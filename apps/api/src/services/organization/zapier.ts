@@ -139,3 +139,29 @@ export async function redeliverZapierTriggerFailuresService(organizationId: stri
 
   return { redelivered: failedDeliveries.length };
 }
+
+/**
+ * Retries the last 24 hours of failed deliveries for every given Zapier-managed
+ * trigger subscription in one call, so a single dashboard click covers an outage
+ * affecting more triggers than the per-minute redelivery budget allows.
+ * Triggers that no longer exist or are disabled are reported, not retried.
+ */
+export async function redeliverZapierTriggerFailuresBulkService(organizationId: string, triggerIds: string[]) {
+  const uniqueIds = [...new Set(triggerIds)];
+  let redelivered = 0;
+  const failed: Array<{ triggerId: string; error: string }> = [];
+
+  for (const triggerId of uniqueIds) {
+    try {
+      const result = await redeliverZapierTriggerFailuresService(organizationId, triggerId);
+      redelivered += result.redelivered;
+    } catch (error) {
+      failed.push({
+        triggerId,
+        error: error instanceof AppError ? error.message : 'Failed to redeliver trigger events'
+      });
+    }
+  }
+
+  return { redelivered, failed };
+}

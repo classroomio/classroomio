@@ -45,7 +45,10 @@ import {
 } from '@cio/db/queries/webhook';
 import { enqueueWebhookDelivery } from '@cio/jobs';
 import { getZapierOAuthClientId } from '@api/services/oauth/clients';
-import { redeliverZapierTriggerFailuresService } from '@api/services/organization/zapier';
+import {
+  redeliverZapierTriggerFailuresBulkService,
+  redeliverZapierTriggerFailuresService
+} from '@api/services/organization/zapier';
 
 const orgId = '22222222-2222-4222-8222-222222222222';
 const webhookId = '11111111-1111-4111-8111-111111111111';
@@ -138,5 +141,38 @@ describe('redeliverZapierTriggerFailuresService', () => {
     await expect(redeliverZapierTriggerFailuresService(orgId, webhookId)).rejects.toMatchObject({
       statusCode: 409
     });
+  });
+});
+
+describe('redeliverZapierTriggerFailuresBulkService', () => {
+  const secondWebhookId = '22222222-2222-4222-8222-222222222222';
+
+  it('sums redeliveries and reports triggers that cannot be retried', async () => {
+    vi.mocked(getManagedWebhookEndpoint).mockImplementation(async (_orgId, id) => {
+      if (id === webhookId) return buildManagedEndpoint();
+      if (id === secondWebhookId) return buildManagedEndpoint({ id: secondWebhookId, isActive: false });
+
+      return null;
+    });
+    vi.mocked(listFailedWebhookDeliveriesSince).mockResolvedValue([{ id: 'whd_1' }]);
+
+    const result = await redeliverZapierTriggerFailuresBulkService(orgId, [
+      webhookId,
+      secondWebhookId,
+      'missing-trigger-id'
+    ]);
+
+    expect(result.redelivered).toBe(1);
+    expect(result.failed.map((failure) => failure.triggerId).sort()).toEqual([secondWebhookId, 'missing-trigger-id']);
+    expect(requeueWebhookDelivery).toHaveBeenCalledTimes(1);
+  });
+
+  it('dedupes repeated trigger ids', async () => {
+    vi.mocked(listFailedWebhookDeliveriesSince).mockResolvedValue([{ id: 'whd_1' }]);
+
+    const result = await redeliverZapierTriggerFailuresBulkService(orgId, [webhookId, webhookId]);
+
+    expect(result).toEqual({ redelivered: 1, failed: [] });
+    expect(requeueWebhookDelivery).toHaveBeenCalledTimes(1);
   });
 });
