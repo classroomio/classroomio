@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/course/invite', () => ({
   createCourseInvite: vi.fn(),
-  createCourseInviteAudit: vi.fn()
+  createCourseInviteAudit: vi.fn(),
+  createEnrollmentInviteIfAbsent: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/course', () => ({
@@ -19,10 +20,14 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
   emitCourseMemberWebhookEvent: vi.fn()
 }));
 
-import { createCourseInvite, createCourseInviteAudit } from '@cio/db/queries/course/invite';
+import {
+  createCourseInvite,
+  createCourseInviteAudit,
+  createEnrollmentInviteIfAbsent
+} from '@cio/db/queries/course/invite';
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { createStudentInvite } from '@api/services/course/invite';
+import { createEmailInviteAndSend, createStudentInvite } from '@api/services/course/invite';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const ACTOR_ID = 'actor-1';
@@ -129,5 +134,80 @@ describe('createStudentInvite (course invite onboarding)', () => {
       createStudentInvite(COURSE_ID, ACTOR_ID, { ...baseInvite, recipientCsv: 'a@example.com, not-an-email' })
     ).rejects.toMatchObject({ statusCode: 400 });
     expect(createCourseInvite).not.toHaveBeenCalled();
+  });
+});
+
+describe('createEmailInviteAndSend with reuseActiveInvite', () => {
+  const inviteInput = {
+    courseId: COURSE_ID,
+    createdByProfileId: ACTOR_ID,
+    recipientEmail: 'New.Person@Example.com',
+    policy: { expiresAt: '2026-12-01T00:00:00.000Z', maxUses: 1 },
+    orgName: 'Org',
+    organizationId: 'org-1',
+    courseName: 'Course',
+    courseSlug: 'course',
+    org: { siteName: 'org', customDomain: null, isCustomDomainVerified: null },
+    branding: {} as never,
+    shouldSend: true,
+    reuseActiveInvite: true
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(createCourseInviteAudit).mockResolvedValue(undefined as never);
+    vi.mocked(enqueueTransactionalEmail).mockResolvedValue(undefined as never);
+  });
+
+  it('returns the invite already naming the email without creating or emailing another', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: false,
+      invite: null,
+      existingInviteId: 'invite-existing'
+    });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(result).toEqual({ created: false, invite: null, inviteId: 'invite-existing', sent: false, error: null });
+    expect(createCourseInvite).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(createCourseInviteAudit).not.toHaveBeenCalled();
+  });
+
+  it('creates one invite and sends one email when no usable invite exists', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: true,
+      invite: {
+        id: 'invite-new',
+        courseId: COURSE_ID,
+        roleId: 3,
+        expiresAt: inviteInput.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        allowedEmails: ['new.person@example.com'],
+        allowedDomains: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        isRevoked: false
+      } as never,
+      existingInviteId: null
+    });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(createEnrollmentInviteIfAbsent).toHaveBeenCalledWith(
+      COURSE_ID,
+      'new.person@example.com',
+      expect.objectContaining({
+        allowedEmails: ['new.person@example.com'],
+        maxUses: 1,
+        expiresAt: inviteInput.policy.expiresAt,
+        metadata: { source: 'DIRECT_EMAIL_INVITE' }
+      })
+    );
+    expect(result).toMatchObject({ created: true, inviteId: 'invite-new', sent: true, error: null });
+    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
+    expect(createCourseInviteAudit).toHaveBeenCalledWith(
+      expect.objectContaining({ inviteId: 'invite-new', eventType: 'CREATED' })
+    );
   });
 });

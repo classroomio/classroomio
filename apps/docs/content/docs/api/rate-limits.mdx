@@ -16,11 +16,11 @@ Analytics snapshot, Academy query, and reminder endpoints have stricter per-minu
 
 Every response tells you where you stand:
 
-| Header | Meaning |
-| --- | --- |
-| `X-RateLimit-Limit` | Requests allowed per minute |
-| `X-RateLimit-Remaining` | Requests left in the current minute |
-| `X-RateLimit-Reset` | Sixty seconds after this request, as an ISO 8601 timestamp |
+| Header                  | Meaning                                                    |
+| ----------------------- | ---------------------------------------------------------- |
+| `X-RateLimit-Limit`     | Requests allowed per minute                                |
+| `X-RateLimit-Remaining` | Requests left in the current minute                        |
+| `X-RateLimit-Reset`     | Sixty seconds after this request, as an ISO 8601 timestamp |
 
 On the Academy query, analytics snapshot and overdue-goal reminder endpoints, the headers report that endpoint's stricter per-key budget, not the 100-request baseline.
 
@@ -58,6 +58,16 @@ MCP usage also has per-minute limits for each connected app or MCP key (`cio_mcp
 
 Wait up to a minute, because the limit counts the last 60 seconds, then retry.
 
+### Zapier connections
+
+Requests from the ClassroomIO Zapier app use per-organization limits instead of the per-key one: 120 reads and 40 writes per minute on Early Adopter, and 360 reads and 120 writes per minute on Enterprise. Reads are `GET` and `HEAD` requests. A `429` from this limit has the same body and `Retry-After` header as the per-key limit.
+
+### Course invites
+
+Creating course invites has a separate limit: each person can create invites for one course 60 times in any hour. For an API key or connection, that person is whoever created the key or connected the app. The dashboard, `POST /courses/{courseId}/invites` and `POST /courses/{courseId}/enrollments` share this budget. Every `/invites` request counts. An `/enrollments` call counts only when it has to send a new invite, so a repeat call that returns `already_enrolled` or `already_invited` doesn't.
+
+Over the limit, `/invites` answers with the per-key body shown above, with `Retry-After`. `/enrollments` answers in the [standard error format](/api/errors#error-format) with `code` `COURSE_INVITE_RATE_LIMIT_EXCEEDED` and no `Retry-After`. Wait and retry later.
+
 ## Handle a 429
 
 Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP usage limits, this waits 60 seconds:
@@ -83,12 +93,12 @@ To stay under the limit:
 - Cache responses that don't change often.
 
 :::note[Self-hosted instances]
-Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit, except for the fail-closed limiters below (analytics queries and snapshots, reminders, and email-template test emails), which refuse the request with a `503` instead.
+Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, most requests go through without a limit. The fail-closed limiters below (analytics queries and snapshots, overdue-goal reminders, email-template test emails, and course invites) refuse the request with a `503` and code `RATE_LIMIT_UNAVAILABLE` instead.
 :::
 
 ### Fail-closed limits
 
-The Academy analytics query, analytics snapshot, overdue-goal reminder, and email-template test-email limiters use `failClosed: true`. When Redis cannot be reached to check the budget, the request fails with `503` and code `RATE_LIMIT_UNAVAILABLE` instead of going through:
+The Academy analytics query, analytics snapshot, overdue-goal reminder, email-template test-email, and course-invite limiters use `failClosed: true`. When Redis cannot be reached to check the budget, the request fails with `503` and code `RATE_LIMIT_UNAVAILABLE` instead of going through:
 
 ```json
 {

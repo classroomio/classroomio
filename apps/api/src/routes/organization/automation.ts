@@ -13,12 +13,22 @@ import {
 } from '@api/services/organization/automation-key';
 import { listOAuthConnectedAppsService, revokeOAuthConnectedAppService } from '@api/services/oauth/oauth';
 import { getOrganizationAutomationUsageSummaryService } from '@api/services/organization/automation-usage';
+import { getZapierConnectionsService, redeliverZapierTriggerFailuresService } from '@api/services/organization/zapier';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { zValidator } from '@hono/zod-validator';
+import { ZZapierTriggerParam } from '@cio/utils/validation/automation';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
+
+const zapierRedeliverRateLimit = createRateLimiter({
+  windowMs: 60 * 1000,
+  maxRequests: 10,
+  message: 'Too many redelivery requests. Please try again shortly.',
+  keyGenerator: (c) => `zapier_redeliver:${c.req.header('cio-org-id') ?? 'unknown'}`
+});
 
 export const automationRouter = new Hono()
   .get(
@@ -46,6 +56,16 @@ export const automationRouter = new Hono()
       return c.json({ success: true, data: apps }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list connected apps');
+    }
+  })
+  .get('/zapier', authMiddleware, orgAdminMiddleware, async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const zapier = await getZapierConnectionsService(orgId);
+
+      return c.json({ success: true, data: zapier }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load Zapier connections');
     }
   })
   .delete(
@@ -102,6 +122,24 @@ export const automationRouter = new Hono()
         return c.json({ success: true, data: key }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to revoke organization automation key');
+      }
+    }
+  )
+  .post(
+    '/zapier/triggers/:triggerId/redeliver',
+    authMiddleware,
+    orgAdminMiddleware,
+    zapierRedeliverRateLimit,
+    zValidator('param', ZZapierTriggerParam),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { triggerId } = c.req.valid('param');
+        const data = await redeliverZapierTriggerFailuresService(orgId, triggerId);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to redeliver Zapier trigger events');
       }
     }
   )

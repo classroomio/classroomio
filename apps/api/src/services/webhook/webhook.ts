@@ -24,6 +24,7 @@ import {
   type TWebhookEndpointWithEvents
 } from '@cio/db/queries/webhook';
 import { enqueueWebhookDelivery } from '@cio/jobs';
+import type { TWebhookEndpoint } from '@cio/db/types';
 import {
   WEBHOOK_DEGRADED_FAILURE_THRESHOLD,
   WEBHOOK_EVENT_TYPES,
@@ -34,7 +35,9 @@ import type { TCreateWebhook, TUpdateWebhook, TWebhookDeliveryListQuery } from '
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
-function resolveHealth(endpoint: TWebhookEndpointWithEvents): TWebhookEndpointHealth {
+export function resolveWebhookHealth(
+  endpoint: Pick<TWebhookEndpoint, 'isActive' | 'autoDisabledAt' | 'consecutiveFailures'>
+): TWebhookEndpointHealth {
   if (!endpoint.isActive && endpoint.autoDisabledAt) return 'disabled';
   if (endpoint.consecutiveFailures >= WEBHOOK_DEGRADED_FAILURE_THRESHOLD) return 'degraded';
 
@@ -56,7 +59,7 @@ export function toWebhookView(
     eventMode: endpoint.eventMode as 'all' | 'selected',
     eventTypes: endpoint.eventTypes,
     isActive: endpoint.isActive,
-    health: resolveHealth(endpoint),
+    health: resolveWebhookHealth(endpoint),
     consecutiveFailures: endpoint.consecutiveFailures,
     hasSecret: Boolean(endpoint.secretCiphertext),
     secretLast4: endpoint.secretLast4,
