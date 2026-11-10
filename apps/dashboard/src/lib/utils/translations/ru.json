@@ -3778,9 +3778,43 @@
       "refresh": "Обновить"
     },
     "upload": {
-      "videos": "Загрузить видео",
-      "documents": "Загрузить документы",
-      "more_options": "Другие варианты загрузки"
+      "files": "Загрузить файлы",
+      "add_video_link": "Добавить ссылку на видео",
+      "more_options": "Другие варианты загрузки",
+      "dialog_title": "Загрузка файлов",
+      "drag_drop": "Перетащите файлы сюда или нажмите, чтобы выбрать",
+      "limits": "Видео и документы. До {count} файлов за раз, каждый до {size}.",
+      "limits_by_kind": "До {count} файлов за раз. Видео до {videoSize}, документы до {documentSize}.",
+      "add_more": "Добавить ещё файлы",
+      "minimize": "Свернуть",
+      "maximize": "Открыть окно загрузки",
+      "expand": "Показать файлы",
+      "collapse": "Скрыть файлы",
+      "close": "Закрыть",
+      "done": "Готово",
+      "keep_in_background": "Продолжить в фоне",
+      "upgrade": "Обновите тариф, чтобы загружать файлы в медиатеку",
+      "status": {
+        "queued": "Ожидание",
+        "completed": "Завершено",
+        "failed": "Ошибка",
+        "retry": "Повторить",
+        "remove": "Удалить файл",
+        "uploading_progress": "Загрузка {percent}%",
+        "size_progress": "{uploaded} из {total}"
+      },
+      "summary": {
+        "uploading": "Загружено {done} из {total} файлов",
+        "completed": "Загрузок завершено: {count}",
+        "failed": "Не удалось загрузить: {count} из {total}"
+      },
+      "errors": {
+        "unsupported_type": "{name} не является поддерживаемым видео или документом.",
+        "too_large": "{name} больше {size}.",
+        "too_many": "Можно загружать до {count} файлов за раз.",
+        "generic": "Не удалось загрузить"
+      },
+      "switch_organization_confirm": "При смене организации текущие загрузки будут отменены. Всё равно сменить?"
     },
     "storage": {
       "total_bytes": "Общий объем хранилища",

@@ -3778,9 +3778,43 @@
       "refresh": "ताज़ा करना"
     },
     "upload": {
-      "videos": "वीडियो अपलोड करें",
-      "documents": "दस्तावेज़ अपलोड करें",
-      "more_options": "अधिक अपलोड विकल्प"
+      "files": "फ़ाइलें अपलोड करें",
+      "add_video_link": "वीडियो लिंक जोड़ें",
+      "more_options": "अपलोड के और विकल्प",
+      "dialog_title": "फ़ाइलें अपलोड करें",
+      "drag_drop": "फ़ाइलें यहाँ खींचकर छोड़ें, या चुनने के लिए क्लिक करें",
+      "limits": "वीडियो और दस्तावेज़। एक बार में {count} फ़ाइलें तक, प्रत्येक {size}।",
+      "limits_by_kind": "एक बार में {count} फ़ाइलें तक। वीडियो {videoSize} तक, दस्तावेज़ {documentSize} तक।",
+      "add_more": "और फ़ाइलें जोड़ें",
+      "minimize": "छोटा करें",
+      "maximize": "अपलोड विंडो खोलें",
+      "expand": "फ़ाइलें दिखाएँ",
+      "collapse": "फ़ाइलें छिपाएँ",
+      "close": "बंद करें",
+      "done": "हो गया",
+      "keep_in_background": "बैकग्राउंड में जारी रखें",
+      "upgrade": "अपनी मीडिया लाइब्रेरी में फ़ाइलें अपलोड करने के लिए अपग्रेड करें",
+      "status": {
+        "queued": "प्रतीक्षा में",
+        "completed": "पूर्ण",
+        "failed": "विफल",
+        "retry": "फिर से कोशिश करें",
+        "remove": "फ़ाइल हटाएँ",
+        "uploading_progress": "अपलोड हो रहा है {percent}%",
+        "size_progress": "{total} में से {uploaded}"
+      },
+      "summary": {
+        "uploading": "{total} में से {done} फ़ाइलें अपलोड हुईं",
+        "completed": "{count} अपलोड पूर्ण",
+        "failed": "{total} में से {count} अपलोड विफल"
+      },
+      "errors": {
+        "unsupported_type": "{name} समर्थित वीडियो या दस्तावेज़ नहीं है।",
+        "too_large": "{name} {size} से बड़ी है।",
+        "too_many": "आप एक बार में {count} फ़ाइलें तक अपलोड कर सकते हैं।",
+        "generic": "अपलोड विफल"
+      },
+      "switch_organization_confirm": "संगठन बदलने से चल रहे अपलोड रद्द हो जाएँगे। फिर भी बदलें?"
     },
     "storage": {
       "total_bytes": "कुल संग्रहण",

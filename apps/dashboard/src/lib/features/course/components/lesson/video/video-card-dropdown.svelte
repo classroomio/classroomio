@@ -4,11 +4,13 @@
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import ImageIcon from '@lucide/svelte/icons/image';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { mediaApi } from '$features/media/api';
-  import { ManageThumbnailsDialog } from '$features/media/components';
+  import type { TAssetUpdate } from '@cio/utils/validation/assets';
+  import { libraryAssetCache, mediaApi } from '$features/media/api';
+  import { EditAssetDialog, ManageThumbnailsDialog } from '$features/media/components';
   import type { OrganizationAsset } from '$features/media/utils';
   import { JobPoller, jobsApi, type MediaJobEnvelope } from '$features/jobs';
   import { sidePanel } from '$features/side-panel';
@@ -49,6 +51,9 @@
   let manageThumbsOpen = $state(false);
   let manageThumbsAsset = $state<OrganizationAsset | null>(null);
   let isLoadingAsset = $state(false);
+  let editOpen = $state(false);
+  let editAsset = $state<OrganizationAsset | null>(null);
+  let isSavingAsset = $state(false);
   let dropdownOpen = $state(false);
 
   let isTranscribing = $state(false);
@@ -68,6 +73,7 @@
   const canGenerateTranscript = $derived((video.type === 'upload' || video.type === 'youtube') && !!assetId);
   const canViewTranscript = $derived((video.type === 'upload' || video.type === 'youtube') && !!assetId);
   const canManageThumbnails = $derived(video.type === 'upload' && !!assetId);
+  const canEditAsset = $derived(!!assetId);
   const hls1080Status = $derived(getHls1080Status(video));
   const showGenerate1080 = $derived(canGenerateHls1080(video) && !isGenerating1080);
   const show1080Ready = $derived(hls1080Status === 'ready');
@@ -75,7 +81,8 @@
     isHlsUploadVideo(video) && !hasHls1080Rendition(video) && !isGenerating1080 && hls1080Status === 'unavailable'
   );
   const hasMenuItems = $derived(
-    canManageThumbnails ||
+    canEditAsset ||
+      canManageThumbnails ||
       canGenerateTranscript ||
       showGenerate1080 ||
       isGenerating1080 ||
@@ -258,6 +265,49 @@
     }
   }
 
+  async function handleEditAsset() {
+    if (!assetId || isLoadingAsset) return;
+
+    dropdownOpen = false;
+
+    isLoadingAsset = true;
+    try {
+      const asset = await libraryAssetCache.load(assetId);
+      if (!asset) {
+        snackbar.error('snackbar.media_manager.list_failed');
+        return;
+      }
+
+      editAsset = asset;
+      editOpen = true;
+    } finally {
+      isLoadingAsset = false;
+    }
+  }
+
+  async function saveEditedAsset(fields: TAssetUpdate) {
+    if (!editAsset) return;
+
+    const previousThumbnailUrl = editAsset.thumbnailUrl;
+
+    isSavingAsset = true;
+    try {
+      const updated = await mediaApi.updateAsset(editAsset.id, fields);
+      if (!updated) return;
+
+      libraryAssetCache.set(updated);
+      editAsset = updated;
+      editOpen = false;
+      snackbar.success('snackbar.media_manager.update_success');
+
+      if (updated.thumbnailUrl && updated.thumbnailUrl !== previousThumbnailUrl) {
+        onThumbnailSaved?.(updated.thumbnailUrl);
+      }
+    } finally {
+      isSavingAsset = false;
+    }
+  }
+
   function handleThumbnailSaved(asset: OrganizationAsset) {
     manageThumbsAsset = asset;
     if (asset.thumbnailUrl) {
@@ -348,6 +398,20 @@
       </IconButton>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content align="end">
+      {#if canEditAsset}
+        <DropdownMenu.Item
+          disabled={isLoadingAsset}
+          data-testid="lesson-video-edit"
+          onclick={() => {
+            void handleEditAsset();
+          }}
+        >
+          <span class="flex items-center gap-2">
+            <PencilIcon size={14} />
+            {$t('media_manager.actions.edit')}
+          </span>
+        </DropdownMenu.Item>
+      {/if}
       {#if canManageThumbnails}
         <DropdownMenu.Item
           disabled={isLoadingAsset}
@@ -436,6 +500,14 @@
     </DropdownMenu.Content>
   </DropdownMenu.Root>
 {/if}
+
+<EditAssetDialog
+  bind:open={editOpen}
+  asset={editAsset}
+  isSaving={isSavingAsset}
+  showStatus={false}
+  onSave={saveEditedAsset}
+/>
 
 <ManageThumbnailsDialog
   bind:open={manageThumbsOpen}

@@ -38,4 +38,4 @@ export const videoTabs = [
   }
 ];
 
-export const lessonOnlyVideoTabs = new Set(['library', 'google_drive']);
+export const lessonOnlyVideoTabs = new Set(['upload', 'library', 'google_drive']);

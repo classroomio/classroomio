@@ -3778,9 +3778,43 @@
       "refresh": "Làm cho khỏe lại"
     },
     "upload": {
-      "videos": "Tải video lên",
-      "documents": "Tải tài liệu lên",
-      "more_options": "Thêm tùy chọn tải lên"
+      "files": "Tải tệp lên",
+      "add_video_link": "Thêm liên kết video",
+      "more_options": "Tùy chọn tải lên khác",
+      "dialog_title": "Tải tệp lên",
+      "drag_drop": "Kéo và thả tệp vào đây, hoặc nhấp để chọn",
+      "limits": "Video và tài liệu. Tối đa {count} tệp mỗi lần, mỗi tệp {size}.",
+      "limits_by_kind": "Tối đa {count} tệp mỗi lần. Video tối đa {videoSize}, tài liệu tối đa {documentSize}.",
+      "add_more": "Thêm tệp",
+      "minimize": "Thu nhỏ",
+      "maximize": "Mở cửa sổ tải lên",
+      "expand": "Hiện tệp",
+      "collapse": "Ẩn tệp",
+      "close": "Đóng",
+      "done": "Xong",
+      "keep_in_background": "Tiếp tục ở chế độ nền",
+      "upgrade": "Nâng cấp để tải tệp lên thư viện phương tiện của bạn",
+      "status": {
+        "queued": "Đang chờ",
+        "completed": "Hoàn tất",
+        "failed": "Thất bại",
+        "retry": "Thử lại",
+        "remove": "Xóa tệp",
+        "uploading_progress": "Đang tải lên {percent}%",
+        "size_progress": "{uploaded} trên {total}"
+      },
+      "summary": {
+        "uploading": "Đã tải lên {done} trên {total} tệp",
+        "completed": "Đã tải lên xong {count} tệp",
+        "failed": "{count} trên {total} lượt tải lên thất bại"
+      },
+      "errors": {
+        "unsupported_type": "{name} không phải là video hoặc tài liệu được hỗ trợ.",
+        "too_large": "{name} lớn hơn {size}.",
+        "too_many": "Bạn có thể tải lên tối đa {count} tệp mỗi lần.",
+        "generic": "Tải lên thất bại"
+      },
+      "switch_organization_confirm": "Chuyển tổ chức sẽ hủy các tệp đang tải lên. Vẫn chuyển?"
     },
     "storage": {
       "total_bytes": "Tổng dung lượng lưu trữ",
