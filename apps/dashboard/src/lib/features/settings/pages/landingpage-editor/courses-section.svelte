@@ -288,10 +288,13 @@
     {#if showsFeaturedCourseToggle}
       <Field.Field orientation="horizontal">
         <Switch
+          id="landing-courses-featured-toggle"
           checked={isFeaturedCourseShown(settings?.featuredCourse)}
           onCheckedChange={(checked) => setFeaturedCourseShown(checked === true)}
         />
-        <Field.Label>{$t('settings.landing_page.editor.courses.featured_toggle')}</Field.Label>
+        <Field.Label for="landing-courses-featured-toggle">
+          {$t('settings.landing_page.editor.courses.featured_toggle')}
+        </Field.Label>
       </Field.Field>
       <Field.Description>{$t('settings.landing_page.editor.courses.featured_toggle_desc')}</Field.Description>
     {/if}
