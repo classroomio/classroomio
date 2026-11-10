@@ -357,7 +357,8 @@ A member is added to a course, by an admin or by accepting an invite.
     "inviteLinkId": null,
     "cohortId": null,
     "programId": null,
-    "apiKeyId": null
+    "apiKeyId": null,
+    "oauthClientId": null
   },
   "actorProfileId": null,
   "actor": null,
@@ -368,7 +369,7 @@ A member is added to a course, by an admin or by accepting an invite.
 }
 ```
 
-`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `enrolledAt` is when the membership was created. `source.method` is `invite`, `invite_link`, `self_enroll`, `import`, `api`, `sso`, `payment`, `admin` or `cohort`, and the other `source` fields hold the matching id or `null`. `actor` is the admin or tutor who added the member, or `null` when the student joined by themselves. `roleId` is `1` for admin, `2` for tutor, `3` for student.
+`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `enrolledAt` is when the membership was created. `source.method` is `invite`, `invite_link`, `self_enroll`, `import`, `api`, `sso`, `payment`, `admin` or `cohort`, and the other `source` fields hold the matching id or `null`. `source.oauthClientId` holds the OAuth client ID when the enrollment was created by a connected application, or `null` otherwise. `actor` is the admin or tutor who added the member, or `null` when the student joined by themselves. `roleId` is `1` for admin, `2` for tutor, `3` for student.
 
 #### `course.member.removed`
 
@@ -1253,6 +1254,10 @@ If a Standard Webhooks receiver rejects the signature for a webhook created befo
 - Self-hosted installs can allow private-network and plain `http` destinations by setting `WEBHOOK_ALLOW_PRIVATE_NETWORKS=true` on the API and jobs services.
 
 ## Changelog
+
+### 2026-10-31
+
+- `course.member.added`: Added `oauthClientId` (string or `null`) to the `source` object. It identifies the connected application that created the enrollment, and is `null` otherwise.
 
 ### 2026-10-21
 
