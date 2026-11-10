@@ -335,6 +335,24 @@ export async function updateOAuthClientScopes(clientId: string, scopes: readonly
   }
 }
 
+/**
+ * Deletes a registered OAuth client. Its consents, grants and keys follow through
+ * cascading foreign keys, so nothing wide-scoped is left behind.
+ */
+export async function deleteOAuthClient(clientId: string): Promise<boolean> {
+  try {
+    const deleted = await db
+      .delete(schema.oauthClient)
+      .where(eq(schema.oauthClient.clientId, clientId))
+      .returning({ clientId: schema.oauthClient.clientId });
+
+    return deleted.length > 0;
+  } catch (error) {
+    console.error('deleteOAuthClient error:', error);
+    throw new Error('Failed to delete OAuth client');
+  }
+}
+
 export type PublicJwk = Record<string, unknown> & { kid: string };
 
 /**
