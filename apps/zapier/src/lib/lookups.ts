@@ -19,7 +19,7 @@ export const STUDENT_OUTPUT_FIELDS: Array<{ key: string; label: string; type?: '
 ];
 
 export async function findStudentByEmail(z: ZObject, email: string): Promise<AudienceMember | null> {
-  const response = await z.request({ url: apiUrl('/audience'), params: { email } });
+  const response = await z.request({ url: apiUrl('/audience'), params: { email: email.trim() } });
   const members = response.data.data as AudienceMember[];
 
   return members[0] ?? null;
