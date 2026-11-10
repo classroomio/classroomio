@@ -7,10 +7,13 @@
   import PlusIcon from '@lucide/svelte/icons/plus';
   import HistoryIcon from '@lucide/svelte/icons/history';
   import ChatHistoryPopover from '$features/ai-assistant/chat-history-popover.svelte';
-  import { closeAiAssistant } from '$features/ai-assistant/utils/store';
+  import { closeAiAssistant, dockAiAssistant } from '$features/ai-assistant/utils/store';
   import { t } from '$lib/utils/functions/translations';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
+  import { sidePanel } from '$features/side-panel';
+  import { startFloatingDrag } from '$features/side-panel/utils/floating';
+  import Maximize2Icon from '@lucide/svelte/icons/maximize-2';
 
   interface Conversation {
     id: string;
@@ -67,6 +70,8 @@
 
   let renameCommitInFlight = $state(false);
   let snapshotConversationIdForRename = $state<string | null>(null);
+
+  const isFloating = $derived(sidePanel.isFloating);
 
   const canRenameConversation = $derived(
     Boolean(activeConversationId && conversationTitle && conversationTitle !== 'New conversation')
@@ -166,10 +171,59 @@
       cancelRenameConversation();
     }
   }
+
+  function handleGripPointerDown(event: PointerEvent) {
+    const def = sidePanel.activeDefinition;
+    const rect = sidePanel.floatingRect;
+    if (!def || !rect || !isFloating) return;
+    if (event.button !== 0) return;
+
+    event.preventDefault();
+    sidePanel.isFloatingDragging = true;
+
+    startFloatingDrag({
+      event,
+      rect,
+      definition: def,
+      onPreview: (nextRect) => {
+        sidePanel.updateFloatingRect(nextRect, false);
+      },
+      onCommit: (nextRect, shouldDock) => {
+        sidePanel.isFloatingDragging = false;
+        sidePanel.showDockHint = false;
+        if (shouldDock) {
+          sidePanel.dock();
+          return;
+        }
+
+        sidePanel.updateFloatingRect(nextRect, true);
+      },
+      onDockHintChange: (show) => {
+        sidePanel.showDockHint = show;
+      },
+      onCancel: () => {
+        sidePanel.isFloatingDragging = false;
+        sidePanel.showDockHint = false;
+      }
+    });
+  }
+
+  function handleHeaderPointerDown(event: PointerEvent) {
+    if (!isFloating) return;
+
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('button, input, textarea, select, a, [role="button"]')) return;
+
+    handleGripPointerDown(event);
+  }
 </script>
 
-<div class="border-b px-4 py-3">
-  <div class="flex items-center justify-between">
+<div
+  class="border-b px-4 py-3 {isFloating ? 'cursor-grab active:cursor-grabbing' : ''}"
+  role="presentation"
+  onpointerdown={handleHeaderPointerDown}
+>
+  <div class="flex items-center justify-between gap-2">
     <div class="flex min-w-0 items-center gap-2">
       <SparklesIcon size={18} class="ui:text-primary shrink-0" />
       <div class="min-w-0">
@@ -205,42 +259,53 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <IconButton
-        onclick={onNewChat}
-        disabled={isNewChatDisabled}
-        variant="outline"
-        size="icon-xs"
-        tooltip={$t('ai_assistant.new_chat')}
-      >
-        <PlusIcon size={16} />
-      </IconButton>
+      {#if isFloating}
+        <IconButton
+          onclick={dockAiAssistant}
+          variant="outline"
+          size="icon-xs"
+          tooltip={$t('side_panel.floating.expand_aria')}
+        >
+          <Maximize2Icon size={16} />
+        </IconButton>
+      {:else}
+        <IconButton
+          onclick={onNewChat}
+          disabled={isNewChatDisabled}
+          variant="outline"
+          size="icon-xs"
+          tooltip={$t('ai_assistant.new_chat')}
+        >
+          <PlusIcon size={16} />
+        </IconButton>
 
-      <Popover.Root bind:open={historyPopoverOpen}>
-        <Popover.Trigger>
-          {#snippet child({ props })}
-            <Button
-              variant="outline"
-              size="icon-xs"
-              {...props}
-              aria-label={$t('ai_assistant.chat_history')}
-              title={$t('ai_assistant.chat_history')}
-            >
-              <HistoryIcon size={16} />
-            </Button>
-          {/snippet}
-        </Popover.Trigger>
-        <Popover.Content class="w-72 p-0!" align="center">
-          <ChatHistoryPopover
-            {conversations}
-            {activeConversationId}
-            onLoad={handleLoadConversation}
-            onDelete={onDeleteConversation}
-          />
-        </Popover.Content>
-      </Popover.Root>
+        <Popover.Root bind:open={historyPopoverOpen}>
+          <Popover.Trigger>
+            {#snippet child({ props })}
+              <Button
+                variant="outline"
+                size="icon-xs"
+                {...props}
+                aria-label={$t('ai_assistant.chat_history')}
+                title={$t('ai_assistant.chat_history')}
+              >
+                <HistoryIcon size={16} />
+              </Button>
+            {/snippet}
+          </Popover.Trigger>
+          <Popover.Content class="w-72 p-0!" align="center">
+            <ChatHistoryPopover
+              {conversations}
+              {activeConversationId}
+              onLoad={handleLoadConversation}
+              onDelete={onDeleteConversation}
+            />
+          </Popover.Content>
+        </Popover.Root>
+      {/if}
 
-      <IconButton onclick={closeAiAssistant} variant="outline" size="icon-xs">
-        <XIcon size={16} />
+      <IconButton onclick={closeAiAssistant} variant="outline" size="icon-xs" tooltip={t.get('side_panel.close_aria')}>
+        <XIcon size={18} />
       </IconButton>
     </div>
   </div>

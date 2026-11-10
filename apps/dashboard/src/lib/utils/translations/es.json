@@ -3059,7 +3059,11 @@
       "preview": "Vista previa del curso",
       "preview_missing_slug": "Genera y guarda un slug del curso antes de previsualizarlo.",
       "view_as_student": "Ver como estudiante",
-      "view_course_site": "Ver sitio del curso"
+      "view_course_site": "Ver sitio del curso",
+      "assistant_pop_out": "Chat emergente",
+      "assistant_close_floating": "Cerrar chat flotante",
+      "assistant_tip": "Consejo: utilice el icono emergente para hacer flotar al asistente mientras trabaja.",
+      "assistant_tip_dismiss": "Descartar consejo"
     },
     "view_course_site": {
       "unpublished_title": "Publica tu curso",
@@ -5758,6 +5762,11 @@
     "titles": {
       "ai_assistant": "Asistente de IA",
       "transcript": "Transcripción"
+    },
+    "floating": {
+      "resize_aria": "Cambiar el tamaño de la ventana del asistente",
+      "expand_aria": "Expandir al panel lateral",
+      "dock_hint": "Suelte para atracar a un lado"
     }
   },
   "compliance": {

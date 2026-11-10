@@ -3059,7 +3059,11 @@
       "preview": "Podgląd kursu",
       "preview_missing_slug": "Wygeneruj i zapisz slug kursu przed podglądem.",
       "view_as_student": "Wyświetl jako student",
-      "view_course_site": "Zobacz stronę kursu"
+      "view_course_site": "Zobacz stronę kursu",
+      "assistant_pop_out": "Wyskakuj czat",
+      "assistant_close_floating": "Zamknij pływający czat",
+      "assistant_tip": "Wskazówka: użyj wyskakującej ikony, aby unieść asystenta podczas pracy.",
+      "assistant_tip_dismiss": "Odrzuć wskazówkę"
     },
     "view_course_site": {
       "unpublished_title": "Opublikuj swój kurs",
@@ -5758,6 +5762,11 @@
     "titles": {
       "ai_assistant": "Asystent AI",
       "transcript": "Transkrypcja"
+    },
+    "floating": {
+      "resize_aria": "Zmień rozmiar okna asystenta",
+      "expand_aria": "Rozwiń do panelu bocznego",
+      "dock_hint": "Zwolnij, aby zadokować z boku"
     }
   },
   "compliance": {

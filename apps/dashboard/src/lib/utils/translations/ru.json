@@ -3059,7 +3059,11 @@
       "preview": "Предпросмотр курса",
       "preview_missing_slug": "Создайте и сохраните slug курса перед предпросмотром.",
       "view_as_student": "Посмотреть как студент",
-      "view_course_site": "Посмотреть сайт курса"
+      "view_course_site": "Посмотреть сайт курса",
+      "assistant_pop_out": "Всплывающий чат",
+      "assistant_close_floating": "Закрыть плавающий чат",
+      "assistant_tip": "Совет: используйте всплывающий значок, чтобы перемещать помощника во время работы.",
+      "assistant_tip_dismiss": "Отклонить совет"
     },
     "view_course_site": {
       "unpublished_title": "Опубликуйте курс",
@@ -5758,6 +5762,11 @@
     "titles": {
       "ai_assistant": "ИИ-помощник",
       "transcript": "Транскрипция"
+    },
+    "floating": {
+      "resize_aria": "Изменение размера окна помощника",
+      "expand_aria": "Развернуть на боковую панель",
+      "dock_hint": "Отпустите, чтобы состыковать в сторону"
     }
   },
   "compliance": {

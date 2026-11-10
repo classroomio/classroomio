@@ -7,6 +7,13 @@ export const AI_COURSE_CHAT_MAX_WIDTH = 520;
 export const AI_COURSE_CHAT_STORAGE_KEY = 'classroomio-ai-course-chat-width';
 export const AI_CHAT_MODEL_STORAGE_KEY = 'classroomio-ai-chat-model';
 
+export const AI_COURSE_CHAT_FLOATING_STORAGE_KEY = 'classroomio-ai-course-chat-floating';
+export const AI_COURSE_CHAT_FLOATING_DEFAULT_WIDTH_REM = 26;
+export const AI_COURSE_CHAT_FLOATING_DEFAULT_HEIGHT = 560;
+export const AI_COURSE_CHAT_FLOATING_MIN_WIDTH = 320;
+export const AI_COURSE_CHAT_FLOATING_MIN_HEIGHT = 380;
+export const AI_ASSISTANT_POPOUT_TIP_DISMISSED_KEY = 'classroomio-ai-assistant-popout-tip-dismissed';
+
 /** Display via `$t(entry.key)`; `prompt` is sent to the model (English). */
 export const AI_ASSISTANT_QUICK_ACTION_ENTRIES = [
   {

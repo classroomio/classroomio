@@ -3059,7 +3059,11 @@
       "preview": "Kursvorschau",
       "preview_missing_slug": "Generieren und speichern Sie einen Kurs-Slug, bevor Sie eine Vorschau anzeigen.",
       "view_as_student": "Als Student anzeigen",
-      "view_course_site": "Kursseite anzeigen"
+      "view_course_site": "Kursseite anzeigen",
+      "assistant_pop_out": "Pop-out-Chat",
+      "assistant_close_floating": "Schwebenden Chat schließen",
+      "assistant_tip": "Tipp: Verwenden Sie das Popup-Symbol, um den Assistenten während der Arbeit schweben zu lassen.",
+      "assistant_tip_dismiss": "Tipp verwerfen"
     },
     "view_course_site": {
       "unpublished_title": "Kurs veröffentlichen",
@@ -5758,6 +5762,11 @@
     "titles": {
       "ai_assistant": "KI-Assistent",
       "transcript": "Transkript"
+    },
+    "floating": {
+      "resize_aria": "Assistentenfenster in der Größe ändern",
+      "expand_aria": "Zum Seitenbereich erweitern",
+      "dock_hint": "Zum seitlichen Andocken loslassen"
     }
   },
   "compliance": {

@@ -2502,7 +2502,11 @@
       "preview": "Kursu önizleyin",
       "preview_missing_slug": "Önizlemeden önce bir kurs bilgisi oluşturun ve kaydedin.",
       "view_as_student": "Öğrenci olarak görüntüle",
-      "view_course_site": "Kurs Sitesini Görüntüle"
+      "view_course_site": "Kurs Sitesini Görüntüle",
+      "assistant_pop_out": "Sohbeti aç",
+      "assistant_close_floating": "Kayan sohbeti kapat",
+      "assistant_tip": "İpucu: Çalışırken asistanı yüzdürmek için açılır simgeyi kullanın.",
+      "assistant_tip_dismiss": "İpucunu reddet"
     },
     "view_course_site": {
       "unpublished_title": "Kursunuzu yayınlayın",
@@ -6018,6 +6022,11 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transkript"
+    },
+    "floating": {
+      "resize_aria": "Asistan penceresini yeniden boyutlandır",
+      "expand_aria": "Yan panele genişlet",
+      "dock_hint": "Yan tarafa sabitlemek için bırakın"
     }
   },
   "cohorts": {
