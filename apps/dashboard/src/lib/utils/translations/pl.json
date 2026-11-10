@@ -6549,7 +6549,10 @@
     "consent": {
       "page_title": "Połącz aplikację z ClassroomIO",
       "title": "Połącz {client} z ClassroomIO",
-      "workspace": "Przestrzeń robocza: {workspace}",
+      "subtitle": "Wybierz przestrzeń roboczą, do której {client} ma mieć dostęp.",
+      "workspace_label": "Przestrzeń robocza",
+      "no_workspaces_title": "Brak dostępnych przestrzeni roboczych",
+      "no_workspaces_description": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Poproś administratora lub zaloguj się na konto administratora.",
       "permissions_heading": "{client} będzie mógł:",
       "stay_connected": "Pozostań połączony, dopóki nie usuniesz dostępu",
       "admin_note": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Dostęp wynika z Twoich uprawnień administratora i wygasa, jeśli je utracisz.",
@@ -6559,12 +6562,6 @@
       "unknown_client": "Ta aplikacja",
       "error_title": "To żądanie połączenia jest nieprawidłowe",
       "error_description": "Wróć do aplikacji, którą łączysz, i zacznij od nowa."
-    },
-    "select_organization": {
-      "title": "Wybierz przestrzeń roboczą",
-      "subtitle": "Wybierz przestrzeń roboczą, do której {client} ma mieć dostęp.",
-      "empty_title": "Brak dostępnych przestrzeni roboczych",
-      "empty_description": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Poproś administratora lub zaloguj się na konto administratora."
     },
     "error": {
       "generic": "Coś poszło nie tak. Spróbuj ponownie."

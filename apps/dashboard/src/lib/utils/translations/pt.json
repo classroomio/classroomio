@@ -6549,7 +6549,10 @@
     "consent": {
       "page_title": "Conecte um app ao ClassroomIO",
       "title": "Conectar {client} ao ClassroomIO",
-      "workspace": "Espaço de trabalho: {workspace}",
+      "subtitle": "Escolha o espaço de trabalho ao qual {client} pode ter acesso.",
+      "workspace_label": "Espaço de trabalho",
+      "no_workspaces_title": "Nenhum espaço de trabalho disponível",
+      "no_workspaces_description": "Somente administradores do espaço de trabalho podem conectar apps. Peça a um administrador ou entre com uma conta de administrador.",
       "permissions_heading": "{client} poderá:",
       "stay_connected": "Manter conectado até você remover o acesso",
       "admin_note": "Somente administradores do espaço de trabalho podem conectar apps. O acesso segue suas permissões de administrador e termina se você as perder.",
@@ -6559,12 +6562,6 @@
       "unknown_client": "Este app",
       "error_title": "Esta solicitação de conexão não é válida",
       "error_description": "Volte ao app que você estava conectando e comece de novo."
-    },
-    "select_organization": {
-      "title": "Escolha um espaço de trabalho",
-      "subtitle": "Escolha o espaço de trabalho ao qual {client} pode ter acesso.",
-      "empty_title": "Nenhum espaço de trabalho disponível",
-      "empty_description": "Somente administradores do espaço de trabalho podem conectar apps. Peça a um administrador ou entre com uma conta de administrador."
     },
     "error": {
       "generic": "Algo deu errado. Tente novamente."

@@ -9,7 +9,6 @@ import { OAUTH_SCOPES } from './oauth-scopes';
 
 export const OAUTH_LOGIN_PAGE = '/login';
 export const OAUTH_CONSENT_PAGE = '/oauth/consent';
-export const OAUTH_ORGANIZATION_PAGE = '/oauth/select-organization';
 
 const ACCESS_TOKEN_TTL_SECONDS = 10 * 60;
 
@@ -28,7 +27,7 @@ export function buildOAuthPlugins(): BetterAuthPlugin[] {
       enforcePerClientResources: false,
       accessTokenExpiresIn: ACCESS_TOKEN_TTL_SECONDS,
       postLogin: {
-        page: OAUTH_ORGANIZATION_PAGE,
+        page: OAUTH_CONSENT_PAGE,
         shouldRedirect: async ({ session, isContinuation }) => {
           if (!isContinuation) return true;
 

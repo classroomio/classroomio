@@ -6549,7 +6549,10 @@
     "consent": {
       "page_title": "Connecter une application à ClassroomIO",
       "title": "Connecter {client} à ClassroomIO",
-      "workspace": "Espace de travail : {workspace}",
+      "subtitle": "Choisissez l'espace de travail auquel {client} peut accéder.",
+      "workspace_label": "Espace de travail",
+      "no_workspaces_title": "Aucun espace de travail disponible",
+      "no_workspaces_description": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. Demandez à un administrateur ou connectez-vous avec un compte administrateur.",
       "permissions_heading": "{client} pourra :",
       "stay_connected": "Rester connecté jusqu'à ce que vous retiriez l'accès",
       "admin_note": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. L'accès suit vos autorisations d'administrateur et prend fin si vous les perdez.",
@@ -6559,12 +6562,6 @@
       "unknown_client": "Cette application",
       "error_title": "Cette demande de connexion n'est pas valide",
       "error_description": "Retournez à l'application que vous vouliez connecter et recommencez."
-    },
-    "select_organization": {
-      "title": "Choisir un espace de travail",
-      "subtitle": "Choisissez l'espace de travail auquel {client} peut accéder.",
-      "empty_title": "Aucun espace de travail disponible",
-      "empty_description": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. Demandez à un administrateur ou connectez-vous avec un compte administrateur."
     },
     "error": {
       "generic": "Une erreur s'est produite. Veuillez réessayer."

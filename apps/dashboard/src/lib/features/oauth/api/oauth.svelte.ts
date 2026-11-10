@@ -37,7 +37,11 @@ class OAuthApi extends BaseApiWithErrors {
   async selectOrganization(organizationId: string) {
     return this.execute<SelectOAuthOrganizationRequest>({
       requestFn: () => classroomio.oauth['organization-selection'].$post({ json: { organizationId } }),
-      logContext: 'selecting OAuth organization'
+      logContext: 'selecting OAuth organization',
+      onSuccess: () => {
+        this.selectedOrganization =
+          this.organizations?.find((organization) => organization.id === organizationId) ?? null;
+      }
     });
   }
 
@@ -53,10 +57,6 @@ class OAuthApi extends BaseApiWithErrors {
       console.error('Error loading OAuth client:', error);
       this.client = null;
     }
-  }
-
-  async continueAfterOrganization(oauthQuery: string): Promise<string | null> {
-    return this.postAuthorizationStep('/oauth2/continue', { postLogin: true, oauth_query: oauthQuery });
   }
 
   async submitConsent(accept: boolean, oauthQuery: string): Promise<string | null> {
