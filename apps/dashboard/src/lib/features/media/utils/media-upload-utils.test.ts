@@ -41,26 +41,19 @@ describe('resolveMediaUpload', () => {
 });
 
 describe('resolveMediaUploadSizeLimits', () => {
-  const deployment = { videoBytes: 800 * 1024 * 1024, documentBytes: 5 * 1024 * 1024 };
+  it('uses the deployment limits when they are below 1 GB', () => {
+    const deployment = { videoBytes: 800 * 1024 * 1024, documentBytes: 5 * 1024 * 1024 };
 
-  it('allows 1 GB videos when the browser encodes them', () => {
-    const limits = resolveMediaUploadSizeLimits({ ...deployment, encodesVideoInBrowser: true });
-
-    expect(limits.video).toBe(MEDIA_UPLOAD_MAX_FILE_BYTES);
-    expect(limits.document).toBe(deployment.documentBytes);
-  });
-
-  it('keeps the deployment video limit when the source file is uploaded as is', () => {
-    const limits = resolveMediaUploadSizeLimits({ ...deployment, encodesVideoInBrowser: false });
-
-    expect(limits.video).toBe(deployment.videoBytes);
+    expect(resolveMediaUploadSizeLimits(deployment)).toEqual({
+      video: deployment.videoBytes,
+      document: deployment.documentBytes
+    });
   });
 
   it('never exceeds 1 GB', () => {
     const limits = resolveMediaUploadSizeLimits({
       videoBytes: 4 * MEDIA_UPLOAD_MAX_FILE_BYTES,
-      documentBytes: 4 * MEDIA_UPLOAD_MAX_FILE_BYTES,
-      encodesVideoInBrowser: false
+      documentBytes: 4 * MEDIA_UPLOAD_MAX_FILE_BYTES
     });
 
     expect(limits).toEqual({ video: MEDIA_UPLOAD_MAX_FILE_BYTES, document: MEDIA_UPLOAD_MAX_FILE_BYTES });

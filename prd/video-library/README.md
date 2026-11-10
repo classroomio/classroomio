@@ -75,7 +75,7 @@ Legend: ✅ available now, ⚠️ partial, ❌ missing
 | Asset usage graph | ✅ | `asset_usages` (`target_type`, `target_id`, `slot_type`) |
 | HLS upload pipeline | ✅ | `POST /organization/assets/hls/init` → `presign` → `finalize`; browser encoder in `hls-encoder.ts` |
 | Signed HLS playback for anonymous visitors | ⚠️ | Exists but keyed to a **public lesson**: `POST /org-site/course/:slug/item/:itemSlug/hls-cookie`. Needs an asset-keyed sibling. |
-| Media library page | ⚠️ | `/org/[slug]/media` lists, filters (kind/status/search), edits, shows usage, manages thumbnails, exports. Upload entry point: **Upload files** (multi-file video and document uploader) and **Add a video link**. |
+| Media library page | ⚠️ | `/org/[slug]/media` lists, filters (kind/status/search), edits, shows usage, manages thumbnails, exports. **No upload entry point.** |
 | Multi-source video picker | ✅ | `add-video-modal.svelte` — YouTube, Embed link, Upload (plan-gated), Library, Google Drive |
 | Transcripts | ✅ | `media_transcripts`, `video_transcripts`, `transcript-panel.svelte` |
 | Org taxonomy (tags, groups, governance) | ✅ | `tag`, `tag_group`; admin-only CRUD |

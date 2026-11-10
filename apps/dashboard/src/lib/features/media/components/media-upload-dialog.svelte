@@ -9,7 +9,7 @@
 
   import { UpgradeBanner } from '$features/ui';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { encodesVideoInBrowser, mediaUploadManager } from '$features/media/api';
+  import { mediaUploadManager } from '$features/media/api';
   import {
     MEDIA_UPLOAD_ACCEPT_ATTRIBUTE,
     MEDIA_UPLOAD_MAX_FILES,
@@ -24,20 +24,18 @@
   import MediaUploadList from './media-upload-list.svelte';
 
   const deploymentLimits = getResolvedUploadLimits();
-  const sizeLimits = resolveMediaUploadSizeLimits({
-    videoBytes: deploymentLimits.videoBytes,
-    documentBytes: deploymentLimits.documentBytes,
-    encodesVideoInBrowser: encodesVideoInBrowser()
-  });
+  const sizeLimits = resolveMediaUploadSizeLimits(deploymentLimits);
 
   const isOpen = $derived(mediaUploadManager.view === 'dialog');
   const hasFiles = $derived(mediaUploadManager.items.length > 0);
   const limitsCopy = $derived(
-    $t('media_manager.upload.limits', {
-      count: MEDIA_UPLOAD_MAX_FILES,
-      videoSize: formatFileSize(sizeLimits.video),
-      documentSize: formatFileSize(sizeLimits.document)
-    })
+    sizeLimits.video === sizeLimits.document
+      ? $t('media_manager.upload.limits', { count: MEDIA_UPLOAD_MAX_FILES, size: formatFileSize(sizeLimits.video) })
+      : $t('media_manager.upload.limits_by_kind', {
+          count: MEDIA_UPLOAD_MAX_FILES,
+          videoSize: formatFileSize(sizeLimits.video),
+          documentSize: formatFileSize(sizeLimits.document)
+        })
   );
 
   function handleOpenChange(nextOpen: boolean) {

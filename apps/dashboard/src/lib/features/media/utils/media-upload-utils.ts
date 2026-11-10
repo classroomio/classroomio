@@ -30,14 +30,9 @@ export function resolveMediaUpload(file: File): { kind: MediaUploadKind; mimeTyp
 export function resolveMediaUploadSizeLimits(deployment: {
   videoBytes: number;
   documentBytes: number;
-  encodesVideoInBrowser: boolean;
 }): MediaUploadSizeLimits {
-  const videoBytes = deployment.encodesVideoInBrowser
-    ? MEDIA_UPLOAD_MAX_FILE_BYTES
-    : Math.min(MEDIA_UPLOAD_MAX_FILE_BYTES, deployment.videoBytes);
-
   return {
-    video: videoBytes,
+    video: Math.min(MEDIA_UPLOAD_MAX_FILE_BYTES, deployment.videoBytes),
     document: Math.min(MEDIA_UPLOAD_MAX_FILE_BYTES, deployment.documentBytes)
   };
 }
