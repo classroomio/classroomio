@@ -15,7 +15,7 @@ const OAUTH_API_SCOPE_DESCRIPTIONS: Record<Exclude<TOrganizationApiKeyScope, 'pu
   'course_import:draft:update': 'Update course import drafts',
   'course_import:draft:publish': 'Publish course import drafts',
   'course:read': 'Read course details and structure',
-  'course:write': 'Create, update, and delete courses',
+  'course:write': 'Create courses from templates or clones and manage course content',
   'course:tag:write': 'Manage course tags',
   'course:exercise:read': 'Read course exercises and questions',
   'course:exercise:write': 'Create and update course exercises and questions',
@@ -60,6 +60,13 @@ function applySecurityToOperations(paths: Record<string, unknown>) {
       const operation = (pathItem as Record<string, unknown>)[method];
 
       if (!operation || typeof operation !== 'object') {
+        continue;
+      }
+
+      // Routes that declare their own security (for example bearer-only
+      // operations no OAuth scope can reach) keep it; everything else accepts
+      // either an API key or an OAuth token.
+      if ((operation as Record<string, unknown>).security !== undefined) {
         continue;
       }
 

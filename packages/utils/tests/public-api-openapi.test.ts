@@ -34,6 +34,7 @@ describe('enrichPublicApiOpenApiSpec', () => {
       expect(scopes[scope].length).toBeGreaterThan(0);
     }
     expect(scopes['public_api:*']).toBeUndefined();
+    expect(scopes['course:write']).toBe('Create courses from templates or clones and manage course content');
     expect(spec.security).toEqual([{ [PUBLIC_API_BEARER_SCHEME]: [] }, { [PUBLIC_API_OAUTH_SCHEME]: [] }]);
   });
 
@@ -80,5 +81,18 @@ describe('enrichPublicApiOpenApiSpec', () => {
         expect(operation.security).toEqual([{ [PUBLIC_API_BEARER_SCHEME]: [] }, { [PUBLIC_API_OAUTH_SCHEME]: [] }]);
       }
     }
+  });
+
+  it('keeps an operation-declared security scheme instead of adding the OAuth alternative', () => {
+    const rawPaths = {
+      '/public-api/v1/courses': {
+        post: { tags: ['Courses'], security: [{ [PUBLIC_API_BEARER_SCHEME]: [] }] }
+      }
+    };
+
+    const spec = enrichPublicApiOpenApiSpec({ paths: rawPaths });
+    const paths = spec.paths as Record<string, Record<string, { security?: unknown[] }>>;
+
+    expect(paths['/public-api/v1/courses']?.post?.security).toEqual([{ [PUBLIC_API_BEARER_SCHEME]: [] }]);
   });
 });
