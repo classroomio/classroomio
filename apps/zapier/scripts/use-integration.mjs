@@ -8,9 +8,10 @@ if (!variable) {
   throw new Error(`Usage: use-integration.mjs <${Object.keys(ENVIRONMENTS).join('|')}>`);
 }
 
-const id = Number(process.env[variable]);
+const raw = process.env[variable]?.trim();
+const id = Number(raw);
 
-if (!Number.isInteger(id)) {
+if (!raw || !Number.isInteger(id) || id <= 0) {
   throw new Error(`Set ${variable} to the integration id from the Zapier developer platform`);
 }
 
