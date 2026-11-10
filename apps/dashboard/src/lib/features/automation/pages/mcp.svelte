@@ -2,7 +2,7 @@
   import { automationApi } from '$features/automation/api/automation.svelte';
   import { getMaskedAutomationSecret, MCP_DOCS_URL } from '$features/automation/utils/automation-utils';
   import KeySecretDialog from '$features/automation/components/key-secret-dialog.svelte';
-  import { VideoGuideCard } from '$features/video-guide/components';
+  import { VideoGuideCard } from '@cio/ui/custom/video-guide';
   import { VIDEO_GUIDES } from '$features/video-guide/utils/video-guide-utils';
   import { summarizeOAuthScopes } from '$features/oauth/utils/oauth-scopes';
   import { isOrgAdmin } from '$lib/utils/store/org';
@@ -126,12 +126,18 @@
     </Field.Set>
   {/if}
 
-  <VideoGuideCard
-    guide={VIDEO_GUIDES.connectClaude}
-    description={$t('video_guide.connect_claude.description')}
-    class="mx-0 mt-6"
-    testId="mcp-video-guide"
-  />
+  <div class="mt-6">
+    <VideoGuideCard
+      align="start"
+      videoId={VIDEO_GUIDES.connectClaude.videoId}
+      title={$t(VIDEO_GUIDES.connectClaude.titleKey)}
+      description={$t('video_guide.connect_claude.description')}
+      badgeLabel={$t('video_guide.new_badge')}
+      actionLabel={$t('video_guide.watch_video')}
+      closeLabel={$t('video_guide.close')}
+      testId="mcp-video-guide"
+    />
+  </div>
 {/snippet}
 
 <Field.Group class="mx-auto w-full space-y-2">

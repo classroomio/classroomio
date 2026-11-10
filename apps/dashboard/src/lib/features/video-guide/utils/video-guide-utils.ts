@@ -6,11 +6,3 @@ export const VIDEO_GUIDES = {
 } as const satisfies Record<string, VideoGuide>;
 
 export const LESSON_BLOCKS_COACH_MARK_KEY = 'classroomio:lesson-blocks-coach-mark-seen';
-
-export function getVideoGuideEmbedUrl(videoId: string): string {
-  return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1`;
-}
-
-export function getVideoGuideThumbnailUrl(videoId: string): string {
-  return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
-}

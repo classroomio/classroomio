@@ -20,7 +20,6 @@
   import {
     buildStudentHomePageOptions,
     getStudentHomeWarning,
-    STUDENT_HOME_HELP_URL,
     toStudentHomeDestination
   } from '$features/org/utils/student-home-utils';
   import type { TStudentHomeDestination } from '@cio/utils/validation/organization';
@@ -149,7 +148,7 @@
       {$t('components.settings.customize_lms.student_home.description')}
       <a
         class="ui:text-primary underline"
-        href={STUDENT_HOME_HELP_URL}
+        href="https://classroomio.com/help/publish-and-brand/student-home"
         target="_blank"
         rel="noopener noreferrer"
         data-testid="customize-lms-student-home-learn-more"
