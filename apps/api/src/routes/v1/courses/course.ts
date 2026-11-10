@@ -42,6 +42,7 @@ import { getEventSource } from '@api/utils/event-source';
 import { captureCoursePublished } from '@cio/core/services/course/course';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+import { PUBLIC_API_BEARER_SCHEME } from '@cio/utils/openapi/public-api';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 import { ANY_KEY_RULE, COURSE_TEAM_RULE, ORG_TEAM_RULE, cloneForbiddenResponse, mcpRateLimitResponse } from './docs';
 
@@ -94,6 +95,8 @@ export const v1CourseRouter = new Hono()
       description:
         'Create an unpublished course and add the key creator as its tutor; needs public_api:* or course:write, and an org admin or tutor key creator. The banner field says if one was applied.',
       tags: ['Courses'],
+      // Creating a course requires public_api:*, which OAuth tokens never carry.
+      security: [{ [PUBLIC_API_BEARER_SCHEME]: [] }],
       responses: {
         201: jsonResponse('Course created successfully', itemResponse(ZPublicApiCreateCourseResponse)),
         400: { description: 'Invalid request body' },
