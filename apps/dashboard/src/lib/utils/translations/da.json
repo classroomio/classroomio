@@ -6549,7 +6549,10 @@
     "consent": {
       "page_title": "Forbind en app til ClassroomIO",
       "title": "Forbind {client} til ClassroomIO",
-      "workspace": "Arbejdsområde: {workspace}",
+      "subtitle": "Vælg det arbejdsområde, {client} må have adgang til.",
+      "workspace_label": "Arbejdsområde",
+      "no_workspaces_title": "Intet arbejdsområde tilgængeligt",
+      "no_workspaces_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto.",
       "permissions_heading": "{client} vil kunne:",
       "stay_connected": "Forbliv forbundet, indtil du fjerner adgangen",
       "admin_note": "Kun administratorer af arbejdsområdet kan forbinde apps. Adgangen følger dine administratorrettigheder og ophører, hvis du mister dem.",
@@ -6560,14 +6563,9 @@
       "error_title": "Denne forbindelsesanmodning er ugyldig",
       "error_description": "Gå tilbage til den app, du forbandt, og start forfra."
     },
-    "select_organization": {
-      "title": "Vælg et arbejdsområde",
-      "subtitle": "Vælg det arbejdsområde, {client} må have adgang til.",
-      "empty_title": "Intet arbejdsområde tilgængeligt",
-      "empty_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto."
-    },
     "error": {
-      "generic": "Noget gik galt. Prøv igen."
+      "generic": "Noget gik galt. Prøv igen.",
+      "retry": "Prøv igen"
     },
     "scope_group": {
       "courses": {

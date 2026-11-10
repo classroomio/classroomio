@@ -6535,7 +6535,10 @@
     "consent": {
       "page_title": "Connect an app to ClassroomIO",
       "title": "Connect {client} to ClassroomIO",
-      "workspace": "Workspace: {workspace}",
+      "subtitle": "Pick the workspace {client} can access.",
+      "workspace_label": "Workspace",
+      "no_workspaces_title": "No workspace available",
+      "no_workspaces_description": "Only workspace admins can connect apps. Ask an admin or sign in with an admin account.",
       "permissions_heading": "{client} will be able to:",
       "stay_connected": "Stay connected until you remove access",
       "admin_note": "Only workspace admins can connect apps. Access follows your admin permissions and ends if you lose them.",
@@ -6546,14 +6549,9 @@
       "error_title": "This connection request is not valid",
       "error_description": "Go back to the app you were connecting and start again."
     },
-    "select_organization": {
-      "title": "Choose a workspace",
-      "subtitle": "Pick the workspace {client} can access.",
-      "empty_title": "No workspace available",
-      "empty_description": "Only workspace admins can connect apps. Ask an admin or sign in with an admin account."
-    },
     "error": {
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "retry": "Try again"
     },
     "scope_group": {
       "courses": {
