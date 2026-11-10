@@ -5798,7 +5798,6 @@
       "transcript": "Transkript"
     },
     "floating": {
-      "move_aria": "Fenster des Assistenten verschieben",
       "resize_aria": "Assistentenfenster in der Größe ändern",
       "expand_aria": "Zum Seitenbereich erweitern",
       "dock_hint": "Zum seitlichen Andocken loslassen"

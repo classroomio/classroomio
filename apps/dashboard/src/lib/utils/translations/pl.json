@@ -5798,7 +5798,6 @@
       "transcript": "Transkrypcja"
     },
     "floating": {
-      "move_aria": "Przenieś okno asystenta",
       "resize_aria": "Zmień rozmiar okna asystenta",
       "expand_aria": "Rozwiń do panelu bocznego",
       "dock_hint": "Zwolnij, aby zadokować z boku"

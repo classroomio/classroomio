@@ -2492,8 +2492,8 @@
       "preview_missing_slug": "Genera e salva uno slug del corso prima dell'anteprima.",
       "view_as_student": "Visualizza come studente",
       "view_course_site": "Visualizza il sito del corso",
-      "assistant_pop_out": "Apri la chat",
-      "assistant_close_floating": "Chiudi la chat mobile",
+      "assistant_pop_out": "Apri la chat in una finestra",
+      "assistant_close_floating": "Chiudi la chat fluttuante",
       "assistant_tip": "Suggerimento: utilizza l'icona a comparsa per far fluttuare l'assistente mentre lavori.",
       "assistant_tip_dismiss": "Ignora suggerimento"
     },
@@ -6048,7 +6048,6 @@
       "transcript": "Trascrizione"
     },
     "floating": {
-      "move_aria": "Sposta la finestra dell'assistente",
       "resize_aria": "Ridimensiona la finestra dell'assistente",
       "expand_aria": "Espandi al pannello laterale",
       "dock_hint": "Rilascia per attraccare lateralmente"

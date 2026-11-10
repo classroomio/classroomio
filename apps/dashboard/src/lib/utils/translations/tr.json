@@ -6058,7 +6058,6 @@
       "transcript": "Transkript"
     },
     "floating": {
-      "move_aria": "Asistan penceresini taşı",
       "resize_aria": "Asistan penceresini yeniden boyutlandır",
       "expand_aria": "Yan panele genişlet",
       "dock_hint": "Yan tarafa sabitlemek için bırakın"

@@ -5798,7 +5798,6 @@
       "transcript": "Transskription"
     },
     "floating": {
-      "move_aria": "Flyt assistentvinduet",
       "resize_aria": "Ændr størrelse på assistentvindue",
       "expand_aria": "Udvid til sidepanelet",
       "dock_hint": "Slip for at docke til siden"

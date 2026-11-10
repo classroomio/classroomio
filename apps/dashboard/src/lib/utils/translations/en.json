@@ -6048,7 +6048,6 @@
       "transcript": "Transcript"
     },
     "floating": {
-      "move_aria": "Move assistant window",
       "resize_aria": "Resize assistant window",
       "expand_aria": "Expand to side panel",
       "dock_hint": "Release to dock to the side"

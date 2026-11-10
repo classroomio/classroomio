@@ -5798,7 +5798,6 @@
       "transcript": "Transcription"
     },
     "floating": {
-      "move_aria": "Déplacer la fenêtre de l'assistant",
       "resize_aria": "Redimensionner la fenêtre de l'assistant",
       "expand_aria": "Développer vers le panneau latéral",
       "dock_hint": "Relâchez pour accoster sur le côté"
