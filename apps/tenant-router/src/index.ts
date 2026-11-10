@@ -305,6 +305,10 @@ export default {
 
     // Public embed scripts — served from the R2 `assets` bucket (no Render hop).
     if (originalHost === env.EMBED_HOST) {
+      if (url.pathname === '/') {
+        return Response.redirect(env.APEX_REDIRECT_TARGET, 301);
+      }
+
       return handleEmbedAssetRequest(request, env);
     }
 
