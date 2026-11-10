@@ -4130,7 +4130,9 @@
           "popover_title": "Vælg kurser",
           "popover_empty": "Ingen offentliggjorte kurser tilgængelige.",
           "search_no_results": "Ingen kurser matcher din søgning.",
-          "search_placeholder": "Søg efter kurser..."
+          "search_placeholder": "Søg efter kurser...",
+          "featured_toggle": "Vis fremhævet kursus",
+          "featured_toggle_desc": "Fremhæver dit første kursus i en stor blok. Slå fra for i stedet at vise det sammen med dine andre kurser."
         }
       },
       "content": {

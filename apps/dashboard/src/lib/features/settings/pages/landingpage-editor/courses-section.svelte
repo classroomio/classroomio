@@ -12,6 +12,9 @@
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
+  import { Switch } from '@cio/ui/base/switch';
+  import { isFeaturedCourseShown, themeHasFeaturedCourse } from '@cio/ui/custom/org-landing-page/landing-page-utils';
+  import { resolvePreviewTheme } from '$features/org/utils/landing-page';
   import { orgApi } from '$features/org/api/org.svelte';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
   import type { OrgPublicCourses } from '$features/org/utils/types';
@@ -35,8 +38,6 @@
 
   let { settings = $bindable(), markDirty, registerSaveHandler }: Props = $props();
 
-  void settings;
-
   type DndEvent = CustomEvent<{ items: OrderedCourseItem[] }>;
 
   const FLIP_DURATION_MS = 200;
@@ -58,6 +59,17 @@
   let itemsBeforeDrag: OrderedCourseItem[] = [];
 
   const siteName = $derived($currentOrg.siteName || page.params.slug || '');
+
+  const showsFeaturedCourseToggle = $derived(
+    settings ? themeHasFeaturedCourse(resolvePreviewTheme(page.url.searchParams.get('theme'), settings.theme)) : false
+  );
+
+  function setFeaturedCourseShown(enabled: boolean) {
+    if (!settings) return;
+
+    settings = { ...settings, featuredCourse: { enabled } };
+    markDirty?.();
+  }
 
   const filteredCourses = $derived(
     searchQuery.trim()
@@ -272,6 +284,17 @@
     </div>
 
     <Field.Description>{$t('settings.landing_page.editor.sections.courses_desc')}</Field.Description>
+
+    {#if showsFeaturedCourseToggle}
+      <Field.Field orientation="horizontal">
+        <Switch
+          checked={isFeaturedCourseShown(settings?.featuredCourse)}
+          onCheckedChange={(checked) => setFeaturedCourseShown(checked === true)}
+        />
+        <Field.Label>{$t('settings.landing_page.editor.courses.featured_toggle')}</Field.Label>
+      </Field.Field>
+      <Field.Description>{$t('settings.landing_page.editor.courses.featured_toggle_desc')}</Field.Description>
+    {/if}
 
     <div class="space-y-3">
       <p class="ui:text-muted-foreground text-xs">

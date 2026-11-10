@@ -4130,7 +4130,9 @@
           "popover_title": "Wybierz kursy",
           "popover_empty": "Brak opublikowanych kursów.",
           "search_no_results": "Brak kursów pasujących do wyszukiwania.",
-          "search_placeholder": "Szukaj kursów..."
+          "search_placeholder": "Szukaj kursów...",
+          "featured_toggle": "Pokaż wyróżniony kurs",
+          "featured_toggle_desc": "Wyróżnia Twój pierwszy kurs w dużym bloku. Wyłącz, aby wyświetlać go razem z pozostałymi kursami."
         }
       },
       "content": {

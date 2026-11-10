@@ -4130,7 +4130,9 @@
           "popover_title": "Sélectionner des cours",
           "popover_empty": "Aucun cours publié disponible.",
           "search_no_results": "Aucun cours ne correspond à votre recherche.",
-          "search_placeholder": "Rechercher des cours..."
+          "search_placeholder": "Rechercher des cours...",
+          "featured_toggle": "Afficher le cours en vedette",
+          "featured_toggle_desc": "Met votre premier cours en avant dans un grand bloc. Désactivez cette option pour l'afficher avec vos autres cours."
         }
       },
       "content": {

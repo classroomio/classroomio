@@ -87,8 +87,16 @@
   <EditorialLandingPage {...mockProps} />
 </Story>
 
+<Story name="Editorial (featured course hidden)">
+  <EditorialLandingPage {...mockProps} featuredCourse={{ enabled: false }} />
+</Story>
+
 <Story name="Vibrant">
   <VibrantLandingPage {...mockProps} />
+</Story>
+
+<Story name="Vibrant (featured course hidden)">
+  <VibrantLandingPage {...mockProps} featuredCourse={{ enabled: false }} />
 </Story>
 
 <Story name="Vibrant (featured course without banner)">

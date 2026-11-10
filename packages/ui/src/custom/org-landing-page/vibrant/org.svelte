@@ -12,7 +12,12 @@
   import EditableLandingSection from '../editable-section.svelte';
   import LandingThemeScope from '../landing-theme-scope.svelte';
   import { Button } from '../../../base/button';
-  import { getCourseTypeLandingMeta, defaultLessonsLabel, defaultExercisesLabel } from '../landing-page-utils';
+  import {
+    getCourseTypeLandingMeta,
+    defaultLessonsLabel,
+    defaultExercisesLabel,
+    isFeaturedCourseShown
+  } from '../landing-page-utils';
 
   let {
     orgName,
@@ -23,6 +28,7 @@
     courses,
     hasMoreCourses = false,
     coursesLoaded = true,
+    featuredCourse,
     disableCourseLinks = false,
     learningPaths,
     hasMoreLearningPaths = false,
@@ -34,7 +40,7 @@
     learnerAccount
   }: OrgLandingPageProps = $props();
 
-  const featured = $derived(courses[0]);
+  const featured = $derived(isFeaturedCourseShown(featuredCourse) ? courses[0] : undefined);
   const featuredTypeMeta = $derived(featured ? getCourseTypeLandingMeta(featured) : undefined);
   const remainingCourses = $derived(courses.slice(1));
 

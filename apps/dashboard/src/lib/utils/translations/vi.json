@@ -4130,7 +4130,9 @@
           "popover_title": "Chọn khóa học",
           "popover_empty": "Hiện không có khóa học nào được đăng tải.",
           "search_no_results": "Không có khóa học nào khớp với tìm kiếm của bạn.",
-          "search_placeholder": "Tìm khóa học..."
+          "search_placeholder": "Tìm khóa học...",
+          "featured_toggle": "Hiển thị khóa học nổi bật",
+          "featured_toggle_desc": "Làm nổi bật khóa học đầu tiên của bạn trong một khối lớn. Tắt để hiển thị khóa học này cùng với các khóa học khác."
         }
       },
       "content": {

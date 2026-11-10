@@ -4130,7 +4130,9 @@
           "popover_title": "Selecionar cursos",
           "popover_empty": "Nenhum curso publicado disponível.",
           "search_no_results": "Nenhum curso corresponde à sua pesquisa.",
-          "search_placeholder": "Buscar cursos..."
+          "search_placeholder": "Buscar cursos...",
+          "featured_toggle": "Mostrar curso em destaque",
+          "featured_toggle_desc": "Destaca seu primeiro curso em um bloco grande. Desative para listá-lo junto com seus outros cursos."
         }
       },
       "content": {
