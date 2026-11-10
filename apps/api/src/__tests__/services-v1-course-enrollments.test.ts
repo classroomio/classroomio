@@ -18,7 +18,9 @@ vi.mock('@cio/db/queries/organization', () => ({
 
 vi.mock('@cio/db/queries/course/invite', () => ({
   findActiveCourseInviteIdForEmail: vi.fn(),
-  revokeCourseInvite: vi.fn()
+  listCourseInviteAuditStatsForInvites: vi.fn(),
+  revokeCourseInvite: vi.fn(),
+  deleteCourseInvite: vi.fn()
 }));
 
 vi.mock('@api/services/course/invite-rate-limit', () => ({
@@ -44,7 +46,12 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseMemberIdByEmail } from '@cio/db/queries/course/people';
 import { getOrganizationMembersByNormalizedEmails } from '@cio/db/queries/organization';
-import { findActiveCourseInviteIdForEmail, revokeCourseInvite } from '@cio/db/queries/course/invite';
+import {
+  deleteCourseInvite,
+  findActiveCourseInviteIdForEmail,
+  listCourseInviteAuditStatsForInvites,
+  revokeCourseInvite
+} from '@cio/db/queries/course/invite';
 import { createEmailInviteAndSend, resolveCourseInviteContext } from '@api/services/course/invite';
 import { reserveCourseInviteCreation } from '@api/services/course/invite-rate-limit';
 import { AppError } from '@api/utils/errors';
@@ -86,6 +93,9 @@ describe('enrollCourseStudentService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(findActiveCourseInviteIdForEmail).mockResolvedValue(null);
+    vi.mocked(listCourseInviteAuditStatsForInvites).mockResolvedValue([
+      { inviteId: INVITE_ID, eventType: 'EMAIL_SENT', count: 1, lastAt: '2026-01-01T00:00:00.000Z' }
+    ]);
     vi.mocked(reserveCourseInviteCreation).mockResolvedValue(releaseInviteBudget);
     vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
     vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
@@ -175,6 +185,7 @@ describe('enrollCourseStudentService', () => {
         status: 'already_enrolled',
         memberId: MEMBER_ID,
         inviteId: null,
+        inviteLink: null,
         email: 'student@example.com'
       });
       expect(addCourseMemberService).not.toHaveBeenCalled();
@@ -183,7 +194,13 @@ describe('enrollCourseStudentService', () => {
 
     it('staff case: throws 409 STAFF_CANNOT_ENROLL when email belongs to an admin or tutor', async () => {
       vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-        { normalizedEmail: 'tutor@example.com', profileId: 'profile-tutor', roleId: ROLE.TUTOR, status: 'ACTIVE', hasLapsedInvite: false }
+        {
+          normalizedEmail: 'tutor@example.com',
+          profileId: 'profile-tutor',
+          roleId: ROLE.TUTOR,
+          status: 'ACTIVE',
+          hasLapsedInvite: false
+        }
       ]);
 
       await expect(
@@ -227,6 +244,7 @@ describe('enrollCourseStudentService', () => {
         status: 'enrolled',
         memberId: MEMBER_ID,
         inviteId: null,
+        inviteLink: null,
         email: 'orgstudent@example.com'
       });
       expect(addCourseMemberService).toHaveBeenCalledWith(
@@ -256,6 +274,7 @@ describe('enrollCourseStudentService', () => {
         status: 'already_invited',
         memberId: null,
         inviteId: INVITE_ID,
+        inviteLink: null,
         email: 'newperson@example.com'
       });
       expect(reserveCourseInviteCreation).not.toHaveBeenCalled();
@@ -285,6 +304,7 @@ describe('enrollCourseStudentService', () => {
         status: 'already_invited',
         memberId: null,
         inviteId: INVITE_ID,
+        inviteLink: null,
         email: 'newperson@example.com'
       });
       expect(createEmailInviteAndSend).toHaveBeenCalledTimes(1);
@@ -306,6 +326,7 @@ describe('enrollCourseStudentService', () => {
         status: 'invited',
         memberId: null,
         inviteId: INVITE_ID,
+        inviteLink: null,
         email: 'brandnew@example.com'
       });
       expect(createEmailInviteAndSend).toHaveBeenCalledWith(
@@ -326,7 +347,13 @@ describe('enrollCourseStudentService', () => {
 
     it('idempotency: successive calls return already_enrolled after enrolling', async () => {
       vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-        { normalizedEmail: 'repeat@example.com', profileId: 'profile-repeat', roleId: ROLE.STUDENT, status: 'ACTIVE', hasLapsedInvite: false }
+        {
+          normalizedEmail: 'repeat@example.com',
+          profileId: 'profile-repeat',
+          roleId: ROLE.STUDENT,
+          status: 'ACTIVE',
+          hasLapsedInvite: false
+        }
       ]);
       vi.mocked(addCourseMemberService).mockResolvedValue({ id: MEMBER_ID } as never);
 
@@ -458,6 +485,32 @@ describe('enrollCourseStudentService', () => {
       expect(captureLearnerInvited).not.toHaveBeenCalled();
     });
 
+    it('rejects an archived student before the existing-member shortcut', async () => {
+      vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+        {
+          normalizedEmail: 'archived@example.com',
+          profileId: 'profile-archived',
+          roleId: ROLE.STUDENT,
+          status: 'ARCHIVED',
+          hasLapsedInvite: false
+        }
+      ]);
+      vi.mocked(getCourseMemberIdByEmail).mockResolvedValue(MEMBER_ID);
+
+      await expect(
+        enrollCourseStudentService(
+          ORG_ID,
+          ACTOR_ID,
+          courseParam,
+          { email: 'archived@example.com', sendEmail: true },
+          principal
+        )
+      ).rejects.toMatchObject({ statusCode: 409, code: ErrorCodes.ORG_MEMBER_ARCHIVED });
+
+      expect(addCourseMemberService).not.toHaveBeenCalled();
+      expect(createEmailInviteAndSend).not.toHaveBeenCalled();
+    });
+
     it('gives the invite budget back when the invite context cannot be resolved', async () => {
       vi.mocked(resolveCourseInviteContext).mockRejectedValueOnce(
         new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404)
@@ -517,6 +570,75 @@ describe('enrollCourseStudentService', () => {
       expect(revokeCourseInvite).toHaveBeenCalledWith(COURSE_ID, INVITE_ID, ACTOR_ID);
       expect(releaseInviteBudget).toHaveBeenCalledTimes(1);
       expect(captureLearnerInvited).not.toHaveBeenCalled();
+    });
+
+    it('deletes the fresh invite when revoking it fails, so a retry starts clean', async () => {
+      vi.mocked(createEmailInviteAndSend).mockResolvedValueOnce({
+        created: true,
+        invite: { id: INVITE_ID } as never,
+        inviteId: INVITE_ID,
+        sent: false,
+        error: 'smtp down'
+      });
+      vi.mocked(revokeCourseInvite).mockRejectedValueOnce(new Error('db down'));
+
+      await expect(
+        enrollCourseStudentService(
+          ORG_ID,
+          ACTOR_ID,
+          courseParam,
+          { email: 'brandnew@example.com', sendEmail: true },
+          principal
+        )
+      ).rejects.toMatchObject({ statusCode: 500, code: ErrorCodes.INTERNAL_ERROR });
+
+      expect(deleteCourseInvite).toHaveBeenCalledWith(COURSE_ID, INVITE_ID);
+      expect(releaseInviteBudget).toHaveBeenCalledTimes(1);
+      expect(captureLearnerInvited).not.toHaveBeenCalled();
+    });
+
+    it('returns the fresh invite link so the caller can deliver it', async () => {
+      vi.mocked(createEmailInviteAndSend).mockResolvedValueOnce({
+        created: true,
+        invite: { id: INVITE_ID, inviteLink: 'https://acme.test/invites/token' } as never,
+        inviteId: INVITE_ID,
+        sent: false,
+        error: null
+      });
+
+      const result = await enrollCourseStudentService(
+        ORG_ID,
+        ACTOR_ID,
+        courseParam,
+        { email: 'brandnew@example.com', sendEmail: false },
+        principal
+      );
+
+      expect(result).toEqual({
+        status: 'invited',
+        memberId: null,
+        inviteId: INVITE_ID,
+        inviteLink: 'https://acme.test/invites/token',
+        email: 'brandnew@example.com'
+      });
+    });
+
+    it('refuses already_invited when the invite email was never queued', async () => {
+      vi.mocked(findActiveCourseInviteIdForEmail).mockResolvedValue(INVITE_ID);
+      vi.mocked(listCourseInviteAuditStatsForInvites).mockResolvedValue([]);
+
+      await expect(
+        enrollCourseStudentService(
+          ORG_ID,
+          ACTOR_ID,
+          courseParam,
+          { email: 'stuck@example.com', sendEmail: true },
+          principal
+        )
+      ).rejects.toMatchObject({ statusCode: 500, code: ErrorCodes.INTERNAL_ERROR });
+
+      expect(createEmailInviteAndSend).not.toHaveBeenCalled();
+      expect(reserveCourseInviteCreation).not.toHaveBeenCalled();
     });
   });
 });

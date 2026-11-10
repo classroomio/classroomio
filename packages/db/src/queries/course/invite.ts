@@ -349,6 +349,26 @@ export async function revokeCourseInvite(
   }
 }
 
+/**
+ * Permanently removes a course invite. Audit rows cascade, so no orphaned
+ * history is left behind. Used only to clean up a just-created invite whose
+ * email could not be queued, so a retry creates a fresh invite instead of
+ * reusing a dead one.
+ */
+export async function deleteCourseInvite(courseId: string, inviteId: string): Promise<boolean> {
+  try {
+    const deleted = await db
+      .delete(schema.courseInvite)
+      .where(and(eq(schema.courseInvite.id, inviteId), eq(schema.courseInvite.courseId, courseId)))
+      .returning({ id: schema.courseInvite.id });
+
+    return deleted.length > 0;
+  } catch (error) {
+    console.error('deleteCourseInvite error:', error);
+    throw new Error(`Failed to delete course invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export type TCourseInviteTokenData = {
   invite: TCourseInvite;
   course: {
