@@ -57,6 +57,7 @@ jobs:
 
       - name: Build shared packages
         run: |
+          pnpm --filter @cio/utils^... build
           pnpm --filter @cio/utils build
           pnpm --filter @cio/db build
           pnpm --filter @cio/email build
