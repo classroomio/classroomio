@@ -12,7 +12,7 @@ if (!process.env.DATABASE_URL && !process.env.PRIVATE_DATABASE_URL && !process.e
 import { ZAPIER_OAUTH_SCOPES } from '@cio/utils/constants/zapier';
 
 import { auth } from '../auth';
-import { updateOAuthClientScopes } from '../queries/auth/oauth';
+import { deleteOAuthClient, updateOAuthClientScopes } from '../queries/auth/oauth';
 
 const ZAPIER_LOGO_URI = 'https://cdn.zapier.com/zapier/images/logos/zapier-logomark.png';
 
@@ -61,9 +61,27 @@ async function registerZapierClient() {
   });
 
   // Dynamic registration stores every scope this provider supports, ignoring the requested scope.
-  const scopesUpdated = await updateOAuthClientScopes(client.client_id, ZAPIER_OAUTH_SCOPES);
-  if (!scopesUpdated) {
-    throw new Error('Registered OAuth client was not found');
+  try {
+    const scopesUpdated = await updateOAuthClientScopes(client.client_id, ZAPIER_OAUTH_SCOPES);
+
+    if (!scopesUpdated) {
+      throw new Error('Registered OAuth client was not found');
+    }
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : error;
+
+    try {
+      await deleteOAuthClient(client.client_id);
+    } catch (cleanupError) {
+      const cleanupReason = cleanupError instanceof Error ? cleanupError.message : cleanupError;
+      throw new Error(
+        `Scope narrowing failed (${reason}) and deleting client ${client.client_id} also failed (${cleanupReason}). Delete it manually: its stored scopes are too broad.`
+      );
+    }
+
+    throw new Error(
+      `Scope narrowing failed (${reason}). Deleted client ${client.client_id} so no broad client is left behind; re-run the script.`
+    );
   }
 
   console.log(`client_id=${client.client_id}`);
