@@ -6,7 +6,6 @@ import {
   getDefaultFloatingRect,
   getViewport,
   readFloatingState,
-  SSR_VIEWPORT,
   writeFloatingState
 } from './floating';
 
@@ -46,28 +45,18 @@ class SidePanelStore {
 
   private ensureFloatingRect(def: SidePanelDefinition): SidePanelFloatingRect {
     if (this.floatingRect) {
-      try {
-        const viewport = getViewport();
-        return clampFloatingRect(this.floatingRect, def, viewport);
-      } catch {
-        return this.floatingRect;
-      }
-    }
-
-    try {
-      const state = readFloatingState(def);
-      if (state?.rect) {
-        const viewport = getViewport();
-        return clampFloatingRect(state.rect, def, viewport);
-      }
-    } catch {}
-
-    try {
       const viewport = getViewport();
-      return getDefaultFloatingRect(def, viewport);
-    } catch {
-      return getDefaultFloatingRect(def, SSR_VIEWPORT);
+      return clampFloatingRect(this.floatingRect, def, viewport);
     }
+
+    const state = readFloatingState(def);
+    if (state?.rect) {
+      const viewport = getViewport();
+      return clampFloatingRect(state.rect, def, viewport);
+    }
+
+    const viewport = getViewport();
+    return getDefaultFloatingRect(def, viewport);
   }
 
   private persistFloatingState(def: SidePanelDefinition) {

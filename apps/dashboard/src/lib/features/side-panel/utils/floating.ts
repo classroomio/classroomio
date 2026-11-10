@@ -47,10 +47,12 @@ function getMinDimensions(def: SidePanelDefinition) {
 export function getDefaultFloatingRect(def: SidePanelDefinition, viewport: FloatingViewport): SidePanelFloatingRect {
   const { defaultWidth, defaultHeight } = getDefaultDimensions(def);
   const { minWidth, minHeight } = getMinDimensions(def);
-  const maxWidth = Math.max(minWidth, viewport.width - FLOATING_WINDOW_MARGIN * 2);
-  const maxHeight = Math.max(minHeight, viewport.height - FLOATING_WINDOW_MARGIN * 2);
-  const width = Math.max(minWidth, Math.min(defaultWidth, maxWidth));
-  const height = Math.max(minHeight, Math.min(defaultHeight, maxHeight));
+  const maxWidth = Math.max(0, viewport.width - FLOATING_WINDOW_MARGIN * 2);
+  const maxHeight = Math.max(0, viewport.height - FLOATING_WINDOW_MARGIN * 2);
+  let width = Math.min(defaultWidth, maxWidth);
+  let height = Math.min(defaultHeight, maxHeight);
+  if (maxWidth >= minWidth) width = Math.max(width, minWidth);
+  if (maxHeight >= minHeight) height = Math.max(height, minHeight);
   const x = Math.max(FLOATING_WINDOW_MARGIN, viewport.width - width - FLOATING_WINDOW_MARGIN);
   const y = Math.max(FLOATING_WINDOW_MARGIN, viewport.height - height - FLOATING_WINDOW_MARGIN);
 
@@ -63,14 +65,12 @@ export function clampFloatingRect(
   viewport: FloatingViewport
 ): SidePanelFloatingRect {
   const { minWidth, minHeight } = getMinDimensions(def);
-  const width = Math.min(
-    Math.max(minWidth, rect.width),
-    Math.max(minWidth, viewport.width - FLOATING_WINDOW_MARGIN * 2)
-  );
-  const height = Math.min(
-    Math.max(minHeight, rect.height),
-    Math.max(minHeight, viewport.height - FLOATING_WINDOW_MARGIN * 2)
-  );
+  const maxWidth = Math.max(0, viewport.width - FLOATING_WINDOW_MARGIN * 2);
+  const maxHeight = Math.max(0, viewport.height - FLOATING_WINDOW_MARGIN * 2);
+  let width = Math.min(rect.width, maxWidth);
+  let height = Math.min(rect.height, maxHeight);
+  if (maxWidth >= minWidth) width = Math.max(width, minWidth);
+  if (maxHeight >= minHeight) height = Math.max(height, minHeight);
   const maxX = Math.max(FLOATING_WINDOW_MARGIN, viewport.width - width - FLOATING_WINDOW_MARGIN);
   const maxY = Math.max(FLOATING_WINDOW_MARGIN, viewport.height - height - FLOATING_WINDOW_MARGIN);
   const x = Math.min(maxX, Math.max(FLOATING_WINDOW_MARGIN, rect.x));
@@ -126,14 +126,6 @@ export function readFloatingState(def: SidePanelDefinition): FloatingState | nul
     }
 
     if (rect.x === 0 && rect.y === 0) return null;
-
-    if (
-      rect.x === FLOATING_WINDOW_MARGIN &&
-      rect.y === FLOATING_WINDOW_MARGIN &&
-      (rect.width === DEFAULT_FLOATING_WIDTH || rect.width === 416) &&
-      rect.height === DEFAULT_FLOATING_HEIGHT
-    )
-      return null;
 
     const mode = parsed.mode === 'docked' || parsed.mode === 'floating' ? parsed.mode : undefined;
 

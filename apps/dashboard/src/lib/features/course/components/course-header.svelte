@@ -157,30 +157,32 @@
 
     {#if IS_AI_ENABLED}
       <div class="relative inline-flex">
-        <div
-          class="ui:bg-primary ui:text-primary-foreground relative inline-flex overflow-hidden rounded-md shadow-2xs"
-        >
-          <Waves
-            lineColor="rgba(255,255,255,0.55)"
-            xGap={8}
-            yGap={12}
-            waveAmpX={18}
-            waveAmpY={9}
-            waveSpeedX={0.04}
-            waveSpeedY={0.02}
-          />
-          <button
-            type="button"
+        <div class="relative inline-flex rounded-md shadow-2xs">
+          <div class="ui:bg-primary pointer-events-none absolute inset-0 overflow-hidden rounded-md">
+            <Waves
+              lineColor="rgba(255,255,255,0.55)"
+              xGap={8}
+              yGap={12}
+              waveAmpX={18}
+              waveAmpY={9}
+              waveSpeedX={0.04}
+              waveSpeedY={0.02}
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
             onclick={toggleAiAssistant}
             aria-pressed={assistantOpen}
             data-testid="course-assistant-toggle"
-            class="relative z-10 inline-flex h-8 items-center gap-1.5 bg-transparent px-3 text-sm font-medium whitespace-nowrap text-white hover:bg-white/15 focus-visible:outline-none"
+            class="relative z-10 rounded-md bg-transparent px-3 text-white hover:bg-white/15 hover:text-white focus-visible:z-20 md:rounded-none md:rounded-l-md"
           >
-            <SparklesIcon size={14} class="custom ui:text-white relative z-10" />
-            <span class="ui:text-white relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
-          </button>
-          <button
-            type="button"
+            <SparklesIcon size={14} class="text-white" />
+            <span class="text-white">{$t('course.navItems.nav_ai_assistant')}</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onclick={handlePopOutClick}
             aria-label={assistantFloating
               ? t.get('course.header.assistant_close_floating')
@@ -190,14 +192,14 @@
               ? t.get('course.header.assistant_close_floating')
               : t.get('course.header.assistant_pop_out')}
             data-testid="course-assistant-popout"
-            class="relative z-10 hidden h-8 w-8 items-center justify-center border-l border-white/30 bg-transparent text-white hover:bg-white/15 focus-visible:outline-none md:inline-flex"
+            class="relative z-10 hidden rounded-none rounded-r-md border-l border-white/30 bg-transparent text-white hover:bg-white/15 hover:text-white focus-visible:z-20 md:inline-flex"
           >
             {#if assistantFloating}
-              <XIcon size={16} class="custom ui:text-white" />
+              <XIcon size={16} class="text-white" />
             {:else}
-              <PictureInPictureIcon size={16} class="custom ui:text-white cursor-pointer" />
+              <PictureInPictureIcon size={16} class="text-white" />
             {/if}
-          </button>
+          </Button>
         </div>
         {#if showAssistantTip}
           <div
