@@ -162,18 +162,6 @@ export const updateProfileEmailValidation = (email) => {
   return processErrors(error);
 };
 
-export const createQuizValidation = (fields = {}) => {
-  const schema = z.object({
-    title: z.string().min(6, {
-      message: `${t.get('validations.course_payment.full_name.min_char')}`
-    })
-  });
-
-  const { error } = schema.safeParse(fields);
-
-  return processErrors(error);
-};
-
 export const askCommunityValidation = (fields = {}) => {
   const schema = z.object({
     title: z.string().min(6, {
