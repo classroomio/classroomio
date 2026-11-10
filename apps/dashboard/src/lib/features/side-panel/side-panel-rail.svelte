@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { startResizablePanelDrag } from '$lib/utils/functions/resizable-panel';
   import { t } from '$lib/utils/functions/translations';
+  import MoveDiagonal2Icon from '@lucide/svelte/icons/move-diagonal-2';
   import { sidePanel } from './utils/store.svelte';
   import { clampFloatingRect, getViewport, startFloatingResize } from './utils/floating';
 
@@ -252,16 +253,7 @@
           class="ui:text-muted-foreground absolute right-0 bottom-0 flex h-6 w-6 cursor-nwse-resize items-center justify-center border-0 bg-transparent p-1"
           onpointerdown={handleFloatingResizePointerDown}
         >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.4"
-            stroke-linecap="round"
-            aria-hidden="true"><path d="M9 1 1 9"></path><path d="M9 5 5 9"></path></svg
-          >
+          <MoveDiagonal2Icon size={10} />
         </button>
       {/if}
     </aside>

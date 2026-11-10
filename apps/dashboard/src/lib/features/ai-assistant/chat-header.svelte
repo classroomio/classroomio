@@ -6,7 +6,6 @@
   import XIcon from '@lucide/svelte/icons/x';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import HistoryIcon from '@lucide/svelte/icons/history';
-  import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
   import ChatHistoryPopover from '$features/ai-assistant/chat-history-popover.svelte';
   import { closeAiAssistant, dockAiAssistant } from '$features/ai-assistant/utils/store';
   import { t } from '$lib/utils/functions/translations';
@@ -222,17 +221,6 @@
 >
   <div class="flex items-center justify-between gap-2">
     <div class="flex min-w-0 items-center gap-2">
-      <!-- {#if isFloating}
-        <button
-          type="button"
-          class="ui:text-muted-foreground ui:hover:bg-muted flex h-6 w-6 shrink-0 cursor-grab items-center justify-center rounded border-0 bg-transparent p-0 active:cursor-grabbing"
-          aria-label={t.get('side_panel.floating.move_aria')}
-          title={t.get('side_panel.floating.move_aria')}
-          onpointerdown={handleGripPointerDown}
-        >
-          <GripVerticalIcon size={14} />
-        </button>
-      {/if} -->
       <SparklesIcon size={18} class="ui:text-primary shrink-0" />
       <div class="min-w-0">
         <h3 class="text-sm font-semibold">{$t('course.navItems.nav_ai_assistant')}</h3>
