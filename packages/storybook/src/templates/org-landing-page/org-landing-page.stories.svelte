@@ -91,6 +91,13 @@
   <VibrantLandingPage {...mockProps} />
 </Story>
 
+<Story name="Vibrant (featured course without banner)">
+  <VibrantLandingPage
+    {...mockProps}
+    courses={mockProps.courses.map((course, index) => (index === 0 ? { ...course, bannerImage: null } : course))}
+  />
+</Story>
+
 <!--
   Demonstrates the OrgLandingPageLabels override surface. Every UI-chrome
   string is replaced via the `labels` prop; per-template defaults disappear.
