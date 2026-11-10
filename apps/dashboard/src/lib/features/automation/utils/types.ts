@@ -1,4 +1,5 @@
-import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import type { TZapierAppCategory, TZapierRecipeStep, TZapierSearchKey } from '@cio/utils/constants/zapier';
+import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
 export type ListAutomationKeysRequest = (typeof classroomio.organization)['automation']['keys']['$get'];
 export type GetAutomationUsageRequest = (typeof classroomio.organization)['automation']['usage']['$get'];
@@ -24,6 +25,7 @@ export type GetOAuthConfigSuccess = Extract<InferResponseType<GetOAuthConfigRequ
 export type ConnectedApp = ListConnectedAppsSuccess['data'][number];
 export type AutomationKey = ListAutomationKeysSuccess['data'][number];
 export type AutomationKeyType = AutomationKey['type'];
+export type CreatableAutomationKeyType = InferRequestType<CreateAutomationKeyRequest>['json']['type'];
 export type AutomationUsage = GetAutomationUsageSuccess['data'];
 
 export type ListWebhooksRequest = (typeof classroomio.organization)['webhooks']['$get'];
@@ -62,3 +64,33 @@ export type WebhookFormFields = {
   eventTypes: string[];
   isActive: boolean;
 };
+
+export type GetZapierOverviewRequest = (typeof classroomio.organization)['automation']['zapier']['$get'];
+export type RedeliverZapierTriggerRequest =
+  (typeof classroomio.organization)['automation']['zapier']['triggers'][':triggerId']['redeliver']['$post'];
+export type GetZapierOverviewSuccess = Extract<InferResponseType<GetZapierOverviewRequest>, { success: true }>;
+export type ZapierOverview = GetZapierOverviewSuccess['data'];
+export type RedeliverZapierTriggerSuccess = Extract<
+  InferResponseType<RedeliverZapierTriggerRequest>,
+  { success: true }
+>;
+export type RedeliverZapierTriggerResult = RedeliverZapierTriggerSuccess['data'];
+export type ZapierConnection = ZapierOverview['connections'][number];
+export type ZapierTrigger = ZapierConnection['triggers'][number];
+
+export type ZapierAppCategory = TZapierAppCategory;
+export type ZapierDirectoryCategory = ZapierAppCategory | 'all';
+
+export type ZapierDirectoryState = {
+  query: string;
+  category: ZapierDirectoryCategory;
+};
+
+export type ZapierDirectoryCounts = {
+  all: number;
+  categories: Record<ZapierAppCategory, number>;
+};
+
+export type ZapierZapStep = TZapierRecipeStep | { app: 'classroomio'; type: 'search'; key: TZapierSearchKey };
+
+export type ZapierAccess = 'read_write' | 'read_only';

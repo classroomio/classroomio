@@ -2,7 +2,7 @@
   import { Button } from '@cio/ui/base/button';
   import * as Item from '@cio/ui/base/item';
   import * as Page from '@cio/ui/base/page';
-  import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
+  import { ChecklistItem } from '@cio/ui/custom/checklist-item';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import UserPlusIcon from '@lucide/svelte/icons/user-plus';
@@ -82,23 +82,15 @@
         <!-- Setup Items -->
         <Item.Group class="space-y-2">
           {#each setupList as list (list.id)}
-            <Item.Root
-              variant="muted"
-              class={list.is_completed ? 'opacity-60' : ''}
-              onclick={() => {
-                if (list.is_completed) {
-                  return;
-                }
-
-                goToSetupItem(list.id);
-              }}
+            <ChecklistItem
+              title={$t(list.title)}
+              description={$t(list.desc)}
+              completed={list.is_completed}
+              doneLabel={$t('setup.done')}
+              onclick={() => goToSetupItem(list.id)}
             >
-              <Item.Media variant="icon">
-                {#if list.is_completed}
-                  <div class="flex size-5 items-center justify-center rounded">
-                    <BadgeCheckIcon class="size-5 text-white" />
-                  </div>
-                {:else if list.id === SETUP_STEPS.CREATE_COURSE}
+              {#snippet media()}
+                {#if list.id === SETUP_STEPS.CREATE_COURSE}
                   <BookOpenIcon class="size-5 text-gray-600" />
                 {:else if list.id === SETUP_STEPS.CREATE_LESSON || list.id === SETUP_STEPS.CREATE_EXERCISE}
                   <FileTextIcon class="size-5 text-gray-600" />
@@ -111,28 +103,14 @@
                 {:else}
                   <BookOpenIcon class="size-5 text-gray-600" />
                 {/if}
-              </Item.Media>
-              <Item.Content>
-                <Item.Title class={list.is_completed ? 'text-gray-500 line-through' : 'font-semibold'}>
-                  {$t(list.title)}
-                </Item.Title>
-                <Item.Description class={list.is_completed ? 'text-gray-500 line-through' : ''}>
-                  {$t(list.desc)}
-                </Item.Description>
-              </Item.Content>
-              <Item.Actions>
-                {#if list.is_completed}
-                  <Button variant="secondary" size="sm" disabled class="bg-gray-400 text-white">
-                    {$t('setup.done')}
-                  </Button>
-                {:else}
-                  <Button variant="outline" size="sm" type="button" class="w-full sm:w-auto">
-                    {$t('setup.todo')}
-                    <ChevronRightIcon class="ml-2 size-4" />
-                  </Button>
-                {/if}
-              </Item.Actions>
-            </Item.Root>
+              {/snippet}
+              {#snippet action()}
+                <Button variant="outline" size="sm" type="button" class="w-full sm:w-auto">
+                  {$t('setup.todo')}
+                  <ChevronRightIcon class="ml-2 size-4" />
+                </Button>
+              {/snippet}
+            </ChecklistItem>
           {/each}
         </Item.Group>
       </section>

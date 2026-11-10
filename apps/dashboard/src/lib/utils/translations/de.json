@@ -37,7 +37,8 @@
         "caption": "Ihre Kurse, Lernenden und Einstellungen werden vorbereitet."
       }
     },
-    "back": "Zurück"
+    "back": "Zurück",
+    "dismiss": "Schließen"
   },
   "validations": {
     "generic": {
@@ -535,6 +536,12 @@
     },
     "org_switcher": {
       "open_academy_failed": "Diese Akademie konnte nicht geöffnet werden. Bitte versuchen Sie es erneut."
+    },
+    "zapier": {
+      "removed": "Zapier-Zugriff entfernt",
+      "remove_failed": "Zapier-Zugriff konnte nicht entfernt werden. Versuchen Sie es erneut.",
+      "redelivered": "{count} fehlgeschlagene Ereignisse stehen zur erneuten Zustellung in der Warteschlange",
+      "redeliver_failed": "Fehlgeschlagene Ereignisse konnten nicht erneut übermittelt werden"
     }
   },
   "explore": {
@@ -596,7 +603,8 @@
     "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
     "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen.",
     "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten",
-    "webhooks_required": "Upgraden Sie auf Early Adopter oder Enterprise, um Webhooks zu nutzen."
+    "webhooks_required": "Upgraden Sie auf Early Adopter oder Enterprise, um Webhooks zu nutzen.",
+    "zapier_required": "Für Zapier ist der Early Adopter- oder Enterprise-Plan erforderlich."
   },
   "analytics": {
     "title": "Analysen",
@@ -5210,7 +5218,631 @@
       "disabled_description": "Nur Organisationsadministratoren können Automatisierungen verwalten, einschließlich verbundener Apps und Schlüssel."
     },
     "zapier": {
-      "page_subtitle": "Automatisieren Sie ClassroomIO mit Tausenden von Apps über Zapier. Demnächst verfügbar."
+      "page_subtitle": "Automatisieren Sie ClassroomIO mit Tausenden von Apps über Zapier. Demnächst verfügbar.",
+      "permissions_description": "Nur Organisations-Admins können Zapier verbinden und dessen Verbindungen verwalten.",
+      "create_zap": "Einen Zap erstellen",
+      "upgrade": {
+        "title": "Upgrade, um Zapier zu verbinden",
+        "description": "Zum Verbinden von ClassroomIO mit Zapier ist der Plan Early Adopter oder Enterprise erforderlich.",
+        "cta": "Plan upgraden"
+      },
+      "error": {
+        "title": "Zapier-Verbindungen konnten nicht geladen werden",
+        "description": "Der Server ist nicht erreichbar. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+        "retry": "Erneut versuchen"
+      },
+      "paused": {
+        "title": "Zapier ist pausiert",
+        "description": "Ihr Tarif enthält Zapier nicht mehr. Zaps schlagen fehl, bis Sie upgraden; Ihre Verbindungen bleiben erhalten."
+      },
+      "selfhosted": {
+        "title": "Zapier ist in ClassroomIO Cloud verfügbar",
+        "description": "Verwenden Sie bei einer selbst gehosteten Installation Webhooks mit dem Webhooks by Zapier-Trigger und API-Schlüssel für Aktionen."
+      },
+      "catalog": {
+        "categories": {
+          "all": "Alle",
+          "crm": "CRM",
+          "marketing": "Marketing",
+          "communication": "Kommunikation",
+          "customer-support": "Kundensupport",
+          "sales": "Verkäufe",
+          "productivity": "Produktivität",
+          "forms": "Formulare und Umfragen",
+          "analytics": "Analytik",
+          "community": "Community"
+        }
+      },
+      "app_sheet": {
+        "title": "ClassroomIO + {app}",
+        "create_zap": "Einen {app}-Zap erstellen"
+      },
+      "catalog_triggers": {
+        "new_course_enrollment": {
+          "label": "Neue Kurseinschreibung"
+        },
+        "course_member_removed": {
+          "label": "Lernender aus Kurs entfernt"
+        },
+        "course_completed": {
+          "label": "Kurs abgeschlossen"
+        },
+        "new_certificate": {
+          "label": "Neues Zertifikat"
+        },
+        "new_submission": {
+          "label": "Neue Übungseinreichung"
+        },
+        "submission_status_changed": {
+          "label": "Einreichungsstatus geändert"
+        },
+        "lesson_completed": {
+          "label": "Lektion abgeschlossen"
+        },
+        "course_invite_accepted": {
+          "label": "Kurseinladung angenommen"
+        },
+        "new_payment_request": {
+          "label": "Neue Zahlungsanforderung"
+        },
+        "new_organization_member": {
+          "label": "Neues Organisationsmitglied"
+        },
+        "compliance_status_changed": {
+          "label": "Compliance-Status geändert"
+        },
+        "course_published": {
+          "label": "Kurs veröffentlicht"
+        },
+        "live_session_scheduled": {
+          "label": "Live-Sitzung geplant"
+        },
+        "new_cohort_member": {
+          "label": "Neues Kohortenmitglied"
+        }
+      },
+      "catalog_actions": {
+        "enroll_student": {
+          "label": "Lernenden in Kurs einschreiben"
+        },
+        "add_student": {
+          "label": "Lernenden zu Organisation hinzufügen"
+        },
+        "update_student": {
+          "label": "Lernenden aktualisieren"
+        },
+        "remove_student": {
+          "label": "Lernenden aus Organisation entfernen"
+        },
+        "remove_course_member": {
+          "label": "Lernenden aus Kurs entfernen"
+        },
+        "send_course_invite": {
+          "label": "Kurseinladung senden"
+        },
+        "revoke_course_invite": {
+          "label": "Kurseinladung widerrufen"
+        },
+        "reset_course_progress": {
+          "label": "Kursfortschritt des Lernenden zurücksetzen"
+        },
+        "mark_lesson_complete": {
+          "label": "Lektion als abgeschlossen markieren"
+        },
+        "add_cohort_member": {
+          "label": "Lernenden zu Kohorte hinzufügen"
+        },
+        "post_cohort_announcement": {
+          "label": "In Kohorten-Feed posten"
+        }
+      },
+      "apps": {
+        "hubspot": {
+          "description": "CRM- und Kundenplattform"
+        },
+        "salesforce": {
+          "description": "CRM für Vertriebs- und Serviceteams"
+        },
+        "mailchimp": {
+          "description": "E-Mail-Marketing und Zielgruppen"
+        },
+        "customerio": {
+          "description": "Messaging- und Lifecycle-Kampagnen"
+        },
+        "slack": {
+          "description": "Teamkommunikation und Zusammenarbeit"
+        },
+        "teams": {
+          "description": "Chat und Kanäle für Ihre Organisation"
+        },
+        "google_meet": {
+          "description": "Videomeetings in Google Workspace"
+        },
+        "zoom": {
+          "description": "Videomeetings und Webinare"
+        },
+        "zendesk": {
+          "description": "Kundensupport und Ticketing"
+        },
+        "intercom": {
+          "description": "Kunden-Messaging-Plattform"
+        },
+        "calendly": {
+          "description": "Terminplanung und Buchungslinks"
+        },
+        "calcom": {
+          "description": "Open-Source-Terminplanung und Buchungslinks"
+        },
+        "sheets": {
+          "description": "Tabellen und Datenverwaltung"
+        },
+        "notion": {
+          "description": "Dokumente, Wikis und Projektnotizen"
+        },
+        "confluence": {
+          "description": "Dokumente und Wikis für technische Teams"
+        },
+        "typeform": {
+          "description": "Formulare und Umfragen"
+        },
+        "jotform": {
+          "description": "Formulare und Umfragen"
+        },
+        "pendo": {
+          "description": "Digitale Einführung und Produktnutzung"
+        },
+        "mixpanel": {
+          "description": "Produktanalytik und Funnels"
+        },
+        "circle": {
+          "description": "Community-Bereiche und Diskussionen"
+        }
+      },
+      "directory": {
+        "title": "App-Verzeichnis",
+        "subtitle": "Durchsuchen Sie die Apps, die Sie über Zapier mit ClassroomIO verbinden können.",
+        "create_zap": "Erstellen Sie einen Zap in Zapier",
+        "back": "Zurück zu Zaps",
+        "search_placeholder": "Apps suchen…",
+        "filters_title": "Filter",
+        "categories": "Kategorien",
+        "all_apps": "Alle Apps",
+        "count": {
+          "all": "{count} Apps",
+          "one": "1 App",
+          "all_matching": "{count} Apps, die mit „{query}“ übereinstimmen",
+          "one_matching": "1 App passend zu „{query}“"
+        },
+        "empty": {
+          "title": "Keine Apps entsprechen Ihrer Suche",
+          "description": "Versuchen Sie es mit einem anderen Namen oder durchsuchen Sie jede App, mit der Zapier ClassroomIO verbindet.",
+          "search_zapier": "Suche in Zapier"
+        },
+        "end": {
+          "title": "Das sind alle Apps, die wir ausgewählt haben",
+          "description": "Zapier verbindet ClassroomIO mit Tausenden anderen.",
+          "cta": "In Zapier fortfahren"
+        }
+      },
+      "page_title": "Zaps",
+      "zaps_empty": {
+        "title": "Zapier ist noch nicht verbunden"
+      },
+      "invite": {
+        "title": "Verbinden Sie ClassroomIO mit Zapier",
+        "description": "Zapier erfordert, dass Sie die ClassroomIO-Einladung einmal annehmen, bevor Sie Zaps erstellen können.",
+        "step_1_title": "Nehmen Sie die ClassroomIO-Einladung auf Zapier an",
+        "step_1_description": "Zapier bittet Sie einmal um die Annahme. Danach erscheint ClassroomIO in Ihrem Zapier-Konto.",
+        "step_1_button": "Öffnen Sie die Einladung auf Zapier",
+        "step_2_title": "Fahren Sie mit Ihrem Zap fort",
+        "step_2_description": "Ihr Zap wird in einem neuen Tab geöffnet. Es läuft nichts, bis Sie es einschalten.",
+        "step_2_button": "Weiterfahrt nach Zapier",
+        "already_accepted": "Ich habe bereits zugesagt",
+        "note": "ClassroomIO ist derzeit auf Zapier nur auf Einladung verfügbar. Nehmen Sie die Einladung einmal an, bevor Sie Ihren ersten Zap erstellen.",
+        "step_done": "Fertig"
+      },
+      "recipes": {
+        "tabs_out": "Von ClassroomIO",
+        "tabs_in": "In ClassroomIO",
+        "sentence_out": "Wenn {trigger} in ClassroomIO, {action} in {app}.",
+        "sentence_in": "Wenn {trigger} in {app}, {action} in ClassroomIO.",
+        "hubspot_deal_stage_enroll": {
+          "title": "Melden Sie neue Kunden für das Onboarding an, wenn ein Geschäft abgeschlossen ist"
+        },
+        "hubspot_list_enroll": {
+          "title": "Registrieren Sie Kontakte, wenn sie einer HubSpot-Liste beitreten"
+        },
+        "hubspot_form_invite": {
+          "title": "Laden Sie Formularanmeldungen zu einem Kurs ein"
+        },
+        "hubspot_completed_contact": {
+          "title": "Aktualisieren Sie den Kontakt, wenn sie einen Kurs abschließen"
+        },
+        "hubspot_certificate_list": {
+          "title": "Fügen Sie zertifizierte Lernende zu einer HubSpot-Liste hinzu"
+        },
+        "hubspot_compliance_task": {
+          "title": "Erstellen Sie eine Folgeaufgabe, wenn die Schulung überfällig ist"
+        },
+        "salesforce_certificate_record": {
+          "title": "Erfassen Sie jedes Zertifikat in Salesforce"
+        },
+        "salesforce_completed_contact": {
+          "title": "Aktualisieren Sie den Kontakt, wenn sie einen Kurs abschließen"
+        },
+        "salesforce_payment_lead": {
+          "title": "Erstellen Sie für jede Zahlungsanforderung einen Lead"
+        },
+        "salesforce_contact_enroll": {
+          "title": "Melden Sie neue Kontakte für das Onboarding an"
+        },
+        "salesforce_opportunity_enroll": {
+          "title": "Registrieren Sie Kunden, wenn eine Gelegenheit endet"
+        },
+        "mailchimp_enrollment_subscriber": {
+          "title": "Fügen Sie einer Zielgruppe neue Anmeldungen hinzu"
+        },
+        "mailchimp_completed_tag": {
+          "title": "Markieren Sie Abonnenten, die einen Kurs abschließen"
+        },
+        "mailchimp_removed_untag": {
+          "title": "Entfernen Sie das Kurs-Tag, wenn ein Student den Kurs verlässt"
+        },
+        "mailchimp_subscriber_student": {
+          "title": "Fügen Sie neue Abonnenten als Studenten hinzu"
+        },
+        "mailchimp_tag_enroll": {
+          "title": "Registrieren Sie Abonnenten, wenn sie ein Tag erhalten"
+        },
+        "customerio_completed_event": {
+          "title": "Versenden Sie Kursabschlüsse als Ereignisse"
+        },
+        "customerio_enrollment_person": {
+          "title": "Erstellen oder aktualisieren Sie die Person, wenn sie sich anmeldet"
+        },
+        "customerio_certificate_event": {
+          "title": "Zertifikate als Ereignisse versenden"
+        },
+        "customerio_compliance_event": {
+          "title": "Starten Sie Erinnerungskampagnen, wenn Schulungen überfällig sind"
+        },
+        "customerio_lesson_event": {
+          "title": "Unterrichtsfortschritte als Ereignisse senden"
+        },
+        "slack_completed_channel": {
+          "title": "Posten Sie auf einem Kanal, wenn ein Kurs abgeschlossen ist"
+        },
+        "slack_submission_dm": {
+          "title": "Benachrichtigen Sie den Tutor, wenn ein Schüler eine Übung einreicht"
+        },
+        "slack_payment_channel": {
+          "title": "Benachrichtigen Sie das Team über Zahlungsanfragen"
+        },
+        "slack_compliance_channel": {
+          "title": "Markieren Sie überfällige Schulungen in einem Kanal"
+        },
+        "slack_certificate_channel": {
+          "title": "Feiern Sie neue Zertifikate"
+        },
+        "slack_member_enroll": {
+          "title": "Melden Sie neue Workspace-Mitglieder für das Onboarding an"
+        },
+        "teams_completed_channel": {
+          "title": "Posten Sie auf einem Kanal, wenn ein Kurs abgeschlossen ist"
+        },
+        "teams_submission_chat": {
+          "title": "Benachrichtigen Sie den Tutor, wenn ein Schüler eine Übung einreicht"
+        },
+        "teams_compliance_channel": {
+          "title": "Markieren Sie überfällige Schulungen in einem Kanal"
+        },
+        "teams_session_channel": {
+          "title": "Kündigen Sie Live-Sitzungen in einem Kanal an"
+        },
+        "teams_member_enroll": {
+          "title": "Melden Sie neue Teammitglieder für das Onboarding an"
+        },
+        "meet_session_meeting": {
+          "title": "Erstellen Sie für jede Live-Sitzung ein Meet"
+        },
+        "meet_completed_meeting": {
+          "title": "Buchen Sie einen Besprechungstermin, wenn ein Kurs abgeschlossen ist"
+        },
+        "zoom_enrollment_registrant": {
+          "title": "Melden Sie neue Studierende für ein Webinar an"
+        },
+        "zoom_cohort_registrant": {
+          "title": "Melden Sie Kohortenmitglieder für das Kickoff-Meeting an"
+        },
+        "zoom_session_meeting": {
+          "title": "Erstellen Sie für jede Live-Sitzung ein Zoom-Meeting"
+        },
+        "zoom_registrant_enroll": {
+          "title": "Melden Sie Webinar-Anmelder für Vorbereitungsmaterial an"
+        },
+        "zoom_joiner_lesson": {
+          "title": "Markieren Sie die Live-Lektion als abgeschlossen, wenn ein Lernender beitritt"
+        },
+        "zendesk_tag_enroll": {
+          "title": "Registrieren Sie einen Kunden, wenn ein Agent sein Ticket markiert"
+        },
+        "zendesk_compliance_ticket": {
+          "title": "Öffnen Sie ein Ticket, wenn die Schulung überfällig ist"
+        },
+        "zendesk_payment_ticket": {
+          "title": "Öffnen Sie für jede Zahlungsanforderung ein Ticket"
+        },
+        "zendesk_completed_user": {
+          "title": "Zeichnen Sie die abgeschlossene Schulung des Zendesk-Benutzers auf"
+        },
+        "zendesk_user_enroll": {
+          "title": "Melden Sie neue Zendesk-Benutzer für einen Einführungskurs an"
+        },
+        "intercom_completed_message": {
+          "title": "Benachrichtigen Sie Benutzer, wenn sie einen Kurs abschließen"
+        },
+        "intercom_completed_tag": {
+          "title": "Markieren Sie Benutzer, die das Onboarding abgeschlossen haben"
+        },
+        "intercom_lesson_event": {
+          "title": "Unterrichtsfortschritte als Ereignisse senden"
+        },
+        "intercom_user_enroll": {
+          "title": "Melden Sie neue Benutzer für das Onboarding an"
+        },
+        "intercom_tag_enroll": {
+          "title": "Registrieren Sie Benutzer, wenn sie markiert sind"
+        },
+        "calendly_booking_enroll": {
+          "title": "Melden Sie eingeladene Personen bei der Buchung für Vorbereitungsmaterial an"
+        },
+        "calendly_noshow_invite": {
+          "title": "Senden Sie einen Kurs zum Selbststudium an Nichterscheinen"
+        },
+        "calendly_form_student": {
+          "title": "Fügen Sie Routing-Formular-Leads als Studenten hinzu"
+        },
+        "calendly_cancel_remove": {
+          "title": "Entfernen Sie den Vorbereitungskurs, wenn eine Buchung storniert wird"
+        },
+        "calcom_booking_enroll": {
+          "title": "Registrieren Sie Teilnehmer bei der Buchung für Vorbereitungsmaterial"
+        },
+        "calcom_cancel_remove": {
+          "title": "Entfernen Sie den Vorbereitungskurs, wenn eine Buchung storniert wird"
+        },
+        "calcom_meeting_invite": {
+          "title": "Versenden Sie den Folgekurs nach dem Anruf"
+        },
+        "sheets_completed_row": {
+          "title": "Protokollieren Sie Abschlüsse in einem Blatt"
+        },
+        "sheets_certificate_row": {
+          "title": "Führen Sie ein Zertifikatsregister"
+        },
+        "sheets_compliance_row": {
+          "title": "Compliance-Änderungen protokollieren"
+        },
+        "sheets_payment_row": {
+          "title": "Verfolgen Sie Zahlungsanfragen"
+        },
+        "sheets_row_enroll": {
+          "title": "Registrieren Sie alle zu einem Blatt hinzugefügten Personen"
+        },
+        "sheets_row_cohort": {
+          "title": "Fügen Sie alle Personen in einem Blatt einer Kohorte hinzu"
+        },
+        "notion_completed_item": {
+          "title": "Verfolgen Sie Abschlüsse in einer Datenbank"
+        },
+        "notion_submission_item": {
+          "title": "Stellen Sie Einreichungen zur Überprüfung in die Warteschlange"
+        },
+        "notion_course_page": {
+          "title": "Fügen Sie für jeden neuen Kurs eine Seite hinzu"
+        },
+        "notion_item_enroll": {
+          "title": "Registrieren Sie Personen, die einer Datenbank hinzugefügt wurden"
+        },
+        "confluence_course_page": {
+          "title": "Erstellen Sie eine Seite, wenn ein Kurs veröffentlicht wird"
+        },
+        "confluence_session_page": {
+          "title": "Erstellen Sie für jede Live-Sitzung eine Agendaseite"
+        },
+        "confluence_page_announce": {
+          "title": "Kündigen Sie einer Kohorte neue Dokumente an"
+        },
+        "typeform_entry_enroll": {
+          "title": "Melden Sie Teilnehmer für einen Kurs an"
+        },
+        "typeform_entry_cohort": {
+          "title": "Fügen Sie Bewerber einer Kohorte hinzu"
+        },
+        "typeform_entry_student": {
+          "title": "Befragte als Studierende hinzufügen"
+        },
+        "jotform_submission_enroll": {
+          "title": "Melden Sie Personen an, die ein Formular einreichen"
+        },
+        "jotform_completed_form": {
+          "title": "Senden Sie ein Feedback-Formular, wenn ein Kurs abgeschlossen ist"
+        },
+        "jotform_submission_student": {
+          "title": "Fügen Sie Personen hinzu, die ein Formular als Studenten einreichen"
+        },
+        "pendo_status_enroll": {
+          "title": "Melden Sie Antragsteller für einen Kurs an, sobald ihre Anfrage versendet wird"
+        },
+        "pendo_status_announce": {
+          "title": "Versendete Anfragen an eine Kohorte bekannt geben"
+        },
+        "mixpanel_completed_event": {
+          "title": "Verfolgen Sie Kursabschlüsse"
+        },
+        "mixpanel_enrollment_event": {
+          "title": "Verfolgen Sie Anmeldungen"
+        },
+        "mixpanel_lesson_event": {
+          "title": "Verfolgen Sie den Unterrichtsfortschritt"
+        },
+        "mixpanel_certificate_profile": {
+          "title": "Markieren Sie zertifizierte Benutzer in ihrem Profil"
+        },
+        "circle_member_enroll": {
+          "title": "Melden Sie neue Community-Mitglieder für einen Willkommenskurs an"
+        },
+        "circle_certificate_space": {
+          "title": "Schalten Sie einen Bereich frei, wenn ein Lernender ein Zertifikat erhält"
+        },
+        "circle_completed_tag": {
+          "title": "Markieren Sie Mitglieder, die einen Kurs abschließen"
+        },
+        "circle_cohort_group": {
+          "title": "Gewähren Sie Kohortenmitgliedern Zugriff auf eine Raumgruppe"
+        },
+        "circle_removed_student": {
+          "title": "Entfernen Sie Schüler, die die Community verlassen"
+        },
+        "use_zap": "Benutze Zap",
+        "ways_to_use": "{count} Verwendungsmöglichkeiten"
+      },
+      "partner_steps": {
+        "hubspot": {
+          "add_to_list_v3": "Kontakt zur Liste hinzufügen",
+          "create_engagement": "Schaffen Sie Engagement",
+          "form_submission_resthook_v3": "Übermittlung eines neuen Formulars",
+          "new_contact_in_list_resthook_v3": "Neuer Kontakt in der Liste",
+          "updated_deal_stage": "Aktualisierte Deal-Phase",
+          "upsert_contact": "Kontakt erstellen oder aktualisieren"
+        },
+        "salesforce": {
+          "create_lead": "Lead erstellen",
+          "create_record": "Datensatz erstellen",
+          "new_contact": "Neuer Kontakt",
+          "update_contact": "Kontakt aktualisieren",
+          "updated_field_on_record": "Aktualisiertes Feld im Datensatz"
+        },
+        "mailchimp": {
+          "memberCreate": "Abonnenten hinzufügen/aktualisieren",
+          "new_member": "Neuer Abonnent",
+          "remove_tag": "Abonnenten aus Tag entfernen",
+          "subscriber_segment": "Abonnenten zum Tag hinzufügen",
+          "subscriber_tag": "Neuer Abonnent im Segment oder Tag"
+        },
+        "customerio": {
+          "create_customer": "Erstellen oder aktualisieren Sie eine Person",
+          "track_event": "Ereignis erstellen"
+        },
+        "slack": {
+          "channel_message": "Kanalnachricht senden",
+          "direct_message": "Direktnachricht senden",
+          "team_join": "Neuer Benutzer"
+        },
+        "teams": {
+          "member": "Neues Teammitglied",
+          "send_channel_message_from_user": "Kanalnachricht senden",
+          "send_chat_message": "Chat-Nachricht senden"
+        },
+        "google_meet": {
+          "schedule_meeting": "Planen Sie ein Meeting"
+        },
+        "zoom": {
+          "create_meeting": "Treffen erstellen",
+          "create_meeting_registrant": "Meeting-Anmelder erstellen",
+          "create_registrant": "Webinar-Anmelder erstellen",
+          "new_joiner": "Neuer Teilnehmer ist dem Webinar oder Meeting beigetreten",
+          "new_registrant": "Neuer Webinar-Anmelder"
+        },
+        "zendesk": {
+          "new_tag_ticket": "Neues Tag zum Ticket hinzugefügt",
+          "ticket": "Ticket erstellen",
+          "update_user": "Benutzer aktualisieren",
+          "user_v2": "Neuer Benutzer"
+        },
+        "intercom": {
+          "add_tag_to_contact": "Tag zum Kontakt hinzufügen",
+          "create_data_event": "Datenereignis erstellen",
+          "new_user_created": "Neuer Benutzer",
+          "send_message_to_contact": "Nachricht an Kontakt senden",
+          "user_tag": "Tag zum Benutzer hinzugefügt"
+        },
+        "calendly": {
+          "invitee_canceled": "Einladung abgesagt",
+          "invitee_created": "Einladung erstellt oder neu geplant",
+          "invitee_no_show_created": "Kein Erscheinen des eingeladenen Teilnehmers erstellt",
+          "routing_form_submission": "Übermittlung eines neuen Routing-Formulars"
+        },
+        "calcom": {
+          "booking_cancelled": "Buchung storniert",
+          "booking_created": "Buchung erstellt",
+          "meeting_ended": "Besprechung beendet"
+        },
+        "sheets": {
+          "add_row": "Tabellenzeile erstellen",
+          "new_row_notify_hook": "Neue Tabellenzeile"
+        },
+        "notion": {
+          "create_database_item": "Datenquellenelement erstellen",
+          "create_page": "Seite erstellen",
+          "new_data_source_item": "Neues Datenquellenelement"
+        },
+        "confluence": {
+          "pageCreate": "Erstellen Sie eine Seite oder einen Blogbeitrag",
+          "pageList": "Neue Seite oder Blogbeitrag"
+        },
+        "typeform": {
+          "entries_resthook_v2": "Neuer Eintrag"
+        },
+        "jotform": {
+          "assign_prefilled_form": "Vorausgefülltes Formular zuweisen",
+          "new_submission": "Neue Einreichung"
+        },
+        "pendo": {
+          "feature_status_changed": "Anforderungsstatus geändert"
+        },
+        "mixpanel": {
+          "engage": "Profil erstellen oder aktualisieren",
+          "track": "Ereignis verfolgen"
+        },
+        "circle": {
+          "add_space_group_member": "Mitglied zur Space-Gruppe hinzufügen",
+          "add_space_member": "Mitglied zum Space hinzufügen",
+          "community_member_removed": "Mitglied entfernt",
+          "new_member": "Neues Mitglied hinzugefügt",
+          "tag_members": "Tag-Mitglied"
+        }
+      },
+      "explore_apps": "Entdecken Sie Apps",
+      "my_zaps": "Meine Zaps",
+      "see_all_apps": "Alle Apps anzeigen",
+      "popular_zaps": "Beliebte Zaps",
+      "app_page": {
+        "connected": "{organization} ist mit Zapier · {access} verbunden.",
+        "manage": "Verwalten",
+        "related_apps": "Verwandte Apps"
+      },
+      "connection": {
+        "title": "Verbindung",
+        "name": "Zapier",
+        "connected_by": "Vernetzt durch {name} am {date}",
+        "unknown_admin": "ein ehemaliger Administrator",
+        "disconnect": "Trennen",
+        "access_read_write": "Lesen und schreiben",
+        "access_read_only": "Nur lesen"
+      },
+      "failed_events": {
+        "title": "Einige Ereignisse erreichten Zapier nicht",
+        "description": "Zapier hat Ereignisse der letzten 24 Stunden verpasst. Senden Sie sie erneut, um die Zaps auszuführen, die hätten starten sollen.",
+        "resend": "Fehlgeschlagene Ereignisse erneut senden"
+      },
+      "remove": {
+        "title": "Zapier trennen?",
+        "description": "Zaps, die diese Verbindung verwenden, werden sofort gestoppt und ihre {count} aktiven Trigger werden entfernt. Stellen Sie die Verbindung von Zapier erneut her, um sie erneut zu verwenden.",
+        "confirm": "Trennen",
+        "zapier_side": "ClassroomIO kann die Verbindung nicht von Ihrem Zapier-Konto entfernen, also löschen Sie sie auch dort.",
+        "open_zapier_connections": "Zapier-Verbindungen öffnen"
+      }
     },
     "webhooks": {
       "page_subtitle": "Senden Sie ClassroomIO-Ereignisse in Echtzeit an Slack, Ihr CRM oder Ihr eigenes Backend.",
@@ -6645,7 +7277,15 @@
       "deny": "Ablehnen",
       "unknown_client": "Diese App",
       "error_title": "Diese Verbindungsanfrage ist ungültig",
-      "error_description": "Kehre zur App zurück, die du verbinden wolltest, und starte erneut."
+      "error_description": "Kehre zur App zurück, die du verbinden wolltest, und starte erneut.",
+      "verified": "Verifiziert",
+      "allow_changes": {
+        "label": "Erlauben Sie {client}, Änderungen vorzunehmen",
+        "description": "Deaktivieren Sie dies für den schreibgeschützten Zugriff. {client} kann weiterhin Daten lesen und Trigger ausführen, aber nichts hinzufügen, ändern oder entfernen."
+      },
+      "plan_required": "Führen Sie ein Upgrade auf Early Adopter durch, um diese App zu verbinden",
+      "no_eligible_title": "Kein berechtigter Arbeitsbereich",
+      "no_eligible_description": "Keiner Ihrer Arbeitsbereiche hat einen Plan, der diese App enthält. Führen Sie ein Upgrade auf Early Adopter oder Enterprise durch und versuchen Sie es erneut."
     },
     "error": {
       "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
@@ -6695,6 +7335,10 @@
       "media": {
         "read": "Medien hochladen",
         "write": "Medien hochladen"
+      },
+      "webhooks": {
+        "read": "Aktuelle Ereignisse in Ihrem Workspace einsehen",
+        "write": "Ereignisse in Ihrem Workspace empfangen, sobald sie eintreten"
       }
     },
     "connect": {

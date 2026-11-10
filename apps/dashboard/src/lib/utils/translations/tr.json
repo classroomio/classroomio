@@ -475,7 +475,8 @@
         "caption": "Kurslarınız, öğrencileriniz ve ayarlarınız hazırlanıyor."
       }
     },
-    "back": "Geri"
+    "back": "Geri",
+    "dismiss": "Kapat"
   },
   "compliance": {
     "title": "Compliance",
@@ -5052,7 +5053,8 @@
     "enterprise_required": "Bu özellik bir Kurumsal plan gerektirir.",
     "public_api_required": "Erişim için Erken Benimseyen veya Kurumsal sürümüne yükseltin genel API.",
     "unlock_field": "Bu ayarın kilidini açmak için yükseltme",
-    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin."
+    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin.",
+    "zapier_required": "Zapier, Early Adopter veya Enterprise planını gerektirir."
   },
   "automation": {
     "title": "Automation",
@@ -5137,7 +5139,631 @@
       }
     },
     "zapier": {
-      "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında."
+      "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında.",
+      "permissions_description": "Yalnızca kuruluş yöneticileri Zapier'ı bağlayabilir ve bağlantılarını yönetebilir.",
+      "create_zap": "Bir Zap oluştur",
+      "upgrade": {
+        "title": "Zapier'i bağlamak için yükseltin",
+        "description": "ClassroomIO'yu Zapier'e bağlamak için Early Adopter veya Enterprise planı gerekir.",
+        "cta": "Planı yükselt"
+      },
+      "error": {
+        "title": "Zapier bağlantıları yüklenemedi",
+        "description": "Sunucuya ulaşamadık. Bağlantınızı kontrol edip tekrar deneyin.",
+        "retry": "Tekrar dene"
+      },
+      "paused": {
+        "title": "Zapier duraklatıldı",
+        "description": "Planınız artık Zapier'ı içermiyor. Yükseltme yapana kadar Zap'ler başarısız olur; bağlantılarınız korunur."
+      },
+      "selfhosted": {
+        "title": "Zapier, ClassroomIO Cloud'da mevcuttur",
+        "description": "Kendi kendine barındırılan bir kurulumda, eylemler için Webhooks by Zapier tetikleyicisi ve API anahtarlarıyla Webhook'ları kullanın."
+      },
+      "catalog": {
+        "categories": {
+          "all": "Tümü",
+          "crm": "CRM",
+          "marketing": "Pazarlama",
+          "communication": "İletişim",
+          "customer-support": "Müşteri desteği",
+          "sales": "Satış",
+          "productivity": "Verimlilik",
+          "forms": "Formlar ve anketler",
+          "analytics": "Analitik",
+          "community": "Topluluk"
+        }
+      },
+      "app_sheet": {
+        "title": "ClassroomIO + {app}",
+        "create_zap": "Bir {app} Zap'i oluştur"
+      },
+      "catalog_triggers": {
+        "new_course_enrollment": {
+          "label": "Yeni kurs kaydı"
+        },
+        "course_member_removed": {
+          "label": "Öğrenci kurstan çıkarıldı"
+        },
+        "course_completed": {
+          "label": "Kurs tamamlandı"
+        },
+        "new_certificate": {
+          "label": "Yeni sertifika"
+        },
+        "new_submission": {
+          "label": "Yeni egzersiz teslimi"
+        },
+        "submission_status_changed": {
+          "label": "Teslim durumu değişti"
+        },
+        "lesson_completed": {
+          "label": "Ders tamamlandı"
+        },
+        "course_invite_accepted": {
+          "label": "Kurs daveti kabul edildi"
+        },
+        "new_payment_request": {
+          "label": "Yeni ödeme talebi"
+        },
+        "new_organization_member": {
+          "label": "Yeni kuruluş üyesi"
+        },
+        "compliance_status_changed": {
+          "label": "Uyum durumu değişti"
+        },
+        "course_published": {
+          "label": "Kurs yayınlandı"
+        },
+        "live_session_scheduled": {
+          "label": "Canlı oturum planlandı"
+        },
+        "new_cohort_member": {
+          "label": "Yeni grup üyesi"
+        }
+      },
+      "catalog_actions": {
+        "enroll_student": {
+          "label": "Öğrenciyi kursa kaydet"
+        },
+        "add_student": {
+          "label": "Öğrenciyi kuruluşa ekle"
+        },
+        "update_student": {
+          "label": "Öğrenciyi güncelle"
+        },
+        "remove_student": {
+          "label": "Öğrenciyi kuruluştan çıkar"
+        },
+        "remove_course_member": {
+          "label": "Öğrenciyi kurstan çıkar"
+        },
+        "send_course_invite": {
+          "label": "Kurs daveti gönder"
+        },
+        "revoke_course_invite": {
+          "label": "Kurs davetini iptal et"
+        },
+        "reset_course_progress": {
+          "label": "Öğrencinin kurs ilerlemesini sıfırla"
+        },
+        "mark_lesson_complete": {
+          "label": "Dersi tamamlandı olarak işaretle"
+        },
+        "add_cohort_member": {
+          "label": "Öğrenciyi gruba ekle"
+        },
+        "post_cohort_announcement": {
+          "label": "Grup akışında yayınla"
+        }
+      },
+      "apps": {
+        "hubspot": {
+          "description": "CRM ve müşteri platformu"
+        },
+        "salesforce": {
+          "description": "Satış ve servis ekipleri için CRM"
+        },
+        "mailchimp": {
+          "description": "E-posta pazarlaması ve kitleler"
+        },
+        "customerio": {
+          "description": "Mesajlaşma ve yaşam döngüsü kampanyaları"
+        },
+        "slack": {
+          "description": "Ekip iletişimi ve iş birliği"
+        },
+        "teams": {
+          "description": "Kuruluşunuz için sohbet ve kanallar"
+        },
+        "google_meet": {
+          "description": "Google Workspace'te görüntülü toplantılar"
+        },
+        "zoom": {
+          "description": "Görüntülü toplantılar ve web seminerleri"
+        },
+        "zendesk": {
+          "description": "Müşteri desteği ve biletleme"
+        },
+        "intercom": {
+          "description": "Müşteri mesajlaşma platformu"
+        },
+        "calendly": {
+          "description": "Planlama ve rezervasyon bağlantıları"
+        },
+        "calcom": {
+          "description": "Açık kaynaklı planlama ve rezervasyon bağlantıları"
+        },
+        "sheets": {
+          "description": "Elektronik tablolar ve veri yönetimi"
+        },
+        "notion": {
+          "description": "Belgeler, vikiler ve proje notları"
+        },
+        "confluence": {
+          "description": "Teknik ekipler için belgeler ve vikiler"
+        },
+        "typeform": {
+          "description": "Formlar ve anketler"
+        },
+        "jotform": {
+          "description": "Formlar ve anketler"
+        },
+        "pendo": {
+          "description": "Dijital benimseme ve ürün kullanımı"
+        },
+        "mixpanel": {
+          "description": "Ürün analitiği ve huniler"
+        },
+        "circle": {
+          "description": "Topluluk alanları ve tartışma"
+        }
+      },
+      "directory": {
+        "title": "Uygulama Dizini",
+        "subtitle": "Zapier aracılığıyla ClassroomIO'ya bağlanabileceğiniz uygulamalara göz atın.",
+        "create_zap": "Zapier'de bir Zap oluşturun",
+        "back": "Zaps'e geri dön",
+        "search_placeholder": "Uygulamaları arayın…",
+        "filters_title": "Filtreler",
+        "categories": "Kategoriler",
+        "all_apps": "Tüm uygulamalar",
+        "count": {
+          "all": "{count} uygulama",
+          "one": "1 uygulama",
+          "all_matching": "\"{query}\" ile eşleşen {count} uygulama",
+          "one_matching": "“{query}” ile eşleşen 1 uygulama"
+        },
+        "empty": {
+          "title": "Aramanızla eşleşen uygulama yok",
+          "description": "Farklı bir ad deneyin veya Zapier'in ClassroomIO'yu bağladığı her uygulamaya göz atın.",
+          "search_zapier": "Zapier'de ara"
+        },
+        "end": {
+          "title": "Seçtiğimiz tüm uygulamalar bunlar",
+          "description": "Zapier, ClassroomIO'yu binlerce kişiye daha bağlıyor.",
+          "cta": "Zapier'de devam et"
+        }
+      },
+      "page_title": "Zap'ler",
+      "zaps_empty": {
+        "title": "Zapier henüz bağlı değil"
+      },
+      "invite": {
+        "title": "ClassroomIO'yu Zapier'e bağlayın",
+        "description": "Zapier, Zap'leri oluşturabilmeniz için ClassroomIO davetini bir kez kabul etmenizi istiyor.",
+        "step_1_title": "Zapier'de ClassroomIO davetini kabul edin",
+        "step_1_description": "Zapier sizden bir kez kabul etmenizi istiyor. Bundan sonra ClassroomIO, Zapier hesabınızda görünür.",
+        "step_1_button": "Daveti Zapier'de aç",
+        "step_2_title": "Zap'inize devam edin",
+        "step_2_description": "Zap'iniz yeni bir sekmede açılır. Siz onu açana kadar hiçbir şey çalışmaz.",
+        "step_2_button": "Zapier'e devam et",
+        "already_accepted": "zaten kabul ettim",
+        "note": "ClassroomIO şimdilik Zapier'de yalnızca davetle kullanılabilir. İlk Zap'inizi oluşturmadan önce daveti bir kez kabul edin.",
+        "step_done": "Bitti"
+      },
+      "recipes": {
+        "tabs_out": "ClassroomIO'dan",
+        "tabs_in": "ClassroomIO'ya",
+        "sentence_out": "ClassroomIO'da {trigger}, {app}'de {action} olduğunda.",
+        "sentence_in": "{app}'de {trigger}, ClassroomIO'da {action} olduğunda.",
+        "hubspot_deal_stage_enroll": {
+          "title": "Bir anlaşma belirli bir aşamaya ulaştığında yeni müşterileri katılıma kaydedin"
+        },
+        "hubspot_list_enroll": {
+          "title": "Kişileri bir HubSpot listesine katıldıklarında kaydedin"
+        },
+        "hubspot_form_invite": {
+          "title": "Form kayıtlarını bir kursa davet etme"
+        },
+        "hubspot_completed_contact": {
+          "title": "Bir kursu tamamladıklarında kişiyi güncelleyin"
+        },
+        "hubspot_certificate_list": {
+          "title": "Sertifikalı öğrencileri HubSpot listesine ekleme"
+        },
+        "hubspot_compliance_task": {
+          "title": "Eğitimin süresi dolduğunda bir takip görevi oluşturun"
+        },
+        "salesforce_certificate_record": {
+          "title": "Her sertifikayı Salesforce'a kaydedin"
+        },
+        "salesforce_completed_contact": {
+          "title": "Bir kursu tamamladıklarında kişiyi güncelleyin"
+        },
+        "salesforce_payment_lead": {
+          "title": "Her ödeme talebi için bir müşteri adayı oluşturun"
+        },
+        "salesforce_contact_enroll": {
+          "title": "Yeni kişileri katılıma kaydetme"
+        },
+        "salesforce_opportunity_enroll": {
+          "title": "Bir fırsat kapandığında müşterileri kaydedin"
+        },
+        "mailchimp_enrollment_subscriber": {
+          "title": "Hedef kitleye yeni kayıtlar ekleme"
+        },
+        "mailchimp_completed_tag": {
+          "title": "Kursu tamamlayan aboneleri etiketleyin"
+        },
+        "mailchimp_removed_untag": {
+          "title": "Bir öğrenci ayrıldığında kurs etiketini kaldırın"
+        },
+        "mailchimp_subscriber_student": {
+          "title": "Öğrenci olarak yeni aboneler ekleyin"
+        },
+        "mailchimp_tag_enroll": {
+          "title": "Aboneleri etiket aldıklarında kaydedin"
+        },
+        "customerio_completed_event": {
+          "title": "Kurs tamamlamalarını etkinlik olarak gönder"
+        },
+        "customerio_enrollment_person": {
+          "title": "Kişiyi kaydolduğunda oluşturun veya güncelleyin"
+        },
+        "customerio_certificate_event": {
+          "title": "Sertifikaları etkinlik olarak gönder"
+        },
+        "customerio_compliance_event": {
+          "title": "Eğitimin süresi dolduğunda hatırlatma kampanyaları başlatın"
+        },
+        "customerio_lesson_event": {
+          "title": "Ders ilerlemesini etkinlik olarak gönder"
+        },
+        "slack_completed_channel": {
+          "title": "Kurs tamamlandığında bir kanalda yayınlama"
+        },
+        "slack_submission_dm": {
+          "title": "Bir öğrenci bir alıştırma gönderdiğinde öğretmene mesaj gönderin"
+        },
+        "slack_payment_channel": {
+          "title": "Ekibi ödeme talepleri konusunda uyarın"
+        },
+        "slack_compliance_channel": {
+          "title": "Bir kanalda süresi geçmiş eğitimi işaretleme"
+        },
+        "slack_certificate_channel": {
+          "title": "Yeni sertifikaları kutlayın"
+        },
+        "slack_member_enroll": {
+          "title": "Yeni çalışma alanı üyelerini katılıma kaydetme"
+        },
+        "teams_completed_channel": {
+          "title": "Kurs tamamlandığında bir kanalda yayınlama"
+        },
+        "teams_submission_chat": {
+          "title": "Bir öğrenci bir alıştırma gönderdiğinde öğretmene mesaj gönderin"
+        },
+        "teams_compliance_channel": {
+          "title": "Bir kanalda süresi geçmiş eğitimi işaretleme"
+        },
+        "teams_session_channel": {
+          "title": "Bir kanalda canlı oturumları duyurun"
+        },
+        "teams_member_enroll": {
+          "title": "Yeni ekip üyelerini işe alım sürecine kaydedin"
+        },
+        "meet_session_meeting": {
+          "title": "Her canlı oturum için bir Meet oluşturun"
+        },
+        "meet_completed_meeting": {
+          "title": "Bir kurs tamamlandığında inceleme görüşmesi yapın"
+        },
+        "zoom_enrollment_registrant": {
+          "title": "Bir web seminerine yeni öğrencileri kaydedin"
+        },
+        "zoom_cohort_registrant": {
+          "title": "Başlangıç toplantısı için grup üyelerini kaydedin"
+        },
+        "zoom_session_meeting": {
+          "title": "Her canlı oturum için bir Zoom toplantısı oluşturun"
+        },
+        "zoom_registrant_enroll": {
+          "title": "Web seminerine kaydolanları hazırlık materyaline kaydedin"
+        },
+        "zoom_joiner_lesson": {
+          "title": "Bir öğrenci katıldığında canlı dersi tamamlandı olarak işaretleme"
+        },
+        "zendesk_tag_enroll": {
+          "title": "Bir temsilci biletini etiketlediğinde müşteriyi kaydedin"
+        },
+        "zendesk_compliance_ticket": {
+          "title": "Eğitimin süresi dolduğunda bir bilet açın"
+        },
+        "zendesk_payment_ticket": {
+          "title": "Her ödeme talebi için bir bilet açın"
+        },
+        "zendesk_completed_user": {
+          "title": "Tamamlanan eğitimi Zendesk kullanıcısına kaydedin"
+        },
+        "zendesk_user_enroll": {
+          "title": "Yeni Zendesk kullanıcılarını başlangıç kursuna kaydedin"
+        },
+        "intercom_completed_message": {
+          "title": "Bir kursu tamamladıklarında kullanıcılara mesaj gönderin"
+        },
+        "intercom_completed_tag": {
+          "title": "Katılımı tamamlayan kullanıcıları etiketleyin"
+        },
+        "intercom_lesson_event": {
+          "title": "Ders ilerlemesini etkinlik olarak gönder"
+        },
+        "intercom_user_enroll": {
+          "title": "Yeni kullanıcıları katılıma kaydetme"
+        },
+        "intercom_tag_enroll": {
+          "title": "Kullanıcıları etiketlendiklerinde kaydedin"
+        },
+        "calendly_booking_enroll": {
+          "title": "Davetlileri rezervasyon yaparken hazırlık materyaline kaydedin"
+        },
+        "calendly_noshow_invite": {
+          "title": "Gelmeyenlere temposunu kendiniz belirleyebileceğiniz bir kurs gönderin"
+        },
+        "calendly_form_student": {
+          "title": "Yönlendirme formu potansiyel müşterilerini öğrenci olarak ekleyin"
+        },
+        "calendly_cancel_remove": {
+          "title": "Rezervasyon iptal edildiğinde hazırlık kursunu kaldırın"
+        },
+        "calcom_booking_enroll": {
+          "title": "Katılımcıları rezervasyon yaparken hazırlık materyaline kaydedin"
+        },
+        "calcom_cancel_remove": {
+          "title": "Rezervasyon iptal edildiğinde hazırlık kursunu kaldırın"
+        },
+        "calcom_meeting_invite": {
+          "title": "Aramadan sonra takip kursunu gönderin"
+        },
+        "sheets_completed_row": {
+          "title": "Tamamlamaları bir sayfaya kaydedin"
+        },
+        "sheets_certificate_row": {
+          "title": "Sertifika kaydını tutun"
+        },
+        "sheets_compliance_row": {
+          "title": "Uyumluluk değişikliklerini günlüğe kaydet"
+        },
+        "sheets_payment_row": {
+          "title": "Ödeme isteklerini takip edin"
+        },
+        "sheets_row_enroll": {
+          "title": "Bir sayfaya eklenen herkesi kaydetme"
+        },
+        "sheets_row_cohort": {
+          "title": "Bir sayfadaki herkesi bir gruba ekleme"
+        },
+        "notion_completed_item": {
+          "title": "Veritabanındaki tamamlamaları izleme"
+        },
+        "notion_submission_item": {
+          "title": "Gönderimleri incelenmek üzere sıraya alın"
+        },
+        "notion_course_page": {
+          "title": "Her yeni kurs için bir sayfa ekleyin"
+        },
+        "notion_item_enroll": {
+          "title": "Veritabanına eklenen kişileri kaydetme"
+        },
+        "confluence_course_page": {
+          "title": "Bir kurs yayınlandığında sayfa oluşturun"
+        },
+        "confluence_session_page": {
+          "title": "Her canlı oturum için bir gündem sayfası oluşturun"
+        },
+        "confluence_page_announce": {
+          "title": "Yeni dokümanları bir gruba duyurun"
+        },
+        "typeform_entry_enroll": {
+          "title": "Katılımcıları bir kursa kaydetme"
+        },
+        "typeform_entry_cohort": {
+          "title": "Başvuranları bir gruba ekleyin"
+        },
+        "typeform_entry_student": {
+          "title": "Yanıtlayanları öğrenci olarak ekleyin"
+        },
+        "jotform_submission_enroll": {
+          "title": "Form gönderen kişileri kaydedin"
+        },
+        "jotform_completed_form": {
+          "title": "Bir kurs tamamlandığında geri bildirim formu gönderin"
+        },
+        "jotform_submission_student": {
+          "title": "Form gönderen kişileri öğrenci olarak ekleme"
+        },
+        "pendo_status_enroll": {
+          "title": "İstekleri gönderildiğinde, istekte bulunanları bir kursa kaydedin"
+        },
+        "pendo_status_announce": {
+          "title": "Gönderilen istekleri bir gruba duyurun"
+        },
+        "mixpanel_completed_event": {
+          "title": "Kurs tamamlamalarını takip edin"
+        },
+        "mixpanel_enrollment_event": {
+          "title": "Kayıtları takip edin"
+        },
+        "mixpanel_lesson_event": {
+          "title": "Ders ilerlemesini takip edin"
+        },
+        "mixpanel_certificate_profile": {
+          "title": "Sertifikalı kullanıcıları profillerinde işaretleyin"
+        },
+        "circle_member_enroll": {
+          "title": "Yeni topluluk üyelerini hoş geldiniz kursuna kaydedin"
+        },
+        "circle_certificate_space": {
+          "title": "Öğrenci sertifika kazandığında alanın kilidini açın"
+        },
+        "circle_completed_tag": {
+          "title": "Kursu tamamlayan üyeleri etiketleyin"
+        },
+        "circle_cohort_group": {
+          "title": "Grup üyelerine bir alan grubuna erişim izni verme"
+        },
+        "circle_removed_student": {
+          "title": "Topluluktan ayrılan öğrencileri kaldırın"
+        },
+        "use_zap": "Zap'i kullan",
+        "ways_to_use": "{count} kullanım yolu"
+      },
+      "partner_steps": {
+        "hubspot": {
+          "add_to_list_v3": "Kişiyi Listeye Ekle",
+          "create_engagement": "Etkileşim Oluştur",
+          "form_submission_resthook_v3": "Yeni Form Gönderimi",
+          "new_contact_in_list_resthook_v3": "Listedeki Yeni Kişi",
+          "updated_deal_stage": "Güncellenmiş Anlaşma Aşaması",
+          "upsert_contact": "Kişi Oluşturun veya Güncelleyin"
+        },
+        "salesforce": {
+          "create_lead": "Potansiyel Müşteri Oluştur",
+          "create_record": "Kayıt Oluştur",
+          "new_contact": "Yeni Kişi",
+          "update_contact": "Kişiyi Güncelle",
+          "updated_field_on_record": "Kayıttaki Güncel Alan"
+        },
+        "mailchimp": {
+          "memberCreate": "Abone Ekle/Güncelle",
+          "new_member": "Yeni Abone",
+          "remove_tag": "Aboneyi Etiketten Kaldır",
+          "subscriber_segment": "Etikete Abone Ekle",
+          "subscriber_tag": "Segment veya Etikette Yeni Abone"
+        },
+        "customerio": {
+          "create_customer": "Kişi Oluşturma veya Güncelleme",
+          "track_event": "Etkinlik Oluştur"
+        },
+        "slack": {
+          "channel_message": "Kanal Mesajı Gönder",
+          "direct_message": "Doğrudan Mesaj Gönder",
+          "team_join": "Yeni Kullanıcı"
+        },
+        "teams": {
+          "member": "Yeni Ekip Üyesi",
+          "send_channel_message_from_user": "Kanal Mesajı Gönder",
+          "send_chat_message": "Sohbet Mesajı Gönder"
+        },
+        "google_meet": {
+          "schedule_meeting": "Toplantı Planlama"
+        },
+        "zoom": {
+          "create_meeting": "Toplantı Oluştur",
+          "create_meeting_registrant": "Toplantı Kaydı Oluştur",
+          "create_registrant": "Web Semineri Kaydı Oluşturun",
+          "new_joiner": "Yeni Katılımcı Web Seminerine veya Toplantıya Katıldı",
+          "new_registrant": "Yeni Web Semineri Kaydı Yapan"
+        },
+        "zendesk": {
+          "new_tag_ticket": "Bilete Yeni Etiket Eklendi",
+          "ticket": "Bilet Oluştur",
+          "update_user": "Kullanıcıyı Güncelle",
+          "user_v2": "Yeni Kullanıcı"
+        },
+        "intercom": {
+          "add_tag_to_contact": "Kişiye Etiket Ekle",
+          "create_data_event": "Veri Etkinliği Oluştur",
+          "new_user_created": "Yeni Kullanıcı",
+          "send_message_to_contact": "Kişiye Mesaj Gönder",
+          "user_tag": "Kullanıcıya Etiket Eklendi"
+        },
+        "calendly": {
+          "invitee_canceled": "Davetli İptal Edildi",
+          "invitee_created": "Davetli Oluşturuldu veya Yeniden Planlandı",
+          "invitee_no_show_created": "Davetli Gösteri Yok Oluşturuldu",
+          "routing_form_submission": "Yeni Yönlendirme Formu Gönderimi"
+        },
+        "calcom": {
+          "booking_cancelled": "Rezervasyon İptal Edildi",
+          "booking_created": "Rezervasyon Oluşturuldu",
+          "meeting_ended": "Toplantı Sona Erdi"
+        },
+        "sheets": {
+          "add_row": "Elektronik Tablo Satırı Oluştur",
+          "new_row_notify_hook": "Yeni Elektronik Tablo Satırı"
+        },
+        "notion": {
+          "create_database_item": "Veri Kaynağı Öğesi Oluştur",
+          "create_page": "Sayfa Oluştur",
+          "new_data_source_item": "Yeni Veri Kaynağı Öğesi"
+        },
+        "confluence": {
+          "pageCreate": "Sayfa veya Blog Gönderisi Oluşturun",
+          "pageList": "Yeni Sayfa veya Blog Gönderisi"
+        },
+        "typeform": {
+          "entries_resthook_v2": "Yeni Giriş"
+        },
+        "jotform": {
+          "assign_prefilled_form": "Önceden Doldurulmuş Formu Ata",
+          "new_submission": "Yeni Gönderim"
+        },
+        "pendo": {
+          "feature_status_changed": "Talep Durumu Değiştirildi"
+        },
+        "mixpanel": {
+          "engage": "Profil Oluşturun veya Güncelleyin",
+          "track": "Etkinliği Takip Et"
+        },
+        "circle": {
+          "add_space_group_member": "Üyeyi Uzay Grubuna Ekle",
+          "add_space_member": "Üyeyi Alana Ekle",
+          "community_member_removed": "Üye Kaldırıldı",
+          "new_member": "Yeni Üye Eklendi",
+          "tag_members": "Üyeyi Etiketle"
+        }
+      },
+      "explore_apps": "Uygulamaları keşfedin",
+      "my_zaps": "Zap'lerim",
+      "see_all_apps": "Tüm uygulamaları görün",
+      "popular_zaps": "Popüler Zap'ler",
+      "app_page": {
+        "connected": "{organization}, Zapier · {access}'e bağlı.",
+        "manage": "Yönet",
+        "related_apps": "İlgili uygulamalar"
+      },
+      "connection": {
+        "title": "Bağlantı",
+        "name": "Zapier",
+        "connected_by": "{name} tarafından {date} tarihinde bağlanıldı",
+        "unknown_admin": "eski yönetici",
+        "disconnect": "Bağlantıyı kes",
+        "access_read_write": "Okuyun ve yazın",
+        "access_read_only": "Salt okunur"
+      },
+      "failed_events": {
+        "title": "Bazı etkinlikler Zapier'e ulaşmadı",
+        "description": "Zapier son 24 saatteki etkinlikleri kaçırdı. Başlaması gereken Zap'leri çalıştırmaları için onları yeniden gönderin.",
+        "resend": "Başarısız etkinlikleri yeniden gönder"
+      },
+      "remove": {
+        "title": "Zapier'in bağlantısı kesilsin mi?",
+        "description": "Bu bağlantıyı kullanan Zap'ler hemen durdurulur ve {count} aktif tetikleyicisi kaldırılır. Bunları tekrar kullanmak için Zapier'den yeniden bağlanın.",
+        "confirm": "Bağlantıyı kes",
+        "zapier_side": "ClassroomIO, Zapier hesabınızdaki bağlantıyı kaldıramaz; dolayısıyla onu oradan da silin.",
+        "open_zapier_connections": "Zapier bağlantılarını aç"
+      }
     },
     "webhooks": {
       "page_subtitle": "ClassroomIO olaylarını gerçek zamanlı olarak Slack'e, CRM'inize veya kendi arka ucunuza gönderin.",
@@ -5670,6 +6296,12 @@
     },
     "org_switcher": {
       "open_academy_failed": "Akademi açılamadı. Lütfen tekrar deneyin."
+    },
+    "zapier": {
+      "removed": "Zapier erişimi kaldırıldı",
+      "remove_failed": "Zapier erişimi kaldırılamadı. Tekrar deneyin.",
+      "redelivered": "{count} başarısız etkinlik yeniden dağıtım için sıraya alındı",
+      "redeliver_failed": "Başarısız etkinlikler yeniden teslim edilemedi"
     }
   },
   "specialization": {
@@ -6625,7 +7257,15 @@
       "deny": "Reddet",
       "unknown_client": "Bu uygulama",
       "error_title": "Bu bağlantı isteği geçerli değil",
-      "error_description": "Bağlamak istediğiniz uygulamaya dönün ve yeniden başlayın."
+      "error_description": "Bağlamak istediğiniz uygulamaya dönün ve yeniden başlayın.",
+      "verified": "Doğrulandı",
+      "allow_changes": {
+        "label": "{client}'ın değişiklik yapmasına izin ver",
+        "description": "Salt okunur erişim için bunu kapatın. {client} hâlâ verileri okuyabilir ve tetikleyicileri çalıştırabilir ancak herhangi bir şey ekleyemez, değiştiremez veya kaldıramaz."
+      },
+      "plan_required": "Bu uygulamayı bağlamak için Early Adopter planına yükseltin",
+      "no_eligible_title": "Uygun çalışma alanı yok",
+      "no_eligible_description": "Çalışma alanlarınızın hiçbiri bu uygulamayı içeren bir plana sahip değil. Birini Early Adopter veya Enterprise’a yükseltip tekrar deneyin."
     },
     "error": {
       "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
@@ -6675,6 +7315,10 @@
       "media": {
         "read": "Medya yükle",
         "write": "Medya yükle"
+      },
+      "webhooks": {
+        "read": "Çalışma alanınızdaki son etkinlikleri görüntüleyin",
+        "write": "Çalışma alanınızda meydana gelen etkinlikleri anında alın"
       }
     },
     "connect": {

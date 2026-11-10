@@ -50,6 +50,19 @@
   {/snippet}
 </Story>
 
+<Story name="Dismissible">
+  {#snippet template()}
+    <Alert.Callout
+      variant="information"
+      title="Invite pending"
+      description="Accept the invite once before building your first Zap."
+      dismissLabel="Dismiss"
+      onDismiss={() => {}}
+      class="max-w-md"
+    />
+  {/snippet}
+</Story>
+
 <Story name="Custom composition">
   {#snippet template()}
     <Alert.Root variant="default" class="max-w-md">

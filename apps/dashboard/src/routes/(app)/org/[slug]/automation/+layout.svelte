@@ -17,10 +17,10 @@
   ] as const;
 
   function getCurrentTab(pathname: string) {
-    if (pathname.endsWith('/automation/mcp')) return 'mcp';
-    if (pathname.endsWith('/automation/api')) return 'api';
-    if (pathname.endsWith('/automation/zapier')) return 'zapier';
-    if (pathname.endsWith('/automation/webhooks')) return 'webhooks';
+    if (pathname.includes('/automation/mcp')) return 'mcp';
+    if (pathname.includes('/automation/api')) return 'api';
+    if (pathname.includes('/automation/zapier')) return 'zapier';
+    if (pathname.includes('/automation/webhooks')) return 'webhooks';
     return 'mcp';
   }
 
