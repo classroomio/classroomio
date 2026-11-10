@@ -1,6 +1,7 @@
+import { OFFLINE_ACCESS_SCOPE } from '@cio/utils/constants/oauth-scopes';
 import { ZOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
-export const OFFLINE_ACCESS_SCOPE = 'offline_access';
+export { OFFLINE_ACCESS_SCOPE };
 
 export const OAUTH_API_SCOPES = ZOrganizationApiKeyScope.options.filter((scope) => scope !== 'public_api:*');
 

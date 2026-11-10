@@ -48,6 +48,7 @@ import type {
   TPublicApiCourseAnalyticsQuery,
   TPublicApiCourseAnalyticsStudentsQuery,
   TPublicApiCourseMembersQuery,
+  TPublicApiEnrollCourseStudent,
   TPublicApiCreateCourseLessonComment,
   TPublicApiCreateCourseSection,
   TPublicApiDeleteCourseContent,
@@ -966,6 +967,13 @@ export class ClassroomIoApiClient {
 
   async addCourseMember(courseId: string, payload: TPublicApiAddCourseMember) {
     return this.request(`/public-api/v1/courses/${courseId}/members`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async enrollCourseStudent(courseId: string, payload: TPublicApiEnrollCourseStudent) {
+    return this.request(`/public-api/v1/courses/${courseId}/enrollments`, {
       method: 'POST',
       body: payload
     });

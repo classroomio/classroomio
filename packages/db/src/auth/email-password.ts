@@ -1,9 +1,9 @@
 import * as schema from '@db/schema';
-import bcrypt from 'bcrypt';
 
 import { db, eq } from '@db/drizzle';
 import { type BetterAuthOptions } from 'better-auth';
 import { sendEmail } from '@cio/email';
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, hashPassword, verifyPassword } from './password';
 
 /**
  * Configuration for the email and password options
@@ -11,13 +11,11 @@ import { sendEmail } from '@cio/email';
  */
 export const config: BetterAuthOptions['emailAndPassword'] = {
   enabled: true,
+  minPasswordLength: PASSWORD_MIN_LENGTH,
+  maxPasswordLength: PASSWORD_MAX_LENGTH,
   password: {
-    hash: async (password) => {
-      return await bcrypt.hash(password, 10);
-    },
-    verify: async ({ hash, password }) => {
-      return await bcrypt.compare(password, hash);
-    }
+    hash: hashPassword,
+    verify: ({ hash, password }) => verifyPassword(hash, password)
   },
   sendResetPassword: sendResetPassword,
   onPasswordReset: onPasswordReset

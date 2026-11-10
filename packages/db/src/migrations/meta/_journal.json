@@ -358,6 +358,13 @@
       "when": 1794542037000,
       "tag": "0050_lesson_history_client_name",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1794603210861,
+      "tag": "0052_webhook_subscriptions",
+      "breakpoints": true
     }
   ]
 }

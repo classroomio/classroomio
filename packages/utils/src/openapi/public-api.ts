@@ -1,6 +1,45 @@
+import { ZOrganizationApiKeyScope, type TOrganizationApiKeyScope } from '../validation/organization';
+
 export const PUBLIC_API_BASE_URL = 'https://api.classroomio.com/public-api/v1';
 export const PUBLIC_API_OPENAPI_URL = 'https://api.cdn.clsrio.com/openapi/public-api/openapi-latest.json';
 export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
+export const PUBLIC_API_OAUTH_SCHEME = 'oauth2';
+
+export const OAUTH_API_SCOPES = ZOrganizationApiKeyScope.options.filter(
+  (scope): scope is Exclude<TOrganizationApiKeyScope, 'public_api:*'> => scope !== 'public_api:*'
+);
+
+const OAUTH_API_SCOPE_DESCRIPTIONS: Record<Exclude<TOrganizationApiKeyScope, 'public_api:*'>, string> = {
+  'course_import:draft:create': 'Create course import drafts',
+  'course_import:draft:read': 'Read course import drafts',
+  'course_import:draft:update': 'Update course import drafts',
+  'course_import:draft:publish': 'Publish course import drafts',
+  'course:read': 'Read course details and structure',
+  'course:write': 'Create, update, and delete courses',
+  'course:tag:write': 'Manage course tags',
+  'course:exercise:read': 'Read course exercises and questions',
+  'course:exercise:write': 'Create and update course exercises and questions',
+  'cohort:read': 'Read cohort details and members',
+  'cohort:write': 'Create and manage cohorts',
+  'course:member:read': 'Read course members and progress',
+  'course:member:write': 'Manage course members and send course invites by email',
+  'course:certificate:read': 'Read course certificates and settings',
+  'course:certificate:write': 'Issue and update course certificates',
+  'analytics:read': 'Read organization and course analytics',
+  'media:write': 'Upload and manage media assets',
+  'course:submission:read': 'Read exercise submissions and grades',
+  'course:submission:write': 'Submit exercises and grade submissions',
+  'course:student:write': 'Update student progress and completion',
+  'audience:read': 'Read organization audience members',
+  'audience:write': 'Manage organization audience members',
+  'team:read': 'Read organization team members',
+  'team:write': 'Manage organization team members',
+  'organization:read': 'Read organization details',
+  'organization:write': 'Update organization settings',
+  'organization:domain:write': 'Manage the organization custom domain',
+  'webhook:subscription:read': 'Read webhook subscriptions and sample events',
+  'webhook:subscription:write': 'Create and delete webhook subscriptions'
+};
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
@@ -24,7 +63,10 @@ function applySecurityToOperations(paths: Record<string, unknown>) {
         continue;
       }
 
-      (operation as Record<string, unknown>).security = [{ [PUBLIC_API_BEARER_SCHEME]: [] }];
+      (operation as Record<string, unknown>).security = [
+        { [PUBLIC_API_BEARER_SCHEME]: [] },
+        { [PUBLIC_API_OAUTH_SCHEME]: [] }
+      ];
     }
   }
 }
@@ -86,6 +128,11 @@ function collapseNullableUnions(value: unknown): void {
 // entry in the reference's sidebar rendered as a near-duplicate route string.
 // Keyed by "METHOD /path" (the exact template, including `{param}` braces).
 const OPERATION_SUMMARIES: Record<string, string> = {
+  'GET /public-api/v1/me': 'Get the current connection',
+  'POST /public-api/v1/webhooks/subscriptions': 'Create a webhook subscription',
+  'DELETE /public-api/v1/webhooks/subscriptions/{subscriptionId}': 'Delete a webhook subscription',
+  'GET /public-api/v1/webhooks/samples': 'List sample events',
+  'POST /public-api/v1/courses/{courseId}/enrollments': 'Enroll a student by email',
   'GET /public-api/v1/audience': 'List audience members',
   'POST /public-api/v1/audience': 'Invite audience members',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
@@ -245,6 +292,11 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 
 const OPERATION_TAGS = [
   { name: 'Organization', description: "Read and update your organization's name, logo and theme." },
+  { name: 'Connection', description: 'Check which organization, connection and admin a credential acts for.' },
+  {
+    name: 'Webhook Subscriptions',
+    description: 'Let a connected app subscribe to events and receive them as they happen.'
+  },
   { name: 'Audience', description: 'Manage people in your organization.' },
   { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
   {
@@ -362,9 +414,21 @@ export function enrichPublicApiOpenApiSpec<T extends OpenApiDocument>(spec: T): 
           bearerFormat: 'API Key',
           description:
             'Organization API key from Automation → API in your org dashboard. Paste the full `cio_api_...` value as the Bearer token.'
+        },
+        [PUBLIC_API_OAUTH_SCHEME]: {
+          type: 'oauth2',
+          description:
+            'ClassroomIO OAuth 2.0 with authorization code flow. Use this scheme to connect third-party platforms like Zapier.',
+          flows: {
+            authorizationCode: {
+              authorizationUrl: 'https://app.classroomio.com/api/auth/oauth2/authorize',
+              tokenUrl: 'https://app.classroomio.com/api/auth/oauth2/token',
+              scopes: OAUTH_API_SCOPE_DESCRIPTIONS
+            }
+          }
         }
       }
     },
-    security: [{ [PUBLIC_API_BEARER_SCHEME]: [] }]
+    security: [{ [PUBLIC_API_BEARER_SCHEME]: [] }, { [PUBLIC_API_OAUTH_SCHEME]: [] }]
   };
 }

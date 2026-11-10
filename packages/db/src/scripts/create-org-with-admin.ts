@@ -6,15 +6,32 @@
  * with verified = true and an active plan is attached to the new org.
  *
  * Usage:
- *   pnpm --filter @cio/db db:create-org "<Org Name>" <email> [PLAN] [site-name] [--dry-run]
+ *   [ADMIN_PASSWORD=...] pnpm --filter @cio/db db:create-org "<Org Name>" <email> [PLAN] [site-name] [--dry-run]
  *
  * PLAN is one of BASIC (default), EARLY_ADOPTER, ENTERPRISE.
  * site-name defaults to a slug of the org name.
  * --dry-run prints what would be created without writing anything.
+ *
+ * ADMIN_PASSWORD gives the admin an email/password login. It is read from the
+ * environment so it stays out of shell history and process listings. Without
+ * it the admin has no password and sets one with "Forgot password". It is
+ * refused when the user already has a password.
  */
 import 'dotenv/config';
 
-import { db, eq, organization, organizationmember, organizationPlan, profile, user } from '@db/drizzle';
+import {
+  account,
+  and,
+  db,
+  eq,
+  organization,
+  organizationmember,
+  organizationPlan,
+  profile,
+  user,
+  type DbOrTxClient
+} from '@db/drizzle';
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, hashPassword } from '@db/auth/password';
 
 import { ROLE } from '@cio/utils/constants';
 import { PLAN } from '@cio/utils/plans';
@@ -42,8 +59,19 @@ function parseArgs() {
     email: email.trim().toLowerCase(),
     plan,
     siteName: siteNameArg?.trim(),
+    password: parsePassword(process.env.ADMIN_PASSWORD),
     isDryRun
   };
+}
+
+function parsePassword(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+
+  if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
+    throw new Error(`ADMIN_PASSWORD must be ${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} characters long.`);
+  }
+
+  return value;
 }
 
 function slugify(input: string): string {
@@ -54,18 +82,18 @@ function slugify(input: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-async function createUser(email: string): Promise<string> {
+async function createUser(email: string, client: DbOrTxClient): Promise<string> {
   const name = email.split('@')[0] || 'user';
-  const [created] = await db.insert(user).values({ name, email, emailVerified: true }).returning({ id: user.id });
+  const [created] = await client.insert(user).values({ name, email, emailVerified: true }).returning({ id: user.id });
 
   return created.id;
 }
 
-async function ensureProfile(userId: string, email: string): Promise<void> {
+async function ensureProfile(userId: string, email: string, client: DbOrTxClient): Promise<void> {
   const emailPrefix = email.split('@')[0] || 'user';
   const username = `${emailPrefix}${Date.now()}`;
 
-  await db.insert(profile).values({
+  await client.insert(profile).values({
     id: userId,
     username,
     fullname: emailPrefix,
@@ -81,8 +109,31 @@ async function hasProfile(userId: string): Promise<boolean> {
   return rows.length > 0;
 }
 
+async function hasCredentialAccount(userId: string): Promise<boolean> {
+  const rows = await db
+    .select({ id: account.id })
+    .from(account)
+    .where(and(eq(account.userId, userId), eq(account.providerId, 'credential')))
+    .limit(1);
+
+  return rows.length > 0;
+}
+
+async function createCredentialAccount(userId: string, password: string, client: DbOrTxClient): Promise<void> {
+  const passwordHash = await hashPassword(password);
+
+  await client.insert(account).values({ userId, accountId: userId, providerId: 'credential', password: passwordHash });
+}
+
+function describePassword(isSettingPassword: boolean, credentialExists: boolean): string {
+  if (isSettingPassword) return 'will be set from ADMIN_PASSWORD';
+  if (credentialExists) return 'already set';
+
+  return 'none (set one with "Forgot password")';
+}
+
 async function main() {
-  const { orgName, email, plan, siteName: providedSiteName, isDryRun } = parseArgs();
+  const { orgName, email, plan, siteName: providedSiteName, password, isDryRun } = parseArgs();
 
   const siteName = providedSiteName || slugify(orgName);
   if (!siteName) {
@@ -103,6 +154,11 @@ async function main() {
   const userId = existingUser[0]?.id;
   const userExists = Boolean(userId);
   const profileExists = userId ? await hasProfile(userId) : false;
+  const credentialExists = userId ? await hasCredentialAccount(userId) : false;
+
+  if (password && credentialExists) {
+    throw new Error(`${email} already has a password. Unset ADMIN_PASSWORD, or reset it with "Forgot password".`);
+  }
 
   console.log('');
   console.log(isDryRun ? '[DRY RUN] No changes made.' : 'Creating organization:');
@@ -112,6 +168,7 @@ async function main() {
   console.log(`  Admin user:  ${userExists ? `exists (${userId})` : 'will be created'}`);
   console.log(`  Profile:     ${profileExists ? 'exists' : 'will be created'}`);
   console.log(`  Plan:        ${plan}`);
+  console.log(`  Password:    ${describePassword(Boolean(password), credentialExists)}`);
 
   if (isDryRun) {
     console.log('');
@@ -119,12 +176,16 @@ async function main() {
     return;
   }
 
-  const resolvedUserId = userExists ? (userId as string) : await createUser(email);
-  if (!profileExists) {
-    await ensureProfile(resolvedUserId, email);
-  }
-
   const result = await db.transaction(async (tx) => {
+    const resolvedUserId = userExists ? (userId as string) : await createUser(email, tx);
+    if (!profileExists) {
+      await ensureProfile(resolvedUserId, email, tx);
+    }
+
+    if (password) {
+      await createCredentialAccount(resolvedUserId, password, tx);
+    }
+
     const [org] = await tx.insert(organization).values({ name: orgName, siteName }).returning();
 
     const [member] = await tx
@@ -149,8 +210,11 @@ async function main() {
   console.log('Created:');
   console.log(`  Org ID:    ${result.org.id}`);
   console.log(`  Member ID: ${result.member.id}`);
-  console.log('');
-  console.log('The admin has no password yet; use "forgot password" on login to set one.');
+
+  if (!password && !credentialExists) {
+    console.log('');
+    console.log('The admin has no password yet; use "forgot password" on login to set one.');
+  }
 }
 
 main().catch((error) => {

@@ -31,6 +31,12 @@ exports[`public API course request contract > ZPublicApiCoursesQuery keeps its p
       "maxLength": 200,
       "type": "string",
     },
+    "slug": {
+      "description": "Exact course slug",
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string",
+    },
     "sort": {
       "description": "price sorts on the stored cost, with free courses as 0. Default: date_created.",
       "enum": [
@@ -53,6 +59,12 @@ exports[`public API course request contract > ZPublicApiCoursesQuery keeps its p
     "tags": {
       "description": "Comma-separated tag slugs; returns courses with any of them.",
       "maxLength": 2000,
+      "type": "string",
+    },
+    "title": {
+      "description": "Exact course title, case-insensitive",
+      "maxLength": 200,
+      "minLength": 1,
       "type": "string",
     },
     "type": {

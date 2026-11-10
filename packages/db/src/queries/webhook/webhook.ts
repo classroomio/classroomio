@@ -8,9 +8,16 @@ import type {
   TWebhookEndpoint,
   TWebhookEvent
 } from '@db/types';
-import { and, count, desc, eq, gte, inArray, lte, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, inArray, isNotNull, isNull, lte, or, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient, type TxClient } from '@db/drizzle';
 import { WEBHOOK_DEGRADED_FAILURE_THRESHOLD } from '@cio/utils/constants/webhook';
+
+const isCustomerEndpoint = isNull(schema.webhookEndpoint.oauthConsentId);
+
+export type TWebhookEventScope = {
+  courseId?: string | null;
+  cohortId?: string | null;
+};
 
 export type TWebhookEndpointWithEvents = TWebhookEndpoint & { eventTypes: string[] };
 
@@ -59,7 +66,7 @@ export type TWebhookAttemptResult = {
   failureThreshold: number;
 };
 
-async function attachEventTypes(
+export async function attachEventTypes(
   endpoints: TWebhookEndpoint[],
   client: DbOrTxClient
 ): Promise<TWebhookEndpointWithEvents[]> {
@@ -159,7 +166,13 @@ export async function updateWebhookEndpoint(
     const [updated] = await tx
       .update(schema.webhookEndpoint)
       .set({ ...values, updatedAt: new Date().toISOString() })
-      .where(and(eq(schema.webhookEndpoint.id, webhookId), eq(schema.webhookEndpoint.organizationId, organizationId)))
+      .where(
+        and(
+          eq(schema.webhookEndpoint.id, webhookId),
+          eq(schema.webhookEndpoint.organizationId, organizationId),
+          isCustomerEndpoint
+        )
+      )
       .returning();
 
     if (!updated) return null;
@@ -185,7 +198,13 @@ export async function deleteWebhookEndpoint(organizationId: string, webhookId: s
   try {
     const deleted = await db
       .delete(schema.webhookEndpoint)
-      .where(and(eq(schema.webhookEndpoint.id, webhookId), eq(schema.webhookEndpoint.organizationId, organizationId)))
+      .where(
+        and(
+          eq(schema.webhookEndpoint.id, webhookId),
+          eq(schema.webhookEndpoint.organizationId, organizationId),
+          isCustomerEndpoint
+        )
+      )
       .returning({ id: schema.webhookEndpoint.id });
 
     return deleted.length > 0;
@@ -204,7 +223,13 @@ export async function getWebhookEndpoint(
     const [endpoint] = await client
       .select()
       .from(schema.webhookEndpoint)
-      .where(and(eq(schema.webhookEndpoint.id, webhookId), eq(schema.webhookEndpoint.organizationId, organizationId)))
+      .where(
+        and(
+          eq(schema.webhookEndpoint.id, webhookId),
+          eq(schema.webhookEndpoint.organizationId, organizationId),
+          isCustomerEndpoint
+        )
+      )
       .limit(1);
 
     if (!endpoint) return null;
@@ -215,6 +240,38 @@ export async function getWebhookEndpoint(
   } catch (error) {
     console.error('getWebhookEndpoint error:', error);
     throw new Error('Failed to load webhook endpoint');
+  }
+}
+
+/**
+ * Loads an endpoint managed by an OAuth app (for example Zapier). Customer endpoints are excluded.
+ */
+export async function getManagedWebhookEndpoint(
+  organizationId: string,
+  webhookId: string,
+  client: DbOrTxClient = db
+): Promise<TWebhookEndpointWithEvents | null> {
+  try {
+    const [endpoint] = await client
+      .select()
+      .from(schema.webhookEndpoint)
+      .where(
+        and(
+          eq(schema.webhookEndpoint.id, webhookId),
+          eq(schema.webhookEndpoint.organizationId, organizationId),
+          isNotNull(schema.webhookEndpoint.oauthConsentId)
+        )
+      )
+      .limit(1);
+
+    if (!endpoint) return null;
+
+    const [withEvents] = await attachEventTypes([endpoint], client);
+
+    return withEvents ?? null;
+  } catch (error) {
+    console.error('getManagedWebhookEndpoint error:', error);
+    throw new Error('Failed to load managed webhook endpoint');
   }
 }
 
@@ -241,7 +298,7 @@ export async function listWebhookEndpoints(organizationId: string): Promise<TWeb
     const endpoints = await db
       .select()
       .from(schema.webhookEndpoint)
-      .where(eq(schema.webhookEndpoint.organizationId, organizationId))
+      .where(and(eq(schema.webhookEndpoint.organizationId, organizationId), isCustomerEndpoint))
       .orderBy(desc(schema.webhookEndpoint.createdAt));
 
     return attachEventTypes(endpoints, db);
@@ -293,7 +350,7 @@ export async function countWebhookEndpoints(organizationId: string, client: DbOr
     const [row] = await client
       .select({ total: count() })
       .from(schema.webhookEndpoint)
-      .where(eq(schema.webhookEndpoint.organizationId, organizationId));
+      .where(and(eq(schema.webhookEndpoint.organizationId, organizationId), isCustomerEndpoint));
 
     return row?.total ?? 0;
   } catch (error) {
@@ -442,6 +499,7 @@ export async function getWebhookEventContext(
 export async function listActiveEndpointsForEvent(
   organizationId: string,
   eventType: string,
+  scope: TWebhookEventScope = {},
   client: DbOrTxClient = db
 ): Promise<TWebhookEndpoint[]> {
   try {
@@ -452,6 +510,14 @@ export async function listActiveEndpointsForEvent(
         and(
           eq(schema.webhookEndpoint.organizationId, organizationId),
           eq(schema.webhookEndpoint.isActive, true),
+          or(
+            isNull(schema.webhookEndpoint.filterCourseId),
+            scope.courseId ? eq(schema.webhookEndpoint.filterCourseId, scope.courseId) : sql`false`
+          ),
+          or(
+            isNull(schema.webhookEndpoint.filterCohortId),
+            scope.cohortId ? eq(schema.webhookEndpoint.filterCohortId, scope.cohortId) : sql`false`
+          ),
           or(
             eq(schema.webhookEndpoint.eventMode, 'all'),
             sql`exists (
@@ -482,9 +548,23 @@ export async function insertWebhookEventWithDeliveries(
 
     if (deliveries.length === 0) return [];
 
+    const webhookIds = [...new Set(deliveries.map((delivery) => delivery.webhookId))];
+    // Key-share locks block a concurrent DELETE until this transaction commits, so a subscription
+    // removed mid-emit can't make the delivery insert violate the endpoint foreign key and roll back
+    // the deliveries belonging to every other endpoint.
+    const endpoints = await tx
+      .select({ id: schema.webhookEndpoint.id })
+      .from(schema.webhookEndpoint)
+      .where(inArray(schema.webhookEndpoint.id, webhookIds))
+      .for('key share');
+    const liveEndpointIds = new Set(endpoints.map((endpoint) => endpoint.id));
+    const liveDeliveries = deliveries.filter((delivery) => liveEndpointIds.has(delivery.webhookId));
+
+    if (liveDeliveries.length === 0) return [];
+
     return tx
       .insert(schema.webhookDelivery)
-      .values(deliveries.map((delivery) => ({ ...delivery, eventId: event.id })))
+      .values(liveDeliveries.map((delivery) => ({ ...delivery, eventId: event.id })))
       .returning();
   };
 
@@ -563,6 +643,32 @@ export async function listWebhookDeliveries(
   } catch (error) {
     console.error('listWebhookDeliveries error:', error);
     throw new Error('Failed to list webhook deliveries');
+  }
+}
+
+/**
+ * Failed deliveries created since `since`, for one endpoint. Used to retry events missed while an
+ * integration endpoint was unreachable.
+ */
+export async function listFailedWebhookDeliveriesSince(
+  webhookId: string,
+  since: Date,
+  client: DbOrTxClient = db
+): Promise<{ id: string }[]> {
+  try {
+    return await client
+      .select({ id: schema.webhookDelivery.id })
+      .from(schema.webhookDelivery)
+      .where(
+        and(
+          eq(schema.webhookDelivery.webhookId, webhookId),
+          inArray(schema.webhookDelivery.status, ['FAILED', 'GAVE_UP']),
+          gte(schema.webhookDelivery.createdAt, since.toISOString())
+        )
+      );
+  } catch (error) {
+    console.error('listFailedWebhookDeliveriesSince error:', error);
+    throw new Error('Failed to list failed webhook deliveries');
   }
 }
 
