@@ -54,6 +54,16 @@ MCP usage also has per-minute limits for each connected app or MCP key (`cio_mcp
 
 Wait up to a minute, because the limit counts the last 60 seconds, then retry.
 
+### Zapier connections
+
+Requests from the ClassroomIO Zapier app use per-organization limits instead of the per-key one: 120 reads and 40 writes per minute on Early Adopter, and 360 reads and 120 writes per minute on Enterprise. Reads are `GET` and `HEAD` requests. A `429` from this limit has the same body and `Retry-After` header as the per-key limit.
+
+### Course invites
+
+Creating course invites has a separate limit: each person can create invites for one course 60 times in any hour. For an API key or connection, that person is whoever created the key or connected the app. The dashboard, `POST /courses/{courseId}/invites` and `POST /courses/{courseId}/enrollments` share this budget. Every `/invites` request counts. An `/enrollments` call counts only when it has to send a new invite, so a repeat call that returns `already_enrolled` or `already_invited` doesn't.
+
+Over the limit, `/invites` answers with the per-key body shown above, with `Retry-After`. `/enrollments` answers in the [standard error format](/api/errors#error-format) with `code` `COURSE_INVITE_RATE_LIMIT_EXCEEDED` and no `Retry-After`. Wait and retry later.
+
 ## Handle a 429
 
 Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP usage limits, this waits 60 seconds:
@@ -79,7 +89,7 @@ To stay under the limit:
 - Cache responses that don't change often.
 
 :::note[Self-hosted instances]
-Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit.
+Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, most requests go through without a limit. Creating course invites through the public API is the exception: `POST /courses/{courseId}/invites`, and `POST /courses/{courseId}/enrollments` when it needs a new invite, fail with `503` and `code` `RATE_LIMIT_UNAVAILABLE` until Redis is back.
 :::
 
 ## Next steps

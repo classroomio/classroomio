@@ -9,6 +9,7 @@ import { createAuthenticationFailureRateLimiter, createRateLimiter } from '@api/
 import { publicApiCors } from '@api/middlewares/cors';
 import { publicApiScopesMiddleware } from '@api/middlewares/public-api-scopes';
 import { v1McpUsageMiddleware } from '@api/middlewares/v1-mcp-usage';
+import { isZapierRequest, zapierRateLimiter } from '@api/middlewares/zapier-rate-limit';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
 import { v1AnalyticsRouter } from './analytics';
 import { v1AudienceRouter } from './audience';
@@ -17,9 +18,11 @@ import { v1CourseTemplatesRouter } from './course-templates';
 import { v1CoursesRouter } from './courses';
 import { v1MediaRouter } from './media';
 import { v1ExerciseTemplatesRouter } from './exercise-templates';
+import { v1MeRouter } from './me';
 import { v1OrganizationRouter } from './organization';
 import { v1TeamRouter } from './team';
 import { v1TagsRouter } from './tags';
+import { v1WebhooksRouter } from './webhooks';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -38,9 +41,11 @@ export const v1Router = new Hono()
     createRateLimiter({
       maxRequests: DEFAULT_MAX_REQUESTS,
       windowMs: DEFAULT_WINDOW_MS,
-      keyGenerator: publicApiKeyGenerator
+      keyGenerator: publicApiKeyGenerator,
+      skip: isZapierRequest
     })
   )
+  .use('*', zapierRateLimiter)
   .use('*', v1McpUsageMiddleware)
   .route('/analytics', v1AnalyticsRouter)
   .route('/audience', v1AudienceRouter)
@@ -51,4 +56,6 @@ export const v1Router = new Hono()
   .route('/cohorts', v1CohortsRouter)
   .route('/assets', v1MediaRouter)
   .route('/exercise-templates', v1ExerciseTemplatesRouter)
-  .route('/tags', v1TagsRouter);
+  .route('/tags', v1TagsRouter)
+  .route('/me', v1MeRouter)
+  .route('/webhooks', v1WebhooksRouter);

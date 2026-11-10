@@ -1,6 +1,7 @@
 ---
 title: OAuth for integrations
 description: Let a third-party platform act on a ClassroomIO workspace on behalf of an admin, without sharing an API key.
+last_reviewed: '2026-10-31'
 ---
 
 ClassroomIO is an OAuth 2.1 authorization server. A platform that cannot hold a long-lived secret registers itself, sends a workspace admin through a consent screen, and receives short-lived tokens it can use with the public API and the remote MCP endpoint.
@@ -10,7 +11,7 @@ Use [Connect an MCP client](/developers/mcp/setup) when you run the client yours
 ## What the admin sees
 
 1. The platform sends the admin to ClassroomIO to sign in.
-2. The consent screen names the platform, lists the permissions in plain language, lets the admin pick the workspace the platform may act on (if they administer more than one), and shows where approval will send the browser.
+2. The consent screen names the platform, lists the permissions in plain language, lets the admin pick the workspace the platform may act on (if they administer more than one), and shows where approval will send the browser. When the platform asks for write scopes, the admin can turn off changes to grant read-only access: every scope that changes workspace data is dropped, and `webhook:subscription:read` and `webhook:subscription:write` are kept. Read the `scope` field of the token response to see what was granted.
 3. After approval the platform receives an authorization code and exchanges it for tokens.
 
 Only workspace admins can connect a platform. Access follows the admin's role: if they stop being an admin of that workspace, the platform loses access and its grant is deleted.
@@ -86,7 +87,7 @@ curl https://api.classroomio.com/public-api/v1/team \
   -H "Authorization: Bearer <access_token>"
 ```
 
-OAuth tokens use the same public API routes and the same scopes as automation keys, and they are subject to the same plan limits. A request fails with `401` when the token is expired or revoked, and with `403` when the token does not carry the scope the route needs.
+OAuth tokens use the same public API routes and the same scopes as automation keys, and they are subject to the same plan limits. Requests from the ClassroomIO Zapier integration have their own per-organization limits instead: 120 reads and 40 writes per minute on Early Adopter, 360 reads and 120 writes per minute on Enterprise. A request fails with `401` when the token is expired or revoked, and with `403` and code `INSUFFICIENT_SCOPE` when the token does not carry the scope the route needs; `requiredScope` names the missing scope.
 
 ## Token lifetime
 
@@ -114,6 +115,75 @@ Tokens carry the same scopes as automation keys. `public_api:*` is never granted
 | Analytics and media       | `analytics:read`, `media:write`                                                                                  |
 | Webhook subscriptions     | `webhook:subscription:read`, `webhook:subscription:write`                                                        |
 
+## Receive events (REST hooks)
+
+ClassroomIO's managed REST hook subscriptions are reserved for the first-party ClassroomIO Zapier OAuth client. The platform accepts only callback URLs on `hooks.zapier.com`, so an arbitrary OAuth application cannot use this endpoint to register a receiver. Other integrations should either poll the public API or have an organization administrator configure a [webhook](/developers/webhooks) in the dashboard.
+
+### Subscribing to an event
+
+With the ClassroomIO Zapier OAuth client, request the `webhook:subscription:write` scope and call `POST /public-api/v1/webhooks/subscriptions`:
+
+```bash
+curl -X POST https://api.classroomio.com/public-api/v1/webhooks/subscriptions \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "targetUrl": "https://hooks.zapier.com/hooks/catch/123456/abcdef/",
+    "eventType": "course.completed",
+    "courseId": "98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e"
+  }'
+```
+
+- `targetUrl`: The HTTPS destination that receives events. Managed subscriptions require a `hooks.zapier.com` host; the URL must respond with a `2xx` status within 10 seconds.
+- `eventType`: The webhook event to listen for (such as `course.member.added`, `course.completed`, or `course.certificate.issued`).
+- `courseId` or `cohortId` (optional): Filter events to a specific course or cohort.
+
+The response returns `201 Created` (or `200 OK` if the target URL is already subscribed to that event) with the subscription ID and a signing secret:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "6f1c2b9e-3a4d-4e8f-9b7a-2c5d1e0f8a3b",
+    "eventType": "course.completed",
+    "targetUrl": "https://hooks.zapier.com/hooks/catch/123456/abcdef/",
+    "courseId": "98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e",
+    "cohortId": null,
+    "secret": "whsec_...",
+    "createdAt": "2026-10-31T12:00:00.000Z"
+  }
+}
+```
+
+Every delivery to `targetUrl` is signed using the subscription's secret and includes both standard `X-Cio-Signature-256` HMAC headers and [Standard Webhooks](https://www.standardwebhooks.com) headers (`webhook-id`, `webhook-timestamp`, `webhook-signature`). See [Verify the signature](/developers/webhooks#verify-the-signature).
+
+### Listing sample events
+
+During setup and field mapping, clients with the `webhook:subscription:read` scope can fetch representative event payloads by calling `GET /public-api/v1/webhooks/samples`:
+
+```bash
+curl "https://api.classroomio.com/public-api/v1/webhooks/samples?eventType=course.completed" \
+  -H "Authorization: Bearer <access_token>"
+```
+
+This returns up to three recent real event payloads from the workspace, or the documented event example if no events of that type have occurred yet.
+
+### Unsubscribing
+
+When a workflow is turned off or deleted, remove the subscription with `DELETE /public-api/v1/webhooks/subscriptions/:subscriptionId`:
+
+```bash
+curl -X DELETE https://api.classroomio.com/public-api/v1/webhooks/subscriptions/6f1c2b9e-3a4d-4e8f-9b7a-2c5d1e0f8a3b \
+  -H "Authorization: Bearer <access_token>"
+```
+
+### Lifecycle and limits
+
+- Subscriptions are managed per OAuth grant: if the admin revokes access or loses their admin role, all subscriptions created by that app are deleted immediately.
+- A subscription is also deleted when its target URL answers `410 Gone`, or when a delivery finds that its grant no longer belongs to an active admin. ClassroomIO doesn't email admins about failing managed subscriptions.
+- Managed subscriptions do not count toward the workspace's manual 20-endpoint webhook cap. They are capped separately based on plan (50 subscriptions on Early Adopter, 250 on Enterprise).
+- A subscription that ClassroomIO auto-disabled after repeated delivery failures is reactivated, with its failure count reset, the next time the app subscribes the same target URL.
+
 ## Manage connected apps
 
-Admins see every connected platform in **Automation → MCP → Connected apps**, with who authorized it and when it was last used. Removing an app deletes its grant and tokens, and it stops working immediately.
+Admins see connected AI platforms in **Automation → MCP → Connected apps**, and Zapier connections in **Automation → Zapier**, with who connected each one and when. Removing an app deletes its grant, tokens, and any webhook subscriptions it holds, stopping access immediately.
