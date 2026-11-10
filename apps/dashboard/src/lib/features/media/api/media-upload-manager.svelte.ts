@@ -1,7 +1,12 @@
 import { SvelteMap } from 'svelte/reactivity';
 
-import { MEDIA_UPLOAD_MAX_CONCURRENT, MEDIA_UPLOAD_MAX_FILES } from '../utils/constants';
-import { getMediaUploadOverallProgress, isMediaUploadInFlight, resolveMediaUpload } from '../utils/media-upload-utils';
+import { MEDIA_UPLOAD_MAX_FILES } from '../utils/constants';
+import {
+  getMediaUploadOverallProgress,
+  isMediaUploadInFlight,
+  pickUploadsToStart,
+  resolveMediaUpload
+} from '../utils/media-upload-utils';
 import type {
   MediaFileTransferOptions,
   MediaUploadItem,
@@ -10,7 +15,7 @@ import type {
   MediaUploadSizeLimits,
   MediaUploadView
 } from '../utils/types';
-import { uploadMediaFile } from './media-file-transfer';
+import { encodesVideoInBrowser, uploadMediaFile } from './media-file-transfer';
 
 /**
  * Uploads media library files in the background of the whole app: the queue outlives the page that started it,
@@ -147,11 +152,9 @@ export class MediaUploadManager {
   }
 
   private pump() {
-    const activeCount = this.items.filter((item) => item.status === 'uploading').length;
-    const freeSlots = Math.max(MEDIA_UPLOAD_MAX_CONCURRENT - activeCount, 0);
-    const waiting = this.items.filter((item) => item.status === 'queued').slice(0, freeSlots);
+    const isEncodedVideo = (item: MediaUploadItem) => item.kind === 'video' && encodesVideoInBrowser();
 
-    for (const item of waiting) {
+    for (const item of pickUploadsToStart(this.items, isEncodedVideo)) {
       item.status = 'uploading';
       void this.upload(item);
     }

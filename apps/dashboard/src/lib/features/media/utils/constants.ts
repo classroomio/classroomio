@@ -25,6 +25,7 @@ export function getKindIcon(kindValue: string): Component {
 
 export const MEDIA_UPLOAD_MAX_FILES = 5;
 export const MEDIA_UPLOAD_MAX_CONCURRENT = 5;
+export const MEDIA_UPLOAD_MAX_CONCURRENT_VIDEO_ENCODES = 2;
 export const MEDIA_UPLOAD_MAX_FILE_BYTES = 1024 * 1024 * 1024;
 
 export const MEDIA_UPLOAD_VIDEO_TYPES = [

@@ -10,7 +10,7 @@ import { mediaApi } from './media-manager.svelte';
 
 const MAX_PROGRESS_BEFORE_REGISTRATION = 99;
 
-function encodesVideoInBrowser(): boolean {
+export function encodesVideoInBrowser(): boolean {
   return publicEnv.PUBLIC_IS_SELFHOSTED !== 'true';
 }
 
