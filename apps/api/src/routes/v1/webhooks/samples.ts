@@ -8,7 +8,7 @@ import { Hono } from '@api/utils/hono';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { ORG_ADMIN_RULE } from '../team/docs';
 import { mcpRateLimitResponse } from '../courses/docs';
-import { WEBHOOK_SUBSCRIPTIONS_TAG, webhookSubscriptionForbiddenWithoutCap } from './docs';
+import { WEBHOOK_SUBSCRIPTIONS_TAG } from './docs';
 
 export const v1WebhookSamplesRouter = new Hono().get(
   '/',
@@ -19,7 +19,10 @@ export const v1WebhookSamplesRouter = new Hono().get(
       200: jsonResponse('Sample events, newest first', itemResponse(z.array(ZPublicApiWebhookSampleResponse))),
       400: errorResponses.badRequest,
       401: errorResponses.unauthorized,
-      403: webhookSubscriptionForbiddenWithoutCap('webhook:subscription:read'),
+      403: {
+        description:
+          'Missing the webhook:subscription:read scope, the key creator is not an org admin, or the plan does not allow webhooks'
+      },
       429: mcpRateLimitResponse
     }
   }),
