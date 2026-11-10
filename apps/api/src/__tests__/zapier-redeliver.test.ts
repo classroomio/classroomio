@@ -21,6 +21,10 @@ vi.mock('@cio/db/queries/cohort/cohort', () => ({
   getCohortTitlesByIds: vi.fn()
 }));
 
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run({})) }
+}));
+
 vi.mock('@cio/db/queries/webhook', () => ({
   getManagedWebhookEndpoint: vi.fn(),
   listFailedWebhookDeliveriesSince: vi.fn(),
@@ -91,8 +95,8 @@ describe('redeliverZapierTriggerFailuresService', () => {
 
     expect(result).toEqual({ redelivered: 2 });
     expect(listOAuthConnectedApps).toHaveBeenCalledWith(orgId, { clientId: 'zapier-client' });
-    expect(requeueWebhookDelivery).toHaveBeenCalledWith(webhookId, 'whd_1');
-    expect(requeueWebhookDelivery).toHaveBeenCalledWith(webhookId, 'whd_2');
+    expect(requeueWebhookDelivery).toHaveBeenCalledWith(webhookId, 'whd_1', expect.anything());
+    expect(requeueWebhookDelivery).toHaveBeenCalledWith(webhookId, 'whd_2', expect.anything());
     expect(enqueueWebhookDelivery).toHaveBeenCalledTimes(1);
     expect(enqueueWebhookDelivery).toHaveBeenCalledWith({ webhookId });
 
