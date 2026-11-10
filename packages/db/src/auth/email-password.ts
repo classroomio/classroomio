@@ -8,6 +8,11 @@ import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, hashPassword, verifyPassword 
 /**
  * Configuration for the email and password options
  * @see https://www.better-auth.com/docs/authentication/email-password
+ *
+ * maxPasswordLength stays a character bound: lowering it would lock out
+ * sign-ins whose pre-limit passwords were hashed from truncated input.
+ * The 72-byte bcrypt ceiling is enforced by `hashPassword` (uniform auth
+ * error) and by password-setting forms (friendly validation message).
  */
 export const config: BetterAuthOptions['emailAndPassword'] = {
   enabled: true,
