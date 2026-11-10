@@ -72,7 +72,8 @@ export async function countManagedWebhookSubscriptions(
 /**
  * Returns the connected app's subscription for `values.payloadUrl`, creating it for `eventType` while the
  * organization holds fewer than `maxSubscriptions`. Counts and inserts under a row lock on the organization.
- * Returns null at the cap.
+ * Returns null at the cap. A repeat for the same event with different course or cohort filters updates the
+ * stored filters instead of silently keeping the old ones.
  */
 export async function upsertManagedWebhookSubscription(
   values: TManagedWebhookSubscriptionValues,
@@ -91,22 +92,33 @@ export async function upsertManagedWebhookSubscription(
 
       if (existing) {
         if (existing.eventTypes[0] !== eventType) return { subscription: existing, created: false };
-        if (existing.isActive && !existing.autoDisabledAt) return { subscription: existing, created: false };
 
-        const [reactivated] = await tx
+        const filtersMatch =
+          existing.filterCourseId === values.filterCourseId && existing.filterCohortId === values.filterCohortId;
+        const needsReactivation = !existing.isActive || existing.autoDisabledAt !== null;
+
+        if (filtersMatch && !needsReactivation) return { subscription: existing, created: false };
+
+        const [updated] = await tx
           .update(schema.webhookEndpoint)
-          .set({ isActive: true, consecutiveFailures: 0, autoDisabledAt: null })
+          .set({
+            filterCourseId: values.filterCourseId,
+            filterCohortId: values.filterCohortId,
+            isActive: true,
+            consecutiveFailures: 0,
+            autoDisabledAt: null
+          })
           .where(eq(schema.webhookEndpoint.id, existing.id))
           .returning();
 
-        if (!reactivated) return { subscription: existing, created: false };
+        if (!updated) return { subscription: existing, created: false };
 
-        const [withEvents] = await attachEventTypes([reactivated], tx);
+        const [withEvents] = await attachEventTypes([updated], tx);
 
         return {
-          subscription: withEvents ?? { ...existing, ...reactivated },
+          subscription: withEvents ?? { ...existing, ...updated },
           created: false,
-          reactivated: true
+          reactivated: needsReactivation ? true : undefined
         };
       }
 
