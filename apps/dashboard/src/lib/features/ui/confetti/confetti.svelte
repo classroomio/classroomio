@@ -1,13 +1,14 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import confetti from 'canvas-confetti';
   import { confettiStore } from './store';
 
   let myCanvas = $state();
   let myConfetti;
+  let intervalId;
 
   function showConfetti(show) {
-    if (!show) return;
+    if (!show || !myConfetti) return;
 
     const duration = 5 * 1000;
     const animationEnd = Date.now() + duration;
@@ -17,15 +18,15 @@
       return Math.random() * (max - min) + min;
     }
 
-    const interval = setInterval(function () {
+    clearInterval(intervalId);
+    intervalId = setInterval(function () {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
-        return clearInterval(interval);
+        return clearInterval(intervalId);
       }
 
       const particleCount = 50 * (timeLeft / duration);
-      // since particles fall down, start a bit higher than random
       myConfetti(
         Object.assign({}, defaults, {
           particleCount,
@@ -42,10 +43,16 @@
   }
 
   onMount(() => {
+    // Firefox throws InvalidStateError when a worker-transferred canvas is re-used across remounts.
     myConfetti = confetti.create(myCanvas, {
       resize: true,
-      useWorker: true
+      useWorker: false
     });
+  });
+
+  onDestroy(() => {
+    clearInterval(intervalId);
+    myConfetti?.reset();
   });
 
   $effect(() => {
