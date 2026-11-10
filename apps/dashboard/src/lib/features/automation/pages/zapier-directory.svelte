@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import SearchXIcon from '@lucide/svelte/icons/search-x';
@@ -84,7 +85,12 @@
     if (nextSearch === page.url.searchParams.toString()) return;
 
     const nextUrl = `${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}${page.url.hash}`;
-    await goto(nextUrl, { replaceState: true, keepFocus: true, noScroll: true });
+
+    try {
+      await goto(resolve(nextUrl, {}), { replaceState: true, keepFocus: true, noScroll: true });
+    } catch {
+      searchValue = directoryState.query;
+    }
   }
 
   function handleCategoryChange(category: ZapierDirectoryCategory) {

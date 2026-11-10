@@ -309,28 +309,30 @@ describe('Zapier overview helpers', () => {
     expect(getZapierAppLogoUrl(partnerApp('jotform'))).toBe('/images/zapier-apps/jotform.png');
   });
 
-  it('finds triggers whose last delivery failed in the last 24 hours', () => {
-    const now = Date.parse('2026-11-09T12:00:00Z');
-    const trigger = (id: string, lastDeliveryStatus: string | null, lastDeliveryAt: string | null) => ({
+  it('finds triggers with failed deliveries in the last 24 hours', () => {
+    const trigger = (id: string, failedDeliveryCount: number, isActive = true) => ({
       id,
-      lastDeliveryStatus,
-      lastDeliveryAt
+      failedDeliveryCount,
+      isActive,
+      lastDeliveryStatus: failedDeliveryCount > 0 ? 'FAILED' : 'SUCCESS',
+      lastDeliveryAt: '2026-11-09T08:00:00Z'
     });
     const connections = [
       {
         triggers: [
-          trigger('failed-recent', 'FAILED', '2026-11-09T08:00:00Z'),
-          trigger('gave-up-recent', 'GAVE_UP', '2026-11-08T13:00:00Z'),
-          trigger('failed-old', 'FAILED', '2026-11-07T08:00:00Z'),
-          trigger('delivered', 'DELIVERED', '2026-11-09T09:00:00Z'),
-          trigger('never', null, null)
+          trigger('failed-recent', 2),
+          trigger('gave-up-recent', 1),
+          trigger('failed-but-disabled', 3, false),
+          trigger('delivered', 0),
+          trigger('never', 0)
         ]
       }
     ] as unknown as ZapierConnection[];
 
-    expect(getZapierFailingTriggers(connections, now).map((failing) => failing.id)).toEqual([
+    expect(getZapierFailingTriggers(connections).map((failing) => failing.id)).toEqual([
       'failed-recent',
-      'gave-up-recent'
+      'gave-up-recent',
+      'failed-but-disabled'
     ]);
   });
 

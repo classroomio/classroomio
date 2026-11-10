@@ -46,6 +46,8 @@
   const isPausedByPlan = $derived(isConnected && !$hasPublicApiAccess);
   const hasLoadError = $derived(Boolean(zapierApi.error) && !overview);
   const failingTriggers = $derived(getZapierFailingTriggers(connections));
+  const resendableTriggers = $derived(failingTriggers.filter((trigger) => trigger.isActive));
+  const disabledFailingTriggers = $derived(failingTriggers.filter((trigger) => !trigger.isActive));
   const showInviteNote = $derived(
     isZapierInviteRequired() && !isInviteNoteDismissed && !hasAcceptedZapierInvite(connections, $profile.id)
   );
@@ -68,6 +70,20 @@
     void zapierApi.loadOnce();
   });
 
+  $effect(() => {
+    const organizationId = $currentOrg.id;
+
+    if (!organizationId || !$isOrgAdmin) return;
+
+    const refreshOnVisible = () => {
+      if (document.visibilityState === 'visible') void zapierApi.loadOnce();
+    };
+
+    document.addEventListener('visibilitychange', refreshOnVisible);
+
+    return () => document.removeEventListener('visibilitychange', refreshOnVisible);
+  });
+
   function resetOrganizationView() {
     disconnectingConnection = null;
     zapierApi.resetOrganizationState();
@@ -86,7 +102,7 @@
   async function resendFailedEvents() {
     isResending = true;
     try {
-      await zapierApi.redeliverFailed(failingTriggers.map((trigger) => trigger.id));
+      await zapierApi.redeliverFailed(resendableTriggers.map((trigger) => trigger.id));
     } finally {
       isResending = false;
     }
@@ -171,23 +187,34 @@
     {#if isPausedByPlan}
       <Alert.Callout variant="warning" title={$t(`${T}.paused.title`)} description={$t(`${T}.paused.description`)} />
     {:else if failingTriggers.length > 0}
-      <Alert.Root variant="warning" data-testid="zapier-failed-events">
-        <AlertTriangleIcon />
-        <Alert.Title>{$t(`${T}.failed_events.title`)}</Alert.Title>
-        <Alert.Description>
-          <p>{$t(`${T}.failed_events.description`)}</p>
-          <Button
-            variant="outline"
-            size="sm"
-            class="mt-2"
-            loading={isResending}
-            onclick={resendFailedEvents}
-            testId="zapier-resend-failed"
-          >
-            {$t(`${T}.failed_events.resend`)}
-          </Button>
-        </Alert.Description>
-      </Alert.Root>
+      {#if resendableTriggers.length > 0}
+        <Alert.Root variant="warning" data-testid="zapier-failed-events">
+          <AlertTriangleIcon />
+          <Alert.Title>{$t(`${T}.failed_events.title`)}</Alert.Title>
+          <Alert.Description>
+            <p>{$t(`${T}.failed_events.description`)}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              class="mt-2"
+              loading={isResending}
+              onclick={resendFailedEvents}
+              testId="zapier-resend-failed"
+            >
+              {$t(`${T}.failed_events.resend`)}
+            </Button>
+          </Alert.Description>
+        </Alert.Root>
+      {/if}
+      {#if disabledFailingTriggers.length > 0}
+        <Alert.Root variant="warning" data-testid="zapier-disabled-triggers">
+          <AlertTriangleIcon />
+          <Alert.Title>{$t(`${T}.disabled_triggers.title`)}</Alert.Title>
+          <Alert.Description>
+            <p>{$t(`${T}.disabled_triggers.description`)}</p>
+          </Alert.Description>
+        </Alert.Root>
+      {/if}
     {/if}
 
     <Field.Set class="gap-3">
