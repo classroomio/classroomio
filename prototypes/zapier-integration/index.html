@@ -47,13 +47,13 @@
           <button class="icon-btn mobile-nav-btn" id="mobileNavBtn" title="Menu" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
           <nav class="crumbs"><a href="automation-overview.html">Automation</a><span class="sep">/</span><span class="here">Zapier</span></nav>
           <div class="top-actions">
-            <div class="dev-toggle" title="Prototype-only: preview a non-admin viewer">
-              <button class="on" id="roleAdmin" type="button">Admin</button>
-              <button id="roleMember" type="button">Member</button>
-            </div>
             <div class="dev-toggle" title="Prototype-only: preview both plan states">
               <button class="on" id="planEarly" type="button">Early Adopter</button>
               <button id="planBasic" type="button">Basic plan</button>
+            </div>
+            <div class="dev-toggle" title="Prototype-only: preview an org with no Zaps yet vs. one with existing connections">
+              <button id="stateEmpty" type="button">Empty State</button>
+              <button id="stateNonEmpty" type="button">Non-Empty State</button>
             </div>
             <a class="btn btn-sm btn-outline" href="prototype-map.html">Prototype map</a>
             <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
@@ -61,15 +61,8 @@
         </header>
 
         <main class="content">
-          <!-- Admin-permission and Basic-plan gates (hidden by default) -->
+          <!-- Basic-plan gate (hidden by default) -->
           <div class="wrap">
-            <div class="card card-pad" id="memberGate" hidden style="border-color: color-mix(in oklab, var(--border) 100%, transparent); background: var(--muted); margin: 24px 0; display:flex; align-items:center; gap: 14px;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:20px;height:20px;stroke-width:2;color:var(--muted-foreground);flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-              <div style="flex:1">
-                <div style="font-size:13.5px;font-weight:600">You need admin access to connect Zapier</div>
-                <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px">Ask an admin on Acme Academy to connect Zapier. You can still browse the App Directory below.</div>
-              </div>
-            </div>
             <div class="card card-pad" id="gateCallout" hidden style="border-color: color-mix(in oklab, var(--warning) 30%, var(--border)); background: var(--warning-soft); margin: 24px 0; display:flex; align-items:center; gap: 14px;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:20px;height:20px;stroke-width:2;color:var(--warning);flex-shrink:0"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
               <div style="flex:1">
@@ -80,72 +73,54 @@
             </div>
           </div>
 
-          <div class="wrap" id="connectedNoteWrap" hidden>
-            <div class="card card-pad" style="display:flex;align-items:center;gap:14px;margin:24px 0 0;border-color:color-mix(in oklab, var(--success) 30%, var(--border));background:var(--success-soft)">
-              <div style="flex:1">
-                <div style="font-size:13.5px;font-weight:600">Your organization is already connected to Zapier</div>
-                <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px">See your connected apps, or add another integration below.</div>
-              </div>
-              <a class="btn btn-outline btn-sm" href="zapier-connected.html">View connections</a>
-            </div>
-          </div>
-
           <div id="connectContent">
             <div class="wrap" style="max-width: 1080px">
-              <div class="zi-home-hero">
-                <div class="zi-home-hero-inner">
-                  <h1 class="zi-home-title">Connect ClassroomIO with your favorite apps</h1>
-                  <p class="zi-home-sub">
-                    Automate enrollments, completions, and certificates by linking ClassroomIO to the tools your
-                    team already uses. Search for an app below to get started.
-                  </p>
-                  <div class="zi-home-search">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    <input type="text" id="homeSearch" placeholder="Search apps to connect…" autocomplete="off" />
-                    <button class="zi-home-search-submit" id="homeSearchGo" type="button" aria-label="Search">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                    </button>
-                  </div>
-                  <p class="zi-home-browse">
-                    Looking for something specific? <a href="app-directory.html">Browse all <span id="appCount"></span> apps in the App Directory</a>
-                  </p>
-                  <div class="zi-home-zap-cta">
-                    <span>Already know what you want to automate?</span>
-                    <a class="btn btn-primary" id="createZapCta" href="https://zapier.com/app/editor" target="_blank" rel="noopener">Create a Zap in Zapier <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
-                  </div>
+              <div class="page-head">
+                <div>
+                  <h1 class="page-title">Zaps</h1>
+                  <p class="page-sub" id="pageSub">Automate ClassroomIO with the apps your team already uses.</p>
                 </div>
-              </div>
-
-              <div class="zi-home-add-row">
-                <a class="zi-home-add-btn" href="app-directory.html">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
-                  Add integration
+                <a class="btn btn-primary" id="topCta" href="https://zapier.com/app/editor" target="_blank" rel="noopener">
+                  <span id="topCtaLabel">Create a Zap</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 </a>
               </div>
 
-              <div id="homeDefault">
-                <div class="zi-home-section-head">
-                  <div class="zi-home-section-label">Popular integrations</div>
+              <!-- EMPTY STATE: no Zaps or app connections yet -->
+              <div class="card zi-conn-empty" id="emptyState">
+                <div class="zi-conn-logos">
+                  <span id="emptyCioLogo"></span>
+                  <span class="plus">+</span>
+                  <div class="zap-mark zap-mark-md"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
                 </div>
-                <div class="zi-home-grid" id="homeGrid"></div>
-                <div class="zi-home-viewmore-row">
-                  <a class="btn btn-primary" href="app-directory.html">
-                    View more apps
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                <div class="t">No Zaps yet</div>
+                <div class="d">Connect ClassroomIO to an app your team already uses, or jump straight into Zapier if you already know what you want to automate.</div>
+                <div style="display:flex; gap:10px; margin-top:4px">
+                  <a class="btn btn-primary" href="https://zapier.com/app/editor" target="_blank" rel="noopener">
+                    Create a Zap
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                  <a class="btn btn-outline" href="app-directory.html">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M17.5 14v7M14 17.5h7"/></svg>
+                    Connect Apps
                   </a>
                 </div>
               </div>
 
-              <div id="homeResults" hidden>
-                <div class="zi-home-section-head">
-                  <div class="zi-home-result-count" id="homeResultCount"></div>
+              <!-- NON-EMPTY STATE: apps already connected -->
+              <div id="nonEmptyState" hidden>
+                <div class="card zi-status-banner">
+                  <div class="zi-status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="zi-status-text">
+                    <div class="t" id="connectedCount">3 apps connected to ClassroomIO</div>
+                    <div class="d">Each one runs its Zaps automatically in Zapier whenever a ClassroomIO event fires.</div>
+                  </div>
                 </div>
-                <div class="zi-app-card-grid" id="homeResultsGrid"></div>
-                <div class="zi-dir-empty" id="homeEmpty" hidden>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                  <div class="t">No apps match your search</div>
-                  <div class="d">Try a different name, or connect ClassroomIO to Zapier directly. Zapier's full directory has 6,000+ apps beyond what's shown here.</div>
+
+                <div class="sec-head">
+                  <p class="sec-title">Connected apps</p>
                 </div>
+                <div id="connectedList" style="display:flex; flex-direction:column; gap:10px"></div>
               </div>
             </div>
           </div>
@@ -157,160 +132,89 @@
     <script src="brand-logos.js"></script>
     <script src="apps-catalog.js"></script>
     <script>
-      var roleAdmin = document.getElementById('roleAdmin');
-      var roleMember = document.getElementById('roleMember');
-      var memberGate = document.getElementById('memberGate');
       var planEarly = document.getElementById('planEarly');
       var planBasic = document.getElementById('planBasic');
       var gate = document.getElementById('gateCallout');
       var content = document.getElementById('connectContent');
 
-      // Admin-permission gate takes priority over the plan gate: a non-admin
-      // never sees the connect flow regardless of plan, matching the PRD's
-      // Dashboard Zapier Tab section order (admin callout, then plan callout).
-      roleAdmin.onclick = function () {
-        roleAdmin.classList.add('on');
-        roleMember.classList.remove('on');
-        memberGate.hidden = true;
-        gate.hidden = !planBasic.classList.contains('on') ? true : false;
-        content.hidden = planBasic.classList.contains('on');
-      };
-      roleMember.onclick = function () {
-        roleMember.classList.add('on');
-        roleAdmin.classList.remove('on');
-        memberGate.hidden = false;
-        gate.hidden = true;
-        content.hidden = true;
-      };
-
       planEarly.onclick = function () {
         planEarly.classList.add('on');
         planBasic.classList.remove('on');
         gate.hidden = true;
-        content.hidden = roleMember.classList.contains('on');
+        content.hidden = false;
       };
       planBasic.onclick = function () {
         planBasic.classList.add('on');
         planEarly.classList.remove('on');
-        if (!roleMember.classList.contains('on')) gate.hidden = false;
+        gate.hidden = false;
         content.hidden = true;
       };
 
-      document.getElementById('appCount').textContent = ZI.appSlugs().length;
-      document.getElementById('connectedNoteWrap').hidden = !ziState.isAuthorized();
+      document.getElementById('emptyCioLogo').innerHTML = ZI.classroomioLogoHTML('width:44px;height:44px;border-radius:12px');
 
-      if (new URLSearchParams(location.search).get('denied')) {
-        setTimeout(function () { ziToast('Connection request denied'); }, 250);
-      }
+      // ---------- connected apps (Non-Empty State) ----------
+      // Same three apps the App Directory features as Popular, picked in the
+      // integration research (prd/zapier/integration-research.md) for spanning
+      // three distinct customer-education workflows: HubSpot (CRM
+      // lifecycle-triggered enrollment), Zoom (live training registration),
+      // Slack (CS/CE team visibility). Reused here as the example org's
+      // already-connected apps so the empty vs. non-empty demo stays coherent.
+      // View Connection opens zapier-connections.html, a simulation of
+      // zapier.com/app/assets/connections; picking an app in its Add new
+      // connection modal opens the ClassroomIO + app page.
+      var CONNECTED_APPS = [
+        { slug: 'hubspot', info: 'Enrolls new customers in onboarding when a deal closes' },
+        { slug: 'slack', info: 'Posts to #customer-onboarding when a course is completed' },
+        { slug: 'zoom', info: 'Registers learners for a live session when they enroll' }
+      ];
 
-      // ---------- popular apps (default state) ----------
-      // Picked from the integration research (prd/zapier/integration-research.md),
-      // not raw Zapier fame: HubSpot (CRM lifecycle-triggered enrollment), Zoom
-      // (live training/webinar registration), and Slack (CS/CE team visibility)
-      // are the three V1 "must have" apps that most directly demonstrate a
-      // customer education workflow, spanning three distinct categories.
-      var POPULAR_SLUGS = ['hubspot', 'zoom', 'slack'];
-
-      function cardBanner(slug) {
-        var app = ZI.APPS[slug];
-        return (
-          '<div class="zi-home-card-banner" style="background:color-mix(in oklab, ' + app.color + ' 16%, var(--muted))">' +
-          '<div class="zi-home-card-pair">' +
-          '<span class="zi-org-mark-sm">A</span>' +
-          '<span class="plus">+</span>' +
-          ZI.badgeHTML(slug) +
-          '<span>ClassroomIO + ' + app.name + '</span>' +
+      var connectedList = document.getElementById('connectedList');
+      CONNECTED_APPS.forEach(function (entry) {
+        var app = ZI.APPS[entry.slug];
+        var row = document.createElement('div');
+        row.className = 'card card-pad';
+        row.style.cssText = 'display:flex; align-items:center; gap:14px';
+        row.innerHTML =
+          ZI.badgeHTML(entry.slug, 'width:40px;height:40px;font-size:15px;border-radius:11px') +
+          '<div style="flex:1; min-width:0">' +
+          '<div style="font-weight:600; font-size:13.5px">' + app.name + '</div>' +
+          '<div style="font-size:12.5px; color:var(--muted-foreground); margin-top:2px">Connected · ' + entry.info + '</div>' +
           '</div>' +
-          '</div>'
-        );
+          '<a class="btn btn-outline btn-sm" href="zapier-connections.html">View Connection</a>';
+        connectedList.appendChild(row);
+      });
+      document.getElementById('connectedCount').textContent =
+        CONNECTED_APPS.length + ' app' + (CONNECTED_APPS.length === 1 ? '' : 's') + ' connected to ClassroomIO';
+
+      // ---------- prototype-only: Empty State / Non-Empty State switch ----------
+      // Defaults to Empty (ziState.isAuthorized() is never set to true by
+      // anything in this prototype anymore — there's no ClassroomIO-hosted
+      // authorization step left to set it). A reviewer can flip it either way,
+      // or land directly on either state via index.html?fresh=1 / ?returning=1.
+      var stateEmptyBtn = document.getElementById('stateEmpty');
+      var stateNonEmptyBtn = document.getElementById('stateNonEmpty');
+      var emptyState = document.getElementById('emptyState');
+      var nonEmptyState = document.getElementById('nonEmptyState');
+      var topCtaLabel = document.getElementById('topCtaLabel');
+      var pageSub = document.getElementById('pageSub');
+
+      function setDemoState(isNonEmpty) {
+        stateEmptyBtn.classList.toggle('on', !isNonEmpty);
+        stateNonEmptyBtn.classList.toggle('on', isNonEmpty);
+        emptyState.hidden = isNonEmpty;
+        nonEmptyState.hidden = !isNonEmpty;
+        topCtaLabel.textContent = isNonEmpty ? 'Create More Zaps' : 'Create a Zap';
+        pageSub.textContent = isNonEmpty
+          ? 'A preview of the apps already connected — manage them anytime in Zapier.'
+          : 'Automate ClassroomIO with the apps your team already uses.';
       }
-
-      var homeGrid = document.getElementById('homeGrid');
-      POPULAR_SLUGS.forEach(function (slug) {
-        var app = ZI.APPS[slug];
-        var wrap = document.createElement('div');
-        wrap.style.display = 'flex';
-        wrap.style.flexDirection = 'column';
-        wrap.innerHTML =
-          '<span class="zi-home-ribbon">Popular · ' + ZI.categoryLabel(app.category) + '</span>' +
-          '<a class="card zi-home-card" href="app-detail.html?app=' + slug + '">' +
-          '<div class="zi-home-card-head">' +
-          ZI.badgeHTML(slug) +
-          '<div class="txt"><div class="t">' + app.name + '</div><div class="c">' + ZI.categoryLabel(app.category) + '</div></div>' +
-          '</div>' +
-          cardBanner(slug) +
-          '<div class="zi-home-card-desc"><strong>' + app.name + '</strong> ' + (app.detailBlurb || app.description) + '</div>' +
-          '</a>';
-        homeGrid.appendChild(wrap);
+      stateEmptyBtn.addEventListener('click', function () {
+        setDemoState(false);
       });
-
-      // ---------- live search across the full catalog ----------
-      var homeSearch = document.getElementById('homeSearch');
-      var homeDefault = document.getElementById('homeDefault');
-      var homeResults = document.getElementById('homeResults');
-      var homeResultsGrid = document.getElementById('homeResultsGrid');
-      var homeResultCount = document.getElementById('homeResultCount');
-      var homeEmpty = document.getElementById('homeEmpty');
-
-      function runSearch(q) {
-        q = q.trim();
-        if (!q) {
-          homeDefault.hidden = false;
-          homeResults.hidden = true;
-          return;
-        }
-        homeDefault.hidden = true;
-        homeResults.hidden = false;
-
-        var needle = q.toLowerCase();
-        var matches = ZI.appSlugs()
-          .filter(function (slug) {
-            var app = ZI.APPS[slug];
-            return app.name.toLowerCase().indexOf(needle) !== -1 || ZI.categoryLabel(app.category).toLowerCase().indexOf(needle) !== -1;
-          })
-          .sort(function (a, b) {
-            var pa = ZI.APPS[a].popular ? 1 : 0;
-            var pb = ZI.APPS[b].popular ? 1 : 0;
-            return pb - pa || ZI.APPS[a].name.localeCompare(ZI.APPS[b].name);
-          });
-
-        homeResultCount.innerHTML =
-          '<strong>' + matches.length + '</strong> app' + (matches.length === 1 ? '' : 's') + ' matching “' + q + '”';
-
-        homeResultsGrid.innerHTML = '';
-        matches.forEach(function (slug) {
-          var app = ZI.APPS[slug];
-          var card = document.createElement('a');
-          card.className = 'card zi-app-card';
-          card.href = 'app-detail.html?app=' + slug;
-          card.innerHTML =
-            ZI.badgeHTML(slug) +
-            '<div class="txt">' +
-            '<div class="t">' + app.name + '</div>' +
-            '<div class="d">' + app.description + '</div>' +
-            (app.popular ? '<span class="badge badge-primary-soft">Popular</span>' : '') +
-            '</div>';
-          homeResultsGrid.appendChild(card);
-        });
-
-        homeResultsGrid.hidden = matches.length === 0;
-        homeEmpty.hidden = matches.length !== 0;
-        homeResultCount.hidden = matches.length === 0;
-      }
-
-      homeSearch.addEventListener('input', function () {
-        runSearch(homeSearch.value);
+      stateNonEmptyBtn.addEventListener('click', function () {
+        setDemoState(true);
       });
-      document.getElementById('homeSearchGo').addEventListener('click', function () {
-        runSearch(homeSearch.value);
-        if (homeSearch.value.trim()) homeResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-      homeSearch.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          runSearch(homeSearch.value);
-        }
-      });
+      setDemoState(ziState.isAuthorized());
     </script>
   </body>
 </html>

@@ -448,9 +448,9 @@ See `Molecules/ComboButton` in Storybook.
 
 ### Machines (`src/custom/animation/machines/`)
 
-Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). Two more illustrate product states: `MachineBrokenTrack` (a block tips over a gap it cannot cross, and a playable runner game) for error pages, and `MachineBlankLesson` (a blank lesson page whose title starts being written) for an empty lesson. The animation is SVG SMIL, so the drawings run without JavaScript. `MachineBrokenTrack` adds an optional game that does need JavaScript; without it the animation still plays. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
+Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). Three more illustrate product states: `MachineBrokenTrack` (a block tips over a gap it cannot cross, and a playable runner game) for error pages, `MachineBlankLesson` (a blank lesson page whose title starts being written) for an empty lesson, and `MachineZapierNoZaps` (a switchboard where a cable plugs Zapier into Slack, HubSpot and email in turn while events travel out and replies travel back) for a Zapier page with no Zaps. The animation is SVG SMIL, so the drawings run without JavaScript. `MachineBrokenTrack` adds an optional game that does need JavaScript; without it the animation still plays. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
 
-The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the marketing drawings is placeholder copy (brand and domain names are placeholders). `MachineBrokenTrack` draws real UI strings, so pass translated labels. Use the marketing machines for ClassroomIO-branded surfaces only, not org sites. The two state machines carry no brand text and take the accent from `--primary`, so they are safe on org sites too. `MachineBlankLesson` draws a `LESSON` caption; pass `heading` with translated text.
+The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the marketing drawings is placeholder copy (brand and domain names are placeholders). `MachineBrokenTrack` draws real UI strings, so pass translated labels. Use the marketing machines for ClassroomIO-branded surfaces only, not org sites. `MachineBrokenTrack` and `MachineBlankLesson` carry no brand text and take the accent from `--primary`, so they are safe on org sites too. `MachineZapierNoZaps` draws fixed, untranslated labels (CLASSROOMIO, ZAPIER, SLACK, HUBSPOT, EMAIL), so keep it on admin screens. `MachineBlankLesson` draws a `LESSON` caption; pass `heading` with translated text.
 
 | Prop                   | Type                                 | Default                  | Description                                                                                                                                                                          |
 | ---------------------- | ------------------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -481,7 +481,7 @@ Three machines show features that are not shipped yet: the training line and eve
 
 `MachineBrokenTrack` is also a small game in the style of the Chrome offline dinosaur. It shows a blinking "PRESS SPACE TO PLAY" prompt; on the first Space, ArrowUp or tap it loads the game code on demand (a dynamic import, so error pages that never play pay nothing), the board slowly extends, a 3-2-1 countdown runs, and obstacles rise out of the far end block for the block to jump. The score is the number of obstacles cleared. The best score is stored in localStorage under `cio-track-runner-best` and a new best shows a record line. Once the game starts, two icon buttons appear in a row above the board, right-aligned: mute and, where the browser supports it, full screen (it fullscreens the enclosing `Empty` card, not the whole page); the mute choice is stored under `cio-track-runner-muted`, and if storage is blocked nothing is remembered and nothing breaks. Sound effects (jump, point, countdown, crash and record) are synthesized with the Web Audio API and loaded on first use, so no audio files are fetched. The key listener is on `window`: while idle, Space and ArrowUp anywhere on the page (outside form controls, buttons and links) start the game and suppress scrolling, but only while the illustration is visible (it is hidden on phones and short viewports); during play they jump, and after a crash Space, ArrowUp or a tap restarts. Labels default to English, so pass translated strings, or pass `playable={false}` for the plain animation. `stillAt` applies to the idle animation only; once the game starts it is ignored, and under `prefers-reduced-motion` the game still runs but the board extension is skipped.
 
-`stillAt` defaults to `3.9` for `MachineBrokenTrack` and `3` for `MachineBlankLesson`, the frames where each drawing reads best.
+`stillAt` defaults to `3.9` for `MachineBrokenTrack`, `3` for `MachineBlankLesson` and `2.5` for `MachineZapierNoZaps`, the frames where each drawing reads best.
 
 In an empty state, pass the machine through the `media` snippet of `Empty` (`@cio/ui/custom/empty`). With `media`, the `Empty` card grows to fit its content, and a `full-page` layout scrolls rather than clipping, leaving room for the logo when `showLogo` is set. The media is hidden on phones (below the `sm` breakpoint, or shorter than 640px), so the message and actions fit without scrolling and the game is not reachable on phones. Without `media`, the card keeps its 360px height cap. `Empty` takes three props for this: `size` (`'default'` or `'lg'`; `'lg'` makes a `page` card wider and taller), `mediaOnly` (hides the title, description and actions so the media fills the card, but only where the media is shown, so on phones and short viewports the message stays) and `overlay` (a snippet rendered over the card, which hides the card's own dashed border). `MachineRunnerBorder` is the overlay the game uses: pass it the `onstatechange` snapshot (`{ status, passed, isNewRecord }`) that `MachineBrokenTrack` emits. It redraws the dashed border as a progress meter: each obstacle cleared lights the next 1/30 of the border (a stretch of dashes) clockwise from the top-left in the accent colour, the lit dashes flow faster as the score rises, a full lap (30 obstacles) flashes the border and starts again, a crash turns the lit dashes red and scatters them, and a new record locks the whole border green with a glow. Reduced motion turns the animation off. Off a `--muted` card, set `--machine-face` to the page colour:
 
@@ -596,6 +596,37 @@ Read-only `InputGroup` that shows a value with an inline Copy button. Focusing t
 - Any other name: a monogram of its first letter and the name as reported.
 
 The logos are path data in `ai-client-icons.ts` (simple-icons, CC0, plus the OpenAI mark from lobe-icons, MIT), so nothing is fetched at render time. Each mark stays the property of its brand.
+
+### Checklist item (`src/custom/checklist-item/`)
+
+One row of a checklist: media, title, optional description and an action. A completed item strikes through its text, swaps its media for a green check and its action for a disabled `doneLabel` button, shows a not-allowed cursor, and ignores clicks. Used by the setup checklist and the Zapier invite steps. The host passes translated text.
+
+| Prop          | Type         | Default     | Description                                          |
+| ------------- | ------------ | ----------- | ---------------------------------------------------- |
+| `title`       | `string`     | required    | Item title                                           |
+| `description` | `string`     | `undefined` | Supporting line under the title                      |
+| `completed`   | `boolean`    | `false`     | Shows the done state                                 |
+| `doneLabel`   | `string`     | required    | Label of the disabled button shown once completed    |
+| `media`       | `Snippet`    | `undefined` | Icon or step number while open                       |
+| `action`      | `Snippet`    | `undefined` | Controls while open                                  |
+| `onclick`     | `() => void` | `undefined` | Row click while open; without it the row is inert    |
+| `testId`      | `string`     | `undefined` | `data-testid` on the row                             |
+| `class`       | `string`     | `undefined` | Extra classes on the row                             |
+
+```svelte
+<ChecklistItem title={$t('setup.create_course')} completed={isDone} doneLabel={$t('setup.done')} onclick={open}>
+  {#snippet media()}<BookOpenIcon class="size-5" />{/snippet}
+  {#snippet action()}<Button variant="outline" size="sm">{$t('setup.todo')}</Button>{/snippet}
+</ChecklistItem>
+```
+
+### Alert dismiss (`src/base/alert/`)
+
+`Alert.Root` and `Alert.Callout` take an optional `onDismiss`. With it, the alert shows a close button in its top-right corner that calls the handler; pass `dismissLabel` as the button's accessible name. Remembering the dismissal is the host's job.
+
+```svelte
+<Alert.Callout variant="information" {title} {description} onDismiss={hide} dismissLabel={$t('common.dismiss')} />
+```
 
 ### Hooks (`src/hooks/`)
 
