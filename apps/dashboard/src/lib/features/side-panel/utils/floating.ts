@@ -216,6 +216,7 @@ export interface StartFloatingDragOptions {
   onPreview: (rect: SidePanelFloatingRect) => void;
   onCommit: (rect: SidePanelFloatingRect, shouldDock: boolean) => void;
   onDockHintChange?: (show: boolean) => void;
+  onCancel?: () => void;
 }
 
 export function startFloatingDrag(options: StartFloatingDragOptions): () => void {
@@ -267,6 +268,8 @@ export function startFloatingDrag(options: StartFloatingDragOptions): () => void
 
     if (shouldCommit) {
       onCommit(activeRect, shouldDock);
+    } else {
+      options.onCancel?.();
     }
   }
 
@@ -299,6 +302,7 @@ export interface StartFloatingResizeOptions {
   definition: SidePanelDefinition;
   onPreview: (rect: SidePanelFloatingRect) => void;
   onCommit: (rect: SidePanelFloatingRect) => void;
+  onCancel?: () => void;
 }
 
 export function startFloatingResize(options: StartFloatingResizeOptions): () => void {
@@ -343,6 +347,8 @@ export function startFloatingResize(options: StartFloatingResizeOptions): () => 
 
     if (shouldCommit) {
       onCommit(activeRect);
+    } else {
+      options.onCancel?.();
     }
   }
 

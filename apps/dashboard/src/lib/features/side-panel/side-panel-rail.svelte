@@ -161,6 +161,10 @@
         sidePanel.updateFloatingRect(nextRect, true);
         isFloatingResizeActive = false;
         stopFloatingResize = null;
+      },
+      onCancel: () => {
+        isFloatingResizeActive = false;
+        stopFloatingResize = null;
       }
     });
     isFloatingResizeActive = true;

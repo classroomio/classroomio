@@ -200,6 +200,10 @@
       },
       onDockHintChange: (show) => {
         sidePanel.showDockHint = show;
+      },
+      onCancel: () => {
+        sidePanel.isFloatingDragging = false;
+        sidePanel.showDockHint = false;
       }
     });
   }
