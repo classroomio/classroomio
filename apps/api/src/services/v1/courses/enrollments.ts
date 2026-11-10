@@ -1,4 +1,5 @@
 import { ROLE } from '@cio/utils/constants';
+import { revokeCourseInvite } from '@cio/db/queries/course/invite';
 import { getOrganizationMembersByNormalizedEmails } from '@cio/db/queries/organization';
 import { getCourseMemberIdByEmail } from '@cio/db/queries/course/people';
 import { findActiveCourseInviteIdForEmail } from '@cio/db/queries/course/invite';
@@ -8,6 +9,7 @@ import type { TPublicApiCourseParam, TPublicApiEnrollCourseStudent } from '@cio/
 import type { TAutomationPrincipal } from '@api/utils/automation-principal';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { createEmailInviteAndSend, resolveCourseInviteContext } from '@api/services/course/invite';
+import type { TCreateEmailInviteResult } from '@api/services/course/invite';
 import { reserveCourseInviteCreation } from '@api/services/course/invite-rate-limit';
 import { captureLearnerInvited } from '@api/services/product-events';
 import { addCourseMemberService } from './members';
@@ -18,7 +20,8 @@ const ENROLLMENT_INVITE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 /**
  * Enrolls `email` as a student: an existing organization student is added directly, someone new gets a single-use
  * invite. Repeating the call changes nothing and reports `already_enrolled` or `already_invited`. A new invite
- * spends the actor's course invite budget, which repeats do not.
+ * spends the actor's course invite budget, which repeats do not. When the invitation email cannot be queued, the
+ * fresh invite is revoked and the call fails, so a retry sends a new email instead of reporting `already_invited`.
  */
 export async function enrollCourseStudentService(
   orgId: string,
@@ -70,48 +73,57 @@ export async function enrollCourseStudentService(
     return { status: 'already_invited' as const, memberId: null, inviteId: activeInviteId, email };
   }
 
-  const releaseInviteBudget = await reserveCourseInviteCreation(actorId, params.courseId);
   const context = await resolveCourseInviteContext(params.courseId);
+  const releaseInviteBudget = await reserveCourseInviteCreation(actorId, params.courseId);
   const expiresAt = new Date(Date.now() + ENROLLMENT_INVITE_TTL_MS).toISOString();
-  const invite = await createEmailInviteAndSend({
-    courseId: params.courseId,
-    createdByProfileId: actorId,
-    recipientEmail: email,
-    policy: { expiresAt, maxUses: 1 },
-    orgName: context.orgName,
-    organizationId: context.organizationId,
-    courseName: context.courseName,
-    courseSlug: context.courseSlug,
-    org: context.org,
-    branding: context.branding,
-    shouldSend: payload.sendEmail,
-    reuseActiveInvite: true
-  });
+
+  let invite: TCreateEmailInviteResult;
+  try {
+    invite = await createEmailInviteAndSend({
+      courseId: params.courseId,
+      createdByProfileId: actorId,
+      recipientEmail: email,
+      policy: { expiresAt, maxUses: 1 },
+      orgName: context.orgName,
+      organizationId: context.organizationId,
+      courseName: context.courseName,
+      courseSlug: context.courseSlug,
+      org: context.org,
+      branding: context.branding,
+      shouldSend: payload.sendEmail,
+      reuseActiveInvite: true
+    });
+  } catch (error) {
+    await releaseInviteBudget();
+    throw error;
+  }
 
   if (!invite.created) {
     await releaseInviteBudget();
+
+    return { status: 'already_invited' as const, memberId: null, inviteId: invite.inviteId, email };
   }
 
-  if (invite.created) {
-    captureLearnerInvited({
-      profileId: actorId,
-      orgId,
-      target: 'course',
-      inviteType: 'email',
-      count: 1,
-      courseId: params.courseId,
-      source
-    });
+  if (payload.sendEmail && invite.error) {
+    try {
+      await revokeCourseInvite(params.courseId, invite.inviteId, actorId);
+    } catch (revokeError) {
+      console.error('Enrollment invite cleanup failed:', { inviteId: invite.inviteId, error: revokeError });
+    }
+
+    await releaseInviteBudget();
+    throw new AppError('Failed to send the course invitation email', ErrorCodes.INTERNAL_ERROR, 500, 'email');
   }
 
-  if (invite.created && payload.sendEmail && invite.error) {
-    console.error('Enrollment invite email failed:', { inviteId: invite.inviteId, error: invite.error });
-  }
+  captureLearnerInvited({
+    profileId: actorId,
+    orgId,
+    target: 'course',
+    inviteType: 'email',
+    count: 1,
+    courseId: params.courseId,
+    source
+  });
 
-  return {
-    status: invite.created ? ('invited' as const) : ('already_invited' as const),
-    memberId: null,
-    inviteId: invite.inviteId,
-    email
-  };
+  return { status: 'invited' as const, memberId: null, inviteId: invite.inviteId, email };
 }
