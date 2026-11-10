@@ -4,9 +4,9 @@ on:
   pull_request:
     paths:
       - 'apps/zapier/**'
-      - 'packages/utils/src/constants/webhook.ts'
-      - 'packages/utils/src/constants/zapier.ts'
+      - 'packages/utils/src/constants/**'
       - 'packages/utils/src/validation/webhook/**'
+      - 'packages/utils/src/validation/public-api/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/zapier-app-check.yml'
   push:
