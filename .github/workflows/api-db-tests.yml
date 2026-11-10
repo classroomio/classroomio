@@ -55,15 +55,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build shared packages
-        run: |
-          pnpm --filter @cio/utils^... build
-          pnpm --filter @cio/utils build
-          pnpm --filter @cio/db build
-          pnpm --filter @cio/email build
-          pnpm --filter @cio/jobs build
-          pnpm --filter @cio/analytics build
-          pnpm --filter @cio/core build
+      - name: Build API and its workspace dependencies
+        run: pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
 
       - name: Migrate the test database
         run: pnpm --filter @cio/db db:migrate
