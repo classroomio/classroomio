@@ -27,8 +27,6 @@ export const ZAPIER_URLS = {
 
 const ZAPIER_LOGO_DIRECTORY = '/images/zapier-apps';
 const PNG_LOGO_SLUGS: readonly string[] = ['jotform'];
-const FAILED_EVENT_WINDOW_MS = 24 * 60 * 60 * 1000;
-const FAILED_DELIVERY_STATUSES: readonly string[] = ['FAILED', 'GAVE_UP'];
 
 export const ZAPIER_LOGO_URL = `${ZAPIER_LOGO_DIRECTORY}/zapier.svg`;
 export const CLASSROOMIO_LOGO_URL = '/logo-192.png';
@@ -40,17 +38,11 @@ export function getZapierAppLogoUrl(app: Pick<TZapierPartnerApp, 'slug'>): strin
 }
 
 /**
- * Triggers whose last delivery to Zapier failed within the redelivery window, across every connection.
+ * Triggers with failed deliveries to Zapier in the redelivery window, across every connection. The server counts
+ * FAILED and GAVE_UP deliveries from the last 24 hours, so a later success does not hide earlier missed events.
  */
-export function getZapierFailingTriggers(connections: readonly ZapierConnection[], now = Date.now()): ZapierTrigger[] {
-  return connections.flatMap((connection) =>
-    connection.triggers.filter((trigger) => {
-      if (!trigger.lastDeliveryStatus || !FAILED_DELIVERY_STATUSES.includes(trigger.lastDeliveryStatus)) return false;
-      if (!trigger.lastDeliveryAt) return false;
-
-      return now - new Date(trigger.lastDeliveryAt).getTime() <= FAILED_EVENT_WINDOW_MS;
-    })
-  );
+export function getZapierFailingTriggers(connections: readonly ZapierConnection[]): ZapierTrigger[] {
+  return connections.flatMap((connection) => connection.triggers.filter((trigger) => trigger.failedDeliveryCount > 0));
 }
 
 const ZAPIER_CREATE_ZAP_URL = 'https://zapier.com/webintent/create-zap';
@@ -124,19 +116,23 @@ export function describeRecipe(
 ): string {
   if (recipe.trigger.app === 'classroomio') {
     const actionKey = recipe.action.app === 'partner' ? recipe.action.key : '';
+    const triggerLabel = translate(`automation.zapier.catalog_triggers.${recipe.trigger.key}.label`);
+    const actionLabel = translate(`automation.zapier.partner_steps.${app.slug}.${actionKey}`);
 
     return translate('automation.zapier.recipes.sentence_out', {
-      trigger: translate(`automation.zapier.catalog_triggers.${recipe.trigger.key}.label`),
-      action: translate(`automation.zapier.partner_steps.${app.slug}.${actionKey}`),
+      trigger: triggerLabel,
+      action: actionLabel,
       app: app.name
     });
   }
 
   const actionKey = recipe.action.app === 'classroomio' ? recipe.action.key : '';
+  const triggerLabel = translate(`automation.zapier.partner_steps.${app.slug}.${recipe.trigger.key}`);
+  const actionLabel = translate(`automation.zapier.catalog_actions.${actionKey}.label`);
 
   return translate('automation.zapier.recipes.sentence_in', {
-    trigger: translate(`automation.zapier.partner_steps.${app.slug}.${recipe.trigger.key}`),
-    action: translate(`automation.zapier.catalog_actions.${actionKey}.label`),
+    trigger: triggerLabel,
+    action: actionLabel,
     app: app.name
   });
 }
@@ -270,8 +266,10 @@ function parseZapierCategory(value: string | null): ZapierDirectoryCategory {
 }
 
 export function parseZapierDirectoryState(searchParams: URLSearchParams): ZapierDirectoryState {
+  const query = searchParams.get('q')?.trim() ?? '';
+
   return {
-    query: searchParams.get('q')?.trim() ?? '',
+    query,
     category: parseZapierCategory(searchParams.get('category'))
   };
 }

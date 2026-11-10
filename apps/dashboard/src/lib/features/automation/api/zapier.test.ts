@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   zapierGet: vi.fn(),
+  redeliverPost: vi.fn(),
   deleteConnection: vi.fn(),
   snackbarSuccess: vi.fn(),
   snackbarError: vi.fn()
@@ -11,18 +12,33 @@ vi.mock('$lib/utils/services/api', () => {
   class BaseApiWithErrors {
     isLoading = false;
     error: string | null = null;
-    async execute<T>({ requestFn, onSuccess, onError }: any) {
+    async execute<TResponse>({
+      requestFn,
+      onSuccess,
+      onError
+    }: {
+      requestFn: () => Promise<{ ok: boolean; json: () => Promise<unknown> }>;
+      logContext?: string;
+      onSuccess?: (body: TResponse) => void | Promise<void>;
+      onError?: (error: unknown) => void | Promise<void>;
+    }): Promise<TResponse | null> {
       try {
         const response = await requestFn();
-        if (response.ok) {
-          const body = await response.json();
-          onSuccess?.(body);
-          return body;
+        const body = (await response.json()) as { success: boolean };
+
+        if (body.success === false) {
+          await onError?.(body);
+
+          return null;
         }
-        onError?.(response);
+
+        await onSuccess?.(body as TResponse);
+
+        return body as TResponse;
       } catch (e) {
-        onError?.(e);
+        await onError?.(e);
       }
+
       return null;
     }
   }
@@ -31,7 +47,14 @@ vi.mock('$lib/utils/services/api', () => {
     organization: {
       automation: {
         zapier: {
-          $get: mocks.zapierGet
+          $get: mocks.zapierGet,
+          triggers: {
+            ':triggerId': {
+              redeliver: {
+                $post: mocks.redeliverPost
+              }
+            }
+          }
         },
         'connected-apps': {
           ':consentId': {
@@ -177,7 +200,7 @@ describe('zapierApi', () => {
   });
 
   it('ignores stale load responses when a new request is initiated', async () => {
-    let resolveFirst: any;
+    let resolveFirst!: (value: unknown) => void;
     const firstPromise = new Promise((resolve) => {
       resolveFirst = resolve;
     });
@@ -214,5 +237,99 @@ describe('zapierApi', () => {
     await firstLoad;
 
     expect(zapierApi.overview?.limits.activeTriggerSubscriptions).toBe(5);
+  });
+
+  it('leaves overview empty when the API reports success: false', async () => {
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: false, error: 'Forbidden' })
+    });
+
+    await zapierApi.load();
+
+    expect(zapierApi.overview).toBeNull();
+  });
+
+  it('reloads the overview on loadOnce even when a connection list is cached', async () => {
+    const overviewData = {
+      connections: [],
+      limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 }
+    };
+
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: overviewData })
+    });
+
+    await zapierApi.load();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+
+    await zapierApi.loadOnce();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(2);
+  });
+
+  it('dedupes concurrent loadOnce calls into one request', async () => {
+    let resolveGet!: (value: unknown) => void;
+
+    mocks.zapierGet.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveGet = resolve;
+        })
+    );
+
+    const first = zapierApi.loadOnce();
+    const second = zapierApi.loadOnce();
+
+    resolveGet({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { connections: [], limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 } }
+      })
+    });
+    await Promise.all([first, second]);
+
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+  });
+
+  it('redelivers failed triggers, reports the redelivered count and reloads', async () => {
+    mocks.redeliverPost
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: { redelivered: 2 } }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: { redelivered: 3 } }) });
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { connections: [], limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 } }
+      })
+    });
+
+    await zapierApi.redeliverFailed(['trig-1', 'trig-2']);
+
+    expect(mocks.redeliverPost).toHaveBeenCalledTimes(2);
+    expect(mocks.redeliverPost).toHaveBeenCalledWith({ param: { triggerId: 'trig-1' } });
+    expect(mocks.snackbarSuccess).toHaveBeenCalledTimes(1);
+    expect(mocks.snackbarError).not.toHaveBeenCalled();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a failure when any trigger redelivery fails', async () => {
+    mocks.redeliverPost
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: { redelivered: 2 } }) })
+      .mockRejectedValueOnce(new Error('gone'));
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { connections: [], limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 } }
+      })
+    });
+
+    await zapierApi.redeliverFailed(['trig-1', 'trig-2']);
+
+    expect(mocks.snackbarError).toHaveBeenCalledWith('snackbar.zapier.redeliver_failed');
+    expect(mocks.snackbarSuccess).not.toHaveBeenCalled();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
   });
 });

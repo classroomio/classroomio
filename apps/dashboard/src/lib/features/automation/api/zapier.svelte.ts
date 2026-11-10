@@ -33,9 +33,8 @@ class ZapierApi extends BaseApiWithErrors {
     });
   }
 
-  /** Loads the overview at most once at a time, for surfaces that only need the connection list. */
+  /** Loads the overview, deduplicating concurrent requests. Always revalidates so admins returning from Zapier see new connections. */
   async loadOnce() {
-    if (this.overview) return;
     if (this.loadInFlight) return this.loadInFlight;
 
     this.loadInFlight = this.load().finally(() => {
