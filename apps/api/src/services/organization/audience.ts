@@ -17,7 +17,7 @@ import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail, enqueueTransactionalEmails, type EnqueueOutcome } from '@api/services/jobs';
 import {
-  addCohortMember,
+  addCohortMembers,
   getCohortsByOrg,
   getCourseIdsByCohortIds,
   getExistingCohortMembers
@@ -259,15 +259,13 @@ async function enrollAudienceStudentProfilesInCohorts(
   const alreadyEnrolled = pairs.length - toInsert.length;
 
   if (toInsert.length > 0) {
-    const addedCohortMembers = await Promise.all(
-      toInsert.map((pair) =>
-        addCohortMember({
-          cohortId: pair.cohortId,
-          roleId: ROLE.STUDENT,
-          profileId: pair.profileId,
-          email: profileEmailMap.get(pair.profileId) || undefined
-        })
-      )
+    const addedCohortMembers = await addCohortMembers(
+      toInsert.map((pair) => ({
+        cohortId: pair.cohortId,
+        roleId: ROLE.STUDENT,
+        profileId: pair.profileId,
+        email: profileEmailMap.get(pair.profileId) || undefined
+      }))
     );
 
     for (const cohortMember of addedCohortMembers) {

@@ -2,7 +2,7 @@ import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isUniqueConstraintViolation } from '@cio/utils/errors';
 import {
-  addCourseMember,
+  addCourseMembers,
   deleteCourseMember,
   getCourseMember,
   getPaginatedCourseMembers,
@@ -260,29 +260,19 @@ export async function addMembers(
       theme: courseOrgData.orgTheme
     });
 
-    // Add members sequentially so partial failures still invalidate stats for successful inserts.
-    const addedMembers = [];
-    let addedStudentMember = false;
+    const addedMembers = await addCourseMembers(courseId, members);
 
-    try {
-      for (const member of members) {
-        const addedMember = await addCourseMember(courseId, member);
-        addedMembers.push(addedMember);
-        await emitCourseMemberAddedWebhookEvent(courseId, addedMember, {
-          source: context.source ?? buildMemberSource('admin'),
-          actorProfileId: context.actorProfileId
-        });
+    if (addedMembers.some((member) => member.roleId === ROLE.STUDENT)) {
+      await invalidateOrgStats(courseOrgData.orgId);
+    }
 
-        if (member.roleId === ROLE.STUDENT) {
-          addedStudentMember = true;
-        }
-      }
-    } finally {
-      if (addedStudentMember) {
-        await invalidateOrgStats(courseOrgData.orgId);
-      }
+    captureLearnersEnrolled(addedMembers, 'admin', source);
 
-      captureLearnersEnrolled(addedMembers, 'admin', source);
+    for (const addedMember of addedMembers) {
+      await emitCourseMemberAddedWebhookEvent(courseId, addedMember, {
+        source: context.source ?? buildMemberSource('admin'),
+        actorProfileId: context.actorProfileId
+      });
     }
 
     const studentProfileIds = members

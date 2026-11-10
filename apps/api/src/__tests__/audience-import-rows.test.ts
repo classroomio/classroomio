@@ -33,7 +33,7 @@ vi.mock('@cio/db/queries/course', () => ({
 }));
 
 vi.mock('@cio/db/queries/cohort', () => ({
-  addCohortMember: vi.fn(),
+  addCohortMembers: vi.fn().mockResolvedValue([]),
   getCohortsByOrg: vi.fn().mockResolvedValue([]),
   getCourseIdsByCohortIds: vi.fn().mockResolvedValue([]),
   getExistingCohortMembers: vi.fn().mockResolvedValue([])
