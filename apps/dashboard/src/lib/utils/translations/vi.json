@@ -3444,7 +3444,8 @@
           "course_hint_restricted": "Học viên đã đăng ký sẽ đi thẳng vào bài học tiếp theo. Khóa học này được trả phí hoặc chỉ dành cho người được mời, vì vậy những sinh viên chưa đăng ký sẽ truy cập Trang tổng quan.",
           "unavailable_badge": "Không có sẵn",
           "course_type_live": "Trực tiếp",
-          "course_type_compliance": "Tuân thủ"
+          "course_type_compliance": "Tuân thủ",
+          "learn_more": "Tìm hiểu thêm"
         }
       },
       "domains": {
@@ -6631,5 +6632,21 @@
       "revoke": "Gỡ quyền truy cập",
       "revoke_confirm": "Gỡ quyền truy cập của ứng dụng này? Ứng dụng sẽ ngừng hoạt động ngay lập tức."
     }
+  },
+  "video_guide": {
+    "watch_video": "Xem video",
+    "new_badge": "Mới",
+    "connect_claude": {
+      "title": "Kết nối ClassroomIO với Claude",
+      "description": "Xem cách kết nối ClassroomIO với Claude và những gì bạn có thể yêu cầu. 4 phút."
+    },
+    "lesson_blocks": {
+      "title": "Giới thiệu khối bài học",
+      "description": "Bài học bây giờ được xây dựng từ các khối. Xem cách nó hoạt động trong 5 phút.",
+      "coach_description": "Xây dựng từng bài học từ các khối ghi chú, video, slide, tài liệu và hình ảnh, theo bất kỳ thứ tự nào. Chọn Chỉnh sửa để thử.",
+      "coach_title": "🎉 Mới! Các bài học bây giờ rất linh hoạt."
+    },
+    "close": "Đóng",
+    "dismiss": "Hiểu rồi"
   }
 }

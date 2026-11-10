@@ -3444,7 +3444,8 @@
           "course_hint_restricted": "Les étudiants inscrits passent directement à leur prochaine leçon. Ce cours est payant ou sur invitation uniquement, de sorte que les étudiants qui ne sont pas inscrits accèdent au tableau de bord.",
           "unavailable_badge": "Indisponible",
           "course_type_live": "En direct",
-          "course_type_compliance": "Conformité"
+          "course_type_compliance": "Conformité",
+          "learn_more": "En savoir plus"
         }
       },
       "domains": {
@@ -6631,5 +6632,21 @@
       "revoke": "Retirer l'accès",
       "revoke_confirm": "Retirer l'accès de cette application ? Elle cessera de fonctionner immédiatement."
     }
+  },
+  "video_guide": {
+    "watch_video": "Regarder la vidéo",
+    "new_badge": "Nouveau",
+    "connect_claude": {
+      "title": "Connecter ClassroomIO à Claude",
+      "description": "Découvrez comment connecter ClassroomIO à Claude et ce que vous pouvez lui demander. 4 minutes."
+    },
+    "lesson_blocks": {
+      "title": "Présentation des blocs de cours",
+      "description": "Les leçons sont désormais construites à partir de blocs. Voyez comment cela fonctionne en 5 minutes.",
+      "coach_description": "Construisez chaque leçon à partir de blocs de notes, de vidéos, de diapositives, de documents et d'images, dans n'importe quel ordre. Sélectionnez Modifier pour l'essayer.",
+      "coach_title": "🎉 Nouveau ! Les cours sont désormais flexibles."
+    },
+    "close": "Fermer",
+    "dismiss": "Compris"
   }
 }

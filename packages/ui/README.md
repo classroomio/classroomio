@@ -204,6 +204,47 @@ Full-screen image viewer for screenshots and other detailed images. `ZoomableIma
 <BoardFrame src={coverUrl} alt={title} url="feedback.classroomio.com/updates" />
 ```
 
+### Video guide (`src/custom/video-guide/`)
+
+Entry points for a short YouTube walkthrough of a feature. All three open the same dialog component, which plays the video from `youtube-nocookie.com` with autoplay. They take a YouTube `videoId` rather than a URL. Pass every label from the host app (`closeLabel` falls back to an untranslated "Close").
+
+- `VideoGuideCard`: a thumbnail card with a play button, optional `badgeLabel` and `actionLabel`, and a `description`. Use it in an empty state or under a setup guide. It is centred with `max-w-md`; pass `align="start"` to keep it at the start of its container.
+- `VideoGuideButton`: a button with a play icon and a `label`. Takes the `Button` `variant` (default `outline`) and `size`.
+- `VideoGuideDialog`: the dialog on its own, for a custom trigger. Bind `open`.
+
+`title` is the dialog title and the iframe title, and `closeLabel` is its close button. The card and the button own their dialog, and `open` is bindable on both. See `Molecules/VideoGuide` in Storybook.
+
+```svelte
+<VideoGuideCard
+  videoId="9hpGCqzypLk"
+  title={$t('video_guide.lesson_blocks.title')}
+  description={$t('video_guide.lesson_blocks.description')}
+  badgeLabel={$t('video_guide.new_badge')}
+  actionLabel={$t('video_guide.watch_video')}
+  closeLabel={$t('video_guide.close')}
+/>
+```
+
+### Coach mark (`src/custom/coach-mark/`)
+
+`CoachMark` is a small primary-colored tip with a pointer that sits under the control it introduces. Render it inside a `relative` wrapper around that control. It takes a `title`, an optional `description`, a `dismissLabel`, and an optional `actionLabel` with `onAction` and an `actionIcon` snippet. `align` (`end` by default, or `start`) picks which edge of the wrapper the tip and its pointer line up with; `class` and `arrowClass` override the position, for example at a breakpoint.
+
+Pass `storageKey` to show the tip once: it is stored in `localStorage` when the tip is dismissed, when its action runs, or when the tip is removed from the page, and the tip stays hidden afterwards. Without `storageKey` it shows on every mount. See `Molecules/CoachMark` in Storybook.
+
+```svelte
+<div class="relative">
+  <LessonModeToggle {mode} onToggle={toggleMode} />
+  <CoachMark
+    title={$t('video_guide.lesson_blocks.coach_title')}
+    description={$t('video_guide.lesson_blocks.coach_description')}
+    dismissLabel={$t('video_guide.dismiss')}
+    actionLabel={$t('video_guide.watch_video')}
+    storageKey="classroomio:lesson-blocks-coach-mark-seen"
+    onAction={() => (videoOpen = true)}
+  />
+</div>
+```
+
 ### Changelog cover (`src/custom/changelog-cover/`)
 
 `ChangelogCover` is the fallback image for a changelog entry that has no cover. It draws a 1600×838 SVG in the brand style (sand background, the blue ClassroomIO mark and wordmark, a heavy Geist title with tight tracking, Geist Mono labels and a hairline) from `title`, with optional `label` (top right, default "Changelog") and `footer` (bottom left, for example a date). SVG text cannot wrap, so `layoutChangelogTitle` from `@cio/utils/functions/changelog-cover` wraps the title and steps the font size down for long ones, cutting a very long title with an ellipsis. The SVG fills its container (`preserveAspectRatio="xMidYMin slice"`, so a wide crop keeps the top row and trims from the bottom), so give the parent the aspect ratio. It inherits the page's Geist when loaded and falls back to system fonts otherwise. See `Molecules/ChangelogCover` in Storybook.

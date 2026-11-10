@@ -2144,6 +2144,7 @@
           "heading": "Student home",
           "description": "Choose where signed-in students go when they open your academy’s homepage. Visitors who aren’t signed in, and your team, still see your landing page.",
           "label": "Authenticated student home",
+          "learn_more": "Learn more",
           "placeholder": "Search pages and courses",
           "option_default": "Landing page (default)",
           "group_pages": "Learning portal",
@@ -6507,6 +6508,22 @@
       "expired": "This link has expired. Contact support and we will help you connect your plan.",
       "unavailable": "This plan link has already been used or is no longer active. Contact support if this is a mistake.",
       "conflict": "This academy already has a paid plan, so we could not connect this one. Contact support and we will help."
+    }
+  },
+  "video_guide": {
+    "watch_video": "Watch video",
+    "new_badge": "New",
+    "close": "Close",
+    "dismiss": "Got it",
+    "lesson_blocks": {
+      "coach_title": "🎉 New! Lessons are now flexible.",
+      "coach_description": "Build each lesson from note, video, slides, document and image blocks, in any order. Select Edit to try it.",
+      "title": "Introducing lesson blocks",
+      "description": "Lessons are now built from blocks. See how it works in 5 minutes."
+    },
+    "connect_claude": {
+      "description": "See how to connect ClassroomIO to Claude and what you can ask it. 4 minutes.",
+      "title": "Connect ClassroomIO to Claude"
     }
   },
   "whats_new": {

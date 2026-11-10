@@ -3444,7 +3444,8 @@
           "course_hint_restricted": "Tilmeldte elever går direkte til deres næste lektion. Dette kursus er betalt eller kun for invitationer, så studerende, der ikke er tilmeldt, går til Dashboard.",
           "unavailable_badge": "Ikke tilgængelig",
           "course_type_live": "Live klasse",
-          "course_type_compliance": "Overholdelse"
+          "course_type_compliance": "Overholdelse",
+          "learn_more": "Få flere oplysninger"
         }
       },
       "domains": {
@@ -6631,5 +6632,21 @@
       "revoke": "Fjern adgang",
       "revoke_confirm": "Fjern denne apps adgang? Den holder straks op med at virke."
     }
+  },
+  "video_guide": {
+    "watch_video": "Se video",
+    "new_badge": "Ny",
+    "connect_claude": {
+      "title": "Forbind ClassroomIO til Claude",
+      "description": "Se, hvordan du forbinder ClassroomIO til Claude, og hvad du kan bede om det. 4 minutter."
+    },
+    "lesson_blocks": {
+      "title": "Introduktion til lektionsblokke",
+      "description": "Lektioner er nu bygget af blokke. Se hvordan det virker på 5 minutter.",
+      "coach_description": "Byg hver lektion ud fra noter, video, dias, dokument- og billedblokke i vilkårlig rækkefølge. Vælg Rediger for at prøve det.",
+      "coach_title": "🎉 Nyt! Lektionerne er nu fleksible."
+    },
+    "close": "Luk",
+    "dismiss": "Forstået"
   }
 }
