@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest';
-import type { ConnectedApp, GetZapierOverviewRequest, ZapierConnection, ZapierOverview, ZapierTrigger } from './types';
+import type { ConnectedApp, ZapierConnection, ZapierOverview, ZapierTrigger } from './types';
 import type { OAuthClientTrust, OAuthOrganization, OAuthScopeGroupKey } from '$features/oauth/utils/types';
 
 describe('dashboard automation and oauth types', () => {
