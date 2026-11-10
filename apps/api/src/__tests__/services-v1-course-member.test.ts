@@ -72,7 +72,7 @@ describe('services/v1/courses/members', () => {
     vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
     vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'a@example.com', profileId: 'profile-1', roleId: ROLE.STUDENT, hasLapsedInvite: false }
+      { normalizedEmail: 'a@example.com', profileId: 'profile-1', roleId: ROLE.STUDENT, status: 'ACTIVE', hasLapsedInvite: false }
     ]);
   });
 
@@ -149,7 +149,7 @@ describe('services/v1/courses/members', () => {
   it('addCourseMemberService keeps a pending org member (no profile yet) as an email-only member', async () => {
     const payload = { roleId: ROLE.STUDENT, email: 'pending@example.com', sendEmail: true };
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'pending@example.com', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: false }
+      { normalizedEmail: 'pending@example.com', profileId: null, roleId: ROLE.STUDENT, status: 'ACTIVE', hasLapsedInvite: false }
     ]);
     vi.mocked(addMembers).mockResolvedValue([{ id: MEMBER_ID }] as Awaited<ReturnType<typeof addMembers>>);
 
@@ -174,6 +174,27 @@ describe('services/v1/courses/members', () => {
         sendEmail: true
       })
     ).rejects.toMatchObject({ statusCode: 404 });
+    expect(addMembers).not.toHaveBeenCalled();
+  });
+
+  it('addCourseMemberService returns 409 when the email belongs to an archived organization member', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      {
+        normalizedEmail: 'archived@example.com',
+        profileId: 'profile-archived',
+        roleId: ROLE.STUDENT,
+        status: 'ARCHIVED',
+        hasLapsedInvite: false
+      }
+    ]);
+
+    await expect(
+      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, {
+        roleId: ROLE.STUDENT,
+        email: 'archived@example.com',
+        sendEmail: true
+      })
+    ).rejects.toMatchObject({ statusCode: 409, code: 'ORG_MEMBER_ARCHIVED' });
     expect(addMembers).not.toHaveBeenCalled();
   });
 

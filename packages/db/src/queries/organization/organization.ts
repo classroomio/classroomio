@@ -32,6 +32,7 @@ import {
 import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import type { OrganizationMemberStatus } from './member-lifecycle';
 import type { TAudienceSortBy, TAudienceSortOrder } from '@cio/utils/validation/organization';
 
 export function getOrgIdBySiteName(siteName: string) {
@@ -1609,6 +1610,7 @@ export type TOrganizationMemberByEmail = {
   normalizedEmail: string;
   profileId: string | null;
   roleId: number;
+  status: OrganizationMemberStatus;
   /** See `hasLapsedStudentInvite`. */
   hasLapsedInvite: boolean;
 };
@@ -1629,10 +1631,10 @@ export async function getOrganizationMembersByNormalizedEmails(
       .select({
         roleId: schema.organizationmember.roleId,
         profileId: schema.organizationmember.profileId,
+        status: schema.organizationmember.status,
         matchEmail: sql<string>`lower(trim(coalesce(${schema.profile.email}, ${schema.organizationmember.email})))`.as(
           'matchEmail'
         ),
-        status: schema.organizationmember.status,
         inviteHoldsSeat: inviteHoldsSeatSql.as('inviteHoldsSeat')
       })
       .from(schema.organizationmember)
@@ -1648,6 +1650,7 @@ export async function getOrganizationMembersByNormalizedEmails(
       normalizedEmail: row.matchEmail,
       profileId: row.profileId,
       roleId: row.roleId,
+      status: row.status,
       hasLapsedInvite: row.roleId === ROLE.STUDENT && row.status !== 'ARCHIVED' && !row.inviteHoldsSeat
     }));
   } catch (error) {
