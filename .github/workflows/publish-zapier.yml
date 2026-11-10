@@ -32,7 +32,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build shared utils
-        run: pnpm --filter @cio/utils build
+        run: pnpm --filter @cio/utils^... build && pnpm --filter @cio/utils build
 
       - name: Select integration
         working-directory: apps/zapier
