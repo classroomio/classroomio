@@ -17,7 +17,17 @@
   import CheckIcon from '@lucide/svelte/icons/check';
 
   let isReady = $state(false);
+  let isOrganizationsLoaded = $state(false);
+  let selectionReadFailed = $state(false);
+  let clientLoadFailed = $state(false);
+
   let selectedOrganizationId = $state('');
+
+  /**
+   * `undefined` means unknown (read failed), `null` means the server has
+   * nothing saved yet, and a string is the last confirmed saved selection.
+   */
+  let savedOrganizationId = $state<string | null | undefined>(undefined);
 
   const oauthQuery = $derived(getOAuthQuery(page.url.search));
   const isValidRequest = $derived(isOAuthAuthorizationQuery(page.url.searchParams));
@@ -28,6 +38,7 @@
     oauthApi.selectedOrganization?.id === selectedOrganizationId ? oauthApi.selectedOrganization : null
   );
   const hasWorkspaces = $derived((oauthApi.organizations?.length ?? 0) > 0);
+  const canApprove = $derived(Boolean(savedOrganizationId) && savedOrganizationId === selectedOrganizationId);
   const redirectHost = $derived.by(() => {
     try {
       return new URL(page.url.searchParams.get('redirect_uri') ?? '').host;
@@ -36,46 +47,141 @@
     }
   });
 
+  function getClientId(): string | null {
+    return page.url.searchParams.get('client_id');
+  }
+
+  async function reloadClient() {
+    const clientId = getClientId();
+
+    if (!clientId) return;
+
+    clientLoadFailed = !(await oauthApi.loadClient(clientId));
+  }
+
+  async function resolveWorkspaceSelection() {
+    if (savedOrganizationId) {
+      selectedOrganizationId = savedOrganizationId;
+
+      return;
+    }
+
+    if (selectionReadFailed || !isOrganizationsLoaded) return;
+
+    const firstOrganisationId = oauthApi.organizations?.[0]?.id ?? '';
+
+    if (!firstOrganisationId) return;
+
+    selectedOrganizationId = firstOrganisationId;
+
+    const saved = await oauthApi.selectOrganization(firstOrganisationId);
+
+    if (!saved) {
+      selectedOrganizationId = '';
+      savedOrganizationId = null;
+
+      return;
+    }
+
+    savedOrganizationId = firstOrganisationId;
+  }
+
+  async function reloadOrganizations() {
+    const clientId = getClientId();
+
+    if (!clientId) return;
+
+    const result = await oauthApi.listOrganizations();
+    const loaded = Boolean(result);
+
+    isOrganizationsLoaded = loaded;
+
+    if (loaded) await resolveWorkspaceSelection();
+  }
+
+  async function handleWorkspaceChange(organizationId: string) {
+    selectedOrganizationId = organizationId;
+
+    const saved = await oauthApi.selectOrganization(organizationId);
+
+    if (saved) {
+      savedOrganizationId = organizationId;
+
+      return;
+    }
+
+    selectedOrganizationId = savedOrganizationId ?? '';
+  }
+
   async function respond(accept: boolean) {
     const redirectUrl = await oauthApi.submitConsent(accept, oauthQuery);
     if (redirectUrl) window.location.href = redirectUrl;
   }
 
-  onMount(async () => {
-    const clientId = page.url.searchParams.get('client_id');
+  async function initialize() {
+    const clientId = getClientId();
+
+    if (!clientId) {
+      isReady = true;
+
+      return;
+    }
+
+    selectedOrganizationId = '';
+    savedOrganizationId = undefined;
+    selectionReadFailed = false;
+    clientLoadFailed = false;
 
     try {
-      if (clientId) {
-        await Promise.all([
-          oauthApi.loadClient(clientId),
-          oauthApi.listOrganizations(),
-          oauthApi.loadSelectedOrganization()
-        ]);
+      const [clientLoaded, organizationsLoaded, selectionResponse] = await Promise.all([
+        oauthApi.loadClient(clientId),
+        oauthApi.listOrganizations(),
+        oauthApi.loadSelectedOrganization()
+      ]);
+
+      clientLoadFailed = !clientLoaded;
+      isOrganizationsLoaded = Boolean(organizationsLoaded);
+      selectionReadFailed = selectionResponse === undefined;
+
+      if (selectionResponse) {
+        savedOrganizationId = oauthApi.selectedOrganization?.id ?? null;
+      } else {
+        savedOrganizationId = undefined;
       }
-
-      const organizations = oauthApi.organizations ?? [];
-      const savedOrganisation = oauthApi.selectedOrganization;
-      const savedOrganisationIsEligible = organizations.some(
-        (organization) => organization.id === savedOrganisation?.id
-      );
-      const nextSelection = savedOrganisationIsEligible ? savedOrganisation!.id : (organizations[0]?.id ?? '');
-
-      selectedOrganizationId = nextSelection;
-
-      if (nextSelection) await oauthApi.selectOrganization(nextSelection);
     } finally {
       isReady = true;
     }
+
+    await resolveWorkspaceSelection();
+  }
+
+  onMount(() => {
+    void initialize();
   });
 </script>
 
 <svelte:head><title>{$t('oauth.consent.page_title')}</title></svelte:head>
 
-<AuthUI showOnlyContent showLogo isLoading={oauthApi.isLoading} handleSubmit={() => respond(true)}>
+<AuthUI showOnlyContent showLogo isLoading={oauthApi.isLoading || !isReady} handleSubmit={() => respond(true)}>
   {#if isReady && !isValidRequest}
     <div class="space-y-1 text-center">
       <h1 class="text-xl font-medium">{$t('oauth.consent.error_title')}</h1>
       <p class="ui:text-muted-foreground text-sm">{$t('oauth.consent.error_description')}</p>
+    </div>
+  {:else if isReady && clientLoadFailed}
+    <div class="flex flex-col gap-3">
+      <h1 class="text-2xl font-normal">{$t('oauth.consent.title', { client: clientName })}</h1>
+      <p class="ui:text-destructive text-sm">{$t('oauth.error.generic')}</p>
+      <Button type="button" variant="outline" onclick={reloadClient} class="mx-auto">
+        {$t('oauth.error.retry')}
+      </Button>
+    </div>
+  {:else if isReady && !isOrganizationsLoaded}
+    <div class="flex flex-col gap-3">
+      <p class="ui:text-destructive text-center text-sm">{$t('oauth.error.generic')}</p>
+      <Button type="button" variant="outline" onclick={reloadOrganizations} class="mx-auto">
+        {$t('oauth.error.retry')}
+      </Button>
     </div>
   {:else if isReady && !hasWorkspaces}
     <div class="space-y-1 text-center">
@@ -97,7 +203,7 @@
         <Select.Root
           type="single"
           bind:value={selectedOrganizationId}
-          onValueChange={(organizationId) => oauthApi.selectOrganization(organizationId)}
+          onValueChange={handleWorkspaceChange}
           disabled={oauthApi.isLoading}
         >
           <Select.Trigger class="w-full" data-testid="oauth-consent-workspace-select">
@@ -168,7 +274,13 @@
         >
           {$t('oauth.consent.deny')}
         </Button>
-        <Button type="submit" class="flex-1" loading={oauthApi.isLoading} testId="oauth-consent-allow">
+        <Button
+          type="submit"
+          class="flex-1"
+          disabled={!canApprove}
+          loading={oauthApi.isLoading}
+          testId="oauth-consent-allow"
+        >
           {$t('oauth.consent.allow')}
         </Button>
       </div>

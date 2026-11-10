@@ -6564,7 +6564,8 @@
       "error_description": "Vuelve a la app que querías conectar y empieza de nuevo."
     },
     "error": {
-      "generic": "Algo salió mal. Inténtalo de nuevo."
+      "generic": "Algo salió mal. Inténtalo de nuevo.",
+      "retry": "Intentar de nuevo"
     },
     "scope_group": {
       "courses": {

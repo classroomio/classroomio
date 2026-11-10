@@ -6564,7 +6564,8 @@
       "error_description": "Retournez à l'application que vous vouliez connecter et recommencez."
     },
     "error": {
-      "generic": "Une erreur s'est produite. Veuillez réessayer."
+      "generic": "Une erreur s'est produite. Veuillez réessayer.",
+      "retry": "Réessayer"
     },
     "scope_group": {
       "courses": {

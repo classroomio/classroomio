@@ -6564,7 +6564,8 @@
       "error_description": "Hãy quay lại ứng dụng bạn đang kết nối và bắt đầu lại."
     },
     "error": {
-      "generic": "Đã xảy ra lỗi. Vui lòng thử lại."
+      "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+      "retry": "Thử lại"
     },
     "scope_group": {
       "courses": {

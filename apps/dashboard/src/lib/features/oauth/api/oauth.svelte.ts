@@ -45,7 +45,7 @@ class OAuthApi extends BaseApiWithErrors {
     });
   }
 
-  async loadClient(clientId: string) {
+  async loadClient(clientId: string): Promise<boolean> {
     try {
       const { data } = await authClient.$fetch<OAuthClientInfo>('/oauth2/public-client', {
         method: 'GET',
@@ -53,9 +53,13 @@ class OAuthApi extends BaseApiWithErrors {
       });
 
       this.client = data ?? null;
+
+      return Boolean(data);
     } catch (error) {
       console.error('Error loading OAuth client:', error);
       this.client = null;
+
+      return false;
     }
   }
 

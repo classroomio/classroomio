@@ -6564,7 +6564,8 @@
       "error_description": "Wróć do aplikacji, którą łączysz, i zacznij od nowa."
     },
     "error": {
-      "generic": "Coś poszło nie tak. Spróbuj ponownie."
+      "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+      "retry": "Spróbuj ponownie"
     },
     "scope_group": {
       "courses": {

@@ -6544,7 +6544,8 @@
       "error_description": "Bağlamak istediğiniz uygulamaya dönün ve yeniden başlayın."
     },
     "error": {
-      "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+      "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+      "retry": "Tekrar dene"
     },
     "scope_group": {
       "courses": {

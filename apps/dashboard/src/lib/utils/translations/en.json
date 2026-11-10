@@ -6550,7 +6550,8 @@
       "error_description": "Go back to the app you were connecting and start again."
     },
     "error": {
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "retry": "Try again"
     },
     "scope_group": {
       "courses": {

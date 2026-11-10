@@ -6564,7 +6564,8 @@
       "error_description": "Gå tilbage til den app, du forbandt, og start forfra."
     },
     "error": {
-      "generic": "Noget gik galt. Prøv igen."
+      "generic": "Noget gik galt. Prøv igen.",
+      "retry": "Prøv igen"
     },
     "scope_group": {
       "courses": {

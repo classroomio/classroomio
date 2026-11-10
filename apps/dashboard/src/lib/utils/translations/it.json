@@ -6534,7 +6534,8 @@
       "error_description": "Torna all'app che volevi collegare e ricomincia."
     },
     "error": {
-      "generic": "Qualcosa è andato storto. Riprova."
+      "generic": "Qualcosa è andato storto. Riprova.",
+      "retry": "Riprova"
     },
     "scope_group": {
       "courses": {

@@ -6564,7 +6564,8 @@
       "error_description": "Volte ao app que você estava conectando e comece de novo."
     },
     "error": {
-      "generic": "Algo deu errado. Tente novamente."
+      "generic": "Algo deu errado. Tente novamente.",
+      "retry": "Tentar novamente"
     },
     "scope_group": {
       "courses": {

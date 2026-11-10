@@ -6564,7 +6564,8 @@
       "error_description": "Kehre zur App zurück, die du verbinden wolltest, und starte erneut."
     },
     "error": {
-      "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+      "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "retry": "Erneut versuchen"
     },
     "scope_group": {
       "courses": {
