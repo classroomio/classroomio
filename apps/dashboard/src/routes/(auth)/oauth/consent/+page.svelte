@@ -114,8 +114,32 @@
   }
 
   async function respond(accept: boolean) {
-    const redirectUrl = await oauthApi.submitConsent(accept, oauthQuery);
-    if (redirectUrl) window.location.href = redirectUrl;
+    if (!accept) {
+      const deniedUrl = await oauthApi.submitConsent(false, oauthQuery);
+
+      if (deniedUrl) window.location.href = deniedUrl;
+
+      return;
+    }
+
+    clearPostLoginGate();
+  }
+
+  async function clearPostLoginGate() {
+    const consentPageUrl = await oauthApi.continueAfterOrganization(oauthQuery);
+
+    if (!consentPageUrl) return;
+
+    const consentPageQuery = new URL(consentPageUrl, window.location.origin).search.slice(1);
+    const redirectUrl = await oauthApi.submitConsent(true, consentPageQuery);
+
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
+
+      return;
+    }
+
+    window.location.href = consentPageUrl;
   }
 
   async function initialize() {

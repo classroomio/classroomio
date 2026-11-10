@@ -63,6 +63,10 @@ class OAuthApi extends BaseApiWithErrors {
     }
   }
 
+  async continueAfterOrganization(oauthQuery: string): Promise<string | null> {
+    return this.postAuthorizationStep('/oauth2/continue', { postLogin: true, oauth_query: oauthQuery });
+  }
+
   async submitConsent(accept: boolean, oauthQuery: string): Promise<string | null> {
     return this.postAuthorizationStep('/oauth2/consent', { accept, oauth_query: oauthQuery });
   }
