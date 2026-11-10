@@ -106,51 +106,76 @@ async function resolveCourseIdsAndNamesForImport(orgId: string, data: TImportAud
   return { courseIds, courseNames };
 }
 
-async function resolveCohortIdsAndNamesForImport(orgId: string, data: TImportAudienceMembers) {
-  let cohortIds: string[] = [];
-  let cohortNames: string[] = [];
-
+async function resolveCohortsForImport(orgId: string, data: TImportAudienceMembers) {
   if (data.allCohorts) {
-    const cohorts = await getCohortsByOrg(orgId);
-    cohortIds = cohorts.map((cohort) => cohort.id);
-    cohortNames = cohorts.map((cohort) => cohort.name).filter(Boolean);
-  } else if (data.cohortIds && data.cohortIds.length > 0) {
-    const cohorts = await getCohortsByOrg(orgId, data.cohortIds);
-    cohortIds = cohorts.map((cohort) => cohort.id);
-    cohortNames = cohorts.map((cohort) => cohort.name).filter(Boolean);
+    return getCohortsByOrg(orgId);
   }
 
-  return { cohortIds, cohortNames };
+  if (data.cohortIds && data.cohortIds.length > 0) {
+    return getCohortsByOrg(orgId, data.cohortIds);
+  }
+
+  return [];
+}
+
+type TAudienceOrganization = NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>;
+type TAudienceCourseGroup = Awaited<ReturnType<typeof getOrgCourseGroups>>[number];
+type TAudienceCohort = Awaited<ReturnType<typeof getCohortsByOrg>>[number];
+type TCohortCourses = { courseIds: string[]; groupIds: string[] };
+
+type TAudienceEnrolment = {
+  orgId: string;
+  organization: TAudienceOrganization;
+  shouldSendEmail: boolean;
+  source: TEventSource;
+  actorProfileId: string | null;
+};
+
+/** Profile id → org member email, for the given profiles that are students of the org. */
+async function getStudentEmailsByProfileId(orgId: string, profileIds: string[]): Promise<Map<string, string>> {
+  if (profileIds.length === 0) return new Map();
+
+  const members = await getOrgMembersByProfileIds(orgId, [...new Set(profileIds)]);
+
+  return new Map(
+    members
+      .filter((member) => member.profileId && member.roleId === ROLE.STUDENT)
+      .map((member) => [member.profileId!, member.email ?? ''])
+  );
+}
+
+/** Looks up the courses linked to the cohorts on first use and reuses the answer after that. */
+function lazyCohortCourses(cohortIds: string[]): () => Promise<TCohortCourses> {
+  let cohortCourses: Promise<TCohortCourses> | undefined;
+
+  return () =>
+    (cohortCourses ??= (async () => {
+      const courseIds = await getCourseIdsByCohortIds(cohortIds);
+      const courseGroups = courseIds.length > 0 ? await getCourseGroupIds(courseIds) : [];
+
+      return {
+        courseIds,
+        groupIds: courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[]
+      };
+    })());
 }
 
 async function enrollAudienceStudentProfilesInCourses(
-  orgId: string,
-  organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>,
+  enrolment: TAudienceEnrolment,
+  profileEmailMap: Map<string, string>,
   profileIds: string[],
-  courseIds: string[],
-  shouldSendEmail: boolean,
-  source: TEventSource
+  courseGroups: TAudienceCourseGroup[]
 ): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
-  if (courseIds.length === 0 || profileIds.length === 0) {
-    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
-  }
+  const { orgId, organization, shouldSendEmail, source } = enrolment;
 
-  const uniqueProfileIds = [...new Set(profileIds)];
-  const orgMembers = await getOrgMembersByProfileIds(orgId, uniqueProfileIds);
-  const studentMembers = orgMembers.filter((m) => m.profileId && m.roleId === ROLE.STUDENT);
-  const validProfileIds = new Set(studentMembers.map((m) => m.profileId!));
-  const profileEmailMap = new Map(studentMembers.filter((m) => m.profileId).map((m) => [m.profileId!, m.email ?? '']));
-
-  const courseGroups = await getOrgCourseGroups(orgId, courseIds);
-
-  if (courseGroups.length === 0) {
+  if (courseGroups.length === 0 || profileIds.length === 0) {
     return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
   }
 
   const validGroupIds = courseGroups.map((cg) => cg.groupId).filter(Boolean) as string[];
   const courseTitleByGroupId = new Map(courseGroups.map((cg) => [cg.groupId, cg.courseTitle]));
   const welcomeMessageByGroupId = new Map(courseGroups.map((cg) => [cg.groupId, cg.welcomeEmailMessage]));
-  const validProfiles = uniqueProfileIds.filter((id) => validProfileIds.has(id));
+  const validProfiles = [...new Set(profileIds)].filter((id) => profileEmailMap.has(id));
 
   const pairs = validProfiles.flatMap((profileId) => validGroupIds.map((groupId) => ({ groupId, profileId })));
 
@@ -224,35 +249,22 @@ async function enrollAudienceStudentProfilesInCourses(
 }
 
 async function enrollAudienceStudentProfilesInCohorts(
-  organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>,
-  orgId: string,
+  enrolment: TAudienceEnrolment,
+  profileEmailMap: Map<string, string>,
   profileIds: string[],
-  cohortIds: string[],
-  shouldSendEmail: boolean,
-  source: TEventSource,
-  actorProfileId: string | null = null
+  cohorts: TAudienceCohort[],
+  getCohortCourses: () => Promise<TCohortCourses>
 ): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
-  if (cohortIds.length === 0 || profileIds.length === 0) {
-    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
-  }
+  const { orgId, organization, shouldSendEmail, source, actorProfileId } = enrolment;
 
-  const uniqueProfileIds = [...new Set(profileIds)];
-  const orgMembers = await getOrgMembersByProfileIds(orgId, uniqueProfileIds);
-  const studentMembers = orgMembers.filter((member) => member.profileId && member.roleId === ROLE.STUDENT);
-  const validProfileIds = new Set(studentMembers.map((member) => member.profileId!));
-  const profileEmailMap = new Map(
-    studentMembers.filter((member) => member.profileId).map((member) => [member.profileId!, member.email ?? ''])
-  );
-
-  const cohorts = await getCohortsByOrg(orgId, cohortIds);
-  if (cohorts.length === 0) {
+  if (cohorts.length === 0 || profileIds.length === 0) {
     return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
   }
 
   const cohortNameById = new Map(cohorts.map((cohort) => [cohort.id, cohort.name || 'Cohort']));
   const loginUrl = getDashboardBaseUrl(organization);
   const validCohortIds = cohorts.map((cohort) => cohort.id);
-  const validProfiles = uniqueProfileIds.filter((profileId) => validProfileIds.has(profileId));
+  const validProfiles = [...new Set(profileIds)].filter((profileId) => profileEmailMap.has(profileId));
   const pairs = validProfiles.flatMap((profileId) => validCohortIds.map((cohortId) => ({ cohortId, profileId })));
   const existingSet = await getExistingCohortMembers(pairs);
   const toInsert = pairs.filter((pair) => !existingSet.has(`${pair.cohortId}:${pair.profileId}`));
@@ -281,11 +293,11 @@ async function enrollAudienceStudentProfilesInCohorts(
 
   // Enrols every assigned profile, not only new memberships, so re-running repairs
   // members added before cohort course enrolment existed.
-  const cohortCourseIds = await getCourseIdsByCohortIds(validCohortIds);
+  const cohortCourses = validProfiles.length > 0 ? await getCohortCourses() : { courseIds: [], groupIds: [] };
+  const cohortCourseIds = cohortCourses.courseIds;
 
-  if (cohortCourseIds.length > 0 && validProfiles.length > 0) {
-    const courseGroups = await getCourseGroupIds(cohortCourseIds);
-    const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+  if (cohortCourseIds.length > 0) {
+    const groupIds = cohortCourses.groupIds;
     const users = validProfiles.map((profileId) => ({
       profileId,
       email: profileEmailMap.get(profileId) || undefined
@@ -560,26 +572,37 @@ export async function importAudienceMembers(
   newEmails.push(...admittedEmails);
 
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
-  const { cohortIds, cohortNames } = await resolveCohortIdsAndNamesForImport(orgId, data);
-  const accessNames = [...courseNames, ...cohortNames];
+  const cohorts = await resolveCohortsForImport(orgId, data);
+  const cohortIds = cohorts.map((cohort) => cohort.id);
+  const accessNames = [...courseNames, ...cohorts.map((cohort) => cohort.name).filter(Boolean)];
   const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
 
-  const assignedToCourses = await enrollAudienceStudentProfilesInCourses(
+  const courseGroups = courseIds.length > 0 ? await getOrgCourseGroups(orgId, courseIds) : [];
+  const getCohortCourses = lazyCohortCourses(cohortIds);
+  const enrolment: TAudienceEnrolment = {
     orgId,
     organization,
+    shouldSendEmail: data.sendEmail,
+    source,
+    actorProfileId: invitedByProfileId
+  };
+  const existingStudentEmails =
+    courseGroups.length > 0 || cohorts.length > 0
+      ? await getStudentEmailsByProfileId(orgId, existingStudentProfileIds)
+      : new Map<string, string>();
+
+  const assignedToCourses = await enrollAudienceStudentProfilesInCourses(
+    enrolment,
+    existingStudentEmails,
     existingStudentProfileIds,
-    courseIds,
-    data.sendEmail,
-    source
+    courseGroups
   );
   const assignedToCohorts = await enrollAudienceStudentProfilesInCohorts(
-    organization,
-    orgId,
+    enrolment,
+    existingStudentEmails,
     existingStudentProfileIds,
-    cohortIds,
-    data.sendEmail,
-    source,
-    invitedByProfileId
+    cohorts,
+    getCohortCourses
   );
 
   let imported = 0;
@@ -624,38 +647,26 @@ export async function importAudienceMembers(
       }
     }
 
-    if (courseIds.length > 0) {
-      const courseGroupMappings = await getCourseGroupIds(courseIds);
-      const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
+    const validGroupIds = courseGroups.map((courseGroup) => courseGroup.groupId).filter(Boolean) as string[];
+    const profiles = validGroupIds.length > 0 || cohorts.length > 0 ? await getProfilesByEmails(addedEmails) : [];
+    const profileIds = profiles.map((profile) => profile.id);
 
-      if (validGroupIds.length > 0) {
-        const profiles = await getProfilesByEmails(addedEmails);
-        if (profiles.length > 0) {
-          const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
-          const enrolledMembers = await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
-          await invalidateOrgStats(orgId);
-          captureLearnersEnrolled(enrolledMembers, 'audience', source);
-          await ensureComplianceEnrollmentRecordsForProfiles(
-            courseIds,
-            profiles.map((profile) => profile.id)
-          );
-        }
-      }
+    if (validGroupIds.length > 0 && profiles.length > 0) {
+      const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
+      const enrolledMembers = await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
+      await invalidateOrgStats(orgId);
+      captureLearnersEnrolled(enrolledMembers, 'audience', source);
+      await ensureComplianceEnrollmentRecordsForProfiles(courseIds, profileIds);
     }
 
-    if (cohortIds.length > 0) {
-      const profiles = await getProfilesByEmails(addedEmails);
-      if (profiles.length > 0) {
-        await enrollAudienceStudentProfilesInCohorts(
-          organization,
-          orgId,
-          profiles.map((profile) => profile.id),
-          cohortIds,
-          false,
-          source,
-          invitedByProfileId
-        );
-      }
+    if (cohorts.length > 0 && profiles.length > 0) {
+      await enrollAudienceStudentProfilesInCohorts(
+        { ...enrolment, shouldSendEmail: false },
+        await getStudentEmailsByProfileId(orgId, profileIds),
+        profileIds,
+        cohorts,
+        getCohortCourses
+      );
     }
 
     const inviteOutcome = await createStudentOrgInvitesAndSendEmails({
@@ -919,6 +930,16 @@ export async function assignAudienceToCourses(
   let assignedToCourses = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
   let assignedToCohorts = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
 
+  const enrolment: TAudienceEnrolment = {
+    orgId,
+    organization,
+    shouldSendEmail: data.sendEmail,
+    source,
+    actorProfileId
+  };
+  let studentEmails: Promise<Map<string, string>> | undefined;
+  const getStudentEmails = () => (studentEmails ??= getStudentEmailsByProfileId(orgId, data.profileIds));
+
   if (courseIds.length > 0) {
     const courseGroups = await getOrgCourseGroups(orgId, courseIds);
     if (courseGroups.length === 0) {
@@ -926,12 +947,10 @@ export async function assignAudienceToCourses(
     }
 
     assignedToCourses = await enrollAudienceStudentProfilesInCourses(
-      orgId,
-      organization,
+      enrolment,
+      await getStudentEmails(),
       data.profileIds,
-      courseIds,
-      data.sendEmail,
-      source
+      courseGroups
     );
   }
 
@@ -942,13 +961,11 @@ export async function assignAudienceToCourses(
     }
 
     assignedToCohorts = await enrollAudienceStudentProfilesInCohorts(
-      organization,
-      orgId,
+      enrolment,
+      await getStudentEmails(),
       data.profileIds,
-      cohortIds,
-      data.sendEmail,
-      source,
-      actorProfileId
+      cohorts,
+      lazyCohortCourses(cohorts.map((cohort) => cohort.id))
     );
   }
 
