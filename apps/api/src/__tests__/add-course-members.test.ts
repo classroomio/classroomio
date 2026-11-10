@@ -22,8 +22,8 @@ vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
   invalidateOrgStats: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/auth', () => ({ getProfileById: vi.fn() }));
-vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmail: vi.fn() }));
+vi.mock('@cio/db/queries/auth', () => ({ getProfilesByIds: vi.fn() }));
+vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmails: vi.fn() }));
 vi.mock('@api/services/course/session-invite', () => ({ getWelcomeSessionIcs: vi.fn() }));
 vi.mock('@api/services/product-events', () => ({ captureLearnersEnrolled: vi.fn() }));
 vi.mock('@cio/core/config/dashboard-url', () => ({ getDashboardBaseUrl: vi.fn(() => 'https://acme.classroomio.com') }));
@@ -37,8 +37,8 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
 import { ROLE } from '@cio/utils/constants';
 import { addCourseMember, getCourseMember, updateCourseMember } from '@cio/db/queries/course/people';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
-import { getProfileById } from '@cio/db/queries/auth';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { getProfilesByIds } from '@cio/db/queries/auth';
+import { enqueueTransactionalEmails } from '@api/services/jobs';
 import { addMembers, updateMember } from '@api/services/course/people';
 
 const uniqueViolation = new Error('Failed to add course member: duplicate key', {
@@ -56,7 +56,9 @@ const mockCourseOrgData = () =>
   } as Awaited<ReturnType<typeof getCourseWithOrgData>>);
 
 const sentEmails = () =>
-  vi.mocked(enqueueTransactionalEmail).mock.calls.map(([emailId, payload]) => ({ emailId, ...payload }));
+  vi
+    .mocked(enqueueTransactionalEmails)
+    .mock.calls.flatMap(([emailId, inputs]) => inputs.map((input) => ({ emailId, ...input })));
 
 describe('changing a member email to one already in the course', () => {
   it('updateMember returns 409 instead of a 500', async () => {
@@ -93,8 +95,12 @@ describe('welcome emails when adding course members', () => {
     vi.mocked(addCourseMember).mockImplementation(
       async (_courseId, member) => ({ id: 'member-1', groupId: 'group-1', ...member }) as never
     );
-    vi.mocked(enqueueTransactionalEmail).mockResolvedValue([] as never);
-    vi.mocked(getProfileById).mockResolvedValue({ email: 'ada@example.com', fullname: 'Ada' } as never);
+    vi.mocked(enqueueTransactionalEmails).mockImplementation(async (_emailId, inputs) =>
+      inputs.map(() => ({ ok: true as const, jobIds: [] }))
+    );
+    vi.mocked(getProfilesByIds).mockResolvedValue([
+      { id: 'profile-1', email: 'ada@example.com', fullname: 'Ada' }
+    ] as never);
   });
 
   it('sends a student the course welcome with the same key as Audience → Assign courses', async () => {
@@ -120,7 +126,7 @@ describe('welcome emails when adding course members', () => {
   it('sends to the given email when there is no profile yet', async () => {
     await addMembers('course-1', [{ roleId: ROLE.STUDENT, email: 'pending@example.com' }]);
 
-    expect(getProfileById).not.toHaveBeenCalled();
+    expect(getProfilesByIds).not.toHaveBeenCalled();
     expect(sentEmails()).toEqual([
       expect.objectContaining({
         to: 'pending@example.com',
@@ -141,7 +147,7 @@ describe('welcome emails when adding course members', () => {
       { sendEmail: false }
     );
 
-    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalled();
   });
 
   it('still sends a tutor the teacher welcome and not the student one', async () => {
@@ -153,7 +159,7 @@ describe('welcome emails when adding course members', () => {
   });
 
   it('keeps the member added when the email fails to queue', async () => {
-    vi.mocked(enqueueTransactionalEmail).mockRejectedValue(new Error('queue down'));
+    vi.mocked(enqueueTransactionalEmails).mockRejectedValue(new Error('queue down'));
 
     await expect(addMembers('course-1', [{ roleId: ROLE.STUDENT, profileId: 'profile-1' }])).resolves.toHaveLength(1);
   });

@@ -54,7 +54,10 @@ vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
 }));
 
 vi.mock('@api/services/jobs', () => ({
-  enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined)
+  enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined),
+  enqueueTransactionalEmails: vi.fn(async (_emailId: string, inputs: unknown[]) =>
+    inputs.map(() => ({ ok: true, jobIds: [] }))
+  )
 }));
 
 vi.mock('@api/services/organization/student-limit', () => ({
@@ -76,7 +79,7 @@ import {
   getOrganizationMembersByNormalizedEmails
 } from '@cio/db/queries/organization';
 import { getCohortsByOrg } from '@cio/db/queries/cohort';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { enqueueTransactionalEmails } from '@api/services/jobs';
 import {
   assertStudentCapacityOrThrow,
   getRemainingStudentSeats,
@@ -280,10 +283,9 @@ describe('importAudienceMembers — cohort invites', () => {
         metadata: expect.objectContaining({ cohortIds: ['cohort-1'] })
       })
     ]);
-    expect(enqueueTransactionalEmail).toHaveBeenCalledWith(
-      'studentOrgInvite',
+    expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentOrgInvite', [
       expect.objectContaining({ to: 'new@test.dev' })
-    );
+    ]);
     expect(result.emailsSent).toBe(1);
   });
 
@@ -291,7 +293,7 @@ describe('importAudienceMembers — cohort invites', () => {
     const result = await importAudienceMembers(ORG, cohortInvite(false, 'new@test.dev'), ACTOR);
 
     expect(createOrganizationInvites).toHaveBeenCalled();
-    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalled();
     expect(result.emailsSent).toBe(0);
   });
 

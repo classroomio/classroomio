@@ -128,6 +128,12 @@ export async function getProfilesByEmails(emails: string[]) {
   return db.select().from(schema.profile).where(inArray(schema.profile.email, emails));
 }
 
+export async function getProfilesByIds(ids: string[]) {
+  if (ids.length === 0) return [];
+
+  return db.select().from(schema.profile).where(inArray(schema.profile.id, ids));
+}
+
 export const updateProfile = async (
   id: string,
   data: Partial<Omit<TProfile, 'id' | 'createdAt' | 'updatedAt'>>,

@@ -15,7 +15,7 @@ import type {
 import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { enqueueTransactionalEmail, enqueueTransactionalEmails, type EnqueueOutcome } from '@api/services/jobs';
 import {
   addCohortMember,
   getCohortsByOrg,
@@ -53,25 +53,19 @@ import { captureLearnerInvited, captureLearnersEnrolled } from '@api/services/pr
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ORG_INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
-/** Parallel outbound invite emails; avoids sequential SMTP/API latency per recipient. */
-const EMAIL_SEND_CONCURRENCY = 5;
+function countEnqueuedEmails(outcomes: EnqueueOutcome[], recipients: string[], caller: string): number {
+  let sent = 0;
 
-async function mapWithConcurrency<T, R>(items: T[], concurrency: number, fn: (item: T) => Promise<R>): Promise<R[]> {
-  if (items.length === 0) {
-    return [];
-  }
-  const results: R[] = new Array(items.length);
-  let next = 0;
-  const workerCount = Math.min(concurrency, items.length);
-  const workers = Array.from({ length: workerCount }, async () => {
-    while (true) {
-      const i = next++;
-      if (i >= items.length) break;
-      results[i] = await fn(items[i]);
+  outcomes.forEach((outcome, index) => {
+    if (outcome.ok) {
+      sent++;
+      return;
     }
+
+    console.error(`${caller} enqueue error for ${recipients[index]}:`, outcome.error);
   });
-  await Promise.all(workers);
-  return results;
+
+  return sent;
 }
 
 function hashToken(token: string): string {
@@ -194,32 +188,32 @@ async function enrollAudienceStudentProfilesInCourses(
       await Promise.all(courseGroups.map(async (cg) => [cg.groupId, await getWelcomeSessionIcs(cg.courseId)] as const))
     );
 
-    const emailPromises = toInsert
-      .filter((p) => profileEmailMap.get(p.profileId))
-      .map(async (p) => {
-        const email = profileEmailMap.get(p.profileId)!;
-        try {
-          await enqueueTransactionalEmail('studentCourseWelcome', {
-            to: email,
-            fields: {
-              orgName: organization.name,
-              courseName: courseTitleByGroupId.get(p.groupId) || 'Course',
-              loginUrl,
-              customMessage: welcomeMessageByGroupId.get(p.groupId) ?? undefined,
-              branding: buildEmailBranding(organization)
-            },
-            from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-            idempotencyKey: `audience-course-welcome:${p.groupId}:${p.profileId}`,
-            ics: icsByGroupId.get(p.groupId),
-            preference: { organizationId: orgId, recipientProfileId: p.profileId }
-          });
-          emailsSent++;
-        } catch (emailError) {
-          console.error(`enrollAudienceStudentProfilesInCourses enqueue error for ${email}:`, emailError);
-        }
-      });
+    const recipients = toInsert.filter((p) => profileEmailMap.get(p.profileId));
+    const branding = buildEmailBranding(organization);
+    const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
+    const outcomes = await enqueueTransactionalEmails(
+      'studentCourseWelcome',
+      recipients.map((p) => ({
+        to: profileEmailMap.get(p.profileId)!,
+        fields: {
+          orgName: organization.name,
+          courseName: courseTitleByGroupId.get(p.groupId) || 'Course',
+          loginUrl,
+          customMessage: welcomeMessageByGroupId.get(p.groupId) ?? undefined,
+          branding
+        },
+        from,
+        idempotencyKey: `audience-course-welcome:${p.groupId}:${p.profileId}`,
+        ics: icsByGroupId.get(p.groupId),
+        preference: { organizationId: orgId, recipientProfileId: p.profileId }
+      }))
+    );
 
-    await Promise.all(emailPromises);
+    emailsSent = countEnqueuedEmails(
+      outcomes,
+      recipients.map((p) => profileEmailMap.get(p.profileId)!),
+      'enrollAudienceStudentProfilesInCourses'
+    );
   }
 
   return {
@@ -311,30 +305,29 @@ async function enrollAudienceStudentProfilesInCohorts(
   let emailsSent = 0;
 
   if (shouldSendEmail && toInsert.length > 0) {
-    await Promise.all(
-      toInsert
-        .filter((pair) => profileEmailMap.get(pair.profileId))
-        .map(async (pair) => {
-          const email = profileEmailMap.get(pair.profileId)!;
+    const recipients = toInsert.filter((pair) => profileEmailMap.get(pair.profileId));
+    const branding = buildEmailBranding(organization);
+    const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
+    const outcomes = await enqueueTransactionalEmails(
+      'studentCohortWelcome',
+      recipients.map((pair) => ({
+        to: profileEmailMap.get(pair.profileId)!,
+        fields: {
+          orgName: organization.name,
+          cohortName: cohortNameById.get(pair.cohortId) || 'Cohort',
+          loginUrl,
+          branding
+        },
+        from,
+        idempotencyKey: `audience-cohort-welcome:${pair.cohortId}:${pair.profileId}`,
+        preference: { organizationId: orgId, recipientProfileId: pair.profileId }
+      }))
+    );
 
-          try {
-            await enqueueTransactionalEmail('studentCohortWelcome', {
-              to: email,
-              fields: {
-                orgName: organization.name,
-                cohortName: cohortNameById.get(pair.cohortId) || 'Cohort',
-                loginUrl,
-                branding: buildEmailBranding(organization)
-              },
-              from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-              idempotencyKey: `audience-cohort-welcome:${pair.cohortId}:${pair.profileId}`,
-              preference: { organizationId: orgId, recipientProfileId: pair.profileId }
-            });
-            emailsSent++;
-          } catch (emailError) {
-            console.error(`enrollAudienceStudentProfilesInCohorts enqueue error for ${email}:`, emailError);
-          }
-        })
+    emailsSent = countEnqueuedEmails(
+      outcomes,
+      recipients.map((pair) => profileEmailMap.get(pair.profileId)!),
+      'enrollAudienceStudentProfilesInCohorts'
     );
   }
 
@@ -418,38 +411,34 @@ async function createStudentOrgInvitesAndSendEmails(input: {
   let emailsFailed = 0;
 
   if (shouldSendEmail) {
-    const emailOutcomes = await mapWithConcurrency(emails, EMAIL_SEND_CONCURRENCY, async (email) => {
-      const invite = inviteByEmail.get(email)!;
-      const token = tokenByEmail.get(email)!;
-      try {
-        const inviteLink = buildInviteLink(token, organization);
-        await enqueueTransactionalEmail('studentOrgInvite', {
-          to: email,
-          fields: {
-            email,
-            orgName: organization.name,
-            inviteLink,
-            expiresAt: getExpiryLabel(expiresAt),
-            courseNames: accessNamesLabel,
-            branding: buildEmailBranding(organization)
-          },
-          from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-          organizationId: orgId,
-          idempotencyKey: `student-org-invite:${invite.id}`
-        });
-
-        // Optimistic — see comment in services/organization/invite.ts.
-        return {
-          inviteId: invite.id,
+    const branding = buildEmailBranding(organization);
+    const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
+    const expiresAtLabel = getExpiryLabel(expiresAt);
+    const enqueueOutcomes = await enqueueTransactionalEmails(
+      'studentOrgInvite',
+      emails.map((email) => ({
+        to: email,
+        fields: {
           email,
-          success: true as const,
-          error: undefined as string | undefined
-        };
-      } catch (emailError) {
-        const message = emailError instanceof Error ? emailError.message : 'Unknown email error';
-        return { inviteId: invite.id, email, success: false as const, error: message };
-      }
-    });
+          orgName: organization.name,
+          inviteLink: buildInviteLink(tokenByEmail.get(email)!, organization),
+          expiresAt: expiresAtLabel,
+          courseNames: accessNamesLabel,
+          branding
+        },
+        from,
+        organizationId: orgId,
+        idempotencyKey: `student-org-invite:${inviteByEmail.get(email)!.id}`
+      }))
+    );
+
+    // Optimistic — see comment in services/organization/invite.ts.
+    const emailOutcomes = enqueueOutcomes.map((outcome, index) => ({
+      inviteId: inviteByEmail.get(emails[index])!.id,
+      email: emails[index],
+      success: outcome.ok,
+      error: outcome.ok ? undefined : outcome.error.message
+    }));
 
     emailsSent = emailOutcomes.filter((o) => o.success).length;
     emailsFailed = emailOutcomes.length - emailsSent;

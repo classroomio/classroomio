@@ -26,9 +26,9 @@ import { getCourseProgress } from '@cio/db/queries/course/course';
 import { getWebhookLastActiveAt } from '@cio/db/queries/webhook';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
-import { getProfileById } from '@cio/db/queries/auth';
+import { getProfilesByIds } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { enqueueTransactionalEmails } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
@@ -132,33 +132,86 @@ type TCourseOrgData = NonNullable<Awaited<ReturnType<typeof getCourseWithOrgData
 /**
  * Uses the same idempotency key as Audience → Assign courses, so a student added both ways gets one email.
  */
-async function sendStudentCourseWelcome(
+async function sendStudentCourseWelcomes(
   courseId: string,
   courseOrgData: TCourseOrgData,
-  student: TAddCourseMembers[number],
+  students: TAddCourseMembers,
   delivery: { baseUrl: string; branding: ReturnType<typeof buildEmailBranding>; ics?: string }
 ) {
-  const to = student.profileId ? (await getProfileById(student.profileId))?.email : student.email;
-  if (!to) return;
-
+  const profileIds = students.flatMap((student) => (student.profileId ? [student.profileId] : []));
+  const profiles = profileIds.length > 0 ? await getProfilesByIds(profileIds) : [];
+  const emailByProfileId = new Map(profiles.map((profile) => [profile.id, profile.email]));
   const orgName = courseOrgData.orgName || 'ClassroomIO';
-  const idempotencyKey = student.profileId
-    ? `audience-course-welcome:${courseOrgData.groupId}:${student.profileId}`
-    : `course-people-student-welcome:${courseId}:${to}`;
+  const from = buildEmailFromName(`${orgName} (via ClassroomIO.com)`);
 
-  await enqueueTransactionalEmail('studentCourseWelcome', {
-    to,
-    fields: {
-      orgName,
-      courseName: courseOrgData.courseTitle || 'Course',
-      loginUrl: delivery.baseUrl,
-      customMessage: courseOrgData.welcomeEmailMessage ?? undefined,
-      branding: delivery.branding
-    },
-    from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-    idempotencyKey,
-    ics: delivery.ics,
-    preference: { organizationId: courseOrgData.orgId, recipientProfileId: student.profileId }
+  const inputs = students.flatMap((student) => {
+    const to = student.profileId ? emailByProfileId.get(student.profileId) : student.email;
+    if (!to) return [];
+
+    return [
+      {
+        to,
+        fields: {
+          orgName,
+          courseName: courseOrgData.courseTitle || 'Course',
+          loginUrl: delivery.baseUrl,
+          customMessage: courseOrgData.welcomeEmailMessage ?? undefined,
+          branding: delivery.branding
+        },
+        from,
+        idempotencyKey: student.profileId
+          ? `audience-course-welcome:${courseOrgData.groupId}:${student.profileId}`
+          : `course-people-student-welcome:${courseId}:${to}`,
+        ics: delivery.ics,
+        preference: { organizationId: courseOrgData.orgId, recipientProfileId: student.profileId }
+      }
+    ];
+  });
+
+  if (inputs.length === 0) return;
+
+  const outcomes = await enqueueTransactionalEmails('studentCourseWelcome', inputs);
+
+  outcomes.forEach((outcome, index) => {
+    if (!outcome.ok) console.error(`Failed to enqueue student welcome email to ${inputs[index].to}:`, outcome.error);
+  });
+}
+
+async function sendTeacherCourseWelcomes(
+  courseId: string,
+  courseOrgData: TCourseOrgData,
+  teachers: TAddCourseMembers,
+  delivery: { inviteLink: string; branding: ReturnType<typeof buildEmailBranding> }
+) {
+  const orgName = courseOrgData.orgName || 'ClassroomIO';
+  const from = buildEmailFromName(`${orgName} (via ClassroomIO.com)`);
+
+  const inputs = teachers.flatMap(({ email, name }) =>
+    email && name
+      ? [
+          {
+            to: email,
+            fields: {
+              name,
+              orgName,
+              courseName: courseOrgData.courseTitle || '',
+              inviteLink: delivery.inviteLink,
+              branding: delivery.branding
+            },
+            from,
+            idempotencyKey: `teacher-course-welcome:${courseId}:${email}`,
+            preference: { organizationId: courseOrgData.orgId }
+          }
+        ]
+      : []
+  );
+
+  if (inputs.length === 0) return;
+
+  const outcomes = await enqueueTransactionalEmails('teacherCourseWelcome', inputs);
+
+  outcomes.forEach((outcome, index) => {
+    if (!outcome.ok) console.error(`Failed to enqueue welcome email to ${inputs[index].to}:`, outcome.error);
   });
 }
 
@@ -200,8 +253,6 @@ export async function addMembers(
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);
     }
 
-    const courseName = courseOrgData.courseTitle || '';
-    const orgName = courseOrgData.orgName || 'ClassroomIO';
     const orgSiteName = courseOrgData.orgSiteName || '';
     const branding = buildEmailBranding({
       name: courseOrgData.orgName,
@@ -253,55 +304,18 @@ export async function addMembers(
     });
     const inviteLink = `${baseUrl}/org/${orgSiteName}/courses`;
 
-    const emailPromises: Promise<unknown>[] = [];
     const addedStudents = members.filter((member) => member.roleId === ROLE.STUDENT);
+    const addedTeachers = members.filter((member) => member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR);
     const welcomeIcs = addedStudents.length > 0 ? await getWelcomeSessionIcs(courseId) : undefined;
 
-    for (const student of addedStudents) {
-      emailPromises.push(
-        sendStudentCourseWelcome(courseId, courseOrgData, student, { baseUrl, branding, ics: welcomeIcs }).catch(
-          (emailError) => {
-            console.error('Failed to enqueue student welcome email:', emailError);
-          }
-        )
-      );
-    }
-
-    addedMembers.forEach((member, index) => {
-      const memberData = members[index];
-      const roleId = memberData.roleId;
-      const email = memberData.email;
-      const name = memberData.name;
-
-      if ((roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) && email && name) {
-        emailPromises.push(
-          enqueueTransactionalEmail('teacherCourseWelcome', {
-            to: email,
-            fields: {
-              name,
-              orgName,
-              courseName,
-              inviteLink,
-              branding
-            },
-            from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-            idempotencyKey: `teacher-course-welcome:${courseId}:${email}`,
-            preference: { organizationId: courseOrgData.orgId }
-          }).catch((emailError) => {
-            console.error(`Failed to enqueue welcome email to ${email}:`, emailError);
-            return [];
-          })
-        );
-      }
-    });
-
-    if (emailPromises.length > 0) {
-      try {
-        await Promise.all(emailPromises);
-      } catch (emailError) {
-        console.error('Failed to enqueue welcome emails:', emailError);
-      }
-    }
+    await Promise.all([
+      sendStudentCourseWelcomes(courseId, courseOrgData, addedStudents, { baseUrl, branding, ics: welcomeIcs }).catch(
+        (emailError) => console.error('Failed to enqueue student welcome emails:', emailError)
+      ),
+      sendTeacherCourseWelcomes(courseId, courseOrgData, addedTeachers, { inviteLink, branding }).catch((emailError) =>
+        console.error('Failed to enqueue teacher welcome emails:', emailError)
+      )
+    ]);
 
     return addedMembers;
   } catch (error) {

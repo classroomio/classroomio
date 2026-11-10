@@ -34,3 +34,26 @@ export async function enqueueEmailSend(
 
   return job.id;
 }
+
+export type EmailSendJob = { payload: TSendEmailPayload; idempotencyKey?: string };
+
+/**
+ * Enqueue many `emails:send` jobs in one Redis round trip. Deduplicates on `jobId` like `enqueueEmailSend`.
+ * Returns the job ids in input order.
+ */
+export async function enqueueEmailSends(jobs: EmailSendJob[]): Promise<(string | undefined)[]> {
+  if (jobs.length === 0) return [];
+
+  const added = await getQueue(QUEUE_NAMES.emails).addBulk(
+    jobs.map(({ payload, idempotencyKey }) => ({
+      name: JOB_NAMES.emails.send,
+      data: payload,
+      opts: {
+        ...QUEUE_DEFAULTS[QUEUE_NAMES.emails],
+        ...(idempotencyKey ? { jobId: toEmailJobId(idempotencyKey) } : {})
+      }
+    }))
+  );
+
+  return added.map((job) => job.id);
+}
