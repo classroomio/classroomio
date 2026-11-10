@@ -38,6 +38,7 @@ function buildApp(scopes: string[], oauthConsentId: string | null = null) {
       c.json({ success: true }, 201)
     )
     .put('/courses/:courseId/members/:memberId', (c) => c.json({ success: true }))
+    .post('/courses/:courseId/enrollments', (c) => c.json({ success: true }, 201))
     .get('/courses/:courseId', (c) => c.json({ success: true }))
     .get('/courses', (c) => c.json({ success: true }))
     .post('/courses', (c) => c.json({ success: true }, 201))
@@ -129,6 +130,18 @@ describe('publicApiScopesMiddleware', () => {
     const app = buildApp(['course:member:write']);
 
     expect((await app.request('/public-api/v1/courses/c1/members/m1', { method: 'PUT' })).status).toBe(200);
+  });
+
+  it('lets course:member:write enroll a student through the enrollments route', async () => {
+    const app = buildApp(['course:member:write']);
+
+    expect((await app.request('/public-api/v1/courses/c1/enrollments', { method: 'POST' })).status).toBe(201);
+  });
+
+  it('keeps course:read keys out of the enrollments route', async () => {
+    const app = buildApp(['course:read']);
+
+    expect((await app.request('/public-api/v1/courses/c1/enrollments', { method: 'POST' })).status).toBe(403);
   });
 
   it('lets a media:write key create an asset upload', async () => {

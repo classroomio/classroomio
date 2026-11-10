@@ -20,8 +20,10 @@ const ENROLLMENT_INVITE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 /**
  * Enrolls `email` as a student: an existing organization student is added directly, someone new gets a single-use
  * invite. Repeating the call changes nothing and reports `already_enrolled` or `already_invited`. A new invite
- * spends the actor's course invite budget, which repeats do not. When the invitation email cannot be queued, the
- * fresh invite is revoked and the call fails, so a retry sends a new email instead of reporting `already_invited`.
+ * spends the actor's course invite budget: it is reserved first so over-limit callers are rejected before any
+ * reads, and every path that creates nothing gives it back. Archived organization members are refused instead of
+ * gaining a course seat they cannot use. When the invitation email cannot be queued, the fresh invite is revoked
+ * and the call fails, so a retry sends a new email instead of reporting `already_invited`.
  */
 export async function enrollCourseStudentService(
   orgId: string,
@@ -53,6 +55,15 @@ export async function enrollCourseStudentService(
     );
   }
 
+  if (organizationMember && organizationMember.status !== 'ACTIVE') {
+    throw new AppError(
+      'This email belongs to an archived organization member. Restore them in the dashboard before enrolling',
+      ErrorCodes.ORG_MEMBER_ARCHIVED,
+      409,
+      'email'
+    );
+  }
+
   if (organizationMember) {
     const member = await addCourseMemberService(
       orgId,
@@ -73,13 +84,18 @@ export async function enrollCourseStudentService(
     return { status: 'already_invited' as const, memberId: null, inviteId: activeInviteId, email };
   }
 
-  const context = await resolveCourseInviteContext(params.courseId);
   const releaseInviteBudget = await reserveCourseInviteCreation(actorId, params.courseId);
-  const expiresAt = new Date(Date.now() + ENROLLMENT_INVITE_TTL_MS).toISOString();
+  let budgetReleased = false;
+  const releaseBudgetOnce = async () => {
+    if (budgetReleased) return;
+    budgetReleased = true;
+    await releaseInviteBudget();
+  };
 
-  let invite: TCreateEmailInviteResult;
   try {
-    invite = await createEmailInviteAndSend({
+    const context = await resolveCourseInviteContext(params.courseId);
+    const expiresAt = new Date(Date.now() + ENROLLMENT_INVITE_TTL_MS).toISOString();
+    const invite: TCreateEmailInviteResult = await createEmailInviteAndSend({
       courseId: params.courseId,
       createdByProfileId: actorId,
       recipientEmail: email,
@@ -93,37 +109,37 @@ export async function enrollCourseStudentService(
       shouldSend: payload.sendEmail,
       reuseActiveInvite: true
     });
-  } catch (error) {
-    await releaseInviteBudget();
-    throw error;
-  }
 
-  if (!invite.created) {
-    await releaseInviteBudget();
+    if (!invite.created) {
+      await releaseBudgetOnce();
 
-    return { status: 'already_invited' as const, memberId: null, inviteId: invite.inviteId, email };
-  }
-
-  if (payload.sendEmail && invite.error) {
-    try {
-      await revokeCourseInvite(params.courseId, invite.inviteId, actorId);
-    } catch (revokeError) {
-      console.error('Enrollment invite cleanup failed:', { inviteId: invite.inviteId, error: revokeError });
+      return { status: 'already_invited' as const, memberId: null, inviteId: invite.inviteId, email };
     }
 
-    await releaseInviteBudget();
-    throw new AppError('Failed to send the course invitation email', ErrorCodes.INTERNAL_ERROR, 500, 'email');
+    if (payload.sendEmail && invite.error) {
+      try {
+        await revokeCourseInvite(params.courseId, invite.inviteId, actorId);
+      } catch (revokeError) {
+        console.error('Enrollment invite cleanup failed:', { inviteId: invite.inviteId, error: revokeError });
+      }
+
+      await releaseBudgetOnce();
+      throw new AppError('Failed to send the course invitation email', ErrorCodes.INTERNAL_ERROR, 500, 'email');
+    }
+
+    captureLearnerInvited({
+      profileId: actorId,
+      orgId,
+      target: 'course',
+      inviteType: 'email',
+      count: 1,
+      courseId: params.courseId,
+      source
+    });
+
+    return { status: 'invited' as const, memberId: null, inviteId: invite.inviteId, email };
+  } catch (error) {
+    await releaseBudgetOnce();
+    throw error;
   }
-
-  captureLearnerInvited({
-    profileId: actorId,
-    orgId,
-    target: 'course',
-    inviteType: 'email',
-    count: 1,
-    courseId: params.courseId,
-    source
-  });
-
-  return { status: 'invited' as const, memberId: null, inviteId: invite.inviteId, email };
 }
