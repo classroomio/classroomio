@@ -32,6 +32,7 @@
       </Dialog.Description>
       <p class="ui:text-muted-foreground text-sm">
         {$t(`${T}.zapier_side`)}
+        <!-- eslint-disable svelte/no-navigation-without-resolve -- links to the absolute Zapier connections URL, not an internal route. -->
         <a
           href={ZAPIER_URLS.connections}
           target="_blank"
@@ -42,6 +43,7 @@
           {$t(`${T}.open_zapier_connections`)}
           <ArrowUpRightIcon size={14} />
         </a>
+        <!-- eslint-enable svelte/no-navigation-without-resolve -->
       </p>
     </Dialog.Header>
     <Dialog.Footer>

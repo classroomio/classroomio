@@ -22,6 +22,7 @@
   <Alert.Description>
     <p>
       {$t(`${T}.note`)}
+      <!-- eslint-disable svelte/no-navigation-without-resolve -- inviteUrl is an absolute Zapier URL from env, not an internal route. -->
       <a
         href={inviteUrl}
         target="_blank"
@@ -33,6 +34,7 @@
         {$t(`${T}.step_1_button`)}
         <ArrowUpRightIcon size={14} />
       </a>
+      <!-- eslint-enable svelte/no-navigation-without-resolve -->
     </p>
   </Alert.Description>
 </Alert.Root>

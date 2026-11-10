@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import * as Alert from '@cio/ui/base/alert';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
@@ -73,7 +74,10 @@
           organization: $currentOrg.name,
           access: $t(`${T}.connection.access_${getZapierAccess(connection.scopes)}`)
         })}
-        <a href={`${$currentOrgPath}/automation/zapier`} class="ui:text-primary font-medium hover:underline">
+        <a
+          href={resolve(`${$currentOrgPath}/automation/zapier`, {})}
+          class="ui:text-primary font-medium hover:underline"
+        >
           {$t(`${T}.app_page.manage`)}
         </a>
       </p>

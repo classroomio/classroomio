@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import * as Card from '@cio/ui/base/card';
   import type { TZapierPartnerApp } from '@cio/utils/constants/zapier';
 
@@ -16,7 +17,7 @@
 </script>
 
 <a
-  {href}
+  href={resolve(href, {})}
   class="ui:focus-visible:ring-ring/50 block h-full rounded-xl focus-visible:ring-[3px] focus-visible:outline-none"
   data-testid="zapier-app-card-{app.slug}"
 >

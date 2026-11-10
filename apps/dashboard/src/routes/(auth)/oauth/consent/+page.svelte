@@ -41,14 +41,18 @@
   const isValidRequest = $derived(isOAuthAuthorizationQuery(page.url.searchParams));
   const scopes = $derived(parseOAuthScopeParam(page.url.searchParams.get('scope')));
   const canRequestChanges = $derived(canOAuthScopesChangeData(scopes));
-  const grantedScopes = $derived(allowChanges ? scopes : getReadOnlyOAuthScopes(scopes));
+  const readOnlyScopes = $derived(getReadOnlyOAuthScopes(scopes));
+  const grantedScopes = $derived(allowChanges ? scopes : readOnlyScopes);
+  const canNarrowScopes = $derived(canRequestChanges && readOnlyScopes.length > 0);
   const scopeSummaries = $derived(summarizeOAuthScopes(grantedScopes));
   const clientName = $derived(oauthApi.client?.client_name || t.get('oauth.consent.unknown_client'));
   const selectedOrganization = $derived(
     oauthApi.selectedOrganization?.id === selectedOrganizationId ? oauthApi.selectedOrganization : null
   );
   const hasWorkspaces = $derived((oauthApi.organizations?.length ?? 0) > 0);
-  const eligibleOrganizations = $derived((oauthApi.organizations ?? []).filter((organization) => organization.eligible));
+  const eligibleOrganizations = $derived(
+    (oauthApi.organizations ?? []).filter((organization) => organization.eligible)
+  );
   const hasEligibleWorkspaces = $derived(eligibleOrganizations.length > 0);
   const isSubmitting = $derived(pendingDecision !== null || oauthApi.isLoading);
   const canApprove = $derived(Boolean(savedOrganizationId) && savedOrganizationId === selectedOrganizationId);
@@ -129,6 +133,7 @@
 
   async function respond(accept: boolean) {
     if (isSubmitting) return;
+    if (accept && grantedScopes.length === 0) return;
 
     pendingDecision = accept ? 'allow' : 'deny';
 
@@ -343,7 +348,7 @@
         </ul>
       </div>
 
-      {#if canRequestChanges}
+      {#if canNarrowScopes}
         <Field.Field orientation="horizontal">
           <Switch id="oauth-consent-allow-changes" bind:checked={allowChanges} disabled={isSubmitting} />
           <div class="space-y-0.5">
@@ -384,7 +389,7 @@
           type="submit"
           class="flex-1"
           loading={pendingDecision === 'allow'}
-          disabled={!canApprove || isSubmitting}
+          disabled={!canApprove || isSubmitting || grantedScopes.length === 0}
           testId="oauth-consent-allow"
         >
           {$t('oauth.consent.allow')}
