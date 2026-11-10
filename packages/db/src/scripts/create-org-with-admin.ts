@@ -71,6 +71,10 @@ function parsePassword(value: string | undefined): string | undefined {
     throw new Error(`ADMIN_PASSWORD must be ${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} characters long.`);
   }
 
+  if (Buffer.byteLength(value, 'utf8') > 72) {
+    throw new Error('ADMIN_PASSWORD must not exceed 72 UTF-8 bytes.');
+  }
+
   return value;
 }
 
@@ -109,8 +113,8 @@ async function hasProfile(userId: string): Promise<boolean> {
   return rows.length > 0;
 }
 
-async function hasCredentialAccount(userId: string): Promise<boolean> {
-  const rows = await db
+async function hasCredentialAccount(userId: string, client: DbOrTxClient = db): Promise<boolean> {
+  const rows = await client
     .select({ id: account.id })
     .from(account)
     .where(and(eq(account.userId, userId), eq(account.providerId, 'credential')))
@@ -183,6 +187,11 @@ async function main() {
     }
 
     if (password) {
+      const credentialExistsInTransaction = await hasCredentialAccount(resolvedUserId, tx);
+      if (credentialExistsInTransaction) {
+        throw new Error(`${email} already has a password. Unset ADMIN_PASSWORD, or reset it with "Forgot password".`);
+      }
+
       await createCredentialAccount(resolvedUserId, password, tx);
     }
 
