@@ -26,7 +26,6 @@ const {
   getRecipeDirection,
   getRecipeMode,
   getZapierPrimaryRecipe,
-  getZapierSimilarApps,
   describeRecipe,
   dismissZapierInviteNote,
   sortRecipes,

@@ -37,11 +37,15 @@
     ...restProps
   }: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
     variant?: AlertVariant;
-    /** Shows a close button in the top-right corner that calls this handler. */
-    onDismiss?: () => void;
-    /** Accessible name of the close button. */
-    dismissLabel?: string;
-  } = $props();
+  } & (
+      | {
+          /** Shows a close button in the top-right corner that calls this handler. */
+          onDismiss: () => void;
+          /** Accessible name of the close button. */
+          dismissLabel: string;
+        }
+      | { onDismiss?: undefined; dismissLabel?: undefined }
+    ) = $props();
 </script>
 
 <div
