@@ -24,6 +24,10 @@ export const ZPublicApiEnrollCourseStudentResponse = z.object({
   ),
   memberId: z.uuid().nullable().describe('Course member id when the student is enrolled'),
   inviteId: z.uuid().nullable().describe('Pending course invite id when the student was invited'),
+  inviteLink: z
+    .string()
+    .nullable()
+    .describe('Enrollment URL for a newly created invite; null when reusing an existing member or invite'),
   email: z.string()
 });
 export type TPublicApiEnrollCourseStudentResponse = z.infer<typeof ZPublicApiEnrollCourseStudentResponse>;
