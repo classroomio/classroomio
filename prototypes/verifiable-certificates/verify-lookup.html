@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Verify a certificate · Acme Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <link rel="stylesheet" href="verify.css?v=6" />
+    <link rel="stylesheet" href="org-shell.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div id="os-top"></div>
+
+    <main class="vp-main">
+      <div class="vp-col">
+        <div class="vp-card">
+          <div class="vp-lookup-card">
+            <h1>Verify a certificate</h1>
+            <p>Enter the code printed under the QR code on an Acme Academy certificate, or scan the QR code to open its page directly.</p>
+            <form class="vp-lookup" id="lookup">
+              <input id="code" name="code" placeholder="Enter a code, e.g. 7KQM-4XH2" autocomplete="off" autofocus aria-label="Certificate code" />
+              <button class="lp-btn lp-btn-primary" type="submit">Verify</button>
+            </form>
+            <div class="vp-err" id="err" role="alert"></div>
+            <p class="vp-help" style="margin: 0">Try <button type="button" class="lp-btn" style="padding: 0 4px; border: 0; background: none; color: var(--landing-accent); text-decoration: underline; cursor: pointer" data-fill="7KQM-4XH2">7KQM-4XH2</button> (valid), <button type="button" style="padding: 0 4px; border: 0; background: none; color: var(--landing-accent); text-decoration: underline; cursor: pointer; font: inherit" data-fill="R9TD-W3FN">R9TD-W3FN</button> (expired), <button type="button" style="padding: 0 4px; border: 0; background: none; color: var(--landing-accent); text-decoration: underline; cursor: pointer; font: inherit" data-fill="b6zc p8vg">b6zc p8vg</button> (revoked), or anything else.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div id="os-foot"></div>
+    <button id="theme" class="lp-theme-btn" aria-label="Toggle theme" style="position: fixed; right: 16px; bottom: 16px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+    <div class="toast" id="toast"></div>
+    <script src="common.js"></script>
+    <script src="org-shell.js"></script>
+    <script>
+      var ALPHABET = /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]+$/;
+      var ROUTES = { '7KQM4XH2': 'verify-valid.html', R9TDW3FN: 'verify-expired.html', B6ZCP8VG: 'verify-revoked.html' };
+      var input = document.getElementById('code');
+      var err = document.getElementById('err');
+      function go(raw) {
+        var n = raw.toUpperCase().replace(/[\s-]+/g, '');
+        if (!n) { err.textContent = 'Enter the code printed on the certificate.'; return; }
+        if (n.length !== 8 || !ALPHABET.test(n)) { location.href = 'verify-not-found.html'; return; }
+        location.href = ROUTES[n] || 'verify-not-found.html';
+      }
+      document.getElementById('lookup').addEventListener('submit', function (e) { e.preventDefault(); go(input.value); });
+      document.querySelectorAll('[data-fill]').forEach(function (b) { b.onclick = function () { input.value = b.getAttribute('data-fill'); input.focus(); }; });
+      var q = new URLSearchParams(location.search).get('code');
+      if (q) { input.value = q; go(q); }
+    </script>
+  </body>
+</html>

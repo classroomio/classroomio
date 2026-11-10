@@ -2144,6 +2144,7 @@
           "heading": "Student home",
           "description": "Choose where signed-in students go when they open your academy’s homepage. Visitors who aren’t signed in, and your team, still see your landing page.",
           "label": "Authenticated student home",
+          "learn_more": "Learn more",
           "placeholder": "Search pages and courses",
           "option_default": "Landing page (default)",
           "group_pages": "Learning portal",
@@ -2491,7 +2492,11 @@
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
       "view_as_student": "View as student",
-      "view_course_site": "View Course Site"
+      "view_course_site": "View Course Site",
+      "assistant_pop_out": "Pop out chat",
+      "assistant_close_floating": "Close floating chat",
+      "assistant_tip": "Tip: use the pop-out icon to float the assistant while you work.",
+      "assistant_tip_dismiss": "Dismiss tip"
     },
     "view_course_site": {
       "unpublished_title": "Publish your course",
@@ -6007,6 +6012,11 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transcript"
+    },
+    "floating": {
+      "resize_aria": "Resize assistant window",
+      "expand_aria": "Expand to side panel",
+      "dock_hint": "Release to dock to the side"
     }
   },
   "cohorts": {
@@ -6509,6 +6519,22 @@
       "conflict": "This academy already has a paid plan, so we could not connect this one. Contact support and we will help."
     }
   },
+  "video_guide": {
+    "watch_video": "Watch video",
+    "new_badge": "New",
+    "close": "Close",
+    "dismiss": "Got it",
+    "lesson_blocks": {
+      "coach_title": "🎉 New! Lessons are now flexible.",
+      "coach_description": "Build each lesson from note, video, slides, document and image blocks, in any order. Select Edit to try it.",
+      "title": "Introducing lesson blocks",
+      "description": "Lessons are now built from blocks. See how it works in 5 minutes."
+    },
+    "connect_claude": {
+      "description": "See how to connect ClassroomIO to Claude and what you can ask it. 4 minutes.",
+      "title": "Connect ClassroomIO to Claude"
+    }
+  },
   "whats_new": {
     "new_badge": "New",
     "read_full": "Read the full changelog",
@@ -6518,7 +6544,10 @@
     "consent": {
       "page_title": "Connect an app to ClassroomIO",
       "title": "Connect {client} to ClassroomIO",
-      "workspace": "Workspace: {workspace}",
+      "subtitle": "Pick the workspace {client} can access.",
+      "workspace_label": "Workspace",
+      "no_workspaces_title": "No workspace available",
+      "no_workspaces_description": "Only workspace admins can connect apps. Ask an admin or sign in with an admin account.",
       "permissions_heading": "{client} will be able to:",
       "stay_connected": "Stay connected until you remove access",
       "admin_note": "Only workspace admins can connect apps. Access follows your admin permissions and ends if you lose them.",
@@ -6529,14 +6558,9 @@
       "error_title": "This connection request is not valid",
       "error_description": "Go back to the app you were connecting and start again."
     },
-    "select_organization": {
-      "title": "Choose a workspace",
-      "subtitle": "Pick the workspace {client} can access.",
-      "empty_title": "No workspace available",
-      "empty_description": "Only workspace admins can connect apps. Ask an admin or sign in with an admin account."
-    },
     "error": {
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "retry": "Try again"
     },
     "scope_group": {
       "courses": {

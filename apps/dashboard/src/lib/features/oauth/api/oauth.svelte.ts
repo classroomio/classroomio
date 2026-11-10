@@ -37,11 +37,15 @@ class OAuthApi extends BaseApiWithErrors {
   async selectOrganization(organizationId: string) {
     return this.execute<SelectOAuthOrganizationRequest>({
       requestFn: () => classroomio.oauth['organization-selection'].$post({ json: { organizationId } }),
-      logContext: 'selecting OAuth organization'
+      logContext: 'selecting OAuth organization',
+      onSuccess: () => {
+        this.selectedOrganization =
+          this.organizations?.find((organization) => organization.id === organizationId) ?? null;
+      }
     });
   }
 
-  async loadClient(clientId: string) {
+  async loadClient(clientId: string): Promise<boolean> {
     try {
       const { data } = await authClient.$fetch<OAuthClientInfo>('/oauth2/public-client', {
         method: 'GET',
@@ -49,9 +53,13 @@ class OAuthApi extends BaseApiWithErrors {
       });
 
       this.client = data ?? null;
+
+      return Boolean(data);
     } catch (error) {
       console.error('Error loading OAuth client:', error);
       this.client = null;
+
+      return false;
     }
   }
 
