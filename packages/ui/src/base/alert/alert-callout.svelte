@@ -20,9 +20,13 @@
     title: string;
     description: string;
     class?: string;
-    onDismiss?: () => void;
-    dismissLabel?: string;
-  };
+  } & (
+    | {
+        onDismiss: () => void;
+        dismissLabel: string;
+      }
+    | { onDismiss?: undefined; dismissLabel?: undefined }
+  );
 
   let { variant = 'default', title, description, class: className, onDismiss, dismissLabel }: Props = $props();
 
