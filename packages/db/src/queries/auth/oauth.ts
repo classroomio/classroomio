@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, eq, gt, max } from 'drizzle-orm';
+import { and, eq, gt, max, ne } from 'drizzle-orm';
 
 import { createHash, randomBytes } from 'crypto';
 
@@ -199,8 +199,20 @@ export async function getOrCreateOAuthGrantKey(data: {
   }
 }
 
-export async function listOAuthConnectedApps(organizationId: string): Promise<OAuthConnectedApp[]> {
+/**
+ * The organization's OAuth grants, limited to `clientId` or leaving out `excludeClientId` when given.
+ */
+export async function listOAuthConnectedApps(
+  organizationId: string,
+  filter: { clientId?: string; excludeClientId?: string } = {}
+): Promise<OAuthConnectedApp[]> {
   try {
+    const consentFilter = and(
+      eq(schema.oauthConsent.referenceId, organizationId),
+      filter.clientId ? eq(schema.oauthConsent.clientId, filter.clientId) : undefined,
+      filter.excludeClientId ? ne(schema.oauthConsent.clientId, filter.excludeClientId) : undefined
+    );
+
     const consents = await db
       .select({
         consentId: schema.oauthConsent.id,
@@ -216,7 +228,7 @@ export async function listOAuthConnectedApps(organizationId: string): Promise<OA
       .from(schema.oauthConsent)
       .innerJoin(schema.oauthClient, eq(schema.oauthClient.clientId, schema.oauthConsent.clientId))
       .leftJoin(schema.profile, eq(schema.profile.id, schema.oauthConsent.userId))
-      .where(eq(schema.oauthConsent.referenceId, organizationId));
+      .where(consentFilter);
 
     const lastUsedRows = await db
       .select({
@@ -301,6 +313,25 @@ export async function revokeUserOAuthGrantsInOrganization(userId: string, organi
   } catch (error) {
     console.error('revokeUserOAuthGrantsInOrganization error:', error);
     throw new Error('Failed to revoke OAuth grants');
+  }
+}
+
+/**
+ * Sets the scopes a registered client may request, for clients registered through dynamic
+ * registration, which always stores every scope the provider supports.
+ */
+export async function updateOAuthClientScopes(clientId: string, scopes: readonly string[]): Promise<boolean> {
+  try {
+    const updated = await db
+      .update(schema.oauthClient)
+      .set({ scopes: [...scopes] })
+      .where(eq(schema.oauthClient.clientId, clientId))
+      .returning({ clientId: schema.oauthClient.clientId });
+
+    return updated.length > 0;
+  } catch (error) {
+    console.error('updateOAuthClientScopes error:', error);
+    throw new Error('Failed to update OAuth client scopes');
   }
 }
 

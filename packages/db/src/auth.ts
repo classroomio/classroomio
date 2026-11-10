@@ -169,4 +169,5 @@ export {
   type OAuthResourceKind
 } from './auth/oauth/verify-access-token';
 export { OAUTH_API_SCOPES, OAUTH_SCOPES } from './auth/oauth/oauth-scopes';
-export { MCP_RESOURCE, OAUTH_ISSUER, PUBLIC_API_RESOURCE } from './constants';
+export { isTrustedOAuthClient } from './auth/oauth/trusted-clients';
+export { MCP_RESOURCE, OAUTH_ISSUER, OAUTH_TRUSTED_CLIENT_IDS, PUBLIC_API_RESOURCE } from './constants';

@@ -2,7 +2,8 @@ import { getOrganizationById } from '@cio/db/queries/organization';
 import {
   insertWebhookEventWithDeliveries,
   listActiveEndpointsForEvent,
-  orgHasActiveWebhookEndpoint
+  orgHasActiveWebhookEndpoint,
+  type TWebhookEventScope
 } from '@cio/db/queries/webhook';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import type { TGroupmember } from '@cio/db/types';
@@ -93,6 +94,13 @@ async function resolveCourseOrganizationId(courseId: string): Promise<string | n
   return organizationId;
 }
 
+function readWebhookEventScope(data: Record<string, unknown>): TWebhookEventScope {
+  const courseId = typeof data.courseId === 'string' ? data.courseId : null;
+  const cohortId = typeof data.cohortId === 'string' ? data.cohortId : null;
+
+  return { courseId, cohortId };
+}
+
 /**
  * Records the event for every subscribed endpoint and schedules delivery, and resolves once that is done.
  * Never throws: a webhook failure must not fail the action that triggered it.
@@ -106,7 +114,8 @@ export async function recordWebhookEvent<TEvent extends TWebhookEventType>(
   try {
     if (!(await orgHasWebhookEndpoints(organizationId))) return;
 
-    const endpoints = await listActiveEndpointsForEvent(organizationId, eventType);
+    const scope = readWebhookEventScope(data as Record<string, unknown>);
+    const endpoints = await listActiveEndpointsForEvent(organizationId, eventType, scope);
 
     if (endpoints.length === 0) return;
 
@@ -198,7 +207,8 @@ export function buildMemberSource(
     inviteLinkId: ids.inviteLinkId ?? null,
     cohortId: ids.cohortId ?? null,
     programId: ids.programId ?? null,
-    apiKeyId: ids.apiKeyId ?? null
+    apiKeyId: ids.apiKeyId ?? null,
+    oauthClientId: ids.oauthClientId ?? null
   };
 }
 

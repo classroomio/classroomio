@@ -23,6 +23,7 @@ export type TPublicApiCourseMemberParam = z.infer<typeof ZPublicApiCourseMemberP
 
 export const ZPublicApiCourseMembersQuery = ZPublicApiPaginationQuery.extend({
   search: z.string().trim().max(200).optional().describe('Matches name or email.'),
+  email: z.string().trim().email().optional().describe('Exact email, case-insensitive'),
   roleId: z.coerce
     .number()
     .int()
