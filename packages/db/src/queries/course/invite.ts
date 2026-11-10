@@ -3,6 +3,9 @@ import * as schema from '@db/schema';
 
 import { and, desc, eq, gte, inArray, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { chunk } from '@cio/utils/functions/array';
+
+const INVITE_INSERT_CHUNK_SIZE = 500;
 
 export async function createCourseInvite(values: TNewCourseInvite): Promise<TCourseInvite> {
   try {
@@ -16,6 +19,40 @@ export async function createCourseInvite(values: TNewCourseInvite): Promise<TCou
   } catch (error) {
     console.error('createCourseInvite error:', error);
     throw new Error(`Failed to create course invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function createCourseInvites(
+  values: TNewCourseInvite[],
+  dbClient: DbOrTxClient = db
+): Promise<TCourseInvite[]> {
+  const created: TCourseInvite[] = [];
+
+  try {
+    for (const valuesChunk of chunk(values, INVITE_INSERT_CHUNK_SIZE)) {
+      created.push(...(await dbClient.insert(schema.courseInvite).values(valuesChunk).returning()));
+    }
+
+    return created;
+  } catch (error) {
+    console.error('createCourseInvites error:', error);
+    throw new Error(`Failed to create course invites: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function createCourseInviteAudits(
+  values: TNewCourseInviteAudit[],
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  try {
+    for (const valuesChunk of chunk(values, INVITE_INSERT_CHUNK_SIZE)) {
+      await dbClient.insert(schema.courseInviteAudit).values(valuesChunk);
+    }
+  } catch (error) {
+    console.error('createCourseInviteAudits error:', error);
+    throw new Error(
+      `Failed to create course invite audit events: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
