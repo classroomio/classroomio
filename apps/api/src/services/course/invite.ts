@@ -595,13 +595,13 @@ async function createInviteForEmail(
 
   if (!input.reuseActiveInvite) {
     const created = await createCourseInvite(values);
-    const invite = await recordCreatedInvite(
-      created,
-      token,
+    const invite = await recordFreshInvite(
+      input.courseId,
       input.createdByProfileId,
       normalizedEmail,
       input.courseSlug,
-      input.org
+      input.org,
+      { invite: created, token }
     );
 
     return { invite, existingInviteId: null };
@@ -613,16 +613,46 @@ async function createInviteForEmail(
     return { invite: null, existingInviteId: result.existingInviteId };
   }
 
-  const invite = await recordCreatedInvite(
-    result.invite,
-    token,
+  const invite = await recordFreshInvite(
+    input.courseId,
     input.createdByProfileId,
     normalizedEmail,
     input.courseSlug,
-    input.org
+    input.org,
+    { invite: result.invite, token }
   );
 
   return { invite, existingInviteId: null };
+}
+
+/**
+ * Records a freshly committed invite (audit row plus enroll link). The invite
+ * row commits before this step runs, so a failure here revokes it: otherwise a
+ * retry would find the unsent invite and report `already_invited` without ever
+ * sending an email.
+ */
+async function recordFreshInvite(
+  courseId: string,
+  createdByProfileId: string,
+  targetEmail: string | null,
+  courseSlug: string,
+  org: OrgUrlInfo,
+  created: { invite: TCourseInvite; token: string }
+): Promise<TCourseInviteWithLink> {
+  try {
+    return await recordCreatedInvite(created.invite, created.token, createdByProfileId, targetEmail, courseSlug, org);
+  } catch (error) {
+    try {
+      await revokeCourseInvite(courseId, created.invite.id, createdByProfileId);
+    } catch (revokeError) {
+      console.error('createInviteForEmail cleanup failed:', {
+        inviteId: created.invite.id,
+        error: revokeError
+      });
+    }
+
+    throw error;
+  }
 }
 
 /**
@@ -642,7 +672,7 @@ export async function createEmailInviteAndSend(input: TCreateEmailInviteInput): 
   }
 
   try {
-    await enqueueTransactionalEmail('studentCourseInvite', {
+    const { jobIds } = await enqueueTransactionalEmail('studentCourseInvite', {
       to: normalizedEmail,
       fields: {
         orgName: input.orgName,
@@ -655,6 +685,10 @@ export async function createEmailInviteAndSend(input: TCreateEmailInviteInput): 
       organizationId: input.organizationId,
       idempotencyKey: `course-invite-email:${invite.id}`
     });
+
+    if (jobIds.length === 0) {
+      throw new Error('Email queue accepted no recipients: invitation email was not queued');
+    }
 
     // Optimistic EMAIL_SENT — see comment in services/organization/invite.ts.
     await recordInviteAudit(invite.id, input.courseId, 'EMAIL_SENT', {

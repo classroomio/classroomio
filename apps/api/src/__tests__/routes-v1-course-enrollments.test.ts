@@ -42,6 +42,7 @@ describe('v1CourseEnrollmentsRouter', () => {
       status: 'enrolled',
       memberId: MEMBER_ID,
       inviteId: null,
+      inviteLink: null,
       email: 'student@example.com'
     });
 
@@ -58,6 +59,7 @@ describe('v1CourseEnrollmentsRouter', () => {
         status: 'enrolled',
         memberId: MEMBER_ID,
         inviteId: null,
+        inviteLink: null,
         email: 'student@example.com'
       }
     });
