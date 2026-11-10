@@ -3808,9 +3808,41 @@
       "refresh": "Rafraîchir"
     },
     "upload": {
-      "videos": "Téléverser des vidéos",
-      "documents": "Téléverser des documents",
-      "more_options": "Plus d'options de téléversement"
+      "files": "Téléverser des fichiers",
+      "add_video_link": "Ajouter un lien vidéo",
+      "more_options": "Plus d'options de téléversement",
+      "dialog_title": "Téléverser des fichiers",
+      "drag_drop": "Glissez-déposez des fichiers ici, ou cliquez pour parcourir",
+      "limits": "Jusqu'à {count} fichiers à la fois. Vidéos jusqu'à {videoSize}, documents jusqu'à {documentSize}.",
+      "add_more": "Ajouter d'autres fichiers",
+      "minimize": "Réduire",
+      "maximize": "Ouvrir la fenêtre de téléversement",
+      "expand": "Afficher les fichiers",
+      "collapse": "Masquer les fichiers",
+      "close": "Fermer",
+      "done": "Terminé",
+      "keep_in_background": "Continuer en arrière-plan",
+      "upgrade": "Passez à un forfait supérieur pour téléverser des fichiers dans votre médiathèque",
+      "status": {
+        "queued": "En attente",
+        "completed": "Terminé",
+        "failed": "Échec",
+        "retry": "Réessayer",
+        "remove": "Retirer le fichier",
+        "uploading_progress": "Téléversement {percent}%",
+        "size_progress": "{uploaded} sur {total}"
+      },
+      "summary": {
+        "uploading": "{done} fichiers sur {total} téléversés",
+        "completed": "{count} téléversements terminés",
+        "failed": "{count} téléversements sur {total} ont échoué"
+      },
+      "errors": {
+        "unsupported_type": "{name} n'est pas une vidéo ou un document pris en charge.",
+        "too_large": "{name} dépasse {size}.",
+        "too_many": "Vous pouvez téléverser jusqu'à {count} fichiers à la fois.",
+        "generic": "Échec du téléversement"
+      }
     },
     "storage": {
       "total_bytes": "Stockage total",

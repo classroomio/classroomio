@@ -1422,9 +1422,41 @@
       "not_available": "N/A"
     },
     "upload": {
-      "videos": "Upload videos",
-      "documents": "Upload documents",
-      "more_options": "More upload options"
+      "files": "Upload files",
+      "add_video_link": "Add a video link",
+      "more_options": "More upload options",
+      "dialog_title": "Upload files",
+      "drag_drop": "Drag and drop files here, or click to browse",
+      "limits": "Up to {count} files at a time. Videos up to {videoSize}, documents up to {documentSize}.",
+      "add_more": "Add more files",
+      "minimize": "Minimize",
+      "maximize": "Open the upload window",
+      "expand": "Show files",
+      "collapse": "Hide files",
+      "close": "Close",
+      "done": "Done",
+      "keep_in_background": "Continue in background",
+      "upgrade": "Upgrade to upload files to your media library",
+      "status": {
+        "queued": "Waiting",
+        "completed": "Completed",
+        "failed": "Failed",
+        "retry": "Try again",
+        "remove": "Remove file",
+        "uploading_progress": "Uploading {percent}%",
+        "size_progress": "{uploaded} of {total}"
+      },
+      "summary": {
+        "uploading": "{done} of {total} files uploaded",
+        "completed": "{count} uploads complete",
+        "failed": "{count} of {total} uploads failed"
+      },
+      "errors": {
+        "unsupported_type": "{name} is not a supported video or document.",
+        "too_large": "{name} is larger than {size}.",
+        "too_many": "You can upload up to {count} files at a time.",
+        "generic": "Upload failed"
+      }
     },
     "storage": {
       "total_bytes": "Total Storage",

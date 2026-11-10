@@ -3808,9 +3808,41 @@
       "refresh": "Opfriske"
     },
     "upload": {
-      "videos": "Upload videoer",
-      "documents": "Upload dokumenter",
-      "more_options": "Flere uploadmuligheder"
+      "files": "Upload filer",
+      "add_video_link": "Tilføj et videolink",
+      "more_options": "Flere uploadmuligheder",
+      "dialog_title": "Upload filer",
+      "drag_drop": "Træk og slip filer her, eller klik for at gennemse",
+      "limits": "Op til {count} filer ad gangen. Videoer op til {videoSize}, dokumenter op til {documentSize}.",
+      "add_more": "Tilføj flere filer",
+      "minimize": "Minimer",
+      "maximize": "Åbn uploadvinduet",
+      "expand": "Vis filer",
+      "collapse": "Skjul filer",
+      "close": "Luk",
+      "done": "Færdig",
+      "keep_in_background": "Fortsæt i baggrunden",
+      "upgrade": "Opgrader for at uploade filer til dit mediebibliotek",
+      "status": {
+        "queued": "Venter",
+        "completed": "Fuldført",
+        "failed": "Mislykkedes",
+        "retry": "Prøv igen",
+        "remove": "Fjern fil",
+        "uploading_progress": "Uploader {percent}%",
+        "size_progress": "{uploaded} af {total}"
+      },
+      "summary": {
+        "uploading": "{done} af {total} filer uploadet",
+        "completed": "{count} uploads fuldført",
+        "failed": "{count} af {total} uploads mislykkedes"
+      },
+      "errors": {
+        "unsupported_type": "{name} er ikke en understøttet video eller et understøttet dokument.",
+        "too_large": "{name} er større end {size}.",
+        "too_many": "Du kan uploade op til {count} filer ad gangen.",
+        "generic": "Upload mislykkedes"
+      }
     },
     "storage": {
       "total_bytes": "Samlet opbevaring",

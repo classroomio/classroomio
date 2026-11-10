@@ -3808,9 +3808,41 @@
       "refresh": "Refrescar"
     },
     "upload": {
-      "videos": "Subir videos",
-      "documents": "Subir documentos",
-      "more_options": "Más opciones de carga"
+      "files": "Subir archivos",
+      "add_video_link": "Añadir un enlace de video",
+      "more_options": "Más opciones de subida",
+      "dialog_title": "Subir archivos",
+      "drag_drop": "Arrastra y suelta archivos aquí, o haz clic para buscar",
+      "limits": "Hasta {count} archivos a la vez. Videos de hasta {videoSize}, documentos de hasta {documentSize}.",
+      "add_more": "Añadir más archivos",
+      "minimize": "Minimizar",
+      "maximize": "Abrir la ventana de subida",
+      "expand": "Mostrar archivos",
+      "collapse": "Ocultar archivos",
+      "close": "Cerrar",
+      "done": "Listo",
+      "keep_in_background": "Continuar en segundo plano",
+      "upgrade": "Mejora tu plan para subir archivos a tu biblioteca de medios",
+      "status": {
+        "queued": "En espera",
+        "completed": "Completado",
+        "failed": "Falló",
+        "retry": "Reintentar",
+        "remove": "Quitar archivo",
+        "uploading_progress": "Subiendo {percent}%",
+        "size_progress": "{uploaded} de {total}"
+      },
+      "summary": {
+        "uploading": "{done} de {total} archivos subidos",
+        "completed": "{count} subidas completadas",
+        "failed": "{count} de {total} subidas fallaron"
+      },
+      "errors": {
+        "unsupported_type": "{name} no es un video o documento compatible.",
+        "too_large": "{name} supera los {size}.",
+        "too_many": "Puedes subir hasta {count} archivos a la vez.",
+        "generic": "La subida falló"
+      }
     },
     "storage": {
       "total_bytes": "Almacenamiento total",

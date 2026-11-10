@@ -22,3 +22,14 @@ export const KIND_ICON_MAP: Record<string, Component> = {
 export function getKindIcon(kindValue: string): Component {
   return KIND_ICON_MAP[kindValue] ?? FileIcon;
 }
+
+export const MEDIA_UPLOAD_MAX_FILES = 5;
+export const MEDIA_UPLOAD_MAX_CONCURRENT = 2;
+export const MEDIA_UPLOAD_MAX_FILE_BYTES = 1024 * 1024 * 1024;
+
+export const MEDIA_UPLOAD_VIDEO_TYPES = [
+  'video/mp4',
+  'video/quicktime',
+  'video/x-msvideo',
+  'video/x-matroska'
+] as const;

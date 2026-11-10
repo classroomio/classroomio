@@ -3808,9 +3808,41 @@
       "refresh": "Aktualisieren"
     },
     "upload": {
-      "videos": "Videos hochladen",
-      "documents": "Dokumente hochladen",
-      "more_options": "Weitere Upload-Optionen"
+      "files": "Dateien hochladen",
+      "add_video_link": "Videolink hinzufügen",
+      "more_options": "Weitere Upload-Optionen",
+      "dialog_title": "Dateien hochladen",
+      "drag_drop": "Dateien hierher ziehen oder zum Durchsuchen klicken",
+      "limits": "Bis zu {count} Dateien gleichzeitig. Videos bis {videoSize}, Dokumente bis {documentSize}.",
+      "add_more": "Weitere Dateien hinzufügen",
+      "minimize": "Minimieren",
+      "maximize": "Upload-Fenster öffnen",
+      "expand": "Dateien anzeigen",
+      "collapse": "Dateien ausblenden",
+      "close": "Schließen",
+      "done": "Fertig",
+      "keep_in_background": "Im Hintergrund fortsetzen",
+      "upgrade": "Führe ein Upgrade durch, um Dateien in deine Mediathek hochzuladen",
+      "status": {
+        "queued": "Wartet",
+        "completed": "Abgeschlossen",
+        "failed": "Fehlgeschlagen",
+        "retry": "Erneut versuchen",
+        "remove": "Datei entfernen",
+        "uploading_progress": "Wird hochgeladen {percent}%",
+        "size_progress": "{uploaded} von {total}"
+      },
+      "summary": {
+        "uploading": "{done} von {total} Dateien hochgeladen",
+        "completed": "{count} Uploads abgeschlossen",
+        "failed": "{count} von {total} Uploads fehlgeschlagen"
+      },
+      "errors": {
+        "unsupported_type": "{name} ist kein unterstütztes Video oder Dokument.",
+        "too_large": "{name} ist größer als {size}.",
+        "too_many": "Du kannst bis zu {count} Dateien gleichzeitig hochladen.",
+        "generic": "Upload fehlgeschlagen"
+      }
     },
     "storage": {
       "total_bytes": "Gesamtspeicher",
