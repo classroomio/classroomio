@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@api/services/course/compliance', () => ({
-  ensureComplianceEnrollmentRecordsForProfiles: vi.fn()
+  emitComplianceEnrollmentEvents: vi.fn(),
+  ensureComplianceEnrollmentRecordsForProfiles: vi.fn().mockResolvedValue({ createdCount: 0, createdRecords: [] })
 }));
 
 vi.mock('@cio/db/queries/course/people', () => ({
@@ -16,6 +17,11 @@ vi.mock('@cio/db/queries/course/people', () => ({
 vi.mock('@cio/db/queries/course', () => ({
   getCourseWithOrgData: vi.fn(),
   getOrgIdByCourseId: vi.fn().mockResolvedValue('org-1')
+}));
+
+const TX = { tx: true };
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
 }));
 
 vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
@@ -115,6 +121,15 @@ describe('welcome emails when adding course members', () => {
     vi.mocked(getProfilesByIds).mockResolvedValue([
       { id: 'profile-1', email: 'ada@example.com', fullname: 'Ada' }
     ] as never);
+  });
+
+  it('adds the members and their compliance records in one transaction', async () => {
+    const members = [{ roleId: ROLE.STUDENT, profileId: 'profile-1' }];
+
+    await addMembers('course-1', members);
+
+    expect(addCourseMembers).toHaveBeenCalledWith('course-1', members, TX);
+    expect(ensureComplianceEnrollmentRecordsForProfiles).toHaveBeenCalledWith(['course-1'], ['profile-1'], TX);
   });
 
   it('sends a student the course welcome with the same key as Audience → Assign courses', async () => {

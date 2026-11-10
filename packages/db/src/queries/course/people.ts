@@ -480,17 +480,16 @@ export async function addCourseMembers(
       throw new Error('Course group not found');
     }
 
-    return await dbClient.transaction((tx) =>
-      addGroupMembers(
-        members.map((member) => ({
-          groupId,
-          profileId: member.profileId,
-          roleId: member.roleId,
-          email: member.email
-        })),
-        tx
-      )
-    );
+    const rows = members.map((member) => ({
+      groupId,
+      profileId: member.profileId,
+      roleId: member.roleId,
+      email: member.email
+    }));
+
+    return await (dbClient === db
+      ? db.transaction((tx) => addGroupMembers(rows, tx))
+      : addGroupMembers(rows, dbClient));
   } catch (error) {
     console.error('addCourseMembers error:', error);
     const message = `Failed to add course members: ${error instanceof Error ? error.message : 'Unknown error'}`;

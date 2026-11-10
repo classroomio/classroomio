@@ -27,13 +27,16 @@ export async function createOrganizationInvite(values: TNewOrganizationInvite): 
   }
 }
 
-export async function createOrganizationInvites(values: TNewOrganizationInvite[]): Promise<TOrganizationInvite[]> {
+export async function createOrganizationInvites(
+  values: TNewOrganizationInvite[],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInvite).values(values).returning();
+    return await dbClient.insert(schema.organizationInvite).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInvites error:', error);
     throw new Error(
@@ -62,14 +65,15 @@ export async function createOrganizationInviteAudit(
 }
 
 export async function createOrganizationInviteAudits(
-  values: TNewOrganizationInviteAudit[]
+  values: TNewOrganizationInviteAudit[],
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationInviteAudit[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInviteAudit).values(values).returning();
+    return await dbClient.insert(schema.organizationInviteAudit).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInviteAudits error:', error);
     throw new Error(

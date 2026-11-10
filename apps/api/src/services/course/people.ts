@@ -29,7 +29,8 @@ import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course
 import { getProfilesByIds } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmails } from '@api/services/jobs';
-import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { db } from '@cio/db/drizzle';
+import { emitComplianceEnrollmentEvents, ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 import type { TEventSource } from '@cio/core/services/posthog';
@@ -260,7 +261,19 @@ export async function addMembers(
       theme: courseOrgData.orgTheme
     });
 
-    const addedMembers = await addCourseMembers(courseId, members);
+    const studentProfileIds = members
+      .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
+      .map((member) => member.profileId!);
+
+    const { addedMembers, complianceRecords } = await db.transaction(async (tx) => {
+      const addedMembers = await addCourseMembers(courseId, members, tx);
+      const { createdRecords } =
+        studentProfileIds.length > 0
+          ? await ensureComplianceEnrollmentRecordsForProfiles([courseId], studentProfileIds, tx)
+          : { createdRecords: [] };
+
+      return { addedMembers, complianceRecords: createdRecords };
+    });
 
     if (addedMembers.some((member) => member.roleId === ROLE.STUDENT)) {
       await invalidateOrgStats(courseOrgData.orgId);
@@ -275,13 +288,7 @@ export async function addMembers(
       });
     }
 
-    const studentProfileIds = members
-      .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
-      .map((member) => member.profileId!);
-
-    if (studentProfileIds.length > 0) {
-      await ensureComplianceEnrollmentRecordsForProfiles([courseId], studentProfileIds);
-    }
+    await emitComplianceEnrollmentEvents(complianceRecords);
 
     if (!sendEmail) {
       return addedMembers;

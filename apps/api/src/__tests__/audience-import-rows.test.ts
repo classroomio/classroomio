@@ -231,7 +231,7 @@ describe('importAudienceMembers — seat limit', () => {
 
     expect(result.rows.map((row) => row.status)).toEqual(['ready', 'already_member']);
     expect(result.imported).toBe(1);
-    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'a@test.dev' })]);
+    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'a@test.dev' })], TX);
   });
 
   it('checks capacity and inserts members in the same transaction', async () => {
@@ -276,13 +276,16 @@ describe('importAudienceMembers — cohort invites', () => {
   it('creates an org invite tagged with the cohort for an unknown email and queues the invite email', async () => {
     const result = await importAudienceMembers(ORG, cohortInvite(true, 'new@test.dev'), ACTOR);
 
-    expect(createOrganizationInvites).toHaveBeenCalledWith([
-      expect.objectContaining({
-        email: 'new@test.dev',
-        createdByProfileId: ACTOR,
-        metadata: expect.objectContaining({ cohortIds: ['cohort-1'] })
-      })
-    ]);
+    expect(createOrganizationInvites).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({
+          email: 'new@test.dev',
+          createdByProfileId: ACTOR,
+          metadata: expect.objectContaining({ cohortIds: ['cohort-1'] })
+        })
+      ],
+      TX
+    );
     expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentOrgInvite', [
       expect.objectContaining({ to: 'new@test.dev' })
     ]);
