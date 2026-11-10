@@ -116,7 +116,7 @@ export async function assertEmailBelongsToOrganization(orgId: string, email: str
     );
   }
 
-  const member = members.find((candidate) => candidate.profileId);
+  const member = members.find((candidate) => candidate.profileId) ?? members[0];
 
   if (member && member.status !== 'ACTIVE') {
     throw new AppError(
