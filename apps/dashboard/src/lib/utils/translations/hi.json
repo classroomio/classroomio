@@ -1021,8 +1021,6 @@
         "reports": "पाठों के लिए ग्रेडिंग रिपोर्ट उपलब्ध कराएं",
         "disabled": "अक्षम",
         "enabled": "सक्षम",
-        "order": "आदेश पाठ टैब",
-        "drag": "अपने सामग्री टैब को पुनः क्रमित करने के लिए लेबल खींचें और छोड़ें",
         "content_grouping_title": "सामग्री समूहन",
         "content_grouping_description": "सामग्री सूची में अनुभाग के अनुसार समूह पाठ और अभ्यास।",
         "progression_mode_title": "छात्र प्रगति",
@@ -2444,11 +2442,6 @@
           }
         },
         "materials": {
-          "body_heading": "इस पाठ के लिए अभी तक कोई नोट, वीडियो या स्लाइड नहीं जोड़ा गया है",
-          "body_content": "आकर्षक सामग्री बनाकर अपने ज्ञान को अपने छात्रों के साथ साझा करें। पर क्लिक करके प्रारंभ करें",
-          "get_started": "आरंभ करें",
-          "no_translation": "चयनित भाषा के लिए कोई अनुवाद नहीं",
-          "button": "बटन",
           "show_transcript": "प्रतिलेख दिखाएं",
           "summarize_lesson": "पाठ का सारांश",
           "summarize_lesson_prompt": {
@@ -2458,13 +2451,7 @@
           },
           "button_done": "हो गया",
           "tabs": {
-            "settings": {
-              "title": "सेटिंग्स"
-            },
             "document": {
-              "title": "दस्तावेज़",
-              "add_document": "दस्तावेज़ जोड़ें",
-              "download": "डाउनलोड करें",
               "upload_title": "दस्तावेज़ अपलोड करें",
               "upload_description": "PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB, या PY फ़ाइलें अपलोड करें",
               "up_to_size_each": "(प्रत्येक {size} तक)",
@@ -2479,35 +2466,18 @@
               "upload_error": "दस्तावेज़ अपलोड करने में विफल",
               "file_type_error": "फ़ाइल प्रकार समर्थित नहीं है. कृपया PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB, या PY फ़ाइलें अपलोड करें।",
               "file_size_error": "फ़ाइल का आकार बहुत बड़ा है. अधिकतम आकार {size} है.",
-              "try_again": "पुनः प्रयास करें",
               "upgrade": "दस्तावेज़ अपलोड करने की अपनी योजना को अपग्रेड करें",
               "no_library_documents": "आपकी मीडिया लाइब्रेरी में कोई दस्तावेज़ उपलब्ध नहीं है",
               "selected_count": "{count} चयनित",
               "clear_selection": "साफ़ करें",
               "add_one_file": "1 फ़ाइल जोड़ें",
               "add_files": "{count} फ़ाइलें जोड़ें",
-              "download_success": "दस्तावेज़ सफलतापूर्वक डाउनलोड हुआ",
-              "download_error": "दस्तावेज़ डाउनलोड करने में विफल",
-              "remove_document": "दस्तावेज़ हटाएँ",
-              "delete": "हटाएँ",
-              "page_of": "{page} का पेज {total}",
-              "loading_pdf": "पीडीएफ लोड हो रहा है...",
-              "failed_to_load_pdf": "पीडीएफ दस्तावेज़ लोड करने में विफल",
-              "failed_to_render_pdf": "पीडीएफ पेज प्रस्तुत करने में विफल",
-              "use_arrow_keys": "नेविगेट करने के लिए तीर कुंजियों का उपयोग करें, ज़ूम करने के लिए +/- का उपयोग करें, या ऊपर दिए गए नियंत्रणों पर क्लिक करें। राइट-क्लिक अक्षम है.",
-              "empty_title": "अभी तक कोई दस्तावेज़ नहीं",
-              "empty_description": "अपने छात्रों के साथ साझा करने के लिए दस्तावेज़ अपलोड करें",
-              "attachments_heading": "अटैचमेंट",
-              "file_count": "{count, plural, one {# फ़ाइल} other {# फ़ाइलें}}",
-              "view_file": "फ़ाइल देखें",
-              "reorder_file": "फ़ाइल को पुनः क्रमित करें"
+              "remove_document": "दस्तावेज़ हटाएँ"
             },
             "video": {
-              "title": "वीडियो",
               "embed_link": "लिंक एम्बेड करें",
               "upload": "अपलोड करें",
               "library": "पुस्तकालय",
-              "button": "वीडियो जोड़ें/संपादित करें",
               "remove_video": "वीडियो हटाएँ",
               "add_video": {
                 "title": "एक वीडियो जोड़ें",
@@ -2574,8 +2544,6 @@
                 "vimeo_privacy_error_domain_suffix": "को वीडियो सेटिंग्स में अनुमति दी गई है)",
                 "vimeo_privacy_error_other_hint": "अन्य Vimeo गोपनीयता सेटिंग्स"
               },
-              "empty_title": "अभी तक कोई वीडियो नहीं",
-              "empty_description": "YouTube से वीडियो जोड़ें, अपलोड करें, या अपनी मीडिया लाइब्रेरी से",
               "google_drive": "गूगल ड्राइव",
               "generate_transcript": "ट्रांसक्रिप्शन बनाएं",
               "transcript_in_progress": "ट्रांसक्रिप्ट प्राप्त किया जा रहा है…",
@@ -2629,11 +2597,6 @@
               "title": "फिसल पट्टी",
               "slide_link": "स्लाइड लिंक",
               "helper_message": "आप Google स्लाइड या Canva प्रेजेंटेशन को एम्बेड कर सकते हैं",
-              "button": "स्लाइड जोड़ें",
-              "remove_slide": "स्लाइड हटाएँ",
-              "menu_aria": "स्लाइड क्रियाएँ",
-              "empty_title": "अभी कोई स्लाइड नहीं",
-              "empty_description": "Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare या Beautiful.ai एम्बेड करें",
               "add_slide": {
                 "title": "स्लाइड जोड़ें",
                 "search": "प्लेटफ़ॉर्म खोजें",
@@ -2709,17 +2672,10 @@
                   "step_2": "Click Get Embed Code.",
                   "step_3": "Paste the iframe embed code here."
                 }
-              },
-              "frame_title": "{platform} ({index} में से {total})"
+              }
             },
             "note": {
-              "title": "नोट",
-              "placeholder": "अपना पाठ नोट यहां लिखें",
-              "ai": {
-                "outline": "पाठ की रूपरेखा तैयार करें",
-                "note": "पाठ नोट तैयार करें",
-                "activities": "पाठ गतिविधियाँ उत्पन्न करें"
-              }
+              "placeholder": "अपना पाठ नोट यहां लिखें"
             }
           },
           "blocks": {
@@ -2776,7 +2732,17 @@
             "empty_preview_title": "अभी पूर्वावलोकन करने के लिए कुछ भी नहीं है",
             "empty_preview_description": "इस पाठ में विद्यार्थियों के देखने के लिए कोई सामग्री नहीं है। नोट, वीडियो, स्लाइड, दस्तावेज़ या छवि जोड़ने के लिए {editLabel} पर स्विच करें।",
             "empty_learner_title": "यह पाठ अभी तक तैयार नहीं है",
-            "empty_learner_description": "आपके प्रशिक्षक ने इस पाठ में कोई सामग्री नहीं जोड़ी है। जल्दी वापस जाँच करें।"
+            "empty_learner_description": "आपके प्रशिक्षक ने इस पाठ में कोई सामग्री नहीं जोड़ी है। जल्दी वापस जाँच करें।",
+            "document": {
+              "view_file": "फ़ाइल देखें",
+              "download": "डाउनलोड करें",
+              "download_success": "दस्तावेज़ सफलतापूर्वक डाउनलोड हुआ",
+              "download_error": "दस्तावेज़ डाउनलोड करने में विफल",
+              "try_again": "पुनः प्रयास करें"
+            },
+            "slides": {
+              "add_slide": "स्लाइड जोड़ें"
+            }
           }
         },
         "lesson_nav": {
@@ -2868,7 +2834,6 @@
         },
         "saving": "सहेजा जा रहा है...",
         "saved": "सहेजा गया",
-        "draft_recovery": "इस पाठ के लिए एक सहेजा न गया ड्राफ्ट मिला। क्या आप इसे पुनर्स्थापित करना चाहेंगे?",
         "stats": {
           "sections": "अनुभाग",
           "lessons": "सबक",
@@ -3479,7 +3444,8 @@
           "course_hint_restricted": "नामांकित छात्र सीधे अपने अगले पाठ में जाते हैं। यह पाठ्यक्रम सशुल्क या केवल-आमंत्रित है, इसलिए जो छात्र नामांकित नहीं हैं वे डैशबोर्ड पर जाएं।",
           "unavailable_badge": "अनुपलब्ध",
           "course_type_live": "लाइव",
-          "course_type_compliance": "अनुपालन"
+          "course_type_compliance": "अनुपालन",
+          "learn_more": "और जानें"
         }
       },
       "domains": {
@@ -6550,7 +6516,6 @@
         "bannerImage": "कवर छवि",
         "welcomeEmail": "आपका स्वागत है ईमेल",
         "completionDeadline": "पूर्ण करने की समय सीमा",
-        "lessonTabsOrder": "पाठ टैब",
         "contentGrouping": "सामग्री समूहन",
         "progression": "प्रगति",
         "comments": "पाठ टिप्पणियाँ",
@@ -6701,5 +6666,21 @@
       "revoke": "एक्सेस हटाएँ",
       "revoke_confirm": "इस ऐप का एक्सेस हटाएँ? यह तुरंत काम करना बंद कर देगा।"
     }
+  },
+  "video_guide": {
+    "watch_video": "वीडियो देखें",
+    "new_badge": "नया",
+    "connect_claude": {
+      "title": "ClassroomIO को Claude से कनेक्ट करें",
+      "description": "देखें कि ClassroomIO को Claude से कैसे कनेक्ट करें और आप उससे क्या पूछ सकते हैं। 4 मिनट।"
+    },
+    "lesson_blocks": {
+      "title": "पाठ ब्लॉकों का परिचय",
+      "description": "अब पाठ ब्लॉकों से बनाए जाते हैं। देखें कि यह 5 मिनट में कैसे काम करता है।",
+      "coach_description": "प्रत्येक पाठ को किसी भी क्रम में नोट, वीडियो, स्लाइड, दस्तावेज़ और छवि ब्लॉक से बनाएं। इसे आज़माने के लिए संपादित करें का चयन करें.",
+      "coach_title": "🎉 नया! पाठ अब लचीले हैं."
+    },
+    "close": "बंद करें",
+    "dismiss": "समझ गया"
   }
 }

@@ -2,6 +2,8 @@
   import { McpAutomationPage } from '$features/automation/pages';
   import { automationApi } from '$features/automation/api/automation.svelte';
   import { MCP_DOCS_URL } from '$features/automation/utils/automation-utils';
+  import { VideoGuideButton } from '@cio/ui/custom/video-guide';
+  import { VIDEO_GUIDES } from '$features/video-guide/utils/video-guide-utils';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
   import { Button } from '@cio/ui/base/button';
@@ -23,6 +25,13 @@
     <Page.Subtitle>{$t('automation.mcp.page_subtitle')}</Page.Subtitle>
   </Page.HeaderContent>
   <Page.Action>
+    <VideoGuideButton
+      videoId={VIDEO_GUIDES.connectClaude.videoId}
+      title={$t(VIDEO_GUIDES.connectClaude.titleKey)}
+      label={$t('video_guide.watch_video')}
+      closeLabel={$t('video_guide.close')}
+      testId="mcp-watch-video"
+    />
     <Button
       variant="secondary"
       href={MCP_DOCS_URL}

@@ -41,7 +41,7 @@
     queued: $t(`${keyPrefix}.queued`),
     completed: $t(`${keyPrefix}.completed`),
     failed: $t(`${keyPrefix}.failed`),
-    retry: $t(`${keyPrefix}.try_again`),
+    retry: $t('course.navItem.lessons.materials.blocks.document.try_again'),
     remove: $t(`${keyPrefix}.remove_document`),
     uploading: (percent) => $t(`${keyPrefix}.uploading_progress`, { percent }),
     transferred: (uploaded, total) => $t(`${keyPrefix}.size_progress`, { uploaded, total })
