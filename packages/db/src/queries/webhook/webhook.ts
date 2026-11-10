@@ -710,9 +710,13 @@ export async function countFailedWebhookDeliveriesSince(
 /**
  * Resets a delivery so the worker attempts it again. Keeps the event id so consumers can dedupe.
  */
-export async function requeueWebhookDelivery(webhookId: string, deliveryId: string): Promise<TWebhookDelivery | null> {
+export async function requeueWebhookDelivery(
+  webhookId: string,
+  deliveryId: string,
+  client: DbOrTxClient = db
+): Promise<TWebhookDelivery | null> {
   try {
-    const [updated] = await db
+    const [updated] = await client
       .update(schema.webhookDelivery)
       .set({
         status: 'PENDING',

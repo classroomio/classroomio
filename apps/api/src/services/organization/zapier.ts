@@ -1,4 +1,5 @@
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
+import { db } from '@cio/db/drizzle';
 import { listOAuthConnectedApps } from '@cio/db/queries/auth';
 import { getCourseTitlesByIds } from '@cio/db/queries/course/course';
 import { getCohortTitlesByIds } from '@cio/db/queries/cohort/cohort';
@@ -107,7 +108,8 @@ const ZAPIER_FAILED_EVENT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Retries the last 24 hours of failed deliveries for one Zapier-managed trigger subscription.
- * The delivery keeps its event id, so Zaps can dedupe a repeat.
+ * The delivery keeps its event id, so Zaps can dedupe a repeat. Reads and requeues run in one
+ * transaction so a mid-loop failure rolls every requeue back; the worker is nudged only after commit.
  */
 export async function redeliverZapierTriggerFailuresService(organizationId: string, webhookId: string) {
   const [endpoint, zapierApps] = await Promise.all([
@@ -127,11 +129,15 @@ export async function redeliverZapierTriggerFailuresService(organizationId: stri
   }
 
   const since = new Date(Date.now() - ZAPIER_FAILED_EVENT_WINDOW_MS);
-  const failedDeliveries = await listFailedWebhookDeliveriesSince(webhookId, since);
+  const failedDeliveries = await db.transaction(async (tx) => {
+    const failed = await listFailedWebhookDeliveriesSince(webhookId, since, tx);
 
-  for (const delivery of failedDeliveries) {
-    await requeueWebhookDelivery(webhookId, delivery.id);
-  }
+    for (const delivery of failed) {
+      await requeueWebhookDelivery(webhookId, delivery.id, tx);
+    }
+
+    return failed;
+  });
 
   if (failedDeliveries.length > 0) {
     await enqueueWebhookDelivery({ webhookId });
