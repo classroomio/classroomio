@@ -28,6 +28,7 @@ export class MediaUploadManager {
   completedCount = $state(0);
 
   private abortControllers = new SvelteMap<string, AbortController>();
+  private stopping = $state<MediaUploadItem[]>([]);
 
   inFlightCount = $derived(this.items.filter(isMediaUploadInFlight).length);
   doneCount = $derived(this.items.filter((item) => item.status === 'done').length);
@@ -121,8 +122,11 @@ export class MediaUploadManager {
     return rejections;
   }
 
-  /** Cancels the upload if it is running and drops the file from the list. */
+  /** Cancels the upload if it is running and drops the file from the list. Its slot stays taken until it has stopped. */
   remove(id: string) {
+    const removed = this.items.find((item) => item.id === id);
+    if (removed?.status === 'uploading') this.stopping.push(removed);
+
     this.abortControllers.get(id)?.abort();
     this.abortControllers.delete(id);
     this.items = this.items.filter((item) => item.id !== id);
@@ -131,8 +135,10 @@ export class MediaUploadManager {
     if (this.items.length === 0 && this.view === 'minimized') this.view = 'closed';
   }
 
-  /** Aborts every upload and clears the list, whatever state the files are in. */
+  /** Aborts every upload and clears the list, whatever state the files are in. Running uploads keep their slots until they stop. */
   cancelAll() {
+    this.stopping.push(...this.items.filter((item) => item.status === 'uploading'));
+
     for (const controller of this.abortControllers.values()) controller.abort();
 
     this.abortControllers.clear();
@@ -154,7 +160,7 @@ export class MediaUploadManager {
   private pump() {
     const isEncodedVideo = (item: MediaUploadItem) => item.kind === 'video' && encodesVideoInBrowser();
 
-    for (const item of pickUploadsToStart(this.items, isEncodedVideo)) {
+    for (const item of pickUploadsToStart([...this.items, ...this.stopping], isEncodedVideo)) {
       item.status = 'uploading';
       void this.upload(item);
     }
@@ -185,6 +191,7 @@ export class MediaUploadManager {
       item.errorMessage = error instanceof Error ? error.message : null;
     } finally {
       this.abortControllers.delete(item.id);
+      this.stopping = this.stopping.filter((stoppingItem) => stoppingItem.id !== item.id);
       this.pump();
     }
   }

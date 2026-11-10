@@ -377,7 +377,19 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
       );
     }
 
-    await conversion.execute();
+    const cancelConversion = () => void conversion.cancel();
+    if (opts.signal?.aborted) {
+      cancelConversion();
+    } else {
+      opts.signal?.addEventListener('abort', cancelConversion, { once: true });
+    }
+
+    try {
+      await conversion.execute();
+    } finally {
+      opts.signal?.removeEventListener('abort', cancelConversion);
+    }
+
     emit({ stage: 'uploading', percent: 73 });
     await uploader.flush();
 
