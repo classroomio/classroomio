@@ -3843,7 +3843,8 @@
         "too_large": "{name} lớn hơn {size}.",
         "too_many": "Bạn có thể tải lên tối đa {count} tệp mỗi lần.",
         "generic": "Tải lên thất bại"
-      }
+      },
+      "switch_organization_confirm": "Chuyển tổ chức sẽ hủy các tệp đang tải lên. Vẫn chuyển?"
     },
     "storage": {
       "total_bytes": "Tổng dung lượng lưu trữ",

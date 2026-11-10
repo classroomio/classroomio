@@ -3843,7 +3843,8 @@
         "too_large": "{name} é maior que {size}.",
         "too_many": "Você pode enviar até {count} arquivos por vez.",
         "generic": "Falha no envio"
-      }
+      },
+      "switch_organization_confirm": "Trocar de organização cancela os envios em andamento. Trocar mesmo assim?"
     },
     "storage": {
       "total_bytes": "Armazenamento total",

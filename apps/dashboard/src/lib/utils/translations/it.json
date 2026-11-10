@@ -1457,7 +1457,8 @@
         "too_large": "{name} supera {size}.",
         "too_many": "Puoi caricare fino a {count} file alla volta.",
         "generic": "Caricamento non riuscito"
-      }
+      },
+      "switch_organization_confirm": "Cambiare organizzazione annulla i caricamenti in corso. Cambiare comunque?"
     },
     "storage": {
       "total_bytes": "Spazio di archiviazione totale",

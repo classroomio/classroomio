@@ -3843,7 +3843,8 @@
         "too_large": "{name} er større end {size}.",
         "too_many": "Du kan uploade op til {count} filer ad gangen.",
         "generic": "Upload mislykkedes"
-      }
+      },
+      "switch_organization_confirm": "Skift af organisation annullerer igangværende uploads. Skift alligevel?"
     },
     "storage": {
       "total_bytes": "Samlet opbevaring",

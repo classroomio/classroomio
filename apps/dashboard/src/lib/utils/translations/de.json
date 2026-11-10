@@ -3843,7 +3843,8 @@
         "too_large": "{name} ist größer als {size}.",
         "too_many": "Du kannst bis zu {count} Dateien gleichzeitig hochladen.",
         "generic": "Upload fehlgeschlagen"
-      }
+      },
+      "switch_organization_confirm": "Beim Wechsel der Organisation werden laufende Uploads abgebrochen. Trotzdem wechseln?"
     },
     "storage": {
       "total_bytes": "Gesamtspeicher",

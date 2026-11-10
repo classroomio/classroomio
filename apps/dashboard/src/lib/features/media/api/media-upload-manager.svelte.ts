@@ -126,9 +126,19 @@ export class MediaUploadManager {
     if (this.items.length === 0 && this.view === 'minimized') this.view = 'closed';
   }
 
+  /** Aborts every upload and clears the list, whatever state the files are in. */
+  cancelAll() {
+    for (const controller of this.abortControllers.values()) controller.abort();
+
+    this.abortControllers.clear();
+    this.items = [];
+    this.view = 'closed';
+  }
+
+  /** Restarts a failed file. Does nothing while the queue is full. */
   retry(id: string) {
     const item = this.items.find((candidate) => candidate.id === id);
-    if (!item || item.status !== 'error') return;
+    if (!item || item.status !== 'error' || this.remainingSlots === 0) return;
 
     item.status = 'queued';
     item.progress = 0;

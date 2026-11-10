@@ -3843,7 +3843,8 @@
         "too_large": "{name} {size} से बड़ी है।",
         "too_many": "आप एक बार में {count} फ़ाइलें तक अपलोड कर सकते हैं।",
         "generic": "अपलोड विफल"
-      }
+      },
+      "switch_organization_confirm": "संगठन बदलने से चल रहे अपलोड रद्द हो जाएँगे। फिर भी बदलें?"
     },
     "storage": {
       "total_bytes": "कुल संग्रहण",

@@ -1457,7 +1457,8 @@
         "too_large": "{name} is larger than {size}.",
         "too_many": "You can upload up to {count} files at a time.",
         "generic": "Upload failed"
-      }
+      },
+      "switch_organization_confirm": "Switching organizations cancels the uploads still in progress. Switch anyway?"
     },
     "storage": {
       "total_bytes": "Total Storage",

@@ -3843,7 +3843,8 @@
         "too_large": "{name} dépasse {size}.",
         "too_many": "Vous pouvez téléverser jusqu'à {count} fichiers à la fois.",
         "generic": "Échec du téléversement"
-      }
+      },
+      "switch_organization_confirm": "Changer d'organisation annule les téléversements en cours. Changer quand même ?"
     },
     "storage": {
       "total_bytes": "Stockage total",

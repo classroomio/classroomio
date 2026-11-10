@@ -59,9 +59,12 @@ async function uploadDocument(file: File, options: MediaFileTransferOptions): Pr
   const downloadUrls = await presignApi.getDocumentDownloadUrls([presigned.fileKey]);
   options.signal.throwIfAborted();
 
+  const documentUrl = downloadUrls[presigned.fileKey];
+  if (!documentUrl) throw new Error('Failed to get the uploaded document URL');
+
   const asset = await mediaApi.registerUploadedDocument({
     fileKey: presigned.fileKey,
-    documentUrl: downloadUrls[presigned.fileKey],
+    documentUrl,
     fileName: file.name,
     mimeType: file.type,
     byteSize: file.size
@@ -106,9 +109,12 @@ async function uploadSourceVideo(file: File, options: MediaFileTransferOptions):
   const downloadUrls = await presignApi.getVideoDownloadUrls([presigned.fileKey]);
   options.signal.throwIfAborted();
 
+  const videoUrl = downloadUrls[presigned.fileKey];
+  if (!videoUrl) throw new Error('Failed to get the uploaded video URL');
+
   const asset = await mediaApi.registerUploadedVideo({
     fileKey: presigned.fileKey,
-    videoUrl: downloadUrls[presigned.fileKey],
+    videoUrl,
     fileName: file.name,
     mimeType: file.type,
     byteSize: file.size,

@@ -1467,7 +1467,8 @@
         "too_large": "{name}, {size} sınırını aşıyor.",
         "too_many": "Aynı anda en fazla {count} dosya yükleyebilirsiniz.",
         "generic": "Yükleme başarısız"
-      }
+      },
+      "switch_organization_confirm": "Kuruluş değiştirmek devam eden yüklemeleri iptal eder. Yine de değiştirilsin mi?"
     },
     "storage": {
       "total_bytes": "Toplam Depolama",

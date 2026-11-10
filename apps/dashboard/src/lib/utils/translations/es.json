@@ -3843,7 +3843,8 @@
         "too_large": "{name} supera los {size}.",
         "too_many": "Puedes subir hasta {count} archivos a la vez.",
         "generic": "La subida falló"
-      }
+      },
+      "switch_organization_confirm": "Cambiar de organización cancela las subidas en curso. ¿Cambiar de todos modos?"
     },
     "storage": {
       "total_bytes": "Almacenamiento total",

@@ -3843,7 +3843,8 @@
         "too_large": "{name} przekracza {size}.",
         "too_many": "Możesz przesłać do {count} plików naraz.",
         "generic": "Przesyłanie nie powiodło się"
-      }
+      },
+      "switch_organization_confirm": "Zmiana organizacji anuluje trwające przesyłania. Zmienić mimo to?"
     },
     "storage": {
       "total_bytes": "Całkowita pamięć",

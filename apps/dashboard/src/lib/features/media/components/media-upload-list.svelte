@@ -33,7 +33,7 @@
       {labels}
       class="shrink-0"
       onRemove={() => mediaUploadManager.remove(item.id)}
-      onRetry={() => mediaUploadManager.retry(item.id)}
+      onRetry={mediaUploadManager.remainingSlots > 0 ? () => mediaUploadManager.retry(item.id) : undefined}
     />
   {/each}
 </div>

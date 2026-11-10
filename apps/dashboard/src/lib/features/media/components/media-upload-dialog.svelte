@@ -76,11 +76,6 @@
       return;
     }
 
-    if (rejected.reason === 'Maximum files uploaded') {
-      snackbar.error(rejectionMessage({ file: rejected.file, reason: 'too_many' }));
-      return;
-    }
-
     snackbar.error(rejectionMessage({ file: rejected.file, reason: 'unsupported_type' }));
   }
 </script>
@@ -119,8 +114,6 @@
         <div class={$isFreePlan ? 'pointer-events-none opacity-50' : ''}>
           <FileDropZone.Root
             accept={MEDIA_UPLOAD_ACCEPT_ATTRIBUTE}
-            maxFiles={MEDIA_UPLOAD_MAX_FILES}
-            fileCount={mediaUploadManager.inFlightCount}
             maxFileSize={MEDIA_UPLOAD_MAX_FILE_BYTES}
             onUpload={handleFilesPicked}
             onFileRejected={handleFileRejected}
@@ -135,11 +128,7 @@
                 </div>
               </FileDropZone.Trigger>
             {:else}
-              <FileDropZone.Trigger
-                label={$t('media_manager.upload.drag_drop')}
-                formatMaxFiles={() => ''}
-                formatMaxFilesAndSize={() => ''}
-              />
+              <FileDropZone.Trigger label={$t('media_manager.upload.drag_drop')} formatMaxSize={() => ''} />
             {/if}
           </FileDropZone.Root>
         </div>
