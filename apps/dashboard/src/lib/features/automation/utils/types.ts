@@ -66,15 +66,15 @@ export type WebhookFormFields = {
 };
 
 export type GetZapierOverviewRequest = (typeof classroomio.organization)['automation']['zapier']['$get'];
-export type RedeliverZapierTriggerRequest =
-  (typeof classroomio.organization)['automation']['zapier']['triggers'][':triggerId']['redeliver']['$post'];
+export type RedeliverZapierTriggersRequest =
+  (typeof classroomio.organization)['automation']['zapier']['triggers']['redeliver']['$post'];
 export type GetZapierOverviewSuccess = Extract<InferResponseType<GetZapierOverviewRequest>, { success: true }>;
 export type ZapierOverview = GetZapierOverviewSuccess['data'];
-export type RedeliverZapierTriggerSuccess = Extract<
-  InferResponseType<RedeliverZapierTriggerRequest>,
+export type RedeliverZapierTriggersSuccess = Extract<
+  InferResponseType<RedeliverZapierTriggersRequest>,
   { success: true }
 >;
-export type RedeliverZapierTriggerResult = RedeliverZapierTriggerSuccess['data'];
+export type RedeliverZapierTriggersResult = RedeliverZapierTriggersSuccess['data'];
 export type ZapierConnection = ZapierOverview['connections'][number];
 export type ZapierTrigger = ZapierConnection['triggers'][number];
 

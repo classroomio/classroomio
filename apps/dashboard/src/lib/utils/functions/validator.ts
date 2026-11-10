@@ -33,9 +33,9 @@ export const getConfirmPasswordError = ({
     return undefined;
   }
 
-  const result = ZPasswordFields.safeParse({ password, confirmPassword });
-
-  return result.success ? undefined : t.get('validations.confirm_password.not_match');
+  // Strength (including the byte ceiling) is reported on the password field
+  // itself; the confirmation only reports an actual mismatch.
+  return password === confirmPassword ? undefined : t.get('validations.confirm_password.not_match');
 };
 
 export const processErrors = (error, mapToId?: boolean) => {

@@ -1,6 +1,6 @@
 import type {
   GetZapierOverviewRequest,
-  RedeliverZapierTriggerRequest,
+  RedeliverZapierTriggersRequest,
   RevokeConnectedAppRequest,
   ZapierOverview
 } from '$features/automation/utils/types';
@@ -45,27 +45,29 @@ class ZapierApi extends BaseApiWithErrors {
   }
 
   /**
-   * Requeues failed events from the last 24 hours for each trigger, then reloads the overview.
+   * Requeues failed events from the last 24 hours for the given triggers in one
+   * request, then reloads the overview.
    */
   async redeliverFailed(triggerIds: string[]) {
+    if (triggerIds.length === 0) return;
+
     let redelivered = 0;
     let hasFailed = false;
 
-    for (const triggerId of triggerIds) {
-      await this.execute<RedeliverZapierTriggerRequest>({
-        requestFn: () =>
-          classroomio.organization.automation.zapier.triggers[':triggerId'].redeliver.$post({
-            param: { triggerId }
-          }),
-        logContext: 'redelivering Zapier trigger events',
-        onSuccess: (response) => {
-          redelivered += response.data.redelivered;
-        },
-        onError: () => {
-          hasFailed = true;
-        }
-      });
-    }
+    await this.execute<RedeliverZapierTriggersRequest>({
+      requestFn: () =>
+        classroomio.organization.automation.zapier.triggers.redeliver.$post({
+          json: { triggerIds }
+        }),
+      logContext: 'redelivering Zapier trigger events',
+      onSuccess: (response) => {
+        redelivered = response.data.redelivered;
+        hasFailed = response.data.failed.length > 0;
+      },
+      onError: () => {
+        hasFailed = true;
+      }
+    });
 
     if (hasFailed) {
       snackbar.error('snackbar.zapier.redeliver_failed');
