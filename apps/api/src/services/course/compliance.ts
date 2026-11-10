@@ -3,6 +3,8 @@ import {
   createCourseCertificateIssue,
   createCourseCompletionNotificationEvent,
   createCourseCompletionRecord,
+  createCourseCompletionRecords,
+  getComplianceSettingsByCourseIds,
   getCourseComplianceHistoryRows,
   getCourseCurrentComplianceRows,
   getLatestComplianceRecordsByProfiles,
@@ -220,7 +222,9 @@ async function getTargetStudentMembers(courseId: string, profileIds?: string[]) 
  * record creation (enrollment itself is still allowed). Throws only when a
  * deadline is present but malformed.
  */
-function getComplianceInitialDueDate(course: Awaited<ReturnType<typeof getComplianceCourseOrThrow>>): string | null {
+function getComplianceInitialDueDate(
+  course: Pick<Awaited<ReturnType<typeof getComplianceCourseOrThrow>>, 'certificate'>
+): string | null {
   const dueDate = course.certificate?.deadline ?? null;
 
   if (!dueDate) {
@@ -352,46 +356,59 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(
     };
   }
 
-  let createdCount = 0;
-  for (const courseId of courseIds) {
-    const [course] = await getCourseById(courseId, dbClient);
+  const courses = await getComplianceSettingsByCourseIds([...new Set(courseIds)], dbClient);
 
-    if (!course || course.type !== 'COMPLIANCE' || !course.compliance) {
+  for (const course of courses) {
+    if (course.type !== 'COMPLIANCE' || !course.compliance) {
       continue;
     }
 
-    const initialDueDate = getComplianceInitialDueDate(course);
-    if (!initialDueDate) {
+    const dueDate = getComplianceInitialDueDate(course);
+    if (!dueDate) {
       continue;
     }
 
-    const learners = await getStudentCourseMembersForCompliance(courseId, profileIds, dbClient);
-    for (const learner of learners) {
-      const profileId = learner.member.profileId;
-      if (!profileId) {
-        continue;
-      }
+    const learners = await getStudentCourseMembersForCompliance(course.id, profileIds, dbClient);
+    const groupMemberIdByProfileId = new Map(
+      learners.flatMap(({ member }) => (member.profileId ? [[member.profileId, member.id] as const] : []))
+    );
 
-      const [existingRecord] = await getLatestComplianceRecordsByProfiles(courseId, [profileId], dbClient);
-      if (existingRecord) {
-        continue;
-      }
-
-      const created = await ensureComplianceEnrollmentRecordForLearner(
-        courseId,
-        learner.member.id,
-        profileId,
-        dbClient
-      );
-      if (created) {
-        createdRecords.push(created);
-      }
-      createdCount += 1;
+    if (groupMemberIdByProfileId.size === 0) {
+      continue;
     }
+
+    const existingRecords = await getLatestComplianceRecordsByProfiles(
+      course.id,
+      [...groupMemberIdByProfileId.keys()],
+      dbClient
+    );
+    const profilesWithRecord = new Set(existingRecords.map((record) => record.profileId));
+
+    const created = await createCourseCompletionRecords(
+      [...groupMemberIdByProfileId]
+        .filter(([profileId]) => !profilesWithRecord.has(profileId))
+        .map(([profileId, groupMemberId]) => ({
+          courseId: course.id,
+          groupMemberId,
+          profileId,
+          cycleNumber: 1,
+          status: 'not_started',
+          dueDate,
+          attempts: 0,
+          timeSpentMinutes: 0
+        })),
+      dbClient
+    );
+
+    createdRecords.push(...created);
+  }
+
+  if (dbClient === db && createdRecords.length > 0) {
+    await emitComplianceEnrollmentEvents(createdRecords);
   }
 
   return {
-    createdCount,
+    createdCount: createdRecords.length,
     createdRecords
   };
 }
