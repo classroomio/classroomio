@@ -30,6 +30,7 @@ import {
   HLS_MIN_UPLOAD_CONCURRENCY,
   HLS_UPLOAD_CONCURRENCY,
   HlsEncoderError,
+  executeCancellableConversion,
   putPresignedObject,
   sleep
 } from './hls-upload-put';
@@ -377,19 +378,7 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
       );
     }
 
-    const cancelConversion = () => void conversion.cancel();
-    if (opts.signal?.aborted) {
-      cancelConversion();
-    } else {
-      opts.signal?.addEventListener('abort', cancelConversion, { once: true });
-    }
-
-    try {
-      await conversion.execute();
-    } finally {
-      opts.signal?.removeEventListener('abort', cancelConversion);
-    }
-
+    await executeCancellableConversion(conversion, opts.signal);
     emit({ stage: 'uploading', percent: 73 });
     await uploader.flush();
 

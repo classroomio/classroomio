@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ConcurrencyGate, HlsEncoderError, putAttemptTimeoutMs, putPresignedObject } from './hls-upload-put';
+import {
+  ConcurrencyGate,
+  HlsEncoderError,
+  executeCancellableConversion,
+  putAttemptTimeoutMs,
+  putPresignedObject
+} from './hls-upload-put';
 import type { PresignedUrl } from './types';
 
 const SEGMENT_BYTES = 1_000_000;
@@ -198,5 +204,83 @@ describe('ConcurrencyGate', () => {
     await Promise.all(tasks);
 
     expect(peak).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('executeCancellableConversion', () => {
+  function fakeConversion() {
+    let rejectExecute: (reason: Error) => void = () => undefined;
+    let finishCancel: () => void = () => undefined;
+    const execute = vi.fn(
+      () =>
+        new Promise<void>((_resolve, reject) => {
+          rejectExecute = reject;
+        })
+    );
+    const cancel = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finishCancel = resolve;
+        })
+    );
+
+    return {
+      conversion: { execute, cancel },
+      rejectExecute: (reason: Error) => rejectExecute(reason),
+      finishCancel: () => finishCancel()
+    };
+  }
+
+  it('cancels the conversion when the signal aborts', async () => {
+    const { conversion, rejectExecute, finishCancel } = fakeConversion();
+    const controller = new AbortController();
+    const run = executeCancellableConversion(conversion, controller.signal);
+
+    controller.abort();
+    rejectExecute(new Error('canceled'));
+    finishCancel();
+
+    await expect(run).rejects.toThrow('canceled');
+    expect(conversion.cancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not settle until the cancellation has finished', async () => {
+    const { conversion, rejectExecute, finishCancel } = fakeConversion();
+    const controller = new AbortController();
+    const onSettled = vi.fn();
+    const run = executeCancellableConversion(conversion, controller.signal).catch(onSettled);
+
+    controller.abort();
+    rejectExecute(new Error('canceled'));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(onSettled).not.toHaveBeenCalled();
+
+    finishCancel();
+    await run;
+
+    expect(onSettled).toHaveBeenCalledTimes(1);
+  });
+
+  it('cancels at once when the signal is already aborted', async () => {
+    const { conversion, rejectExecute, finishCancel } = fakeConversion();
+    const controller = new AbortController();
+    controller.abort();
+    const run = executeCancellableConversion(conversion, controller.signal);
+
+    rejectExecute(new Error('canceled'));
+    finishCancel();
+
+    await expect(run).rejects.toThrow('canceled');
+    expect(conversion.cancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('never cancels a conversion that finishes without an abort', async () => {
+    const conversion = { execute: vi.fn(async () => undefined), cancel: vi.fn(async () => undefined) };
+
+    await executeCancellableConversion(conversion, new AbortController().signal);
+
+    expect(conversion.cancel).not.toHaveBeenCalled();
   });
 });
