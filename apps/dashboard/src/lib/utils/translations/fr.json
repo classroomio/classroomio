@@ -5836,6 +5836,10 @@
         "description": "Zapier a raté les événements des dernières 24 heures. Renvoyez-les pour exécuter les Zaps qui auraient dû démarrer.",
         "resend": "Renvoyer les événements ayant échoué"
       },
+      "disabled_triggers": {
+        "title": "Certains déclencheurs sont désactivés",
+        "description": "Ces déclencheurs ont été désactivés après des échecs répétés. Corrigez la destination dans Zapier, puis réactivez le Zap pour vous réabonner."
+      },
       "remove": {
         "title": "Déconnecter Zapier ?",
         "description": "Les Zaps qui utilisent cette connexion s'arrêtent immédiatement et ses {count} déclencheurs actifs sont supprimés. Reconnectez-vous de Zapier pour les utiliser à nouveau.",

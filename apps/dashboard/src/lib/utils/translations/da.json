@@ -5764,22 +5764,22 @@
           "add_tag_to_contact": "Tilføj tag til kontakt",
           "create_data_event": "Opret datahændelse",
           "new_user_created": "Ny bruger",
-          "send_message_to_contact": "Send Message to Contact",
-          "user_tag": "Tag Added to User"
+          "send_message_to_contact": "Send besked til kontakt",
+          "user_tag": "Tag tilføjet til bruger"
         },
         "calendly": {
-          "invitee_canceled": "Invitee Canceled",
+          "invitee_canceled": "Inviteret annulleret",
           "invitee_created": "Inviteret oprettet eller omlagt",
-          "invitee_no_show_created": "Invitee No Show Created",
+          "invitee_no_show_created": "Inviteret udeblevet",
           "routing_form_submission": "Indsendelse af ny ruteformular"
         },
         "calcom": {
-          "booking_cancelled": "Booking Cancelled",
-          "booking_created": "Booking Created",
-          "meeting_ended": "Meeting Ended"
+          "booking_cancelled": "Booking annulleret",
+          "booking_created": "Booking oprettet",
+          "meeting_ended": "Møde afsluttet"
         },
         "sheets": {
-          "add_row": "Create Spreadsheet Row",
+          "add_row": "Opret regnearksrække",
           "new_row_notify_hook": "Ny regnearksrække"
         },
         "notion": {
@@ -5835,6 +5835,10 @@
         "title": "Nogle begivenheder nåede ikke Zapier",
         "description": "Zapier gik glip af begivenheder fra de sidste 24 timer. Send dem igen for at køre de Zaps, der skulle være startet.",
         "resend": "Send mislykkede begivenheder igen"
+      },
+      "disabled_triggers": {
+        "title": "Nogle triggere er deaktiveret",
+        "description": "Disse triggere blev slået fra efter gentagne leveringsfejl. Ret den modtagende ende i Zapier, og tænd derefter din Zap igen for at abonnere på ny."
       },
       "remove": {
         "title": "Afbryd forbindelsen til Zapier?",

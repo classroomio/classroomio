@@ -5836,6 +5836,10 @@
         "description": "Zapier perdeu eventos das últimas 24 horas. Reenvie-os para executar os Zaps que deveriam ter iniciado.",
         "resend": "Reenviar eventos com falha"
       },
+      "disabled_triggers": {
+        "title": "Alguns gatilhos estão desativados",
+        "description": "Esses gatilhos foram desativados após falhas repetidas de entrega. Corrija o destino no Zapier e ligue o Zap novamente para reassinar."
+      },
       "remove": {
         "title": "Desconectar Zapier?",
         "description": "Zaps que usam esta conexão param imediatamente e seus {count} gatilhos ativos são removidos. Reconecte-se do Zapier para usá-los novamente.",

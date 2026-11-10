@@ -5876,6 +5876,10 @@
         "description": "Zapier missed events from the last 24 hours. Resend them to run the Zaps that should have started.",
         "resend": "Resend failed events"
       },
+      "disabled_triggers": {
+        "title": "Some triggers are disabled",
+        "description": "These triggers were turned off after repeated delivery failures. Fix the receiving end in Zapier, then turn the Zap back on to resubscribe."
+      },
       "connection": {
         "title": "Connection",
         "name": "Zapier",

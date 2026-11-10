@@ -5436,8 +5436,8 @@
         "step_1_button": "Öffnen Sie die Einladung auf Zapier",
         "step_2_title": "Fahren Sie mit Ihrem Zap fort",
         "step_2_description": "Ihr Zap wird in einem neuen Tab geöffnet. Es läuft nichts, bis Sie es einschalten.",
-        "step_2_button": "Weiterfahrt nach Zapier",
-        "already_accepted": "Ich habe bereits zugesagt",
+        "step_2_button": "Weiter zu Zapier",
+        "already_accepted": "Ich habe bereits akzeptiert",
         "note": "ClassroomIO ist derzeit auf Zapier nur auf Einladung verfügbar. Nehmen Sie die Einladung einmal an, bevor Sie Ihren ersten Zap erstellen.",
         "step_done": "Fertig"
       },
@@ -5835,6 +5835,10 @@
         "title": "Einige Ereignisse erreichten Zapier nicht",
         "description": "Zapier hat Ereignisse der letzten 24 Stunden verpasst. Senden Sie sie erneut, um die Zaps auszuführen, die hätten starten sollen.",
         "resend": "Fehlgeschlagene Ereignisse erneut senden"
+      },
+      "disabled_triggers": {
+        "title": "Einige Trigger sind deaktiviert",
+        "description": "Diese Trigger wurden nach wiederholten Zustellungsfehlern deaktiviert. Beheben Sie das empfangende Ende in Zapier und schalten Sie den Zap dann wieder ein, um erneut zu abonnieren."
       },
       "remove": {
         "title": "Zapier trennen?",

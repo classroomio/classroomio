@@ -2089,7 +2089,7 @@
     "goto_lms": "Git LMS",
     "goto_dashboard": "Gösterge Paneli",
     "join_academy": "Akademiye Katılın",
-    "goto_home": "Sınıfa GitIO Ana Sayfa",
+    "goto_home": "ClassroomIO Ana Sayfasına Git",
     "login": "LGiriş",
     "signup": "Kaydol",
     "redirecting": "Yönlendiriyor",
@@ -5756,6 +5756,10 @@
         "title": "Bazı etkinlikler Zapier'e ulaşmadı",
         "description": "Zapier son 24 saatteki etkinlikleri kaçırdı. Başlaması gereken Zap'leri çalıştırmaları için onları yeniden gönderin.",
         "resend": "Başarısız etkinlikleri yeniden gönder"
+      },
+      "disabled_triggers": {
+        "title": "Bazı tetikleyiciler devre dışı",
+        "description": "Bu tetikleyiciler, tekrarlanan teslimat hatalarından sonra kapatıldı. Zapier'de alıcı tarafı düzeltin, ardından yeniden abone olmak için Zap'i tekrar açın."
       },
       "remove": {
         "title": "Zapier'in bağlantısı kesilsin mi?",

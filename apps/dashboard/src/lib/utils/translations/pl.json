@@ -5402,7 +5402,7 @@
         "title": "Katalog aplikacji",
         "subtitle": "Przeglądaj aplikacje, które możesz połączyć z ClassroomIO za pośrednictwem Zapiera.",
         "create_zap": "Utwórz Zap w Zapier",
-        "back": "Wracając do Zapsów",
+        "back": "Wróć do Zapów",
         "search_placeholder": "Wyszukaj aplikacje…",
         "filters_title": "Filtry",
         "categories": "Kategorie",
@@ -5436,7 +5436,7 @@
         "step_1_button": "Otwórz zaproszenie na Zapier",
         "step_2_title": "Przejdź do swojego Zapa",
         "step_2_description": "Twój Zap otworzy się w nowej karcie. Nic nie działa, dopóki tego nie włączysz.",
-        "step_2_button": "Jedź dalej do Zapiera",
+        "step_2_button": "Przejdź do Zapier",
         "already_accepted": "Już zaakceptowałem",
         "note": "ClassroomIO jest obecnie dostępny tylko na zaproszenie w Zapier. Zaakceptuj zaproszenie raz, zanim zbudujesz swojego pierwszego Zapa.",
         "step_done": "Gotowe"
@@ -5824,7 +5824,7 @@
       },
       "connection": {
         "title": "Połączenie",
-        "name": "Zapiera",
+        "name": "Zapier",
         "connected_by": "Połączył się z: {name} w dniu {date}",
         "unknown_admin": "były administrator",
         "disconnect": "Rozłącz",
@@ -5835,6 +5835,10 @@
         "title": "Niektóre wydarzenia nie dotarły do Zapiera",
         "description": "Zapier przegapił wydarzenia z ostatnich 24 godzin. Wyślij ich ponownie, aby uruchomili Zaps, który powinien był się uruchomić.",
         "resend": "Wyślij ponownie nieudane zdarzenia"
+      },
+      "disabled_triggers": {
+        "title": "Niektóre triggery są wyłączone",
+        "description": "Te triggery zostały wyłączone po wielokrotnych niepowodzeniach dostarczania. Napraw odbiorcę w Zapierze, a następnie włącz Zapa ponownie, aby zasubskrybować."
       },
       "remove": {
         "title": "Odłączyć Zapiera?",

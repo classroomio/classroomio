@@ -5836,6 +5836,10 @@
         "description": "Zapier đã bỏ lỡ các sự kiện trong 24 giờ qua. Gửi lại chúng để chạy Zaps lẽ ra phải bắt đầu.",
         "resend": "Gửi lại sự kiện không thành công"
       },
+      "disabled_triggers": {
+        "title": "Một số trình kích hoạt đã bị tắt",
+        "description": "Các trình kích hoạt này đã bị tắt sau nhiều lần gửi thất bại. Hãy sửa đầu nhận trong Zapier, sau đó bật lại Zap để đăng ký lại."
+      },
       "remove": {
         "title": "Ngắt kết nối Zapier?",
         "description": "Các Zap sử dụng kết nối này sẽ dừng ngay lập tức và trình kích hoạt hoạt động {count} của nó sẽ bị xóa. Kết nối lại từ Zapier để sử dụng lại chúng.",

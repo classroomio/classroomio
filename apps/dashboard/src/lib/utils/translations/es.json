@@ -5836,6 +5836,10 @@
         "description": "Zapier se perdió eventos de las últimas 24 horas. Vuelva a enviarlos para ejecutar los Zaps que deberían haberse iniciado.",
         "resend": "Reenviar eventos fallidos"
       },
+      "disabled_triggers": {
+        "title": "Algunos desencadenadores están desactivados",
+        "description": "Estos desencadenadores se desactivaron tras repetidos errores de entrega. Corrija el destino en Zapier y vuelva a activar el Zap para suscribirse de nuevo."
+      },
       "remove": {
         "title": "¿Desconectar Zapier?",
         "description": "Los zaps que utilizan esta conexión se detienen de inmediato y sus {count} activadores activos se eliminan. Vuelve a conectarte desde Zapier para usarlos nuevamente.",
