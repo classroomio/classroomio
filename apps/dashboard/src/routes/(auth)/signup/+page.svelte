@@ -3,7 +3,7 @@
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
-  import { PASSWORD_MIN_LENGTH } from '@cio/utils/validation/auth/password';
+  import { PASSWORD_MAX_BYTES, PASSWORD_MIN_LENGTH } from '@cio/utils/validation/auth/password';
   import { page } from '$app/state';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
@@ -232,7 +232,9 @@
   }
 
   function validatePasswordLength() {
-    if (fields.password && fields.password.length < PASSWORD_MIN_LENGTH) {
+    if (fields.password && new TextEncoder().encode(fields.password).length > PASSWORD_MAX_BYTES) {
+      errors.password = 'validations.auth.password.max_bytes';
+    } else if (fields.password && fields.password.length < PASSWORD_MIN_LENGTH) {
       errors.password = 'validations.auth.password.min_char';
     } else {
       errors.password = '';

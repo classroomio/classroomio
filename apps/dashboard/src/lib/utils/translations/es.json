@@ -92,7 +92,8 @@
     },
     "auth": {
       "password": {
-        "min_char": "Debe tener 8 o más caracteres"
+        "min_char": "Debe tener 8 o más caracteres",
+        "max_bytes": "No debe superar los 72 bytes"
       },
       "email": {
         "invalid_email": "Dirección de correo electrónico no válida"

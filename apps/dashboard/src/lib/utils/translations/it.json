@@ -6412,7 +6412,8 @@
         "invalid_email": "Indirizzo e-mail non valido"
       },
       "password": {
-        "min_char": "Deve contenere 8 o più caratteri"
+        "min_char": "Deve contenere 8 o più caratteri",
+        "max_bytes": "Non deve superare i 72 byte"
       }
     },
     "reset": {

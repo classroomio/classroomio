@@ -92,7 +92,8 @@
     },
     "auth": {
       "password": {
-        "min_char": "Muss mindestens 8 Zeichen lang sein"
+        "min_char": "Muss mindestens 8 Zeichen lang sein",
+        "max_bytes": "Darf 72 Bytes nicht überschreiten"
       },
       "email": {
         "invalid_email": "Ungültige E-Mail-Adresse"

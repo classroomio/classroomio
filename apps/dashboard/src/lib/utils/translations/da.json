@@ -92,7 +92,8 @@
     },
     "auth": {
       "password": {
-        "min_char": "Skal være på 8 eller flere tegn"
+        "min_char": "Skal være på 8 eller flere tegn",
+        "max_bytes": "Må ikke overstige 72 byte"
       },
       "email": {
         "invalid_email": "Ugyldig e-mailadresse"

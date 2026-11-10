@@ -6422,7 +6422,8 @@
         "invalid_email": "Geçersiz e-posta adresi"
       },
       "password": {
-        "min_char": "8 veya daha fazla karakter uzunluğunda olmalı"
+        "min_char": "8 veya daha fazla karakter uzunluğunda olmalı",
+        "max_bytes": "72 baytı aşmamalıdır"
       }
     },
     "reset": {

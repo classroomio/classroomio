@@ -6420,7 +6420,8 @@
         "invalid_email": "Invalid email address"
       },
       "password": {
-        "min_char": "Must be 8 or more characters long"
+        "min_char": "Must be 8 or more characters long",
+        "max_bytes": "Must not exceed 72 bytes"
       }
     },
     "reset": {

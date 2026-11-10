@@ -92,7 +92,8 @@
     },
     "auth": {
       "password": {
-        "min_char": "Phải dài từ 8 ký tự trở lên"
+        "min_char": "Phải dài từ 8 ký tự trở lên",
+        "max_bytes": "Không được vượt quá 72 byte"
       },
       "email": {
         "invalid_email": "Địa chỉ email không hợp lệ"
