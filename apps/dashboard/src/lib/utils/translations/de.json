@@ -3444,7 +3444,8 @@
           "course_hint_restricted": "Eingeschriebene Schüler gehen direkt zur nächsten Unterrichtsstunde. Dieser Kurs ist kostenpflichtig oder nur auf Einladung möglich. Studierende, die nicht eingeschrieben sind, gehen also zum Dashboard.",
           "unavailable_badge": "Nicht verfügbar",
           "course_type_live": "Live-Klasse",
-          "course_type_compliance": "Compliance"
+          "course_type_compliance": "Compliance",
+          "learn_more": "Erfahren Sie mehr"
         }
       },
       "domains": {
@@ -6631,5 +6632,21 @@
       "revoke": "Zugriff entfernen",
       "revoke_confirm": "Zugriff dieser App entfernen? Sie funktioniert dann sofort nicht mehr."
     }
+  },
+  "video_guide": {
+    "watch_video": "Video ansehen",
+    "new_badge": "Neu",
+    "connect_claude": {
+      "title": "Verbinden Sie ClassroomIO mit Claude",
+      "description": "Erfahren Sie, wie Sie ClassroomIO mit Claude verbinden und was Sie fragen können. 4 Minuten."
+    },
+    "lesson_blocks": {
+      "title": "Einführung in Unterrichtsblöcke",
+      "description": "Der Unterricht wird jetzt aus Blöcken aufgebaut. Sehen Sie, wie es in 5 Minuten funktioniert.",
+      "coach_description": "Erstellen Sie jede Lektion aus Notizen, Videos, Folien, Dokumenten und Bildblöcken in beliebiger Reihenfolge. Wählen Sie Bearbeiten, um es auszuprobieren.",
+      "coach_title": "🎉 Neu! Der Unterricht ist jetzt flexibel."
+    },
+    "close": "Schließen",
+    "dismiss": "Verstanden"
   }
 }

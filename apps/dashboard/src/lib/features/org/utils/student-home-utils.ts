@@ -2,6 +2,8 @@ import { getLmsDestinationByPath, LMS_DESTINATIONS, type LmsAvailabilityContext 
 import type { TStudentHomeDestination } from '@cio/utils/validation/organization';
 import type { StudentHomeCourseOption } from './types';
 
+export const STUDENT_HOME_HELP_URL = 'https://classroomio.com/help/publish-and-brand/student-home';
+
 export type StudentHomePageOption = {
   key: (typeof LMS_DESTINATIONS)[number]['key'];
   label: string;

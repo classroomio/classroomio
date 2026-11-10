@@ -20,6 +20,7 @@
   import {
     buildStudentHomePageOptions,
     getStudentHomeWarning,
+    STUDENT_HOME_HELP_URL,
     toStudentHomeDestination
   } from '$features/org/utils/student-home-utils';
   import type { TStudentHomeDestination } from '@cio/utils/validation/organization';
@@ -144,7 +145,18 @@
 <Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('components.settings.customize_lms.student_home.heading')}</Field.Legend>
-    <Field.Description>{$t('components.settings.customize_lms.student_home.description')}</Field.Description>
+    <Field.Description>
+      {$t('components.settings.customize_lms.student_home.description')}
+      <a
+        class="ui:text-primary underline"
+        href={STUDENT_HOME_HELP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="customize-lms-student-home-learn-more"
+      >
+        {$t('components.settings.customize_lms.student_home.learn_more')}
+      </a>
+    </Field.Description>
     <Field.Group>
       <Field.Field>
         <Field.Label>{$t('components.settings.customize_lms.student_home.label')}</Field.Label>

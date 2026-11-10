@@ -3444,7 +3444,8 @@
           "course_hint_restricted": "Os alunos matriculados vão direto para a próxima aula. Este curso é pago ou somente para convidados, então os alunos que não estão matriculados acessam o Painel.",
           "unavailable_badge": "Indisponível",
           "course_type_live": "Ao vivo",
-          "course_type_compliance": "Conformidade"
+          "course_type_compliance": "Conformidade",
+          "learn_more": "Saiba mais"
         }
       },
       "domains": {
@@ -6631,5 +6632,21 @@
       "revoke": "Remover acesso",
       "revoke_confirm": "Remover o acesso deste app? Ele deixará de funcionar imediatamente."
     }
+  },
+  "video_guide": {
+    "watch_video": "Assista ao vídeo",
+    "new_badge": "Novo",
+    "connect_claude": {
+      "title": "Conecte o ClassroomIO ao Claude",
+      "description": "Veja como conectar o ClassroomIO ao Claude e o que você pode perguntar. 4 minutos."
+    },
+    "lesson_blocks": {
+      "title": "Apresentando blocos de aula",
+      "description": "As aulas agora são construídas a partir de blocos. Veja como funciona em 5 minutos.",
+      "coach_description": "Crie cada lição a partir de blocos de notas, vídeos, slides, documentos e imagens, em qualquer ordem. Selecione Editar para experimentar.",
+      "coach_title": "🎉 Novidade! As aulas agora são flexíveis."
+    },
+    "close": "Fechar",
+    "dismiss": "Entendi"
   }
 }

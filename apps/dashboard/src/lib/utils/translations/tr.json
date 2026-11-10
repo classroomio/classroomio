@@ -2169,7 +2169,8 @@
           "course_hint_restricted": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Bu kurs ücretlidir veya yalnızca davetle yapılabilir; dolayısıyla kayıtlı olmayan öğrenciler Kontrol Paneli'ne gider.",
           "unavailable_badge": "Kullanılamıyor",
           "course_type_live": "Canlı",
-          "course_type_compliance": "Uyumluluk"
+          "course_type_compliance": "Uyumluluk",
+          "learn_more": "Daha fazla bilgi edinin"
         }
       },
       "landing_page": {
@@ -6611,5 +6612,21 @@
       "revoke": "Erişimi kaldır",
       "revoke_confirm": "Bu uygulamanın erişimi kaldırılsın mı? Hemen çalışmayı durduracak."
     }
+  },
+  "video_guide": {
+    "watch_video": "Videoyu izle",
+    "new_badge": "Yeni",
+    "connect_claude": {
+      "title": "ClassroomIO'yu Claude'a bağlayın",
+      "description": "ClassroomIO'yu Claude'a nasıl bağlayacağınızı ve ona neler sorabileceğinizi görün. 4 dakika."
+    },
+    "lesson_blocks": {
+      "title": "Ders bloklarıyla tanışın",
+      "description": "Dersler artık bloklardan oluşturuluyor. 5 dakikada nasıl çalıştığını görün.",
+      "coach_description": "Her dersi not, video, slayt, belge ve resim bloklarından istediğiniz sırayla oluşturun. Denemek için Düzenle'yi seçin.",
+      "coach_title": "🎉 Yeni! Dersler artık esnek."
+    },
+    "close": "Kapalı",
+    "dismiss": "Anladım"
   }
 }

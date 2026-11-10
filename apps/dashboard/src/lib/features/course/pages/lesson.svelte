@@ -27,6 +27,8 @@
   import LessonBlocks from '$features/course/components/lesson/lesson-blocks.svelte';
   import LessonSettingsSheet from '$features/course/components/lesson/lesson-settings-sheet.svelte';
   import LessonModeToggle from '$features/course/components/lesson/lesson-mode-toggle.svelte';
+  import { VideoGuideCoachMark } from '$features/video-guide/components';
+  import { LESSON_BLOCKS_COACH_MARK_KEY, VIDEO_GUIDES } from '$features/video-guide/utils/video-guide-utils';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoBus } from '$features/course/components/lesson/video/lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from '$features/course/components/lesson/video/transcript-panel-definition';
@@ -417,12 +419,18 @@
         </RoleBasedSecurity>
 
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <LessonModeToggle
-            class="order-first md:order-none"
-            {mode}
-            disabled={lessonApi.isSaving}
-            onToggle={toggleMode}
-          />
+          <div class="relative order-first md:order-none">
+            <LessonModeToggle {mode} disabled={lessonApi.isSaving} onToggle={toggleMode} />
+            {#if mode === MODES.view}
+              <VideoGuideCoachMark
+                guide={VIDEO_GUIDES.lessonBlocks}
+                title={$t('video_guide.lesson_blocks.coach_title')}
+                description={$t('video_guide.lesson_blocks.coach_description')}
+                storageKey={LESSON_BLOCKS_COACH_MARK_KEY}
+                testId="lesson-blocks-coach-mark"
+              />
+            {/if}
+          </div>
         </RoleBasedSecurity>
       </div>
     </Page.Action>

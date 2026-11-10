@@ -2,6 +2,8 @@
   import { automationApi } from '$features/automation/api/automation.svelte';
   import { getMaskedAutomationSecret, MCP_DOCS_URL } from '$features/automation/utils/automation-utils';
   import KeySecretDialog from '$features/automation/components/key-secret-dialog.svelte';
+  import { VideoGuideCard } from '$features/video-guide/components';
+  import { VIDEO_GUIDES } from '$features/video-guide/utils/video-guide-utils';
   import { summarizeOAuthScopes } from '$features/oauth/utils/oauth-scopes';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -123,6 +125,13 @@
       </ol>
     </Field.Set>
   {/if}
+
+  <VideoGuideCard
+    guide={VIDEO_GUIDES.connectClaude}
+    description={$t('video_guide.connect_claude.description')}
+    class="mx-0 mt-6"
+    testId="mcp-video-guide"
+  />
 {/snippet}
 
 <Field.Group class="mx-auto w-full space-y-2">

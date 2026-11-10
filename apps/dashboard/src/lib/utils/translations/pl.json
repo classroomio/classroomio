@@ -3444,7 +3444,8 @@
           "course_hint_restricted": "Zapisani uczniowie przechodzą od razu na następną lekcję. Ten kurs jest płatny lub dostępny tylko na zaproszenie, więc niezarejestrowani studenci przechodzą do Panelu.",
           "unavailable_badge": "Niedostępne",
           "course_type_live": "Na żywo",
-          "course_type_compliance": "Zgodność"
+          "course_type_compliance": "Zgodność",
+          "learn_more": "Dowiedz się więcej"
         }
       },
       "domains": {
@@ -6631,5 +6632,21 @@
       "revoke": "Usuń dostęp",
       "revoke_confirm": "Usunąć dostęp tej aplikacji? Przestanie działać natychmiast."
     }
+  },
+  "video_guide": {
+    "watch_video": "Obejrzyj wideo",
+    "new_badge": "Nowy",
+    "connect_claude": {
+      "title": "Połącz ClassroomIO z Claudem",
+      "description": "Zobacz, jak połączyć ClassroomIO z Claudem i o co możesz go zapytać. 4 minuty."
+    },
+    "lesson_blocks": {
+      "title": "Przedstawiamy bloki lekcyjne",
+      "description": "Lekcje są teraz budowane z bloków. Zobacz jak to działa w 5 minut.",
+      "coach_description": "Twórz każdą lekcję z notatek, wideo, slajdów, bloków dokumentów i obrazów, w dowolnej kolejności. Wybierz opcję Edytuj, aby spróbować.",
+      "coach_title": "🎉 Nowość! Lekcje są teraz elastyczne."
+    },
+    "close": "Zamknąć",
+    "dismiss": "Rozumiem"
   }
 }

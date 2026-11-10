@@ -14,6 +14,8 @@
   import { getBlockContent } from '../utils/block-list-utils';
   import { getBlockEditor } from '../utils/block-edit-registry';
   import type { BlockEditHost, BlockOf, BlockRecord } from '../utils/types';
+  import { VideoGuideCard } from '$features/video-guide/components';
+  import { VIDEO_GUIDES } from '$features/video-guide/utils/video-guide-utils';
   import BlockAddRow from './block-add-row.svelte';
 
   interface Props {
@@ -129,6 +131,13 @@
 >
   {#snippet emptyAction()}
     <BlockAddRow onSelect={(type) => add(type, 0)} />
+    <div class="mt-6 w-full">
+      <VideoGuideCard
+        guide={VIDEO_GUIDES.lessonBlocks}
+        description={t.get('video_guide.lesson_blocks.description')}
+        testId="block-empty-video-guide"
+      />
+    </div>
   {/snippet}
 
   {#snippet renderItem({ item: block, index, total, highlighted })}
