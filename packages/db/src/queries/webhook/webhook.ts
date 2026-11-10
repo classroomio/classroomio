@@ -673,6 +673,41 @@ export async function listFailedWebhookDeliveriesSince(
 }
 
 /**
+ * Failed delivery counts created since `since`, keyed by endpoint id, for the given endpoints. Used to
+ * surface triggers with missed events even after a later delivery succeeded.
+ */
+export async function countFailedWebhookDeliveriesSince(
+  webhookIds: string[],
+  since: Date,
+  client: DbOrTxClient = db
+): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+
+  if (webhookIds.length === 0) return counts;
+
+  try {
+    const rows = await client
+      .select({ webhookId: schema.webhookDelivery.webhookId, total: count() })
+      .from(schema.webhookDelivery)
+      .where(
+        and(
+          inArray(schema.webhookDelivery.webhookId, webhookIds),
+          inArray(schema.webhookDelivery.status, ['FAILED', 'GAVE_UP']),
+          gte(schema.webhookDelivery.createdAt, since.toISOString())
+        )
+      )
+      .groupBy(schema.webhookDelivery.webhookId);
+
+    for (const row of rows) counts.set(row.webhookId, Number(row.total));
+
+    return counts;
+  } catch (error) {
+    console.error('countFailedWebhookDeliveriesSince error:', error);
+    throw new Error('Failed to count failed webhook deliveries');
+  }
+}
+
+/**
  * Resets a delivery so the worker attempts it again. Keeps the event id so consumers can dedupe.
  */
 export async function requeueWebhookDelivery(webhookId: string, deliveryId: string): Promise<TWebhookDelivery | null> {

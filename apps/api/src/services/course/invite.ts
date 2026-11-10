@@ -524,6 +524,11 @@ export async function resolveCourseInviteContext(courseId: string): Promise<TCou
 
   const courseTitle = course[0].title;
   const courseSlug = course[0].slug ?? (await ensureCourseSlug(course[0].id, courseTitle));
+  const branding = buildEmailBranding({
+    name: courseOrgData.orgName,
+    avatarUrl: courseOrgData.orgAvatarUrl,
+    theme: courseOrgData.orgTheme
+  });
 
   return {
     organizationId: courseOrgData.orgId,
@@ -535,11 +540,7 @@ export async function resolveCourseInviteContext(courseId: string): Promise<TCou
       customDomain: courseOrgData.orgCustomDomain ?? null,
       isCustomDomainVerified: courseOrgData.orgIsCustomDomainVerified ?? null
     },
-    branding: buildEmailBranding({
-      name: courseOrgData.orgName,
-      avatarUrl: courseOrgData.orgAvatarUrl,
-      theme: courseOrgData.orgTheme
-    })
+    branding
   };
 }
 

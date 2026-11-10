@@ -164,6 +164,55 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
     expect(reactivated?.subscription.autoDisabledAt).toBeNull();
   });
 
+  it('updates the stored filters when the app resubscribes the same URL with different filters', async () => {
+    const targetUrl = 'https://hooks.zapier.com/filter-update';
+    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed', 10);
+    expect(created?.created).toBe(true);
+
+    const updated = await upsertManagedWebhookSubscription(
+      { ...managedValues(targetUrl), filterCourseId: randomUUID(), filterCohortId: randomUUID() },
+      'course.completed',
+      10
+    );
+
+    expect(updated?.created).toBe(false);
+    expect(updated?.reactivated).toBeUndefined();
+    expect(updated?.subscription.filterCourseId).not.toBeNull();
+    expect(updated?.subscription.filterCohortId).not.toBeNull();
+
+    const [row] = await db
+      .select({
+        filterCourseId: schema.webhookEndpoint.filterCourseId,
+        filterCohortId: schema.webhookEndpoint.filterCohortId
+      })
+      .from(schema.webhookEndpoint)
+      .where(eq(schema.webhookEndpoint.id, created!.subscription.id));
+
+    expect(row.filterCourseId).toBe(updated?.subscription.filterCourseId);
+    expect(row.filterCohortId).toBe(updated?.subscription.filterCohortId);
+  });
+
+  it('updates the filters while reactivating an auto-disabled subscription', async () => {
+    const targetUrl = 'https://hooks.zapier.com/filter-reactivate';
+    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed', 10);
+
+    await db
+      .update(schema.webhookEndpoint)
+      .set({ isActive: false, autoDisabledAt: new Date().toISOString(), consecutiveFailures: 5 })
+      .where(eq(schema.webhookEndpoint.id, created!.subscription.id));
+
+    const filterCourseId = randomUUID();
+    const reactivated = await upsertManagedWebhookSubscription(
+      { ...managedValues(targetUrl), filterCourseId },
+      'course.completed',
+      10
+    );
+
+    expect(reactivated?.reactivated).toBe(true);
+    expect(reactivated?.subscription.isActive).toBe(true);
+    expect(reactivated?.subscription.filterCourseId).toBe(filterCourseId);
+  });
+
   it('leaves an auto-disabled subscription disabled when the app subscribes it to a different event', async () => {
     const targetUrl = 'https://hooks.zapier.com/reactivate-conflict';
     const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed', 10);

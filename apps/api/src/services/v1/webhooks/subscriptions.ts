@@ -72,20 +72,23 @@ function readSubscriptionSecret(subscription: TWebhookEndpointWithEvents): strin
 }
 
 function toWebhookSubscriptionView(subscription: TWebhookEndpointWithEvents) {
+  const secret = readSubscriptionSecret(subscription);
+
   return {
     id: subscription.id,
     eventType: subscription.eventTypes[0],
     targetUrl: subscription.payloadUrl,
     courseId: subscription.filterCourseId,
     cohortId: subscription.filterCohortId,
-    secret: readSubscriptionSecret(subscription),
+    secret,
     createdAt: subscription.createdAt
   };
 }
 
 /**
  * Subscribes the connected app's `targetUrl` to one event. Idempotent per target URL: a repeat returns the
- * existing subscription with `created: false`. Throws 403 for automation keys, at the plan cap, or without webhooks.
+ * existing subscription with `created: false`, updating its course or cohort filters when they changed.
+ * Throws 403 for automation keys, at the plan cap, or without webhooks.
  */
 export async function createWebhookSubscriptionService(
   orgId: string,
@@ -108,6 +111,8 @@ export async function createWebhookSubscriptionService(
   }
 
   const secret = generateWebhookSecret();
+  const secretCiphertext = encryptWebhookSecret(secret);
+  const secretLast4 = secret.slice(-4);
   const maxSubscriptions = await getOrganizationSubscriptionLimit(orgId);
   const name = `${getSubscriptionNamePrefix(grant.clientId)} · ${payload.eventType}`.slice(
     0,
@@ -119,8 +124,8 @@ export async function createWebhookSubscriptionService(
       oauthConsentId: grant.oauthConsentId,
       name,
       payloadUrl: payload.targetUrl,
-      secretCiphertext: encryptWebhookSecret(secret),
-      secretLast4: secret.slice(-4),
+      secretCiphertext,
+      secretLast4,
       filterCourseId: payload.courseId ?? null,
       filterCohortId: payload.cohortId ?? null,
       createdByProfileId: actorId

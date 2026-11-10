@@ -5,6 +5,7 @@ import { getCohortTitlesByIds } from '@cio/db/queries/cohort/cohort';
 import {
   getManagedWebhookEndpoint,
   listFailedWebhookDeliveriesSince,
+  countFailedWebhookDeliveriesSince,
   listManagedWebhookSubscriptions,
   requeueWebhookDelivery,
   type TWebhookEndpointWithEvents
@@ -19,17 +20,24 @@ import { resolveWebhookHealth } from '@api/services/webhook/webhook';
 function toZapierTriggerView(
   subscription: TWebhookEndpointWithEvents,
   courseTitles: Map<string, string | null>,
-  cohortTitles: Map<string, string | null>
+  cohortTitles: Map<string, string | null>,
+  failedDeliveryCounts: Map<string, number>
 ) {
+  const courseTitle = subscription.filterCourseId ? (courseTitles.get(subscription.filterCourseId) ?? null) : null;
+  const cohortTitle = subscription.filterCohortId ? (cohortTitles.get(subscription.filterCohortId) ?? null) : null;
+  const health = resolveWebhookHealth(subscription);
+  const failedDeliveryCount = failedDeliveryCounts.get(subscription.id) ?? 0;
+
   return {
     id: subscription.id,
     eventType: subscription.eventTypes[0],
     courseId: subscription.filterCourseId,
-    courseTitle: subscription.filterCourseId ? (courseTitles.get(subscription.filterCourseId) ?? null) : null,
+    courseTitle,
     cohortId: subscription.filterCohortId,
-    cohortTitle: subscription.filterCohortId ? (cohortTitles.get(subscription.filterCohortId) ?? null) : null,
-    health: resolveWebhookHealth(subscription),
+    cohortTitle,
+    health,
     isActive: subscription.isActive,
+    failedDeliveryCount,
     lastDeliveryStatus: subscription.lastDeliveryStatus,
     lastDeliveryAt: subscription.lastDeliveryAt,
     createdAt: subscription.createdAt
@@ -63,22 +71,28 @@ export async function getZapierConnectionsService(organizationId: string) {
   const cohortIds = zapierSubscriptions.flatMap((subscription) =>
     subscription.filterCohortId ? [subscription.filterCohortId] : []
   );
-  const [courseTitles, cohortTitles] = await Promise.all([
+  const [courseTitles, cohortTitles, failedDeliveryCounts] = await Promise.all([
     getCourseTitlesByIds([...new Set(courseIds)]),
-    getCohortTitlesByIds([...new Set(cohortIds)])
+    getCohortTitlesByIds([...new Set(cohortIds)]),
+    countFailedWebhookDeliveriesSince(
+      zapierSubscriptions.map((subscription) => subscription.id),
+      new Date(Date.now() - ZAPIER_FAILED_EVENT_WINDOW_MS)
+    )
   ]);
 
   const connections = zapierApps.map((app) => {
     const triggers = zapierSubscriptions
       .filter((subscription) => subscription.oauthConsentId === app.consentId)
-      .map((subscription) => toZapierTriggerView(subscription, courseTitles, cohortTitles));
+      .map((subscription) => toZapierTriggerView(subscription, courseTitles, cohortTitles, failedDeliveryCounts));
+    const connectedAt = app.createdAt.toISOString();
+    const lastUsedAt = app.lastUsedAt ? new Date(app.lastUsedAt).toISOString() : null;
 
     return {
       consentId: app.consentId,
       authorizedBy: { profileId: app.userId, fullname: app.userFullname },
       scopes: app.scopes,
-      connectedAt: app.createdAt.toISOString(),
-      lastUsedAt: app.lastUsedAt ? new Date(app.lastUsedAt).toISOString() : null,
+      connectedAt,
+      lastUsedAt,
       triggers
     };
   });
