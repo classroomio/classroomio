@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   zapierGet: vi.fn(),
-  redeliverPost: vi.fn(),
+  redeliverBulkPost: vi.fn(),
   deleteConnection: vi.fn(),
   snackbarSuccess: vi.fn(),
   snackbarError: vi.fn()
@@ -49,10 +49,8 @@ vi.mock('$lib/utils/services/api', () => {
         zapier: {
           $get: mocks.zapierGet,
           triggers: {
-            ':triggerId': {
-              redeliver: {
-                $post: mocks.redeliverPost
-              }
+            redeliver: {
+              $post: mocks.redeliverBulkPost
             }
           }
         },
@@ -293,10 +291,11 @@ describe('zapierApi', () => {
     expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
   });
 
-  it('redelivers failed triggers, reports the redelivered count and reloads', async () => {
-    mocks.redeliverPost
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: { redelivered: 2 } }) })
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: { redelivered: 3 } }) });
+  it('redelivers failed triggers in one bulk call, reports the count and reloads', async () => {
+    mocks.redeliverBulkPost.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: { redelivered: 5, failed: [] } })
+    });
     mocks.zapierGet.mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -307,17 +306,38 @@ describe('zapierApi', () => {
 
     await zapierApi.redeliverFailed(['trig-1', 'trig-2']);
 
-    expect(mocks.redeliverPost).toHaveBeenCalledTimes(2);
-    expect(mocks.redeliverPost).toHaveBeenCalledWith({ param: { triggerId: 'trig-1' } });
+    expect(mocks.redeliverBulkPost).toHaveBeenCalledTimes(1);
+    expect(mocks.redeliverBulkPost).toHaveBeenCalledWith({ json: { triggerIds: ['trig-1', 'trig-2'] } });
     expect(mocks.snackbarSuccess).toHaveBeenCalledTimes(1);
     expect(mocks.snackbarError).not.toHaveBeenCalled();
     expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
   });
 
-  it('reports a failure when any trigger redelivery fails', async () => {
-    mocks.redeliverPost
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, data: { redelivered: 2 } }) })
-      .mockRejectedValueOnce(new Error('gone'));
+  it('reports a failure when the bulk redelivery skips triggers', async () => {
+    mocks.redeliverBulkPost.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { redelivered: 2, failed: [{ triggerId: 'trig-2', error: 'Zapier trigger not found' }] }
+      })
+    });
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { connections: [], limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 } }
+      })
+    });
+
+    await zapierApi.redeliverFailed(['trig-1', 'trig-2']);
+
+    expect(mocks.snackbarError).toHaveBeenCalledWith('snackbar.zapier.redeliver_failed');
+    expect(mocks.snackbarSuccess).not.toHaveBeenCalled();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a failure when the bulk redelivery request fails', async () => {
+    mocks.redeliverBulkPost.mockRejectedValueOnce(new Error('gone'));
     mocks.zapierGet.mockResolvedValue({
       ok: true,
       json: async () => ({
