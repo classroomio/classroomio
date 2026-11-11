@@ -107,6 +107,13 @@
     step = 'preview';
   }
 
+  function toImportRecipient(row: ParsedImportRow) {
+    const email = row.email.trim().toLowerCase();
+    const name = row.name?.trim() || undefined;
+
+    return { email, name, courses: row.courses };
+  }
+
   function handleRowEdit() {
     parsedRows = reclassifyImportRows(parsedRows);
   }
@@ -137,13 +144,7 @@
     try {
       // Only the rows the preview marked importable are sent; the server
       // re-checks and can still reject individually.
-      const recipients = parsedRows
-        .filter((row) => row.status === 'ready')
-        .map((row) => ({
-          email: row.email.trim().toLowerCase(),
-          name: row.name?.trim() || undefined,
-          courses: row.courses
-        }));
+      const recipients = parsedRows.filter((row) => row.status === 'ready').map((row) => toImportRecipient(row));
 
       const result = await orgApi.importAudienceMembers({
         recipients,
@@ -289,6 +290,7 @@
               <Table.Cell>
                 <Input
                   bind:value={row.name}
+                  maxlength={200}
                   oninput={handleRowEdit}
                   aria-label={$t('audience.import.edit_name')}
                   placeholder={$t('audience.name')}

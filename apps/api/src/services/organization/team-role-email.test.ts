@@ -51,6 +51,12 @@ describe('sendTeamRoleChangedEmail', () => {
     );
   });
 
+  it('sends nothing to a member who has not joined yet', async () => {
+    await sendTeamRoleChangedEmail({ ...notice, memberEmail: 'pending@acme.test', memberProfileId: null });
+
+    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+  });
+
   it('sends nothing when no email can be found', async () => {
     vi.mocked(getProfileById).mockResolvedValue({ id: 'member-1', email: null } as never);
 

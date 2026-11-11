@@ -147,6 +147,25 @@ describe('isImportableEmail', () => {
   });
 });
 
+describe('parseAudienceImportCsv — names on rows that need fixing', () => {
+  it('keeps the name and courses on an invalid row so correcting the email loses nothing', () => {
+    const parsed = parseAudienceImportCsv('email,name,courses\nada@,Ada Lovelace,"React,Data"');
+    const [row] = parsed.rows;
+
+    expect(row).toMatchObject({ status: 'invalid_email', name: 'Ada Lovelace', courses: ['React', 'Data'] });
+    expect(reclassifyImportRows([{ ...row, email: 'ada@test.dev' }])[0]).toMatchObject({
+      status: 'ready',
+      name: 'Ada Lovelace'
+    });
+  });
+
+  it('keeps the name on a row with a blank email', () => {
+    const [row] = parseAudienceImportCsv('email,name\n,Ada Lovelace').rows;
+
+    expect(row).toMatchObject({ status: 'missing_email', name: 'Ada Lovelace' });
+  });
+});
+
 describe('reclassifyImportRows', () => {
   it('marks a corrected address ready and flags a broken one', () => {
     const parsed = parseAudienceImportCsv('ada@test.dev\nnot-an-email');

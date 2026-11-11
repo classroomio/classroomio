@@ -221,17 +221,6 @@ export function parseAudienceImportCsv(text: string): ParsedImport {
       if (rows.length >= AUDIENCE_IMPORT_MAX_ROWS) break;
 
       const email = raw.trim().toLowerCase();
-
-      if (!email) {
-        rows.push({ line, email: '', courses: [], status: 'missing_email' });
-        continue;
-      }
-
-      if (!isImportableEmail(email)) {
-        rows.push({ line, email, courses: [], status: 'invalid_email' });
-        continue;
-      }
-
       const nameIndex = columns.indexOf('name');
       const coursesIndex = columns.indexOf('courses');
       const name = nameIndex >= 0 ? cells[nameIndex]?.trim() || undefined : undefined;
@@ -242,6 +231,16 @@ export function parseAudienceImportCsv(text: string): ParsedImport {
               .map((value) => value.trim())
               .filter(Boolean)
           : [];
+
+      if (!email) {
+        rows.push({ line, email: '', name, courses, status: 'missing_email' });
+        continue;
+      }
+
+      if (!isImportableEmail(email)) {
+        rows.push({ line, email, name, courses, status: 'invalid_email' });
+        continue;
+      }
 
       if (seen.has(email)) {
         rows.push({ line, email, name, courses, status: 'duplicate_in_file' });
