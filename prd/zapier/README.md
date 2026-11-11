@@ -1,6 +1,8 @@
 # Zapier Integration PRD
 
-![Status](https://img.shields.io/badge/status-draft-yellow)
+## Status
+
+- In progress (built; the Zapier app is not published yet, so the private invite has not gone out)
 
 **Prototype:** [`prototypes/zapier-integration`](../../prototypes/zapier-integration) in this repo. Run it locally (`python3 -m http.server 4748` from that folder) and open `index.html?returning=1`. · **Demo video:** [watch the walkthrough](https://www.awesomescreenshot.com/video/57929349?key=6d5fe60a45237a8c6e4051cec3ca9777)
 
@@ -204,7 +206,7 @@ Envelope, headers and signing are those of `prd/webhooks`. Delivery is at-least-
 - **Hosts**: Zapier targets are unguessable HTTPS URLs on `hooks.zapier.com`. Subscribe rejects any other host. Signing stays on.
 - **Retries**: 6 attempts over roughly 2.6 hours (immediately, then after 10 s, 1 min, 5 min, 30 min and 2 hours).
 - **Give-up**: after the last failure the delivery is marked `GAVE_UP`. The trigger's health degrades after repeated give-ups, and the endpoint is auto-disabled at the threshold.
-- **Redelivery**: when events from the last 24 hours failed, the Zaps page shows a warning that resends them.
+- **Redelivery**: when events from the last 24 hours failed, the Zaps page shows a warning that resends every failed trigger in one call.
 - **410 Gone**: when Zapier reports the Zap was turned off or deleted, the managed subscription is deleted.
 - **Isolation**: Zapier-managed subscriptions are not shown in the Webhooks tab and do not count toward its 20-endpoint cap. They have their own per-plan cap. Removing a connection deletes its subscriptions.
 
@@ -259,7 +261,7 @@ Automation keys of type `zapier` can no longer be created. Zapier connects only 
 | --- | --- |
 | Validation (`packages/utils`) | Subscription, enrollment and `/me` schemas; `?email=`, `?slug=` and `?title=` filters; the trigger, action and search catalog; Zapier plan limits; read-only scope rules. |
 | Queries (`packages/db`) | Managed webhook endpoints bound to an OAuth grant (deleted with the grant); connection and trigger listings; failed-delivery lookups. |
-| API (`apps/api`) | `GET /public-api/v1/me`; `POST /public-api/v1/courses/:courseId/enrollments`; `POST` and `DELETE /public-api/v1/webhooks/subscriptions`; `GET /public-api/v1/webhooks/samples`; `GET /organization/automation/zapier` and `POST /organization/automation/zapier/triggers/:triggerId/redeliver` for the dashboard; per-plan Zapier rate limits; connected apps listed by kind so the MCP tab excludes Zapier. |
+| API (`apps/api`) | `GET /public-api/v1/me`; `POST /public-api/v1/courses/:courseId/enrollments`; `POST` and `DELETE /public-api/v1/webhooks/subscriptions`; `GET /public-api/v1/webhooks/samples`; `GET /organization/automation/zapier` and `POST /organization/automation/zapier/triggers/redeliver` (one batch of trigger ids, one rate-limit slot) for the dashboard; per-plan Zapier rate limits; connected apps listed by kind so the MCP tab excludes Zapier. |
 | Dashboard (`apps/dashboard`) | The Zaps page, App Directory and ClassroomIO + {App} page under the Automation → Zapier tab; workspace picker and consent changes. |
 | Zapier app (`apps/zapier`) | Zapier Platform CLI app with OAuth, 14 REST Hook triggers, 11 actions, 2 searches, course and cohort dropdowns, and error mapping (plan, read-only, rate limit, validation). Built, tested and validated in CI; pushed manually. |
 
