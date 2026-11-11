@@ -1231,7 +1231,9 @@
           "popover_title": "Seleziona i corsi",
           "popover_empty": "Nessun corso pubblicato disponibile.",
           "search_no_results": "Nessun corso corrisponde alla tua ricerca.",
-          "search_placeholder": "Cerca corsi..."
+          "search_placeholder": "Cerca corsi...",
+          "featured_toggle": "Mostra il corso in evidenza",
+          "featured_toggle_desc": "Mette in evidenza il tuo primo corso in un grande blocco. Disattiva per elencarlo insieme agli altri corsi."
         }
       },
       "title": "Titolo",

@@ -1146,7 +1146,9 @@
           "popover_title": "Dersleri seçin",
           "popover_empty": "Yayınlanmış kurs yok.",
           "search_no_results": "Aramanızla eşleşen kurs yok.",
-          "search_placeholder": "Kursları arayın..."
+          "search_placeholder": "Kursları arayın...",
+          "featured_toggle": "Öne çıkan kursu göster",
+          "featured_toggle_desc": "İlk kursunuzu büyük bir blokta öne çıkarır. Bunu kapatırsanız kurs diğer kurslarınızla birlikte listelenir."
         }
       },
       "title": "Başlık",

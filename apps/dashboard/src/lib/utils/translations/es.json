@@ -4168,7 +4168,9 @@
           "popover_title": "Seleccionar cursos",
           "popover_empty": "No hay cursos publicados disponibles.",
           "search_no_results": "Ningún curso coincide con tu búsqueda.",
-          "search_placeholder": "Buscar cursos..."
+          "search_placeholder": "Buscar cursos...",
+          "featured_toggle": "Mostrar curso destacado",
+          "featured_toggle_desc": "Destaca tu primer curso en un bloque grande. Desactívalo para mostrarlo junto con tus otros cursos."
         }
       },
       "content": {
