@@ -15,3 +15,7 @@ Disallow:
 User-agent: *
 Disallow: 
 Disallow: /cgi-bin/
+
+Sitemap: https://classroomio.com/sitemap.xml
+Sitemap: https://classroomio.com/help/sitemap.xml
+Sitemap: https://classroomio.com/docs/sitemap.xml
