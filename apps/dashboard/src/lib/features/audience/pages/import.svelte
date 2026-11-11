@@ -274,7 +274,7 @@
         </Table.Header>
         <Table.Body>
           {#each parsedRows as row, index (index)}
-            <Table.Row class={row.status === 'ready' ? undefined : 'ui:text-muted-foreground'}>
+            <Table.Row>
               <Table.Cell>
                 <Input
                   type="email"
