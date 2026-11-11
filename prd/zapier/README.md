@@ -82,7 +82,7 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
 
 | Area | Decision |
 | --- | --- |
-| Distribution | Private Zapier app via an invite link first, public Zapier listing once about 5 paying orgs use it and v1 is stable. |
+| Distribution | Private Zapier app via an invite link first (early access), public Zapier listing once v1 is stable and the directory review is approved. |
 | Plans | Early Adopter and above. Basic sees an upgrade prompt. Access is binary: no monthly task credits. Per-minute rate limits apply as abuse protection. |
 | Plan downgrade | Zapier pauses. Every call returns `403 UPGRADE_REQUIRED`, trigger deliveries stop, and the dashboard explains why. Connections and subscriptions stay in place, so upgrading resumes every Zap without reconnecting. |
 | Auth | OAuth 2.0 with admin consent. No API-key paste. Admins can grant read-only access on the consent screen. |
@@ -109,18 +109,17 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
 
 ## Non-Goals (v1)
 
-1. Public listing in the Zapier directory (after private validation).
-2. Polling triggers (superseded by webhooks).
-3. Make / n8n / Pipedream curated app listings.
-4. Free / Basic plan access.
-5. Inbound webhooks from Zapier to ClassroomIO (Zapier writes via REST actions).
-6. Monthly task credits.
-7. Customer-authored custom triggers.
-8. A cap on the number of Zapier connections. Trigger subscriptions are capped instead.
-9. Bulk "Disconnect Zapier" button.
-10. Branding review and Zapier marketplace screenshots.
-11. Zapier on self-hosted installs.
-12. Deferred triggers and actions listed in At a Glance.
+1. Polling triggers (superseded by webhooks).
+2. Make / n8n / Pipedream curated app listings.
+3. Free / Basic plan access.
+4. Inbound webhooks from Zapier to ClassroomIO (Zapier writes via REST actions).
+5. Monthly task credits.
+6. Customer-authored custom triggers.
+7. A cap on the number of Zapier connections. Trigger subscriptions are capped instead.
+8. Bulk "Disconnect Zapier" button.
+9. Branding review and Zapier marketplace screenshots (before directory submission).
+10. Zapier on self-hosted installs.
+11. Deferred triggers and actions listed in At a Glance.
 
 ## User Stories
 
@@ -269,7 +268,7 @@ Automation keys of type `zapier` can no longer be created. Zapier connects only 
 
 1. Annotate every new route with `describeRoute`; run `pnpm --filter @cio/api upload:openapi`.
 2. Add Zapier guides to the help center: connect your account, read-only connections, trigger catalog with sample payloads, action catalog with required fields, searches, limits, managing connections, and troubleshooting (connection removed, read-only, plan paused, rate limited).
-3. Name Zapier alongside REST API, Webhooks and MCP on the website's automation pages. Follow-up after private listing; does not gate v1.
+3. Name Zapier alongside REST API, Webhooks and MCP on the website's automation pages. Ships with the public listing; does not gate the integration itself.
 
 ## Rollout Plan
 
@@ -277,7 +276,7 @@ Automation keys of type `zapier` can no longer be created. Zapier connects only 
 2. **Public API and subscriptions**: `/me`, filters, enrollment endpoint, subscription and samples routes, per-plan limits, OpenAPI upload.
 3. **Dashboard**: Zaps page, App Directory, ClassroomIO + {App} page, translations.
 4. **Zapier app**: 14 triggers, 11 actions, 2 searches, dropdowns, `zapier push`.
-5. **Private validation**: share the invite link with paying orgs, watch usage and delivery logs, iterate, update docs.
+5. **Early access (pre-listing)**: share the invite link with early orgs until the listing is approved, watch usage and delivery logs, iterate, update docs.
 6. **Public listing**: submit for directory review, promote, announce.
 7. **Later**: deferred triggers and actions, other iPaaS clients.
 
