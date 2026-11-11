@@ -1,6 +1,7 @@
 import type { Handle, RequestEvent } from '@sveltejs/kit';
 import { buildPricingMarkdown } from '$lib/server/agent-resources';
 import { DOCS_ORIGIN, HELP_ORIGIN } from '$lib/server/upstreams';
+import { prefersMarkdown } from '$lib/utils/accept-header';
 import { resolveLegacyRedirect } from '$lib/utils/legacy-redirects';
 
 function proxy(origin: string, pathname: string, event: RequestEvent) {
@@ -32,8 +33,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     return proxy(HELP_ORIGIN, pathname, event);
   }
 
-  const wantsMarkdown = event.request.headers.get('accept')?.includes('text/markdown');
-  if (pathname === '/pricing' && wantsMarkdown) {
+  if (pathname === '/pricing' && prefersMarkdown(event.request.headers.get('accept'))) {
     return new Response(buildPricingMarkdown(), {
       headers: { 'content-type': 'text/markdown; charset=utf-8', vary: 'Accept' }
     });
