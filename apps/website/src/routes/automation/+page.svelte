@@ -51,12 +51,12 @@
           Developer reference
         </Badge>
         <h1 class="text-title font-medium text-balance text-gray-950 lg:text-[64px]">
-          API, Webhooks, MCP.
+          API, Webhooks, Zapier, MCP.
           <em class="text-blue-700 not-italic">No integration tax.</em>
         </h1>
         <HeroSubtitle>
-          ClassroomIO ships with a public REST API, signed Webhooks, and an MCP server. No closed marketplace, no
-          "premium connector" plans. Build the integration that fits your stack.
+          ClassroomIO ships with a public REST API, signed Webhooks, Zapier, and an MCP server. No closed marketplace,
+          no "premium connector" plans. Build the integration that fits your stack.
         </HeroSubtitle>
         <div class="mt-9 flex flex-wrap items-center gap-3">
           <CtaButton href="https://classroomio.com/docs/api">Read the API docs</CtaButton>
@@ -142,6 +142,77 @@
 
   <McpServerSection />
 
+  <Section class="bg-gray-50" innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <SectionHeader
+        align="left"
+        size="h3"
+        eyebrow="Zapier"
+        eyebrowClass="text-blue-700"
+        titleClass=""
+        ledeClass="text-gray-500"
+        lede="Connect ClassroomIO to HubSpot, Slack, Google Drive, and thousands more without code. Triggers fire when enrollments, completions, certificates, and submissions happen. Actions enroll, update, or remove students."
+      >
+        {#snippet title()}No-code automations on the same API.{/snippet}
+      </SectionHeader>
+
+      <ul class="mt-8 space-y-3 text-[15px] text-gray-700">
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> HubSpot deal won → enroll the buyer in onboarding
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> Certificate issued → upload the PDF to Drive
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> Exercise submitted → notify the tutor in Slack
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> Available on Early Adopter and Enterprise (ClassroomIO Cloud)
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-700">→</span> Invite-only on Zapier until the public listing lands
+        </li>
+      </ul>
+
+      <div class="mt-9 flex flex-wrap items-center gap-3">
+        <CtaButton href="https://classroomio.com/help/integrations-and-automation/connect-classroomio-to-zapier"
+          >How to connect</CtaButton
+        >
+        <CtaButton
+          href="https://classroomio.com/help/integrations-and-automation/zapier-triggers-and-actions"
+          variant="secondary">See triggers and actions →</CtaButton
+        >
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-gray-200 bg-white p-6 md:p-8">
+      <p class="text-label font-mono text-gray-500 uppercase">Zaps</p>
+      <ul class="mt-5 space-y-4 text-[15px] text-gray-700">
+        <li class="flex items-start gap-3">
+          <span
+            class="flex h-6 min-w-9 shrink-0 items-center justify-center rounded-xs bg-blue-50 px-1.5 font-mono text-[10px] font-medium text-blue-700"
+            >WHEN</span
+          >
+          HubSpot deal won → Enroll Student in Course
+        </li>
+        <li class="flex items-start gap-3">
+          <span
+            class="flex h-6 min-w-9 shrink-0 items-center justify-center rounded-xs bg-blue-50 px-1.5 font-mono text-[10px] font-medium text-blue-700"
+            >WHEN</span
+          >
+          New Certificate → Upload to HRIS / Drive
+        </li>
+        <li class="flex items-start gap-3">
+          <span
+            class="flex h-6 min-w-9 shrink-0 items-center justify-center rounded-xs bg-blue-50 px-1.5 font-mono text-[10px] font-medium text-blue-700"
+            >WHEN</span
+          >
+          New Exercise Submission → Notify tutor in Slack
+        </li>
+      </ul>
+    </div>
+  </Section>
+
   <Section innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
     <div>
       <SectionHeader
@@ -215,7 +286,7 @@
 
   <PageSignupCTA
     header="Programmable from day one."
-    subText="API, Webhooks, and an MCP server in the box. Self-host it or use the hosted version. Same surface either way."
+    subText="API, Webhooks, and an MCP server in the box — plus Zapier on ClassroomIO Cloud. Self-host it or use the hosted version."
     btnLabel="Read the docs"
     link="https://classroomio.com/docs/api"
     demo={false}
