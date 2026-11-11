@@ -4,7 +4,8 @@ import { getNextStep, getPreviousStep, ONBOARDING_STEPS } from '../utils/constan
 import { validateMetadata, validateOrgSetup, validateQuestionStep } from '../utils/validations';
 import { hasManagedOrganization } from '../utils/completeness';
 
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, matchesError } from '$lib/utils/services/api';
+import { ErrorCodes } from '@cio/utils/constants';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { profile } from '$lib/utils/store/user';
 import { get } from 'svelte/store';
@@ -88,31 +89,17 @@ export class OnboardingApi extends BaseApiWithErrors {
         this.step = ONBOARDING_STEPS.USE_CASES;
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
+        if (matchesError(result, { code: ErrorCodes.SITENAME_EXISTS }) || matchesError(result, { field: 'siteName' })) {
+          this.errors = { ...this.errors, siteName: result.message };
           return;
         }
 
-        if ('message' in result) {
-          snackbar.error(result.message);
+        if (matchesError(result, { field: 'orgName' })) {
+          this.errors = { ...this.errors, orgName: result.message };
           return;
         }
 
-        if ('error' in result) {
-          // Specific handling for siteName / orgName
-          if (result.code === 'SITENAME_EXISTS' || result.field === 'siteName') {
-            this.errors = { ...this.errors, siteName: result.error };
-            return;
-          }
-
-          if (result.code === 'ORGNAME_EXISTS' || result.field === 'orgName') {
-            this.errors = { ...this.errors, orgName: result.error };
-            return;
-          }
-
-          // Fallback to generic
-          this.handleValidationError(result);
-        }
+        this.handleValidationError(result);
       }
     });
   }
@@ -142,20 +129,7 @@ export class OnboardingApi extends BaseApiWithErrors {
         window.location.href = orgPath;
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-
-        if ('message' in result) {
-          snackbar.error(result.message);
-          return;
-        }
-
-        // map api validation back to frontend fields
-        if ('error' in result) {
-          this.handleValidationError(result);
-        }
+        this.handleValidationError(result);
       }
     });
   }

@@ -1,4 +1,4 @@
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, hasErrorCode, matchesError } from '$lib/utils/services/api';
 
 import type {
   Course,
@@ -273,10 +273,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch course');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch course');
       }
     });
     return this.course;
@@ -364,47 +362,23 @@ export class CourseApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.invite.failed_join');
-        } else if (
-          typeof result === 'object' &&
-          result !== null &&
-          'code' in result &&
-          result.code === 'UPGRADE_REQUIRED'
-        ) {
+        if (hasErrorCode(result, ErrorCodes.UPGRADE_REQUIRED)) {
           snackbar.error(
             t.get('course.navItem.landing_page.enroll_page.student_limit_reached', {
               orgName: get(currentOrg)?.name ?? ''
             })
           );
-        } else if (
-          typeof result === 'object' &&
-          result !== null &&
-          'code' in result &&
-          result.code === ErrorCodes.VALIDATION_ERROR &&
-          'field' in result &&
-          result.field === 'certificate.deadline'
-        ) {
+        } else if (matchesError(result, { code: ErrorCodes.VALIDATION_ERROR, field: 'certificate.deadline' })) {
           snackbar.error('course.certification.deadline_invalid');
-        } else if (
-          typeof result === 'object' &&
-          result !== null &&
-          'code' in result &&
-          result.code === ErrorCodes.FORBIDDEN
-        ) {
+        } else if (hasErrorCode(result, ErrorCodes.FORBIDDEN)) {
           const message = t.get('course.navItem.landing_page.enroll_page.members_only');
 
           this.errors = { ...this.errors, general: message };
           snackbar.error(message);
-        } else if (
-          typeof result === 'object' &&
-          result !== null &&
-          'code' in result &&
-          result.code === ErrorCodes.INVITE_RESTRICTED
-        ) {
+        } else if (hasErrorCode(result, ErrorCodes.INVITE_RESTRICTED)) {
           this.inviteRestricted = true;
-        } else if (typeof result === 'object' && result !== null && 'error' in result) {
-          snackbar.error((result as { error: string }).error);
+        } else {
+          snackbar.error(result.message);
         }
       }
     });
@@ -429,10 +403,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch course by slug');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch course by slug');
       }
     });
     return this.course;
@@ -490,18 +462,12 @@ export class CourseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to create course');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          // Field-specific error (e.g., duplicate title)
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          // General error
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -575,22 +541,18 @@ export class CourseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to update course');
-          return;
-        }
-        if ('code' in result && result.code === ErrorCodes.COMPLIANCE_DEADLINE_REQUIRED) {
+        if (hasErrorCode(result, ErrorCodes.COMPLIANCE_DEADLINE_REQUIRED)) {
           this.errors['certificate.deadline'] = t.get('course.certification.deadline_required');
           snackbar.error('course.certification.deadline_required');
           return;
         }
 
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -625,10 +587,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to delete course');
-        }
+      onError: () => {
+        snackbar.error('Failed to delete course');
       }
     });
   }
@@ -653,10 +613,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch course progress');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch course progress');
       }
     });
   }
@@ -674,10 +632,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to load certification status');
-        }
+      onError: () => {
+        snackbar.error('Failed to load certification status');
       }
     });
   }
@@ -701,10 +657,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch course analytics');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch course analytics');
       }
     });
   }
@@ -818,10 +772,8 @@ export class CourseApi extends BaseApiWithErrors {
         this.success = true;
         this.errors = {};
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to send payment request');
-        }
+      onError: () => {
+        snackbar.error('Failed to send payment request');
       }
     });
   }
