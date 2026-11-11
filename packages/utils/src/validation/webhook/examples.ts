@@ -4,6 +4,7 @@ import type { TWebhookEventData } from './events';
 export type TWebhookExampleOrganization = { id: string; name: string | null; siteName: string | null };
 
 export const WEBHOOK_EXAMPLE_CREATED_AT = '2026-10-01T09:00:00.000Z';
+export const WEBHOOK_EXAMPLE_ID_PREFIX = 'evt_example_';
 
 export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebhookEventData<TEvent> } = {
   'organization.invite.created': {
@@ -858,7 +859,7 @@ export function buildWebhookExampleEnvelope<TEvent extends TWebhookEventType>(
   organization: TWebhookExampleOrganization
 ) {
   return {
-    id: `evt_example_${eventType.replace(/\./g, '_')}`,
+    id: `${WEBHOOK_EXAMPLE_ID_PREFIX}${eventType.replace(/\./g, '_')}`,
     type: eventType,
     createdAt: WEBHOOK_EXAMPLE_CREATED_AT,
     apiVersion: WEBHOOK_API_VERSION,

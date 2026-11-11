@@ -149,6 +149,56 @@ describe('event triggers', () => {
     expect(result).toEqual([(App.triggers.new_course_enrollment.operation as any).sample]);
   });
 
+  it('skips the certificate download for documented examples', async () => {
+    const example = {
+      id: 'evt_example_course_certificate_issued',
+      type: 'course.certificate.issued',
+      createdAt: '2026-10-13T12:15:30.000Z',
+      apiVersion: '2026-10-21',
+      organization: { id: 'org-1', name: 'Acme', siteName: 'acme' },
+      data: WEBHOOK_EVENT_DATA_EXAMPLES['course.certificate.issued']
+    };
+
+    nock(API_ORIGIN)
+      .get('/public-api/v1/webhooks/samples')
+      .query({ eventType: 'course.certificate.issued' })
+      .reply(200, { success: true, data: [example] });
+
+    const performList = (App.triggers.new_certificate.operation as any).performList;
+    const result = (await appTester(performList, {
+      authData: { access_token: 'token' },
+      inputData: {}
+    })) as any[];
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).not.toHaveProperty('certificate_file');
+  });
+
+  it('attaches a certificate download for real events', async () => {
+    const envelope = {
+      id: 'evt_01J9Z8X7Y6W5V4U3T2S1',
+      type: 'course.certificate.issued',
+      createdAt: '2026-10-13T12:15:30.000Z',
+      apiVersion: '2026-10-21',
+      organization: { id: 'org-1', name: 'Acme', siteName: 'acme' },
+      data: WEBHOOK_EVENT_DATA_EXAMPLES['course.certificate.issued']
+    };
+
+    nock(API_ORIGIN)
+      .get('/public-api/v1/webhooks/samples')
+      .query({ eventType: 'course.certificate.issued' })
+      .reply(200, { success: true, data: [envelope] });
+
+    const performList = (App.triggers.new_certificate.operation as any).performList;
+    const result = (await appTester(performList, {
+      authData: { access_token: 'token' },
+      inputData: {}
+    })) as any[];
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveProperty('certificate_file');
+  });
+
   it('returns a signed delivery and drops a forged one', async () => {
     const envelope = {
       id: 'evt_test',

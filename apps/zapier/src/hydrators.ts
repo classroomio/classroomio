@@ -1,5 +1,7 @@
 import type { Bundle, ZObject } from 'zapier-platform-core';
 
+import { WEBHOOK_EXAMPLE_ID_PREFIX } from '@cio/utils/validation/webhook';
+
 import { apiUrl } from './lib/config';
 import { readString, type EventRecord } from './lib/records';
 
@@ -22,7 +24,7 @@ export function attachCertificateFile(z: ZObject, record: EventRecord): EventRec
   const courseId = readString(record.courseId);
   const memberId = readString(record.memberId);
 
-  if (!courseId || !memberId) return record;
+  if (!courseId || !memberId || record.id.startsWith(WEBHOOK_EXAMPLE_ID_PREFIX)) return record;
 
   return { ...record, certificate_file: z.dehydrateFile(hydrators.certificateFile, { courseId, memberId }) };
 }
