@@ -153,10 +153,21 @@ describe('zapierApi', () => {
       }
     };
 
-    mocks.zapierGet.mockResolvedValue({
-      ok: true,
-      json: async () => ({ success: true, data: overviewData })
-    });
+    mocks.zapierGet
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true, data: overviewData })
+      })
+      .mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            connections: [],
+            limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 }
+          }
+        })
+      });
     mocks.deleteConnection.mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: { consentId: 'consent-1' } })
@@ -166,9 +177,74 @@ describe('zapierApi', () => {
     await zapierApi.removeConnection('consent-1');
 
     expect(mocks.deleteConnection).toHaveBeenCalledWith({ param: { consentId: 'consent-1' } });
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(2);
     expect(zapierApi.overview?.connections).toHaveLength(0);
     expect(zapierApi.overview?.limits.activeTriggerSubscriptions).toBe(0);
     expect(mocks.snackbarSuccess).toHaveBeenCalledWith('snackbar.zapier.removed');
+  });
+
+  it('discards a stale overview load racing a disconnect', async () => {
+    const staleOverview = {
+      connections: [
+        {
+          consentId: 'consent-1',
+          authorizedBy: { profileId: 'user-1', fullname: 'Admin' },
+          scopes: ['course:read'],
+          connectedAt: '2026-01-01T00:00:00.000Z',
+          lastUsedAt: null,
+          triggers: [
+            {
+              id: 'trig-1',
+              eventType: 'course.completed',
+              courseId: null,
+              courseTitle: null,
+              cohortId: null,
+              health: 'healthy',
+              isActive: true,
+              lastDeliveryStatus: null,
+              lastDeliveryAt: null,
+              createdAt: '2026-01-01T00:00:00.000Z'
+            }
+          ]
+        }
+      ],
+      limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 1 }
+    };
+    const freshOverview = {
+      connections: [],
+      limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 }
+    };
+
+    let resolveStaleGet!: (value: unknown) => void;
+
+    mocks.zapierGet.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveStaleGet = resolve;
+        })
+    );
+
+    const racingLoad = zapierApi.loadOnce();
+
+    mocks.deleteConnection.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: { consentId: 'consent-1' } })
+    });
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: freshOverview })
+    });
+
+    await zapierApi.removeConnection('consent-1');
+
+    resolveStaleGet({
+      ok: true,
+      json: async () => ({ success: true, data: staleOverview })
+    });
+    await racingLoad;
+
+    expect(zapierApi.overview?.connections).toHaveLength(0);
+    expect(zapierApi.overview?.limits.activeTriggerSubscriptions).toBe(0);
   });
 
   it('shows an error message when removing a connection fails', async () => {
@@ -177,6 +253,7 @@ describe('zapierApi', () => {
     await zapierApi.removeConnection('consent-1');
 
     expect(mocks.snackbarError).toHaveBeenCalledWith('snackbar.zapier.remove_failed');
+    expect(mocks.zapierGet).not.toHaveBeenCalled();
   });
 
   it('resets organization state cleanly', async () => {

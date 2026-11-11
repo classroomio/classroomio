@@ -79,25 +79,33 @@ class ZapierApi extends BaseApiWithErrors {
   }
 
   async removeConnection(consentId: string) {
-    return this.execute<RevokeConnectedAppRequest>({
+    this.loadRequestSeq += 1;
+
+    let removed = false;
+
+    await this.execute<RevokeConnectedAppRequest>({
       requestFn: () =>
         classroomio.organization.automation['connected-apps'][':consentId'].$delete({ param: { consentId } }),
       logContext: 'removing Zapier connection',
       onSuccess: () => {
+        removed = true;
+
         if (!this.overview) return;
 
-        const removed = this.overview.connections.find((connection) => connection.consentId === consentId);
+        const deleted = this.overview.connections.find((connection) => connection.consentId === consentId);
 
         this.overview.connections = this.overview.connections.filter(
           (connection) => connection.consentId !== consentId
         );
-        this.overview.limits.activeTriggerSubscriptions -= removed?.triggers.length ?? 0;
+        this.overview.limits.activeTriggerSubscriptions -= deleted?.triggers.length ?? 0;
         snackbar.success('snackbar.zapier.removed');
       },
       onError: () => {
         snackbar.error('snackbar.zapier.remove_failed');
       }
     });
+
+    if (removed) await this.load();
   }
 
   resetOrganizationState() {
