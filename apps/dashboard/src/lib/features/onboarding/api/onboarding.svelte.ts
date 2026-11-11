@@ -100,6 +100,10 @@ export class OnboardingApi extends BaseApiWithErrors {
         }
 
         this.handleValidationError(result);
+
+        if (!result.field) {
+          snackbar.error(result.message);
+        }
       }
     });
   }
@@ -130,6 +134,10 @@ export class OnboardingApi extends BaseApiWithErrors {
       },
       onError: (result) => {
         this.handleValidationError(result);
+
+        if (!result.field) {
+          snackbar.error(result.message);
+        }
       }
     });
   }

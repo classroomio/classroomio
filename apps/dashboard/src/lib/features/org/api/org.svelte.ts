@@ -397,6 +397,10 @@ class OrgApi extends BaseApiWithErrors {
       },
       onError: (result) => {
         this.handleValidationError(result);
+
+        if (!result.field) {
+          snackbar.error(result.message);
+        }
       }
     });
   }

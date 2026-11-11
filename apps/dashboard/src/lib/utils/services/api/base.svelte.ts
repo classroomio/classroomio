@@ -1,19 +1,7 @@
-import type { InferResponseType } from '@cio/api/rpc-types';
-import type { ZodValidationError, ZodValidatorMesssage } from './types';
+import type { ZodValidationError, ZodValidatorMesssage, ExtractData, ExecuteOptions } from './types';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation/validation';
 import { ZodError } from 'zod/v4';
 import { toNormalizedApiError, type NormalizedApiError } from './errors';
-
-// Extract the data type from a success response
-type ExtractData<T> = Extract<InferResponseType<T>, { success: true }>;
-
-interface ExecuteOptions<TrpcType> {
-  requestFn: () => Promise<Response>;
-  errorMessage?: string;
-  onSuccess?: (data: ExtractData<TrpcType>) => Promise<void> | void;
-  onError?: (error: NormalizedApiError) => Promise<void> | void;
-  logContext?: string;
-}
 
 /**
  * Base API class that provides shared state management and request handling
@@ -127,7 +115,11 @@ export class BaseApiWithErrors extends BaseApi {
       }
     }
 
-    this.errors = { ...this.errors, general: result.message };
+    if (result.field) {
+      this.errors = { ...this.errors, [result.field]: result.message };
+    } else {
+      this.errors = { ...this.errors, general: result.message };
+    }
   }
 
   override resetErrors() {
