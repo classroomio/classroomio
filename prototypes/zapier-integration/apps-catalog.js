@@ -3,10 +3,9 @@
 // lists the same apps with the same names, descriptions, and actions rather
 // than drifting apart.
 //
-// 20 apps, curated from the integration research (prd/zapier/integration-research.md
-// and prd/zapier/10-app-deep-dive.md), not a sample of Zapier's full 6,000+
-// directory. Every one maps to a real customer-education workflow for a SaaS
-// company running ClassroomIO; nothing here is included for popularity alone.
+// 20 apps, curated for customer-education fit, not a sample of Zapier's full
+// 6,000+ directory. Every one maps to a real customer-education workflow for a
+// SaaS company running ClassroomIO; nothing here is included for popularity alone.
 //
 // Badges are rendered from a `color` (plus an optional `dark` flag for light
 // backgrounds) rather than a per-app CSS class, so adding an app never means
