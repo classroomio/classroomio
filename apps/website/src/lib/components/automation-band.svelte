@@ -4,6 +4,7 @@
   import Webhook from '@lucide/svelte/icons/webhook';
   import Code2 from '@lucide/svelte/icons/code-2';
   import Sparkles from '@lucide/svelte/icons/sparkles';
+  import Zap from '@lucide/svelte/icons/zap';
   import CtaButton from './ui/cta-button.svelte';
   import NotchCard from './ui/notch-card.svelte';
   import Section from './ui/section.svelte';
@@ -25,6 +26,12 @@
       title: 'MCP server',
       description:
         'Course authoring as agent tools. Works with Cursor, Claude Code, Codex, OpenCode, VS Code, Gemini CLI, and more.'
+    },
+    {
+      Icon: Zap,
+      title: 'Zapier',
+      description:
+        'No-code Zaps on the same API. Enroll from your CRM, file certificates to Drive, ping Slack on submissions.'
     }
   ];
 </script>
@@ -40,7 +47,7 @@
       ledeClass="text-gray-500"
       titleClass=""
     >
-      {#snippet title()}API, Webhooks, MCP.{/snippet}
+      {#snippet title()}API, Webhooks, Zapier, MCP.{/snippet}
     </SectionHeader>
 
     <div class="automation-machine h-56 sm:h-64 lg:h-80">
@@ -51,7 +58,7 @@
     </div>
   </div>
 
-  <div class="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+  <div class="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-4">
     {#each lanes as lane, i}
       <BlurFade delay={0.05 * i} once class="h-full">
         <NotchCard class="h-full bg-white" notchClass="bg-gray-50">
