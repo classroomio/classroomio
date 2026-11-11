@@ -241,6 +241,71 @@ describe('createEmailInviteAndSend with reuseActiveInvite', () => {
     );
   });
 
+  it('keeps a queued invite usable when the EMAIL_SENT audit fails', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: true,
+      invite: {
+        id: 'invite-new',
+        courseId: COURSE_ID,
+        roleId: 3,
+        expiresAt: inviteInput.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        allowedEmails: ['new.person@example.com'],
+        allowedDomains: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        isRevoked: false
+      } as never,
+      existingInviteId: null
+    });
+    vi.mocked(createCourseInviteAudit).mockImplementation(async (values) => {
+      if (values.eventType === 'EMAIL_SENT') {
+        throw new Error('audit down');
+      }
+
+      return undefined as never;
+    });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({ created: true, inviteId: 'invite-new', sent: true, error: null });
+    expect(createCourseInviteAudit).not.toHaveBeenCalledWith(
+      expect.objectContaining({ inviteId: 'invite-new', eventType: 'EMAIL_FAILED' })
+    );
+  });
+
+  it('reports the queue failure even when the EMAIL_FAILED audit fails', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: true,
+      invite: {
+        id: 'invite-new',
+        courseId: COURSE_ID,
+        roleId: 3,
+        expiresAt: inviteInput.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        allowedEmails: ['new.person@example.com'],
+        allowedDomains: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        isRevoked: false
+      } as never,
+      existingInviteId: null
+    });
+    vi.mocked(enqueueTransactionalEmail).mockRejectedValueOnce(new Error('queue down'));
+    vi.mocked(createCourseInviteAudit).mockImplementation(async (values) => {
+      if (values.eventType === 'EMAIL_FAILED') {
+        throw new Error('audit down');
+      }
+
+      return undefined as never;
+    });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(result).toMatchObject({ created: true, inviteId: 'invite-new', sent: false, error: 'queue down' });
+  });
+
   it('revokes the fresh invite when recording it fails so a retry starts clean', async () => {
     vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
       created: true,

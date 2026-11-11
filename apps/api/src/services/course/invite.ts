@@ -689,24 +689,32 @@ export async function createEmailInviteAndSend(input: TCreateEmailInviteInput): 
     if (jobIds.length === 0) {
       throw new Error('Email queue accepted no recipients: invitation email was not queued');
     }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown email error';
 
-    // Optimistic EMAIL_SENT — see comment in services/organization/invite.ts.
+    try {
+      await recordInviteAudit(invite.id, input.courseId, 'EMAIL_FAILED', {
+        actorProfileId: input.createdByProfileId,
+        targetEmail: normalizedEmail,
+        metadata: { error: message }
+      });
+    } catch (auditError) {
+      console.error(`Failed to record the failed course invite email for ${normalizedEmail}:`, auditError);
+    }
+
+    return { created: true, invite, inviteId: invite.id, sent: false, error: message };
+  }
+
+  try {
     await recordInviteAudit(invite.id, input.courseId, 'EMAIL_SENT', {
       actorProfileId: input.createdByProfileId,
       targetEmail: normalizedEmail
     });
-
-    return { created: true, invite, inviteId: invite.id, sent: true, error: null };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown email error';
-    await recordInviteAudit(invite.id, input.courseId, 'EMAIL_FAILED', {
-      actorProfileId: input.createdByProfileId,
-      targetEmail: normalizedEmail,
-      metadata: { error: message }
-    });
-
-    return { created: true, invite, inviteId: invite.id, sent: false, error: message };
+    console.error(`Failed to record the queued course invite email for ${normalizedEmail}:`, error);
   }
+
+  return { created: true, invite, inviteId: invite.id, sent: true, error: null };
 }
 
 /**
