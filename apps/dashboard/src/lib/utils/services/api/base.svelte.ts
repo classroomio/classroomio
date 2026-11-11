@@ -58,6 +58,11 @@ export class BaseApi {
         this.success = true;
         return typedResult;
       }
+
+      const normalized = toNormalizedApiError(result, response.status);
+      this.error = normalized.message;
+      this.lastError = normalized;
+      await options.onError?.(normalized);
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         return;
