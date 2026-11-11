@@ -4719,6 +4719,8 @@
       "csv_hint": "CSV UTF-8 con una colonna email. Fino a {rows} righe, 5 MB.",
       "download_template": "Scarica il modello",
       "paste_hint": "Un indirizzo per riga o separato da virgole.",
+      "edit_email": "Modifica email",
+      "edit_name": "Modifica nome",
       "review": "Revisione",
       "done": "Fatto",
       "submit_count": "Importare {count} studenti",

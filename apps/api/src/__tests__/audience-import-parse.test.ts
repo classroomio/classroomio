@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
   AUDIENCE_IMPORT_MAX_ROWS,
   isImportableEmail,
-  parseAudienceImportCsv
+  parseAudienceImportCsv,
+  reclassifyImportRows
 } from '@cio/utils/validation/organization';
 
 describe('parseAudienceImportCsv — headers', () => {
@@ -143,5 +144,37 @@ describe('isImportableEmail', () => {
 
     expect(isImportableEmail(`a@${'a'.repeat(100_000)}`)).toBe(false);
     expect(performance.now() - started).toBeLessThan(50);
+  });
+});
+
+describe('reclassifyImportRows', () => {
+  it('marks a corrected address ready and flags a broken one', () => {
+    const parsed = parseAudienceImportCsv('ada@test.dev\nnot-an-email');
+    const edited = parsed.rows.map((row) =>
+      row.status === 'invalid_email' ? { ...row, email: 'grace@test.dev' } : { ...row, email: 'ada@' }
+    );
+
+    expect(reclassifyImportRows(edited).map((row) => row.status)).toEqual(['invalid_email', 'ready']);
+  });
+
+  it('flags the later row when an edit creates a duplicate, ignoring case and spacing', () => {
+    const rows = parseAudienceImportCsv('ada@test.dev\ngrace@test.dev').rows;
+    rows[1] = { ...rows[1], email: '  ADA@test.dev ' };
+
+    expect(reclassifyImportRows(rows).map((row) => row.status)).toEqual(['ready', 'duplicate_in_file']);
+  });
+
+  it('promotes the next copy to ready once the first copy is changed', () => {
+    const rows = parseAudienceImportCsv('ada@test.dev\nada@test.dev').rows;
+    rows[0] = { ...rows[0], email: 'grace@test.dev' };
+
+    expect(reclassifyImportRows(rows).map((row) => row.status)).toEqual(['ready', 'ready']);
+  });
+
+  it('reports a cleared address as missing and keeps the typed text', () => {
+    const rows = parseAudienceImportCsv('ada@test.dev').rows;
+    rows[0] = { ...rows[0], email: '  ' };
+
+    expect(reclassifyImportRows(rows)).toEqual([expect.objectContaining({ email: '  ', status: 'missing_email' })]);
   });
 });

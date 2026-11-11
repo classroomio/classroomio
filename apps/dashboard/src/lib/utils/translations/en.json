@@ -4721,6 +4721,8 @@
       "csv_hint": "UTF-8 CSV with an email column. Up to {rows} rows, 5 MB.",
       "download_template": "Download the template",
       "paste_hint": "One address per line, or comma separated.",
+      "edit_email": "Edit email",
+      "edit_name": "Edit name",
       "review": "Review",
       "done": "Done",
       "submit_count": "Import {count} students",

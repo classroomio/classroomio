@@ -8,6 +8,7 @@
   import * as Table from '@cio/ui/base/table';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { Input } from '@cio/ui/base/input';
   import { Label } from '@cio/ui/base/label';
   import UploadIcon from '@lucide/svelte/icons/upload';
   import {
@@ -16,7 +17,8 @@
     AUDIENCE_IMPORT_MAX_ROWS,
     AUDIENCE_IMPORT_TEMPLATE,
     type ParsedImportRow,
-    parseAudienceImportCsv
+    parseAudienceImportCsv,
+    reclassifyImportRows
   } from '@cio/utils/validation/organization';
   import { t } from '$lib/utils/functions/translations';
   import type { ImportControls } from '$features/audience/utils/types';
@@ -105,6 +107,10 @@
     step = 'preview';
   }
 
+  function handleRowEdit() {
+    parsedRows = reclassifyImportRows(parsedRows);
+  }
+
   async function handleFileUpload(files: File[]) {
     const file = files[0];
     if (!file) return;
@@ -133,7 +139,11 @@
       // re-checks and can still reject individually.
       const recipients = parsedRows
         .filter((row) => row.status === 'ready')
-        .map((row) => ({ email: row.email, name: row.name, courses: row.courses }));
+        .map((row) => ({
+          email: row.email.trim().toLowerCase(),
+          name: row.name?.trim() || undefined,
+          courses: row.courses
+        }));
 
       const result = await orgApi.importAudienceMembers({
         recipients,
@@ -263,10 +273,28 @@
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each parsedRows as row (`${row.line}-${row.email}`)}
+          {#each parsedRows as row, index (index)}
             <Table.Row class={row.status === 'ready' ? undefined : 'ui:text-muted-foreground'}>
-              <Table.Cell>{row.email || '—'}</Table.Cell>
-              <Table.Cell>{row.name ?? '—'}</Table.Cell>
+              <Table.Cell>
+                <Input
+                  type="email"
+                  bind:value={row.email}
+                  oninput={handleRowEdit}
+                  aria-label={$t('audience.import.edit_email')}
+                  aria-invalid={row.status === 'invalid_email' || row.status === 'missing_email'}
+                  placeholder={$t('audience.email')}
+                  data-testid="audience-import-email-{index}"
+                />
+              </Table.Cell>
+              <Table.Cell>
+                <Input
+                  bind:value={row.name}
+                  oninput={handleRowEdit}
+                  aria-label={$t('audience.import.edit_name')}
+                  placeholder={$t('audience.name')}
+                  data-testid="audience-import-name-{index}"
+                />
+              </Table.Cell>
               <Table.Cell>
                 <Badge variant={row.status === 'ready' ? 'secondary' : 'outline'}>
                   {$t(IMPORT_ROW_STATUS_LABEL[row.status])}

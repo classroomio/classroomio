@@ -803,6 +803,8 @@
       "csv_hint": "CSV em UTF-8 com uma coluna de e-mail. Até {rows} linhas, 5 MB.",
       "download_template": "Baixe o modelo",
       "paste_hint": "Um endereço por linha ou separado por vírgulas.",
+      "edit_email": "Editar e-mail",
+      "edit_name": "Editar nome",
       "review": "Revisar",
       "done": "Concluído",
       "count_ready": "{count} prontos",
