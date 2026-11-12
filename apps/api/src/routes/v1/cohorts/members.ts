@@ -60,7 +60,7 @@ export const v1CohortMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add people to a cohort without an invitation; a student added by email with an account outside the org joins it and uses a seat; ${COHORT_TEAM_RULE}.`,
+      description: `Add people to a cohort without an invitation; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         201: jsonResponse(
@@ -92,7 +92,7 @@ export const v1CohortMembersRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: `Change a cohort member's role to tutor or student; a tutor/admin made a student who isn't in the org joins it and uses a seat; ${COHORT_TEAM_RULE}.`,
+      description: `Change a cohort member's role to tutor or student; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         200: jsonResponse('Cohort member updated successfully', MemberResponse),

@@ -52,22 +52,14 @@ export const ZPublicApiCohortMemberListItemResponse = ZPublicApiCohortMemberResp
 });
 
 export const ZPublicApiAddCohortMembersResponse = z.object({
-  added: z
-    .array(ZPublicApiCohortMemberResponse)
-    .describe(
-      'Memberships created by this request, plus existing cohort students whose missing org membership it restored'
-    ),
+  added: z.array(ZPublicApiCohortMemberResponse).describe('Memberships created or restored by this request'),
   errors: z
     .array(
       z.object({
         index: z.number().describe('Position of the failed entry in the request members array'),
         email: z.string().nullable(),
         profileId: z.string().nullable(),
-        code: z
-          .string()
-          .describe(
-            'E.g. MEMBER_ALREADY_IN_COHORT for an existing member (a student with no org membership gets one instead; retrying duplicates nothing), or UPGRADE_REQUIRED'
-          ),
+        code: z.string().describe('E.g. MEMBER_ALREADY_IN_COHORT or UPGRADE_REQUIRED'),
         message: z.string()
       })
     )
