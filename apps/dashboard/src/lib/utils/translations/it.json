@@ -4721,6 +4721,8 @@
       "paste_hint": "Un indirizzo per riga o separato da virgole.",
       "edit_email": "Modifica email",
       "edit_name": "Modifica nome",
+      "search_placeholder": "Nome o email",
+      "search_no_results": "Nessuna riga corrisponde alla ricerca.",
       "review": "Revisione",
       "done": "Fatto",
       "submit_count": "Importare {count} studenti",

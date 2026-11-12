@@ -805,6 +805,8 @@
       "paste_hint": "Una dirección por línea o separadas por comas.",
       "edit_email": "Editar correo electrónico",
       "edit_name": "Editar nombre",
+      "search_placeholder": "Nombre o correo",
+      "search_no_results": "Ninguna fila coincide con tu búsqueda.",
       "review": "Revisión",
       "done": "Listo",
       "count_ready": "{count} listos",

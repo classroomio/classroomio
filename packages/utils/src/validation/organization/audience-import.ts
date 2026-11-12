@@ -283,3 +283,23 @@ export function reclassifyImportRows(rows: ParsedImportRow[]): ParsedImportRow[]
     return { ...row, status: 'ready' };
   });
 }
+
+/** Rows shown per page in the import preview. */
+export const AUDIENCE_IMPORT_PREVIEW_PAGE_SIZE = 20;
+
+/**
+ * Indexes of the rows whose name or email contains the query, ignoring case and surrounding spaces.
+ * Every index for a blank query.
+ */
+export function filterImportRowIndexes(rows: Pick<ParsedImportRow, 'email' | 'name'>[], query: string): number[] {
+  const needle = query.trim().toLowerCase();
+  const indexes: number[] = [];
+
+  rows.forEach((row, index) => {
+    if (!needle || row.email.toLowerCase().includes(needle) || (row.name ?? '').toLowerCase().includes(needle)) {
+      indexes.push(index);
+    }
+  });
+
+  return indexes;
+}

@@ -805,6 +805,8 @@
       "paste_hint": "Én adresse pr. linje eller kommasepareret.",
       "edit_email": "Rediger e-mail",
       "edit_name": "Rediger navn",
+      "search_placeholder": "Navn eller e-mail",
+      "search_no_results": "Ingen rækker matcher din søgning.",
       "review": "Gennemgå",
       "done": "Udført",
       "count_ready": "{count} klar",

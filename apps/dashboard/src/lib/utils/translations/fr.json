@@ -805,6 +805,8 @@
       "paste_hint": "Une adresse par ligne, ou séparées par des virgules.",
       "edit_email": "Modifier l'e-mail",
       "edit_name": "Modifier le nom",
+      "search_placeholder": "Nom ou e-mail",
+      "search_no_results": "Aucune ligne ne correspond à votre recherche.",
       "review": "Revoir",
       "done": "Fait",
       "count_ready": "{count} prêt",

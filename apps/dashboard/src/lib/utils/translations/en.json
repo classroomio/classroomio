@@ -4723,6 +4723,8 @@
       "paste_hint": "One address per line, or comma separated.",
       "edit_email": "Edit email",
       "edit_name": "Edit name",
+      "search_placeholder": "Name or email",
+      "search_no_results": "No rows match your search.",
       "review": "Review",
       "done": "Done",
       "submit_count": "Import {count} students",

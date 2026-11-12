@@ -3,6 +3,7 @@ import { parseFullnameFromInviteMetadata } from '@api/utils/org';
 
 import {
   AUDIENCE_IMPORT_MAX_ROWS,
+  filterImportRowIndexes,
   isImportableEmail,
   parseAudienceImportCsv,
   reclassifyImportRows
@@ -212,5 +213,29 @@ describe('parseFullnameFromInviteMetadata', () => {
 
   it.each([null, undefined, {}, { fullname: '   ' }, { fullname: 7 }, 'not json'])('ignores %j', (metadata) => {
     expect(parseFullnameFromInviteMetadata(metadata)).toBeUndefined();
+  });
+});
+
+describe('filterImportRowIndexes', () => {
+  const rows = parseAudienceImportCsv(
+    'email,name\nada@test.dev,Ada Lovelace\ngrace@example.com,Grace Hopper\nlin@test.dev,'
+  ).rows;
+
+  it('returns every index for a blank query', () => {
+    expect(filterImportRowIndexes(rows, '')).toEqual([0, 1, 2]);
+    expect(filterImportRowIndexes(rows, '   ')).toEqual([0, 1, 2]);
+  });
+
+  it('matches the email or the name, ignoring case and surrounding spaces', () => {
+    expect(filterImportRowIndexes(rows, ' TEST.DEV ')).toEqual([0, 2]);
+    expect(filterImportRowIndexes(rows, 'hopper')).toEqual([1]);
+  });
+
+  it('returns nothing when no row matches', () => {
+    expect(filterImportRowIndexes(rows, 'zzz')).toEqual([]);
+  });
+
+  it('returns indexes into the full list so edits stay attached to their rows', () => {
+    expect(filterImportRowIndexes(rows, 'grace')).toEqual([1]);
   });
 });

@@ -805,6 +805,8 @@
       "paste_hint": "Một địa chỉ trên mỗi dòng, hoặc phân tách bằng dấu phẩy.",
       "edit_email": "Chỉnh sửa email",
       "edit_name": "Chỉnh sửa tên",
+      "search_placeholder": "Tên hoặc email",
+      "search_no_results": "Không có dòng nào khớp với tìm kiếm của bạn.",
       "review": "Xem lại",
       "done": "Hoàn tất",
       "count_ready": "{count} sẵn sàng",

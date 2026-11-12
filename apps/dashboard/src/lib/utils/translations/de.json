@@ -805,6 +805,8 @@
       "paste_hint": "Eine Adresse pro Zeile oder durch Komma getrennt.",
       "edit_email": "E-Mail bearbeiten",
       "edit_name": "Name bearbeiten",
+      "search_placeholder": "Name oder E-Mail",
+      "search_no_results": "Keine Zeilen entsprechen Ihrer Suche.",
       "review": "Rezension",
       "done": "Erledigt",
       "count_ready": "{count} bereit",

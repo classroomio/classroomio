@@ -4731,6 +4731,8 @@
       "paste_hint": "Satır başına bir adres veya virgülle ayrılmış.",
       "edit_email": "E-postayı düzenle",
       "edit_name": "Adı düzenle",
+      "search_placeholder": "Ad veya e-posta",
+      "search_no_results": "Aramanızla eşleşen satır yok.",
       "review": "İnceleme",
       "done": "Done",
       "submit_count": "{count} öğrencilerini içe aktar",
