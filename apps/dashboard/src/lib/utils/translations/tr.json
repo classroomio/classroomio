@@ -131,7 +131,10 @@
   "account": {
     "switcher": {
       "your_account": "Hesabınız",
-      "other_organizations": "Diğer kuruluşlar"
+      "other_organizations": "Diğer kuruluşlar",
+      "learning": "Öğrenme",
+      "add_organization": "Kuruluş ekle",
+      "current": "Mevcut kuruluş"
     },
     "workspaces": {
       "page_title": "Çalışma Alanları",
@@ -563,6 +566,10 @@
     "reset_password": {
       "heading": "Yeni Şifre",
       "description": "Yeni şifre ayrıntılarınızı girin"
+    },
+    "existing_account": {
+      "message": "Bu e-postayla zaten bir hesap var.",
+      "cta": "Bunun yerine giriş yap"
     }
   },
   "profileMenu": {
@@ -2049,6 +2056,24 @@
     "create": "Oluşturun",
     "sitename": "Akademi alt alan adı zaten var",
     "error_organization": "Bu kuruluş oluşturulurken bir şeyler ters gitti. Lütfen yeniden yükleyin ve tekrar deneyin"
+  },
+  "org_chooser": {
+    "page_title": "Kuruluşlarınız",
+    "title": "Nereye gideceğinizi seçin",
+    "subtitle": "Açmak için bir kuruluş seçin.",
+    "signed_in_as": "{email} olarak giriş yapıldı",
+    "managed_heading": "Yönettiğiniz kuruluşlar",
+    "learning_heading": "Öğrendiğiniz akademiler",
+    "invites_heading": "Bekleyen davetler",
+    "open_dashboard": "{name} panosunu aç",
+    "open_academy": "{name} adlı akademiyi {host} üzerinde aç",
+    "invited_as": "{role} olarak davet edildi",
+    "accept_invite": "Kabul et",
+    "create_heading": "Kendi akademinizi yönetmek mi istiyorsunuz?",
+    "create_description": "Kurs yayınlamak ve kendi öğrencilerinizi davet etmek için bir kuruluş oluşturun.",
+    "create_cta": "Kuruluş oluştur",
+    "different_account": "Kuruluşunuzu göremiyor musunuz?",
+    "different_account_cta": "Farklı bir e-postayla giriş yapın"
   },
   "navigation": {
     "goto": "Şuraya gidin",
@@ -5640,6 +5665,9 @@
     },
     "oauth": {
       "revoked": "Uygulama erişimi kaldırıldı"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Akademi açılamadı. Lütfen tekrar deneyin."
     }
   },
   "specialization": {

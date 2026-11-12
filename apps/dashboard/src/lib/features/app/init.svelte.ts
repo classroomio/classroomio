@@ -11,6 +11,7 @@ import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils
 
 import type { AccountResponse, AccountSuccess } from './types';
 import { type AppOrgParams } from './resolve-app-org-params';
+import { ORG_CHOOSER_PATH, shouldShowOrgChooser } from './utils/post-auth-destination';
 import type { PendingOrgInvite } from '$features/lms/utils/types';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
@@ -399,6 +400,10 @@ class AppInitApi extends BaseApi {
 
     if (path.includes('/onboarding') && ((isStudent && userHasOrganizations) || needsOnboarding)) {
       return;
+    }
+
+    if (shouldShowOrgChooser({ isCloud, isOrgSite, organizations: this.data.organizations })) {
+      return goto(resolve(ORG_CHOOSER_PATH, {}));
     }
 
     const shouldGoToLMS = isCloud ? isOrgSite || !!isStudent : !!isStudent;

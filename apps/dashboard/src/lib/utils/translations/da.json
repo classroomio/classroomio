@@ -532,6 +532,9 @@
     },
     "oauth": {
       "revoked": "Appens adgang er fjernet"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Akademiet kunne ikke åbnes. Prøv igen."
     }
   },
   "explore": {
@@ -3574,6 +3577,24 @@
     "sitename": "Academy-underdomænet findes allerede",
     "error_organization": "Noget gik galt under oprettelsen af denne organisation. Genindlæs og prøv igen"
   },
+  "org_chooser": {
+    "page_title": "Dine organisationer",
+    "title": "Vælg, hvor du vil hen",
+    "subtitle": "Vælg en organisation, du vil åbne.",
+    "signed_in_as": "Logget ind som {email}",
+    "managed_heading": "Organisationer, du administrerer",
+    "learning_heading": "Akademier, hvor du lærer",
+    "invites_heading": "Ventende invitationer",
+    "open_dashboard": "Åbn {name}-dashboardet",
+    "open_academy": "Åbn {name} på {host}",
+    "invited_as": "Inviteret som {role}",
+    "accept_invite": "Acceptér",
+    "create_heading": "Vil du drive dit eget akademi?",
+    "create_description": "Opret en organisation for at udgive kurser og invitere dine egne elever.",
+    "create_cta": "Opret organisation",
+    "different_account": "Kan du ikke finde din organisation?",
+    "different_account_cta": "Log ind med en anden e-mailadresse"
+  },
   "setup": {
     "your_checklist": "Din tjekliste",
     "get_started": "Kom i gang",
@@ -4743,7 +4764,11 @@
       "heading": "Ny adgangskode",
       "description": "Indtast dine nye adgangskodeoplysninger"
     },
-    "continue_with": "Eller fortsæt med"
+    "continue_with": "Eller fortsæt med",
+    "existing_account": {
+      "message": "Der findes allerede en konto med denne e-mailadresse.",
+      "cta": "Log ind i stedet"
+    }
   },
   "app": {
     "search": {
@@ -5937,7 +5962,10 @@
     },
     "switcher": {
       "your_account": "Din konto",
-      "other_organizations": "Andre organisationer"
+      "other_organizations": "Andre organisationer",
+      "learning": "Læring",
+      "add_organization": "Tilføj organisation",
+      "current": "Nuværende organisation"
     }
   },
   "aiTutor": {

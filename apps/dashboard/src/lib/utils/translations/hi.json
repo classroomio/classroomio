@@ -532,6 +532,9 @@
     },
     "oauth": {
       "revoked": "ऐप का एक्सेस हटा दिया गया"
+    },
+    "org_switcher": {
+      "open_academy_failed": "वह अकादमी नहीं खोली जा सकी। कृपया पुनः प्रयास करें।"
     }
   },
   "explore": {
@@ -3574,6 +3577,24 @@
     "sitename": "अकादमी उपडोमेन पहले से मौजूद है",
     "error_organization": "इस संगठन को बनाते समय कुछ गलत हो गया. कृपया पुनः लोड करें और पुनः प्रयास करें"
   },
+  "org_chooser": {
+    "page_title": "आपके संगठन",
+    "title": "चुनें कि कहाँ जाना है",
+    "subtitle": "खोलने के लिए एक संगठन चुनें।",
+    "signed_in_as": "{email} के रूप में साइन इन",
+    "managed_heading": "आपके प्रबंधित संगठन",
+    "learning_heading": "अकादमियाँ जहाँ आप सीखते हैं",
+    "invites_heading": "लंबित निमंत्रण",
+    "open_dashboard": "{name} डैशबोर्ड खोलें",
+    "open_academy": "{host} पर {name} खोलें",
+    "invited_as": "{role} के रूप में आमंत्रित",
+    "accept_invite": "स्वीकार करें",
+    "create_heading": "अपनी अकादमी चलाना चाहते हैं?",
+    "create_description": "पाठ्यक्रम प्रकाशित करने और अपने शिक्षार्थियों को आमंत्रित करने के लिए संगठन बनाएँ।",
+    "create_cta": "संगठन बनाएँ",
+    "different_account": "आपको अपना संगठन नहीं दिख रहा?",
+    "different_account_cta": "किसी अन्य ईमेल से साइन इन करें"
+  },
   "setup": {
     "your_checklist": "आपकी चेकलिस्ट",
     "get_started": "आरंभ करें",
@@ -4743,7 +4764,11 @@
       "heading": "नया पासवर्ड",
       "description": "अपना नया पासवर्ड विवरण दर्ज करें"
     },
-    "continue_with": "या साथ जारी रखें"
+    "continue_with": "या साथ जारी रखें",
+    "existing_account": {
+      "message": "इस ईमेल से पहले से एक खाता मौजूद है।",
+      "cta": "इसके बजाय लॉग इन करें"
+    }
   },
   "app": {
     "search": {
@@ -5937,7 +5962,10 @@
     },
     "switcher": {
       "your_account": "आपका खाता",
-      "other_organizations": "अन्य संगठन"
+      "other_organizations": "अन्य संगठन",
+      "learning": "सीखना",
+      "add_organization": "संगठन जोड़ें",
+      "current": "वर्तमान संगठन"
     }
   },
   "aiTutor": {

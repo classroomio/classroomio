@@ -131,7 +131,10 @@
   "account": {
     "switcher": {
       "your_account": "Il tuo conto",
-      "other_organizations": "Altre organizzazioni"
+      "other_organizations": "Altre organizzazioni",
+      "learning": "Apprendimento",
+      "add_organization": "Aggiungi organizzazione",
+      "current": "Organizzazione corrente"
     },
     "workspaces": {
       "page_title": "Spazi di lavoro",
@@ -553,6 +556,10 @@
     "reset_password": {
       "heading": "Nuova parola d'ordine",
       "description": "Inserisci i dettagli della tua nuova password"
+    },
+    "existing_account": {
+      "message": "Esiste già un account con questo indirizzo email.",
+      "cta": "Accedi invece"
     }
   },
   "profileMenu": {
@@ -2039,6 +2046,24 @@
     "create": "Creare",
     "sitename": "Il sottodominio Academy esiste già",
     "error_organization": "Qualcosa è andato storto durante la creazione di questa organizzazione. Ricarica e riprova"
+  },
+  "org_chooser": {
+    "page_title": "Le tue organizzazioni",
+    "title": "Scegli dove andare",
+    "subtitle": "Scegli un'organizzazione da aprire.",
+    "signed_in_as": "Accesso effettuato come {email}",
+    "managed_heading": "Organizzazioni che gestisci",
+    "learning_heading": "Accademie in cui impari",
+    "invites_heading": "Inviti in sospeso",
+    "open_dashboard": "Apri la dashboard di {name}",
+    "open_academy": "Apri {name} su {host}",
+    "invited_as": "Invitato come {role}",
+    "accept_invite": "Accetta",
+    "create_heading": "Vuoi gestire la tua accademia?",
+    "create_description": "Crea un'organizzazione per pubblicare corsi e invitare i tuoi studenti.",
+    "create_cta": "Crea organizzazione",
+    "different_account": "Non vedi la tua organizzazione?",
+    "different_account_cta": "Accedi con un altro indirizzo email"
   },
   "navigation": {
     "goto": "Vai a",
@@ -5630,6 +5655,9 @@
     },
     "oauth": {
       "revoked": "Accesso dell'app rimosso"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Impossibile aprire l'accademia. Riprova."
     }
   },
   "specialization": {

@@ -532,6 +532,9 @@
     },
     "oauth": {
       "revoked": "App-Zugriff entfernt"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Diese Akademie konnte nicht geöffnet werden. Bitte versuchen Sie es erneut."
     }
   },
   "explore": {
@@ -3574,6 +3577,24 @@
     "sitename": "Die Academy-Subdomain existiert bereits",
     "error_organization": "Beim Erstellen dieser Organisation ist ein Fehler aufgetreten. Bitte laden Sie es neu und versuchen Sie es erneut"
   },
+  "org_chooser": {
+    "page_title": "Ihre Organisationen",
+    "title": "Wählen Sie, wohin es gehen soll",
+    "subtitle": "Wählen Sie eine Organisation aus, die Sie öffnen möchten.",
+    "signed_in_as": "Angemeldet als {email}",
+    "managed_heading": "Organisationen, die Sie verwalten",
+    "learning_heading": "Akademien, in denen Sie lernen",
+    "invites_heading": "Ausstehende Einladungen",
+    "open_dashboard": "Das {name}-Dashboard öffnen",
+    "open_academy": "{name} auf {host} öffnen",
+    "invited_as": "Eingeladen als {role}",
+    "accept_invite": "Annehmen",
+    "create_heading": "Möchten Sie Ihre eigene Akademie betreiben?",
+    "create_description": "Erstellen Sie eine Organisation, um Kurse zu veröffentlichen und Ihre eigenen Lernenden einzuladen.",
+    "create_cta": "Organisation erstellen",
+    "different_account": "Ihre Organisation nicht dabei?",
+    "different_account_cta": "Mit einer anderen E-Mail-Adresse anmelden"
+  },
   "setup": {
     "your_checklist": "Ihre Checkliste",
     "get_started": "Legen Sie los",
@@ -4743,7 +4764,11 @@
       "heading": "Neues Passwort",
       "description": "Geben Sie Ihre neuen Passwortdaten ein"
     },
-    "continue_with": "Oder fahren Sie mit fort"
+    "continue_with": "Oder fahren Sie mit fort",
+    "existing_account": {
+      "message": "Ein Konto mit dieser E-Mail-Adresse existiert bereits.",
+      "cta": "Stattdessen anmelden"
+    }
   },
   "app": {
     "search": {
@@ -5937,7 +5962,10 @@
     },
     "switcher": {
       "your_account": "Ihr Konto",
-      "other_organizations": "Andere Organisationen"
+      "other_organizations": "Andere Organisationen",
+      "learning": "Lernen",
+      "add_organization": "Organisation hinzufügen",
+      "current": "Aktuelle Organisation"
     }
   },
   "aiTutor": {

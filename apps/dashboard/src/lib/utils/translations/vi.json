@@ -532,6 +532,9 @@
     },
     "oauth": {
       "revoked": "Đã gỡ quyền truy cập của ứng dụng"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Không thể mở học viện đó. Vui lòng thử lại."
     }
   },
   "explore": {
@@ -3574,6 +3577,24 @@
     "sitename": "Tên miền phụ của học viện đã tồn tại",
     "error_organization": "Đã xảy ra lỗi khi tạo tổ chức này. Vui lòng tải lại và thử lại"
   },
+  "org_chooser": {
+    "page_title": "Các tổ chức của bạn",
+    "title": "Chọn nơi đến",
+    "subtitle": "Chọn một tổ chức để mở.",
+    "signed_in_as": "Đã đăng nhập với {email}",
+    "managed_heading": "Tổ chức bạn quản lý",
+    "learning_heading": "Học viện bạn theo học",
+    "invites_heading": "Lời mời đang chờ",
+    "open_dashboard": "Mở bảng điều khiển {name}",
+    "open_academy": "Mở {name} trên {host}",
+    "invited_as": "Được mời với vai trò {role}",
+    "accept_invite": "Chấp nhận",
+    "create_heading": "Muốn điều hành học viện riêng?",
+    "create_description": "Tạo tổ chức để xuất bản khóa học và mời học viên của bạn.",
+    "create_cta": "Tạo tổ chức",
+    "different_account": "Không thấy tổ chức của bạn?",
+    "different_account_cta": "Đăng nhập bằng email khác"
+  },
   "setup": {
     "your_checklist": "Danh sách kiểm tra của bạn",
     "get_started": "Bắt đầu",
@@ -4743,7 +4764,11 @@
       "heading": "Mật khẩu mới",
       "description": "Nhập chi tiết mật khẩu mới của bạn"
     },
-    "continue_with": "Hoặc tiếp tục với"
+    "continue_with": "Hoặc tiếp tục với",
+    "existing_account": {
+      "message": "Đã có tài khoản với email này.",
+      "cta": "Đăng nhập"
+    }
   },
   "app": {
     "search": {
@@ -5937,7 +5962,10 @@
     },
     "switcher": {
       "your_account": "Tài khoản của bạn",
-      "other_organizations": "Các tổ chức khác"
+      "other_organizations": "Các tổ chức khác",
+      "learning": "Học tập",
+      "add_organization": "Thêm tổ chức",
+      "current": "Tổ chức hiện tại"
     }
   },
   "aiTutor": {

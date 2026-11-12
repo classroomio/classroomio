@@ -532,6 +532,9 @@
     },
     "oauth": {
       "revoked": "Acesso do app removido"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Não foi possível abrir essa academia. Tente novamente."
     }
   },
   "explore": {
@@ -3574,6 +3577,24 @@
     "sitename": "O subdomínio da Academia já existe",
     "error_organization": "Algo deu errado durante a criação desta organização. Atualize e tente novamente"
   },
+  "org_chooser": {
+    "page_title": "As suas organizações",
+    "title": "Escolha para onde ir",
+    "subtitle": "Escolha uma organização para abrir.",
+    "signed_in_as": "Sessão iniciada como {email}",
+    "managed_heading": "Organizações que gere",
+    "learning_heading": "Academias onde aprende",
+    "invites_heading": "Convites pendentes",
+    "open_dashboard": "Abrir o painel de {name}",
+    "open_academy": "Abrir {name} em {host}",
+    "invited_as": "Convidado como {role}",
+    "accept_invite": "Aceitar",
+    "create_heading": "Quer gerir a sua própria academia?",
+    "create_description": "Crie uma organização para publicar cursos e convidar os seus próprios alunos.",
+    "create_cta": "Criar organização",
+    "different_account": "Não vê a sua organização?",
+    "different_account_cta": "Inicie sessão com outro e-mail"
+  },
   "setup": {
     "your_checklist": "Sua lista de verificação",
     "get_started": "Comece",
@@ -4743,7 +4764,11 @@
       "heading": "Nova senha",
       "description": "Insira os detalhes da sua nova senha"
     },
-    "continue_with": "Ou continue com"
+    "continue_with": "Ou continue com",
+    "existing_account": {
+      "message": "Já existe uma conta com este e-mail.",
+      "cta": "Iniciar sessão"
+    }
   },
   "app": {
     "search": {
@@ -5937,7 +5962,10 @@
     },
     "switcher": {
       "your_account": "Sua conta",
-      "other_organizations": "Outras organizações"
+      "other_organizations": "Outras organizações",
+      "learning": "Aprendizagem",
+      "add_organization": "Adicionar organização",
+      "current": "Organização atual"
     }
   },
   "aiTutor": {

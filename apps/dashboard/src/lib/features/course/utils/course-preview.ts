@@ -68,7 +68,7 @@ export async function viewAsStudent({ courseId, currentOrgDomain = '' }: ViewAsS
     return false;
   }
 
-  const token = await accountApi.createViewAsStudentToken();
+  const token = await accountApi.createLoginLinkToken();
   if (!token) {
     snackbar.error('snackbar.view_as_student.failed');
 

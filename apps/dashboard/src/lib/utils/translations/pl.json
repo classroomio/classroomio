@@ -532,6 +532,9 @@
     },
     "oauth": {
       "revoked": "Dostęp aplikacji usunięty"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Nie można otworzyć tej akademii. Spróbuj ponownie."
     }
   },
   "explore": {
@@ -3574,6 +3577,24 @@
     "sitename": "Subdomena Academy już istnieje",
     "error_organization": "Coś poszło nie tak podczas tworzenia tej organizacji. Załaduj ponownie i spróbuj ponownie"
   },
+  "org_chooser": {
+    "page_title": "Twoje organizacje",
+    "title": "Wybierz, dokąd przejść",
+    "subtitle": "Wybierz organizację do otwarcia.",
+    "signed_in_as": "Zalogowano jako {email}",
+    "managed_heading": "Organizacje, którymi zarządzasz",
+    "learning_heading": "Akademie, w których się uczysz",
+    "invites_heading": "Oczekujące zaproszenia",
+    "open_dashboard": "Otwórz panel {name}",
+    "open_academy": "Otwórz {name} na {host}",
+    "invited_as": "Zaproszono jako {role}",
+    "accept_invite": "Akceptuj",
+    "create_heading": "Chcesz prowadzić własną akademię?",
+    "create_description": "Utwórz organizację, aby publikować kursy i zapraszać własnych kursantów.",
+    "create_cta": "Utwórz organizację",
+    "different_account": "Nie widzisz swojej organizacji?",
+    "different_account_cta": "Zaloguj się przy użyciu innego adresu e-mail"
+  },
   "setup": {
     "your_checklist": "Twoja lista kontrolna",
     "get_started": "Rozpocznij",
@@ -4743,7 +4764,11 @@
       "heading": "Nowe hasło",
       "description": "Wprowadź dane nowego hasła"
     },
-    "continue_with": "Lub kontynuuj z"
+    "continue_with": "Lub kontynuuj z",
+    "existing_account": {
+      "message": "Konto z tym adresem e-mail już istnieje.",
+      "cta": "Zaloguj się"
+    }
   },
   "app": {
     "search": {
@@ -5937,7 +5962,10 @@
     },
     "switcher": {
       "your_account": "Twoje konto",
-      "other_organizations": "Inne organizacje"
+      "other_organizations": "Inne organizacje",
+      "learning": "Nauka",
+      "add_organization": "Dodaj organizację",
+      "current": "Bieżąca organizacja"
     }
   },
   "aiTutor": {
