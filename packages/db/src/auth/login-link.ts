@@ -1,5 +1,7 @@
 import { SignJWT } from 'jose';
 
+import { saveLoginLinkGrant } from '@db/queries/auth/login-link';
+
 /**
  * Default lifetime for a minted login-link token. Login links are single-purpose
  * cross-host sign-in handoffs, so they are intentionally short-lived.
@@ -19,9 +21,10 @@ function getLoginLinkSecret(): Uint8Array {
 /**
  * Mint a short-lived HS256 JWT consumed by the `login-link` auth plugin
  * (`GET /api/auth/login-link?token=…`). The payload matches `ZLoginLinkPayload`
- * (`sub` + `email` + `type`); the consumer re-verifies the user and email before
+ * (`sub` + `jti` + `email` + `type`); the consumer re-verifies the user and email before
  * creating a session, so callers must only ever mint for a user they have
- * already authenticated (self sign-in), never an arbitrary target.
+ * already authenticated (self sign-in), never an arbitrary target. Each token
+ * carries a `jti` stored until expiry, so it can be redeemed only once.
  */
 export async function mintLoginLinkToken({
   userId,
@@ -32,13 +35,20 @@ export async function mintLoginLinkToken({
   email: string;
   ttlMinutes?: number;
 }): Promise<string> {
+  const tokenId = crypto.randomUUID();
+  const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000);
+  const expiresAtSeconds = Math.floor(expiresAt.getTime() / 1000);
+
+  await saveLoginLinkGrant(tokenId, userId, expiresAt);
+
   return new SignJWT({
     email: email.toLowerCase().trim(),
     type: 'login-link'
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(userId)
+    .setJti(tokenId)
     .setIssuedAt()
-    .setExpirationTime(`${ttlMinutes}m`)
+    .setExpirationTime(expiresAtSeconds)
     .sign(getLoginLinkSecret());
 }

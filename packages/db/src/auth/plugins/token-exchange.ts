@@ -39,7 +39,6 @@ export function tokenExchange(): BetterAuthPlugin {
         }
 
         const { token, redirect } = query.data;
-        const redirectUrl = redirect && redirect.startsWith('/') ? redirect : '/';
 
         const auth = (
           c as unknown as { context: { auth: { api: { signUpEmail: (args: unknown) => Promise<{ user: unknown }> } } } }
@@ -124,7 +123,7 @@ export function tokenExchange(): BetterAuthPlugin {
 
         await setSessionCookie(c, { session, user: userPayload });
 
-        return c.redirect(redirectUrl);
+        return c.redirect(redirect);
       })
     }
   };
