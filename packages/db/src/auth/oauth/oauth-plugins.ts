@@ -34,9 +34,7 @@ export function buildOAuthPlugins(): BetterAuthPlugin[] {
       cachedTrustedClients: new Set(OAUTH_TRUSTED_CLIENT_IDS),
       postLogin: {
         page: OAUTH_CONSENT_PAGE,
-        shouldRedirect: async ({ session, isContinuation }) => {
-          if (!isContinuation) return true;
-
+        shouldRedirect: async ({ session }) => {
           const organizationId = await getOAuthOrganizationSelection(session.id);
 
           return !organizationId;
