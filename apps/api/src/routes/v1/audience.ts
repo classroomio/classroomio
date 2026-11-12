@@ -40,7 +40,7 @@ const forbidden = (scope: 'audience:read' | 'audience:write') => ({
 const audienceWriteForbidden = forbidden('audience:write');
 
 const createAudienceForbidden = {
-  description: `${audienceWriteForbidden.description}, or the Free plan student limit is reached during the request (UPGRADE_REQUIRED)`
+  description: `${audienceWriteForbidden.description}, or the seats fill up mid-request (UPGRADE_REQUIRED)`
 };
 
 export const v1AudienceRouter = new Hono()
@@ -89,7 +89,7 @@ export const v1AudienceRouter = new Hono()
       tags: ['Audience'],
       responses: {
         201: jsonResponse(
-          'Invites processed. rows has one entry per address, in order, with what happened to it',
+          'Invites processed; one row per address, in order. Rows that cannot get a seat come back as over_seat_limit',
           itemResponse(ZPublicApiCreateAudienceResponse)
         ),
         400: errorResponses.badRequest,
