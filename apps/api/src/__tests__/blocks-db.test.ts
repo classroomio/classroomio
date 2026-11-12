@@ -158,6 +158,38 @@ describe.skipIf(!hasDatabase)('lesson blocks', () => {
     await removeLessonPlacement(ids.lessonA, own.placementId);
   });
 
+  it('accepts the asset-id-prefixed key the public API gives an uploaded video', async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+
+    const assetId = crypto.randomUUID();
+    const apiKey = `${assetId}/source.mp4`;
+    await db.insert(schema.asset).values({
+      id: assetId,
+      organizationId: ids.org,
+      kind: 'video',
+      provider: 'upload',
+      storageProvider: 's3',
+      storageKey: apiKey,
+      title: 'api-upload.mp4',
+      isExternal: false
+    });
+
+    const exampleVideo = await createLessonBlock(ids.lessonA, {
+      type: 'video',
+      data: { type: 'generic', link: 'https://youtu.be/KrnMm5CRBK4' }
+    });
+    const updated = await updateLessonBlock(ids.lessonA, exampleVideo.id, {
+      data: { type: 'upload', link: '', key: apiKey, assetId },
+      expectedVersion: exampleVideo.version
+    });
+
+    expect(updated.data).toMatchObject({ key: apiKey, assetId });
+
+    await removeLessonPlacement(ids.lessonA, exampleVideo.placementId);
+    await db.delete(schema.asset).where(eq(schema.asset.id, assetId));
+  });
+
   it('rejects a stale version instead of overwriting', async () => {
     const note = await createLessonBlock(ids.lessonA, { type: 'note', data: {}, content: '<p>v1</p>' });
 

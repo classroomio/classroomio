@@ -57,7 +57,7 @@ import {
 } from '@cio/db/queries/assets';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { sanitizeOptionalHtml } from '../../utils/sanitize-html';
-import { readOrganizationIdFromFileKey } from '../../utils/upload';
+import { resolveFileKeyOwnerOrganizationIds } from '../../utils/upload';
 import { recordBlockLocaleVersion } from './block-version';
 import { ensureLessonRevisionBaseline, recordLessonRevision } from './lesson-revision';
 import { enrichBlocksMedia, loadLessonBlocks, toLessonBlock, type LessonBlock } from './block-view';
@@ -122,15 +122,11 @@ function validatedBlockData(type: TBlockType, data: unknown): Record<string, unk
 }
 
 /**
- * True when a prefixed key carries this organization's id, or when every asset claiming an unprefixed key
- * belongs to this organization. An unprefixed key that no asset claims counts as owned.
+ * True when every owner of the key is this organization. A key nobody owns counts as owned.
  */
 async function isStorageKeyOwnedBy(key: string, organizationId: string): Promise<boolean> {
-  const prefixOrganizationId = readOrganizationIdFromFileKey(key);
-  if (prefixOrganizationId) return prefixOrganizationId === organizationId;
-
-  const owners = await getAssetOrganizationIdsByStorageKeys([key]);
-  const ownerOrganizationIds = owners.get(key) ?? [];
+  const assetOwners = await getAssetOrganizationIdsByStorageKeys([key]);
+  const ownerOrganizationIds = resolveFileKeyOwnerOrganizationIds(key, assetOwners.get(key));
 
   return ownerOrganizationIds.every((ownerOrganizationId) => ownerOrganizationId === organizationId);
 }

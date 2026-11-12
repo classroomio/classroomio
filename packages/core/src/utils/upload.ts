@@ -50,3 +50,16 @@ const ORGANIZATION_PREFIXED_KEY = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f
 export function readOrganizationIdFromFileKey(fileKey: string): string | null {
   return ORGANIZATION_PREFIXED_KEY.exec(fileKey)?.[1] ?? null;
 }
+
+/**
+ * Organizations that own the object behind `fileKey`. Assets that claim the key are authoritative, because an
+ * API-created asset's key is `<assetId>/source.<ext>` and looks organization-prefixed. Without a claim the key's
+ * prefix decides; a key with neither has no determinable owner and returns an empty list.
+ */
+export function resolveFileKeyOwnerOrganizationIds(fileKey: string, assetOrganizationIds: string[] = []): string[] {
+  if (assetOrganizationIds.length > 0) return assetOrganizationIds;
+
+  const prefixOrganizationId = readOrganizationIdFromFileKey(fileKey);
+
+  return prefixOrganizationId ? [prefixOrganizationId] : [];
+}
