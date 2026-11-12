@@ -253,6 +253,10 @@ export default defineConfig({
                 root: '/build-courses/add-documents-and-downloads'
               },
               {
+                label: 'Upload files to your media library',
+                root: '/build-courses/upload-files-to-your-media-library'
+              },
+              {
                 label: 'Recover drafts and use version history',
                 root: '/build-courses/recover-drafts-and-use-version-history'
               }

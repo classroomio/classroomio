@@ -1,5 +1,5 @@
 import { ErrorCodes } from '@cio/utils/constants';
-import { tryParseApiErrorBody } from '$lib/utils/services/api/parse-api-error-body';
+import type { NormalizedApiError } from '$lib/utils/services/api';
 
 const COHORT_ERROR_CODE_SNACKBAR_KEYS: Record<string, string> = {
   [ErrorCodes.COHORT_FORBIDDEN]: 'snackbar.cohort.error.code.cohort_forbidden',
@@ -13,9 +13,8 @@ const COHORT_ERROR_CODE_SNACKBAR_KEYS: Record<string, string> = {
   [ErrorCodes.COHORT_NEWSFEED_COMMENT_NOT_FOUND]: 'snackbar.cohort.error.code.cohort_newsfeed_comment_not_found'
 };
 
-export function getErrorKey(rawError: string | null, kind: 'create' | 'update'): string {
-  const parsed = tryParseApiErrorBody(rawError);
-  const mapped = parsed?.code ? COHORT_ERROR_CODE_SNACKBAR_KEYS[parsed.code] : undefined;
+export function getErrorKey(error: NormalizedApiError | null, kind: 'create' | 'update'): string {
+  const mapped = error?.code ? COHORT_ERROR_CODE_SNACKBAR_KEYS[error.code] : undefined;
 
   if (mapped) {
     return mapped;

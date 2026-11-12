@@ -1,11 +1,12 @@
 <script lang="ts">
   import * as Block from '@cio/ui/custom/block';
   import { courseApi, lessonApi } from '$features/course/api';
+  import { libraryAssetCache } from '$features/media/api';
   import VideoCardDropdown from './video-card-dropdown.svelte';
   import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
   import {
     getVideoPosterUrls,
-    getVideoTitle,
+    getVideoDisplayTitle,
     getVideoDurationSeconds,
     formatVideoDuration,
     getVideoCreatedAt,
@@ -42,7 +43,17 @@
   let isTranscribingForVideo = $state(false);
 
   const poster = $derived(getVideoPosterUrls(video));
-  const title = $derived(getVideoTitle(video, index));
+  const title = $derived(getVideoDisplayTitle(video, index));
+
+  let loadedAssetId = '';
+
+  $effect(() => {
+    const assetId = video.assetId;
+    if (!isEditMode || isExample || !assetId || assetId === loadedAssetId) return;
+
+    loadedAssetId = assetId;
+    libraryAssetCache.ensureLoaded(assetId);
+  });
   const durationSeconds = $derived(getVideoDurationSeconds(video));
   const durationFormatted = $derived(formatVideoDuration(durationSeconds ?? undefined));
   const createdAtIso = $derived(getVideoCreatedAt(video));

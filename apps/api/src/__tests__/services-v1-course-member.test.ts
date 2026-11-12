@@ -72,7 +72,7 @@ describe('services/v1/courses/members', () => {
     vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
     vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'a@example.com', profileId: 'profile-1', roleId: ROLE.STUDENT }
+      { normalizedEmail: 'a@example.com', profileId: 'profile-1', roleId: ROLE.STUDENT, hasLapsedInvite: false }
     ]);
   });
 
@@ -149,7 +149,7 @@ describe('services/v1/courses/members', () => {
   it('addCourseMemberService keeps a pending org member (no profile yet) as an email-only member', async () => {
     const payload = { roleId: ROLE.STUDENT, email: 'pending@example.com', sendEmail: true };
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'pending@example.com', profileId: null, roleId: ROLE.STUDENT }
+      { normalizedEmail: 'pending@example.com', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: false }
     ]);
     vi.mocked(addMembers).mockResolvedValue([{ id: MEMBER_ID }] as Awaited<ReturnType<typeof addMembers>>);
 

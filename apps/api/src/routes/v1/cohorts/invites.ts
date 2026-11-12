@@ -32,7 +32,7 @@ export const v1CohortInvitesRouter = new Hono()
       tags: ['Cohort Invites'],
       responses: {
         201: jsonResponse(
-          'Invites processed; see data.rows for the per-email outcome, where emails past the student limit are over_seat_limit',
+          'Invites processed; see data.rows. Emails needing a new seat past the limit, or all of them if payment failed, are over_seat_limit',
           itemResponse(ZPublicApiInviteStudentsToCohortResponse)
         ),
         400: errorResponses.badRequest,

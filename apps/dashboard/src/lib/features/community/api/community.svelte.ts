@@ -162,9 +162,7 @@ class CommunityApi extends BaseApiWithErrors {
       onError: (result) => {
         console.error('Error creating question:', result);
         snackbar.error('snackbar.community.error.try_again');
-        if (typeof result !== 'string' && 'error' in result) {
-          this.handleValidationError(result);
-        }
+        this.handleValidationError(result);
       }
     });
   }
@@ -230,9 +228,7 @@ class CommunityApi extends BaseApiWithErrors {
       onError: (result) => {
         console.error('Error creating comment:', result);
         snackbar.error('snackbar.community.error.comment_failed');
-        if (typeof result !== 'string' && 'error' in result) {
-          this.handleValidationError(result);
-        }
+        this.handleValidationError(result);
         this.isCommenting = false;
       }
     });
@@ -327,9 +323,7 @@ class CommunityApi extends BaseApiWithErrors {
       onError: (result) => {
         console.error('Error updating question:', result);
         snackbar.error('snackbar.community.error.update_failed');
-        if (typeof result !== 'string' && 'error' in result) {
-          this.handleValidationError(result);
-        }
+        this.handleValidationError(result);
         this.isEditing = false;
       }
     });

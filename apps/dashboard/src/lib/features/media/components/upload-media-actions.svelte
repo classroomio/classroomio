@@ -1,10 +1,11 @@
 <script lang="ts">
-  import FileTextIcon from '@lucide/svelte/icons/file-text';
+  import LinkIcon from '@lucide/svelte/icons/link';
   import UploadIcon from '@lucide/svelte/icons/upload';
   import { ComboButton, type ComboButtonItem } from '@cio/ui/custom/combo-button';
 
-  import { AddDocumentModal, AddVideoModal } from '$features/course/components/lesson';
-  import { lessonDocUpload, lessonVideoUpload } from '$features/course/components/lesson/store';
+  import { AddVideoModal } from '$features/course/components/lesson';
+  import { lessonVideoUpload } from '$features/course/components/lesson/store';
+  import { mediaUploadManager } from '$features/media/api';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -15,42 +16,45 @@
 
   const items = $derived<ComboButtonItem[]>([
     {
-      id: 'documents',
-      label: $t('media_manager.upload.documents'),
-      icon: FileTextIcon,
-      onSelect: openDocumentModal
+      id: 'video-link',
+      label: $t('media_manager.upload.add_video_link'),
+      icon: LinkIcon,
+      onSelect: openVideoLinkModal
     }
   ]);
 
-  function openVideoModal() {
+  function openVideoLinkModal() {
     $lessonVideoUpload.isModalOpen = true;
   }
 
-  function openDocumentModal() {
-    $lessonDocUpload.isModalOpen = true;
-  }
-
-  let wasModalOpen = false;
+  let wasLinkModalOpen = false;
+  let refreshedCompletedCount = mediaUploadManager.completedCount;
 
   $effect(() => {
-    const isModalOpen = $lessonVideoUpload.isModalOpen || $lessonDocUpload.isModalOpen;
-    if (wasModalOpen && !isModalOpen) onUploaded();
+    const isLinkModalOpen = $lessonVideoUpload.isModalOpen;
+    if (wasLinkModalOpen && !isLinkModalOpen) onUploaded();
 
-    wasModalOpen = isModalOpen;
+    wasLinkModalOpen = isLinkModalOpen;
+  });
+
+  $effect(() => {
+    const completedCount = mediaUploadManager.completedCount;
+    if (completedCount === refreshedCompletedCount) return;
+
+    refreshedCompletedCount = completedCount;
+    onUploaded();
   });
 </script>
 
 <ComboButton
   variant="outline"
   size="default"
-  label={$t('media_manager.upload.videos')}
+  label={$t('media_manager.upload.files')}
   menuLabel={$t('media_manager.upload.more_options')}
   icon={UploadIcon}
   {items}
   testId="media-upload"
-  onSelect={openVideoModal}
+  onSelect={() => mediaUploadManager.open()}
 />
 
 <AddVideoModal />
-
-<AddDocumentModal />

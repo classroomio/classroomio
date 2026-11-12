@@ -10,6 +10,7 @@ import {
   type TAssetProvider
 } from '@cio/utils';
 import { lessonApi } from '$features/course/api';
+import { libraryAssetCache } from '$features/media/api/library-asset-cache.svelte';
 import { addLessonVideos } from '../media-picks';
 import { mediaApi } from '$features/media/api';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -155,6 +156,17 @@ function getFileNameFromKey(key: string | undefined): string | null {
  * Display title for a video.
  * Order: top-level fileName → metadata.title → (upload only) derive from key → type fallback → "Video N".
  */
+/**
+ * The title to show for a lesson video: the library asset's current title when it is loaded in the asset cache,
+ * otherwise the name saved with the lesson.
+ */
+export function getVideoDisplayTitle(video: LessonVideo, index: number): string {
+  const assetId = (video as LessonVideo & { assetId?: string }).assetId;
+  const libraryTitle = assetId ? libraryAssetCache.get(assetId)?.title?.trim() : undefined;
+
+  return libraryTitle || getVideoTitle(video, index);
+}
+
 export function getVideoTitle(video: LessonVideo, index: number): string {
   const topLevelName = (video as LessonVideo & { fileName?: string }).fileName;
   if (topLevelName && typeof topLevelName === 'string') return topLevelName;

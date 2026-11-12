@@ -144,7 +144,18 @@
 <Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('components.settings.customize_lms.student_home.heading')}</Field.Legend>
-    <Field.Description>{$t('components.settings.customize_lms.student_home.description')}</Field.Description>
+    <Field.Description>
+      {$t('components.settings.customize_lms.student_home.description')}
+      <a
+        class="ui:text-primary underline"
+        href="https://classroomio.com/help/publish-and-brand/student-home"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="customize-lms-student-home-learn-more"
+      >
+        {$t('components.settings.customize_lms.student_home.learn_more')}
+      </a>
+    </Field.Description>
     <Field.Group>
       <Field.Field>
         <Field.Label>{$t('components.settings.customize_lms.student_home.label')}</Field.Label>

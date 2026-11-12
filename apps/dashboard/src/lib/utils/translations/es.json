@@ -3059,7 +3059,11 @@
       "preview": "Vista previa del curso",
       "preview_missing_slug": "Genera y guarda un slug del curso antes de previsualizarlo.",
       "view_as_student": "Ver como estudiante",
-      "view_course_site": "Ver sitio del curso"
+      "view_course_site": "Ver sitio del curso",
+      "assistant_pop_out": "Chat emergente",
+      "assistant_close_floating": "Cerrar chat flotante",
+      "assistant_tip": "Consejo: utilice el icono emergente para hacer flotar al asistente mientras trabaja.",
+      "assistant_tip_dismiss": "Descartar consejo"
     },
     "view_course_site": {
       "unpublished_title": "Publica tu curso",
@@ -3444,7 +3448,8 @@
           "course_hint_restricted": "Los estudiantes matriculados pasan directamente a la siguiente lección. Este curso es pago o solo por invitación, por lo que los estudiantes que no están inscritos van al Panel de control.",
           "unavailable_badge": "No disponible",
           "course_type_live": "En vivo",
-          "course_type_compliance": "Cumplimiento"
+          "course_type_compliance": "Cumplimiento",
+          "learn_more": "Más información"
         }
       },
       "domains": {
@@ -3773,9 +3778,43 @@
       "refresh": "Refrescar"
     },
     "upload": {
-      "videos": "Subir videos",
-      "documents": "Subir documentos",
-      "more_options": "Más opciones de carga"
+      "files": "Subir archivos",
+      "add_video_link": "Añadir un enlace de video",
+      "more_options": "Más opciones de subida",
+      "dialog_title": "Subir archivos",
+      "drag_drop": "Arrastra y suelta archivos aquí, o haz clic para buscar",
+      "limits": "Videos y documentos. Hasta {count} archivos a la vez, {size} cada uno.",
+      "limits_by_kind": "Hasta {count} archivos a la vez. Videos de hasta {videoSize}, documentos de hasta {documentSize}.",
+      "add_more": "Añadir más archivos",
+      "minimize": "Minimizar",
+      "maximize": "Abrir la ventana de subida",
+      "expand": "Mostrar archivos",
+      "collapse": "Ocultar archivos",
+      "close": "Cerrar",
+      "done": "Listo",
+      "keep_in_background": "Continuar en segundo plano",
+      "upgrade": "Mejora tu plan para subir archivos a tu biblioteca de medios",
+      "status": {
+        "queued": "En espera",
+        "completed": "Completado",
+        "failed": "Falló",
+        "retry": "Reintentar",
+        "remove": "Quitar archivo",
+        "uploading_progress": "Subiendo {percent}%",
+        "size_progress": "{uploaded} de {total}"
+      },
+      "summary": {
+        "uploading": "{done} de {total} archivos subidos",
+        "completed": "{count} subidas completadas",
+        "failed": "{count} de {total} subidas fallaron"
+      },
+      "errors": {
+        "unsupported_type": "{name} no es un video o documento compatible.",
+        "too_large": "{name} supera los {size}.",
+        "too_many": "Puedes subir hasta {count} archivos a la vez.",
+        "generic": "La subida falló"
+      },
+      "switch_organization_confirm": "Cambiar de organización cancela las subidas en curso. ¿Cambiar de todos modos?"
     },
     "storage": {
       "total_bytes": "Almacenamiento total",
@@ -4129,7 +4168,9 @@
           "popover_title": "Seleccionar cursos",
           "popover_empty": "No hay cursos publicados disponibles.",
           "search_no_results": "Ningún curso coincide con tu búsqueda.",
-          "search_placeholder": "Buscar cursos..."
+          "search_placeholder": "Buscar cursos...",
+          "featured_toggle": "Mostrar curso destacado",
+          "featured_toggle_desc": "Destaca tu primer curso en un bloque grande. Desactívalo para mostrarlo junto con tus otros cursos."
         }
       },
       "content": {
@@ -5757,6 +5798,11 @@
     "titles": {
       "ai_assistant": "Asistente de IA",
       "transcript": "Transcripción"
+    },
+    "floating": {
+      "resize_aria": "Cambiar el tamaño de la ventana del asistente",
+      "expand_aria": "Expandir al panel lateral",
+      "dock_hint": "Suelte para atracar a un lado"
     }
   },
   "compliance": {
@@ -6548,7 +6594,10 @@
     "consent": {
       "page_title": "Conecta una app con ClassroomIO",
       "title": "Conectar {client} con ClassroomIO",
-      "workspace": "Espacio de trabajo: {workspace}",
+      "subtitle": "Elige el espacio de trabajo al que {client} puede acceder.",
+      "workspace_label": "Espacio de trabajo",
+      "no_workspaces_title": "No hay espacios de trabajo disponibles",
+      "no_workspaces_description": "Solo los administradores del espacio de trabajo pueden conectar apps. Pide ayuda a un administrador o inicia sesión con una cuenta de administrador.",
       "permissions_heading": "{client} podrá:",
       "stay_connected": "Mantener la conexión hasta que quites el acceso",
       "admin_note": "Solo los administradores del espacio de trabajo pueden conectar apps. El acceso sigue tus permisos de administrador y termina si los pierdes.",
@@ -6559,14 +6608,9 @@
       "error_title": "Esta solicitud de conexión no es válida",
       "error_description": "Vuelve a la app que querías conectar y empieza de nuevo."
     },
-    "select_organization": {
-      "title": "Elige un espacio de trabajo",
-      "subtitle": "Elige el espacio de trabajo al que {client} puede acceder.",
-      "empty_title": "No hay espacios de trabajo disponibles",
-      "empty_description": "Solo los administradores del espacio de trabajo pueden conectar apps. Pide ayuda a un administrador o inicia sesión con una cuenta de administrador."
-    },
     "error": {
-      "generic": "Algo salió mal. Inténtalo de nuevo."
+      "generic": "Algo salió mal. Inténtalo de nuevo.",
+      "retry": "Intentar de nuevo"
     },
     "scope_group": {
       "courses": {
@@ -6631,5 +6675,21 @@
       "revoke": "Quitar acceso",
       "revoke_confirm": "¿Quitar el acceso de esta app? Dejará de funcionar de inmediato."
     }
+  },
+  "video_guide": {
+    "watch_video": "Ver vídeo",
+    "new_badge": "Nuevo",
+    "connect_claude": {
+      "title": "Conecte ClassroomIO a Claude",
+      "description": "Vea cómo conectar ClassroomIO a Claude y qué puede pedirle. 4 minutos."
+    },
+    "lesson_blocks": {
+      "title": "Introducción de bloques de lecciones",
+      "description": "Las lecciones ahora se construyen a partir de bloques. Mira cómo funciona en 5 minutos.",
+      "coach_description": "Cree cada lección a partir de bloques de notas, videos, diapositivas, documentos e imágenes, en cualquier orden. Seleccione Editar para probarlo.",
+      "coach_title": "🎉 ¡Nuevo! Las lecciones ahora son flexibles."
+    },
+    "close": "Cerrar",
+    "dismiss": "Entendido"
   }
 }

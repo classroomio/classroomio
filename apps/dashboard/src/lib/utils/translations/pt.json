@@ -3059,7 +3059,11 @@
       "preview": "Visualizar curso",
       "preview_missing_slug": "Gere e salve um slug do curso antes de visualizar.",
       "view_as_student": "Ver como aluno",
-      "view_course_site": "Ver site do curso"
+      "view_course_site": "Ver site do curso",
+      "assistant_pop_out": "Destacar bate-papo",
+      "assistant_close_floating": "Fechar bate-papo flutuante",
+      "assistant_tip": "Dica: use o ícone pop-out para fazer o assistente flutuar enquanto você trabalha.",
+      "assistant_tip_dismiss": "Ignorar dica"
     },
     "view_course_site": {
       "unpublished_title": "Publique seu curso",
@@ -3444,7 +3448,8 @@
           "course_hint_restricted": "Os alunos matriculados vão direto para a próxima aula. Este curso é pago ou somente para convidados, então os alunos que não estão matriculados acessam o Painel.",
           "unavailable_badge": "Indisponível",
           "course_type_live": "Ao vivo",
-          "course_type_compliance": "Conformidade"
+          "course_type_compliance": "Conformidade",
+          "learn_more": "Saiba mais"
         }
       },
       "domains": {
@@ -3773,9 +3778,43 @@
       "refresh": "Atualizar"
     },
     "upload": {
-      "videos": "Enviar vídeos",
-      "documents": "Enviar documentos",
-      "more_options": "Mais opções de envio"
+      "files": "Enviar arquivos",
+      "add_video_link": "Adicionar um link de vídeo",
+      "more_options": "Mais opções de envio",
+      "dialog_title": "Enviar arquivos",
+      "drag_drop": "Arraste e solte arquivos aqui, ou clique para procurar",
+      "limits": "Vídeos e documentos. Até {count} arquivos por vez, {size} cada.",
+      "limits_by_kind": "Até {count} arquivos por vez. Vídeos de até {videoSize}, documentos de até {documentSize}.",
+      "add_more": "Adicionar mais arquivos",
+      "minimize": "Minimizar",
+      "maximize": "Abrir a janela de envio",
+      "expand": "Mostrar arquivos",
+      "collapse": "Ocultar arquivos",
+      "close": "Fechar",
+      "done": "Concluir",
+      "keep_in_background": "Continuar em segundo plano",
+      "upgrade": "Faça upgrade para enviar arquivos à sua biblioteca de mídia",
+      "status": {
+        "queued": "Aguardando",
+        "completed": "Concluído",
+        "failed": "Falhou",
+        "retry": "Tentar novamente",
+        "remove": "Remover arquivo",
+        "uploading_progress": "Enviando {percent}%",
+        "size_progress": "{uploaded} de {total}"
+      },
+      "summary": {
+        "uploading": "{done} de {total} arquivos enviados",
+        "completed": "{count} envios concluídos",
+        "failed": "{count} de {total} envios falharam"
+      },
+      "errors": {
+        "unsupported_type": "{name} não é um vídeo ou documento compatível.",
+        "too_large": "{name} é maior que {size}.",
+        "too_many": "Você pode enviar até {count} arquivos por vez.",
+        "generic": "Falha no envio"
+      },
+      "switch_organization_confirm": "Trocar de organização cancela os envios em andamento. Trocar mesmo assim?"
     },
     "storage": {
       "total_bytes": "Armazenamento total",
@@ -4129,7 +4168,9 @@
           "popover_title": "Selecionar cursos",
           "popover_empty": "Nenhum curso publicado disponível.",
           "search_no_results": "Nenhum curso corresponde à sua pesquisa.",
-          "search_placeholder": "Buscar cursos..."
+          "search_placeholder": "Buscar cursos...",
+          "featured_toggle": "Mostrar curso em destaque",
+          "featured_toggle_desc": "Destaca seu primeiro curso em um bloco grande. Desative para listá-lo junto com seus outros cursos."
         }
       },
       "content": {
@@ -5757,6 +5798,11 @@
     "titles": {
       "ai_assistant": "Assistente de IA",
       "transcript": "Transcrição"
+    },
+    "floating": {
+      "resize_aria": "Redimensionar janela do assistente",
+      "expand_aria": "Expandir para o painel lateral",
+      "dock_hint": "Solte para encaixar na lateral"
     }
   },
   "compliance": {
@@ -6548,7 +6594,10 @@
     "consent": {
       "page_title": "Conecte um app ao ClassroomIO",
       "title": "Conectar {client} ao ClassroomIO",
-      "workspace": "Espaço de trabalho: {workspace}",
+      "subtitle": "Escolha o espaço de trabalho ao qual {client} pode ter acesso.",
+      "workspace_label": "Espaço de trabalho",
+      "no_workspaces_title": "Nenhum espaço de trabalho disponível",
+      "no_workspaces_description": "Somente administradores do espaço de trabalho podem conectar apps. Peça a um administrador ou entre com uma conta de administrador.",
       "permissions_heading": "{client} poderá:",
       "stay_connected": "Manter conectado até você remover o acesso",
       "admin_note": "Somente administradores do espaço de trabalho podem conectar apps. O acesso segue suas permissões de administrador e termina se você as perder.",
@@ -6559,14 +6608,9 @@
       "error_title": "Esta solicitação de conexão não é válida",
       "error_description": "Volte ao app que você estava conectando e comece de novo."
     },
-    "select_organization": {
-      "title": "Escolha um espaço de trabalho",
-      "subtitle": "Escolha o espaço de trabalho ao qual {client} pode ter acesso.",
-      "empty_title": "Nenhum espaço de trabalho disponível",
-      "empty_description": "Somente administradores do espaço de trabalho podem conectar apps. Peça a um administrador ou entre com uma conta de administrador."
-    },
     "error": {
-      "generic": "Algo deu errado. Tente novamente."
+      "generic": "Algo deu errado. Tente novamente.",
+      "retry": "Tentar novamente"
     },
     "scope_group": {
       "courses": {
@@ -6631,5 +6675,21 @@
       "revoke": "Remover acesso",
       "revoke_confirm": "Remover o acesso deste app? Ele deixará de funcionar imediatamente."
     }
+  },
+  "video_guide": {
+    "watch_video": "Assista ao vídeo",
+    "new_badge": "Novo",
+    "connect_claude": {
+      "title": "Conecte o ClassroomIO ao Claude",
+      "description": "Veja como conectar o ClassroomIO ao Claude e o que você pode perguntar. 4 minutos."
+    },
+    "lesson_blocks": {
+      "title": "Apresentando blocos de aula",
+      "description": "As aulas agora são construídas a partir de blocos. Veja como funciona em 5 minutos.",
+      "coach_description": "Crie cada lição a partir de blocos de notas, vídeos, slides, documentos e imagens, em qualquer ordem. Selecione Editar para experimentar.",
+      "coach_title": "🎉 Novidade! As aulas agora são flexíveis."
+    },
+    "close": "Fechar",
+    "dismiss": "Entendi"
   }
 }

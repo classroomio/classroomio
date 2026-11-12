@@ -36,6 +36,16 @@ export const landingPageThemes = [
   'quartz'
 ] as const satisfies OrgLandingPageTheme[];
 
+export function isLandingPageTheme(value: string | null): value is (typeof landingPageThemes)[number] {
+  if (value === null) return false;
+
+  return (landingPageThemes as readonly string[]).includes(value);
+}
+
+export function resolvePreviewTheme(queryTheme: string | null, savedTheme: OrgLandingPageTheme): OrgLandingPageTheme {
+  return isLandingPageTheme(queryTheme) ? queryTheme : savedTheme;
+}
+
 export const defaultLandingPageHero: OrgLandingPageHero = {
   heading: 'Become a Certified AI Engineer',
   subheading: 'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
@@ -556,7 +566,22 @@ function normalizeHeroEyebrow(value: unknown): string | undefined {
   return value.trim();
 }
 
+function normalizeFeaturedCourse(value: unknown): OrgLandingPageJson['featuredCourse'] {
+  if (!isRecord(value)) return undefined;
+
+  return { enabled: value.enabled !== false };
+}
+
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {
+  const settings = normalizeLandingPageSections(value);
+  if (!isRecord(value)) return settings;
+
+  const featuredCourse = normalizeFeaturedCourse(value.featuredCourse);
+
+  return featuredCourse ? { ...settings, featuredCourse } : settings;
+}
+
+function normalizeLandingPageSections(value: unknown): OrgLandingPageJson {
   const defaultSettings = createDefaultLandingPageSettings();
 
   if (!isRecord(value)) {

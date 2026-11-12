@@ -1,20 +1,7 @@
-import { getErrMsg } from './utils';
-import type { InferResponseType } from '@cio/api/rpc-types';
-import { ApiError, type ZodValidationError, type ZodValidatorMesssage } from './types';
+import type { ZodValidationError, ZodValidatorMesssage, ExtractData, ExecuteOptions } from './types';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation/validation';
 import { ZodError } from 'zod/v4';
-
-// Extract the data type from a success response
-type ExtractData<T> = Extract<InferResponseType<T>, { success: true }>;
-type ExtractError<T> = Extract<InferResponseType<T>, { success: false }>;
-
-interface ExecuteOptions<TrpcType> {
-  requestFn: () => Promise<Response>;
-  errorMessage?: string;
-  onSuccess?: (data: ExtractData<TrpcType>) => Promise<void> | void;
-  onError?: (error: ExtractError<TrpcType> | string) => Promise<void> | void;
-  logContext?: string;
-}
+import { toNormalizedApiError, type NormalizedApiError } from './errors';
 
 /**
  * Base API class that provides shared state management and request handling
@@ -24,6 +11,7 @@ export class BaseApi {
   isLoading = $state(false);
   error = $state<string | null>(null);
   success = $state(false);
+  lastError = $state<NormalizedApiError | null>(null);
 
   constructor(loading = false) {
     this.isLoading = loading;
@@ -40,6 +28,7 @@ export class BaseApi {
 
     this.isLoading = true;
     this.error = null;
+    this.lastError = null;
     this.success = false;
 
     try {
@@ -50,9 +39,10 @@ export class BaseApi {
         const apiResult = result as { success: boolean; data?: unknown; error?: string; message?: string };
 
         if (apiResult.success === false) {
-          console.log('apiResult false', apiResult);
-          this.error = JSON.stringify(apiResult);
-          options.onError?.(apiResult as ExtractError<TrpcType>);
+          const normalized = toNormalizedApiError(apiResult, response.status);
+          this.error = normalized.message;
+          this.lastError = normalized;
+          await options.onError?.(normalized);
 
           return;
         }
@@ -68,46 +58,29 @@ export class BaseApi {
         this.success = true;
         return typedResult;
       }
+
+      const normalized = toNormalizedApiError(result, response.status);
+      this.error = normalized.message;
+      this.lastError = normalized;
+      await options.onError?.(normalized);
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         return;
       }
 
       console.error(`Error in ${logContext}:`, error);
-      this.error = getErrMsg(error, `Error ${logContext}:`);
-
-      const errorResult = this.getServerError<ExtractError<TrpcType>>(error);
-      options.onError?.(errorResult);
+      const normalized = toNormalizedApiError(error);
+      this.error = normalized.message;
+      this.lastError = normalized;
+      await options.onError?.(normalized);
     } finally {
       this.isLoading = false;
     }
   }
 
-  getServerError<T>(error: unknown): T | string {
-    if (error instanceof ApiError) {
-      console.log('instance of ApiError', error);
-      try {
-        const json = JSON.parse(error.message) as T;
-        return json;
-      } catch (e) {
-        console.log('error parsing json', e);
-        return error.message;
-      }
-    }
-
-    if (error instanceof Error) {
-      return error.message;
-    }
-
-    if (typeof error === 'string') {
-      return error;
-    }
-
-    return `${error}`;
-  }
-
   resetErrors() {
     this.error = null;
+    this.lastError = null;
   }
 
   /**
@@ -116,6 +89,7 @@ export class BaseApi {
   reset() {
     this.isLoading = false;
     this.error = null;
+    this.lastError = null;
   }
 }
 
@@ -126,29 +100,36 @@ export class BaseApi {
 export class BaseApiWithErrors extends BaseApi {
   errors = $state<Record<string, string>>({});
 
-  handleValidationError(result: {
-    success: false;
-    error: string;
-    code?: string;
-    field?: string;
-  }): Promise<void> | void {
-    const zodValidationError = result.error as unknown as ZodValidationError;
-
-    // Handle Zod validation errors
-    if (zodValidationError && typeof zodValidationError === 'object' && zodValidationError.name === 'ZodError') {
-      const issues = JSON.parse(zodValidationError.message) as ZodValidatorMesssage;
-      this.errors = mapZodErrorsToTranslations(new ZodError(issues));
-      return;
+  handleValidationError(result: NormalizedApiError): Promise<void> | void {
+    const candidates = [result.raw];
+    if (typeof result.raw === 'object' && result.raw !== null && 'error' in result.raw) {
+      candidates.push((result.raw as { error: unknown }).error);
     }
 
-    // Generic fallback only — no field-specific mapping here
-    if (typeof result.error === 'string') {
-      this.errors = { ...this.errors, general: result.error };
+    for (const candidate of candidates) {
+      const zodValidationError = candidate as ZodValidationError | null;
+
+      if (zodValidationError && typeof zodValidationError === 'object' && zodValidationError.name === 'ZodError') {
+        try {
+          const issues = JSON.parse(zodValidationError.message) as ZodValidatorMesssage;
+          this.errors = mapZodErrorsToTranslations(new ZodError(issues));
+          return;
+        } catch {
+          break;
+        }
+      }
+    }
+
+    if (result.field) {
+      this.errors = { ...this.errors, [result.field]: result.message };
+    } else {
+      this.errors = { ...this.errors, general: result.message };
     }
   }
 
   override resetErrors() {
     this.errors = {};
+    this.lastError = null;
   }
 
   clearError(field: string) {
