@@ -32,6 +32,7 @@ import {
   type TWebhookEndpointHealth
 } from '@cio/utils/constants/webhook';
 import type { TCreateWebhook, TUpdateWebhook, TWebhookDeliveryListQuery } from '@cio/utils/validation/webhook';
+import { AUTOMATION_PLAN_GATE_MESSAGES } from '@cio/utils/plans';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
@@ -108,8 +109,8 @@ export async function assertWebhooksAllowed(organizationId: string): Promise<voi
 
   throw new AppError(
     env.PUBLIC_IS_SELFHOSTED === 'true'
-      ? 'Webhooks require an Enterprise plan'
-      : 'Webhooks require an Early Adopter or Enterprise plan',
+      ? AUTOMATION_PLAN_GATE_MESSAGES.webhooks.selfHosted
+      : AUTOMATION_PLAN_GATE_MESSAGES.webhooks.cloud,
     ErrorCodes.UPGRADE_REQUIRED,
     403
   );

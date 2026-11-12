@@ -13,6 +13,7 @@ import {
 } from '@cio/db/queries/organization';
 import type { TOrganizationApiKey, TOrganizationApiKeyType, TPlan } from '@db/types';
 import {
+  AUTOMATION_PLAN_GATE_MESSAGES,
   AUTOMATION_TYPE,
   getMcpAutomationCategory,
   canUsePublicApi,
@@ -63,9 +64,7 @@ export async function assertPublicApiAllowed(organizationId: string): Promise<TP
 
   if (!canUsePublicApi(planName, isSelfHosted)) {
     throw new AppError(
-      isSelfHosted
-        ? 'Public API keys require an Enterprise plan'
-        : 'Public API keys require an Early Adopter or Enterprise plan',
+      isSelfHosted ? AUTOMATION_PLAN_GATE_MESSAGES.publicApi.selfHosted : AUTOMATION_PLAN_GATE_MESSAGES.publicApi.cloud,
       ErrorCodes.UPGRADE_REQUIRED,
       403
     );
