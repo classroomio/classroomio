@@ -46,7 +46,7 @@
   let status = $state<AssetStatusValue>('active');
 
   const canSubmit = $derived(Boolean(asset) && !isSaving && !isThumbnailUploading);
-  const canChangeStatus = $derived(asset?.status !== 'processing');
+  const canChangeStatus = $derived(asset?.status === 'active' || asset?.status === 'archived');
 
   function setFormValues(nextAsset: OrganizationAsset | null) {
     title = nextAsset?.title ?? '';

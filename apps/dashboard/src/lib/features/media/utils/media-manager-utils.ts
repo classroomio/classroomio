@@ -75,10 +75,11 @@ export function isHlsAsset(asset: OrganizationAsset): boolean {
 }
 
 /**
- * True for a video with no manifest, stored file or source link, so nothing can play it yet.
+ * True for a video nothing can play yet: its upload is still pending, or it has no manifest, stored file or source link.
  */
 export function isUnfinishedVideoUpload(asset: OrganizationAsset): boolean {
   if (asset.kind !== 'video') return false;
+  if (asset.status === 'pending') return true;
 
   return !isHlsAsset(asset) && !asset.storageKey && !asset.sourceUrl;
 }
