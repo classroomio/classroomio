@@ -14,6 +14,7 @@ import {
   listOAuthConnectedApps,
   listOAuthEligibleOrganizations,
   revokeOAuthConsent,
+  revokeStaleOAuthTokens,
   revokeUserOAuthGrantsInOrganization,
   saveOAuthOrganizationSelection
 } from '@cio/db/queries/auth';
@@ -137,10 +138,21 @@ export async function authenticateOAuthAccessTokenService(
     await revokeUserOAuthGrantsInOrganization(claims.userId, claims.organizationId);
   }
 
-  const consentCreatedAtSeconds = consent ? Math.floor(consent.createdAt.getTime() / 1000) : 0;
-  const isIssuedForThisGrant = claims.issuedAt >= consentCreatedAtSeconds;
+  if (!isAdmin || !consent) {
+    throw new AppError('Access has been revoked', ErrorCodes.UNAUTHORIZED, 401);
+  }
 
-  if (!isAdmin || !consent || !isIssuedForThisGrant) {
+  const consentCreatedAtSeconds = Math.floor(consent.createdAt.getTime() / 1000);
+  const isIssuedForThisGrant = claims.issuedAt >= consentCreatedAtSeconds;
+  const isWithinGrantedScopes = claims.scopes.every((scope) => consent.scopes.includes(scope));
+
+  if (!isWithinGrantedScopes) {
+    await revokeStaleOAuthTokens(claims.userId, claims.clientId, claims.organizationId, consent.scopes).catch(
+      (error: unknown) => console.error('revokeStaleOAuthTokens error:', error)
+    );
+  }
+
+  if (!isIssuedForThisGrant || !isWithinGrantedScopes) {
     throw new AppError('Access has been revoked', ErrorCodes.UNAUTHORIZED, 401);
   }
 
