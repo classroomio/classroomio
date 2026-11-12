@@ -3,6 +3,7 @@ import { env } from '../config/env';
 export const EMAIL_IDS = [
   'forgotPassword',
   'inviteTeacher',
+  'teamRoleChanged',
   'newsfeedComment',
   'newsfeedPost',
   'onPasswordReset',

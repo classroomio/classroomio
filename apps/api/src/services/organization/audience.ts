@@ -1,5 +1,6 @@
 import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { parseFullnameFromInviteMetadata } from '@api/utils/org';
 import {
   type AudienceImportResult,
   type ParsedImportRow,
@@ -27,6 +28,7 @@ import {
   createOrganizationInvites,
   createOrganizationMembers,
   getOrganizationAudienceMember,
+  getLatestOrganizationInviteMetadataByEmails,
   getLatestOrganizationInviteRowByOrgAndEmail,
   getOrgMembersByProfileIds,
   getOrganizationById,
@@ -355,6 +357,7 @@ type StudentOrgInviteInput = {
   accessNamesLabel: string | undefined;
   invitedByProfileId: string;
   shouldSendEmail: boolean;
+  fullnamesByEmail?: Map<string, string>;
 };
 
 async function createStudentOrgInvitesAndSendEmails(
@@ -365,10 +368,13 @@ async function createStudentOrgInvitesAndSendEmails(
 
 /** Revokes and re-creates the invites. Pass a transaction to save them under the seat lock. */
 async function createStudentOrgInvites(
-  input: Pick<StudentOrgInviteInput, 'orgId' | 'emails' | 'courseIds' | 'cohortIds' | 'invitedByProfileId'>,
+  input: Pick<
+    StudentOrgInviteInput,
+    'orgId' | 'emails' | 'courseIds' | 'cohortIds' | 'invitedByProfileId' | 'fullnamesByEmail'
+  >,
   dbClient: DbOrTxClient = db
 ) {
-  const { orgId, emails, courseIds, cohortIds, invitedByProfileId } = input;
+  const { orgId, emails, courseIds, cohortIds, invitedByProfileId, fullnamesByEmail } = input;
 
   if (emails.length === 0) {
     return null;
@@ -376,10 +382,20 @@ async function createStudentOrgInvites(
 
   await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId, dbClient);
 
+  const namelessEmails = emails.filter((email) => !fullnamesByEmail?.get(email));
+  const previousInvites = await getLatestOrganizationInviteMetadataByEmails(orgId, namelessEmails, dbClient);
+  const previousFullnames = new Map<string, string>();
+  for (const previousInvite of previousInvites) {
+    const previousFullname = parseFullnameFromInviteMetadata(previousInvite.metadata);
+    if (previousFullname) previousFullnames.set(previousInvite.email.toLowerCase(), previousFullname);
+  }
+
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
 
   const inviteInputs = emails.map((email) => {
     const token = generateToken();
+    const fullname = fullnamesByEmail?.get(email) ?? previousFullnames.get(email);
+
     return {
       email,
       token,
@@ -394,7 +410,8 @@ async function createStudentOrgInvites(
         metadata: {
           source: 'AUDIENCE_IMPORT',
           courseIds: courseIds.length > 0 ? courseIds : undefined,
-          cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+          cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+          fullname
         }
       }
     };
@@ -615,6 +632,14 @@ export async function importAudienceMembers(
     row.status = 'already_member';
   }
 
+  const fullnamesByEmail = new Map<string, string>();
+  for (const row of rows) {
+    if (row.status !== 'ready' && row.status !== 'invite_resent') continue;
+
+    const fullname = row.name?.trim();
+    if (fullname) fullnamesByEmail.set(row.email, fullname);
+  }
+
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
   const { cohortIds, cohortNames } = await resolveCohortIdsAndNamesForImport(orgId, data);
   const accessNames = [...courseNames, ...cohortNames];
@@ -645,7 +670,14 @@ export async function importAudienceMembers(
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
   let insertedMembers: Awaited<ReturnType<typeof createOrganizationMembers>> = [];
   let renewedInvites: Awaited<ReturnType<typeof createStudentOrgInvites>> = null;
-  const renewalInput = { orgId, emails: pendingStudentEmails, courseIds, cohortIds, invitedByProfileId };
+  const renewalInput = {
+    orgId,
+    emails: pendingStudentEmails,
+    courseIds,
+    cohortIds,
+    invitedByProfileId,
+    fullnamesByEmail
+  };
 
   // New members and renewed invites are both saved under the seat lock, so a seat the check grants is taken
   // before the lock is released.
@@ -731,7 +763,8 @@ export async function importAudienceMembers(
       cohortIds,
       accessNamesLabel,
       invitedByProfileId,
-      shouldSendEmail: data.sendEmail
+      shouldSendEmail: data.sendEmail,
+      fullnamesByEmail
     });
     imported = addedEmails.length;
     importEmailsSent = inviteOutcome.emailsSent;
@@ -808,6 +841,7 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, emailToUse);
   const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
+  const previousFullname = parseFullnameFromInviteMetadata(latestInvite?.metadata);
   const courseIdsFromMetadata = meta.courseIds?.filter(Boolean) ?? [];
   const cohortIdsFromMetadata = meta.cohortIds?.filter(Boolean) ?? [];
 
@@ -854,7 +888,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
         metadata: {
           source: 'AUDIENCE_RESEND',
           courseIds: courseIds.length > 0 ? courseIds : undefined,
-          cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+          cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+          fullname: previousFullname
         }
       },
       tx
@@ -1101,6 +1136,9 @@ export async function updatePendingAudienceMemberEmail(
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
   const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
+  const fullnamesByEmail = new Map<string, string>();
+  const previousFullname = parseFullnameFromInviteMetadata(latestInvite?.metadata);
+  if (previousFullname) fullnamesByEmail.set(normalizedEmail, previousFullname);
 
   await createStudentOrgInvitesAndSendEmails({
     orgId,
@@ -1110,7 +1148,8 @@ export async function updatePendingAudienceMemberEmail(
     cohortIds: meta.cohortIds?.filter(Boolean) ?? [],
     accessNamesLabel: undefined,
     invitedByProfileId,
-    shouldSendEmail: data.sendEmail
+    shouldSendEmail: data.sendEmail,
+    fullnamesByEmail
   });
 
   if (studentMilestoneNotification) {
