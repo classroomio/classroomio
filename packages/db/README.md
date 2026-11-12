@@ -96,7 +96,7 @@ pnpm --filter @cio/db db:create-org "<Org Name>" <email> [PLAN] [site-name] [--d
 
 `PLAN` is `BASIC` (default), `EARLY_ADOPTER` or `ENTERPRISE`. `site-name` defaults to a slug of the organization name. `--dry-run` prints what would be created and writes nothing.
 
-Without a password the admin signs in by choosing **Forgot password** on the login page, which creates their password. To give the admin a password from the start, set `ADMIN_PASSWORD` (8-128 characters) in the environment. It is read from the environment so it stays out of shell history and process listings, and it is refused if the user already has a password:
+Without a password the admin signs in by choosing **Forgot password** on the login page, which creates their password. To give the admin a password from the start, set `ADMIN_PASSWORD` (8–128 characters, but no more than 72 UTF-8 bytes) in the environment. It is read from the environment so it stays out of shell history and process listings, and it is refused if the user already has a password:
 
 ```bash
 read -rs ADMIN_PASSWORD && export ADMIN_PASSWORD
