@@ -27,7 +27,7 @@ The same document is also served at `/.well-known/openid-configuration` and unde
 
 ## Register a client
 
-Clients register themselves with [Dynamic Client Registration](https://datatracker.ietf.org/doc/html/rfc7591) at `registration_endpoint`. Registration is rate limited, and every registered client is untrusted: the consent screen is always shown.
+Clients register themselves with [Dynamic Client Registration](https://datatracker.ietf.org/doc/html/rfc7591) at `registration_endpoint`. Registration is rate limited, and every registered client is untrusted. The consent screen shows unless a stored grant already covers the requested scopes.
 
 Trusted clients, such as ClassroomIO's native Zapier integration, are pre-registered confidential clients configured by ClassroomIO. When an administrator connects a trusted client, the consent screen displays a **Verified** badge confirming the integration is official and vetted.
 
