@@ -117,7 +117,7 @@ type StudentDef = {
   joinedDaysAgo: number;
   lastLoginDaysAgo: number | null;
   loginDaysAgo: number[];
-  orgStatus?: 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
+  orgStatus?: 'ACTIVE' | 'ARCHIVED';
 };
 
 type LessonDef = {
@@ -168,7 +168,7 @@ type PersonDef = {
   joinedDaysAgo: number;
   lastLoginDaysAgo: number | null;
   loginDaysAgo: number[];
-  orgStatus: 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
+  orgStatus: 'ACTIVE' | 'ARCHIVED';
 };
 
 function seedId(prefix: number, index: number): string {
@@ -1324,29 +1324,6 @@ const STUDENTS: StudentDef[] = [
     lastLoginDaysAgo: 0,
     loginDaysAgo: [0, 3, 8, 15],
     coursePlans: {}
-  },
-  {
-    key: 'excluded-deactivated',
-    fullname: 'Victor Jack',
-    username: 'victor-jack',
-    email: `victor@${EMAIL_DOMAIN}`,
-    cohortKeys: ['full'],
-    courses: ['lead'],
-    joinedDaysAgo: 60,
-    lastLoginDaysAgo: 0,
-    loginDaysAgo: [0, 5, 20],
-    orgStatus: 'DEACTIVATED',
-    coursePlans: {
-      lead: {
-        completedLessons: ['lead-l1'],
-        attempts: {
-          'lead-e1': [{ score: 80, daysAgo: 10 }],
-          'lead-e2': [{ score: 85, daysAgo: 10 }],
-          'lead-e3': [{ score: 80, daysAgo: 10 }]
-        },
-        completionDaysAgo: 10
-      }
-    }
   },
   {
     key: 'excluded-archived',

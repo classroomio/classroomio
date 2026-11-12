@@ -173,7 +173,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
     const addOrgMember = async (
       organizationId: string,
       profileId: string,
-      status: 'ACTIVE' | 'DEACTIVATED',
+      status: 'ACTIVE' | 'ARCHIVED',
       createdAt?: string
     ) => {
       await db.insert(schema.organizationmember).values({
@@ -189,7 +189,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
     for (const student of ['L1', 'L2', 'L3', 'L4']) {
       await addOrgMember(orgAId, profiles[student], 'ACTIVE');
     }
-    await addOrgMember(orgAId, profiles.L6, 'DEACTIVATED');
+    await addOrgMember(orgAId, profiles.L6, 'ARCHIVED');
     await addOrgMember(orgBId, profiles.L7, 'ACTIVE');
 
     const createGroup = async (organizationId: string, label: string) => {
@@ -1004,7 +1004,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
     expect(byPair.get('L4|K1')).toMatchObject({ progress_pct__value: 0, is_overdue__value: true });
   });
 
-  it('excludes the pending and deactivated cohort members', async () => {
+  it('excludes the pending and archived cohort members', async () => {
     const rows = await runQuery({
       source: 'student',
       dimensions: ['student'],
