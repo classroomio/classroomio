@@ -18,7 +18,9 @@ const ITEMS = [
       'Yet most founders guess their price in an afternoon and never look at it again. In this lesson we will build a simple process to set it with evidence.',
       'We will cover three methods: cost-plus, competitor-based and value-based pricing. By the end you will know which one fits your product.'
     ],
-    video: { duration: 312 }
+    video: { duration: 312 },
+    slides: 5,
+    image: true
   },
   {
     id: 'l2',
@@ -114,22 +116,20 @@ function seed() {
       'resolved',
       'u2',
       '5w ago'
-    )
+    ),
+    mk('t11', { type: 'slide', itemId: 'l1', slide: 3 }, [
+      c('u2', 'This headline is too long for one line. Can we shorten it?', '3h ago')
+    ]),
+    mk('t12', { type: 'slide', itemId: 'l1', slide: 3 }, [
+      c('u3', 'Where does the 12% come from? We need a source. @Ellena Okpani', '5h ago')
+    ]),
+    mk('t13', { type: 'slide', itemId: 'l1', slide: 4 }, [
+      c('u1', 'Value-based is the method we recommend, so highlight it.', '1d ago')
+    ]),
+    mk('t14', { type: 'image', itemId: 'l1', x: 19, y: 36 }, [
+      c('u3', 'Blur the competitor logo before we publish this screenshot.', '2d ago')
+    ])
   ];
-  threads.find((t) => t.id === 't2').assignee = 'u2';
-  logEvent(
-    threads.find((t) => t.id === 't2'),
-    'u1',
-    'assigned this to Ada Obi',
-    '35m ago'
-  );
-  threads.find((t) => t.id === 't7').assignee = 'u3';
-  logEvent(
-    threads.find((t) => t.id === 't7'),
-    'u2',
-    'assigned this to Tunde Bello',
-    '1d ago'
-  );
   return threads;
 }
 
@@ -187,14 +187,14 @@ let cid = 100;
 function c(author, body, when) {
   return { id: 'c' + cid++, author, body, mentions: parseMentions(body), when, edited: false };
 }
-function mk(id, anchor, comments, status = 'open', resolvedBy = null, resolvedAt = null, assignee = null) {
+function mk(id, anchor, comments, status = 'open', resolvedBy = null, resolvedAt = null) {
   const log = comments.map((cm, i) => ({
     who: cm.author,
     text: i === 0 ? 'started this thread' : 'replied',
     when: cm.when
   }));
   if (status === 'resolved') log.push({ who: resolvedBy, text: 'resolved this thread', when: resolvedAt });
-  return { id, anchor, comments, status, resolvedBy, resolvedAt, assignee, log };
+  return { id, anchor, comments, status, resolvedBy, resolvedAt, log };
 }
 function logEvent(thread, who, text, when = 'just now') {
   thread.log.push({ who, text, when });
@@ -224,22 +224,27 @@ const state = {
   viewer: 'u1',
   itemId: 'l1',
   panelOpen: true,
-  bellOpen: false,
-  filter: 'open',
+  fUnread: true,
+  fRead: true,
+  fResolved: false,
+  fPeople: [],
+  filterOpen: false,
+  blockFilter: null,
+  pinMode: false,
+  showText: true,
+  showVideo: true,
+  showPins: true,
   activeId: null,
-  history: {},
   histDays: 7,
   histPerson: 'all',
-  histKind: 'all',
-  histQuery: '',
   panelTab: 'threads',
   activityDot: true,
-  draftAssignee: '',
   versions: seedVersions(),
   verSel: null,
   draft: null,
   editing: null,
   time: 0,
+  slide: 3,
   playing: false,
   typing: null
 };
@@ -335,16 +340,14 @@ function notify(userId, threadId, text) {
 
 const COURSE_TITLE = 'Pricing Strategy 101';
 
+const unreadThreadCount = () => (isLearner() ? 0 : state.threads.filter((t) => unreadCount(t) > 0).length);
+
 function renderHeader() {
   const learner = isLearner();
-  const unread = state.notifs.filter((n) => n.userId === state.viewer && !n.read).length;
+  const unread = unreadThreadCount();
   const staffControls = learner
     ? ''
-    : `<div class="bell-wrap">
-        <button class="btn btn-outline btn-icon-sm" id="bell" aria-label="Notifications" aria-expanded="${state.bellOpen}">${ICON.bell}${unread ? `<span class="bell-dot">${unread}</span>` : ''}</button>
-        <div class="bell-menu" id="bellMenu" ${state.bellOpen ? '' : 'hidden'}>${bellMenuHtml()}</div>
-      </div>
-      <button class="btn btn-outline btn-sm" id="openPanel" aria-pressed="${state.panelOpen}">${ICON.comment}<span>Comments</span><span class="count-badge">${openCount()}</span>${hasUnread() ? '<span class="unread-dot" title="New replies you have not seen"></span>' : ''}</button>`;
+    : `<button class="btn btn-outline btn-sm" id="openPanel" aria-pressed="${state.panelOpen}" aria-label="Comments and notifications" title="Comments and notifications">${ICON.comment}<span class="count-badge corner-badge">${unread || openCount()}</span></button>`;
   $('head').innerHTML = `
     <button class="btn-ghost-icon" data-act="toggle-sidebar" aria-label="Toggle sidebar">${icon('panel')}</button>
     <span class="vsep"></span>
@@ -354,21 +357,6 @@ function renderHeader() {
     ${staffControls}
     <span class="btn btn-sm btn-assistant">${icon('sparkles')}<span class="assistant-label">Assistant</span></span>
     ${learner ? '' : `<span class="site-btn" style="display:inline-flex"><button class="btn btn-outline btn-sm" style="border-top-right-radius:0;border-bottom-right-radius:0">${icon('external')}View course site</button><button class="btn btn-outline btn-sm btn-icon-sm" aria-label="More" style="border-top-left-radius:0;border-bottom-left-radius:0;border-left:0">${icon('more')}</button></span>`}`;
-}
-
-function bellMenuHtml() {
-  const mine = state.notifs.filter((n) => n.userId === state.viewer);
-  return (
-    '<h4>Notifications</h4>' +
-    (mine.length
-      ? mine
-          .map(
-            (n) =>
-              `<button class="bell-item ${n.read ? '' : 'unread'}" data-notif="${n.id}">${esc(n.text)}<div class="muted">${esc(threadSummary(n.threadId))}</div></button>`
-          )
-          .join('')
-      : '<div class="bell-empty">Nothing yet.</div>')
-  );
 }
 
 function threadSummary(threadId) {
@@ -422,6 +410,7 @@ function highlightedParagraph(it, p) {
   if (!isLearner()) {
     state.threads.forEach((t) => {
       if (t.status !== 'open' || t.anchor.itemId !== it.id) return;
+      if (!state.showText && t.id !== state.activeId) return;
       const r = textRange(t);
       if (r && r.para === p) ranges.push({ ...r, id: t.id });
     });
@@ -445,7 +434,14 @@ function renderVideo(it) {
   const markers = isLearner()
     ? ''
     : state.threads
-        .filter((t) => t.anchor.type === 'video' && t.anchor.itemId === it.id && t.status === 'open' && !anchorState(t))
+        .filter(
+          (t) =>
+            t.anchor.type === 'video' &&
+            t.anchor.itemId === it.id &&
+            t.status === 'open' &&
+            !anchorState(t) &&
+            (state.showVideo || t.id === state.activeId)
+        )
         .map(
           (t) =>
             `<button class="marker ${t.id === state.activeId ? 'flash' : ''}" style="left:${(t.anchor.time / it.video.duration) * 100}%" data-marker="${t.id}" aria-label="Comment at ${fmt(t.anchor.time)}">${t.comments.length}</button>`
@@ -468,18 +464,57 @@ function renderVideo(it) {
   </section>`;
 }
 
+const blockThreads = (it, kind) =>
+  state.threads.filter((t) => {
+    if (t.status !== 'open' || t.anchor.itemId !== it.id) return false;
+    const type = t.anchor.type;
+    if (kind === 'note') return type === 'text' || type === 'lesson' || (type === 'question' && state.questionGone);
+    return type === kind;
+  });
+
+const blockKindOf = (thread) => {
+  const type = thread.anchor.type;
+  if (type === 'text' || type === 'lesson' || type === 'question') return 'note';
+
+  return type;
+};
+
+const BLOCK_NAMES = { note: 'Note', video: 'Video', slide: 'Slides', image: 'Image' };
+
+function pinMarkup(thread, number) {
+  return `<button class="pin ${thread.id === state.activeId ? 'active' : ''}" style="left:${thread.anchor.x}%;top:${thread.anchor.y}%" data-pin="${thread.id}" aria-label="Comment ${number}"><span><b>${number}</b></span></button>`;
+}
+
+function stageHtml(it, kind, learner) {
+  const onStage = (t) => t.anchor.type === kind && (kind === 'image' || t.anchor.slide === state.slide);
+  const pins =
+    learner || kind !== 'image'
+      ? []
+      : blockThreads(it, kind)
+          .filter(onStage)
+          .filter((t) => t.anchor.x != null && (state.showPins || t.id === state.activeId));
+  const draft = state.draft;
+  const draftPin =
+    !learner && draft && draft.type === kind && draft.x != null && (kind === 'image' || draft.slide === state.slide)
+      ? `<span class="pin draft" style="left:${draft.x}%;top:${draft.y}%"><span><b>+</b></span></span>`
+      : '';
+  const slideBodies = {
+    3: '<h4>A 1% price rise lifts profit by up to 12%</h4><p class="stage-big">+12%</p>',
+    4: '<h4>Three pricing methods</h4><ul class="stage-methods"><li>Cost-plus</li><li>Competitor-based</li><li>Value-based</li></ul>'
+  };
+  const imageBody = `<div class="shot"><div class="shot-bar"><span class="shot-logo">Acme</span><span>Pricing</span><span>Docs</span></div>
+      <div class="shot-plans"><div><b>Basic</b><span>$19</span></div><div class="pro"><b>Pro</b><span>$39</span></div><div><b>Team</b><span>$79</span></div></div></div>`;
+  const body = kind === 'slide' ? slideBodies[state.slide] || `<h4>Slide ${state.slide}</h4>` : imageBody;
+  const label = kind === 'slide' ? `Slide ${state.slide} of ${it.slides}` : 'Screenshot: a competitor pricing page';
+  return `<div class="stage stage-${kind}${state.pinMode && state.draft && state.draft.type === kind ? ' pin-mode' : ''}" data-stage="${kind}"><div class="stage-content">${body}</div><span class="stage-label">${label}</span>${pins.map((t, i) => pinMarkup(t, i + 1)).join('')}${draftPin}</div>`;
+}
+
 function renderPage() {
   const it = item(state.itemId);
   const learner = isLearner();
   const paras = itemParas(it.id)
     .map((_, p) => `<p data-para="${p}">${highlightedParagraph(it, p)}</p>`)
     .join('');
-  const pageCount = state.threads.filter(
-    (t) =>
-      t.status === 'open' &&
-      t.anchor.itemId === it.id &&
-      (t.anchor.type === 'lesson' || (t.anchor.type === 'question' && state.questionGone))
-  ).length;
   const questions = (it.questions || [])
     .filter(() => !state.questionGone)
     .map((q) => {
@@ -488,43 +523,88 @@ function renderPage() {
         ${learner ? '' : `<button class="btn btn-secondary btn-sm" data-qcomment="${q.id}" aria-label="Comment on this question">${ICON.comment}${count ? `<span>${count}</span>` : ''}</button>`}</div>`;
     })
     .join('');
-  const staffActions = learner
-    ? ''
-    : `<button class="btn btn-outline btn-sm comment-btn" id="pageComment">${ICON.comment}<span>Comment</span>${pageCount ? `<span class="count-badge">${pageCount}</span>` : ''}</button>
-       <button class="btn btn-primary btn-sm" id="publish">Publish changes</button>
-       <span class="vsep desktop-only"></span>
-       <button class="btn btn-outline btn-icon-sm desktop-only" aria-label="Edit lesson">${icon('pencil')}</button>
-       <button class="btn btn-outline btn-sm" id="versionHistory" title="See earlier versions of this page and restore one">${icon('history')}<span>Version history</span></button>`;
-  $('page').innerHTML = `
-    <div class="pg-head">
-      <div style="min-width:0"><h1 class="pg-title">${esc(it.title)}</h1>
-        <p class="pg-sub"><span>${esc(it.section)}</span><span class="sep">·</span><span>${it.kind}</span></p></div>
-      <div class="pg-actions">${staffActions}<button class="btn btn-outline btn-sm lang-btn">${icon('globe')}English</button></div>
-    </div>
+  if (learner) {
+    $('page').innerHTML = `
+    <div class="pg-head"><div style="min-width:0"><h1 class="pg-title">${esc(it.title)}</h1>
+      <p class="pg-sub"><span>${esc(it.section)}</span><span class="sep">·</span><span>${it.kind}</span></p></div></div>
     <div class="lesson-col">
-      ${learner ? '<p class="learner-note">Learner view: comments are not visible here and are not returned by the API.</p>' : ''}
+      <p class="learner-note">Learner view: comments are not visible here and are not returned by the API.</p>
       <div class="doc" id="doc">${paras}</div>
       ${it.video ? renderVideo(it) : ''}
+      ${it.slides ? `<section class="plain-block">${stageHtml(it, 'slide', true)}</section>` : ''}
+      ${it.image ? `<section class="plain-block">${stageHtml(it, 'image', true)}</section>` : ''}
       ${questions}
     </div>`;
+    return;
+  }
+  const toolIcon = (name, label) =>
+    `<button class="tb-btn" type="button" tabindex="-1" aria-label="${label}" title="${label}">${icon(name, 16)}</button>`;
+  const toolbar = `<div class="blk-toolbar" role="toolbar" aria-label="Text formatting">
+      ${toolIcon('undo', 'Undo')}${toolIcon('redo', 'Redo')}<span class="tb-sep"></span>
+      <button class="tb-btn tb-wide" type="button" tabindex="-1" aria-label="Heading">${icon('heading', 16)}${icon('chevDown', 12)}</button>
+      ${toolIcon('link', 'Link')}${toolIcon('pilcrow', 'Paragraph')}${toolIcon('bold', 'Bold')}${toolIcon('italic', 'Italic')}${toolIcon('underline', 'Underline')}${toolIcon('strike', 'Strikethrough')}${toolIcon('quote', 'Quote')}${toolIcon('code', 'Code')}${toolIcon('list', 'Bulleted list')}${toolIcon('listOrdered', 'Numbered list')}${toolIcon('image', 'Image')}
+      <span class="grow"></span>
+    </div>`;
+  const blockHead = (label, extra = '') =>
+    `<div class="blk-head"><span class="blk-grip" aria-hidden="true">${icon('grip', 14)}</span><span class="blk-label">${label}</span><span class="grow"></span>${extra}<button class="btn-ghost-icon" type="button" tabindex="-1" aria-label="More options">${icon('more', 16)}</button></div>`;
+  const blockBtn = (kind, label) => {
+    const count = blockThreads(it, kind).length;
+    return `<button class="btn-ghost-icon blk-comment" data-blockc="${kind}" aria-label="${label}" title="${label}">${ICON.comment}${count ? `<span class="count-badge corner-badge">${count}</span>` : ''}</button>`;
+  };
+  $('page').innerHTML = `
+    <div class="ed-head">
+      <h1 class="ed-title">${esc(it.title)}</h1>
+      <div class="ed-actions">
+        <span class="ed-saved">Saved</span>
+        <button class="btn btn-secondary btn-icon-sm" type="button" aria-label="Save" title="Save">${icon('save')}</button>
+        <button class="btn btn-secondary btn-icon-sm" type="button" aria-label="Settings" title="Settings">${icon('settings')}</button>
+        <button class="btn btn-primary btn-sm" id="publish" type="button">Publish</button>
+        <div class="ed-mode" role="group" aria-label="Mode"><button type="button" tabindex="-1">${icon('eye', 14)}Preview</button><button type="button" tabindex="-1" aria-pressed="true">${icon('pencil', 14)}Edit</button></div>
+      </div>
+    </div>
+    <div class="ed-col">
+      <section class="blk" aria-label="Note block">
+        ${blockHead('Note', blockBtn('note', 'Comments on this note'))}
+        <div class="blk-card">
+          ${toolbar}
+          <div class="doc" id="doc">${paras}</div>
+        </div>
+      </section>
+      ${
+        it.video
+          ? `<section class="blk blk-video" aria-label="Video block">${blockHead('Video', blockBtn('video', 'Comments on this video'))}<div class="blk-card">${renderVideo(it)}</div></section>`
+          : ''
+      }
+      ${it.slides ? `<section class="blk" aria-label="Slides block">${blockHead('Slides', blockBtn('slide', 'Comments on these slides'))}<div class="blk-card blk-pad">${stageHtml(it, 'slide', false)}</div></section>` : ''}
+      ${it.image ? `<section class="blk" aria-label="Image block">${blockHead('Image', blockBtn('image', 'Comments on this image'))}<div class="blk-card blk-pad">${stageHtml(it, 'image', false)}</div></section>` : ''}
+      ${questions ? `<section class="blk" aria-label="Questions">${blockHead('Questions')}<div class="blk-card blk-pad">${questions}</div></section>` : ''}
+      <div class="add-bar" aria-hidden="true"><span class="ab-ai">${icon('sparkles', 14)}Ask AI</span><span class="ab-sep"></span>
+        <span>${icon('note', 16)}Note</span><span>${icon('video', 16)}Video</span><span>${icon('slides', 16)}Slides</span><span>${icon('document', 16)}Document</span><span>${icon('image', 16)}Image</span></div>
+    </div>`;
+}
+
+function anchorChip(a) {
+  const kinds = {
+    course: ['content', 'Whole course'],
+    lesson: ['note', 'Note'],
+    text: ['note', 'Note'],
+    video: ['video', a.type === 'video' ? `Video · ${fmt(a.time)}` : 'Video'],
+    slide: ['slides', `Slide ${a.slide}`],
+    image: ['image', 'Image'],
+    question: ['exercise', 'Question']
+  };
+  const [name, label] = kinds[a.type];
+
+  return `<span class="tag-type">${icon(name, 12)}${label}</span>`;
 }
 
 function anchorLine(thread) {
   const unread = unreadCount(thread);
   const a = thread.anchor;
   const problem = anchorState(thread);
-  const parts = [];
-  if (a.type === 'course') parts.push('<span class="tag">Whole course</span>');
-  if (a.type === 'lesson') parts.push('<span class="tag">Page</span>');
-  if (a.type === 'text') parts.push('<span class="tag">Text</span>');
-  if (a.type === 'question') parts.push('<span class="tag">Question 1</span>');
-  if (a.type === 'video') parts.push(`<span class="tag tag-time">▶ ${fmt(a.time)}</span>`);
+  const parts = [anchorChip(a)];
   if (problem) parts.push(`<span class="tag tag-warn">${problem}</span>`);
   if (thread.status === 'resolved') parts.push('<span class="tag tag-ok">Resolved</span>');
-  if (thread.assignee && thread.status === 'open') {
-    const who = thread.assignee === state.viewer ? 'you' : member(thread.assignee).name.split(' ')[0];
-    parts.push(`<span class="tag tag-assignee">Assigned to ${who}</span>`);
-  }
   if (unread) parts.push(`<span class="tag tag-new">${unread} new</span>`);
   return `<div class="anchor-line">${parts.join('')}<button class="link-btn copy-link" data-act="copy-link" data-thread="${thread.id}" aria-label="Copy link to this thread">${ICON.link} Copy link</button></div>`;
 }
@@ -555,25 +635,13 @@ function canDelete(comment) {
 function composer(key, placeholder, button) {
   return `<div class="composer"><textarea data-key="${key}" placeholder="${placeholder}" rows="2">${esc(drafts[key] || '')}</textarea>
     <div class="composer-row"><span class="hint">@ to mention a teammate</span>
-    <span>${key === 'draft' ? '<button class="btn btn-ghost btn-sm" data-act="cancel-draft">Cancel</button>' : ''}${key.startsWith('edit') ? '<button class="btn btn-ghost btn-sm" data-act="cancel-edit">Cancel</button>' : ''}<button class="btn btn-primary btn-sm" data-act="post" data-key="${key}">${button}</button></span></div></div>`;
+    <span>${key === 'draft' ? `<button class="btn-ghost-icon" data-act="cancel-draft" aria-label="Cancel" title="Cancel">${icon('x')}</button>` : ''}${key.startsWith('edit') ? `<button class="btn-ghost-icon" data-act="cancel-edit" aria-label="Cancel" title="Cancel">${icon('x')}</button>` : ''}<button class="btn btn-primary btn-sm" data-act="post" data-key="${key}">${button}</button></span></div></div>`;
 }
 
 const formerTag = (id) =>
   isFormer(id)
     ? '<span class="former" title="No longer on this course team. Their comments stay.">Former member</span>'
     : '';
-
-function historyHtml(thread) {
-  const rows = thread.log
-    .slice()
-    .reverse()
-    .map((entry) => {
-      const who = member(entry.who);
-      return `<li><span class="avatar sm" style="background:${who.color}">${initialsOf(who.name)}</span><span><strong>${esc(who.name)}</strong>${formerTag(who.id)} ${esc(entry.text)}<span class="when"> · ${esc(entry.when)}</span></span></li>`;
-    })
-    .join('');
-  return `<ol class="hist">${rows}</ol>`;
-}
 
 function commentHtml(thread, comment) {
   const author = member(comment.author);
@@ -594,16 +662,6 @@ function commentHtml(thread, comment) {
     </div></div>`;
 }
 
-function assignHtml(thread) {
-  const options = TEAM.filter((m) => !isFormer(m.id))
-    .map(
-      (m) =>
-        `<option value="${m.id}" ${thread.assignee === m.id ? 'selected' : ''}>${esc(m.name)}${m.id === state.viewer ? ' (you)' : ''}</option>`
-    )
-    .join('');
-  return `<label class="assign"><span>Assignee</span><select data-assign="${thread.id}" aria-label="Assign this thread"><option value="">Unassigned</option>${options}</select></label>`;
-}
-
 function threadHtml(thread) {
   const active = thread.id === state.activeId;
   const a = thread.anchor;
@@ -618,81 +676,125 @@ function threadHtml(thread) {
     ${comments.map((cm) => commentHtml(thread, cm)).join('')}
     ${hidden ? `<div class="muted">${hidden} ${hidden === 1 ? 'reply' : 'replies'}</div>` : ''}
     ${state.typing && state.typing.threadId === thread.id ? liveDraftHtml(member(state.typing.userId)) : ''}
-    <div class="hist-row"><button class="btn btn-outline btn-sm" data-act="history" data-thread="${thread.id}" aria-expanded="${!!state.history[thread.id]}">${ICON.clock} ${state.history[thread.id] ? 'Hide history' : 'View history'} <span class="hist-count">${thread.log.length}</span></button></div>${state.history[thread.id] ? historyHtml(thread) : ''}
     ${active ? `<div class="reply-wrap">${composer('reply:' + thread.id, 'Reply, or @ to mention', 'Reply')}</div>` : ''}
     ${
       active || thread.status === 'resolved'
-        ? `<div class="thread-foot">${thread.status === 'resolved' ? `<span class="resolved-by">Resolved by ${esc(resolver)}${resolverTag} · ${esc(thread.resolvedAt || '')}</span>` : assignHtml(thread)}
+        ? `<div class="thread-foot">${thread.status === 'resolved' ? `<span class="resolved-by">Resolved by ${esc(resolver)}${resolverTag} · ${esc(thread.resolvedAt || '')}</span>` : ''}
       <button class="btn btn-outline btn-sm" data-act="toggle" data-thread="${thread.id}">${thread.status === 'open' ? ICON.check + ' Resolve' : 'Reopen'}</button></div>`
         : ''
     }
   </div>`;
 }
 
-function matchesFilter(thread, filter = state.filter) {
-  if (filter === 'open') return thread.status === 'open';
-  if (filter === 'resolved') return thread.status === 'resolved';
-  if (filter === 'assigned') return thread.status === 'open' && thread.assignee === state.viewer;
-  if (filter === 'mentions') return thread.comments.some((cm) => cm.mentions.some((m) => m.userId === state.viewer));
-  return thread.comments[0].author === state.viewer;
+function matchesFilter(thread) {
+  if (state.fPeople.length && !thread.comments.some((cm) => state.fPeople.includes(cm.author))) return false;
+  if (thread.status === 'resolved') return state.fResolved;
+
+  return unreadCount(thread) > 0 ? state.fUnread : state.fRead;
+}
+
+function setStatusFilter(kind) {
+  state.fUnread = kind === 'open';
+  state.fRead = kind === 'open';
+  state.fResolved = kind === 'resolved';
+  state.fPeople = [];
+}
+
+const filtersActive = () =>
+  !(
+    state.fUnread &&
+    state.fRead &&
+    !state.fResolved &&
+    !state.fPeople.length &&
+    state.showText &&
+    state.showVideo &&
+    state.showPins
+  );
+
+function toggleFilterOption(option) {
+  if (option === 'open') {
+    const on = state.fUnread || state.fRead;
+    state.fUnread = !on;
+    state.fRead = !on;
+  } else if (option === 'unread') state.fUnread = !state.fUnread;
+  else if (option === 'read') state.fRead = !state.fRead;
+  else if (option === 'resolved') state.fResolved = !state.fResolved;
+  else if (option === 'any') state.fPeople = [];
+  else if (option === 'show:text') state.showText = !state.showText;
+  else if (option === 'show:video') state.showVideo = !state.showVideo;
+  else if (option === 'show:pins') state.showPins = !state.showPins;
+  else {
+    const id = option.slice(7);
+    state.fPeople = state.fPeople.includes(id) ? state.fPeople.filter((p) => p !== id) : [...state.fPeople, id];
+  }
+}
+
+function filterPopHtml() {
+  const box = (option, label, checked, extra = '', cls = '') =>
+    `<button class="fo ${cls}" role="checkbox" aria-checked="${checked}" data-fopt="${option}"><span class="cbx">${checked ? ICON.check : ''}</span>${extra}<span>${label}</span></button>`;
+  const open = state.fUnread || state.fRead;
+  const people = TEAM.filter((m) => !isFormer(m.id))
+    .map((m) =>
+      box(
+        'person:' + m.id,
+        esc(m.name) + (m.id === state.viewer ? ' (you)' : ''),
+        state.fPeople.includes(m.id),
+        `<span class="avatar sm" style="background:${m.color}">${initialsOf(m.name)}</span>`
+      )
+    )
+    .join('');
+  return `<div class="filter-pop" role="dialog" aria-label="Filter comments">
+    <p class="fo-head">Status</p>
+    ${box('open', 'Open', open)}${box('unread', 'Unread', state.fUnread, '', 'sub')}${box('read', 'Read', state.fRead, '', 'sub')}${box('resolved', 'Resolved', state.fResolved)}
+    <div class="fo-sep"></div>
+    <p class="fo-head">Person</p>
+    ${box('any', 'Anyone', !state.fPeople.length)}${people}
+    <div class="fo-sep"></div>
+    <p class="fo-head">Show on content</p>
+    ${box('show:text', 'Text highlights', state.showText)}${box('show:video', 'Video markers', state.showVideo)}${box('show:pins', 'Image pins', state.showPins)}</div>`;
 }
 
 function renderPanel() {
   const panel = $('panel');
   const open = state.panelOpen && !isLearner();
   document.body.classList.toggle('sp-open', open);
-  const toggle = $('openPanel');
-  if (toggle) toggle.setAttribute('aria-pressed', String(open));
-  const tab = $('spTab');
-  tab.hidden = open || isLearner();
-  tab.innerHTML = `${ICON.comment}<span>Comments</span><span class="count-badge">${openCount()}</span>${hasUnread() ? '<span class="unread-dot"></span>' : ''}`;
   if (!open) {
     panel.innerHTML = '';
     return;
   }
-  const filters = [
-    ['open', 'Open'],
-    ['resolved', 'Resolved'],
-    ['mentions', 'Mentions me'],
-    ['assigned', 'Assigned to me'],
-    ['mine', 'Created by me']
-  ];
-  const visible = state.threads.filter((t) => matchesFilter(t));
+  const block = state.blockFilter;
+  const inBlock = (t) => !block || (t.anchor.itemId === state.itemId && blockKindOf(t) === block);
+  const visible = state.threads.filter((t) => matchesFilter(t) && inBlock(t));
   const groups = [{ title: 'General', list: visible.filter((t) => !t.anchor.itemId) }].concat(
     ITEMS.map((it) => ({ title: it.title, list: visible.filter((t) => t.anchor.itemId === it.id) }))
   );
   const draft = state.draft;
+  const canPin = draft && draft.type === 'image';
+  const pinButton = canPin
+    ? `<button class="btn btn-outline btn-sm pin-spot" data-act="pin-spot" aria-pressed="${state.pinMode}">${icon('mapPin', 14)}${state.pinMode ? `Click the ${draft.type} to place it` : draft.x != null ? 'Move pin' : 'Pin to a spot'}</button>`
+    : '';
   const draftHtml = draft
-    ? `<div class="new-box">${draft.type === 'text' ? `<blockquote class="quote">${esc(draft.quote)}</blockquote>` : ''}
-        ${draft.type === 'video' ? `<div class="anchor-line"><span class="tag tag-time">▶ ${fmt(draft.time)}</span></div>` : ''}
-        ${draft.type === 'course' ? '<div class="anchor-line"><span class="tag">Whole course</span></div>' : ''}
-        ${draft.type === 'lesson' ? '<div class="anchor-line"><span class="tag">Page</span></div>' : ''}
-        ${draft.type === 'question' ? '<div class="anchor-line"><span class="tag">Question 1</span></div>' : ''}
-        <label class="assign draft-assign"><span>Assign to</span><select data-draft-assign aria-label="Assign this thread"><option value="">Nobody yet</option>${TEAM.filter(
-          (m) => !isFormer(m.id)
-        )
-          .map(
-            (m) =>
-              `<option value="${m.id}" ${state.draftAssignee === m.id ? 'selected' : ''}>${esc(m.name)}${m.id === state.viewer ? ' (you)' : ''}</option>`
-          )
-          .join('')}</select></label>
-        ${composer('draft', 'Write a comment, @ to mention a teammate', 'Comment')}</div>`
+    ? `<div class="new-box"><div class="anchor-line">${anchorChip(draft)}${draft.x != null ? '<span class="tag">Pinned</span>' : ''}</div>${draft.type === 'text' ? `<blockquote class="quote">${esc(draft.quote)}</blockquote>` : ''}
+        ${composer('draft', block ? `Comment on ${block === 'slide' ? 'slide ' + state.slide : BLOCK_NAMES[block].toLowerCase()}, @ to mention a teammate` : 'Write a comment, @ to mention a teammate', 'Comment')}${pinButton}</div>`
+    : '';
+  const blockHead = block
+    ? `<div class="block-head"><span>${BLOCK_NAMES[block]} · ${visible.length} ${visible.length === 1 ? 'comment' : 'comments'}</span><button class="link-btn" data-act="show-all">Show all</button></div>`
     : '';
   const body = groups
     .filter((g) => g.list.length)
     .map((g) => `<div class="group-title">${esc(g.title)}</div>${g.list.map((t) => threadHtml(t)).join('')}`)
     .join('');
-  panel.innerHTML = `<div class="sp-head"><div><div class="t">Comments</div><div class="s"><span class="live-pill" title="Comments from teammates appear without refreshing"><i></i>Live</span>${openCount()} open · only admins and tutors see these</div></div>
-      <div class="acts">${hasUnread() ? `<button class="btn btn-ghost btn-sm" data-act="mark-all-read" title="Mark all read" aria-label="Mark all read">${ICON.check}<span class="lbl">Mark all read</span></button>` : ''}<button class="btn btn-outline btn-sm" data-act="new-general" title="New comment" aria-label="New comment">${ICON.comment}<span class="lbl">New comment</span></button>
-      <button class="btn btn-outline btn-sm" data-act="close-panel" aria-label="Close comments panel" title="Close (Esc)">${icon('x', 14)}<span class="lbl">Close</span></button></div></div>
-    <div class="sp-main" role="tablist">
-      <button role="tab" data-ptab="threads" aria-selected="${state.panelTab === 'threads'}">Threads</button>
-      <button role="tab" data-ptab="activity" aria-selected="${state.panelTab === 'activity'}">Activity${state.activityDot && state.panelTab !== 'activity' ? '<span class="unread-dot" title="New activity"></span>' : ''}</button></div>
+  const inHistory = state.panelTab === 'activity';
+  const tipBtn = (tip, extra, attrs, svg, dot = '') =>
+    `<button class="btn btn-outline btn-icon-sm tip ${extra}" data-tip="${tip}" aria-label="${tip}" ${attrs}>${svg}${dot}</button>`;
+  panel.innerHTML = `<div class="sp-head"><div class="sp-title"><div class="t">${inHistory ? 'Comment history' : 'Comments'}</div>
+      <div class="sp-icons">${tipBtn('New comment', '', 'data-act="new-general"', icon('plus'))}${inHistory ? '' : tipBtn('Filter comments', '', `data-act="toggle-filter" aria-pressed="${state.filterOpen}"`, icon('listFilter'), filtersActive() ? '<span class="unread-dot" aria-hidden="true"></span>' : '')}${tipBtn('Comment history', '', `data-act="toggle-history" aria-pressed="${inHistory}"`, icon('history'), state.activityDot && !inHistory ? '<span class="unread-dot" aria-hidden="true"></span>' : '')}${tipBtn('Close (Esc)', 'tip-end', 'data-act="close-panel"', icon('x'))}</div></div>
+      ${state.filterOpen && !inHistory ? filterPopHtml() : ''}
+      <div class="s"><span class="live-pill" title="Comments from teammates appear without refreshing"><i></i>Live</span>${openCount()} open · only admins and tutors see these${hasUnread() ? '<button class="link-btn mark-read" data-act="mark-all-read">Mark all read</button>' : ''}</div></div>
     ${
-      state.panelTab === 'activity'
+      inHistory
         ? activityHtml()
-        : `<div class="sp-tools"><div class="sp-tabs">${filters.map(([k, l]) => `<button data-filter="${k}" aria-pressed="${state.filter === k}">${l}</button>`).join('')}</div></div>
-    <div class="panel-body">${draftHtml}${body || (draft ? '' : '<div class="empty">No threads here.</div>')}</div>`
+        : `<div class="panel-body">${blockHead}${draftHtml}${body || (draft ? '' : '<div class="empty">No threads match these filters.</div>')}</div>`
     }`;
 }
 
@@ -703,29 +805,57 @@ function renderAll() {
   renderPanel();
 }
 
-function startDraft(anchor) {
+function startDraft(anchor, keepBlock = false) {
   state.draft = anchor;
-  state.draftAssignee = '';
+  state.pinMode = false;
+  if (!keepBlock) state.blockFilter = null;
   state.panelTab = 'threads';
   state.panelOpen = true;
+  renderPage();
   renderPanel();
   const box = document.querySelector('.new-box textarea');
   if (box) box.focus();
 }
 
-function goTo(threadId) {
+function openBlockComments(kind) {
+  const base = { itemId: state.itemId };
+  const anchors = {
+    note: { type: 'lesson', ...base },
+    video: { type: 'video', ...base, time: state.time },
+    slide: { type: 'slide', ...base, slide: state.slide },
+    image: { type: 'image', ...base }
+  };
+  if (kind === 'video') setPlaying(false);
+  state.blockFilter = kind;
+  startDraft(anchors[kind], true);
+}
+
+function goTo(threadId, opts = {}) {
   const thread = state.threads.find((t) => t.id === threadId);
   if (!thread) return;
   state.activeId = threadId;
   state.panelOpen = true;
   state.panelTab = 'threads';
   markSeen(thread);
+  state.notifs.forEach((n) => {
+    if (n.userId === state.viewer && n.threadId === thread.id) n.read = true;
+  });
   history.replaceState(null, '', '#thread=' + threadId);
   if (thread.anchor.itemId) state.itemId = thread.anchor.itemId;
+  if (state.blockFilter && !(thread.anchor.itemId === state.itemId && blockKindOf(thread) === state.blockFilter))
+    state.blockFilter = null;
+  if (thread.anchor.type === 'slide') state.slide = thread.anchor.slide;
   if (thread.anchor.type === 'video' && thread.anchor.assetId === state.videoAsset) {
     state.time = thread.anchor.time;
   }
-  if (!state.filter || !matchesFilter(thread)) state.filter = thread.status === 'resolved' ? 'resolved' : 'open';
+  if (!matchesFilter(thread)) {
+    state.fPeople = [];
+    if (thread.status === 'resolved') state.fResolved = true;
+    else {
+      state.fUnread = true;
+      state.fRead = true;
+    }
+  }
   renderAll();
   requestAnimationFrame(() => {
     const mark = document.querySelector(`.hl[data-ids~="${threadId}"]`);
@@ -736,7 +866,11 @@ function goTo(threadId) {
       question.classList.add('flash');
     }
     const card = document.querySelector(`.thread[data-thread="${threadId}"]`);
-    if (card) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const body = card && card.closest('.panel-body');
+    if (body) {
+      const offset = card.getBoundingClientRect().top - body.getBoundingClientRect().top;
+      body.scrollTop += offset - (body.clientHeight - card.offsetHeight) / 2;
+    }
   });
 }
 
@@ -745,7 +879,6 @@ function toggleThread(thread) {
     thread.status = 'resolved';
     thread.resolvedBy = state.viewer;
     thread.resolvedAt = 'just now';
-    thread.assignee = null;
     logEvent(thread, state.viewer, 'resolved this thread');
     notify(thread.comments[0].author, thread.id, `${me().name} resolved your thread`);
     toast('Resolved. The highlight and badge are gone.');
@@ -768,16 +901,11 @@ function post(key) {
       { id: 'c' + cid++, author, body: value, mentions, when: 'just now', edited: false }
     ]);
     if (thread.anchor.type === 'video') thread.anchor.assetId = state.videoAsset;
-    if (state.draftAssignee) {
-      thread.assignee = state.draftAssignee;
-      logEvent(thread, author, `assigned this to ${member(state.draftAssignee).name}`);
-      notify(state.draftAssignee, thread.id, `${me().name} assigned you a thread`);
-    }
     state.threads.push(thread);
     mentions.forEach((m) => notify(m.userId, thread.id, `${me().name} mentioned you`));
     state.draft = null;
-    state.draftAssignee = '';
-    state.filter = 'open';
+    state.pinMode = false;
+    setStatusFilter('open');
     state.activeId = thread.id;
     toastMentions(mentions);
   } else if (key.startsWith('reply:')) {
@@ -787,7 +915,6 @@ function post(key) {
     const mentioned = new Set(mentions.map((m) => m.userId));
     mentions.forEach((m) => notify(m.userId, thread.id, `${me().name} mentioned you`));
     const people = new Set(thread.comments.flatMap((cm) => [cm.author, ...cm.mentions.map((m) => m.userId)]));
-    if (thread.assignee) people.add(thread.assignee);
     people.forEach((userId) => {
       if (!mentioned.has(userId)) notify(userId, thread.id, `${me().name} replied in a thread you are in`);
     });
@@ -895,26 +1022,6 @@ $('panel').addEventListener('input', (e) => {
   showMentions(e.target);
 });
 
-$('panel').addEventListener('change', (e) => {
-  if ('draftAssign' in e.target.dataset) {
-    state.draftAssignee = e.target.value;
-    return;
-  }
-  const threadId = e.target.dataset.assign;
-  if (!threadId) return;
-  const thread = state.threads.find((t) => t.id === threadId);
-  const assignee = e.target.value || null;
-  thread.assignee = assignee;
-  logEvent(thread, state.viewer, assignee ? `assigned this to ${member(assignee).name}` : 'unassigned this thread');
-  if (assignee) {
-    notify(assignee, thread.id, `${me().name} assigned you a thread`);
-    toast(assignee === state.viewer ? 'Assigned to you' : `Assigned to ${member(assignee).name}. They were notified.`);
-  } else {
-    toast('Thread unassigned');
-  }
-  renderAll();
-});
-
 $('panel').addEventListener('keydown', (e) => {
   if (e.target.dataset.key) {
     if (mentionState) {
@@ -947,9 +1054,10 @@ $('panel').addEventListener('keydown', (e) => {
 $('panel').addEventListener('click', (e) => {
   const mention = e.target.closest('[data-mention]');
   if (mention) return pickMention(mention.dataset.mention);
-  const filter = e.target.closest('[data-filter]');
-  if (filter) {
-    state.filter = filter.dataset.filter;
+  const option = e.target.closest('[data-fopt]');
+  if (option) {
+    toggleFilterOption(option.dataset.fopt);
+    if (option.dataset.fopt.startsWith('show:')) renderPage();
     return renderPanel();
   }
   const act = e.target.closest('[data-act]');
@@ -957,10 +1065,20 @@ $('panel').addEventListener('click', (e) => {
     const { act: name, thread: threadId, comment: commentId, key } = act.dataset;
     const thread = state.threads.find((t) => t.id === threadId);
     if (name === 'post') post(key);
+    if (name === 'pin-spot') {
+      state.pinMode = !state.pinMode;
+      renderPage();
+      renderPanel();
+    }
+    if (name === 'show-all') {
+      state.blockFilter = null;
+      renderPanel();
+    }
     if (name === 'cancel-draft') {
       delete drafts.draft;
       state.draft = null;
-      state.draftAssignee = '';
+      state.pinMode = false;
+      renderPage();
       renderPanel();
     }
     if (name === 'cancel-edit') {
@@ -982,6 +1100,17 @@ $('panel').addEventListener('click', (e) => {
       return renderAll();
     }
     if (name === 'new-general') startDraft({ type: 'course', itemId: null });
+    if (name === 'toggle-filter') {
+      state.filterOpen = !state.filterOpen;
+      return renderPanel();
+    }
+    if (name === 'toggle-history') {
+      state.filterOpen = false;
+      state.panelTab = state.panelTab === 'activity' ? 'threads' : 'activity';
+      if (state.panelTab === 'activity') state.activityDot = false;
+      return renderPanel();
+    }
+    if (name === 'open-versions') return openVersions(true);
     if (name === 'edit') {
       state.editing = `edit:${threadId}:${commentId}`;
       state.activeId = threadId;
@@ -999,10 +1128,6 @@ $('panel').addEventListener('click', (e) => {
       renderAll();
     }
     if (name === 'toggle') toggleThread(thread);
-    if (name === 'history') {
-      state.history[threadId] = !state.history[threadId];
-      renderPanel();
-    }
     return;
   }
   const card = e.target.closest('.thread');
@@ -1014,11 +1139,6 @@ function hoverThread(threadId, on) {
     .querySelectorAll(`.hl[data-ids~="${threadId}"], .marker[data-marker="${threadId}"]`)
     .forEach((el) => el.classList.toggle('hover', on));
 }
-
-$('spTab').addEventListener('click', () => {
-  state.panelOpen = true;
-  renderPanel();
-});
 
 $('panel').addEventListener('mouseover', (e) => {
   const card = e.target.closest('.thread');
@@ -1045,11 +1165,35 @@ $('page').addEventListener('click', (e) => {
     setPlaying(false);
     return startDraft({ type: 'video', itemId: state.itemId, time: state.time });
   }
+  const pin = e.target.closest('[data-pin]');
+  if (pin) return goTo(pin.dataset.pin);
+  const thumb = e.target.closest('[data-slide]');
+  if (thumb) {
+    state.slide = Number(thumb.dataset.slide);
+    return renderPage();
+  }
+  const stage = e.target.closest('[data-stage]');
+  if (stage && !isLearner() && stage.dataset.stage === 'image') {
+    const kind = stage.dataset.stage;
+    if (!state.draft || state.draft.type !== kind)
+      return toast('Use the comment icon above this block to add a comment');
+    const rect = stage.getBoundingClientRect();
+    state.draft.x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    state.draft.y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+    state.draft.slide = state.slide;
+    state.pinMode = false;
+    renderPage();
+    return renderPanel();
+  }
+  const blockBtn = e.target.closest('[data-blockc]');
+  if (blockBtn) return openBlockComments(blockBtn.dataset.blockc);
   if (e.target.closest('#publish')) return openPublish();
-  if (e.target.closest('#versionHistory')) return openVersions(true);
-  if (e.target.closest('#pageComment')) return startDraft({ type: 'lesson', itemId: state.itemId });
   const q = e.target.closest('[data-qcomment]');
   if (q) return startDraft({ type: 'question', itemId: state.itemId, questionId: q.dataset.qcomment });
+});
+
+$('page').addEventListener('mousedown', (e) => {
+  if (e.target.closest('.tb-btn')) e.preventDefault();
 });
 
 $('page').addEventListener('input', (e) => {
@@ -1098,26 +1242,17 @@ $('side').addEventListener('click', (e) => {
   e.preventDefault();
   setPlaying(false);
   state.itemId = btn.dataset.item;
+  state.blockFilter = null;
   state.time = 0;
+  state.slide = 3;
   renderAll();
 });
 
 $('head').addEventListener('click', (e) => {
   if (e.target.closest('#openPanel')) {
     state.panelOpen = !state.panelOpen;
+    renderHeader();
     return renderPanel();
-  }
-  if (e.target.closest('#bell')) {
-    state.bellOpen = !state.bellOpen;
-    return renderHeader();
-  }
-  const notifBtn = e.target.closest('[data-notif]');
-  if (notifBtn) {
-    const notif = state.notifs.find((n) => n.id === notifBtn.dataset.notif);
-    notif.read = true;
-    state.bellOpen = false;
-    if (!state.threads.find((t) => t.id === notif.threadId)) return renderHeader();
-    return goTo(notif.threadId);
   }
   if (e.target.closest('[data-act="toggle-sidebar"]')) document.body.classList.toggle('side-collapsed');
 });
@@ -1153,9 +1288,9 @@ function closeDialog() {
 }
 
 const HISTORY_RANGES = [
-  { days: 7, label: 'Last week' },
-  { days: 14, label: 'Last 2 weeks' },
-  { days: 30, label: 'Last month' }
+  { days: 7, label: 'Last 7 days' },
+  { days: 14, label: 'Last 14 days' },
+  { days: 30, label: 'Last 30 days' }
 ];
 
 function ageInDays(when) {
@@ -1167,161 +1302,87 @@ function ageInDays(when) {
   return Number(match[1]) * perUnit[match[2]];
 }
 
-function dayBucket(age) {
-  if (age < 1) return 'Today';
-  if (age < 2) return 'Yesterday';
-  if (age < 8) return 'Earlier this week';
-  if (age < 15) return 'Last week';
-
-  return 'Weeks ago';
+function historyEvents() {
+  return state.threads
+    .flatMap((thread) => thread.log.map((entry) => ({ thread, entry, age: ageInDays(entry.when) })))
+    .filter(({ entry, age }) => age <= state.histDays && (state.histPerson === 'all' || entry.who === state.histPerson))
+    .sort((a, b) => a.age - b.age);
 }
 
-function eventKind(text) {
-  if (text.startsWith('started')) return 'started';
-  if (text.startsWith('replied')) return 'reply';
-  if (text.startsWith('resolved')) return 'resolved';
-  if (text.startsWith('reopened')) return 'reopened';
-  if (text.includes('assign')) return 'assigned';
-  return 'changed';
+function threadLabel(thread) {
+  const text = thread.anchor.quote || thread.comments[0].body;
+
+  return `“${text.length > 30 ? text.slice(0, 30) + '…' : text}”`;
 }
 
-const HISTORY_KINDS = [
-  { id: 'all', label: 'All events' },
-  { id: 'started', label: 'Started' },
-  { id: 'reply', label: 'Replies' },
-  { id: 'resolved', label: 'Resolved' },
-  { id: 'assigned', label: 'Assigned' }
-];
+function threadPlace(thread) {
+  const a = thread.anchor;
+  if (a.type === 'video') return `Video · ${fmt(a.time)}`;
+  if (a.type === 'text') return 'Note';
+  if (a.type === 'question') return 'Question';
+  if (a.type === 'slide') return `Slide ${a.slide}`;
+  if (a.type === 'image') return 'Image';
+  if (a.type === 'course') return 'Whole course';
 
-const EVENT_VERB = {
-  started: 'started',
-  reply: 'replied',
-  resolved: 'resolved',
-  reopened: 'reopened',
-  assigned: 'assigned',
-  changed: 'updated'
-};
-
-function historyCards() {
-  const query = state.histQuery.trim().toLowerCase();
-  const cards = [];
-  state.threads.forEach((thread) => {
-    const events = thread.log
-      .map((entry) => ({ entry, age: ageInDays(entry.when), kind: eventKind(entry.text) }))
-      .filter(
-        ({ entry, age, kind }) =>
-          age <= state.histDays &&
-          (state.histPerson === 'all' || entry.who === state.histPerson) &&
-          (state.histKind === 'all' || kind === state.histKind)
-      );
-    if (!events.length) return;
-    const place = thread.anchor.itemId ? item(thread.anchor.itemId).title : 'Whole course';
-    const haystack =
-      `${place} ${thread.anchor.quote || ''} ${thread.comments.map((c) => c.body).join(' ')}`.toLowerCase();
-    if (query && !haystack.includes(query)) return;
-    cards.push({ thread, place, events, age: Math.min(...events.map((e) => e.age)) });
-  });
-
-  return cards.sort((a, b) => a.age - b.age);
+  return 'Lesson';
 }
 
-function historyCardHtml({ thread, place, events }) {
-  const quote = thread.anchor.quote || (thread.anchor.type === 'video' ? 'Video moment' : '');
-  const lines = events
-    .slice()
-    .reverse()
-    .map(({ entry, kind }) => {
-      const who = member(entry.who);
-      return `<li class="hd-ev"><span class="avatar" style="background:${who.color}">${initialsOf(who.name)}</span><span class="hd-ev-text"><strong>${esc(who.name)}</strong>${formerTag(who.id)} <span class="hd-verb hd-${kind}">${esc(entry.text)}</span></span><span class="hd-when">${esc(entry.when)}</span></li>`;
-    })
-    .join('');
-  const resolved = thread.status === 'resolved';
+function eventSentence({ thread, entry }) {
+  const label = `<b>${esc(threadLabel(thread))}</b>`;
+  const text = entry.text;
+  if (text.startsWith('started')) return `started ${label}`;
+  if (text === 'replied') return `replied to ${label}`;
+  if (text.startsWith('resolved')) return `resolved ${label}`;
+  if (text.startsWith('reopened')) return `reopened ${label}`;
+  if (/^(added|removed) /.test(text)) return esc(text);
 
-  return `<article class="hd-card">
-    <button class="hd-head" data-hist="goto" data-thread="${thread.id}">
-      <span class="hd-badge ${resolved ? 'hd-badge-res' : 'hd-badge-open'}">${resolved ? 'Resolved' : 'Open'}</span>
-      <span class="hd-place">${esc(place)}</span><span class="hd-go" aria-hidden="true">›</span>
-    </button>
-    ${quote ? `<blockquote class="hd-quote">${esc(quote)}</blockquote>` : `<p class="hd-quote">${esc(threadSummary(thread.id))}</p>`}
-    <ol class="hd-events">${lines}</ol></article>`;
+  return `${esc(text)} on ${label}`;
+}
+
+function historyRowHtml(ev) {
+  const who = member(ev.entry.who);
+  const resolved = ev.entry.text.startsWith('resolved');
+
+  return `<button class="hv-row" data-hist="goto" data-thread="${ev.thread.id}"><span class="hv-dot ${resolved ? 'ok' : ''}"></span>
+    <span class="hv-text"><span><strong>${esc(who.name.split(' ')[0])}</strong>${formerTag(who.id)} ${eventSentence(ev)}</span>
+    <small>${threadPlace(ev.thread)} · ${esc(ev.entry.when)}</small></span></button>`;
 }
 
 function activityHtml() {
-  const cards = historyCards();
-  const eventCount = cards.reduce((sum, card) => sum + card.events.length, 0);
-  const rangeChips = HISTORY_RANGES.map(
-    (range) =>
-      `<button data-hist="range" data-days="${range.days}" aria-pressed="${state.histDays === range.days}">${range.label}</button>`
-  ).join('');
+  const events = historyEvents();
   const people = TEAM.map(
     (m) =>
-      `<option value="${m.id}" ${state.histPerson === m.id ? 'selected' : ''}>${esc(m.name)}${isFormer(m.id) ? ' (former)' : ''}</option>`
+      `<option value="${m.id}" ${state.histPerson === m.id ? 'selected' : ''}>${esc(m.name.split(' ')[0])}${isFormer(m.id) ? ' (former)' : ''}</option>`
   ).join('');
-  const kinds = HISTORY_KINDS.map(
-    (k) => `<option value="${k.id}" ${state.histKind === k.id ? 'selected' : ''}>${k.label}</option>`
+  const ranges = HISTORY_RANGES.map(
+    (r) => `<option value="${r.days}" ${state.histDays === r.days ? 'selected' : ''}>${r.label}</option>`
   ).join('');
+  const body = events.length
+    ? events.map(historyRowHtml).join('')
+    : '<p class="hc-empty">No activity matches these filters.</p>';
 
-  const groups = [];
-  cards.forEach((card) => {
-    const label = dayBucket(card.age);
-    const last = groups[groups.length - 1];
-    if (last && last.label === label) last.cards.push(card);
-    else groups.push({ label, cards: [card] });
-  });
-  const body = groups.length
-    ? groups
-        .map(
-          (g) =>
-            `<h3 class="hc-day">${g.label}<span>${g.cards.length}</span></h3>${g.cards.map(historyCardHtml).join('')}`
-        )
-        .join('')
-    : '<p class="hc-empty">No comment activity matches these filters.</p>';
-
-  return `<div class="hd-filters">
-      <div class="range-switch" role="group" aria-label="Time range">${rangeChips}</div>
-      <div class="hd-selects"><select data-hist="person" aria-label="Person"><option value="all">Everyone</option>${people}</select>
-      <select data-hist="kind" aria-label="Event type">${kinds}</select></div>
-      <label class="hd-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="search" data-hist="query" placeholder="Search comments" value="${esc(state.histQuery)}" aria-label="Search comments" /></label>
-    </div>
-    <div class="panel-body hd-body">${body}</div>
-    <footer class="hd-foot">${cards.length} ${cards.length === 1 ? 'thread' : 'threads'} · ${eventCount} ${eventCount === 1 ? 'event' : 'events'}</footer>`;
+  return `<div class="hv-filters"><select data-hist="person" aria-label="Person"><option value="all">Everyone</option>${people}</select>
+      <select data-hist="range" aria-label="Time range">${ranges}</select></div>
+    <div class="panel-body hv-body">${body}</div>
+    <footer class="hv-foot"><span>${events.length} ${events.length === 1 ? 'event' : 'events'}</span><button class="link-btn" data-act="open-versions">Lesson version history</button></footer>`;
 }
 
 function refreshActivity() {
-  const body = document.querySelector('#panel .hd-body');
+  const body = document.querySelector('#panel .hv-body');
   const scroll = body ? body.scrollTop : 0;
-  const focusKey = document.activeElement?.dataset?.hist;
   renderPanel();
-  document.querySelector('#panel .hd-body').scrollTop = scroll;
-  if (focusKey === 'query') {
-    const input = document.querySelector('#panel input[data-hist="query"]');
-    input.focus();
-    input.setSelectionRange(input.value.length, input.value.length);
-  }
+  document.querySelector('#panel .hv-body').scrollTop = scroll;
 }
 
 $('panel').addEventListener('click', (e) => {
-  const tab = e.target.closest('[data-ptab]');
-  if (tab) {
-    state.panelTab = tab.dataset.ptab;
-    if (state.panelTab === 'activity') state.activityDot = false;
-    return renderPanel();
-  }
-  const action = e.target.closest('button[data-hist]');
-  if (!action) return;
-  if (action.dataset.hist === 'range') {
-    state.histDays = Number(action.dataset.days);
-    return refreshActivity();
-  }
-  if (action.dataset.hist === 'goto') goTo(action.dataset.thread);
+  const row = e.target.closest('button[data-hist="goto"]');
+  if (row) goTo(row.dataset.thread);
 });
 
 $('panel').addEventListener('input', (e) => {
   const field = e.target.dataset.hist;
-  if (field === 'query') state.histQuery = e.target.value;
+  if (field === 'range') state.histDays = Number(e.target.value);
   else if (field === 'person') state.histPerson = e.target.value;
-  else if (field === 'kind') state.histKind = e.target.value;
   else return;
   refreshActivity();
 });
@@ -1419,7 +1480,7 @@ function restoreVersion() {
   state.paras[ITEMS.findIndex((it) => it.id === state.itemId)] = cloneParas(selected.paras);
   pushVersion(state.itemId, `Restored “${selected.label}”`);
   closeDialog();
-  state.filter = 'open';
+  setStatusFilter('open');
   renderAll();
   toast(
     lost.length
@@ -1441,14 +1502,24 @@ $('dialog').addEventListener('click', (e) => {
   closeDialog();
   if (name === 'publish') toast(open.length ? `Published with ${open.length} open comments` : 'Published');
   if (name === 'review') {
-    state.filter = 'open';
+    setStatusFilter('open');
     goTo(open[0].id);
   }
+});
+
+document.addEventListener('click', (e) => {
+  if (!state.filterOpen || e.target.closest('.filter-pop, [data-act="toggle-filter"]')) return;
+  state.filterOpen = false;
+  renderPanel();
 });
 
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (!$('dialog').hidden) return closeDialog();
+  if (state.filterOpen) {
+    state.filterOpen = false;
+    return renderPanel();
+  }
   if (state.panelOpen && !mentionState && !e.target.closest?.('textarea')) {
     state.panelOpen = false;
     renderPanel();
@@ -1467,58 +1538,23 @@ function removeMember(userId) {
   } else {
     removedIds.push(userId);
     state.threads.forEach((t) => {
-      const involved = t.comments.some((cm) => cm.author === userId) || t.assignee === userId;
-      if (t.assignee === userId) {
-        t.assignee = null;
-        logEvent(t, 'u1', `removed ${person.name} from the course team, so the assignee was cleared`);
-      } else if (involved) {
+      if (t.comments.some((cm) => cm.author === userId))
         logEvent(t, 'u1', `removed ${person.name} from the course team`);
-      }
     });
     if (state.viewer === userId) setViewer('u1');
-    state.filter = 'open';
+    setStatusFilter('open');
     toast(`${person.name} was removed. Their comments stay, tagged "Former member".`);
   }
-  syncRemoveButton();
   renderAll();
 }
-
-function syncRemoveButton() {
-  const gone = isFormer('u3');
-  $('simRemove').textContent = gone ? 'Add Tunde back' : 'Remove Tunde from course';
-  const option = $('viewAs').querySelector('option[value="u3"]');
-  option.disabled = gone;
-  option.textContent = gone ? 'Tunde (removed, sees nothing)' : 'Tunde (Tutor)';
-}
-
-$('simRemove').addEventListener('click', () => removeMember('u3'));
 
 function setViewer(userId) {
   state.viewer = userId;
-  $('viewAs').value = userId;
   state.draft = null;
   state.editing = null;
   state.activeId = null;
-  state.bellOpen = false;
   renderAll();
 }
-
-$('viewAs').addEventListener('change', (e) => setViewer(e.target.value));
-
-$('help').addEventListener('click', () => {
-  $('dialog').innerHTML = `<div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
-    <h2 id="dlgTitle">How to use this prototype</h2>
-    <p>This is a mock of the lesson page with the new Comments feature added. Nothing here is saved. <strong>Easiest start: press Play guided story in the top bar</strong> and just keep pressing Next. Or try it yourself with the steps below.</p>
-    <ul class="dlg-list">
-      <li><strong>1. Pick who you are</strong><span>The top bar's <em>Who am I?</em> menu. Try Ellena, then Ada, then a learner. A learner sees no comments at all.</span></li>
-      <li><strong>2. Leave a comment</strong><span>Select a sentence in the lesson and click Comment, or pause the video and click Comment at. Type @ to mention someone.</span></li>
-      <li><strong>3. Switch person to see it arrive</strong><span>Change <em>Who am I?</em> to the person you mentioned and open the bell. They got a notification.</span></li>
-      <li><strong>4. Try "What if the course changes?"</strong><span>These buttons pretend someone edited the course. The comments stay and say what changed instead of disappearing.</span></li>
-      <li><strong>5. Made a mess?</strong><span>Click <em>Start over</em>.</span></li>
-    </ul>
-    <div class="dialog-foot"><span></span><button class="btn btn-primary btn-sm" data-dlg="close">Got it</button></div></div>`;
-  $('dialog').hidden = false;
-});
 
 function deleteSentence() {
   const idx = ITEMS.findIndex((it) => it.id === 'l1');
@@ -1527,26 +1563,9 @@ function deleteSentence() {
   if (state.paras[idx][1] !== before) pushVersion('l1', 'Deleted a sentence');
   toast('Sentence deleted. The thread stays and shows the original quote.');
   state.itemId = 'l1';
-  state.filter = 'open';
+  setStatusFilter('open');
   renderAll();
 }
-
-$('simDelete').addEventListener('click', deleteSentence);
-
-$('simVideo').addEventListener('click', () => {
-  state.videoAsset = 'v2';
-  state.itemId = 'l1';
-  toast('Video replaced. Timestamp threads are marked "Video has changed".');
-  renderAll();
-});
-
-$('simQuestion').addEventListener('click', () => {
-  state.questionGone = true;
-  state.itemId = 'e1';
-  state.filter = 'open';
-  toast('Question deleted. Its threads moved up to the exercise page, marked "Question was removed".');
-  renderAll();
-});
 
 const LIVE_LINES = [
   'Just checked this on mobile and it reads fine there.',
@@ -1688,21 +1707,14 @@ async function liveComment(authorId, threadId) {
   cursors.forEach((el) => el.remove());
 }
 
-$('simLive').addEventListener('click', () => liveComment());
-
 function resetAll() {
   setPlaying(false);
-  syncRemoveButton();
   state.questionGone = false;
   removedIds.length = 0;
-  state.history = {};
   state.histDays = 7;
   state.histPerson = 'all';
-  state.histKind = 'all';
-  state.histQuery = '';
   state.panelTab = 'threads';
   state.activityDot = true;
-  state.draftAssignee = '';
   state.versions = seedVersions();
   state.threads = seed();
   state.notifs = seedNotifs();
@@ -1712,35 +1724,16 @@ function resetAll() {
   state.draft = null;
   state.editing = null;
   state.activeId = null;
-  state.bellOpen = false;
   state.itemId = 'l1';
   state.panelOpen = true;
   state.time = 0;
+  state.slide = 3;
   state.typing = null;
-  state.filter = 'open';
+  setStatusFilter('open');
   Object.keys(drafts).forEach((k) => delete drafts[k]);
   history.replaceState(null, '', location.pathname);
   renderAll();
 }
-
-$('reset').addEventListener('click', () => {
-  stopStory();
-  resetAll();
-});
-
-document.addEventListener('click', (e) => {
-  if (!state.bellOpen || e.target.closest('.bell-wrap')) return;
-  state.bellOpen = false;
-  renderHeader();
-});
-
-$('theme').value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-$('theme').addEventListener('change', (e) => {
-  document.documentElement.classList.toggle('dark', e.target.value === 'dark');
-  try {
-    localStorage.setItem('commentsProtoTheme', e.target.value);
-  } catch (err) {}
-});
 
 const sleep = (ms) =>
   new Promise((resolve, reject) => setTimeout(() => (story.on ? resolve() : reject(new Error('story stopped'))), ms));
@@ -1764,7 +1757,7 @@ function spot(selector) {
   setTimeout(() => el.classList.remove('spot'), 2600);
 }
 
-const story = { on: false, running: false, i: -1, textId: null, videoId: null };
+const story = { on: false, running: false, i: -1, textId: null, videoId: null, imageId: null };
 
 const STORY = [
   {
@@ -1774,12 +1767,12 @@ const STORY = [
       resetAll();
       setViewer('u1');
       await sleep(300);
-      spot('#openPanel');
+      spot('#panel');
     }
   },
   {
     title: 'Comment on a sentence',
-    say: 'Ellena selects a sentence, clicks Comment and writes a note. Typing @ lets her pick a teammate to mention. The Assign to box above the note makes Ada the owner, so everyone knows who should act.',
+    say: 'Ellena selects a sentence, clicks Comment and writes a note. Typing @ lets her pick a teammate to mention.',
     run: async () => {
       startDraft({
         type: 'text',
@@ -1787,15 +1780,11 @@ const STORY = [
         quote: 'we will build a simple process to set it with evidence'
       });
       await typeInto('.new-box textarea', 'Can we show a real example of "evidence" here? @Ada Obi');
-      await sleep(400);
-      state.draftAssignee = 'u2';
-      renderPanel();
-      spot('.draft-assign');
     }
   },
   {
     title: 'Post it',
-    say: 'The sentence is now highlighted in the lesson and the thread sits in the panel with "Assigned to Ada". Ada is notified twice over: she was mentioned and she was assigned.',
+    say: 'The sentence is now highlighted in the lesson and the thread sits in the panel. Ada is notified because she was mentioned.',
     run: async () => {
       post('draft');
       story.textId = state.activeId;
@@ -1821,39 +1810,64 @@ const STORY = [
     }
   },
   {
-    title: 'Assign it later',
-    say: 'A thread can also be assigned after it is started. Ellena opens the video thread and picks Tunde in the Assignee box. He is notified, and the card now says "Assigned to Tunde". One owner per thread.',
+    title: 'Comment on a slide',
+    say: 'Slides get comments per slide. Ellena clicks the comment icon on the Slides block and writes her note. It is tagged with the slide on screen. Each content block shows how many comments it has, so nobody has to open the panel to find out.',
     run: async () => {
-      goTo(story.videoId);
-      await sleep(700);
-      const picker = document.querySelector(`[data-assign="${story.videoId}"]`);
-      picker.value = 'u3';
-      picker.dispatchEvent(new Event('change', { bubbles: true }));
+      state.slide = 3;
+      renderPage();
+      document.querySelector('.stage-slide').scrollIntoView({ block: 'center', behavior: 'smooth' });
+      await sleep(600);
+      openBlockComments('slide');
+      await typeInto('.new-box textarea', 'Add the date of this data in a footnote.');
+      await sleep(500);
+      post('draft');
+      await sleep(300);
+      spot('.stage-slide');
+    }
+  },
+  {
+    title: 'Pin a comment on an image',
+    say: 'Images work the same way, with one extra. Ellena clicks the comment icon on the Image block, writes her note, then presses "Pin to a spot" and clicks the image. A numbered red pin lands there and the red count on the block goes up.',
+    run: async () => {
+      document.querySelector('.stage-image').scrollIntoView({ block: 'center', behavior: 'smooth' });
+      await sleep(600);
+      openBlockComments('image');
+      await typeInto('.new-box textarea', 'The Team price is out of date. It is $89 now.');
       await sleep(400);
-      spot('.tag-assignee');
+      document.querySelector('[data-act="pin-spot"]').click();
+      await sleep(700);
+      Object.assign(state.draft, { x: 82, y: 62 });
+      state.pinMode = false;
+      renderPage();
+      renderPanel();
+      await sleep(700);
+      post('draft');
+      story.imageId = state.activeId;
+      await sleep(300);
+      spot('.stage-image .pin.active');
+    }
+  },
+  {
+    title: 'Resolve it and the red count goes',
+    say: 'Once the image is fixed, Ellena resolves that comment. Its pin leaves the image and the red count on the Image block drops. The same happens on notes, videos and slides: a resolved comment takes its highlight, marker or count with it, and it stays gone unless someone replies.',
+    run: async () => {
+      goTo(story.imageId);
+      await sleep(1000);
+      toggleThread(state.threads.find((t) => t.id === story.imageId));
+      await sleep(300);
+      spot('[data-blockc="image"]');
     }
   },
   {
     title: 'Switch to Ada',
-    say: 'Now we are Ada, a tutor. Her bell shows the mention and the assignment, and the lesson in the sidebar has a blue dot for things she has not read.',
+    say: 'Now we are Ada, a tutor. Her comments button shows a red number for threads she has not read, and the lesson in the sidebar has a blue dot.',
     run: async () => {
       setViewer('u2');
-      state.bellOpen = true;
-      renderHeader();
-      await sleep(300);
-      spot('#bell');
-    }
-  },
-  {
-    title: "Ada's to-do list",
-    say: "Assigned to me shows only the open threads that are Ada's to handle. Mentions me is different: it lists threads where someone tagged her, even if they are not hers to fix.",
-    run: async () => {
-      state.bellOpen = false;
+      state.panelOpen = true;
       state.panelTab = 'threads';
-      state.filter = 'assigned';
       renderAll();
       await sleep(300);
-      spot('[data-filter="assigned"]');
+      spot('#openPanel');
     }
   },
   {
@@ -1862,7 +1876,6 @@ const STORY = [
     run: async () => {
       const notif = state.notifs.find((n) => n.userId === 'u2' && n.threadId === story.textId);
       notif.read = true;
-      state.bellOpen = false;
       goTo(story.textId);
       await sleep(900);
     }
@@ -1881,43 +1894,32 @@ const STORY = [
   },
   {
     title: 'Back to Ellena',
-    say: 'Ellena has two new notifications: the reply from Ada and, from earlier, a mention from Tunde. Each one links to its thread.',
+    say: 'Ellena has new threads: the reply from Ada and, from earlier, a mention from Tunde. Each has a blue new tag, and opening it clears it.',
     run: async () => {
       setViewer('u1');
-      state.filter = 'open';
-      state.bellOpen = true;
+      setStatusFilter('open');
+      state.panelTab = 'threads';
       renderAll();
       await sleep(300);
-      spot('#bell');
+      spot('#openPanel');
     }
   },
   {
     title: 'Resolve the thread',
-    say: 'The feedback is handled, so Ellena resolves it. The highlight and the count badge disappear, the assignee is cleared, but the thread is kept and can be reopened.',
+    say: 'The feedback is handled, so Ellena resolves it. The highlight and the count badge disappear, but the thread is kept and can be reopened.',
     run: async () => {
-      state.bellOpen = false;
       goTo(story.textId);
       await sleep(1000);
       toggleThread(state.threads.find((t) => t.id === story.textId));
-      state.filter = 'resolved';
+      setStatusFilter('resolved');
       renderPanel();
-    }
-  },
-  {
-    title: 'See the thread history',
-    say: 'Every thread keeps a history: who started it, assigned it, replied and resolved it, newest first. Nothing is lost when it is resolved.',
-    run: async () => {
-      state.history[story.textId] = true;
-      goTo(story.textId);
-      await sleep(600);
-      spot('.hist-row');
     }
   },
   {
     title: 'A teammate replies live',
     say: 'Teammates show up like in Figma: a coloured cursor with their name and initials. Watch Ada and Tunde move around the lesson, then Ada types a reply in the thread and it lands with no refresh.',
     run: async () => {
-      state.filter = 'open';
+      setStatusFilter('open');
       goTo(story.videoId);
       await sleep(800);
       await liveComment('u2', story.videoId);
@@ -1928,7 +1930,7 @@ const STORY = [
     title: 'The course gets edited',
     say: 'Someone deletes a sentence that had a comment on it. The comment is not lost: it stays, marked "Original text was removed", with the quote as it was.',
     run: async () => {
-      state.filter = 'open';
+      setStatusFilter('open');
       deleteSentence();
       await sleep(300);
       goTo('t2');
@@ -1940,8 +1942,7 @@ const STORY = [
     title: 'Publishing with open comments',
     say: 'Before publishing, Ellena is warned about threads still open on this page. She can review them, cancel, or publish anyway. Learners never see the comments either way.',
     run: async () => {
-      state.history = {};
-      state.filter = 'open';
+      setStatusFilter('open');
       renderAll();
       openPublish();
       await sleep(900);
@@ -1958,7 +1959,7 @@ const STORY = [
   },
   {
     title: 'A teammate leaves the course',
-    say: 'Tunde is removed from the course team. His comments and history stay, tagged "Former member". The thread assigned to him goes back to unassigned, and he can no longer be mentioned or assigned.',
+    say: 'Tunde is removed from the course team. His comments and history stay, tagged "Former member". He can no longer be mentioned.',
     run: async () => {
       closeDialog();
       if (!isFormer('u3')) removeMember('u3');
@@ -1968,14 +1969,14 @@ const STORY = [
     }
   },
   {
-    title: 'The Activity tab',
-    say: 'The Activity tab is the history of the whole course: last week, 2 weeks or month, one card per thread with its events inside. It shows the assignment, the removal and the resolve, and you can filter by person or event.',
+    title: 'Comment history',
+    say: 'The clock icon in the panel header opens the history of the whole course: one short sentence per event, like "Ada replied to “Add a source”", newest first. Pick a person or a time range, and click a line to jump to that thread.',
     run: async () => {
       state.panelTab = 'activity';
       state.activityDot = false;
       renderPanel();
       await sleep(500);
-      spot('.sp-main');
+      spot('[data-act="toggle-history"]');
     }
   },
   {
@@ -1988,13 +1989,13 @@ const STORY = [
   },
   {
     title: 'Your turn',
-    say: 'That is the whole flow. Everything is live now, so try it yourself: select a sentence, mention someone, then switch Who am I? to see their side. Start over resets it.',
+    say: 'That is the whole flow. Everything is live now, so try it yourself: select a sentence, use the comment icon on a slide, or drop a pin on the image, and mention someone.',
     run: async () => {
       closeDialog();
       if (isFormer('u3')) removeMember('u3');
       setViewer('u1');
       state.panelTab = 'threads';
-      state.filter = 'open';
+      setStatusFilter('open');
       renderAll();
     }
   }
@@ -2013,7 +2014,7 @@ function renderCoach() {
     <div class="coach-top"><span>${intro ? 'Guided story' : `Step ${story.i + 1} of ${STORY.length}`}</span>
       <button class="btn-ghost-icon" data-coach="exit" aria-label="Close the story">${icon('x')}</button></div>
     <h3>${intro ? 'See the whole feature in about 3 minutes' : esc(current.title)}</h3>
-    <p>${intro ? 'Press Start and the prototype acts out a real review. Ellena comments and assigns, Ada gets notified and replies, the thread is resolved, then the course changes and a teammate leaves. You only press Next.' : esc(current.say)}</p>
+    <p>${intro ? 'Press Start and the prototype acts out a real review. Ellena comments and mentions Ada, Ada gets notified and replies, the thread is resolved, then the course changes and a teammate leaves. You only press Next.' : esc(current.say)}</p>
     <div class="coach-dots">${dots}</div>
     <div class="coach-foot">
       <span class="muted">${next && !intro ? 'Up next: ' + esc(next.title) : ''}</span>
