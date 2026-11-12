@@ -190,6 +190,31 @@ describe.skipIf(!hasDatabase)('lesson blocks', () => {
     await db.delete(schema.asset).where(eq(schema.asset.id, assetId));
   });
 
+  it('does not let an asset claim override the organization a key is prefixed with', async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+
+    const foreignKey = `${crypto.randomUUID()}/claimed-lecture.mp4`;
+    const [claim] = await db
+      .insert(schema.asset)
+      .values({
+        organizationId: ids.org,
+        kind: 'video',
+        provider: 'upload',
+        storageProvider: 's3',
+        storageKey: foreignKey,
+        title: 'claimed',
+        isExternal: false
+      })
+      .returning();
+
+    await expect(
+      createLessonBlock(ids.lessonA, { type: 'video', data: { type: 'upload', link: '', key: foreignKey } })
+    ).rejects.toMatchObject({ statusCode: 400, code: ErrorCodes.BLOCK_INVALID_DATA });
+
+    await db.delete(schema.asset).where(eq(schema.asset.id, claim.id));
+  });
+
   it('rejects a stale version instead of overwriting', async () => {
     const note = await createLessonBlock(ids.lessonA, { type: 'note', data: {}, content: '<p>v1</p>' });
 

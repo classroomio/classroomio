@@ -8,11 +8,13 @@ import type { Context, Next } from 'hono';
 import { findUnauthorizedDownloadKeys, resolveUploadOrganizationId } from './presign-auth';
 
 const mocks = vi.hoisted(() => ({
-  legacyOwners: vi.fn()
+  legacyOwners: vi.fn(),
+  assetOwners: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/assets', () => ({
-  getAssetOrganizationIdsByStorageKeys: (keys: string[]) => mocks.legacyOwners(keys)
+  getAssetOrganizationIdsByStorageKeys: (keys: string[]) => mocks.legacyOwners(keys),
+  getAssetOrganizationIdsByAssetIds: (ids: string[]) => mocks.assetOwners(ids)
 }));
 
 const ORG_ID = '3f2504e0-4f89-11d3-9a0c-0305e82c3301';
@@ -54,6 +56,8 @@ describe('presign authorization helpers', () => {
   beforeEach(() => {
     mocks.legacyOwners.mockReset();
     mocks.legacyOwners.mockResolvedValue(new Map());
+    mocks.assetOwners.mockReset();
+    mocks.assetOwners.mockResolvedValue(new Map());
   });
 
   describe('every org role can presign, because students need these routes', () => {
@@ -144,19 +148,18 @@ describe('presign authorization helpers', () => {
     });
 
     it('lets the owning organization download an API-created asset whose key starts with the asset id', async () => {
-      const apiKey = `${ASSET_ID}/source.mp4`;
-      mocks.legacyOwners.mockResolvedValue(new Map([[apiKey, [ORG_ID]]]));
+      mocks.assetOwners.mockResolvedValue(new Map([[ASSET_ID, ORG_ID]]));
       const app = buildApp({ [ORG_ID]: ROLE.STUDENT });
-      const response = await post(app, '/video/download', { keys: [apiKey] });
+      const response = await post(app, '/video/download', { keys: [`${ASSET_ID}/source.mp4`] });
 
       expect(response.status).toBe(200);
+      expect(mocks.assetOwners).toHaveBeenCalledWith([ASSET_ID]);
     });
 
     it('rejects an API-created asset key owned by another organization', async () => {
-      const apiKey = `${ASSET_ID}/source.mp4`;
-      mocks.legacyOwners.mockResolvedValue(new Map([[apiKey, [OTHER_ORG_ID]]]));
+      mocks.assetOwners.mockResolvedValue(new Map([[ASSET_ID, OTHER_ORG_ID]]));
       const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
-      const response = await post(app, '/video/download', { keys: [apiKey] });
+      const response = await post(app, '/video/download', { keys: [`${ASSET_ID}/source.mp4`] });
 
       expect(response.status).toBe(403);
     });
@@ -164,6 +167,24 @@ describe('presign authorization helpers', () => {
     it('rejects an unclaimed prefixed key that names another organization', async () => {
       const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
       const response = await post(app, '/video/download', { keys: [`${OTHER_ORG_ID}/unclaimed.mp4`] });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('ignores asset claims on a prefixed key, so a caller cannot register a foreign key to download it', async () => {
+      mocks.legacyOwners.mockResolvedValue(new Map([[`${OTHER_ORG_ID}/theirs.mp4`, [ORG_ID]]]));
+      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
+      const response = await post(app, '/video/download', { keys: [`${OTHER_ORG_ID}/theirs.mp4`] });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('ignores asset claims on an API asset key owned by another organization', async () => {
+      const apiKey = `${ASSET_ID}/source.mp4`;
+      mocks.assetOwners.mockResolvedValue(new Map([[ASSET_ID, OTHER_ORG_ID]]));
+      mocks.legacyOwners.mockResolvedValue(new Map([[apiKey, [ORG_ID]]]));
+      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
+      const response = await post(app, '/video/download', { keys: [apiKey] });
 
       expect(response.status).toBe(403);
     });

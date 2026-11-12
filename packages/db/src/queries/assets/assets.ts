@@ -485,6 +485,32 @@ export async function mergeAssetMetadata(
 }
 
 /**
+ * Maps each asset id that exists to the organization that owns it. Ids with no asset row are absent.
+ */
+export async function getAssetOrganizationIdsByAssetIds(
+  assetIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Map<string, string>> {
+  try {
+    if (assetIds.length === 0) {
+      return new Map();
+    }
+
+    const rows = await dbClient
+      .select({ id: schema.asset.id, organizationId: schema.asset.organizationId })
+      .from(schema.asset)
+      .where(inArray(schema.asset.id, assetIds));
+
+    return new Map(rows.map((row) => [row.id, row.organizationId]));
+  } catch (error) {
+    console.error('getAssetOrganizationIdsByAssetIds error:', error);
+    throw new Error(
+      `Failed to get asset organizations by asset ids: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Looks up which organizations own the given storage keys. Used to authorize
  * download presigns for keys minted before organization-prefixed keys existed,
  * where ownership cannot be read off the key itself.

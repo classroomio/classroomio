@@ -53,11 +53,12 @@ import {
   createAssetUsage,
   deleteAssetUsagesByTargetSlots,
   getAssetById,
+  getAssetOrganizationIdsByAssetIds,
   getAssetOrganizationIdsByStorageKeys
 } from '@cio/db/queries/assets';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { sanitizeOptionalHtml } from '../../utils/sanitize-html';
-import { resolveFileKeyOwnerOrganizationIds } from '../../utils/upload';
+import { readOrganizationIdFromFileKey, resolveFileKeyOwnerOrganizationIds } from '../../utils/upload';
 import { recordBlockLocaleVersion } from './block-version';
 import { ensureLessonRevisionBaseline, recordLessonRevision } from './lesson-revision';
 import { enrichBlocksMedia, loadLessonBlocks, toLessonBlock, type LessonBlock } from './block-view';
@@ -125,8 +126,13 @@ function validatedBlockData(type: TBlockType, data: unknown): Record<string, unk
  * True when every owner of the key is this organization. A key nobody owns counts as owned.
  */
 async function isStorageKeyOwnedBy(key: string, organizationId: string): Promise<boolean> {
-  const assetOwners = await getAssetOrganizationIdsByStorageKeys([key]);
-  const ownerOrganizationIds = resolveFileKeyOwnerOrganizationIds(key, assetOwners.get(key));
+  const prefix = readOrganizationIdFromFileKey(key);
+  const prefixAssetOwners = await getAssetOrganizationIdsByAssetIds(prefix ? [prefix] : []);
+  const claimingOwners = await getAssetOrganizationIdsByStorageKeys(prefix ? [] : [key]);
+  const ownerOrganizationIds = resolveFileKeyOwnerOrganizationIds(key, {
+    prefixAssetOrganizationId: prefix ? prefixAssetOwners.get(prefix) : undefined,
+    claimingOrganizationIds: claimingOwners.get(key)
+  });
 
   return ownerOrganizationIds.every((ownerOrganizationId) => ownerOrganizationId === organizationId);
 }
