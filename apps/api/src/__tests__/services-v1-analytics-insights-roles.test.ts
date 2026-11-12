@@ -63,6 +63,8 @@ const DASHBOARD = {
     cohortCount: 1,
     activeCohortCount: 1,
     studentTarget: null,
+    seatsUsed: null,
+    seatsNotJoined: null,
     courses: []
   },
   structures: {},

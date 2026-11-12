@@ -107,6 +107,18 @@ export const ZPublicApiInsightsScopeResponse = z.object({
   cohortCount: z.number(),
   activeCohortCount: z.number(),
   studentTarget: z.number().nullable(),
+  seatsUsed: z
+    .number()
+    .nullable()
+    .describe(
+      "Student seats in use under the plan's student limit, including students who have not joined yet. Org scope only; null otherwise."
+    ),
+  seatsNotJoined: z
+    .number()
+    .nullable()
+    .describe(
+      'Seats held by students who were added or invited but have not joined, while their invitation is not revoked or expired. Org scope only; null otherwise.'
+    ),
   courses: z.array(ZPublicApiInsightsScopeCourseResponse)
 });
 

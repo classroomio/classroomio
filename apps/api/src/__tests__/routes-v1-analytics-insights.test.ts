@@ -63,6 +63,8 @@ const SNAPSHOT = {
     cohortCount: 1,
     activeCohortCount: 1,
     studentTarget: null,
+    seatsUsed: null,
+    seatsNotJoined: null,
     courses: []
   },
   selection: { courseId: null, exerciseId: null, breakdown: 'core' as const, range: 'all' as const },

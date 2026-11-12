@@ -143,6 +143,8 @@ function dashboardOf(widgets: TInsightsWidget[], options: DashboardOptions = {})
       cohortCount: options.cohortCount ?? 0,
       activeCohortCount: 0,
       studentTarget: null,
+      seatsUsed: null,
+      seatsNotJoined: null,
       courses: [{ id: COURSE_ID, title: 'Course', isGrouped: true, hasPassRequired: true }]
     },
     structures,
