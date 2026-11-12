@@ -74,6 +74,15 @@ export function isHlsAsset(asset: OrganizationAsset): boolean {
   return Boolean(asset.hlsManifestKey);
 }
 
+/**
+ * True for a video with no manifest, stored file or source link, so nothing can play it yet.
+ */
+export function isUnfinishedVideoUpload(asset: OrganizationAsset): boolean {
+  if (asset.kind !== 'video') return false;
+
+  return !isHlsAsset(asset) && !asset.storageKey && !asset.sourceUrl;
+}
+
 export function getAssetHlsManifestLink(asset: OrganizationAsset): string {
   return `/hls/${asset.id}/master.m3u8`;
 }

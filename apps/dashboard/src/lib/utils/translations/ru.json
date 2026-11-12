@@ -2510,6 +2510,7 @@
                 "loading_library": "Загрузка медиатеки...",
                 "no_library_videos": "В вашей медиатеке нет доступных видео.",
                 "add_from_library": "Добавить",
+                "upload_not_finished": "Загрузка не завершена. У этого видео пока нет файла, поэтому его нельзя добавить.",
                 "cancel_upload": "Отменить загрузку",
                 "upload_cancelled": "Загрузка отменена пользователем",
                 "max_files": "{count, plural, one {Можно загрузить # файл} other {Можно загрузить # файлов}}",
@@ -3743,7 +3744,8 @@
     "status": {
       "active": "Активный",
       "archived": "В архиве",
-      "processing": "Обработка"
+      "processing": "Обработка",
+      "upload_not_finished": "Загрузка не завершена"
     },
     "provider": {
       "upload": "Загрузить",
