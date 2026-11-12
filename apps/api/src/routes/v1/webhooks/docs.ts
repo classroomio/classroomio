@@ -7,11 +7,5 @@ const webhookForbiddenBase = (scope: 'webhook:subscription:read' | 'webhook:subs
   `${scope}; OAuth admin only. Codes: OAUTH_CONNECTION_REQUIRED, UPGRADE_REQUIRED, ORG_TEAM_NOT_AUTHORIZED`;
 
 export const webhookSubscriptionForbidden = (scope: 'webhook:subscription:read' | 'webhook:subscription:write') => ({
-  description: `${webhookForbiddenBase(scope)}, WEBHOOK_SUBSCRIPTION_LIMIT_EXCEEDED`
-});
-
-export const webhookSubscriptionForbiddenWithoutCap = (
-  scope: 'webhook:subscription:read' | 'webhook:subscription:write'
-) => ({
   description: webhookForbiddenBase(scope)
 });

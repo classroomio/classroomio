@@ -1,6 +1,5 @@
-import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
-import { db } from '@cio/db/drizzle';
 import { listOAuthConnectedApps } from '@cio/db/queries/auth';
+import { db } from '@cio/db/drizzle';
 import { getCourseTitlesByIds } from '@cio/db/queries/course/course';
 import { getCohortTitlesByIds } from '@cio/db/queries/cohort/cohort';
 import {
@@ -12,7 +11,6 @@ import {
   type TWebhookEndpointWithEvents
 } from '@cio/db/queries/webhook';
 import { enqueueWebhookDelivery } from '@cio/jobs';
-import { getWebhookSubscriptionLimit } from '@cio/utils/plans';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getZapierOAuthClientId } from '@api/services/oauth/clients';
@@ -53,13 +51,12 @@ async function listZapierConnectedApps(organizationId: string) {
 }
 
 /**
- * The organization's Zapier connections, each with its active trigger subscriptions, plus the plan's trigger cap.
+ * The organization's Zapier connections, each with its active trigger subscriptions.
  */
 export async function getZapierConnectionsService(organizationId: string) {
-  const [zapierApps, subscriptions, activePlan] = await Promise.all([
+  const [zapierApps, subscriptions] = await Promise.all([
     listZapierConnectedApps(organizationId),
-    listManagedWebhookSubscriptions(organizationId),
-    getActiveOrganizationPlan(organizationId)
+    listManagedWebhookSubscriptions(organizationId)
   ]);
 
   const zapierConsentIds = new Set(zapierApps.map((app) => app.consentId));
@@ -98,10 +95,7 @@ export async function getZapierConnectionsService(organizationId: string) {
     };
   });
 
-  const maxTriggerSubscriptions = getWebhookSubscriptionLimit(activePlan?.planName);
-  const limits = { maxTriggerSubscriptions, activeTriggerSubscriptions: subscriptions.length };
-
-  return { connections, limits };
+  return { connections };
 }
 
 const ZAPIER_FAILED_EVENT_WINDOW_MS = 24 * 60 * 60 * 1000;
