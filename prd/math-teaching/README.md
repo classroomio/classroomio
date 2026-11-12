@@ -4,6 +4,8 @@
 
 Draft (November 12, 2026)
 
+> **UI reference:** the clickable prototype at [`prototypes/math-teaching/`](../../prototypes/math-teaching/index.html) shows math authoring (Type, Photo, Draw, Ask AI), the student quiz with per-question keypads, and the teacher results grid with answer clusters. Grading in the prototype runs the real Compute Engine; AI conversions are sample data.
+
 ## Purpose
 
 Make ClassroomIO the most capable and most customisable LMS for math teaching businesses: tutoring centres, exam-prep academies, homeschool programmes and online math schools. A teacher must be able to write any math question in seconds, students must be able to answer in real math notation from any device, the system must grade those answers correctly, AI must help on both sides without getting the math wrong, and the teacher must see what every student got wrong and why, at a glance.
