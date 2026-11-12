@@ -24,7 +24,12 @@
   import { profile } from '$lib/utils/store/user';
 
   import { groupOrgMemberships } from '../../utils/org-memberships';
-  import { getOrgSiteHost, openLearnerOrg, switchToManagedOrg } from '../../utils/org-navigation';
+  import {
+    getOrgSiteHost,
+    invalidatePendingHandoff,
+    openLearnerOrg,
+    switchToManagedOrg
+  } from '../../utils/org-navigation';
   import OrgChooserRow from './org-chooser-row.svelte';
 
   const SKELETON_ROWS = [0, 1, 2];
@@ -56,29 +61,43 @@
     capturePosthogEvent('org_chooser_selected', { role: 'learner' });
     openingOrgId = org.id;
 
-    const isOpening = await openLearnerOrg(org);
-    if (!isOpening) {
+    try {
+      await openLearnerOrg(org);
+    } finally {
       openingOrgId = null;
     }
   }
 
   async function acceptInvite(invite: PendingOrgInviteItem) {
+    invalidatePendingHandoff();
     await pendingInvitesApi.acceptInvite(invite.id);
 
     const isStillPending = pendingInvitesApi.invites.some((pending) => pending.id === invite.id);
     if (isStillPending) return;
 
-    await authClient.getSession({ query: { disableCookieCache: true } });
+    try {
+      await authClient.getSession({ query: { disableCookieCache: true } });
+    } catch (error) {
+      console.error('refreshing session after invite accept error:', error);
+    }
+
     await appInitApi.refreshAccountData();
   }
 
   function createOrganization() {
+    invalidatePendingHandoff();
     capturePosthogEvent('org_chooser_create_clicked');
     goto(resolve('/onboarding', {}));
   }
 
   async function useDifferentAccount() {
-    await logout();
+    invalidatePendingHandoff();
+
+    try {
+      await logout();
+    } catch (error) {
+      console.error('logout error:', error);
+    }
   }
 </script>
 
@@ -202,6 +221,23 @@
                     </ResourceListRow.Root>
                   {/each}
                 </ResourceListRow.Group>
+              </section>
+            {:else if pendingInvitesApi.hasLoaded && pendingInvitesApi.lastError}
+              <section class="flex flex-col gap-2">
+                <h2 class="ui:text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                  {$t('org_chooser.invites_heading')}
+                </h2>
+                <div class="ui:bg-card flex flex-col items-start gap-3 rounded-lg p-4">
+                  <p class="ui:text-muted-foreground text-sm">{$t('org_chooser.invites_error')}</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    testId="org-chooser-invites-retry"
+                    onclick={() => pendingInvitesApi.fetchPendingInvites()}
+                  >
+                    {$t('org_chooser.invites_retry')}
+                  </Button>
+                </div>
               </section>
             {/if}
 

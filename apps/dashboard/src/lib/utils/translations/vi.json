@@ -3589,6 +3589,8 @@
     "open_academy": "Mở {name} trên {host}",
     "invited_as": "Được mời với vai trò {role}",
     "accept_invite": "Chấp nhận",
+    "invites_error": "Không tải được lời mời của bạn. Kiểm tra kết nối và thử lại.",
+    "invites_retry": "Thử lại",
     "create_heading": "Muốn điều hành học viện riêng?",
     "create_description": "Tạo tổ chức để xuất bản khóa học và mời học viên của bạn.",
     "create_cta": "Tạo tổ chức",

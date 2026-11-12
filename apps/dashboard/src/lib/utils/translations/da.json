@@ -3589,6 +3589,8 @@
     "open_academy": "Åbn {name} på {host}",
     "invited_as": "Inviteret som {role}",
     "accept_invite": "Acceptér",
+    "invites_error": "Dine invitationer kunne ikke indlæses. Tjek din forbindelse, og prøv igen.",
+    "invites_retry": "Prøv igen",
     "create_heading": "Vil du drive dit eget akademi?",
     "create_description": "Opret en organisation for at udgive kurser og invitere dine egne elever.",
     "create_cta": "Opret organisation",

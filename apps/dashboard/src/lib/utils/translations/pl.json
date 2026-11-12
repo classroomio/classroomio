@@ -3589,6 +3589,8 @@
     "open_academy": "Otwórz {name} na {host}",
     "invited_as": "Zaproszono jako {role}",
     "accept_invite": "Akceptuj",
+    "invites_error": "Nie można wczytać twoich zaproszeń. Sprawdź połączenie i spróbuj ponownie.",
+    "invites_retry": "Spróbuj ponownie",
     "create_heading": "Chcesz prowadzić własną akademię?",
     "create_description": "Utwórz organizację, aby publikować kursy i zapraszać własnych kursantów.",
     "create_cta": "Utwórz organizację",

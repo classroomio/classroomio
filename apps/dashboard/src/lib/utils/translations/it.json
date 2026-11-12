@@ -2059,6 +2059,8 @@
     "open_academy": "Apri {name} su {host}",
     "invited_as": "Invitato come {role}",
     "accept_invite": "Accetta",
+    "invites_error": "Impossibile caricare i tuoi inviti. Controlla la connessione e riprova.",
+    "invites_retry": "Riprova",
     "create_heading": "Vuoi gestire la tua accademia?",
     "create_description": "Crea un'organizzazione per pubblicare corsi e invitare i tuoi studenti.",
     "create_cta": "Crea organizzazione",

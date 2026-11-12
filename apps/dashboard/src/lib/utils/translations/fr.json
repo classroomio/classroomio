@@ -3589,6 +3589,8 @@
     "open_academy": "Ouvrir {name} sur {host}",
     "invited_as": "Invité en tant que {role}",
     "accept_invite": "Accepter",
+    "invites_error": "Impossible de charger vos invitations. Vérifiez votre connexion et réessayez.",
+    "invites_retry": "Réessayer",
     "create_heading": "Vous voulez diriger votre propre académie ?",
     "create_description": "Créez une organisation pour publier des cours et inviter vos propres apprenants.",
     "create_cta": "Créer une organisation",

@@ -107,6 +107,7 @@
     },
     onClear: () => {
       errors.email = '';
+      hasExistingAccount = false;
       discoveryState = null;
     }
   });
@@ -357,7 +358,7 @@
         {#if hasExistingAccount}
           <p class="ui:text-destructive text-sm" data-testid="signup-existing-account">
             {$t('login.existing_account.message')}
-            <a class="ui:text-primary font-medium hover:underline" href={loginInsteadHref}>
+            <a class="ui:text-primary font-medium hover:underline" href={resolve(loginInsteadHref, {})}>
               {$t('login.existing_account.cta')}
             </a>
           </p>

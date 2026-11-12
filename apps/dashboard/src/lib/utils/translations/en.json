@@ -2059,6 +2059,8 @@
     "open_academy": "Open {name} on {host}",
     "invited_as": "Invited as {role}",
     "accept_invite": "Accept",
+    "invites_error": "Couldn't load your invitations. Check your connection and try again.",
+    "invites_retry": "Try again",
     "create_heading": "Want to run your own academy?",
     "create_description": "Create an organization to publish courses and invite your own learners.",
     "create_cta": "Create organization",

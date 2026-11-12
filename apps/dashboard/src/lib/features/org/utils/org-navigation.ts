@@ -4,10 +4,22 @@ import { mediaUploadManager } from '$features/media/api';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { setTheme } from '$lib/utils/functions/theme';
-import { currentOrg, getOrgPublicOrigin, getOrgPublicUrl, mergeAccountOrgFromServer } from '$lib/utils/store/org';
+import {
+  currentOrg,
+  getOrgHandoffOrigin,
+  getOrgPublicOrigin,
+  getOrgPublicUrl,
+  mergeAccountOrgFromServer
+} from '$lib/utils/store/org';
 import { STUDENT_HOME_ENTRY_PATH } from '@cio/utils/lms';
 
 const LAST_ORG_SITENAME_KEY = 'classroomio_org_sitename';
+
+let handoffGeneration = 0;
+
+export function invalidatePendingHandoff(): void {
+  handoffGeneration += 1;
+}
 
 type OrgSiteDestination = Pick<AccountOrg, 'siteName' | 'customDomain' | 'isCustomDomainVerified'>;
 
@@ -34,6 +46,7 @@ export function switchToManagedOrg(org: AccountOrg): boolean {
     return false;
   }
 
+  invalidatePendingHandoff();
   cancelUploads();
   localStorage.setItem(LAST_ORG_SITENAME_KEY, org.siteName);
   currentOrg.set(mergeAccountOrgFromServer(org));
@@ -52,6 +65,9 @@ export async function openLearnerOrg(org: OrgSiteDestination): Promise<boolean> 
     return false;
   }
 
+  invalidatePendingHandoff();
+  const generation = handoffGeneration;
+
   const origin = getOrgPublicOrigin(org);
   if (!origin || origin === window.location.origin) {
     cancelUploads();
@@ -67,8 +83,12 @@ export async function openLearnerOrg(org: OrgSiteDestination): Promise<boolean> 
     return false;
   }
 
+  if (generation !== handoffGeneration) {
+    return false;
+  }
+
   cancelUploads();
-  const loginLinkUrl = new URL('/api/auth/login-link', origin);
+  const loginLinkUrl = new URL('/api/auth/login-link', getOrgHandoffOrigin(org));
   loginLinkUrl.searchParams.set('token', token);
   loginLinkUrl.searchParams.set('redirect', STUDENT_HOME_ENTRY_PATH);
   window.location.href = loginLinkUrl.toString();

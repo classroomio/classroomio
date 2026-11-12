@@ -16,6 +16,7 @@ import type { PendingOrgInvite } from '$features/lms/utils/types';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
 import { authClient } from '$lib/utils/services/auth/client';
+import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { activateLocale, handleLocaleChange } from '$lib/utils/functions/translations';
@@ -321,7 +322,7 @@ class AppInitApi extends BaseApi {
     );
   }
 
-  routeUserToNextPage(params: AppSetupParams) {
+  routeUserToNextPage(params: AppSetupParams): Promise<void> {
     console.log('routeUserToNextPage', window.location.pathname);
     if (!this.data?.success) {
       return;
@@ -380,6 +381,12 @@ class AppInitApi extends BaseApi {
     if (isCloud) {
       const shouldRedirectToOnboarding = !userHasOrganizations && !isOrgSite;
       if (shouldRedirectToOnboarding) {
+        await pendingInvitesApi.fetchPendingInvites();
+
+        if (pendingInvitesApi.invites.length > 0) {
+          return goto(resolve(ORG_CHOOSER_PATH, {}));
+        }
+
         console.log('cloud: redirecting to onboarding');
         return goto(resolve(`/onboarding`, {}));
       }

@@ -3589,6 +3589,8 @@
     "open_academy": "Abrir {name} em {host}",
     "invited_as": "Convidado como {role}",
     "accept_invite": "Aceitar",
+    "invites_error": "Não foi possível carregar os teus convites. Verifica a tua ligação e tenta novamente.",
+    "invites_retry": "Tentar novamente",
     "create_heading": "Quer gerir a sua própria academia?",
     "create_description": "Crie uma organização para publicar cursos e convidar os seus próprios alunos.",
     "create_cta": "Criar organização",

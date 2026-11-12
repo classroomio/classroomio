@@ -27,6 +27,12 @@
 
     switchToManagedOrg(org);
   }
+
+  function selectLearnerOrg(org: AccountOrg) {
+    void openLearnerOrg(org).catch((error) => {
+      console.error('openLearnerOrg error:', error);
+    });
+  }
 </script>
 
 {#snippet managedOrgItem(org: AccountOrg)}
@@ -70,7 +76,7 @@
   {#each learningOrgs as org (org.id)}
     {@const host = getOrgSiteHost(org)}
     <DropdownMenu.Item
-      onSelect={() => openLearnerOrg(org)}
+      onSelect={() => selectLearnerOrg(org)}
       class="gap-2 p-2"
       aria-label={$t('org_chooser.open_academy', { name: org.name, host })}
       data-testid="org-switcher-learning-{org.siteName}"

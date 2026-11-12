@@ -2069,6 +2069,8 @@
     "open_academy": "{name} adlı akademiyi {host} üzerinde aç",
     "invited_as": "{role} olarak davet edildi",
     "accept_invite": "Kabul et",
+    "invites_error": "Davetlerin yüklenemedi. Bağlantını kontrol edip tekrar dene.",
+    "invites_retry": "Tekrar dene",
     "create_heading": "Kendi akademinizi yönetmek mi istiyorsunuz?",
     "create_description": "Kurs yayınlamak ve kendi öğrencilerinizi davet etmek için bir kuruluş oluşturun.",
     "create_cta": "Kuruluş oluştur",

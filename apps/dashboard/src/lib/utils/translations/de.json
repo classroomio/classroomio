@@ -3589,6 +3589,8 @@
     "open_academy": "{name} auf {host} öffnen",
     "invited_as": "Eingeladen als {role}",
     "accept_invite": "Annehmen",
+    "invites_error": "Deine Einladungen konnten nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+    "invites_retry": "Erneut versuchen",
     "create_heading": "Möchten Sie Ihre eigene Akademie betreiben?",
     "create_description": "Erstellen Sie eine Organisation, um Kurse zu veröffentlichen und Ihre eigenen Lernenden einzuladen.",
     "create_cta": "Organisation erstellen",
