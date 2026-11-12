@@ -10,7 +10,7 @@ import type {
   SelectOAuthOrganizationRequest
 } from '$features/oauth/utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
-import { authClient } from '$lib/utils/services/auth/client';
+import { authClient, nonNavigatingAuthClient } from '$lib/utils/services/auth/client';
 
 class OAuthApi extends BaseApiWithErrors {
   organizations = $state<OAuthOrganization[] | null>(null);
@@ -99,7 +99,10 @@ class OAuthApi extends BaseApiWithErrors {
     this.error = null;
 
     try {
-      const { data, error } = await authClient.$fetch<OAuthRedirectResponse>(path, { method: 'POST', body });
+      const { data, error } = await nonNavigatingAuthClient.$fetch<OAuthRedirectResponse>(path, {
+        method: 'POST',
+        body
+      });
 
       if (error || !data?.url) {
         this.error = 'oauth.error.generic';
