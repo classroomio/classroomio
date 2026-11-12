@@ -225,9 +225,7 @@ export const ZPublicApiInviteStudentsToCohortResponse = z.object({
         ])
       })
     )
-    .describe(
-      'Outcome for each CSV row, including renewed invites (invite_resent), invalid, repeated and over-seat-limit emails'
-    ),
+    .describe('Outcome for each CSV row'),
   assigned: z.number().optional(),
   alreadyEnrolledInCourses: z.number().optional(),
   alreadyEnrolledInCohorts: z.number().optional(),
