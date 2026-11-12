@@ -179,6 +179,15 @@ describe('presign authorization helpers', () => {
       expect(response.status).toBe(403);
     });
 
+    it('keeps the real owner able to download after another organization claims their prefixed key', async () => {
+      const ownedKey = `${ORG_ID}/mine.mp4`;
+      mocks.legacyOwners.mockResolvedValue(new Map([[ownedKey, [OTHER_ORG_ID]]]));
+      const app = buildApp({ [ORG_ID]: ROLE.STUDENT });
+      const response = await post(app, '/video/download', { keys: [ownedKey] });
+
+      expect(response.status).toBe(200);
+    });
+
     it('ignores asset claims on an API asset key owned by another organization', async () => {
       const apiKey = `${ASSET_ID}/source.mp4`;
       mocks.assetOwners.mockResolvedValue(new Map([[ASSET_ID, OTHER_ORG_ID]]));
