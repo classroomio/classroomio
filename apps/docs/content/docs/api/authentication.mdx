@@ -4,7 +4,7 @@ description: Get an organization API key, send it as a Bearer token, and rotate 
 last_reviewed: '2026-10-23'
 ---
 
-Every request to the ClassroomIO API is authenticated with a credential that belongs to one organization: an API key you generate, or an OAuth access token granted through a connected application.
+Every request to the ClassroomIO API is authenticated with a credential that belongs to one organization: an API key you generate, or an OAuth access token granted through an OAuth connection.
 
 :::info[Plan requirement]
 On ClassroomIO Cloud, API keys are available on the **Early Adopter** and **Enterprise** plans. Self-hosted instances need **Enterprise**.
@@ -54,6 +54,16 @@ const { data } = await res.json();
 </CodeGroup>
 
 To try a request from these docs, open any endpoint page, open **Try it**, and paste your key into the token field.
+
+## Authenticate with OAuth instead
+
+Instead of pasting an API key, an integration can sign the workspace admin in through OAuth and call the API with the resulting access token. Send it the same way, as a Bearer token:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+Request the scopes the integration needs when it starts authorization (see the [OAuth scopes](/developers/oauth#scopes)); the token carries only those scopes, and calls outside them fail with `403`. Tokens expire after 10 minutes and are refreshed with the connection's refresh token, and `GET /public-api/v1/me` identifies the workspace, connection, and granted scopes behind any token. Access follows the admin who connected: if they stop being an admin, the connection loses access. The ClassroomIO Zapier integration authenticates this way, so no API key is involved.
 
 ## Rotate or revoke a key
 
