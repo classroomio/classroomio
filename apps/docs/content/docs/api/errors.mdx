@@ -32,7 +32,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 | `404` | The resource doesn't exist, or belongs to another organization |
 | `409` | The request conflicts with the resource's current state |
 | `429` | Too many requests. See [Rate limits](/api/rate-limits) |
-| `503` | The rate limit could not be checked, so a fail-closed insights or reminder request was refused |
+| `503` | The rate limit could not be checked, so a fail-closed insights, reminder, or email-template test request was refused |
 | `500` | Something went wrong on our side |
 
 ## Common errors
@@ -100,7 +100,7 @@ Status `429`. The body depends on which limit you hit. The per-key request limit
 
 ### Rate limit unavailable
 
-Status `503` with `code` `RATE_LIMIT_UNAVAILABLE`. The insights query, insights snapshot, and overdue-goal reminder limiters are fail-closed: when Redis cannot be reached to check the budget, the request is refused instead of going through. Retry once Redis is reachable again. See [Fail-closed insights and reminder limits](/api/rate-limits#fail-closed-insights-and-reminder-limits).
+Status `503` with `code` `RATE_LIMIT_UNAVAILABLE`. The insights query, insights snapshot, overdue-goal reminder, and email-template test-email limiters are fail-closed: when Redis cannot be reached to check the budget, the request is refused instead of going through. Retry once Redis is reachable again. See [Fail-closed limits](/api/rate-limits#fail-closed-limits).
 
 ## Next steps
 
