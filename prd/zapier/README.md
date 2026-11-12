@@ -83,7 +83,7 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
 | Area | Decision |
 | --- | --- |
 | Distribution | Private Zapier app via an invite link first (early access), public Zapier listing once v1 is stable and the directory review is approved. |
-| Plans | Early Adopter and above. Basic sees an upgrade prompt. Access is binary: no monthly task credits. Per-minute rate limits apply as abuse protection. |
+| Plans | Early Adopter and above. Basic sees an upgrade prompt. Access is binary: no monthly task credits and no plan-specific usage caps. |
 | Plan downgrade | Zapier pauses. Every call returns `403 UPGRADE_REQUIRED`, trigger deliveries stop, and the dashboard explains why. Connections and subscriptions stay in place, so upgrading resumes every Zap without reconnecting. |
 | Auth | OAuth 2.0 with admin consent. No API-key paste. Admins can grant read-only access on the consent screen. |
 | Triggers | Instant. Every trigger is a REST Hook delivered by the webhooks platform. No polling triggers in v1. |
@@ -115,7 +115,7 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
 4. Inbound webhooks from Zapier to ClassroomIO (Zapier writes via REST actions).
 5. Monthly task credits.
 6. Customer-authored custom triggers.
-7. A cap on the number of Zapier connections. Trigger subscriptions are capped instead.
+7. A cap on the number of Zapier connections or trigger subscriptions.
 8. Bulk "Disconnect Zapier" button.
 9. Branding review and Zapier marketplace screenshots (before directory submission).
 10. Zapier on self-hosted installs.
@@ -208,7 +208,7 @@ Envelope, headers and signing are those of `prd/webhooks`. Delivery is at-least-
 - **Give-up**: after the last failure the delivery is marked `GAVE_UP`. The trigger's health degrades after repeated give-ups, and the endpoint is auto-disabled at the threshold.
 - **Redelivery**: when events from the last 24 hours failed, the Zaps page shows a warning that resends every failed trigger in one call.
 - **410 Gone**: when Zapier reports the Zap was turned off or deleted, the managed subscription is deleted.
-- **Isolation**: Zapier-managed subscriptions are not shown in the Webhooks tab and do not count toward its 20-endpoint cap. They have their own per-plan cap. Removing a connection deletes its subscriptions.
+- **Isolation**: Zapier-managed subscriptions are not shown in the Webhooks tab and do not count toward its 20-endpoint cap. Removing a connection deletes its subscriptions.
 
 ## Authentication and Scopes
 
@@ -242,39 +242,32 @@ A read-only connection keeps every `:read` scope plus `webhook:subscription:read
 
 Automation keys of type `zapier` can no longer be created. Zapier connects only through OAuth.
 
-## Access and Limits
+## Access
 
-| Plan | Zapier | Trigger subscriptions | Reads / min | Writes / min |
-| --- | --- | --- | --- | --- |
-| Basic | No | 0 | 0 | 0 |
-| Early Adopter | Yes | 50 | 120 | 40 |
-| Enterprise | Yes | 250 | 360 | 120 |
+Zapier is available on the Early Adopter and Enterprise plans. Basic sees an upgrade prompt. Access is binary: when the plan includes Zapier, there are no caps on connections or trigger subscriptions, and no plan-specific read or write quotas. Requests use the same public API rate limit as every other client (100 requests per minute per connection). When the plan does not include Zapier, every call returns `403 UPGRADE_REQUIRED`.
 
-- Read and write limits are shared by every Zapier connection in the workspace, so connecting more Zapier accounts does not raise them. Reads are `GET` requests; every other request, including trigger subscribe and unsubscribe, is a write.
-- Over the limit, the API returns `429` with `Retry-After`, and Zapier retries the step.
-- The number of connections is not capped.
 - Only org admins can connect. Admins can revoke a connection at any time.
 
 ## Technical Design
 
 | Layer | What ships |
 | --- | --- |
-| Validation (`packages/utils`) | Subscription, enrollment and `/me` schemas; `?email=`, `?slug=` and `?title=` filters; the trigger, action and search catalog; Zapier plan limits; read-only scope rules. |
+| Validation (`packages/utils`) | Subscription, enrollment and `/me` schemas; `?email=`, `?slug=` and `?title=` filters; the trigger, action and search catalog; read-only scope rules. |
 | Queries (`packages/db`) | Managed webhook endpoints bound to an OAuth grant (deleted with the grant); connection and trigger listings; failed-delivery lookups. |
-| API (`apps/api`) | `GET /public-api/v1/me`; `POST /public-api/v1/courses/:courseId/enrollments`; `POST` and `DELETE /public-api/v1/webhooks/subscriptions`; `GET /public-api/v1/webhooks/samples`; `GET /organization/automation/zapier` and `POST /organization/automation/zapier/triggers/redeliver` (one batch of trigger ids, one rate-limit slot) for the dashboard; per-plan Zapier rate limits; connected apps listed by kind so the MCP tab excludes Zapier. |
+| API (`apps/api`) | `GET /public-api/v1/me`; `POST /public-api/v1/courses/:courseId/enrollments`; `POST` and `DELETE /public-api/v1/webhooks/subscriptions`; `GET /public-api/v1/webhooks/samples`; `GET /organization/automation/zapier` and `POST /organization/automation/zapier/triggers/redeliver` (one batch of trigger ids, one rate-limit slot) for the dashboard; connected apps listed by kind so the MCP tab excludes Zapier. |
 | Dashboard (`apps/dashboard`) | The Zaps page, App Directory and ClassroomIO + {App} page under the Automation → Zapier tab; workspace picker and consent changes. |
 | Zapier app (`apps/zapier`) | Zapier Platform CLI app with OAuth, 14 REST Hook triggers, 11 actions, 2 searches, course and cohort dropdowns, and error mapping (plan, read-only, rate limit, validation). Built, tested and validated in CI; pushed manually. |
 
 ## API and Docs
 
 1. Annotate every new route with `describeRoute`; run `pnpm --filter @cio/api upload:openapi`.
-2. Add Zapier guides to the help center: connect your account, read-only connections, trigger catalog with sample payloads, action catalog with required fields, searches, limits, managing connections, and troubleshooting (connection removed, read-only, plan paused, rate limited).
+2. Add Zapier guides to the help center: connect your account, read-only connections, trigger catalog with sample payloads, action catalog with required fields, searches, managing connections, and troubleshooting (connection removed, read-only, plan paused, rate limited).
 3. Name Zapier alongside REST API, Webhooks and MCP on the website's automation pages (done: Zapier section with the canonical Zaps as copy on `apps/website/src/routes/automation/+page.svelte`, fourth Zapier lane in the home page automation band, SEO meta; `automate-section.svelte` left untouched — it is exported but unrendered. The section CTA reads "How to connect" → help guide until the listing is live, then "Connect on Zapier" → directory URL). Does not gate the integration itself.
 
 ## Rollout Plan
 
 1. **Authorization**: OAuth server, consent and workspace picker, plan and admin checks, read-only consent.
-2. **Public API and subscriptions**: `/me`, filters, enrollment endpoint, subscription and samples routes, per-plan limits, OpenAPI upload.
+2. **Public API and subscriptions**: `/me`, filters, enrollment endpoint, subscription and samples routes, OpenAPI upload.
 3. **Dashboard**: Zaps page, App Directory, ClassroomIO + {App} page, translations.
 4. **Zapier app**: 14 triggers, 11 actions, 2 searches, dropdowns, `zapier push`.
 5. **Early access (pre-listing)**: share the invite link with early orgs until the listing is approved, watch usage and delivery logs, iterate, update docs.
@@ -304,7 +297,7 @@ The dashboard has no public mode. Everything it does works the same for a privat
 ## Risks and Mitigations
 
 1. **The OAuth server is an attack surface.** Short-lived JWT access tokens, rotating refresh tokens, PKCE, server-side scope checks, per-request admin and plan checks, and a security review before public listing.
-2. **Subscription volume.** Each Zap trigger is one subscription. Separate per-plan caps from the 20-endpoint webhook limit, delete on Zap-off and on revoke, and show counts in the dashboard.
+2. **Subscription volume.** Each Zap trigger is one subscription. Keep them separate from the 20-endpoint webhook limit, delete on Zap-off and on revoke, and show counts in the dashboard.
 3. **A Zapier outage longer than the retry window loses events.** Retry for about 2.6 hours, show failed deliveries on the Zaps page, and let admins resend the last 24 hours.
 4. **Auto-disable.** Failing endpoints are degraded or disabled by the webhook health logic. Show failures on the Zaps page; a new subscribe recovers the trigger.
 5. **Plan mismatch.** Zapier and webhook entitlement drifting apart. Both derive from the same public API plan check.
@@ -346,4 +339,3 @@ Manual verification:
 11. Downgrade to Basic; the Zaps page shows the paused callout, calls return `UPGRADE_REQUIRED`, and deliveries stop. Upgrade; Zaps resume without reconnecting.
 12. Force access token expiry; Zapier refreshes silently.
 13. Make the target return 500 repeatedly; confirm retries, the failed delivery on the Zaps page, redelivery, and the health state.
-14. Exceed the plan's write limit; Zapier receives `429` with `Retry-After` and retries.

@@ -207,9 +207,9 @@ connections, and **the actual Zap built on zapier.com**. These are the parts the
 
 - **Plan gating is binary at Early Adopter+.** `index.html`'s dev toggle shows the upgrade callout a
   Basic-plan org would see instead of the empty/non-empty Zaps view, matching the PRD's stated gate.
-- **The limits come from the PRD's Access and Limits table:** Basic has no Zapier, Early Adopter gets
-  50 trigger subscriptions at 120 reads / 40 writes per minute, Enterprise 250 at 360 / 120. The
-  prototype draws the Early Adopter state.
+  There are no per-plan caps on connections, trigger subscriptions, or read/write volume once the
+  plan includes Zapier; the shared public API rate limit still applies. The prototype draws the Early
+  Adopter state.
 - **The trigger and action catalog is data, not markup.** `ZI.TRIGGERS`, `ZI.CLASSROOMIO_ACTIONS` and
   `ZI.CLASSROOMIO_SEARCHES` in `apps-catalog.js` currently carry five triggers, five actions and two
   searches; `zapier-handoff.html` renders whatever those objects contain, so bringing the prototype up

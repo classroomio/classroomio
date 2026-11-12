@@ -86,11 +86,13 @@ Zapier requires an active Early Adopter or Enterprise plan on ClassroomIO cloud.
 
 The connection was made with **Allow Zapier to make changes** turned off, so it can run triggers and searches but not actions. Reconnect ClassroomIO in Zapier and leave the switch on.
 
-### 429 Too Many Requests (Rate limits)
+### 429 Too Many Requests
 
-Zapier requests are rate limited per organization, not per connection: Early Adopter allows 120 reads and 40 writes per minute, and Enterprise allows 360 reads and 120 writes per minute. If you run high-volume Zaps that process hundreds of items simultaneously, add delay steps in Zapier or batch operations to remain within the rate limit.
+Zapier requests use the same limit as other public API clients: 100 requests per minute for each ClassroomIO connection. Zapier retries a throttled step automatically. If a high-volume Zap keeps hitting the limit, add delay steps or process items in smaller batches.
 
-Invites have their own limit: the admin who connected Zapier can create invites for one course 60 times per hour. **Send Course Invite**, **Enroll Student in Course** when it has to invite someone new, and that admin's invites from the dashboard all count toward it. Enrolling someone who is already enrolled or invited doesn't count.
+### Course invite limits
+
+The admin who connected Zapier can create invites for one course 60 times per hour. **Send Course Invite**, **Enroll Student in Course** when it has to invite someone new, and that admin's invites from the dashboard all count toward it. Enrolling someone who is already enrolled or invited doesn't count.
 
 ### Missing trigger events
 
