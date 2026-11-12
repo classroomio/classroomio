@@ -28,6 +28,7 @@ import {
   createOrganizationInvites,
   createOrganizationMembers,
   getOrganizationAudienceMember,
+  getLatestOrganizationInviteMetadataByEmails,
   getLatestOrganizationInviteRowByOrgAndEmail,
   getOrgMembersByProfileIds,
   getOrganizationById,
@@ -373,12 +374,14 @@ async function createStudentOrgInvitesAndSendEmails(input: {
     return { created: 0, emailsSent: 0, emailsFailed: 0 };
   }
 
-  const revokedInvites = await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId);
+  await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId);
+
+  const namelessEmails = emails.filter((email) => !fullnamesByEmail?.get(email));
+  const previousInvites = await getLatestOrganizationInviteMetadataByEmails(orgId, namelessEmails);
   const previousFullnames = new Map<string, string>();
-  for (const revokedInvite of revokedInvites) {
-    const previousFullname = parseFullnameFromInviteMetadata(revokedInvite.metadata);
-    const revokedEmail = revokedInvite.email?.toLowerCase();
-    if (previousFullname && revokedEmail) previousFullnames.set(revokedEmail, previousFullname);
+  for (const previousInvite of previousInvites) {
+    const previousFullname = parseFullnameFromInviteMetadata(previousInvite.metadata);
+    if (previousFullname) previousFullnames.set(previousInvite.email.toLowerCase(), previousFullname);
   }
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();

@@ -16,6 +16,7 @@ vi.mock('@cio/db/queries/organization', () => ({
     ),
   createOrganizationMembers: vi.fn().mockImplementation(async (rows: { email: string }[]) => rows),
   getOrganizationAudienceMember: vi.fn(),
+  getLatestOrganizationInviteMetadataByEmails: vi.fn().mockResolvedValue([]),
   getLatestOrganizationInviteRowByOrgAndEmail: vi.fn(),
   getOrgMembersByProfileIds: vi.fn().mockResolvedValue([]),
   getOrganizationById: vi.fn(),
@@ -73,8 +74,8 @@ import {
   createOrganizationInvites,
   createOrganizationMembers,
   getOrganizationById,
-  getOrganizationMembersByNormalizedEmails,
-  revokeActiveOrganizationInvitesByEmails
+  getLatestOrganizationInviteMetadataByEmails,
+  getOrganizationMembersByNormalizedEmails
 } from '@cio/db/queries/organization';
 import { getCohortsByOrg } from '@cio/db/queries/cohort';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
@@ -372,8 +373,8 @@ describe('importAudienceMembers — names stored with the invite', () => {
     expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace' });
   });
 
-  it('keeps the saved name when a pending student is imported again without one', async () => {
-    vi.mocked(revokeActiveOrganizationInvitesByEmails).mockResolvedValueOnce([
+  it('keeps the saved name, even from a revoked invite, when a pending student is imported again without one', async () => {
+    vi.mocked(getLatestOrganizationInviteMetadataByEmails).mockResolvedValueOnce([
       { email: 'ada@test.dev', metadata: { source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' } }
     ] as never);
 
@@ -383,7 +384,7 @@ describe('importAudienceMembers — names stored with the invite', () => {
   });
 
   it('prefers the name in the new import over the previous invite name', async () => {
-    vi.mocked(revokeActiveOrganizationInvitesByEmails).mockResolvedValueOnce([
+    vi.mocked(getLatestOrganizationInviteMetadataByEmails).mockResolvedValueOnce([
       { email: 'ada@test.dev', metadata: { source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' } }
     ] as never);
 
