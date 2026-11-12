@@ -67,6 +67,13 @@ export async function viewAsStudent({ courseId }: ViewAsStudentOptions) {
     return false;
   }
 
+  const handoffOrigin = getOrgHandoffOrigin(get(currentOrg));
+  if (!handoffOrigin) {
+    snackbar.error('snackbar.view_as_student.failed');
+
+    return false;
+  }
+
   const token = await accountApi.createLoginLinkToken();
   if (!token) {
     snackbar.error('snackbar.view_as_student.failed');
@@ -74,7 +81,7 @@ export async function viewAsStudent({ courseId }: ViewAsStudentOptions) {
     return false;
   }
 
-  const loginLinkUrl = new URL('/api/auth/login-link', getOrgHandoffOrigin(get(currentOrg)));
+  const loginLinkUrl = new URL('/api/auth/login-link', handoffOrigin);
   loginLinkUrl.searchParams.set('token', token);
   loginLinkUrl.searchParams.set('redirect', `/courses/${courseId}/lessons?next=true`);
 

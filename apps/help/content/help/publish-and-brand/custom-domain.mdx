@@ -17,6 +17,8 @@ When ClassroomIO builds a link for your organization, it resolves the host in th
 
 Most customer-facing course links use your org context and stop at step 1 or 4. The `app.classroomio.com` fallback applies when no academy URL is available.
 
+Sign-in handoffs from the admin dashboard are the exception. When an admin uses **View as student** or switches into an academy from the organization switcher, the one-time sign-in link goes to `https://<siteName>.myclassroomio.com` even when a custom domain is verified. That keeps the sign-in token on ClassroomIO's own host instead of sending it to a domain your organization controls.
+
 ## Set up your domain
 
 ### 1. Open domain settings
@@ -41,12 +43,13 @@ An unverified custom domain is not used for generated links. Until verification 
 
 ## Which links use your org URL
 
-| Link type                                | Uses org domain when verified?                 |
-| ---------------------------------------- | ---------------------------------------------- |
-| Course enrollment (`/course/.../enroll`) | Yes                                            |
-| Course invite emails from **People**     | Yes                                            |
-| Org site landing page and course catalog | Yes                                            |
-| Organization team invite (some flows)    | May still use platform URL until fully aligned |
+| Link type                                             | Uses org domain when verified?                  |
+| ----------------------------------------------------- | ----------------------------------------------- |
+| Course enrollment (`/course/.../enroll`)              | Yes                                             |
+| Course invite emails from **People**                  | Yes                                             |
+| Org site landing page and course catalog              | Yes                                             |
+| Admin sign-in handoff (View as student, org switcher) | No — always uses `<siteName>.myclassroomio.com` |
+| Organization team invite (some flows)                 | May still use platform URL until fully aligned  |
 
 Course invites are documented in [Invite Students](/manage-students/invite-students). Those links should point at your academy, not `app.classroomio.com`, when your domain is verified.
 

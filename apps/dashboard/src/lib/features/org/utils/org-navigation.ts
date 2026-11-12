@@ -76,6 +76,13 @@ export async function openLearnerOrg(org: OrgSiteDestination): Promise<boolean> 
     return true;
   }
 
+  const handoffOrigin = getOrgHandoffOrigin(org);
+  if (!handoffOrigin) {
+    snackbar.error('snackbar.org_switcher.open_academy_failed');
+
+    return false;
+  }
+
   const token = await accountApi.createLoginLinkToken();
   if (!token) {
     snackbar.error('snackbar.org_switcher.open_academy_failed');
@@ -88,7 +95,7 @@ export async function openLearnerOrg(org: OrgSiteDestination): Promise<boolean> 
   }
 
   cancelUploads();
-  const loginLinkUrl = new URL('/api/auth/login-link', getOrgHandoffOrigin(org));
+  const loginLinkUrl = new URL('/api/auth/login-link', handoffOrigin);
   loginLinkUrl.searchParams.set('token', token);
   loginLinkUrl.searchParams.set('redirect', STUDENT_HOME_ENTRY_PATH);
   window.location.href = loginLinkUrl.toString();

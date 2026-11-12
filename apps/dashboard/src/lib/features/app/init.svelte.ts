@@ -381,9 +381,15 @@ class AppInitApi extends BaseApi {
     if (isCloud) {
       const shouldRedirectToOnboarding = !userHasOrganizations && !isOrgSite;
       if (shouldRedirectToOnboarding) {
+        if (path.includes('/onboarding')) {
+          return;
+        }
+
         await pendingInvitesApi.fetchPendingInvites();
 
-        if (pendingInvitesApi.invites.length > 0) {
+        const hasPendingInvites = pendingInvitesApi.invites.length > 0;
+        const invitesFailedToLoad = pendingInvitesApi.lastError !== null;
+        if (hasPendingInvites || invitesFailedToLoad) {
           return goto(resolve(ORG_CHOOSER_PATH, {}));
         }
 

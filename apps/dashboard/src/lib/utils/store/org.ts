@@ -171,7 +171,9 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 /**
  * Origin that may receive a login-link handoff for `org`. A verified custom domain is
  * operator-controlled DNS, so handoffs use the org's canonical tenant host instead —
- * the token never travels to an address the org operator controls. Client-only.
+ * the token never travels to an address the org operator controls. Returns an empty
+ * string when a verified custom domain has no academy site name to fall back to.
+ * Client-only.
  */
 export function getOrgHandoffOrigin(org: OrgPublicOrigin): string {
   if (!browser) {
@@ -182,8 +184,8 @@ export function getOrgHandoffOrigin(org: OrgPublicOrigin): string {
     return window.location.origin;
   }
 
-  if (org.customDomain && org.isCustomDomainVerified && org.siteName) {
-    return `https://${org.siteName}.${TENANT_ROOT_DOMAIN}`;
+  if (org.customDomain && org.isCustomDomainVerified) {
+    return org.siteName ? `https://${org.siteName}.${TENANT_ROOT_DOMAIN}` : '';
   }
 
   return getOrgPublicOrigin(org);
