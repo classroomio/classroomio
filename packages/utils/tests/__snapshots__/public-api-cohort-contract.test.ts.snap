@@ -9,7 +9,7 @@ exports[`public API cohort request contract > ZPublicApiAddCohortMembers keeps i
       "items": {
         "properties": {
           "email": {
-            "description": "Linked to its profile if one exists; a student not yet in the organization joins it and uses a seat. Otherwise stored against the email alone.",
+            "description": "Linked to its profile if one exists; otherwise stored against the email alone.",
             "format": "email",
             "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
             "type": "string",
