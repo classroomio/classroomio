@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   authFetch: vi.fn(),
-  assignHref: vi.fn()
+  nonNavigatingAuthFetch: vi.fn()
 }));
 
 vi.mock('$lib/utils/services/api', () => {
@@ -17,6 +17,9 @@ vi.mock('$lib/utils/services/api', () => {
 vi.mock('$lib/utils/services/auth/client', () => ({
   authClient: {
     $fetch: mocks.authFetch
+  },
+  nonNavigatingAuthClient: {
+    $fetch: mocks.nonNavigatingAuthFetch
   }
 }));
 
@@ -27,56 +30,43 @@ describe('oauthApi authorization steps', () => {
     vi.clearAllMocks();
     oauthApi.error = null;
     oauthApi.isLoading = false;
-    vi.stubGlobal('window', {
-      location: {
-        set href(url: string) {
-          mocks.assignHref(url);
-        }
-      }
-    });
   });
 
-  it('returns the callback url without navigating itself when the redirectPlugin redirects on consent', async () => {
+  it('posts consent through the non-navigating client and returns the callback url', async () => {
     const callbackUrl = 'https://zapier.com/dashboard/auth/oauth/return/App249044CLIAPI/?code=abc&state=xyz';
+    mocks.nonNavigatingAuthFetch.mockResolvedValue({ data: { redirect: true, url: callbackUrl }, error: null });
 
-    mocks.authFetch.mockImplementation(async () => {
-      window.location.href = callbackUrl;
-
-      return { data: { redirect: true, url: callbackUrl }, error: null };
-    });
-
-    const redirectUrl = await oauthApi.submitConsent(true, 'client_id=zapier&sig=123');
+    const redirectUrl = await oauthApi.submitConsent(true, 'client_id=zapier&sig=123', ['course:read']);
 
     expect(redirectUrl).toBe(callbackUrl);
     expect(oauthApi.error).toBeNull();
-    expect(mocks.assignHref).toHaveBeenCalledTimes(1);
-    expect(mocks.assignHref).toHaveBeenCalledWith(callbackUrl);
+    expect(mocks.authFetch).not.toHaveBeenCalled();
+    expect(mocks.nonNavigatingAuthFetch).toHaveBeenCalledWith('/oauth2/consent', {
+      method: 'POST',
+      body: { accept: true, oauth_query: 'client_id=zapier&sig=123', scope: 'course:read' }
+    });
   });
 
-  it('returns the consent url without navigating itself when the redirectPlugin redirects on continue', async () => {
-    const consentUrl = '/oauth/consent?client_id=zapier&sig=123';
+  it('continues after the post-login gate through the non-navigating client and returns the next url', async () => {
+    const consentUrl = '/oauth/consent?client_id=zapier&sig=456';
+    mocks.nonNavigatingAuthFetch.mockResolvedValue({ data: { redirect: true, url: consentUrl }, error: null });
 
-    mocks.authFetch.mockImplementation(async () => {
-      window.location.href = consentUrl;
+    const nextUrl = await oauthApi.continueAfterOrganization('client_id=zapier&sig=123');
 
-      return { data: { redirect: true, url: consentUrl }, error: null };
+    expect(nextUrl).toBe(consentUrl);
+    expect(mocks.authFetch).not.toHaveBeenCalled();
+    expect(mocks.nonNavigatingAuthFetch).toHaveBeenCalledWith('/oauth2/continue', {
+      method: 'POST',
+      body: { postLogin: true, oauth_query: 'client_id=zapier&sig=123' }
     });
-
-    const consentPageUrl = await oauthApi.continueAfterOrganization('client_id=zapier&sig=123');
-
-    expect(consentPageUrl).toBe(consentUrl);
-    expect(oauthApi.error).toBeNull();
-    expect(mocks.assignHref).toHaveBeenCalledTimes(1);
-    expect(mocks.assignHref).toHaveBeenCalledWith(consentUrl);
   });
 
   it('sets generic error and returns null when authorization step fails', async () => {
-    mocks.authFetch.mockResolvedValue({ data: null, error: { message: 'bad request' } });
+    mocks.nonNavigatingAuthFetch.mockResolvedValue({ data: null, error: { message: 'bad request' } });
 
     const redirectUrl = await oauthApi.submitConsent(true, 'client_id=zapier&sig=123');
 
     expect(redirectUrl).toBeNull();
     expect(oauthApi.error).toBe('oauth.error.generic');
-    expect(mocks.assignHref).not.toHaveBeenCalled();
   });
 });

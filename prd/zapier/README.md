@@ -190,7 +190,7 @@ App logos are bundled with the dashboard, so no logo is loaded from a third-part
 3. The consent screen shows the app name, the workspace, the permissions grouped by area (View or Add and manage), "Stay connected until you remove access", and the redirect host.
 4. **Allow {app} to make changes** is on by default. Turning it off grants read-only access: every scope that changes workspace data is dropped, and the permission list updates to match. The connection keeps the scopes it needs to read data and subscribe to triggers.
 5. `Allow access` returns to Zapier with an authorization code. `Deny` returns with `error=access_denied`.
-6. Reconnecting with the same access skips the consent screen. Asking for more access than the admin granted shows it again.
+6. The consent screen always shows, so the admin can pick the workspace. If the admin already granted the app the requested access in that workspace, `Allow access` returns to Zapier with a code and keeps that grant, so the switch in step 4 has no effect. Disconnecting deletes the grant, so the next connection records a new one.
 
 ## Trigger Delivery (REST Hooks)
 

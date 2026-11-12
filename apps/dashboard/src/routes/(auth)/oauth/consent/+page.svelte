@@ -4,6 +4,7 @@
   import { AuthUI } from '$features/ui';
   import { oauthApi } from '$features/oauth/api/oauth.svelte';
   import {
+    getOAuthConsentPageQuery,
     getOAuthQuery,
     getOAuthResource,
     hasOfflineAccess,
@@ -155,25 +156,26 @@
   }
 
   async function clearPostLoginGate() {
-    const consentPageUrl = await oauthApi.continueAfterOrganization(oauthQuery);
+    const nextUrl = await oauthApi.continueAfterOrganization(oauthQuery);
 
-    if (!consentPageUrl) {
+    if (!nextUrl) {
       pendingDecision = null;
 
       return;
     }
 
-    const consentPageQuery = new URL(consentPageUrl, window.location.origin).search.slice(1);
-    const narrowedScopes = allowChanges ? undefined : grantedScopes;
-    const redirectUrl = await oauthApi.submitConsent(true, consentPageQuery, narrowedScopes);
+    const consentPageQuery = getOAuthConsentPageQuery(nextUrl, window.location.origin);
 
-    if (redirectUrl) {
-      window.location.href = redirectUrl;
+    if (consentPageQuery === null) {
+      window.location.href = nextUrl;
 
       return;
     }
 
-    window.location.href = consentPageUrl;
+    const narrowedScopes = allowChanges ? undefined : grantedScopes;
+    const redirectUrl = await oauthApi.submitConsent(true, consentPageQuery, narrowedScopes);
+
+    window.location.href = redirectUrl ?? nextUrl;
   }
 
   async function initialize() {

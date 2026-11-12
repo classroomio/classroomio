@@ -67,6 +67,20 @@ export function isOAuthAuthorizationQuery(searchParams: URLSearchParams): boolea
   return searchParams.has('client_id') && searchParams.has('sig');
 }
 
+export const OAUTH_CONSENT_PAGE_PATH = '/oauth/consent';
+
+/**
+ * Returns the signed authorization query when `url` points at the consent page, or `null` when it is any other
+ * destination, such as the client's redirect URI carrying an authorization code.
+ */
+export function getOAuthConsentPageQuery(url: string, baseUrl: string): string | null {
+  const parsedUrl = new URL(url, baseUrl);
+  const isConsentPage =
+    parsedUrl.pathname === OAUTH_CONSENT_PAGE_PATH && isOAuthAuthorizationQuery(parsedUrl.searchParams);
+
+  return isConsentPage ? getOAuthQuery(parsedUrl.search) : null;
+}
+
 export function buildOAuthAuthorizeUrl(search: string): string {
   return `/api/auth/oauth2/authorize${search}`;
 }
