@@ -2699,6 +2699,7 @@
             "empty_description": "Fügen Sie eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzu. Sie können beliebig viele Blöcke in beliebiger Reihenfolge hinzufügen.",
             "empty_note": "Diese Notiz ist leer.",
             "scroll_rail": "Unterrichtsblöcke",
+            "save_failed": "Diese Änderung konnte nicht gespeichert werden, daher wurde der Block wiederhergestellt. {reason}",
             "go_to_block": "Gehe zu Block {index}",
             "image": {
               "upload": "Bild hochladen",

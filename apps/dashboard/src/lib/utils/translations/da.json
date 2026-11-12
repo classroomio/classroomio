@@ -2699,6 +2699,7 @@
             "empty_description": "Tilføj en note, video, slides, dokument eller billede. Du kan tilføje så mange blokke, som du har brug for, i en hvilken som helst rækkefølge.",
             "empty_note": "Denne note er tom.",
             "scroll_rail": "Lektionsblokke",
+            "save_failed": "Ændringen kunne ikke gemmes, så blokken er blevet gendannet. {reason}",
             "go_to_block": "Gå til blok {index}",
             "image": {
               "upload": "Upload billede",

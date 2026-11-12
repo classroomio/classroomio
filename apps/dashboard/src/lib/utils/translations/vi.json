@@ -2699,6 +2699,7 @@
             "empty_description": "Thêm ghi chú, video, slide, tài liệu hoặc hình ảnh. Bạn có thể thêm bao nhiêu khối tùy thích, theo bất kỳ thứ tự nào.",
             "empty_note": "Ghi chú này trống.",
             "scroll_rail": "Khối bài học",
+            "save_failed": "Không thể lưu thay đổi này nên khối đã được khôi phục. {reason}",
             "go_to_block": "Đi đến khối {index}",
             "image": {
               "upload": "Tải ảnh lên",

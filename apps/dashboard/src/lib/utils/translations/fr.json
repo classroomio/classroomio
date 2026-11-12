@@ -2699,6 +2699,7 @@
             "empty_description": "Ajoutez une note, une vidéo, des diapositives, un document ou une image. Vous pouvez ajouter autant de blocs que nécessaire, dans l'ordre de votre choix.",
             "empty_note": "Cette note est vide.",
             "scroll_rail": "Blocs de leçon",
+            "save_failed": "Ce changement n'a pas pu être enregistré, le bloc a donc été restauré. {reason}",
             "go_to_block": "Aller au bloc {index}",
             "image": {
               "upload": "Télécharger une image",
