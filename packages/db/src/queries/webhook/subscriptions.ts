@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, count, desc, eq, isNotNull, sql, type SQL } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, sql, type SQL } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TNewWebhookEndpoint } from '@db/types';
@@ -50,36 +50,16 @@ async function findManagedSubscriptionByTarget(
   return withEvents ?? null;
 }
 
-export async function countManagedWebhookSubscriptions(
-  organizationId: string,
-  client: DbOrTxClient = db
-): Promise<number> {
-  try {
-    const [row] = await client
-      .select({ total: count() })
-      .from(schema.webhookEndpoint)
-      .where(
-        and(eq(schema.webhookEndpoint.organizationId, organizationId), isNotNull(schema.webhookEndpoint.oauthConsentId))
-      );
-
-    return row?.total ?? 0;
-  } catch (error) {
-    console.error('countManagedWebhookSubscriptions error:', error);
-    throw new Error('Failed to count webhook subscriptions');
-  }
-}
-
 /**
- * Returns the connected app's subscription for `values.payloadUrl`, creating it for `eventType` while the
- * organization holds fewer than `maxSubscriptions`. Counts and inserts under a row lock on the organization.
- * Returns null at the cap. A repeat for the same event with different course or cohort filters updates the
- * stored filters instead of silently keeping the old ones.
+ * Returns the connected app's subscription for `values.payloadUrl`, creating it for `eventType` when needed.
+ * Serializes concurrent subscribes for one organization, so a retried request cannot create a duplicate row for
+ * the same target. A repeat for the same event with different course or cohort filters updates the stored filters
+ * instead of silently keeping the old ones.
  */
 export async function upsertManagedWebhookSubscription(
   values: TManagedWebhookSubscriptionValues,
-  eventType: string,
-  maxSubscriptions: number
-): Promise<TManagedWebhookSubscriptionResult | null> {
+  eventType: string
+): Promise<TManagedWebhookSubscriptionResult> {
   try {
     return await db.transaction(async (tx) => {
       await tx
@@ -121,10 +101,6 @@ export async function upsertManagedWebhookSubscription(
           reactivated: needsReactivation ? true : undefined
         };
       }
-
-      const total = await countManagedWebhookSubscriptions(values.organizationId, tx);
-
-      if (total >= maxSubscriptions) return null;
 
       const subscription = await createWebhookEndpoint(
         {
