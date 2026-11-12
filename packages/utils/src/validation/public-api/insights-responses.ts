@@ -55,9 +55,9 @@ export const ZPublicApiInsightsCatalogSourceResponse = z.object({
   description: z.string(),
   scopeTypes: z.array(z.enum(INSIGHTS_SCOPE_TYPES)),
   hasSearch: z.boolean(),
-  dimensions: z.record(z.enum(INSIGHTS_DIMENSIONS), ZPublicApiInsightsDimensionDescriptionResponse),
-  metrics: z.record(z.enum(INSIGHTS_METRICS), ZPublicApiInsightsMetricDescriptionResponse),
-  filters: z.record(z.enum(INSIGHTS_FILTER_FIELDS), ZPublicApiInsightsFilterDescriptionResponse)
+  dimensions: z.partialRecord(z.enum(INSIGHTS_DIMENSIONS), ZPublicApiInsightsDimensionDescriptionResponse),
+  metrics: z.partialRecord(z.enum(INSIGHTS_METRICS), ZPublicApiInsightsMetricDescriptionResponse),
+  filters: z.partialRecord(z.enum(INSIGHTS_FILTER_FIELDS), ZPublicApiInsightsFilterDescriptionResponse)
 });
 
 export const ZPublicApiInsightsCatalogResponse = z.object({

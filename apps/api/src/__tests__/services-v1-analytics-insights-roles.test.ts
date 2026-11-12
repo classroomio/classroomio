@@ -139,4 +139,42 @@ describe('v1 insights per-scope role matrix', () => {
       getPublicApiInsightsSnapshotService(ORG_ID, TUTOR_ID, { scopeType: 'org', scopeId: ORG_ID }, {})
     ).rejects.toMatchObject({ code: ErrorCodes.UNAUTHORIZED, statusCode: 401 });
   });
+
+  it('authorizes a course-team tutor on course scope', async () => {
+    vi.mocked(getOrganizationMemberRoleId).mockResolvedValue(ROLE.TUTOR);
+    vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
+    vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
+    vi.mocked(getInsightsDashboardForScope).mockResolvedValue({
+      ...DASHBOARD,
+      scope: { ...DASHBOARD.scope, type: 'course', id: COURSE_ID }
+    } as never);
+
+    const snapshot = await getPublicApiInsightsSnapshotService(
+      ORG_ID,
+      TUTOR_ID,
+      { scopeType: 'course', scopeId: COURSE_ID },
+      {}
+    );
+
+    expect(isCourseTeamMemberOrOrgAdmin).toHaveBeenCalledWith(COURSE_ID, TUTOR_ID);
+    expect(getInsightsDashboardForScope).toHaveBeenCalled();
+    expect(snapshot.scope.id).toBe(COURSE_ID);
+  });
+
+  it('authorizes a cohort tutor on cohort scope', async () => {
+    vi.mocked(getOrganizationMemberRoleId).mockResolvedValue(ROLE.TUTOR);
+    vi.mocked(getCohortOrganizationId).mockResolvedValue(ORG_ID);
+    vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.TUTOR);
+
+    const snapshot = await getPublicApiInsightsSnapshotService(
+      ORG_ID,
+      TUTOR_ID,
+      { scopeType: 'cohort', scopeId: COHORT_ID },
+      {}
+    );
+
+    expect(getCohortMemberRole).toHaveBeenCalledWith(COHORT_ID, TUTOR_ID);
+    expect(getInsightsDashboardForScope).toHaveBeenCalled();
+    expect(snapshot.scope.id).toBe(COHORT_ID);
+  });
 });
