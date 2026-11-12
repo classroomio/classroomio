@@ -123,6 +123,12 @@ Status `409`, with `code` `STAFF_CANNOT_ENROLL`, from `POST /courses/{courseId}/
 
 **Fix:** Add admins and tutors to the course from the dashboard.
 
+### Organization member is archived
+
+Status `409`, with `code` `ORG_MEMBER_ARCHIVED`, from `POST /courses/{courseId}/enrollments` when the email belongs to an archived organization member. Archived members cannot gain a course seat until they are restored.
+
+**Fix:** Restore the member in the dashboard (**People**), then enroll them again.
+
 ## Next steps
 
 - [Authentication](/api/authentication): get and manage API keys.
