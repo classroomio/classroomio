@@ -190,7 +190,7 @@ App logos are bundled with the dashboard, so no logo is loaded from a third-part
 3. The consent screen shows the app name, the workspace, the permissions grouped by area (View or Add and manage), "Stay connected until you remove access", and the redirect host.
 4. **Allow {app} to make changes** is on by default. Turning it off grants read-only access: every scope that changes workspace data is dropped, and the permission list updates to match. The connection keeps the scopes it needs to read data and subscribe to triggers.
 5. `Allow access` returns to Zapier with an authorization code. `Deny` returns with `error=access_denied`.
-6. The consent screen always shows, so the admin can pick the workspace. If the admin already granted the app the requested access in that workspace, `Allow access` returns to Zapier with a code and keeps that grant, so the switch in step 4 has no effect. Disconnecting deletes the grant, so the next connection records a new one.
+6. The consent screen shows on every authorization request, reconnects included, even when the admin already granted the app access in that workspace. The approved scopes replace the stored grant, so reconnecting with the switch off makes the connection read-only and reconnecting with it on allows changes again. Tokens issued earlier with a scope the grant no longer covers are rejected, and the first such token that reaches the API deletes the stale tokens, refresh tokens included.
 
 ## Trigger Delivery (REST Hooks)
 
@@ -269,7 +269,7 @@ Zapier is available on the Early Adopter and Enterprise plans. Basic sees an upg
 1. **Authorization**: OAuth server, consent and workspace picker, plan and admin checks, read-only consent.
 2. **Public API and subscriptions**: `/me`, filters, enrollment endpoint, subscription and samples routes, OpenAPI upload.
 3. **Dashboard**: Zaps page, App Directory, ClassroomIO + {App} page, translations.
-4. **Zapier app**: 14 triggers, 11 actions, 2 searches, dropdowns, `zapier push`.
+4. **Zapier app**: 14 triggers, 11 actions, 2 searches, dropdowns, `zapier push`. The reconnect and read-only-narrowing behavior in the help center assumes the pushed app version containing `prompt=consent`; do not publish those doc updates until that push is live.
 5. **Early access (pre-listing)**: share the invite link with early orgs until the listing is approved, watch usage and delivery logs, iterate, update docs.
 6. **Public listing**: submit for directory review, promote, announce.
 7. **Later**: deferred triggers and actions, other iPaaS clients.
