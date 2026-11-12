@@ -879,6 +879,22 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
     optionalCourseItems['EO-required'] = exerciseRequired.id;
     optionalCourseItems['EO-optional'] = exerciseOptional.id;
 
+    const pendingMembers = ['open', 'expired'].map((label) => ({
+      organizationId: orgOId,
+      roleId: ROLE.STUDENT,
+      email: `not-joined-${label}-${suffix}@insights.test`,
+      status: 'ACTIVE' as const
+    }));
+    await db.insert(schema.organizationmember).values(pendingMembers);
+    await db.insert(schema.organizationInvite).values({
+      organizationId: orgOId,
+      roleId: ROLE.STUDENT,
+      email: `not-joined-expired-${suffix}@insights.test`,
+      tokenHash: `insights-expired-${suffix}`,
+      createdByProfileId: profiles.O1,
+      expiresAt: isoDaysAgo(1)
+    });
+
     const gmO1 = await addGroupMember(groupGO.id, profiles.O1, 'O1O');
     const gmO2 = await addGroupMember(groupGO.id, profiles.O2, 'O2O');
 
@@ -934,6 +950,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
     await remove(schema.groupmember, schema.groupmember.groupId, groupIds);
     await remove(schema.course, schema.course.id, courseIds);
     await remove(schema.group, schema.group.id, groupIds);
+    await remove(schema.organizationInvite, schema.organizationInvite.organizationId, organizationIds);
     await remove(schema.organizationmember, schema.organizationmember.organizationId, organizationIds);
     await remove(schema.profile, schema.profile.id, profileIds);
     await remove(schema.user, schema.user.id, userIds);
@@ -2248,6 +2265,21 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
       scope: scopeO
     });
     expectRows(assessmentRows, 4);
+  });
+
+  it('reports org seats with the plan limit rules and the seats held by students who have not joined', async () => {
+    const { getInsightsScopeSummary } = await import('@cio/db/queries/insights');
+    const { countActiveStudents } = await import('@cio/db/queries/organization');
+
+    const orgSummary = await getInsightsScopeSummary({ orgId: orgOId, type: 'org', id: orgOId });
+    const seatsUsed = await countActiveStudents(orgOId);
+
+    expect(orgSummary).toMatchObject({ seatsUsed: 3, seatsNotJoined: 1 });
+    expect(orgSummary.seatsUsed).toBe(seatsUsed);
+
+    const courseSummary = await getInsightsScopeSummary({ orgId: orgOId, type: 'course', id: courseKOId });
+
+    expect(courseSummary).toMatchObject({ seatsUsed: null, seatsNotJoined: null });
   });
 
   it('counts a completion inside the week window', async () => {

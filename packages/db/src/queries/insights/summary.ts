@@ -3,6 +3,7 @@ import { sql, type SQL } from 'drizzle-orm';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
+import { countActiveStudents, countNotJoinedSeatHolders } from '../organization/organization';
 import { plainScopeContext, scopeCtes } from './scope';
 import type { InsightsScopeCourse, InsightsScopeRef, InsightsScopeSummary } from './types';
 
@@ -22,6 +23,24 @@ function pendingCountSql(scope: InsightsScopeRef): SQL {
     SELECT COUNT(*) FROM cohort_member
     WHERE cohort_id = ${scope.id} AND role_id = ${ROLE.STUDENT} AND profile_id IS NULL
   )`;
+}
+
+/**
+ * Seat usage with the same rules as the plan's student limit, and how many of those seats belong to students who have
+ * not joined yet. Null outside org scope.
+ */
+async function orgSeatCounts(
+  scope: InsightsScopeRef,
+  dbClient: DbOrTxClient
+): Promise<{ used: number | null; notJoined: number | null }> {
+  if (scope.type !== 'org') return { used: null, notJoined: null };
+
+  const [used, notJoined] = await Promise.all([
+    countActiveStudents(scope.orgId, dbClient),
+    countNotJoinedSeatHolders(scope.orgId, dbClient)
+  ]);
+
+  return { used, notJoined };
 }
 
 /** The cohort description with blanks as null; null outside cohort scope. */
@@ -97,6 +116,7 @@ export async function getInsightsScopeSummary(
           ) ORDER BY sc.course_title)
           FROM scope_course sc
         ), '[]'::json) AS courses`);
+    const seats = await orgSeatCounts(scope, dbClient);
     const [row] = Array.from(result) as Array<{
       name: string;
       description: string | null;
@@ -116,6 +136,8 @@ export async function getInsightsScopeSummary(
       cohortCount: row?.cohort_count ?? 0,
       activeCohortCount: row?.active_cohort_count ?? 0,
       studentTarget: row?.student_target ?? null,
+      seatsUsed: seats.used,
+      seatsNotJoined: seats.notJoined,
       courses: row?.courses ?? []
     };
   } catch (error) {

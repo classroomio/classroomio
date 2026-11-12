@@ -109,6 +109,8 @@ export type InsightsScopeSummary = {
   cohortCount: number;
   activeCohortCount: number;
   studentTarget: number | null;
+  seatsUsed: number | null;
+  seatsNotJoined: number | null;
   courses: InsightsScopeCourse[];
 };
 
