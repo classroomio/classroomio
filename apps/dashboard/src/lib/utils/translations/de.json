@@ -6694,7 +6694,7 @@
       "share_of_cohort": "{percent} der Kohorte",
       "share_of_enrolled": "{percent} der Eingeschriebenen",
       "share_of_completions": "{percent} der Abschlüsse",
-      "avg_progress_hint": "abgeschlossene Lektionen und Übungen / gesamt",
+      "avg_progress_hint": "abgeschlossene Pflichtlektionen und -übungen / gesamt",
       "avg_score_hint": "über die durchgeführten Übungen hinweg",
       "overdue_hint": "Frist überschritten, nicht erledigt",
       "completed_certified": "{percent} der Kohorte · {count} zertifiziert",

@@ -6776,7 +6776,7 @@
       "share_of_cohort": "Grubun {percent}'si",
       "share_of_enrolled": "{percent} kayıtlı kişi",
       "share_of_completions": "{percent} tamamlama sayısı",
-      "avg_progress_hint": "tamamlanan dersler ve alıştırmalar / toplam",
+      "avg_progress_hint": "tamamlanan zorunlu dersler ve alıştırmalar / toplam",
       "avg_score_hint": "yapılan egzersizler arasında",
       "overdue_hint": "son teslim tarihi geçmiş, yapılmamış",
       "completed_certified": "Grubun {percent}'si · {count} sertifikalı",

@@ -6694,7 +6694,7 @@
       "share_of_cohort": "समूह का {percent}",
       "share_of_enrolled": "नामांकित का {percent}",
       "share_of_completions": "पूर्णता का {percent}",
-      "avg_progress_hint": "पाठ और अभ्यास पूर्ण/कुल",
+      "avg_progress_hint": "आवश्यक पाठ और अभ्यास पूर्ण/कुल",
       "avg_score_hint": "पूरे अभ्यास में लिया गया",
       "overdue_hint": "उनकी समय सीमा समाप्त हो गई, पूरा नहीं हुआ",
       "completed_certified": "समूह का {percent} · {count} प्रमाणित",

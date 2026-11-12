@@ -6694,7 +6694,7 @@
       "share_of_cohort": "{percent} của nhóm thuần tập",
       "share_of_enrolled": "{percent} trong số đã đăng ký",
       "share_of_completions": "{percent} số lần hoàn thành",
-      "avg_progress_hint": "bài học và bài tập đã hoàn thành / tổng số",
+      "avg_progress_hint": "bài học và bài tập bắt buộc đã hoàn thành / tổng số",
       "avg_score_hint": "qua các bài tập đã thực hiện",
       "overdue_hint": "quá thời hạn của họ, chưa xong",
       "completed_certified": "{percent} của nhóm thuần tập · {count} được chứng nhận",

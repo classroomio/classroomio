@@ -6694,7 +6694,7 @@
       "share_of_cohort": "{percent} da coorte",
       "share_of_enrolled": "{percent} dos inscritos",
       "share_of_completions": "{percent} de conclusões",
-      "avg_progress_hint": "lições e exercícios concluídos / total",
+      "avg_progress_hint": "lições e exercícios obrigatórios concluídos / total",
       "avg_score_hint": "entre exercícios realizados",
       "overdue_hint": "passou do prazo, não foi feito",
       "completed_certified": "{percent} da coorte · Certificado {count}",

@@ -6796,7 +6796,7 @@
       "share_of_cohort": "{percent} из когорты",
       "share_of_enrolled": "{percent} зачисленных",
       "share_of_completions": "{percent} завершенных проектов",
-      "avg_progress_hint": "уроков и упражнений выполнено/всего",
+      "avg_progress_hint": "обязательных уроков и упражнений выполнено/всего",
       "avg_score_hint": "по упражнениям, выполненным",
       "overdue_hint": "истек срок, не выполнено",
       "completed_certified": "{percent} когорты · сертифицирован {count}",

@@ -6694,7 +6694,7 @@
       "share_of_cohort": "{percent} af kohorten",
       "share_of_enrolled": "{percent} af tilmeldte",
       "share_of_completions": "{percent} af fuldførelser",
-      "avg_progress_hint": "lektioner og øvelser gennemført / i alt",
+      "avg_progress_hint": "obligatoriske lektioner og øvelser gennemført / i alt",
       "avg_score_hint": "på tværs af øvelser",
       "overdue_hint": "forbi deres deadline, ikke gjort",
       "completed_certified": "{percent} af kohorten · {count} certificeret",

@@ -6731,7 +6731,7 @@
       "share_of_cohort": "{percent} of the cohort",
       "share_of_enrolled": "{percent} of enrolled",
       "share_of_completions": "{percent} of completions",
-      "avg_progress_hint": "lessons and exercises completed / total",
+      "avg_progress_hint": "required lessons and exercises completed / total",
       "avg_score_hint": "across exercises taken",
       "overdue_hint": "past their deadline, not done",
       "completed_certified": "{percent} of the cohort · {count} certified",
