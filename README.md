@@ -79,7 +79,7 @@ To get a local copy up and running, please follow these simple steps.
 
 Here is what you need to be able to run ClassroomIO.com
 
-- **[Node.js](https://nodejs.org/)** (Version: >=20.19.3) — _required_
+- **[Node.js](https://nodejs.org/)** (Version: 24.22.1, see `.nvmrc`) — _required_
 - **[pnpm](https://pnpm.io/installation)** (v10) — _required_; the package scripts call `pnpm` directly, so npm/yarn are not substitutes
 - **[Docker](https://docs.docker.com/engine/install/)** — _required_; runs Postgres + Redis (no local install of those needed)
 

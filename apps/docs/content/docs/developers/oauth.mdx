@@ -40,7 +40,7 @@ Two API environment variables configure first-party integrations:
 | `OAUTH_TRUSTED_CLIENT_IDS` | Comma-separated OAuth client IDs treated as first-party. Trusted clients show the **Verified** badge and cannot be modified through the dynamic client CRUD endpoints. Leave empty unless deploying ClassroomIO's own integration. |
 | `ZAPIER_OAUTH_CLIENT_ID`   | The client ID of ClassroomIO's Zapier OAuth client. Identifies Zapier grants in the dashboard, `/me` responses, and managed webhook subscriptions.                                                        |
 
-Store only client IDs issued to ClassroomIO's own integrations in `OAUTH_TRUSTED_CLIENT_IDS`. Any third-party client registered through dynamic registration must stay untrusted so admins always see the consent screen.
+Store only client IDs issued to ClassroomIO's own integrations in `OAUTH_TRUSTED_CLIENT_IDS`. Third-party clients registered through dynamic registration must stay untrusted; note that repeat requests whose scopes the stored grant already covers skip the consent screen unless the client sends `prompt=consent`.
 
 ```bash
 curl -X POST https://app.classroomio.com/api/auth/oauth2/register \
