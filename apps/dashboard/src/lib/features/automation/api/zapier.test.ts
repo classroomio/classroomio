@@ -81,7 +81,7 @@ describe('zapierApi', () => {
     zapierApi.resetOrganizationState();
   });
 
-  it('loads Zapier overview connections and limits', async () => {
+  it('loads Zapier overview connections', async () => {
     const overviewData = {
       connections: [
         {
@@ -105,11 +105,7 @@ describe('zapierApi', () => {
             }
           ]
         }
-      ],
-      limits: {
-        maxTriggerSubscriptions: 50,
-        activeTriggerSubscriptions: 1
-      }
+      ]
     };
 
     mocks.zapierGet.mockResolvedValue({
@@ -122,7 +118,7 @@ describe('zapierApi', () => {
     expect(zapierApi.overview).toEqual(overviewData);
   });
 
-  it('removes a connection and updates overview active triggers', async () => {
+  it('removes a connection and reloads the overview', async () => {
     const overviewData = {
       connections: [
         {
@@ -146,11 +142,7 @@ describe('zapierApi', () => {
             }
           ]
         }
-      ],
-      limits: {
-        maxTriggerSubscriptions: 50,
-        activeTriggerSubscriptions: 1
-      }
+      ]
     };
 
     mocks.zapierGet
@@ -163,8 +155,7 @@ describe('zapierApi', () => {
         json: async () => ({
           success: true,
           data: {
-            connections: [],
-            limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 }
+            connections: []
           }
         })
       });
@@ -179,7 +170,6 @@ describe('zapierApi', () => {
     expect(mocks.deleteConnection).toHaveBeenCalledWith({ param: { consentId: 'consent-1' } });
     expect(mocks.zapierGet).toHaveBeenCalledTimes(2);
     expect(zapierApi.overview?.connections).toHaveLength(0);
-    expect(zapierApi.overview?.limits.activeTriggerSubscriptions).toBe(0);
     expect(mocks.snackbarSuccess).toHaveBeenCalledWith('snackbar.zapier.removed');
   });
 
@@ -207,12 +197,10 @@ describe('zapierApi', () => {
             }
           ]
         }
-      ],
-      limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 1 }
+      ]
     };
     const freshOverview = {
-      connections: [],
-      limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 }
+      connections: []
     };
 
     let resolveStaleGet!: (value: unknown) => void;
@@ -244,7 +232,6 @@ describe('zapierApi', () => {
     await racingLoad;
 
     expect(zapierApi.overview?.connections).toHaveLength(0);
-    expect(zapierApi.overview?.limits.activeTriggerSubscriptions).toBe(0);
   });
 
   it('shows an error message when removing a connection fails', async () => {
@@ -258,8 +245,7 @@ describe('zapierApi', () => {
 
   it('resets organization state cleanly', async () => {
     zapierApi.overview = {
-      connections: [],
-      limits: { maxTriggerSubscriptions: 0, activeTriggerSubscriptions: 0 }
+      connections: []
     };
 
     zapierApi.resetOrganizationState();
@@ -287,8 +273,7 @@ describe('zapierApi', () => {
         json: async () => ({
           success: true,
           data: {
-            connections: [],
-            limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 5 }
+            connections: [{ consentId: 'consent-fresh' }]
           }
         })
       });
@@ -297,21 +282,20 @@ describe('zapierApi', () => {
     const secondLoad = zapierApi.load();
 
     await secondLoad;
-    expect(zapierApi.overview?.limits.activeTriggerSubscriptions).toBe(5);
+    expect(zapierApi.overview?.connections[0]?.consentId).toBe('consent-fresh');
 
     resolveFirst({
       ok: true,
       json: async () => ({
         success: true,
         data: {
-          connections: [],
-          limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 999 }
+          connections: [{ consentId: 'consent-stale' }]
         }
       })
     });
     await firstLoad;
 
-    expect(zapierApi.overview?.limits.activeTriggerSubscriptions).toBe(5);
+    expect(zapierApi.overview?.connections[0]?.consentId).toBe('consent-fresh');
   });
 
   it('leaves overview empty when the API reports success: false', async () => {
@@ -327,8 +311,7 @@ describe('zapierApi', () => {
 
   it('reloads the overview on loadOnce even when a connection list is cached', async () => {
     const overviewData = {
-      connections: [],
-      limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 }
+      connections: []
     };
 
     mocks.zapierGet.mockResolvedValue({
@@ -360,7 +343,7 @@ describe('zapierApi', () => {
       ok: true,
       json: async () => ({
         success: true,
-        data: { connections: [], limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 } }
+        data: { connections: [] }
       })
     });
     await Promise.all([first, second]);
@@ -377,7 +360,7 @@ describe('zapierApi', () => {
       ok: true,
       json: async () => ({
         success: true,
-        data: { connections: [], limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 } }
+        data: { connections: [] }
       })
     });
 
@@ -402,7 +385,7 @@ describe('zapierApi', () => {
       ok: true,
       json: async () => ({
         success: true,
-        data: { connections: [], limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 } }
+        data: { connections: [] }
       })
     });
 
@@ -419,7 +402,7 @@ describe('zapierApi', () => {
       ok: true,
       json: async () => ({
         success: true,
-        data: { connections: [], limits: { maxTriggerSubscriptions: 50, activeTriggerSubscriptions: 0 } }
+        data: { connections: [] }
       })
     });
 

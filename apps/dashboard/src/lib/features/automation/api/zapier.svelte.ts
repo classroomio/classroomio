@@ -92,12 +92,9 @@ class ZapierApi extends BaseApiWithErrors {
 
         if (!this.overview) return;
 
-        const deleted = this.overview.connections.find((connection) => connection.consentId === consentId);
-
         this.overview.connections = this.overview.connections.filter(
           (connection) => connection.consentId !== consentId
         );
-        this.overview.limits.activeTriggerSubscriptions -= deleted?.triggers.length ?? 0;
         snackbar.success('snackbar.zapier.removed');
       },
       onError: () => {
