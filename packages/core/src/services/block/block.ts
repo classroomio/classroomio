@@ -125,10 +125,10 @@ function validatedBlockData(type: TBlockType, data: unknown): Record<string, unk
 /**
  * True when every owner of the key is this organization. A key nobody owns counts as owned.
  */
-async function isStorageKeyOwnedBy(key: string, organizationId: string): Promise<boolean> {
+async function isStorageKeyOwnedBy(key: string, organizationId: string, dbClient: DbOrTxClient): Promise<boolean> {
   const prefix = readOrganizationIdFromFileKey(key);
-  const prefixAssetOwners = await getAssetOrganizationIdsByAssetIds(prefix ? [prefix] : []);
-  const claimingOwners = await getAssetOrganizationIdsByStorageKeys(prefix ? [] : [key]);
+  const prefixAssetOwners = await getAssetOrganizationIdsByAssetIds(prefix ? [prefix] : [], dbClient);
+  const claimingOwners = await getAssetOrganizationIdsByStorageKeys(prefix ? [] : [key], dbClient);
   const ownerOrganizationIds = resolveFileKeyOwnerOrganizationIds(key, {
     prefixAssetOrganizationId: prefix ? prefixAssetOwners.get(prefix) : undefined,
     claimingOrganizationIds: claimingOwners.get(key)
@@ -140,20 +140,21 @@ async function isStorageKeyOwnedBy(key: string, organizationId: string): Promise
 async function assertAssetsBelongToOrganization(
   type: TBlockType,
   data: Record<string, unknown>,
-  organizationId: string
+  organizationId: string,
+  dbClient: DbOrTxClient
 ): Promise<void> {
   if (!BLOCK_DEFINITIONS[type].media) return;
 
   const assetId = getBlockAssetId(type, data);
   if (assetId) {
-    const asset = await getAssetById(assetId, organizationId);
+    const asset = await getAssetById(assetId, organizationId, dbClient);
     if (!asset) {
       throw new AppError('Asset not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
     }
   }
 
   const storageKey = typeof data.key === 'string' ? data.key : '';
-  if (storageKey && !(await isStorageKeyOwnedBy(storageKey, organizationId))) {
+  if (storageKey && !(await isStorageKeyOwnedBy(storageKey, organizationId, dbClient))) {
     throw new AppError('File not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
   }
 }
@@ -287,7 +288,7 @@ export async function createLessonBlock(
   const created = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
     await ensureLessonRevisionBaseline(lessonId, tx);
-    await assertAssetsBelongToOrganization(input.type, data, scope.organizationId);
+    await assertAssetsBelongToOrganization(input.type, data, scope.organizationId, tx);
     await lockLessonBlockPositions(lessonId, tx);
 
     const ordered = await getPlacementPositions(lessonId, tx);
@@ -407,7 +408,7 @@ export async function updateLessonBlock(
     const row = await requireLessonBlockRow(lessonId, blockId, tx);
     const type = row.block.type as TBlockType;
     const data = validatedBlockData(type, input.data);
-    await assertAssetsBelongToOrganization(type, data, scope.organizationId);
+    await assertAssetsBelongToOrganization(type, data, scope.organizationId, tx);
 
     const affectedLessonIds = (await listLessonIdsForBlock(blockId, tx)).sort();
     for (const affectedLessonId of affectedLessonIds) {

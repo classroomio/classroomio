@@ -139,14 +139,18 @@ export async function createOrGetAssetByStorageKey(values: TNewAsset, dbClient: 
   }
 }
 
-export async function getAssetById(assetId: string, orgId?: string): Promise<TAsset | null> {
+export async function getAssetById(
+  assetId: string,
+  orgId?: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
   try {
     const conditions = [eq(schema.asset.id, assetId)];
     if (orgId) {
       conditions.push(eq(schema.asset.organizationId, orgId));
     }
 
-    const [item] = await db
+    const [item] = await dbClient
       .select()
       .from(schema.asset)
       .where(and(...conditions))
