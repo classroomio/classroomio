@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, eq, gt, max, ne } from 'drizzle-orm';
+import { and, eq, gt, inArray, max, ne } from 'drizzle-orm';
 
 import { createHash, randomBytes } from 'crypto';
 
@@ -125,13 +125,14 @@ export async function findActiveOAuthConsent(
   userId: string,
   clientId: string,
   organizationId: string
-): Promise<{ id: string; createdAt: Date; clientName: string | null } | null> {
+): Promise<{ id: string; createdAt: Date; clientName: string | null; scopes: string[] } | null> {
   try {
     const [row] = await db
       .select({
         id: schema.oauthConsent.id,
         createdAt: schema.oauthConsent.createdAt,
-        clientName: schema.oauthClient.name
+        clientName: schema.oauthClient.name,
+        scopes: schema.oauthConsent.scopes
       })
       .from(schema.oauthConsent)
       .leftJoin(schema.oauthClient, eq(schema.oauthClient.clientId, schema.oauthConsent.clientId))
@@ -148,6 +149,77 @@ export async function findActiveOAuthConsent(
   } catch (error) {
     console.error('findActiveOAuthConsent error:', error);
     throw new Error('Failed to check OAuth grant');
+  }
+}
+
+/**
+ * Deletes the grant's access and refresh tokens that carry a scope outside
+ * `grantedScopes`, so a refresh token cannot outlive a narrowed grant.
+ * Returns how many tokens were deleted.
+ */
+export async function revokeStaleOAuthTokens(
+  userId: string,
+  clientId: string,
+  organizationId: string,
+  grantedScopes: readonly string[]
+): Promise<number> {
+  try {
+    return await db.transaction(async (tx) => {
+      const refreshTokens = await tx
+        .select({ id: schema.oauthRefreshToken.id, scopes: schema.oauthRefreshToken.scopes })
+        .from(schema.oauthRefreshToken)
+        .where(
+          and(
+            eq(schema.oauthRefreshToken.userId, userId),
+            eq(schema.oauthRefreshToken.clientId, clientId),
+            eq(schema.oauthRefreshToken.referenceId, organizationId)
+          )
+        );
+
+      const staleRefreshIds = refreshTokens
+        .filter((token) => !token.scopes.every((scope) => grantedScopes.includes(scope)))
+        .map((token) => token.id);
+
+      let removed = 0;
+
+      if (staleRefreshIds.length > 0) {
+        const deletedRefresh = await tx
+          .delete(schema.oauthRefreshToken)
+          .where(inArray(schema.oauthRefreshToken.id, staleRefreshIds))
+          .returning({ id: schema.oauthRefreshToken.id });
+
+        removed += deletedRefresh.length;
+      }
+
+      const accessTokens = await tx
+        .select({ id: schema.oauthAccessToken.id, scopes: schema.oauthAccessToken.scopes })
+        .from(schema.oauthAccessToken)
+        .where(
+          and(
+            eq(schema.oauthAccessToken.userId, userId),
+            eq(schema.oauthAccessToken.clientId, clientId),
+            eq(schema.oauthAccessToken.referenceId, organizationId)
+          )
+        );
+
+      const staleAccessIds = accessTokens
+        .filter((token) => !token.scopes.every((scope) => grantedScopes.includes(scope)))
+        .map((token) => token.id);
+
+      if (staleAccessIds.length > 0) {
+        const deletedAccess = await tx
+          .delete(schema.oauthAccessToken)
+          .where(inArray(schema.oauthAccessToken.id, staleAccessIds))
+          .returning({ id: schema.oauthAccessToken.id });
+
+        removed += deletedAccess.length;
+      }
+
+      return removed;
+    });
+  } catch (error) {
+    console.error('revokeStaleOAuthTokens error:', error);
+    throw new Error('Failed to revoke stale OAuth tokens');
   }
 }
 
