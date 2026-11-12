@@ -2,9 +2,24 @@ export type BucketCombine = 'sum';
 
 export type ChartBucket = { date: Date; endDate: Date; isSingleDay: boolean; rawCount: number };
 
-export type ChartAxisTickProps = { x: number; y: number; value: string };
+type ChartTextValue = string | number | ((datum: never) => unknown);
+
+/** The props layerchart passes to an axis `tickLabel` snippet, mirroring its text props without importing it. */
+export type ChartAxisTickProps = { x?: ChartTextValue; y?: ChartTextValue; value?: ChartTextValue };
 
 type DailyPoint<TKey extends string> = { date: string } & Record<TKey, number | null>;
+
+/** An axis tick coordinate; layerchart only passes accessor functions for data-bound text, never for ticks. */
+export function tickCoordinate(value: ChartTextValue | undefined): string | number | undefined {
+  return typeof value === 'function' ? undefined : value;
+}
+
+/** An axis tick's label text. */
+export function tickText(value: ChartTextValue | undefined): string {
+  if (value === undefined || typeof value === 'function') return '';
+
+  return String(value);
+}
 
 export const DATE_TICK_MIN_WIDTH = 56;
 export const EXERCISE_TICK_MIN_WIDTH = 96;

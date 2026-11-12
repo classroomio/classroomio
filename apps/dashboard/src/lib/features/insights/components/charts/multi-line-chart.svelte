@@ -10,7 +10,14 @@
   import { browser } from '$app/environment';
   import type { ChartConfig } from '@cio/ui/base/chart/types';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { EXERCISE_TICK_MIN_WIDTH, truncateTickLabel, visibleTicks, type ChartAxisTickProps } from '$features/ui';
+  import {
+    EXERCISE_TICK_MIN_WIDTH,
+    truncateTickLabel,
+    tickCoordinate,
+    tickText,
+    visibleTicks,
+    type ChartAxisTickProps
+  } from '$features/ui';
 
   import { cycleColor, INSIGHTS_COLORS, NO_COHORT_SERIES_KEY } from '../../utils/insights-utils';
   import type { InsightsChartPoint } from '../../utils/types';
@@ -66,14 +73,14 @@
   {@const isLast = index === ticks.length - 1 && ticks.length > 1}
   {@const anchor = isFirst ? 'start' : isLast ? 'end' : 'middle'}
   <text
-    x={tickProps.x}
-    y={tickProps.y}
+    x={tickCoordinate(tickProps.x)}
+    y={tickCoordinate(tickProps.y)}
     dy="8"
     text-anchor={anchor}
     class="lc-axis-tick-label fill-muted-foreground font-normal"
     font-size="12"
   >
-    {tickProps.value}
+    {tickText(tickProps.value)}
   </text>
 {/snippet}
 

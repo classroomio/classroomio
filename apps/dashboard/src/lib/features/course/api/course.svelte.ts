@@ -53,7 +53,6 @@ interface UpdateCourseOptions {
 export class CourseApi extends BaseApiWithErrors {
   course = $state<Course | null>(null);
   inviteRestricted = $state(false);
-  courseAnalytics = $state<CourseAnalytics | null>(null);
   get publicConversionOffenders(): NonAutoGradableQuestionOffender[] {
     return publicConversionFlow.offenders;
   }

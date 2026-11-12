@@ -4,6 +4,8 @@ import {
   DATE_TICK_MIN_WIDTH,
   formatChartTooltipDate,
   getBucketSize,
+  tickCoordinate,
+  tickText,
   truncateTickLabel,
   visibleTicks
 } from './chart-buckets';
@@ -122,5 +124,18 @@ describe('formatChartTooltipDate', () => {
       rawCount: 5
     };
     expect(formatChartTooltipDate(start, point, 'en-US')).toBe('Sep 28 – Oct 2, 2026');
+  });
+});
+
+describe('axis tick props', () => {
+  it('passes plain coordinates and labels through and drops accessor functions', () => {
+    const accessor = () => 'ignored';
+
+    expect(tickCoordinate(12)).toBe(12);
+    expect(tickCoordinate(accessor)).toBeUndefined();
+    expect(tickText('Week 1')).toBe('Week 1');
+    expect(tickText(3)).toBe('3');
+    expect(tickText(accessor)).toBe('');
+    expect(tickText(undefined)).toBe('');
   });
 });
