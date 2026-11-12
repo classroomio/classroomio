@@ -41,7 +41,7 @@ ClassroomIO is an intelligent customer training platform that helps SaaS compani
 - **Learning Paths:** Guide learners through structured learning experiences.
 - **Embedded Learning:** Embed videos, slides, and documents directly into your courses to give learners a seamless learning experience.
 - **REST API & Webhooks:** Connect ClassroomIO to your existing systems, access learning data, and trigger workflows across your tools.
-- **Zapier Integration (Coming Soon):** Connect ClassroomIO with your favourite tools and automate workflows across your existing apps.
+- **Zapier Integration:** Connect ClassroomIO with your favourite tools and automate workflows across your existing apps.
 
   ### 3. Intelligence
 
@@ -90,7 +90,8 @@ This repo is a monorepo that consists of these primary apps:
 1. `website`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
 2. `api`: The api service that handles PDF, video processing, Emailing and Notifications.
 3. `dashboard`: The web application that runs the learning management system hosted [here](https://app.classroomio.com).
-4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
+4. `zapier`: The Zapier integration app that connects ClassroomIO to thousands of apps through triggers and actions.
+5. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
 The repository also contains shared packages under `packages/` (for example `packages/db`, `packages/utils`, and `packages/ui`).
 
