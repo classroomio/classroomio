@@ -157,7 +157,7 @@ All create actions that take a student accept the student's email address, not a
   - `Student Email` (required).
   - `Send Email` (optional, defaults to on).
 - **Outputs**: `id`, `profileId`, `name`, `email`.
-- **Repeat behavior**: If the student is already a member or has a pending invite, returns the existing record. When used through **Find or Create Student**, this action returns the same student shape as **Find Student**, so later steps receive the student record rather than an import summary.
+- **Repeat behavior**: If the student has already joined, returns the existing record. If they have an invite that hasn't been accepted, the invite is renewed and re-sent, and the existing record is returned. Renewing a pending invite keeps its seat; renewing one that expired or was revoked takes a free student seat, and the step fails if your plan has no seats left. When used through **Find or Create Student**, this action returns the same student shape as **Find Student**, so later steps receive the student record rather than an import summary.
 
 ### 3. Update Student
 
@@ -168,7 +168,7 @@ All create actions that take a student accept the student's email address, not a
   - `New Name` (optional; applies to students who have joined).
   - `New Email` (optional; applies to invites that haven't been accepted).
 - **Outputs**: `id`, `profileId`, `name`, `email`, `avatarUrl`, `createdAt`, `status`, `memberStatus`, `lastLoginAt`, `lastActiveAt`, `enrolledCount`, `completedCount`, `progressPercent`, `certificateCount`.
-- **Repeat behavior**: Updates the profile or pending invite in place. Fill in `New Name` for a joined student, or `New Email` for a pending invite.
+- **Repeat behavior**: Updates the profile or pending invite in place. Fill in `New Name` for a joined student, or `New Email` for a pending invite. Changing the email of an invite that expired or was revoked renews it, which needs a free student seat.
 
 ### 4. Remove Student From Organization
 
