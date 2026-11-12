@@ -304,20 +304,26 @@ async function enrollAudienceStudentProfilesInCohorts(
   const existingSet = await getExistingCohortMembers(pairs, tx);
   const toInsert = pairs.filter((pair) => !existingSet.has(`${pair.cohortId}:${pair.profileId}`));
 
-  result.assigned = toInsert.length;
-  result.alreadyEnrolled = pairs.length - toInsert.length;
+  const addedCohortMembers =
+    toInsert.length > 0
+      ? await addCohortMembers(
+          toInsert.map((pair) => ({
+            cohortId: pair.cohortId,
+            roleId: ROLE.STUDENT,
+            profileId: pair.profileId,
+            email: profileEmailMap.get(pair.profileId) || undefined
+          })),
+          tx
+        )
+      : [];
+  const addedPairs = addedCohortMembers.flatMap(({ cohortId, profileId }) =>
+    cohortId && profileId ? [{ cohortId, profileId }] : []
+  );
 
-  if (toInsert.length > 0) {
-    const addedCohortMembers = await addCohortMembers(
-      toInsert.map((pair) => ({
-        cohortId: pair.cohortId,
-        roleId: ROLE.STUDENT,
-        profileId: pair.profileId,
-        email: profileEmailMap.get(pair.profileId) || undefined
-      })),
-      tx
-    );
+  result.assigned = addedPairs.length;
+  result.alreadyEnrolled = pairs.length - addedPairs.length;
 
+  if (addedCohortMembers.length > 0) {
     afterCommit.push(async () => {
       for (const cohortMember of addedCohortMembers) {
         await emitCohortMemberWebhookEvent(
@@ -358,10 +364,10 @@ async function enrollAudienceStudentProfilesInCohorts(
     afterCommit.push(() => emitComplianceEnrollmentEvents(createdRecords));
   }
 
-  if (shouldSendEmail && toInsert.length > 0) {
+  if (shouldSendEmail && addedPairs.length > 0) {
     afterCommit.push(async () => {
       const loginUrl = getDashboardBaseUrl(organization);
-      const recipients = toInsert.filter((pair) => profileEmailMap.get(pair.profileId));
+      const recipients = addedPairs.filter((pair) => profileEmailMap.get(pair.profileId));
       const branding = buildEmailBranding(organization);
       const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
       const outcomes = await enqueueTransactionalEmails(
@@ -477,20 +483,25 @@ async function createStudentOrgInvitesAndSendEmails(
       const expiresAtLabel = getExpiryLabel(expiresAt);
       const enqueueOutcomes = await enqueueTransactionalEmails(
         'studentOrgInvite',
-        emails.map((email) => ({
-          to: email,
-          fields: {
-            email,
-            orgName: organization.name,
-            inviteLink: buildInviteLink(tokenByEmail.get(email)!, organization),
-            expiresAt: expiresAtLabel,
-            courseNames: accessNamesLabel,
-            branding
-          },
-          from,
-          organizationId: orgId,
-          idempotencyKey: `student-org-invite:${inviteByEmail.get(email)!.id}`
-        }))
+        emails.map((email) => {
+          const inviteLink = buildInviteLink(tokenByEmail.get(email)!, organization);
+          const inviteId = inviteByEmail.get(email)!.id;
+
+          return {
+            to: email,
+            fields: {
+              email,
+              orgName: organization.name,
+              inviteLink,
+              expiresAt: expiresAtLabel,
+              courseNames: accessNamesLabel,
+              branding
+            },
+            from,
+            organizationId: orgId,
+            idempotencyKey: `student-org-invite:${inviteId}`
+          };
+        })
       );
 
       // Optimistic — see comment in services/organization/invite.ts.
@@ -1006,29 +1017,29 @@ export async function assignAudienceToCourses(
 
   const { assignedToCourses, assignedToCohorts } = await db.transaction(async (tx) => {
     const studentEmails = await getStudentEmailsByProfileId(orgId, data.profileIds, tx);
+    const getCohortCourses = lazyCohortCourses(
+      cohorts.map((cohort) => cohort.id),
+      tx
+    );
+    const assignedToCourses = await enrollAudienceStudentProfilesInCourses(
+      enrolment,
+      studentEmails,
+      data.profileIds,
+      courseGroups,
+      tx,
+      afterCommit
+    );
+    const assignedToCohorts = await enrollAudienceStudentProfilesInCohorts(
+      enrolment,
+      studentEmails,
+      data.profileIds,
+      cohorts,
+      getCohortCourses,
+      tx,
+      afterCommit
+    );
 
-    return {
-      assignedToCourses: await enrollAudienceStudentProfilesInCourses(
-        enrolment,
-        studentEmails,
-        data.profileIds,
-        courseGroups,
-        tx,
-        afterCommit
-      ),
-      assignedToCohorts: await enrollAudienceStudentProfilesInCohorts(
-        enrolment,
-        studentEmails,
-        data.profileIds,
-        cohorts,
-        lazyCohortCourses(
-          cohorts.map((cohort) => cohort.id),
-          tx
-        ),
-        tx,
-        afterCommit
-      )
-    };
+    return { assignedToCourses, assignedToCohorts };
   });
 
   await runAfterCommit(afterCommit);

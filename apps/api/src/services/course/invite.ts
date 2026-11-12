@@ -530,10 +530,12 @@ async function createEmailInvitesAndSend(input: {
   });
 
   const rowByTokenHash = new Map(createdRows.map((row) => [row.tokenHash, row]));
-  const invites = pending.map(({ recipientEmail, token, tokenHash }) => ({
-    recipientEmail,
-    invite: { ...rowByTokenHash.get(tokenHash)!, inviteLink: buildEnrollLink(input.courseSlug, token, input.org) }
-  }));
+  const invites = pending.map(({ recipientEmail, token, tokenHash }) => {
+    const row = rowByTokenHash.get(tokenHash)!;
+    const inviteLink = buildEnrollLink(input.courseSlug, token, input.org);
+
+    return { recipientEmail, invite: { ...row, inviteLink } };
+  });
 
   for (const { recipientEmail, invite } of invites) {
     await emitInviteWebhook(invite.id, input.courseId, 'CREATED', {

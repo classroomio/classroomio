@@ -75,10 +75,11 @@ vi.mock('@cio/db/drizzle', async (importOriginal) => ({
 import {
   createOrganizationInvites,
   createOrganizationMembers,
+  getOrgMembersByProfileIds,
   getOrganizationById,
   getOrganizationMembersByNormalizedEmails
 } from '@cio/db/queries/organization';
-import { getCohortsByOrg } from '@cio/db/queries/cohort';
+import { addCohortMembers, getCohortsByOrg, getExistingCohortMembers } from '@cio/db/queries/cohort';
 import { enqueueTransactionalEmails } from '@api/services/jobs';
 import {
   assertStudentCapacityOrThrow,
@@ -347,5 +348,53 @@ describe('importAudienceMembers — structured recipients', () => {
     );
 
     expect(result.rows.map((row) => row.status)).toEqual(['ready', 'duplicate_in_file']);
+  });
+});
+
+describe('importAudienceMembers — cohort enrolment of existing students', () => {
+  beforeEach(() => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', email: 'ada@test.dev', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getCohortsByOrg).mockResolvedValue([{ id: 'cohort-1', name: 'Cohort A' }] as never);
+    vi.mocked(getExistingCohortMembers).mockResolvedValue(new Set());
+  });
+
+  function importIntoCohort() {
+    return importAudienceMembers(
+      ORG,
+      {
+        recipientCsv: 'email\nada@test.dev',
+        cohortIds: ['cohort-1'],
+        allCourses: false,
+        allCohorts: false,
+        sendEmail: true
+      } as never,
+      ACTOR
+    );
+  }
+
+  it('counts and welcomes a student the insert added', async () => {
+    vi.mocked(addCohortMembers).mockResolvedValueOnce([{ cohortId: 'cohort-1', profileId: 'p-1' }] as never);
+
+    const result = await importIntoCohort();
+
+    expect(result.assigned).toBe(1);
+    expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentCohortWelcome', [
+      expect.objectContaining({ to: 'ada@test.dev' })
+    ]);
+  });
+
+  it('neither counts nor welcomes a student another request added first', async () => {
+    vi.mocked(addCohortMembers).mockResolvedValueOnce([]);
+
+    const result = await importIntoCohort();
+
+    expect(result.assigned).toBe(0);
+    expect(result.alreadyEnrolledInCohorts).toBe(1);
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalledWith('studentCohortWelcome', expect.anything());
   });
 });
