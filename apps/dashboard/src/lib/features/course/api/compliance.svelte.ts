@@ -39,10 +39,8 @@ export class ComplianceApi extends BaseApiWithErrors {
         this.success = true;
         this.errors = {};
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.course.compliance.overview_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.course.compliance.overview_failed');
       }
     });
 
@@ -70,10 +68,8 @@ export class ComplianceApi extends BaseApiWithErrors {
         this.success = true;
         this.errors = {};
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.course.compliance.history_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.course.compliance.history_failed');
       }
     });
 
@@ -109,13 +105,10 @@ export class ComplianceApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.course.compliance.reset_failed');
-          return;
-        }
-
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          snackbar.error(result.message);
         }
       }
     });
@@ -148,13 +141,10 @@ export class ComplianceApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.course.compliance.extend_failed');
-          return;
-        }
-
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          snackbar.error(result.message);
         }
       }
     });
@@ -187,13 +177,10 @@ export class ComplianceApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.course.compliance.waive_failed');
-          return;
-        }
-
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          snackbar.error(result.message);
         }
       }
     });

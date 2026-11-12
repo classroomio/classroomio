@@ -34,6 +34,7 @@ import {
   getOrganizationMembersByNormalizedEmails,
   getStudentOrganizationMemberByOrgAndEmail,
   hasActiveOrganizationInviteForEmail,
+  hasLapsedStudentInvite,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { emitOrganizationInviteAuditWebhooks, recordOrganizationInviteAudits } from './invite';
@@ -44,7 +45,7 @@ import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { assertStudentCapacityOrThrow, getRemainingStudentSeats, notifyStudentMilestone } from './student-limit';
-
+import type { StudentMilestoneNotification } from './student-limit';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { emitComplianceEnrollmentEvents, ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
@@ -592,13 +593,28 @@ export async function importAudienceMembers(
   const existingStudentProfileIds: string[] = [];
   const pendingStudentEmails: string[] = [];
 
+  // Import what the plan allows and report the overflow, rather than refusing
+  // the whole file when it does not fit.
+  let seatsLeft = await getRemainingStudentSeats(orgId);
+  let renewedSeats = 0;
+  const takeSeat = () => {
+    if (seatsLeft <= 0) return false;
+
+    seatsLeft -= 1;
+    return true;
+  };
+
   for (const row of rows) {
     if (row.status !== 'ready') continue;
 
     const m = memberByEmail.get(row.email);
 
     if (!m) {
-      newEmails.push(row.email);
+      if (takeSeat()) {
+        newEmails.push(row.email);
+      } else {
+        row.status = 'over_seat_limit';
+      }
       continue;
     }
 
@@ -610,6 +626,15 @@ export async function importAudienceMembers(
     }
 
     if (!m.profileId) {
+      if (m.hasLapsedInvite) {
+        if (!takeSeat()) {
+          row.status = 'over_seat_limit';
+          continue;
+        }
+
+        renewedSeats += 1;
+      }
+
       pendingStudentEmails.push(row.email);
       row.status = 'invite_resent';
       continue;
@@ -618,21 +643,6 @@ export async function importAudienceMembers(
     existingStudentProfileIds.push(m.profileId);
     row.status = 'already_member';
   }
-
-  // Import what the plan allows and report the overflow, rather than refusing
-  // the whole file when it does not fit.
-  const remainingSeats = await getRemainingStudentSeats(orgId);
-  // `slice` even when unlimited: aliasing `newEmails` here and clearing it below
-  // would empty both.
-  const admittedEmails = newEmails.slice(0, Number.isFinite(remainingSeats) ? remainingSeats : undefined);
-  const rejectedForSeats = new Set(newEmails.slice(admittedEmails.length));
-
-  for (const row of rows) {
-    if (rejectedForSeats.has(row.email)) row.status = 'over_seat_limit';
-  }
-
-  newEmails.length = 0;
-  newEmails.push(...admittedEmails);
 
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
   const cohorts = await resolveCohortsForImport(orgId, data);
@@ -655,10 +665,20 @@ export async function importAudienceMembers(
     const getCohortCourses = lazyCohortCourses(cohortIds, tx);
     let addedEmails: string[] = [];
 
-    if (newEmails.length > 0) {
-      const studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, newEmails.length, tx, {
-        deferNotification: true
+    // New members and renewed lapsed invites take seats; both are saved in this transaction, under the seat lock.
+    const seatsNeeded = newEmails.length + renewedSeats;
+    const studentMilestoneNotification =
+      seatsNeeded > 0 ? await assertStudentCapacityOrThrow(orgId, seatsNeeded, tx, { deferNotification: true }) : null;
+
+    if (studentMilestoneNotification) {
+      afterCommit.push(() => {
+        notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+          console.error('notifyStudentMilestone error:', error);
+        });
       });
+    }
+
+    if (newEmails.length > 0) {
       const insertedMembers = await createOrganizationMembers(
         newEmails.map((email) => ({ organizationId: orgId, email, roleId: ROLE.STUDENT, verified: false })),
         tx
@@ -674,14 +694,6 @@ export async function importAudienceMembers(
           );
         }
       });
-
-      if (studentMilestoneNotification) {
-        afterCommit.push(() => {
-          notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
-            console.error('notifyStudentMilestone error:', error);
-          });
-        });
-      }
 
       const insertedEmails = new Set(insertedMembers.map((member) => (member.email ?? '').toLowerCase()));
       addedEmails = newEmails.filter((email) => insertedEmails.has(email));
@@ -848,27 +860,45 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     cohortNames = cohorts.map((cohort) => cohort.name).filter(Boolean);
   }
 
-  await revokeActiveOrganizationInvitesByEmails(orgId, [emailToUse], invitedByProfileId);
-
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
   const token = generateToken();
   const accessNames = [...courseNames, ...cohortNames];
   const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
 
-  const invite = await createOrganizationInvite({
-    organizationId: orgId,
-    roleId: ROLE.STUDENT,
-    email: emailToUse,
-    tokenHash: hashToken(token),
-    createdByProfileId: invitedByProfileId,
-    expiresAt,
-    isRevoked: false,
-    metadata: {
-      source: 'AUDIENCE_RESEND',
-      courseIds: courseIds.length > 0 ? courseIds : undefined,
-      cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+  let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+
+  const invite = await db.transaction(async (tx) => {
+    const needsSeat = await hasLapsedStudentInvite(orgId, member.id, tx);
+    if (needsSeat) {
+      studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
     }
+
+    await revokeActiveOrganizationInvitesByEmails(orgId, [emailToUse], invitedByProfileId, tx);
+
+    return createOrganizationInvite(
+      {
+        organizationId: orgId,
+        roleId: ROLE.STUDENT,
+        email: emailToUse,
+        tokenHash: hashToken(token),
+        createdByProfileId: invitedByProfileId,
+        expiresAt,
+        isRevoked: false,
+        metadata: {
+          source: 'AUDIENCE_RESEND',
+          courseIds: courseIds.length > 0 ? courseIds : undefined,
+          cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+        }
+      },
+      tx
+    );
   });
+
+  if (studentMilestoneNotification) {
+    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
+  }
 
   await recordOrganizationInviteAudits([
     {
@@ -1091,16 +1121,28 @@ export async function updatePendingAudienceMemberEmail(
     }
   }
 
-  await revokeActiveOrganizationInvitesByEmails(orgId, [currentEmail, normalizedEmail], invitedByProfileId);
+  let studentMilestoneNotification: StudentMilestoneNotification | null = null;
 
-  const updatedMember = await updateOrganizationAudienceMember(orgId, memberId, {
-    email: normalizedEmail,
-    verified: false
+  const updatedMember = await db.transaction(async (tx) => {
+    if (await hasLapsedStudentInvite(orgId, memberId, tx)) {
+      studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
+    }
+
+    await revokeActiveOrganizationInvitesByEmails(orgId, [currentEmail, normalizedEmail], invitedByProfileId, tx);
+
+    const updated = await updateOrganizationAudienceMember(
+      orgId,
+      memberId,
+      { email: normalizedEmail, verified: false },
+      tx
+    );
+
+    if (!updated) {
+      throw new AppError('Audience member not found', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    return updated;
   });
-
-  if (!updatedMember) {
-    throw new AppError('Audience member not found', ErrorCodes.NOT_FOUND, 404);
-  }
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
   const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
@@ -1122,6 +1164,12 @@ export async function updatePendingAudienceMemberEmail(
     afterInvite
   );
   await runAfterCommit(afterInvite);
+
+  if (studentMilestoneNotification) {
+    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
+  }
 
   return updatedMember;
 }

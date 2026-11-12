@@ -3778,9 +3778,43 @@
       "refresh": "Aktualisieren"
     },
     "upload": {
-      "videos": "Videos hochladen",
-      "documents": "Dokumente hochladen",
-      "more_options": "Weitere Upload-Optionen"
+      "files": "Dateien hochladen",
+      "add_video_link": "Videolink hinzufügen",
+      "more_options": "Weitere Upload-Optionen",
+      "dialog_title": "Dateien hochladen",
+      "drag_drop": "Dateien hierher ziehen oder zum Durchsuchen klicken",
+      "limits": "Videos und Dokumente. Bis zu {count} Dateien gleichzeitig, je {size}.",
+      "limits_by_kind": "Bis zu {count} Dateien gleichzeitig. Videos bis {videoSize}, Dokumente bis {documentSize}.",
+      "add_more": "Weitere Dateien hinzufügen",
+      "minimize": "Minimieren",
+      "maximize": "Upload-Fenster öffnen",
+      "expand": "Dateien anzeigen",
+      "collapse": "Dateien ausblenden",
+      "close": "Schließen",
+      "done": "Fertig",
+      "keep_in_background": "Im Hintergrund fortsetzen",
+      "upgrade": "Führe ein Upgrade durch, um Dateien in deine Mediathek hochzuladen",
+      "status": {
+        "queued": "Wartet",
+        "completed": "Abgeschlossen",
+        "failed": "Fehlgeschlagen",
+        "retry": "Erneut versuchen",
+        "remove": "Datei entfernen",
+        "uploading_progress": "Wird hochgeladen {percent}%",
+        "size_progress": "{uploaded} von {total}"
+      },
+      "summary": {
+        "uploading": "{done} von {total} Dateien hochgeladen",
+        "completed": "{count} Uploads abgeschlossen",
+        "failed": "{count} von {total} Uploads fehlgeschlagen"
+      },
+      "errors": {
+        "unsupported_type": "{name} ist kein unterstütztes Video oder Dokument.",
+        "too_large": "{name} ist größer als {size}.",
+        "too_many": "Du kannst bis zu {count} Dateien gleichzeitig hochladen.",
+        "generic": "Upload fehlgeschlagen"
+      },
+      "switch_organization_confirm": "Beim Wechsel der Organisation werden laufende Uploads abgebrochen. Trotzdem wechseln?"
     },
     "storage": {
       "total_bytes": "Gesamtspeicher",
@@ -4134,7 +4168,9 @@
           "popover_title": "Kurse auswählen",
           "popover_empty": "Es sind keine Kurse verfügbar.",
           "search_no_results": "Keine Kurse entsprechen Ihrer Suche.",
-          "search_placeholder": "Kurse suchen..."
+          "search_placeholder": "Kurse suchen...",
+          "featured_toggle": "Hervorgehobenen Kurs anzeigen",
+          "featured_toggle_desc": "Hebt Ihren ersten Kurs in einem großen Block hervor. Deaktivieren Sie dies, um ihn stattdessen zusammen mit Ihren anderen Kursen aufzulisten."
         }
       },
       "content": {

@@ -1,8 +1,8 @@
 import type { Handle, RequestEvent } from '@sveltejs/kit';
+import { buildPricingMarkdown } from '$lib/server/agent-resources';
+import { DOCS_ORIGIN, HELP_ORIGIN } from '$lib/server/upstreams';
+import { prefersMarkdown } from '$lib/utils/accept-header';
 import { resolveLegacyRedirect } from '$lib/utils/legacy-redirects';
-
-const DOCS_ORIGIN = 'https://cio-docs.digdippa.workers.dev';
-const HELP_ORIGIN = 'https://cio-help.digdippa.workers.dev';
 
 function proxy(origin: string, pathname: string, event: RequestEvent) {
   const upstream = new URL(pathname + event.url.search, origin);
@@ -22,23 +22,6 @@ function proxy(origin: string, pathname: string, event: RequestEvent) {
   });
 }
 
-const DOCS_LLMS_SECTION = `
-
-## Developer docs
-
-- [Developer docs index](https://classroomio.com/docs/llms.txt): API reference, MCP, OAuth, webhooks, token auth, self-hosting and contributing guides.
-`;
-
-async function serveLlmsTxt(event: RequestEvent) {
-  const upstream = await proxy(HELP_ORIGIN, '/help/llms.txt', event);
-  if (!upstream.ok) return upstream;
-
-  const helpIndex = await upstream.text();
-  const headers = new Headers({ 'content-type': 'text/plain; charset=utf-8' });
-
-  return new Response(helpIndex.trimEnd() + DOCS_LLMS_SECTION, { status: 200, headers });
-}
-
 export const handle: Handle = async ({ event, resolve }) => {
   const { pathname } = event.url;
 
@@ -46,12 +29,14 @@ export const handle: Handle = async ({ event, resolve }) => {
     return proxy(DOCS_ORIGIN, pathname, event);
   }
 
-  if (pathname === '/llms.txt') {
-    return serveLlmsTxt(event);
-  }
-
   if (pathname === '/help' || pathname.startsWith('/help/')) {
     return proxy(HELP_ORIGIN, pathname, event);
+  }
+
+  if (pathname === '/pricing' && prefersMarkdown(event.request.headers.get('accept'))) {
+    return new Response(buildPricingMarkdown(), {
+      headers: { 'content-type': 'text/markdown; charset=utf-8', vary: 'Accept' }
+    });
   }
 
   const legacyTarget = resolveLegacyRedirect(pathname);

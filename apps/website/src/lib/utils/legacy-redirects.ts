@@ -39,8 +39,7 @@ const EXACT_REDIRECTS: Record<string, string> = {
   '/get-started/signup': '/help/get-started/signup',
   '/quickstart/signup': '/help/get-started/signup',
   '/quickstart/onboarding': '/help/get-started/onboarding',
-  '/build-a-course/course-types': '/help/create-and-deliver/course-types',
-  '/llms-full.txt': '/help/llms-full.txt'
+  '/build-a-course/course-types': '/help/create-and-deliver/course-types'
 };
 
 const PREFIX_REDIRECTS: Array<[prefix: string, target: string]> = [

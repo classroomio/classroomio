@@ -1146,7 +1146,9 @@
           "popover_title": "Dersleri seçin",
           "popover_empty": "Yayınlanmış kurs yok.",
           "search_no_results": "Aramanızla eşleşen kurs yok.",
-          "search_placeholder": "Kursları arayın..."
+          "search_placeholder": "Kursları arayın...",
+          "featured_toggle": "Öne çıkan kursu göster",
+          "featured_toggle_desc": "İlk kursunuzu büyük bir blokta öne çıkarır. Bunu kapatırsanız kurs diğer kurslarınızla birlikte listelenir."
         }
       },
       "title": "Başlık",
@@ -1432,9 +1434,43 @@
       "not_available": "N/A"
     },
     "upload": {
-      "videos": "Video yükle",
-      "documents": "Belge yükle",
-      "more_options": "Diğer yükleme seçenekleri"
+      "files": "Dosya yükle",
+      "add_video_link": "Video bağlantısı ekle",
+      "more_options": "Diğer yükleme seçenekleri",
+      "dialog_title": "Dosya yükle",
+      "drag_drop": "Dosyaları buraya sürükleyip bırakın veya göz atmak için tıklayın",
+      "limits": "Videolar ve belgeler. Aynı anda en fazla {count} dosya, her biri {size}.",
+      "limits_by_kind": "Aynı anda en fazla {count} dosya. Videolar en fazla {videoSize}, belgeler en fazla {documentSize}.",
+      "add_more": "Daha fazla dosya ekle",
+      "minimize": "Küçült",
+      "maximize": "Yükleme penceresini aç",
+      "expand": "Dosyaları göster",
+      "collapse": "Dosyaları gizle",
+      "close": "Kapat",
+      "done": "Bitti",
+      "keep_in_background": "Arka planda devam et",
+      "upgrade": "Medya kitaplığınıza dosya yüklemek için planınızı yükseltin",
+      "status": {
+        "queued": "Bekliyor",
+        "completed": "Tamamlandı",
+        "failed": "Başarısız",
+        "retry": "Tekrar dene",
+        "remove": "Dosyayı kaldır",
+        "uploading_progress": "Yükleniyor {percent}%",
+        "size_progress": "{uploaded} / {total}"
+      },
+      "summary": {
+        "uploading": "{total} dosyadan {done} tanesi yüklendi",
+        "completed": "{count} yükleme tamamlandı",
+        "failed": "{total} yüklemeden {count} tanesi başarısız"
+      },
+      "errors": {
+        "unsupported_type": "{name} desteklenen bir video veya belge değil.",
+        "too_large": "{name}, {size} sınırını aşıyor.",
+        "too_many": "Aynı anda en fazla {count} dosya yükleyebilirsiniz.",
+        "generic": "Yükleme başarısız"
+      },
+      "switch_organization_confirm": "Kuruluş değiştirmek devam eden yüklemeleri iptal eder. Yine de değiştirilsin mi?"
     },
     "storage": {
       "total_bytes": "Toplam Depolama",

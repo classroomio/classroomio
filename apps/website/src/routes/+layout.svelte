@@ -27,7 +27,11 @@
 
 <MetaTags {...metaTags} />
 
-<div class="overflow-hidden bg-white">
+<svelte:head>
+  <link rel="describedby" type="text/plain" href="/llms.txt" />
+</svelte:head>
+
+<div class="bg-white">
   <Navigation stars={data.stars} />
 
   {#if page.status === 404}

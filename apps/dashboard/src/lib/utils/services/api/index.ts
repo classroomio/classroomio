@@ -320,6 +320,8 @@ export type { InferResponseType, InferRequestType } from '@cio/api/rpc-types';
 
 // Export base API classes
 export { BaseApi, BaseApiWithErrors } from './base.svelte';
+export { hasErrorCode, matchesError, toNormalizedApiError } from './errors';
+export type { ApiErrorMatch, NormalizedApiError } from './errors';
 
 /**
  * Gets headers with cookies and organization ID for API calls

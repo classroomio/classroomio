@@ -27,6 +27,10 @@ export type OrgLandingPageTheme =
   | 'vibrant'
   | 'quartz';
 
+export type OrgLandingPageFeaturedCourse = {
+  enabled?: boolean;
+};
+
 export type CourseItem = {
   id: string;
   slug?: string;
@@ -446,6 +450,7 @@ export interface OrgLandingPageProps {
   hasMoreCourses?: boolean;
   /** When false, templates suppress the empty catalog state while courses are still loading. */
   coursesLoaded?: boolean;
+  featuredCourse?: OrgLandingPageFeaturedCourse;
   disableCourseLinks?: boolean;
   /**
    * Optional — no `learning_path` API exists yet, so this is undefined on the real,

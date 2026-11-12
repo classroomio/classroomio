@@ -10,6 +10,7 @@
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import { shortenName } from '$lib/utils/functions/string';
   import type { AccountOrg } from '$features/app/types';
+  import { mediaUploadManager } from '$features/media/api';
 
   import { setTheme } from '$lib/utils/functions/theme';
   import {
@@ -46,6 +47,12 @@
 
   function onClick(org: AccountOrg) {
     if (org.id === $currentOrg.id) return;
+
+    if (mediaUploadManager.isUploading) {
+      if (!window.confirm($t('media_manager.upload.switch_organization_confirm'))) return;
+
+      mediaUploadManager.cancelAll();
+    }
 
     localStorage.setItem('classroomio_org_sitename', org.siteName!);
     currentOrg.set(mergeAccountOrgFromServer(org));

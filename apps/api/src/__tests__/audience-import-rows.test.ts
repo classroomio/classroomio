@@ -22,6 +22,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationMembersByNormalizedEmails: vi.fn(),
   getStudentOrganizationMemberByOrgAndEmail: vi.fn(),
   hasActiveOrganizationInviteForEmail: vi.fn().mockResolvedValue(false),
+  hasLapsedStudentInvite: vi.fn().mockResolvedValue(false),
   revokeActiveOrganizationInvitesByEmails: vi.fn().mockResolvedValue([]),
   updateOrganizationAudienceMember: vi.fn()
 }));
@@ -73,20 +74,31 @@ vi.mock('@cio/db/drizzle', async (importOriginal) => ({
 }));
 
 import {
+  createOrganizationInvite,
   createOrganizationInvites,
   createOrganizationMembers,
   getOrgMembersByProfileIds,
+  getOrganizationAudienceMember,
+  getLatestOrganizationInviteRowByOrgAndEmail,
   getOrganizationById,
-  getOrganizationMembersByNormalizedEmails
+  getOrganizationMembersByNormalizedEmails,
+  getStudentOrganizationMemberByOrgAndEmail,
+  hasLapsedStudentInvite,
+  revokeActiveOrganizationInvitesByEmails,
+  updateOrganizationAudienceMember
 } from '@cio/db/queries/organization';
 import { addCohortMembers, getCohortsByOrg, getExistingCohortMembers } from '@cio/db/queries/cohort';
-import { enqueueTransactionalEmails } from '@api/services/jobs';
+import { enqueueTransactionalEmail, enqueueTransactionalEmails } from '@api/services/jobs';
 import {
   assertStudentCapacityOrThrow,
   getRemainingStudentSeats,
   notifyStudentMilestone
 } from '@api/services/organization/student-limit';
-import { importAudienceMembers } from '@api/services/organization/audience';
+import {
+  importAudienceMembers,
+  resendAudienceInvite,
+  updatePendingAudienceMemberEmail
+} from '@api/services/organization/audience';
 import { ROLE } from '@cio/utils/constants';
 
 const ORG = 'org-1';
@@ -257,6 +269,111 @@ describe('importAudienceMembers — seat limit', () => {
     await expect(importAudienceMembers(ORG, csv('email', 'a@test.dev'), ACTOR)).rejects.toThrow('UPGRADE_REQUIRED');
     expect(createOrganizationMembers).not.toHaveBeenCalled();
   });
+
+  it('renews a lapsed invite only when a seat is free, in file order with new addresses', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(1);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev', 'new@test.dev'), ACTOR);
+
+    expect(result.rows.map((row) => row.status)).toEqual(['invite_resent', 'over_seat_limit']);
+    expect(result.imported).toBe(0);
+  });
+
+  it('reports a lapsed invite as over the limit when no seats remain', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(0);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev'), ACTOR);
+
+    expect(result.rows[0].status).toBe('over_seat_limit');
+    expect(result).toMatchObject({ pendingInvitesRenewed: 0 });
+    expect(createOrganizationInvites).not.toHaveBeenCalled();
+  });
+
+  it('renews a still-pending invite without needing a free seat', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(0);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'pending@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: false }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, csv('email', 'pending@test.dev'), ACTOR);
+
+    expect(result.rows[0].status).toBe('invite_resent');
+    expect(result).toMatchObject({ pendingInvitesRenewed: 1 });
+    expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+  });
+
+  it('counts a renewed lapsed invite in the seat check, so milestone emails fire', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(5);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev', 'new@test.dev'), ACTOR);
+
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 2, TX, { deferNotification: true });
+  });
+
+  it('renews lapsed invites inside the seat-check transaction, so the seat is taken under the lock', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(5);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev'), ACTOR);
+
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
+    expect(revokeActiveOrganizationInvitesByEmails).toHaveBeenCalledWith(ORG, ['lapsed@test.dev'], ACTOR, TX);
+    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'lapsed@test.dev' })], TX);
+  });
+});
+
+describe('resendAudienceInvite — seat limit', () => {
+  beforeEach(() => {
+    vi.mocked(getStudentOrganizationMemberByOrgAndEmail).mockResolvedValue({
+      id: 7,
+      profileId: null,
+      email: 'ada@test.dev'
+    });
+    vi.mocked(getLatestOrganizationInviteRowByOrgAndEmail).mockResolvedValue(null as never);
+    vi.mocked(createOrganizationInvite).mockResolvedValue({ id: 'invite-new' } as never);
+  });
+
+  it('does not need a free seat to resend a still-pending invite', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
+
+    await resendAudienceInvite(ORG, { email: 'ada@test.dev' } as never, ACTOR);
+
+    expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+    expect(createOrganizationInvite).toHaveBeenCalledWith(expect.objectContaining({ email: 'ada@test.dev' }), TX);
+  });
+
+  it('checks for a free seat in the same transaction when the invite was revoked or expired', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(true);
+
+    await resendAudienceInvite(ORG, { email: 'ada@test.dev' } as never, ACTOR);
+
+    expect(hasLapsedStudentInvite).toHaveBeenCalledWith(ORG, 7, TX);
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
+    expect(revokeActiveOrganizationInvitesByEmails).toHaveBeenCalledWith(ORG, ['ada@test.dev'], ACTOR, TX);
+    expect(createOrganizationInvite).toHaveBeenCalledWith(expect.anything(), TX);
+  });
+
+  it('sends no new invite when the plan is full', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(true);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(new Error('UPGRADE_REQUIRED'));
+
+    await expect(resendAudienceInvite(ORG, { email: 'ada@test.dev' } as never, ACTOR)).rejects.toThrow(
+      'UPGRADE_REQUIRED'
+    );
+    expect(createOrganizationInvite).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+  });
 });
 
 describe('importAudienceMembers — cohort invites', () => {
@@ -396,5 +513,39 @@ describe('importAudienceMembers — cohort enrolment of existing students', () =
     expect(result.assigned).toBe(0);
     expect(result.alreadyEnrolledInCohorts).toBe(1);
     expect(enqueueTransactionalEmails).not.toHaveBeenCalledWith('studentCohortWelcome', expect.anything());
+  });
+});
+
+describe('updatePendingAudienceMemberEmail — seat limit', () => {
+  beforeEach(() => {
+    vi.mocked(getOrganizationAudienceMember).mockResolvedValue({
+      id: 7,
+      profileId: null,
+      email: 'old@test.dev'
+    } as never);
+    vi.mocked(updateOrganizationAudienceMember).mockResolvedValue({ id: 7 } as never);
+    vi.mocked(getLatestOrganizationInviteRowByOrgAndEmail).mockResolvedValue(null as never);
+  });
+
+  it('does not need a free seat to correct a still-pending invite', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
+
+    await updatePendingAudienceMemberEmail(ORG, 7, { email: 'new@test.dev', sendEmail: false }, ACTOR);
+
+    expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+    expect(updateOrganizationAudienceMember).toHaveBeenCalled();
+  });
+
+  it('leaves the member unchanged when a lapsed invite would need a seat and none is free', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(true);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(new Error('UPGRADE_REQUIRED'));
+
+    await expect(
+      updatePendingAudienceMemberEmail(ORG, 7, { email: 'new@test.dev', sendEmail: false }, ACTOR)
+    ).rejects.toThrow('UPGRADE_REQUIRED');
+    expect(hasLapsedStudentInvite).toHaveBeenCalledWith(ORG, 7, TX);
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
+    expect(revokeActiveOrganizationInvitesByEmails).not.toHaveBeenCalled();
+    expect(updateOrganizationAudienceMember).not.toHaveBeenCalled();
   });
 });

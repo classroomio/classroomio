@@ -3778,9 +3778,43 @@
       "refresh": "Odświeżać"
     },
     "upload": {
-      "videos": "Prześlij filmy",
-      "documents": "Prześlij dokumenty",
-      "more_options": "Więcej opcji przesyłania"
+      "files": "Prześlij pliki",
+      "add_video_link": "Dodaj link do wideo",
+      "more_options": "Więcej opcji przesyłania",
+      "dialog_title": "Prześlij pliki",
+      "drag_drop": "Przeciągnij i upuść pliki tutaj lub kliknij, aby wybrać",
+      "limits": "Wideo i dokumenty. Do {count} plików naraz, każdy do {size}.",
+      "limits_by_kind": "Do {count} plików naraz. Wideo do {videoSize}, dokumenty do {documentSize}.",
+      "add_more": "Dodaj więcej plików",
+      "minimize": "Minimalizuj",
+      "maximize": "Otwórz okno przesyłania",
+      "expand": "Pokaż pliki",
+      "collapse": "Ukryj pliki",
+      "close": "Zamknij",
+      "done": "Gotowe",
+      "keep_in_background": "Kontynuuj w tle",
+      "upgrade": "Ulepsz plan, aby przesyłać pliki do biblioteki multimediów",
+      "status": {
+        "queued": "Oczekuje",
+        "completed": "Ukończono",
+        "failed": "Niepowodzenie",
+        "retry": "Spróbuj ponownie",
+        "remove": "Usuń plik",
+        "uploading_progress": "Przesyłanie {percent}%",
+        "size_progress": "{uploaded} z {total}"
+      },
+      "summary": {
+        "uploading": "Przesłano {done} z {total} plików",
+        "completed": "Ukończone przesyłania: {count}",
+        "failed": "Nieudane przesyłania: {count} z {total}"
+      },
+      "errors": {
+        "unsupported_type": "{name} nie jest obsługiwanym wideo ani dokumentem.",
+        "too_large": "{name} przekracza {size}.",
+        "too_many": "Możesz przesłać do {count} plików naraz.",
+        "generic": "Przesyłanie nie powiodło się"
+      },
+      "switch_organization_confirm": "Zmiana organizacji anuluje trwające przesyłania. Zmienić mimo to?"
     },
     "storage": {
       "total_bytes": "Całkowita pamięć",
@@ -4134,7 +4168,9 @@
           "popover_title": "Wybierz kursy",
           "popover_empty": "Brak opublikowanych kursów.",
           "search_no_results": "Brak kursów pasujących do wyszukiwania.",
-          "search_placeholder": "Szukaj kursów..."
+          "search_placeholder": "Szukaj kursów...",
+          "featured_toggle": "Pokaż wyróżniony kurs",
+          "featured_toggle_desc": "Wyróżnia Twój pierwszy kurs w dużym bloku. Wyłącz, aby wyświetlać go razem z pozostałymi kursami."
         }
       },
       "content": {

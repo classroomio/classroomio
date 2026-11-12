@@ -1231,7 +1231,9 @@
           "popover_title": "Seleziona i corsi",
           "popover_empty": "Nessun corso pubblicato disponibile.",
           "search_no_results": "Nessun corso corrisponde alla tua ricerca.",
-          "search_placeholder": "Cerca corsi..."
+          "search_placeholder": "Cerca corsi...",
+          "featured_toggle": "Mostra il corso in evidenza",
+          "featured_toggle_desc": "Mette in evidenza il tuo primo corso in un grande blocco. Disattiva per elencarlo insieme agli altri corsi."
         }
       },
       "title": "Titolo",
@@ -1422,9 +1424,43 @@
       "not_available": "N / A"
     },
     "upload": {
-      "videos": "Carica video",
-      "documents": "Carica documenti",
-      "more_options": "Altre opzioni di caricamento"
+      "files": "Carica file",
+      "add_video_link": "Aggiungi un link video",
+      "more_options": "Altre opzioni di caricamento",
+      "dialog_title": "Carica file",
+      "drag_drop": "Trascina qui i file, oppure fai clic per sfogliare",
+      "limits": "Video e documenti. Fino a {count} file alla volta, {size} ciascuno.",
+      "limits_by_kind": "Fino a {count} file alla volta. Video fino a {videoSize}, documenti fino a {documentSize}.",
+      "add_more": "Aggiungi altri file",
+      "minimize": "Riduci a icona",
+      "maximize": "Apri la finestra di caricamento",
+      "expand": "Mostra file",
+      "collapse": "Nascondi file",
+      "close": "Chiudi",
+      "done": "Fatto",
+      "keep_in_background": "Continua in background",
+      "upgrade": "Passa a un piano superiore per caricare file nella tua libreria multimediale",
+      "status": {
+        "queued": "In attesa",
+        "completed": "Completato",
+        "failed": "Non riuscito",
+        "retry": "Riprova",
+        "remove": "Rimuovi file",
+        "uploading_progress": "Caricamento {percent}%",
+        "size_progress": "{uploaded} di {total}"
+      },
+      "summary": {
+        "uploading": "{done} file su {total} caricati",
+        "completed": "{count} caricamenti completati",
+        "failed": "{count} caricamenti su {total} non riusciti"
+      },
+      "errors": {
+        "unsupported_type": "{name} non è un video o un documento supportato.",
+        "too_large": "{name} supera {size}.",
+        "too_many": "Puoi caricare fino a {count} file alla volta.",
+        "generic": "Caricamento non riuscito"
+      },
+      "switch_organization_confirm": "Cambiare organizzazione annulla i caricamenti in corso. Cambiare comunque?"
     },
     "storage": {
       "total_bytes": "Spazio di archiviazione totale",

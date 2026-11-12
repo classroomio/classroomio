@@ -28,3 +28,4 @@ packages/ui/src/output.css
 .prettierignore
 .dockerignore
 **/Dockerfile
+prototypes/floating-ai-assistant/support.js

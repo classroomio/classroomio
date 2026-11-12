@@ -177,16 +177,12 @@ export class LessonApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lesson_create_failed');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -224,16 +220,11 @@ export class LessonApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lesson_update_failed');
-          return;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else {
-          snackbar.error('snackbar.lessons.lesson_update_failed');
-        }
+
+        snackbar.error(result.message);
       }
     });
 
@@ -262,10 +253,8 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lesson_delete_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.lesson_delete_failed');
       }
     });
   }
@@ -308,14 +297,11 @@ export class LessonApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.section_create_failed');
-          return;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        }
+
+        snackbar.error(result.message);
       }
     });
 
@@ -345,19 +331,13 @@ export class LessonApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.section_update_failed');
-          return;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          this.errors.general = result.message;
         }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-          return;
-        }
-        if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
-        }
+
+        snackbar.error(result.message);
       }
     });
   }
@@ -386,10 +366,8 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.section_update_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.section_update_failed');
       }
     });
   }
@@ -431,10 +409,8 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.sections_reorder_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.sections_reorder_failed');
       }
     });
   }
@@ -485,11 +461,9 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
+      onError: () => {
         this.commentsByLessonId[lessonId].isLoading = false;
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.comment_fetch_failed');
-        }
+        snackbar.error('snackbar.lessons.comment_fetch_failed');
       }
     });
   }
@@ -525,11 +499,9 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
+      onError: () => {
         commentState.isLoading = false;
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.load_more_comments_failed');
-        }
+        snackbar.error('snackbar.lessons.load_more_comments_failed');
       }
     });
   }
@@ -567,10 +539,8 @@ export class LessonApi extends BaseApiWithErrors {
             this.commentsByLessonId[lessonId].totalCount++;
           }
         },
-        onError: (result) => {
-          if (typeof result === 'string') {
-            snackbar.error('snackbar.lessons.comment_add_failed');
-          }
+        onError: () => {
+          snackbar.error('snackbar.lessons.comment_add_failed');
         }
       });
     } finally {
@@ -612,10 +582,8 @@ export class LessonApi extends BaseApiWithErrors {
             this.errors = {};
           }
         },
-        onError: (result) => {
-          if (typeof result === 'string') {
-            snackbar.error('snackbar.lessons.comment_update_failed');
-          }
+        onError: () => {
+          snackbar.error('snackbar.lessons.comment_update_failed');
         }
       });
     } finally {
@@ -647,10 +615,8 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.comment_delete_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.comment_delete_failed');
       }
     });
   }
@@ -736,10 +702,8 @@ export class LessonApi extends BaseApiWithErrors {
           }
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.completion_update_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.completion_update_failed');
       }
     });
   }

@@ -27,7 +27,8 @@
   } from '@cio/utils/functions/live-session';
   import { ZLessonRecordingUrl } from '@cio/utils/validation/lesson';
   import { slugifyTitle } from '@cio/utils/validation';
-  import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
+  import { getVideoDisplayTitle, type LessonVideo } from './video/video-card-utils';
+  import { libraryAssetCache } from '$features/media/api/library-asset-cache.svelte';
 
   interface Props {
     hasUnsavedSessionChanges?: boolean;
@@ -205,6 +206,12 @@
   const lessonCommentsEnabled = $derived(lessonApi.lesson?.commentsEnabled ?? true);
   const videoWatchThreshold = $derived(lessonApi.lesson?.videoWatchThreshold ?? 95);
   const videos = $derived(blockVideos ?? lessonApi.lesson?.videos ?? []);
+
+  $effect(() => {
+    for (const video of videos) {
+      if (video.assetId) libraryAssetCache.ensureLoaded(video.assetId);
+    }
+  });
 
   const enforceableVideos = $derived(
     videos
@@ -501,7 +508,7 @@
                       onCheckedChange={(checked) => onVideoWatchEnforcedChange(index, checked === true)}
                     />
                     <Field.Label for={`watch-enforced-${video.assetId}`} class="font-normal">
-                      {getVideoTitle(video, index)}
+                      {getVideoDisplayTitle(video, index)}
                     </Field.Label>
                   </Field.Field>
                 {/each}

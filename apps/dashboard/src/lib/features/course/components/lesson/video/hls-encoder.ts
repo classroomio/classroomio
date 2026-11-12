@@ -30,6 +30,7 @@ import {
   HLS_MIN_UPLOAD_CONCURRENCY,
   HLS_UPLOAD_CONCURRENCY,
   HlsEncoderError,
+  executeCancellableConversion,
   putPresignedObject,
   sleep
 } from './hls-upload-put';
@@ -377,7 +378,7 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
       );
     }
 
-    await conversion.execute();
+    await executeCancellableConversion(conversion, opts.signal);
     emit({ stage: 'uploading', percent: 73 });
     await uploader.flush();
 

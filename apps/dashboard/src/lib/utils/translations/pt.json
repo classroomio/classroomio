@@ -3778,9 +3778,43 @@
       "refresh": "Atualizar"
     },
     "upload": {
-      "videos": "Enviar vídeos",
-      "documents": "Enviar documentos",
-      "more_options": "Mais opções de envio"
+      "files": "Enviar arquivos",
+      "add_video_link": "Adicionar um link de vídeo",
+      "more_options": "Mais opções de envio",
+      "dialog_title": "Enviar arquivos",
+      "drag_drop": "Arraste e solte arquivos aqui, ou clique para procurar",
+      "limits": "Vídeos e documentos. Até {count} arquivos por vez, {size} cada.",
+      "limits_by_kind": "Até {count} arquivos por vez. Vídeos de até {videoSize}, documentos de até {documentSize}.",
+      "add_more": "Adicionar mais arquivos",
+      "minimize": "Minimizar",
+      "maximize": "Abrir a janela de envio",
+      "expand": "Mostrar arquivos",
+      "collapse": "Ocultar arquivos",
+      "close": "Fechar",
+      "done": "Concluir",
+      "keep_in_background": "Continuar em segundo plano",
+      "upgrade": "Faça upgrade para enviar arquivos à sua biblioteca de mídia",
+      "status": {
+        "queued": "Aguardando",
+        "completed": "Concluído",
+        "failed": "Falhou",
+        "retry": "Tentar novamente",
+        "remove": "Remover arquivo",
+        "uploading_progress": "Enviando {percent}%",
+        "size_progress": "{uploaded} de {total}"
+      },
+      "summary": {
+        "uploading": "{done} de {total} arquivos enviados",
+        "completed": "{count} envios concluídos",
+        "failed": "{count} de {total} envios falharam"
+      },
+      "errors": {
+        "unsupported_type": "{name} não é um vídeo ou documento compatível.",
+        "too_large": "{name} é maior que {size}.",
+        "too_many": "Você pode enviar até {count} arquivos por vez.",
+        "generic": "Falha no envio"
+      },
+      "switch_organization_confirm": "Trocar de organização cancela os envios em andamento. Trocar mesmo assim?"
     },
     "storage": {
       "total_bytes": "Armazenamento total",
@@ -4134,7 +4168,9 @@
           "popover_title": "Selecionar cursos",
           "popover_empty": "Nenhum curso publicado disponível.",
           "search_no_results": "Nenhum curso corresponde à sua pesquisa.",
-          "search_placeholder": "Buscar cursos..."
+          "search_placeholder": "Buscar cursos...",
+          "featured_toggle": "Mostrar curso em destaque",
+          "featured_toggle_desc": "Destaca seu primeiro curso em um bloco grande. Desative para listá-lo junto com seus outros cursos."
         }
       },
       "content": {
