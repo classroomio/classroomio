@@ -30,6 +30,8 @@ export const authentication: Authentication = {
         response_type: 'code',
         state: '{{bundle.inputData.state}}',
         scope: SCOPE,
+        // Reconnects must also land on the consent screen: better-auth skips it when the stored grant already covers the request.
+        prompt: 'consent',
         resource: '{{process.env.CIO_API_ORIGIN}}/public-api/v1'
       }
     },

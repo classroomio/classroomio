@@ -25,6 +25,7 @@ const mocks = vi.hoisted(() => ({
   listOAuthConnectedApps: vi.fn(),
   listOAuthEligibleOrganizations: vi.fn(),
   revokeOAuthConsent: vi.fn(),
+  revokeStaleOAuthTokens: vi.fn(),
   revokeUserGrants: vi.fn(),
   getActiveOrganizationPlan: vi.fn(),
   refreshOrgHasWebhookEndpoints: vi.fn(),
@@ -60,6 +61,7 @@ vi.mock('@cio/db/queries/auth', () => ({
   listOAuthConnectedApps: mocks.listOAuthConnectedApps,
   listOAuthEligibleOrganizations: mocks.listOAuthEligibleOrganizations,
   revokeOAuthConsent: mocks.revokeOAuthConsent,
+  revokeStaleOAuthTokens: mocks.revokeStaleOAuthTokens,
   revokeUserOAuthGrantsInOrganization: mocks.revokeUserGrants
 }));
 
@@ -76,7 +78,11 @@ const claims = {
   issuedAt: 1_800_000_100
 };
 
-const CONSENT = { id: CONSENT_ID, createdAt: new Date(1_800_000_000 * 1000) };
+const CONSENT = {
+  id: CONSENT_ID,
+  createdAt: new Date(1_800_000_000 * 1000),
+  scopes: ['course:read']
+};
 
 describe('authenticateOAuthAccessTokenService', () => {
   beforeEach(() => {
@@ -84,6 +90,7 @@ describe('authenticateOAuthAccessTokenService', () => {
     mocks.verifyOAuthAccessToken.mockResolvedValue(claims);
     mocks.isActiveOrganizationAdmin.mockResolvedValue(true);
     mocks.findActiveOAuthConsent.mockResolvedValue(CONSENT);
+    mocks.revokeStaleOAuthTokens.mockResolvedValue(0);
     mocks.getOrCreateOAuthGrantKey.mockResolvedValue({
       id: 'key-1',
       organizationId: ORG_ID,
@@ -118,10 +125,38 @@ describe('authenticateOAuthAccessTokenService', () => {
   });
 
   it('rejects a token issued before the current grant was created', async () => {
-    mocks.findActiveOAuthConsent.mockResolvedValue({ id: CONSENT_ID, createdAt: new Date(1_800_000_200 * 1000) });
+    mocks.findActiveOAuthConsent.mockResolvedValue({ ...CONSENT, createdAt: new Date(1_800_000_200 * 1000) });
 
     await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
     expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+  });
+
+  it('rejects a token carrying a scope the narrowed grant no longer covers and deletes stale tokens', async () => {
+    mocks.verifyOAuthAccessToken.mockResolvedValue({ ...claims, scopes: ['course:read', 'course:member:write'] });
+
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
+    expect(mocks.revokeStaleOAuthTokens).toHaveBeenCalledWith(USER_ID, 'client-1', ORG_ID, ['course:read']);
+    expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+  });
+
+  it('still rejects the token when deleting stale tokens fails', async () => {
+    mocks.verifyOAuthAccessToken.mockResolvedValue({ ...claims, scopes: ['course:read', 'course:member:write'] });
+    mocks.revokeStaleOAuthTokens.mockRejectedValue(new Error('database unavailable'));
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
+    expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+
+    consoleError.mockRestore();
+  });
+
+  it('accepts a token whose scopes the widened grant covers', async () => {
+    mocks.findActiveOAuthConsent.mockResolvedValue({ ...CONSENT, scopes: ['course:read', 'course:member:write'] });
+
+    await authenticateOAuthAccessTokenService('token', 'any');
+
+    expect(mocks.revokeStaleOAuthTokens).not.toHaveBeenCalled();
+    expect(mocks.getOrCreateOAuthGrantKey).toHaveBeenCalled();
   });
 
   it('requires the public API plan for tokens issued for the public API', async () => {

@@ -18,6 +18,12 @@ beforeAll(() => {
 afterEach(() => nock.cleanAll());
 
 describe('authentication', () => {
+  it('always shows the consent screen so reconnects can narrow the grant', () => {
+    const authorizeUrl = (App.authentication as any).oauth2Config.authorizeUrl;
+
+    expect(authorizeUrl.params.prompt).toBe('consent');
+  });
+
   it('exchanges authorization code with PKCE code_verifier and resource', async () => {
     const scope = nock(APP_ORIGIN)
       .post('/api/auth/oauth2/token', {
