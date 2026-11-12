@@ -7,6 +7,6 @@ export function initPosthog(): void {
     ui_host: POSTHOG_UI_HOST,
     cross_subdomain_cookie: true,
     person_profiles: 'identified_only',
-    session_recording: { maskAllInputs: true }
+    disable_session_recording: true
   });
 }
