@@ -27,6 +27,8 @@ Deleting a section also deletes its lessons and exercises. Deleting an exercise 
 
 Requests are limited per minute, separately for reads, writes, and publishes. The limits depend on your plan and apply to each connected app or MCP key and to your whole organization. The dashboard does not show them. Going over a limit returns a `429`; wait up to a minute, then retry.
 
+Insights queries add fixed per-key budgets on top of the plan limits: **60 insights queries per minute** and **20 dashboard snapshots per minute** for each key, plus **20 overdue-goal reminders per minute**. These limiters are fail-closed: when Redis is unavailable, the request fails with `503` and code `RATE_LIMIT_UNAVAILABLE` instead of going through. See [Rate limits](/api/rate-limits) and [API errors](/api/errors).
+
 | Plan | Each app or key (read / write / publish) | Whole organization (read / write / publish) |
 | --- | --- | --- |
 | Free | 30 / 10 / 1 | 60 / 20 / 2 |
