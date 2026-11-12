@@ -6612,7 +6612,8 @@
       "courses": "Cursos: {count}",
       "cohorts": "Coortes: {count}",
       "active_cohorts": "{count, plural, one {# coorte ativa} other {# coortes ativas}}",
-      "seats": "Assentos: {used} de {limit}"
+      "seats": "Assentos: {used} de {limit}",
+      "seats_not_joined": "{count} ainda não entraram"
     },
     "now_tag": {
       "label": "Agora",

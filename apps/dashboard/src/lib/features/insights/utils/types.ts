@@ -31,6 +31,9 @@ export type InsightsDashboard = InsightsDashboardSuccess['data'];
 export type InsightsWidget = InsightsDashboard['widgets'][number];
 export type InsightsScopeSummary = InsightsDashboard['scope'];
 export type InsightsScopeCourse = InsightsScopeSummary['courses'][number];
+
+export type PlanSeatUsage = { used: number; limit: number | null };
+export type SeatUsage = { used: number; limit: number; notJoined: number };
 export type InsightsCourseStructure = InsightsDashboard['structures'][string];
 export type InsightsStructureItem = InsightsCourseStructure['items'][number];
 

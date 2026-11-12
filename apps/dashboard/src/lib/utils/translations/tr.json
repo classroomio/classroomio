@@ -6694,7 +6694,8 @@
       "courses": "Kurslar: {count}",
       "cohorts": "Gruplar: {count}",
       "active_cohorts": "{count, plural, one {# aktif grup} other {# aktif grup}}",
-      "seats": "Koltuklar: {used} / {limit}"
+      "seats": "Koltuklar: {used} / {limit}",
+      "seats_not_joined": "{count} henüz katılmadı"
     },
     "now_tag": {
       "label": "Şimdi",

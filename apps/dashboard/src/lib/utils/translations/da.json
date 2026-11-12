@@ -6612,7 +6612,8 @@
       "courses": "Kurser: {count}",
       "cohorts": "Kohorter: {count}",
       "active_cohorts": "{count, plural, one {# aktiv kohorte} other {# aktive kohorter}}",
-      "seats": "Pladser: {used} af {limit}"
+      "seats": "Pladser: {used} af {limit}",
+      "seats_not_joined": "{count} har ikke tilmeldt sig endnu"
     },
     "now_tag": {
       "label": "Nu",

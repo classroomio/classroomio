@@ -6640,7 +6640,8 @@
       "courses": "Courses: {count}",
       "cohorts": "Cohorts: {count}",
       "active_cohorts": "{count, plural, one {# active cohort} other {# active cohorts}}",
-      "seats": "Seats: {used} of {limit}"
+      "seats": "Seats: {used} of {limit}",
+      "seats_not_joined": "{count} not joined yet"
     },
     "pagination": {
       "showing": "Showing {from}–{to} of {total}",

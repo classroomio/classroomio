@@ -30,6 +30,7 @@ import type {
   InsightsScopeCourse,
   InsightsScopeRef,
   InsightsScopeSummary,
+  PlanSeatUsage,
   InsightsScopeType,
   InsightsSelection,
   InsightsSpec,
@@ -44,6 +45,7 @@ import type {
   StudentSort,
   ScopeEmptyAction,
   ScopeEmptyState,
+  SeatUsage,
   SelectedStudent,
   TableSort,
   WidgetEmptyState
@@ -1772,6 +1774,23 @@ export function formatKpi(
       : translate('insights.kpi.no_data.in_days', { days: context.rangeDays });
 
   return { ...display, description, trend: 'flat' };
+}
+
+/**
+ * The seats chip: used and not-joined seats from the org scope summary, which share one read, and the plan's limit.
+ * Falls back to the plan usage count before the summary loads. Null without a seat limit.
+ */
+export function seatUsage(
+  summary: Pick<InsightsScopeSummary, 'seatsUsed' | 'seatsNotJoined'> | null | undefined,
+  planUsage: PlanSeatUsage | null | undefined
+): SeatUsage | null {
+  const limit = planUsage?.limit ?? null;
+  if (limit === null) return null;
+
+  const used = summary?.seatsUsed ?? planUsage?.used ?? 0;
+  const notJoined = summary?.seatsNotJoined ?? 0;
+
+  return { used, limit, notJoined };
 }
 
 export function growthYMax(

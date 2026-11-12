@@ -29,6 +29,7 @@ import {
   formatUpdatedAgo,
   groupScoreDisplay,
   growthYMax,
+  seatUsage,
   hasStudents,
   hasNoStudents,
   histogramPoints,
@@ -1526,6 +1527,22 @@ describe('insights-utils', () => {
       const points = [{ key: 'w1', label: '', rank: 0, members_total__value: 120 }];
       expect(growthYMax(points, 'members_total__value', 2000, 5000)).toBe(5000);
       expect(growthYMax(points, 'members_total__value', null, null)).toBe(120);
+    });
+
+    it('seatUsage reads seats from the scope summary and the limit from the plan', () => {
+      expect(seatUsage({ seatsUsed: 120, seatsNotJoined: 20 }, { used: 118, limit: 200 })).toEqual({
+        used: 120,
+        limit: 200,
+        notJoined: 20
+      });
+      expect(seatUsage(null, { used: 118, limit: 200 })).toEqual({ used: 118, limit: 200, notJoined: 0 });
+      expect(seatUsage({ seatsUsed: null, seatsNotJoined: null }, { used: 5, limit: 10 })).toEqual({
+        used: 5,
+        limit: 10,
+        notJoined: 0
+      });
+      expect(seatUsage({ seatsUsed: 120, seatsNotJoined: 20 }, { used: 118, limit: null })).toBeNull();
+      expect(seatUsage({ seatsUsed: 120, seatsNotJoined: 20 }, undefined)).toBeNull();
     });
 
     it('cycleColor preserves base palette on first pass and dynamically tweaks deeper passes', () => {

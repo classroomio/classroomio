@@ -6582,7 +6582,8 @@
       "courses": "Corsi: {count}",
       "cohorts": "Coorti: {count}",
       "active_cohorts": "{count, plural, one {# coorte attiva} other {# coorti attive}}",
-      "seats": "Posti: {used} di {limit}"
+      "seats": "Posti: {used} di {limit}",
+      "seats_not_joined": "{count} non ancora iscritti"
     },
     "now_tag": {
       "label": "Ora",

@@ -6612,7 +6612,8 @@
       "courses": "Khóa học: {count}",
       "cohorts": "Nhóm thuần tập: {count}",
       "active_cohorts": "{count, plural, one {# đoàn hệ tích cực} other {# nhóm thuần tập đang hoạt động}}",
-      "seats": "Số ghế: {used} trong tổng số {limit}"
+      "seats": "Số ghế: {used} trong tổng số {limit}",
+      "seats_not_joined": "{count} chưa tham gia"
     },
     "now_tag": {
       "label": "Hiện nay",

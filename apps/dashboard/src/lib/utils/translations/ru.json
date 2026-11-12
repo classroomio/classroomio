@@ -6714,7 +6714,8 @@
       "courses": "Курсы: {count}",
       "cohorts": "Когорты: {count}",
       "active_cohorts": "{count, plural, one {# активная когорта} other {# активных когорт}}",
-      "seats": "Мест: {used} из {limit}"
+      "seats": "Мест: {used} из {limit}",
+      "seats_not_joined": "{count} ещё не присоединились"
     },
     "now_tag": {
       "label": "Сейчас",

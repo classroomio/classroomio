@@ -3,7 +3,7 @@
   import { studentUsage } from '$lib/utils/store/org';
 
   import { insightsApi } from '../../api';
-  import { formatCount, growthYMax, toChartPoints } from '../../utils/insights-utils';
+  import { formatCount, growthYMax, seatUsage, toChartPoints } from '../../utils/insights-utils';
   import type { WidgetRendererProps } from '../../utils/types';
   import LineChart from '../charts/line-chart.svelte';
   import StudentTargetEditor from '../student-target-editor.svelte';
@@ -15,16 +15,20 @@
   const studentTarget = $derived(insightsApi.dashboard?.scope.studentTarget ?? null);
   const points = $derived(toChartPoints(result, 'period', $t));
   const target = $derived(studentTarget ? { value: studentTarget, label: $t('insights.legend.target') } : null);
-  const yMax = $derived(growthYMax(points, VALUE_KEY, studentTarget, $studentUsage?.limit ?? null));
+  const seats = $derived(seatUsage(insightsApi.dashboard?.scope, $studentUsage));
+  const yMax = $derived(growthYMax(points, VALUE_KEY, studentTarget, seats?.limit ?? null));
 </script>
 
 <div class="mb-2 flex items-center justify-between">
-  {#if $studentUsage?.limit}
+  {#if seats}
     <span class="ui:text-muted-foreground text-xs font-medium tabular-nums">
       {$t('insights.chips.seats', {
-        used: formatCount($studentUsage.used),
-        limit: formatCount($studentUsage.limit)
+        used: formatCount(seats.used),
+        limit: formatCount(seats.limit)
       })}
+      {#if seats.notJoined > 0}
+        · {$t('insights.chips.seats_not_joined', { count: formatCount(seats.notJoined) })}
+      {/if}
     </span>
   {:else}
     <span></span>

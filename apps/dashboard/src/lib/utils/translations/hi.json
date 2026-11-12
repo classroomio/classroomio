@@ -6612,7 +6612,8 @@
       "courses": "पाठ्यक्रम: {count}",
       "cohorts": "समूह: {count}",
       "active_cohorts": "{count, plural, one {# सक्रिय समूह} other {#सक्रिय दल}}",
-      "seats": "सीटें: {limit} में से {used}"
+      "seats": "सीटें: {limit} में से {used}",
+      "seats_not_joined": "{count} अभी तक शामिल नहीं हुए"
     },
     "now_tag": {
       "label": "अब",

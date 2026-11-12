@@ -6612,7 +6612,8 @@
       "courses": "Kursy: {count}",
       "cohorts": "Kohorty: {count}",
       "active_cohorts": "{count, plural, one {# aktywna kohorta} other {# aktywne kohorty}}",
-      "seats": "Miejsca: {used} z {limit}"
+      "seats": "Miejsca: {used} z {limit}",
+      "seats_not_joined": "{count} jeszcze nie dołączyło"
     },
     "now_tag": {
       "label": "Teraz",
