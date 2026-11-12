@@ -33,7 +33,7 @@ Trusted clients, such as ClassroomIO's native Zapier integration, are pre-regist
 
 ### Trusted clients
 
-Two API environment variables configure first-party integrations:
+Two API environment variables configure first-party integrations. Trusted clients are registered out of band by ClassroomIO (never through the dynamic registration endpoint below):
 
 | Variable                   | Purpose                                                                                                                                                                                                 |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -41,6 +41,8 @@ Two API environment variables configure first-party integrations:
 | `ZAPIER_OAUTH_CLIENT_ID`   | The client ID of ClassroomIO's Zapier OAuth client. Identifies Zapier grants in the dashboard, `/me` responses, and managed webhook subscriptions.                                                        |
 
 Store only client IDs issued to ClassroomIO's own integrations in `OAUTH_TRUSTED_CLIENT_IDS`. Third-party clients registered through dynamic registration must stay untrusted; note that repeat requests whose scopes the stored grant already covers skip the consent screen unless the client sends `prompt=consent`.
+
+Register a third-party platform with dynamic client registration (this path always creates an untrusted client):
 
 ```bash
 curl -X POST https://app.classroomio.com/api/auth/oauth2/register \
