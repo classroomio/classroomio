@@ -28,7 +28,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 | `200` / `201` | The request worked |
 | `400` | The request body or query is invalid |
 | `401` | The credential (API key or OAuth token) is missing, invalid, expired, or revoked |
-| `403` | The credential can't call this endpoint — missing scope, or a plan without API access |
+| `403` | The credential can't call this endpoint — missing scope, read-only connection, or a plan without API access |
 | `404` | The resource doesn't exist, or belongs to another organization |
 | `409` | The request conflicts with the resource's current state |
 | `429` | Too many requests. See [Rate limits](/api/rate-limits) |
@@ -63,7 +63,7 @@ Status `403`
 }
 ```
 
-**Fix:** You're using a key that can't call this endpoint, usually an MCP key or a connected MCP app. Use an API key (`cio_api_...`) instead. An OAuth access token that lacks the route's scope fails the same way; reconnect the app and grant that scope.
+**Fix:** You're using a key that can't call this endpoint, usually an MCP key or a connected MCP app. Use an API key (`cio_api_...`) instead. An OAuth access token that lacks the route's scope also fails with `403`, but with `INSUFFICIENT_SCOPE` and the missing scope in `requiredScope`.
 
 An OAuth connection, such as Zapier, gets `INSUFFICIENT_SCOPE` instead, with the missing scope in `requiredScope`:
 
