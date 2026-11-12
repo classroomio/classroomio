@@ -113,7 +113,8 @@ describe('event triggers', () => {
   it('uses the shared error handler when unsubscribe fails', async () => {
     nock(API_ORIGIN).delete('/public-api/v1/webhooks/subscriptions/sub-1').reply(403, {
       success: false,
-      code: 'UPGRADE_REQUIRED'
+      code: 'UPGRADE_REQUIRED',
+      error: 'Webhooks require an Early Adopter or Enterprise plan'
     });
 
     const performUnsubscribe = (App.triggers.new_course_enrollment.operation as any).performUnsubscribe;

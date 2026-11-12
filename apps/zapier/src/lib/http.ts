@@ -1,6 +1,7 @@
 import type { Bundle, HttpRequestOptions, HttpResponse, ZObject } from 'zapier-platform-core';
 
 import { isOAuthDataChangeScope } from '@cio/utils/constants/oauth-scopes';
+import { isAutomationPlanGateMessage } from '@cio/utils/plans';
 
 import packageJson from '../../package.json' with { type: 'json' };
 import { publicApiResource } from './config';
@@ -84,7 +85,9 @@ function handleApiErrorsWith(response: HttpResponse, z: ZObject, force: boolean)
   }
 
   if (response.status === 403 && body.code === 'UPGRADE_REQUIRED') {
-    throw new z.errors.Error(PLAN_REQUIRED_MESSAGE, 'PlanRequired', 403);
+    const planMessage = isAutomationPlanGateMessage(body.error ?? body.message) ? PLAN_REQUIRED_MESSAGE : message;
+
+    throw new z.errors.Error(planMessage, 'PlanRequired', 403);
   }
 
   if (

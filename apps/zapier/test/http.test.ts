@@ -124,8 +124,11 @@ describe('HTTP middleware', () => {
     expect(() => handleApiErrors(response, z)).toThrow('analytics:read');
   });
 
-  it('throws PlanRequired Error on 403 with UPGRADE_REQUIRED', () => {
-    const response = createMockResponse(403, { code: 'UPGRADE_REQUIRED' });
+  it('throws PlanRequired Error when the plan gate blocks the public API', () => {
+    const response = createMockResponse(403, {
+      code: 'UPGRADE_REQUIRED',
+      error: 'Public API keys require an Early Adopter or Enterprise plan'
+    });
 
     try {
       handleApiErrors(response, z);
@@ -134,6 +137,31 @@ describe('HTTP middleware', () => {
       expect(error.message).toContain("This ClassroomIO organization's plan doesn't include Zapier");
       expect(error.message).toContain('"code":"PlanRequired"');
       expect(error.message).toContain('"status":403');
+    }
+  });
+
+  it('shows the plan message when the webhooks plan gate refuses a subscription', () => {
+    const response = createMockResponse(403, {
+      code: 'UPGRADE_REQUIRED',
+      error: 'Webhooks require an Early Adopter or Enterprise plan'
+    });
+
+    expect(() => handleApiErrors(response, z)).toThrow("This ClassroomIO organization's plan doesn't include Zapier");
+  });
+
+  it('passes a narrower upgrade prompt through instead of blaming the Zapier plan', () => {
+    const response = createMockResponse(403, {
+      code: 'UPGRADE_REQUIRED',
+      error: 'This organization is not accepting new students right now'
+    });
+
+    try {
+      handleApiErrors(response, z);
+      expect.unreachable();
+    } catch (error: any) {
+      expect(error.message).toContain('This organization is not accepting new students right now');
+      expect(error.message).not.toContain("plan doesn't include Zapier");
+      expect(error.message).toContain('"code":"PlanRequired"');
     }
   });
 
