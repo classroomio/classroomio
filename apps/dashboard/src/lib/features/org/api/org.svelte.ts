@@ -35,7 +35,13 @@ import type {
   TOrgUpdateForm
 } from '../utils/types';
 import type { EmailLocale, StudentEmailId } from '@cio/utils/email';
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import {
+  BaseApiWithErrors,
+  classroomio,
+  hasErrorCode,
+  matchesError,
+  type NormalizedApiError
+} from '$lib/utils/services/api';
 import type {
   TAssignAudienceCourses,
   TAudienceInviteByEmail,
@@ -105,7 +111,7 @@ class OrgApi extends BaseApiWithErrors {
         window.location.href = resolveOrgJoinRedirect(redirectTo, window.location.origin);
       },
       onError: (result) => {
-        if (typeof result === 'object' && 'code' in result && typeof result.code === 'string') {
+        if (result.code) {
           this.joinErrorCode = result.code;
         }
 
@@ -390,12 +396,10 @@ class OrgApi extends BaseApiWithErrors {
         goto(resolve(`/org/${organization.siteName}`, {}));
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-        if ('error' in result) {
-          this.handleValidationError(result);
+        this.handleValidationError(result);
+
+        if (!result.field) {
+          snackbar.error(result.message);
         }
       }
     });
@@ -513,55 +517,26 @@ class OrgApi extends BaseApiWithErrors {
       onError: (error) => {
         console.error('Error updating organization:', error);
 
-        if (typeof error === 'object' && error !== null && 'error' in error) {
-          const apiError = error as {
-            success: false;
-            error: string;
-            code?: string;
-            field?: string;
-          };
-
-          if (apiError.field === 'siteName' || apiError.code === 'SITENAME_EXISTS') {
-            const message = typeof apiError.error === 'string' ? apiError.error : 'Site name already exists';
-            this.errors = { ...this.errors, siteName: message };
-            snackbar.error(message);
-            return;
-          }
-
-          if (apiError.field && typeof apiError.error === 'string') {
-            this.errors = { ...this.errors, [apiError.field]: apiError.error };
-            snackbar.error(apiError.error);
-            return;
-          }
-
-          if (typeof apiError.error === 'string') {
-            this.errors = { ...this.errors, general: apiError.error };
-            snackbar.error(apiError.error);
-            return;
-          }
-
-          this.errors = { ...this.errors, general: t.get('snackbar.update_failed') };
-          snackbar.error(t.get('snackbar.update_failed'));
+        if (matchesError(error, { field: 'siteName' }) || hasErrorCode(error, ErrorCodes.SITENAME_EXISTS)) {
+          this.errors = { ...this.errors, siteName: error.message };
+          snackbar.error(error.message);
           return;
         }
 
-        const message =
-          error instanceof Error ? error.message : typeof error === 'string' ? error : t.get('snackbar.update_failed');
-        this.errors = { ...this.errors, general: message };
-        snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
+        if (error.field) {
+          this.errors = { ...this.errors, [error.field]: error.message };
+          snackbar.error(error.message);
+          return;
+        }
+
+        this.errors = { ...this.errors, general: error.message };
+        snackbar.error(`${t.get('snackbar.update_failed')}: ${error.message}`);
       }
     });
   }
 
-  private showStudentEmailTemplateError(result: unknown) {
-    if (typeof result === 'string') {
-      snackbar.error(result);
-      return;
-    }
-
-    const { message, error } = (result ?? {}) as { message?: unknown; error?: unknown };
-    const text = [message, error].find((value) => typeof value === 'string' && value.length > 0);
-    snackbar.error(typeof text === 'string' ? text : 'snackbar.something');
+  private showStudentEmailTemplateError(result: NormalizedApiError) {
+    snackbar.error(result.message || 'snackbar.something');
   }
 
   async listStudentEmailTemplates() {
@@ -633,12 +608,10 @@ class OrgApi extends BaseApiWithErrors {
         if (response.data.queuedCount > 0) void this.getOrgTeam();
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-        if ('error' in result && 'field' in result) {
-          this.errors[result.field as string] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          snackbar.error(result.message);
         }
       }
     });
@@ -663,7 +636,7 @@ class OrgApi extends BaseApiWithErrors {
         await this.getOrgTeam();
       },
       onError: (result) => {
-        if (typeof result !== 'string' && result.code === ErrorCodes.ORG_TEAM_LAST_ADMIN) {
+        if (hasErrorCode(result, ErrorCodes.ORG_TEAM_LAST_ADMIN)) {
           snackbar.error('snackbar.team_members.last_admin');
           return;
         }
@@ -689,9 +662,7 @@ class OrgApi extends BaseApiWithErrors {
         this.getOrgTeam();
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -717,9 +688,7 @@ class OrgApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -747,12 +716,10 @@ class OrgApi extends BaseApiWithErrors {
         this.success = true;
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-        if ('error' in result && 'field' in result) {
-          this.errors[result.field as string] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          snackbar.error(result.message);
         }
       }
     });
@@ -780,13 +747,7 @@ class OrgApi extends BaseApiWithErrors {
         this.success = true;
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-        if ('error' in result) {
-          snackbar.error(result.error);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -806,9 +767,7 @@ class OrgApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -824,9 +783,7 @@ class OrgApi extends BaseApiWithErrors {
         snackbar.success('audience.invite.revoke_snackbar_success');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -843,7 +800,7 @@ class OrgApi extends BaseApiWithErrors {
         }),
       logContext: 'building audience export',
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -860,7 +817,7 @@ class OrgApi extends BaseApiWithErrors {
         }),
       logContext: 'previewing bulk audience action',
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -877,7 +834,7 @@ class OrgApi extends BaseApiWithErrors {
       requestFn: () => classroomio.organization.audience['bulk-action'].$post({ json: parsed.data }),
       logContext: 'applying bulk audience action',
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -895,7 +852,7 @@ class OrgApi extends BaseApiWithErrors {
         }),
       logContext: 'reading bulk audience action status',
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -908,7 +865,7 @@ class OrgApi extends BaseApiWithErrors {
         snackbar.success('audience.bulk.undo_success');
       },
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -924,12 +881,7 @@ class OrgApi extends BaseApiWithErrors {
         snackbar.success('audience.delete.snackbar_success');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-
-        snackbar.error('error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }

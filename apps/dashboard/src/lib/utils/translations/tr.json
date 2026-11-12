@@ -1513,7 +1513,8 @@
     "status": {
       "active": "Active",
       "archived": "Archived",
-      "processing": "İşleniyor"
+      "processing": "İşleniyor",
+      "upload_not_finished": "Yükleme tamamlanmadı"
     },
     "table": {
       "title": "Title",
@@ -2955,6 +2956,7 @@
                 "loading_library": "LMedya kitaplığı yükleniyor...",
                 "no_library_videos": "Medya kitaplığınızda video yok",
                 "add_from_library": "Ekle",
+                "upload_not_finished": "Yükleme tamamlanmadı. Bu videonun henüz dosyası yok, bu yüzden eklenemez.",
                 "cancel_upload": "Yüklemeyi iptal et",
                 "upload_cancelled": "Yükleme kullanıcı tarafından iptal edildi",
                 "max_files": "{sayı, çoğul, bir {You can upload # file} diğer {You can upload # files}}",

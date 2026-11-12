@@ -2508,6 +2508,7 @@
                 "loading_library": "Chargement de la médiathèque...",
                 "no_library_videos": "Aucune vidéo disponible dans votre médiathèque",
                 "add_from_library": "Ajouter",
+                "upload_not_finished": "Téléversement inachevé. Cette vidéo n'a pas encore de fichier et ne peut donc pas être ajoutée.",
                 "cancel_upload": "Annuler le téléchargement",
                 "upload_cancelled": "Téléchargement annulé par l'utilisateur",
                 "max_files": "{count, plural, one {Vous pouvez téléverser # fichier} other {Vous pouvez téléverser # fichiers}}",
@@ -3747,7 +3748,8 @@
     "status": {
       "active": "Actif",
       "archived": "Archivé",
-      "processing": "Traitement en cours"
+      "processing": "Traitement en cours",
+      "upload_not_finished": "Téléversement inachevé"
     },
     "provider": {
       "upload": "Téléverser",

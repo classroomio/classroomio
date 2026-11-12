@@ -2508,6 +2508,7 @@
                 "loading_library": "Ładowanie biblioteki multimediów...",
                 "no_library_videos": "W Twojej bibliotece multimediów nie ma dostępnych filmów",
                 "add_from_library": "Dodaj",
+                "upload_not_finished": "Przesyłanie nieukończone. Ten film nie ma jeszcze pliku, więc nie można go dodać.",
                 "cancel_upload": "Anuluj przesyłanie",
                 "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
                 "max_files": "{count, plural, one {Możesz przesłać # plik} other {Możesz przesłać # plików}}",
@@ -3747,7 +3748,8 @@
     "status": {
       "active": "Aktywny",
       "archived": "Zarchiwizowane",
-      "processing": "Przetwarzanie"
+      "processing": "Przetwarzanie",
+      "upload_not_finished": "Przesyłanie nieukończone"
     },
     "provider": {
       "upload": "Prześlij",

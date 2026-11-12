@@ -1503,7 +1503,8 @@
     "status": {
       "active": "Active",
       "archived": "Archived",
-      "processing": "Processing"
+      "processing": "Processing",
+      "upload_not_finished": "Upload not finished"
     },
     "table": {
       "title": "Title",
@@ -2953,6 +2954,7 @@
                 "loading_library": "Loading media library...",
                 "no_library_videos": "No videos available in your media library",
                 "add_from_library": "Add",
+                "upload_not_finished": "Upload not finished. This video has no file yet, so it can't be added.",
                 "cancel_upload": "Cancel Upload",
                 "upload_cancelled": "Upload cancelled by user",
                 "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",

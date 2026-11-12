@@ -2508,6 +2508,7 @@
                 "loading_library": "Carregando biblioteca de mídia...",
                 "no_library_videos": "Nenhum vídeo disponível na sua biblioteca de mídia",
                 "add_from_library": "Adicionar",
+                "upload_not_finished": "Envio não concluído. Este vídeo ainda não tem arquivo, por isso não pode ser adicionado.",
                 "cancel_upload": "Cancelar upload",
                 "upload_cancelled": "Upload cancelado pelo usuário",
                 "max_files": "{count, plural, one {Você pode enviar # arquivo} other {Você pode enviar # arquivos}}",
@@ -3747,7 +3748,8 @@
     "status": {
       "active": "Ativo",
       "archived": "Arquivado",
-      "processing": "Processando"
+      "processing": "Processando",
+      "upload_not_finished": "Envio não concluído"
     },
     "provider": {
       "upload": "Enviar",

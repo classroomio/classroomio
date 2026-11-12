@@ -17,6 +17,7 @@
     formatUsageDate,
     getAssetDisplayName,
     getKindIcon,
+    isUnfinishedVideoUpload,
     type OrganizationAsset
   } from '$features/media/utils';
   import { Tooltip } from '@cio/ui';
@@ -136,7 +137,11 @@
     <div class="mt-3 flex flex-wrap gap-2">
       <Badge variant="outline">{$t(`media_manager.kind.${asset.kind}`)}</Badge>
       <Badge variant="outline">{$t(`media_manager.provider.${asset.provider}`)}</Badge>
-      <Badge variant="outline">{$t(`media_manager.status.${asset.status}`)}</Badge>
+      {#if isUnfinishedVideoUpload(asset)}
+        <Badge variant="warning">{$t('media_manager.status.upload_not_finished')}</Badge>
+      {:else}
+        <Badge variant="outline">{$t(`media_manager.status.${asset.status}`)}</Badge>
+      {/if}
     </div>
 
     <div class="mt-4 grid grid-cols-2 gap-3 text-sm">

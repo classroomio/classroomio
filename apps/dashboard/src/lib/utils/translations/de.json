@@ -2508,6 +2508,7 @@
                 "loading_library": "Medienbibliothek wird geladen...",
                 "no_library_videos": "In Ihrer Medienbibliothek sind keine Videos verfügbar",
                 "add_from_library": "Hinzufügen",
+                "upload_not_finished": "Upload nicht abgeschlossen. Dieses Video hat noch keine Datei und kann daher nicht hinzugefügt werden.",
                 "cancel_upload": "Hochladen abbrechen",
                 "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
                 "max_files": "{count, plural, one {Sie können # Datei hochladen} other {Sie können # Dateien hochladen}}",
@@ -3747,7 +3748,8 @@
     "status": {
       "active": "Aktiv",
       "archived": "Archiviert",
-      "processing": "Wird verarbeitet"
+      "processing": "Wird verarbeitet",
+      "upload_not_finished": "Upload nicht abgeschlossen"
     },
     "provider": {
       "upload": "Hochladen",
