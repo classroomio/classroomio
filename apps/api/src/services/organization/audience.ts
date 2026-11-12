@@ -373,13 +373,19 @@ async function createStudentOrgInvitesAndSendEmails(input: {
     return { created: 0, emailsSent: 0, emailsFailed: 0 };
   }
 
-  await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId);
+  const revokedInvites = await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId);
+  const previousFullnames = new Map<string, string>();
+  for (const revokedInvite of revokedInvites) {
+    const previousFullname = parseFullnameFromInviteMetadata(revokedInvite.metadata);
+    const revokedEmail = revokedInvite.email?.toLowerCase();
+    if (previousFullname && revokedEmail) previousFullnames.set(revokedEmail, previousFullname);
+  }
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
 
   const inviteInputs = emails.map((email) => {
     const token = generateToken();
-    const fullname = fullnamesByEmail?.get(email);
+    const fullname = fullnamesByEmail?.get(email) ?? previousFullnames.get(email);
 
     return {
       email,

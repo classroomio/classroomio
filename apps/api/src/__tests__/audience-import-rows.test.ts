@@ -73,7 +73,8 @@ import {
   createOrganizationInvites,
   createOrganizationMembers,
   getOrganizationById,
-  getOrganizationMembersByNormalizedEmails
+  getOrganizationMembersByNormalizedEmails,
+  revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { getCohortsByOrg } from '@cio/db/queries/cohort';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
@@ -369,5 +370,25 @@ describe('importAudienceMembers — names stored with the invite', () => {
     );
 
     expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace' });
+  });
+
+  it('keeps the saved name when a pending student is imported again without one', async () => {
+    vi.mocked(revokeActiveOrganizationInvitesByEmails).mockResolvedValueOnce([
+      { email: 'ada@test.dev', metadata: { source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' } }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email', 'ada@test.dev'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace' });
+  });
+
+  it('prefers the name in the new import over the previous invite name', async () => {
+    vi.mocked(revokeActiveOrganizationInvitesByEmails).mockResolvedValueOnce([
+      { email: 'ada@test.dev', metadata: { source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' } }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email,name', 'ada@test.dev,Ada King'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada King' });
   });
 });
