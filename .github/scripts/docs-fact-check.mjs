@@ -84,9 +84,14 @@ async function resolveFixedThreads(pullNumber, activeDocPaths) {
 
     if (docPath && activeDocPaths.has(docPath)) continue;
 
-    await githubGraphQL(`mutation($id:ID!) { resolveReviewThread(input:{threadId:$id}) { thread { id } } }`, {
-      id: thread.id
-    });
+    // The job token may not be allowed to resolve threads; don't fail the review over it.
+    try {
+      await githubGraphQL(`mutation($id:ID!) { resolveReviewThread(input:{threadId:$id}) { thread { id } } }`, {
+        id: thread.id
+      });
+    } catch (error) {
+      console.warn(`Could not resolve fact-check thread ${thread.id}:`, error.message);
+    }
   }
 }
 
@@ -358,7 +363,7 @@ async function postFailureNotice(pullRequest, replyContext, error) {
     return;
   }
 
-  await githubRequest(`/pulls/${pullRequest.number}/issues/comments`, {
+  await githubRequest(`/issues/${pullRequest.number}/comments`, {
     method: 'POST',
     body: JSON.stringify({ body })
   });
