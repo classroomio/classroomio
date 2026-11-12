@@ -55,10 +55,8 @@ export class ExerciseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch exercise');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch exercise');
       }
     });
   }
@@ -168,16 +166,12 @@ export class ExerciseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to create exercise');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -212,16 +206,12 @@ export class ExerciseApi extends BaseApiWithErrors {
       },
       onError: (result) => {
         this.success = false;
-        if (typeof result === 'string') {
-          snackbar.error('Failed to update exercise');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -244,10 +234,8 @@ export class ExerciseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to delete exercise');
-        }
+      onError: () => {
+        snackbar.error('Failed to delete exercise');
       }
     });
   }
@@ -277,16 +265,12 @@ export class ExerciseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to submit exercise');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -392,16 +376,12 @@ export class ExerciseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to create exercise from template');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });

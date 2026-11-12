@@ -45,6 +45,18 @@ Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{
 |---|---|
 | `course-settings-people-link` | Self-enrollment description link to the course People page |
 | `customize-lms-student-home` | Customize LMS student-home combobox trigger |
+| `lesson-video-edit` | **Edit** item in a lesson video block's options menu |
+| `media-upload` | Media page **Upload files** button |
+| `media-upload-menu` | Media page upload-options menu (**Add a video link**) |
+| `media-upload-dialog` | Media upload dialog |
+| `media-upload-minimize` | Minimize button in the media upload dialog |
+| `media-upload-done` | **Done** button in the media upload dialog |
+| `media-upload-list` | List of files in the media upload dialog and the minimized uploader |
+| `media-upload-tray` | Minimized media uploader (bottom-right, every `(app)` route) |
+| `media-upload-tray-title` | Minimized uploader status line |
+| `media-upload-tray-toggle` | Show or hide the files in the minimized uploader |
+| `media-upload-tray-maximize` | Reopen the upload dialog from the minimized uploader |
+| `media-upload-tray-close` | Dismiss the minimized uploader once nothing is uploading |
 
 ## Helpers
 

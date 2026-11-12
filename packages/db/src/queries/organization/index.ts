@@ -2,7 +2,6 @@ export * from './organization';
 export * from './student-home';
 export * from './audience';
 export * from './member-lifecycle';
-export * from './quiz';
 export * from './invite';
 export * from './link-invite';
 export * from './automation-key';

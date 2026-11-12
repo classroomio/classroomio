@@ -27,12 +27,18 @@
       emptyPrompt: t.get(`${prefix}.add_slide.empty_prompt`),
       embedCodeLabel: t.get(`${prefix}.add_slide.embed_code`),
       embedCodePlaceholder: t.get(`${prefix}.add_slide.embed_placeholder`),
-      addEmbed: t.get(`${prefix}.button`),
+      addEmbed: t.get('course.navItem.lessons.materials.blocks.slides.add_slide'),
       howToEmbed: t.get(`${prefix}.add_slide.how_to_embed`),
       previewLabel: t.get(`${prefix}.add_slide.preview`),
       embedReady: t.get(`${prefix}.add_slide.embed_ready`),
       invalidEmbed: t.get(`${prefix}.add_slide.invalid_embed`),
       unsupportedPlatform: t.get(`${prefix}.add_slide.unsupported`),
+      // The ICU parser throws on missing variables; SlideEmbedPicker fills these placeholders itself.
+      platformMismatch: t.get(`${prefix}.add_slide.platform_mismatch`, {
+        detected: '{detected}',
+        selected: '{selected}'
+      }),
+      previewInPlatform: t.get(`${prefix}.add_slide.preview_in_platform`, { platform: '{platform}' }),
       platforms
     };
   });

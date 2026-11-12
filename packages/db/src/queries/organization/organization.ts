@@ -1,5 +1,6 @@
 import * as schema from '@db/schema';
 
+import { inviteHoldsSeatSql } from './invite-status';
 import type { OrganizationPlan, OrganizationWithMemberAndPlans, OrganizationWithPlans } from './types';
 import type {
   TNewOrganization,
@@ -628,9 +629,10 @@ export const deleteCohortMembershipsForOrgProfiles = async (
 export const updateOrganizationAudienceMember = async (
   orgId: string,
   memberId: number,
-  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>
+  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>,
+  dbClient: DbOrTxClient = db
 ) => {
-  const [updated] = await db
+  const [updated] = await dbClient
     .update(schema.organizationmember)
     .set(data)
     .where(
@@ -903,27 +905,54 @@ export async function lockOrganizationForStudentCapacity(orgId: string, dbClient
     .limit(1);
 }
 
+function unarchivedStudentConditions(orgId: string) {
+  return and(
+    eq(schema.organizationmember.organizationId, orgId),
+    eq(schema.organizationmember.roleId, ROLE.STUDENT),
+    ne(schema.organizationmember.status, 'ARCHIVED')
+  );
+}
+
 /**
- * Student memberships that occupy a plan seat. `ARCHIVED` is excluded, so
- * archiving reclaims a seat.
+ * Student memberships that occupy a plan seat. Archived members and members
+ * who never joined and whose latest invite was revoked or expired are excluded.
  */
 export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
   try {
     const [row] = await dbClient
       .select({ count: count(schema.organizationmember.id) })
       .from(schema.organizationmember)
-      .where(
-        and(
-          eq(schema.organizationmember.organizationId, orgId),
-          eq(schema.organizationmember.roleId, ROLE.STUDENT),
-          ne(schema.organizationmember.status, 'ARCHIVED')
-        )
-      );
+      .where(and(unarchivedStudentConditions(orgId), inviteHoldsSeatSql));
 
     return Number(row?.count ?? 0);
   } catch (error) {
     console.error('countActiveStudents error:', error);
     throw new Error('Failed to count active students');
+  }
+}
+
+/**
+ * True for an unarchived student who never joined and whose latest invite was
+ * revoked or expired: they hold no seat until re-invited or linked to an account.
+ */
+export async function hasLapsedStudentInvite(
+  orgId: string,
+  memberId: number,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(unarchivedStudentConditions(orgId), eq(schema.organizationmember.id, memberId), not(inviteHoldsSeatSql))
+      )
+      .limit(1);
+
+    return Boolean(row);
+  } catch (error) {
+    console.error('hasLapsedStudentInvite error:', error);
+    throw new Error('Failed to check lapsed student invite');
   }
 }
 
@@ -1593,6 +1622,8 @@ export type TOrganizationMemberByEmail = {
   normalizedEmail: string;
   profileId: string | null;
   roleId: number;
+  /** See `hasLapsedStudentInvite`. */
+  hasLapsedInvite: boolean;
 };
 
 /**
@@ -1613,7 +1644,9 @@ export async function getOrganizationMembersByNormalizedEmails(
         profileId: schema.organizationmember.profileId,
         matchEmail: sql<string>`lower(trim(coalesce(${schema.profile.email}, ${schema.organizationmember.email})))`.as(
           'matchEmail'
-        )
+        ),
+        status: schema.organizationmember.status,
+        inviteHoldsSeat: inviteHoldsSeatSql.as('inviteHoldsSeat')
       })
       .from(schema.organizationmember)
       .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -1627,7 +1660,8 @@ export async function getOrganizationMembersByNormalizedEmails(
     return rows.map((row) => ({
       normalizedEmail: row.matchEmail,
       profileId: row.profileId,
-      roleId: row.roleId
+      roleId: row.roleId,
+      hasLapsedInvite: row.roleId === ROLE.STUDENT && row.status !== 'ARCHIVED' && !row.inviteHoldsSeat
     }));
   } catch (error) {
     console.error('getOrganizationMembersByNormalizedEmails error:', error);

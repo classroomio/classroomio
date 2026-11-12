@@ -2732,7 +2732,17 @@
             "empty_preview_title": "Intet at forhåndsvise endnu",
             "empty_preview_description": "Denne lektion har intet indhold, som eleverne kan se. Skift til {editLabel} for at tilføje en note, video, dias, dokument eller billede.",
             "empty_learner_title": "Denne lektion er ikke klar endnu",
-            "empty_learner_description": "Din instruktør har ikke tilføjet noget indhold til denne lektion. Kom snart tilbage."
+            "empty_learner_description": "Din instruktør har ikke tilføjet noget indhold til denne lektion. Kom snart tilbage.",
+            "document": {
+              "view_file": "Vis fil",
+              "download": "Download",
+              "download_success": "Dokument downloadet",
+              "download_error": "Kunne ikke downloade dokumentet",
+              "try_again": "Prøv igen"
+            },
+            "slides": {
+              "add_slide": "Tilføj dias"
+            }
           }
         },
         "lesson_nav": {
@@ -3049,7 +3059,11 @@
       "preview": "Forhåndsvis kursus",
       "preview_missing_slug": "Generer og gem et kursus-slug, før du forhåndsviser.",
       "view_as_student": "Se som studerende",
-      "view_course_site": "Se kursusside"
+      "view_course_site": "Se kursusside",
+      "assistant_pop_out": "Pop ud chat",
+      "assistant_close_floating": "Luk flydende chat",
+      "assistant_tip": "Tip: Brug pop-out-ikonet til at flyde assistenten, mens du arbejder.",
+      "assistant_tip_dismiss": "Afvis tip"
     },
     "view_course_site": {
       "unpublished_title": "Udgiv dit kursus",
@@ -3434,7 +3448,8 @@
           "course_hint_restricted": "Tilmeldte elever går direkte til deres næste lektion. Dette kursus er betalt eller kun for invitationer, så studerende, der ikke er tilmeldt, går til Dashboard.",
           "unavailable_badge": "Ikke tilgængelig",
           "course_type_live": "Live klasse",
-          "course_type_compliance": "Overholdelse"
+          "course_type_compliance": "Overholdelse",
+          "learn_more": "Få flere oplysninger"
         }
       },
       "domains": {
@@ -3763,9 +3778,43 @@
       "refresh": "Opfriske"
     },
     "upload": {
-      "videos": "Upload videoer",
-      "documents": "Upload dokumenter",
-      "more_options": "Flere uploadmuligheder"
+      "files": "Upload filer",
+      "add_video_link": "Tilføj et videolink",
+      "more_options": "Flere uploadmuligheder",
+      "dialog_title": "Upload filer",
+      "drag_drop": "Træk og slip filer her, eller klik for at gennemse",
+      "limits": "Videoer og dokumenter. Op til {count} filer ad gangen, {size} hver.",
+      "limits_by_kind": "Op til {count} filer ad gangen. Videoer op til {videoSize}, dokumenter op til {documentSize}.",
+      "add_more": "Tilføj flere filer",
+      "minimize": "Minimer",
+      "maximize": "Åbn uploadvinduet",
+      "expand": "Vis filer",
+      "collapse": "Skjul filer",
+      "close": "Luk",
+      "done": "Færdig",
+      "keep_in_background": "Fortsæt i baggrunden",
+      "upgrade": "Opgrader for at uploade filer til dit mediebibliotek",
+      "status": {
+        "queued": "Venter",
+        "completed": "Fuldført",
+        "failed": "Mislykkedes",
+        "retry": "Prøv igen",
+        "remove": "Fjern fil",
+        "uploading_progress": "Uploader {percent}%",
+        "size_progress": "{uploaded} af {total}"
+      },
+      "summary": {
+        "uploading": "{done} af {total} filer uploadet",
+        "completed": "{count} uploads fuldført",
+        "failed": "{count} af {total} uploads mislykkedes"
+      },
+      "errors": {
+        "unsupported_type": "{name} er ikke en understøttet video eller et understøttet dokument.",
+        "too_large": "{name} er større end {size}.",
+        "too_many": "Du kan uploade op til {count} filer ad gangen.",
+        "generic": "Upload mislykkedes"
+      },
+      "switch_organization_confirm": "Skift af organisation annullerer igangværende uploads. Skift alligevel?"
     },
     "storage": {
       "total_bytes": "Samlet opbevaring",
@@ -4119,7 +4168,9 @@
           "popover_title": "Vælg kurser",
           "popover_empty": "Ingen offentliggjorte kurser tilgængelige.",
           "search_no_results": "Ingen kurser matcher din søgning.",
-          "search_placeholder": "Søg efter kurser..."
+          "search_placeholder": "Søg efter kurser...",
+          "featured_toggle": "Vis fremhævet kursus",
+          "featured_toggle_desc": "Fremhæver dit første kursus i en stor blok. Slå fra for i stedet at vise det sammen med dine andre kurser."
         }
       },
       "content": {
@@ -5747,6 +5798,11 @@
     "titles": {
       "ai_assistant": "AI-assistent",
       "transcript": "Transskription"
+    },
+    "floating": {
+      "resize_aria": "Ændr størrelse på assistentvindue",
+      "expand_aria": "Udvid til sidepanelet",
+      "dock_hint": "Slip for at docke til siden"
     }
   },
   "compliance": {
@@ -6540,7 +6596,10 @@
     "consent": {
       "page_title": "Forbind en app til ClassroomIO",
       "title": "Forbind {client} til ClassroomIO",
-      "workspace": "Arbejdsområde: {workspace}",
+      "subtitle": "Vælg det arbejdsområde, {client} må have adgang til.",
+      "workspace_label": "Arbejdsområde",
+      "no_workspaces_title": "Intet arbejdsområde tilgængeligt",
+      "no_workspaces_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto.",
       "permissions_heading": "{client} vil kunne:",
       "stay_connected": "Forbliv forbundet, indtil du fjerner adgangen",
       "admin_note": "Kun administratorer af arbejdsområdet kan forbinde apps. Adgangen følger dine administratorrettigheder og ophører, hvis du mister dem.",
@@ -6551,14 +6610,9 @@
       "error_title": "Denne forbindelsesanmodning er ugyldig",
       "error_description": "Gå tilbage til den app, du forbandt, og start forfra."
     },
-    "select_organization": {
-      "title": "Vælg et arbejdsområde",
-      "subtitle": "Vælg det arbejdsområde, {client} må have adgang til.",
-      "empty_title": "Intet arbejdsområde tilgængeligt",
-      "empty_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto."
-    },
     "error": {
-      "generic": "Noget gik galt. Prøv igen."
+      "generic": "Noget gik galt. Prøv igen.",
+      "retry": "Prøv igen"
     },
     "scope_group": {
       "courses": {
@@ -6623,5 +6677,21 @@
       "revoke": "Fjern adgang",
       "revoke_confirm": "Fjern denne apps adgang? Den holder straks op med at virke."
     }
+  },
+  "video_guide": {
+    "watch_video": "Se video",
+    "new_badge": "Ny",
+    "connect_claude": {
+      "title": "Forbind ClassroomIO til Claude",
+      "description": "Se, hvordan du forbinder ClassroomIO til Claude, og hvad du kan bede om det. 4 minutter."
+    },
+    "lesson_blocks": {
+      "title": "Introduktion til lektionsblokke",
+      "description": "Lektioner er nu bygget af blokke. Se hvordan det virker på 5 minutter.",
+      "coach_description": "Byg hver lektion ud fra noter, video, dias, dokument- og billedblokke i vilkårlig rækkefølge. Vælg Rediger for at prøve det.",
+      "coach_title": "🎉 Nyt! Lektionerne er nu fleksible."
+    },
+    "close": "Luk",
+    "dismiss": "Forstået"
   }
 }

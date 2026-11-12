@@ -52,7 +52,6 @@ vi.mock('@api/routes/organization/course-import', () => ({ courseImportRouter: n
 vi.mock('@api/routes/organization/member-email-notifications', () => ({
   organizationMemberEmailNotificationsRouter: new Hono()
 }));
-vi.mock('@api/routes/organization/quiz', () => ({ quizRouter: new Hono() }));
 vi.mock('@api/routes/organization/search', () => ({ searchRouter: new Hono() }));
 vi.mock('@api/routes/organization/tags', () => ({ tagsRouter: new Hono() }));
 vi.mock('@api/routes/organization/widgets', () => ({ widgetsRouter: new Hono() }));

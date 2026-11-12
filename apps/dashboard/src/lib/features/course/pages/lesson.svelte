@@ -27,6 +27,10 @@
   import LessonBlocks from '$features/course/components/lesson/lesson-blocks.svelte';
   import LessonSettingsSheet from '$features/course/components/lesson/lesson-settings-sheet.svelte';
   import LessonModeToggle from '$features/course/components/lesson/lesson-mode-toggle.svelte';
+  import CirclePlayIcon from '@lucide/svelte/icons/circle-play';
+  import { CoachMark } from '@cio/ui/custom/coach-mark';
+  import { VideoGuideDialog } from '@cio/ui/custom/video-guide';
+  import { LESSON_BLOCKS_COACH_MARK_KEY, VIDEO_GUIDES } from '$features/video-guide/utils/video-guide-utils';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoBus } from '$features/course/components/lesson/video/lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from '$features/course/components/lesson/video/transcript-panel-definition';
@@ -75,6 +79,7 @@
 
   let prevModeParam = $state<string | null>(null);
   let settingsOpen = $state(false);
+  let lessonBlocksVideoOpen = $state(false);
   let blockListLessonId = '';
   // Derived from the URL so a reload reopens the drawer. The URL is the single source of
   // truth; nothing sets this directly.
@@ -417,12 +422,33 @@
         </RoleBasedSecurity>
 
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <LessonModeToggle
-            class="order-first md:order-none"
-            {mode}
-            disabled={lessonApi.isSaving}
-            onToggle={toggleMode}
-          />
+          <div class="relative order-first md:order-none">
+            <LessonModeToggle {mode} disabled={lessonApi.isSaving} onToggle={toggleMode} />
+            {#if mode === MODES.view}
+              <CoachMark
+                title={$t('video_guide.lesson_blocks.coach_title')}
+                description={$t('video_guide.lesson_blocks.coach_description')}
+                dismissLabel={$t('video_guide.dismiss')}
+                actionLabel={$t('video_guide.watch_video')}
+                storageKey={LESSON_BLOCKS_COACH_MARK_KEY}
+                class="max-md:right-auto max-md:left-0"
+                arrowClass="max-md:right-auto max-md:left-28"
+                testId="lesson-blocks-coach-mark"
+                onAction={() => (lessonBlocksVideoOpen = true)}
+              >
+                {#snippet actionIcon()}
+                  <CirclePlayIcon class="size-4" />
+                {/snippet}
+              </CoachMark>
+            {/if}
+            <VideoGuideDialog
+              bind:open={lessonBlocksVideoOpen}
+              videoId={VIDEO_GUIDES.lessonBlocks.videoId}
+              title={$t(VIDEO_GUIDES.lessonBlocks.titleKey)}
+              closeLabel={$t('video_guide.close')}
+              testId="lesson-blocks-video-dialog"
+            />
+          </div>
         </RoleBasedSecurity>
       </div>
     </Page.Action>

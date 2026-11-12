@@ -20,6 +20,8 @@
     open?: boolean;
     asset?: OrganizationAsset | null;
     isSaving?: boolean;
+    /** Hide the Active/Archived control where archiving would pull the asset out from under the caller. */
+    showStatus?: boolean;
     onSave?: (fields: TAssetUpdate) => Promise<void> | void;
   }
 
@@ -28,7 +30,13 @@
   const uploadLimits = getResolvedUploadLimits();
   const thumbnailMaxSize = uploadLimits.thumbnailBytes;
 
-  let { open = $bindable(false), asset = null, isSaving = false, onSave = async () => {} }: Props = $props();
+  let {
+    open = $bindable(false),
+    asset = null,
+    isSaving = false,
+    showStatus = true,
+    onSave = async () => {}
+  }: Props = $props();
 
   let isThumbnailUploading = $state(false);
   let thumbnailFileInput = $state<HTMLInputElement>();
@@ -219,18 +227,20 @@
           </div>
         {/if}
 
-        <div class="space-y-2">
-          <p class="text-sm font-medium">{$t('media_manager.form.status')}</p>
-          <Select.Root type="single" bind:value={status}>
-            <Select.Trigger class="w-full">
-              <p>{$t(`media_manager.status.${status}`)}</p>
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Item value="active">{$t('media_manager.status.active')}</Select.Item>
-              <Select.Item value="archived">{$t('media_manager.status.archived')}</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        </div>
+        {#if showStatus}
+          <div class="space-y-2">
+            <p class="text-sm font-medium">{$t('media_manager.form.status')}</p>
+            <Select.Root type="single" bind:value={status}>
+              <Select.Trigger class="w-full">
+                <p>{$t(`media_manager.status.${status}`)}</p>
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Item value="active">{$t('media_manager.status.active')}</Select.Item>
+                <Select.Item value="archived">{$t('media_manager.status.archived')}</Select.Item>
+              </Select.Content>
+            </Select.Root>
+          </div>
+        {/if}
       </div>
     {/if}
 

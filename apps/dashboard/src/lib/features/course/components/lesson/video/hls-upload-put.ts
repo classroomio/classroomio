@@ -224,3 +224,30 @@ export async function putPresignedObject(options: {
 
   throw new HlsEncoderError('upload_failed', `PUT ${options.path} failed`);
 }
+
+/**
+ * Runs a conversion, cancelling it when `signal` aborts. Resolves or rejects once `execute` has settled and any
+ * cancellation it triggered has finished releasing its resources.
+ */
+export async function executeCancellableConversion(
+  conversion: { execute(): Promise<void>; cancel(): Promise<void> },
+  signal?: AbortSignal
+): Promise<void> {
+  let cancellation: Promise<void> | null = null;
+  const cancelConversion = () => {
+    cancellation ??= conversion.cancel();
+  };
+
+  if (signal?.aborted) {
+    cancelConversion();
+  } else {
+    signal?.addEventListener('abort', cancelConversion, { once: true });
+  }
+
+  try {
+    await conversion.execute();
+  } finally {
+    signal?.removeEventListener('abort', cancelConversion);
+    await cancellation?.catch(() => undefined);
+  }
+}

@@ -2732,7 +2732,17 @@
             "empty_preview_title": "Es gibt noch nichts zur Vorschau",
             "empty_preview_description": "Diese Lektion enthält keinen Inhalt, den die Schüler sehen können. Wechseln Sie zu {editLabel}, um eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzuzufügen.",
             "empty_learner_title": "Diese Lektion ist noch nicht fertig",
-            "empty_learner_description": "Ihr Kursleiter hat dieser Lektion keine Inhalte hinzugefügt. Schauen Sie bald wieder vorbei."
+            "empty_learner_description": "Ihr Kursleiter hat dieser Lektion keine Inhalte hinzugefügt. Schauen Sie bald wieder vorbei.",
+            "document": {
+              "view_file": "Datei anzeigen",
+              "download": "Herunterladen",
+              "download_success": "Dokument erfolgreich heruntergeladen",
+              "download_error": "Dokument konnte nicht heruntergeladen werden",
+              "try_again": "Versuchen Sie es erneut"
+            },
+            "slides": {
+              "add_slide": "Folie hinzufügen"
+            }
           }
         },
         "lesson_nav": {
@@ -3049,7 +3059,11 @@
       "preview": "Kursvorschau",
       "preview_missing_slug": "Generieren und speichern Sie einen Kurs-Slug, bevor Sie eine Vorschau anzeigen.",
       "view_as_student": "Als Student anzeigen",
-      "view_course_site": "Kursseite anzeigen"
+      "view_course_site": "Kursseite anzeigen",
+      "assistant_pop_out": "Pop-out-Chat",
+      "assistant_close_floating": "Schwebenden Chat schließen",
+      "assistant_tip": "Tipp: Verwenden Sie das Popup-Symbol, um den Assistenten während der Arbeit schweben zu lassen.",
+      "assistant_tip_dismiss": "Tipp verwerfen"
     },
     "view_course_site": {
       "unpublished_title": "Kurs veröffentlichen",
@@ -3434,7 +3448,8 @@
           "course_hint_restricted": "Eingeschriebene Schüler gehen direkt zur nächsten Unterrichtsstunde. Dieser Kurs ist kostenpflichtig oder nur auf Einladung möglich. Studierende, die nicht eingeschrieben sind, gehen also zum Dashboard.",
           "unavailable_badge": "Nicht verfügbar",
           "course_type_live": "Live-Klasse",
-          "course_type_compliance": "Compliance"
+          "course_type_compliance": "Compliance",
+          "learn_more": "Erfahren Sie mehr"
         }
       },
       "domains": {
@@ -3763,9 +3778,43 @@
       "refresh": "Aktualisieren"
     },
     "upload": {
-      "videos": "Videos hochladen",
-      "documents": "Dokumente hochladen",
-      "more_options": "Weitere Upload-Optionen"
+      "files": "Dateien hochladen",
+      "add_video_link": "Videolink hinzufügen",
+      "more_options": "Weitere Upload-Optionen",
+      "dialog_title": "Dateien hochladen",
+      "drag_drop": "Dateien hierher ziehen oder zum Durchsuchen klicken",
+      "limits": "Videos und Dokumente. Bis zu {count} Dateien gleichzeitig, je {size}.",
+      "limits_by_kind": "Bis zu {count} Dateien gleichzeitig. Videos bis {videoSize}, Dokumente bis {documentSize}.",
+      "add_more": "Weitere Dateien hinzufügen",
+      "minimize": "Minimieren",
+      "maximize": "Upload-Fenster öffnen",
+      "expand": "Dateien anzeigen",
+      "collapse": "Dateien ausblenden",
+      "close": "Schließen",
+      "done": "Fertig",
+      "keep_in_background": "Im Hintergrund fortsetzen",
+      "upgrade": "Führe ein Upgrade durch, um Dateien in deine Mediathek hochzuladen",
+      "status": {
+        "queued": "Wartet",
+        "completed": "Abgeschlossen",
+        "failed": "Fehlgeschlagen",
+        "retry": "Erneut versuchen",
+        "remove": "Datei entfernen",
+        "uploading_progress": "Wird hochgeladen {percent}%",
+        "size_progress": "{uploaded} von {total}"
+      },
+      "summary": {
+        "uploading": "{done} von {total} Dateien hochgeladen",
+        "completed": "{count} Uploads abgeschlossen",
+        "failed": "{count} von {total} Uploads fehlgeschlagen"
+      },
+      "errors": {
+        "unsupported_type": "{name} ist kein unterstütztes Video oder Dokument.",
+        "too_large": "{name} ist größer als {size}.",
+        "too_many": "Du kannst bis zu {count} Dateien gleichzeitig hochladen.",
+        "generic": "Upload fehlgeschlagen"
+      },
+      "switch_organization_confirm": "Beim Wechsel der Organisation werden laufende Uploads abgebrochen. Trotzdem wechseln?"
     },
     "storage": {
       "total_bytes": "Gesamtspeicher",
@@ -4119,7 +4168,9 @@
           "popover_title": "Kurse auswählen",
           "popover_empty": "Es sind keine Kurse verfügbar.",
           "search_no_results": "Keine Kurse entsprechen Ihrer Suche.",
-          "search_placeholder": "Kurse suchen..."
+          "search_placeholder": "Kurse suchen...",
+          "featured_toggle": "Hervorgehobenen Kurs anzeigen",
+          "featured_toggle_desc": "Hebt Ihren ersten Kurs in einem großen Block hervor. Deaktivieren Sie dies, um ihn stattdessen zusammen mit Ihren anderen Kursen aufzulisten."
         }
       },
       "content": {
@@ -5747,6 +5798,11 @@
     "titles": {
       "ai_assistant": "KI-Assistent",
       "transcript": "Transkript"
+    },
+    "floating": {
+      "resize_aria": "Assistentenfenster in der Größe ändern",
+      "expand_aria": "Zum Seitenbereich erweitern",
+      "dock_hint": "Zum seitlichen Andocken loslassen"
     }
   },
   "compliance": {
@@ -6540,7 +6596,10 @@
     "consent": {
       "page_title": "Eine App mit ClassroomIO verbinden",
       "title": "{client} mit ClassroomIO verbinden",
-      "workspace": "Workspace: {workspace}",
+      "subtitle": "Wähle den Workspace, auf den {client} zugreifen darf.",
+      "workspace_label": "Workspace",
+      "no_workspaces_title": "Kein Workspace verfügbar",
+      "no_workspaces_description": "Nur Workspace-Admins können Apps verbinden. Frage einen Admin oder melde dich mit einem Admin-Konto an.",
       "permissions_heading": "{client} kann Folgendes:",
       "stay_connected": "Verbunden bleiben, bis du den Zugriff entfernst",
       "admin_note": "Nur Workspace-Admins können Apps verbinden. Der Zugriff folgt deinen Admin-Berechtigungen und endet, wenn du sie verlierst.",
@@ -6551,14 +6610,9 @@
       "error_title": "Diese Verbindungsanfrage ist ungültig",
       "error_description": "Kehre zur App zurück, die du verbinden wolltest, und starte erneut."
     },
-    "select_organization": {
-      "title": "Workspace auswählen",
-      "subtitle": "Wähle den Workspace, auf den {client} zugreifen darf.",
-      "empty_title": "Kein Workspace verfügbar",
-      "empty_description": "Nur Workspace-Admins können Apps verbinden. Frage einen Admin oder melde dich mit einem Admin-Konto an."
-    },
     "error": {
-      "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+      "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "retry": "Erneut versuchen"
     },
     "scope_group": {
       "courses": {
@@ -6623,5 +6677,21 @@
       "revoke": "Zugriff entfernen",
       "revoke_confirm": "Zugriff dieser App entfernen? Sie funktioniert dann sofort nicht mehr."
     }
+  },
+  "video_guide": {
+    "watch_video": "Video ansehen",
+    "new_badge": "Neu",
+    "connect_claude": {
+      "title": "Verbinden Sie ClassroomIO mit Claude",
+      "description": "Erfahren Sie, wie Sie ClassroomIO mit Claude verbinden und was Sie fragen können. 4 Minuten."
+    },
+    "lesson_blocks": {
+      "title": "Einführung in Unterrichtsblöcke",
+      "description": "Der Unterricht wird jetzt aus Blöcken aufgebaut. Sehen Sie, wie es in 5 Minuten funktioniert.",
+      "coach_description": "Erstellen Sie jede Lektion aus Notizen, Videos, Folien, Dokumenten und Bildblöcken in beliebiger Reihenfolge. Wählen Sie Bearbeiten, um es auszuprobieren.",
+      "coach_title": "🎉 Neu! Der Unterricht ist jetzt flexibel."
+    },
+    "close": "Schließen",
+    "dismiss": "Verstanden"
   }
 }

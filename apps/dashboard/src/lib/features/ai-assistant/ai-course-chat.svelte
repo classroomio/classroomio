@@ -253,14 +253,7 @@
     const updatedTitle = await aiAssistantApi.renameConversation(conversationId, title);
 
     if (!updatedTitle) {
-      const rawError = aiAssistantApi.error;
-      let message = t.get('ai_assistant.rename_chat_failed');
-
-      if (rawError && !rawError.startsWith('{')) {
-        message = rawError;
-      }
-
-      throw new Error(message);
+      throw new Error(aiAssistantApi.error ?? t.get('ai_assistant.rename_chat_failed'));
     }
   }
 

@@ -7,3 +7,4 @@ export { default as ManageThumbnailsDialog } from './manage-thumbnails-dialog.sv
 export { default as MediaFilters } from './media-filters.svelte';
 export { default as StorageCards } from './storage-cards.svelte';
 export { default as UploadMediaActions } from './upload-media-actions.svelte';
+export { default as MediaUploadHost } from './media-upload-host.svelte';

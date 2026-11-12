@@ -27,6 +27,7 @@
 
 <svelte:head>
   <title>Pricing | ClassroomIO</title>
+  <link rel="alternate" type="text/markdown" href="/pricing.md" />
 </svelte:head>
 
 <section>

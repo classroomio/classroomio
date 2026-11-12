@@ -1,7 +1,8 @@
 name: Railway Preview Teardown
 
-# Auto-deletes whatever railway-preview.yml created for a branch once its PR closes. Doesn't
-# know which `mode` was used, so it tries all three resource shapes and tolerates "not found".
+# Auto-deletes whatever railway-preview.yml created for a branch once its PR closes. Probes
+# for the branch's preview resources first and skips when none exist. Doesn't know which
+# `mode` was used, so it tries all three resource shapes and tolerates "not found".
 #
 # Trigger is pull_request_target (not pull_request) so fork PRs get torn down too — safe
 # here because the checkout below never takes a ref, so for a pull_request_target event it
@@ -42,7 +43,44 @@ jobs:
         run: |
           railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$BASE_ENV"
 
+      - name: Check for preview resources
+        id: check
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          source .github/scripts/railway-preview-name.sh
+          env_name=$(preview_base_name "$HEAD_REPO" "$HEAD_REF")
+          echo "env_name=${env_name}" >> "$GITHUB_OUTPUT"
+          dashboard_service_name="${env_name}-dashboard"
+          fb_dashboard_service_name="${env_name}-fb-dashboard"
+          fb_backend_service_name="${env_name}-fb-api"
+          if ! env_json=$(railway environment list --json 2>&1); then
+            echo "$env_json"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! svc_json=$(railway service list --json 2>&1); then
+            echo "$svc_json"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! env_probe=$(echo "$env_json" | jq -r --arg n "$env_name" '[.. | objects | .name // empty] | any(. == $n)' 2>/dev/null); then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! svc_probe=$(echo "$svc_json" | jq -r --arg a "$dashboard_service_name" --arg b "$fb_dashboard_service_name" --arg c "$fb_backend_service_name" '[.. | objects | .name // empty] | any(. == $a or . == $b or . == $c)' 2>/dev/null); then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$env_probe" = "true" ] || [ "$svc_probe" = "true" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Delete the preview environment and/or preview service(s)
+        if: steps.check.outputs.exists == 'true'
         # Naming logic lives in .github/scripts/railway-preview-name.sh, shared with
         # railway-preview.yml, so the two can't drift out of sync with each other.
         # HEAD_REF/HEAD_REPO bound via env, not interpolated — avoids script injection.
@@ -107,3 +145,10 @@ jobs:
 
           [ "$failed" = true ] && exit 1
           exit 0
+
+      - name: Report no preview found
+        if: steps.check.outputs.exists != 'true'
+        env:
+          ENV_NAME: ${{ steps.check.outputs.env_name }}
+        run: |
+          echo "No Railway preview resources for \`$ENV_NAME\` — nothing to tear down." >> "$GITHUB_STEP_SUMMARY"

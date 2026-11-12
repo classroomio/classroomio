@@ -20,20 +20,25 @@ For plan features and current prices, see [Compare plans and feature limits](/ge
 
 ## How the student limit works
 
-ClassroomIO counts every non-archived organization member whose role is **Student**. The count is organization-wide rather than the sum of course enrollments, so the same student in several courses occupies one plan seat.
+ClassroomIO counts every non-archived organization member whose role is **Student**, except people who never joined and whose latest invitation was revoked or has expired. The count is organization-wide rather than the sum of course enrollments, so the same student in several courses occupies one plan seat.
 
-Member status changes affect seats differently:
+Pending invitations count too. Anyone invited by email, from **Audience → Import Users**, a course's **People** page, a cohort, the API, or MCP, holds a seat from the moment the invitation is created. The seat is freed when the invitation is revoked or expires, 7 days after it was created or last renewed. One exception: a course invitation created through the API or MCP, by email or link, takes a seat only when someone outside the organization accepts it, and acceptance is blocked if no seat is free.
 
-| Action        | Access result                             | Plan seat result         |
-| ------------- | ----------------------------------------- | ------------------------ |
-| **Archive**   | The student loses access until unarchived | The seat is freed        |
-| **Unarchive** | The student regains access                | A seat is required again |
+Member and invitation changes affect seats differently:
 
-ClassroomIO checks capacity before direct additions, invitations that create a student, self-enrollment, course joins, cohort assignments, changing a cohort tutor or admin who isn't in the organization to a student, imports, and moving archived students out of **Archived** (unarchive or undoing an archive). An action can fill the final available seat, but an action that would exceed the limit is blocked.
+| Action                                 | Access result                             | Plan seat result         |
+| -------------------------------------- | ----------------------------------------- | ------------------------ |
+| **Archive**                            | The student loses access until unarchived | The seat is freed        |
+| **Unarchive**                          | The student regains access                | A seat is required again |
+| **Revoke pending invite**              | The invitation link stops working         | The seat is freed        |
+| Invitation expires                     | The invitation link stops working         | The seat is freed        |
+| **Resend invite** (expired or revoked) | A new invitation link is sent             | A seat is required again |
+
+ClassroomIO checks capacity before direct additions, invitations that create a student, self-enrollment, course joins, cohort assignments, changing a cohort tutor or admin who isn't in the organization to a student, imports, moving archived students out of **Archived** (unarchive or undoing an archive), and resending, re-importing, or correcting the email of an invitation that was revoked or has expired. An action can fill the final available seat, but an action that would exceed the limit is blocked.
 
 Administrators receive a one-time notification when an addition crosses half of a finite student allowance and another when it reaches the allowance.
 
-On the Free plan, the **Upgrade** control in the organization sidebar shows the current student count and the 20-student limit. The count can change after you add, archive, or unarchive a student.
+On the Free plan, the **Upgrade** control in the organization sidebar shows the current student count and the 20-student limit. The count can change after you add, archive, or unarchive a student, or when a pending invitation is revoked or expires.
 
 ## How AI credits work
 
@@ -85,7 +90,7 @@ Review usage before canceling or changing a subscription. See [Manage your subsc
 
 ## If a count looks wrong
 
-- **Student count is higher than expected:** archived students do not count. Archive students who no longer need access to free their seats.
+- **Student count is higher than expected:** pending invitations count, and archived students do not. Revoke invitations you no longer need, and archive students who no longer need access, to free their seats.
 - **A student appears in several courses:** course enrollments do not create extra organization seats for the same person.
 - **AI usage is higher than raw token counts:** model-cost weighting is included in the credit total.
 - **AI credits did not roll over:** only purchased credits roll over. The plan's included allowance resets monthly.

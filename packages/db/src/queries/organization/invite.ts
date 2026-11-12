@@ -10,9 +10,12 @@ import * as schema from '@db/schema';
 import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
-export async function createOrganizationInvite(values: TNewOrganizationInvite): Promise<TOrganizationInvite> {
+export async function createOrganizationInvite(
+  values: TNewOrganizationInvite,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite> {
   try {
-    const [created] = await db.insert(schema.organizationInvite).values(values).returning();
+    const [created] = await dbClient.insert(schema.organizationInvite).values(values).returning();
 
     if (!created) {
       throw new Error('Failed to create organization invite');
@@ -27,13 +30,16 @@ export async function createOrganizationInvite(values: TNewOrganizationInvite): 
   }
 }
 
-export async function createOrganizationInvites(values: TNewOrganizationInvite[]): Promise<TOrganizationInvite[]> {
+export async function createOrganizationInvites(
+  values: TNewOrganizationInvite[],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInvite).values(values).returning();
+    return await dbClient.insert(schema.organizationInvite).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInvites error:', error);
     throw new Error(

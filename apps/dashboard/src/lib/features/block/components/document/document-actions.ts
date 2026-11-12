@@ -4,7 +4,7 @@ import type { TDocumentBlockData } from '@cio/utils/validation/block';
 import { t } from '$lib/utils/functions/translations';
 import { snackbar } from '$features/ui/snackbar/store';
 
-const KEY_PREFIX = 'course.navItem.lessons.materials.tabs.document';
+const KEY_PREFIX = 'course.navItem.lessons.materials.blocks.document';
 
 export function toAttachmentFile(blockId: string, document: TDocumentBlockData): AttachmentListFile {
   return { id: blockId, name: document.name, size: document.size, type: document.type };

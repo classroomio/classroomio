@@ -277,7 +277,9 @@ export const v1AudienceRouter = new Hono()
             'Invalid path or body, no fields to update, an email change on a joined member, a profile change on a pending member, or a username that is already taken'
         },
         401: errorResponses.unauthorized,
-        403: forbidden('audience:write'),
+        403: {
+          description: `${audienceWriteForbidden.description}, or the student limit is full when fixing a lapsed invite (UPGRADE_REQUIRED)`
+        },
         404: { description: 'Audience member not found' },
         409: { description: 'Another member of the organization already has this email' },
         429: mcpRateLimitResponse
