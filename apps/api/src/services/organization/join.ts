@@ -3,7 +3,8 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   createOrganizationMember,
   getOrganizationById,
-  getOrganizationMemberIdByOrgAndProfile
+  getOrganizationMemberIdByOrgAndProfile,
+  hasLapsedStudentInvite
 } from '@cio/db/queries/organization';
 import {
   getActivePendingOrgInviteForEmail,
@@ -16,7 +17,8 @@ import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/cou
 import { getProfileById } from '@cio/db/queries/auth';
 import { db } from '@cio/db/drizzle';
 import { env } from '@cio/core/config/env';
-import { assertStudentCapacityOrThrow } from './student-limit';
+import { assertStudentCapacityOrThrow, notifyStudentMilestone } from './student-limit';
+import type { StudentMilestoneNotification } from './student-limit';
 
 interface OrgSignupSettings {
   signup?: {
@@ -53,11 +55,26 @@ async function linkExistingMemberByEmail(
   }
 
   if (!existingMemberByEmail.profileId) {
-    await updateOrganizationMemberById(db, existingMemberByEmail.id, {
-      profileId: userId,
-      email: normalizedEmail,
-      verified: true
+    let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+
+    await db.transaction(async (tx) => {
+      const needsSeat = await hasLapsedStudentInvite(orgId, existingMemberByEmail.id, tx);
+      if (needsSeat) {
+        studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
+      }
+
+      await updateOrganizationMemberById(tx, existingMemberByEmail.id, {
+        profileId: userId,
+        email: normalizedEmail,
+        verified: true
+      });
     });
+
+    if (studentMilestoneNotification) {
+      notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+        console.error('notifyStudentMilestone error:', error);
+      });
+    }
 
     return { alreadyMember: true, linkedExistingMember: true };
   }
