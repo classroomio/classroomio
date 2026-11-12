@@ -6,6 +6,7 @@ Use this file to keep a single prioritized view of all PRDs.
 
 | Rank | List # | PRD | Status |
 | --- | --- | --- | --- |
+| - | - | `prd/math-teaching` | draft (Phase 0 ticket 0.1 is a security fix: answer keys sent to students) |
 | - | - | `prd/super-admin` | draft |
 | - | - | `prd/embed-link-platforms` | draft |
 | - | - | `prd/short-links` | proposal |
