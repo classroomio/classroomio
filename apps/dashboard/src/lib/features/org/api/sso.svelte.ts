@@ -71,11 +71,7 @@ class SsoApi extends BaseApiWithErrors {
         };
       },
       onError: (error) => {
-        if (typeof error === 'string') {
-          snackbar.error(error);
-        } else if ('error' in error) {
-          snackbar.error(error.error);
-        }
+        snackbar.error(error.message);
       }
     });
   }

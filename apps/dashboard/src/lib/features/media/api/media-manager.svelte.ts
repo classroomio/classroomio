@@ -1,5 +1,6 @@
 import { presignApi } from '$features/course/api/presign.svelte';
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, hasErrorCode } from '$lib/utils/services/api';
+import { ErrorCodes } from '@cio/utils/constants';
 import type {
   AssetStorageSummary,
   AssetTranscriptPayload,
@@ -387,8 +388,11 @@ export class MediaApi extends BaseApiWithErrors {
         snackbar.success('snackbar.media_manager.delete_success');
       },
       onError: (error) => {
-        const inUse = typeof error === 'object' && error !== null && 'code' in error && error.code === 'ASSET_IN_USE';
-        snackbar.error(inUse ? 'snackbar.media_manager.delete_in_use' : 'snackbar.media_manager.delete_failed');
+        snackbar.error(
+          hasErrorCode(error, ErrorCodes.ASSET_IN_USE)
+            ? 'snackbar.media_manager.delete_in_use'
+            : 'snackbar.media_manager.delete_failed'
+        );
       }
     });
 
@@ -680,9 +684,8 @@ export class MediaApi extends BaseApiWithErrors {
         snackbar.success('snackbar.media_manager.transcription_started');
       },
       onError: (error) => {
-        const isConflict = typeof error === 'object' && error !== null && 'code' in error && error.code === 'CONFLICT';
         snackbar.error(
-          isConflict
+          hasErrorCode(error, ErrorCodes.CONFLICT)
             ? 'snackbar.media_manager.transcription_already_running'
             : 'snackbar.media_manager.transcription_start_failed'
         );

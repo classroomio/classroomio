@@ -69,14 +69,10 @@ class AutomationApi extends BaseApiWithErrors {
         snackbar.success('snackbar.automation.created');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          return;
-        }
-
         this.handleValidationError(result);
 
-        if ('field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         }
       }
     });
