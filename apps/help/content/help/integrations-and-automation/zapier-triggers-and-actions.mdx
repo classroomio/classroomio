@@ -13,7 +13,7 @@ Zapier triggers and actions require an Early Adopter or Enterprise plan on Class
 ClassroomIO triggers are **instant**: they use real-time REST hooks backed by ClassroomIO's webhook engine rather than polling on a schedule. Your Zaps run within seconds of an event occurring in your academy.
 
 :::note[Delivery and retries]
-If your Zap's hook endpoint is unreachable, ClassroomIO retries the event for about 2.6 hours (6 attempts). After the last attempt the delivery is marked failed. Admins are not emailed about Zapier deliveries. Instead, **Automation › Zapier** shows one of two warnings:
+If your Zap's hook endpoint is unreachable, ClassroomIO retries the event for about 2.6 hours (6 attempts). After the last attempt the delivery is marked failed. Admins are not emailed about Zapier deliveries. Instead, while failures from the last 24 hours are recorded, **Automation › Zapier** shows one of two warnings:
 
 - **Some events didn't reach Zapier**: events from the last 24 hours failed while the trigger is still active. Select **Resend failed events** to send them again.
 - **Some triggers are disabled**: ClassroomIO turned the trigger off after repeated delivery failures, so there is nothing to resend. Fix the receiving end in Zapier, then turn the Zap back on to resubscribe the trigger.
