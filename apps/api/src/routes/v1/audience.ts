@@ -89,7 +89,7 @@ export const v1AudienceRouter = new Hono()
       tags: ['Audience'],
       responses: {
         201: jsonResponse(
-          'Invites processed; rows has one entry per address, in order. Addresses needing a new seat past the limit, or all of them if payment failed, are over_seat_limit',
+          'Invites processed; one row per address, in order. Addresses needing a seat past the limit, or all of them 2+ days after a failed payment, are over_seat_limit',
           itemResponse(ZPublicApiCreateAudienceResponse)
         ),
         400: errorResponses.badRequest,
