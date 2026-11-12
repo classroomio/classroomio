@@ -143,6 +143,21 @@ describe('createStudentInvite (course invite onboarding)', () => {
     expect(result.delivery).toMatchObject({ requested: 2, sent: 2, failed: 0 });
   });
 
+  it('still returns the invites when recording the email outcomes fails', async () => {
+    vi.mocked(createCourseInviteAudits)
+      .mockResolvedValueOnce(undefined as never)
+      .mockRejectedValueOnce(new Error('audit insert failed'));
+
+    const result = await createStudentInvite(COURSE_ID, ACTOR_ID, {
+      ...baseInvite,
+      sendEmail: true,
+      recipientEmails: ['a@example.com']
+    });
+
+    expect(result.invites).toHaveLength(1);
+    expect(result.delivery).toMatchObject({ requested: 1, sent: 1, failed: 0 });
+  });
+
   it('reports a failed send per recipient without failing the whole request', async () => {
     vi.mocked(enqueueTransactionalEmails).mockResolvedValueOnce([
       { ok: false, error: new Error('queue down') },

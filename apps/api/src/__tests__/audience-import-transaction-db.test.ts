@@ -182,6 +182,32 @@ describe.skipIf(!hasDatabase || selfHosted)('audience import transaction against
     expect(memberships).toHaveLength(1);
   });
 
+  it('keeps a pending member on their old email when the replacement invite cannot be created', async () => {
+    const { db, schema, eq } = await load();
+    const { updatePendingAudienceMemberEmail } = await import('@api/services/organization/audience');
+    const oldEmail = `pending-old@${emailDomain}`;
+    const [member] = await db
+      .insert(schema.organizationmember)
+      .values({ organizationId, email: oldEmail, roleId: ROLE.STUDENT, verified: false })
+      .returning();
+    failInviteInsert.enabled = true;
+
+    await expect(
+      updatePendingAudienceMemberEmail(
+        organizationId,
+        member.id,
+        { email: `pending-new@${emailDomain}`, sendEmail: false },
+        adminId
+      )
+    ).rejects.toThrow('invite insert failed');
+
+    const [after] = await db
+      .select({ email: schema.organizationmember.email })
+      .from(schema.organizationmember)
+      .where(eq(schema.organizationmember.id, member.id));
+    expect(after.email).toBe(oldEmail);
+  });
+
   it('keeps two concurrent imports within the student limit', async () => {
     const { students, invites } = await countRows();
     const batchSize = studentLimit - students;

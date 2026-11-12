@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/core/services/webhook/emit', () => ({
   emitWebhookEvent: vi.fn().mockResolvedValue(undefined),
-  emitOrganizationMemberWebhookEvent: vi.fn().mockResolvedValue(undefined)
+  emitOrganizationMemberWebhookEvent: vi.fn().mockResolvedValue(undefined),
+  emitCohortMemberWebhookEvent: vi.fn().mockResolvedValue(undefined)
 }));
 
 vi.mock('@cio/db/queries/organization', () => ({
@@ -88,6 +89,7 @@ import {
   updateOrganizationAudienceMember
 } from '@cio/db/queries/organization';
 import { addCohortMembers, getCohortsByOrg, getExistingCohortMembers } from '@cio/db/queries/cohort';
+import { emitCohortMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { enqueueTransactionalEmail, enqueueTransactionalEmails } from '@api/services/jobs';
 import {
@@ -496,11 +498,13 @@ describe('importAudienceMembers — cohort enrolment of existing students', () =
   }
 
   it('counts and welcomes a student the insert added', async () => {
-    vi.mocked(addCohortMembers).mockResolvedValueOnce([{ cohortId: 'cohort-1', profileId: 'p-1' }] as never);
+    const added = { cohortId: 'cohort-1', profileId: 'p-1' };
+    vi.mocked(addCohortMembers).mockResolvedValueOnce([added] as never);
 
     const result = await importIntoCohort();
 
     expect(result.assigned).toBe(1);
+    expect(emitCohortMemberWebhookEvent).toHaveBeenCalledWith('cohort.member.added', ORG, 'cohort-1', added, ACTOR);
     expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentCohortWelcome', [
       expect.objectContaining({ to: 'ada@test.dev' })
     ]);
@@ -548,6 +552,25 @@ describe('updatePendingAudienceMemberEmail — seat limit', () => {
     expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
     expect(revokeActiveOrganizationInvitesByEmails).not.toHaveBeenCalled();
     expect(updateOrganizationAudienceMember).not.toHaveBeenCalled();
+  });
+
+  it('creates the replacement invite in the same transaction as the email change', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
+
+    await updatePendingAudienceMemberEmail(ORG, 7, { email: 'new@test.dev', sendEmail: false }, ACTOR);
+
+    expect(updateOrganizationAudienceMember).toHaveBeenCalledWith(ORG, 7, expect.anything(), TX);
+    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'new@test.dev' })], TX);
+  });
+
+  it('fails the whole change and sends nothing when the replacement invite cannot be created', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
+    vi.mocked(createOrganizationInvites).mockRejectedValueOnce(new Error('invite insert failed'));
+
+    await expect(
+      updatePendingAudienceMemberEmail(ORG, 7, { email: 'new@test.dev', sendEmail: true }, ACTOR)
+    ).rejects.toThrow('invite insert failed');
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalled();
   });
 });
 

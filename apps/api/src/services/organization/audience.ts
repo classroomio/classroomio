@@ -1124,11 +1124,23 @@ export async function updatePendingAudienceMemberEmail(
     }
   }
 
-  let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+  const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
+  const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
+  const afterCommit: TAfterCommit = [];
 
   const updatedMember = await db.transaction(async (tx) => {
     if (await hasLapsedStudentInvite(orgId, memberId, tx)) {
-      studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, { deferNotification: true });
+      const studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, 1, tx, {
+        deferNotification: true
+      });
+
+      if (studentMilestoneNotification) {
+        afterCommit.push(() => {
+          notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+            console.error('notifyStudentMilestone error:', error);
+          });
+        });
+      }
     }
 
     await revokeActiveOrganizationInvitesByEmails(orgId, [currentEmail, normalizedEmail], invitedByProfileId, tx);
@@ -1144,35 +1156,25 @@ export async function updatePendingAudienceMemberEmail(
       throw new AppError('Audience member not found', ErrorCodes.NOT_FOUND, 404);
     }
 
+    await createStudentOrgInvitesAndSendEmails(
+      {
+        orgId,
+        organization,
+        emails: [normalizedEmail],
+        courseIds: meta.courseIds?.filter(Boolean) ?? [],
+        cohortIds: meta.cohortIds?.filter(Boolean) ?? [],
+        accessNamesLabel: undefined,
+        invitedByProfileId,
+        shouldSendEmail: data.sendEmail
+      },
+      tx,
+      afterCommit
+    );
+
     return updated;
   });
 
-  const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
-  const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
-
-  const afterInvite: TAfterCommit = [];
-
-  await createStudentOrgInvitesAndSendEmails(
-    {
-      orgId,
-      organization,
-      emails: [normalizedEmail],
-      courseIds: meta.courseIds?.filter(Boolean) ?? [],
-      cohortIds: meta.cohortIds?.filter(Boolean) ?? [],
-      accessNamesLabel: undefined,
-      invitedByProfileId,
-      shouldSendEmail: data.sendEmail
-    },
-    db,
-    afterInvite
-  );
-  await runAfterCommit(afterInvite);
-
-  if (studentMilestoneNotification) {
-    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
-      console.error('notifyStudentMilestone error:', error);
-    });
-  }
+  await runAfterCommit(afterCommit);
 
   return updatedMember;
 }

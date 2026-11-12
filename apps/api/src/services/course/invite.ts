@@ -575,19 +575,24 @@ async function createEmailInvitesAndSend(input: {
     };
   });
 
-  // Optimistic EMAIL_SENT — see comment in services/organization/invite.ts.
-  await createCourseInviteAudits(
-    results.map(({ invite, sent, error }, index) => ({
-      inviteId: invite.id,
-      courseId: input.courseId,
-      eventType: sent ? ('EMAIL_SENT' as const) : ('EMAIL_FAILED' as const),
-      actorProfileId: input.createdByProfileId,
-      targetEmail: invites[index].recipientEmail,
-      ipAddress: null,
-      userAgent: null,
-      metadata: sent ? {} : { error }
-    }))
-  );
+  // Optimistic EMAIL_SENT — see comment in services/organization/invite.ts. The invites and emails already
+  // exist, so a failed audit write is logged rather than failing the request and inviting a retry.
+  const outcomeAudits = results.map(({ invite, sent, error }, index) => ({
+    inviteId: invite.id,
+    courseId: input.courseId,
+    eventType: sent ? ('EMAIL_SENT' as const) : ('EMAIL_FAILED' as const),
+    actorProfileId: input.createdByProfileId,
+    targetEmail: invites[index].recipientEmail,
+    ipAddress: null,
+    userAgent: null,
+    metadata: sent ? {} : { error }
+  }));
+
+  try {
+    await createCourseInviteAudits(outcomeAudits);
+  } catch (auditError) {
+    console.error('Failed to record course invite email outcomes', { courseId: input.courseId, auditError });
+  }
 
   return results;
 }
