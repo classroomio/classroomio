@@ -15,7 +15,8 @@ export const INSIGHTS_SOURCE_DESCRIPTIONS: Record<TInsightsSource, string> = {
   question_result: "One row per learner, exercise and scored question, read from the learner's best graded submission.",
   lesson_progress: 'One row per learner and lesson, with whether the learner completed it.',
   login_day: 'One row per learner and day in the login window, marking whether they logged in on that day.',
-  overdue_item: 'One row per learner and overdue goal, compliance cycle or exercise, with due dates and lateness.',
+  overdue_item:
+    'One row per learner and overdue goal, compliance cycle or required exercise, with due dates and lateness.',
   overdue_student:
     'One row per learner who has at least one overdue item, with the courses involved, progress and overdue count.',
   org_member: 'One row per period bucket, with how many students joined in it and the running total.',
@@ -31,9 +32,9 @@ export const INSIGHTS_METRIC_DESCRIPTIONS: Record<TInsightsMetric, string> = {
   avatar_url: 'The learner avatar image URL.',
   title: 'The title of the item the row describes, such as the course or the overdue item.',
   overall_progress_pct:
-    'Share of all course items (lessons and required exercises) the learner completed across their enrollments in the scope.',
+    'Share of the required lessons and exercises (completion rule other than none) the learner completed across their enrollments in the scope.',
   progress_pct:
-    'Share of the items (lessons and required exercises) of one course the learner completed in that enrollment.',
+    'Share of the required lessons and exercises (completion rule other than none) of one course the learner completed in that enrollment.',
   progress_pct_at_period_start: 'The enrollment progress as of the start of the period used for comparisons.',
   avg_score_pct: 'Average graded score percentage for the rows in the group.',
   best_score_pct: 'The percentage of an exercise max points earned by the best graded submission.',
@@ -56,9 +57,11 @@ export const INSIGHTS_METRIC_DESCRIPTIONS: Record<TInsightsMetric, string> = {
   courses_completed: 'Number of those course enrollments the learner has completed.',
   days_to_finish: 'Days between enrollment and completion, set only after the enrollment completes.',
   enrolled_at: 'When the learner enrolled in the course.',
-  now_at_item_id: 'The id of the first not-yet-completed item in course order, the item the learner should do next.',
-  now_at_title: 'The title of the first not-yet-completed item in course order, the item the learner should do next.',
-  took_all: 'Whether the learner has a graded submission for every exercise of the section.',
+  now_at_item_id:
+    'The id of the first not-yet-completed required item in course order, the item the learner should do next.',
+  now_at_title:
+    'The title of the first not-yet-completed required item in course order, the item the learner should do next.',
+  took_all: 'Whether the learner has a graded submission for every required exercise of the section.',
   video_pct: 'Percentage of video-tracked lessons the learner completed in the group.',
   attendance_pct: 'Percentage of taken attendance sessions across the scope the learner attended.',
   attendance: 'Presence at taken attendance sessions, pooled across the rows as one percentage.',
@@ -67,7 +70,7 @@ export const INSIGHTS_METRIC_DESCRIPTIONS: Record<TInsightsMetric, string> = {
   logged_in_today: 'Whether the learner signed in today.',
   logged_in: 'Whether the learner signed in on that login_day row.',
   logged_in_period: 'Whether the learner signed in at least once inside the selected range.',
-  is_overdue: 'Whether the learner has any overdue goal, compliance cycle or exercise in the scope.',
+  is_overdue: 'Whether the learner has any overdue goal, compliance cycle or required exercise in the scope.',
   is_inactive: 'Whether the learner has not signed in for two or more days, or has never signed in.',
   is_low_score: 'Whether the learner average score is under 50 percent.',
   is_low_video: 'Whether the learner video completion is under 60 percent.',
@@ -77,7 +80,7 @@ export const INSIGHTS_METRIC_DESCRIPTIONS: Record<TInsightsMetric, string> = {
   correct_pct: 'Percentage of the question points earned on the best graded submission.',
   wrong_answer: 'The answer text the learner gave on their best graded submission when it earned no points.',
   kind: 'The overdue item type: goal, compliance or exercise.',
-  due_at: 'When the overdue goal, compliance cycle or exercise is due.',
+  due_at: 'When the overdue goal, compliance cycle or required exercise is due.',
   days_overdue: 'Whole days between the due date and today.',
   assignment_id: 'The cohort goal assignment id of an overdue goal item.',
   course_titles: 'The titles of the courses the overdue item belongs to, comma separated.',
