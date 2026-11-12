@@ -322,7 +322,7 @@ class AppInitApi extends BaseApi {
     );
   }
 
-  routeUserToNextPage(params: AppSetupParams): Promise<void> {
+  async routeUserToNextPage(params: AppSetupParams): Promise<void> {
     console.log('routeUserToNextPage', window.location.pathname);
     if (!this.data?.success) {
       return;
