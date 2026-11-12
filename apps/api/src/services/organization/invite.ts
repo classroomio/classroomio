@@ -43,8 +43,16 @@ import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from './student-limit';
 import type { StudentMilestoneNotification } from './student-limit';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
-import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
-import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
+import {
+  parseCourseIdsFromInviteMetadata,
+  parseCohortIdsFromInviteMetadata,
+  parseFullnameFromInviteMetadata
+} from '@api/utils/org';
+import {
+  getProfileById,
+  markUserAndProfileEmailVerified,
+  setProfileFullnameIfUnset
+} from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName, sanitizeEmailSubject } from '@cio/email';
 import { emitComplianceEnrollmentEvents, ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
@@ -607,6 +615,11 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
       if (!acceptedInvite) {
         throw new AppError('Invite is no longer available', ErrorCodes.VALIDATION_ERROR, 409);
+      }
+
+      const invitedFullname = parseFullnameFromInviteMetadata(row.invite.metadata);
+      if (invitedFullname) {
+        await setProfileFullnameIfUnset(user.id, invitedFullname, tx);
       }
     }
 

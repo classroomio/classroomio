@@ -354,9 +354,19 @@ async function createStudentOrgInvitesAndSendEmails(input: {
   accessNamesLabel: string | undefined;
   invitedByProfileId: string;
   shouldSendEmail: boolean;
+  fullnamesByEmail?: Map<string, string>;
 }): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
-  const { orgId, organization, emails, courseIds, cohortIds, accessNamesLabel, invitedByProfileId, shouldSendEmail } =
-    input;
+  const {
+    orgId,
+    organization,
+    emails,
+    courseIds,
+    cohortIds,
+    accessNamesLabel,
+    invitedByProfileId,
+    shouldSendEmail,
+    fullnamesByEmail
+  } = input;
 
   if (emails.length === 0) {
     return { created: 0, emailsSent: 0, emailsFailed: 0 };
@@ -368,6 +378,8 @@ async function createStudentOrgInvitesAndSendEmails(input: {
 
   const inviteInputs = emails.map((email) => {
     const token = generateToken();
+    const fullname = fullnamesByEmail?.get(email);
+
     return {
       email,
       token,
@@ -382,7 +394,8 @@ async function createStudentOrgInvitesAndSendEmails(input: {
         metadata: {
           source: 'AUDIENCE_IMPORT',
           courseIds: courseIds.length > 0 ? courseIds : undefined,
-          cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+          cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+          fullname
         }
       }
     };
@@ -572,6 +585,12 @@ export async function importAudienceMembers(
   newEmails.length = 0;
   newEmails.push(...admittedEmails);
 
+  const fullnamesByEmail = new Map<string, string>();
+  for (const row of rows) {
+    const fullname = row.name?.trim();
+    if (fullname) fullnamesByEmail.set(row.email, fullname);
+  }
+
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
   const { cohortIds, cohortNames } = await resolveCohortIdsAndNamesForImport(orgId, data);
   const accessNames = [...courseNames, ...cohortNames];
@@ -679,7 +698,8 @@ export async function importAudienceMembers(
       cohortIds,
       accessNamesLabel,
       invitedByProfileId,
-      shouldSendEmail: data.sendEmail
+      shouldSendEmail: data.sendEmail,
+      fullnamesByEmail
     });
     imported = addedEmails.length;
     importEmailsSent = inviteOutcome.emailsSent;
@@ -697,7 +717,8 @@ export async function importAudienceMembers(
       cohortIds,
       accessNamesLabel,
       invitedByProfileId,
-      shouldSendEmail: data.sendEmail
+      shouldSendEmail: data.sendEmail,
+      fullnamesByEmail
     });
     pendingEmailsSent = pendingOutcome.emailsSent;
     pendingEmailsFailed = pendingOutcome.emailsFailed;

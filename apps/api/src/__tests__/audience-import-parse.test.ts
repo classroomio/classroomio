@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { parseFullnameFromInviteMetadata } from '@api/utils/org';
 
 import {
   AUDIENCE_IMPORT_MAX_ROWS,
@@ -195,5 +196,21 @@ describe('reclassifyImportRows', () => {
     rows[0] = { ...rows[0], email: '  ' };
 
     expect(reclassifyImportRows(rows)).toEqual([expect.objectContaining({ email: '  ', status: 'missing_email' })]);
+  });
+});
+
+describe('parseFullnameFromInviteMetadata', () => {
+  it('returns the trimmed stored name', () => {
+    expect(parseFullnameFromInviteMetadata({ source: 'AUDIENCE_IMPORT', fullname: '  Ada Lovelace ' })).toBe(
+      'Ada Lovelace'
+    );
+  });
+
+  it('reads metadata stored as a JSON string', () => {
+    expect(parseFullnameFromInviteMetadata('{"fullname":"Ada Lovelace"}')).toBe('Ada Lovelace');
+  });
+
+  it.each([null, undefined, {}, { fullname: '   ' }, { fullname: 7 }, 'not json'])('ignores %j', (metadata) => {
+    expect(parseFullnameFromInviteMetadata(metadata)).toBeUndefined();
   });
 });
