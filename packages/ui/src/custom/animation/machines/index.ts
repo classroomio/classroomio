@@ -5,4 +5,6 @@ export { default as MachineCertificatePress } from './certificate-press.svelte';
 export { default as MachineBrandStand } from './brand-stand.svelte';
 export { default as MachineEventWire } from './event-wire.svelte';
 export { default as MachineGlassBox } from './glass-box.svelte';
+export { default as MachineBrokenTrack } from './broken-track.svelte';
+export { default as MachineBlankLesson } from './blank-lesson.svelte';
 export type { MachineProps } from './types';

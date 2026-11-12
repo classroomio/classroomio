@@ -430,6 +430,7 @@ export async function updateSubmissionGrades(
     feedback?: string;
     statusId?: number;
     gradingState?: string;
+    gradedBy?: string | null;
   }
 ): Promise<TSubmission | null> {
   try {
@@ -457,6 +458,9 @@ export async function updateSubmissionGrades(
       }
       if (data.gradingState !== undefined) {
         submissionData.gradingState = data.gradingState;
+      }
+      if (data.gradedBy !== undefined) {
+        submissionData.gradedBy = data.gradedBy;
       }
 
       const [updated] = await tx

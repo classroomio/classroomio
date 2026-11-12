@@ -2,6 +2,7 @@ import { getSessionData } from '$lib/utils/services/auth/session';
 import { getHasCioCookies } from '$lib/utils/functions/cookies';
 import { applyCspExtensions } from '$lib/utils/csp';
 import { proxyRequestToApi, shouldForwardToApi } from '$lib/utils/proxy-api-request';
+import { proxyRequestToPosthog, shouldForwardToPosthog } from '$lib/utils/proxy-posthog-request';
 import { type Handle, type HandleServerError, isRedirect, redirect } from '@sveltejs/kit';
 import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { ROUTE } from '$lib/utils/constants/routes';
@@ -108,6 +109,10 @@ function withRedirectFallbackBody(response: Response, request: Request): Respons
 
 export const handle: Handle = async (args) => {
   const { event } = args;
+
+  if (shouldForwardToPosthog(event.url.pathname)) {
+    return proxyRequestToPosthog(event.request);
+  }
 
   if (shouldForwardToApi(event.url.pathname)) {
     return proxyRequestToApi(event.request);

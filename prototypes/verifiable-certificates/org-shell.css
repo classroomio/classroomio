@@ -1,0 +1,211 @@
+/* Mirrors the "minimal" org landing theme: minimal/hero.svelte (compact), minimal/nav.svelte,
+   landing-page-footer.svelte with getFooterTokens('minimal'). Colours come from landing-theme.css. */
+.os-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 16px 16px 32px;
+  background:
+    radial-gradient(
+      circle at top center,
+      color-mix(in oklab, var(--landing-accent) 24%, transparent) 0%,
+      transparent 58%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--landing-accent) 12%, var(--landing-bg)) 0%,
+      color-mix(in oklab, var(--landing-accent) 6%, var(--landing-bg)) 48%,
+      var(--landing-bg) 100%
+    );
+}
+.os-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  background-image: radial-gradient(var(--landing-fg) 1px, transparent 1px);
+  background-size: 16px 16px;
+  pointer-events: none;
+}
+.os-nav-wrap {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.os-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 24px;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--landing-border) 60%, transparent);
+  backdrop-filter: blur(4px);
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--landing-accent) 16%, var(--landing-bg)) 0%,
+    color-mix(in oklab, var(--landing-accent) 8%, var(--landing-bg)) 100%
+  );
+}
+.os-brand {
+  font-weight: 600;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--landing-fg);
+}
+.os-brand .os-logo {
+  height: 32px;
+  width: 32px;
+  border-radius: 8px;
+  background: var(--landing-accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+.os-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.os-links {
+  display: none;
+  gap: 32px;
+}
+.os-links a {
+  font-size: 14px;
+  color: color-mix(in oklab, var(--landing-fg) 70%, transparent);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.os-links a:hover {
+  color: var(--landing-fg);
+}
+.os-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--landing-fg);
+  background: var(--landing-card);
+  border: 1px solid var(--landing-border);
+}
+.os-cta:hover {
+  background: var(--landing-card-soft);
+}
+.os-cta svg {
+  width: 14px;
+  height: 14px;
+}
+@media (min-width: 768px) {
+  .os-links {
+    display: flex;
+  }
+}
+
+.os-foot {
+  border-top: 1px solid color-mix(in oklab, var(--landing-border) 50%, transparent);
+  padding: 48px 16px;
+  background: var(--landing-bg);
+  color: var(--landing-fg);
+}
+.os-foot-in {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.os-foot-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px 32px;
+}
+.os-foot .os-brand {
+  font-size: 20px;
+}
+.os-tag {
+  font-size: 14px;
+  color: var(--landing-fg-muted);
+  margin: 8px 0 0;
+}
+.os-foot h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--landing-fg);
+}
+.os-foot ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.os-foot li a {
+  display: block;
+  font-size: 14px;
+  color: var(--landing-fg-muted);
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color 0.15s;
+}
+.os-foot li a:hover {
+  color: var(--landing-fg);
+}
+.os-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid color-mix(in oklab, var(--landing-border) 50%, transparent);
+  font-size: 14px;
+  color: var(--landing-fg-muted);
+}
+.os-bottom a {
+  color: var(--landing-fg-muted);
+  text-decoration: none;
+}
+.os-bottom a:hover {
+  color: var(--landing-fg);
+}
+.os-bottom .l {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+@media (min-width: 640px) {
+  .os-foot {
+    padding: 48px 24px;
+  }
+  .os-foot-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .os-foot-grid > :first-child {
+    grid-column: span 2;
+  }
+  .os-bottom {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+@media (min-width: 768px) {
+  .os-foot {
+    padding: 64px 32px;
+  }
+  .os-foot-grid {
+    grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(140px, 1fr));
+    gap: 48px;
+  }
+  .os-foot-grid > :first-child {
+    grid-column: auto;
+  }
+  .os-bottom {
+    margin-top: 48px;
+  }
+}

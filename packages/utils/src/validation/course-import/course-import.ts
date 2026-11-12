@@ -7,7 +7,7 @@ import { ZLessonVideoItem } from '../lesson/lesson';
 
 const ZSupportedLocale = z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it']);
 const LESSON_BODY_HTML_DESCRIPTION =
-  'Lesson body HTML only. Do not include the lesson title. Do not use h1 or h2 anywhere in lessonLanguages[].content. Start headings at h3 because that is the highest heading level allowed in lesson content.';
+  'Lesson body HTML, without the title. Start headings at h3; h1 and h2 are not allowed.';
 const TOP_LEVEL_ORDER_DESCRIPTION =
   'Top-level position. Sections, lessons without a section, and exercises with neither a section nor a lesson share one contiguous 1-based sequence.';
 
@@ -61,7 +61,7 @@ export const ZCourseImportDraftLesson = z.object({
     .int()
     .min(1)
     .describe(
-      'Position within the section, 1-based. A lesson without a section takes its place in the top-level sequence it shares with sections and top-level exercises.'
+      'Position in the section, from 1; a lesson without one uses the top-level order shared with sections and exercises.'
     ),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
@@ -69,7 +69,7 @@ export const ZCourseImportDraftLesson = z.object({
     .array(ZLessonVideoItem)
     .optional()
     .describe(
-      'Lesson videos as { type, link }, where type is youtube, vimeo, generic, upload or google_drive. Add new videos as youtube, vimeo or generic with a hosted URL, and keep any upload or google_drive entries already in the draft unchanged.'
+      'Videos as { type, link }. Add youtube, vimeo or generic links; keep existing upload and google_drive entries unchanged.'
     )
 });
 export type TCourseImportDraftLesson = z.infer<typeof ZCourseImportDraftLesson>;
@@ -109,7 +109,7 @@ export const ZCourseImportDraftExercise = z.object({
     .int()
     .min(1)
     .describe(
-      'Position within its section or lesson, 1-based. An exercise with neither takes its place in the top-level sequence it shares with sections and top-level lessons.'
+      'Position in its section or lesson, from 1; with neither, the top-level order shared with sections and lessons.'
     ),
   dueBy: z.string().optional(),
   questions: z.array(ZCourseImportDraftExerciseQuestion).optional()

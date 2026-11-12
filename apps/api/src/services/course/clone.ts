@@ -7,7 +7,6 @@ import {
   createExerciseSections,
   createExercises,
   createGroup,
-  createLessonLanguages,
   createLessons,
   createOptions,
   createAsset,
@@ -31,7 +30,10 @@ import {
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
+import { copyLessonBlocks } from '@cio/core/services/block/copy';
+import { withDerivedLessonContent } from '@db/queries/block/legacy';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { captureServerEvent } from '@cio/core/services/posthog';
 import { transferUploadedAsset, withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 
 const ASSET_ID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi;
@@ -224,6 +226,20 @@ export async function cloneCourse(
   );
   await invalidateOrgStats(created.organizationId);
 
+  if (!created.course.isTemplate) {
+    captureServerEvent({
+      event: 'course_created',
+      distinctId: options.userId,
+      orgId: created.organizationId,
+      properties: {
+        course_id: created.course.id,
+        course_type: created.course.type,
+        is_published: !!created.course.isPublished,
+        source: options.templateId ? 'template' : 'clone'
+      }
+    });
+  }
+
   return created.course;
 }
 
@@ -347,10 +363,6 @@ async function cloneCourseWithClient(
     lessonCopies.length > 0
       ? await createLessons(
           lessonCopies.map((lesson) => ({
-            note: lesson.note,
-            videoUrl: lesson.videoUrl,
-            slideUrl: lesson.slideUrl,
-            slides: lesson.slides,
             courseId: newCourse.id,
             title: lesson.title,
             public: lesson.public,
@@ -365,8 +377,6 @@ async function cloneCourseWithClient(
             completionPolicy: lesson.completionPolicy,
             videoWatchThreshold: lesson.videoWatchThreshold,
             commentsEnabled: lesson.commentsEnabled,
-            videos: lesson.videos,
-            documents: lesson.documents,
             sectionId: lesson.sectionId ? (sectionMap.get(lesson.sectionId) ?? null) : null,
             slug: lesson.slug,
             sourceId: options.setSourceIds ? lesson.id : null,
@@ -382,20 +392,20 @@ async function cloneCourseWithClient(
     if (created) lessonMap.set(lesson.id, created.id);
   });
 
-  if (targetOrgId) {
-    await syncLessonAssetUsages(newLessons, targetOrgId, options.userId, tx);
+  const blockOrganizationId = targetOrgId ?? sourceOrgId;
+  if (blockOrganizationId && lessonMap.size > 0) {
+    await copyLessonBlocks({
+      lessonIdMap: lessonMap,
+      organizationId: blockOrganizationId,
+      actorProfileId: options.userId,
+      transform: (value) => replaceAssetIds(value, assetIds),
+      setSourceIds: options.setSourceIds,
+      dbClient: tx
+    });
   }
 
-  const languageCopies = replaceAssetIds(oldLessonLanguages, assetIds);
-  if (languageCopies.length > 0) {
-    await createLessonLanguages(
-      languageCopies.map((language) => ({
-        content: language.content,
-        locale: language.locale,
-        lessonId: lessonMap.get(language.lessonId!)!
-      })),
-      tx
-    );
+  if (targetOrgId) {
+    await syncLessonAssetUsages(await withDerivedLessonContent(newLessons, tx), targetOrgId, options.userId, tx);
   }
 
   const exerciseCopies = replaceAssetIds(oldExercises, assetIds);

@@ -1,14 +1,6 @@
-import { redirect } from '@sveltejs/kit';
-import { client } from '$lib/utils/posthog';
-import { getDistinctId } from '$lib/utils/posthog/distinct-id';
+import { trackAndRedirect } from '$lib/utils/posthog/track-redirect';
 
 export const prerender = false;
 
-export const load = async ({ request }) => {
-  client.capture({
-    distinctId: getDistinctId(request),
-    event: 'github page visited'
-  });
-
-  redirect(307, 'https://github.com/rotimi-best/classroomio');
-};
+export const load = ({ request, platform }) =>
+  trackAndRedirect({ request, platform }, 'github page visited', 'https://github.com/rotimi-best/classroomio');

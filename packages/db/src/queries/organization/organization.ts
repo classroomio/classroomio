@@ -1,12 +1,14 @@
 import * as schema from '@db/schema';
 
+import { inviteHoldsSeatSql } from './invite-status';
 import type { OrganizationPlan, OrganizationWithMemberAndPlans, OrganizationWithPlans } from './types';
 import type {
   TNewOrganization,
   TNewOrganizationPlan,
   TNewOrganizationmember,
   TOrganization,
-  TOrganizationPlan
+  TOrganizationPlan,
+  TOrganizationmember
 } from '@db/types';
 import {
   and,
@@ -19,6 +21,7 @@ import {
   ilike,
   inArray,
   isNotNull,
+  isNull,
   ne,
   not,
   notInArray,
@@ -69,7 +72,10 @@ export const getOrganizationByProfileId = async (
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
+        customerId:
+          sql`COALESCE(organization_plan.payload->>'customerId', organization_plan.payload->>'customer_id')`.as(
+            'customerId'
+          )
       }
     })
     .from(schema.organization)
@@ -270,16 +276,19 @@ export const createOrganizationMembers = async (data: TNewOrganizationmember[], 
   return members;
 };
 
+/**
+ * Inserts the members that do not exist yet and returns only the rows it created.
+ */
 export async function insertOrganizationMembersOnConflictDoNothing(
   data: TNewOrganizationmember[],
   dbClient: DbOrTxClient = db
-): Promise<void> {
+): Promise<TOrganizationmember[]> {
   if (data.length === 0) {
-    return;
+    return [];
   }
 
   try {
-    await dbClient.insert(schema.organizationmember).values(data).onConflictDoNothing();
+    return await dbClient.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
   } catch (error) {
     console.error('insertOrganizationMembersOnConflictDoNothing error:', error);
     throw new Error(
@@ -410,13 +419,17 @@ export const hasOrgMemberByProfileIdOrEmail = async (
  * contains exactly one row. The table lock makes the singleton check and insert
  * atomic with concurrent organization inserts.
  */
+/**
+ * Adds the person as a student of the single self-hosted organization. `ensured` is false when there is no
+ * single organization; `createdMember` is set only when this call created the membership.
+ */
 export async function ensureSelfHostedStudentMembership({
   profileId,
   email
 }: {
   profileId: string;
   email: string | null | undefined;
-}): Promise<boolean> {
+}): Promise<{ ensured: boolean; createdMember: TOrganizationmember | null }> {
   try {
     return await db.transaction(async (tx) => {
       await tx.execute(sql`LOCK TABLE "organization" IN SHARE ROW EXCLUSIVE MODE`);
@@ -428,7 +441,7 @@ export async function ensureSelfHostedStudentMembership({
         .limit(2);
 
       if (organizations.length !== 1) {
-        return false;
+        return { ensured: false, createdMember: null };
       }
 
       const organizationId = organizations[0].id;
@@ -443,18 +456,19 @@ export async function ensureSelfHostedStudentMembership({
         .where(and(eq(schema.organizationmember.organizationId, organizationId), profileOrEmailMatch))
         .limit(1);
 
-      if (!existingMember) {
-        const memberData: TNewOrganizationmember = {
-          organizationId,
-          profileId,
-          roleId: ROLE.STUDENT,
-          verified: true
-        };
-
-        await createOrganizationMember(memberData, tx);
+      if (existingMember) {
+        return { ensured: true, createdMember: null };
       }
 
-      return true;
+      const memberData: TNewOrganizationmember = {
+        organizationId,
+        profileId,
+        roleId: ROLE.STUDENT,
+        verified: true
+      };
+      const createdMember = await createOrganizationMember(memberData, tx);
+
+      return { ensured: true, createdMember };
     });
   } catch (error) {
     console.error('ensureSelfHostedStudentMembership error:', error);
@@ -509,8 +523,8 @@ export const checkEmailsExistInOrg = async (orgId: string, emails: string[]): Pr
  * @param memberId Member ID to delete
  * @returns Deleted member or null if not found
  */
-export const deleteOrganizationMember = async (orgId: string, memberId: number) => {
-  const [deleted] = await db
+export const deleteOrganizationMember = async (orgId: string, memberId: number, dbClient: DbOrTxClient = db) => {
+  const [deleted] = await dbClient
     .delete(schema.organizationmember)
     .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.id, memberId)))
     .returning();
@@ -584,9 +598,10 @@ export const deleteGroupMembershipsForOrgProfiles = async (
 export const updateOrganizationAudienceMember = async (
   orgId: string,
   memberId: number,
-  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>
+  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>,
+  dbClient: DbOrTxClient = db
 ) => {
-  const [updated] = await db
+  const [updated] = await dbClient
     .update(schema.organizationmember)
     .set(data)
     .where(
@@ -717,7 +732,10 @@ export const getOrganizationTeam = async (orgId: string) => {
       profile: {
         id: schema.profile.id,
         fullname: schema.profile.fullname,
-        email: schema.profile.email
+        email: schema.profile.email,
+        username: schema.profile.username,
+        avatarUrl: schema.profile.avatarUrl,
+        locale: schema.profile.locale
       }
     })
     .from(schema.organizationmember)
@@ -736,7 +754,10 @@ export const getOrganizationTeam = async (orgId: string) => {
     verified: member.verified,
     roleId: member.roleId,
     profileId: member.profile?.id,
-    fullname: member.profile?.fullname || ''
+    fullname: member.profile?.fullname || '',
+    username: member.profile?.username ?? null,
+    avatarUrl: member.profile?.avatarUrl || '',
+    locale: member.profile?.locale ?? null
   }));
 };
 
@@ -853,27 +874,54 @@ export async function lockOrganizationForStudentCapacity(orgId: string, dbClient
     .limit(1);
 }
 
+function unarchivedStudentConditions(orgId: string) {
+  return and(
+    eq(schema.organizationmember.organizationId, orgId),
+    eq(schema.organizationmember.roleId, ROLE.STUDENT),
+    ne(schema.organizationmember.status, 'ARCHIVED')
+  );
+}
+
 /**
- * Student memberships that occupy a plan seat. `ARCHIVED` is excluded and
- * `DEACTIVATED` is not: archiving reclaims a seat, deactivating keeps one.
+ * Student memberships that occupy a plan seat. Archived members and members
+ * who never joined and whose latest invite was revoked or expired are excluded.
  */
 export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
   try {
     const [row] = await dbClient
       .select({ count: count(schema.organizationmember.id) })
       .from(schema.organizationmember)
-      .where(
-        and(
-          eq(schema.organizationmember.organizationId, orgId),
-          eq(schema.organizationmember.roleId, ROLE.STUDENT),
-          ne(schema.organizationmember.status, 'ARCHIVED')
-        )
-      );
+      .where(and(unarchivedStudentConditions(orgId), inviteHoldsSeatSql));
 
     return Number(row?.count ?? 0);
   } catch (error) {
     console.error('countActiveStudents error:', error);
     throw new Error('Failed to count active students');
+  }
+}
+
+/**
+ * True for an unarchived student who never joined and whose latest invite was
+ * revoked or expired: they hold no seat until re-invited or linked to an account.
+ */
+export async function hasLapsedStudentInvite(
+  orgId: string,
+  memberId: number,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(unarchivedStudentConditions(orgId), eq(schema.organizationmember.id, memberId), not(inviteHoldsSeatSql))
+      )
+      .limit(1);
+
+    return Boolean(row);
+  } catch (error) {
+    console.error('hasLapsedStudentInvite error:', error);
+    throw new Error('Failed to check lapsed student invite');
   }
 }
 
@@ -998,7 +1046,10 @@ export const getOrganizations = async (filters?: {
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
+        customerId:
+          sql`COALESCE(organization_plan.payload->>'customerId', organization_plan.payload->>'customer_id')`.as(
+            'customerId'
+          )
       }
     })
     .from(schema.organization)
@@ -1122,7 +1173,10 @@ export const getFirstOrganizationWithPlans = async (): Promise<
         isActive: schema.organizationPlan.isActive,
         provider: schema.organizationPlan.provider,
         subscriptionId: schema.organizationPlan.subscriptionId,
-        customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
+        customerId:
+          sql`COALESCE(organization_plan.payload->>'customerId', organization_plan.payload->>'customer_id')`.as(
+            'customerId'
+          )
       }
     })
     .from(schema.organization)
@@ -1260,8 +1314,91 @@ export const updateOrganizationPlan = async (
   return plan ?? null;
 };
 
+function getEventModifiedAt(payload: TOrganizationPlan['payload']): string | null {
+  const modifiedAt = (payload as { modifiedAt?: unknown } | null)?.modifiedAt;
+
+  if (typeof modifiedAt !== 'string') {
+    return null;
+  }
+
+  const parsed = new Date(modifiedAt);
+
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+function isNotNewerThanEvent(payload: TOrganizationPlan['payload']) {
+  const eventModifiedAt = getEventModifiedAt(payload);
+
+  if (!eventModifiedAt) {
+    return sql`true`;
+  }
+
+  return sql`(${schema.organizationPlan.payload}->>'modifiedAt' is null or (${schema.organizationPlan.payload}->>'modifiedAt')::timestamptz <= ${eventModifiedAt}::timestamptz)`;
+}
+
 /**
- * Activates an organization plan by subscription ID.
+ * Records a failed payment on an organization plan by subscription ID.
+ * The first failure timestamp is claimed in one conditional update and kept for later events of the same failure.
+ * An event older than the stored subscription state is ignored and the plan is returned unchanged.
+ * @param subscriptionId Subscription ID
+ * @param payload Payload data to update
+ * @returns The plan, or null when the plan does not exist
+ */
+export const markOrganizationPlanPastDue = async (
+  subscriptionId: string,
+  payload: TOrganizationPlan['payload'],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationPlan | null> => {
+  const notStale = isNotNewerThanEvent(payload);
+
+  const [firstFailure] = await dbClient
+    .update(schema.organizationPlan)
+    .set({
+      payload,
+      paymentFailedAt: sql`now()`,
+      updatedAt: sql`timezone('utc'::text, now())`
+    })
+    .where(
+      and(
+        eq(schema.organizationPlan.subscriptionId, subscriptionId),
+        isNull(schema.organizationPlan.paymentFailedAt),
+        notStale
+      )
+    )
+    .returning();
+
+  if (firstFailure) {
+    return firstFailure;
+  }
+
+  const [ongoingFailure] = await dbClient
+    .update(schema.organizationPlan)
+    .set({ payload, updatedAt: sql`timezone('utc'::text, now())` })
+    .where(
+      and(
+        eq(schema.organizationPlan.subscriptionId, subscriptionId),
+        isNotNull(schema.organizationPlan.paymentFailedAt),
+        notStale
+      )
+    )
+    .returning();
+
+  if (ongoingFailure) {
+    return ongoingFailure;
+  }
+
+  const [existing] = await dbClient
+    .select()
+    .from(schema.organizationPlan)
+    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .limit(1);
+
+  return existing ?? null;
+};
+
+/**
+ * Activates an organization plan by subscription ID and clears any recorded payment failure.
+ * An event older than the stored subscription state is ignored and the plan is returned unchanged.
  * @param subscriptionId Subscription ID
  * @param payload Payload data to update
  * @returns Activated organization plan record, or null when it does not exist
@@ -1276,13 +1413,24 @@ export const activateOrganizationPlan = async (
     .set({
       isActive: true,
       deactivatedAt: null,
+      paymentFailedAt: null,
       payload,
       updatedAt: sql`timezone('utc'::text, now())`
     })
-    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .where(and(eq(schema.organizationPlan.subscriptionId, subscriptionId), isNotNewerThanEvent(payload)))
     .returning();
 
-  return plan ?? null;
+  if (plan) {
+    return plan;
+  }
+
+  const [existing] = await dbClient
+    .select()
+    .from(schema.organizationPlan)
+    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .limit(1);
+
+  return existing ?? null;
 };
 
 /**
@@ -1301,6 +1449,7 @@ export const cancelOrganizationPlan = async (
     .set({
       isActive: false,
       deactivatedAt: sql`timezone('utc'::text, now())`,
+      paymentFailedAt: null,
       payload,
       updatedAt: sql`timezone('utc'::text, now())`
     })
@@ -1368,8 +1517,8 @@ export const updateOrganization = async (
  * @param orgId Organization ID
  * @returns Array of plan records
  */
-export const getOrganizationPlanStatus = async (orgId: string) => {
-  const result = await db
+export const getOrganizationPlanStatus = async (orgId: string, dbClient: DbOrTxClient = db) => {
+  const result = await dbClient
     .select({
       planName: schema.organizationPlan.planName,
       isActive: schema.organizationPlan.isActive
@@ -1442,6 +1591,8 @@ export type TOrganizationMemberByEmail = {
   normalizedEmail: string;
   profileId: string | null;
   roleId: number;
+  /** See `hasLapsedStudentInvite`. */
+  hasLapsedInvite: boolean;
 };
 
 /**
@@ -1462,7 +1613,9 @@ export async function getOrganizationMembersByNormalizedEmails(
         profileId: schema.organizationmember.profileId,
         matchEmail: sql<string>`lower(trim(coalesce(${schema.profile.email}, ${schema.organizationmember.email})))`.as(
           'matchEmail'
-        )
+        ),
+        status: schema.organizationmember.status,
+        inviteHoldsSeat: inviteHoldsSeatSql.as('inviteHoldsSeat')
       })
       .from(schema.organizationmember)
       .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -1476,7 +1629,8 @@ export async function getOrganizationMembersByNormalizedEmails(
     return rows.map((row) => ({
       normalizedEmail: row.matchEmail,
       profileId: row.profileId,
-      roleId: row.roleId
+      roleId: row.roleId,
+      hasLapsedInvite: row.roleId === ROLE.STUDENT && row.status !== 'ARCHIVED' && !row.inviteHoldsSeat
     }));
   } catch (error) {
     console.error('getOrganizationMembersByNormalizedEmails error:', error);

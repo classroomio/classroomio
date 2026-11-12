@@ -15,6 +15,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin } from '../shared';
 import { assertExerciseBelongsToCourse } from './exercises';
 import { toPublicSubmission } from './submissions';
+import type { TEventSource } from '@cio/core/services/posthog';
 
 /** Returns the student's member and profile ids; throws unless the actor is course team and the member is a joined student. */
 async function resolveStudent(orgId: string, actorId: string | null, courseId: string, memberId: string) {
@@ -57,7 +58,12 @@ export async function setStudentLessonCompletionService(
     type: ContentType.Lesson
   });
 
-  const completion = await upsertLessonCompletionService(params.lessonId, student.profileId, payload.isComplete);
+  const completion = await upsertLessonCompletionService(
+    params.lessonId,
+    student.profileId,
+    payload.isComplete,
+    'admin'
+  );
 
   if (payload.isComplete) {
     void evaluateCourseCertification(params.courseId, student.profileId).catch((certError) => {
@@ -77,7 +83,8 @@ export async function createStudentSubmissionService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseStudentExerciseParam,
-  payload: TPublicApiCreateStudentSubmission
+  payload: TPublicApiCreateStudentSubmission,
+  source: TEventSource = 'public_api'
 ) {
   const student = await resolveStudent(orgId, actorId, params.courseId, params.memberId);
   await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
@@ -94,7 +101,7 @@ export async function createStudentSubmissionService(
     params.exerciseId,
     student.memberId,
     payload.answers,
-    { strict: true, allowUploads: false }
+    { strict: true, allowUploads: false, source }
   );
 
   return toPublicSubmission(submission);

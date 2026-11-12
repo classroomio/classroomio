@@ -39,7 +39,7 @@
 </script>
 
 <Tabs.Root bind:value={kind} class="min-w-0 flex-1" onValueChange={handleKindChange}>
-  <Tabs.List class="grid h-auto w-full grid-cols-3 md:grid-cols-6">
+  <Tabs.List class="grid h-auto w-fit grid-cols-3 md:grid-cols-6">
     {#each ASSET_KIND_OPTIONS as option (option)}
       <Tabs.Trigger value={option}>
         {$t(`media_manager.filters.kind_options.${option}`)}

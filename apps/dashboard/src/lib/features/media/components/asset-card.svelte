@@ -3,7 +3,6 @@
   import { Button } from '@cio/ui/base/button';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Item from '@cio/ui/base/item';
-  import { IconButton } from '@cio/ui/custom/icon-button';
 
   import DownloadIcon from '@lucide/svelte/icons/download';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
@@ -20,6 +19,7 @@
     getKindIcon,
     type OrganizationAsset
   } from '$features/media/utils';
+  import { Tooltip } from '@cio/ui';
 
   interface Props {
     asset: OrganizationAsset;
@@ -114,11 +114,24 @@
   </Item.Header>
 
   <Item.Content>
-    <div class="min-w-0 flex-1">
-      <Item.Title class="line-clamp-1 w-full!">
-        <span class="max-w-64 truncate text-base! break-all">{getAssetDisplayName(asset)}</span>
-      </Item.Title>
-    </div>
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger>
+          <div class="min-w-0 flex-1">
+            <Item.Title class="line-clamp-1 w-full!">
+              <span class="max-w-64 text-base! break-all">{getAssetDisplayName(asset)}</span>
+            </Item.Title>
+          </div>
+        </Tooltip.Trigger>
+        <Tooltip.Content
+          side="top"
+          sideOffset={4}
+          class="max-w-[min(24rem,calc(100vw_-_2rem))] text-wrap! wrap-anywhere"
+        >
+          {getAssetDisplayName(asset)}
+        </Tooltip.Content>
+      </Tooltip.Root>
+    </Tooltip.Provider>
 
     <div class="mt-3 flex flex-wrap gap-2">
       <Badge variant="outline">{$t(`media_manager.kind.${asset.kind}`)}</Badge>

@@ -1,4 +1,5 @@
 import { db, lesson } from '@db/drizzle';
+import { seedLessonBlocks } from './lesson-blocks';
 
 export interface LessonTemplate {
   mvcCourseId: string;
@@ -130,7 +131,13 @@ export async function seedLessons({
   ].filter((l) => !existingLessonIds.includes(l.id));
 
   if (lessonsToInsert.length > 0) {
-    await db.insert(lesson).values(lessonsToInsert);
+    await db.insert(lesson).values(lessonsToInsert.map(({ videos: _videos, ...row }) => row));
+    await seedLessonBlocks(
+      lessonsToInsert.map((row) => ({
+        lessonId: row.id,
+        blocks: row.videos.map((video) => ({ type: 'video' as const, data: video }))
+      }))
+    );
     console.log(`   ✓ Inserted ${lessonsToInsert.length} lesson(s)`);
   } else {
     console.log('   ✓ Lessons already exist, skipping');

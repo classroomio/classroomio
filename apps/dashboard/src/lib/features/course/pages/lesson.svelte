@@ -5,13 +5,9 @@
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { resolve } from '$app/paths';
   import { untrack } from 'svelte';
-  import isEmpty from 'lodash/isEmpty';
-  import { writable } from 'svelte/store';
   import { fade } from 'svelte/transition';
   import Save from '@lucide/svelte/icons/save';
-  import Pencil from '@lucide/svelte/icons/pencil';
   import HistoryIcon from '@lucide/svelte/icons/history';
-  import VideoIcon from '@lucide/svelte/icons/video';
   import SettingsIcon from '@lucide/svelte/icons/settings';
 
   import MODES from '$lib/utils/constants/mode';
@@ -26,41 +22,35 @@
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
+  import { lessonBlockList } from '$features/course/store/lesson-blocks.svelte';
+  import { createLessonBlockOwner } from '$features/course/utils/lesson-block-owner';
+  import LessonBlocks from '$features/course/components/lesson/lesson-blocks.svelte';
+  import LessonSettingsSheet from '$features/course/components/lesson/lesson-settings-sheet.svelte';
+  import LessonModeToggle from '$features/course/components/lesson/lesson-mode-toggle.svelte';
+  import CirclePlayIcon from '@lucide/svelte/icons/circle-play';
+  import { CoachMark } from '@cio/ui/custom/coach-mark';
+  import { VideoGuideDialog } from '@cio/ui/custom/video-guide';
+  import { LESSON_BLOCKS_COACH_MARK_KEY, VIDEO_GUIDES } from '$features/video-guide/utils/video-guide-utils';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
+  import { lessonVideoBus } from '$features/course/components/lesson/video/lesson-video-bus.svelte';
+  import { TRANSCRIPT_PANEL_ID } from '$features/course/components/lesson/video/transcript-panel-definition';
+  import { sidePanel } from '$features/side-panel';
   import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
   import { resolveLessonSlides } from '@cio/utils/functions';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { Button } from '@cio/ui/base/button';
-  import { Chip } from '@cio/ui/custom/chip';
   import * as Page from '@cio/ui/base/page';
-  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
-  import { Empty } from '@cio/ui/custom/empty';
   import { Spinner } from '@cio/ui/base/spinner';
   import { RoleBasedSecurity } from '$features/ui';
 
   import {
     ContentNavigationActions,
-    LanguageSelector,
     LessonPageEditHeader,
-    Comments,
-    Note,
-    Slide,
-    Video,
-    Document,
-    AddVideoModal,
-    AddDocumentModal,
-    LessonSettingsTab,
-    LessonMaterialActions
+    Comments
+    // LessonMaterialActions
   } from '$features/course/components/lesson';
 
-  import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
-  import type { TLocale } from '@cio/db/types';
-  import { orderedTabs, SETTINGS_TAB_VALUE, tabs as materialTabs } from '$features/course/components/lesson/constants';
-  import { getViewModeComponents } from '$features/course/components/lesson/utils';
-  import { loadDraft, clearDraft } from '$features/course/utils/lesson-draft';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
   import LiveSessionCard from '$features/course/components/lesson/live-session-card.svelte';
@@ -88,7 +78,9 @@
   const VERSION_PARAM = 'version';
 
   let prevModeParam = $state<string | null>(null);
-  let isDeletingLesson = $state(false);
+  let settingsOpen = $state(false);
+  let lessonBlocksVideoOpen = $state(false);
+  let blockListLessonId = '';
   // Derived from the URL so a reload reopens the drawer. The URL is the single source of
   // truth; nothing sets this directly.
   const isVersionDrawerOpen = $derived($page.url.searchParams.get(HISTORY_PARAM) === 'open');
@@ -98,6 +90,21 @@
 
   $effect(() => {
     hasUnsavedChanges = (lessonApi.isDirty || sessionHasUnsavedChanges) && mode === MODES.edit;
+  });
+
+  $effect(() => {
+    const lesson = lessonApi.lesson;
+    if (!lesson || lesson.id !== lessonId || blockListLessonId === lessonId) return;
+
+    blockListLessonId = lessonId;
+    void lessonBlockList.load(createLessonBlockOwner(courseId, lessonId));
+  });
+
+  $effect(() => {
+    const lesson = lessonApi.lesson;
+    if (!lesson || lesson.id !== lessonId || !Array.isArray(lesson.blocks)) return;
+
+    lessonBlockList.syncFromPayload(lesson.blocks.map((block) => block.id));
   });
 
   const currentLessonContentItem = $derived(
@@ -135,7 +142,6 @@
 
     return courseApi.course?.content != null;
   });
-  const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const isLiveSessionLesson = $derived(Boolean(lessonApi.lesson?.callUrl && lessonApi.lesson?.lessonAt));
   const lessonSessionPhase = $derived(
@@ -174,17 +180,11 @@
     return goto(resolve(query ? `${$page.url.pathname}?${query}` : $page.url.pathname, {}), { replaceState: false });
   }
 
-  function setTabQueryParam(value: string) {
-    const params = new SvelteURLSearchParams($page.url.searchParams);
-    params.set('tab', value);
-    goto(resolve(`${$page.url.pathname}?${params.toString()}`, {}), { replaceState: false });
-  }
-
   function toggleMode() {
     if (mode === MODES.edit && lessonApi.isDirty) {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = undefined;
-      queueSave('manual');
+      queueSave();
     }
     if (!sessionHasUnsavedChanges) hasUnsavedChanges = false;
     setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
@@ -212,80 +212,37 @@
     snackbar.success('snackbar.lessons.success.version_restored');
   };
 
-  let tabs = $derived.by(() => {
-    if (lessonApi.lesson?.id !== lessonId) return [];
-    const ordered = orderedTabs(materialTabs, courseApi.course?.metadata?.lessonTabsOrder);
-    const content = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '';
-
-    const slides = resolveLessonSlides(lessonApi.lesson?.slides, lessonApi.lesson?.slideUrl);
-    const videos = lessonApi.lesson?.videos || [];
-    const documents = lessonApi.lesson?.documents || [];
-
-    return ordered.map((tab) => {
-      if (tab.value === 1) {
-        tab.badgeValue = isHtmlValueEmpty(content) ? 0 : 1;
-      } else if (tab.value === 2) {
-        tab.badgeValue = slides.length;
-      } else if (tab.value === 3) {
-        tab.badgeValue = !isEmpty(videos) ? videos.length : 0;
-      } else if (tab.value === 4) {
-        tab.badgeValue = !isEmpty(documents) ? documents.length : 0;
-      }
-
-      return tab;
-    });
+  const showBlockViewComments = $derived(
+    mode === MODES.view &&
+      showLessonComments &&
+      !!lessonApi.lesson &&
+      lessonBlockList.isReady &&
+      !($isCourseLearnerView && (!isStudentLessonStateReady || contentLockReason))
+  );
+  const hasTranscript = $derived.by(() => {
+    lessonVideoBus.transcriptSources;
+    return lessonVideoBus.hasTranscriptAvailable();
   });
-
-  let currentTabValue = $state('');
-  $effect(() => {
-    if (!tabs.length || currentTabValue) return;
-
-    const urlTab = $page.url.searchParams.get('tab');
-    if (urlTab === SETTINGS_TAB_VALUE) {
-      currentTabValue = SETTINGS_TAB_VALUE;
-      return;
-    }
-
-    currentTabValue = urlTab ?? String(tabs[0].value);
-  });
-
-  const viewModeComponents = $derived(getViewModeComponents(tabs));
-
-  const isMaterialsEmpty = $derived(tabs.every((tab) => tab.badgeValue === 0));
-  const hasLessonVideos = $derived((lessonApi.lesson?.videos?.length ?? 0) > 0);
-
   let timeoutId: NodeJS.Timeout | undefined;
 
   // Saves run one at a time: clearing the debounce only cancels a save that has
   // not started, so an in-flight autosave could still land after a manual one.
   let saveQueue: Promise<unknown> = Promise.resolve();
 
-  function queueSave(versionIntent: TLessonVersionIntentRequest) {
-    saveQueue = saveQueue.catch(() => undefined).then(() => saveLesson(versionIntent));
+  function queueSave() {
+    saveQueue = saveQueue.catch(() => undefined).then(() => saveLesson());
 
     return saveQueue;
   }
 
-  let isLoading = writable(false);
+  const canAutoSave = $derived(mode === MODES.edit || settingsOpen);
 
-  function callAI(_type = '') {}
+  function handleSettingsOpenChange(isOpen: boolean) {
+    if (isOpen || mode === MODES.edit || !lessonApi.isDirty) return;
 
-  const getValue = (label: string) => {
-    const tabValue = tabs.find((tab) => tab.label === label)?.value;
-    return tabValue;
-  };
-
-  async function saveOrUpdateTranslation(
-    locale: TLocale,
-    lessonId: string,
-    versionIntent: TLessonVersionIntentRequest
-  ) {
-    const content = lessonApi.translations[lessonId]?.[locale] || '';
-
-    if (!courseApi.course?.id) return;
-
-    // Use API to upsert lesson language (creates if doesn't exist, updates if exists)
-    await lessonApi.upsertLanguage(courseApi.course.id, lessonId, locale, content, versionIntent);
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = undefined;
+    void queueSave();
   }
 
   function hasLessonNoteContent(targetLessonId: string) {
@@ -311,29 +268,22 @@
     });
   }
 
-  async function saveLesson(versionIntent: TLessonVersionIntentRequest = 'auto') {
+  async function saveLesson() {
     if (!lessonApi.lesson) return false;
 
     const revisionAtSave = lessonApi.revision;
-    const [isLessonUpdated] = await Promise.all([
-      lessonApi.update(courseApi.course?.id || '', lessonId, {
-        title: lessonApi.lesson.title || undefined,
-        isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
-        completionPolicy: lessonApi.lesson.completionPolicy ?? undefined,
-        videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
-        commentsEnabled: lessonApi.lesson.commentsEnabled ?? true,
-        slideUrl: lessonApi.lesson.slideUrl || undefined,
-        slides: lessonApi.lesson.slides || [],
-        videos: lessonApi.lesson.videos || [],
-        documents: lessonApi.lesson.documents || [],
-        slug: isPublicCourse && lessonApi.lesson.slug ? lessonApi.lesson.slug : undefined
-      }),
-      saveOrUpdateTranslation(lessonApi.currentLocale, lessonId, versionIntent)
-    ]);
+    const isLessonUpdated = await lessonApi.update(courseApi.course?.id || '', lessonId, {
+      title: lessonApi.lesson.title || undefined,
+      isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
+      completionPolicy: lessonApi.lesson.completionPolicy ?? undefined,
+      videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
+      commentsEnabled: lessonApi.lesson.commentsEnabled ?? true,
+      readingDensity: lessonApi.lesson.readingDensity ?? undefined,
+      slug: isPublicCourse && lessonApi.lesson.slug ? lessonApi.lesson.slug : undefined
+    });
 
     if (isLessonUpdated && revisionAtSave === lessonApi.revision) {
       patchLessonListItemLocally();
-      clearDraft(lessonId, lessonApi.currentLocale);
       lessonApi.isDirty = false;
     } else if (revisionAtSave !== lessonApi.revision) {
       autoSave();
@@ -344,93 +294,41 @@
     lessonApi.updateLessonState('title', value);
   }
 
-  function handleLessonSlugChange(value: string) {
-    lessonApi.updateLessonState('slug', value);
-  }
+  function openTranscriptPanel() {
+    if (!lessonVideoBus.prepareTranscriptPanelSelection()) return;
 
-  function handleToggleLessonLock() {
-    const currentValue = lessonApi.lesson?.isUnlocked ?? false;
-    lessonApi.updateLessonState('isUnlocked', !currentValue);
-  }
-
-  async function handleDeleteLesson() {
-    if (!courseId || !lessonId || isDeletingLesson) return;
-
-    isDeletingLesson = true;
-    await lessonApi.delete(courseId, lessonId);
-
-    if (lessonApi.success) {
-      hasUnsavedChanges = false;
-      await goto(resolve(`/courses/${courseId}/lessons`, {}));
-    }
-
-    isDeletingLesson = false;
+    sidePanel.open(TRANSCRIPT_PANEL_ID);
   }
 
   function handleSave(prevMode: string) {
     untrack(() => {
       if (prevMode === MODES.edit) {
+        void lessonBlockList.flush();
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = undefined;
-        queueSave('manual');
+        queueSave();
       }
     });
   }
 
   function autoSave() {
-    if (mode === MODES.view) return;
+    if (!canAutoSave) return;
     if (!lessonApi.isDirty) return;
 
     if (timeoutId) clearTimeout(timeoutId);
 
     untrack(() => {
       timeoutId = setTimeout(() => {
-        void queueSave('auto');
+        void queueSave();
       }, 2000);
     });
   }
 
-  const triggerAutoSave = () => {
-    if (!lessonApi.lesson) return;
-
-    autoSave();
-  };
-
-  // Check for an unsaved localStorage draft when the lesson first loads.
-  let draftCheckedForLesson = '';
-  $effect(() => {
-    if (!browser) return;
-    if (!lessonApi.lesson || !lessonId) return;
-    if (draftCheckedForLesson === lessonId) return;
-    draftCheckedForLesson = lessonId;
-
-    const draft = loadDraft(lessonId, lessonApi.currentLocale);
-    if (!draft) return;
-
-    const serverContent = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '';
-    if (draft.content === serverContent) {
-      clearDraft(lessonId, lessonApi.currentLocale);
-      return;
-    }
-
-    const shouldRestore = window.confirm(t.get('course.navItem.lessons.draft_recovery'));
-    if (shouldRestore) {
-      if (!lessonApi.translations[lessonId]) {
-        lessonApi.translations[lessonId] = {} as Record<TLocale, string>;
-      }
-      lessonApi.translations[lessonId][lessonApi.currentLocale] = draft.content;
-      lessonApi.markDirty();
-    } else {
-      clearDraft(lessonId, lessonApi.currentLocale);
-    }
-  });
-
   // Only autosave after real edits, not on every reactive update.
   $effect(() => {
-    if (mode !== MODES.edit) return;
+    if (!canAutoSave) return;
     if (!lessonApi.lesson || !lessonId) return;
     if (!lessonApi.isDirty) return;
-    if ($isLoading) return;
 
     autoSave();
   });
@@ -458,53 +356,25 @@
   });
 </script>
 
-<AddVideoModal
-  {lessonId}
-  onClose={() => {
-    if ($lessonVideoUpload.isUploading) return;
+<Page.Header
+  isSticky
+  class="ui:top-12 ui:z-app-bar ui:my-0 ui:border-border ui:bg-background w-full border-b px-4 pt-4 pb-3 md:px-6 md:pt-5 md:pb-4"
+>
+  <div class="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-3">
+    <Page.HeaderContent class="min-w-52 flex-1">
+      <LessonPageEditHeader
+        {mode}
+        title={mode === MODES.edit ? (lessonApi.lesson?.title ?? '') : lessonTitle}
+        onTitleChange={handleLessonTitleChange}
+      />
+    </Page.HeaderContent>
+    <Page.Action class="min-w-0">
+      <div class="flex flex-wrap items-center gap-2 md:justify-end">
+        {#if mode === MODES.view && $isCourseLearnerView}
+          <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
+        {/if}
 
-    $lessonVideoUpload.isModalOpen = false;
-
-    triggerAutoSave();
-  }}
-/>
-
-<AddDocumentModal
-  {lessonId}
-  onClose={() => {
-    if ($lessonDocUpload.isUploading) return;
-
-    $lessonDocUpload.isModalOpen = false;
-    $lessonDocUpload.error = null;
-
-    triggerAutoSave();
-  }}
-/>
-
-<Page.Header>
-  <Page.HeaderContent>
-    <LessonPageEditHeader
-      {mode}
-      title={mode === MODES.edit ? (lessonApi.lesson?.title ?? '') : lessonTitle}
-      isUnlocked={lessonApi.lesson?.isUnlocked ?? false}
-      {isDeletingLesson}
-      onTitleChange={handleLessonTitleChange}
-      onToggleLock={handleToggleLessonLock}
-      onDeleteLesson={handleDeleteLesson}
-      slug={lessonSlug}
-      showSlugEditor={isPublicCourse}
-      slugError={lessonApi.errors.slug}
-      onSlugChange={handleLessonSlugChange}
-    />
-  </Page.HeaderContent>
-  <Page.Action>
-    <div class="flex items-center gap-2">
-      {#if mode === MODES.view && $isCourseLearnerView}
-        <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
-      {/if}
-
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <div class="flex flex-row items-center gap-2 lg:flex">
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if mode === MODES.edit}
             <span class="ui:text-muted-foreground text-sm" aria-live="polite">
               {#if lessonApi.isSaving}
@@ -513,37 +383,81 @@
                 {$t('course.navItem.lessons.saved')}
               {/if}
             </span>
-          {/if}
-          <IconButton onclick={toggleMode} disabled={lessonApi.isSaving}>
-            {#if mode === MODES.edit}
+
+            <IconButton
+              onclick={toggleMode}
+              disabled={lessonApi.isSaving}
+              aria-label={$t('course.navItem.lessons.add_lesson.save')}
+              tooltip={$t('course.navItem.lessons.add_lesson.save')}
+              tooltipSide="bottom"
+            >
               <Save size={20} />
-            {:else}
-              <Pencil size={20} />
-            {/if}
+            </IconButton>
+          {/if}
+
+          <IconButton
+            onclick={() => (settingsOpen = true)}
+            aria-label={$t('course.navItem.lessons.materials.blocks.settings.title')}
+            tooltip={$t('course.navItem.lessons.materials.blocks.settings.title')}
+            tooltipSide="bottom"
+          >
+            <SettingsIcon size={20} />
           </IconButton>
-        </div>
 
-        <IconButton
-          class="inline-flex"
-          onclick={() => setHistoryQueryParam(true)}
-          aria-label={$t('course.navItem.lessons.version_history.title')}
-          tooltip={$t('course.navItem.lessons.version_history.title')}
-          tooltipSide="bottom"
-        >
-          <HistoryIcon size={20} />
-        </IconButton>
+          <IconButton
+            class="inline-flex"
+            onclick={() => setHistoryQueryParam(true)}
+            aria-label={$t('course.navItem.lessons.version_history.title')}
+            tooltip={$t('course.navItem.lessons.version_history.title')}
+            tooltipSide="bottom"
+          >
+            <HistoryIcon size={20} />
+          </IconButton>
 
-        <RefreshPageData class="hidden lg:inline-flex" onRefresh={() => lessonApi.get(courseId, lessonId)} />
-      </RoleBasedSecurity>
+          {#if mode === MODES.view}
+            <div class="hidden lg:inline-flex">
+              <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
+            </div>
+          {/if}
+        </RoleBasedSecurity>
 
-      <LanguageSelector />
-    </div>
-  </Page.Action>
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <div class="relative order-first md:order-none">
+            <LessonModeToggle {mode} disabled={lessonApi.isSaving} onToggle={toggleMode} />
+            {#if mode === MODES.view}
+              <CoachMark
+                title={$t('video_guide.lesson_blocks.coach_title')}
+                description={$t('video_guide.lesson_blocks.coach_description')}
+                dismissLabel={$t('video_guide.dismiss')}
+                actionLabel={$t('video_guide.watch_video')}
+                storageKey={LESSON_BLOCKS_COACH_MARK_KEY}
+                class="max-md:right-auto max-md:left-0"
+                arrowClass="max-md:right-auto max-md:left-28"
+                testId="lesson-blocks-coach-mark"
+                onAction={() => (lessonBlocksVideoOpen = true)}
+              >
+                {#snippet actionIcon()}
+                  <CirclePlayIcon class="size-4" />
+                {/snippet}
+              </CoachMark>
+            {/if}
+            <VideoGuideDialog
+              bind:open={lessonBlocksVideoOpen}
+              videoId={VIDEO_GUIDES.lessonBlocks.videoId}
+              title={$t(VIDEO_GUIDES.lessonBlocks.titleKey)}
+              closeLabel={$t('video_guide.close')}
+              testId="lesson-blocks-video-dialog"
+            />
+          </div>
+        </RoleBasedSecurity>
+      </div>
+    </Page.Action>
+  </div>
 </Page.Header>
 
-<Page.Body>
+<Page.Body class="w-full gap-0 pb-0!">
   {#snippet child()}
-    <div class={`overflow-x-hidden pb-6 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}>
+    <div class="mx-auto w-full overflow-x-hidden md:max-w-[min(48rem,calc(100%-3rem))]">
       {#if isLiveSessionLesson && mode === MODES.view && !($isCourseLearnerView && contentLockReason)}
         <div class="mb-4">
           <LiveSessionCard
@@ -557,137 +471,50 @@
         </div>
       {/if}
 
-      {#if $isCourseLearnerView}
-        {#if !isStudentLessonStateReady}
-          <div class="flex justify-center py-16">
-            <Spinner />
-          </div>
-        {:else if contentLockReason}
-          <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
-        {:else if lessonApi.lesson && !isMaterialsEmpty}
-          {#key lessonId}
-            <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
-              {#if !hasLessonVideos}
-                <LessonMaterialActions showSummarize {lessonId} alignWithNote />
-              {/if}
+      {#if $isCourseLearnerView && !isStudentLessonStateReady}
+        <div class="flex justify-center py-16">
+          <Spinner />
+        </div>
+      {:else if $isCourseLearnerView && contentLockReason}
+        <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
+      {:else if lessonApi.lesson && lessonBlockList.isReady}
+        <div class={['pt-5', showBlockViewComments ? 'pb-12' : 'min-h-screen pb-20']} in:fade={{ delay: 300 }} out:fade>
+          <LessonBlocks {mode} {courseId} {lessonId} learnerView={$isCourseLearnerView} />
 
-              {#each viewModeComponents as Component, index (index)}
-                <Component {mode} {lessonId} {courseId} />
-              {/each}
-
-              {#if showLessonComments}
-                <hr class="my-2" />
-
-                <Comments {lessonId} />
-              {/if}
-            </div>
-          {/key}
-        {:else}
-          <Empty
-            title={$t('course.navItem.lessons.materials.no_content')}
-            icon={VideoIcon}
-            variant="page"
-            class="text-center"
-          />
-        {/if}
-      {:else if mode === MODES.edit}
-        <UnderlineTabs.Root
-          bind:value={currentTabValue}
-          onValueChange={(e) => {
-            setTabQueryParam(e);
-          }}
-        >
-          <!-- Tabs List -->
-          <UnderlineTabs.List>
-            {#each tabs as tab (tab.value)}
-              <UnderlineTabs.Trigger value={String(tab.value)}>
-                {#if tab.icon}
-                  <tab.icon size={16} />
-                {/if}
-                {$t(tab.label)}
-                {#if typeof tab.badgeValue === 'number' && tab.badgeValue > 0}
-                  <Chip value={`${tab.badgeValue}`} className="ml-1" />
-                {/if}
-              </UnderlineTabs.Trigger>
-            {/each}
-            <UnderlineTabs.Trigger value={SETTINGS_TAB_VALUE}>
-              <SettingsIcon size={16} />
-              {$t('course.navItem.lessons.materials.tabs.settings.title')}
-            </UnderlineTabs.Trigger>
-          </UnderlineTabs.List>
-          <!-- End Tabs List -->
-
-          <!-- Note Tab -->
-          <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.note.title') || '')}>
-            <Note {mode} {lessonId} {isLoading} {callAI} />
-          </UnderlineTabs.Content>
-          <!-- End Note Tab -->
-
-          <!-- Slide Tab -->
-          <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.slide.title') || '')}>
-            <Slide {mode} />
-          </UnderlineTabs.Content>
-          <!-- End Slide Tab -->
-
-          <!-- Video Tab -->
-          <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.video.title') || '')}>
-            <Video {mode} {courseId} {lessonId} />
-          </UnderlineTabs.Content>
-          <!-- End Video Tab -->
-
-          <!-- Document Tab -->
-          <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.document.title') || '')}>
-            <Document {mode} />
-          </UnderlineTabs.Content>
-          <!-- End Document Tab -->
-
-          <!-- Settings Tab (fixed, not part of lessonTabsOrder) -->
-          <UnderlineTabs.Content value={SETTINGS_TAB_VALUE}>
-            <LessonSettingsTab bind:hasUnsavedSessionChanges={sessionHasUnsavedChanges} />
-          </UnderlineTabs.Content>
-          <!-- End Settings Tab -->
-        </UnderlineTabs.Root>
-      {:else if lessonApi.lesson && !isMaterialsEmpty}
-        {#key lessonId}
-          <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
-            {#if !hasLessonVideos}
-              <LessonMaterialActions showSummarize {lessonId} alignWithNote />
-            {/if}
-
-            {#each viewModeComponents as Component, index (index)}
-              <Component {mode} {lessonId} {courseId} />
-            {/each}
-
-            {#if showLessonComments}
-              <hr class="my-2" />
-
-              <Comments {lessonId} />
-            {/if}
-          </div>
-        {/key}
+          <!-- {#if mode === MODES.view}
+            <LessonMaterialActions
+              showTranscript={hasTranscript}
+              showSummarize
+              {lessonId}
+              showBottomSeparator={!showLessonComments}
+              onTranscript={openTranscriptPanel}
+            />
+          {/if} -->
+        </div>
       {:else}
-        <Empty
-          title={$t('course.navItem.lessons.materials.body_heading')}
-          description={$t('course.navItem.lessons.materials.body_content') +
-            ' ' +
-            $t('course.navItem.lessons.materials.get_started') +
-            ' ' +
-            $t('course.navItem.lessons.materials.button') +
-            '.'}
-          icon={VideoIcon}
-          variant="page"
-          class="text-center"
-        >
-          <Button onclick={toggleMode}>
-            {$t('course.navItem.lessons.materials.get_started')}
-          </Button>
-        </Empty>
+        <div class="flex justify-center py-16">
+          <Spinner />
+        </div>
       {/if}
     </div>
+
+    {#if showBlockViewComments}
+      <div class="ui:border-border border-t">
+        <div class="mx-auto w-full px-3 md:max-w-[min(48rem,calc(100%-3rem))] md:px-0">
+          <Comments {lessonId} />
+        </div>
+      </div>
+    {/if}
   {/snippet}
 </Page.Body>
 
 <UnsavedChanges bind:hasUnsavedChanges />
+
+<LessonSettingsSheet
+  bind:open={settingsOpen}
+  bind:hasUnsavedSessionChanges={sessionHasUnsavedChanges}
+  onOpenChange={handleSettingsOpenChange}
+/>
 
 {#if isVersionDrawerOpen}
   <LessonVersionHistory

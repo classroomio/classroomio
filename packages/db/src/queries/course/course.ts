@@ -53,10 +53,13 @@ export interface TAdminCourse extends TBaseCourse {
  * Student course type - extends TBaseCourse with progress fields
  * Used for student dashboard and enrolled courses views
  * progressRate = lessons completed, exercisesCompleted = exercises submitted
+ * lessonCount / exerciseCount = all content (display), progress* = content counted toward progress
  */
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
   exercisesCompleted: number;
+  progressLessonCount: number;
+  progressExerciseCount: number;
   certificateEarnedAt: string | null;
   complianceStatus: string | null;
   complianceCycleNumber: number | null;
@@ -227,6 +230,8 @@ export const reorderOrgCourses = async (orgId: string, orders: { id: string; ord
     const courseIds = orders.map(({ id }) => id);
 
     await db.transaction(async (tx) => {
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`org_course_order:${orgId}`}))`);
+
       const allOrgCourses = await tx
         .select({ id: schema.course.id })
         .from(schema.course)
@@ -568,7 +573,10 @@ export async function createCourse(newCourse: TNewCourse, dbClient: DbOrTxClient
     return await dbClient.insert(schema.course).values(newCourse).returning();
   } catch (error) {
     console.error('createCourse error:', error);
-    throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw Object.assign(
+      new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`),
+      { cause: error }
+    );
   }
 }
 
@@ -649,6 +657,8 @@ export async function getCourseProgress(
   exercisesCompleted: number;
   groupMemberId: string | null;
   roleId: number | null;
+  enrolledAt: string | null;
+  completedAt: string | null;
   certificateEarnedAt: string | null;
   certificationEmailSentAt: string | null;
 }> {
@@ -658,6 +668,8 @@ export async function getCourseProgress(
       .select({
         id: schema.groupmember.id,
         roleId: schema.groupmember.roleId,
+        enrolledAt: schema.groupmember.createdAt,
+        completedAt: schema.groupmember.completedAt,
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
         certificationEmailSentAt: schema.groupmember.certificationEmailSentAt
       })
@@ -675,6 +687,8 @@ export async function getCourseProgress(
         exercisesCompleted: 0,
         groupMemberId: null,
         roleId: null,
+        enrolledAt: null,
+        completedAt: null,
         certificateEarnedAt: null,
         certificationEmailSentAt: null
       };
@@ -682,11 +696,16 @@ export async function getCourseProgress(
 
     const groupMemberId = groupMemberResult[0].id;
     const roleId = groupMemberResult[0].roleId;
+    const enrolledAt = groupMemberResult[0].enrolledAt ?? null;
+    const completedAt = groupMemberResult[0].completedAt ?? null;
     const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
 
     const [lessons, completedLessons, exercises, [completedRow]] = await Promise.all([
-      db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
+      db
+        .select({ id: schema.lesson.id })
+        .from(schema.lesson)
+        .where(and(eq(schema.lesson.courseId, courseId), sql`${schema.lesson.completionPolicy} != 'none'`)),
 
       db
         .select({ id: schema.lessonCompletion.id })
@@ -695,6 +714,7 @@ export async function getCourseProgress(
         .where(
           and(
             eq(schema.lesson.courseId, courseId),
+            sql`${schema.lesson.completionPolicy} != 'none'`,
             eq(schema.lessonCompletion.profileId, profileId),
             eq(schema.lessonCompletion.isComplete, true)
           )
@@ -704,7 +724,12 @@ export async function getCourseProgress(
         .select({ id: schema.exercise.id })
         .from(schema.exercise)
         .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-        .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))),
+        .where(
+          and(
+            or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+            sql`${schema.exercise.completionPolicy} != 'none'`
+          )
+        ),
 
       db
         .select({
@@ -715,6 +740,7 @@ export async function getCourseProgress(
         .where(
           and(
             or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+            sql`${schema.exercise.completionPolicy} != 'none'`,
             isExerciseCompletedSql('exercise', { groupMemberId })
           )
         )
@@ -727,6 +753,8 @@ export async function getCourseProgress(
       exercisesCompleted: completedRow?.exercisesCompleted ?? 0,
       groupMemberId,
       roleId,
+      enrolledAt,
+      completedAt,
       certificateEarnedAt,
       certificationEmailSentAt
     };
@@ -745,6 +773,7 @@ export type TCourseCertificationRow = {
     emailMessage?: string | null;
   } | null;
   title: string;
+  type: TCourseType | null;
   orgId: string;
   orgSiteName: string | null;
   orgCustomDomain: string | null;
@@ -760,6 +789,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
       .select({
         certificate: schema.course.certificate,
         title: schema.course.title,
+        type: schema.course.type,
         orgId: schema.organization.id,
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,
@@ -784,7 +814,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
 }
 
 type OrgCoursePublishedStatus = 'published' | 'unpublished';
-type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons';
+type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons' | 'name' | 'price';
 type OrgCourseSortOrder = 'asc' | 'desc';
 
 interface GetOrgCoursesOptions {
@@ -852,20 +882,20 @@ function orgCourseListConditions({
 
 function orgCourseListOrderBy(sortKey?: OrgCourseSortKey, order?: OrgCourseSortOrder) {
   const direction = order === 'asc' ? asc : desc;
+  const column =
+    sortKey === 'last_updated_at'
+      ? sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`
+      : sortKey === 'published'
+        ? schema.course.isPublished
+        : sortKey === 'lessons'
+          ? sql`COUNT(DISTINCT ${schema.lesson.id})`
+          : sortKey === 'name'
+            ? sql`lower(${schema.course.title})`
+            : sortKey === 'price'
+              ? sql`COALESCE(${schema.course.cost}, 0)`
+              : schema.course.createdAt;
 
-  if (sortKey === 'last_updated_at') {
-    return direction(sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`);
-  }
-
-  if (sortKey === 'published') {
-    return direction(schema.course.isPublished);
-  }
-
-  if (sortKey === 'lessons') {
-    return direction(sql`COUNT(DISTINCT ${schema.lesson.id})`);
-  }
-
-  return direction(schema.course.createdAt);
+  return [direction(column), direction(schema.course.id)];
 }
 
 export async function countOrgCourses({
@@ -974,7 +1004,7 @@ export const getOrgCourses = async ({
 
     const result = await itemsQuery
       .groupBy(schema.course.id)
-      .orderBy(orgCourseListOrderBy(sortKey, order))
+      .orderBy(...orgCourseListOrderBy(sortKey, order))
       .limit(limit)
       .offset((page - 1) * limit);
 
@@ -1133,11 +1163,16 @@ export const getEnrolledCourses = async ({
       .select({
         course: schema.course,
         lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('lesson_count'),
+        progressLessonCount:
+          sql<number>`COUNT(DISTINCT CASE WHEN ${schema.lesson.completionPolicy} != 'none' THEN ${schema.lesson.id} END)`.as(
+            'progress_lesson_count'
+          ),
         progressRate: sql<number>`(
           SELECT COUNT(*)::bigint
           FROM ${schema.lessonCompletion} as lc
           JOIN ${schema.lesson} as l ON l.id = lc.lesson_id
           WHERE ${eq(sql`l.course_id`, schema.course.id)}
+          AND l.completion_policy != 'none'
           AND lc.is_complete = true
           AND lc.profile_id = ${sql.raw(`'${profileId}'::uuid`)}
         )`.as('progress_rate'),
@@ -1147,12 +1182,20 @@ export const getEnrolledCourses = async ({
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
         )`.as('exercise_count'),
+        progressExerciseCount: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.exercise} as ex
+          LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+          WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
+            AND ex.completion_policy != 'none'
+        )`.as('progress_exercise_count'),
         exercisesCompleted: sql<number>`(
           SELECT COUNT(*)::bigint
           FROM ${schema.exercise} as ex
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${and(
             or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id)),
+            sql`ex.completion_policy != 'none'`,
             isExerciseCompletedSql('ex', { profileId })
           )}
         )`.as('exercises_completed'),
@@ -1211,8 +1254,10 @@ export const getEnrolledCourses = async ({
     return result.map((row) => ({
       ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
+      progressLessonCount: Number(row.progressLessonCount ?? 0),
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
+      progressExerciseCount: Number(row.progressExerciseCount ?? 0),
       exercisesCompleted: Number(row.exercisesCompleted),
       certificateEarnedAt: row.certificateEarnedAt ?? null,
       complianceStatus: row.complianceStatus ?? null,
@@ -1232,6 +1277,8 @@ interface GetExploreCoursesOptions {
   profileId: string;
   limit?: number;
   page?: number;
+  sortKey?: OrgCourseSortKey;
+  order?: OrgCourseSortOrder;
 }
 
 export interface GetExploreCoursesResult {
@@ -1252,7 +1299,9 @@ export const getExploreCourses = async ({
   orgId,
   profileId,
   limit,
-  page = 1
+  page = 1,
+  sortKey,
+  order
 }: GetExploreCoursesOptions): Promise<GetExploreCoursesResult> => {
   try {
     const whereCondition = and(
@@ -1289,7 +1338,7 @@ export const getExploreCourses = async ({
       )
       .where(whereCondition)
       .groupBy(schema.course.id, schema.group.id)
-      .orderBy(desc(schema.course.createdAt));
+      .orderBy(...orgCourseListOrderBy(sortKey, order));
 
     const countSelect = db
       .select({ total: count(schema.course.id) })
@@ -1568,6 +1617,21 @@ export async function getCourseGroupIds(courseIds: string[], dbClient: DbOrTxCli
     console.error('getCourseGroupIds error:', error);
     throw new Error(`Failed to get course group IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
+
+export async function getCoursesByGroupIds(groupIds: string[], dbClient: DbOrTxClient = db) {
+  if (groupIds.length === 0) return [];
+
+  return dbClient
+    .select({
+      courseId: schema.course.id,
+      groupId: schema.course.groupId,
+      cost: schema.course.cost,
+      organizationId: schema.group.organizationId
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.group.id, schema.course.groupId))
+    .where(inArray(schema.course.groupId, groupIds));
 }
 
 /** Locks the course row so a concurrent status change can't slip past an accept in progress. */

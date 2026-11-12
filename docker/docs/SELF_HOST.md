@@ -103,7 +103,8 @@ effectively required: without SMTP (or Zoho) configured, signup verification, pa
 invites silently don't send (see [Email](#email)). Google OAuth, Unsplash, and `LICENSE_KEY` stay
 off until you set them. If you raise the `UPLOAD_MAX_*_MB` vars (documents, images, videos,
 assignment files; full list in [`.env.example`](../../.env.example)), set the same values on both
-`api` and `dashboard`, and raise your reverse-proxy body-size limit to match.
+`api` and `dashboard`, and raise your reverse-proxy body-size limit to match. Videos default to
+1 GB, so the proxy has to allow uploads that large even if you change nothing.
 
 ## Verify
 

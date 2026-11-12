@@ -177,7 +177,9 @@ export async function gradeCourseSubmissionService(
     );
   }
 
-  const updated = await updateSubmissionGradesBatch(params.submissionId, params.courseId, payload);
+  const updated = await updateSubmissionGradesBatch(params.submissionId, params.courseId, payload, {
+    actorProfileId: actorId
+  });
 
   return toPublicSubmission(updated);
 }
@@ -191,7 +193,9 @@ export async function updateCourseSubmissionService(
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertSubmissionBelongsToCourse(params.courseId, params.submissionId);
 
-  const updated = await updateSubmissionService(params.submissionId, params.courseId, payload);
+  const updated = await updateSubmissionService(params.submissionId, params.courseId, payload, {
+    actorProfileId: actorId
+  });
 
   return toPublicSubmission(updated);
 }

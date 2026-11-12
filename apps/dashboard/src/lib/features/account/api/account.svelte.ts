@@ -70,8 +70,10 @@ class AccountApi extends BaseApiWithErrors {
         await this.listWorkspaces();
       },
       onError: (result) => {
-        if (typeof result === 'object' && 'code' in result) {
-          snackbar.error(`snackbar.account.${String(result.code).toLowerCase()}`);
+        if (result.code) {
+          snackbar.error(`snackbar.account.${result.code.toLowerCase()}`);
+        } else {
+          snackbar.error(result.message);
         }
       }
     });
@@ -86,8 +88,10 @@ class AccountApi extends BaseApiWithErrors {
         snackbar.success('snackbar.account.workspaceDeleted');
       },
       onError: (result) => {
-        if (typeof result === 'object' && 'code' in result) {
-          snackbar.error(`snackbar.account.${String(result.code).toLowerCase()}`);
+        if (result.code) {
+          snackbar.error(`snackbar.account.${result.code.toLowerCase()}`);
+        } else {
+          snackbar.error(result.message);
         }
       }
     });

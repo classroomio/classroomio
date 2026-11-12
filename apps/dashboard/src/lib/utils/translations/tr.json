@@ -471,7 +471,8 @@
         "title": "Akademiniz açılıyor…",
         "caption": "Kurslarınız, öğrencileriniz ve ayarlarınız hazırlanıyor."
       }
-    }
+    },
+    "back": "Geri"
   },
   "compliance": {
     "title": "Compliance",
@@ -648,8 +649,8 @@
         "heading": "E-posta tercihleriniz",
         "description": "Bunlar, bu kuruluşta size gönderilen e-postalar için geçerlidir. Kuruluşunuz yine de belirli e-postaları herkes için devre dışı bırakabilir.",
         "description_with_org": "Bunlar, {orgName}'te size gönderilen e-postalar için geçerlidir. Kuruluşunuz yine de belirli e-postaları herkes için devre dışı bırakabilir.",
-        "save": "Kişisel tercihleri ​​kaydedin",
-        "save_success": "Kişisel bildirim tercihleri ​​kaydedildi"
+        "save": "Kişisel tercihleri kaydedin",
+        "save_success": "Kişisel bildirim tercihleri kaydedildi"
       },
       "org": {
         "heading": "Kuruluş varsayılanları",
@@ -1145,7 +1146,9 @@
           "popover_title": "Dersleri seçin",
           "popover_empty": "Yayınlanmış kurs yok.",
           "search_no_results": "Aramanızla eşleşen kurs yok.",
-          "search_placeholder": "Kursları arayın..."
+          "search_placeholder": "Kursları arayın...",
+          "featured_toggle": "Öne çıkan kursu göster",
+          "featured_toggle_desc": "İlk kursunuzu büyük bir blokta öne çıkarır. Bunu kapatırsanız kurs diğer kurslarınızla birlikte listelenir."
         }
       },
       "title": "Başlık",
@@ -1256,7 +1259,13 @@
       "active": "Yapmıyorsunuz etkin faturanız var",
       "provider": "Faturalandırmanızı yönetmenize yardımcı olması için Polar'ı kullanıyoruz",
       "open_billing": "Açık faturalandırma",
-      "error": "Faturalandırmayı açarken bir hata oluştu"
+      "admin_only": "Faturalandırmayı yalnızca kuruluş yöneticileri yönetebilir.",
+      "error": "Faturalandırmayı açarken bir hata oluştu",
+      "payment_failed": {
+        "warning": "Son ödemeniz başarısız oldu. Yeni öğrenci kaydetmeye devam etmek için {date} tarihinden önce ödeme yönteminizi güncelleyin.",
+        "blocked": "Son ödemeniz başarısız oldu, bu nedenle yeni öğrenciler kayıt olamıyor. Kayıtları yeniden başlatmak için ödeme yönteminizi güncelleyin.",
+        "action": "Ödeme yöntemini güncelle"
+      }
     },
     "ai_credits": {
       "sub_title": "AI kredileri",
@@ -1424,6 +1433,45 @@
     "common": {
       "not_available": "N/A"
     },
+    "upload": {
+      "files": "Dosya yükle",
+      "add_video_link": "Video bağlantısı ekle",
+      "more_options": "Diğer yükleme seçenekleri",
+      "dialog_title": "Dosya yükle",
+      "drag_drop": "Dosyaları buraya sürükleyip bırakın veya göz atmak için tıklayın",
+      "limits": "Videolar ve belgeler. Aynı anda en fazla {count} dosya, her biri {size}.",
+      "limits_by_kind": "Aynı anda en fazla {count} dosya. Videolar en fazla {videoSize}, belgeler en fazla {documentSize}.",
+      "add_more": "Daha fazla dosya ekle",
+      "minimize": "Küçült",
+      "maximize": "Yükleme penceresini aç",
+      "expand": "Dosyaları göster",
+      "collapse": "Dosyaları gizle",
+      "close": "Kapat",
+      "done": "Bitti",
+      "keep_in_background": "Arka planda devam et",
+      "upgrade": "Medya kitaplığınıza dosya yüklemek için planınızı yükseltin",
+      "status": {
+        "queued": "Bekliyor",
+        "completed": "Tamamlandı",
+        "failed": "Başarısız",
+        "retry": "Tekrar dene",
+        "remove": "Dosyayı kaldır",
+        "uploading_progress": "Yükleniyor {percent}%",
+        "size_progress": "{uploaded} / {total}"
+      },
+      "summary": {
+        "uploading": "{total} dosyadan {done} tanesi yüklendi",
+        "completed": "{count} yükleme tamamlandı",
+        "failed": "{total} yüklemeden {count} tanesi başarısız"
+      },
+      "errors": {
+        "unsupported_type": "{name} desteklenen bir video veya belge değil.",
+        "too_large": "{name}, {size} sınırını aşıyor.",
+        "too_many": "Aynı anda en fazla {count} dosya yükleyebilirsiniz.",
+        "generic": "Yükleme başarısız"
+      },
+      "switch_organization_confirm": "Kuruluş değiştirmek devam eden yüklemeleri iptal eder. Yine de değiştirilsin mi?"
+    },
     "storage": {
       "total_bytes": "Toplam Depolama",
       "internal_bytes": "Dahili Depolama",
@@ -1464,7 +1512,8 @@
     },
     "status": {
       "active": "Active",
-      "archived": "Archived"
+      "archived": "Archived",
+      "processing": "İşleniyor"
     },
     "table": {
       "title": "Title",
@@ -1937,6 +1986,20 @@
       "all": "Tüm",
       "unpublished": "Yayınlanmamış",
       "course_type": "Ders Türü"
+    },
+    "filters": {
+      "filter": "Filtrele",
+      "popover_title": "Filtreler",
+      "clear_all": "Tümünü temizle",
+      "search_placeholder": "İsimle ara",
+      "status": "Durum",
+      "layout_type": "Yerleşim türü",
+      "selection_mode": "Seçim modu",
+      "no_results_title": "Filtrelerinize uyan hiçbir widget bulunamadı.",
+      "no_results_description": "Farklı bir arama terimi deneyin veya filtrelerinizi temizleyerek her şeyi tekrar görüntüleyin.",
+      "no_results_page_title": "Bu sayfada hiçbir şey yok.",
+      "no_results_page_description": "Bu filtreler, bu sayfanın başlangıcındaki değerlerden daha az sayıda widget ile eşleşiyor.",
+      "back_to_first_page": "İlk sayfaya geri dön"
     }
   },
   "setup": {
@@ -2115,7 +2178,6 @@
         },
         "apps": {
           "title": "Uygulamalar",
-          "poll": "Anket",
           "live_comment": "Lcanlı yorumlar"
         },
         "auth_background": {
@@ -2123,6 +2185,34 @@
           "description": "Kuruluşunuzun sitesindeki oturum açma, kaydolma ve diğer hesap sayfalarının arkasında isteğe bağlı arka plan resmi.",
           "paid_plan_note": "Oturum açma arka planını özelleştirmek için planınızı yükseltin.",
           "preview_alt": "Oturum açma arka planı önizlemesi"
+        },
+        "student_home": {
+          "heading": "Öğrenci ana sayfası",
+          "description": "Oturum açan öğrencilerin akademinizin ana sayfasını açtıklarında nereye gideceklerini seçin. Oturum açmamış ziyaretçiler ve ekibiniz açılış sayfanızı görmeye devam eder.",
+          "label": "Oturum açmış öğrenci ana sayfası",
+          "placeholder": "Sayfaları ve kursları arayın",
+          "option_default": "Açılış sayfası (varsayılan)",
+          "group_pages": "Öğrenim portalı",
+          "group_courses": "Kurslar",
+          "reason_disabled_toggle": "Aşağıdaki Kontrol Paneli bölümünde bu özelliği açın",
+          "reason_paid_plan": "Ücretli planlarda mevcut",
+          "courses_empty": "Henüz yayınlanmış kurs yok",
+          "load_more": "Daha fazlasını yükle",
+          "search_empty": "\"{query}\" ile eşleşen sayfa veya kurs yok",
+          "warning_unavailable": "{destination} şu anda öğrencilere sunulmadığından bunun yerine Kontrol Paneline gönderiliyorlar. Başka bir hedef seçin veya onu tekrar kullanılabilir hale getirin.",
+          "warning_course_missing": "Seçtiğiniz kurs silindi veya yayından kaldırıldı, dolayısıyla öğrenciler onun yerine Kontrol Paneli'ne yönlendiriliyor.",
+          "course_hint_open": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Kayıtlı olmayan öğrenciler tek tıklamayla katılabilir.",
+          "course_hint_restricted": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Bu kurs ücretlidir veya yalnızca davetle yapılabilir; dolayısıyla kayıtlı olmayan öğrenciler Kontrol Paneli'ne gider.",
+          "unavailable_badge": "Kullanılamıyor",
+          "course_type_live": "Canlı",
+          "course_type_compliance": "Uyumluluk",
+          "learn_more": "Daha fazla bilgi edinin"
+        }
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Oturum açan öğrenciler bu sayfayı atlayıp {destination} adresine gider.",
+          "change": "Değiştir"
         }
       }
     }
@@ -2237,7 +2327,9 @@
       "date_created": "Oluşturulma Tarihi",
       "last_updated_at": "LSon Güncelleme Tarihi",
       "published": "Yayınlandı",
-      "lessons": "Lessons"
+      "lessons": "Lessons",
+      "name": "Ad",
+      "price": "Fiyat"
     },
     "course_card": {
       "empty_title": "Oluşturulan Kurs Yok",
@@ -2446,7 +2538,11 @@
       "preview": "Kursu önizleyin",
       "preview_missing_slug": "Önizlemeden önce bir kurs bilgisi oluşturun ve kaydedin.",
       "view_as_student": "Öğrenci olarak görüntüle",
-      "view_course_site": "Kurs Sitesini Görüntüle"
+      "view_course_site": "Kurs Sitesini Görüntüle",
+      "assistant_pop_out": "Sohbeti aç",
+      "assistant_close_floating": "Kayan sohbeti kapat",
+      "assistant_tip": "İpucu: Çalışırken asistanı yüzdürmek için açılır simgeyi kullanın.",
+      "assistant_tip_dismiss": "İpucunu reddet"
     },
     "view_course_site": {
       "unpublished_title": "Kursunuzu yayınlayın",
@@ -2574,6 +2670,10 @@
             "watch_videos_no_uploads_title": "Bu derste yüklenmiş video yok",
             "watch_videos_required": "Video izlemeyi kullanırken en az bir video seçin.",
             "students_only_note": "Bu kurallar yalnızca öğrenciler için geçerlidir. Öğretirken özgürce önizleyebilir ve gezinebilirsiniz."
+          },
+          "access": {
+            "title": "Erişim",
+            "description": "Siz kilidi açana kadar öğrenciler kilitli bir dersi açamazlar."
           }
         },
         "watch_progress": {
@@ -2706,7 +2806,6 @@
         "autosaving": "Otomatik kaydetme...",
         "saving": "Kaydediliyor…",
         "saved": "Kaydedildi",
-        "draft_recovery": "Bu ders için kaydedilmemiş bir taslak bulundu. Geri yüklemek ister misiniz?",
         "done": "Done",
         "edit": "Edit",
         "mark_as": "Farklı olarak işaretle",
@@ -2717,12 +2816,6 @@
         "prev_shortcut": "Önceki (←)",
         "next_shortcut": "Sonraki (→)",
         "materials": {
-          "body_heading": "Bu ders için henüz not, video veya slayt eklenmedi",
-          "body_content": "İlgi çekici içerikler oluşturarak bilginizi öğrencilerinizle paylaşın. Tıklayarak başlayın",
-          "get_started": "Başlayın",
-          "no_content": "İçerik Yok",
-          "no_translation": "Seçili dil için çeviri yok",
-          "button": "düğme",
           "show_transcript": "Transkripti göster",
           "summarize_lesson": "Dersi özetle",
           "summarize_lesson_prompt": {
@@ -2732,22 +2825,10 @@
           },
           "tabs": {
             "note": {
-              "title": "Not",
-              "placeholder": "Ders notunuzu buraya yazın",
-              "ai": {
-                "outline": "Ders Taslağını Oluşturun",
-                "note": "Ders Notu Oluşturun",
-                "activities": "Ders Aktiviteleri Oluşturun"
-              }
+              "placeholder": "Ders notunuzu buraya yazın"
             },
             "slide": {
               "title": "Slayt",
-              "button": "Slayt ekle",
-              "remove_slide": "Slaytı kaldır",
-              "menu_aria": "Slayt eylemleri",
-              "empty_title": "Henüz slayt yok",
-              "empty_description": "Google Slaytlar, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare veya Beautiful.ai",
-              "frame_title": "{platform} ({index} / {total})",
               "add_slide": {
                 "title": "Slayt ekle",
                 "search": "Platformlarda ara",
@@ -2758,7 +2839,9 @@
                 "preview": "Önizleme",
                 "embed_ready": "Yerleştirmeye hazır",
                 "invalid_embed": "Tam iframe yerleştirme kodunu buradan yapıştırın platform.",
-                "unsupported": "Bu yerleştirme henüz desteklemediğimiz bir platformdan."
+                "unsupported": "Bu yerleştirme henüz desteklemediğimiz bir platformdan.",
+                "platform_mismatch": "Bu bir {detected} gömmesi, {selected} değil.",
+                "preview_in_platform": "{platform} içinde önizle"
               },
               "platforms": {
                 "google-slides": {
@@ -2823,20 +2906,13 @@
                 }
               }
             },
-            "settings": {
-              "title": "Settings"
-            },
             "video": {
-              "title": "Video",
               "vimeo_link": "Vimeo Bağlantı",
               "embed_link": "Gömülü Bağlantı",
               "google_drive": "Google Drive",
               "upload": "Yükleme",
               "library": "Library",
-              "button": "Video Ekle/Düzenle",
               "remove_video": "Videoyu kaldır",
-              "empty_title": "Henüz video yok",
-              "empty_description": "Video ekle YouTube, Vimeo, Google Drive'dan bağlantı ekleyin, yükleyin veya medya kitaplığınızdan",
               "add_video": {
                 "title": "Video Ekle",
                 "add_by": "Bunu Ekle",
@@ -2878,7 +2954,7 @@
                 "search_library_action": "Arama",
                 "loading_library": "LMedya kitaplığı yükleniyor...",
                 "no_library_videos": "Medya kitaplığınızda video yok",
-                "add_from_library": "Kütüphaneden ekle",
+                "add_from_library": "Ekle",
                 "cancel_upload": "Yüklemeyi iptal et",
                 "upload_cancelled": "Yükleme kullanıcı tarafından iptal edildi",
                 "max_files": "{sayı, çoğul, bir {You can upload # file} diğer {You can upload # files}}",
@@ -2948,52 +3024,96 @@
               }
             },
             "document": {
-              "title": "Docs",
-              "add_document": "Belge Ekle",
-              "no_document": "Henüz belge yüklenmedi",
-              "view_document": "Belgeyi Görüntüle",
-              "download": "İndir",
-              "upload_document": "Belgeyi Yükle",
               "upload_title": "Belgeyi Yükle",
-              "upload_description": "PDF, DOCX veya DOC dosyalarını yükleyin. Maksimum boyut: 5MB",
+              "upload_description": "PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB veya PY dosyalarını yükleyin",
+              "up_to_size_each": "(her biri en fazla {size})",
+              "uploading_progress": "Yükleniyor %{percent}",
+              "queued": "Bekliyor",
+              "completed": "Tamamlandı",
+              "failed": "Başarısız",
+              "finish": "Bitir",
+              "max_files_error": "Aynı anda en fazla {count} dosya yükleyebilirsiniz.",
+              "size_progress": "{total} içinden {uploaded}",
               "drag_drop": "Belgenizi buraya sürükleyip bırakın",
-              "or": "or",
-              "choose_file": "Dosya Seç",
-              "cancel": "İptal",
-              "uploading": "Yükleniyor...",
-              "upload_success": "Belge başarıyla yüklendi!",
               "upload_error": "Yükleme başarısız oldu document",
-              "file_type_error": "Dosya türü desteklenmiyor. Lütfen PDF, DOCX veya DOC dosyalarını yükleyin.",
+              "file_type_error": "Dosya türü desteklenmiyor. Lütfen PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB veya PY dosyalarını yükleyin.",
               "file_size_error": "Dosya boyutu çok büyük. Maksimum boyut {size}.",
-              "type": "Type",
-              "size": "Size",
-              "upload_error_title": "Yükleme Hatası",
-              "upload_error_message": "Desteklenmeyen dosya biçimi veya yükleme başarısız oldu",
-              "upload_error_try_again": "Lütfen geçerli bir belge dosyasıyla tekrar deneyin",
-              "try_again": "Tekrar Dene",
               "upgrade": "Yükleme planınızı yükseltin belgeler",
-              "cancel_upload": "Yüklemeyi iptal et",
-              "upload_cancelled": "Yükleme kullanıcı tarafından iptal edildi",
-              "downloading": "İndiriliyor...",
-              "download_success": "Belge başarıyla indirildi",
-              "download_error": "Belge indirilemedi",
-              "view_pdf": "PDF'yi görüntüle",
-              "remove_document": "Belgeyi kaldır",
-              "delete": "Delete",
-              "page_of": "Page {page} / {total}",
-              "loading_pdf": "LPDF yükleniyor...",
-              "failed_to_load_pdf": "PDF belgesi yüklenemedi",
-              "failed_to_render_pdf": "PDF sayfası oluşturulamadı",
-              "use_arrow_keys": "Gezinmek için ok tuşlarını, yakınlaştırmak için +/-'yi kullanın veya yukarıdaki kontrollere tıklayın. Sağ tıklama devre dışı.",
-              "empty_title": "Henüz belge yok",
-              "empty_description": "Öğrencilerinizle paylaşmak için belge yükleyin",
-              "attachments_heading": "Ekler",
-              "file_count": "{sayım, çoğul, bir {# file} diğer {# files}}",
-              "view_file": "Dosyayı görüntüle",
-              "reorder_file": "Dosyayı yeniden sırala"
+              "no_library_documents": "Medya kitaplığınızda kullanılabilir belge yok",
+              "selected_count": "{count} seçildi",
+              "clear_selection": "Temizle",
+              "add_one_file": "1 dosya ekle",
+              "add_files": "{count} dosya ekle",
+              "remove_document": "Belgeyi kaldır"
             }
           },
-          "button_done": "Done"
+          "button_done": "Done",
+          "blocks": {
+            "add_content": "İçerik ekle",
+            "example": "Örnek",
+            "change_type": "{type} türünü değiştir",
+            "edit_type": "{type} düzenle",
+            "remove": "Bloku kaldır",
+            "move_up": "Yukarı çık",
+            "move_down": "Aşağıya doğru hareket edin",
+            "actions": "Blok eylemleri",
+            "drag": "Sırayı değiştirmek için sürükleyin",
+            "drag_hint": "Bir bloğun üzerindeki tutamacı sürükleyerek bloğun sırasını değiştirebilirsiniz. Ayrıca menüsünden Yukarı Taşı ve Aşağı Taşı seçeneklerini de kullanabilirsiniz.",
+            "dismiss_hint": "Yeniden sipariş ipucunu göz ardı et",
+            "empty_title": "Bu dersi oluşturmaya başlayın.",
+            "empty_description": "Not, video, slayt, belge veya resim ekleyin. İstediğiniz kadar blok ekleyebilir ve istediğiniz sırayla düzenleyebilirsiniz.",
+            "empty_note": "Bu not boş.",
+            "scroll_rail": "Ders blokları",
+            "go_to_block": "{index} bloğuna git",
+            "image": {
+              "upload": "Resim yükle",
+              "upload_error": "Resim yüklenemedi. Lütfen tekrar deneyin.",
+              "change": "Resmi değiştir",
+              "settings": "Görüntü ayarları",
+              "alt": "Alternatif metin",
+              "alt_placeholder": "Yardımcı teknoloji kullanan öğrenciler için görseli açıklayın.",
+              "fit": "Yerleştirmek",
+              "fit_cover": "Doldurmak",
+              "fit_contain": "Yerleştirmek"
+            },
+            "settings": {
+              "title": "Ders ayarları",
+              "description": "Bu dersi içerik tuvalinden ayrılmadan yönetin."
+            },
+            "reading_density": {
+              "title": "Okuma yoğunluğu",
+              "description": "Öğrenciler için bloklar arasındaki boşluğu kontrol eder. Düzenleme alanını değiştirmez.",
+              "compact": "Kompakt",
+              "comfortable": "Rahat",
+              "spacious": "Ferah"
+            },
+            "ai": {
+              "title": "Yapay zekâ ile bir not taslağı oluşturun.",
+              "prompt_label": "Çabuk",
+              "prompt_placeholder": "Örneğin, yeni başlayanlar için su döngüsüne kısa bir giriş."
+            },
+            "types": {
+              "note": "Not",
+              "video": "Video",
+              "slides": "Slaytlar",
+              "document": "Belge",
+              "image": "Görüntü"
+            },
+            "empty_preview_title": "Henüz önizlenecek bir şey yok",
+            "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik bulunmamaktadır. Not, video, slayt, belge veya resim eklemek için {editLabel}'a geçin.",
+            "empty_learner_title": "Bu ders henüz hazır değil",
+            "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin.",
+            "document": {
+              "view_file": "Dosyayı görüntüle",
+              "download": "İndir",
+              "download_success": "Belge başarıyla indirildi",
+              "download_error": "Belge indirilemedi",
+              "try_again": "Tekrar Dene"
+            },
+            "slides": {
+              "add_slide": "Slayt ekle"
+            }
+          }
         },
         "exercises": {
           "heading": "Tüm Egzersizler",
@@ -3245,7 +3365,8 @@
                 "passed": "Geçildi",
                 "not_passed": "Geçilmedi",
                 "no_submission_title": "Bu kullanıcının bu alıştırma için gönderimi yok",
-                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek."
+                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek.",
+                "optional": "İsteğe bağlı"
               },
               "submissions": "Gönderimler",
               "loading_submissions": "Lyükleniyor gönderimler...",
@@ -3574,7 +3695,9 @@
                   "max_characters_placeholder": "Maksimum karakter"
                 }
               }
-            }
+            },
+            "settings_completion_none": "Yok — isteğe bağlı",
+            "settings_completion_none_helper": "Bu alıştırma kursun ilerlemesini engellemez ve kursun tamamlanması veya sertifikalar için gerekli değildir."
           }
         },
         "disabled": "Özellik devre dışı",
@@ -3587,42 +3710,19 @@
           "cancel_btn": "İptal",
           "edit": "Düzenle",
           "delete": "Sil",
-          "load_more_btn": "LDaha fazlasını yükle",
-          "comment_error": "Yorum gönderilemedi. Lütfen tekrar deneyin."
-        },
-        "polls": {
-          "title": "Anket",
-          "active_polls": "Aktif Anketler",
-          "expired_polls": "Süresi Dolmuş Anketler",
-          "loading": "LYükleniyor...",
-          "no_polls": "Görüntülenecek anket yok"
-        },
-        "poll": {
-          "voted": "Oylandı",
-          "created_by": "Oluşturan",
-          "status": "Durum",
-          "draft": "Draft",
-          "publish": "Yayınlama",
-          "expiration": "Sona Erme",
-          "total_voted": "Toplam Oylar",
-          "responses": "Yanıtlar",
-          "expires": "Sona Erme",
-          "today": "Bugün",
-          "back": "Geri",
-          "result": "Sonuç",
-          "delete": "Sil",
-          "create_poll": "Anket oluştur",
-          "question": "Soru",
-          "options": "Seçenekler",
-          "option_label": "Seçenek Etiketi",
-          "cancel": "İptal",
-          "poll_question": "Anket Sorusu"
+          "comment_error": "Yorum gönderilemedi. Lütfen tekrar deneyin.",
+          "save_btn": "Kaydet",
+          "unknown_user": "Bilinmiyor",
+          "actions": "Yorum işlemleri",
+          "read_more": "Devamını oku",
+          "show_less": "Daha az göster",
+          "see_all": "Tüm yorumları görün ({count})",
+          "show_more": "Daha fazla yorum göster"
         },
         "version_history": {
           "title": "Sürüm geçmişi",
           "fetch_more_versions": "Daha fazla sürüm getir",
           "current_version": "Geçerli sürüm",
-          "restore_version": "Bu sürümü geri yükle",
           "edit_count": "{sayım, çoğul, bir {# edit} diğer {# edits}}",
           "today": "Bugün",
           "yesterday": "Dün",
@@ -3632,11 +3732,48 @@
             "publish": "Published"
           },
           "by_author": "tarafından {name}",
-          "empty": "Henüz sürüm yok"
+          "empty": "Henüz sürüm yok",
+          "block_label": "{number} / {count} metin bloğu",
+          "restore_failed": "Bu sürüm geri yüklenemedi",
+          "shared_restore_hint": "Bu metin bloğu diğer derslerle paylaşılıyor. Geri yükleme bu derse kendi kopyasını verir ve diğer dersler geçerli metinlerini korur.",
+          "structure_change": "Yapı",
+          "restore_lesson_failed": "Ders geri yüklenemedi",
+          "undo_change": "Geri al",
+          "by_assistant": "Asistan",
+          "by_restore": "Geri yükle",
+          "change_added": "{name} eklendi",
+          "change_removed": "{name} kaldırıldı",
+          "change_moved": "{name} taşındı",
+          "change_edited": "{name} değiştirildi",
+          "block_type": {
+            "note": "metin bloğu",
+            "video": "video",
+            "slides": "slaytlar",
+            "document": "belge",
+            "image": "resim"
+          },
+          "change_kind": {
+            "added": "Eklendi",
+            "removed": "Kaldırıldı",
+            "moved": "Taşındı",
+            "edited": "Değiştirildi"
+          },
+          "restore_version": "Bu bloğu geri yükle",
+          "restore_lesson": "Dersin tamamını geri yükle",
+          "undo_failed": "Bu değişiklik geri alınamadı. Değiştirilen bir şey daha sonra düzenlendiyse bunun yerine istediğiniz sürümü geri yükleyin.",
+          "removed_block_label": "Metin bloğu kaldırıldı",
+          "restore_lesson_confirm": "Dersin tamamı bu sürümle değiştirilsin mi?",
+          "structure_state": "Başlangıç noktası: kaydedilen ilk değişiklikten önce ders bloklarının nasıl düzenlendiği."
         },
         "expand_content": "İçeriği genişlet",
         "collapse_content": "İçeriği daralt",
-        "no_section": "Bölüm yok"
+        "no_section": "Bölüm yok",
+        "header": {
+          "mode_label": "Ders modu",
+          "mode_edit": "Düzenlemek",
+          "mode_preview": "Önizleme",
+          "mode_shortcut": "Modu değiştir"
+        }
       },
       "attendance": {
         "title": "Attendance",
@@ -4196,7 +4333,10 @@
           "enrolled_success": "Bu kursa kaydoldunuz.",
           "enrolled_verify_email": "Kayıt oldunuz! Bu kursa erişmek için e-posta adresinizi doğrulayın.",
           "student_limit_reached": "{orgName} öğrenci kapasitesine ulaştı. Lütfen kuruluş yöneticinizle iletişime geçin.",
-          "members_only": "Yalnızca bu kuruluşun üyeleri kaydolabilir. Yöneticiden davetiye isteyin."
+          "members_only": "Yalnızca bu kuruluşun üyeleri kaydolabilir. Yöneticiden davetiye isteyin.",
+          "invite_restricted_email": "Bu davet {inviteEmail} adresine gönderildi, ancak {currentEmail} olarak oturum açtınız. Oturumu kapatın ve davet edilen e-postayla devam edin.",
+          "invite_restricted": "Bu davet farklı bir hesapla sınırlıdır. Oturumu kapatın ve davet edilen hesapla devam edin.",
+          "switch_account": "Oturumu kapat ve hesap değiştir"
         },
         "course_content": "Kurs içeriği",
         "modules": "modules",
@@ -4267,8 +4407,6 @@
         "reports": "Dersler için notlandırma raporlarını kullanılabilir hale getirin",
         "disabled": "Devre Dışı",
         "enabled": "Etkin",
-        "order": "Ders Siparişi Sekmesi",
-        "drag": "Sürükle ve Materyal sekmelerinizi yeniden sıralamak için etiketleri bırakın",
         "welcome_email": {
           "title": "Karşılama e-postası",
           "description": "Öğrencilerin kaydolduktan sonra aldıkları e-postayı özelleştirin. Kişisel bir not, talimatlar veya canlı oturum bağlantısı ekleyin.",
@@ -4648,7 +4786,6 @@
     "filter": {
       "status": "Üye durumu",
       "status_active": "Active",
-      "status_deactivated": "Devre dışı",
       "status_archived": "Arşivlenmiş",
       "last_login": "LSon giriş",
       "last_activity": "LSon etkinlik",
@@ -4684,29 +4821,21 @@
       "clear": "Temizle",
       "action": {
         "archive": "{count} öğrencilerini arşivle",
-        "deactivate": "{count} öğrencilerini devre dışı bırak",
-        "reactivate": "{count} öğrencilerini yeniden etkinleştirin",
         "unarchive": "{count} öğrencilerini arşivden çıkar",
         "delete": "{count} öğrencilerini sil"
       },
       "confirm_title": {
         "archive": "{count} öğrencilerini arşivle?",
-        "deactivate": "{count} öğrencilerini devre dışı bırak?",
-        "reactivate": "{count} öğrencilerini yeniden etkinleştir?",
         "unarchive": "{count} öğrencilerini arşivden çıkar?",
         "delete": "{count} öğrencileri kalıcı olarak kaldırılsın mı?"
       },
       "confirm_body": {
         "archive": "Erişimlerini kaybederler ve planınızda yer açarlar. Bunları istediğiniz zaman arşivden çıkarabilirsiniz.",
-        "deactivate": "Erişimlerini kaybederler ancak planınızdaki yerlerini korurlar. Bunları istediğiniz zaman yeniden etkinleştirebilirsiniz.",
-        "reactivate": "Kuruluşunuza ve kurslarına yeniden erişim kazanırlar.",
         "unarchive": "Yeniden erişim kazanırlar ve planınızda yer alırlar.",
         "delete": "Bu, onları bu kuruluştan kaldırır ve geri alınamaz. Hesapları, gönderimleri ve sonuçları saklanır."
       },
       "confirm_action": {
         "archive": "Archive",
-        "deactivate": "Deactivate",
-        "reactivate": "Reactivate",
         "unarchive": "Unarchive",
         "delete": "Kalıcı olarak sil"
       },
@@ -4893,9 +5022,10 @@
     "title": "Automation",
     "subtitle": "Zapier ve genel API'nin aynı kuruluş kapsamlı anahtar sistemini takip etmesiyle MCP istemcilerini şimdi bağlayın.",
     "coming_soon": "Çok yakında",
+    "read_docs": "Dokümanları okuyun",
     "permissions": {
       "disabled_title": "Salt okuma erişimi",
-      "disabled_description": "Yalnızca kuruluş yöneticileri şunları oluşturabilir, döndürebilir, veya otomasyon anahtarlarını iptal edin. Öğretmenler kurulum talimatlarını buradan inceleyebilir."
+      "disabled_description": "Otomasyonu yalnızca kuruluş yöneticileri yönetebilir; buna bağlı uygulamalar ve anahtarlar da dahildir."
     },
     "tabs": {
       "mcp": "MCP",
@@ -4919,8 +5049,6 @@
       "revoked": "Revoked",
       "rotate": "Rotate",
       "revoke": "Revoke",
-      "empty_title": "Hayır MCP anahtarları henüz",
-      "empty_description": "Claude Code, Codex, Cursor veya OpenCode'a bağlanmak için ilk kuruluş kapsamlı MCP anahtarını oluşturun.",
       "created_at_label": "Oluşturuldu:",
       "last_used_label": "LSon kullanım:",
       "never_used": "Never",
@@ -4940,39 +5068,14 @@
       }
     },
     "mcp": {
-      "page_subtitle": "Döndürebileceğiniz kuruluş kapsamlı anahtarlarla AI araçlarını ClassroomIO'ya bağlayın istediğiniz zaman.",
-      "usage": {
-        "title": "Kullanım ve sınırlar",
-        "description": "MCP her planda mevcuttur. Kullanım, anahtar limitleri ve hız limitleri tarafından kontrol edilir.",
-        "keys_title": "Etkin anahtarlar",
-        "keys_description": "Entegrasyon başına bir MCP anahtarı kullanın, böylece erişim temiz bir şekilde döndürülebilir veya iptal edilebilir.",
-        "rate_limits_title": "Hız limitleri",
-        "rate_limits_description": "Okuma / yazma / yayınlama isteklerine dakika başına izin verilir.",
-        "used_label": "Kullanım:"
-      },
+      "page_subtitle": "Giriş yaparak yapay zeka araçlarını ClassroomIO'ya bağlayın. Erişimini kesmek için bir uygulamayı istediğiniz zaman kaldırın.",
       "keys": {
         "title": "MCP anahtarları",
-        "description": "Bu anahtarlar, bir MCP istemcisi `@classroomio/mcp` aracılığıyla ClassroomIO'yu aradığında mevcut organizasyonun kimliğini doğrular.",
-        "generate": "MCP anahtarını oluştur",
-        "modal": {
-          "title": "MCP anahtarı oluştur",
-          "description": "Oluşturulmadan önce bu MCP anahtarı için bir ad seçin.",
-          "name_label": "Anahtar adı",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "İptal",
-          "save": "Anahtar oluştur"
-        },
-        "reveal_title": "Yeni MCP anahtarınız"
+        "description": "Bu eski anahtarlar çalışmaya devam eder, ancak artık yeni MCP anahtarları oluşturulamaz. Bunları buradan yenileyin veya iptal edin, yeni istemcileri giriş yaparak bağlayın.",
+        "reveal_title": "Yeni MCP anahtarınız",
+        "deprecated_badge": "Kullanımdan kaldırıldı"
       },
-      "setup": {
-        "title": "İstemci kurulumu",
-        "description": "Entegrasyon başına bir kuruluş kapsamlı anahtar kullanın. Bir anahtar döndürülür veya iptal edilirse, istemci yeni gizli dizi yapılandırılana kadar çalışmayı durdurur.",
-        "claude_code_description": "Oluşturulan kuruluş kapsamlı anahtarı kullanarak `@classroomio/mcp'yi Claude Koduyla kaydeder.",
-        "codex_description": "ClassroomIO MCP sunucusunu aynı kuruluş kapsamlı anahtarla Codex'e ekler.",
-        "cursor_description": "Bunu şuraya yapıştırın: `~/.cursor/mcp.json` veya çalışma alanınız MCP config.",
-        "opencode_description": "Bunu proje kökünüzdeki `opencode.json'a veya `~/.config/opencode/opencode.json`a ekleyin."
-      },
-      "view_docs": "Dokümanları Görüntüle"
+      "connections_tab": "Bağlantılar"
     },
     "api": {
       "subtitle": "ClassroomIO genel API'si ile entegre olmak için API anahtarlarını yönetin.",
@@ -4995,8 +5098,7 @@
       "setup": {
         "title": "Hızlı başlangıç",
         "description": "API anahtarınızı her istekte Taşıyıcı belirteci olarak kullanın. Yer tutucuyu yukarıdan bir anahtarla değiştirin veya gizli anahtarı oluşturduktan hemen sonra yapıştırın."
-      },
-      "view_docs": "Belgeleri Görüntüleyin"
+      }
     },
     "zapier": {
       "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında."
@@ -5072,7 +5174,9 @@
       "event_groups": {
         "organization": "Kuruluş",
         "course": "Kurslar",
-        "learning": "Öğrenme ilerlemesi"
+        "learning": "Öğrenme ilerlemesi",
+        "cohort": "Gruplar",
+        "compliance": "Compliance"
       },
       "events": {
         "organization_invite_created": "Bir ekip daveti gönderildiğinde",
@@ -5088,7 +5192,18 @@
         "course_submission_created": "Bir alıştırma gönderimi oluşturulduğunda",
         "course_submission_status_changed": "Bir gönderimin durumu değiştiğinde, örneğin notlandırıldığında",
         "lesson_completion_updated": "Bir ders tamamlandı olarak işaretlendiğinde veya sıfırlandığında",
-        "exercise_completion_updated": "Bir alıştırma tamamlandığında veya sıfırlandığında"
+        "exercise_completion_updated": "Bir alıştırma tamamlandığında veya sıfırlandığında",
+        "compliance_record_status_changed": "Bir öğrencinin uyumluluk durumu değiştiğinde",
+        "compliance_record_waived": "Bir öğrencinin uyumluluk şartından muaf tutulduğunda",
+        "organization_member_added": "Bir kişi kuruluşa katıldığında",
+        "organization_member_removed": "Bir kişi kuruluştan çıkarıldığında",
+        "organization_member_updated": "Bir kişinin rolü veya durumu değiştiğinde",
+        "course_published": "Bir kurs yayınlandığında",
+        "course_unpublished": "Bir kursun yayını kaldırıldığında",
+        "cohort_member_added": "Bir kişi gruba eklendiğinde",
+        "cohort_member_removed": "Bir kişi gruptan çıkarıldığında",
+        "lesson_session_scheduled": "Bir canlı oturum planlandığında veya taşındığında",
+        "course_payment_request_created": "Bir öğrenci bir kursun ödemesini yapmak istediğinde"
       },
       "deliveries": {
         "title": "Teslimatlar",
@@ -5222,6 +5337,7 @@
     "update": "Güncelleme",
     "update_failed": "Güncelleme başarısız oldu",
     "media_manager": {
+      "video_added": "Video kitaplığınıza eklendi",
       "list_failed": "Medya varlıkları yüklenemedi",
       "storage_failed": "Depolama özeti yüklenemedi",
       "create_failed": "Medya varlığı oluşturulamadı",
@@ -5235,6 +5351,8 @@
       "delete_in_use": "Bu video hala bir derse eklenmiştir. Önce oradan kaldırın.",
       "delete_failed": "Video silinemedi",
       "added_to_lesson": "Video derse eklendi",
+      "document_added_to_lesson": "Belge derse eklendi",
+      "documents_added_to_lesson": "Belgeler derse eklendi",
       "download_failed": "Varlık indirme URL'si alınamadı",
       "thumbnail_uploaded": "Küçük resim yüklendi",
       "thumbnail_upload_failed": "Küçük resim yüklenemedi",
@@ -5256,17 +5374,6 @@
     "lesson_video": {
       "generate_1080_completed": "1080p yorumlama eklendi",
       "generate_1080_failed": "1080p yorumlama oluşturulamadı"
-    },
-    "poll": {
-      "error": {
-        "creating_poll": "Anket oluşturulurken bir hata oluştu",
-        "updating_poll": "Anket durumu güncellenirken bir hata oluştu",
-        "submitting_poll": "Anket gönderilirken bir hata oluştu"
-      },
-      "info": {
-        "not_published": "Anket henüz yayınlanmadı",
-        "vote_once": "Yalnızca bir kez oy verebilirsiniz"
-      }
     },
     "exercise": {
       "validation_errors": "Lütfen kaydetmeden önce tüm doğrulama hatalarını düzeltin.",
@@ -5326,7 +5433,8 @@
       },
       "info": {
         "conversion_blocked": "Herkese açık hale getirme işlemini tamamlamak için aşağıdaki soruları düzeltin."
-      }
+      },
+      "sections_reorder_failed": "Bölümler yeniden sıralanamadı"
     },
     "course": {
       "success": {
@@ -5520,6 +5628,9 @@
       "test_success": "Test olayı başarıyla teslim edildi.",
       "test_failed": "Test olayı başarısız oldu. Nedenini görmek için teslimat günlüğünü açın.",
       "redelivered": "Olay yeniden teslim için sıraya alındı."
+    },
+    "oauth": {
+      "revoked": "Uygulama erişimi kaldırıldı"
     }
   },
   "specialization": {
@@ -5688,7 +5799,7 @@
       }
     },
     "generic": {
-      "invalid_type": "Geçersiz tür{beklenen, seç, tanımsız{} diğer{. Beklenen {expected}}}{alındı, seç, tanımsız{} diğer{ (alındı ​​{received})}}",
+      "invalid_type": "Geçersiz tür{beklenen, seç, tanımsız{} diğer{. Beklenen {expected}}}{alındı, seç, tanımsız{} diğer{ (alındı {received})}}",
       "too_big": "Değer çok büyük{maksimum, seç, tanımsız{} diğer{. Maksimum {maximum}}}",
       "too_small": "Değer çok küçük{minimum, seçin, tanımsız{} diğer{. Minimum {minimum}}}",
       "invalid_format": "Geçersiz biçim{doğrulama, seçme, tanımsız{} diğer{ {validation} için}}",
@@ -5849,7 +5960,22 @@
         "fetch_documentation_url_with_url": "Reading {url}",
         "list_youtube_playlist_videos": "Loynatma listesi videolarını listeleme",
         "get_lesson_transcript": "Video transkripsiyonunu okuma",
-        "add_youtube_video_to_lesson": "YouTube videosunu yerleştirme"
+        "add_youtube_video_to_lesson": "YouTube videosunu yerleştirme",
+        "add_lesson_note_block": "Metin bloğu ekleme",
+        "remove_lesson_block": "Bir metin bloğunu kaldırma",
+        "move_lesson_block": "Bir bloğu taşıma",
+        "add_lesson_slides_block": "Slayt ekleme",
+        "add_lesson_image_block": "Resim ekleme",
+        "update_lesson_block_settings": "Blok ayarları güncelleniyor",
+        "update_lesson_block_requirements": "Tamamlama kuralları güncelleniyor",
+        "detach_lesson_block": "Paylaşılan bir bloğu ayırma",
+        "list_block_library": "Blok kütüphanesinde arama",
+        "attach_library_block": "Kütüphane bloğu ekleme",
+        "move_lesson_block_to_lesson": "Bir bloğu başka bir derse taşıma",
+        "attach_document_to_lesson": "Belge ekleme",
+        "get_lesson_history": "Ders geçmişini okuma",
+        "restore_lesson_version": "Daha önceki bir sürümü geri yükleme",
+        "undo_lesson_change": "Bir değişikliği geri alma"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
@@ -5889,7 +6015,21 @@
         "get_lesson_transcript_plan_gated": "Transkriptler ücretli bir plan gerektirir",
         "get_lesson_transcript_no_credits": "Transkriptleri getirmek için AI kredisi bitti",
         "get_lesson_transcript_unavailable": "No transcript available for {title}",
-        "add_youtube_video_to_lesson": "Gömülü video: {title}"
+        "add_youtube_video_to_lesson": "Gömülü video: {title}",
+        "remove_lesson_block": "{title}'dan bir metin bloğu kaldırıldı",
+        "move_lesson_block": "{title} içinde bir blok taşındı",
+        "add_lesson_slides_block": "{title} dosyasına slaytlar eklendi",
+        "add_lesson_image_block": "{title}'a bir resim eklendi",
+        "update_lesson_block_settings": "{title} içindeki bir blok güncellendi",
+        "update_lesson_block_requirements": "{title} içindeki tamamlama kuralları güncellendi",
+        "detach_lesson_block": "{title} adlı kullanıcıya paylaşılan bloğun kendi kopyasını verdi",
+        "list_block_library": "Blok kütüphanesinde arama yapıldı",
+        "attach_library_block": "{title}'a bir kütüphane bloğu eklendi",
+        "move_lesson_block_to_lesson": "Bir blok {title}'a taşındı",
+        "attach_document_to_lesson": "Doküman eklendi: {title}",
+        "get_lesson_history": "Ders geçmişi yüklendi",
+        "restore_lesson_version": "Dersin önceki bir sürümü geri yüklendi",
+        "undo_lesson_change": "Bir değişiklik geri alındı"
       }
     },
     "mention_lesson": "LDers",
@@ -5918,6 +6058,11 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transkript"
+    },
+    "floating": {
+      "resize_aria": "Asistan penceresini yeniden boyutlandır",
+      "expand_aria": "Yan panele genişlet",
+      "dock_hint": "Yan tarafa sabitlemek için bırakın"
     }
   },
   "cohorts": {
@@ -6362,7 +6507,6 @@
         "bannerImage": "Kapak resmi",
         "welcomeEmail": "Karşılama e-postası",
         "completionDeadline": "Tamamlanma tarihi",
-        "lessonTabsOrder": "Lders sekmeleri",
         "contentGrouping": "İçerik gruplama",
         "progression": "İlerleme",
         "comments": "Lders yorumları",
@@ -6425,5 +6569,107 @@
     "new_badge": "Yeni",
     "read_full": "Tüm değişiklik günlüğünü oku",
     "close": "Kapat"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "ClassroomIO'ya bir uygulama bağla",
+      "title": "{client} uygulamasını ClassroomIO'ya bağla",
+      "subtitle": "{client} uygulamasının erişebileceği çalışma alanını seçin.",
+      "workspace_label": "Çalışma alanı",
+      "no_workspaces_title": "Kullanılabilir çalışma alanı yok",
+      "no_workspaces_description": "Uygulamaları yalnızca çalışma alanı yöneticileri bağlayabilir. Bir yöneticiden yardım isteyin veya yönetici hesabıyla giriş yapın.",
+      "permissions_heading": "{client} şunları yapabilecek:",
+      "stay_connected": "Erişimi kaldırana kadar bağlı kal",
+      "admin_note": "Uygulamaları yalnızca çalışma alanı yöneticileri bağlayabilir. Erişim yönetici izinlerinizi izler ve onları kaybederseniz sona erer.",
+      "redirect_note": "Onayladıktan sonra {host} adresine yönlendirileceksiniz.",
+      "allow": "Erişime izin ver",
+      "deny": "Reddet",
+      "unknown_client": "Bu uygulama",
+      "error_title": "Bu bağlantı isteği geçerli değil",
+      "error_description": "Bağlamak istediğiniz uygulamaya dönün ve yeniden başlayın."
+    },
+    "error": {
+      "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+      "retry": "Tekrar dene"
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Kursları ve içeriklerini görüntüle",
+        "write": "Kursları ve içeriklerini oluştur, düzenle ve yayınla"
+      },
+      "exercises": {
+        "read": "Alıştırmaları ve soruları görüntüle",
+        "write": "Alıştırmaları ve soruları oluştur ve düzenle"
+      },
+      "course_members": {
+        "read": "Kurs üyelerini görüntüle",
+        "write": "Kurs üyelerini ve ilerlemelerini ekle ve yönet"
+      },
+      "certificates": {
+        "read": "Kurs sertifikalarını görüntüle",
+        "write": "Kurs sertifikalarını yönet"
+      },
+      "submissions": {
+        "read": "Gönderimleri ve notları görüntüle",
+        "write": "Gönderimleri notlandır ve notları yönet"
+      },
+      "cohorts": {
+        "read": "Kohortları görüntüle",
+        "write": "Kohortları oluştur ve yönet"
+      },
+      "audience": {
+        "read": "Hedef kitlenizi görüntüle",
+        "write": "Hedef kitlenizi ekle ve yönet"
+      },
+      "team": {
+        "read": "Ekip üyelerini görüntüle",
+        "write": "Ekip üyelerini yönet"
+      },
+      "organization": {
+        "read": "Çalışma alanı ayarlarını görüntüle",
+        "write": "Ayarları, açılış sayfasını ve e-posta şablonlarını düzenle"
+      },
+      "analytics": {
+        "read": "Analizleri görüntüle",
+        "write": "Analizleri görüntüle"
+      },
+      "media": {
+        "read": "Medya yükle",
+        "write": "Medya yükle"
+      }
+    },
+    "connect": {
+      "title": "Claude veya ChatGPT'den bağlan",
+      "description": "Bu URL ile ClassroomIO'yu yapay zeka uygulamanıza özel bağlayıcı olarak ekleyin, ardından giriş yapıp erişimi onaylayın.",
+      "step_1": "Yapay zeka uygulamanızda bağlayıcılar veya entegrasyonlar ayarlarını açın ve özel bir bağlayıcı ekleyin.",
+      "step_2": "Yukarıdaki URL'yi yapıştırın ve bağlantıyı başlatın.",
+      "step_3": "ClassroomIO'ya giriş yapın, bu çalışma alanını seçin ve izinleri onaylayın."
+    },
+    "connected_apps": {
+      "title": "Bağlı uygulamalar",
+      "description": "Bu çalışma alanında işlem yapması için onayladığınız uygulamalar. Erişimini hemen kesmek için bir uygulamayı kaldırın.",
+      "table_app": "Uygulama",
+      "table_authorized_by": "Yetkilendiren",
+      "table_permissions": "İzinler",
+      "permissions_count": "{count} alan",
+      "revoke": "Erişimi kaldır",
+      "revoke_confirm": "Bu uygulamanın erişimi kaldırılsın mı? Hemen çalışmayı durduracak."
+    }
+  },
+  "video_guide": {
+    "watch_video": "Videoyu izle",
+    "new_badge": "Yeni",
+    "connect_claude": {
+      "title": "ClassroomIO'yu Claude'a bağlayın",
+      "description": "ClassroomIO'yu Claude'a nasıl bağlayacağınızı ve ona neler sorabileceğinizi görün. 4 dakika."
+    },
+    "lesson_blocks": {
+      "title": "Ders bloklarıyla tanışın",
+      "description": "Dersler artık bloklardan oluşturuluyor. 5 dakikada nasıl çalıştığını görün.",
+      "coach_description": "Her dersi not, video, slayt, belge ve resim bloklarından istediğiniz sırayla oluşturun. Denemek için Düzenle'yi seçin.",
+      "coach_title": "🎉 Yeni! Dersler artık esnek."
+    },
+    "close": "Kapat",
+    "dismiss": "Anladım"
   }
 }

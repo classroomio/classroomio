@@ -1,112 +1,316 @@
-<div class="error-container">
-  <div class="error-content">
-    <img src="/logo-512.png" class="logo" alt="ClassroomIO - Logo" />
-    <h2>Something unexpected occured.</h2>
-    <p>
-      Don't worry, your learning is safe. It isn't your fault, it is ours. We have gotten the error notification and
-      will push a fix ASAP. In the meantime, take a short break and come back a bit later.
-    </p>
-    <a href="mailto:support@classroomio.com">Contact Us</a>
-  </div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Something unexpected occurred</title>
+    <style>
+      :root {
+        --background: #ffffff;
+        --foreground: #18181b;
+        --muted-foreground: #71717a;
+        --border: #e4e4e7;
+        --secondary: #f4f4f5;
+        --secondary-hover: #e4e4e7;
+        --primary: #1d4ed8;
+        --primary-hover: #1e3a8a;
+        --hl-face: var(--background);
+        --hl-ink: var(--primary);
+        --hl-line: color-mix(in srgb, var(--foreground) 38%, var(--hl-face));
+        --hl-line2: color-mix(in srgb, var(--foreground) 14%, var(--hl-face));
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
 
-  <div class="error-icon">
-    <img src="/500-error.svg" alt="Error" />
-  </div>
-</div>
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: #09090b;
+          --foreground: #fafafa;
+          --muted-foreground: #a1a1aa;
+          --border: #27272a;
+          --secondary: #27272a;
+          --secondary-hover: #3f3f46;
+          --primary: #3b82f6;
+          --primary-hover: #2563eb;
+        }
+      }
 
-<style>
-  body {
-    margin: 0;
-    font-family: "Inter", sans-serif;
-  }
+      * {
+        box-sizing: border-box;
+      }
 
-  .error-container {
-    max-width: 964px;
-    margin: auto;
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100vw;
-    padding: 0;
-  }
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--foreground);
+      }
 
-  :global(.dark) .error-container {
-    background-color: black;
-  }
+      .page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        width: 100%;
+        padding: 7rem 1rem 2rem;
+      }
 
-  .error-content {
-    padding: 0.5rem;
-    width: 100%;
-  }
+      .logo-banner {
+        position: absolute;
+        top: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        border: 1px dashed var(--border);
+        border-radius: 0.375rem;
+        padding: 0.25rem 1rem;
+      }
 
-  .error-content h2 {
-    width: 100%;
-    font-size: 1.125rem;
-    font-weight: 500;
-  }
+      .logo-banner a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: var(--foreground);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9375rem;
+      }
 
-  .error-content p {
-    width: 100%;
-    font-size: 1rem;
-    font-weight: 400;
-    margin: 1.5rem 0;
-    color: rgb(75, 85, 99);
-  }
+      .logo-banner img {
+        height: 1.75rem;
+        width: 1.75rem;
+      }
 
-  :global(.dark) .error-content p {
-    color: white;
-  }
+      .logo-banner p {
+        margin: 0;
+        color: var(--muted-foreground);
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+      }
 
-  .error-content .logo {
-    width: 5rem;
-  }
+      .card {
+        width: 100%;
+        max-width: 48rem;
+        border: 1px dashed var(--border);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        text-align: center;
+      }
 
-  .error-content a {
-    background-color: rgb(29, 78, 216);
-    padding: 0.75rem 2.25rem;
-    border-radius: 0.75rem;
-    color: white;
-    margin-top: 0.75rem;
-    transition: all 0.2s;
-    display: inline-block;
-  }
+      @media (min-width: 768px) {
+        .card {
+          padding: 3rem;
+        }
+      }
 
-  .error-content a:hover {
-    background-color: rgb(30, 58, 138);
-    text-decoration: none;
-  }
+      .media {
+        height: 13rem;
+        width: 100%;
+        max-width: 340px;
+      }
 
-  .error-icon {
-    width: 18rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+      .machine {
+        display: block;
+        height: 100%;
+        width: 100%;
+        pointer-events: none;
+      }
 
-  @media (min-width: 768px) {
-    .error-content {
-      width: 90%;
-    }
-  }
+      .machine * {
+        vector-effect: non-scaling-stroke;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+      }
 
-  @media (min-width: 1024px) {
-    .error-container {
-      flex-direction: row;
-    }
+      .machine .ln {
+        fill: var(--hl-face);
+        stroke: var(--hl-line);
+        stroke-width: 1.1;
+      }
 
-    .error-content {
-      width: 50%;
-    }
+      .machine .lo {
+        fill: none;
+        stroke: var(--hl-line);
+        stroke-width: 1.1;
+      }
 
-    .error-content h2 {
-      font-size: 1.875rem;
-      font-weight: 400;
-    }
+      .machine .lt {
+        fill: none;
+        stroke: var(--hl-line2);
+        stroke-width: 1;
+      }
 
-    .error-icon {
-      width: 50%;
-    }
-  }
-</style>
+      .machine .dash {
+        stroke-dasharray: 3 4;
+        stroke: var(--hl-line);
+      }
+
+      .machine .ink {
+        fill: var(--hl-face);
+        stroke: var(--hl-ink);
+        stroke-width: 1.5;
+      }
+
+      .machine .kf {
+        fill: var(--hl-ink);
+        stroke: none;
+      }
+
+      .card h2 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+
+      .card p {
+        margin: 0;
+        max-width: 24rem;
+        color: var(--muted-foreground);
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.25rem;
+        text-decoration: none;
+        transition: background-color 0.15s ease;
+      }
+
+      .btn:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-hover);
+      }
+
+      .btn-secondary {
+        background: var(--secondary);
+        color: var(--foreground);
+      }
+
+      .btn-secondary:hover {
+        background: var(--secondary-hover);
+      }
+
+      @media (max-width: 640px) {
+        .actions {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="logo-banner">
+        <a href="https://classroomio.com">
+          <img src="/logo-512.png" alt="ClassroomIO Logo" />
+          <span>ClassroomIO</span>
+        </a>
+        <p>One Platform for Customer, Partner, and Employee Training</p>
+      </div>
+
+      <section class="card">
+        <div class="media">
+          <svg
+            class="machine"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="-96 -29 339 222"
+            aria-hidden="true"
+          >
+            <polygon class="ln" points="-77.9,45.0 147.2,175.0 147.2,167.0 -77.9,37.0"></polygon>
+            <polygon class="ln" points="225.2,130.0 147.2,175.0 147.2,167.0 225.2,122.0"></polygon>
+            <polygon class="ln" points="0.0,-8.0 225.2,122.0 147.2,167.0 -77.9,37.0"></polygon>
+            <polyline class="lo" points="110.9,58.0 94.4,61.5 94.4,73.5 74.5,75.0 72.7,87.0 52.8,88.5 48.5,98.0 33.8,101.5"></polyline>
+            <polygon class="ln" points="-48.5,20.0 -36.4,27.0 -36.4,7.0 -48.5,0.0"></polygon>
+            <polygon class="ln" points="-17.3,16.0 -36.4,27.0 -36.4,7.0 -17.3,-4.0"></polygon>
+            <polygon class="ln" points="-29.4,-11.0 -17.3,-4.0 -36.4,7.0 -48.5,0.0"></polygon>
+            <polygon class="ln" points="164.5,143.0 176.7,150.0 176.7,130.0 164.5,123.0"></polygon>
+            <polygon class="ln" points="195.7,139.0 176.7,150.0 176.7,130.0 195.7,119.0"></polygon>
+            <polygon class="ln" points="183.6,112.0 195.7,119.0 176.7,130.0 164.5,123.0"></polygon>
+            <polygon class="ln" points="-31.2,24.0 47.6,69.5 47.6,63.5 -31.2,18.0"></polygon>
+            <polygon class="ln" points="56.3,64.5 47.6,69.5 47.6,63.5 56.3,58.5"></polygon>
+            <polygon class="ln" points="-22.5,13.0 56.3,58.5 47.6,63.5 -31.2,18.0"></polygon>
+            <polygon class="lt dash" points="56.3,58.5 99.6,83.5 90.9,88.5 47.6,63.5"></polygon>
+            <polygon class="ln" points="90.9,94.5 169.7,140.0 169.7,134.0 90.9,88.5"></polygon>
+            <polygon class="ln" points="178.4,135.0 169.7,140.0 169.7,134.0 178.4,129.0"></polygon>
+            <polygon class="ln" points="99.6,83.5 178.4,129.0 169.7,134.0 90.9,88.5"></polygon>
+            <polygon class="ln" points="46.8,101.0 53.7,105.0 53.7,83.0 46.8,79.0"></polygon>
+            <polygon class="ln" points="60.6,101.0 53.7,105.0 53.7,83.0 60.6,79.0"></polygon>
+            <polygon class="ln" points="53.7,75.0 60.6,79.0 53.7,83.0 46.8,79.0"></polygon>
+            <polygon class="kf" points="53.7,75.0 60.6,79.0 53.7,83.0 46.8,79.0">
+              <animate
+                attributeName="opacity"
+                values="0.15;0.15;1;0.15;1;0.15;1;0.15;0.15"
+                keyTimes="0;0.36;0.4;0.44;0.48;0.52;0.56;0.6;1"
+                dur="8s"
+                repeatCount="indefinite"
+              ></animate>
+            </polygon>
+            <g>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0.0,0.0;0.0,0.0;53.7,31.0;60.6,35.0;60.6,35.0;52.0,30.0;0.0,0.0;0.0,0.0"
+                keyTimes="0;0.0625;0.35;0.4;0.5375;0.5875;0.825;1"
+                calcMode="spline"
+                keySplines=".42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1"
+                dur="8s"
+                repeatCount="indefinite"
+              ></animateTransform>
+              <g>
+                <animateTransform
+                  attributeName="transform"
+                  type="rotate"
+                  values="0 -8.7 26.0;0 -8.7 26.0;12 -8.7 26.0;12 -8.7 26.0;-1.5 -8.7 26.0;0 -8.7 26.0;0 -8.7 26.0"
+                  keyTimes="0;0.4;0.4437;0.5375;0.5813;0.6125;1"
+                  calcMode="spline"
+                  keySplines=".42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1"
+                  dur="8s"
+                  repeatCount="indefinite"
+                ></animateTransform>
+                <polygon class="ink" points="-26.8,25.5 -9.5,35.5 -9.5,17.5 -26.8,7.5"></polygon>
+                <polygon class="ink" points="7.8,25.5 -9.5,35.5 -9.5,17.5 7.8,7.5"></polygon>
+                <polygon class="kf" points="-9.5,-2.5 7.8,7.5 -9.5,17.5 -26.8,7.5"></polygon>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <h2>Something unexpected occurred.</h2>
+        <p>
+          Don't worry, your learning is safe. It isn't your fault, it is ours. We have gotten the error notification
+          and will push a fix ASAP. In the meantime, take a short break and come back a bit later.
+        </p>
+        <div class="actions">
+          <a class="btn btn-secondary" href="https://classroomio.com/changelog">Explore our Changelog</a>
+          <a class="btn btn-primary" href="https://classroomio.com">Go Home</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -39,13 +39,18 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 - Make sensitive list fields intentional and return only the personal data consumers need.
 - Document idempotency, concurrency behavior, pagination limits, filtering, sorting, and error responses in OpenAPI and client docs.
 
-## Keep descriptions to one sentence
+## Keep descriptions short
 
-- A `describeRoute` description is one sentence: what the endpoint does, then who may call it (`List the members of a cohort; the key creator must be a cohort member or an org admin.`). Take the "who" clause from the domain `docs.ts` so the wording matches what the service enforces.
-- Put every other detail next to the thing it is about, where the reference and MCP clients still show it:
+The API reference shows field, parameter and response descriptions as one line of plain text, with no line breaks, lists or links. A long one becomes an unreadable block. `apps/api/src/__tests__/public-api-description-length.test.ts` fails on any that is too long.
+
+- A `describeRoute` description is one sentence (at most 200 characters, no bullets or extra paragraphs): what the endpoint does, then who may call it (`List the members of a cohort; the key creator must be a cohort member or an org admin.`). Take the "who" clause from the domain `docs.ts` so the wording matches what the service enforces. The parameters and response schema carry everything else.
+- A field, parameter or response description is short: one line, at most 160 characters (one or two plain sentences):
   - a rule about one field (defaults, limits, `null` clears it, formats) goes in that field's `.describe()` in the public schema. Call `.describe()` after `.refine()`, which returns a new schema without the description.
-  - why a call fails goes in the matching error response description.
+  - why a call fails goes in the matching error response description. Use the shared helpers in the domain `docs.ts` ("Missing the X scope, or the key creator is not …").
   - what the response holds goes in the success response description or the response field's `.describe()`.
+- A catalog (every type, status or format and what it means) never goes in one field. Use an enum so the values show in the reference. If callers can't use the endpoint without a lookup table (question type ids, answer formats), put the table in a guide page under `apps/docs/content/docs/api/` and keep one line on the field. Otherwise leave it out.
+- MCP tools still get the full detail, since agents don't read the docs: add it to the tool's field with `withNotes` (`packages/mcp/src/tools/cohort-tool-text.ts`) or to the tool description.
+- Before review, open the changed endpoint pages in the local docs (`apps/docs`) and read them as a caller would.
 - An MCP tool description is the same sentence plus at most one more, kept only when an agent would otherwise call the tool wrongly (a tool to call first, a status code to expect).
 - Check every claim against the service and schema, including text you only moved or shortened. A list of accepted values names every value in the schema's enum; if only some are for new data, say which. Guidance moved onto a field ("use X") is not that field's contract ("accepts X, Y, Z"). Say what to do with each value, not where values usually come from, unless the code enforces it.
 
@@ -65,6 +70,8 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 - Test allowed and disallowed plans, existing keys after plan changes, and every route that can create or mutate the gated resource.
 
 ## Check security and operational failure modes
+
+Load [`../security-audit/SKILL.md`](../security-audit/SKILL.md) in guidance mode for the trust-boundary review, and use the checks below as the ClassroomIO-specific minimum.
 
 - Prevent IDOR/BOLA by checking organization and actor access for every resource operation.
 - Do not trust organization IDs, roles, member IDs, or permissions supplied by the caller.
@@ -128,6 +135,6 @@ The docs site (`apps/docs`) renders the public API reference sidebar from the Op
 - [ ] Routes and services are grouped by versioned domain folders.
 - [ ] Security and failure-mode tests are included.
 - [ ] Applicable resource lifecycle, actions, bulk operations, exports/files, reporting/history, notifications/webhooks, and audit operations are either supported or explicitly scoped out.
-- [ ] OpenAPI, examples, and MCP documentation match the implementation.
+- [ ] OpenAPI, examples, and MCP documentation match the implementation, confirmed by the sub-agent docs fact-check each commit requires (`skills/stage-and-commit/SKILL.md`, step 4).
 - [ ] The docs sidebar structure follows the section/tag rules above; every tag is placed in `API_SECTIONS` and the published spec is regenerated after tag changes.
 - [ ] PRs adding or re-tagging public API endpoints include the sidebar structure breakdown in the description.

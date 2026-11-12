@@ -47,3 +47,11 @@ export const FREE_LANDING_PAGE_THEMES: readonly string[] = ['quartz'];
 export function isFreeLandingPageTheme(theme: string): boolean {
   return FREE_LANDING_PAGE_THEMES.includes(theme);
 }
+
+/** What the LMS uses for any `organization.customization` key the organization never saved. */
+export const DEFAULT_ORG_CUSTOMIZATION = {
+  apps: { comments: true },
+  course: { grading: true, newsfeed: true },
+  dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
+  auth: { backgroundImage: '' }
+};

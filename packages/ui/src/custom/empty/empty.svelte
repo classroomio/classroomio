@@ -7,13 +7,33 @@
   import { cn } from '../../tools';
 
   const emptyVariants = tv({
-    base: 'ui:w-full ui:max-h-90',
+    base: 'ui:w-full',
     variants: {
       variant: {
         default: '',
-        page: 'ui:h-full ui:border ui:border-dashed ui:max-w-3xl ui:mx-auto'
+        page: 'ui:border ui:border-dashed ui:max-w-3xl ui:mx-auto'
+      },
+      hasMedia: {
+        false: 'ui:max-h-90',
+        true: 'ui:flex-none'
       }
-    }
+    },
+    compoundVariants: [{ variant: 'page', hasMedia: false, class: 'ui:h-full' }]
+  });
+
+  const fullPageVariants = tv({
+    base: 'ui:relative ui:flex ui:flex-col ui:items-center ui:justify-center',
+    variants: {
+      hasMedia: {
+        false: 'ui:h-screen ui:w-screen',
+        true: 'ui:min-h-screen ui:w-full ui:py-6'
+      },
+      showLogo: {
+        true: '',
+        false: ''
+      }
+    },
+    compoundVariants: [{ hasMedia: true, showLogo: true, class: 'ui:pt-28' }]
   });
 
   type EmptyVariant = VariantProps<typeof emptyVariants>['variant'];
@@ -23,7 +43,9 @@
     description?: string;
     icon?: Component<any, any, any>;
     iconClass?: string;
+    media?: Snippet;
     class?: string;
+    contentClass?: string;
     children?: Snippet;
     variant?: EmptyVariant;
     layout?: 'block' | 'full-page';
@@ -36,7 +58,9 @@
     description,
     icon: IconComponent,
     iconClass = '',
+    media,
     class: className = '',
+    contentClass = '',
     children,
     variant = 'default',
     layout = 'block',
@@ -46,7 +70,7 @@
   }: Props & Omit<ComponentProps<typeof EmptyBase.Root>, 'class' | 'children'> = $props();
 
   const mergedProps = $derived({
-    class: cn(emptyVariants({ variant }), className),
+    class: cn(emptyVariants({ variant, hasMedia: Boolean(media) }), className),
     'data-slot': 'empty',
     'data-variant': variant,
     animatedBackground,
@@ -57,7 +81,14 @@
 {#snippet content()}
   <EmptyBase.Root {...mergedProps}>
     <EmptyBase.Header class="">
-      {#if IconComponent}
+      {#if media}
+        <EmptyBase.Media
+          variant="default"
+          class="ui:mb-3 ui:w-full ui:max-sm:hidden ui:[@media(max-height:639px)]:hidden"
+        >
+          {@render media()}
+        </EmptyBase.Media>
+      {:else if IconComponent}
         <EmptyBase.Media variant="icon">
           {@const Icon = IconComponent}
           <Icon class={iconClass} />
@@ -71,7 +102,7 @@
       {/if}
     </EmptyBase.Header>
     {#if children}
-      <EmptyBase.Content>
+      <EmptyBase.Content class={contentClass}>
         {@render children()}
       </EmptyBase.Content>
     {/if}
@@ -79,7 +110,7 @@
 {/snippet}
 
 {#if layout === 'full-page'}
-  <div class="ui:relative ui:flex ui:h-screen ui:w-screen ui:flex-col ui:items-center ui:justify-center">
+  <div class={fullPageVariants({ hasMedia: Boolean(media), showLogo })}>
     {#if showLogo}
       <SimpleLogoNav />
     {/if}

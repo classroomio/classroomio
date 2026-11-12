@@ -1,6 +1,8 @@
 # @classroomio/mcp
 
-Thin stdio MCP server for ClassroomIO course authoring.
+> **Deprecated.** Running this package through `npx` with `CLASSROOMIO_API_KEY` is deprecated. Connect to the hosted server at `https://mcp.classroomio.com` instead: your client signs in with your ClassroomIO account and no key or Node.js install is needed. This package keeps working for now and is still the only way to use `upload_video`, which reads a file from your own computer. See [Connect an MCP client](https://classroomio.com/docs/developers/mcp/setup).
+
+Thin MCP server for ClassroomIO course authoring. It runs over stdio for local clients, and ClassroomIO's API also serves it over HTTP for remote clients.
 
 The package does not parse PDFs or generate course structures. The agent does that work. `@classroomio/mcp` only exposes tools, validates tool input, and forwards requests to the ClassroomIO API.
 
@@ -29,6 +31,24 @@ ClassroomIO API
 ClassroomIO DB
 ```
 
+## Transports
+
+### stdio (this package)
+
+`npx -y @classroomio/mcp` starts a local process for clients that can spawn one (Cursor, Claude Code, Codex, OpenCode). It authenticates with `CLASSROOMIO_API_KEY` and pins one organization for the life of the process. It is the only transport that registers `upload_video`, because that tool reads a file from the machine running the server.
+
+### Streamable HTTP (hosted by the API)
+
+Remote clients such as Claude and ChatGPT connect to `POST /mcp` on the ClassroomIO API (`https://mcp.classroomio.com` on ClassroomIO cloud, where the Cloudflare Worker maps `/` to `/mcp`). The endpoint is stateless and builds one server per request:
+
+- **Authentication.** A request carries `Authorization: Bearer <credential>`, either an OAuth access token issued for the MCP resource or a `cio_mcp_...` automation key. A missing or invalid credential gets `401` with a `WWW-Authenticate` header that points at `/.well-known/oauth-protected-resource`, which starts the OAuth flow in the client. A credential that was not issued for MCP gets `403`.
+- **Per-request identity.** Tool calls run in-process against the real `/public-api/v1` routes with the caller's own credential, so scopes, rate limits, plan limits and usage metering apply exactly as for a direct API call. There is no shared client.
+- **Tools.** The same tools as stdio, without `upload_video`.
+- **Accept header.** A missing or partial `Accept` header is treated as `application/json, text/event-stream`. Rejected requests (status 400 or above) are logged on the server.
+- **Methods.** Only `POST` is accepted. `GET` and `DELETE` return `405` because the server never opens a stream or session.
+
+The API imports `createMcpServer` and `ClassroomIoApiClient` from `@classroomio/mcp/server`. Importing the package root starts the stdio server, so never do that from another process.
+
 ## Principles
 
 1. The agent owns reasoning.
@@ -50,6 +70,15 @@ Current tools:
 - `update_course_draft`
 - `tag_course_draft`
 - `tag_courses`
+- `clone_course`
+- `list_related_courses`
+- `set_featured_courses`
+- `list_tags`
+- `create_tag`
+- `update_tag`
+- `create_tag_group`
+- `update_tag_group`
+- `set_course_tags`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
 - `list_course_members`
@@ -109,9 +138,28 @@ Current tools:
 - `assign_audience_courses`
 - `update_audience_member`
 - `remove_audience_member`
+- `set_audience_status`
 - `list_team_members`
 - `get_team_member`
 - `update_team_member`
+- `invite_team_members`
+- `remove_team_member`
+- `get_team_invite_link`
+- `set_team_invite_link`
+- `get_organization`
+- `update_organization`
+- `get_organization_customization`
+- `update_organization_customization`
+- `list_email_templates`
+- `get_email_template`
+- `update_email_template`
+- `reset_email_template`
+- `send_test_email_template`
+- `get_domain`
+- `update_domain`
+- `connect_custom_domain`
+- `refresh_custom_domain`
+- `remove_custom_domain`
 
 Course certificate tools:
 
@@ -144,7 +192,9 @@ Course section, lesson and content tools:
 
 - `list_course_sections`, `create_course_section`, `update_course_section`, `delete_course_section`
 - `list_course_lessons`, `get_course_lesson`, `delete_course_lesson`, `notify_course_lesson_session_update`
-- `list_course_lesson_translations`, `set_course_lesson_translation`, `list_course_lesson_history`
+- `list_lesson_blocks`, `add_lesson_block`, `attach_lesson_block`, `update_lesson_block`, `set_lesson_block_content`, `update_lesson_block_placement`, `move_lesson_block`, `remove_lesson_block`, `duplicate_lesson_block`
+- `list_course_lesson_translations`, `set_course_lesson_translation` (these read and write the lesson's first note block)
+- `list_course_lesson_history` (the text versions of every text block in one language, newest first, with `blockId` naming the block; it does not include blocks being added, moved or removed, and there is no MCP restore or undo)
 - `list_course_lesson_comments`, `create_course_lesson_comment`, `update_course_lesson_comment`, `delete_course_lesson_comment`
 - `reorder_course_content`, `set_course_content_unlocked`, `delete_course_content`
 
@@ -154,7 +204,17 @@ They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's
 - `delete_course_section`, `delete_course_lesson` and `delete_course_content` are hard deletes. Deleting a section also deletes its lessons and exercises. If students have submissions or lesson completions in what you delete, they fail with 409 unless `force` is true, which deletes that work too.
 - `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
-- Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`. Restoring a lesson version is not covered.
+- Lesson content is a list of blocks (notes, videos, slides, documents). A block can be reused in several lessons and editing it changes all of them; send the `version` you last read as `expectedVersion` so concurrent edits fail with 409 instead of overwriting each other. `required` and the watch threshold belong to a lesson's use of a block, not to the block.
+- Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`; the `videos` they take are video blocks. Restoring a lesson version is not covered.
+- `update_lesson` also accepts `lessonAt`, the live-session start time as an ISO 8601 timestamp with a UTC offset (`null` clears it). Lessons created with `create_lesson` start with no date, and there is no field for the join link, so set that in the dashboard. Students see a live session, and get reminders, only when the lesson has both a date and a join link; reminders also need a published Live class course.
+
+Course copy, related courses and landing page tools:
+
+- `clone_course` calls `POST /public-api/v1/courses/:id/clone` with the `course:write` scope. The key creator must be an org admin or tutor and becomes the copy's tutor. The copy keeps the source's published state, and its exercise due dates are set to the time of copying. Templates are refused.
+- `list_related_courses` calls `GET /public-api/v1/courses/:id/related` with the `course:read` scope. It returns published courses that share at least one tag with the course, most shared tags first, then newest, with the tags they share. Pass `profileId` to leave out courses that person is already in, `pricing` (`free` or `paid`) to filter by price, and `limit` (1–20, default 4). A course with no tags returns an empty list.
+- `set_featured_courses` calls `PUT /public-api/v1/organization/landing-page/featured-courses` with the `organization:write` scope. The key creator must be an org admin. It sets the published courses (at most 4) shown first, in the order given, on the landing page and public course list. Other published courses still show after them, newest first. It replaces the current list; an empty list clears it.
+
+MCP keys have both scopes by default.
 
 Course exercise tools:
 
@@ -206,9 +266,30 @@ What the tools cover compared with the dashboard:
 - Not covered, on purpose: student actions (submitting an exercise, recording video answers). A key acts as its creator, an admin or tutor, and must not submit on a student's behalf.
 - Covered by other tools: moving or reordering exercises (`reorder_course_content`) and unlocking one (`isUnlocked` on `update_course_exercise`).
 
+Course template tools:
+
+- `list_course_templates`
+- `get_course_template`
+- `create_course_from_template`
+- `save_course_as_template`
+
+They call `/public-api/v1/course-templates` and `/public-api/v1/courses/:id/template` with the `course:read` (reads) and `course:write` (writes) scopes, which MCP keys have by default. They act as the person who created the key, with the same rules as the dashboard:
+
+- Listing and reading templates needs them to be an org admin or tutor.
+- Creating a course from a template and saving a course as a template need them to be an org admin.
+
+`list_course_templates` returns the organization's own templates first, then the curated global ones. Pass `source` (`all`, `org` or `global`) to narrow it; it takes `page` and `limit` (default 20, max 100) and returns `{ data, pagination }`. `get_course_template` returns the outline, item counts and the settings a new course starts with.
+
+`create_course_from_template` copies the template's content and settings into a new unpublished course and adds the key creator to it as a tutor. `save_course_as_template` copies a course into a new unpublished template and leaves the course unchanged. It counts against the plan's template limit (Basic 1, Early Adopter 25, Enterprise unlimited) and fails with 403 `UPGRADE_REQUIRED` once that is reached.
+
+What the tools cover compared with the dashboard:
+
+- Covered: browsing and previewing templates, creating a course from one, and saving a course as a template. Saving a template again works as a duplicate.
+- Not covered yet: converting a course into a template in place, and pulling template updates into courses made from it.
+
 ## Auth Model
 
-The package expects an org-scoped ClassroomIO automation key generated from `Automation -> MCP` in the ClassroomIO dashboard.
+The package expects an existing org-scoped ClassroomIO automation key. New MCP keys can no longer be created, so use the hosted server at `https://mcp.classroomio.com` unless you already have a key. The hosted server uses the permissions you approve when you sign in and your role in the workspace instead of key scopes.
 
 The MCP process sends the key as a bearer token on every request.
 
@@ -221,11 +302,11 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
-Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course draft tools above call internal-only endpoints and use their own scopes (`course_import:draft:*`, `course:read`/`write`, etc.). Both kinds count toward the same MCP rate limits.
+Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course draft tools above call internal-only endpoints and use their own scopes (`course_import:draft:*`, `course:read`/`write`, etc.), except `list_org_courses`, which calls `GET /public-api/v1/courses` with the `course:read` scope. Both kinds count toward the same MCP rate limits. `list_course_members` takes the dashboard People page's filters and sort (`progress`, `membership`, `enrolledWithin`, `lastLoginBefore`, `certificateEarned`, `sortBy`, `sortOrder`).
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, and team routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. Domain tools call `/public-api/v1/organization/domain/...` and need `organization:read` (reads) and `organization:domain:write` (everything else), also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the course list (`GET /public-api/v1/courses`, with `course:read`), the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, organization customization, email template, landing page and domain, and tag routes, plus a course update that sends only `tagIds` or `addTagIds`. The other course/draft tools above, apart from `list_org_courses`, call internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -238,15 +319,45 @@ Cohort tools act as the person who created the API key and follow the same rules
 
 `add_cohort_members` creates memberships directly and sends no email; `invite_students_to_cohort` is the dashboard invite flow (organization invites plus emails).
 
-List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `list_cohort_goals`, `list_cohort_newsfeed_comments`, `list_my_enrolled_cohorts`, `list_my_cohort_goals`, `get_org_goals_overview`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`. `list_cohort_newsfeed` is cursor-based: pass the returned `nextCursor` back as `cursor`.
+List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `list_cohort_goals`, `list_cohort_newsfeed_comments`, `list_my_enrolled_cohorts`, `list_my_cohort_goals`, `get_org_goals_overview`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`. `list_cohort_newsfeed` is cursor-based: pass the returned `nextCursor` back as `cursor`. `list_org_cohorts` also takes `search`, `status`, `sortBy` and `sortOrder`; `list_cohort_members` takes `search`, `roleId`, `membership`, `lastLoginBefore`, `sortBy` and `sortOrder`, the same filters as the dashboard.
 
 Audience and team tools act as the key creator:
 
 - Every audience and team tool needs the key creator to be an org admin, the same as the dashboard's Audience and Team settings pages.
 - `update_team_member` switches a member between admin and tutor with `roleId` (1 or 2). The key creator cannot change their own role, and the organization must keep at least one admin.
-- `update_audience_member` and `update_team_member` take `name` to set a joined member's full name. The profile is shared, so the name changes in every organization that person belongs to. Email, password, username and avatar stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
-- `remove_audience_member` deletes the organization membership; the person keeps their account. Inviting and removing team members is not available yet.
+- `update_audience_member` and `update_team_member` take `name`, `username`, `avatarUrl` and `locale` to change a joined member's profile, with the same rules as Settings → Profile, except that `avatarUrl` must be an http or https URL. A taken username is refused. The profile is shared, so a change shows in every organization that person belongs to, and the person is emailed which fields changed. Email and password stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
+- `remove_audience_member` and `remove_team_member` delete the organization membership; the person keeps their account. The key creator cannot remove themselves, and the organization must keep at least one admin.
+- `set_audience_status` calls `POST /public-api/v1/audience/bulk-status` to archive or unarchive up to 500 students by `memberIds` or `emails`, and needs `confirm: true`. Archived students lose course access and keep their progress; archiving also frees their plan seat. Unarchiving takes their seats back, and is refused with `UPGRADE_REQUIRED` when it would go over the plan's student limit. It returns one row per id or email: `changed`, `already_in_state` or `not_found`.
+- When a tool call fails in the API, the result has `isError: true` and its text is JSON with the API's `error`, `code` (for example `UPGRADE_REQUIRED`), `status` and, for a validation error, `field`.
+- `invite_team_members` sends the same invite emails as Settings → Teams. If an address belongs to a student, nothing is sent and `requiresConfirmation` is true; call again with those addresses in `confirmedStudentEmails` to promote them.
+- `get_team_invite_link` and `set_team_invite_link` manage the reusable admin or tutor join link (`roleId` 1 or 2). `set_team_invite_link` with `enabled: true` returns the active link, creating a new one if the role's link is off; `enabled: false` turns it off.
+
 - `list_audience_members` and `list_team_members` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
+
+Organization tools call `GET` and `PATCH /public-api/v1/organization` with the `organization:read` and `organization:write` scopes. The key creator must be an org admin, the same as the dashboard's Organization settings page:
+
+- `get_organization` returns the organization's `id`, `name`, `siteName`, `avatarUrl` (logo) and `theme`.
+- `update_organization` takes any of `name` (at least 5 characters), `avatarUrl` (an http(s) image URL) and `theme` (`blue`, `rose`, `green`, `orange`, `purple`, or a `#RRGGBB` / `#RRGGBBAA` color). Omitted fields keep their values. The site name and custom domain can't be changed here.
+
+LMS customization tools call `GET` and `PATCH /public-api/v1/organization/customization` with the same scopes and the same org admin rule, matching the dashboard's Customize LMS page:
+
+- `get_organization_customization` returns `dashboard` (`community`, `exercise`, `bannerImage`, `bannerText`), `course` (`newsfeed`, `grading`), `apps` (`comments`) and `auth` (`backgroundImage`), with defaults filled in. Unset images are `null`.
+- `update_organization_customization` takes any of those fields. Omitted fields keep their values. Images must be http(s) URLs, and `null` removes one. Setting `auth.backgroundImage` needs a paid plan or a self-hosted install (403 `UPGRADE_REQUIRED` otherwise); removing it doesn't. The language settings on that page aren't included.
+
+Email template tools act as the key creator, who must be an org admin, the same as the dashboard's Emails settings page:
+
+- `list_email_templates` returns every student email in one `locale` (default `en`) without its body. `get_email_template` returns the body, the allowed `variables`, and whether the email may link to `{{action_url}}`.
+- `update_email_template` takes `content` and an optional `subject` (omit to keep it, `null` for the default). It rejects placeholders the email does not allow and removes unsafe HTML.
+- `reset_email_template` deletes the saved version and returns the default. It succeeds even when nothing was saved.
+- `send_test_email_template` sends up to 5 addresses a test with sample values. Without `content` or `subject` it tests the current template. The organization gets 5 test sends per 15 minutes, shared with the dashboard.
+- Saving, resetting and test sends need a paid plan (403 `UPGRADE_REQUIRED` otherwise). Students only get a saved template on a paid plan, and a non-English one only when the organization enforces that language.
+
+Domain tools act as the key creator, who must be an org admin, the same as the dashboard's Domains settings page:
+
+- `get_domain` returns the subdomain (`siteName`), the site URL, the favicon and the connected custom domain with its last known `verified` state.
+- `update_domain` changes `siteName` and/or `favicon` (`null` falls back to the logo). A new subdomain breaks every link to the old one.
+- `connect_custom_domain` takes `hostname` and returns the DNS records to add. On ClassroomIO Cloud it needs a paid plan (403 `UPGRADE_REQUIRED`); self-hosted instances have no plan limit but return 409 `CUSTOM_DOMAIN_UNAVAILABLE` until Approximated is configured. To switch domains, remove the current one first.
+- `refresh_custom_domain` checks DNS and SSL again; `remove_custom_domain` disconnects the domain on any plan. Both act only on the organization's own connected domain.
 
 Analytics tools are read-only, cost no credits, and act as the key creator:
 
@@ -258,6 +369,8 @@ Analytics tools are read-only, cost no credits, and act as the key creator:
 - `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50. Both return `{ data, pagination }`.
 
 ## Required Environment Variables
+
+These settings, and the sections below that use them, apply only to this deprecated package.
 
 - `CLASSROOMIO_API_URL`
 - `CLASSROOMIO_API_KEY`
@@ -283,6 +396,8 @@ npx -y @classroomio/mcp
 ```
 
 ## Client Setup
+
+These examples use the deprecated local package with a key. To connect without a key, follow [Connect an MCP client](https://classroomio.com/docs/developers/mcp/setup).
 
 ### Claude Code
 
@@ -601,7 +716,9 @@ Tagging tools use:
 - `mode: "merge" | "replace"`
 - `groupName` optional, defaults to `Automation`
 
-The API creates missing tags automatically when needed.
+Missing tags are created automatically. `tag_course_draft` stores the names on the draft, and publishing creates the tags. `tag_courses` uses the public API: it reads tags from `/public-api/v1/tags`, matches them by name ignoring case, creates any that are missing, then calls `PUT /public-api/v1/courses/{courseId}` for each course: with `addTagIds` in merge mode, so the server adds them and calls on the same course cannot drop each other's tags, or with `tagIds` in replace mode. It needs `course:read` and `course:tag:write`, which MCP keys have by default, and the key creator must be an org admin. Each course it tags costs one credit, plus one for each tag or group it has to create. Each course is a separate write, so if one fails (for example on the rate limit), the courses before it keep their tags and the error lists which courses were tagged and which were not.
+
+The other tag tools map one-to-one to the public tag endpoints: `list_tags` (free, needs `course:read` and an org-member key creator), and `create_tag`, `update_tag`, `create_tag_group`, `update_tag_group` and `set_course_tags` (one credit each, need `course:tag:write` and an org-admin key creator). `set_course_tags` replaces a course's tags with the ids you send, so `[]` removes them all.
 
 Exercise tools use the live course directly:
 

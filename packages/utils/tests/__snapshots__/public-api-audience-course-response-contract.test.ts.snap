@@ -24,6 +24,86 @@ exports[`public API audience and course response contract > ZPublicApiAssignAudi
 }
 `;
 
+exports[`public API audience and course response contract > ZPublicApiAudienceBulkStatusResponse keeps its published shape > ZPublicApiAudienceBulkStatusResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "archive",
+        "unarchive",
+      ],
+      "type": "string",
+    },
+    "changed": {
+      "type": "number",
+    },
+    "requested": {
+      "type": "number",
+    },
+    "rows": {
+      "description": "One entry per memberId or email, in request order",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+            "description": "The email sent, or null when memberIds was sent",
+          },
+          "index": {
+            "description": "Position in memberIds or emails",
+            "type": "number",
+          },
+          "memberId": {
+            "anyOf": [
+              {
+                "type": "number",
+              },
+              {
+                "type": "null",
+              },
+            ],
+            "description": "null when not_found",
+          },
+          "status": {
+            "description": "changed: moved to the new state. already_in_state: was already there; nothing changed. not_found: not a student of this organization",
+            "enum": [
+              "changed",
+              "already_in_state",
+              "not_found",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "index",
+          "memberId",
+          "email",
+          "status",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "action",
+    "requested",
+    "changed",
+    "rows",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`public API audience and course response contract > ZPublicApiAudienceMemberResponse keeps its published shape > ZPublicApiAudienceMemberResponse 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -72,11 +152,21 @@ exports[`public API audience and course response contract > ZPublicApiAudienceMe
         },
       ],
     },
+    "locale": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Language ClassroomIO is shown in for them; null until they create an account",
+    },
     "memberStatus": {
       "description": "Lifecycle state of the membership",
       "enum": [
         "ACTIVE",
-        "DEACTIVATED",
         "ARCHIVED",
       ],
       "type": "string",
@@ -110,13 +200,26 @@ exports[`public API audience and course response contract > ZPublicApiAudienceMe
       ],
       "type": "string",
     },
+    "username": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "null until the invited person creates an account",
+    },
   },
   "required": [
     "id",
     "profileId",
     "name",
+    "username",
     "email",
     "avatarUrl",
+    "locale",
     "createdAt",
     "status",
     "memberStatus",
@@ -1663,6 +1766,35 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "studentLimitReached": {
       "type": "boolean",
     },
+    "tags": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "type": "string",
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+          "slug": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "color",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
     "templateId": {
       "anyOf": [
         {
@@ -1730,6 +1862,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "status",
     "type",
     "callout",
+    "tags",
     "group",
     "attendance",
     "content",
@@ -3412,7 +3545,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "order": {
-                "description": "Position within its section or lesson, 1-based. An exercise with neither takes its place in the top-level sequence it shares with sections and top-level lessons.",
+                "description": "Position in its section or lesson, from 1; with neither, the top-level order shared with sections and lessons.",
                 "maximum": 9007199254740991,
                 "minimum": 1,
                 "type": "integer",
@@ -3569,7 +3702,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             "additionalProperties": false,
             "properties": {
               "content": {
-                "description": "Lesson body HTML only. Do not include the lesson title. Do not use h1 or h2 anywhere in lessonLanguages[].content. Start headings at h3 because that is the highest heading level allowed in lesson content.",
+                "description": "Lesson body HTML, without the title. Start headings at h3; h1 and h2 are not allowed.",
                 "minLength": 1,
                 "type": "string",
               },
@@ -3617,7 +3750,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "boolean",
               },
               "order": {
-                "description": "Position within the section, 1-based. A lesson without a section takes its place in the top-level sequence it shares with sections and top-level exercises.",
+                "description": "Position in the section, from 1; a lesson without one uses the top-level order shared with sections and exercises.",
                 "maximum": 9007199254740991,
                 "minimum": 1,
                 "type": "integer",
@@ -3635,7 +3768,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "videos": {
-                "description": "Lesson videos as { type, link }, where type is youtube, vimeo, generic, upload or google_drive. Add new videos as youtube, vimeo or generic with a hosted URL, and keep any upload or google_drive entries already in the draft unchanged.",
+                "description": "Videos as { type, link }. Add youtube, vimeo or generic links; keep existing upload and google_drive entries unchanged.",
                 "items": {
                   "additionalProperties": false,
                   "properties": {
@@ -3884,7 +4017,7 @@ exports[`public API audience and course response contract > ZPublicApiCreateAudi
             "type": "string",
           },
           "status": {
-            "description": "ready: added to the organization and invited. already_member: a student who has joined; enrolled in courseIds directly. invite_resent: invited earlier but not joined; earlier invites are revoked and a new one is created. invalid_email, missing_email: skipped. duplicate_in_file: the address appears earlier in the request; skipped. is_staff: an admin or tutor of the organization; skipped. over_seat_limit: no student seats left on the plan; skipped",
+            "description": "What happened to this address",
             "enum": [
               "ready",
               "already_member",
@@ -4685,7 +4818,6 @@ exports[`public API audience and course response contract > ZPublicApiRemoveAudi
     "status": {
       "enum": [
         "ACTIVE",
-        "DEACTIVATED",
         "ARCHIVED",
       ],
       "type": "string",

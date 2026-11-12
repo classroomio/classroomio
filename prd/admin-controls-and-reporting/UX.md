@@ -1,5 +1,7 @@
 # UI Behavior Spec — Learner Usage & Lifecycle
 
+> **Update:** Deactivate and Reactivate were retired in [#1502](https://github.com/classroomio/classroomio/issues/1502). Archive and Unarchive are the only reversible actions, and existing deactivated members were migrated to archived. Sections below that describe Deactivate record the original design.
+
 Companion to `README.md`, which covers data, API, and sequencing. This file covers **what the admin sees and
 what happens when they click.**
 

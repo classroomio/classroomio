@@ -15,6 +15,7 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
@@ -114,7 +115,7 @@ export const v1CourseInvitesRouter = new Hono()
         const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const invite = await createCourseInviteService(orgId, actorId, params, payload);
+        const invite = await createCourseInviteService(orgId, actorId, params, payload, getEventSource(c));
 
         return c.json(
           {

@@ -12,7 +12,7 @@ export const ZPublicApiCourseSectionsQuery = ZPublicApiPaginationQuery;
 export type TPublicApiCourseSectionsQuery = z.infer<typeof ZPublicApiCourseSectionsQuery>;
 
 const SECTION_ORDER_DESCRIPTION =
-  'Top-level position, starting at 1. Sections share these positions with lessons and exercises outside any section; the entry at that position and every later one move down one.';
+  'Top-level position from 1, shared with lessons and exercises outside a section. Entries from there on move down one.';
 
 export const ZPublicApiCreateCourseSection = z
   .object({

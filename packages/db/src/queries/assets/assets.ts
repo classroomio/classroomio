@@ -309,7 +309,7 @@ export async function listAssetsByOrg(orgId: string, options: ListAssetsOptions 
       .select()
       .from(schema.asset)
       .where(and(...conditions))
-      .orderBy(desc(schema.asset.createdAt))
+      .orderBy(desc(schema.asset.createdAt), desc(schema.asset.id))
       .limit(limit)
       .offset(offset);
 

@@ -4,14 +4,19 @@ import * as z from 'zod';
 const timestamp = z.string();
 const nullableTimestamp = z.string().nullable();
 
-const memberStatus = z.enum(['ACTIVE', 'DEACTIVATED', 'ARCHIVED']);
+const memberStatus = z.enum(['ACTIVE', 'ARCHIVED']);
 
 export const ZPublicApiAudienceMemberResponse = z.object({
   id: z.number(),
   profileId: z.string().uuid().nullable().describe('null until the invited person creates an account'),
   name: z.string(),
+  username: z.string().nullable().describe('null until the invited person creates an account'),
   email: z.string(),
   avatarUrl: z.string(),
+  locale: z
+    .string()
+    .nullable()
+    .describe('Language ClassroomIO is shown in for them; null until they create an account'),
   createdAt: z.string().describe('Day the member joined this organization, as a date string (e.g. "Mon Oct 05 2026")'),
   status: z.enum(['active', 'pending', 'expired', 'revoked']).describe('Invite state'),
   memberStatus: memberStatus.describe('Lifecycle state of the membership'),
@@ -43,9 +48,7 @@ export const ZPublicApiCreateAudienceResponse = z.object({
           'over_seat_limit',
           'missing_email'
         ])
-        .describe(
-          'ready: added to the organization and invited. already_member: a student who has joined; enrolled in courseIds directly. invite_resent: invited earlier but not joined; earlier invites are revoked and a new one is created. invalid_email, missing_email: skipped. duplicate_in_file: the address appears earlier in the request; skipped. is_staff: an admin or tutor of the organization; skipped. over_seat_limit: no student seats left on the plan; skipped'
-        )
+        .describe('What happened to this address')
     })
   ),
   assigned: z.number(),
@@ -53,6 +56,26 @@ export const ZPublicApiCreateAudienceResponse = z.object({
   alreadyEnrolledInCohorts: z.number(),
   pendingInvitesRenewed: z.number(),
   truncated: z.number().describe('Rows beyond the import limit, which were not processed')
+});
+
+export const ZPublicApiAudienceBulkStatusResponse = z.object({
+  action: z.enum(['archive', 'unarchive']),
+  requested: z.number(),
+  changed: z.number(),
+  rows: z
+    .array(
+      z.object({
+        index: z.number().describe('Position in memberIds or emails'),
+        memberId: z.number().nullable().describe('null when not_found'),
+        email: z.string().nullable().describe('The email sent, or null when memberIds was sent'),
+        status: z
+          .enum(['changed', 'already_in_state', 'not_found'])
+          .describe(
+            'changed: moved to the new state. already_in_state: was already there; nothing changed. not_found: not a student of this organization'
+          )
+      })
+    )
+    .describe('One entry per memberId or email, in request order')
 });
 
 export const ZPublicApiAssignAudienceCoursesResponse = z.object({

@@ -10,6 +10,7 @@ import { createStudentSubmissionService, setStudentLessonCompletionService } fro
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, studentForbiddenResponse, mcpRateLimitResponse } from './docs';
@@ -60,11 +61,11 @@ export const v1CourseStudentRouter = new Hono()
   .post(
     '/exercises/:exerciseId/submissions',
     describeRoute({
-      description: `Submit an exercise for a student; ${COURSE_TEAM_RULE}.`,
+      description: `Submit an exercise for a student; ${COURSE_TEAM_RULE}; see [Question types](/api/question-types) for answer formats.`,
       tags: [TAG],
       responses: {
         201: jsonResponse(
-          'Submission created. It is already graded (gradingState completed, with a total) when every question can be auto-graded. Tutors are emailed, as when a student submits in the dashboard. Read the answers with GET /courses/{courseId}/submissions/{submissionId}.',
+          'Submission created; read its answers with GET /courses/{courseId}/submissions/{submissionId}.',
           itemResponse(ZPublicApiCourseSubmissionResponse)
         ),
         400: {
@@ -91,7 +92,8 @@ export const v1CourseStudentRouter = new Hono()
           orgId,
           actorId,
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getEventSource(c)
         );
 
         return c.json({ success: true, data: submission }, 201);

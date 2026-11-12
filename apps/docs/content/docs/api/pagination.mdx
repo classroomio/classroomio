@@ -1,0 +1,74 @@
+---
+title: Pagination
+description: Page through list endpoints with page and limit, and read the pagination block in the response.
+last_reviewed: '2026-10-23'
+---
+
+List endpoints, such as `GET /courses` and `GET /audience`, return results one page at a time.
+
+## Request a page
+
+| Param | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `page` | integer | `1` | Starts at `1` |
+| `limit` | integer | `20` | Up to `100` on most endpoints. Each endpoint's page shows its own maximum |
+
+```bash
+curl "https://api.classroomio.com/public-api/v1/courses?page=2&limit=50" \
+  -H "Authorization: Bearer cio_api_your_key_here"
+```
+
+## Read the response
+
+```json
+{
+  "success": true,
+  "data": [],
+  "pagination": { "page": 2, "limit": 50, "total": 120, "totalPages": 3 },
+  "query": { "page": 2, "limit": 50 }
+}
+```
+
+- `data` holds the results for this page.
+- `pagination` describes the full result set: `total` items across `totalPages` pages.
+- `query` echoes the parameters the API used, including defaults and any filters such as `search` or `tags`.
+
+## Fetch every page
+
+Keep requesting the next page until you reach `totalPages`. A large export can hit the [rate limit](/api/rate-limits), so wait and retry the same page on a `429`:
+
+```js
+async function listAll(path) {
+  const items = [];
+  let page = 1;
+  let totalPages = 1;
+
+  do {
+    const res = await fetch(`https://api.classroomio.com/public-api/v1${path}?page=${page}&limit=100`, {
+      headers: { Authorization: `Bearer ${process.env.CLASSROOMIO_API_KEY}` }
+    });
+
+    if (res.status === 429) {
+      const seconds = Number(res.headers.get('Retry-After') ?? 60);
+      await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+      continue;
+    }
+
+    const body = await res.json();
+    if (!res.ok) {
+      throw new Error(`${res.status} ${body.code}: ${body.error}`);
+    }
+
+    items.push(...body.data);
+    totalPages = body.pagination.totalPages;
+    page += 1;
+  } while (page <= totalPages);
+
+  return items;
+}
+```
+
+## Next steps
+
+- [Rate limits](/api/rate-limits): large exports use many requests, so check your budget.
+- [API reference](/api/reference): each list endpoint's filters and sort options.

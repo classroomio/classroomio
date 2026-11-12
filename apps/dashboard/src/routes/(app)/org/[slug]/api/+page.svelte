@@ -27,9 +27,15 @@
       <Page.Subtitle>{$t('automation.api.subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="outline" href={PUBLIC_API_DOCS_URL} target="_blank" rel="noopener noreferrer">
+      <Button
+        variant="secondary"
+        href={PUBLIC_API_DOCS_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        testId="automation-api-read-docs"
+      >
         <ArrowUpRightIcon size={16} />
-        {$t('automation.api.view_docs')}
+        {$t('automation.read_docs')}
       </Button>
     </Page.Action>
   </Page.Header>

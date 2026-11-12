@@ -22,7 +22,7 @@ export const faqs = [
   {
     question: 'What kind of team plans does ClassroomIO offer?',
     answer:
-      'ClassroomIO offers a Team plan designed to cater to organizations of any size. Depending on the plan you select, you can invite other teachers into your organization.'
+      'ClassroomIO offers Basic, Early Adopters and Enterprise plans to cater to organizations of any size. Depending on the plan you select, you can invite other teachers into your organization.'
   },
   {
     question: 'Can I try ClassroomIO before I buy it?',

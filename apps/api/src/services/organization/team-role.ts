@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { emitOrganizationMemberUpdatedWebhookEvent } from '@cio/core/services/webhook/emit';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
@@ -26,7 +27,7 @@ export function assertAssignableTeamRole(roleId: number) {
   }
 }
 
-export type AppliedTeamMemberRole = UpdatedTeamMemberRole & { roleChanged: boolean };
+export type AppliedTeamMemberRole = UpdatedTeamMemberRole & { roleChanged: boolean; previousRoleId: number };
 
 /**
  * Changes another member's org role to admin or tutor inside `tx`; the caller schedules the course role reconcile
@@ -65,7 +66,8 @@ export async function applyTeamMemberRoleChange(
       verified: member.verified ?? false,
       roleId: member.roleId,
       profileId: member.profileId,
-      roleChanged: false
+      roleChanged: false,
+      previousRoleId: member.roleId
     };
   }
 
@@ -89,14 +91,28 @@ export async function applyTeamMemberRoleChange(
     verified: saved.verified ?? false,
     roleId: saved.roleId,
     profileId: saved.profileId,
-    roleChanged: true
+    roleChanged: true,
+    previousRoleId: member.roleId
   };
 }
 
 /** Schedules the course role reconcile for a member whose org role just changed. */
-export async function reconcileAfterTeamRoleChange(orgId: string, applied: AppliedTeamMemberRole) {
+export async function reconcileAfterTeamRoleChange(
+  orgId: string,
+  applied: AppliedTeamMemberRole,
+  actorProfileId: string | null = null
+) {
   if (applied.roleChanged && applied.profileId) {
     await scheduleCourseRoleReconcile(orgId, applied.profileId);
+  }
+
+  if (applied.roleChanged) {
+    await emitOrganizationMemberUpdatedWebhookEvent(
+      orgId,
+      { id: applied.id, profileId: applied.profileId, email: applied.email, roleId: applied.roleId },
+      { roleId: { from: applied.previousRoleId, to: applied.roleId } },
+      actorProfileId
+    );
   }
 }
 
@@ -114,7 +130,7 @@ export async function updateTeamMemberRole(
       applyTeamMemberRoleChange(orgId, memberId, roleId, actorProfileId, tx)
     );
 
-    await reconcileAfterTeamRoleChange(orgId, updated);
+    await reconcileAfterTeamRoleChange(orgId, updated, actorProfileId);
 
     return {
       id: updated.id,

@@ -207,7 +207,7 @@
             class="flex h-6 min-w-9 shrink-0 items-center justify-center rounded-xs bg-blue-50 px-1.5 font-mono text-[10px] font-medium text-blue-700"
             >MCP</span
           >
-          Open-source server, <span class="font-mono text-xs">@classroomio/mcp</span>
+          Hosted server, <span class="font-mono text-xs">mcp.classroomio.com</span>
         </li>
       </ul>
     </div>

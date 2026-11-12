@@ -120,6 +120,23 @@ describe('exercise progression helpers', () => {
     ).toBe(true);
   });
 
+  it('treats none-policy submissions like submitted', () => {
+    const submission = makeSubmission({
+      id: 'optional',
+      gradingState: 'awaiting_manual',
+      total: 0
+    });
+
+    expect(
+      shouldCompleteExerciseFromSubmission({
+        completionPolicy: 'none',
+        passThreshold: 100,
+        totalPossiblePoints: 10,
+        submission
+      })
+    ).toBe(true);
+  });
+
   it('groups submissions by student and orders attempts by submission date', () => {
     const olderAttempt = makeSubmission({
       id: 'attempt-1',

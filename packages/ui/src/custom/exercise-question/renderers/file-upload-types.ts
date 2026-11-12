@@ -49,6 +49,8 @@ function fileExtensionLabel(fileName: string | undefined): string | null {
 export function fileTypeLabel(mimeType: string | undefined, fileName?: string): string {
   const mime = mimeType ?? '';
   if (mime.includes('pdf')) return 'PDF';
+  if (mime.includes('spreadsheetml') || mime.includes('xlsx')) return 'XLSX';
+  if (mime.includes('ms-excel')) return fileExtensionLabel(fileName) === 'CSV' ? 'CSV' : 'XLS';
   if (mime.includes('wordprocessingml') || mime.includes('docx')) return 'DOCX';
   if (mime.includes('msword') || mime.includes('doc')) return 'DOC';
   if (mime.includes('image')) return 'IMAGE';

@@ -5,6 +5,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import VideoIcon from '@lucide/svelte/icons/video';
   import { lessonApi } from '$features/course/api';
+  import { addLessonVideos } from '../media-picks';
   import { mediaApi } from '$features/media/api';
   import type { OrganizationAsset } from '$features/media/utils';
   import { onDestroy, onMount } from 'svelte';
@@ -93,7 +94,7 @@
         return;
       }
 
-      lessonApi.updateLessonState('videos', [lessonVideo], { append: true });
+      addLessonVideos([lessonVideo]);
       snackbar.success('snackbar.media_manager.added_to_lesson');
     } finally {
       addingAssetId = null;
@@ -118,6 +119,7 @@
       placeholder={$t('course.navItem.lessons.materials.tabs.video.add_video.search_library')}
     />
     <Button
+      variant="secondary"
       onclick={() => {
         search.takePending();
         void loadLibrary(1);

@@ -6,6 +6,10 @@ This document collects implementation rules and workflow conventions for code ch
 
 **Read [`skills/writing-code/SKILL.md`](skills/writing-code/SKILL.md) before writing or editing any code.** The comment policy there is mandatory: default to no comments, use JSDoc only for function contracts, and never add an inline comment to explain a design choice — refactor the code instead. The only allowed inline comments record an external constraint the code cannot express.
 
+## Security reviews
+
+**Load [`skills/security-audit/SKILL.md`](skills/security-audit/SKILL.md) when reviewing or writing a change that touches a trust boundary:** auth, sessions, API keys, roles and permissions, org/tenant isolation, file uploads and downloads, webhooks, payments, user-controlled HTML or URLs, or LLM/MCP tool input. Use its guidance mode for these reviews. Run its full six-phase audit only when someone explicitly asks for a security audit, pen test, or comprehensive security review. For public API routes and MCP tools, apply it alongside [`skills/public-api-review/SKILL.md`](skills/public-api-review/SKILL.md).
+
 ## Research Requirements
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
@@ -34,10 +38,10 @@ The `prototypes/` directory holds standalone HTML/CSS design mocks for explorati
 
 ## Verification before commit/PR
 
-Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 20 (the repo's `.nvmrc` version):
+Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 24 (the repo's `.nvmrc` version):
 
 ```bash
-export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+export PATH="$HOME/.nvm/versions/node/v24.22.1/bin:$PATH"
 ```
 
 - **Dashboard changes** (`apps/dashboard/**`, or shared packages consumed by the dashboard):
@@ -60,6 +64,8 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
   ```
 
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
+
+**Fact-check every commit against the docs.** Before each commit, spin up a sub agent to verify the commit's changes (`git diff --cached`) against our docs, help center, website and READMEs, and fix every inaccurate statement and stale screenshot it finds in the same commit. Procedure: [`skills/stage-and-commit/SKILL.md`](skills/stage-and-commit/SKILL.md), step 4.
 
 ## Database migrations
 
@@ -307,6 +313,18 @@ For response shapes that need a small normalization (e.g. API returns `JSONValue
 
 ### API Class Pattern
 API classes handle all logic; components should be thin.
+
+### Dashboard API error handling
+- `BaseApi.execute()` normalizes every failure (except aborted requests,
+  which return silently) to `NormalizedApiError`
+  (`apps/dashboard/src/lib/utils/services/api/errors.ts`) before calling
+  `onError`. Handlers receive one typed shape — never a bare `string`.
+- Use `hasErrorCode(error, ...)` / `matchesError(error, { code, field })`
+  instead of hand-rolled `typeof` / `in` narrowing. Read `error.message`,
+  `error.code`, `error.field` directly, and use `ErrorCodes` constants.
+- Structured errors cross into components only as `NormalizedApiError`
+  (via `api.lastError`). `api.error` is a plain display string — never
+  parse it as JSON.
 
 ### Translations (UI copy)
 
@@ -659,6 +677,14 @@ All user-controlled URLs in org landing pages (nav links, hero CTAs, footer link
 
 Theme previews in the dashboard are visual-only. Render preview content inside an `inert` container so links, buttons, and other controls cannot navigate or trigger actions while previewing a theme.
 
+## Content blocks
+
+Lesson content is a list of blocks (note, video, slides, document, image). **Read [`packages/utils/src/validation/block/ADDING_A_BLOCK_TYPE.md`](packages/utils/src/validation/block/ADDING_A_BLOCK_TYPE.md) before adding or changing a block type.**
+
+- Each type is one contract file in `packages/utils/src/validation/block/definitions/` and one folder in `apps/dashboard/src/lib/features/block/components/`, registered in `BLOCK_DEFINITIONS`, `BLOCK_VIEWS` and `BLOCK_EDITORS`.
+- Never branch on a block type outside those files. Server code reads capabilities (`localizedContent`, `media`, `toPublicData`) from the registry, and dashboard containers look the component up by type.
+- View files must not import editor code: the public lesson page renders them.
+
 ## Emails: system vs org-branded
 
 Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.
@@ -904,13 +930,13 @@ When moving from `apps/dashboard/src/lib/components/` to `apps/dashboard/src/lib
 The full setup/run flow lives in `README.md` and `DEV_SETUP_NOTES.md`. The notes below cover only the non-obvious, cloud-VM-specific caveats. The update script already runs `pnpm install` on startup.
 
 ### Node version (important)
-The sandbox injects `/exec-daemon/node` (Node 22) at the front of `PATH`, so a bare `node`/`pnpm` runs under Node 22 even though the repo requires Node `^20.19.3` (`.nvmrc`). Node 20.19.3 is installed via nvm and set as the nvm default. Before running any `pnpm`/dev command, prepend the repo Node to `PATH`:
+The sandbox injects `/exec-daemon/node` (Node 22) at the front of `PATH`, so a bare `node`/`pnpm` runs under Node 22 even though the repo requires Node `^24.22.1` (`.nvmrc`). Node 24.22.1 is installed via nvm and set as the nvm default. Before running any `pnpm`/dev command, prepend the repo Node to `PATH`:
 
 ```bash
-export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+export PATH="$HOME/.nvm/versions/node/v24.22.1/bin:$PATH"
 ```
 
-`pnpm install` itself succeeds under either version (there is no `engine-strict`), but run the dev servers and DB scripts on Node 20.
+`pnpm install` itself succeeds under either version (there is no `engine-strict`), but run the dev servers and DB scripts on Node 24.
 
 ### Services & how to run them
 Docker is installed and provides Postgres 16 + Redis 7 (the app does not run them natively). After a fresh VM boot the Docker daemon is usually not running — start it (it needs the snapshot's `/etc/docker/daemon.json`, which already sets `fuse-overlayfs` + disables the containerd snapshotter, plus `iptables-legacy`):

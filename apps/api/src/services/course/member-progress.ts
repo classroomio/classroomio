@@ -3,7 +3,7 @@ import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
 import { getCourseById } from '@cio/db/queries/course/course';
-import { getCourseContentItems } from '@cio/db/queries/course/content';
+import type { getCourseContentItems } from '@cio/db/queries/course/content';
 import {
   getBatchCompletedExerciseIdsForMembers,
   getBatchLessonCompletionsForCourse,
@@ -11,6 +11,7 @@ import {
   getCourseTrackableContentCounts
 } from '@cio/db/queries/course/member-progress';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
+import { getCachedCourseContentStructure } from '@api/utils/redis/course-content-cache';
 import { buildCourseContent, type CourseContentItem } from '@cio/core/services/course/utils';
 
 export type CourseMemberStage =
@@ -62,8 +63,9 @@ function buildOrderedTrackableItems(
 ): Omit<TrackableContentItem, 'isComplete'>[] {
   const content = buildCourseContent(contentRows, isContentGroupingEnabled);
   const orderedItems = flattenNavigableItems(content);
+  const requiredItems = orderedItems.filter((item) => item.completionPolicy !== 'none');
 
-  return toTrackableContentItems(orderedItems as CourseContentItem[]).map(({ id, type, title }) => ({
+  return toTrackableContentItems(requiredItems).map(({ id, type, title }) => ({
     id,
     type,
     title
@@ -145,7 +147,7 @@ export async function getCourseMemberProgressSummaries(
     lastSeenByProfileId
   ] = await Promise.all([
     getCourseById(courseId),
-    getCourseContentItems(courseId),
+    getCachedCourseContentStructure(courseId),
     getCourseTrackableContentCounts(courseId),
     getBatchStudentCourseMembership(courseId, profileIds),
     getBatchLessonCompletionsForCourse(courseId, profileIds),

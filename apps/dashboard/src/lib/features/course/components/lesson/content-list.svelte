@@ -10,7 +10,6 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import UnlockIcon from '@lucide/svelte/icons/lock-open';
   import VideoIcon from '@lucide/svelte/icons/video';
-  import { HoverableItem, AttachmentIcon } from '@cio/ui/custom/moving-icons';
   import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
   import { lessonApi, exerciseApi, courseApi, contentApi } from '$features/course/api';
@@ -349,9 +348,7 @@
           {#snippet meta()}
             {@const hasVideos = (item.videosCount ?? 0) > 0}
             {@const hasDocuments = (item.documentsCount ?? 0) > 0}
-            {@const hasNote = item.hasNoteContent === true}
             {@const hasSlide = item.hasSlideContent === true}
-            {@const hasAnyMaterials = hasVideos || hasDocuments || hasNote || hasSlide}
             <div class="mt-2 flex flex-wrap items-center gap-1.5">
               {#if hasVideos}
                 <span class={metaChipClass}>
@@ -367,29 +364,11 @@
                 </span>
               {/if}
 
-              {#if hasNote}
-                <span class={metaChipClass}>
-                  <FileTextIcon size={12} />
-                  {$t('course.navItem.lessons.materials.tabs.note.title')}
-                </span>
-              {/if}
-
               {#if hasSlide}
                 <span class={metaChipClass}>
                   <FileTextIcon size={12} />
                   {$t('course.navItem.lessons.materials.tabs.slide.title')}
                 </span>
-              {/if}
-
-              {#if !hasAnyMaterials}
-                <HoverableItem>
-                  {#snippet children(isHovered)}
-                    <span class={metaChipClass}>
-                      <AttachmentIcon size={11} {isHovered} />
-                      {$t('course.navItem.lessons.materials.no_content')}
-                    </span>
-                  {/snippet}
-                </HoverableItem>
               {/if}
 
               {#if isLiveCourse && item.lessonAt}

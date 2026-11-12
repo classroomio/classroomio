@@ -42,7 +42,8 @@ Two things follow from being mounted at `/docs`:
 
 ## API reference
 
-`/docs/api` is the Scalar API reference, rendered at build time (the old `/docs/api/reference` path
-301s here). `scripts/fetch-openapi.mjs` pulls the spec from R2 and injects the bearer auth scheme via
+`/docs/api` holds the hand-written Getting started pages (`content/docs/api`). The generated reference
+lives at `/docs/api/reference`, rendered at build time; old `/docs/api/<tag>/*` endpoint URLs 301 there.
+`scripts/fetch-openapi.mjs` pulls the spec from R2 and injects the bearer auth scheme via
 `@cio/utils/openapi/public-api`. Because it is static, a new spec reaches the site only on a rebuild —
 `.github/workflows/upload-openapi-spec.yml` triggers one automatically.

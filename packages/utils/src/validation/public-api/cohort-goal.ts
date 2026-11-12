@@ -15,7 +15,7 @@ export const ZPublicApiCreateCohortGoal = z
     type: z
       .enum(GOAL_TYPES)
       .describe(
-        'complete_all needs nothing extra, n_of_m needs requiredCount (at most the number of courses), score needs scoreThreshold, pass_rate needs scoreThreshold and teamPassRateThreshold, and readiness needs nothing extra but cannot have a deadline.'
+        "n_of_m needs requiredCount; score needs scoreThreshold; pass_rate needs scoreThreshold and teamPassRateThreshold; readiness can't have a deadline."
       ),
     title: z.string().min(1).max(255),
     description: z.string().max(2000).nullable().optional(),

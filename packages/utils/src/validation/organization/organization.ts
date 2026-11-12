@@ -4,6 +4,7 @@ import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 import { ROLE, blockedSubdomain } from '@cio/utils/constants';
 import { ZCourseType } from '../course/course-type';
 import { containsDisallowedHrefs } from '../shared';
+import { ZStudentHomeDestination } from './student-home';
 
 export const ZGetOrganizations = z.object({
   siteName: z.string().min(1).optional(),
@@ -31,14 +32,24 @@ export const ZGetCoursesBySiteName = z.object({
 
 export type TGetCoursesBySiteName = z.infer<typeof ZGetCoursesBySiteName>;
 
+export const ZOrganizationCourseSort = z.enum([
+  'date_created',
+  'last_updated_at',
+  'published',
+  'lessons',
+  'name',
+  'price'
+]);
+export type TOrganizationCourseSort = z.infer<typeof ZOrganizationCourseSort>;
+
 export const ZGetOrganizationCoursesQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  search: z.string().trim().optional(),
-  tags: z.string().optional(),
+  search: z.string().trim().max(200).optional(),
+  tags: z.string().max(2000).optional(),
   type: ZCourseType.optional(),
   status: z.enum(['published', 'unpublished']).optional(),
-  sort: z.enum(['date_created', 'last_updated_at', 'published', 'lessons']).optional(),
+  sort: ZOrganizationCourseSort.optional(),
   order: z.enum(['asc', 'desc']).optional()
 });
 
@@ -107,6 +118,13 @@ export const ZCancelOrgPlan = z.object({
 
 export type TCancelOrgPlan = z.infer<typeof ZCancelOrgPlan>;
 
+export const ZMarkOrgPlanPastDue = z.object({
+  subscriptionId: z.string().min(1),
+  payload: z.record(z.string(), z.unknown())
+});
+
+export type TMarkOrgPlanPastDue = z.infer<typeof ZMarkOrgPlanPastDue>;
+
 export const ZEarlyAdopterSubscriptionEvent = z.object({
   event: z.enum(['activated', 'updated', 'revoked']),
   subscriptionId: z.string().min(1),
@@ -124,6 +142,16 @@ export const ZClaimEarlyAdopterPlan = z.object({
 
 export type TClaimEarlyAdopterPlan = z.infer<typeof ZClaimEarlyAdopterPlan>;
 
+export const ZSiteName = z
+  .string()
+  .min(5)
+  .refine((val) => !/^[-]|[-]$/.test(val), {
+    message: 'Site name cannot start or end with a hyphen'
+  })
+  .refine((val) => !blockedSubdomain.includes(val), {
+    message: 'Sitename already exists.'
+  });
+
 export const ZCreateOrganization = z.object({
   name: z
     .string()
@@ -131,15 +159,7 @@ export const ZCreateOrganization = z.object({
     .refine((val) => !/^[-]|[-]$/.test(val), {
       message: 'Organization name cannot start or end with a hyphen'
     }),
-  siteName: z
-    .string()
-    .min(5)
-    .refine((val) => !/^[-]|[-]$/.test(val), {
-      message: 'Site name cannot start or end with a hyphen'
-    })
-    .refine((val) => !blockedSubdomain.includes(val), {
-      message: 'Sitename already exists.'
-    })
+  siteName: ZSiteName
 });
 
 export type TCreateOrganization = z.infer<typeof ZCreateOrganization>;
@@ -161,14 +181,13 @@ export const ZUpdateOrganization = z.object({
     .refine((val) => !val || !containsDisallowedHrefs(val), {
       message: 'URLs with javascript:, data:, or vbscript: schemes are not allowed'
     }),
-  siteName: z.string().min(1).optional(),
-  customDomain: z.string().nullable().optional(),
-  isCustomDomainVerified: z.boolean().optional(),
+  siteName: ZSiteName.optional(),
   customization: z.record(z.string(), z.unknown()).optional(),
   disableSignup: z.boolean().optional(),
   disableSignupMessage: z.string().optional(),
   disableEmailPassword: z.boolean().optional(),
   disableGoogleAuth: z.boolean().optional(),
+  studentHome: ZStudentHomeDestination.nullable().optional(),
   /** Nested settings (stored in organization.settings JSONB). signup.inviteOnly = true means invite-only signup. */
   settings: z
     .object({

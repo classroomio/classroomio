@@ -55,6 +55,8 @@ import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUr
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureExerciseSubmitted } from '@api/services/product-events';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
 type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
@@ -64,15 +66,19 @@ async function triggerCertificationIfExerciseComplete(
   exerciseId: string,
   groupMemberId: string
 ): Promise<void> {
-  const profile = await getProfileByGroupMemberId(groupMemberId);
-  if (!profile?.id) return;
+  try {
+    const profile = await getProfileByGroupMemberId(groupMemberId);
+    if (!profile?.id) return;
 
-  const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
-  if (!isComplete) return;
+    const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
+    if (!isComplete) return;
 
-  void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
-    console.error('Failed to evaluate course certification after exercise submission:', certError);
-  });
+    void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
+      console.error('Failed to evaluate course certification after exercise submission:', certError);
+    });
+  } catch (lookupError) {
+    console.error('Failed to check course certification after exercise submission:', lookupError);
+  }
 }
 
 const LEGACY_BOARD_STATUS_LABELS: Record<number, string> = {
@@ -567,6 +573,7 @@ export type CreateSubmissionOptions = {
   /** Reject unknown questions, undecodable answers, foreign options and non-number values instead of skipping them. */
   strict?: boolean;
   allowUploads?: boolean;
+  source?: TEventSource;
 };
 
 const UPLOAD_QUESTION_TYPES = new Set(['FILE_UPLOAD', 'VIDEO_RECORDING']);
@@ -740,7 +747,8 @@ async function emitSubmissionCreatedWebhookEvent(
 
 async function emitSubmissionStatusChangedWebhookEvent(
   submission: TSubmission,
-  previous: { statusId: number; gradingState: string }
+  previous: { statusId: number; gradingState: string },
+  actorProfileId: string | null = null
 ) {
   if (!submission.courseId) return;
 
@@ -749,7 +757,8 @@ async function emitSubmissionStatusChangedWebhookEvent(
   await emitCourseWebhookEvent(submission.courseId, 'course.submission.status_changed', {
     ...submissionData,
     previousStatusId: previous.statusId,
-    previousGradingState: previous.gradingState
+    previousGradingState: previous.gradingState,
+    actorProfileId
   });
 }
 
@@ -845,6 +854,14 @@ export async function createSubmissionService(
       const insertedRows = await insertQuestionAnswersBatch([...answeredRows, ...unansweredRows], tx);
 
       return { submission: createdSubmission, insertedAnswers: insertedRows };
+    });
+
+    captureExerciseSubmitted({
+      courseId,
+      exerciseId,
+      groupMemberId: submittedBy,
+      isAutoGraded: shouldAutoGrade,
+      source: options.source ?? 'dashboard'
     });
 
     let submission = created.submission;
@@ -947,7 +964,8 @@ function assertSubmissionBelongsToCourse(submission: { courseId: string | null }
 export async function updateSubmissionService(
   submissionId: string,
   courseId: string,
-  data: TSubmissionUpdate
+  data: TSubmissionUpdate,
+  options: { actorProfileId?: string | null } = {}
 ): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
@@ -970,6 +988,9 @@ export async function updateSubmissionService(
       updatePayload.gradingState = requestedGradingState;
       updatePayload.statusId = projectLegacyStatusId(requestedGradingState);
     }
+    if (requestedGradingState === 'completed' && options.actorProfileId) {
+      updatePayload.gradedBy = options.actorProfileId;
+    }
 
     const nextLegacyStatusId = Number(updatePayload.statusId ?? previousLegacyStatusId);
     const statusChanged = nextLegacyStatusId !== previousLegacyStatusId;
@@ -988,13 +1009,15 @@ export async function updateSubmissionService(
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
+      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy);
     }
 
     if (statusChanged || gradingStateChanged) {
-      await emitSubmissionStatusChangedWebhookEvent(updated, {
-        statusId: previousLegacyStatusId,
-        gradingState: currentGradingState
-      });
+      await emitSubmissionStatusChangedWebhookEvent(
+        updated,
+        { statusId: previousLegacyStatusId, gradingState: currentGradingState },
+        options.actorProfileId ?? null
+      );
     }
 
     await emitExerciseCompletionIfReached(updated, wasCompleteBefore);
@@ -1065,7 +1088,8 @@ export async function updateSubmissionAnswer(
 export async function updateSubmissionGradesBatch(
   submissionId: string,
   courseId: string,
-  data: TSubmissionGradesUpdate
+  data: TSubmissionGradesUpdate,
+  options: { actorProfileId?: string | null } = {}
 ): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
@@ -1091,7 +1115,8 @@ export async function updateSubmissionGradesBatch(
       total: data.total,
       feedback: data.feedback,
       statusId: targetStatusId,
-      gradingState: targetGradingState
+      gradingState: targetGradingState,
+      gradedBy: options.actorProfileId ?? null
     });
 
     if (!updated) {
@@ -1106,13 +1131,15 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
+      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy);
     }
 
     if (statusChanged || currentGradingState !== targetGradingState) {
-      await emitSubmissionStatusChangedWebhookEvent(updated, {
-        statusId: previousLegacyStatusId,
-        gradingState: currentGradingState
-      });
+      await emitSubmissionStatusChangedWebhookEvent(
+        updated,
+        { statusId: previousLegacyStatusId, gradingState: currentGradingState },
+        options.actorProfileId ?? null
+      );
     }
 
     await emitExerciseCompletionIfReached(updated, wasCompleteBefore);

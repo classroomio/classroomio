@@ -10,9 +10,12 @@ import * as schema from '@db/schema';
 import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
-export async function createOrganizationInvite(values: TNewOrganizationInvite): Promise<TOrganizationInvite> {
+export async function createOrganizationInvite(
+  values: TNewOrganizationInvite,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite> {
   try {
-    const [created] = await db.insert(schema.organizationInvite).values(values).returning();
+    const [created] = await dbClient.insert(schema.organizationInvite).values(values).returning();
 
     if (!created) {
       throw new Error('Failed to create organization invite');
@@ -27,13 +30,16 @@ export async function createOrganizationInvite(values: TNewOrganizationInvite): 
   }
 }
 
-export async function createOrganizationInvites(values: TNewOrganizationInvite[]): Promise<TOrganizationInvite[]> {
+export async function createOrganizationInvites(
+  values: TNewOrganizationInvite[],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInvite).values(values).returning();
+    return await dbClient.insert(schema.organizationInvite).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInvites error:', error);
     throw new Error(
@@ -159,13 +165,12 @@ export type TOrganizationInviteTokenData = {
     id: string;
     name: string;
     siteName: string;
+    avatarUrl: string | null;
   };
 };
 
 /** List rows for the notification panel: the token data plus the org avatar. */
-export type TPendingOrgInviteListItem = Omit<TOrganizationInviteTokenData, 'organization'> & {
-  organization: TOrganizationInviteTokenData['organization'] & { avatarUrl: string | null };
-};
+export type TPendingOrgInviteListItem = TOrganizationInviteTokenData;
 
 export async function getOrganizationInviteByTokenHash(
   tokenHash: string
@@ -177,7 +182,8 @@ export async function getOrganizationInviteByTokenHash(
         organization: {
           id: schema.organization.id,
           name: schema.organization.name,
-          siteName: schema.organization.siteName
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
         }
       })
       .from(schema.organizationInvite)
@@ -371,7 +377,7 @@ export async function getActivePendingOrgInvitesForEmail(email: string): Promise
 export async function getActivePendingOrgInviteForEmail(
   organizationId: string,
   email: string
-): Promise<TOrganizationInviteTokenData | null> {
+): Promise<{ invite: TOrganizationInvite; organization: { id: string; name: string; siteName: string } } | null> {
   const normalized = email.toLowerCase().trim();
   if (!normalized) {
     return null;

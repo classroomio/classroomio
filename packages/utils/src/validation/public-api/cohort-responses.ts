@@ -47,7 +47,8 @@ export const ZPublicApiCohortMemberListItemResponse = ZPublicApiCohortMemberResp
       avatarUrl: z.string().nullable(),
       email: z.string().nullable()
     })
-    .nullable()
+    .nullable(),
+  lastLoginAt: nullableTimestamp.describe('Null if no login was ever recorded')
 });
 
 export const ZPublicApiAddCohortMembersResponse = z.object({
@@ -67,7 +68,7 @@ export const ZPublicApiAddCohortMembersResponse = z.object({
       })
     )
     .describe(
-      'Entries that failed. Entries are processed independently once every profileId passes the organization check; one outside the organization fails the whole request with 404.'
+      'Entries that failed; each entry is processed on its own. A profileId outside the organization fails the whole request (404).'
     )
 });
 

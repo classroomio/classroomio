@@ -253,6 +253,10 @@ export default defineConfig({
                 root: '/build-courses/add-documents-and-downloads'
               },
               {
+                label: 'Upload files to your media library',
+                root: '/build-courses/upload-files-to-your-media-library'
+              },
+              {
                 label: 'Recover drafts and use version history',
                 root: '/build-courses/recover-drafts-and-use-version-history'
               }
@@ -649,6 +653,10 @@ export default defineConfig({
                 root: '/publish-and-brand/choose-which-lms-navigation-tabs-learners-see'
               },
               {
+                label: 'Send signed-in students straight to your learning portal',
+                root: '/publish-and-brand/student-home'
+              },
+              {
                 label: 'Understand the student dashboard banner settings',
                 root: '/publish-and-brand/customize-the-learner-dashboard-banner'
               },
@@ -960,11 +968,11 @@ export default defineConfig({
                 root: '/integrations-and-automation/understand-classroomio-mcp'
               },
               {
-                label: 'Create, rotate, and revoke MCP keys',
+                label: 'Rotate and revoke MCP keys',
                 root: '/integrations-and-automation/create-rotate-and-revoke-mcp-keys'
               },
               {
-                label: 'Connect Claude Code, Codex, Cursor, or OpenCode',
+                label: 'Connect an AI coding agent',
                 root: '/integrations-and-automation/connect-claude-code-codex-cursor-or-opencode'
               },
               {

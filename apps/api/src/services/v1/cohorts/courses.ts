@@ -1,3 +1,4 @@
+import type { TEventSource } from '@cio/core/services/posthog';
 import type {
   TPublicApiAddCourseToCohort,
   TPublicApiCohortCourseParam,
@@ -39,7 +40,8 @@ export async function addPublicApiCohortCourseService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCohortParam,
-  payload: TPublicApiAddCourseToCohort
+  payload: TPublicApiAddCourseToCohort,
+  source: TEventSource = 'public_api'
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
@@ -49,7 +51,7 @@ export async function addPublicApiCohortCourseService(
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
-  return addCourseToCohortService(params.cohortId, payload);
+  return addCourseToCohortService(params.cohortId, payload, source);
 }
 
 export async function removePublicApiCohortCourseService(

@@ -1,8 +1,8 @@
 # Help Center content backlog
 
-This is an internal production brief for the 99 Help Center articles that currently contain only a coming-soon state. It is intentionally stored outside `content/help`, so Blume does not publish it or expose it in Help Center navigation or search.
+This is the original internal production brief for 99 Help Center articles. The articles have since replaced their coming-soon states; this file preserves their initial editorial scope rather than tracking current completion. It is stored outside `content/help`, so Blume does not publish it or expose it in Help Center navigation or search.
 
-Use each entry as a starting brief, not as verified product documentation. Before replacing a placeholder, confirm the current interface, permissions, plan requirements, defaults, side effects, and success states in the product and source code. Follow `skills/write-docs/SKILL.md` when drafting the article.
+Use each entry as a starting brief, not as verified product documentation. Before revising an article, confirm the current interface, permissions, plan requirements, defaults, side effects, and success states in the product and source code. Follow `skills/write-docs/SKILL.md` when drafting the article.
 
 Media notes:
 
@@ -321,13 +321,6 @@ Media notes:
 - **Cover:** Each feature toggle; required course or organization conditions; what students see; notification implications; grading visibility; effects of disabling features after use; how to test.
 - **Images:** Relevant Customize LMS settings and student views of news feed and marks.
 - **Video:** No video.
-
-### `content/help/publish-and-brand/configure-polls-and-live-comments.mdx` — Configure polls and live comments
-
-- **Article type:** Settings and moderation guide.
-- **Cover:** Availability and permissions; enabling each feature; where it appears; participation and moderation behavior; notifications; disabling after activity exists; student-facing experience.
-- **Images:** Poll/comment settings and an active student-facing poll or live-comment surface.
-- **Video:** Recommended if comments update in real time; show participation and moderation continuity.
 
 ### `content/help/publish-and-brand/customize-the-sign-in-background.mdx` — Customize the sign-in background
 
@@ -732,4 +725,4 @@ Media notes:
 4. Write troubleshooting pages after their canonical task guides so diagnostics can link to stable instructions instead of repeating them.
 5. Capture media only after written procedures and exact UI labels are verified.
 
-When an article is complete, replace its coming-soon MDX, add `last_reviewed`, add contextual inbound and related-guide links, validate/build the Help Center, and check off or remove its entry here.
+For future revisions, verify current behavior against the product, update `last_reviewed`, check links and media, and validate/build the Help Center.

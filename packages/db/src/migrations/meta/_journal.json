@@ -274,6 +274,83 @@
       "when": 1792497761466,
       "tag": "0038_remove_final_exercise_and_completion_threshold",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792741679148,
+      "tag": "0039_remove_poll_feature",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792952625947,
+      "tag": "0040_groupmember_completed_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792960500700,
+      "tag": "0041_mcp_key_organization_scopes",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1793103932290,
+      "tag": "0042_oauth_provider",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793489857066,
+      "tag": "0043_lesson_at_no_default",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1793493380393,
+      "tag": "0044_organization_plan_payment_failed_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1793493957846,
+      "tag": "0045_mcp_key_domain_scope",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1793782571227,
+      "tag": "0046_index_cleanup",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1793923822027,
+      "tag": "0047_student_home_course_content_perf_audience_bulk_status",
+      "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1794059018119,
+      "tag": "0048_retire_deactivated_member_status",
+      "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1794218915414,
+      "tag": "0049_lesson_blocks",
+      "breakpoints": true
     }
   ]
 }

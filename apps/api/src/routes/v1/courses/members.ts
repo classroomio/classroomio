@@ -23,6 +23,7 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, forbiddenResponse, mcpRateLimitResponse } from './docs';
@@ -78,7 +79,7 @@ export const v1CourseMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Give someone already in your organization access to a course, the same as adding a member in the dashboard; ${COURSE_TEAM_RULE}.`,
+      description: `Give someone already in your organization access to a course and send them the course welcome email; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         201: jsonResponse('Course member added successfully', MemberResponse),
@@ -98,7 +99,14 @@ export const v1CourseMembersRouter = new Hono()
         const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const member = await addCourseMemberService(orgId, actorId, params, payload);
+        const member = await addCourseMemberService(
+          orgId,
+          actorId,
+          params,
+          payload,
+          getEventSource(c),
+          c.get('automationKey')?.id ?? null
+        );
 
         return c.json(
           {

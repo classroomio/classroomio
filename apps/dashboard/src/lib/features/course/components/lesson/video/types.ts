@@ -7,6 +7,12 @@ export interface HlsRungConfig {
   videoBitrate: number;
 }
 
+export interface PresignedUrl {
+  url: string;
+  key: string;
+  createdAt: number;
+}
+
 export interface HlsUploadFailureContext {
   objectPath: string;
   requestBytes: number;

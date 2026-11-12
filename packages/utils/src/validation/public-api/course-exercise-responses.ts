@@ -21,7 +21,7 @@ export const ZPublicApiCourseExerciseResponse = z.object({
   dueBy: nullableTimestamp,
   allowMultipleAttempts: z.boolean(),
   sectionDisplayMode: z.string().nullable().describe('one_question | all_questions'),
-  completionPolicy: z.string().describe('submitted | passed'),
+  completionPolicy: z.string().describe('submitted | passed | none'),
   passThreshold: z.number().nullable(),
   createdAt: nullableTimestamp,
   updatedAt: nullableTimestamp

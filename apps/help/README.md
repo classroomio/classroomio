@@ -58,8 +58,8 @@ Two things follow from being mounted at `/help`:
 
 - **Links** are authored root-relative to the content root (e.g. `/create-and-deliver/course-types`).
   Blume prepends the base at build time.
-- **Images** must be written with the base (`/help/customize-organization.webp`). Blume deliberately
-  does not rebase images, so an unprefixed path would 404.
+- **Images in `public/`** must be written with the base (for example, `/help/course-page.webp`). Blume deliberately
+  does not rebase those images, so an unprefixed path would 404. Article images stored beside content use relative paths.
 
 `scripts/package-assets.mjs` moves `dist/` under `build/help/` to match the served path. There are no
 redirects from the old `/docs/guides/*` URLs — this is a clean-break move, by design.

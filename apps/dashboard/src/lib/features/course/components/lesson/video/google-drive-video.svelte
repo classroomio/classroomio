@@ -3,6 +3,7 @@
   import type { Lesson, LessonVideoType } from '$features/course/utils/types';
   import type { TAssetProvider } from '@cio/utils/validation/assets';
   import { lessonApi } from '$features/course/api';
+  import { addLessonVideos } from '../media-picks';
   import { mediaApi } from '$features/media/api';
   import {
     googleDrivePreviewUrl,
@@ -87,9 +88,7 @@
         metadata: videoMetadata
       };
 
-      lessonApi.updateLessonState('videos', [newVideo as unknown as NonNullable<Lesson['videos']>[number]], {
-        append: true
-      });
+      addLessonVideos([newVideo as unknown as NonNullable<Lesson['videos']>[number]]);
       lessonApi.markDirty();
     } catch (error) {
       console.error('Google Drive picker error:', error);
@@ -116,4 +115,4 @@
   {/if}
 </div>
 
-<AddedVideoList type="google_drive" />
+<AddedVideoList type="google_drive" {lessonId} />

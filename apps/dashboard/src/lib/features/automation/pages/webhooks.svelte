@@ -19,7 +19,7 @@
   import KeySecretDialog from '$features/automation/components/key-secret-dialog.svelte';
   import WebhookDeliveriesSheet from '$features/automation/components/webhook-deliveries-sheet.svelte';
   import WebhookFormSheet from '$features/automation/components/webhook-form-sheet.svelte';
-  import { WEBHOOKS_DOCS_URL } from '$features/automation/utils/automation-utils';
+  import { WEBHOOKS_VERIFY_SIGNATURE_DOCS_URL } from '$features/automation/utils/automation-utils';
   import type { Webhook } from '$features/automation/utils/types';
   import {
     formatWebhookTimestamp,
@@ -284,6 +284,6 @@
   description={$t(`${T}.reveal_description`)}
   docsLabel={$t(`${T}.reveal_docs`)}
   secret={revealedSecret}
-  docsHref={WEBHOOKS_DOCS_URL}
+  docsHref={WEBHOOKS_VERIFY_SIGNATURE_DOCS_URL}
   testId="webhook-secret"
 />

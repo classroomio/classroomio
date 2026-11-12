@@ -18,6 +18,7 @@ import {
   ZGetOrganizations,
   ZGetUserAnalytics,
   ZImportAudienceMembers,
+  ZMarkOrgPlanPastDue,
   ZInviteTeamMembers,
   ZLMSExercisesParam,
   ZRemoveTeamMember,
@@ -70,8 +71,10 @@ import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
 import { joinOrganization } from '@api/services/organization/join';
+import { markOrgPlanPastDue } from '@api/services/organization/payment-status';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
+import { organizationStudentHomeRouter } from '@api/routes/organization/student-home';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { apiKeyMiddleware } from '@api/middlewares/api-key';
@@ -93,11 +96,9 @@ import {
   toggleOrgLinkInvite
 } from '@api/services/organization/invite';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
-import { orgAdminOrAutomationKeyMiddleware } from '@api/middlewares/org-admin-or-automation-key';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-member-or-automation-key';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
-import { quizRouter } from '@api/routes/organization/quiz';
 import { searchRouter } from '@api/routes/organization/search';
 import { tagsRouter } from '@api/routes/organization/tags';
 import { widgetsRouter } from '@api/routes/organization/widgets';
@@ -572,26 +573,20 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/courses/reorder
    * Persists the manual display order of organization courses (landing page + public catalog)
-   * Requires authentication and organization administrator privileges (or automation key with `course:write`)
+   * Requires authentication and organization administrator privileges. Automation keys use PUT /public-api/v1/organization/landing-page/featured-courses
    */
-  .post(
-    '/courses/reorder',
-    authOrAutomationKeyMiddleware,
-    orgAdminOrAutomationKeyMiddleware(['course:write']),
-    zValidator('json', ZCourseReorder),
-    async (c) => {
-      try {
-        const { courses } = c.req.valid('json');
-        const orgId = c.get('orgId')!;
+  .post('/courses/reorder', authMiddleware, orgAdminMiddleware, zValidator('json', ZCourseReorder), async (c) => {
+    try {
+      const { courses } = c.req.valid('json');
+      const orgId = c.req.header('cio-org-id')!;
 
-        await reorderOrgCourses(orgId, courses);
+      await reorderOrgCourses(orgId, courses);
 
-        return c.json({ success: true }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to reorder courses');
-      }
+      return c.json({ success: true }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to reorder courses');
     }
-  )
+  })
   /**
    * GET /organization/courses/enrolled
    * Gets enrolled courses for a user in an organization (used in lms)
@@ -628,10 +623,10 @@ export const organizationRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const { limit, page = 1 } = c.req.valid('query');
+        const { limit, page = 1, sort, order } = c.req.valid('query');
 
         const orgId = c.req.header('cio-org-id')!;
-        const { data, total } = await getRecommendedCourses(orgId, user.id, limit, page);
+        const { data, total } = await getRecommendedCourses(orgId, user.id, limit, page, sort, order);
 
         const resolvedLimit = limit ?? total;
         const totalPages = resolvedLimit > 0 ? Math.ceil(total / resolvedLimit) : 1;
@@ -876,6 +871,21 @@ export const organizationRouter = new Hono()
     }
   )
   /**
+   * POST /organization/plan/past-due
+   * Records a failed subscription payment and emails the org admins on the first failure
+   * Requires a server API key
+   */
+  .post('/plan/past-due', apiKeyMiddleware, zValidator('json', ZMarkOrgPlanPastDue), async (c) => {
+    try {
+      const { subscriptionId, payload } = c.req.valid('json');
+      const plan = await markOrgPlanPastDue(subscriptionId, payload);
+
+      return c.json({ success: true, data: plan }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to record failed payment');
+    }
+  })
+  /**
    * POST /organization/plan/cancel
    * Cancels an organization plan by subscription ID
    * Requires a server API key
@@ -1027,7 +1037,7 @@ export const organizationRouter = new Hono()
         const orgId = c.req.header('cio-org-id')!;
         const data = c.req.valid('json');
 
-        const result = await assignAudienceToCourses(orgId, data);
+        const result = await assignAudienceToCourses(orgId, data, 'dashboard', c.get('user')?.id ?? null);
 
         return c.json(
           {
@@ -1050,5 +1060,5 @@ export const organizationRouter = new Hono()
   .route('/widgets', widgetsRouter)
   .route('/assets', assetsRouter)
   .route('/ai-tutor', organizationAiTutorRouter)
-  .route('/member/email-notifications', organizationMemberEmailNotificationsRouter)
-  .route('/:orgId/quiz', quizRouter);
+  .route('/student-home', organizationStudentHomeRouter)
+  .route('/member/email-notifications', organizationMemberEmailNotificationsRouter);

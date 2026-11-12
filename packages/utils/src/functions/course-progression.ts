@@ -45,10 +45,10 @@ function lessonBlocksProgression(policy?: string | null): boolean {
 }
 
 /**
- * Evaluates whether an exercise blocks sequential progression (always true).
+ * Evaluates whether an exercise blocks sequential progression.
  */
-function exerciseBlocksProgression(): boolean {
-  return true;
+function exerciseBlocksProgression(policy?: string | null): boolean {
+  return policy !== 'none';
 }
 
 /**
@@ -60,7 +60,7 @@ function itemBlocksProgression(type?: ContentType, completionPolicy?: string | n
   }
 
   if (type === ContentType.Exercise) {
-    return exerciseBlocksProgression();
+    return exerciseBlocksProgression(completionPolicy ?? 'submitted');
   }
 
   return false;

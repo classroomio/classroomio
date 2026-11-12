@@ -159,7 +159,13 @@ export type GetLessonHistoryRequest =
 export type GetLessonHistoryResponse = InferResponseType<GetLessonHistoryRequest> | null;
 export type GetLessonHistorySuccess = Extract<InferResponseType<GetLessonHistoryRequest>, { success: true }>;
 export type LessonHistory = GetLessonHistorySuccess['data'];
-export type LessonHistoryRow = LessonHistory[number];
+export type LessonHistoryRow = LessonHistory['items'][number];
+export type RestoreLessonHistoryRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['restore']['$post'];
+export type RestoreLessonToEntryRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['restore-lesson']['$post'];
+export type UndoLessonChangeSetRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['undo']['$post'];
 
 /**
  * A history row with its timestamps parsed, as the version history panel renders
@@ -168,6 +174,7 @@ export type LessonHistoryRow = LessonHistory[number];
  */
 export interface LessonVersionEntry {
   id: number;
+  entryType: LessonHistoryRow['entryType'];
   newContent: string;
   oldContent: string;
   kind: NonNullable<LessonHistoryRow['kind']>;
@@ -176,8 +183,18 @@ export interface LessonVersionEntry {
   timestamp: Date;
   editCount: number;
   authorName: string | null;
+  source: LessonHistoryRow['source'];
+  changeSetId: string | null;
+  undoable: boolean;
+  changes: LessonHistoryRow['changes'];
   locale: TLocale;
   lessonId: string;
+  blockId: string | null;
+  /** 1-based position of the block among the lesson's text blocks; null for structure entries and removed blocks. */
+  blockNumber: number | null;
+  blockCount: number;
+  blockRemoved: boolean;
+  sharedWithOtherLessons: number;
 }
 
 /** Version entries bucketed into calendar days, newest day first. */
@@ -554,6 +571,8 @@ export type WaiveCourseComplianceSuccess = Extract<WaiveCourseComplianceResponse
 export type LessonVideoType = NonNullable<Lesson['videos']>[number]['type'];
 export type LessonDocument = NonNullable<Lesson['documents']>[number];
 
+export type LessonReadingDensity = 'compact' | 'comfortable' | 'spacious';
+
 // Derived types from Course metadata
 export type Tabs = NonNullable<NonNullable<Course['metadata']>['lessonTabsOrder']>[number];
 export type Review = NonNullable<NonNullable<Course['metadata']>['reviews']>[number];
@@ -704,3 +723,26 @@ export type SidebarOutlineEntry =
 /** A lesson or exercise as a contents-page drag zone holds it: `id` is the drag key, `contentId` the item id. */
 export type ContentDndItem = CourseContentItem & { contentId: string };
 export type SidebarDeleteTarget = { kind: 'section'; sectionId: string } | { kind: 'item'; item: CourseContentItem };
+
+export type DocumentUploadStatus = 'queued' | 'uploading' | 'done' | 'error';
+
+export type DocumentUploadItem = {
+  id: string;
+  file: File;
+  status: DocumentUploadStatus;
+  progress: number;
+  position: number;
+  errorMessage: string | null;
+};
+
+type LessonBlocksRoute = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['blocks'];
+
+export type ListLessonBlocksRequest = LessonBlocksRoute['$get'];
+export type CreateLessonBlockRequest = LessonBlocksRoute['$post'];
+export type AttachLessonBlockRequest = LessonBlocksRoute['attach']['$post'];
+export type UpdateLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['$patch'];
+export type MoveLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['move']['$put'];
+export type RemoveLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['$delete'];
+export type UpdateLessonBlockRequest = LessonBlocksRoute[':blockId']['$patch'];
+export type UpdateLessonBlockLocaleRequest = LessonBlocksRoute[':blockId']['locale'][':locale']['$put'];
+export type DuplicateLessonBlockRequest = LessonBlocksRoute[':blockId']['duplicate']['$post'];

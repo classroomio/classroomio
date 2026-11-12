@@ -22,6 +22,7 @@ import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { getPlanLimit } from '@cio/utils/plans';
+import { capturePlanLimitReached } from '@cio/core/services/posthog';
 import { slugifyTitle } from '@cio/utils/validation';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -34,6 +35,15 @@ async function assertTemplateCapacity(orgId: string, dbClient: DbOrTxClient = db
 
   const used = await countOrgTemplates(orgId, dbClient);
   if (used >= limit) {
+    capturePlanLimitReached({
+      orgId,
+      limitType: 'templates',
+      plan: plan?.planName,
+      limit,
+      current: used,
+      blocked: true
+    });
+
     throw new AppError(
       `Your plan includes ${limit} template${limit === 1 ? '' : 's'}`,
       ErrorCodes.UPGRADE_REQUIRED,

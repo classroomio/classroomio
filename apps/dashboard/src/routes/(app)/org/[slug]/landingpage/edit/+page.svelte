@@ -8,9 +8,13 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { orgApi } from '$features/org/api/org.svelte';
   import { landingPageSettings, landingPageEditorSelection } from '$features/settings/utils/store';
-  import { buildOrgLandingPageProps, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
+  import {
+    buildOrgLandingPageProps,
+    isLandingPageTheme,
+    normalizeLandingPageSettings,
+    resolvePreviewTheme
+  } from '$features/org/utils/landing-page';
   import { landingPageThemeComponents } from '$features/org/utils/landing-page-components';
-  import { landingPageThemes } from '$features/org/utils/landing-page';
   import LandingpageEditor from '$features/settings/pages/landingpage-editor.svelte';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { setLandingPageEditContext, type LandingSectionKey } from '@cio/ui/custom/org-landing-page';
@@ -62,20 +66,10 @@
   let sidebarOpen = $state(true);
   let hasInitialized = $state(false);
 
-  function isLandingPageTheme(value: string | null): value is (typeof landingPageThemes)[number] {
-    if (value === null) return false;
-    return (landingPageThemes as readonly string[]).includes(value);
-  }
-
   const savedLandingPageSettings = $derived(normalizeLandingPageSettings($currentOrg.landingpage));
-  const previewTheme = $derived.by(() => {
-    const queryTheme = page.url.searchParams.get('theme');
-    if (isLandingPageTheme(queryTheme)) {
-      return queryTheme;
-    }
-
-    return savedLandingPageSettings.theme;
-  });
+  const previewTheme = $derived(
+    resolvePreviewTheme(page.url.searchParams.get('theme'), savedLandingPageSettings.theme)
+  );
   const previewLandingPageSettings = $derived({
     ...$landingPageSettings,
     theme: previewTheme

@@ -1,5 +1,6 @@
 import * as z from 'zod';
 import {
+  ZPublicApiCloneCourse,
   ZPublicApiCourseDetailResponse,
   ZPublicApiCourseListItemResponse,
   ZPublicApiCourseMemberListItemResponse,
@@ -10,27 +11,35 @@ import {
   ZPublicApiCreateCourse,
   ZPublicApiCreateCourseResponse,
   ZPublicApiPaginationQuery,
+  ZPublicApiRelatedCourseResponse,
+  ZPublicApiRelatedCoursesQuery,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseEnvelope,
+  ZPublicApiUpdateCourseResponse,
   ZPublicApiUpdateCourseStructure,
   ZPublicApiUpdateCourseStructureResponse
 } from '@cio/utils/validation/public-api';
 import {
+  clonePublicApiCourseService,
   createPublicApiCourseService,
   deletePublicApiCourseService,
   exportCourseService,
   getCourseService,
   listCoursesService,
   listCourseStudentsService,
+  listRelatedCoursesService,
   updatePublicApiCourseService,
   updatePublicApiCourseStructureService
 } from '@api/services/v1/courses/course';
 
 import { Hono } from '@api/utils/hono';
-import { handlePublicApiError } from '@api/utils/errors';
+import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
+import { captureCoursePublished } from '@cio/core/services/course/course';
 import { describeRoute, validator } from 'hono-openapi';
-import { itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { ANY_KEY_RULE } from './docs';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
+import { ANY_KEY_RULE, ORG_TEAM_RULE, cloneForbiddenResponse, mcpRateLimitResponse } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
@@ -41,15 +50,16 @@ export const v1CourseRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the organization's courses; ${ANY_KEY_RULE}.`,
+      description: "List the organization's courses; any key with the public_api:* or course:read scope may call it.",
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
           'Courses returned successfully',
           paginatedResponse(ZPublicApiCourseListItemResponse, CoursesListEnvelope)
         ),
+        400: { description: 'Invalid query parameters' },
         401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' }
+        403: { description: 'The key has neither the public_api:* nor the course:read scope' }
       }
     }),
     validator('query', ZPublicApiCoursesQuery),
@@ -91,7 +101,7 @@ export const v1CourseRouter = new Hono()
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
         const payload = c.req.valid('json');
-        const course = await createPublicApiCourseService(orgId, actorId, payload);
+        const course = await createPublicApiCourseService(orgId, actorId, payload, getEventSource(c));
 
         return c.json(
           {
@@ -102,6 +112,83 @@ export const v1CourseRouter = new Hono()
         );
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to create course');
+      }
+    }
+  )
+  .post(
+    '/:courseId/clone',
+    describeRoute({
+      description: `Copy a course with its sections, lessons and exercises, without its students, and add the key creator as its tutor; ${ORG_TEAM_RULE}.`,
+      tags: ['Courses'],
+      responses: {
+        201: jsonResponse(
+          'Course copied successfully; the copy keeps the source published state and its exercise due dates are set to now',
+          itemResponse(ZPublicApiCourseResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cloneForbiddenResponse,
+        404: { description: 'Course not found' },
+        409: { description: 'The slug is already in use (SLUG_IN_USE)' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('json', ZPublicApiCloneCourse),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const payload = c.req.valid('json');
+        const course = await clonePublicApiCourseService(orgId, actorId, params, payload);
+
+        return c.json(
+          {
+            success: true,
+            data: course
+          },
+          201
+        );
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to clone course');
+      }
+    }
+  )
+  .get(
+    '/:courseId/related',
+    describeRoute({
+      description:
+        'List published courses that share tags with a course, most shared tags first, then newest; any key with the public_api:* or course:read scope may call it.',
+      tags: ['Courses'],
+      responses: {
+        200: jsonResponse(
+          'Related courses returned successfully; empty when the course has no tags',
+          itemResponse(z.array(ZPublicApiRelatedCourseResponse))
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: { description: 'Missing the course:read scope' },
+        404: { description: 'Course not found, or the profileId is not in your organization' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('query', ZPublicApiRelatedCoursesQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const params = c.req.valid('param');
+        const query = c.req.valid('query');
+        const courses = await listRelatedCoursesService(orgId, params, query);
+
+        return c.json(
+          {
+            success: true,
+            data: courses
+          },
+          200
+        );
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to list related courses');
       }
     }
   )
@@ -278,17 +365,24 @@ export const v1CourseRouter = new Hono()
   .put(
     '/:courseId',
     describeRoute({
-      description: `Update a course; ${ANY_KEY_RULE}.`,
+      description: `Update a course; ${ANY_KEY_RULE}, and a key with only course:tag:write may send just tagIds or addTagIds.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
-          'Course updated successfully',
-          itemResponse(ZPublicApiCourseResponse, ZPublicApiUpdateCourseEnvelope)
+          'Course updated successfully; tags lists the tags on the course after the update',
+          itemResponse(ZPublicApiUpdateCourseResponse, ZPublicApiUpdateCourseEnvelope)
         ),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
-        404: { description: 'Course not found' }
+        400: {
+          description:
+            'Invalid request body, tagIds and addTagIds sent together, or a tag id that is not a tag in this organization'
+        },
+        401: errorResponses.unauthorized,
+        403: {
+          description:
+            'Missing the public_api:* scope (a course:tag:write key may send only tagIds or addTagIds), or a non-admin sent tags'
+        },
+        404: { description: 'Course not found' },
+        429: mcpRateLimitResponse
       }
     }),
     validator('param', ZPublicApiCourseParam),
@@ -296,9 +390,30 @@ export const v1CourseRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const { course, conversionOffenders } = await updatePublicApiCourseService(orgId, params, payload);
+
+        const fields = Object.keys(payload);
+        const tagsOnly = fields.length > 0 && fields.every((field) => field === 'tagIds' || field === 'addTagIds');
+        const keyScopes = c.get('automationKey')?.scopes ?? [];
+        if (!tagsOnly && !organizationApiKeyHasScopes(keyScopes, ['public_api:*'])) {
+          return c.json(
+            { success: false, error: 'Automation key is missing required scopes', code: ErrorCodes.FORBIDDEN },
+            403
+          );
+        }
+
+        const { course, conversionOffenders, publishedNow } = await updatePublicApiCourseService(
+          orgId,
+          actorId,
+          params,
+          payload
+        );
+
+        if (publishedNow) {
+          captureCoursePublished(course, actorId, getEventSource(c));
+        }
 
         return c.json(
           {

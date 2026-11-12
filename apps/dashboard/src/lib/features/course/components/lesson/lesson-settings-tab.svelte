@@ -10,6 +10,8 @@
   import * as Tooltip from '@cio/ui/base/tooltip';
   import * as Alert from '@cio/ui/base/alert';
   import InfoIcon from '@lucide/svelte/icons/info';
+  import LockIcon from '@lucide/svelte/icons/lock';
+  import UnlockIcon from '@lucide/svelte/icons/lock-open';
   import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { toast } from '@cio/ui/base/sonner';
   import { classroomio } from '$lib/utils/services/api';
@@ -24,13 +26,21 @@
     MIN_SESSION_DURATION_MINUTES
   } from '@cio/utils/functions/live-session';
   import { ZLessonRecordingUrl } from '@cio/utils/validation/lesson';
-  import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
+  import { slugifyTitle } from '@cio/utils/validation';
+  import { getVideoDisplayTitle, type LessonVideo } from './video/video-card-utils';
+  import { libraryAssetCache } from '$features/media/api/library-asset-cache.svelte';
 
   interface Props {
     hasUnsavedSessionChanges?: boolean;
+    videos?: LessonVideo[];
+    onVideoWatchEnforcedChange?: (index: number, checked: boolean) => void;
   }
 
-  let { hasUnsavedSessionChanges = $bindable(false) }: Props = $props();
+  let {
+    hasUnsavedSessionChanges = $bindable(false),
+    videos: blockVideos,
+    onVideoWatchEnforcedChange = toggleLegacyVideoWatchEnforced
+  }: Props = $props();
 
   type LessonCompletionPolicy = 'manual' | 'video_watch' | 'none';
 
@@ -184,11 +194,24 @@
     hasUnsavedSessionChanges = sessionChanged();
   });
 
+  const isUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
+  const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
+
+  function handleUnlockedChange(checked: boolean) {
+    lessonApi.updateLessonState('isUnlocked', checked);
+  }
+
   const completionPolicy = $derived(lessonApi.lesson?.completionPolicy ?? 'manual');
   const courseCommentsEnabled = $derived(courseApi.course?.metadata?.commentsEnabled ?? true);
   const lessonCommentsEnabled = $derived(lessonApi.lesson?.commentsEnabled ?? true);
   const videoWatchThreshold = $derived(lessonApi.lesson?.videoWatchThreshold ?? 95);
-  const videos = $derived(lessonApi.lesson?.videos ?? []);
+  const videos = $derived(blockVideos ?? lessonApi.lesson?.videos ?? []);
+
+  $effect(() => {
+    for (const video of videos) {
+      if (video.assetId) libraryAssetCache.ensureLoaded(video.assetId);
+    }
+  });
 
   const enforceableVideos = $derived(
     videos
@@ -215,7 +238,7 @@
     lessonApi.updateLessonState('completionPolicy', value);
   }
 
-  function toggleVideoWatchEnforced(index: number, checked: boolean) {
+  function toggleLegacyVideoWatchEnforced(index: number, checked: boolean) {
     const currentVideos = lessonApi.lesson?.videos;
     if (!currentVideos) return;
 
@@ -248,6 +271,45 @@
 
 <div class="p-4">
   <Field.Group class="w-full max-w-xl">
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.lessons.settings.access.title')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.lessons.settings.access.description')}</Field.Description>
+
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="lesson-unlocked"
+          checked={isUnlocked}
+          onCheckedChange={handleUnlockedChange}
+          data-testid="lesson-lock-toggle"
+        />
+        <Field.Label for="lesson-unlocked" class="gap-1.5">
+          {#if isUnlocked}
+            <UnlockIcon size={14} />
+            {$t('generic.unlocked')}
+          {:else}
+            <LockIcon size={14} />
+            {$t('generic.locked')}
+          {/if}
+        </Field.Label>
+      </Field.Field>
+
+      {#if isPublicCourse}
+        <Field.Field>
+          <InputField
+            label={$t('course.navItem.settings.slug.label')}
+            helperMessage={$t('course.navItem.settings.slug.description')}
+            value={lessonApi.lesson?.slug ?? ''}
+            placeholder={slugifyTitle(lessonApi.lesson?.title ?? '')}
+            onInput={(event) => lessonApi.updateLessonState('slug', event.currentTarget.value)}
+            errorMessage={lessonApi.errors.slug}
+            testId="lesson-settings-slug"
+          />
+        </Field.Field>
+      {/if}
+    </Field.Set>
+
+    <Field.Separator />
+
     {#if isLiveClass}
       <Field.Set>
         <Field.Legend>{$t('course.navItem.lessons.session.heading')}</Field.Legend>
@@ -339,7 +401,7 @@
             <Field.Label for="lesson-completion-policy">
               {$t('course.navItem.lessons.completion_policy.label')}
             </Field.Label>
-            <Tooltip.Provider>
+            <Tooltip.Provider ignoreNonKeyboardFocus>
               <Tooltip.Root>
                 <Tooltip.Trigger aria-label={$t('course.navItem.lessons.settings.progression.option_guide_heading')}>
                   <InfoIcon size={14} class="ui:text-muted-foreground" />
@@ -443,10 +505,10 @@
                     <Checkbox
                       id={`watch-enforced-${video.assetId}`}
                       checked={isVideoWatchEnforced(video)}
-                      onCheckedChange={(checked) => toggleVideoWatchEnforced(index, checked === true)}
+                      onCheckedChange={(checked) => onVideoWatchEnforcedChange(index, checked === true)}
                     />
                     <Field.Label for={`watch-enforced-${video.assetId}`} class="font-normal">
-                      {getVideoTitle(video, index)}
+                      {getVideoDisplayTitle(video, index)}
                     </Field.Label>
                   </Field.Field>
                 {/each}

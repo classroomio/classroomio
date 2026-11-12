@@ -1,3 +1,4 @@
+import { getFileUploadTypeKeyForMimeType } from '@cio/utils/file-upload';
 import { t } from '$lib/utils/functions/translations';
 import type { OrganizationAsset } from './types';
 
@@ -111,6 +112,33 @@ export function mapAssetToLessonVideo(
       createdAt: asset.createdAt ?? undefined,
       ...(isHlsAsset(asset) ? { hls: true } : {})
     }
+  };
+}
+
+export function mapAssetToLessonDocument(
+  asset: OrganizationAsset,
+  options: { url: string; key?: string | null }
+): {
+  type: string;
+  name: string;
+  link: string;
+  key: string;
+  size?: number;
+  assetId: string;
+} {
+  const displayName = getAssetDisplayName(asset);
+  const mimeTypeKey = asset.mimeType ? getFileUploadTypeKeyForMimeType(asset.mimeType) : null;
+  const fileExtension = displayName.includes('.') ? displayName.split('.').pop() : null;
+  const type = mimeTypeKey ?? fileExtension?.toLowerCase() ?? 'file';
+  const key = options.key ?? asset.storageKey ?? '';
+
+  return {
+    type,
+    name: displayName,
+    link: options.url,
+    key,
+    size: asset.byteSize ?? undefined,
+    assetId: asset.id
   };
 }
 

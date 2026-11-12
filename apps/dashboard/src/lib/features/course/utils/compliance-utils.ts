@@ -1,6 +1,7 @@
 import type { TCourseType } from '@cio/db/types';
 import type { TComplianceSettings } from '@cio/utils/validation/course';
 import type { UserEnrolledCourses } from '$features/course/types';
+import { getCourseProgressCounts } from './functions';
 
 export const DEFAULT_COMPLIANCE_SETTINGS = {
   retakeIntervalMonths: 12,
@@ -30,8 +31,8 @@ type StudentEnrolledCourse = UserEnrolledCourses[number];
 
 function getCourseContentProgress(course: StudentEnrolledCourse) {
   const exercisesCompleted = typeof course.exercisesCompleted === 'number' ? course.exercisesCompleted : 0;
-  const totalExercises = typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
-  const totalItems = (course.lessonCount ?? 0) + totalExercises;
+  const progressCounts = getCourseProgressCounts(course);
+  const totalItems = progressCounts.lessons + progressCounts.exercises;
 
   if (totalItems <= 0) {
     return 0;

@@ -78,6 +78,7 @@ describe('read_my_submissions', () => {
         overallStatus: 'auto_graded',
         total: 2,
         reviewerId: null,
+        gradedBy: null,
         feedback: null,
         groupmember: null,
         answers: []
@@ -94,6 +95,7 @@ describe('read_my_submissions', () => {
         overallStatus: 'auto_graded',
         total: 2,
         reviewerId: null,
+        gradedBy: null,
         feedback: 'Review special return types.',
         groupmember: null,
         answers: [
@@ -157,6 +159,7 @@ describe('read_my_submissions', () => {
         overallStatus: 'manual_required',
         total: 0,
         reviewerId: null,
+        gradedBy: null,
         feedback: 'Draft feedback',
         groupmember: null,
         answers: []
@@ -193,6 +196,7 @@ describe('read_my_submissions', () => {
         overallStatus: 'manual_required',
         total: 2,
         reviewerId: null,
+        gradedBy: null,
         feedback: null,
         groupmember: null,
         answers: [

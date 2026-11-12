@@ -1,15 +1,21 @@
+import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
   TCourseReorder,
   TGetAudienceQuery,
-  TGetOrganizationCoursesQuery
+  TGetOrganizationCoursesQuery,
+  TOrganizationCourseSort,
+  TStudentHomeDestination
 } from '@cio/utils/validation/organization';
+import type { LmsAvailabilityContext } from '@cio/utils/lms';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   activateOrganizationPlan,
   cancelOrganizationPlan,
   checkSiteNameExists,
+  countOrganizationAdmins,
   createOrganizationPlan,
   deleteOrganizationAudienceMember,
   deleteOrganizationMember,
@@ -25,8 +31,11 @@ import {
   getOrganizationMemberIdByOrgAndProfile,
   getOrganizationPlanBySubscriptionId,
   getOrganizationTeam,
+  getOrganizationTeamMemberById,
   getOrganizations,
+  lockOrganizationForUpdate,
   revokeActiveOrganizationInvitesByEmails,
+  setOrganizationStudentHome,
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
@@ -57,6 +66,7 @@ import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
+import { assertStudentHomeDestination } from './organization/student-home';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
 export { updateTeamMemberRole } from './organization/team-role';
@@ -73,10 +83,14 @@ const ORG_COURSES_PAGE_SIZE = 6;
 export async function createOrg(profileId: string, data: { name: string; siteName: string }) {
   try {
     // Reuse existing function from onboarding service
-    return await createOrganizationWithOwner(profileId, {
-      orgName: data.name,
-      siteName: data.siteName
-    });
+    return await createOrganizationWithOwner(
+      profileId,
+      {
+        orgName: data.name,
+        siteName: data.siteName
+      },
+      'add_org'
+    );
   } catch (error) {
     // Re-throw AppError as-is
     if (error instanceof AppError) {
@@ -250,6 +264,8 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
     if (!deleted) {
       throw new AppError('Audience member not found', ErrorCodes.ORG_AUDIENCE_REMOVE_FAILED, 404);
     }
+
+    await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
     if (deleted.email && removedByProfileId) {
       const targetEmail = deleted.email.toLowerCase();
@@ -565,9 +581,16 @@ export async function getUserEnrolledCourses(orgId: string, userId: string) {
  * @param userId - User ID to exclude enrolled courses
  * @returns Array of recommended courses
  */
-export async function getRecommendedCourses(orgId: string, userId: string, limit?: number, page?: number) {
+export async function getRecommendedCourses(
+  orgId: string,
+  userId: string,
+  limit?: number,
+  page?: number,
+  sort?: TOrganizationCourseSort,
+  order?: 'asc' | 'desc'
+) {
   try {
-    return getExploreCourses({ orgId, profileId: userId, limit, page });
+    return getExploreCourses({ orgId, profileId: userId, limit, page, sortKey: sort, order });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -793,7 +816,12 @@ async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrgan
   }
 }
 
-export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
+/** `dbClient` lets callers compose the organization write into their own transaction. */
+export async function updateOrg(
+  orgId: string,
+  data: Partial<TOrganization> & { studentHome?: TStudentHomeDestination | null },
+  dbClient: DbOrTxClient = db
+) {
   try {
     if (data.siteName) {
       const exists = await checkSiteNameExists(data.siteName, orgId); // exclude current org
@@ -829,7 +857,40 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       }
     }
 
-    const organization = await updateOrganization(orgId, data);
+    const { studentHome, ...orgData } = data;
+
+    let updateData = orgData;
+
+    if (orgData.customization) {
+      const apps = { ...orgData.customization.apps };
+      Reflect.deleteProperty(apps, 'poll');
+      const customization = { ...orgData.customization, apps };
+      updateData = { ...orgData, customization };
+    }
+
+    const hasOrgUpdates = Object.values(updateData).some((value) => value !== undefined);
+
+    const writeOrganization = async (client: DbOrTxClient) => {
+      if (studentHome !== undefined) {
+        const existing = await getOrganizationById(orgId, client);
+        const home = await assertStudentHomeDestination(
+          orgId,
+          studentHome,
+          (orgData.customization ?? existing?.customization ?? null) as LmsAvailabilityContext['customization'],
+          client
+        );
+        await setOrganizationStudentHome(orgId, home, client);
+      }
+
+      if (!hasOrgUpdates) {
+        return getOrganizationById(orgId, client);
+      }
+
+      return updateOrganization(orgId, updateData, client);
+    };
+
+    const organization =
+      dbClient === db ? await db.transaction((tx) => writeOrganization(tx)) : await writeOrganization(dbClient);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }
@@ -963,14 +1024,39 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
  */
 export async function removeTeamMember(orgId: string, memberId: number, removedByProfileId?: string) {
   try {
-    const deleted = await deleteOrganizationMember(orgId, memberId);
-    if (!deleted) {
-      throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
-    }
+    const { deleted, targetEmail, revoked } = await db.transaction(async (tx) => {
+      await lockOrganizationForUpdate(orgId, tx);
 
-    if (deleted.email && removedByProfileId) {
-      const targetEmail = deleted.email.toLowerCase();
-      const revoked = await revokeActiveOrganizationInvitesByEmails(orgId, [targetEmail], removedByProfileId);
+      const member = await getOrganizationTeamMemberById(orgId, memberId, tx);
+      if (!member) {
+        throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+      }
+
+      if (member.profileId && member.profileId === removedByProfileId) {
+        throw new AppError('You cannot remove yourself from the team', ErrorCodes.ORG_TEAM_REMOVE_SELF, 400);
+      }
+
+      const removed = await deleteOrganizationMember(orgId, memberId, tx);
+      if (!removed) {
+        throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+      }
+
+      if ((await countOrganizationAdmins(orgId, tx)) < 1) {
+        throw new AppError('The organization must keep at least one admin', ErrorCodes.ORG_TEAM_LAST_ADMIN, 400);
+      }
+
+      const removedEmail = removed.email?.toLowerCase() ?? null;
+      const revokedInvites =
+        removedEmail && removedByProfileId
+          ? await revokeActiveOrganizationInvitesByEmails(orgId, [removedEmail], removedByProfileId, tx)
+          : [];
+
+      return { deleted: removed, targetEmail: removedEmail, revoked: revokedInvites };
+    });
+
+    await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
+
+    if (targetEmail && removedByProfileId && revoked.length > 0) {
       await recordOrganizationInviteAudits(
         revoked.map((invite) => ({
           inviteId: invite.id,

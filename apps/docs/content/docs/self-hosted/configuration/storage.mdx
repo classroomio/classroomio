@@ -112,15 +112,16 @@ the `api` and `dashboard` containers. Unset = built-in defaults. On [Railway](/s
 
 | Variable | Default | Applies to |
 |----------|---------|------------|
-| `UPLOAD_MAX_DOCUMENT_MB` | 5 | Course lesson documents |
+| `UPLOAD_MAX_DOCUMENT_MB` | 5 | Course lesson documents and Media page document uploads |
 | `UPLOAD_MAX_IMAGE_MB` | 5 | Avatars, media library, editor images |
-| `UPLOAD_MAX_VIDEO_MB` | 800 | Lesson video uploads |
+| `UPLOAD_MAX_VIDEO_MB` | 1024 | Lesson video uploads, Media page video uploads (never more than 1 GB per file there), and public API video uploads |
 | `UPLOAD_MAX_EXERCISE_FILE_MB` | 2 | Student assignment file-upload questions |
 | `UPLOAD_MAX_AGENT_DOCUMENT_MB` | 5 | AI assistant document uploads |
 | `UPLOAD_MAX_LANDING_IMAGE_MB` | 0.5 | Org landing page cover images |
 | `UPLOAD_MAX_THUMBNAIL_MB` | 5 | Media thumbnail uploads |
 
 :::warning[Reverse proxy limits]
-If you raise these values, also increase your reverse proxy body-size limit (e.g. nginx
-`client_max_body_size`) so large uploads aren't rejected before they reach ClassroomIO.
+The default video limit is 1 GB. Make sure your reverse proxy body-size limit (e.g. nginx
+`client_max_body_size`), including on the storage domain, allows uploads that large, and raise it
+further if you raise these values.
 :::

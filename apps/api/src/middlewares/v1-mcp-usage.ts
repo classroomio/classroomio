@@ -14,13 +14,49 @@ type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
   '/public-api/v1/audience': { GET: 'list_audience_members', POST: 'add_audience_member' },
   '/public-api/v1/audience/assign-courses': { POST: 'assign_audience_courses' },
+  '/public-api/v1/audience/bulk-status': { POST: 'set_audience_status' },
   '/public-api/v1/audience/:memberId': {
     GET: 'get_audience_member',
     PUT: 'update_audience_member',
     DELETE: 'remove_audience_member'
   },
   '/public-api/v1/team': { GET: 'list_team_members' },
-  '/public-api/v1/team/:memberId': { GET: 'get_team_member', PUT: 'update_team_member' },
+  '/public-api/v1/team/invites': { POST: 'invite_team_members' },
+  '/public-api/v1/team/invite-link': {
+    GET: 'get_team_invite_link',
+    POST: 'set_team_invite_link',
+    PATCH: 'set_team_invite_link'
+  },
+  '/public-api/v1/team/:memberId': {
+    GET: 'get_team_member',
+    PUT: 'update_team_member',
+    DELETE: 'remove_team_member'
+  },
+  '/public-api/v1/organization': { GET: 'get_organization', PATCH: 'update_organization' },
+  '/public-api/v1/organization/customization': {
+    GET: 'get_organization_customization',
+    PATCH: 'update_organization_customization'
+  },
+  '/public-api/v1/organization/landing-page/featured-courses': { PUT: 'set_featured_courses' },
+  '/public-api/v1/organization/domain': { GET: 'get_domain', PATCH: 'update_domain' },
+  '/public-api/v1/organization/domain/custom': { PUT: 'connect_custom_domain', DELETE: 'remove_custom_domain' },
+  '/public-api/v1/organization/domain/custom/refresh': { POST: 'refresh_custom_domain' },
+  '/public-api/v1/courses': { GET: 'list_org_courses' },
+  '/public-api/v1/courses/:courseId/clone': { POST: 'clone_course' },
+  '/public-api/v1/courses/:courseId/related': { GET: 'list_related_courses' },
+  '/public-api/v1/organization/email-templates': { GET: 'list_email_templates' },
+  '/public-api/v1/organization/email-templates/:emailId/:locale': {
+    GET: 'get_email_template',
+    PUT: 'update_email_template',
+    DELETE: 'reset_email_template'
+  },
+  '/public-api/v1/organization/email-templates/:emailId/:locale/test': { POST: 'send_test_email_template' },
+  // MCP keys can only send tagIds or addTagIds here.
+  '/public-api/v1/courses/:courseId': { PUT: 'set_course_tags' },
+  '/public-api/v1/tags': { GET: 'list_tags', POST: 'create_tag' },
+  '/public-api/v1/tags/:tagId': { PUT: 'update_tag' },
+  '/public-api/v1/tags/groups': { POST: 'create_tag_group' },
+  '/public-api/v1/tags/groups/:groupId': { PUT: 'update_tag_group' },
   '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
   '/public-api/v1/courses/:courseId/members/:memberId': {
     GET: 'get_course_member',
@@ -47,6 +83,20 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   '/public-api/v1/courses/:courseId/lessons/:lessonId/translations': { GET: 'list_course_lesson_translations' },
   '/public-api/v1/courses/:courseId/lessons/:lessonId/translations/:locale': { PUT: 'set_course_lesson_translation' },
   '/public-api/v1/courses/:courseId/lessons/:lessonId/history': { GET: 'list_course_lesson_history' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks': { GET: 'list_lesson_blocks', POST: 'add_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/attach': { POST: 'attach_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/placements/:placementId': {
+    PATCH: 'update_lesson_block_placement',
+    DELETE: 'remove_lesson_block'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/placements/:placementId/move': {
+    PUT: 'move_lesson_block'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId': { PATCH: 'update_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId/locale/:locale': {
+    PUT: 'set_lesson_block_content'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId/duplicate': { POST: 'duplicate_lesson_block' },
   '/public-api/v1/courses/:courseId/lessons/:lessonId/comments': {
     GET: 'list_course_lesson_comments',
     POST: 'create_course_lesson_comment'
@@ -80,6 +130,10 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify/:jobId': { GET: 'get_course_exercise_notify_status' },
   '/public-api/v1/exercise-templates': { GET: 'list_exercise_templates' },
   '/public-api/v1/exercise-templates/:templateId': { GET: 'get_exercise_template' },
+  '/public-api/v1/course-templates': { GET: 'list_course_templates' },
+  '/public-api/v1/course-templates/:templateId': { GET: 'get_course_template' },
+  '/public-api/v1/course-templates/:templateId/courses': { POST: 'create_course_from_template' },
+  '/public-api/v1/courses/:courseId/template': { POST: 'save_course_as_template' },
   '/public-api/v1/courses/:courseId/submissions': { GET: 'list_course_submissions' },
   '/public-api/v1/courses/:courseId/submissions/:submissionId': {
     GET: 'get_course_submission',

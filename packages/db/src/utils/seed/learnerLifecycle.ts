@@ -92,7 +92,7 @@ type Cohort = {
   lastLoginDaysAgo: [number, number] | null;
   lastActiveDaysAgo: [number, number] | null;
   lessonsCompleted: [number, number];
-  status: 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
+  status: 'ACTIVE' | 'ARCHIVED';
   enrolled: boolean;
 };
 
@@ -158,18 +158,8 @@ const COHORTS: Cohort[] = [
     enrolled: false
   },
   {
-    label: 'deactivated',
-    share: 0.06,
-    joinedDaysAgo: [100, 400],
-    lastLoginDaysAgo: [60, 200],
-    lastActiveDaysAgo: [60, 200],
-    lessonsCompleted: [0, 2],
-    status: 'DEACTIVATED',
-    enrolled: true
-  },
-  {
     label: 'archived',
-    share: 0.06,
+    share: 0.12,
     joinedDaysAgo: [200, 500],
     lastLoginDaysAgo: [150, 300],
     lastActiveDaysAgo: [150, 300],

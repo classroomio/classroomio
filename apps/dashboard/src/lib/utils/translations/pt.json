@@ -36,7 +36,8 @@
         "title": "Abrindo sua academia…",
         "caption": "Preparando seus cursos, alunos e configurações."
       }
-    }
+    },
+    "back": "Voltar"
   },
   "validations": {
     "generic": {
@@ -358,7 +359,8 @@
       },
       "info": {
         "conversion_blocked": "Corrija as perguntas abaixo para concluir a conversão para Público."
-      }
+      },
+      "sections_reorder_failed": "Não foi possível reordenar as seções"
     },
     "people": {
       "success": {
@@ -394,18 +396,8 @@
       "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível.",
       "draft_restored": "Restauramos as alterações não salvas que você deixou"
     },
-    "poll": {
-      "info": {
-        "not_published": "A enquete ainda não foi publicada",
-        "vote_once": "Você só pode votar uma vez"
-      },
-      "error": {
-        "creating_poll": "Ocorreu um erro ao criar a enquete",
-        "updating_poll": "Ocorreu um erro ao atualizar o status da enquete",
-        "submitting_poll": "Ocorreu um erro ao enviar a enquete"
-      }
-    },
     "media_manager": {
+      "video_added": "Vídeo adicionado à sua biblioteca",
       "list_failed": "Falha ao carregar recursos de mídia",
       "storage_failed": "Falha ao carregar o resumo do armazenamento",
       "create_failed": "Falha ao criar recurso de mídia",
@@ -436,6 +428,8 @@
       "delete_in_use": "Este vídeo ainda está anexado a uma aula. Remova-o primeiro.",
       "delete_failed": "Falha ao excluir vídeo",
       "added_to_lesson": "Vídeo adicionado à aula",
+      "document_added_to_lesson": "Documento adicionado à lição",
+      "documents_added_to_lesson": "Documentos adicionados à lição",
       "transcript_unavailable": "Transcrição indisponível"
     },
     "tags": {
@@ -535,6 +529,9 @@
       "test_success": "Evento de teste entregue com sucesso.",
       "test_failed": "O evento de teste falhou. Abra o registro de entregas para ver o motivo.",
       "redelivered": "Evento enfileirado para reenvio."
+    },
+    "oauth": {
+      "revoked": "Acesso do app removido"
     }
   },
   "explore": {
@@ -890,29 +887,21 @@
       "undo_success": "Revertido",
       "confirm_action": {
         "archive": "Arquivar",
-        "deactivate": "Desativar",
-        "reactivate": "Reativar",
         "unarchive": "Desarquivar",
         "delete": "Excluir permanentemente"
       },
       "confirm_body": {
         "archive": "Eles perdem o acesso e liberam uma vaga no seu plano. Você pode desarquivá-los a qualquer momento.",
-        "deactivate": "Eles perdem o acesso, mas mantêm o lugar no seu plano. Você pode reativá-los a qualquer momento.",
-        "reactivate": "Eles recuperam o acesso à sua organização e aos seus cursos.",
         "unarchive": "Eles recuperam o acesso e voltam a ocupar um lugar no seu plano.",
         "delete": "Isso os remove desta organização e a ação é irreversível. Suas contas, envios e resultados serão mantidos."
       },
       "confirm_title": {
         "archive": "Arquivar {count} alunos?",
-        "deactivate": "Desativar {count} alunos?",
-        "reactivate": "Reativar {count} alunos?",
         "unarchive": "Desarquivar {count} alunos?",
         "delete": "Remover permanentemente {count} alunos?"
       },
       "action": {
         "archive": "Arquivar {count} alunos",
-        "deactivate": "Desativar {count} alunos",
-        "reactivate": "Reativar {count} alunos",
         "unarchive": "Desarquivar {count} alunos",
         "delete": "Excluir {count} alunos"
       },
@@ -928,7 +917,6 @@
     "filter": {
       "status": "Status do membro",
       "status_active": "Ativo",
-      "status_deactivated": "Desativado",
       "status_archived": "Arquivado",
       "last_login": "Último login",
       "last_activity": "Última atividade",
@@ -1033,8 +1021,6 @@
         "reports": "Disponibilizar relatórios de notas para aulas",
         "disabled": "Desativado",
         "enabled": "Habilitado",
-        "order": "Guia Solicitar aulas",
-        "drag": "Arraste e solte os rótulos para reordenar suas guias de materiais",
         "content_grouping_title": "Agrupamento de conteúdo",
         "content_grouping_description": "Aulas e exercícios em grupo por seção na lista de conteúdo.",
         "progression_mode_title": "Progressão do aluno",
@@ -1283,7 +1269,10 @@
           "enrolled_success": "Você está inscrito neste curso.",
           "enrolled_verify_email": "Você está inscrito! Verifique seu e-mail para acessar este curso.",
           "student_limit_reached": "{orgName} atingiu sua capacidade de alunos. Entre em contato com o administrador da sua organização.",
-          "members_only": "Apenas membros desta organização podem se inscrever. Solicite um convite a um administrador."
+          "members_only": "Apenas membros desta organização podem se inscrever. Solicite um convite a um administrador.",
+          "invite_restricted_email": "Este convite foi enviado para {inviteEmail}, mas você está conectado como {currentEmail}. Saia e continue com o e-mail convidado.",
+          "invite_restricted": "Este convite é restrito a outra conta. Saia e continue com a conta convidada.",
+          "switch_account": "Sair e trocar de conta"
         },
         "pricing_section": {
           "free": "Grátis",
@@ -1807,7 +1796,6 @@
           "title": "Histórico de versões",
           "fetch_more_versions": "Buscar mais versões",
           "current_version": "Versão atual",
-          "restore_version": "Restaurar esta versão",
           "edit_count": "{count, plural, one {# edição} other {# edições}}",
           "today": "Hoje",
           "yesterday": "Ontem",
@@ -1817,35 +1805,38 @@
             "auto": "Salvamento automático",
             "manual": "Versão salva",
             "publish": "Publicado"
-          }
-        },
-        "poll": {
-          "voted": "Votado",
-          "created_by": "Criado por",
-          "status": "Status",
-          "draft": "Rascunho",
-          "publish": "Publicar",
-          "expiration": "Expiração",
-          "total_voted": "Total de votos",
-          "responses": "Respostas",
-          "expires": "Expira",
-          "today": "Hoje",
-          "back": "Voltar",
-          "result": "Resultado",
-          "delete": "Excluir",
-          "create_poll": "Criar enquete",
-          "question": "Pergunta",
-          "options": "Opções",
-          "option_label": "Rótulo da opção",
-          "cancel": "Cancelar",
-          "poll_question": "Pergunta da enquete"
-        },
-        "polls": {
-          "title": "Enquete",
-          "active_polls": "Enquetes ativas",
-          "expired_polls": "Enquetes expiradas",
-          "loading": "Carregando...",
-          "no_polls": "Nenhuma enquete para exibir"
+          },
+          "block_label": "Bloco de texto {number} de {count}",
+          "restore_failed": "Não foi possível restaurar esta versão",
+          "shared_restore_hint": "Este bloco de texto é compartilhado com outras lições. A restauração dá a esta lição uma cópia própria e as outras lições mantêm o texto atual.",
+          "structure_change": "Estrutura",
+          "restore_lesson_failed": "Não foi possível restaurar a lição",
+          "undo_change": "Desfazer",
+          "by_assistant": "Assistente",
+          "by_restore": "Restaurar",
+          "change_added": "Adicionado {name}",
+          "change_removed": "{name} removido",
+          "change_moved": "Mudou {name}",
+          "change_edited": "{name} alterado",
+          "block_type": {
+            "note": "bloco de texto",
+            "video": "vídeo",
+            "slides": "diapositivos",
+            "document": "documento",
+            "image": "imagem"
+          },
+          "change_kind": {
+            "added": "Adicionado",
+            "removed": "Removido",
+            "moved": "Movido",
+            "edited": "Alterado"
+          },
+          "restore_version": "Restaurar este bloco",
+          "restore_lesson": "Restaurar a lição inteira",
+          "undo_failed": "Não foi possível desfazer esta alteração. Se algo alterado foi editado posteriormente, restaure a versão desejada.",
+          "removed_block_label": "Bloco de texto removido",
+          "restore_lesson_confirm": "Substituir a lição inteira por esta versão?",
+          "structure_state": "Ponto de partida: como os blocos da aula foram dispostos antes da primeira alteração registrada."
         },
         "comments": {
           "title": "Comentários",
@@ -1854,10 +1845,16 @@
           "placeholder": "O que você acha desta lição?",
           "comment_btn": "Comentário",
           "cancel_btn": "Cancelar",
-          "load_more_btn": "Carregar mais",
           "comment_error": "Falha ao postar comentário. Por favor, tente novamente.",
           "edit": "Editar",
-          "delete": "Excluir"
+          "delete": "Excluir",
+          "save_btn": "Salvar",
+          "unknown_user": "Desconhecido",
+          "actions": "Ações de comentários",
+          "read_more": "Leia mais",
+          "show_less": "Mostrar menos",
+          "see_all": "Ver todos os comentários ({count})",
+          "show_more": "Mostrar mais comentários"
         },
         "exercises": {
           "heading": "Todos os exercícios",
@@ -1917,7 +1914,8 @@
                 "passed": "Aprovado",
                 "not_passed": "Não aprovado",
                 "no_submission_title": "Este usuário não tem nenhuma submissão para este exercício.",
-                "no_submission_description": "As submissões aparecerão aqui assim que este aluno concluir o exercício."
+                "no_submission_description": "As submissões aparecerão aqui assim que este aluno concluir o exercício.",
+                "optional": "Opcional"
               },
               "summary": {
                 "heading": "Resumo",
@@ -2405,7 +2403,9 @@
               "save_continue": "Salvar e continuar",
               "question_fallback": "Pergunta {number}",
               "zero_points_field": "A conclusão aprovada precisa de pelo menos um ponto disponível."
-            }
+            },
+            "settings_completion_none": "Nenhum – opcional",
+            "settings_completion_none_helper": "Este exercício não bloqueia a progressão do curso e não é necessário para conclusão do curso ou certificados."
           },
           "new_exercise_modal": {
             "heading": "Novo exercício",
@@ -2442,12 +2442,6 @@
           }
         },
         "materials": {
-          "body_heading": "Nenhuma nota, vídeo ou slide adicionado para esta lição ainda",
-          "body_content": "Compartilhe seu conhecimento com seus alunos criando conteúdo envolvente. Comece clicando em",
-          "get_started": "Comece",
-          "no_content": "Sem conteúdo",
-          "no_translation": "Nenhuma tradução para o idioma selecionado",
-          "button": "botão",
           "show_transcript": "Mostrar transcrição",
           "summarize_lesson": "Resumir lição",
           "summarize_lesson_prompt": {
@@ -2457,60 +2451,33 @@
           },
           "button_done": "Concluído",
           "tabs": {
-            "settings": {
-              "title": "Configurações"
-            },
             "document": {
-              "title": "Documentos",
-              "add_document": "Adicionar documento",
-              "no_document": "Nenhum documento enviado ainda",
-              "view_document": "Ver documento",
-              "download": "Baixar",
-              "upload_document": "Carregar documento",
               "upload_title": "Carregar documento",
-              "upload_description": "Carregue arquivos PDF, DOCX ou DOC. Tamanho máximo: 5MB",
+              "upload_description": "Carregue arquivos PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB ou PY",
+              "up_to_size_each": "(até {size} cada)",
+              "uploading_progress": "Carregando {percent}%",
+              "queued": "Aguardando",
+              "completed": "Concluído",
+              "failed": "Falhou",
+              "finish": "Concluir",
+              "max_files_error": "Você pode carregar até {count} arquivos por vez.",
+              "size_progress": "{uploaded} de {total}",
               "drag_drop": "Arraste e solte seu documento aqui",
-              "or": "ou",
-              "choose_file": "Escolha arquivo",
-              "cancel": "Cancelar",
-              "uploading": "Fazendo upload...",
-              "upload_success": "Documento enviado com sucesso!",
               "upload_error": "Falha ao carregar o documento",
-              "file_type_error": "Tipo de arquivo não suportado. Faça upload de arquivos PDF, DOCX ou DOC.",
+              "file_type_error": "Tipo de arquivo não suportado. Faça upload de arquivos PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB ou PY.",
               "file_size_error": "Tamanho do arquivo muito grande. O tamanho máximo é {size}.",
-              "type": "Tipo",
-              "size": "Tamanho",
-              "upload_error_title": "Erro ao carregar",
-              "upload_error_message": "Formato de arquivo incompatível ou falha no upload",
-              "upload_error_try_again": "Tente novamente com um arquivo de documento válido",
-              "try_again": "Tente novamente",
               "upgrade": "Atualize seu plano para fazer upload de documentos",
-              "cancel_upload": "Cancelar upload",
-              "upload_cancelled": "Upload cancelado pelo usuário",
-              "downloading": "Baixando...",
-              "download_success": "Documento baixado com sucesso",
-              "download_error": "Falha ao baixar o documento",
-              "view_pdf": "Ver PDF",
-              "remove_document": "Remover documento",
-              "delete": "Excluir",
-              "page_of": "Página {page} de {total}",
-              "loading_pdf": "Carregando PDF...",
-              "failed_to_load_pdf": "Falha ao carregar o documento PDF",
-              "failed_to_render_pdf": "Falha ao renderizar a página PDF",
-              "use_arrow_keys": "Use as teclas de seta para navegar, +/- para ampliar ou clique nos controles acima. O clique com o botão direito está desativado.",
-              "empty_title": "Ainda não há documentos",
-              "empty_description": "Faça upload de documentos para compartilhar com seus alunos",
-              "attachments_heading": "Anexos",
-              "file_count": "{count, plural, one {# arquivo} other {# arquivos}}",
-              "view_file": "Ver arquivo",
-              "reorder_file": "Reordenar arquivo"
+              "no_library_documents": "Nenhum documento disponível na sua biblioteca de mídia",
+              "selected_count": "{count} selecionados",
+              "clear_selection": "Limpar",
+              "add_one_file": "Adicionar 1 arquivo",
+              "add_files": "Adicionar {count} arquivos",
+              "remove_document": "Remover documento"
             },
             "video": {
-              "title": "Vídeo",
               "embed_link": "Incorporar link",
               "upload": "Enviar",
               "library": "Biblioteca",
-              "button": "Adicionar/editar vídeo(s)",
               "remove_video": "Remover vídeo",
               "add_video": {
                 "title": "Adicionar um vídeo",
@@ -2536,7 +2503,7 @@
                 "search_library_action": "Pesquisar",
                 "loading_library": "Carregando biblioteca de mídia...",
                 "no_library_videos": "Nenhum vídeo disponível na sua biblioteca de mídia",
-                "add_from_library": "Adicionar da biblioteca",
+                "add_from_library": "Adicionar",
                 "cancel_upload": "Cancelar upload",
                 "upload_cancelled": "Upload cancelado pelo usuário",
                 "max_files": "{count, plural, one {Você pode enviar # arquivo} other {Você pode enviar # arquivos}}",
@@ -2577,8 +2544,6 @@
                 "vimeo_privacy_error_domain_suffix": "está permitido nas configurações do vídeo)",
                 "vimeo_privacy_error_other_hint": "Outras configurações de privacidade do Vimeo"
               },
-              "empty_title": "Ainda não há vídeos",
-              "empty_description": "Adicione vídeos do YouTube, upload ou sua biblioteca de mídia",
               "google_drive": "Google Drive",
               "generate_transcript": "Gerar transcrição",
               "transcript_in_progress": "Obtendo transcrição…",
@@ -2632,11 +2597,6 @@
               "title": "Slide",
               "slide_link": "Link do slide",
               "helper_message": "Você pode incorporar Apresentações Google ou Apresentação Canva",
-              "button": "Adicionar slide",
-              "remove_slide": "Remover slide",
-              "menu_aria": "Ações do slide",
-              "empty_title": "Ainda não há slides",
-              "empty_description": "Incorpore Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare ou Beautiful.ai",
               "add_slide": {
                 "title": "Adicionar um slide",
                 "search": "Pesquisar plataformas",
@@ -2647,7 +2607,9 @@
                 "preview": "Pré-visualização",
                 "embed_ready": "Incorporação pronta",
                 "invalid_embed": "Cole o código iframe completo desta plataforma.",
-                "unsupported": "Essa incorporação é de uma plataforma que ainda não suportamos."
+                "unsupported": "Essa incorporação é de uma plataforma que ainda não suportamos.",
+                "platform_mismatch": "Este é um embed do {detected}, não do {selected}.",
+                "preview_in_platform": "Pré-visualizar no {platform}"
               },
               "platforms": {
                 "google-slides": {
@@ -2710,17 +2672,76 @@
                   "step_2": "Click Get Embed Code.",
                   "step_3": "Paste the iframe embed code here."
                 }
-              },
-              "frame_title": "{platform} ({index} de {total})"
+              }
             },
             "note": {
-              "title": "Nota",
-              "placeholder": "Escreva sua nota de aula aqui",
-              "ai": {
-                "outline": "Gerar esboço da lição",
-                "note": "Gerar nota de aula",
-                "activities": "Gerar atividades de aula"
-              }
+              "placeholder": "Escreva sua nota de aula aqui"
+            }
+          },
+          "blocks": {
+            "add_content": "Adicionar conteúdo",
+            "example": "Exemplo",
+            "change_type": "Alterar {type}",
+            "edit_type": "Editar {type}",
+            "remove": "Remover bloco",
+            "move_up": "Suba",
+            "move_down": "Desça",
+            "actions": "Ações de bloqueio",
+            "drag": "Arraste para reordenar",
+            "drag_hint": "Arraste a alça de um bloco para reordená-lo. Você também pode usar as opções \"Mover para cima\" e \"Mover para baixo\" no menu correspondente.",
+            "dismiss_hint": "Ignorar dica de reordenação",
+            "empty_title": "Comece a construir esta lição.",
+            "empty_description": "Adicione uma nota, vídeo, slides, documento ou imagem. Você pode adicionar quantos blocos precisar, em qualquer ordem.",
+            "empty_note": "Esta nota está vazia.",
+            "scroll_rail": "Blocos de aula",
+            "go_to_block": "Vá para o bloco {index}",
+            "image": {
+              "upload": "Carregar imagem",
+              "upload_error": "Não foi possível carregar a imagem. Tente novamente.",
+              "change": "Alterar imagem",
+              "settings": "Configurações de imagem",
+              "alt": "Texto alternativo",
+              "alt_placeholder": "Descreva a imagem para alunos que utilizam tecnologia assistiva.",
+              "fit": "Ajustar",
+              "fit_cover": "Preencher",
+              "fit_contain": "Ajustar"
+            },
+            "settings": {
+              "title": "Configurações da aula",
+              "description": "Gerencie esta lição sem sair da tela de conteúdo."
+            },
+            "reading_density": {
+              "title": "Densidade de leitura",
+              "description": "Controla o espaçamento entre os blocos para os alunos. Não altera a tela de edição.",
+              "compact": "Compactar",
+              "comfortable": "Confortável",
+              "spacious": "Espaçoso"
+            },
+            "ai": {
+              "title": "Elabore uma nota com IA",
+              "prompt_label": "Incitar",
+              "prompt_placeholder": "Exemplo: Uma breve introdução ao ciclo da água para iniciantes"
+            },
+            "types": {
+              "note": "Observação",
+              "video": "Vídeo",
+              "slides": "Slides",
+              "document": "Documento",
+              "image": "Imagem"
+            },
+            "empty_preview_title": "Nada para visualizar ainda",
+            "empty_preview_description": "Esta lição não tem conteúdo para os alunos verem. Mude para {editLabel} para adicionar uma nota, vídeo, slides, documento ou imagem.",
+            "empty_learner_title": "Esta lição ainda não está pronta",
+            "empty_learner_description": "Seu instrutor não adicionou nenhum conteúdo a esta lição. Volte em breve.",
+            "document": {
+              "view_file": "Ver arquivo",
+              "download": "Baixar",
+              "download_success": "Documento baixado com sucesso",
+              "download_error": "Falha ao baixar o documento",
+              "try_again": "Tente novamente"
+            },
+            "slides": {
+              "add_slide": "Adicionar slide"
             }
           }
         },
@@ -2799,6 +2820,10 @@
             "watch_videos_empty": "A exibição de vídeo rastreia apenas os vídeos enviados. As incorporações externas e do YouTube não podem ser rastreadas, portanto esta lição não pode ser concluída automaticamente e os alunos não podem marcá-la como concluída. Carregue o vídeo na guia Vídeo ou defina a regra de conclusão como Manual.",
             "watch_videos_no_uploads_title": "Nenhum vídeo enviado nesta lição",
             "watch_videos_learn_more": "Saber mais"
+          },
+          "access": {
+            "title": "Acesso",
+            "description": "Os alunos não poderão abrir uma lição bloqueada até que você a desbloqueie."
           }
         },
         "watch_progress": {
@@ -2809,7 +2834,6 @@
         },
         "saving": "Salvando…",
         "saved": "Salvo",
-        "draft_recovery": "Um rascunho não salvo foi encontrado para esta lição. Você gostaria de restaurá-lo?",
         "stats": {
           "sections": "Seções",
           "lessons": "Lições",
@@ -2871,7 +2895,13 @@
         "add_content_add_to_section": "Adicionar conteúdo",
         "expand_content": "Expandir conteúdo",
         "collapse_content": "Recolher conteúdo",
-        "no_section": "Sem seção"
+        "no_section": "Sem seção",
+        "header": {
+          "mode_label": "Modo de aula",
+          "mode_edit": "Editar",
+          "mode_preview": "Pré-visualização",
+          "mode_shortcut": "Alternar modo"
+        }
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -3029,7 +3059,11 @@
       "preview": "Visualizar curso",
       "preview_missing_slug": "Gere e salve um slug do curso antes de visualizar.",
       "view_as_student": "Ver como aluno",
-      "view_course_site": "Ver site do curso"
+      "view_course_site": "Ver site do curso",
+      "assistant_pop_out": "Destacar bate-papo",
+      "assistant_close_floating": "Fechar bate-papo flutuante",
+      "assistant_tip": "Dica: use o ícone pop-out para fazer o assistente flutuar enquanto você trabalha.",
+      "assistant_tip_dismiss": "Ignorar dica"
     },
     "view_course_site": {
       "unpublished_title": "Publique seu curso",
@@ -3255,7 +3289,9 @@
       "date_created": "Data de criação",
       "last_updated_at": "Última atualização",
       "published": "Publicado",
-      "lessons": "Lições"
+      "lessons": "Lições",
+      "name": "Nome",
+      "price": "Preço"
     },
     "tag_filters": {
       "filter": "Filtrar",
@@ -3369,7 +3405,6 @@
         "save": "Salvar alterações",
         "apps": {
           "title": "Aplicativos",
-          "poll": "Enquete",
           "live_comment": "Comentários ao vivo"
         },
         "course": {
@@ -3393,7 +3428,29 @@
           "paid_plan_note": "Atualize seu plano para personalizar o fundo da tela de login.",
           "preview_alt": "Prévia do fundo da tela de login"
         },
-        "page_subtitle": "Escolha quais guias, banners, ferramentas do curso e extras os alunos verão."
+        "page_subtitle": "Escolha quais guias, banners, ferramentas do curso e extras os alunos verão.",
+        "student_home": {
+          "heading": "Início do aluno",
+          "description": "Escolha para onde vão os alunos inscritos quando abrem a página inicial da sua academia. Os visitantes que não estão logados e sua equipe ainda veem sua página de destino.",
+          "label": "Início do aluno autenticado",
+          "placeholder": "Pesquise páginas e cursos",
+          "option_default": "Página de destino (padrão)",
+          "group_pages": "Portal de aprendizagem",
+          "group_courses": "Cursos",
+          "reason_disabled_toggle": "Ative-o na seção Painel abaixo",
+          "reason_paid_plan": "Disponível em planos pagos",
+          "courses_empty": "Nenhum curso publicado ainda",
+          "load_more": "Carregar mais",
+          "search_empty": "Nenhuma página ou curso corresponde a \"{query}\"",
+          "warning_unavailable": "{destination} não está disponível para os alunos no momento, então eles são enviados para o Painel. Escolha outro destino ou disponibilize-o novamente.",
+          "warning_course_missing": "O curso que você escolheu foi excluído ou não publicado, então os alunos são enviados para o Painel.",
+          "course_hint_open": "Os alunos matriculados vão direto para a próxima aula. Os alunos que não estão matriculados podem ingressar com um clique.",
+          "course_hint_restricted": "Os alunos matriculados vão direto para a próxima aula. Este curso é pago ou somente para convidados, então os alunos que não estão matriculados acessam o Painel.",
+          "unavailable_badge": "Indisponível",
+          "course_type_live": "Ao vivo",
+          "course_type_compliance": "Conformidade",
+          "learn_more": "Saiba mais"
+        }
       },
       "domains": {
         "title": "Domínio personalizado",
@@ -3440,6 +3497,12 @@
         "ssl_pending_body": "Seu domínio está apontando para nós. Agora estamos aguardando a emissão e implantação do certificado SSL. Isso geralmente leva alguns minutos depois que todos os registros DNS abaixo estiverem em vigor.",
         "validation_errors_heading": "A emissão do certificado está bloqueada",
         "verified_snackbar": "Domínio personalizado verificado"
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Os alunos inscritos pulam esta página e vão para {destination}.",
+          "change": "Alterar"
+        }
       }
     },
     "quiz": {
@@ -3679,7 +3742,8 @@
     },
     "status": {
       "active": "Ativo",
-      "archived": "Arquivado"
+      "archived": "Arquivado",
+      "processing": "Processando"
     },
     "provider": {
       "upload": "Enviar",
@@ -3712,6 +3776,45 @@
         "other": "Outro"
       },
       "refresh": "Atualizar"
+    },
+    "upload": {
+      "files": "Enviar arquivos",
+      "add_video_link": "Adicionar um link de vídeo",
+      "more_options": "Mais opções de envio",
+      "dialog_title": "Enviar arquivos",
+      "drag_drop": "Arraste e solte arquivos aqui, ou clique para procurar",
+      "limits": "Vídeos e documentos. Até {count} arquivos por vez, {size} cada.",
+      "limits_by_kind": "Até {count} arquivos por vez. Vídeos de até {videoSize}, documentos de até {documentSize}.",
+      "add_more": "Adicionar mais arquivos",
+      "minimize": "Minimizar",
+      "maximize": "Abrir a janela de envio",
+      "expand": "Mostrar arquivos",
+      "collapse": "Ocultar arquivos",
+      "close": "Fechar",
+      "done": "Concluir",
+      "keep_in_background": "Continuar em segundo plano",
+      "upgrade": "Faça upgrade para enviar arquivos à sua biblioteca de mídia",
+      "status": {
+        "queued": "Aguardando",
+        "completed": "Concluído",
+        "failed": "Falhou",
+        "retry": "Tentar novamente",
+        "remove": "Remover arquivo",
+        "uploading_progress": "Enviando {percent}%",
+        "size_progress": "{uploaded} de {total}"
+      },
+      "summary": {
+        "uploading": "{done} de {total} arquivos enviados",
+        "completed": "{count} envios concluídos",
+        "failed": "{count} de {total} envios falharam"
+      },
+      "errors": {
+        "unsupported_type": "{name} não é um vídeo ou documento compatível.",
+        "too_large": "{name} é maior que {size}.",
+        "too_many": "Você pode enviar até {count} arquivos por vez.",
+        "generic": "Falha no envio"
+      },
+      "switch_organization_confirm": "Trocar de organização cancela os envios em andamento. Trocar mesmo assim?"
     },
     "storage": {
       "total_bytes": "Armazenamento total",
@@ -3771,7 +3874,13 @@
       "active": "Você não tem nenhum faturamento ativo",
       "provider": "Usamos a Polar para ajudar a gerenciar seu faturamento",
       "open_billing": "Faturamento aberto",
+      "admin_only": "Somente os administradores da organização podem gerenciar o faturamento.",
       "error": "Ocorreu um erro ao abrir o faturamento",
+      "payment_failed": {
+        "warning": "O seu último pagamento falhou. Atualize o método de pagamento antes de {date} para continuar a matricular novos alunos.",
+        "blocked": "O seu último pagamento falhou, por isso novos alunos não conseguem matricular-se. Atualize o método de pagamento para retomar as matrículas.",
+        "action": "Atualizar método de pagamento"
+      },
       "page_subtitle": "Seu plano, portal de cobrança e como você paga pelo ClassroomIO.",
       "ai_credits": "AI credits",
       "ai_tokens_used": "AI credits usados este mês",
@@ -4059,7 +4168,9 @@
           "popover_title": "Selecionar cursos",
           "popover_empty": "Nenhum curso publicado disponível.",
           "search_no_results": "Nenhum curso corresponde à sua pesquisa.",
-          "search_placeholder": "Buscar cursos..."
+          "search_placeholder": "Buscar cursos...",
+          "featured_toggle": "Mostrar curso em destaque",
+          "featured_toggle_desc": "Destaca seu primeiro curso em um bloco grande. Desative para listá-lo junto com seus outros cursos."
         }
       },
       "content": {
@@ -4984,40 +5095,16 @@
     "title": "Automação",
     "subtitle": "Conecte clientes MCP agora, com o Zapier e a API pública seguindo o mesmo sistema de chaves com escopo organizacional.",
     "coming_soon": "Em breve",
+    "read_docs": "Ler a documentação",
     "mcp": {
-      "setup": {
-        "title": "Configuração do cliente",
-        "description": "Use uma chave com escopo organizacional por integração. Se uma chave for rotacionada ou revogada, o cliente para de funcionar até que o novo segredo seja configurado.",
-        "claude_code_description": "Registra `@classroomio/mcp` com Claude Code usando a chave gerada com escopo organizacional.",
-        "codex_description": "Adiciona o servidor ClassroomIO MCP ao Codex com a mesma chave com escopo organizacional.",
-        "cursor_description": "Cole isso em `~/.cursor/mcp.json` ou na configuração do MCP do seu espaço de trabalho.",
-        "opencode_description": "Adicione isso a `opencode.json` na raiz do projeto ou a `~/.config/opencode/opencode.json`."
-      },
       "keys": {
         "title": "Chaves MCP",
-        "description": "Essas chaves autenticam a organização atual quando um cliente MCP chama ClassroomIO por meio de `@classroomio/mcp`.",
-        "generate": "Gerar chave MCP",
-        "modal": {
-          "title": "Criar chave MCP",
-          "description": "Escolha um nome para esta chave MCP antes de gerá-la.",
-          "name_label": "Nome da chave",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Cancelar",
-          "save": "Criar chave"
-        },
-        "reveal_title": "Sua nova chave MCP"
+        "description": "Estas chaves antigas continuam funcionando, mas não é mais possível criar novas chaves MCP. Gire-as ou revogue-as aqui e conecte novos clientes entrando na sua conta.",
+        "reveal_title": "Sua nova chave MCP",
+        "deprecated_badge": "Obsoleto"
       },
-      "usage": {
-        "title": "Uso e limites",
-        "description": "O MCP está disponível em todos os planos. O uso é controlado por limites de chaves e limites de taxa.",
-        "keys_title": "Chaves ativas",
-        "keys_description": "Use uma chave MCP por integração para que o acesso possa ser alternado ou revogado de forma limpa.",
-        "rate_limits_title": "Limites de taxa",
-        "rate_limits_description": "Solicitações de leitura/gravação/publicação permitidas por minuto.",
-        "used_label": "Usado:"
-      },
-      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento.",
-      "view_docs": "Ver documentação"
+      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO entrando na sua conta. Remova um app a qualquer momento para cortar o acesso dele.",
+      "connections_tab": "Conexões"
     },
     "api": {
       "subtitle": "Gerencie chaves de API para integrar com a API pública do ClassroomIO.",
@@ -5040,16 +5127,13 @@
       "setup": {
         "title": "Início rápido",
         "description": "Use sua chave de API como token Bearer em cada solicitação. Substitua o marcador por uma chave acima ou cole o segredo imediatamente após gerar uma."
-      },
-      "view_docs": "Ver documentação"
+      }
     },
     "keys": {
       "active": "Ativo",
       "revoked": "Revogado",
       "rotate": "Girar",
       "revoke": "Revogar",
-      "empty_title": "Nenhuma chave MCP ainda",
-      "empty_description": "Crie a primeira chave MCP com escopo organizacional para conectar Claude Code, Codex, Cursor ou OpenCode.",
       "created_at_label": "Criado:",
       "last_used_label": "Usado pela última vez:",
       "never_used": "Nunca",
@@ -5087,7 +5171,7 @@
     },
     "permissions": {
       "disabled_title": "Acesso somente leitura",
-      "disabled_description": "Somente administradores da organização podem criar, alternar ou revogar chaves de automação. Os professores podem revisar as instruções de configuração aqui."
+      "disabled_description": "Somente administradores da organização podem gerenciar a automação, incluindo apps conectados e chaves."
     },
     "zapier": {
       "page_subtitle": "Automatize o ClassroomIO com milhares de aplicativos pelo Zapier. Em breve."
@@ -5163,7 +5247,9 @@
       "event_groups": {
         "organization": "Organização",
         "course": "Cursos",
-        "learning": "Progresso de aprendizagem"
+        "learning": "Progresso de aprendizagem",
+        "cohort": "Coortes",
+        "compliance": "Conformidade"
       },
       "events": {
         "organization_invite_created": "Um convite de equipe é enviado",
@@ -5179,7 +5265,18 @@
         "course_submission_created": "Um envio de exercício é criado",
         "course_submission_status_changed": "O status de um envio muda, por exemplo, quando ele é avaliado",
         "lesson_completion_updated": "Uma aula é marcada como concluída ou redefinida",
-        "exercise_completion_updated": "Um exercício é concluído ou redefinido"
+        "exercise_completion_updated": "Um exercício é concluído ou redefinido",
+        "compliance_record_status_changed": "O status de conformidade de um aluno muda",
+        "compliance_record_waived": "Um requisito de conformidade de um aluno é dispensado",
+        "organization_member_added": "Uma pessoa entra na organização",
+        "organization_member_removed": "Uma pessoa é removida da organização",
+        "organization_member_updated": "A função ou o status de uma pessoa muda",
+        "course_published": "Um curso é publicado",
+        "course_unpublished": "Um curso é despublicado",
+        "cohort_member_added": "Uma pessoa é adicionada a uma coorte",
+        "cohort_member_removed": "Uma pessoa é removida de uma coorte",
+        "lesson_session_scheduled": "Uma sessão ao vivo é agendada ou remarcada",
+        "course_payment_request_created": "Um aluno solicita pagar por um curso"
       },
       "deliveries": {
         "title": "Entregas",
@@ -5282,7 +5379,22 @@
         "fetch_documentation_url_with_url": "Lendo {url}",
         "list_youtube_playlist_videos": "Listando vídeos da lista de reprodução",
         "get_lesson_transcript": "Lendo a transcrição do vídeo",
-        "add_youtube_video_to_lesson": "Incorporando vídeo do YouTube"
+        "add_youtube_video_to_lesson": "Incorporando vídeo do YouTube",
+        "add_lesson_note_block": "Adicionando um bloco de texto",
+        "remove_lesson_block": "Removendo um bloco de texto",
+        "move_lesson_block": "Movendo um bloco",
+        "add_lesson_slides_block": "Adicionando slides",
+        "add_lesson_image_block": "Adicionando uma imagem",
+        "update_lesson_block_settings": "Atualizando configurações de bloqueio",
+        "update_lesson_block_requirements": "Atualizando regras de conclusão",
+        "detach_lesson_block": "Desanexando um bloco compartilhado",
+        "list_block_library": "Pesquisando na biblioteca de blocos",
+        "attach_library_block": "Adicionando um bloco de biblioteca",
+        "move_lesson_block_to_lesson": "Movendo um bloco para outra lição",
+        "attach_document_to_lesson": "Adicionando um documento",
+        "get_lesson_history": "Lendo o histórico da aula",
+        "restore_lesson_version": "Restaurando uma versão anterior",
+        "undo_lesson_change": "Desfazendo uma alteração"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# caractere} other {# caracteres}})",
@@ -5322,7 +5434,21 @@
         "get_lesson_transcript_plan_gated": "As transcrições exigem um plano pago",
         "get_lesson_transcript_no_credits": "Sem créditos de IA para obter transcrições",
         "get_lesson_transcript_unavailable": "Nenhuma transcrição disponível para {title}",
-        "add_youtube_video_to_lesson": "Vídeo incorporado: {title}"
+        "add_youtube_video_to_lesson": "Vídeo incorporado: {title}",
+        "remove_lesson_block": "Um bloco de texto removido de {title}",
+        "move_lesson_block": "Movido um bloco em {title}",
+        "add_lesson_slides_block": "Slides adicionados a {title}",
+        "add_lesson_image_block": "Adicionada uma imagem a {title}",
+        "update_lesson_block_settings": "Atualizado um bloco em {title}",
+        "update_lesson_block_requirements": "Regras de conclusão atualizadas em {title}",
+        "detach_lesson_block": "Deu a {title} sua própria cópia de um bloco compartilhado",
+        "list_block_library": "Pesquisei na biblioteca de blocos",
+        "attach_library_block": "Adicionado um bloco de biblioteca a {title}",
+        "move_lesson_block_to_lesson": "Movido um bloco para {title}",
+        "attach_document_to_lesson": "Documento adicionado: {title}",
+        "get_lesson_history": "Histórico de aulas carregado",
+        "restore_lesson_version": "Restaurou uma versão anterior da lição",
+        "undo_lesson_change": "Desfez uma alteração"
       }
     },
     "student_empty_state": "Pergunte-me qualquer coisa sobre este curso - obtenha explicações, faça testes ou resuma o que está lendo.",
@@ -5672,6 +5798,11 @@
     "titles": {
       "ai_assistant": "Assistente de IA",
       "transcript": "Transcrição"
+    },
+    "floating": {
+      "resize_aria": "Redimensionar janela do assistente",
+      "expand_aria": "Expandir para o painel lateral",
+      "dock_hint": "Solte para encaixar na lateral"
     }
   },
   "compliance": {
@@ -6396,7 +6527,6 @@
         "bannerImage": "Imagem da capa",
         "welcomeEmail": "E-mail de boas-vindas",
         "completionDeadline": "Prazo de conclusão",
-        "lessonTabsOrder": "Guias de aula",
         "contentGrouping": "Agrupamento de conteúdo",
         "progression": "Progressão",
         "comments": "Comentários da lição",
@@ -6459,5 +6589,107 @@
     "new_badge": "Novo",
     "read_full": "Ler o changelog completo",
     "close": "Fechar"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Conecte um app ao ClassroomIO",
+      "title": "Conectar {client} ao ClassroomIO",
+      "subtitle": "Escolha o espaço de trabalho ao qual {client} pode ter acesso.",
+      "workspace_label": "Espaço de trabalho",
+      "no_workspaces_title": "Nenhum espaço de trabalho disponível",
+      "no_workspaces_description": "Somente administradores do espaço de trabalho podem conectar apps. Peça a um administrador ou entre com uma conta de administrador.",
+      "permissions_heading": "{client} poderá:",
+      "stay_connected": "Manter conectado até você remover o acesso",
+      "admin_note": "Somente administradores do espaço de trabalho podem conectar apps. O acesso segue suas permissões de administrador e termina se você as perder.",
+      "redirect_note": "Após aprovar, você será enviado para {host}.",
+      "allow": "Permitir acesso",
+      "deny": "Negar",
+      "unknown_client": "Este app",
+      "error_title": "Esta solicitação de conexão não é válida",
+      "error_description": "Volte ao app que você estava conectando e comece de novo."
+    },
+    "error": {
+      "generic": "Algo deu errado. Tente novamente.",
+      "retry": "Tentar novamente"
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Ver cursos e seu conteúdo",
+        "write": "Criar, editar e publicar cursos e seu conteúdo"
+      },
+      "exercises": {
+        "read": "Ver exercícios e perguntas",
+        "write": "Criar e editar exercícios e perguntas"
+      },
+      "course_members": {
+        "read": "Ver membros do curso",
+        "write": "Adicionar e gerenciar membros do curso e seu progresso"
+      },
+      "certificates": {
+        "read": "Ver certificados do curso",
+        "write": "Gerenciar certificados do curso"
+      },
+      "submissions": {
+        "read": "Ver envios e notas",
+        "write": "Avaliar envios e gerenciar notas"
+      },
+      "cohorts": {
+        "read": "Ver turmas",
+        "write": "Criar e gerenciar turmas"
+      },
+      "audience": {
+        "read": "Ver seu público",
+        "write": "Adicionar e gerenciar seu público"
+      },
+      "team": {
+        "read": "Ver membros da equipe",
+        "write": "Gerenciar membros da equipe"
+      },
+      "organization": {
+        "read": "Ver as configurações do espaço de trabalho",
+        "write": "Editar configurações, página inicial e modelos de e-mail"
+      },
+      "analytics": {
+        "read": "Ver análises",
+        "write": "Ver análises"
+      },
+      "media": {
+        "read": "Enviar mídia",
+        "write": "Enviar mídia"
+      }
+    },
+    "connect": {
+      "title": "Conectar pelo Claude ou ChatGPT",
+      "description": "Adicione o ClassroomIO como conector personalizado no seu app de IA usando este URL, depois entre e aprove o acesso.",
+      "step_1": "No seu app de IA, abra as configurações de conectores ou integrações e adicione um conector personalizado.",
+      "step_2": "Cole o URL acima e inicie a conexão.",
+      "step_3": "Entre no ClassroomIO, escolha este espaço de trabalho e aprove as permissões."
+    },
+    "connected_apps": {
+      "title": "Apps conectados",
+      "description": "Apps que você aprovou para atuar neste espaço de trabalho. Remova um app para cortar o acesso dele imediatamente.",
+      "table_app": "App",
+      "table_authorized_by": "Autorizado por",
+      "table_permissions": "Permissões",
+      "permissions_count": "{count} áreas",
+      "revoke": "Remover acesso",
+      "revoke_confirm": "Remover o acesso deste app? Ele deixará de funcionar imediatamente."
+    }
+  },
+  "video_guide": {
+    "watch_video": "Assista ao vídeo",
+    "new_badge": "Novo",
+    "connect_claude": {
+      "title": "Conecte o ClassroomIO ao Claude",
+      "description": "Veja como conectar o ClassroomIO ao Claude e o que você pode perguntar. 4 minutos."
+    },
+    "lesson_blocks": {
+      "title": "Apresentando blocos de aula",
+      "description": "As aulas agora são construídas a partir de blocos. Veja como funciona em 5 minutos.",
+      "coach_description": "Crie cada lição a partir de blocos de notas, vídeos, slides, documentos e imagens, em qualquer ordem. Selecione Editar para experimentar.",
+      "coach_title": "🎉 Novidade! As aulas agora são flexíveis."
+    },
+    "close": "Fechar",
+    "dismiss": "Entendi"
   }
 }

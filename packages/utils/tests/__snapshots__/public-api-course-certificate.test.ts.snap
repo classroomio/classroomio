@@ -88,7 +88,7 @@ exports[`public certificate contract > keeps the ZPublicApiUpdateCourseCertifica
       "description": "ISO 8601 datetime with a timezone, for example 2026-12-31T23:59:59Z. Send null to clear it.",
     },
     "design": {
-      "description": "Replaces the whole stored design instead of merging, so read it first and send the full object. Sent without theme, it sets theme to design.templateId, as the dashboard editor does.",
+      "description": "Replaces the whole stored design, so send the full object. Without theme, theme becomes design.templateId.",
       "properties": {
         "accentColor": {
           "pattern": "^#[0-9a-fA-F]{6}$",

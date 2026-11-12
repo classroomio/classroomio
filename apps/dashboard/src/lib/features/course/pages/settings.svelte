@@ -11,7 +11,6 @@
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import XIcon from '@lucide/svelte/icons/x';
 
-  import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
   import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
   import { CourseTagPicker, PublicConversionSettingsCard } from '$features/course/components';
   import TemplateSettingsSection from '$features/course/components/template-settings-section.svelte';
@@ -269,7 +268,6 @@
       const metadataPayload = {
         ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
         ...reminderOffsetsPayload,
-        lessonTabsOrder: $settings.tabs,
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
         allowSelfEnrollment: $settings.allowSelfEnrollment,
@@ -370,7 +368,6 @@
           : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         courseDescription: course.description,
         bannerImage: course.bannerImage || '',
-        tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
         allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
@@ -653,6 +650,81 @@
         />
       </div>
 
+      <AttentionHighlight id="course-type" scrollBlock="center" class="scroll-mt-24">
+        <Field.Field id="course-type" class="scroll-mt-24">
+          <Field.Label>
+            <a href="#course-type" class="hover:underline">{$t('course.navItem.settings.type')}</a>
+          </Field.Label>
+          <Field.Description>
+            {$t('course.navItem.settings.course_type_desc')}
+            <a
+              href="https://classroomio.com/help/create-and-deliver/course-types"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="ui:text-primary underline"
+            >
+              {$t('course.navItem.settings.course_type_learn_more')}
+            </a>
+          </Field.Description>
+
+          <Select.Root
+            type="single"
+            value={$settings.type}
+            onValueChange={(value) => {
+              if (!value) return;
+              $settings.type = value as TCourseType;
+              if (value !== 'PUBLIC') {
+                delete courseApi.errors.type;
+                courseApi.publicConversionOffenders = [];
+                publicConversionFlow.cancel();
+              }
+              hasUnsavedChanges = true;
+            }}
+          >
+            <Select.Trigger class="w-full">
+              {$t(`course.navItem.settings.${$settings.type.toLowerCase()}`)}
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Group>
+                <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
+                  {$t('course.navItem.settings.self_paced')}
+                </Select.Item>
+                <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
+                  {$t('course.navItem.settings.live_class')}
+                </Select.Item>
+                <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
+                  {$t('course.navItem.settings.compliance')}
+                </Select.Item>
+                <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
+                  {$t('course.navItem.settings.public')}
+                </Select.Item>
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+
+          {#if publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id && publicConversionFlow.offenders.length > 0}
+            {#if courseApi.course}
+              <PublicConversionSettingsCard
+                class="mt-4"
+                course={courseApi.course}
+                offenders={publicConversionFlow.offenders}
+                disabled={hasUnsavedChanges}
+                onCancel={() => {
+                  if (courseApi.course) {
+                    $settings.type = (courseApi.course.type as TCourseType) || 'SELF_PACED';
+                    delete courseApi.errors.type;
+                    publicConversionFlow.cancel();
+                    hasUnsavedChanges = false;
+                  }
+                }}
+              />
+            {/if}
+          {:else if courseApi.errors.type}
+            <p class="ui:text-destructive/90 mt-2 text-sm">{courseApi.errors.type}</p>
+          {/if}
+        </Field.Field>
+      </AttentionHighlight>
+
       <Field.Field id="share" class="scroll-mt-24">
         <Field.Label class="justify-between">
           <a href="#share" class="hover:underline">{$t('course.navItem.settings.link')}</a>
@@ -763,81 +835,6 @@
     </Field.Group>
   </SettingsCard>
 
-  <AttentionHighlight id="course-type" scrollBlock="center" class="scroll-mt-24">
-    <SettingsCard hash="course-type" title={$t('course.navItem.settings.type')}>
-      {#snippet description()}
-        {$t('course.navItem.settings.course_type_desc')}
-        <a
-          href="https://classroomio.com/help/create-and-deliver/course-types"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="ui:text-primary underline"
-        >
-          {$t('course.navItem.settings.course_type_learn_more')}
-        </a>
-      {/snippet}
-      <Field.Group>
-        <Field.Field>
-          <Select.Root
-            type="single"
-            value={$settings.type}
-            onValueChange={(value) => {
-              if (!value) return;
-              $settings.type = value as TCourseType;
-              if (value !== 'PUBLIC') {
-                delete courseApi.errors.type;
-                courseApi.publicConversionOffenders = [];
-                publicConversionFlow.cancel();
-              }
-              hasUnsavedChanges = true;
-            }}
-          >
-            <Select.Trigger class="w-full">
-              {$t(`course.navItem.settings.${$settings.type.toLowerCase()}`)}
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Group>
-                <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
-                  {$t('course.navItem.settings.self_paced')}
-                </Select.Item>
-                <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
-                  {$t('course.navItem.settings.live_class')}
-                </Select.Item>
-                <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
-                  {$t('course.navItem.settings.compliance')}
-                </Select.Item>
-                <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
-                  {$t('course.navItem.settings.public')}
-                </Select.Item>
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-        </Field.Field>
-
-        {#if publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id && publicConversionFlow.offenders.length > 0}
-          {#if courseApi.course}
-            <PublicConversionSettingsCard
-              class="mt-4"
-              course={courseApi.course}
-              offenders={publicConversionFlow.offenders}
-              disabled={hasUnsavedChanges}
-              onCancel={() => {
-                if (courseApi.course) {
-                  $settings.type = (courseApi.course.type as TCourseType) || 'SELF_PACED';
-                  delete courseApi.errors.type;
-                  publicConversionFlow.cancel();
-                  hasUnsavedChanges = false;
-                }
-              }}
-            />
-          {/if}
-        {:else if courseApi.errors.type}
-          <p class="ui:text-destructive/90 mt-2 text-sm">{courseApi.errors.type}</p>
-        {/if}
-      </Field.Group>
-    </SettingsCard>
-  </AttentionHighlight>
-
   <AttentionHighlight
     id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES}
     scrollBlock="start"
@@ -947,20 +944,6 @@
 
   <SettingsCard id="content" title={$t('course.navItem.settings.content_card_title')}>
     <Field.Group>
-      <Field.Field id="lesson-tabs" class="scroll-mt-24">
-        <Field.Label>
-          <a href="#lesson-tabs" class="hover:underline">{$t('course.navItem.settings.order')}</a>
-        </Field.Label>
-        <Field.Description>{$t('course.navItem.settings.drag')}</Field.Description>
-        <ReorderMaterialTabs
-          onchange={() => {
-            hasUnsavedChanges = true;
-          }}
-        />
-      </Field.Field>
-
-      <SettingsSeparator />
-
       <Field.Field class="scroll-mt-24" orientation="horizontal">
         <Field.Content>
           <Field.Label for="content-grouping">

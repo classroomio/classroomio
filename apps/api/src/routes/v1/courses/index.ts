@@ -1,4 +1,5 @@
 import { Hono } from '@api/utils/hono';
+import { v1CourseSaveTemplateRouter } from '../course-templates/template';
 import { v1CourseAnalyticsRouter } from './analytics';
 import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from './certificates';
 import { v1CourseContentRouter } from './content';
@@ -7,6 +8,7 @@ import { v1CourseExerciseQuestionsRouter } from './exercise-questions';
 import { v1CourseExerciseSectionsRouter } from './exercise-sections';
 import { v1CourseExercisesRouter } from './exercises';
 import { v1CourseInvitesRouter } from './invites';
+import { v1CourseLessonBlocksRouter } from './lesson-blocks';
 import { v1CourseLessonCommentsRouter } from './lesson-comments';
 import { v1CourseLessonHistoryRouter, v1CourseLessonTranslationsRouter } from './lesson-translations';
 import { v1CourseLessonsRouter } from './lessons';
@@ -25,6 +27,7 @@ export const v1CoursesRouter = new Hono()
   .route('/:courseId/certificate', v1CourseCertificateRouter)
   .route('/:courseId/certificates', v1CourseCertificatesRouter)
   .route('/:courseId/sections', v1CourseSectionsRouter)
+  .route('/:courseId/lessons/:lessonId/blocks', v1CourseLessonBlocksRouter)
   .route('/:courseId/lessons/:lessonId/translations', v1CourseLessonTranslationsRouter)
   .route('/:courseId/lessons/:lessonId/history', v1CourseLessonHistoryRouter)
   .route('/:courseId/lessons/:lessonId/comments', v1CourseLessonCommentsRouter)
@@ -34,4 +37,5 @@ export const v1CoursesRouter = new Hono()
   .route('/:courseId/exercises/:exerciseId/sections', v1CourseExerciseSectionsRouter)
   .route('/:courseId/exercises', v1CourseExercisesRouter)
   .route('/:courseId/submissions', v1CourseSubmissionsRouter)
-  .route('/:courseId/marks', v1CourseMarksRouter);
+  .route('/:courseId/marks', v1CourseMarksRouter)
+  .route('/:courseId/template', v1CourseSaveTemplateRouter);

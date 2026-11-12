@@ -50,7 +50,7 @@ describe('addCohortMembersSettled', () => {
     >);
     vi.mocked(getCoursesByCohort).mockResolvedValue([]);
     vi.mocked(getCourseGroupIds).mockResolvedValue([]);
-    vi.mocked(insertGroupMembersOnConflictDoNothing).mockResolvedValue();
+    vi.mocked(insertGroupMembersOnConflictDoNothing).mockResolvedValue([]);
     vi.mocked(listActiveOrganizationRoles).mockResolvedValue([]);
     vi.mocked(getProfileByEmail).mockResolvedValue(null as never);
     vi.mocked(addCohortMember).mockResolvedValue({ id: 'new-member' } as Awaited<ReturnType<typeof addCohortMember>>);

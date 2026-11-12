@@ -6,7 +6,6 @@ import {
   deleteCourseMember,
   getCourseMember,
   getPaginatedCourseMembers,
-  getCourseTeachers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
@@ -16,7 +15,16 @@ import type { TGroupmember } from '@cio/db/types';
 import type { PaginatedCourseMember, PaginatedCourseMembersOptions } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { emitCourseMemberWebhookEvent, emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
+import {
+  buildMemberSource,
+  emitCourseMemberAddedWebhookEvent,
+  emitCourseMemberRemovedWebhookEvent,
+  emitCourseWebhookEvent,
+  type TWebhookMemberSource
+} from '@cio/core/services/webhook/emit';
+import { getCourseProgress } from '@cio/db/queries/course/course';
+import { getWebhookLastActiveAt } from '@cio/db/queries/webhook';
+import { calcCourseProgressPercent } from '@api/utils/course-completion';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
@@ -24,6 +32,8 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureLearnersEnrolled } from '@api/services/product-events';
 
 /**
  * Attaches only `stage` to a page of members.
@@ -84,135 +94,72 @@ export async function listPaginatedCourseMembers(courseId: string, query: Pagina
   }
 }
 
-/**
- * Adds a course member (person) to a course
- * @param courseId Course ID
- * @param data Member data (profileId, roleId, email, name)
- * @returns Created member
- */
-export async function addMember(
-  courseId: string,
-  data: { profileId?: string; roleId: number; email?: string; name?: string }
-) {
+export type TMemberWebhookContext = { source?: TWebhookMemberSource; actorProfileId?: string | null };
+
+async function findLastActiveAt(organizationId: string | null, profileId: string) {
+  if (!organizationId) return null;
+
+  return getWebhookLastActiveAt(organizationId, profileId);
+}
+
+async function readProgressAtRemoval(courseId: string, memberId: string) {
   try {
-    if (!data.profileId && !data.email) {
-      throw new AppError('Either profileId or email must be provided', ErrorCodes.VALIDATION_ERROR, 400);
-    }
+    const member = await getCourseMember(courseId, memberId);
 
-    const addedMember = await addCourseMember(courseId, data);
-    await emitCourseMemberWebhookEvent('course.member.added', courseId, addedMember);
+    if (!member?.profileId || member.roleId !== ROLE.STUDENT) return null;
 
-    if (data.roleId === ROLE.STUDENT) {
-      const statsOrgId = await getOrgIdByCourseId(courseId);
-      await invalidateOrgStats(statsOrgId);
-    }
+    const progress = await getCourseProgress(courseId, member.profileId);
+    const percent = calcCourseProgressPercent({
+      lessonsCompleted: progress.lessonsCompleted,
+      totalLessons: progress.lessonsCount,
+      exercisesCompleted: progress.exercisesCompleted,
+      exercisesCount: progress.exercisesCount
+    });
 
-    if (data.roleId === ROLE.STUDENT && data.profileId) {
-      await ensureComplianceEnrollmentRecordsForProfiles([courseId], [data.profileId]);
-    }
+    const organizationId = await getOrgIdByCourseId(courseId);
+    const lastActiveAt = await findLastActiveAt(organizationId, member.profileId);
 
-    // Send emails when a student joins
-    if (data.roleId === ROLE.STUDENT) {
-      try {
-        // Get course and organization data
-        const courseOrgData = await getCourseWithOrgData(courseId);
-
-        if (courseOrgData) {
-          const courseName = courseOrgData.courseTitle || '';
-          const orgName = courseOrgData.orgName || 'ClassroomIO';
-          const branding = buildEmailBranding({
-            name: courseOrgData.orgName,
-            avatarUrl: courseOrgData.orgAvatarUrl,
-            theme: courseOrgData.orgTheme
-          });
-          const loginUrl = getDashboardBaseUrl({
-            siteName: courseOrgData.orgSiteName,
-            customDomain: courseOrgData.orgCustomDomain,
-            isCustomDomainVerified: courseOrgData.orgIsCustomDomainVerified
-          });
-
-          // Get student profile data
-          let studentEmail: string | null = null;
-          let studentName: string | null = null;
-
-          if (data.profileId) {
-            const studentProfile = await getProfileById(data.profileId);
-
-            if (studentProfile) {
-              studentEmail = studentProfile.email;
-              studentName = studentProfile.fullname;
-            }
-          } else if (data.email) {
-            studentEmail = data.email;
-            studentName = data.name || null;
-          }
-
-          if (studentEmail) {
-            try {
-              await enqueueTransactionalEmail('studentCourseWelcome', {
-                to: studentEmail,
-                fields: {
-                  orgName,
-                  courseName,
-                  loginUrl,
-                  customMessage: courseOrgData.welcomeEmailMessage ?? undefined,
-                  branding
-                },
-                from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-                idempotencyKey: `course-people-student-welcome:${courseId}:${studentEmail}`,
-                ics: await getWelcomeSessionIcs(courseId),
-                preference: { organizationId: courseOrgData.orgId, recipientProfileId: data.profileId }
-              });
-            } catch (emailError) {
-              console.error('Failed to enqueue student welcome email:', emailError);
-            }
-          }
-
-          const teachersResult = await getCourseTeachers({ courseId });
-
-          if (teachersResult.length > 0 && studentEmail && studentName) {
-            const teacherEmails = teachersResult.map((t) => t.email).filter((email): email is string => email !== null);
-
-            if (teacherEmails.length > 0) {
-              try {
-                await enqueueTransactionalEmail('teacherStudentJoined', {
-                  to: teacherEmails,
-                  fields: {
-                    courseName,
-                    studentName,
-                    studentEmail,
-                    branding
-                  },
-                  from: buildEmailFromName('ClassroomIO'),
-                  idempotencyKey: `course-people-teacher-joined:${courseId}:${studentEmail}`,
-                  preference: { organizationId: courseOrgData.orgId }
-                });
-              } catch (emailError) {
-                console.error('Failed to enqueue teacher notification email:', emailError);
-              }
-            }
-          }
-        }
-      } catch (emailError) {
-        // Log but don't fail the request if email fails
-        console.error('Failed to send student join emails:', emailError);
-      }
-    }
-
-    return addedMember;
+    return { percent, completed: progress.completedAt !== null, lastActiveAt };
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    if (isUniqueConstraintViolation(error)) {
-      throw new AppError('Already a member of this course', ErrorCodes.CONFLICT, 409);
-    }
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to add course member',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    console.error('readProgressAtRemoval error:', error);
+
+    return null;
   }
+}
+
+type TCourseOrgData = NonNullable<Awaited<ReturnType<typeof getCourseWithOrgData>>>;
+
+/**
+ * Uses the same idempotency key as Audience → Assign courses, so a student added both ways gets one email.
+ */
+async function sendStudentCourseWelcome(
+  courseId: string,
+  courseOrgData: TCourseOrgData,
+  student: TAddCourseMembers[number],
+  delivery: { baseUrl: string; branding: ReturnType<typeof buildEmailBranding>; ics?: string }
+) {
+  const to = student.profileId ? (await getProfileById(student.profileId))?.email : student.email;
+  if (!to) return;
+
+  const orgName = courseOrgData.orgName || 'ClassroomIO';
+  const idempotencyKey = student.profileId
+    ? `audience-course-welcome:${courseOrgData.groupId}:${student.profileId}`
+    : `course-people-student-welcome:${courseId}:${to}`;
+
+  await enqueueTransactionalEmail('studentCourseWelcome', {
+    to,
+    fields: {
+      orgName,
+      courseName: courseOrgData.courseTitle || 'Course',
+      loginUrl: delivery.baseUrl,
+      customMessage: courseOrgData.welcomeEmailMessage ?? undefined,
+      branding: delivery.branding
+    },
+    from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+    idempotencyKey,
+    ics: delivery.ics,
+    preference: { organizationId: courseOrgData.orgId, recipientProfileId: student.profileId }
+  });
 }
 
 /**
@@ -221,7 +168,15 @@ export async function addMember(
  * @param members Array of member data
  * @returns Array of created members
  */
-export async function addMembers(courseId: string, members: TAddCourseMembers) {
+export async function addMembers(
+  courseId: string,
+  members: TAddCourseMembers,
+  source: TEventSource = 'dashboard',
+  context: TMemberWebhookContext = {},
+  options: { sendEmail?: boolean } = {}
+) {
+  const { sendEmail = true } = options;
+
   try {
     if (members.length === 0) {
       throw new AppError('At least one member must be provided', ErrorCodes.VALIDATION_ERROR, 400);
@@ -262,7 +217,10 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       for (const member of members) {
         const addedMember = await addCourseMember(courseId, member);
         addedMembers.push(addedMember);
-        await emitCourseMemberWebhookEvent('course.member.added', courseId, addedMember);
+        await emitCourseMemberAddedWebhookEvent(courseId, addedMember, {
+          source: context.source ?? buildMemberSource('admin'),
+          actorProfileId: context.actorProfileId
+        });
 
         if (member.roleId === ROLE.STUDENT) {
           addedStudentMember = true;
@@ -272,6 +230,8 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       if (addedStudentMember) {
         await invalidateOrgStats(courseOrgData.orgId);
       }
+
+      captureLearnersEnrolled(addedMembers, 'admin', source);
     }
 
     const studentProfileIds = members
@@ -282,7 +242,10 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       await ensureComplianceEnrollmentRecordsForProfiles([courseId], studentProfileIds);
     }
 
-    // Send welcome emails for teachers (TUTOR role = 2, ADMIN role = 1)
+    if (!sendEmail) {
+      return addedMembers;
+    }
+
     const baseUrl = getDashboardBaseUrl({
       siteName: orgSiteName,
       customDomain: courseOrgData.orgCustomDomain,
@@ -290,7 +253,19 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     });
     const inviteLink = `${baseUrl}/org/${orgSiteName}/courses`;
 
-    const teacherEmailPromises: Promise<unknown>[] = [];
+    const emailPromises: Promise<unknown>[] = [];
+    const addedStudents = members.filter((member) => member.roleId === ROLE.STUDENT);
+    const welcomeIcs = addedStudents.length > 0 ? await getWelcomeSessionIcs(courseId) : undefined;
+
+    for (const student of addedStudents) {
+      emailPromises.push(
+        sendStudentCourseWelcome(courseId, courseOrgData, student, { baseUrl, branding, ics: welcomeIcs }).catch(
+          (emailError) => {
+            console.error('Failed to enqueue student welcome email:', emailError);
+          }
+        )
+      );
+    }
 
     addedMembers.forEach((member, index) => {
       const memberData = members[index];
@@ -299,7 +274,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       const name = memberData.name;
 
       if ((roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) && email && name) {
-        teacherEmailPromises.push(
+        emailPromises.push(
           enqueueTransactionalEmail('teacherCourseWelcome', {
             to: email,
             fields: {
@@ -320,9 +295,9 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       }
     });
 
-    if (teacherEmailPromises.length > 0) {
+    if (emailPromises.length > 0) {
       try {
-        await Promise.all(teacherEmailPromises);
+        await Promise.all(emailPromises);
       } catch (emailError) {
         console.error('Failed to enqueue welcome emails:', emailError);
       }
@@ -395,8 +370,13 @@ export async function updateMember(courseId: string, memberId: string, data: Par
  * @param memberId Member ID
  * @returns Deleted member
  */
-export async function deleteMember(courseId: string, memberId: string) {
+export async function deleteMember(
+  courseId: string,
+  memberId: string,
+  context: { actorProfileId?: string | null; reason?: string | null } = {}
+) {
   try {
+    const progressBeforeRemoval = await readProgressAtRemoval(courseId, memberId);
     const deleted = await deleteCourseMember(courseId, memberId);
     if (!deleted) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
@@ -407,7 +387,11 @@ export async function deleteMember(courseId: string, memberId: string) {
       await invalidateOrgStats(statsOrgId);
     }
 
-    await emitCourseMemberWebhookEvent('course.member.removed', courseId, deleted);
+    await emitCourseMemberRemovedWebhookEvent(courseId, deleted, {
+      actorProfileId: context.actorProfileId,
+      reason: context.reason,
+      progressAtRemoval: progressBeforeRemoval
+    });
 
     return deleted;
   } catch (error) {

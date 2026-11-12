@@ -6,11 +6,14 @@ export {
   AI_ASSISTANT_PANEL_ID,
   chatDraft,
   clearChatDraft,
-  openAiAssistant,
   closeAiAssistant,
+  dockAiAssistant,
+  openAiAssistant,
+  openAiAssistantFloating,
   quoteInChat,
   sendPromptToAssistant,
   setChatDraft,
-  toggleAiAssistant
+  toggleAiAssistant,
+  toggleAiAssistantFloating
 } from './utils/store';
 export { aiAssistantPanelDefinition } from './panel';

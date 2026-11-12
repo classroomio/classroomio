@@ -122,6 +122,7 @@
   let lastRunStatusSig = $state('');
   let activeConversationId: string | null = $state(null);
   let isLoadingHistory = $state(false);
+  let isPreparingPrompt = $state(false);
   let selectedModel: AgentModelId = $state(DEFAULT_PICKER_MODEL_ID);
   const paidModelIds = UI_PICKER_MODEL_IDS.filter((id) => !AGENT_MODELS[id].isFree);
 
@@ -252,14 +253,7 @@
     const updatedTitle = await aiAssistantApi.renameConversation(conversationId, title);
 
     if (!updatedTitle) {
-      const rawError = aiAssistantApi.error;
-      let message = t.get('ai_assistant.rename_chat_failed');
-
-      if (rawError && !rawError.startsWith('{')) {
-        message = rawError;
-      }
-
-      throw new Error(message);
+      throw new Error(aiAssistantApi.error ?? t.get('ai_assistant.rename_chat_failed'));
     }
   }
 
@@ -478,19 +472,25 @@
       metadata.template = templateMeta;
     }
 
-    const conversationId = await ensureActiveConversation(courseId);
-    if (!conversationId) return;
+    isPreparingPrompt = true;
 
-    if (templateForFirstMessage) {
-      pendingInitialTemplateId = null;
+    try {
+      const conversationId = await ensureActiveConversation(courseId);
+      if (!conversationId) return;
+
+      if (templateForFirstMessage) {
+        pendingInitialTemplateId = null;
+      }
+
+      inputValue = '';
+
+      chat.sendMessage({
+        text,
+        ...(Object.keys(metadata).length > 0 ? { metadata } : {})
+      });
+    } finally {
+      isPreparingPrompt = false;
     }
-
-    inputValue = '';
-
-    chat.sendMessage({
-      text,
-      ...(Object.keys(metadata).length > 0 ? { metadata } : {})
-    });
   }
 
   async function handleSubmitTemplateAnswers(payload: {
@@ -734,6 +734,7 @@
   }
 
   const isStreaming = $derived(chat.status === 'streaming' || chat.status === 'submitted');
+  const isPreparing = $derived(isPreparingPrompt || $initialChatPrompt !== null);
   const isExhausted = $derived(tokenUsage !== null && tokenUsage.remaining <= 0);
 
   const status = $derived(aiAssistantApi.status);
@@ -1241,6 +1242,7 @@
 
     const model = $initialChatModel;
     const templateFromHome = $initialChatTemplateId;
+    isPreparingPrompt = true;
     clearInitialChatPrompt();
     clearInitialChatModel();
     clearInitialChatTemplateId();
@@ -1250,6 +1252,7 @@
 
       if (model && isAgentModelId(model)) {
         if ($isFreePlan && paidModelIds.includes(model)) {
+          isPreparingPrompt = false;
           openUpgradeModal();
           return;
         }
@@ -1307,6 +1310,7 @@
   <ChatMessageList
     messages={chat.messages}
     {isStreaming}
+    {isPreparing}
     {isLoadingHistory}
     {isStudent}
     {courseId}

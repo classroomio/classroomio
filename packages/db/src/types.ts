@@ -31,9 +31,6 @@ export type TNewGroupAttendance = typeof schema.groupAttendance.$inferInsert;
 export type TCurrency = typeof schema.currency.$inferSelect;
 export type TNewCurrency = typeof schema.currency.$inferInsert;
 
-export type TAppsPollOption = typeof schema.appsPollOption.$inferSelect;
-export type TNewAppsPollOption = typeof schema.appsPollOption.$inferInsert;
-
 export type TProfile = typeof schema.profile.$inferSelect;
 export type TNewProfile = typeof schema.profile.$inferInsert;
 
@@ -71,9 +68,6 @@ export type TNewCourseCompletionNotificationEvent = typeof schema.courseCompleti
 export type TCourseCertificateIssue = typeof schema.courseCertificateIssue.$inferSelect;
 export type TNewCourseCertificateIssue = typeof schema.courseCertificateIssue.$inferInsert;
 
-export type TAppsPoll = typeof schema.appsPoll.$inferSelect;
-export type TNewAppsPoll = typeof schema.appsPoll.$inferInsert;
-
 export type TVideoTranscripts = typeof schema.videoTranscripts.$inferSelect;
 export type TNewVideoTranscripts = typeof schema.videoTranscripts.$inferInsert;
 
@@ -88,9 +82,6 @@ export type TNewAsset = typeof schema.asset.$inferInsert;
 
 export type TAssetUsage = typeof schema.assetUsage.$inferSelect;
 export type TNewAssetUsage = typeof schema.assetUsage.$inferInsert;
-
-export type TAppsPollSubmission = typeof schema.appsPollSubmission.$inferSelect;
-export type TNewAppsPollSubmission = typeof schema.appsPollSubmission.$inferInsert;
 
 export type TExercise = typeof schema.exercise.$inferSelect;
 export type TNewExercise = typeof schema.exercise.$inferInsert;
@@ -150,6 +141,19 @@ export type TLessonLanguageHistory = typeof schema.lessonLanguageHistory.$inferS
 export type TNewLessonLanguageHistory = typeof schema.lessonLanguageHistory.$inferInsert;
 
 export type TLessonVersion = typeof schema.lessonVersions.$inferSelect;
+
+export type TBlock = typeof schema.block.$inferSelect;
+export type TNewBlock = typeof schema.block.$inferInsert;
+export type TBlockPlacement = typeof schema.blockPlacement.$inferSelect;
+export type TNewBlockPlacement = typeof schema.blockPlacement.$inferInsert;
+export type TBlockLocale = typeof schema.blockLocale.$inferSelect;
+export type TNewBlockLocale = typeof schema.blockLocale.$inferInsert;
+export type TBlockLocaleHistory = typeof schema.blockLocaleHistory.$inferSelect;
+export type TNewBlockLocaleHistory = typeof schema.blockLocaleHistory.$inferInsert;
+export type TBlockVersion = typeof schema.blockVersions.$inferSelect;
+export type TLessonRevision = typeof schema.lessonRevision.$inferSelect;
+export type TNewLessonRevision = typeof schema.lessonRevision.$inferInsert;
+export type { TLessonRevisionPlacement } from './schema';
 
 export type TOrganizationmember = typeof schema.organizationmember.$inferSelect;
 export type TNewOrganizationmember = typeof schema.organizationmember.$inferInsert;

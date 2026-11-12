@@ -2,6 +2,7 @@ import type * as z from 'zod';
 import { describe, expectTypeOf, it } from 'vitest';
 import type {
   ZPublicApiAssignAudienceCoursesResponse,
+  ZPublicApiAudienceBulkStatusResponse,
   ZPublicApiAudienceMemberResponse,
   ZPublicApiCourseDetailResponse,
   ZPublicApiCourseListItemResponse,
@@ -9,10 +10,12 @@ import type {
   ZPublicApiCourseStructureResponse,
   ZPublicApiCreateCourseResponse,
   ZPublicApiRemoveAudienceMemberResponse,
+  ZPublicApiUpdateCourseResponse,
   ZPublicApiUpdateCourseStructureResponse
 } from '@cio/utils/validation/public-api';
 import type {
   assignAudienceCoursesService,
+  bulkUpdateAudienceStatusService,
   getAudienceMemberService,
   listAudienceService,
   removeAudienceService
@@ -46,6 +49,9 @@ describe('public API response schemas match what the services return', () => {
     expectTypeOf<KeysOf<Returned<typeof removeAudienceService>>>().toEqualTypeOf<
       DocumentedKeys<typeof ZPublicApiRemoveAudienceMemberResponse>
     >();
+    expectTypeOf<KeysOf<Returned<typeof bulkUpdateAudienceStatusService>>>().toEqualTypeOf<
+      DocumentedKeys<typeof ZPublicApiAudienceBulkStatusResponse>
+    >();
   });
 
   it('courses', () => {
@@ -59,7 +65,7 @@ describe('public API response schemas match what the services return', () => {
       DocumentedKeys<typeof ZPublicApiCreateCourseResponse>
     >();
     expectTypeOf<KeysOf<Returned<typeof updatePublicApiCourseService>['course']>>().toEqualTypeOf<
-      DocumentedKeys<typeof ZPublicApiCourseResponse>
+      DocumentedKeys<typeof ZPublicApiUpdateCourseResponse>
     >();
     expectTypeOf<KeysOf<Returned<typeof deletePublicApiCourseService>>>().toEqualTypeOf<
       DocumentedKeys<typeof ZPublicApiCourseResponse>

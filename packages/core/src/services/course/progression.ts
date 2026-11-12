@@ -41,6 +41,7 @@ export type AnnotatedCourseContent = {
 function annotateNavigableAccess(params: {
   navigableItems: CourseContentItem[];
   lessonPolicyById: Map<string, LessonProgressionPolicy>;
+  exercisePolicyById: Map<string, ExerciseProgressionPolicy>;
   progressionMode: CourseProgressionMode;
   completedLessonIds: Set<string>;
   completedExerciseIds: Set<string>;
@@ -60,8 +61,11 @@ function annotateNavigableAccess(params: {
       return true;
     },
     getCompletionPolicy: (item) => {
-      const lessonPolicy = params.lessonPolicyById.get(item.id);
-      return lessonPolicy?.completionPolicy ?? 'manual';
+      if (item.type === ContentType.Exercise) {
+        return params.exercisePolicyById.get(item.id)?.completionPolicy ?? 'submitted';
+      }
+
+      return params.lessonPolicyById.get(item.id)?.completionPolicy ?? 'manual';
     }
   });
 }
@@ -153,6 +157,7 @@ export async function annotateCourseContentWithProgression(params: {
   const accessById = annotateNavigableAccess({
     navigableItems: flattenNavigableItems(content),
     lessonPolicyById,
+    exercisePolicyById,
     progressionMode,
     completedLessonIds,
     completedExerciseIds

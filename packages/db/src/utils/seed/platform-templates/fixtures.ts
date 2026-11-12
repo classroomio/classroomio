@@ -31,7 +31,7 @@ export type LaunchExerciseSection = {
 export type LaunchExercise = {
   title: string;
   description?: string;
-  completionPolicy?: 'submitted' | 'passed';
+  completionPolicy?: 'submitted' | 'passed' | 'none';
   passThreshold?: number;
   allowMultipleAttempts?: boolean;
   questions?: LaunchQuestion[];

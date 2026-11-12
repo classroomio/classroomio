@@ -9,7 +9,7 @@ A clickable, high-fidelity prototype lives at [`prototypes/lesson-editor-redesig
 * **An AI assistant can draft a Note block from a one-line prompt**, which the admin then edits before it's part of the lesson (see [Confirmed Decision 4](#4-an-ai-assistant-can-draft-a-note-block)).
 * **Adding Video, Slides, Document, or Image inserts a real, fully-rendered example immediately** — not a blank form — which the admin either keeps, edits in place, or replaces via "Change …". The prototype's specific examples (one particular YouTube video, one particular stock photo) are illustrative only, not a literal product requirement (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)).
 * Blocks can be reordered by drag handle or explicit move up/down controls, and removed from a per-block menu.
-* Notes support callout styles (Info, Tip, Important, Warning, Highlight) in addition to plain text.
+* Notes can contain inline callouts (Info, Tip, Important, Warning, Highlight), inserted from the editor toolbar or slash menu. The note block itself has no style setting.
 * **Preview renders Video and Slides large and prominent** (a full-width player/viewer, not a compact edit-mode card), and hides every block's type label, so Preview reads as one continuous learner page rather than a labeled form.
 * The Settings slider offers a persisted, per-lesson reading-density setting (Compact / Comfortable / Spacious) that adjusts block spacing wherever the lesson is rendered for viewing (see [Confirmed Decision 7](#7-preview-represents-the-in-app-learner-experience)).
 * A scroll-position indicator — one dot per block, inside the canvas column — shows where the admin is in a long lesson and jumps to any block on click; Preview shows the equivalent as a continuous progress fill.
@@ -145,6 +145,7 @@ The slider contains exactly the fields currently provided by `LessonSettingsTab`
 
 * **Live class fields** (call URL, date, timezone) — shown only when the course is a live-class-type course (`courseApi.course?.type === 'LIVE_CLASS'`). Most lessons are not live-class lessons and will not see this section at all, exactly as today.
 * **Progression** — a single "Completion rule" field (Manual / Video watch / None). Choosing "Video watch" reveals the video-watch threshold and the per-video "must be watched" checklist; any other choice keeps them hidden. This matches today's conditional reveal exactly — nothing new.
+* **Lesson language** — the language selector, moved here from the lesson header.
 * **Lesson comments** — the existing comments toggle.
 * **Reading density** (new) — see [Confirmed Decision 7](#7-preview-represents-the-in-app-learner-experience).
 
@@ -292,6 +293,8 @@ The following are outside v1:
 * Persisting or re-surfacing the prompt used to generate an AI draft
 * Course creation, enrollment, analytics, attendance, marks, submissions, certificates, compliance, or landing-page editing
 * Changes to `CourseSidebar` or `CourseHeader`
+* Bulk move, bulk duplicate or bulk change of block type
+* Bulk delete on the mobile layout (not yet designed)
 
 ---
 
@@ -370,7 +373,7 @@ Add a persistent Settings action to the lesson header.
 
 Clicking Settings opens a right-side slider using the existing `@cio/ui` Sheet/Drawer primitives.
 
-The slider contains the existing `LessonSettingsTab` fields, including their existing conditional visibility, plus one new field:
+The slider contains the existing `LessonSettingsTab` fields, including their existing conditional visibility, plus two additions: the lesson language selector (moved from the lesson header) and Reading density.
 
 ### Live class
 
@@ -429,9 +432,34 @@ A dismissible hint banner introduces the drag-to-reorder affordance the first ti
 
 ---
 
-## 6. Note callout styles
+## 5a. Bulk delete
 
-A Note block's toolbar includes a style picker with six options: Default (no callout), Info, Tip, Important, Warning, Highlight. Each styled option renders the note body inside a colored callout with its own icon and label, in both Edit and Preview. Switching styles does not alter the note's text.
+An admin can delete several blocks at once instead of removing them one by one. It works on every block type, so it is a feature of the editor, not of any one block.
+
+**Deleting one block at a time stays.** Bulk delete adds to **Remove block** in each block's "..." menu (section 5); it does not replace it. An admin can always delete a single block from its own menu, whether or not select mode is on, and that removal is not affected by select mode.
+
+* A **Bulk delete** button (trash icon) sits in the toolbar next to Edit / Preview. It only shows in Edit.
+* Clicking it turns on **select mode**. A bar appears above the canvas with a master checkbox, "N selected", **Select all**, a red **Delete N** button and **Cancel**. The bar stays visible while the admin scrolls.
+* In select mode, clicking anywhere on a block selects or unselects it. Each block shows a checkbox and a highlighted outline when selected. Controls inside blocks do not react to clicks.
+* **Shift + click** selects every block between the last clicked block and this one.
+* The master checkbox shows empty, partly filled or full. Clicking it selects all or none.
+* **Delete N** is disabled while nothing is selected. It removes the selected blocks and leaves select mode. If more than 5 blocks are selected, the first click changes the button to **Confirm delete N**; a second click within 4 seconds deletes, otherwise it resets.
+* After deleting, a toast says how many blocks were deleted and offers **Undo** for 8 seconds. Undo puts the blocks back in their original order, unselected.
+* Select mode hides the drag-to-reorder hint and the scroll-position dots. Switching to Preview leaves select mode. Deleting autosaves like any other change.
+
+| Key | Action |
+| --- | --- |
+| Esc | Leave select mode and clear the selection |
+| Cmd/Ctrl + A | Select all blocks (not while typing in a field) |
+| Delete / Backspace | Delete the selected blocks (not while typing in a field) |
+
+Bulk delete removes several entries from the ordered block list in one save; Undo restores the previous list. No new fields are needed.
+
+---
+
+## 6. Callouts inside notes
+
+A Note's toolbar and slash menu can insert a callout (Info, Tip, Important, Warning, Highlight) around content inside the note. Callouts are part of the note's content, render the same in Edit and Preview, and the note block itself has no style setting.
 
 ---
 
@@ -683,7 +711,7 @@ No changes are expected for the existing settings (Live class, Progression/compl
 
 ## Reading density (new)
 
-* Needs a persisted, per-lesson field (e.g. `lesson.readingDensity`, enum `compact` / `comfortable` / `spacious`, default `comfortable`) — its exact shape is an implementation decision against `packages/db/src/schema.ts`.
+* Needs a persisted, per-lesson field (e.g. `lesson.readingDensity`, enum `compact` / `comfortable` / `spacious`, default `compact`) — its exact shape is an implementation decision against `packages/db/src/schema.ts`.
 * Read wherever the lesson is rendered for viewing: the admin's in-page Preview and the real in-app learner view. Not read or applied anywhere in the Edit canvas.
 
 ## The ordered block list (new)
@@ -820,11 +848,20 @@ Manually verify:
 23. Adding Video, Slides, Document, or Image inserts a realistic, immediately-viewable example rather than a blank form; its "Change …" action opens the existing Add modal blank, not pre-filled from the example.
 24. A new block is briefly highlighted and the canvas scrolls it into view without a jarring, page-length jump.
 25. The AI entry point inserts an editable Note block from a prompt; the prompt itself is not persisted.
-26. Note blocks support the six callout styles (Default, Info, Tip, Important, Warning, Highlight), selectable without altering the note's text.
+26. A note's editor can insert callouts (Info, Tip, Important, Warning, Highlight) around content inside the note; the note block has no style setting.
 27. Image blocks can be uploaded, and their alt text and fit can be edited independently of replacing the image.
 28. Reading density is a persisted, per-lesson setting: set once from the Settings slider, it determines block spacing in both Preview and the real in-app learner view, with no effect on the Edit canvas.
 29. The Settings slider's visibility rules match production exactly: Live class fields only for live-class-type courses; video-watch threshold and per-video enforcement only when the completion rule is "Video watch".
 30. The scroll-position indicator (dots in Edit, progress fill in Preview) reflects the block currently in view and can jump to any block on click; it does not appear on the mobile frame.
+31. A "Bulk delete" button with a trash icon shows in the toolbar in Edit only.
+32. Clicking it shows the selection bar with master checkbox, "N selected", Select all, Delete N and Cancel, and the bar stays visible on scroll.
+33. Clicking a block selects or unselects it, and controls inside blocks do not respond while select mode is on.
+34. Shift + click selects the range from the last clicked block, and the master checkbox shows none, some or all.
+35. Delete N is disabled when nothing is selected. Deleting 5 or fewer blocks removes them straight away; deleting more than 5 needs a second click on "Confirm delete N" within 4 seconds.
+36. After delete, a toast shows the count and Undo for 8 seconds; Undo restores the blocks in their original order and unselected.
+37. Deleting every block leaves an empty canvas and the lesson autosaves.
+38. Esc leaves select mode; Cmd/Ctrl + A selects all and Delete/Backspace deletes, neither while typing in a field. Switching to Preview leaves select mode.
+39. Each block can still be deleted individually from its "..." menu (Remove block), with or without using Bulk delete.
 
 ---
 

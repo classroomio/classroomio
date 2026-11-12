@@ -69,7 +69,7 @@ export interface QuestionnaireState {
   sectionDisplayMode: ExerciseSectionDisplayMode;
   totalSubmissions: number;
   allowMultipleAttempts?: boolean;
-  completionPolicy?: 'submitted' | 'passed';
+  completionPolicy?: 'submitted' | 'passed' | 'none';
   passThreshold?: number | null;
   slug?: string | null;
 }

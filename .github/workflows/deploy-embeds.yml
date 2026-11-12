@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: "20"
+  NODE_VERSION: "24.22.1"
 
 jobs:
   build-and-deploy-embeds:

@@ -7,6 +7,7 @@
   import { CommandPalette, KeyboardShortcutListener } from '$features/search';
   import { ReportDialog } from '$features/report';
   import SaveAsTemplateDialog from '$features/course/components/save-as-template-dialog.svelte';
+  import { MediaUploadHost } from '$features/media/components';
   import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
   import { currentOrg } from '$lib/utils/store/org';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -53,6 +54,7 @@
 <KeyboardShortcutListener />
 <ReportDialog />
 <SaveAsTemplateDialog />
+<MediaUploadHost />
 
 {#if data.org?.isRestricted || $currentOrg.isRestricted}
   <PageRestricted />

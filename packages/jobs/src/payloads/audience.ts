@@ -1,5 +1,16 @@
 import * as z from 'zod';
 
+// Jobs queued before deactivate and reactivate were retired still carry the old names.
+const retiredActionReplacements = new Map([
+  ['deactivate', 'archive'],
+  ['reactivate', 'unarchive']
+]);
+
+const ZAudienceBulkActionName = z.preprocess(
+  (value) => (typeof value === 'string' ? (retiredActionReplacements.get(value) ?? value) : value),
+  z.enum(['archive', 'unarchive', 'delete'])
+);
+
 /**
  * A bulk lifecycle change too large to apply inside a request.
  *
@@ -13,7 +24,7 @@ import * as z from 'zod';
 export const ZAudienceBulkActionPayload = z.object({
   organizationId: z.string().min(1),
   actorProfileId: z.string().min(1),
-  action: z.enum(['deactivate', 'reactivate', 'archive', 'unarchive', 'delete']),
+  action: ZAudienceBulkActionName,
   memberIds: z.array(z.number().int().positive()).min(1),
   reason: z.string().max(500).optional(),
   /** The filter the action came from, recorded on each audit row. */

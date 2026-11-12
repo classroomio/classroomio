@@ -68,7 +68,7 @@ import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { cohortMemberMiddleware } from '@api/middlewares/cohort-member';
 import { cohortTeamMemberMiddleware } from '@api/middlewares/cohort-team-member';
 import { cohortNewsfeedCommentAuthorOrTeamMiddleware } from '@api/middlewares/cohort-newsfeed-comment-author-or-team';
-import { handleError } from '@api/utils/errors';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 const ZCohortParam = z.object({ cohortId: z.string().uuid() });
@@ -124,11 +124,15 @@ export const cohortRouter = new Hono()
   .post(
     '/',
     authMiddleware,
+    orgTeamMemberMiddleware,
     zValidator('json', ZCreateCohort.extend({ organizationId: z.string().uuid() })),
     async (c) => {
       try {
         const user = c.get('user')!;
         const { organizationId, ...data } = c.req.valid('json');
+        if (organizationId !== c.req.header('cio-org-id')) {
+          throw new AppError('Organization mismatch', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+        }
         const cohort = await createCohort(organizationId, user.id, data);
         return c.json({ success: true, data: cohort }, 201);
       } catch (error) {
@@ -238,7 +242,7 @@ export const cohortRouter = new Hono()
       try {
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await addCohortMembers(cohortId, data);
+        const result = await addCohortMembers(cohortId, data, c.get('user')?.id ?? null);
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to add cohort members');
@@ -280,7 +284,7 @@ export const cohortRouter = new Hono()
     async (c) => {
       try {
         const { cohortId, memberId } = c.req.valid('param');
-        const member = await removeCohortMemberService(cohortId, memberId);
+        const member = await removeCohortMemberService(cohortId, memberId, c.get('user')?.id ?? null);
         return c.json({ success: true, data: member }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to remove cohort member');
@@ -330,7 +334,7 @@ export const cohortRouter = new Hono()
       try {
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await assignExistingStudentsToCohort(cohortId, data);
+        const result = await assignExistingStudentsToCohort(cohortId, data, 'dashboard', c.get('user')?.id ?? null);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to assign students to cohort');

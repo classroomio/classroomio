@@ -371,23 +371,6 @@ function inferDraftLocale(languages: TLessonLanguage[]): TLocale {
   return (locale ?? 'en') as TLocale;
 }
 
-function getPrimaryLessonContent(
-  lessonExternalId: string,
-  lessonLanguages: TCourseImportDraftPayload['lessonLanguages'],
-  preferredLocale: TLocale
-) {
-  const localized = lessonLanguages.find(
-    (lessonLanguage) =>
-      lessonLanguage.lessonExternalId === lessonExternalId && lessonLanguage.locale === preferredLocale
-  );
-
-  if (localized) {
-    return localized.content;
-  }
-
-  return lessonLanguages.find((lessonLanguage) => lessonLanguage.lessonExternalId === lessonExternalId)?.content;
-}
-
 function buildExercisePublishPayload(
   exercise: TCourseImportDraftExercise,
   lessonIdMap: Map<string, string>,
@@ -894,13 +877,17 @@ export async function publishCourseImportDraftService(
     }
 
     if (!courseId) {
-      const courseResult = await createCourse(profileId, {
-        title: courseTitle,
-        description: courseDescription,
-        type: courseType,
-        organizationId: orgId,
-        compliance: courseCompliance
-      });
+      const courseResult = await createCourse(
+        profileId,
+        {
+          title: courseTitle,
+          description: courseDescription,
+          type: courseType,
+          organizationId: orgId,
+          compliance: courseCompliance
+        },
+        'import'
+      );
 
       courseId = courseResult.course.id;
       await reserveDraftPublishedCourseId(orgId, draftId, draft, existing.summary, courseId);
@@ -934,7 +921,6 @@ export async function publishCourseImportDraftService(
       const createdLesson = await createLesson(courseId, {
         courseId,
         title: lesson.title,
-        note: getPrimaryLessonContent(lesson.externalId, draft.lessonLanguages, draft.course.locale as TLocale),
         sectionId,
         order: lessonOrder,
         isUnlocked: lesson.isUnlocked,
@@ -1130,7 +1116,6 @@ export async function publishCourseImportDraftToExistingCourseService(
         throw new AppError(`Lesson "${lesson.title}" references an unknown section`, ErrorCodes.VALIDATION_ERROR, 400);
       }
 
-      const note = getPrimaryLessonContent(lesson.externalId, draft.lessonLanguages, preferredLocale);
       const draftOrder = sectionId ? lesson.order : rootOrders.get(`lesson:${lesson.externalId}`)!;
 
       if (existingLessonIds.has(lesson.externalId)) {
@@ -1148,7 +1133,6 @@ export async function publishCourseImportDraftToExistingCourseService(
 
         const updatedLesson = await updateLessonService(lesson.externalId, {
           title: lesson.title,
-          note,
           ...(sectionId ? { sectionId } : {}),
           ...(sectionId && mergedOrder !== undefined ? { order: mergedOrder } : {}),
           isUnlocked: lesson.isUnlocked,
@@ -1169,7 +1153,6 @@ export async function publishCourseImportDraftToExistingCourseService(
       const createdLesson = await createLesson(course.id, {
         courseId: course.id,
         title: lesson.title,
-        note,
         sectionId,
         order: isMerge ? nextLessonOrder : draftOrder,
         isUnlocked: lesson.isUnlocked,

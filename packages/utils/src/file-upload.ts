@@ -16,6 +16,17 @@ export const FILE_UPLOAD_SUPPORTED_TYPES = [
     label: 'Jupyter Notebook (.ipynb)',
     aliases: ['ipynb', '.ipynb', 'application/json']
   },
+  {
+    value: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    label: 'Excel (.xlsx)',
+    aliases: ['xlsx', '.xlsx']
+  },
+  { value: 'application/vnd.ms-excel', label: 'Excel 97-2003 (.xls)', aliases: ['xls', '.xls'] },
+  {
+    value: 'text/x-python',
+    label: 'Python (.py)',
+    aliases: ['py', '.py', 'text/x-script.python', 'text/x-python-script', 'application/x-python-code', 'text/plain']
+  },
   { value: 'image/jpeg', label: 'JPEG (.jpg, .jpeg)', aliases: ['jpg', '.jpg', 'jpeg', '.jpeg', 'image/jpg'] },
   { value: 'image/png', label: 'PNG (.png)', aliases: ['png', '.png'] },
   { value: 'image/webp', label: 'WEBP (.webp)', aliases: ['webp', '.webp'] },
@@ -24,6 +35,17 @@ export const FILE_UPLOAD_SUPPORTED_TYPES = [
   { value: 'video/quicktime', label: 'MOV (.mov)', aliases: ['mov', '.mov'] },
   { value: 'video/x-msvideo', label: 'AVI (.avi)', aliases: ['avi', '.avi'] },
   { value: 'video/x-matroska', label: 'MKV (.mkv)', aliases: ['mkv', '.mkv'] }
+] as const;
+
+export const LESSON_DOCUMENT_ACCEPTED_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/msword',
+  'text/csv',
+  'application/x-ipynb+json',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel',
+  'text/x-python'
 ] as const;
 
 export const FILE_UPLOAD_ALLOWED_MIME_TYPES = [
@@ -40,7 +62,7 @@ const SUPPORTED_TYPE_BY_VALUE = new Map<string, SupportedType>(
   FILE_UPLOAD_SUPPORTED_TYPES.map((entry) => [entry.value, entry])
 );
 const GENERIC_MIME_TYPES = new Set(['', 'application/octet-stream']);
-const EXTENSION_BOUND_MIME_TYPES = new Set(['application/json', 'application/vnd.ms-excel']);
+const EXTENSION_BOUND_MIME_TYPES = new Set(['application/json', 'application/vnd.ms-excel', 'text/plain']);
 
 function normalizeToken(value: string): string {
   return value.trim().toLowerCase();
@@ -112,7 +134,7 @@ export function formatAcceptedFileTypes(values: string[]): string {
     .join(', ');
 }
 
-export function getFileUploadAcceptAttribute(acceptedTypes: string[]): string {
+export function getFileUploadAcceptAttribute(acceptedTypes: readonly string[]): string {
   return acceptedTypes
     .flatMap((acceptedType) => {
       const supportedType = SUPPORTED_TYPE_BY_VALUE.get(acceptedType);
@@ -126,7 +148,49 @@ export function getFileUploadAcceptAttribute(acceptedTypes: string[]): string {
     .join(',');
 }
 
-export function isFileTypeAllowed(file: FileTypeCandidate, acceptedTypes: string[]): boolean {
+/**
+ * Resolves the supported type a file belongs to among `acceptedTypes`, matching on MIME type or extension.
+ * Returns null when the file is not allowed.
+ */
+function findSupportedType(file: FileTypeCandidate, acceptedTypes: readonly string[]): SupportedType | null {
+  const allowedTypes = acceptedTypes.length > 0 ? acceptedTypes : [...SUPPORTED_TYPE_BY_VALUE.keys()];
+
+  for (const acceptedType of allowedTypes) {
+    const supportedType = SUPPORTED_TYPE_BY_VALUE.get(acceptedType);
+    if (supportedType && isFileTypeAllowed(file, [acceptedType])) return supportedType;
+  }
+
+  return null;
+}
+
+/**
+ * The canonical MIME type for an allowed file, or null when the file is not allowed. Use it to replace the
+ * empty or generic MIME type browsers report for files like `.py` and `.ipynb`.
+ */
+export function resolveFileUploadMimeType(
+  file: FileTypeCandidate,
+  acceptedTypes: readonly string[] = []
+): string | null {
+  return findSupportedType(file, acceptedTypes)?.value ?? null;
+}
+
+/**
+ * The short type key (e.g. `pdf`, `csv`, `ipynb`) stored with an uploaded document, or null when the file is not
+ * allowed.
+ */
+export function resolveFileUploadTypeKey(
+  file: FileTypeCandidate,
+  acceptedTypes: readonly string[] = []
+): string | null {
+  return findSupportedType(file, acceptedTypes)?.aliases[0] ?? null;
+}
+
+/** The short type key for a canonical MIME type, or null when the MIME type is not supported. */
+export function getFileUploadTypeKeyForMimeType(mimeType: string): string | null {
+  return SUPPORTED_TYPE_BY_VALUE.get(normalizeToken(mimeType))?.aliases[0] ?? null;
+}
+
+export function isFileTypeAllowed(file: FileTypeCandidate, acceptedTypes: readonly string[]): boolean {
   const allowedTypes = acceptedTypes.length > 0 ? acceptedTypes : [...SUPPORTED_TYPE_BY_VALUE.keys()];
   const mimeType = normalizeToken(file.type);
   const fileExtension = getFileExtension(file.name);

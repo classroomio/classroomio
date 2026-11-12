@@ -8,6 +8,8 @@ export const WEBHOOK_DELIVERIES_PAGE_SIZE = 10;
 export const WEBHOOK_EVENT_GROUPS = [
   { key: 'organization', eventTypes: WEBHOOK_EVENT_TYPES.filter((type) => type.startsWith('organization.')) },
   { key: 'course', eventTypes: WEBHOOK_EVENT_TYPES.filter((type) => type.startsWith('course.')) },
+  { key: 'cohort', eventTypes: WEBHOOK_EVENT_TYPES.filter((type) => type.startsWith('cohort.')) },
+  { key: 'compliance', eventTypes: WEBHOOK_EVENT_TYPES.filter((type) => type.startsWith('compliance.')) },
   {
     key: 'learning',
     eventTypes: WEBHOOK_EVENT_TYPES.filter((type) => type.startsWith('lesson.') || type.startsWith('exercise.'))
