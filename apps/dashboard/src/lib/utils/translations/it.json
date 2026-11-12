@@ -1503,7 +1503,8 @@
     "status": {
       "active": "Attivo",
       "archived": "Archiviato",
-      "processing": "In elaborazione"
+      "processing": "In elaborazione",
+      "upload_not_finished": "Caricamento non completato"
     },
     "table": {
       "title": "Titolo",
@@ -2947,6 +2948,7 @@
                 "loading_library": "Caricamento catalogo multimediale...",
                 "no_library_videos": "Nessun video disponibile nel tuo catalogo multimediale",
                 "add_from_library": "Aggiungi",
+                "upload_not_finished": "Caricamento non completato. Questo video non ha ancora un file, quindi non può essere aggiunto.",
                 "cancel_upload": "Annulla caricamento",
                 "upload_cancelled": "Caricamento annullato dall'utente",
                 "max_files": "{count, plural, one {Puoi caricare # file} other {Puoi caricare # file}}",

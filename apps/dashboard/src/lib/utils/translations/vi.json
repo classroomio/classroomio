@@ -2504,6 +2504,7 @@
                 "loading_library": "Đang tải thư viện phương tiện...",
                 "no_library_videos": "Không có video nào trong thư viện phương tiện của bạn",
                 "add_from_library": "Thêm",
+                "upload_not_finished": "Tải lên chưa hoàn tất. Video này chưa có tệp nên không thể thêm.",
                 "cancel_upload": "Hủy tải lên",
                 "upload_cancelled": "Tải lên bị người dùng hủy",
                 "max_files": "{count, plural, one {Bạn có thể tải lên # tệp} other {Bạn có thể tải lên # tệp}}",
@@ -3743,7 +3744,8 @@
     "status": {
       "active": "Đang hoạt động",
       "archived": "Đã lưu trữ",
-      "processing": "Đang xử lý"
+      "processing": "Đang xử lý",
+      "upload_not_finished": "Tải lên chưa hoàn tất"
     },
     "provider": {
       "upload": "Tải lên",
