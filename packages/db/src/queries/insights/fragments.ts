@@ -66,6 +66,7 @@ function exerciseCtes(context: InsightsCompileContext): SQL {
         sc.course_id,
         exercise.title AS exercise_title,
         exercise.section_id,
+        exercise.completion_policy <> 'none' AS is_required,
         exercise.completion_policy = 'passed' AS is_pass_required,
         CASE WHEN exercise.completion_policy = 'passed' THEN COALESCE(exercise.pass_threshold, 100) END AS pass_mark,
         COALESCE(exercise.is_unlocked, true) AS is_unlocked,
@@ -84,6 +85,7 @@ function exerciseCtes(context: InsightsCompileContext): SQL {
         sx.exercise_id,
         sx.exercise_title,
         sx.section_id,
+        sx.is_required,
         sx.is_pass_required,
         sx.pass_mark,
         sx.max_points,
@@ -141,6 +143,7 @@ function lessonCtes(): SQL {
         lesson.course_id,
         lesson.title AS lesson_title,
         lesson.section_id,
+        lesson.completion_policy <> 'none' AS is_required,
         (
           lesson.completion_policy = 'video_watch'
           AND EXISTS (
@@ -160,6 +163,7 @@ function lessonCtes(): SQL {
         lsn.lesson_id,
         lsn.lesson_title,
         lsn.section_id,
+        lsn.is_required,
         lsn.is_video_tracked,
         COALESCE(lesson_completion.is_complete, false) AS is_complete,
         CASE WHEN lesson_completion.is_complete
@@ -258,7 +262,7 @@ function overdueCte(context: InsightsCompileContext): SQL {
         ARRAY[mer.course_id],
         NULL::uuid
       FROM member_exercise_result mer
-      WHERE mer.due_by < (now() AT TIME ZONE 'UTC') AND NOT mer.is_complete
+      WHERE mer.is_required AND mer.due_by < (now() AT TIME ZONE 'UTC') AND NOT mer.is_complete
     ),
     overdue_row AS (
       SELECT
@@ -311,7 +315,9 @@ function courseCtes(context: InsightsCompileContext): SQL {
           ON ci.item_type = 'LESSON' AND ml.group_member_id = sm.group_member_id AND ml.lesson_id = ci.item_id
         LEFT JOIN member_exercise_result mer
           ON ci.item_type = 'EXERCISE' AND mer.group_member_id = sm.group_member_id AND mer.exercise_id = ci.item_id
-        WHERE ci.course_id = sm.course_id AND NOT COALESCE(ml.is_complete, mer.is_complete, false)
+        WHERE ci.course_id = sm.course_id
+          AND COALESCE(ml.is_required, mer.is_required, true)
+          AND NOT COALESCE(ml.is_complete, mer.is_complete, false)
         ORDER BY ci.item_rank
         LIMIT 1
       ) now_at ON true`
@@ -327,20 +333,23 @@ function courseCtes(context: InsightsCompileContext): SQL {
       LEFT JOIN (
         SELECT lsn.course_id, COUNT(*)::int AS lessons_total
         FROM scoped_lesson lsn
+        WHERE lsn.is_required
         GROUP BY lsn.course_id
       ) lsn ON lsn.course_id = sc.course_id
       LEFT JOIN (
         SELECT sx.course_id, COUNT(*)::int AS exercises_total
         FROM scope_exercise sx
+        WHERE sx.is_required
         GROUP BY sx.course_id
       ) sx ON sx.course_id = sc.course_id
     ),
     member_lesson_totals AS (
       SELECT
         group_member_id,
-        COUNT(*) FILTER (WHERE is_complete)::int AS lessons_completed,
-        COUNT(*) FILTER (WHERE is_complete AND completed_at < ${periodStart})::int AS lessons_completed_at_period_start,
-        MAX(completed_at) AS last_lesson_completed_at,
+        COUNT(*) FILTER (WHERE is_required AND is_complete)::int AS lessons_completed,
+        COUNT(*) FILTER (WHERE is_required AND is_complete AND completed_at < ${periodStart})::int
+          AS lessons_completed_at_period_start,
+        MAX(completed_at) FILTER (WHERE is_required) AS last_lesson_completed_at,
         COUNT(*) FILTER (WHERE is_video_tracked)::int AS video_lessons,
         COUNT(*) FILTER (WHERE is_video_tracked AND is_complete)::int AS video_watched
       FROM member_lesson
@@ -349,9 +358,10 @@ function courseCtes(context: InsightsCompileContext): SQL {
     member_exercise_totals AS (
       SELECT
         group_member_id,
-        COUNT(*) FILTER (WHERE is_complete)::int AS exercises_completed,
-        COUNT(*) FILTER (WHERE is_complete AND completed_at < ${periodStart})::int AS exercises_completed_at_period_start,
-        MAX(completed_at) FILTER (WHERE is_complete) AS last_exercise_completed_at,
+        COUNT(*) FILTER (WHERE is_required AND is_complete)::int AS exercises_completed,
+        COUNT(*) FILTER (WHERE is_required AND is_complete AND completed_at < ${periodStart})::int
+          AS exercises_completed_at_period_start,
+        MAX(completed_at) FILTER (WHERE is_required AND is_complete) AS last_exercise_completed_at,
         SUM(best_points) FILTER (WHERE state = 'graded' AND max_points > 0) AS graded_points,
         SUM(max_points) FILTER (WHERE state = 'graded' AND max_points > 0) AS graded_max_points,
         COUNT(*) FILTER (WHERE is_pass_required)::int AS pass_mark_exercises,
@@ -703,8 +713,8 @@ function sectionCtes(): SQL {
         group_member_id,
         course_id,
         section_id,
-        COUNT(*)::int AS exercises_total,
-        COUNT(*) FILTER (WHERE state = 'graded')::int AS exercises_graded,
+        COUNT(*) FILTER (WHERE is_required)::int AS exercises_total,
+        COUNT(*) FILTER (WHERE is_required AND state = 'graded')::int AS exercises_graded,
         ROUND(AVG(best_score_pct) FILTER (WHERE state = 'graded')) AS section_score_pct,
         COUNT(*) FILTER (WHERE is_pass_required)::int AS pass_mark_exercises,
         COUNT(*) FILTER (WHERE passed_first_try IS NOT NULL)::int AS first_try_graded,

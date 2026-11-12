@@ -1,7 +1,7 @@
 ---
 title: Track a cohort with analytics
 description: See how a cohort is progressing, find the students who need attention, and send reminders for overdue goals.
-last_reviewed: '2026-10-28'
+last_reviewed: '2026-11-12'
 ---
 
 Open a cohort and select **Analytics** in its sidebar to review progress across the cohort's courses. The page opens on **All courses** and combines summary cards, course and student detail, overdue work, and a filterable student list. The **Course** picker above the cards is always available, even when the cohort has only one course.
@@ -28,13 +28,13 @@ The page keeps checking in the background, so the notice disappears and cards fi
 
 The row under the chips summarizes the cohort's students and their work in the selected courses. Under **All time**, the context lines describe the current position and the last week. Under a shorter range, cards that measure activity use that range instead.
 
-| Card                 | What it shows                                                                                                                                                                             |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Logged in today**  | Students with a login event today, out of all students in the cohort. The hint repeats that count as a share of the cohort. Under a range, the card is titled **Logged in, last N days**. |
-| **Average progress** | The mean share of lessons and exercises each student has completed across the selected courses. Under a range, the hint compares that figure with the start of the range.                 |
-| **Average score**    | The mean of each student's best graded attempt, across the exercises they have taken. Under a range, only attempts made in that range count.                                              |
-| **Overdue**          | Students with at least one past-due goal, compliance item, or exercise due date that is not done. The card turns red when at least 5% of students are overdue.                            |
-| **Completed**        | Students who completed every selected course. The hint reads **x% of the cohort · N certified** under **All courses**, and shows the share of the cohort under a single course.           |
+| Card                 | What it shows                                                                                                                                                                                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Logged in today**  | Students with a login event today, out of all students in the cohort. The hint repeats that count as a share of the cohort. Under a range, the card is titled **Logged in, last N days**.                                              |
+| **Average progress** | The mean share of required lessons and exercises each student has completed across the selected courses. Items with a **None** completion rule are left out. Under a range, the hint compares that figure with the start of the range. |
+| **Average score**    | The mean of each student's best graded attempt, across the exercises they have taken. Under a range, only attempts made in that range count.                                                                                           |
+| **Overdue**          | Students with at least one past-due goal, compliance item, or required exercise that is not done. The card turns red when at least 5% of students are overdue.                                                                         |
+| **Completed**        | Students who completed every selected course. The hint reads **x% of the cohort · N certified** under **All courses**, and shows the share of the cohort under a single course.                                                        |
 
 ## Understand status and attention reasons
 
@@ -101,7 +101,7 @@ Select a student in the **Students** table to open their details beside it. If a
 
 ## Read a student's courses
 
-In the sheet, under **All courses**, the student's courses appear in a sortable, paginated table (five per page). Each row shows **Course**, **Progress**, **Now at**, **Average score**, and **Exercises passed**. **Now at** names the section or item the student is working on, or **Finished** at 100%. **Exercises passed** shows how many exercises with a pass mark the student has passed, such as **2 of 3**; it is – when the course has no pass-mark exercise.
+In the sheet, under **All courses**, the student's courses appear in a sortable, paginated table (five per page). Each row shows **Course**, **Progress**, **Now at**, **Average score**, and **Exercises passed**. **Now at** names the section of the student's next required lesson or exercise, or the item's title when it is not in a section, or **Finished** at 100%. **Exercises passed** shows how many exercises with a pass mark the student has passed, such as **2 of 3**; it is – when the course has no pass-mark exercise.
 
 Click a course row to chart the student's scores by exercise. The sheet switches to **Scores by exercise, \{course\}** with the dashed cohort average, chip stats, and an **Open course profile** link. Select **All courses** at the top of the sheet to return to the course list. The sheet keeps its own course choice; it does not change the page's **Course** picker.
 

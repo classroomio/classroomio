@@ -1,7 +1,7 @@
 ---
 title: Review course performance and student progress
 description: Read a course's enrollment, completion, score, and per-student progress figures.
-last_reviewed: '2026-10-28'
+last_reviewed: '2026-11-12'
 ---
 
 Open a course and select **Analytics** in its sidebar to see how its students are progressing. The page summarizes completion and scores, compares cohorts and sections, and lists every enrolled student with their progress. The live indicator dot next to the page title shows when figures were last updated.
@@ -32,7 +32,7 @@ The top row of summary cards summarizes the course.
 | **Pass rate**             | The share of students who reached the pass mark on their first graded attempt, on exercises that have a pass mark. The hint shows how many students were graded and how many still have to pass. The card appears only when the course has an exercise with a pass mark. |
 | **Median days to finish** | The middle number of days between enrollment and course completion, among students who finished. It counts to completion, not to the certificate. It shows – until someone finishes.                                                                                     |
 
-A student finishes the course by completing every lesson and exercise, or by earning a certificate.
+A student finishes the course by completing every required lesson and exercise, or by earning a certificate. Items with a **None** completion rule don't count.
 
 ## Choose a time range
 
@@ -73,7 +73,7 @@ In the cohort view, **Scores by exercise, by cohort** plots the average score fo
 
 **Section-by-section scorecard** appears when the course is divided into sections. It shows five sections per page; when there are more, the footer reads **Showing 1–5 of N sections in course**. Each row shows:
 
-- **Exercises taken:** students with a graded attempt on every exercise in the section, out of the students in that section.
+- **Exercises taken:** students with a graded attempt on every required exercise in the section, out of the students in that section. Exercises with a **None** completion rule don't count.
 - **Avg score** for the section, averaged across students.
 - **Pass rate:** among students with a graded first attempt on every exercise with a pass mark in the section, the share who passed all of them on the first try.
 - **Video attendance** and **Classroom attendance**.
@@ -97,7 +97,7 @@ Each row shows progress, **Now at**, a score column for each exercise in the cou
 - **Pending** means an attempt is waiting for a grade.
 - A percentage is the student's best graded attempt. A **Pass mark 70%** tag under the exercise name shows its pass mark.
 
-**Last login** shows **Never** for a student without a login event. **Status** uses the same rules as the [cohort page](/analytics-and-reporting/track-a-cohort-with-analytics#understand-status-and-attention-reasons): **Completed** means the course is finished, **At risk** means no login for 2 or more days, an average score under 50%, or overdue work, **Lagging** means an average score under 65% or video attendance under 60%, and everyone else is **On track**. An **Overdue** badge marks a student with a past-due goal, compliance item, or exercise due date.
+**Last login** shows **Never** for a student without a login event. **Status** uses the same rules as the [cohort page](/analytics-and-reporting/track-a-cohort-with-analytics#understand-status-and-attention-reasons): **Completed** means the course is finished, **At risk** means no login for 2 or more days, an average score under 50%, or overdue work, **Lagging** means an average score under 65% or video attendance under 60%, and everyone else is **On track**. An **Overdue** badge marks a student with a past-due goal, compliance item, or required exercise.
 
 The table shows 10 students per page. Numbered pages below it move through the list, and the footer reads **Showing 1–10 of N students in course**. When a search or filter is active, it also reports how many students match. **Export as CSV** downloads every student that matches the current filters and order, including the exercise scores; the menu beside it offers Excel, PDF, and HTML. The export covers all matching students, not only the rows on screen, up to 50,000 students; see [Exports](/reference/exports) for the cap and the exercise-column limit.
 

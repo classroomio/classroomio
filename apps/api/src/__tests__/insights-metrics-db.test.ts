@@ -31,6 +31,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
   let orgBId = '';
   let orgFTId = '';
   let orgPId = '';
+  let orgOId = '';
   let cohortC1Id = '';
   let cohortC2Id = '';
   let cohortC3Id = '';
@@ -43,12 +44,14 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
   let courseKFTId = '';
   let courseKPId = '';
   let courseKRId = '';
+  let courseKOId = '';
 
   const profiles: Record<string, string> = {};
   const membersByCourse: Record<string, Record<string, string>> = {};
   const exercisesByLabel: Record<string, string> = {};
   const coursesByLabel: Record<string, string> = {};
   const studentsByLabel: Record<string, string> = {};
+  const optionalCourseItems: Record<string, string> = {};
 
   const daysAgoDate = (days: number) => {
     const date = new Date();
@@ -279,7 +282,7 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
       courseId?: string;
       sectionId?: string;
       order: number;
-      completionPolicy: 'submitted' | 'passed';
+      completionPolicy: 'submitted' | 'passed' | 'none';
       passThreshold?: number | null;
       isUnlocked?: boolean;
       dueBy?: string;
@@ -825,6 +828,78 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
     void gmP1;
     void gmP2;
     void gmP4;
+
+    const [orgO] = await db
+      .insert(schema.organization)
+      .values({ name: `Insights optional ${suffix}`, siteName: `insights-optional-${suffix}` })
+      .returning();
+    orgOId = orgO.id;
+    organizationIds.push(orgOId);
+
+    for (const label of ['O1', 'O2']) {
+      await createProfile(label);
+      await addOrgMember(orgOId, profiles[label], 'ACTIVE');
+    }
+
+    const groupGO = await createGroup(orgOId, 'GO');
+    const courseKO = await createCourse(groupGO.id, 'KO', 'Optional content course', false);
+    courseKOId = courseKO.id;
+
+    const createOptionalCourseLesson = async (label: string, order: number, completionPolicy: 'manual' | 'none') => {
+      const [lesson] = await db
+        .insert(schema.lesson)
+        .values({
+          courseId: courseKO.id,
+          title: label,
+          slug: `${label.toLowerCase()}-${suffix}`,
+          order,
+          completionPolicy
+        })
+        .returning();
+      optionalCourseItems[label] = lesson.id;
+
+      return lesson;
+    };
+
+    const lessonOptional = await createOptionalCourseLesson('LO-optional', 1, 'none');
+    const lessonRequired = await createOptionalCourseLesson('LO-required', 2, 'manual');
+    const exerciseRequired = await createExercise({
+      label: 'EO-required',
+      courseId: courseKO.id,
+      order: 3,
+      completionPolicy: 'submitted'
+    });
+    const exerciseOptional = await createExercise({
+      label: 'EO-optional',
+      courseId: courseKO.id,
+      order: 4,
+      completionPolicy: 'none',
+      dueBy: daysAgoTimestamp(2)
+    });
+    optionalCourseItems['EO-required'] = exerciseRequired.id;
+    optionalCourseItems['EO-optional'] = exerciseOptional.id;
+
+    const gmO1 = await addGroupMember(groupGO.id, profiles.O1, 'O1O');
+    const gmO2 = await addGroupMember(groupGO.id, profiles.O2, 'O2O');
+
+    await db.insert(schema.lessonCompletion).values([
+      { lessonId: lessonRequired.id, profileId: profiles.O1, isComplete: true },
+      { lessonId: lessonOptional.id, profileId: profiles.O2, isComplete: true }
+    ]);
+    await createSubmission({
+      exerciseId: exerciseRequired.id,
+      courseId: courseKO.id,
+      groupMemberId: gmO1.id,
+      total: 0,
+      gradingState: 'completed'
+    });
+    await createSubmission({
+      exerciseId: exerciseOptional.id,
+      courseId: courseKO.id,
+      groupMemberId: gmO2.id,
+      total: 0,
+      gradingState: 'completed'
+    });
   });
 
   afterAll(async () => {
@@ -2090,6 +2165,90 @@ describe.skipIf(!hasDatabase)('insights metrics against the database', () => {
       expect(row.is_complete__value).toBe(Boolean(completed));
     }
   }, 30_000);
+
+  it('leaves optional lessons and exercises out of progress, completion, overdue and the outline', async () => {
+    const { getCourseProgress } = await import('@cio/db/queries/course/course');
+    const { calcCourseProgressPercent } = await import('@api/utils/course-completion');
+    const scopeO: Scope = { orgId: orgOId, type: 'course', id: courseKOId };
+    const orderedItems = [
+      { label: 'LO-optional', itemType: 'LESSON', itemRank: 1 },
+      { label: 'LO-required', itemType: 'LESSON', itemRank: 2 },
+      { label: 'EO-required', itemType: 'EXERCISE', itemRank: 3 },
+      { label: 'EO-optional', itemType: 'EXERCISE', itemRank: 4 }
+    ].map((item) => ({
+      courseId: courseKOId,
+      itemId: optionalCourseItems[item.label],
+      itemType: item.itemType,
+      itemRank: item.itemRank,
+      sectionId: null,
+      sectionRank: null
+    }));
+
+    const courseRows = await runQuery({
+      source: 'student_course',
+      dimensions: ['student'],
+      measures: [
+        { metric: 'progress_pct', agg: 'value' },
+        { metric: 'is_completed', agg: 'value' },
+        { metric: 'is_overdue', agg: 'value' },
+        { metric: 'now_at_title', agg: 'value' }
+      ],
+      scope: scopeO,
+      orderedItems
+    });
+    const byStudent = indexRows(courseRows, 'student_label');
+
+    expectRows(courseRows, 2);
+    expect(byStudent.get('O1')).toMatchObject({
+      progress_pct__value: 100,
+      is_completed__value: true,
+      is_overdue__value: false,
+      now_at_title__value: null
+    });
+    expect(byStudent.get('O2')).toMatchObject({
+      progress_pct__value: 0,
+      is_completed__value: false,
+      now_at_title__value: 'LO-required'
+    });
+
+    for (const label of ['O1', 'O2']) {
+      const progress = await getCourseProgress(courseKOId, profiles[label]);
+      const expectedProgress = calcCourseProgressPercent({
+        lessonsCompleted: progress.lessonsCompleted,
+        totalLessons: progress.lessonsCount,
+        exercisesCompleted: progress.exercisesCompleted,
+        exercisesCount: progress.exercisesCount
+      });
+
+      expect(byStudent.get(label)?.progress_pct__value).toBe(expectedProgress);
+    }
+
+    const overdueRows = await runQuery({
+      source: 'overdue_item',
+      dimensions: ['student'],
+      measures: [rowCountMeasure],
+      scope: scopeO
+    });
+    expectRows(overdueRows, 0);
+
+    const sectionRows = await runQuery({
+      source: 'section_activity',
+      dimensions: ['section'],
+      filters: [{ field: 'student', op: 'eq', value: profiles.O1 }],
+      measures: [{ metric: 'took_all', agg: 'value' }],
+      scope: scopeO
+    });
+    expectRows(sectionRows, 1);
+    expect(sectionRows[0]).toMatchObject({ took_all__value: true });
+
+    const assessmentRows = await runQuery({
+      source: 'assessment_result',
+      dimensions: ['student', 'exercise'],
+      measures: [rowCountMeasure],
+      scope: scopeO
+    });
+    expectRows(assessmentRows, 4);
+  });
 
   it('counts a completion inside the week window', async () => {
     const { db } = await import('@db/drizzle');
