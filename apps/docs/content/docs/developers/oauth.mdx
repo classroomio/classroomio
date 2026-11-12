@@ -29,6 +29,19 @@ The same document is also served at `/.well-known/openid-configuration` and unde
 
 Clients register themselves with [Dynamic Client Registration](https://datatracker.ietf.org/doc/html/rfc7591) at `registration_endpoint`. Registration is rate limited, and every registered client is untrusted: the consent screen is always shown.
 
+Trusted clients, such as ClassroomIO's native Zapier integration, are pre-registered confidential clients configured by ClassroomIO. When an administrator connects a trusted client, the consent screen displays a **Verified** badge confirming the integration is official and vetted.
+
+### Trusted clients
+
+Two API environment variables configure first-party integrations:
+
+| Variable                   | Purpose                                                                                                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OAUTH_TRUSTED_CLIENT_IDS` | Comma-separated OAuth client IDs treated as first-party. Trusted clients show the **Verified** badge and cannot be modified through the dynamic client CRUD endpoints. Leave empty unless deploying ClassroomIO's own integration. |
+| `ZAPIER_OAUTH_CLIENT_ID`   | The client ID of ClassroomIO's Zapier OAuth client. Identifies Zapier grants in the dashboard, `/me` responses, and managed webhook subscriptions.                                                        |
+
+Store only client IDs issued to ClassroomIO's own integrations in `OAUTH_TRUSTED_CLIENT_IDS`. Any third-party client registered through dynamic registration must stay untrusted so admins always see the consent screen.
+
 ```bash
 curl -X POST https://app.classroomio.com/api/auth/oauth2/register \
   -H "Content-Type: application/json" \
@@ -76,7 +89,7 @@ OAuth tokens use the same public API routes and the same scopes as automation ke
 ## Token lifetime
 
 - Access tokens expire after 10 minutes.
-- Refresh tokens are issued when you request `offline_access`. Each refresh returns a new refresh token and invalidates the previous one. Reusing an old refresh token is treated as theft and invalidates the newer refresh tokens too, so a replayed token cannot be used quietly.
+- Refresh tokens are issued when you request `offline_access` and last 90 days. Each refresh returns a new refresh token and replaces the previous one. The previous token still works for 60 seconds, so refreshes running in parallel don't fail. Reusing it after that is treated as theft and invalidates the newer refresh tokens too, so a replayed token cannot be used quietly.
 - A grant stays valid after the admin signs out of the dashboard. It ends when the admin removes the app, loses the admin role, or the grant is revoked.
 
 You can also revoke a token yourself at `revocation_endpoint` ([RFC 7009](https://datatracker.ietf.org/doc/html/rfc7009)).
@@ -97,6 +110,7 @@ Tokens carry the same scopes as automation keys. `public_api:*` is never granted
 | Team                      | `team:read`, `team:write`                                                                                        |
 | Workspace                 | `organization:read`, `organization:write`, `organization:domain:write`                                           |
 | Analytics and media       | `analytics:read`, `media:write`                                                                                  |
+| Webhook subscriptions     | `webhook:subscription:read`, `webhook:subscription:write`                                                        |
 
 ## Manage connected apps
 
