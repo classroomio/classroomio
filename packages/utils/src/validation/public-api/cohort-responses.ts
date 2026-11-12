@@ -52,18 +52,14 @@ export const ZPublicApiCohortMemberListItemResponse = ZPublicApiCohortMemberResp
 });
 
 export const ZPublicApiAddCohortMembersResponse = z.object({
-  added: z.array(ZPublicApiCohortMemberResponse).describe('Memberships created by this request'),
+  added: z.array(ZPublicApiCohortMemberResponse).describe('Memberships created or restored by this request'),
   errors: z
     .array(
       z.object({
         index: z.number().describe('Position of the failed entry in the request members array'),
         email: z.string().nullable(),
         profileId: z.string().nullable(),
-        code: z
-          .string()
-          .describe(
-            'For example MEMBER_ALREADY_IN_COHORT for an entry that already exists, so retrying a request duplicates nothing'
-          ),
+        code: z.string().describe('E.g. MEMBER_ALREADY_IN_COHORT or UPGRADE_REQUIRED'),
         message: z.string()
       })
     )

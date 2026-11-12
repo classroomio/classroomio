@@ -893,7 +893,7 @@
       "confirm_body": {
         "archive": "Eles perdem o acesso e liberam uma vaga no seu plano. Você pode desarquivá-los a qualquer momento.",
         "unarchive": "Eles recuperam o acesso e voltam a ocupar um lugar no seu plano.",
-        "delete": "Isso os remove desta organização e a ação é irreversível. Suas contas, envios e resultados serão mantidos."
+        "delete": "Isso os remove desta organização, dos seus cursos e das suas coortes, e a ação é irreversível. Suas contas e envios serão mantidos; as conclusões de cursos e o progresso nas metas da coorte serão excluídos."
       },
       "confirm_title": {
         "archive": "Arquivar {count} alunos?",
@@ -6080,6 +6080,8 @@
     "course_removed": "Curso removido",
     "empty_title": "Ainda não há coortes",
     "empty_description": "Crie sua primeira coorte de certificação ou conformidade.",
+    "no_access_title": "Você não tem acesso a esta coorte",
+    "no_access_description": "Talvez você não seja membro desta coorte ou seu acesso tenha sido arquivado. Entre em contato com o administrador da sua organização se achar que isso é um erro.",
     "settings": {
       "general": "Geral",
       "name_label": "Nome",

@@ -893,7 +893,7 @@
       "confirm_body": {
         "archive": "Pierden el acceso y liberan un espacio en tu plan. Puedes desarchivarlos en cualquier momento.",
         "unarchive": "Recuperan el acceso y vuelven a ocupar un lugar en tu plan.",
-        "delete": "Esto los elimina de esta organización y no se puede deshacer. Su cuenta, entregas y resultados se conservan."
+        "delete": "Esto los elimina de esta organización, de sus cursos y de sus cohortes, y no se puede deshacer. Su cuenta y sus entregas se conservan; se eliminan los registros de cursos completados y el progreso en los objetivos de la cohorte."
       },
       "confirm_title": {
         "archive": "¿Archivar {count} estudiantes?",
@@ -6080,6 +6080,8 @@
     "course_removed": "Curso eliminado",
     "empty_title": "Aún no hay cohortes",
     "empty_description": "Crea tu primera cohorte de certificación o cumplimiento.",
+    "no_access_title": "No tienes acceso a esta cohorte",
+    "no_access_description": "Es posible que no seas miembro de esta cohorte o que tu acceso se haya archivado. Contacta con el administrador de tu organización si crees que se trata de un error.",
     "settings": {
       "general": "generales",
       "name_label": "Nombre",

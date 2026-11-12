@@ -235,7 +235,7 @@ export const v1AudienceRouter = new Hono()
       tags: ['Audience'],
       responses: {
         200: jsonResponse(
-          'Organization membership deleted and pending invites revoked; the person keeps their account',
+          'Organization, course and cohort memberships deleted and pending invites revoked; the person keeps their account',
           itemResponse(ZPublicApiRemoveAudienceMemberResponse)
         ),
         400: errorResponses.badRequest,

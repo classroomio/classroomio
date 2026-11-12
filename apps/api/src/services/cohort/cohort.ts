@@ -1,5 +1,6 @@
 import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import type { TOrganizationmember } from '@cio/db/types';
+import type { TCohortMember } from '@cio/db/queries/cohort';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   type TCreateCohort,
@@ -28,6 +29,7 @@ import {
   getCohortById,
   getCohortMemberByEmail,
   getCohortMemberById,
+  findCohortMemberRowByProfileId,
   getCohortMemberByProfileId,
   getCohortMembers,
   getCohortNewsfeed,
@@ -376,16 +378,30 @@ export async function addCohortMembersSettled(
         const profileId = providedProfileId ?? profile?.id ?? null;
         const normalizedEmail = email?.toLowerCase().trim() ?? profile?.email ?? null;
 
+        // A student already in the cohort with no org membership (added before every add created one) is
+        // repaired instead of refused: re-adding them creates the missing membership.
+        let studentToRepair: TCohortMember | null = null;
+
         if (profileId || normalizedEmail) {
           const existing = profileId
-            ? await getCohortMemberByProfileId(cohortId, profileId)
+            ? await findCohortMemberRowByProfileId(cohortId, profileId)
             : await getCohortMemberByEmail(cohortId, normalizedEmail!);
           if (existing) {
-            throw new AppError(
-              `${email ?? profileId} is already a member of this cohort`,
-              ErrorCodes.MEMBER_ALREADY_IN_COHORT,
-              409
-            );
+            const isRepairable =
+              existing.roleId === ROLE.STUDENT &&
+              roleId === ROLE.STUDENT &&
+              existing.profileId &&
+              !(await getOrganizationMemberIdByOrgAndProfile(cohort.organizationId, existing.profileId));
+
+            if (!isRepairable) {
+              throw new AppError(
+                `${email ?? profileId} is already a member of this cohort`,
+                ErrorCodes.MEMBER_ALREADY_IN_COHORT,
+                409
+              );
+            }
+
+            studentToRepair = existing;
           }
         }
 
@@ -401,17 +417,20 @@ export async function addCohortMembersSettled(
           let studentMilestoneNotification: StudentMilestoneNotification | null = null;
           let enrolledMembers: TGroupmember[] = [];
           let createdOrgMembers: TOrganizationmember[] = [];
-          const member = await addCohortMember(
-            {
-              cohortId,
-              profileId,
-              roleId,
-              email: normalizedEmail ?? undefined
-            },
-            tx
-          );
+          const member =
+            studentToRepair ??
+            (await addCohortMember(
+              {
+                cohortId,
+                profileId,
+                roleId,
+                email: normalizedEmail ?? undefined
+              },
+              tx
+            ));
 
-          if (member && member.roleId === ROLE.STUDENT && member.profileId && courseGroupIds.length > 0) {
+          // The org membership is what grants cohort access, so it is created even when the cohort has no courses.
+          if (member && member.roleId === ROLE.STUDENT && member.profileId) {
             const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
 
             const existingOrgMemberId = await getOrganizationMemberIdByOrgAndProfile(
@@ -438,15 +457,17 @@ export async function addCohortMembersSettled(
               tx
             );
 
-            enrolledMembers = await insertGroupMembersOnConflictDoNothing(
-              validCourseGroupIds.map((groupId) => ({
-                groupId,
-                roleId: ROLE.STUDENT,
-                profileId: member.profileId,
-                email: normalizedEmail ?? undefined
-              })),
-              tx
-            );
+            if (validCourseGroupIds.length > 0) {
+              enrolledMembers = await insertGroupMembersOnConflictDoNothing(
+                validCourseGroupIds.map((groupId) => ({
+                  groupId,
+                  roleId: ROLE.STUDENT,
+                  profileId: member.profileId,
+                  email: normalizedEmail ?? undefined
+                })),
+                tx
+              );
+            }
           }
 
           if (member?.profileId && (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR)) {
@@ -486,7 +507,7 @@ export async function addCohortMembersSettled(
           );
         }
 
-        if (transactionResult.member) {
+        if (transactionResult.member && !studentToRepair) {
           await emitCohortMemberWebhookEvent(
             'cohort.member.added',
             cohort.organizationId,
@@ -552,17 +573,42 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
     const wasStaff = isCohortStaffRole(existing.roleId);
     const willBeStaff = isCohortStaffRole(data.roleId);
     const promotingToStaff = Boolean(existing.profileId) && !wasStaff && willBeStaff;
-    const cohort = promotingToStaff ? await getCohortById(cohortId) : null;
-    if (promotingToStaff && !cohort) {
+    const demotingToStudent = Boolean(existing.profileId) && wasStaff && data.roleId === ROLE.STUDENT;
+    const cohort = promotingToStaff || demotingToStudent ? await getCohortById(cohortId) : null;
+    if ((promotingToStaff || demotingToStudent) && !cohort) {
       throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
     }
 
     const courseGroups = promotingToStaff ? await listCohortCourseGroups(cohortId) : [];
+    let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+    let createdOrgMembers: TOrganizationmember[] = [];
 
     const updated = await db.transaction(async (tx) => {
       const member = await updateCohortMemberQuery(cohortId, memberId, { roleId: data.roleId }, tx);
       if (!member) {
         throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
+      }
+
+      // A cohort student needs an org membership for access; a staff member may not have one.
+      if (cohort && demotingToStudent && existing.profileId) {
+        const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(cohort.organizationId, existing.profileId, tx);
+        if (!orgMemberId) {
+          studentMilestoneNotification = await assertStudentCapacityOrThrow(cohort.organizationId, 1, tx, {
+            deferNotification: true
+          });
+          createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
+            [
+              {
+                organizationId: cohort.organizationId,
+                roleId: ROLE.STUDENT,
+                profileId: existing.profileId,
+                email: existing.email ?? undefined,
+                verified: true
+              }
+            ],
+            tx
+          );
+        }
       }
 
       if (cohort && existing.profileId && !wasStaff && willBeStaff) {
@@ -582,6 +628,16 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
 
       return member;
     });
+
+    if (studentMilestoneNotification) {
+      notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+        console.error('notifyStudentMilestone error:', error);
+      });
+    }
+
+    for (const createdOrgMember of cohort ? createdOrgMembers : []) {
+      await emitOrganizationMemberWebhookEvent('organization.member.added', cohort!.organizationId, createdOrgMember);
+    }
 
     return updated;
   } catch (error) {

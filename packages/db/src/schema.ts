@@ -3885,7 +3885,7 @@ export const cohortNewsfeed = pgTable(
       columns: [table.authorId],
       foreignColumns: [cohortMember.id],
       name: 'cohort_newsfeed_author_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.cohortId],
       foreignColumns: [cohort.id],
@@ -3915,7 +3915,7 @@ export const cohortNewsfeedComment = pgTable(
       columns: [table.authorId],
       foreignColumns: [cohortMember.id],
       name: 'cohort_newsfeed_comment_author_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.cohortNewsfeedId],
       foreignColumns: [cohortNewsfeed.id],

@@ -24,9 +24,11 @@ import type {
 import { currentOrg } from '$lib/utils/store/org';
 import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 import { get } from 'svelte/store';
+import { untrack } from 'svelte';
 import { isStudentExperience } from '$lib/utils/store/app';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
+import { ErrorCodes } from '@cio/utils/constants';
 
 class CohortApi extends BaseApiWithErrors {
   cohorts = $state<Cohort[]>([]);
@@ -37,6 +39,7 @@ class CohortApi extends BaseApiWithErrors {
   inviteLink = $state<CohortInviteLink>(null);
   isCohortShellLoading = $state(false);
   currentCohortId = $state<string | null>(null);
+  accessDeniedCohortId = $state<string | null>(null);
   /** Which cohort `inviteLink` belongs to, so stale responses can be discarded. */
   activeInviteLinkCohortId = $state<string | null>(null);
   private inviteLinkRequestSeq = 0;
@@ -66,6 +69,8 @@ class CohortApi extends BaseApiWithErrors {
 
   async getCohort(cohortId: string, force = false) {
     if (!force && this.loadedCohortId === cohortId) return;
+    // untrack: the layout $effect would otherwise re-run on the 403 and loop.
+    if (untrack(() => this.accessDeniedCohortId) === cohortId) this.accessDeniedCohortId = null;
 
     await this.execute<(typeof classroomio.cohort)[':cohortId']['$get']>({
       requestFn: () => classroomio.cohort[':cohortId'].$get({ param: { cohortId } }),
@@ -73,12 +78,19 @@ class CohortApi extends BaseApiWithErrors {
         this.cohort = data.data;
         this.loadedCohortId = cohortId;
       },
+      onError: (error) => {
+        if (this.currentCohortId !== cohortId) return;
+        if (error && typeof error === 'object' && 'code' in error && error.code === ErrorCodes.COHORT_FORBIDDEN) {
+          this.accessDeniedCohortId = cohortId;
+        }
+      },
       logContext: 'getCohort'
     });
   }
 
   resetCohortShell(cohortId?: string) {
     this.currentCohortId = cohortId ?? null;
+    this.accessDeniedCohortId = null;
     this.cohort = null;
     this.members = [];
     this.courses = [];

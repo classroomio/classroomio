@@ -893,7 +893,7 @@
       "confirm_body": {
         "archive": "Sie verlieren dadurch ihren Zugriff und geben einen Platz in Ihrem Abonnement frei. Sie können sie jederzeit wiederherstellen.",
         "unarchive": "Sie erhalten wieder Zugriff und nehmen wieder an Ihrem Plan teil.",
-        "delete": "Dies führt zum Ausschluss aus dieser Organisation und kann nicht rückgängig gemacht werden. Ihr Konto, ihre Beiträge und Ergebnisse bleiben erhalten."
+        "delete": "Dies entfernt sie aus dieser Organisation, ihren Kursen und Kohorten und kann nicht rückgängig gemacht werden. Ihr Konto und ihre Abgaben bleiben erhalten; Kursabschlüsse und der Fortschritt bei Kohortenzielen werden gelöscht."
       },
       "confirm_title": {
         "archive": "{count} Studierende archivieren?",
@@ -6080,6 +6080,8 @@
     "course_removed": "Kurs entfernt",
     "empty_title": "Noch keine Kohorten",
     "empty_description": "Erstellen Sie Ihre erste Zertifizierungs- oder Compliance-Kohorte.",
+    "no_access_title": "Sie haben keinen Zugriff auf diese Kohorte",
+    "no_access_description": "Möglicherweise sind Sie kein Mitglied dieser Kohorte, oder Ihr Zugriff wurde archiviert. Wenden Sie sich an die Administration Ihrer Organisation, wenn Sie glauben, dass dies ein Fehler ist.",
     "settings": {
       "general": "Allgemein",
       "name_label": "Name",

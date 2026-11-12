@@ -106,7 +106,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'remove_audience_member',
-    `Permanently remove a student from the organization and revoke their pending invites, leaving their account in place; ${ORG_ADMIN_RULE}.`,
+    `Permanently remove a student from the organization, its courses and cohorts, and revoke their pending invites, leaving their account in place; ${ORG_ADMIN_RULE}.`,
     removeAudienceMemberShape,
     DESTRUCTIVE,
     async (args) => {
@@ -118,7 +118,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'set_audience_status',
-    `Archive or unarchive up to ${AUDIENCE_BULK_IDS_MAX} students by member id or email, with confirm set to true; ${ORG_ADMIN_RULE}. Archived students lose course access but keep their progress, and archiving frees their plan seat.`,
+    `Archive or unarchive up to ${AUDIENCE_BULK_IDS_MAX} students by member id or email, with confirm set to true; ${ORG_ADMIN_RULE}. Archived students lose course and cohort access but keep their progress, and archiving frees their plan seat.`,
     setAudienceStatusShape,
     DESTRUCTIVE,
     async (args) => {

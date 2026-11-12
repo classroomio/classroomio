@@ -893,7 +893,7 @@
       "confirm_body": {
         "archive": "Họ mất quyền truy cập và giải phóng một chỗ ngồi trong gói của bạn. Bạn có thể bỏ lưu trữ họ bất cứ lúc nào.",
         "unarchive": "Họ lấy lại quyền truy cập và tham gia lại chương trình của bạn.",
-        "delete": "Thao tác này sẽ xóa họ khỏi tổ chức và không thể hoàn tác. Tài khoản, bài nộp và kết quả của họ vẫn được giữ nguyên."
+        "delete": "Thao tác này sẽ xóa họ khỏi tổ chức, các khóa học và các nhóm học tập của tổ chức, và không thể hoàn tác. Tài khoản và bài nộp của họ vẫn được giữ nguyên; kết quả hoàn thành khóa học và tiến độ mục tiêu của nhóm học tập sẽ bị xóa."
       },
       "confirm_title": {
         "archive": "Lưu trữ {count} học sinh?",
@@ -6080,6 +6080,8 @@
     "course_removed": "Đã xóa khóa học",
     "empty_title": "Chưa có nhóm học tập nào",
     "empty_description": "Tạo nhóm học tập chứng nhận hoặc tuân thủ đầu tiên của bạn.",
+    "no_access_title": "Bạn không có quyền truy cập nhóm học tập này",
+    "no_access_description": "Có thể bạn không phải là thành viên của nhóm học tập này hoặc quyền truy cập của bạn đã bị lưu trữ. Hãy liên hệ quản trị viên của tổ chức nếu bạn cho rằng đây là nhầm lẫn.",
     "settings": {
       "general": "chung",
       "name_label": "Tên",
