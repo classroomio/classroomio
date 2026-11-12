@@ -3066,6 +3066,7 @@
             "empty_description": "Not, video, slayt, belge veya resim ekleyin. İstediğiniz kadar blok ekleyebilir ve istediğiniz sırayla düzenleyebilirsiniz.",
             "empty_note": "Bu not boş.",
             "scroll_rail": "Ders blokları",
+            "save_failed": "Bu değişiklik kaydedilemedi, bu yüzden blok geri yüklendi. {reason}",
             "go_to_block": "{index} bloğuna git",
             "image": {
               "upload": "Resim yükle",

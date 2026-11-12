@@ -3080,6 +3080,7 @@
             "empty_learner_description": "Your instructor hasn't added any content to this lesson. Check back soon.",
             "empty_note": "This note is empty.",
             "scroll_rail": "Lesson blocks",
+            "save_failed": "This change couldn't be saved, so the block was restored. {reason}",
             "go_to_block": "Go to block {index}",
             "reading_density": {
               "title": "Reading density",

@@ -3058,6 +3058,7 @@
             "empty_description": "Aggiungi una nota, un video, delle diapositive, un documento o un'immagine. Puoi aggiungere tutti i blocchi che ti servono, in qualsiasi ordine.",
             "empty_note": "Questa banconota è vuota.",
             "scroll_rail": "Blocchi di lezione",
+            "save_failed": "Impossibile salvare questa modifica, quindi il blocco è stato ripristinato. {reason}",
             "go_to_block": "Vai al blocco {index}",
             "image": {
               "upload": "Carica immagine",

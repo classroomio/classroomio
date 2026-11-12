@@ -2699,6 +2699,7 @@
             "empty_description": "Dodaj notatkę, film, slajdy, dokument lub obraz. Możesz dodać dowolną liczbę bloków w dowolnej kolejności.",
             "empty_note": "Ta notatka jest pusta.",
             "scroll_rail": "Bloki lekcji",
+            "save_failed": "Nie udało się zapisać tej zmiany, więc blok został przywrócony. {reason}",
             "go_to_block": "Przejdź do bloku {index}",
             "image": {
               "upload": "Prześlij obraz",
