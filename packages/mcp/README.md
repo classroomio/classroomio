@@ -380,7 +380,7 @@ Insights tools query the numbers behind the cohort, course and organization anal
 - `get_insights_dashboard` returns one dashboard snapshot with the first page of every visible widget. It takes the scope plus optional `courseId`, `exerciseId`, `range` (`all`, `7d`, `30d` or `90d`) and `breakdown` (`courses` or `cohorts`, course or org scope; cohort scope ignores it). The students table is served by `list_insights_students` instead of inside the snapshot.
 - `list_insights_students` lists the students of a scope with progress, score, status and last login, with `page` and `limit` (default 20, max 100). It takes `sort` (`status`, `name`, `progress`, `score` or `lastLogin`) with an optional `dir`.
 - `remind_overdue_cohort_goals` emails the learners with overdue goal assignments now, optionally narrowed with `courseId` or `profileId`; the key creator must be a cohort tutor/admin or an org admin. It costs 1 credit, and each overdue goal assignment is reminded at most once a day.
-- Results are cached per scope and spec; `meta.generatedAt` says when the oldest one was computed, and `meta.range` reports the range actually used (the Free plan sees at most the last 7 days).
+- Results are cached per scope and spec hash. For queries, `meta.generatedAt` says when the result was computed and `meta.cached` says whether it came from the cache. For snapshots, top-level `generatedAt` says when the snapshot was assembled, not when its cached widget results were computed. `list_insights_students` returns `{ data, pagination }` with no freshness metadata. `meta.range` (queries) and each widget's spec range (snapshots) report the range actually used (the Free plan sees at most the last 7 days).
 
 ## Required Environment Variables
 
