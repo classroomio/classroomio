@@ -156,6 +156,10 @@
   }
 
   async function clearPostLoginGate() {
+    if (selectedOrganizationId) {
+      await oauthApi.selectOrganization(selectedOrganizationId);
+    }
+
     const nextUrl = await oauthApi.continueAfterOrganization(oauthQuery);
 
     if (!nextUrl) {
@@ -167,6 +171,20 @@
     const consentPageQuery = getOAuthConsentPageQuery(nextUrl, window.location.origin);
 
     if (consentPageQuery === null) {
+      if (!allowChanges && grantedScopes.length > 0) {
+        const redirectUrl = await oauthApi.submitConsent(true, oauthQuery, grantedScopes);
+
+        if (!redirectUrl) {
+          pendingDecision = null;
+
+          return;
+        }
+
+        window.location.href = redirectUrl;
+
+        return;
+      }
+
       window.location.href = nextUrl;
 
       return;
@@ -175,7 +193,13 @@
     const narrowedScopes = allowChanges ? undefined : grantedScopes;
     const redirectUrl = await oauthApi.submitConsent(true, consentPageQuery, narrowedScopes);
 
-    window.location.href = redirectUrl ?? nextUrl;
+    if (!redirectUrl) {
+      pendingDecision = null;
+
+      return;
+    }
+
+    window.location.href = redirectUrl;
   }
 
   async function initialize() {
