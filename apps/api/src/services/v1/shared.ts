@@ -103,8 +103,7 @@ export async function assertProfileBelongsToOrganization(orgId: string, profileI
 
 /**
  * Email twin of assertProfileBelongsToOrganization. Returns the member's profileId, or null for a pending member.
- * Archived and deactivated members read as archived: both mean no access, so they are refused here instead of
- * gaining a course seat they cannot use.
+ * Archived members are refused here instead of gaining a course seat they cannot use.
  */
 export async function assertEmailBelongsToOrganization(orgId: string, email: string): Promise<string | null> {
   const members = await getOrganizationMembersByNormalizedEmails(orgId, [email]);
