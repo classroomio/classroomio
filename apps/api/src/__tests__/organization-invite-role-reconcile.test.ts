@@ -88,6 +88,7 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
 import {
   acceptLinkInvite,
   acceptOrganizationInvite,
+  acceptOrganizationInviteById,
   fetchOrgLinkInvite,
   getOrCreateLinkInvite,
   inviteTeamMembers,
@@ -106,6 +107,7 @@ import {
   getOrgLinkInviteWithOrg,
   lockOrganizationForUpdate,
   setLinkInviteRevoked,
+  selectOrganizationInviteWithOrgByInviteId,
   selectOrganizationInviteWithOrgByTokenHash,
   selectOrganizationMemberByOrgAndNormalizedEmail,
   selectOrganizationMemberByOrgAndProfile,
@@ -221,6 +223,16 @@ describe('accepting an imported invite that carries a name', () => {
     );
 
     await acceptOrganizationInvite('token-1', USER as never);
+
+    expect(setProfileFullnameIfUnset).toHaveBeenCalledWith(USER.id, 'Ada Lovelace', expect.anything());
+  });
+
+  it('applies the stored name when the invite is accepted by id', async () => {
+    vi.mocked(selectOrganizationInviteWithOrgByInviteId).mockResolvedValue(
+      importedInvite({ source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' }) as never
+    );
+
+    await acceptOrganizationInviteById('invite-1', USER as never);
 
     expect(setProfileFullnameIfUnset).toHaveBeenCalledWith(USER.id, 'Ada Lovelace', expect.anything());
   });

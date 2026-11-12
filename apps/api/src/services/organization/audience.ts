@@ -1,5 +1,6 @@
 import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { parseFullnameFromInviteMetadata } from '@api/utils/org';
 import {
   type AudienceImportResult,
   type ParsedImportRow,
@@ -587,6 +588,8 @@ export async function importAudienceMembers(
 
   const fullnamesByEmail = new Map<string, string>();
   for (const row of rows) {
+    if (row.status !== 'ready' && row.status !== 'invite_resent') continue;
+
     const fullname = row.name?.trim();
     if (fullname) fullnamesByEmail.set(row.email, fullname);
   }
@@ -802,6 +805,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     cohortNames = cohorts.map((cohort) => cohort.name).filter(Boolean);
   }
 
+  const previousFullname = parseFullnameFromInviteMetadata(latestInvite?.metadata);
+
   await revokeActiveOrganizationInvitesByEmails(orgId, [emailToUse], invitedByProfileId);
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
@@ -820,7 +825,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     metadata: {
       source: 'AUDIENCE_RESEND',
       courseIds: courseIds.length > 0 ? courseIds : undefined,
-      cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+      cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+      fullname: previousFullname
     }
   });
 
@@ -1046,6 +1052,9 @@ export async function updatePendingAudienceMemberEmail(
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
   const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
+  const fullnamesByEmail = new Map<string, string>();
+  const previousFullname = parseFullnameFromInviteMetadata(latestInvite?.metadata);
+  if (previousFullname) fullnamesByEmail.set(normalizedEmail, previousFullname);
 
   await createStudentOrgInvitesAndSendEmails({
     orgId,
@@ -1055,7 +1064,8 @@ export async function updatePendingAudienceMemberEmail(
     cohortIds: meta.cohortIds?.filter(Boolean) ?? [],
     accessNamesLabel: undefined,
     invitedByProfileId,
-    shouldSendEmail: data.sendEmail
+    shouldSendEmail: data.sendEmail,
+    fullnamesByEmail
   });
 
   return updatedMember;

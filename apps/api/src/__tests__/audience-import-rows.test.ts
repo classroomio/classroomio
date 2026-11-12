@@ -344,3 +344,30 @@ describe('importAudienceMembers — structured recipients', () => {
     expect(result.rows.map((row) => row.status)).toEqual(['ready', 'duplicate_in_file']);
   });
 });
+
+describe('importAudienceMembers — names stored with the invite', () => {
+  function storedFullnames() {
+    const rows = vi.mocked(createOrganizationInvites).mock.calls.flatMap(([invites]) => invites) as unknown as {
+      email: string;
+      metadata: { fullname?: string };
+    }[];
+
+    return Object.fromEntries(rows.map((row) => [row.email, row.metadata.fullname]));
+  }
+
+  it('stores each imported name in its invite metadata', async () => {
+    await importAudienceMembers(ORG, csv('email,name', 'ada@test.dev,Ada Lovelace', 'grace@test.dev,'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace', 'grace@test.dev': undefined });
+  });
+
+  it('keeps the first row name when a later duplicate row carries another name', async () => {
+    await importAudienceMembers(
+      ORG,
+      csv('email,name', 'ada@test.dev,Ada Lovelace', 'ada@test.dev,Someone Else'),
+      ACTOR
+    );
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace' });
+  });
+});

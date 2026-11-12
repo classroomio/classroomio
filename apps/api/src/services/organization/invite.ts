@@ -72,6 +72,16 @@ interface TAuthUser {
   email?: string | null;
 }
 
+/** Applies the name an admin entered at import time to the accepting profile; a name the person chose is kept. */
+async function applyInvitedFullname(tx: DbOrTxClient, profileId: string, inviteMetadata: unknown): Promise<void> {
+  const invitedFullname = parseFullnameFromInviteMetadata(inviteMetadata);
+  if (!invitedFullname) {
+    return;
+  }
+
+  await setProfileFullnameIfUnset(profileId, invitedFullname, tx);
+}
+
 function hashToken(token: string): string {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
@@ -617,10 +627,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
         throw new AppError('Invite is no longer available', ErrorCodes.VALIDATION_ERROR, 409);
       }
 
-      const invitedFullname = parseFullnameFromInviteMetadata(row.invite.metadata);
-      if (invitedFullname) {
-        await setProfileFullnameIfUnset(user.id, invitedFullname, tx);
-      }
+      await applyInvitedFullname(tx, user.id, row.invite.metadata);
     }
 
     await markUserAndProfileEmailVerified(user.id, tx);
@@ -931,6 +938,8 @@ export async function acceptOrganizationInviteById(
       if (!acceptedInvite) {
         throw new AppError('Invite is no longer available', ErrorCodes.VALIDATION_ERROR, 409);
       }
+
+      await applyInvitedFullname(tx, user.id, row.invite.metadata);
     }
 
     await markUserAndProfileEmailVerified(user.id, tx);
