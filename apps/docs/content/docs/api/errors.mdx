@@ -19,7 +19,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 
 - `error` is meant for people. Don't match on it, since the wording can change.
 - `code` is stable. Use it in your code to decide what to do.
-- `field` is only present on validation errors, and names the input that failed.
+- `field` names the input that failed. It is present on validation errors and on conflicts that name a field (e.g. `SITENAME_EXISTS` with `field: 'siteName'`).
 
 ## HTTP status codes
 

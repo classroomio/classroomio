@@ -803,6 +803,10 @@
       "csv_hint": "CSV UTF-8 con una columna de correo electrónico. Hasta {rows} filas, 5 MB.",
       "download_template": "Descargar la plantilla",
       "paste_hint": "Una dirección por línea o separadas por comas.",
+      "edit_email": "Editar correo electrónico",
+      "edit_name": "Editar nombre",
+      "search_placeholder": "Nombre o correo",
+      "search_no_results": "Ninguna fila coincide con tu búsqueda.",
       "review": "Revisión",
       "done": "Listo",
       "count_ready": "{count} listos",
@@ -2504,6 +2508,7 @@
                 "loading_library": "Cargando biblioteca multimedia...",
                 "no_library_videos": "No hay vídeos disponibles en tu biblioteca multimedia",
                 "add_from_library": "Agregar",
+                "upload_not_finished": "Carga sin terminar. Este video aún no tiene archivo, por lo que no se puede agregar.",
                 "cancel_upload": "Cancelar carga",
                 "upload_cancelled": "Subida cancelada por el usuario",
                 "max_files": "{count, plural, one {Puedes subir # archivo} other {Puedes subir # archivos}}",
@@ -3059,7 +3064,11 @@
       "preview": "Vista previa del curso",
       "preview_missing_slug": "Genera y guarda un slug del curso antes de previsualizarlo.",
       "view_as_student": "Ver como estudiante",
-      "view_course_site": "Ver sitio del curso"
+      "view_course_site": "Ver sitio del curso",
+      "assistant_pop_out": "Chat emergente",
+      "assistant_close_floating": "Cerrar chat flotante",
+      "assistant_tip": "Consejo: utilice el icono emergente para hacer flotar al asistente mientras trabaja.",
+      "assistant_tip_dismiss": "Descartar consejo"
     },
     "view_course_site": {
       "unpublished_title": "Publica tu curso",
@@ -3739,7 +3748,8 @@
     "status": {
       "active": "Activo",
       "archived": "Archivado",
-      "processing": "Procesando"
+      "processing": "Procesando",
+      "upload_not_finished": "Carga sin terminar"
     },
     "provider": {
       "upload": "Subir",
@@ -4164,7 +4174,9 @@
           "popover_title": "Seleccionar cursos",
           "popover_empty": "No hay cursos publicados disponibles.",
           "search_no_results": "Ningún curso coincide con tu búsqueda.",
-          "search_placeholder": "Buscar cursos..."
+          "search_placeholder": "Buscar cursos...",
+          "featured_toggle": "Mostrar curso destacado",
+          "featured_toggle_desc": "Destaca tu primer curso en un bloque grande. Desactívalo para mostrarlo junto con tus otros cursos."
         }
       },
       "content": {
@@ -5792,6 +5804,11 @@
     "titles": {
       "ai_assistant": "Asistente de IA",
       "transcript": "Transcripción"
+    },
+    "floating": {
+      "resize_aria": "Cambiar el tamaño de la ventana del asistente",
+      "expand_aria": "Expandir al panel lateral",
+      "dock_hint": "Suelte para atracar a un lado"
     }
   },
   "compliance": {
@@ -6583,7 +6600,10 @@
     "consent": {
       "page_title": "Conecta una app con ClassroomIO",
       "title": "Conectar {client} con ClassroomIO",
-      "workspace": "Espacio de trabajo: {workspace}",
+      "subtitle": "Elige el espacio de trabajo al que {client} puede acceder.",
+      "workspace_label": "Espacio de trabajo",
+      "no_workspaces_title": "No hay espacios de trabajo disponibles",
+      "no_workspaces_description": "Solo los administradores del espacio de trabajo pueden conectar apps. Pide ayuda a un administrador o inicia sesión con una cuenta de administrador.",
       "permissions_heading": "{client} podrá:",
       "stay_connected": "Mantener la conexión hasta que quites el acceso",
       "admin_note": "Solo los administradores del espacio de trabajo pueden conectar apps. El acceso sigue tus permisos de administrador y termina si los pierdes.",
@@ -6594,14 +6614,9 @@
       "error_title": "Esta solicitud de conexión no es válida",
       "error_description": "Vuelve a la app que querías conectar y empieza de nuevo."
     },
-    "select_organization": {
-      "title": "Elige un espacio de trabajo",
-      "subtitle": "Elige el espacio de trabajo al que {client} puede acceder.",
-      "empty_title": "No hay espacios de trabajo disponibles",
-      "empty_description": "Solo los administradores del espacio de trabajo pueden conectar apps. Pide ayuda a un administrador o inicia sesión con una cuenta de administrador."
-    },
     "error": {
-      "generic": "Algo salió mal. Inténtalo de nuevo."
+      "generic": "Algo salió mal. Inténtalo de nuevo.",
+      "retry": "Intentar de nuevo"
     },
     "scope_group": {
       "courses": {

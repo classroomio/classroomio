@@ -1231,7 +1231,9 @@
           "popover_title": "Select courses",
           "popover_empty": "No published courses available.",
           "search_no_results": "No courses match your search.",
-          "search_placeholder": "Search courses..."
+          "search_placeholder": "Search courses...",
+          "featured_toggle": "Show featured course",
+          "featured_toggle_desc": "Highlights your first course in a large block. Turn this off to list it with your other courses instead."
         }
       },
       "title": "Title",
@@ -1501,7 +1503,8 @@
     "status": {
       "active": "Active",
       "archived": "Archived",
-      "processing": "Processing"
+      "processing": "Processing",
+      "upload_not_finished": "Upload not finished"
     },
     "table": {
       "title": "Title",
@@ -2526,7 +2529,11 @@
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
       "view_as_student": "View as student",
-      "view_course_site": "View Course Site"
+      "view_course_site": "View Course Site",
+      "assistant_pop_out": "Pop out chat",
+      "assistant_close_floating": "Close floating chat",
+      "assistant_tip": "Tip: use the pop-out icon to float the assistant while you work.",
+      "assistant_tip_dismiss": "Dismiss tip"
     },
     "view_course_site": {
       "unpublished_title": "Publish your course",
@@ -2947,6 +2954,7 @@
                 "loading_library": "Loading media library...",
                 "no_library_videos": "No videos available in your media library",
                 "add_from_library": "Add",
+                "upload_not_finished": "Upload not finished. This video has no file yet, so it can't be added.",
                 "cancel_upload": "Cancel Upload",
                 "upload_cancelled": "Upload cancelled by user",
                 "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
@@ -4715,6 +4723,10 @@
       "csv_hint": "UTF-8 CSV with an email column. Up to {rows} rows, 5 MB.",
       "download_template": "Download the template",
       "paste_hint": "One address per line, or comma separated.",
+      "edit_email": "Edit email",
+      "edit_name": "Edit name",
+      "search_placeholder": "Name or email",
+      "search_no_results": "No rows match your search.",
       "review": "Review",
       "done": "Done",
       "submit_count": "Import {count} students",
@@ -6042,6 +6054,11 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transcript"
+    },
+    "floating": {
+      "resize_aria": "Resize assistant window",
+      "expand_aria": "Expand to side panel",
+      "dock_hint": "Release to dock to the side"
     }
   },
   "cohorts": {
@@ -6569,7 +6586,10 @@
     "consent": {
       "page_title": "Connect an app to ClassroomIO",
       "title": "Connect {client} to ClassroomIO",
-      "workspace": "Workspace: {workspace}",
+      "subtitle": "Pick the workspace {client} can access.",
+      "workspace_label": "Workspace",
+      "no_workspaces_title": "No workspace available",
+      "no_workspaces_description": "Only workspace admins can connect apps. Ask an admin or sign in with an admin account.",
       "permissions_heading": "{client} will be able to:",
       "stay_connected": "Stay connected until you remove access",
       "admin_note": "Only workspace admins can connect apps. Access follows your admin permissions and ends if you lose them.",
@@ -6580,14 +6600,9 @@
       "error_title": "This connection request is not valid",
       "error_description": "Go back to the app you were connecting and start again."
     },
-    "select_organization": {
-      "title": "Choose a workspace",
-      "subtitle": "Pick the workspace {client} can access.",
-      "empty_title": "No workspace available",
-      "empty_description": "Only workspace admins can connect apps. Ask an admin or sign in with an admin account."
-    },
     "error": {
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "retry": "Try again"
     },
     "scope_group": {
       "courses": {

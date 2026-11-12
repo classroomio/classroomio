@@ -803,6 +803,10 @@
       "csv_hint": "CSV UTF-8 với cột email. Tối đa {rows} hàng, 5 MB.",
       "download_template": "Tải xuống mẫu",
       "paste_hint": "Một địa chỉ trên mỗi dòng, hoặc phân tách bằng dấu phẩy.",
+      "edit_email": "Chỉnh sửa email",
+      "edit_name": "Chỉnh sửa tên",
+      "search_placeholder": "Tên hoặc email",
+      "search_no_results": "Không có dòng nào khớp với tìm kiếm của bạn.",
       "review": "Xem lại",
       "done": "Hoàn tất",
       "count_ready": "{count} sẵn sàng",
@@ -2504,6 +2508,7 @@
                 "loading_library": "Đang tải thư viện phương tiện...",
                 "no_library_videos": "Không có video nào trong thư viện phương tiện của bạn",
                 "add_from_library": "Thêm",
+                "upload_not_finished": "Tải lên chưa hoàn tất. Video này chưa có tệp nên không thể thêm.",
                 "cancel_upload": "Hủy tải lên",
                 "upload_cancelled": "Tải lên bị người dùng hủy",
                 "max_files": "{count, plural, one {Bạn có thể tải lên # tệp} other {Bạn có thể tải lên # tệp}}",
@@ -3059,7 +3064,11 @@
       "preview": "Xem trước khóa học",
       "preview_missing_slug": "Tạo và lưu slug khóa học trước khi xem trước.",
       "view_as_student": "Xem với tư cách sinh viên",
-      "view_course_site": "Xem trang khóa học"
+      "view_course_site": "Xem trang khóa học",
+      "assistant_pop_out": "Trò chuyện bật ra",
+      "assistant_close_floating": "Đóng trò chuyện nổi",
+      "assistant_tip": "Mẹo: sử dụng biểu tượng bật ra để di chuyển trợ lý trong khi bạn làm việc.",
+      "assistant_tip_dismiss": "Mẹo loại bỏ"
     },
     "view_course_site": {
       "unpublished_title": "Xuất bản khóa học của bạn",
@@ -3739,7 +3748,8 @@
     "status": {
       "active": "Đang hoạt động",
       "archived": "Đã lưu trữ",
-      "processing": "Đang xử lý"
+      "processing": "Đang xử lý",
+      "upload_not_finished": "Tải lên chưa hoàn tất"
     },
     "provider": {
       "upload": "Tải lên",
@@ -4164,7 +4174,9 @@
           "popover_title": "Chọn khóa học",
           "popover_empty": "Hiện không có khóa học nào được đăng tải.",
           "search_no_results": "Không có khóa học nào khớp với tìm kiếm của bạn.",
-          "search_placeholder": "Tìm khóa học..."
+          "search_placeholder": "Tìm khóa học...",
+          "featured_toggle": "Hiển thị khóa học nổi bật",
+          "featured_toggle_desc": "Làm nổi bật khóa học đầu tiên của bạn trong một khối lớn. Tắt để hiển thị khóa học này cùng với các khóa học khác."
         }
       },
       "content": {
@@ -5792,6 +5804,11 @@
     "titles": {
       "ai_assistant": "Trợ lý AI",
       "transcript": "Bản ghi"
+    },
+    "floating": {
+      "resize_aria": "Thay đổi kích thước cửa sổ trợ lý",
+      "expand_aria": "Mở rộng sang bảng điều khiển bên",
+      "dock_hint": "Thả để gắn sang một bên"
     }
   },
   "compliance": {
@@ -6583,7 +6600,10 @@
     "consent": {
       "page_title": "Kết nối ứng dụng với ClassroomIO",
       "title": "Kết nối {client} với ClassroomIO",
-      "workspace": "Không gian làm việc: {workspace}",
+      "subtitle": "Chọn không gian làm việc mà {client} có thể truy cập.",
+      "workspace_label": "Không gian làm việc",
+      "no_workspaces_title": "Không có không gian làm việc nào",
+      "no_workspaces_description": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Hãy nhờ quản trị viên hoặc đăng nhập bằng tài khoản quản trị.",
       "permissions_heading": "{client} sẽ có thể:",
       "stay_connected": "Giữ kết nối cho đến khi bạn gỡ quyền truy cập",
       "admin_note": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Quyền truy cập theo quyền quản trị của bạn và sẽ kết thúc nếu bạn mất quyền đó.",
@@ -6594,14 +6614,9 @@
       "error_title": "Yêu cầu kết nối này không hợp lệ",
       "error_description": "Hãy quay lại ứng dụng bạn đang kết nối và bắt đầu lại."
     },
-    "select_organization": {
-      "title": "Chọn không gian làm việc",
-      "subtitle": "Chọn không gian làm việc mà {client} có thể truy cập.",
-      "empty_title": "Không có không gian làm việc nào",
-      "empty_description": "Chỉ quản trị viên không gian làm việc mới có thể kết nối ứng dụng. Hãy nhờ quản trị viên hoặc đăng nhập bằng tài khoản quản trị."
-    },
     "error": {
-      "generic": "Đã xảy ra lỗi. Vui lòng thử lại."
+      "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+      "retry": "Thử lại"
     },
     "scope_group": {
       "courses": {

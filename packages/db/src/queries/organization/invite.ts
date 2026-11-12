@@ -10,9 +10,12 @@ import * as schema from '@db/schema';
 import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
-export async function createOrganizationInvite(values: TNewOrganizationInvite): Promise<TOrganizationInvite> {
+export async function createOrganizationInvite(
+  values: TNewOrganizationInvite,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite> {
   try {
-    const [created] = await db.insert(schema.organizationInvite).values(values).returning();
+    const [created] = await dbClient.insert(schema.organizationInvite).values(values).returning();
 
     if (!created) {
       throw new Error('Failed to create organization invite');
@@ -27,13 +30,16 @@ export async function createOrganizationInvite(values: TNewOrganizationInvite): 
   }
 }
 
-export async function createOrganizationInvites(values: TNewOrganizationInvite[]): Promise<TOrganizationInvite[]> {
+export async function createOrganizationInvites(
+  values: TNewOrganizationInvite[],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInvite).values(values).returning();
+    return await dbClient.insert(schema.organizationInvite).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInvites error:', error);
     throw new Error(
@@ -448,6 +454,42 @@ export async function getLatestOrganizationInviteRowByOrgAndEmail(
     throw new Error(
       `Failed to get latest organization invite: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * The metadata of the latest invite of any status (including revoked) for each email in the organization, newest by
+ * created_at. Emails without an invite are absent from the result.
+ */
+export async function getLatestOrganizationInviteMetadataByEmails(
+  organizationId: string,
+  emails: string[],
+  dbClient: DbOrTxClient = db
+): Promise<{ email: string; metadata: unknown }[]> {
+  const normalized = [...new Set(emails.map((email) => email.toLowerCase().trim()).filter(Boolean))];
+  if (normalized.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await dbClient
+      .selectDistinctOn([schema.organizationInvite.email], {
+        email: schema.organizationInvite.email,
+        metadata: schema.organizationInvite.metadata
+      })
+      .from(schema.organizationInvite)
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          inArray(schema.organizationInvite.email, normalized)
+        )
+      )
+      .orderBy(schema.organizationInvite.email, desc(schema.organizationInvite.createdAt));
+
+    return rows.flatMap((row) => (row.email ? [{ email: row.email, metadata: row.metadata }] : []));
+  } catch (error) {
+    console.error('getLatestOrganizationInviteMetadataByEmails error:', error);
+    throw new Error('Failed to get latest organization invites');
   }
 }
 

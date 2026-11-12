@@ -1,7 +1,11 @@
 <script>
+  import { page } from '$app/state';
+  import { ALTERNATIVE_SLUGS, COMPETITOR_NAMES } from '$lib/features/alternatives/navigation';
   import Facebook from '@lucide/svelte/icons/facebook';
   import Youtube from '@lucide/svelte/icons/youtube';
   import Twitter from '@lucide/svelte/icons/twitter';
+
+  const currentPath = $derived(page.url.pathname);
 </script>
 
 <footer
@@ -41,7 +45,7 @@
       </div>
     </div>
 
-    <nav class="grid grid-cols-2 gap-x-12 gap-y-10 sm:grid-cols-4">
+    <nav class="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       <div>
         <p class="ui:text-foreground mb-5 text-sm font-semibold">Product</p>
         <ul class="space-y-3.5">
@@ -122,7 +126,7 @@
           </li>
           <li>
             <a
-              href="https://classroomio.com/docs/quickstart/signup"
+              href="https://classroomio.com/help/get-started/signup"
               target="_blank"
               class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Getting Started</a
             >
@@ -163,6 +167,25 @@
               >Terms of Use</a
             >
           </li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="ui:text-foreground mb-5 text-sm font-semibold">Compare platforms</p>
+        <ul class="space-y-3.5">
+          {#each ALTERNATIVE_SLUGS as slug}
+            <li>
+              <a
+                href={`/alternatives/${slug}`}
+                aria-current={currentPath === `/alternatives/${slug}` ? 'page' : undefined}
+                class="text-sm transition-colors {currentPath === `/alternatives/${slug}`
+                  ? 'text-blue-700'
+                  : 'ui:text-muted-foreground ui:hover:text-foreground'}"
+              >
+                {COMPETITOR_NAMES[slug]} alternative
+              </a>
+            </li>
+          {/each}
         </ul>
       </div>
     </nav>

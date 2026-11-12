@@ -314,6 +314,18 @@ For response shapes that need a small normalization (e.g. API returns `JSONValue
 ### API Class Pattern
 API classes handle all logic; components should be thin.
 
+### Dashboard API error handling
+- `BaseApi.execute()` normalizes every failure (except aborted requests,
+  which return silently) to `NormalizedApiError`
+  (`apps/dashboard/src/lib/utils/services/api/errors.ts`) before calling
+  `onError`. Handlers receive one typed shape — never a bare `string`.
+- Use `hasErrorCode(error, ...)` / `matchesError(error, { code, field })`
+  instead of hand-rolled `typeof` / `in` narrowing. Read `error.message`,
+  `error.code`, `error.field` directly, and use `ErrorCodes` constants.
+- Structured errors cross into components only as `NormalizedApiError`
+  (via `api.lastError`). `api.error` is a plain display string — never
+  parse it as JSON.
+
 ### Translations (UI copy)
 
 - No hardcoded user-facing text in components.

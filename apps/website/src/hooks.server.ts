@@ -1,7 +1,8 @@
 import type { Handle, RequestEvent } from '@sveltejs/kit';
-
-const DOCS_ORIGIN = 'https://cio-docs.digdippa.workers.dev';
-const HELP_ORIGIN = 'https://cio-help.digdippa.workers.dev';
+import { buildPricingMarkdown } from '$lib/server/agent-resources';
+import { DOCS_ORIGIN, HELP_ORIGIN } from '$lib/server/upstreams';
+import { prefersMarkdown } from '$lib/utils/accept-header';
+import { resolveLegacyRedirect } from '$lib/utils/legacy-redirects';
 
 function proxy(origin: string, pathname: string, event: RequestEvent) {
   const upstream = new URL(pathname + event.url.search, origin);
@@ -30,6 +31,22 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   if (pathname === '/help' || pathname.startsWith('/help/')) {
     return proxy(HELP_ORIGIN, pathname, event);
+  }
+
+  if (pathname === '/pricing' && prefersMarkdown(event.request.headers.get('accept'))) {
+    return new Response(buildPricingMarkdown(), {
+      headers: { 'content-type': 'text/markdown; charset=utf-8', vary: 'Accept' }
+    });
+  }
+
+  const legacyTarget = resolveLegacyRedirect(pathname);
+  if (legacyTarget) {
+    const location = legacyTarget.startsWith('http') ? new URL(legacyTarget) : new URL(legacyTarget, event.url);
+    location.search = event.url.search;
+
+    const status = legacyTarget.startsWith('http') ? 308 : 301;
+
+    return Response.redirect(location.toString(), status);
   }
 
   return resolve(event);

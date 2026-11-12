@@ -60,12 +60,14 @@ vi.mock('@cio/core/config/dashboard-url', () => ({ getAppBaseUrl: vi.fn(() => 'h
 vi.mock('@api/services/organization/student-limit', () => ({ assertStudentCapacityOrThrow: vi.fn() }));
 vi.mock('@api/utils/org', () => ({
   parseCourseIdsFromInviteMetadata: vi.fn(() => []),
-  parseCohortIdsFromInviteMetadata: vi.fn(() => [])
+  parseCohortIdsFromInviteMetadata: vi.fn(() => []),
+  parseFullnameFromInviteMetadata: vi.fn((metadata: { fullname?: string } | undefined) => metadata?.fullname)
 }));
 // Mocked to sidestep Vite's nested-subpath resolution quirk on `@cio/*` exports.
 vi.mock('@cio/db/queries/auth/profile', () => ({
   getProfileById: vi.fn(),
-  markUserAndProfileEmailVerified: vi.fn()
+  markUserAndProfileEmailVerified: vi.fn(),
+  setProfileFullnameIfUnset: vi.fn()
 }));
 vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmail: vi.fn() }));
 vi.mock('@cio/email', () => ({
@@ -86,6 +88,7 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
 import {
   acceptLinkInvite,
   acceptOrganizationInvite,
+  acceptOrganizationInviteById,
   fetchOrgLinkInvite,
   getOrCreateLinkInvite,
   inviteTeamMembers,
@@ -104,6 +107,7 @@ import {
   getOrgLinkInviteWithOrg,
   lockOrganizationForUpdate,
   setLinkInviteRevoked,
+  selectOrganizationInviteWithOrgByInviteId,
   selectOrganizationInviteWithOrgByTokenHash,
   selectOrganizationMemberByOrgAndNormalizedEmail,
   selectOrganizationMemberByOrgAndProfile,
@@ -111,6 +115,7 @@ import {
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { setProfileFullnameIfUnset } from '@cio/db/queries/auth/profile';
 
 const ORG_ID = 'org-1';
 const USER = { id: 'user-1', email: 'Admin@Example.com' };
@@ -183,6 +188,63 @@ describe('acceptLinkInvite course-role reconciliation', () => {
       10,
       expect.objectContaining({ roleId: ROLE.TUTOR })
     );
+  });
+});
+
+describe('accepting an imported invite that carries a name', () => {
+  function importedInvite(metadata: Record<string, unknown>) {
+    return {
+      invite: {
+        id: 'invite-1',
+        organizationId: ORG_ID,
+        roleId: ROLE.STUDENT,
+        isRevoked: false,
+        acceptedAt: null,
+        expiresAt: '2099-01-01T00:00:00.000Z',
+        email: 'admin@example.com',
+        metadata
+      },
+      organization: { id: ORG_ID, siteName: 'acme' }
+    };
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(lockOrganizationForUpdate).mockResolvedValue(undefined as never);
+    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue(null as never);
+    vi.mocked(selectOrganizationMemberByOrgAndProfile).mockResolvedValue(null as never);
+    vi.mocked(createOrganizationMembers).mockResolvedValue([] as never);
+    vi.mocked(claimPendingOrganizationInvite).mockResolvedValue({ id: 'invite-1' } as never);
+  });
+
+  it('applies the stored name to the profile when the person accepts', async () => {
+    vi.mocked(selectOrganizationInviteWithOrgByTokenHash).mockResolvedValue(
+      importedInvite({ source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' }) as never
+    );
+
+    await acceptOrganizationInvite('token-1', USER as never);
+
+    expect(setProfileFullnameIfUnset).toHaveBeenCalledWith(USER.id, 'Ada Lovelace', expect.anything());
+  });
+
+  it('applies the stored name when the invite is accepted by id', async () => {
+    vi.mocked(selectOrganizationInviteWithOrgByInviteId).mockResolvedValue(
+      importedInvite({ source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' }) as never
+    );
+
+    await acceptOrganizationInviteById('invite-1', USER as never);
+
+    expect(setProfileFullnameIfUnset).toHaveBeenCalledWith(USER.id, 'Ada Lovelace', expect.anything());
+  });
+
+  it('leaves the profile alone when the invite has no stored name', async () => {
+    vi.mocked(selectOrganizationInviteWithOrgByTokenHash).mockResolvedValue(
+      importedInvite({ source: 'AUDIENCE_IMPORT' }) as never
+    );
+
+    await acceptOrganizationInvite('token-1', USER as never);
+
+    expect(setProfileFullnameIfUnset).not.toHaveBeenCalled();
   });
 });
 
@@ -328,7 +390,7 @@ describe('team invitations for existing members', () => {
     vi.clearAllMocks();
     vi.mocked(getOrganizationById).mockResolvedValue({ id: ORG_ID, name: 'Acme', siteName: 'acme' } as never);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'student@example.com', profileId: 'student-1', roleId: ROLE.STUDENT }
+      { normalizedEmail: 'student@example.com', profileId: 'student-1', roleId: ROLE.STUDENT, hasLapsedInvite: false }
     ]);
     vi.mocked(revokeActiveOrganizationInvitesByEmails).mockResolvedValue([]);
     vi.mocked(createOrganizationInvite).mockResolvedValue({ id: 'new-role-invite' } as never);
@@ -382,8 +444,8 @@ describe('team invitations for existing members', () => {
 
   it('requires confirmation again when another student is discovered', async () => {
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'student@example.com', profileId: 'student-1', roleId: ROLE.STUDENT },
-      { normalizedEmail: 'new@example.com', profileId: 'student-2', roleId: ROLE.STUDENT }
+      { normalizedEmail: 'student@example.com', profileId: 'student-1', roleId: ROLE.STUDENT, hasLapsedInvite: false },
+      { normalizedEmail: 'new@example.com', profileId: 'student-2', roleId: ROLE.STUDENT, hasLapsedInvite: false }
     ]);
 
     const result = await inviteTeamMembers(ORG_ID, ['student@example.com', 'new@example.com'], ROLE.TUTOR, USER.id, [
@@ -399,7 +461,7 @@ describe('team invitations for existing members', () => {
     'reports an existing team role %s instead of pretending to send',
     async (roleId) => {
       vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-        { normalizedEmail: 'staff@example.com', profileId: 'staff-1', roleId }
+        { normalizedEmail: 'staff@example.com', profileId: 'staff-1', roleId, hasLapsedInvite: false }
       ]);
 
       const result = await inviteTeamMembers(ORG_ID, ['staff@example.com', 'new@example.com'], ROLE.ADMIN, USER.id);

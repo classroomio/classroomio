@@ -803,6 +803,10 @@
       "csv_hint": "Plik CSV w formacie UTF-8 z kolumną adresu e-mail. Maks. liczba wierszy: {rows}, 5 MB.",
       "download_template": "Pobierz szablon",
       "paste_hint": "Jeden adres w wierszu lub rozdzielony przecinkiem.",
+      "edit_email": "Edytuj adres e-mail",
+      "edit_name": "Edytuj imię i nazwisko",
+      "search_placeholder": "Imię lub e-mail",
+      "search_no_results": "Żaden wiersz nie pasuje do wyszukiwania.",
       "review": "Przegląd",
       "done": "Gotowe",
       "count_ready": "{count} gotowe",
@@ -2504,6 +2508,7 @@
                 "loading_library": "Ładowanie biblioteki multimediów...",
                 "no_library_videos": "W Twojej bibliotece multimediów nie ma dostępnych filmów",
                 "add_from_library": "Dodaj",
+                "upload_not_finished": "Przesyłanie nieukończone. Ten film nie ma jeszcze pliku, więc nie można go dodać.",
                 "cancel_upload": "Anuluj przesyłanie",
                 "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
                 "max_files": "{count, plural, one {Możesz przesłać # plik} other {Możesz przesłać # plików}}",
@@ -3059,7 +3064,11 @@
       "preview": "Podgląd kursu",
       "preview_missing_slug": "Wygeneruj i zapisz slug kursu przed podglądem.",
       "view_as_student": "Wyświetl jako student",
-      "view_course_site": "Zobacz stronę kursu"
+      "view_course_site": "Zobacz stronę kursu",
+      "assistant_pop_out": "Wyskakuj czat",
+      "assistant_close_floating": "Zamknij pływający czat",
+      "assistant_tip": "Wskazówka: użyj wyskakującej ikony, aby unieść asystenta podczas pracy.",
+      "assistant_tip_dismiss": "Odrzuć wskazówkę"
     },
     "view_course_site": {
       "unpublished_title": "Opublikuj swój kurs",
@@ -3739,7 +3748,8 @@
     "status": {
       "active": "Aktywny",
       "archived": "Zarchiwizowane",
-      "processing": "Przetwarzanie"
+      "processing": "Przetwarzanie",
+      "upload_not_finished": "Przesyłanie nieukończone"
     },
     "provider": {
       "upload": "Prześlij",
@@ -4164,7 +4174,9 @@
           "popover_title": "Wybierz kursy",
           "popover_empty": "Brak opublikowanych kursów.",
           "search_no_results": "Brak kursów pasujących do wyszukiwania.",
-          "search_placeholder": "Szukaj kursów..."
+          "search_placeholder": "Szukaj kursów...",
+          "featured_toggle": "Pokaż wyróżniony kurs",
+          "featured_toggle_desc": "Wyróżnia Twój pierwszy kurs w dużym bloku. Wyłącz, aby wyświetlać go razem z pozostałymi kursami."
         }
       },
       "content": {
@@ -5792,6 +5804,11 @@
     "titles": {
       "ai_assistant": "Asystent AI",
       "transcript": "Transkrypcja"
+    },
+    "floating": {
+      "resize_aria": "Zmień rozmiar okna asystenta",
+      "expand_aria": "Rozwiń do panelu bocznego",
+      "dock_hint": "Zwolnij, aby zadokować z boku"
     }
   },
   "compliance": {
@@ -6583,7 +6600,10 @@
     "consent": {
       "page_title": "Połącz aplikację z ClassroomIO",
       "title": "Połącz {client} z ClassroomIO",
-      "workspace": "Przestrzeń robocza: {workspace}",
+      "subtitle": "Wybierz przestrzeń roboczą, do której {client} ma mieć dostęp.",
+      "workspace_label": "Przestrzeń robocza",
+      "no_workspaces_title": "Brak dostępnych przestrzeni roboczych",
+      "no_workspaces_description": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Poproś administratora lub zaloguj się na konto administratora.",
       "permissions_heading": "{client} będzie mógł:",
       "stay_connected": "Pozostań połączony, dopóki nie usuniesz dostępu",
       "admin_note": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Dostęp wynika z Twoich uprawnień administratora i wygasa, jeśli je utracisz.",
@@ -6594,14 +6614,9 @@
       "error_title": "To żądanie połączenia jest nieprawidłowe",
       "error_description": "Wróć do aplikacji, którą łączysz, i zacznij od nowa."
     },
-    "select_organization": {
-      "title": "Wybierz przestrzeń roboczą",
-      "subtitle": "Wybierz przestrzeń roboczą, do której {client} ma mieć dostęp.",
-      "empty_title": "Brak dostępnych przestrzeni roboczych",
-      "empty_description": "Tylko administratorzy przestrzeni roboczej mogą łączyć aplikacje. Poproś administratora lub zaloguj się na konto administratora."
-    },
     "error": {
-      "generic": "Coś poszło nie tak. Spróbuj ponownie."
+      "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+      "retry": "Spróbuj ponownie"
     },
     "scope_group": {
       "courses": {

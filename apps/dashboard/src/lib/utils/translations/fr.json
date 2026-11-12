@@ -803,6 +803,10 @@
       "csv_hint": "Fichier CSV UTF-8 avec une colonne d'adresse e-mail. Jusqu'à {rows} lignes, 5 Mo.",
       "download_template": "Téléchargez le modèle",
       "paste_hint": "Une adresse par ligne, ou séparées par des virgules.",
+      "edit_email": "Modifier l'e-mail",
+      "edit_name": "Modifier le nom",
+      "search_placeholder": "Nom ou e-mail",
+      "search_no_results": "Aucune ligne ne correspond à votre recherche.",
       "review": "Revoir",
       "done": "Fait",
       "count_ready": "{count} prêt",
@@ -2504,6 +2508,7 @@
                 "loading_library": "Chargement de la médiathèque...",
                 "no_library_videos": "Aucune vidéo disponible dans votre médiathèque",
                 "add_from_library": "Ajouter",
+                "upload_not_finished": "Téléversement inachevé. Cette vidéo n'a pas encore de fichier et ne peut donc pas être ajoutée.",
                 "cancel_upload": "Annuler le téléchargement",
                 "upload_cancelled": "Téléchargement annulé par l'utilisateur",
                 "max_files": "{count, plural, one {Vous pouvez téléverser # fichier} other {Vous pouvez téléverser # fichiers}}",
@@ -3059,7 +3064,11 @@
       "preview": "Aperçu du cours",
       "preview_missing_slug": "Générez et enregistrez un identifiant de cours avant de prévisualiser.",
       "view_as_student": "Afficher en tant qu'étudiant",
-      "view_course_site": "Voir le site du cours"
+      "view_course_site": "Voir le site du cours",
+      "assistant_pop_out": "Détacher le chat",
+      "assistant_close_floating": "Fermer le chat flottant",
+      "assistant_tip": "Astuce : utilisez l'icône contextuelle pour faire flotter l'assistant pendant que vous travaillez.",
+      "assistant_tip_dismiss": "Ignorer le conseil"
     },
     "view_course_site": {
       "unpublished_title": "Publiez votre cours",
@@ -3739,7 +3748,8 @@
     "status": {
       "active": "Actif",
       "archived": "Archivé",
-      "processing": "Traitement en cours"
+      "processing": "Traitement en cours",
+      "upload_not_finished": "Téléversement inachevé"
     },
     "provider": {
       "upload": "Téléverser",
@@ -4164,7 +4174,9 @@
           "popover_title": "Sélectionner des cours",
           "popover_empty": "Aucun cours publié disponible.",
           "search_no_results": "Aucun cours ne correspond à votre recherche.",
-          "search_placeholder": "Rechercher des cours..."
+          "search_placeholder": "Rechercher des cours...",
+          "featured_toggle": "Afficher le cours en vedette",
+          "featured_toggle_desc": "Met votre premier cours en avant dans un grand bloc. Désactivez cette option pour l'afficher avec vos autres cours."
         }
       },
       "content": {
@@ -5792,6 +5804,11 @@
     "titles": {
       "ai_assistant": "Assistant IA",
       "transcript": "Transcription"
+    },
+    "floating": {
+      "resize_aria": "Redimensionner la fenêtre de l'assistant",
+      "expand_aria": "Développer vers le panneau latéral",
+      "dock_hint": "Relâchez pour accoster sur le côté"
     }
   },
   "compliance": {
@@ -6583,7 +6600,10 @@
     "consent": {
       "page_title": "Connecter une application à ClassroomIO",
       "title": "Connecter {client} à ClassroomIO",
-      "workspace": "Espace de travail : {workspace}",
+      "subtitle": "Choisissez l'espace de travail auquel {client} peut accéder.",
+      "workspace_label": "Espace de travail",
+      "no_workspaces_title": "Aucun espace de travail disponible",
+      "no_workspaces_description": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. Demandez à un administrateur ou connectez-vous avec un compte administrateur.",
       "permissions_heading": "{client} pourra :",
       "stay_connected": "Rester connecté jusqu'à ce que vous retiriez l'accès",
       "admin_note": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. L'accès suit vos autorisations d'administrateur et prend fin si vous les perdez.",
@@ -6594,14 +6614,9 @@
       "error_title": "Cette demande de connexion n'est pas valide",
       "error_description": "Retournez à l'application que vous vouliez connecter et recommencez."
     },
-    "select_organization": {
-      "title": "Choisir un espace de travail",
-      "subtitle": "Choisissez l'espace de travail auquel {client} peut accéder.",
-      "empty_title": "Aucun espace de travail disponible",
-      "empty_description": "Seuls les administrateurs de l'espace de travail peuvent connecter des applications. Demandez à un administrateur ou connectez-vous avec un compte administrateur."
-    },
     "error": {
-      "generic": "Une erreur s'est produite. Veuillez réessayer."
+      "generic": "Une erreur s'est produite. Veuillez réessayer.",
+      "retry": "Réessayer"
     },
     "scope_group": {
       "courses": {

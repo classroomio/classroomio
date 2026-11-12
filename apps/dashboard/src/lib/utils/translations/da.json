@@ -803,6 +803,10 @@
       "csv_hint": "UTF-8 CSV med en e-mail-kolonne. Op til {rows} rækker, 5 MB.",
       "download_template": "Download skabelonen",
       "paste_hint": "Én adresse pr. linje eller kommasepareret.",
+      "edit_email": "Rediger e-mail",
+      "edit_name": "Rediger navn",
+      "search_placeholder": "Navn eller e-mail",
+      "search_no_results": "Ingen rækker matcher din søgning.",
       "review": "Gennemgå",
       "done": "Udført",
       "count_ready": "{count} klar",
@@ -2504,6 +2508,7 @@
                 "loading_library": "Indlæser mediebibliotek...",
                 "no_library_videos": "Der er ingen tilgængelige videoer i dit mediebibliotek",
                 "add_from_library": "Tilføj",
+                "upload_not_finished": "Upload ikke fuldført. Denne video har ingen fil endnu, så den kan ikke tilføjes.",
                 "cancel_upload": "Annuller upload",
                 "upload_cancelled": "Upload annulleret af brugeren",
                 "max_files": "{count, plural, one {Du kan uploade # fil} other {Du kan uploade # filer}}",
@@ -3059,7 +3064,11 @@
       "preview": "Forhåndsvis kursus",
       "preview_missing_slug": "Generer og gem et kursus-slug, før du forhåndsviser.",
       "view_as_student": "Se som studerende",
-      "view_course_site": "Se kursusside"
+      "view_course_site": "Se kursusside",
+      "assistant_pop_out": "Pop ud chat",
+      "assistant_close_floating": "Luk flydende chat",
+      "assistant_tip": "Tip: Brug pop-out-ikonet til at flyde assistenten, mens du arbejder.",
+      "assistant_tip_dismiss": "Afvis tip"
     },
     "view_course_site": {
       "unpublished_title": "Udgiv dit kursus",
@@ -3739,7 +3748,8 @@
     "status": {
       "active": "Aktiv",
       "archived": "Arkiveret",
-      "processing": "Behandler"
+      "processing": "Behandler",
+      "upload_not_finished": "Upload ikke fuldført"
     },
     "provider": {
       "upload": "Upload",
@@ -4164,7 +4174,9 @@
           "popover_title": "Vælg kurser",
           "popover_empty": "Ingen offentliggjorte kurser tilgængelige.",
           "search_no_results": "Ingen kurser matcher din søgning.",
-          "search_placeholder": "Søg efter kurser..."
+          "search_placeholder": "Søg efter kurser...",
+          "featured_toggle": "Vis fremhævet kursus",
+          "featured_toggle_desc": "Fremhæver dit første kursus i en stor blok. Slå fra for i stedet at vise det sammen med dine andre kurser."
         }
       },
       "content": {
@@ -5792,6 +5804,11 @@
     "titles": {
       "ai_assistant": "AI-assistent",
       "transcript": "Transskription"
+    },
+    "floating": {
+      "resize_aria": "Ændr størrelse på assistentvindue",
+      "expand_aria": "Udvid til sidepanelet",
+      "dock_hint": "Slip for at docke til siden"
     }
   },
   "compliance": {
@@ -6583,7 +6600,10 @@
     "consent": {
       "page_title": "Forbind en app til ClassroomIO",
       "title": "Forbind {client} til ClassroomIO",
-      "workspace": "Arbejdsområde: {workspace}",
+      "subtitle": "Vælg det arbejdsområde, {client} må have adgang til.",
+      "workspace_label": "Arbejdsområde",
+      "no_workspaces_title": "Intet arbejdsområde tilgængeligt",
+      "no_workspaces_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto.",
       "permissions_heading": "{client} vil kunne:",
       "stay_connected": "Forbliv forbundet, indtil du fjerner adgangen",
       "admin_note": "Kun administratorer af arbejdsområdet kan forbinde apps. Adgangen følger dine administratorrettigheder og ophører, hvis du mister dem.",
@@ -6594,14 +6614,9 @@
       "error_title": "Denne forbindelsesanmodning er ugyldig",
       "error_description": "Gå tilbage til den app, du forbandt, og start forfra."
     },
-    "select_organization": {
-      "title": "Vælg et arbejdsområde",
-      "subtitle": "Vælg det arbejdsområde, {client} må have adgang til.",
-      "empty_title": "Intet arbejdsområde tilgængeligt",
-      "empty_description": "Kun administratorer af arbejdsområdet kan forbinde apps. Spørg en administrator, eller log ind med en administratorkonto."
-    },
     "error": {
-      "generic": "Noget gik galt. Prøv igen."
+      "generic": "Noget gik galt. Prøv igen.",
+      "retry": "Prøv igen"
     },
     "scope_group": {
       "courses": {

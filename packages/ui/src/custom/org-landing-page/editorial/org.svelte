@@ -12,7 +12,7 @@
   import EditableLandingSection from '../editable-section.svelte';
   import LandingThemeScope from '../landing-theme-scope.svelte';
   import { Button } from '../../../base/button';
-  import { getCourseTypeLandingMeta } from '../landing-page-utils';
+  import { getCourseTypeLandingMeta, isFeaturedCourseShown } from '../landing-page-utils';
 
   let {
     orgName,
@@ -23,6 +23,7 @@
     courses,
     hasMoreCourses = false,
     coursesLoaded = true,
+    featuredCourse,
     disableCourseLinks = false,
     learningPaths,
     hasMoreLearningPaths = false,
@@ -94,7 +95,7 @@
 
 <LandingThemeScope theme="editorial" class="ui:font-sans">
   <main>
-    <EditorialHero {hero} {courses} {labels}>
+    <EditorialHero {hero} {courses} {labels} showFeaturedCourse={isFeaturedCourseShown(featuredCourse)}>
       {#snippet navigation()}
         <EditorialNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
