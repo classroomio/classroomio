@@ -165,7 +165,7 @@ flowchart TD
 
 1. The **Connection** section shows each Zapier connection: its access (Read and write or Read only), who connected it and when, and a **Disconnect** button.
 2. When events from the last 24 hours failed to reach Zapier while the trigger is still active, a warning offers **Resend failed events**.
-3. When repeated failures have turned a trigger off, a separate warning explains there is nothing to resend: the admin fixes the receiving end in Zapier and turns the Zap back on to resubscribe it.
+3. When repeated failures have turned a trigger off, a separate warning explains there is nothing to resend: the admin fixes the receiving end in Zapier and turns the Zap off and back on to resubscribe it.
 4. **Popular Zaps** stay on the page, with an **Explore apps** link beside the heading that opens the App Directory.
 5. **My Zaps** opens the admin's Zaps on Zapier ([zapier.com/app/zaps](https://zapier.com/app/zaps)), where Zaps and their run history are managed.
 

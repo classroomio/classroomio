@@ -30,7 +30,7 @@ ClassroomIO sends events to Zapier the moment they happen and retries failed del
 After repeated delivery failures ClassroomIO stops retrying and turns that trigger off. While its recent failures are still in the 24-hour window, the Zapier tab shows **Some triggers are disabled** instead of the resend warning, because the trigger is no longer subscribed and has no events to resend:
 
 1. Fix the receiving end in Zapier: check that the Zap is not turned off or errored, and that its owner still has access to the ClassroomIO connection.
-2. Turn the Zap back on in Zapier. ClassroomIO resubscribes the trigger and starts delivering events again.
+2. Turn the Zap off and back on in Zapier. ClassroomIO resubscribes the trigger and starts delivering events again.
 
 If both warnings appear, resend the failed events for the active triggers, then re-enable the disabled ones.
 
@@ -96,7 +96,7 @@ Invites have their own limit: the admin who connected Zapier can create invites 
 
 ClassroomIO retries a failed webhook delivery 5 times over about 2.6 hours (6 attempts in total) before marking it failed. Repeated failures turn the trigger off. If an event did not trigger your Zap:
 
-1. If the Zapier tab shows **Some triggers are disabled**, fix the receiving end in Zapier and turn the Zap back on. There is nothing to resend until the trigger is subscribed again.
+1. If the Zapier tab shows **Some triggers are disabled**, fix the receiving end in Zapier and turn the Zap off and back on. There is nothing to resend until the trigger is subscribed again.
 2. If the Zapier tab shows **Some events didn't reach Zapier**, select **Resend failed events**.
 3. Check your Zap history in Zapier to verify whether Zapier received the event or experienced an execution error.
 
