@@ -122,11 +122,7 @@ export async function assertStudentCapacityOrThrow(
       blocked: true
     });
 
-    throw new AppError(
-      `This organization has reached its ${limit}-student limit on the Free plan`,
-      ErrorCodes.UPGRADE_REQUIRED,
-      403
-    );
+    throw new AppError(`This organization has reached its ${limit}-student limit`, ErrorCodes.UPGRADE_REQUIRED, 403);
   }
 
   const halfway = Math.ceil(limit / 2);
