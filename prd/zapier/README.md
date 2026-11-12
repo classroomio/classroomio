@@ -268,7 +268,7 @@ Automation keys of type `zapier` can no longer be created. Zapier connects only 
 
 1. Annotate every new route with `describeRoute`; run `pnpm --filter @cio/api upload:openapi`.
 2. Add Zapier guides to the help center: connect your account, read-only connections, trigger catalog with sample payloads, action catalog with required fields, searches, limits, managing connections, and troubleshooting (connection removed, read-only, plan paused, rate limited).
-3. Name Zapier alongside REST API, Webhooks and MCP on the website's automation pages. Ships with the public listing; does not gate the integration itself.
+3. Name Zapier alongside REST API, Webhooks and MCP on the website's automation pages (done: Zapier section with the canonical Zaps as copy on `apps/website/src/routes/automation/+page.svelte`, fourth Zapier lane in the home page automation band, SEO meta; `automate-section.svelte` left untouched — it is exported but unrendered. The section CTA reads "How to connect" → help guide until the listing is live, then "Connect on Zapier" → directory URL). Does not gate the integration itself.
 
 ## Rollout Plan
 
