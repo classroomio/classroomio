@@ -748,10 +748,13 @@ export async function importAudienceMembers(
       );
     }
 
+    // Their org membership has no profile until they accept, so match them by the profile found from their email.
     if (cohorts.length > 0 && profiles.length > 0) {
+      const profileEmails = new Map(profiles.map((profile) => [profile.id, profile.email ?? '']));
+
       await enrollAudienceStudentProfilesInCohorts(
         { ...enrolment, shouldSendEmail: false },
-        await getStudentEmailsByProfileId(orgId, profileIds, tx),
+        profileEmails,
         profileIds,
         cohorts,
         getCohortCourses,

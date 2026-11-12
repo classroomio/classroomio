@@ -153,8 +153,37 @@ describe.skipIf(!hasDatabase || selfHosted)('audience import transaction against
     expect(await countRows()).toEqual(before);
   });
 
+  it('adds someone who already has an account to the selected cohort straight away', async () => {
+    const { db, schema, and, eq, importAudienceMembers } = await load();
+    const email = `has-account@${emailDomain}`;
+    const [user] = await db.insert(schema.user).values({ name: 'Has account', email, emailVerified: true }).returning();
+    await db
+      .insert(schema.profile)
+      .values({ id: user.id, email, fullname: 'Has account', username: `has-account-${suffix}` });
+    const [cohort] = await db
+      .insert(schema.cohort)
+      .values({ organizationId, name: `import-tx-${suffix}`, createdByProfileId: adminId })
+      .returning();
+
+    const result = await importAudienceMembers(
+      organizationId,
+      { recipients: [{ email }], cohortIds: [cohort.id], sendEmail: false } as Parameters<
+        typeof importAudienceMembers
+      >[1],
+      adminId
+    );
+
+    const memberships = await db
+      .select({ profileId: schema.cohortMember.profileId })
+      .from(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.cohortId, cohort.id), eq(schema.cohortMember.profileId, user.id)));
+
+    expect(result.imported).toBe(1);
+    expect(memberships).toHaveLength(1);
+  });
+
   it('keeps two concurrent imports within the student limit', async () => {
-    const { students } = await countRows();
+    const { students, invites } = await countRows();
     const batchSize = studentLimit - students;
 
     const results = await Promise.allSettled([
@@ -169,6 +198,6 @@ describe.skipIf(!hasDatabase || selfHosted)('audience import transaction against
 
     const after = await countRows();
     expect(after.students).toBe(studentLimit);
-    expect(after.invites).toBe(batchSize);
+    expect(after.invites).toBe(invites + batchSize);
   }, 60_000);
 });

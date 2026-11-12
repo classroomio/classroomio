@@ -88,6 +88,7 @@ import {
   updateOrganizationAudienceMember
 } from '@cio/db/queries/organization';
 import { addCohortMembers, getCohortsByOrg, getExistingCohortMembers } from '@cio/db/queries/cohort';
+import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { enqueueTransactionalEmail, enqueueTransactionalEmails } from '@api/services/jobs';
 import {
   assertStudentCapacityOrThrow,
@@ -547,5 +548,37 @@ describe('updatePendingAudienceMemberEmail — seat limit', () => {
     expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
     expect(revokeActiveOrganizationInvitesByEmails).not.toHaveBeenCalled();
     expect(updateOrganizationAudienceMember).not.toHaveBeenCalled();
+  });
+});
+
+describe('importAudienceMembers — someone with an account who is new to the org', () => {
+  beforeEach(() => {
+    vi.mocked(getProfilesByEmails).mockResolvedValueOnce([{ id: 'p-9', email: 'ada@test.dev' }] as never);
+    vi.mocked(getCohortsByOrg).mockResolvedValue([{ id: 'cohort-1', name: 'Cohort A' }] as never);
+    vi.mocked(getExistingCohortMembers).mockResolvedValue(new Set());
+    vi.mocked(addCohortMembers).mockResolvedValueOnce([{ cohortId: 'cohort-1', profileId: 'p-9' }] as never);
+  });
+
+  it('adds them to the selected cohort straight away, matched by their profile', async () => {
+    await importAudienceMembers(
+      ORG,
+      {
+        recipientCsv: 'email\nada@test.dev',
+        cohortIds: ['cohort-1'],
+        allCourses: false,
+        allCohorts: false,
+        sendEmail: true
+      } as never,
+      ACTOR
+    );
+
+    expect(addCohortMembers).toHaveBeenCalledWith(
+      [expect.objectContaining({ cohortId: 'cohort-1', profileId: 'p-9', email: 'ada@test.dev' })],
+      TX
+    );
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalledWith('studentCohortWelcome', expect.anything());
+    expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentOrgInvite', [
+      expect.objectContaining({ to: 'ada@test.dev' })
+    ]);
   });
 });
