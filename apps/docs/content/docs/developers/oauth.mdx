@@ -87,7 +87,7 @@ curl https://api.classroomio.com/public-api/v1/team \
   -H "Authorization: Bearer <access_token>"
 ```
 
-OAuth tokens use the same public API routes and the same scopes as automation keys, and they are subject to the same plan limits. Requests from the ClassroomIO Zapier integration have their own per-organization limits instead: 120 reads and 40 writes per minute on Early Adopter, 360 reads and 120 writes per minute on Enterprise. A request fails with `401` when the token is expired or revoked, and with `403` and code `INSUFFICIENT_SCOPE` when the token does not carry the scope the route needs; `requiredScope` names the missing scope.
+OAuth tokens use the same public API routes and the same scopes as automation keys, and they require the same plan access. They are subject to the same rate limit — one 100-requests-per-minute budget per OAuth connection. The ClassroomIO Zapier integration follows the same rule; it has no separate per-plan quotas. A request fails with `401` when the token is expired or revoked, and with `403` and code `INSUFFICIENT_SCOPE` when the token does not carry the scope the route needs; `requiredScope` names the missing scope.
 
 ## Token lifetime
 
@@ -177,11 +177,11 @@ curl -X DELETE https://api.classroomio.com/public-api/v1/webhooks/subscriptions/
   -H "Authorization: Bearer <access_token>"
 ```
 
-### Lifecycle and limits
+### Lifecycle
 
 - Subscriptions are managed per OAuth grant: if the admin revokes access or loses their admin role, all subscriptions created by that app are deleted immediately.
 - A subscription is also deleted when its target URL answers `410 Gone`, or when a delivery finds that its grant no longer belongs to an active admin. ClassroomIO doesn't email admins about failing managed subscriptions.
-- Managed subscriptions do not count toward the workspace's manual 20-endpoint webhook cap. They are capped separately based on plan (50 subscriptions on Early Adopter, 250 on Enterprise).
+- Managed subscriptions do not count toward the workspace's manual 20-endpoint webhook cap.
 - A subscription that ClassroomIO auto-disabled after repeated delivery failures is reactivated, with its failure count reset, the next time the app subscribes the same target URL.
 
 ## Manage connected apps

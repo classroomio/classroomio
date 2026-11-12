@@ -15,12 +15,7 @@ import { handlePublicApiError } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { mcpRateLimitResponse } from '../courses/docs';
-import {
-  CONNECTED_APP_RULE,
-  WEBHOOK_SUBSCRIPTIONS_TAG,
-  webhookSubscriptionForbidden,
-  webhookSubscriptionForbiddenWithoutCap
-} from './docs';
+import { CONNECTED_APP_RULE, WEBHOOK_SUBSCRIPTIONS_TAG, webhookSubscriptionForbidden } from './docs';
 
 export const v1WebhookSubscriptionsRouter = new Hono()
   .post(
@@ -66,7 +61,7 @@ export const v1WebhookSubscriptionsRouter = new Hono()
         200: jsonResponse('Subscription deleted', itemResponse(ZPublicApiDeleteWebhookSubscriptionResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: webhookSubscriptionForbiddenWithoutCap('webhook:subscription:write'),
+        403: webhookSubscriptionForbidden('webhook:subscription:write'),
         404: { description: 'The connected app has no subscription with this id' },
         429: mcpRateLimitResponse
       }

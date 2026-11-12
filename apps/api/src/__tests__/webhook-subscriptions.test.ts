@@ -18,9 +18,6 @@ const cache = vi.hoisted(() => ({
 }));
 
 vi.mock('@cio/db/queries/webhook', () => queries);
-vi.mock('@cio/db/queries/organization', () => ({
-  getActiveOrganizationPlan: vi.fn().mockResolvedValue({ planName: 'EARLY_ADOPTER' })
-}));
 vi.mock('@cio/core/services/webhook/endpoint-cache', () => cache);
 vi.mock('@cio/core/services/webhook/url-guard', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@cio/core/services/webhook/url-guard')>()),
@@ -104,18 +101,6 @@ describe('createWebhookSubscriptionService', () => {
         eventType: 'course.completed'
       })
     ).rejects.toMatchObject({ code: 'WEBHOOK_URL_INVALID' });
-  });
-
-  it('returns 403 at the plan cap', async () => {
-    queries.upsertManagedWebhookSubscription.mockResolvedValue(null);
-
-    await expect(
-      createWebhookSubscriptionService(ORG_ID, ACTOR_ID, oauthPrincipal(), {
-        targetUrl: TARGET_URL,
-        eventType: 'course.completed'
-      })
-    ).rejects.toMatchObject({ code: 'WEBHOOK_SUBSCRIPTION_LIMIT_EXCEEDED', statusCode: 403 });
-    expect(queries.upsertManagedWebhookSubscription).toHaveBeenCalledWith(expect.anything(), 'course.completed', 50);
   });
 
   it('refuses to reuse a target URL for a different event', async () => {

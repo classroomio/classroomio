@@ -9,7 +9,6 @@ import { createAuthenticationFailureRateLimiter, createRateLimiter } from '@api/
 import { publicApiCors } from '@api/middlewares/cors';
 import { publicApiScopesMiddleware } from '@api/middlewares/public-api-scopes';
 import { v1McpUsageMiddleware } from '@api/middlewares/v1-mcp-usage';
-import { isZapierRequest, zapierRateLimiter } from '@api/middlewares/zapier-rate-limit';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
 import { v1AnalyticsRouter } from './analytics';
 import { v1AudienceRouter } from './audience';
@@ -41,11 +40,9 @@ export const v1Router = new Hono()
     createRateLimiter({
       maxRequests: DEFAULT_MAX_REQUESTS,
       windowMs: DEFAULT_WINDOW_MS,
-      keyGenerator: publicApiKeyGenerator,
-      skip: isZapierRequest
+      keyGenerator: publicApiKeyGenerator
     })
   )
-  .use('*', zapierRateLimiter)
   .use('*', v1McpUsageMiddleware)
   .route('/analytics', v1AnalyticsRouter)
   .route('/audience', v1AudienceRouter)

@@ -1,14 +1,14 @@
 ---
 title: Rate limits
-description: How many requests an API key can make, the rate limit headers, and how to handle a 429.
+description: How many requests an API key or OAuth connection can make, the rate limit headers, and how to handle a 429.
 last_reviewed: '2026-10-23'
 ---
 
-The API limits how many requests each API key can make, so one integration can't slow down the others.
+The API limits how many requests each API key or OAuth connection can make, so one integration can't slow down the others.
 
 ## The limit
 
-Each API key can make **100 requests per minute**. Every key has its own budget, so traffic on one key doesn't use up another's.
+Each API key or OAuth connection can make **100 requests per minute**. Every key and connection has its own budget, so traffic on one doesn't use up another's.
 
 ## Rate limit headers
 
@@ -56,7 +56,7 @@ Wait up to a minute, because the limit counts the last 60 seconds, then retry.
 
 ### Zapier connections
 
-Requests from the ClassroomIO Zapier app use per-organization limits instead of the per-key one: 120 reads and 40 writes per minute on Early Adopter, and 360 reads and 120 writes per minute on Enterprise. Reads are `GET` and `HEAD` requests. A `429` from this limit has the same body and `Retry-After` header as the per-key limit.
+Requests from the ClassroomIO Zapier app use the same limit as every other public API client: **100 requests per minute for each connection**. Over the limit, the API returns `429` with `Retry-After`, and Zapier retries the step.
 
 ### Course invites
 

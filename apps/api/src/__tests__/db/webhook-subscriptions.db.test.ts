@@ -131,25 +131,25 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
     await cleanup(fixture);
   });
 
-  it('never exceeds the plan cap when two subscriptions are created concurrently', async () => {
+  it('creates subscriptions for concurrent subscribes without a per-plan cap', async () => {
     const [first, second] = await Promise.all([
-      upsertManagedWebhookSubscription(managedValues('https://hooks.zapier.com/first'), 'course.completed', 1),
-      upsertManagedWebhookSubscription(managedValues('https://hooks.zapier.com/second'), 'course.completed', 1)
+      upsertManagedWebhookSubscription(managedValues('https://hooks.zapier.com/first'), 'course.completed'),
+      upsertManagedWebhookSubscription(managedValues('https://hooks.zapier.com/second'), 'course.completed')
     ]);
 
-    const created = [first, second].filter((result) => result?.created);
-    expect(created).toHaveLength(1);
+    expect(first.created).toBe(true);
+    expect(second.created).toBe(true);
 
     const rows = await db
       .select({ id: schema.webhookEndpoint.id })
       .from(schema.webhookEndpoint)
       .where(eq(schema.webhookEndpoint.organizationId, fixture.orgId));
-    expect(rows).toHaveLength(1);
+    expect(rows).toHaveLength(2);
   });
 
   it('reactivates an auto-disabled subscription when the app subscribes again', async () => {
     const targetUrl = 'https://hooks.zapier.com/reactivate';
-    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed', 10);
+    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed');
     expect(created?.created).toBe(true);
 
     await db
@@ -157,7 +157,7 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
       .set({ isActive: false, autoDisabledAt: new Date().toISOString(), consecutiveFailures: 5 })
       .where(eq(schema.webhookEndpoint.id, created!.subscription.id));
 
-    const reactivated = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed', 10);
+    const reactivated = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed');
     expect(reactivated?.reactivated).toBe(true);
     expect(reactivated?.subscription.isActive).toBe(true);
     expect(reactivated?.subscription.consecutiveFailures).toBe(0);
@@ -166,13 +166,12 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
 
   it('updates the stored filters when the app resubscribes the same URL with different filters', async () => {
     const targetUrl = 'https://hooks.zapier.com/filter-update';
-    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed', 10);
+    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed');
     expect(created?.created).toBe(true);
 
     const updated = await upsertManagedWebhookSubscription(
       { ...managedValues(targetUrl), filterCourseId: randomUUID(), filterCohortId: randomUUID() },
-      'course.completed',
-      10
+      'course.completed'
     );
 
     expect(updated?.created).toBe(false);
@@ -194,7 +193,7 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
 
   it('updates the filters while reactivating an auto-disabled subscription', async () => {
     const targetUrl = 'https://hooks.zapier.com/filter-reactivate';
-    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed', 10);
+    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed');
 
     await db
       .update(schema.webhookEndpoint)
@@ -204,8 +203,7 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
     const filterCourseId = randomUUID();
     const reactivated = await upsertManagedWebhookSubscription(
       { ...managedValues(targetUrl), filterCourseId },
-      'course.completed',
-      10
+      'course.completed'
     );
 
     expect(reactivated?.reactivated).toBe(true);
@@ -215,7 +213,7 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
 
   it('leaves an auto-disabled subscription disabled when the app subscribes it to a different event', async () => {
     const targetUrl = 'https://hooks.zapier.com/reactivate-conflict';
-    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed', 10);
+    const created = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.completed');
     const autoDisabledAt = new Date().toISOString();
 
     await db
@@ -223,7 +221,7 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
       .set({ isActive: false, autoDisabledAt, consecutiveFailures: 5 })
       .where(eq(schema.webhookEndpoint.id, created!.subscription.id));
 
-    const conflict = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.enrolled', 10);
+    const conflict = await upsertManagedWebhookSubscription(managedValues(targetUrl), 'course.enrolled');
 
     expect(conflict?.created).toBe(false);
     expect(conflict?.reactivated).toBeUndefined();
@@ -235,8 +233,7 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
   it('deletes the subscription endpoints when the OAuth grant is revoked', async () => {
     const created = await upsertManagedWebhookSubscription(
       managedValues('https://hooks.zapier.com/cascade'),
-      'course.completed',
-      10
+      'course.completed'
     );
     expect(created?.created).toBe(true);
 
@@ -258,8 +255,7 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
   it('treats a managed subscription grant as active only while its owner is an active admin', async () => {
     const created = await upsertManagedWebhookSubscription(
       managedValues('https://hooks.zapier.com/grant'),
-      'course.completed',
-      10
+      'course.completed'
     );
     expect(created?.created).toBe(true);
 
@@ -276,8 +272,7 @@ describe.skipIf(!shouldRun)('webhook subscriptions (database)', () => {
   it('keeps deliveries for live endpoints when a subscription disappears mid-emit', async () => {
     const created = await upsertManagedWebhookSubscription(
       managedValues('https://hooks.zapier.com/live'),
-      'course.completed',
-      10
+      'course.completed'
     );
     expect(created?.created).toBe(true);
 

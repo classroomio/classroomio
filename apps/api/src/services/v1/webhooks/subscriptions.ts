@@ -2,13 +2,11 @@ import { refreshOrgHasWebhookEndpoints } from '@cio/core/services/webhook/endpoi
 import { getWebhookUrlPolicy } from '@cio/core/services/webhook/policy';
 import { decryptWebhookSecret, encryptWebhookSecret, generateWebhookSecret } from '@cio/core/services/webhook/secret';
 import { assertWebhookUrlShape, resolveWebhookTarget, WebhookUrlError } from '@cio/core/services/webhook/url-guard';
-import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import {
   deleteManagedWebhookSubscription,
   upsertManagedWebhookSubscription,
   type TWebhookEndpointWithEvents
 } from '@cio/db/queries/webhook';
-import { getWebhookSubscriptionLimit } from '@cio/utils/plans';
 import type {
   TPublicApiCreateWebhookSubscription,
   TPublicApiWebhookSubscriptionParam
@@ -57,12 +55,6 @@ async function assertTargetUrlAllowed(targetUrl: string, allowedHosts: readonly 
   }
 }
 
-async function getOrganizationSubscriptionLimit(organizationId: string): Promise<number> {
-  const activePlan = await getActiveOrganizationPlan(organizationId);
-
-  return getWebhookSubscriptionLimit(activePlan?.planName);
-}
-
 function readSubscriptionSecret(subscription: TWebhookEndpointWithEvents): string {
   if (!subscription.secretCiphertext) {
     throw new AppError('Webhook subscription has no signing secret', ErrorCodes.INTERNAL_ERROR, 500);
@@ -88,7 +80,7 @@ function toWebhookSubscriptionView(subscription: TWebhookEndpointWithEvents) {
 /**
  * Subscribes the connected app's `targetUrl` to one event. Idempotent per target URL: a repeat returns the
  * existing subscription with `created: false`, updating its course or cohort filters when they changed.
- * Throws 403 for automation keys, at the plan cap, or without webhooks.
+ * Throws 403 for automation keys or without webhooks.
  */
 export async function createWebhookSubscriptionService(
   orgId: string,
@@ -113,7 +105,6 @@ export async function createWebhookSubscriptionService(
   const secret = generateWebhookSecret();
   const secretCiphertext = encryptWebhookSecret(secret);
   const secretLast4 = secret.slice(-4);
-  const maxSubscriptions = await getOrganizationSubscriptionLimit(orgId);
   const name = `${getSubscriptionNamePrefix(grant.clientId)} · ${payload.eventType}`.slice(
     0,
     SUBSCRIPTION_NAME_MAX_LENGTH
@@ -130,17 +121,8 @@ export async function createWebhookSubscriptionService(
       filterCohortId: payload.cohortId ?? null,
       createdByProfileId: actorId
     },
-    payload.eventType,
-    maxSubscriptions
+    payload.eventType
   );
-
-  if (!result) {
-    throw new AppError(
-      `This organization's plan allows up to ${maxSubscriptions} trigger subscriptions`,
-      ErrorCodes.WEBHOOK_SUBSCRIPTION_LIMIT_EXCEEDED,
-      403
-    );
-  }
 
   if (!result.created && result.subscription.eventTypes[0] !== payload.eventType) {
     throw new AppError(

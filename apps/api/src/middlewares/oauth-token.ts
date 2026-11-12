@@ -40,7 +40,6 @@ export const oauthTokenMiddleware = async (c: Context, next: Next) => {
 
   c.set('automationKey', grant.key);
   c.set('oauthClientId', grant.clientId);
-  c.set('oauthPlanName', grant.planName);
   c.set('orgId', grant.key.organizationId);
   c.set('actorId', grant.key.createdByProfileId);
   c.set('clientName', normalizeClientName(grant.clientName));
