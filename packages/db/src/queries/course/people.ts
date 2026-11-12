@@ -13,7 +13,8 @@ import {
   type TCoursePeopleSortBy,
   type TCoursePeopleSortOrder
 } from '@cio/utils/validation/course';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
+import { addGroupMembers } from '@db/queries/group/group';
 import { isExerciseCompletedSql } from '@db/queries/course/progression';
 import { deleteStudentCourseProgress } from '@db/queries/course/reset-progress';
 
@@ -397,9 +398,9 @@ export async function getCourseMember(
  * @param courseId Course ID
  * @returns Group ID or null if not found
  */
-export async function getCourseGroupId(courseId: string): Promise<string | null> {
+export async function getCourseGroupId(courseId: string, dbClient: DbOrTxClient = db): Promise<string | null> {
   try {
-    const result = await db
+    const result = await dbClient
       .select({ groupId: schema.course.groupId })
       .from(schema.course)
       .where(eq(schema.course.id, courseId))
@@ -465,39 +466,33 @@ export async function getCourseTeachers(options: {
 }
 
 /**
- * Adds a course member (person) to a course
- * @param courseId Course ID
- * @param memberData Member data (profileId, roleId, email)
- * @returns Created member
+ * Adds many members to a course's group, all or none: one duplicate fails the whole call with the unique
+ * violation as its cause.
  */
-export async function addCourseMember(
+export async function addCourseMembers(
   courseId: string,
-  memberData: { profileId?: string; roleId: number; email?: string }
-): Promise<TGroupmember> {
+  members: Array<{ profileId?: string; roleId: number; email?: string }>,
+  dbClient: DbOrTxClient = db
+): Promise<TGroupmember[]> {
   try {
-    const groupId = await getCourseGroupId(courseId);
+    const groupId = await getCourseGroupId(courseId, dbClient);
     if (!groupId) {
       throw new Error('Course group not found');
     }
 
-    const [newMember] = await db
-      .insert(schema.groupmember)
-      .values({
-        groupId,
-        profileId: memberData.profileId,
-        roleId: memberData.roleId,
-        email: memberData.email
-      })
-      .returning();
+    const rows = members.map((member) => ({
+      groupId,
+      profileId: member.profileId,
+      roleId: member.roleId,
+      email: member.email
+    }));
 
-    if (!newMember) {
-      throw new Error('Failed to create course member');
-    }
-
-    return newMember;
+    return await (dbClient === db
+      ? db.transaction((tx) => addGroupMembers(rows, tx))
+      : addGroupMembers(rows, dbClient));
   } catch (error) {
-    console.error('addCourseMember error:', error);
-    const message = `Failed to add course member: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    console.error('addCourseMembers error:', error);
+    const message = `Failed to add course members: ${error instanceof Error ? error.message : 'Unknown error'}`;
     throw Object.assign(new Error(message), { cause: error });
   }
 }

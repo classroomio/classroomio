@@ -122,10 +122,16 @@ export const getProfileByEmail = async (email: string) => {
   return profile;
 };
 
-export async function getProfilesByEmails(emails: string[]) {
+export async function getProfilesByEmails(emails: string[], dbClient: DbOrTxClient = db) {
   if (emails.length === 0) return [];
 
-  return db.select().from(schema.profile).where(inArray(schema.profile.email, emails));
+  return dbClient.select().from(schema.profile).where(inArray(schema.profile.email, emails));
+}
+
+export async function getProfilesByIds(ids: string[]) {
+  if (ids.length === 0) return [];
+
+  return db.select().from(schema.profile).where(inArray(schema.profile.id, ids));
 }
 
 export const updateProfile = async (

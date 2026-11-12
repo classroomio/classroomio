@@ -40,3 +40,19 @@ export function dedupe<T>(items: T[], keyFn?: (item: T) => unknown): T[] {
 
   return result;
 }
+
+/**
+ * Splits an array into consecutive slices of at most `size` items.
+ */
+export function chunk<T>(items: T[], size: number): T[][] {
+  if (size < 1) {
+    throw new RangeError('chunk size must be at least 1');
+  }
+
+  const chunks: T[][] = [];
+  for (let start = 0; start < items.length; start += size) {
+    chunks.push(items.slice(start, start + size));
+  }
+
+  return chunks;
+}

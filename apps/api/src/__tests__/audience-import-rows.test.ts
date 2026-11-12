@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/core/services/webhook/emit', () => ({
   emitWebhookEvent: vi.fn().mockResolvedValue(undefined),
-  emitOrganizationMemberWebhookEvent: vi.fn().mockResolvedValue(undefined)
+  emitOrganizationMemberWebhookEvent: vi.fn().mockResolvedValue(undefined),
+  emitCohortMemberWebhookEvent: vi.fn().mockResolvedValue(undefined)
 }));
 
 vi.mock('@cio/db/queries/organization', () => ({
@@ -34,7 +35,7 @@ vi.mock('@cio/db/queries/course', () => ({
 }));
 
 vi.mock('@cio/db/queries/cohort', () => ({
-  addCohortMember: vi.fn(),
+  addCohortMembers: vi.fn().mockResolvedValue([]),
   getCohortsByOrg: vi.fn().mockResolvedValue([]),
   getCourseIdsByCohortIds: vi.fn().mockResolvedValue([]),
   getExistingCohortMembers: vi.fn().mockResolvedValue([])
@@ -55,7 +56,10 @@ vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
 }));
 
 vi.mock('@api/services/jobs', () => ({
-  enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined)
+  enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined),
+  enqueueTransactionalEmails: vi.fn(async (_emailId: string, inputs: unknown[]) =>
+    inputs.map(() => ({ ok: true, jobIds: [] }))
+  )
 }));
 
 vi.mock('@api/services/organization/student-limit', () => ({
@@ -74,6 +78,7 @@ import {
   createOrganizationInvite,
   createOrganizationInvites,
   createOrganizationMembers,
+  getOrgMembersByProfileIds,
   getOrganizationAudienceMember,
   getLatestOrganizationInviteRowByOrgAndEmail,
   getOrganizationById,
@@ -83,8 +88,10 @@ import {
   revokeActiveOrganizationInvitesByEmails,
   updateOrganizationAudienceMember
 } from '@cio/db/queries/organization';
-import { getCohortsByOrg } from '@cio/db/queries/cohort';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { addCohortMembers, getCohortsByOrg, getExistingCohortMembers } from '@cio/db/queries/cohort';
+import { emitCohortMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { getProfilesByEmails } from '@cio/db/queries/auth';
+import { enqueueTransactionalEmail, enqueueTransactionalEmails } from '@api/services/jobs';
 import {
   assertStudentCapacityOrThrow,
   getRemainingStudentSeats,
@@ -240,10 +247,7 @@ describe('importAudienceMembers — seat limit', () => {
 
     expect(result.rows.map((row) => row.status)).toEqual(['ready', 'already_member']);
     expect(result.imported).toBe(1);
-    expect(createOrganizationInvites).toHaveBeenCalledWith(
-      [expect.objectContaining({ email: 'a@test.dev' })],
-      expect.anything()
-    );
+    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'a@test.dev' })], TX);
   });
 
   it('checks capacity and inserts members in the same transaction', async () => {
@@ -401,12 +405,11 @@ describe('importAudienceMembers — cohort invites', () => {
           metadata: expect.objectContaining({ cohortIds: ['cohort-1'] })
         })
       ],
-      expect.anything()
+      TX
     );
-    expect(enqueueTransactionalEmail).toHaveBeenCalledWith(
-      'studentOrgInvite',
+    expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentOrgInvite', [
       expect.objectContaining({ to: 'new@test.dev' })
-    );
+    ]);
     expect(result.emailsSent).toBe(1);
   });
 
@@ -414,7 +417,7 @@ describe('importAudienceMembers — cohort invites', () => {
     const result = await importAudienceMembers(ORG, cohortInvite(false, 'new@test.dev'), ACTOR);
 
     expect(createOrganizationInvites).toHaveBeenCalled();
-    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalled();
     expect(result.emailsSent).toBe(0);
   });
 
@@ -468,6 +471,56 @@ describe('importAudienceMembers — structured recipients', () => {
   });
 });
 
+describe('importAudienceMembers — cohort enrolment of existing students', () => {
+  beforeEach(() => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', email: 'ada@test.dev', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getCohortsByOrg).mockResolvedValue([{ id: 'cohort-1', name: 'Cohort A' }] as never);
+    vi.mocked(getExistingCohortMembers).mockResolvedValue(new Set());
+  });
+
+  function importIntoCohort() {
+    return importAudienceMembers(
+      ORG,
+      {
+        recipientCsv: 'email\nada@test.dev',
+        cohortIds: ['cohort-1'],
+        allCourses: false,
+        allCohorts: false,
+        sendEmail: true
+      } as never,
+      ACTOR
+    );
+  }
+
+  it('counts and welcomes a student the insert added', async () => {
+    const added = { cohortId: 'cohort-1', profileId: 'p-1' };
+    vi.mocked(addCohortMembers).mockResolvedValueOnce([added] as never);
+
+    const result = await importIntoCohort();
+
+    expect(result.assigned).toBe(1);
+    expect(emitCohortMemberWebhookEvent).toHaveBeenCalledWith('cohort.member.added', ORG, 'cohort-1', added, ACTOR);
+    expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentCohortWelcome', [
+      expect.objectContaining({ to: 'ada@test.dev' })
+    ]);
+  });
+
+  it('neither counts nor welcomes a student another request added first', async () => {
+    vi.mocked(addCohortMembers).mockResolvedValueOnce([]);
+
+    const result = await importIntoCohort();
+
+    expect(result.assigned).toBe(0);
+    expect(result.alreadyEnrolledInCohorts).toBe(1);
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalledWith('studentCohortWelcome', expect.anything());
+  });
+});
+
 describe('updatePendingAudienceMemberEmail — seat limit', () => {
   beforeEach(() => {
     vi.mocked(getOrganizationAudienceMember).mockResolvedValue({
@@ -499,5 +552,56 @@ describe('updatePendingAudienceMemberEmail — seat limit', () => {
     expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, TX, { deferNotification: true });
     expect(revokeActiveOrganizationInvitesByEmails).not.toHaveBeenCalled();
     expect(updateOrganizationAudienceMember).not.toHaveBeenCalled();
+  });
+
+  it('creates the replacement invite in the same transaction as the email change', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
+
+    await updatePendingAudienceMemberEmail(ORG, 7, { email: 'new@test.dev', sendEmail: false }, ACTOR);
+
+    expect(updateOrganizationAudienceMember).toHaveBeenCalledWith(ORG, 7, expect.anything(), TX);
+    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'new@test.dev' })], TX);
+  });
+
+  it('fails the whole change and sends nothing when the replacement invite cannot be created', async () => {
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
+    vi.mocked(createOrganizationInvites).mockRejectedValueOnce(new Error('invite insert failed'));
+
+    await expect(
+      updatePendingAudienceMemberEmail(ORG, 7, { email: 'new@test.dev', sendEmail: true }, ACTOR)
+    ).rejects.toThrow('invite insert failed');
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalled();
+  });
+});
+
+describe('importAudienceMembers — someone with an account who is new to the org', () => {
+  beforeEach(() => {
+    vi.mocked(getProfilesByEmails).mockResolvedValueOnce([{ id: 'p-9', email: 'ada@test.dev' }] as never);
+    vi.mocked(getCohortsByOrg).mockResolvedValue([{ id: 'cohort-1', name: 'Cohort A' }] as never);
+    vi.mocked(getExistingCohortMembers).mockResolvedValue(new Set());
+    vi.mocked(addCohortMembers).mockResolvedValueOnce([{ cohortId: 'cohort-1', profileId: 'p-9' }] as never);
+  });
+
+  it('adds them to the selected cohort straight away, matched by their profile', async () => {
+    await importAudienceMembers(
+      ORG,
+      {
+        recipientCsv: 'email\nada@test.dev',
+        cohortIds: ['cohort-1'],
+        allCourses: false,
+        allCohorts: false,
+        sendEmail: true
+      } as never,
+      ACTOR
+    );
+
+    expect(addCohortMembers).toHaveBeenCalledWith(
+      [expect.objectContaining({ cohortId: 'cohort-1', profileId: 'p-9', email: 'ada@test.dev' })],
+      TX
+    );
+    expect(enqueueTransactionalEmails).not.toHaveBeenCalledWith('studentCohortWelcome', expect.anything());
+    expect(enqueueTransactionalEmails).toHaveBeenCalledWith('studentOrgInvite', [
+      expect.objectContaining({ to: 'ada@test.dev' })
+    ]);
   });
 });

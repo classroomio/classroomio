@@ -247,7 +247,11 @@ async function recordOrganizationInviteAudit(
 
 export async function recordOrganizationInviteAudits(rows: TNewOrganizationInviteAudit[]) {
   await createOrganizationInviteAudits(rows);
+  await emitOrganizationInviteAuditWebhooks(rows);
+}
 
+/** Sends the webhooks for audit rows already written, e.g. inside a transaction that has since committed. */
+export async function emitOrganizationInviteAuditWebhooks(rows: TNewOrganizationInviteAudit[]) {
   for (const row of rows) {
     const webhookEventType = ORGANIZATION_INVITE_WEBHOOK_EVENTS[row.eventType];
 

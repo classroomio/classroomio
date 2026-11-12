@@ -5,7 +5,10 @@ import { and, asc, eq, inArray, isNotNull, isNull, ne, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import { ROLE } from '@cio/utils/constants';
+import { chunk } from '@cio/utils/functions/array';
 import { db, type DbOrTxClient } from '@db/drizzle';
+
+const GROUP_MEMBER_INSERT_CHUNK_SIZE = 500;
 
 export async function createGroup(values: TNewGroup, dbClient: DbOrTxClient = db) {
   try {
@@ -25,13 +28,23 @@ export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxCl
   }
 }
 
+/**
+ * Inserts in chunks to stay under Postgres's bind-parameter limit. Without a transaction client, chunks that
+ * succeed before a failing one stay inserted.
+ */
 export async function addGroupMembers(values: TNewGroupmember[], dbClient: DbOrTxClient = db) {
-  if (values.length === 0) return [];
+  const added: TGroupmember[] = [];
+
   try {
-    return dbClient.insert(schema.groupmember).values(values).returning();
+    for (const valuesChunk of chunk(values, GROUP_MEMBER_INSERT_CHUNK_SIZE)) {
+      added.push(...(await dbClient.insert(schema.groupmember).values(valuesChunk).returning()));
+    }
+
+    return added;
   } catch (error) {
     console.error('addGroupMembers error:', error);
-    throw new Error(`Failed to bulk add group members: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const message = `Failed to bulk add group members: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    throw Object.assign(new Error(message), { cause: error });
   }
 }
 

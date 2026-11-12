@@ -10,7 +10,10 @@ import {
   type TCohortPeopleSortBy,
   type TCohortPeopleSortOrder
 } from '@cio/utils/validation/cohort';
+import { chunk } from '@cio/utils/functions/array';
 import { db, type DbOrTxClient } from '@db/drizzle';
+
+const COHORT_MEMBER_INSERT_CHUNK_SIZE = 500;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -499,6 +502,33 @@ export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxCl
   } catch (error) {
     console.error('addCohortMember error:', error);
     throw new Error(`Failed to add cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Multi-row form of `insertCohortMemberIfAbsent`, inserted in chunks. Returns only the rows this call created.
+ */
+export async function addCohortMembers(
+  values: TNewCohortMember[],
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember[]> {
+  const added: TCohortMember[] = [];
+
+  try {
+    for (const valuesChunk of chunk(values, COHORT_MEMBER_INSERT_CHUNK_SIZE)) {
+      const rows = await dbClient
+        .insert(schema.cohortMember)
+        .values(valuesChunk)
+        .onConflictDoNothing({ target: [schema.cohortMember.cohortId, schema.cohortMember.profileId] })
+        .returning();
+
+      added.push(...rows);
+    }
+
+    return added;
+  } catch (error) {
+    console.error('addCohortMembers error:', error);
+    throw new Error(`Failed to add cohort members: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

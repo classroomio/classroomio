@@ -68,14 +68,15 @@ export async function createOrganizationInviteAudit(
 }
 
 export async function createOrganizationInviteAudits(
-  values: TNewOrganizationInviteAudit[]
+  values: TNewOrganizationInviteAudit[],
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationInviteAudit[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInviteAudit).values(values).returning();
+    return await dbClient.insert(schema.organizationInviteAudit).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInviteAudits error:', error);
     throw new Error(

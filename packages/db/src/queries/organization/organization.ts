@@ -1562,11 +1562,11 @@ export const getActiveOrganizationPlan = async (orgId: string, dbClient: DbOrTxC
  * @param profileIds Array of profile IDs to look up
  * @returns Array of { profileId, email } for matching members
  */
-export async function getOrgMembersByProfileIds(orgId: string, profileIds: string[]) {
+export async function getOrgMembersByProfileIds(orgId: string, profileIds: string[], dbClient: DbOrTxClient = db) {
   try {
     if (profileIds.length === 0) return [];
 
-    return db
+    return dbClient
       .select({
         profileId: schema.organizationmember.profileId,
         email: schema.organizationmember.email,
