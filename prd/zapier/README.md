@@ -164,16 +164,17 @@ flowchart TD
 **Already connected**
 
 1. The **Connection** section shows each Zapier connection: its access (Read and write or Read only), who connected it and when, and a **Disconnect** button.
-2. When events from the last 24 hours failed to reach Zapier, a warning offers **Resend failed events**.
-3. **Popular Zaps** stay on the page, with an **Explore apps** link beside the heading that opens the App Directory.
-4. **My Zaps** opens the admin's Zaps on Zapier ([zapier.com/app/zaps](https://zapier.com/app/zaps)), where Zaps and their run history are managed.
+2. When events from the last 24 hours failed to reach Zapier while the trigger is still active, a warning offers **Resend failed events**.
+3. When repeated failures have turned a trigger off, a separate warning explains there is nothing to resend: the admin fixes the receiving end in Zapier and turns the Zap back on to resubscribe it.
+4. **Popular Zaps** stay on the page, with an **Explore apps** link beside the heading that opens the App Directory.
+5. **My Zaps** opens the admin's Zaps on Zapier ([zapier.com/app/zaps](https://zapier.com/app/zaps)), where Zaps and their run history are managed.
 
 > [!NOTE]
 > Zapier's connections page and its "Add new connection" modal are hosted by Zapier. The prototype simulates them to show the intended redirect back to the ClassroomIO + {App} page. See Open Questions.
 
 ## Screens ClassroomIO Builds
 
-- **Zaps page** (`/org/[slug]/automation/zapier`): header actions **Create a Zap**, **My Zaps** (once connected) and **Read docs**. Not connected: a full-width empty state with **Create a Zap** and **Explore apps**, then popular Zaps. Connected: the connection list with **Disconnect**, a failed-events warning when needed, and popular Zaps with an **Explore apps** link. While the app is private, a dismissible invite note sits above both. Plans without Zapier get an upgrade empty state; non-admins, a paused plan and self-hosted installs get callouts.
+- **Zaps page** (`/org/[slug]/automation/zapier`): header actions **Create a Zap**, **My Zaps** (once connected) and **Read docs**. Not connected: a full-width empty state with **Create a Zap** and **Explore apps**, then popular Zaps. Connected: the connection list with **Disconnect**, a failed-events or disabled-triggers warning when needed, and popular Zaps with an **Explore apps** link. While the app is private, a dismissible invite note sits above both. Plans without Zapier get an upgrade empty state; non-admins, a paused plan and self-hosted installs get callouts.
 - **App Directory** (`.../zapier/apps`): a sidebar with search and categories with counts (All apps first); every curated app in one A–Z grid with its logo, description and ways to use; and a closing card linking to Zapier.
 - **ClassroomIO + {App} page** (`.../zapier/apps/[app]`): a header with both logos, **Create a {App} Zap** and **My Zaps**; a one-line connected status; popular Zaps grouped "From ClassroomIO" and "Into ClassroomIO"; and related apps.
 - **Workspace picker** (`/oauth/select-organization`): shown during connection unless the admin has exactly one workspace and its plan includes Zapier. Only workspaces where they are an admin are listed; a workspace whose plan excludes Zapier is shown but can't be chosen, and when none qualifies the page shows **No eligible workspace**.
