@@ -91,19 +91,14 @@ export type TAutomationTagMode = z.infer<typeof ZAutomationTagMode>;
 export const ZAutomationTagName = z.string().trim().min(1).max(80);
 export type TAutomationTagName = z.infer<typeof ZAutomationTagName>;
 
-export const ZAutomationDraftTagParam = z.object({
-  draftId: z.string().uuid()
-});
-export type TAutomationDraftTagParam = z.infer<typeof ZAutomationDraftTagParam>;
-
-export const ZAutomationDraftTagAssignment = z.object({
+export const ZAutomationTagAssignment = z.object({
   tagNames: z.array(ZAutomationTagName).min(1).max(100),
   mode: ZAutomationTagMode,
   groupName: z.string().trim().min(1).max(80).optional()
 });
-export type TAutomationDraftTagAssignment = z.infer<typeof ZAutomationDraftTagAssignment>;
+export type TAutomationTagAssignment = z.infer<typeof ZAutomationTagAssignment>;
 
-export const ZAutomationCourseTagAssignment = ZAutomationDraftTagAssignment.extend({
+export const ZAutomationCourseTagAssignment = ZAutomationTagAssignment.extend({
   courseIds: z.array(z.string().uuid()).min(1).max(100)
 });
 export type TAutomationCourseTagAssignment = z.infer<typeof ZAutomationCourseTagAssignment>;

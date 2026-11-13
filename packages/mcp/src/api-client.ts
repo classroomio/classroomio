@@ -1,21 +1,9 @@
 import { Readable } from 'node:stream';
-import type {
-  TAutomationCourseTagAssignment,
-  TAutomationDraftTagAssignment,
-  TAutomationDraftTagParam
-} from '@cio/utils/validation/tag';
+import type { TAutomationCourseTagAssignment } from '@cio/utils/validation/tag';
 import type { TBlockLocaleCode } from '@cio/utils/validation/block';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import { pickTagColor } from '@cio/utils/validation/tag';
 import { ErrorCodes } from '@cio/utils/constants';
-import type {
-  TCourseImportCourseParam,
-  TCourseImportDraftCreate,
-  TCourseImportDraftCreateFromCourse,
-  TCourseImportDraftPublish,
-  TCourseImportDraftPublishToCourse,
-  TCourseImportDraftUpdate
-} from '@cio/utils/validation/course-import';
 
 import type { McpServerConfig } from './config';
 import type {
@@ -32,6 +20,7 @@ import type {
   TPublicApiUpdateExerciseSectionFields,
   TPublicApiCourseExercisesQuery,
   TPublicApiCoursesQuery,
+  TPublicApiCreateCourse,
   TPublicApiCourseMarksQuery,
   TPublicApiCourseSubmissionsQuery,
   TPublicApiCreateCourseExercise,
@@ -228,36 +217,31 @@ export class ClassroomIoApiClient {
     }
   }
 
-  async createCourseDraft(payload: TCourseImportDraftCreate) {
-    return this.request('/organization/course-import/drafts', {
-      method: 'POST',
-      body: payload
-    });
+  async createCourse(payload: TPublicApiCreateCourse) {
+    return this.request('/public-api/v1/courses', { method: 'POST', body: payload });
   }
 
-  async createCourseDraftFromCourse(payload: TCourseImportDraftCreateFromCourse) {
-    return this.request('/organization/course-import/drafts/from-course', {
-      method: 'POST',
-      body: payload
-    });
+  async publishCourse(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/publish`, { method: 'POST' });
   }
 
-  async getCourseStructure(courseId: TCourseImportCourseParam['courseId']) {
-    return this.request(`/organization/course-import/courses/${courseId}/structure`, {
-      method: 'GET'
-    });
+  async unpublishCourse(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/unpublish`, { method: 'POST' });
   }
 
-  async updateCourseLandingPage(courseId: TCourseImportCourseParam['courseId'], payload: TCourseLandingPageUpdate) {
+  async getCourseStructure(courseId: string) {
+    const { draft, ...rest } = await this.request<{ courseId: string; draft: unknown }>(
+      `/public-api/v1/courses/${courseId}/structure`,
+      { method: 'GET' }
+    );
+
+    return { ...rest, structure: draft };
+  }
+
+  async updateCourseLandingPage(courseId: string, payload: TCourseLandingPageUpdate) {
     return this.request(`/course/${courseId}/landing-page`, {
       method: 'PUT',
       body: payload
-    });
-  }
-
-  async getCourseDraft(draftId: string) {
-    return this.request(`/organization/course-import/drafts/${draftId}`, {
-      method: 'GET'
     });
   }
 
@@ -415,34 +399,6 @@ export class ClassroomIoApiClient {
   async getCourseMarks(courseId: string, query: Partial<TPublicApiCourseMarksQuery> = {}) {
     return this.requestPaginated(`/public-api/v1/courses/${courseId}/marks${toQuerySuffix(query)}`, {
       method: 'GET'
-    });
-  }
-
-  async updateCourseDraft(draftId: string, payload: TCourseImportDraftUpdate) {
-    return this.request(`/organization/course-import/drafts/${draftId}`, {
-      method: 'PUT',
-      body: payload
-    });
-  }
-
-  async tagCourseDraft(draftId: TAutomationDraftTagParam['draftId'], payload: TAutomationDraftTagAssignment) {
-    return this.request(`/organization/course-import/drafts/${draftId}/tags`, {
-      method: 'PUT',
-      body: payload
-    });
-  }
-
-  async publishCourseDraft(draftId: string, payload: TCourseImportDraftPublish) {
-    return this.request(`/organization/course-import/drafts/${draftId}/publish`, {
-      method: 'POST',
-      body: payload
-    });
-  }
-
-  async publishCourseDraftToExistingCourse(draftId: string, payload: TCourseImportDraftPublishToCourse) {
-    return this.request(`/organization/course-import/drafts/${draftId}/publish-existing-course`, {
-      method: 'POST',
-      body: payload
     });
   }
 

@@ -11,12 +11,14 @@ import {
   ZPublicApiCreateCourse,
   ZPublicApiCreateCourseResponse,
   ZPublicApiPaginationQuery,
+  ZPublicApiPublishCourseResponse,
   ZPublicApiRelatedCourseResponse,
   ZPublicApiRelatedCoursesQuery,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseEnvelope,
   ZPublicApiUpdateCourseResponse,
   ZPublicApiUpdateCourseStructure,
+  ZPublicApiUnpublishCourseResponse,
   ZPublicApiUpdateCourseStructureResponse
 } from '@cio/utils/validation/public-api';
 import {
@@ -28,6 +30,8 @@ import {
   listCoursesService,
   listCourseStudentsService,
   listRelatedCoursesService,
+  publishPublicApiCourseService,
+  unpublishPublicApiCourseService,
   updatePublicApiCourseService,
   updatePublicApiCourseStructureService
 } from '@api/services/v1/courses/course';
@@ -86,13 +90,14 @@ export const v1CourseRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create a course in the organization; ${ANY_KEY_RULE}.`,
+      description:
+        'Create an unpublished course and add the key creator as its tutor; needs public_api:* or course:write, and an org admin or tutor key creator. The banner field says if one was applied.',
       tags: ['Courses'],
       responses: {
         201: jsonResponse('Course created successfully', itemResponse(ZPublicApiCreateCourseResponse)),
         400: { description: 'Invalid request body' },
         401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' }
+        403: { description: 'Missing the course:write scope, or the key creator is not an org admin or tutor' }
       }
     }),
     validator('json', ZPublicApiCreateCourse),
@@ -151,6 +156,68 @@ export const v1CourseRouter = new Hono()
         );
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to clone course');
+      }
+    }
+  )
+  .post(
+    '/:courseId/publish',
+    describeRoute({
+      description:
+        'Publish a course after the go-live readiness check; needs public_api:* or course:write, and a course tutor/admin or org admin key creator. Not-ready courses stay unpublished and list blockers.',
+      tags: ['Courses'],
+      responses: {
+        200: jsonResponse(
+          'Publish result; check published and blockers',
+          itemResponse(ZPublicApiPublishCourseResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: {
+          description: 'Missing the course:write scope, or the key creator is not a course tutor/admin or org admin'
+        },
+        404: { description: 'Course not found' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const result = await publishPublicApiCourseService(orgId, actorId, params);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to publish course');
+      }
+    }
+  )
+  .post(
+    '/:courseId/unpublish',
+    describeRoute({
+      description:
+        'Unpublish a course so students can no longer open it; needs public_api:* or course:write, and a course tutor/admin or org admin key creator.',
+      tags: ['Courses'],
+      responses: {
+        200: jsonResponse('Course unpublished', itemResponse(ZPublicApiUnpublishCourseResponse)),
+        401: errorResponses.unauthorized,
+        403: {
+          description: 'Missing the course:write scope, or the key creator is not a course tutor/admin or org admin'
+        },
+        404: { description: 'Course not found' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const result = await unpublishPublicApiCourseService(orgId, actorId, params);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to unpublish course');
       }
     }
   )
@@ -265,7 +332,8 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/structure',
     describeRoute({
-      description: `Get a snapshot of a course's structure; ${ANY_KEY_RULE}.`,
+      description:
+        "Get a snapshot of a course's structure; any key with the public_api:* or course:read scope may call it.",
       tags: ['Course Structure'],
       responses: {
         200: jsonResponse('Course structure returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
