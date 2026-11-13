@@ -20,7 +20,7 @@ import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
 import { ZCourseContentReorder } from '@cio/utils/validation/course';
 import type { TCourseContentDelete, TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
-import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
+import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
 import { DEFAULT_CONTENT_GROUPING } from './utils';
 
 type CourseContentReorderResult = {
@@ -187,7 +187,7 @@ export async function updateCourseContent(
     });
     const requestedKeys = new Set(items.map(buildContentKey));
 
-    void invalidateInsightsCourseStructure(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
 
     return { items: storedItems.filter((item) => requestedKeys.has(buildContentKey(item))) };
   } catch (error) {
@@ -241,7 +241,7 @@ export async function reorderCourseContent(
       };
     });
 
-    void invalidateInsightsCourseStructure(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
 
     return result;
   } catch (error) {
@@ -333,7 +333,7 @@ export async function deleteCourseContent(
       return work;
     });
 
-    void invalidateInsightsCourseStructure(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
 
     return {
       items: itemsToDelete.map((item) => ({ id: item.id, type: item.type as ContentType })),

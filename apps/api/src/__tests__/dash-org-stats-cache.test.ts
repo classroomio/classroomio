@@ -35,7 +35,7 @@ import {
   getRecentCertifications,
   getTotalCertificatesIssued
 } from '@cio/db/queries/dash';
-import { getOrganisationAnalytics } from '@api/services/dash';
+import { getOrganizationOverview } from '@api/services/dash';
 
 const sampleAnalytics = {
   totalCertificates: 2,
@@ -45,7 +45,7 @@ const sampleAnalytics = {
   recentCertifications: []
 };
 
-describe('getOrganisationAnalytics cache', () => {
+describe('getOrganizationOverview cache', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     redisMocks.mGet.mockResolvedValue([null, null]);
@@ -56,7 +56,7 @@ describe('getOrganisationAnalytics cache', () => {
   });
 
   it('computes from the database on cache miss and writes the payload', async () => {
-    const result = await getOrganisationAnalytics('org-1');
+    const result = await getOrganizationOverview('org-1');
 
     expect(result.numberOfCourses).toBe(8);
     expect(getDashOrgStats).toHaveBeenCalledTimes(1);
@@ -73,7 +73,7 @@ describe('getOrganisationAnalytics cache', () => {
       JSON.stringify({ version: '3', data: { ...sampleAnalytics, numberOfCourses: 5 } })
     ]);
 
-    const result = await getOrganisationAnalytics('org-1');
+    const result = await getOrganizationOverview('org-1');
 
     expect(result.numberOfCourses).toBe(5);
     expect(getDashOrgStats).not.toHaveBeenCalled();
@@ -86,7 +86,7 @@ describe('getOrganisationAnalytics cache', () => {
       JSON.stringify({ version: '3', data: { ...sampleAnalytics, numberOfCourses: 5 } })
     ]);
 
-    const result = await getOrganisationAnalytics('org-1');
+    const result = await getOrganizationOverview('org-1');
 
     expect(result.numberOfCourses).toBe(8);
     expect(getDashOrgStats).toHaveBeenCalledTimes(1);
@@ -98,7 +98,7 @@ describe('getOrganisationAnalytics cache', () => {
       JSON.stringify({ version: '1', data: { ...sampleAnalytics, numberOfCourses: 5 } })
     ]);
 
-    const result = await getOrganisationAnalytics('org-1', undefined, true);
+    const result = await getOrganizationOverview('org-1', undefined, true);
 
     expect(result.numberOfCourses).toBe(8);
     expect(getDashOrgStats).toHaveBeenCalledTimes(1);
@@ -108,7 +108,7 @@ describe('getOrganisationAnalytics cache', () => {
   it('falls back to the database when redis read fails', async () => {
     redisMocks.mGet.mockRejectedValue(new Error('redis down'));
 
-    const result = await getOrganisationAnalytics('org-1');
+    const result = await getOrganizationOverview('org-1');
 
     expect(result.numberOfCourses).toBe(8);
     expect(getDashOrgStats).toHaveBeenCalledTimes(1);
@@ -117,7 +117,7 @@ describe('getOrganisationAnalytics cache', () => {
   it('returns live data when redis write fails', async () => {
     redisMocks.setEx.mockRejectedValue(new Error('redis down'));
 
-    const result = await getOrganisationAnalytics('org-1');
+    const result = await getOrganizationOverview('org-1');
 
     expect(result.numberOfCourses).toBe(8);
   });
@@ -125,7 +125,7 @@ describe('getOrganisationAnalytics cache', () => {
   it('treats malformed cache payload as a miss', async () => {
     redisMocks.mGet.mockResolvedValue(['1', '{not-json']);
 
-    const result = await getOrganisationAnalytics('org-1');
+    const result = await getOrganizationOverview('org-1');
 
     expect(result.numberOfCourses).toBe(8);
     expect(getDashOrgStats).toHaveBeenCalledTimes(1);

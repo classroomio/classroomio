@@ -42,7 +42,7 @@
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
     "@cio/ai-assistant": "workspace:*",
-    "@cio/analytics": "workspace:*",
+    "@cio/tracking": "workspace:*",
     "@cio/certificates": "workspace:*",
     "@cio/core": "workspace:*",
     "@cio/db": "workspace:*",

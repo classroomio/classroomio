@@ -51,7 +51,7 @@ import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organiz
 import type { StudentMilestoneNotification } from '../organization/student-limit';
 import { getWelcomeSessionIcs } from './session-invite';
 import { db } from '@cio/db/drizzle';
-import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/tracking';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureLearnerInvited, captureLearnersEnrolled } from '@api/services/product-events';
 

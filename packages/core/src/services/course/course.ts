@@ -25,7 +25,7 @@ import {
   getLessonsWithCompletion,
   getProfileCourseProgress,
   getUserExercisesStats
-} from '@cio/db/queries/analytics/analytics';
+} from '@cio/db/queries/student-progress';
 import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/reset-progress';
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
@@ -53,7 +53,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getStudentLimit, isPaymentBlocked } from '@cio/utils/plans';
 import { env } from '../../config/env';
-import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
+import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { captureCourseEvent, captureServerEvent, type TEventSource } from '../posthog';
 import { annotateCourseContentWithProgression } from './progression';
@@ -73,7 +73,7 @@ export interface UpdateCourseResult {
   publishedNow: boolean;
   publishChange?: 'published' | 'unpublished' | null;
   /**
-   * True when the content-grouping setting changed. Callers that pass a transaction must drop the cached insights
+   * True when the content-grouping setting changed. Callers that pass a transaction must drop the cached analytics
    * structure after it commits; this call skips the invalidation while it does not own the transaction.
    */
   groupingChanged: boolean;
@@ -520,7 +520,7 @@ export async function updateCourse(
       (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING);
 
     if (groupingChanged && dbClient === db) {
-      void invalidateInsightsCourseStructure(courseId);
+      void invalidateAnalyticsCourseStructure(courseId);
     }
 
     const publishChange = resolvePublishChange(currentCourse.isPublished, updated.isPublished);

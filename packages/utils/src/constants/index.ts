@@ -9,4 +9,4 @@ export * from './error-codes';
 export * from './b64-envelope';
 export * from './live-session-reminder';
 export * from './webhook';
-export * from './insights';
+export * from './analytics';

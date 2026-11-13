@@ -8,7 +8,7 @@ import {
   ZLoginActivity
 } from '@cio/utils/validation/dash';
 import { authMiddleware } from '@api/middlewares/auth';
-import { getCurrentUserLoginStreak, getOrganisationAnalytics, getStudentLoginActivity } from '@api/services/dash';
+import { getCurrentUserLoginStreak, getOrganizationOverview, getStudentLoginActivity } from '@api/services/dash';
 import { getOrgComplianceOverview } from '@api/services/course/compliance';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
@@ -19,9 +19,9 @@ import {
   getCourseFunnel,
   getLandingStats,
   getPopularTypes,
-  getTopCoursesByViews,
-  ingestEventBatch
-} from '@api/services/analytics';
+  getTopCoursesByViews
+} from '@api/services/marketing';
+import { ingestEventBatch } from '@api/services/tracking';
 
 export const dashAnalyticsRouter = new Hono()
   .post('/track', zValidator('json', ZIngestBatch), async (c) => {
@@ -45,7 +45,7 @@ export const dashAnalyticsRouter = new Hono()
       const { bust } = c.req.valid('query');
       const orgId = c.get('orgId')!;
 
-      const result = await getOrganisationAnalytics(orgId, undefined, bust);
+      const result = await getOrganizationOverview(orgId, undefined, bust);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {

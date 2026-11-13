@@ -2685,7 +2685,7 @@ export const organization = pgTable(
         enrollmentWelcome?: boolean;
         courseCompletion?: boolean;
       };
-      insights?: {
+      analytics?: {
         studentTarget?: number | null;
       };
     }>(),

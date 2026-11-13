@@ -14,7 +14,7 @@ import { getPaginatedCourseMembers } from '@cio/db/queries/course/people';
 import { ROLE } from '@cio/utils/constants';
 import { PUBLIC_API_ANALYTICS_TTL_SECONDS, publicApiAnalyticsKey } from '@api/utils/redis/key-generators';
 import { cachedRead, type CachedRead } from '@api/utils/redis/cached-read';
-import { getCourseFunnel } from '@api/services/analytics';
+import { getCourseFunnel } from '@api/services/marketing';
 
 const TTL = PUBLIC_API_ANALYTICS_TTL_SECONDS;
 

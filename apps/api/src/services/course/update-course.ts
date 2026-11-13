@@ -1,5 +1,5 @@
 import { updateCourse } from '@cio/core/services/course/course';
-import { invalidateInsightsCourseStructure } from '@cio/core/utils/redis/insights-cache';
+import { invalidateAnalyticsCourseStructure } from '@cio/core/utils/redis/analytics-cache';
 import { db } from '@cio/db/drizzle';
 import { getCourseByIdForUpdate } from '@cio/db/queries/course';
 import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
@@ -55,7 +55,7 @@ export async function updateCourseWithTags(
   });
 
   if (result.groupingChanged) {
-    void invalidateInsightsCourseStructure(params.courseId);
+    void invalidateAnalyticsCourseStructure(params.courseId);
   }
 
   return result;
