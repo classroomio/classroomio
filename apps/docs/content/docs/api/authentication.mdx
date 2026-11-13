@@ -4,7 +4,7 @@ description: Get an organization API key, send it as a Bearer token, and rotate 
 last_reviewed: '2026-10-23'
 ---
 
-Every request to the ClassroomIO API is authenticated with an API key that belongs to one organization.
+Every request to the ClassroomIO API is authenticated with a credential that belongs to one organization: an API key you generate, or an OAuth access token granted through a connected application.
 
 :::info[Plan requirement]
 On ClassroomIO Cloud, API keys are available on the **Early Adopter** and **Enterprise** plans. Self-hosted instances need **Enterprise**.
@@ -21,6 +21,8 @@ Authorization: Bearer cio_api_your_key_here
 The key decides which organization the request acts on, so you never pass an organization ID.
 
 The key also acts as the person who created it. Endpoints that need a role check that person's role on every request, so if they lose the role, the key loses that access too. Revoke a key when its creator leaves.
+
+Connected applications can authenticate with an OAuth access token instead of a key, sent the same way as a Bearer token. See [OAuth](/developers/oauth) for the authorization flow, scopes and token lifetimes.
 
 ## Get your API key
 
