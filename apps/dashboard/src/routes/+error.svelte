@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
+  import SearchXIcon from '@lucide/svelte/icons/search-x';
   import { ExternalLinkIcon, HomeIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
   import { MachineBrokenTrack } from '@cio/ui/custom/animation';
 
@@ -43,7 +44,7 @@
     variant="page"
     layout="full-page"
     showLogo={true}
-    media={brokenTrack}
+    icon={SearchXIcon}
   >
     <div class="flex items-center gap-2">
       {#if isOrgSite}
