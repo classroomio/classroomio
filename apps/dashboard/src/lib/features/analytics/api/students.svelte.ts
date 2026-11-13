@@ -1,3 +1,4 @@
+import { studentsTableSpec } from '@cio/utils/analytics';
 import { ANALYTICS_LIMITS } from '@cio/utils/constants/analytics';
 import type { ExportDocument } from '@cio/utils/export';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -27,24 +28,6 @@ import type {
   TableSort
 } from '../utils/types';
 import { analyticsApi } from './analytics.svelte';
-
-const STUDENT_MEASURES: AnalyticsSpec['measures'] = [
-  { metric: 'name', agg: 'value' },
-  { metric: 'email', agg: 'value' },
-  { metric: 'avatar_url', agg: 'value' },
-  { metric: 'overall_progress_pct', agg: 'value' },
-  { metric: 'avg_score_pct', agg: 'value' },
-  { metric: 'courses_completed', agg: 'value' },
-  { metric: 'courses_total', agg: 'value' },
-  { metric: 'video_pct', agg: 'value' },
-  { metric: 'attendance_pct', agg: 'value' },
-  { metric: 'certificates', agg: 'value' },
-  { metric: 'last_login_at', agg: 'value' },
-  { metric: 'is_overdue', agg: 'value' },
-  { metric: 'status', agg: 'value' },
-  { metric: 'status_rank', agg: 'value' },
-  { metric: 'now_at_title', agg: 'value' }
-];
 
 const EXERCISE_MEASURES: AnalyticsSpec['measures'] = [
   { metric: 'best_score_pct', agg: 'value' },
@@ -86,22 +69,17 @@ class AnalyticsStudentsApi extends BaseApi {
 
   #studentSpec(page: number, limit: number, selectedCourseId = analyticsApi.selection.courseId): AnalyticsSpec {
     const parts = studentQueryParts(this.filters);
-    const courseFilter = selectedCourseId
-      ? [{ field: 'course' as const, op: 'eq' as const, value: selectedCourseId }]
-      : [];
-    const sort = this.sort ? [{ field: this.sort.key, dir: this.sort.dir }] : parts.sort;
-
-    return {
-      source: 'student',
-      dimensions: ['student'],
-      measures: STUDENT_MEASURES,
-      filters: [...parts.filters, ...courseFilter],
-      sort,
-      search: this.search || undefined,
-      limit,
+    const spec = studentsTableSpec({
+      filters: parts.filters,
+      courseId: selectedCourseId,
+      search: this.search,
       page,
-      range: 'all'
-    };
+      limit
+    });
+
+    if (!this.sort) return spec;
+
+    return { ...spec, sort: [{ field: this.sort.key, dir: this.sort.dir }] };
   }
 
   #exerciseSpec(studentIds: string[] | null, courseId: string, limit: number): AnalyticsSpec {

@@ -40,7 +40,11 @@ import { requiresOrderedItems, runAnalyticsQuery } from '@cio/db/queries/analyti
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { cachedRead } from '@api/utils/redis/cached-read';
 import { resolveAuthorizedScope } from '@api/services/analytics/authorize';
-import { exportAnalyticsQueryForActor, runAnalyticsQueryForActor } from '@api/services/analytics/query';
+import {
+  exportAnalyticsQueryForActor,
+  runAnalyticsQueryForActor,
+  runAnalyticsQueryForScope
+} from '@api/services/analytics/query';
 import { resolveAnalyticsRange } from '@api/services/analytics/plan';
 import type { AnalyticsActor } from '@api/services/analytics/types';
 import { ZAnalyticsExportSpec, ZAnalyticsQuerySpec } from '@cio/utils/validation/analytics';
@@ -113,6 +117,35 @@ describe('runAnalyticsQueryForActor', () => {
     expect(resolveAnalyticsRange).toHaveBeenCalledWith(ORG_ID, spec.range);
     expect(runAnalyticsQuery).toHaveBeenCalledWith(expect.objectContaining({ range: '7d' }), expect.anything());
     expect(cachedRead).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the Free-plan clamp as the effective range on the result', async () => {
+    vi.mocked(resolveAnalyticsRange).mockResolvedValue('7d');
+    const thirtyDaySpec = ZAnalyticsQuerySpec.parse({
+      source: 'student',
+      measures: [{ metric: 'rows', agg: 'count' }],
+      filters: [],
+      range: '30d'
+    });
+
+    const result = await runAnalyticsQueryForActor(actor, {
+      scope: { type: 'cohort', id: COHORT_ID },
+      spec: thirtyDaySpec
+    });
+
+    expect(resolveAnalyticsRange).toHaveBeenCalledWith(ORG_ID, '30d');
+    expect(result.range).toBe('7d');
+    expect(runAnalyticsQuery).toHaveBeenCalledWith(expect.objectContaining({ range: '7d' }), expect.anything());
+  });
+
+  it('runs a scope-level query without re-authorizing and reports its range', async () => {
+    vi.mocked(resolveAnalyticsRange).mockResolvedValue('7d');
+
+    const result = await runAnalyticsQueryForScope(scope, { scope: { type: 'cohort', id: COHORT_ID }, spec });
+
+    expect(resolveAuthorizedScope).not.toHaveBeenCalled();
+    expect(resolveAnalyticsRange).toHaveBeenCalledWith(ORG_ID, spec.range);
+    expect(result.range).toBe('7d');
   });
 
   it('bypasses the cache when a search filter is present', async () => {

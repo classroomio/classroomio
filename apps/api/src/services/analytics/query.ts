@@ -6,6 +6,7 @@ import {
   type AnalyticsQueryOutput
 } from '@cio/db/queries/analytics';
 import { ANALYTICS_LIMITS } from '@cio/utils/constants/analytics';
+import type { TAnalyticsRange } from '@cio/utils/constants/analytics';
 import type {
   TAnalyticsExportRequest,
   TAnalyticsQueryRequest,
@@ -74,15 +75,50 @@ export async function computeAnalyticsQuery(
   return runAnalyticsQuery(spec, { scope, orderedItems });
 }
 
-function uncachedResult(output: AnalyticsQueryOutput): AnalyticsQueryResult {
+function uncachedResult(output: AnalyticsQueryOutput, range: TAnalyticsRange): AnalyticsQueryResult {
   const generatedAt = new Date().toISOString();
 
-  return { ...output, generatedAt, cached: false, refreshThrottled: false };
+  return { ...output, range, generatedAt, cached: false, refreshThrottled: false };
 }
 
 /**
- * Runs one widget spec for the actor. Authorizes before touching the cache, serves cached results inside the scope
- * TTL, recomputes on an allowed refresh, and never caches free-text search.
+ * Runs one widget spec inside an already-authorized scope, without re-authorizing. Serves cached results inside the
+ * scope TTL, recomputes on an allowed refresh, and never caches free-text search.
+ */
+export async function runAnalyticsQueryForScope(
+  scope: AuthorizedAnalyticsScope,
+  request: TAnalyticsQueryRequest,
+  options: { profileId?: string } = {}
+): Promise<AnalyticsQueryResult> {
+  try {
+    const range = await resolveAnalyticsRange(scope.orgId, request.spec.range);
+    const spec = canonicalizeSpec({ ...request.spec, range });
+
+    if (spec.search) {
+      const output = await computeAnalyticsQuery(scope, spec);
+      return uncachedResult(output, range);
+    }
+
+    const startedAt = Date.now();
+    const specHash = hashSpec(spec);
+    const key = analyticsKey('query', scope.orgId, scope.type, scope.id, specHash);
+    const ttlSeconds = analyticsTtlSeconds(scope.type);
+    const refresh =
+      request.refresh && options.profileId
+        ? await claimAnalyticsRefresh(options.profileId, scope.type, scope.id, specHash)
+        : false;
+    const entry = await cachedRead(key, ttlSeconds, () => computeAnalyticsQuery(scope, spec), { refresh });
+    const cached = Date.parse(entry.generatedAt) < startedAt;
+    const refreshThrottled = Boolean(request.refresh) && !refresh;
+
+    return { ...entry.data, range, generatedAt: entry.generatedAt, cached, refreshThrottled };
+  } catch (error) {
+    throw toAnalyticsError(error, ErrorCodes.ANALYTICS_QUERY_FAILED);
+  }
+}
+
+/**
+ * Runs one widget spec for the actor. Authorizes before touching the cache, then delegates.
  */
 export async function runAnalyticsQueryForActor(
   actor: AnalyticsActor,
@@ -90,26 +126,8 @@ export async function runAnalyticsQueryForActor(
 ): Promise<AnalyticsQueryResult> {
   try {
     const scope = await resolveAuthorizedScope(actor, request.scope);
-    const range = await resolveAnalyticsRange(scope.orgId, request.spec.range);
-    const spec = canonicalizeSpec({ ...request.spec, range });
 
-    if (spec.search) {
-      const output = await computeAnalyticsQuery(scope, spec);
-      return uncachedResult(output);
-    }
-
-    const startedAt = Date.now();
-    const specHash = hashSpec(spec);
-    const key = analyticsKey('query', scope.orgId, scope.type, scope.id, specHash);
-    const ttlSeconds = analyticsTtlSeconds(scope.type);
-    const refresh = request.refresh
-      ? await claimAnalyticsRefresh(actor.profileId, scope.type, scope.id, specHash)
-      : false;
-    const entry = await cachedRead(key, ttlSeconds, () => computeAnalyticsQuery(scope, spec), { refresh });
-    const cached = Date.parse(entry.generatedAt) < startedAt;
-    const refreshThrottled = Boolean(request.refresh) && !refresh;
-
-    return { ...entry.data, generatedAt: entry.generatedAt, cached, refreshThrottled };
+    return await runAnalyticsQueryForScope(scope, request, { profileId: actor.profileId });
   } catch (error) {
     throw toAnalyticsError(error, ErrorCodes.ANALYTICS_QUERY_FAILED);
   }
@@ -128,7 +146,7 @@ export async function exportAnalyticsQueryForActor(
     const spec = canonicalizeSpec({ ...request.spec, range });
     const output = await computeAnalyticsQuery(scope, spec);
 
-    return uncachedResult(output);
+    return uncachedResult(output, range);
   } catch (error) {
     throw toAnalyticsError(error, ErrorCodes.ANALYTICS_EXPORT_FAILED);
   }

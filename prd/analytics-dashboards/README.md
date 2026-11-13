@@ -115,7 +115,7 @@ The section-by-section scorecard has one row per `course_section`, ordered by `o
 
 - **Scope:** `{ type: 'org' | 'course' | 'cohort', id }`. The resolver turns it into learner ids and course ids. Cohort scope is the cohort's student members joined to the cohort's courses through `groupmember`. Pending members (no `profileId`) are excluded and counted separately.
 - **Metric registry:** code-defined and typed. Each metric has an id, a translation key, a value type, a source and a SQL expression.
-- **Sources (v1):** `learner_course` (progress, status, due date), `assessment_result` (score per learner and exercise, passed), `activity` (video and classroom attendance, last login).
+- **Sources (v1):** `student_course` (progress, status, due date), `assessment_result` (score per student and exercise, passed), `section_activity` and `login_day` (activity and last login), among the sources in `ANALYTICS_SOURCES`.
 - **Query spec:** validated with Zod against the registry. Returns a single shape, `{ columns, rows }`.
 - **Widget:** a spec plus a viz (`kpi`, `bar`, `line`, `table`, `matrix`, `distribution`).
 - **Dashboard preset:** an ordered list of widgets for a scope type.
@@ -188,7 +188,7 @@ Unchanged: course marks, course attendance, and the per-user analytics in the au
 
 Notes for the change:
 
-- **API (Phase 3, #1495).** The public API will mirror the menu: `/analytics/academy`, `/analytics/marketing` and `/analytics/compliance`, plus `/courses/{courseId}/analytics` and `/cohorts/{cohortId}/analytics`. Nothing will answer `GET /analytics` itself. The old `GET /course/:courseId/analytics` internal route is removed with the old course page.
+- **API (Phase 3, #1495).** The public API mirrors the menu: `/analytics/academy`, `/analytics/marketing` and `/analytics/compliance`, plus `/courses/{courseId}/analytics` and `/cohorts/{cohortId}/analytics`. Nothing answers `GET /analytics` itself. The old `GET /course/:courseId/analytics` internal route is removed with the old course page.
 - **Navigation and copy.** The org navigation (`org-navigation.ts`) has one **Analytics** menu item with the three children above. The `org_navigation` translation keys change in `en.json`, so every other dashboard locale needs updating (see the translation rule in `CLAUDE.md`).
 - **Redirects.** `/org/[slug]/compliance` redirects to `/org/[slug]/analytics/compliance`, and `/org/[slug]/analytics` redirects by role, so existing bookmarks keep working.
 - **Order.** The Marketing and Compliance moves ship first (Phase 0), so the Academy path is free before the new dashboard arrives.
@@ -207,6 +207,7 @@ Follows the layering in `CLAUDE.md`:
    - `POST /analytics/dashboards-refresh` clears a scope's cached results, throttled per user.
    - `PUT /analytics/settings` saves the organization student target (org admins only).
    - Authorization is scope-aware and runs in the service. The existing `cohortTeamMemberMiddleware` and `courseTeamMemberMiddleware` read `cohortId` and `courseId` from the path, and these routes do not have those params, so the routes use `authMiddleware` and `orgMemberMiddleware` (`/settings` uses `orgAdminMiddleware`). Scope checks run in the service with `getCohortMemberRole`, `isCourseTeamMemberOrOrgAdmin` and the actor's org role.
+   - The public API has its own routes under `/public-api/v1`, separate from these internal ones: `GET /analytics/academy`, `POST /analytics/academy/query`, `GET /courses/{id}/analytics` and `GET /cohorts/{id}/analytics` (see API below).
 5. **Dashboard app:** `apps/dashboard/src/lib/features/analytics/` with API class, `utils/types.ts` inferred from the RPC client, widget components, and the analytics page for each scope (see Placement).
    - Charts use the browser-only dynamic import (see Chart Imports and SSR in `CLAUDE.md`).
    - All copy goes through translations.
@@ -301,9 +302,9 @@ Phase 2 adds an `analytics_dashboard` table (`org_id`, `scope_type`, `definition
 
 - [ ] Spec, result and dashboard Zod schemas.
 - [ ] Scope resolver (cohort, course, org) with tenant-isolation tests.
-- [ ] Registry: `learner_course`, `assessment_result`, `activity` sources and about 15 metrics.
+- [ ] Registry: `student_course`, `assessment_result`, `section_activity` and the other `ANALYTICS_SOURCES`, with about 15 metrics.
 - [ ] Exercise ordering (section order, then exercise order) and final-exam resolver (`course.certificate.requiredExerciseId`) with edge-case tests.
-- [ ] Query compiler and `POST /analytics/query`, plus preset dashboards endpoint.
+- [ ] Query compiler and `POST /analytics/query`, plus the preset dashboard snapshot endpoints.
 - [ ] Widgets: KPI, line with band, bar and distribution, matrix table, horizontal bar.
 - [ ] Cohort dashboard: KPIs, course picker, courses table (all courses), scores by exercise, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
 - [ ] Caching per the Caching section: key builder and TTL constants, `generatedAt` in the response, "Updated Ns ago" indicator, visibility-aware auto-refresh, rate-limited refresh.

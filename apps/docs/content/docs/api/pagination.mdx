@@ -31,7 +31,7 @@ curl "https://api.classroomio.com/public-api/v1/courses?page=2&limit=50" \
 
 - `data` holds the results for this page.
 - `pagination` describes the full result set: `total` items across `totalPages` pages.
-- `query` echoes the parameters the API used, including defaults and any filters such as `search` or `tags`.
+- `query` echoes the parameters the API used, including defaults and any filters such as `search` or `tags`. It is returned by `GET /courses` and `GET /audience`; other list endpoints return only `data` and `pagination`.
 
 ## Fetch every page
 

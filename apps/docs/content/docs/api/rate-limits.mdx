@@ -10,6 +10,8 @@ The API limits how many requests each API key can make, so one integration can't
 
 Each API key can make **100 requests per minute**. Every key has its own budget, so traffic on one key doesn't use up another's.
 
+Analytics snapshot, Academy query, and reminder endpoints have stricter per-minute budgets on top of that baseline: **60 Academy analytics queries per minute**, **20 analytics snapshots per minute**, and **20 overdue-goal reminders per minute**. Going over an analytics or reminder budget returns a `429` until capacity frees up again, at most a minute later. Sending a test email is capped separately at **5 per organization per 15 minutes**.
+
 ## Rate limit headers
 
 Every response tells you where you stand:
@@ -18,7 +20,9 @@ Every response tells you where you stand:
 | --- | --- |
 | `X-RateLimit-Limit` | Requests allowed per minute |
 | `X-RateLimit-Remaining` | Requests left in the current minute |
-| `X-RateLimit-Reset` | When the current minute ends, as an ISO 8601 timestamp |
+| `X-RateLimit-Reset` | Sixty seconds after this request, as an ISO 8601 timestamp |
+
+On the Academy query, analytics snapshot and overdue-goal reminder endpoints, the headers report that endpoint's stricter per-key budget, not the 100-request baseline.
 
 ```http
 X-RateLimit-Limit: 100
@@ -28,7 +32,7 @@ X-RateLimit-Reset: 2026-10-23T14:05:00.000Z
 
 ## Exceeding the limit
 
-Once you go over the limit, requests fail with `429 Too Many Requests` until the minute resets. The `Retry-After` header and the `retryAfter` field both give the number of seconds to wait.
+Once you go over the limit, requests fail with `429 Too Many Requests` until capacity frees up again, at most a minute later. The `Retry-After` header and the `retryAfter` field both give the number of seconds to wait, as an upper bound.
 
 ```json
 {
@@ -79,8 +83,22 @@ To stay under the limit:
 - Cache responses that don't change often.
 
 :::note[Self-hosted instances]
-Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit.
+Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit, except for the fail-closed limiters below (analytics queries and snapshots, reminders, and email-template test emails), which refuse the request with a `503` instead.
 :::
+
+### Fail-closed limits
+
+The Academy analytics query, analytics snapshot, overdue-goal reminder, and email-template test-email limiters use `failClosed: true`. When Redis cannot be reached to check the budget, the request fails with `503` and code `RATE_LIMIT_UNAVAILABLE` instead of going through:
+
+```json
+{
+  "success": false,
+  "error": "Rate limit could not be checked. Please try again later.",
+  "code": "RATE_LIMIT_UNAVAILABLE"
+}
+```
+
+Retry the request once Redis is reachable again.
 
 ## Next steps
 

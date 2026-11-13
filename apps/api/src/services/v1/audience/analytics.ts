@@ -1,10 +1,10 @@
-import type { TPublicApiLearnerAnalyticsParam } from '@cio/utils/validation/public-api';
+import type { TPublicApiStudentAnalyticsParam } from '@cio/utils/validation/public-api';
 import { PUBLIC_API_ANALYTICS_TTL_SECONDS, publicApiAnalyticsKey } from '@api/utils/redis/key-generators';
 import { assertOrgTeamMember, assertProfileBelongsToOrganization } from '@api/services/v1/shared';
 import { cachedRead } from '@api/utils/redis/cached-read';
 import { getUserAnalytics } from '@api/services/organization';
 
-async function loadLearnerAnalytics(orgId: string, profileId: string) {
+async function loadStudentAnalytics(orgId: string, profileId: string) {
   const analytics = await getUserAnalytics(profileId, orgId);
   const courses = analytics.courses.map((course) => ({
     id: course.id,
@@ -41,18 +41,18 @@ async function loadLearnerAnalytics(orgId: string, profileId: string) {
 }
 
 /** Mirrors `orgTeamMemberMiddleware` on `GET /organization/audience/:userId/analytics`. */
-export async function getPublicApiLearnerAnalyticsService(
+export async function getPublicApiStudentAnalyticsService(
   orgId: string,
   actorId: string | null,
-  params: TPublicApiLearnerAnalyticsParam
+  params: TPublicApiStudentAnalyticsParam
 ) {
   await assertOrgTeamMember(orgId, actorId);
   await assertProfileBelongsToOrganization(orgId, params.profileId);
 
   const { data } = await cachedRead(
-    publicApiAnalyticsKey('learner', orgId, params.profileId),
+    publicApiAnalyticsKey('student', orgId, params.profileId),
     PUBLIC_API_ANALYTICS_TTL_SECONDS,
-    () => loadLearnerAnalytics(orgId, params.profileId)
+    () => loadStudentAnalytics(orgId, params.profileId)
   );
 
   return data;

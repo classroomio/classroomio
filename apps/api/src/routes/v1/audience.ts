@@ -10,6 +10,8 @@ import {
   ZPublicApiCreateAudience,
   ZPublicApiCreateAudienceResponse,
   ZPublicApiRemoveAudienceMemberResponse,
+  ZPublicApiStudentAnalyticsParam,
+  ZPublicApiStudentAnalyticsResponse,
   ZPublicApiUpdateAudience
 } from '@cio/utils/validation/public-api';
 import {
@@ -29,6 +31,8 @@ import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { mcpRateLimitResponse } from './courses/docs';
+import { getPublicApiStudentAnalyticsService } from '@api/services/v1/audience/analytics';
+import { ANALYTICS_CACHE_CONTROL, LIST_CACHE_NOTE, ORG_TEAM_RULE, analyticsForbiddenResponses } from './analytics/docs';
 import { ORG_ADMIN_FORBIDDEN, ORG_ADMIN_RULE } from './team/docs';
 
 const AudienceListEnvelope = z.object({ query: ZPublicApiAudienceQuery });
@@ -225,6 +229,38 @@ export const v1AudienceRouter = new Hono()
         );
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to fetch audience member');
+      }
+    }
+  )
+  .get(
+    '/:profileId/analytics',
+    describeRoute({
+      description: `Get a student's progress and grades across their courses, by uuid profileId; ${ORG_TEAM_RULE}.`,
+      tags: ['Audience'],
+      responses: {
+        200: jsonResponse(
+          `Student analytics returned; ${LIST_CACHE_NOTE}`,
+          itemResponse(ZPublicApiStudentAnalyticsResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: analyticsForbiddenResponses.orgTeam,
+        404: { description: 'Profile not found in this organization' },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('param', ZPublicApiStudentAnalyticsParam),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const analytics = await getPublicApiStudentAnalyticsService(orgId, actorId, params);
+
+        c.header('Cache-Control', ANALYTICS_CACHE_CONTROL);
+        return c.json({ success: true, data: analytics }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to load student analytics');
       }
     }
   )

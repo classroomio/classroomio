@@ -98,6 +98,8 @@ Tokens carry the same scopes as automation keys. `public_api:*` is never granted
 | Workspace                 | `organization:read`, `organization:write`, `organization:domain:write`                                           |
 | Analytics and media       | `analytics:read`, `media:write`                                                                                  |
 
+`analytics:read` covers everything under Analytics in the dashboard (Academy, Marketing, Compliance), the organization overview, and student analytics. Which of those a caller can read still depends on their role in the workspace.
+
 ## Manage connected apps
 
 Admins see every connected platform in **Automation → MCP → Connected apps**, with who authorized it and when it was last used. Removing an app deletes its grant and tokens, and it stops working immediately.

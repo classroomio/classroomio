@@ -8,7 +8,7 @@ import { mkdirSync, writeFileSync } from 'fs';
 import { app } from '../src/app';
 import { env } from '@cio/core/config/env';
 import { generateSpecs } from 'hono-openapi';
-import { join } from 'path';
+import { dirname, join, resolve } from 'path';
 import { enrichPublicApiOpenApiSpec, PUBLIC_API_OPENAPI_URL } from '@cio/utils/openapi/public-api';
 
 const OPENAPI_CDN_BASE_URL = PUBLIC_API_OPENAPI_URL.replace(/\/openapi-latest\.json$/, '');
@@ -190,6 +190,17 @@ class OpenAPISpecGenerator {
     }
   }
 
+  async generateForDocs(): Promise<string> {
+    const spec = await this.generateSpec();
+    const docsSpecPath = resolve(process.cwd(), '../docs/openapi/public-api.json');
+
+    mkdirSync(dirname(docsSpecPath), { recursive: true });
+    writeFileSync(docsSpecPath, `${spec}\n`, 'utf8');
+    console.log(`✅ OpenAPI spec written for the docs: ${docsSpecPath}`);
+
+    return docsSpecPath;
+  }
+
   async uploadToR2(options: UploadOptions): Promise<void> {
     if (!this.s3Client) {
       throw new Error('S3 client not initialized. Check your Cloudflare R2 credentials.');
@@ -253,10 +264,12 @@ async function main() {
 
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
-Usage: tsx scripts/upload-openapi-spec.ts
+Usage: tsx scripts/upload-openapi-spec.ts [--docs]
 
 Examples:
   tsx scripts/upload-openapi-spec.ts
+  tsx scripts/upload-openapi-spec.ts --docs   Write apps/docs/openapi/public-api.json from this checkout and skip the upload.
+                                              Then run "node scripts/fetch-openapi.mjs --skip-fetch" in apps/docs.
 
 Environment Variables Required for R2 Upload:
   CLOUDFLARE_ACCESS_KEY
@@ -272,6 +285,12 @@ Optional — purge Cloudflare CDN cache for api.cdn.clsrio.com (after upload):
   }
 
   const generator = new OpenAPISpecGenerator();
+
+  if (args.includes('--docs')) {
+    await generator.generateForDocs();
+    return;
+  }
+
   await generator.generateAndUpload();
 }
 

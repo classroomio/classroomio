@@ -92,6 +92,10 @@
     "./lms": {
       "types": "./dist/lms/index.d.ts",
       "default": "./dist/lms/index.js"
+    },
+    "./analytics": {
+      "types": "./dist/analytics/index.d.ts",
+      "default": "./dist/analytics/index.js"
     }
   },
   "scripts": {

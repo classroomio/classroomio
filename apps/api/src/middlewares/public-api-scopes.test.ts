@@ -19,9 +19,21 @@ function buildApp(scopes: string[]) {
     .put('/courses/:courseId', (c) => c.json({ success: true }))
     .delete('/courses/:courseId', (c) => c.json({ success: true }))
     .get('/audience', (c) => c.json({ success: true }))
-    .get('/analytics', (c) => c.json({ success: true }))
-    .post('/analytics', (c) => c.json({ success: true }))
-    .get('/analytics/learners/:profileId', (c) => c.json({ success: true }))
+    .get('/analytics/academy', (c) => c.json({ success: true }))
+    .post('/analytics/academy', (c) => c.json({ success: true }))
+    .get('/analytics/academy/catalog', (c) => c.json({ success: true }))
+    .post('/analytics/academy/query', (c) => c.json({ success: true }))
+    .get('/analytics/academy/students', (c) => c.json({ success: true }))
+    .get('/analytics/marketing', (c) => c.json({ success: true }))
+    .get('/analytics/marketing/courses/:courseId', (c) => c.json({ success: true }))
+    .get('/analytics/compliance', (c) => c.json({ success: true }))
+    .get('/analytics/compliance/students', (c) => c.json({ success: true }))
+    .get('/organization/overview', (c) => c.json({ success: true }))
+    .get('/organization', (c) => c.json({ success: true }))
+    .get('/audience/:profileId/analytics', (c) => c.json({ success: true }))
+    .get('/audience/:memberId', (c) => c.json({ success: true }))
+    .get('/cohorts/:cohortId/analytics', (c) => c.json({ success: true }))
+    .get('/cohorts/:cohortId/analytics/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId/students', (c) => c.json({ success: true }))
@@ -68,21 +80,73 @@ describe('publicApiScopesMiddleware', () => {
 
   it('lets analytics:read reach only analytics GETs', async () => {
     const app = buildApp(['analytics:read']);
+    const reads = [
+      '/public-api/v1/analytics/academy',
+      '/public-api/v1/analytics/academy/catalog',
+      '/public-api/v1/analytics/academy/students',
+      '/public-api/v1/analytics/marketing',
+      '/public-api/v1/analytics/marketing/courses/c1',
+      '/public-api/v1/analytics/compliance',
+      '/public-api/v1/analytics/compliance/students',
+      '/public-api/v1/courses/c1/analytics',
+      '/public-api/v1/courses/c1/analytics/students',
+      '/public-api/v1/cohorts/c1/analytics',
+      '/public-api/v1/cohorts/c1/analytics/students',
+      '/public-api/v1/organization/overview',
+      '/public-api/v1/audience/p1/analytics'
+    ];
 
-    expect((await app.request('/public-api/v1/analytics')).status).toBe(200);
-    expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(200);
-    expect((await app.request('/public-api/v1/courses/c1/analytics/students')).status).toBe(200);
-    expect((await app.request('/public-api/v1/analytics/learners/p1')).status).toBe(200);
-    expect((await app.request('/public-api/v1/analytics', { method: 'POST' })).status).toBe(403);
+    for (const path of reads) {
+      expect((await app.request(path)).status, path).toBe(200);
+    }
+
     expect((await app.request('/public-api/v1/courses/c1/students')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1')).status).toBe(403);
     expect((await app.request('/public-api/v1/cohorts')).status).toBe(403);
+    expect((await app.request('/public-api/v1/organization')).status).toBe(403);
+    expect((await app.request('/public-api/v1/audience/7')).status).toBe(403);
+  });
+
+  it('maps the cohort analytics, organization overview and audience analytics to analytics:read, not their family scope', async () => {
+    const cohortKey = buildApp(COHORT_SCOPES);
+    const organizationKey = buildApp(['organization:read']);
+    const audienceKey = buildApp(['audience:read']);
+
+    expect((await cohortKey.request('/public-api/v1/cohorts/c1/analytics')).status).toBe(403);
+    expect((await cohortKey.request('/public-api/v1/cohorts/c1/analytics/students')).status).toBe(403);
+    expect((await organizationKey.request('/public-api/v1/organization/overview')).status).toBe(403);
+    expect((await organizationKey.request('/public-api/v1/organization')).status).toBe(200);
+    expect((await audienceKey.request('/public-api/v1/audience/p1/analytics')).status).toBe(403);
+    expect((await audienceKey.request('/public-api/v1/audience/7')).status).toBe(200);
+  });
+
+  it('maps the academy query POST to analytics:read, before the generic analytics rule', async () => {
+    const app = buildApp(['analytics:read']);
+
+    expect((await app.request('/public-api/v1/analytics/academy/query', { method: 'POST' })).status).toBe(200);
+  });
+
+  it('keeps the academy query POST out of keys without analytics:read', async () => {
+    const app = buildApp(COHORT_SCOPES);
+
+    expect((await app.request('/public-api/v1/analytics/academy/query', { method: 'POST' })).status).toBe(403);
+  });
+
+  it('still refuses every analytics POST that is not the academy query', async () => {
+    const app = buildApp(['analytics:read']);
+
+    expect((await app.request('/public-api/v1/analytics/academy', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/academy/catalog', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/academy/students', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/marketing', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/compliance', { method: 'POST' })).status).toBe(403);
   });
 
   it('keeps cohort-scoped keys out of analytics', async () => {
     const app = buildApp(COHORT_SCOPES);
 
-    expect((await app.request('/public-api/v1/analytics')).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/academy')).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/marketing')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(403);
   });
 

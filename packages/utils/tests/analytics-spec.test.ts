@@ -12,8 +12,10 @@ import {
   ZAnalyticsQuerySpec,
   ZAnalyticsScope,
   ZAnalyticsSort,
+  ZAnalyticsStudentExportRequest,
   ZAnalyticsWidget,
-  ZRemindOverdueCohortGoals
+  ZRemindOverdueCohortGoals,
+  ZUpdateAnalyticsSettings
 } from '../src';
 
 const schemasToSnapshot = {
@@ -25,9 +27,11 @@ const schemasToSnapshot = {
   ZAnalyticsExportSpec,
   ZAnalyticsQueryRequest,
   ZAnalyticsExportRequest,
+  ZAnalyticsStudentExportRequest,
   ZAnalyticsDashboardParam,
   ZAnalyticsWidget,
-  ZRemindOverdueCohortGoals
+  ZRemindOverdueCohortGoals,
+  ZUpdateAnalyticsSettings
 };
 
 const VALID_UUID = '11111111-1111-4111-8111-111111111111';

@@ -1,11 +1,9 @@
 import {
   ANALYTICS_DEFAULT_PERIOD_DAYS,
   ANALYTICS_LIMITS,
-  ANALYTICS_PLACEHOLDERS,
   ANALYTICS_RANGE_DAYS,
   ANALYTICS_RANGES,
   ANALYTICS_THRESHOLDS,
-  type TAnalyticsBreakdownGroup,
   type TAnalyticsRange,
   type TAnalyticsStatus
 } from '@cio/utils/constants/analytics';
@@ -53,7 +51,7 @@ import type {
 
 type Translate = (key: string, vars?: Record<string, string | number>) => string;
 
-export const SELF_LOADING_WIDGET_IDS: ReadonlySet<string> = new Set(['students']);
+export { SELF_LOADING_WIDGET_IDS } from '@cio/utils/analytics';
 
 export const NO_COHORT_SERIES_KEY = 'none';
 
@@ -174,58 +172,6 @@ export function cycleColor(index: number, palette: readonly string[] = SERIES_CO
   const weight = Number((startWeight / (1 + pass * 0.35)).toFixed(2));
 
   return `color-mix(in oklch, ${baseColor} ${weight}%, ${mixTarget})`;
-}
-
-const PLACEHOLDER_BY_KEY = {
-  course: ANALYTICS_PLACEHOLDERS.course,
-  exercise: ANALYTICS_PLACEHOLDERS.exercise
-} as const;
-
-export type PlaceholderKey = keyof typeof PLACEHOLDER_BY_KEY;
-
-const SELECTION_BY_PLACEHOLDER: Record<PlaceholderKey, 'courseId' | 'exerciseId'> = {
-  course: 'courseId',
-  exercise: 'exerciseId'
-};
-
-export function widgetUsesPlaceholder(widget: AnalyticsWidget, key: PlaceholderKey): boolean {
-  return (widget.spec.filters ?? []).some((filter) => filter.value === PLACEHOLDER_BY_KEY[key]);
-}
-
-function fillPlaceholder(filter: AnalyticsFilter, selection: AnalyticsSelection): AnalyticsFilter | null {
-  const placeholder = (Object.keys(PLACEHOLDER_BY_KEY) as PlaceholderKey[]).find(
-    (key) => filter.value === PLACEHOLDER_BY_KEY[key]
-  );
-  if (!placeholder) return filter;
-
-  const value = selection[SELECTION_BY_PLACEHOLDER[placeholder]];
-  if (!value) return null;
-
-  return { ...filter, value };
-}
-
-export function resolveWidgetSpec(widget: AnalyticsWidget, selection: AnalyticsSelection): AnalyticsSpec | null {
-  const filters: AnalyticsFilter[] = [];
-
-  for (const filter of widget.spec.filters ?? []) {
-    const filled = fillPlaceholder(filter, selection);
-    if (!filled) return null;
-
-    filters.push(filled);
-  }
-
-  const hasCourseFilter = filters.some((filter) => filter.field === 'course');
-  if (widget.courseMode === 'any' && selection.courseId && !hasCourseFilter) {
-    filters.push({ field: 'course', op: 'eq', value: selection.courseId });
-  }
-
-  const range = widget.usesRange ? selection.range : 'all';
-  const pageState = widget.pageGroup ? selection.pages[widget.pageGroup] : undefined;
-  if (!pageState) return { ...widget.spec, filters, range };
-
-  const sort = pageState.sort ? [{ field: pageState.sort.key, dir: pageState.sort.dir }] : widget.spec.sort;
-
-  return { ...widget.spec, filters, range, sort, page: pageState.page };
 }
 
 export const FIRST_PAGE: AnalyticsPageState = { page: 1, sort: null };
@@ -357,68 +303,6 @@ export function widgetTitle(
   const rawTitle = translate(widget.titleKey, vars);
 
   return cleanWidgetTitle(rawTitle);
-}
-
-export function availableBreakdownGroups(
-  scopeType: AnalyticsScopeType,
-  scope: Pick<AnalyticsScopeSummary, 'cohortCount'>
-): TAnalyticsBreakdownGroup[] {
-  if (scopeType !== 'course' && scopeType !== 'org') return [];
-
-  const groups: TAnalyticsBreakdownGroup[] = ['courses'];
-  if (scope.cohortCount > 0) groups.push('cohorts');
-
-  return groups;
-}
-
-export function defaultBreakdownGroup(scope: AnalyticsScopeSummary): TAnalyticsBreakdownGroup {
-  if (scope.type === 'course' && scope.cohortCount > 0) return 'cohorts';
-
-  return 'courses';
-}
-
-export function activeBreakdownGroup(
-  selection: AnalyticsSelection,
-  available: readonly TAnalyticsBreakdownGroup[]
-): TAnalyticsBreakdownGroup {
-  if (available.includes(selection.breakdown)) return selection.breakdown;
-
-  return available[0] ?? 'courses';
-}
-
-export function isWidgetVisible(
-  widget: AnalyticsWidget,
-  dashboard: AnalyticsDashboard,
-  selection: AnalyticsSelection
-): boolean {
-  if (widget.courseMode === 'all' && selection.courseId) return false;
-
-  if (widget.courseMode === 'single' && !selection.courseId) return false;
-
-  const available = availableBreakdownGroups(dashboard.scope.type, dashboard.scope);
-  if (widget.breakdown !== 'core' && widget.breakdown !== activeBreakdownGroup(selection, available)) return false;
-
-  if (widget.requires.includes('cohorts') && dashboard.scope.cohortCount <= 0) return false;
-
-  const course = focusCourse(dashboard, selection);
-  if (widget.requires.includes('grouping') && !course?.isGrouped) return false;
-
-  if (widget.requires.includes('pass_required') && !course?.hasPassRequired) return false;
-
-  return true;
-}
-
-export function defaultCourseId(dashboard: AnalyticsDashboard): string | null {
-  if (dashboard.scope.type !== 'course') return null;
-
-  return dashboard.scope.courses[0]?.id ?? null;
-}
-
-export function defaultExerciseId(structure: AnalyticsCourseStructure | undefined): string | null {
-  const exercises = (structure?.items ?? []).filter((item) => item.type === 'EXERCISE');
-  const lastPassRequired = exercises.findLast((item) => item.isPassRequired);
-
-  return lastPassRequired?.id ?? exercises.at(-1)?.id ?? null;
 }
 
 /**
@@ -1350,20 +1234,7 @@ export function isStudentSort(value: string): value is StudentSort {
   return (STUDENT_SORTS as readonly string[]).includes(value);
 }
 
-const STUDENT_SORT_SPEC: Record<StudentSort, AnalyticsSpec['sort']> = {
-  status: [
-    { field: 'status_rank__value', dir: 'asc' },
-    { field: 'avg_score_pct__value', dir: 'asc' }
-  ],
-  progress: [{ field: 'overall_progress_pct__value', dir: 'asc' }],
-  name: [{ field: 'student', dir: 'asc' }],
-  low_score: [{ field: 'avg_score_pct__value', dir: 'asc' }]
-};
-
-export function studentQueryParts(
-  filters: StudentFilters,
-  sort: StudentSort = 'status'
-): { filters: AnalyticsFilter[]; sort: AnalyticsSpec['sort'] } {
+export function studentQueryParts(filters: StudentFilters): { filters: AnalyticsFilter[] } {
   const specFilters: AnalyticsFilter[] = [];
 
   if (filters.status) specFilters.push({ field: 'status', op: 'eq', value: filters.status });
@@ -1386,7 +1257,7 @@ export function studentQueryParts(
 
   if (filters.flag === 'not_certified') specFilters.push({ field: 'has_certificate', op: 'is_false' });
 
-  return { filters: specFilters, sort: STUDENT_SORT_SPEC[sort] };
+  return { filters: specFilters };
 }
 
 export function countActiveStudentFilters(filters: StudentFilters): number {
@@ -1510,15 +1381,6 @@ export function toSelectedStudent(row: AnalyticsRow | undefined): SelectedStuden
   const name = textCell(row, 'name__value') ?? textCell(row, 'student_label') ?? '';
 
   return { id, name, row };
-}
-
-/**
- * The selection a widget is still waiting for, or null when its spec can run.
- */
-export function missingSelection(widget: AnalyticsWidget, selection: AnalyticsSelection): PlaceholderKey | null {
-  const keys = Object.keys(PLACEHOLDER_BY_KEY) as PlaceholderKey[];
-
-  return keys.find((key) => widgetUsesPlaceholder(widget, key) && !selection[SELECTION_BY_PLACEHOLDER[key]]) ?? null;
 }
 
 type KpiFormatter = (
