@@ -34,7 +34,7 @@ describe('enrichPublicApiOpenApiSpec', () => {
       expect(scopes[scope].length).toBeGreaterThan(0);
     }
     expect(scopes['public_api:*']).toBeUndefined();
-    expect(scopes['course:write']).toBe('Create courses from templates or clones and manage course content');
+    expect(scopes['course:write']).toBe('Create, clone, edit, publish and unpublish courses and their content');
     expect(spec.security).toEqual([{ [PUBLIC_API_BEARER_SCHEME]: [] }, { [PUBLIC_API_OAUTH_SCHEME]: [] }]);
   });
 
