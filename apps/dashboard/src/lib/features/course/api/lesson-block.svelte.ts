@@ -1,4 +1,6 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { t } from '$lib/utils/functions/translations';
+import { snackbar } from '$features/ui/snackbar/store';
 import type { TBlockLocaleCode } from '@cio/utils/validation/block';
 import type {
   AttachLessonBlockRequest,
@@ -78,7 +80,11 @@ class LessonBlockApi extends BaseApiWithErrors {
     return this.execute<UpdateLessonBlockRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].blocks[':blockId'].$patch({ param: params, json }),
-      logContext: 'updating lesson block'
+      logContext: 'updating lesson block',
+      onError: (error) => {
+        const reason = error.message;
+        snackbar.error(t.get('course.navItem.lessons.materials.blocks.save_failed', { reason }));
+      }
     });
   }
 

@@ -12,6 +12,7 @@ import { db } from '@db/drizzle';
 import { eq } from 'drizzle-orm';
 import { jwtVerify } from 'jose';
 import { ZLoginLinkPayload, ZLoginLinkQuery } from '@cio/utils/validation/organization';
+import { consumeLoginLinkGrant } from '@db/queries/auth/login-link';
 
 const SESSION_EXPIRES_IN_SEC = 60 * 60 * 24 * 7;
 
@@ -46,8 +47,6 @@ export function loginLink(): BetterAuthPlugin {
           return c.json({ error: 'Invalid query', message: query.error.message }, { status: 400 });
         }
 
-        const redirectUrl = query.data.redirect && query.data.redirect.startsWith('/') ? query.data.redirect : '/';
-
         let payload: unknown;
         try {
           const verified = await jwtVerify(query.data.token, getLoginLinkSecret(), {
@@ -61,6 +60,11 @@ export function loginLink(): BetterAuthPlugin {
         const parsedPayload = ZLoginLinkPayload.safeParse(payload);
         if (!parsedPayload.success) {
           return c.json({ error: 'Invalid login link payload' }, { status: 400 });
+        }
+
+        const isFirstRedemption = await consumeLoginLinkGrant(parsedPayload.data.jti, parsedPayload.data.sub);
+        if (!isFirstRedemption) {
+          return c.json({ error: 'Invalid or expired login link' }, { status: 401 });
         }
 
         const normalizedEmail = parsedPayload.data.email.toLowerCase().trim();
@@ -113,7 +117,7 @@ export function loginLink(): BetterAuthPlugin {
 
         await setSessionCookie(c, { session, user: userPayload });
 
-        return c.redirect(redirectUrl);
+        return c.redirect(query.data.redirect);
       })
     }
   };

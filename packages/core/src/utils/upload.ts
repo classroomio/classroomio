@@ -50,3 +50,23 @@ const ORGANIZATION_PREFIXED_KEY = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f
 export function readOrganizationIdFromFileKey(fileKey: string): string | null {
   return ORGANIZATION_PREFIXED_KEY.exec(fileKey)?.[1] ?? null;
 }
+
+export interface FileKeyOwnershipRecords {
+  /** Organization that owns the asset whose id is the key's prefix, when such an asset exists. */
+  prefixAssetOrganizationId?: string;
+  /** Organizations that registered an asset claiming this exact key. */
+  claimingOrganizationIds?: string[];
+}
+
+/**
+ * Organizations that own the object behind `fileKey`. A prefix that is an asset id belongs to that asset's
+ * organization, because asset ids are server-generated and cannot be chosen by a caller. Any other prefix is an
+ * organization id. Callers can register any key on their own assets, so those claims only decide keys with no
+ * prefix. A key with neither returns an empty list.
+ */
+export function resolveFileKeyOwnerOrganizationIds(fileKey: string, records: FileKeyOwnershipRecords = {}): string[] {
+  const prefix = readOrganizationIdFromFileKey(fileKey);
+  if (prefix) return [records.prefixAssetOrganizationId ?? prefix];
+
+  return records.claimingOrganizationIds ?? [];
+}

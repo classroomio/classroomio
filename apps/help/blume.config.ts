@@ -91,6 +91,10 @@ export default defineConfig({
             root: '/organization-and-team/admin-dashboard'
           },
           {
+            label: "See what's new in ClassroomIO",
+            root: '/get-started/see-whats-new-in-classroomio'
+          },
+          {
             label: 'Set up your first academy',
             display: 'group',
             collapsed: true,
@@ -98,6 +102,10 @@ export default defineConfig({
               {
                 label: 'Complete your onboarding checklist',
                 root: '/get-started/onboarding'
+              },
+              {
+                label: 'Use the Setup page',
+                root: '/get-started/use-the-setup-page'
               },
               {
                 label: 'Create your first course',
@@ -158,6 +166,10 @@ export default defineConfig({
               {
                 label: 'Create a course with AI',
                 root: '/build-courses/create-a-course-with-ai'
+              },
+              {
+                label: 'Use the AI assistant in the course editor',
+                root: '/build-courses/use-the-ai-assistant-in-the-course-editor'
               },
               {
                 label: 'Create a course from a template',
@@ -863,6 +875,10 @@ export default defineConfig({
           {
             label: 'Manage your notification preferences',
             root: '/account-team-security/manage-your-notification-preferences'
+          },
+          {
+            label: 'Search the dashboard and settings',
+            root: '/organization-and-team/search-the-dashboard-and-settings'
           },
           {
             label: 'Update organization settings',

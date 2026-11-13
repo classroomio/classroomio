@@ -53,11 +53,12 @@ import {
   createAssetUsage,
   deleteAssetUsagesByTargetSlots,
   getAssetById,
+  getAssetOrganizationIdsByAssetIds,
   getAssetOrganizationIdsByStorageKeys
 } from '@cio/db/queries/assets';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { sanitizeOptionalHtml } from '../../utils/sanitize-html';
-import { readOrganizationIdFromFileKey } from '../../utils/upload';
+import { readOrganizationIdFromFileKey, resolveFileKeyOwnerOrganizationIds } from '../../utils/upload';
 import { recordBlockLocaleVersion } from './block-version';
 import { ensureLessonRevisionBaseline, recordLessonRevision } from './lesson-revision';
 import { enrichBlocksMedia, loadLessonBlocks, toLessonBlock, type LessonBlock } from './block-view';
@@ -73,6 +74,8 @@ export interface BlockActor {
   actorProfileId?: string | null;
   /** Who made the changes: a dashboard edit, the AI assistant, or a restore. Defaults to `editor`. */
   source?: TBlockChangeSource;
+  /** Name of the AI client or integration behind an `mcp` or `api` change. */
+  clientName?: string | null;
   /** Ties every snapshot and revision of one write batch together, e.g. an assistant run. */
   changeSetId?: string | null;
 }
@@ -122,15 +125,16 @@ function validatedBlockData(type: TBlockType, data: unknown): Record<string, unk
 }
 
 /**
- * True when a prefixed key carries this organization's id, or when every asset claiming an unprefixed key
- * belongs to this organization. An unprefixed key that no asset claims counts as owned.
+ * True when every owner of the key is this organization. A key nobody owns counts as owned.
  */
-async function isStorageKeyOwnedBy(key: string, organizationId: string): Promise<boolean> {
-  const prefixOrganizationId = readOrganizationIdFromFileKey(key);
-  if (prefixOrganizationId) return prefixOrganizationId === organizationId;
-
-  const owners = await getAssetOrganizationIdsByStorageKeys([key]);
-  const ownerOrganizationIds = owners.get(key) ?? [];
+async function isStorageKeyOwnedBy(key: string, organizationId: string, dbClient: DbOrTxClient): Promise<boolean> {
+  const prefix = readOrganizationIdFromFileKey(key);
+  const prefixAssetOwners = await getAssetOrganizationIdsByAssetIds(prefix ? [prefix] : [], dbClient);
+  const claimingOwners = await getAssetOrganizationIdsByStorageKeys(prefix ? [] : [key], dbClient);
+  const ownerOrganizationIds = resolveFileKeyOwnerOrganizationIds(key, {
+    prefixAssetOrganizationId: prefix ? prefixAssetOwners.get(prefix) : undefined,
+    claimingOrganizationIds: claimingOwners.get(key)
+  });
 
   return ownerOrganizationIds.every((ownerOrganizationId) => ownerOrganizationId === organizationId);
 }
@@ -138,20 +142,21 @@ async function isStorageKeyOwnedBy(key: string, organizationId: string): Promise
 async function assertAssetsBelongToOrganization(
   type: TBlockType,
   data: Record<string, unknown>,
-  organizationId: string
+  organizationId: string,
+  dbClient: DbOrTxClient
 ): Promise<void> {
   if (!BLOCK_DEFINITIONS[type].media) return;
 
   const assetId = getBlockAssetId(type, data);
   if (assetId) {
-    const asset = await getAssetById(assetId, organizationId);
+    const asset = await getAssetById(assetId, organizationId, dbClient);
     if (!asset) {
       throw new AppError('Asset not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
     }
   }
 
   const storageKey = typeof data.key === 'string' ? data.key : '';
-  if (storageKey && !(await isStorageKeyOwnedBy(storageKey, organizationId))) {
+  if (storageKey && !(await isStorageKeyOwnedBy(storageKey, organizationId, dbClient))) {
     throw new AppError('File not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
   }
 }
@@ -227,6 +232,7 @@ interface LocalizedContentOptions {
   intent?: TLessonVersionIntent;
   label?: string | null;
   source?: TBlockChangeSource;
+  clientName?: string | null;
   changeSetId?: string | null;
 }
 
@@ -246,6 +252,7 @@ async function saveLocalizedContent(
     intent: options.intent ?? 'auto',
     label: options.label ?? null,
     source: options.source,
+    clientName: options.clientName,
     changeSetId: options.changeSetId,
     dbClient
   });
@@ -285,7 +292,7 @@ export async function createLessonBlock(
   const created = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
     await ensureLessonRevisionBaseline(lessonId, tx);
-    await assertAssetsBelongToOrganization(input.type, data, scope.organizationId);
+    await assertAssetsBelongToOrganization(input.type, data, scope.organizationId, tx);
     await lockLessonBlockPositions(lessonId, tx);
 
     const ordered = await getPlacementPositions(lessonId, tx);
@@ -301,7 +308,12 @@ export async function createLessonBlock(
         block.id,
         input.locale ?? DEFAULT_LOCALE,
         content,
-        { authorId: actorProfileId, source: options.source, changeSetId: options.changeSetId },
+        {
+          authorId: actorProfileId,
+          source: options.source,
+          clientName: options.clientName,
+          changeSetId: options.changeSetId
+        },
         tx
       );
     }
@@ -322,6 +334,7 @@ export async function createLessonBlock(
       lessonId,
       authorId: actorProfileId,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -376,6 +389,7 @@ export async function attachLessonBlock(
       lessonId,
       authorId: actorProfileId,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -405,7 +419,7 @@ export async function updateLessonBlock(
     const row = await requireLessonBlockRow(lessonId, blockId, tx);
     const type = row.block.type as TBlockType;
     const data = validatedBlockData(type, input.data);
-    await assertAssetsBelongToOrganization(type, data, scope.organizationId);
+    await assertAssetsBelongToOrganization(type, data, scope.organizationId, tx);
 
     const affectedLessonIds = (await listLessonIdsForBlock(blockId, tx)).sort();
     for (const affectedLessonId of affectedLessonIds) {
@@ -423,6 +437,7 @@ export async function updateLessonBlock(
         lessonId: affectedLessonId,
         authorId: actorProfileId,
         source: options.source ?? 'editor',
+        clientName: options.clientName,
         changeSetId: options.changeSetId ?? null,
         dbClient: tx
       });
@@ -473,6 +488,7 @@ export async function updateLessonBlockLocale(
         intent: input.versionIntent,
         label: input.versionLabel,
         source: options.source,
+        clientName: options.clientName,
         changeSetId: options.changeSetId
       },
       tx
@@ -515,6 +531,7 @@ export async function updateLessonPlacement(
       lessonId,
       authorId: options.actorProfileId ?? null,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -559,6 +576,7 @@ export async function moveLessonPlacement(
       lessonId,
       authorId: options.actorProfileId ?? null,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -593,6 +611,7 @@ export async function removeLessonPlacement(
       lessonId,
       authorId: options.actorProfileId ?? null,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -666,6 +685,7 @@ export async function duplicateLessonBlock(
       lessonId,
       authorId: actorProfileId,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });

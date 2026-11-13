@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 
-import { getAssetOrganizationIdsByStorageKeys } from '@cio/db/queries/assets';
-import { readOrganizationIdFromFileKey } from '@cio/core/utils/upload';
+import { getAssetOrganizationIdsByAssetIds, getAssetOrganizationIdsByStorageKeys } from '@cio/db/queries/assets';
+import { readOrganizationIdFromFileKey, resolveFileKeyOwnerOrganizationIds } from '@cio/core/utils/upload';
 
 /**
  * Presign routes are session-only. Students presign uploads and downloads during
@@ -31,43 +31,32 @@ export function resolveUploadOrganizationId(c: Context): string | undefined {
 /**
  * Every requested key must belong to an organization the caller is in.
  *
- * Ownership comes from the key's organization prefix where present. Keys minted
- * before that prefix existed are resolved through the asset table instead; one
- * that no asset claims has no determinable owner and is allowed through, since
- * exercise submission files are stored by key without an asset row and would
- * otherwise stop downloading.
+ * A key's `<uuid>/` prefix is either an organization id or, for assets the
+ * public API created, the id of the asset itself; an existing asset with that
+ * id decides the owner, otherwise the prefix is the organization. Callers can
+ * register any key on their own assets, so asset claims on a key only decide
+ * keys with no prefix. A key with neither has no determinable owner and is
+ * allowed through, since exercise submission files are stored by key without
+ * an asset row and would otherwise stop downloading.
  *
- * A legacy key registered by more than one organization is only allowed when the
- * caller belongs to all of them — the object behind it is shared, so a partial
- * match is not enough.
+ * An unprefixed key registered by more than one organization is only allowed
+ * when the caller belongs to all of them — the object behind it is shared, so
+ * a partial match is not enough.
  */
 export async function findUnauthorizedDownloadKeys(c: Context, keys: string[]): Promise<string[]> {
   const allowedOrgIds = callerOrganizationIds(c);
+  const prefixes = keys.flatMap((key) => readOrganizationIdFromFileKey(key) ?? []);
+  const unprefixedKeys = keys.filter((key) => !readOrganizationIdFromFileKey(key));
+  const prefixAssetOwners = await getAssetOrganizationIdsByAssetIds(prefixes);
+  const claimingOwners = await getAssetOrganizationIdsByStorageKeys(unprefixedKeys);
 
-  const prefixedKeys: string[] = [];
-  const legacyKeys: string[] = [];
+  return keys.filter((key) => {
+    const prefix = readOrganizationIdFromFileKey(key);
+    const ownerOrgIds = resolveFileKeyOwnerOrganizationIds(key, {
+      prefixAssetOrganizationId: prefix ? prefixAssetOwners.get(prefix) : undefined,
+      claimingOrganizationIds: claimingOwners.get(key)
+    });
 
-  for (const key of keys) {
-    (readOrganizationIdFromFileKey(key) ? prefixedKeys : legacyKeys).push(key);
-  }
-
-  const unauthorizedKeys = prefixedKeys.filter((key) => {
-    const ownerOrgId = readOrganizationIdFromFileKey(key)!;
-
-    return !allowedOrgIds.includes(ownerOrgId);
+    return ownerOrgIds.length > 0 && !ownerOrgIds.every((ownerOrgId) => allowedOrgIds.includes(ownerOrgId));
   });
-
-  if (legacyKeys.length === 0) {
-    return unauthorizedKeys;
-  }
-
-  const legacyOwners = await getAssetOrganizationIdsByStorageKeys(legacyKeys);
-  for (const key of legacyKeys) {
-    const ownerOrgIds = legacyOwners.get(key) ?? [];
-    if (ownerOrgIds.length > 0 && !ownerOrgIds.every((ownerOrgId) => allowedOrgIds.includes(ownerOrgId))) {
-      unauthorizedKeys.push(key);
-    }
-  }
-
-  return unauthorizedKeys;
 }

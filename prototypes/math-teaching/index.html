@@ -1,0 +1,1412 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Math teaching — prototype</title>
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500&family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css" />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #0a0a0a;
+        --muted: #f5f5f5;
+        --muted-fg: #737373;
+        --border: #e5e5e5;
+        --primary: #1d4ed8;
+        --primary-fg: #ffffff;
+        --primary-soft: #eff4ff;
+        --sidebar: #fafafa;
+        --good: #15803d;
+        --good-soft: #dcfce7;
+        --warn: #b45309;
+        --warn-soft: #fef3c7;
+        --bad: #b91c1c;
+        --bad-soft: #fee2e2;
+        --pending: #6d28d9;
+        --pending-soft: #ede9fe;
+        --radius: 8px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; color: var(--fg); background: var(--bg); -webkit-font-smoothing: antialiased; }
+      button, input, select, textarea { font: inherit; color: inherit; }
+      button { cursor: pointer; }
+      button:focus-visible, input:focus-visible, select:focus-visible, [contenteditable]:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+      h1, h2, h3, p { margin: 0; }
+      code { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; }
+      [hidden] { display: none !important; }
+
+      .topbar { position: sticky; top: 0; z-index: 30; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+      .brand { display: flex; gap: 10px; align-items: center; font-weight: 600; }
+      .brand .logo { width: 28px; height: 28px; border-radius: 6px; background: var(--primary); color: #fff; display: grid; place-items: center; font-size: 15px; }
+      .brand small { display: block; font-weight: 400; color: var(--muted-fg); font-size: 12px; }
+      .seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--muted); border-radius: 10px; }
+      .seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 7px; font-weight: 500; color: var(--muted-fg); }
+      .seg button[aria-pressed='true'] { background: #fff; color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+      .engine { font-size: 12px; color: var(--muted-fg); display: inline-flex; gap: 6px; align-items: center; }
+      .engine i { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); display: inline-block; }
+      .engine.ready i { background: var(--good); }
+      .note { background: var(--warn-soft); color: #78350f; border-radius: var(--radius); padding: 8px 12px; font-size: 13px; }
+
+      .btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: #fff; border-radius: 6px; padding: 6px 12px; font-weight: 500; }
+      .btn:hover { background: var(--muted); }
+      .btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
+      .btn.primary:hover { background: #1e40af; }
+      .btn.ghost { border-color: transparent; background: transparent; }
+      .btn.sm { padding: 4px 8px; font-size: 12px; }
+      .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; background: var(--muted); color: var(--muted-fg); }
+      .pill.good { background: var(--good-soft); color: var(--good); }
+      .pill.warn { background: var(--warn-soft); color: var(--warn); }
+      .pill.bad { background: var(--bad-soft); color: var(--bad); }
+      .pill.pending { background: var(--pending-soft); color: var(--pending); }
+      .label { font-size: 12px; font-weight: 500; color: var(--muted-fg); }
+      .field { display: flex; flex-direction: column; gap: 6px; }
+      select.input, input.input { border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; background: #fff; min-width: 0; }
+
+      math-field { font-size: 20px; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; min-height: 40px; width: 100%; background: #fff; --caret-color: var(--primary); --selection-background-color: var(--primary-soft); --contains-highlight-background-color: transparent; }
+      math-field:focus-within { outline: 2px solid var(--primary); outline-offset: 1px; }
+      math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) { display: none; }
+
+      /* Author */
+      .app { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: calc(100vh - 53px); }
+      .side { background: var(--sidebar); border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; gap: 2px; }
+      .side-course { display: flex; gap: 10px; align-items: center; padding: 4px 8px 14px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+      .side-course .logo { width: 32px; height: 32px; border-radius: 6px; background: #0f766e; color: #fff; display: grid; place-items: center; font-weight: 600; }
+      .side-course .s { font-size: 12px; color: var(--muted-fg); }
+      .side-sec { font-size: 12px; color: var(--muted-fg); padding: 8px 8px 4px; }
+      .side-row { padding: 7px 8px; border-radius: 6px; color: #404040; }
+      .side-row.active { background: #fff; border: 1px solid var(--border); font-weight: 500; color: var(--fg); }
+      @media (max-width: 900px) { .app { grid-template-columns: minmax(0, 1fr); } .side { display: none; } }
+      .main { padding: 24px; display: flex; flex-direction: column; gap: 16px; max-width: 900px; width: 100%; }
+      .crumbs { font-size: 13px; color: var(--muted-fg); }
+      .tabs { display: flex; gap: 18px; border-bottom: 1px solid var(--border); }
+      .tabs span { padding: 8px 0; color: var(--muted-fg); }
+      .tabs span.on { color: var(--fg); border-bottom: 2px solid var(--fg); font-weight: 500; }
+      .qcard { border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; background: #fff; }
+      .qhead { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+      .qnum { width: 26px; height: 26px; border-radius: 6px; background: var(--muted); display: grid; place-items: center; font-weight: 600; font-size: 13px; }
+      .qhead .left { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .mline, .mrich { border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; line-height: 1.9; min-height: 40px; outline: none; }
+      .mline { font-size: 16px; font-weight: 500; white-space: nowrap; overflow-x: auto; }
+      .mline:focus, .mrich:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+      .mline:empty::before { content: attr(data-placeholder); color: #a3a3a3; font-weight: 400; }
+      .mrich { min-height: 64px; font-size: 14px; }
+      .mrich p { margin: 0 0 4px; }
+      .mchip { display: inline-block; padding: 0 4px; margin: 0 1px; border-radius: 4px; background: var(--primary-soft); cursor: pointer; line-height: 1.4; vertical-align: middle; }
+      .mchip:hover, .mchip.editing { outline: 1px solid var(--primary); }
+      .mchip-empty { color: var(--primary); font-size: 12px; font-style: italic; }
+      .mblock { display: block; margin: 6px 0; padding: 6px; border-radius: 6px; background: var(--primary-soft); cursor: pointer; text-align: center; }
+      .hint { font-size: 12px; color: var(--muted-fg); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+      .hint kbd { font-family: 'Geist Mono', monospace; font-size: 11px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: #fff; }
+      .toolbar { display: flex; gap: 2px; padding: 4px; border: 1px solid var(--border); border-bottom: 0; border-radius: 6px 6px 0 0; background: var(--sidebar); }
+      .toolbar + .mrich { border-radius: 0 0 6px 6px; }
+      .toolbar button { border: 0; background: transparent; border-radius: 4px; padding: 3px 8px; font-size: 13px; }
+      .toolbar button:hover { background: var(--muted); }
+      .opts { display: flex; flex-direction: column; gap: 8px; }
+      .opt { display: flex; gap: 8px; align-items: center; }
+      .opt .radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex: none; }
+      .opt .radio.on { border-color: var(--good); background: radial-gradient(var(--good) 45%, transparent 50%); }
+      .opt .mline { flex: 1; font-size: 15px; font-weight: 400; }
+      .answer-box { background: var(--sidebar); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+      .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+      .try { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+      .tries { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+      .tries button { border: 1px dashed var(--border); background: #fff; border-radius: 999px; padding: 2px 10px; font-size: 13px; }
+      .verdict { min-height: 22px; font-size: 13px; }
+      .fb-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+      .fb-row input { flex: 1; min-width: 200px; }
+      .rubric { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+      .applies { font-size: 12px; color: var(--muted-fg); }
+
+      /* Math popover */
+      .pop { position: fixed; z-index: 50; width: min(480px, calc(100vw - 24px)); background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.14); display: flex; flex-direction: column; }
+      .pop-tabs { display: flex; gap: 2px; padding: 6px; border-bottom: 1px solid var(--border); }
+      .pop-tabs button { border: 0; background: transparent; padding: 6px 10px; border-radius: 6px; color: var(--muted-fg); font-weight: 500; }
+      .pop-tabs button[aria-pressed='true'] { background: var(--muted); color: var(--fg); }
+      .pop-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; max-height: min(70vh, 560px); overflow: auto; }
+      .pop-foot { display: flex; gap: 8px; justify-content: space-between; align-items: center; padding: 10px 12px; border-top: 1px solid var(--border); }
+      .palette { display: flex; flex-wrap: wrap; gap: 4px; }
+      .palette button { min-width: 40px; height: 34px; border: 1px solid var(--border); background: #fff; border-radius: 6px; padding: 0 6px; font-size: 13px; }
+      .palette button:hover { background: var(--primary-soft); border-color: var(--primary); }
+      .latex-out { font-size: 12px; color: var(--muted-fg); word-break: break-all; }
+      .drop { border: 1.5px dashed var(--border); border-radius: 10px; padding: 16px; text-align: center; color: var(--muted-fg); display: flex; flex-direction: column; gap: 10px; align-items: center; }
+      .samples { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+      .imgwrap { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); user-select: none; touch-action: none; cursor: crosshair; }
+      .imgwrap svg, .imgwrap img { display: block; width: 100%; height: auto; }
+      .sel { position: absolute; border: 2px solid var(--primary); background: rgba(29,78,216,0.08); border-radius: 4px; pointer-events: none; }
+      .canvas-wrap { border: 1px solid var(--border); border-radius: 8px; background: #fff; position: relative; }
+      .canvas-wrap canvas { display: block; width: 100%; height: 180px; touch-action: none; cursor: crosshair; }
+      .canvas-wrap .ph { position: absolute; inset: 0; display: grid; place-items: center; color: #a3a3a3; pointer-events: none; }
+      .converting { display: flex; gap: 8px; align-items: center; color: var(--muted-fg); font-size: 13px; }
+      .spin { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .review { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 10px; align-items: start; background: var(--sidebar); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+      .review .thumb { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #fff; }
+      .review .thumb svg, .review .thumb img, .review .thumb canvas { display: block; width: 100%; height: auto; }
+      .check { font-size: 12px; }
+      .check.ok { color: var(--good); }
+      .check.no { color: var(--bad); }
+      .fake { font-size: 11px; color: var(--muted-fg); }
+      @media (max-width: 640px) { .pop { left: 8px !important; right: 8px; top: auto !important; bottom: 8px; width: auto; } .review { grid-template-columns: minmax(0, 1fr); } }
+
+      /* Student */
+      .student { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; padding: 24px 16px 48px; background: var(--sidebar); min-height: calc(100vh - 53px); }
+      .phone { width: 380px; max-width: 100%; height: 780px; border: 10px solid #111; border-radius: 40px; background: #fff; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+      .ph-head { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+      .ph-head .t { font-weight: 600; }
+      .dots { display: flex; gap: 6px; }
+      .dots span { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+      .dots span.on { background: var(--primary); }
+      .dots span.done { background: #93c5fd; }
+      .ph-body { flex: 1; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+      .ph-q { font-size: 17px; font-weight: 500; line-height: 1.6; }
+      .ph-meta { font-size: 12px; color: var(--muted-fg); display: flex; justify-content: space-between; }
+      .ph-opts { display: flex; flex-direction: column; gap: 8px; }
+      .ph-opt { display: flex; gap: 10px; align-items: center; border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: #fff; text-align: left; font-size: 16px; }
+      .ph-opt[aria-pressed='true'] { border-color: var(--primary); background: var(--primary-soft); }
+      .keypad { display: grid; gap: 6px; padding: 8px; background: #f1f1f1; border-top: 1px solid var(--border); }
+      .keypad button { height: 42px; border: 0; border-radius: 8px; background: #fff; font-size: 17px; box-shadow: 0 1px 0 rgba(0,0,0,0.12); }
+      .keypad button.fn { background: #e2e2e2; font-size: 15px; }
+      .keypad button:active { background: var(--primary-soft); }
+      .ph-foot { display: flex; gap: 8px; justify-content: space-between; padding: 10px 12px 14px; border-top: 1px solid var(--border); }
+      .tutor-btn { align-self: flex-start; border: 1px solid var(--border); background: #fff; border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+      .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--border); border-radius: 16px 16px 0 0; box-shadow: 0 -8px 24px rgba(0,0,0,0.12); padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 10px; z-index: 5; }
+      .bubble { background: var(--muted); border-radius: 12px 12px 12px 4px; padding: 10px 12px; line-height: 1.6; }
+      .worktabs { display: flex; gap: 4px; }
+      .worktabs button { flex: 1; border: 1px solid var(--border); background: #fff; border-radius: 8px; padding: 6px; font-size: 13px; }
+      .worktabs button[aria-pressed='true'] { border-color: var(--primary); background: var(--primary-soft); }
+      .side-notes { max-width: 360px; display: flex; flex-direction: column; gap: 12px; padding-top: 12px; }
+      .side-notes h2 { font-size: 16px; }
+      .side-notes p, .side-notes li { color: #404040; line-height: 1.55; }
+      .side-notes ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+      .resq { border: 1px solid var(--border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+      .score-big { font-size: 34px; font-weight: 700; }
+
+      /* Results */
+      .results { padding: 24px; display: flex; flex-direction: column; gap: 16px; max-width: 1200px; margin-inline: auto; }
+      .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+      .stat { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+      .stat b { display: block; font-size: 22px; margin-top: 4px; }
+      .stat small { color: var(--muted-fg); }
+      .gridwrap { border: 1px solid var(--border); border-radius: 10px; overflow: auto; }
+      table.grid { border-collapse: collapse; width: 100%; min-width: 640px; }
+      .grid th, .grid td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; white-space: nowrap; }
+      .grid th { background: var(--sidebar); font-weight: 500; font-size: 13px; position: sticky; top: 0; }
+      .grid th.q { cursor: pointer; }
+      .grid th.q:hover { background: var(--primary-soft); }
+      .grid th .qt { display: block; font-weight: 400; color: var(--muted-fg); font-size: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+      .grid td.c { padding: 4px; }
+      .cell { display: flex; align-items: center; justify-content: center; min-width: 74px; height: 34px; border-radius: 6px; border: 0; font-weight: 600; font-size: 13px; width: 100%; }
+      .cell.good { background: var(--good-soft); color: var(--good); }
+      .cell.part { background: var(--warn-soft); color: var(--warn); }
+      .cell.bad { background: var(--bad-soft); color: var(--bad); }
+      .cell.pending { background: var(--pending-soft); color: var(--pending); }
+      .cell.none { background: var(--muted); color: var(--muted-fg); }
+      tr.you td { background: #f8fbff; }
+      .tip { position: fixed; z-index: 60; background: #111; color: #fff; border-radius: 8px; padding: 8px 10px; font-size: 13px; pointer-events: none; max-width: 280px; }
+      .tip .katex { color: #fff; }
+      .drawer { position: fixed; z-index: 40; top: 0; right: 0; bottom: 0; width: min(460px, 100vw); background: #fff; border-left: 1px solid var(--border); box-shadow: -12px 0 32px rgba(0,0,0,0.12); display: flex; flex-direction: column; }
+      .drawer-head { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; align-items: start; }
+      .drawer-body { padding: 16px; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
+      .cluster { border: 1px solid var(--border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+      .cluster .top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+      .cluster .ans { font-size: 18px; }
+      .cluster .bar { height: 6px; background: var(--muted); border-radius: 3px; overflow: hidden; }
+      .cluster .bar i { display: block; height: 100%; background: var(--primary); }
+      .cluster .acts { display: flex; flex-wrap: wrap; gap: 6px; }
+      .steps { display: flex; flex-direction: column; gap: 8px; }
+      .step { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; }
+      .step .m { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+      .step .m.y { background: var(--good-soft); color: var(--good); }
+      .step .m.n { background: var(--bad-soft); color: var(--bad); }
+      .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+      .skill { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+      .stack { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--muted); }
+      .stack i:nth-child(1) { background: var(--good); }
+      .stack i:nth-child(2) { background: #f59e0b; }
+      .stack i:nth-child(3) { background: #ef4444; }
+      .legend { display: flex; gap: 12px; font-size: 12px; color: var(--muted-fg); flex-wrap: wrap; }
+      .legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; background: currentColor; }
+      .toast { position: fixed; z-index: 70; left: 50%; bottom: 24px; transform: translateX(-50%); background: #111; color: #fff; border-radius: 8px; padding: 10px 14px; font-size: 13px; }
+      .bar-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+      .toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted-fg); cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand"><span class="logo">∑</span><div>Math teaching<small>Prototype for prd/math-teaching</small></div></div>
+      <div class="seg" role="group" aria-label="Flow">
+        <button data-flow="author" aria-pressed="true">1 · Teacher writes</button>
+        <button data-flow="student" aria-pressed="false">2 · Student answers</button>
+        <button data-flow="results" aria-pressed="false">3 · Teacher results</button>
+      </div>
+      <span class="engine" id="engine"><i></i><span>Loading math engine…</span></span>
+    </header>
+
+    <section id="flow-author">
+      <div class="app">
+        <aside class="side">
+          <div class="side-course"><div class="logo">AF</div><div><div>Algebra Foundations</div><div class="s">JSS2 · 42 students</div></div></div>
+          <div class="side-sec">Course</div>
+          <div class="side-row">Overview</div>
+          <div class="side-row">Lessons</div>
+          <div class="side-row active">Exercises</div>
+          <div class="side-row">Submissions</div>
+          <div class="side-row">Marks</div>
+          <div class="side-row">AI tutor</div>
+        </aside>
+        <div class="main">
+          <div class="crumbs">Exercises / Week 3 quiz</div>
+          <h1 style="font-size: 22px">Week 3 quiz · Linear expressions</h1>
+          <div class="tabs"><span class="on">Questions</span><span>Settings</span><span>Submissions</span></div>
+          <p class="note">Prototype. "Try an answer" and every grade in this prototype come from the real math engine (Compute Engine) running in your browser. Photo, Draw and Ask AI return sample results; the real version sends the image or prompt to a vision model. Settings you change here carry over to tabs 2 and 3.</p>
+          <div class="hint"><span>In any title, option or description: type <kbd>$</kbd> or <kbd>/math</kbd> to add math</span><span>Click a formula to edit it</span><span>Paste LaTeX from ChatGPT and it turns into math</span></div>
+          <div id="qcards" style="display: flex; flex-direction: column; gap: 16px"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow-student" hidden>
+      <div class="student">
+        <div class="phone" id="phone"></div>
+        <div class="side-notes">
+          <h2>What the student sees</h2>
+          <ul>
+            <li>Each question picks its own keypad. Question 1 is algebra; question 2 is numbers and fractions only.</li>
+            <li>Answers are real math, not text: type <code>2(x+1)</code> or <code>2+2x</code> and the engine decides.</li>
+            <li>The hint button is the AI tutor in hint-only mode. It checks the student's answer with the engine first, so it never "agrees" with a wrong answer.</li>
+            <li>Question 4 grades the final answer at once and sends the working (typed, photo or drawing) to the teacher with an AI-suggested mark.</li>
+            <li>When you submit, your answers appear as the "You" row in tab 3.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow-results" hidden>
+      <div class="results" id="results"></div>
+    </section>
+
+    <div class="pop" id="pop" hidden role="dialog" aria-label="Math editor">
+      <div class="pop-tabs" role="group">
+        <button data-tab="type" aria-pressed="true">Type</button>
+        <button data-tab="photo" aria-pressed="false">Photo</button>
+        <button data-tab="draw" aria-pressed="false">Draw</button>
+        <button data-tab="ai" aria-pressed="false">Ask AI</button>
+      </div>
+      <div class="pop-body">
+        <div data-pane="type">
+          <div class="palette" id="palette"></div>
+          <div style="height: 8px"></div>
+          <math-field id="popMf"></math-field>
+          <div style="height: 6px"></div>
+          <div class="latex-out">LaTeX: <code id="popLatex"></code></div>
+          <div class="fake">Shortcuts: <code>/</code> fraction, <code>^</code> power, <code>sqrt</code>, <code>pi</code>, <code>&lt;=</code>, <code>!=</code></div>
+        </div>
+        <div data-pane="photo" hidden></div>
+        <div data-pane="draw" hidden></div>
+        <div data-pane="ai" hidden></div>
+      </div>
+      <div class="pop-foot">
+        <span class="fake" id="popStatus"></span>
+        <span style="display: flex; gap: 8px"><button class="btn" id="popCancel">Cancel</button><button class="btn primary" id="popInsert">Insert</button></span>
+      </div>
+    </div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="toast" id="toast" hidden></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js"></script>
+    <script type="module">
+      import 'https://cdn.jsdelivr.net/npm/mathlive@0.111.4/mathlive.min.mjs';
+      import { ComputeEngine } from 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.173.0/dist/esm-min/compute-engine.js';
+
+      var ce = new ComputeEngine();
+      var engineReady = false;
+
+      function $(sel, root) { return (root || document).querySelector(sel); }
+      function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+      function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function tex(latex, display) {
+        try { return window.katex.renderToString(latex, { throwOnError: false, displayMode: !!display }); } catch (e) { return esc(latex); }
+      }
+      function mathText(str) {
+        var out = '', re = /\$\$([^$]+)\$\$|\$([^$]+)\$/g, last = 0, m;
+        while ((m = re.exec(str))) {
+          out += esc(str.slice(last, m.index));
+          out += m[1] ? tex(m[1], true) : tex(m[2]);
+          last = re.lastIndex;
+        }
+        return out + esc(str.slice(last));
+      }
+      function toast(msg) {
+        var t = $('#toast');
+        t.textContent = msg;
+        t.hidden = false;
+        clearTimeout(toast.timer);
+        toast.timer = setTimeout(function () { t.hidden = true; }, 2600);
+      }
+      function mf(attrs) {
+        var f = document.createElement('math-field');
+        f.setAttribute('math-virtual-keyboard-policy', 'manual');
+        if (attrs && attrs.value) f.setAttribute('value', attrs.value);
+        if (attrs && attrs.placeholder) f.setAttribute('placeholder', attrs.placeholder);
+        return f;
+      }
+
+      /* ---------- Grading with the real math engine ---------- */
+
+      function numeric(expr, vars) {
+        var e = expr;
+        if (vars && Object.keys(vars).length) e = e.subs(vars);
+        var v = e.N();
+        var n = typeof v.re === 'number' ? v.re : Number(v.valueOf());
+        return n;
+      }
+      function unwrapAnswer(latex) {
+        var expr = ce.parse(latex);
+        var j = expr.json;
+        if (Array.isArray(j) && j[0] === 'Equal' && typeof j[1] === 'string') return ce.box(j[2]);
+        return expr;
+      }
+      function unknownsOf(a, b) {
+        var u = {};
+        (a.unknowns || []).forEach(function (x) { u[x] = 1; });
+        (b.unknowns || []).forEach(function (x) { u[x] = 1; });
+        return Object.keys(u);
+      }
+      function equivalent(a, b, tol) {
+        var vars = unknownsOf(a, b);
+        var points = [0.7, 1.3, 2.1, -1.6, 3.7];
+        var compared = 0;
+        for (var i = 0; i < (vars.length ? points.length : 1); i++) {
+          var sub = {};
+          vars.forEach(function (v, k) { sub[v] = points[(i + k) % points.length]; });
+          var x = numeric(a, sub), y = numeric(b, sub);
+          if (!isFinite(x) || !isFinite(y)) continue;
+          compared++;
+          var limit = tol != null ? tol : 1e-9 * Math.max(1, Math.abs(y));
+          if (Math.abs(x - y) > limit) return false;
+        }
+        if (compared > 0) return true;
+        try { return a.isEqual(b) === true; } catch (e) { return false; }
+      }
+      function walk(node, fn) {
+        fn(node);
+        if (Array.isArray(node)) node.slice(1).forEach(function (c) { walk(c, fn); });
+      }
+      function strip(node) {
+        while (Array.isArray(node) && node[0] === 'Delimiter') node = node[1];
+        return node;
+      }
+      function isSum(node) { node = strip(node); return Array.isArray(node) && (node[0] === 'Add' || node[0] === 'Subtract'); }
+      function formProblem(latex, mode) {
+        var raw = ce.parse(latex, { canonical: false }).json;
+        if (Array.isArray(raw) && raw[0] === 'Equal' && typeof raw[1] === 'string') raw = raw[2];
+        if (mode === 'expanded') {
+          var bad = false;
+          walk(raw, function (n) {
+            if (!Array.isArray(n)) return;
+            if ((n[0] === 'InvisibleOperator' || n[0] === 'Multiply') && n.slice(1).some(isSum)) bad = true;
+            if (n[0] === 'Power' && isSum(n[1])) bad = true;
+          });
+          return bad ? 'not in expanded form' : null;
+        }
+        if (mode === 'factored') {
+          var top = strip(raw);
+          var ok = Array.isArray(top) && (top[0] === 'InvisibleOperator' || top[0] === 'Multiply' || top[0] === 'Power') && top.slice(1).some(isSum);
+          return ok ? null : 'not in factored form';
+        }
+        if (mode === 'simplified') {
+          var unsimplified = false;
+          walk(raw, function (n) {
+            if (!Array.isArray(n)) return;
+            if ((n[0] === 'Divide' || n[0] === 'Rational') && typeof n[1] === 'number' && typeof n[2] === 'number') {
+              var g = gcd(Math.abs(n[1]), Math.abs(n[2]));
+              if (g > 1 || n[2] === 1) unsimplified = true;
+            }
+            if ((n[0] === 'Add' || n[0] === 'Multiply' || n[0] === 'InvisibleOperator') && n.slice(1).every(function (c) { return typeof c === 'number'; })) unsimplified = true;
+          });
+          return unsimplified ? 'not fully simplified' : null;
+        }
+        return null;
+      }
+      function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+      function engineValid(latex) {
+        if (!engineReady) return true;
+        try { return ce.parse(latex).isValid; } catch (e) { return false; }
+      }
+
+      /**
+       * Returns { status: correct | form | wrong | invalid | empty, points, reason, key }.
+       */
+      function gradeMath(q, latex) {
+        latex = (latex || '').trim();
+        if (!latex) return { status: 'empty', points: 0, reason: 'No answer', key: '' };
+        if (!engineReady) return { status: 'empty', points: 0, reason: 'Math engine loading…', key: latex };
+        var expr;
+        try { expr = unwrapAnswer(latex); } catch (e) { return { status: 'invalid', points: 0, reason: 'Not valid math', key: latex }; }
+        if (!expr.isValid) return { status: 'invalid', points: 0, reason: 'Not valid math', key: latex };
+        var key = JSON.stringify(expr.json);
+        var max = q.answerPoints || q.points;
+        var tol = q.check.mode === 'numeric' ? Number(q.check.tolerance || 0) || 1e-9 : null;
+        var match = q.check.accepted.some(function (acc) {
+          try { return equivalent(expr, unwrapAnswer(acc), tol); } catch (e) { return false; }
+        });
+        if (!match) {
+          var fb = q.feedback && q.feedback[latex.replace(/\s/g, '')];
+          return { status: 'wrong', points: 0, reason: fb ? 'Wrong. Feedback: "' + fb + '"' : 'Not equal to the accepted answer', key: key };
+        }
+        var problem = q.check.mode === 'equivalent' || q.check.mode === 'numeric' ? null : formProblem(latex, q.check.mode);
+        if (problem) return { status: 'form', points: 0, reason: 'Equal to the answer, but ' + problem, key: key };
+        return { status: 'correct', points: max, reason: q.check.mode === 'numeric' ? 'Correct value' : q.check.mode === 'equivalent' ? 'Equivalent to the accepted answer' : 'Equivalent and in the required form', key: key };
+      }
+
+      /* ---------- Shared data ---------- */
+
+      var QUESTIONS = [
+        { id: 'q1', type: 'MATH_EXPRESSION', typeLabel: 'Math expression', title: 'Expand $2(x+1)$', description: '<p>Multiply every term inside the bracket.</p>', points: 2, keyboard: 'algebra', skill: 'Expanding brackets', check: { mode: 'expanded', accepted: ['2x+2'] }, feedback: { '2x+1': 'Multiply the 1 by 2 as well.' } },
+        { id: 'q2', type: 'NUMERIC', typeLabel: 'Numeric answer', title: 'Solve $\\frac{3}{4}x = 6$. What is $x$?', description: '', points: 1, keyboard: 'numbers', skill: 'Linear equations', check: { mode: 'numeric', accepted: ['8'], tolerance: 0 } },
+        { id: 'q3', type: 'RADIO', typeLabel: 'Single answer', title: 'Which value of $x$ solves $3x - 5 = 10$?', description: '', points: 1, skill: 'Linear equations', options: ['$x = 5$', '$x = \\frac{5}{3}$', '$x = 15$', '$x = -5$'], correct: 0 },
+        { id: 'q4', type: 'WORKED_SOLUTION', typeLabel: 'Worked solution', title: 'Solve $2x + 3 = 11$ and show your working.', description: '', points: 5, answerPoints: 2, workingPoints: 3, keyboard: 'algebra', skill: 'Linear equations', check: { mode: 'equivalent', accepted: ['4'] }, rubric: ['Subtract 3 from both sides: $2x = 8$', 'Divide both sides by 2', 'State the answer: $x = 4$'] }
+      ];
+      var Q = {};
+      QUESTIONS.forEach(function (q) { Q[q.id] = q; });
+
+      var STUDENTS = [
+        ['Adaeze Okafor', '2x+2', '8', 0, '4', [1, 1, 1]],
+        ['Tunde Bakare', '2+2x', '8', 0, '4', [1, 1, 1]],
+        ['Grace Mensah', '2(x+1)', '\\frac{16}{2}', 0, '4', [1, 0, 1]],
+        ['Ibrahim Musa', '2x+1', '4.5', 3, '7', [0, 0, 0]],
+        ['Chidi Eze', '2x+2', '8', 0, '4', [1, 1, 1]],
+        ['Sofia Alvarez', '2(x+1)', '8', 0, 'x=4', [1, 1, 1]],
+        ['Fatima Bello', '2x+2', '4.5', 2, '4', [1, 1, 0]],
+        ['Daniel Adeyemi', 'x+2', '8', 0, '4', [0, 1, 1]],
+        ['Ngozi Nwosu', '2x+2', '8', 1, '\\frac{8}{2}', [1, 1, 1]],
+        ['Kwame Asante', '2x+1', '24', 2, '7', [0, 1, 0]],
+        ['Amara Obi', '2+2x', '8', 0, '4', [1, 1, 1]],
+        ['Liam Carter', '2(x+1)', '\\frac{16}{2}', 0, '4', [1, 1, 1]],
+        ['Zainab Yusuf', '2x+2', '24', 3, '14', [0, 0, 0]],
+        ['Emeka Uche', '2x+2', '8', 0, '4', [1, 1, 1]]
+      ].map(function (r) {
+        return { name: r[0], answers: { q1: r[1], q2: r[2], q3: r[3], q4: { a: r[4], work: workingFor(r[4], r[5]), ai: aiFor(r[5]) } }, overrides: {}, workingAccepted: null };
+      });
+
+      function workingFor(answer, steps) {
+        var lines = ['2x + 3 = 11'];
+        lines.push(steps[0] ? '2x = 8' : '2x = 14');
+        lines.push(steps[1] ? 'x = 8/2' : 'x = 8 - 2');
+        lines.push('x = ' + answer.replace('x=', '').replace('\\frac{8}{2}', '8/2'));
+        return lines;
+      }
+      function aiFor(steps) {
+        var notes = [
+          ['Subtracted 3 from both sides to get 2x = 8', 'Added 3 instead of subtracting it'],
+          ['Divided both sides by 2', 'Subtracted 2 instead of dividing by 2'],
+          ['Stated the final answer clearly', 'Final answer does not follow from the working']
+        ];
+        var marks = steps.reduce(function (a, b) { return a + b; }, 0);
+        return {
+          steps: steps.map(function (s, i) { return { ok: !!s, note: notes[i][s ? 0 : 1] }; }),
+          marks: marks,
+          confidence: marks === 3 || marks === 0 ? 'High' : 'Medium',
+          comment: marks === 3 ? 'Clear and correct working.' : 'First mistake is in step ' + (steps.indexOf(0) + 1) + '.'
+        };
+      }
+      var you = null;
+
+      /* ---------- Editable text with math chips ---------- */
+
+      function makeChip(latex, block) {
+        var c = document.createElement(block ? 'div' : 'span');
+        c.className = block ? 'mblock' : 'mchip';
+        c.contentEditable = 'false';
+        c.dataset.latex = latex || '';
+        renderChip(c);
+        c.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        c.addEventListener('click', function () { openPop(c, false); });
+        return c;
+      }
+      function renderChip(c) {
+        c.innerHTML = c.dataset.latex ? tex(c.dataset.latex, c.classList.contains('mblock')) : '<span class="mchip-empty">math</span>';
+      }
+      function fillEditable(node, str) {
+        node.innerHTML = '';
+        var re = /\$\$([^$]+)\$\$|\$([^$]+)\$/g, last = 0, m;
+        while ((m = re.exec(str))) {
+          if (m.index > last) node.appendChild(document.createTextNode(str.slice(last, m.index)));
+          node.appendChild(makeChip(m[1] || m[2], !!m[1]));
+          last = re.lastIndex;
+        }
+        if (last < str.length) node.appendChild(document.createTextNode(str.slice(last)));
+      }
+      function serialize(node) {
+        var out = '';
+        node.childNodes.forEach(function (n) {
+          if (n.nodeType === 3) out += n.textContent;
+          else if (n.classList && n.classList.contains('mchip')) out += n.dataset.latex ? '$' + n.dataset.latex + '$' : '';
+          else if (n.classList && n.classList.contains('mblock')) out += n.dataset.latex ? '$$' + n.dataset.latex + '$$' : '';
+          else out += serialize(n);
+        });
+        return out;
+      }
+      function insertAtCaret(node) {
+        var sel = window.getSelection();
+        if (!sel.rangeCount) return;
+        var range = sel.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(node);
+        range.setStartAfter(node);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      function bindEditable(node, initial, onChange, opts) {
+        fillEditable(node, initial);
+        node.contentEditable = 'true';
+        node.addEventListener('keydown', function (e) {
+          if (e.key === '$') {
+            e.preventDefault();
+            var chip = makeChip('', false);
+            insertAtCaret(chip);
+            openPop(chip, true);
+          }
+          if (e.key === 'Enter' && opts && opts.singleLine) e.preventDefault();
+        });
+        node.addEventListener('input', function () {
+          var sel = window.getSelection();
+          var n = sel.anchorNode;
+          if (n && n.nodeType === 3 && /\/math$/.test(n.textContent.slice(0, sel.anchorOffset))) {
+            var off = sel.anchorOffset;
+            n.textContent = n.textContent.slice(0, off - 5) + n.textContent.slice(off);
+            var r = document.createRange();
+            r.setStart(n, off - 5);
+            r.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(r);
+            var chip = makeChip('', false);
+            insertAtCaret(chip);
+            openPop(chip, true);
+          }
+          onChange(serialize(node));
+        });
+        node.addEventListener('paste', function (e) {
+          var text = (e.clipboardData || window.clipboardData).getData('text/plain');
+          e.preventDefault();
+          var converted = convertPasted(text);
+          var frag = document.createElement('span');
+          fillEditable(frag, opts && opts.singleLine ? converted.replace(/\s*\n\s*/g, ' ') : converted);
+          var nodes = Array.prototype.slice.call(frag.childNodes);
+          nodes.forEach(function (n) { insertAtCaret(n); });
+          onChange(serialize(node));
+          if (converted !== text || /\$/.test(text)) toast('Pasted math converted to editable formulas');
+        });
+      }
+      function convertPasted(text) {
+        return text
+          .replace(/\\\[([\s\S]+?)\\\]/g, function (_, m) { return '$$' + m.trim() + '$$'; })
+          .replace(/\\\(([\s\S]+?)\\\)/g, function (_, m) { return '$' + m.trim() + '$'; });
+      }
+
+      /* ---------- Author view ---------- */
+
+      var MODES = [
+        ['equivalent', 'Any equivalent form'],
+        ['expanded', 'Equivalent, expanded form'],
+        ['factored', 'Equivalent, factored form'],
+        ['simplified', 'Equivalent, simplified'],
+        ['numeric', 'A number (with tolerance)']
+      ];
+      var KEYBOARDS = [['numbers', 'Numbers and fractions'], ['algebra', 'Algebra'], ['calculus', 'Calculus'], ['greek', 'Greek and symbols']];
+
+      function options(list, value) {
+        return list.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === value ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('');
+      }
+
+      function renderAuthor() {
+        var wrap = $('#qcards');
+        wrap.innerHTML = '';
+        QUESTIONS.forEach(function (q, i) {
+          var card = document.createElement('div');
+          card.className = 'qcard';
+          var pts = q.type === 'WORKED_SOLUTION' ? q.answerPoints + ' + ' + q.workingPoints + ' pts' : q.points + (q.points === 1 ? ' pt' : ' pts');
+          card.innerHTML =
+            '<div class="qhead"><div class="left"><span class="qnum">' + (i + 1) + '</span><span class="pill">' + q.typeLabel + '</span><span class="pill">' + pts + '</span><span class="pill">Skill: ' + q.skill + '</span></div></div>' +
+            '<div class="field"><span class="label">Question</span><div class="mline" data-placeholder="Type the question, use $ for math"></div></div>' +
+            (i === 0 ? '<div class="field"><span class="label">Description</span><div class="toolbar"><button title="Bold"><b>B</b></button><button title="Italic"><i>I</i></button><button data-ins="inline" title="Inline math">Σ inline</button><button data-ins="block" title="Block math">Σ block</button></div><div class="mrich"></div></div>' : '') +
+            '<div class="body"></div>';
+          wrap.appendChild(card);
+          bindEditable($('.mline', card), q.title, function (v) { q.title = v; }, { singleLine: true });
+          if (i === 0) {
+            var rich = $('.mrich', card);
+            rich.innerHTML = q.description;
+            rich.contentEditable = 'true';
+            rich.appendChild(makeChip('a(b+c) = ab + ac', true));
+            rich.addEventListener('keydown', function (e) {
+              if (e.key === '$') { e.preventDefault(); var c = makeChip('', false); insertAtCaret(c); openPop(c, true); }
+            });
+            $$('[data-ins]', card).forEach(function (b) {
+              b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+              b.addEventListener('click', function () {
+                var block = b.dataset.ins === 'block';
+                var c = makeChip('', block);
+                if (!rich.contains(window.getSelection().anchorNode)) { rich.focus(); var r = document.createRange(); r.selectNodeContents(rich); r.collapse(false); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); }
+                insertAtCaret(c);
+                openPop(c, true);
+              });
+            });
+          }
+          var body = $('.body', card);
+          if (q.type === 'RADIO') renderRadioEdit(q, body);
+          else renderAnswerEdit(q, body);
+        });
+      }
+
+      function renderRadioEdit(q, body) {
+        body.innerHTML = '<div class="field"><span class="label">Options (click the circle to mark the correct one)</span><div class="opts"></div></div>';
+        var list = $('.opts', body);
+        q.options.forEach(function (o, k) {
+          var row = document.createElement('div');
+          row.className = 'opt';
+          row.innerHTML = '<button class="radio' + (k === q.correct ? ' on' : '') + '" aria-label="Mark correct" style="padding:0;background:#fff"></button><div class="mline"></div>';
+          list.appendChild(row);
+          bindEditable($('.mline', row), o, function (v) { q.options[k] = v; }, { singleLine: true });
+          $('.radio', row).addEventListener('click', function () {
+            q.correct = k;
+            $$('.radio', list).forEach(function (r, j) { r.classList.toggle('on', j === k); });
+          });
+        });
+      }
+
+      function renderAnswerEdit(q, body) {
+        var isWorked = q.type === 'WORKED_SOLUTION';
+        body.innerHTML =
+          '<div class="answer-box">' +
+          '<div class="row">' +
+          '<div class="field"><span class="label">' + (isWorked ? 'Final answer' : 'Accepted answer') + '</span><div class="acc"></div></div>' +
+          '<div class="field"><span class="label">Check as</span><select class="input mode">' + options(MODES, q.check.mode) + '</select></div>' +
+          '<div class="field"><span class="label">Student keypad</span><select class="input kb">' + options(KEYBOARDS, q.keyboard) + '</select></div>' +
+          '</div>' +
+          '<div class="field"><span class="label">Try an answer: type what a student might write</span><div class="try"><div class="trymf"></div><span class="verdict"></span></div><div class="tries"></div></div>' +
+          (q.feedback ? '<div class="fb-row"><span class="label">If a student answers</span><span class="pill">' + tex('2x+1') + '</span><span class="label">say</span><input class="input" value="' + esc(q.feedback['2x+1']) + '" /></div>' : '') +
+          (isWorked ? '<div class="field"><span class="label">Working rubric (3 pts, AI suggests marks, you approve)</span><ol class="rubric">' + q.rubric.map(function (r) { return '<li>' + mathText(r) + '</li>'; }).join('') + '</ol></div>' : '') +
+          '<span class="applies">Changes apply to tabs 2 and 3.</span>' +
+          '</div>';
+        var acc = mf({ value: q.check.accepted[0] });
+        $('.acc', body).appendChild(acc);
+        var tryF = mf({ placeholder: '\\text{e.g. }2(x+1)' });
+        $('.trymf', body).appendChild(tryF);
+        var verdict = $('.verdict', body);
+        function run() {
+          var r = gradeMath(q, tryF.value);
+          var cls = r.status === 'correct' ? 'good' : r.status === 'form' ? 'warn' : r.status === 'empty' ? '' : 'bad';
+          var word = r.status === 'correct' ? 'Marked correct' : r.status === 'form' ? 'Marked wrong' : r.status === 'empty' ? '' : r.status === 'invalid' ? 'Not valid math' : 'Marked wrong';
+          verdict.innerHTML = r.status === 'empty' ? '<span class="fake">' + (engineReady ? 'Type a student answer to test the grading' : esc(r.reason)) + '</span>' : '<span class="pill ' + cls + '">' + word + '</span> <span class="fake">' + esc(r.reason) + '</span>';
+        }
+        acc.addEventListener('input', function () { q.check.accepted = [acc.value]; run(); });
+        tryF.addEventListener('input', run);
+        $('.mode', body).addEventListener('change', function (e) { q.check.mode = e.target.value; run(); });
+        $('.kb', body).addEventListener('change', function (e) { q.keyboard = e.target.value; });
+        var samples = q.id === 'q1' ? ['2+2x', '2(x+1)', '2x+1', 'x+x+2'] : q.id === 'q2' ? ['8', '\\frac{16}{2}', '8.0', '4.5'] : ['4', 'x=4', '\\frac{8}{2}', '7'];
+        var tries = $('.tries', body);
+        tries.innerHTML = '<span class="fake">Quick tries:</span>';
+        samples.forEach(function (s) {
+          var b = document.createElement('button');
+          b.innerHTML = tex(s);
+          b.addEventListener('click', function () { tryF.value = s; run(); });
+          tries.appendChild(b);
+        });
+        q._runTry = run;
+      }
+
+      /* ---------- Sample images (inline SVG so the handwriting font loads) ---------- */
+
+      function notebookSvg(lines, opts) {
+        var w = 360, lh = 34, h = 30 + lines.length * lh + 20;
+        var rules = '';
+        for (var y = 34; y < h; y += lh) rules += '<line x1="0" x2="' + w + '" y1="' + y + '" y2="' + y + '" stroke="#bfdbfe" stroke-width="1"/>';
+        var text = lines.map(function (l, i) {
+          return '<text x="' + (34 + (i % 2) * 3) + '" y="' + (28 + (i + 1) * lh - 8) + '" font-family="Caveat, cursive" font-size="27" fill="#1e3a8a" transform="rotate(' + (i % 2 ? -0.8 : 0.6) + ' 180 ' + (i * lh) + ')">' + esc(l) + '</text>';
+        }).join('');
+        return '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#fffdf6"/>' + rules + '<line x1="24" x2="24" y1="0" y2="' + h + '" stroke="#fca5a5"/>' + text + '</svg>';
+      }
+      function textbookSvg() {
+        return '<svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#fbfaf7"/>' +
+          '<text x="20" y="34" font-family="Georgia, serif" font-size="17" font-weight="bold" fill="#111">Exercise 4B</text>' +
+          '<text x="20" y="60" font-family="Georgia, serif" font-size="13" fill="#444">Solve each equation for x.</text>' +
+          '<text x="20" y="104" font-family="Georgia, serif" font-size="15" fill="#111">6.  5x − 7 = 18</text>' +
+          '<text x="20" y="158" font-family="Georgia, serif" font-size="15" fill="#111">7.</text>' +
+          '<text x="62" y="146" font-family="Georgia, serif" font-size="15" fill="#111">x + 3</text><line x1="58" x2="108" y1="152" y2="152" stroke="#111"/><text x="78" y="170" font-family="Georgia, serif" font-size="15" fill="#111">2</text>' +
+          '<text x="118" y="158" font-family="Georgia, serif" font-size="15" fill="#111">=</text>' +
+          '<text x="140" y="146" font-family="Georgia, serif" font-size="15" fill="#111">2x − 1</text><line x1="136" x2="196" y1="152" y2="152" stroke="#111"/><text x="160" y="170" font-family="Georgia, serif" font-size="15" fill="#111">3</text>' +
+          '<text x="20" y="214" font-family="Georgia, serif" font-size="15" fill="#111">8.  4(x − 2) = 3x + 1</text></svg>';
+      }
+      var PHOTO_SAMPLES = {
+        textbook: { label: 'Textbook page', svg: textbookSvg, sel: [10, 54, 58, 26], result: '\\frac{x+3}{2}=\\frac{2x-1}{3}' },
+        notebook: { label: 'Notebook (handwriting)', svg: function () { return notebookSvg(['Q3.', 'x² − 5x + 6 = 0', 'find both roots']); }, sel: [6, 33, 74, 30], result: 'x^2-5x+6=0' }
+      };
+      var DRAW_RESULTS = ['\\sqrt{x+4}=5', '\\frac{a}{b}+\\frac{c}{d}', 'y=mx+c'];
+      var AI_RESULTS = [
+        [/quadratic.*roots?|roots?.*quadratic/i, 'x^2-x-6'],
+        [/circle/i, '(x-a)^2+(y-b)^2=r^2'],
+        [/pythag/i, 'a^2+b^2=c^2'],
+        [/compound|interest/i, 'A=P\\left(1+\\frac{r}{n}\\right)^{nt}'],
+        [/gradient|slope/i, 'm=\\frac{y_2-y_1}{x_2-x_1}'],
+        [/.*/, '\\frac{x^2-4}{x-2}']
+      ];
+
+      /* ---------- Math popover ---------- */
+
+      var pop = { chip: null, isNew: false, tab: 'type', pending: null };
+      var popEl = $('#pop');
+      var popMf = $('#popMf');
+      var PALETTE = [
+        ['a/b', '\\frac{#@}{#?}'], ['x²', '#@^{2}'], ['xⁿ', '#@^{#?}'], ['xₙ', '#@_{#?}'], ['√', '\\sqrt{#0}'], ['ⁿ√', '\\sqrt[#?]{#0}'],
+        ['±', '\\pm'], ['π', '\\pi'], ['θ', '\\theta'], ['≤', '\\le'], ['≥', '\\ge'], ['≠', '\\ne'], ['∞', '\\infty'], ['|x|', '\\left|#0\\right|'],
+        ['( )', '\\left(#0\\right)'], ['matrix', '\\begin{pmatrix}#0 & #? \\\\ #? & #?\\end{pmatrix}'], ['system', '\\begin{cases}#0 \\\\ #?\\end{cases}'],
+        ['∫', '\\int_{#?}^{#?} #0 \\,dx'], ['Σ', '\\sum_{#?}^{#?} #0'], ['lim', '\\lim_{#?\\to #?} #0'], ['°', '^{\\circ}']
+      ];
+      PALETTE.forEach(function (p) {
+        var b = document.createElement('button');
+        b.textContent = p[0];
+        b.title = p[1];
+        b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        b.addEventListener('click', function () { popMf.insert(p[1], { selectionMode: 'placeholder', focus: true }); updateLatex(); });
+        $('#palette').appendChild(b);
+      });
+      popMf.setAttribute('math-virtual-keyboard-policy', 'manual');
+      function updateLatex() { $('#popLatex').textContent = popMf.value || '(empty)'; }
+      popMf.addEventListener('input', updateLatex);
+      popMf.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); closePop(true); }
+        if (e.key === 'Escape') { e.preventDefault(); closePop(false); }
+      }, true);
+
+      function openPop(chip, isNew) {
+        if (pop.chip && pop.chip !== chip) closePop(false);
+        pop.chip = chip;
+        pop.isNew = isNew;
+        pop.pending = null;
+        chip.classList.add('editing');
+        popEl.hidden = false;
+        popMf.value = chip.dataset.latex || '';
+        updateLatex();
+        setTab('type');
+        place();
+        setTimeout(function () { popMf.focus(); }, 30);
+      }
+      function place() {
+        if (!pop.chip) return;
+        var r = pop.chip.getBoundingClientRect();
+        var w = popEl.offsetWidth, h = popEl.offsetHeight;
+        var top = r.bottom + 8;
+        if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 8);
+        var left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8);
+        popEl.style.top = top + 'px';
+        popEl.style.left = left + 'px';
+      }
+      window.addEventListener('resize', place);
+      window.addEventListener('scroll', place, true);
+      function closePop(insert) {
+        var chip = pop.chip;
+        if (!chip) return;
+        var latex = pop.tab === 'type' ? popMf.value : pop.pending;
+        if (insert && latex) {
+          chip.dataset.latex = latex;
+          renderChip(chip);
+        } else if (!chip.dataset.latex) {
+          chip.remove();
+        }
+        chip.classList.remove('editing');
+        var host = chip.closest ? chip.closest('[contenteditable="true"]') : null;
+        if (host) host.dispatchEvent(new Event('input'));
+        pop.chip = null;
+        popEl.hidden = true;
+      }
+      $('#popCancel').addEventListener('click', function () { closePop(false); });
+      $('#popInsert').addEventListener('click', function () { closePop(true); });
+      document.addEventListener('mousedown', function (e) {
+        if (!pop.chip || popEl.contains(e.target) || pop.chip.contains(e.target)) return;
+        closePop(true);
+      });
+
+      function setTab(tab) {
+        pop.tab = tab;
+        $$('.pop-tabs button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.tab === tab)); });
+        $$('[data-pane]').forEach(function (p) { p.hidden = p.dataset.pane !== tab; });
+        $('#popInsert').disabled = false;
+        $('#popStatus').textContent = '';
+        if (tab === 'type') { setTimeout(function () { popMf.focus(); }, 30); }
+        if (tab === 'photo') renderPhotoPick();
+        if (tab === 'draw') renderDraw();
+        if (tab === 'ai') renderAi();
+        place();
+      }
+      $$('.pop-tabs button').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+
+      function reviewBlock(container, thumbHtml, latex, sourceNote) {
+        var wrap = document.createElement('div');
+        wrap.className = 'review';
+        wrap.innerHTML = '<div class="thumb">' + thumbHtml + '</div><div class="field"><span class="label">Converted. Edit if anything is wrong</span><div class="rmf"></div><span class="check"></span><span class="fake">' + sourceNote + '</span></div>';
+        var f = mf({ value: latex });
+        $('.rmf', wrap).appendChild(f);
+        function check() {
+          var ok = engineValid(f.value);
+          var c = $('.check', wrap);
+          c.className = 'check ' + (ok ? 'ok' : 'no');
+          c.textContent = ok ? '✓ Valid math (checked by the math engine)' : '✗ The engine cannot read this. Fix it before inserting';
+          pop.pending = ok ? f.value : null;
+          $('#popInsert').disabled = !ok;
+        }
+        f.addEventListener('input', check);
+        container.appendChild(wrap);
+        setTimeout(check, 0);
+        place();
+      }
+      function converting(container, label, done) {
+        var c = document.createElement('div');
+        c.className = 'converting';
+        c.innerHTML = '<span class="spin"></span>' + label;
+        container.appendChild(c);
+        $('#popInsert').disabled = true;
+        place();
+        setTimeout(function () { c.remove(); done(); }, 1100);
+      }
+
+      function renderPhotoPick() {
+        var pane = $('[data-pane="photo"]');
+        pop.pending = null;
+        $('#popInsert').disabled = true;
+        pane.innerHTML = '<div class="drop"><div><b>Drop an image, paste a screenshot (Ctrl/Cmd+V), or take a photo</b></div><label class="btn"><input type="file" accept="image/*" capture="environment" hidden />Choose or take photo</label><div class="fake">Or try a sample:</div><div class="samples"></div></div>';
+        Object.keys(PHOTO_SAMPLES).forEach(function (k) {
+          var b = document.createElement('button');
+          b.className = 'btn sm';
+          b.textContent = PHOTO_SAMPLES[k].label;
+          b.addEventListener('click', function () { renderPhotoImage(PHOTO_SAMPLES[k].svg(), PHOTO_SAMPLES[k]); });
+          $('.samples', pane).appendChild(b);
+        });
+        $('input[type=file]', pane).addEventListener('change', function (e) {
+          var file = e.target.files[0];
+          if (!file) return;
+          var url = URL.createObjectURL(file);
+          renderPhotoImage('<img src="' + url + '" alt="Uploaded" />', { sel: [10, 30, 80, 30], result: '3x+4=19', own: true });
+        });
+        place();
+      }
+      document.addEventListener('paste', function (e) {
+        if (!pop.chip || pop.tab !== 'photo') return;
+        var item = Array.prototype.find.call(e.clipboardData.items || [], function (i) { return i.type.indexOf('image') === 0; });
+        if (!item) return;
+        var url = URL.createObjectURL(item.getAsFile());
+        renderPhotoImage('<img src="' + url + '" alt="Pasted" />', { sel: [10, 30, 80, 30], result: '3x+4=19', own: true });
+      });
+      function renderPhotoImage(imgHtml, sample) {
+        var pane = $('[data-pane="photo"]');
+        pane.innerHTML = '<div class="label">Drag a box around the math you want</div><div class="imgwrap">' + imgHtml + '<div class="sel"></div></div><div style="display:flex;gap:8px;justify-content:space-between"><button class="btn sm ghost back">← Another image</button><button class="btn sm primary go">Convert selection</button></div>';
+        var wrap = $('.imgwrap', pane), sel = $('.sel', pane);
+        var s = sample.sel.slice();
+        function draw() { sel.style.left = s[0] + '%'; sel.style.top = s[1] + '%'; sel.style.width = s[2] + '%'; sel.style.height = s[3] + '%'; }
+        draw();
+        var start = null;
+        wrap.addEventListener('pointerdown', function (e) {
+          var r = wrap.getBoundingClientRect();
+          start = [((e.clientX - r.left) / r.width) * 100, ((e.clientY - r.top) / r.height) * 100];
+          wrap.setPointerCapture(e.pointerId);
+        });
+        wrap.addEventListener('pointermove', function (e) {
+          if (!start) return;
+          var r = wrap.getBoundingClientRect();
+          var x = ((e.clientX - r.left) / r.width) * 100, y = ((e.clientY - r.top) / r.height) * 100;
+          s = [Math.min(start[0], x), Math.min(start[1], y), Math.abs(x - start[0]), Math.abs(y - start[1])];
+          draw();
+        });
+        wrap.addEventListener('pointerup', function () { start = null; });
+        $('.back', pane).addEventListener('click', renderPhotoPick);
+        $('.go', pane).addEventListener('click', function () {
+          var out = document.createElement('div');
+          pane.appendChild(out);
+          $('.go', pane).disabled = true;
+          converting(out, 'Reading the math in your selection…', function () {
+            reviewBlock(out, imgHtml, sample.result, sample.own ? 'Prototype: your own uploads return a sample result. The real version sends the selection to a vision model.' : 'Prototype: sample result. The real version sends the selection to a vision model.');
+          });
+        });
+        place();
+      }
+
+      function renderDraw() {
+        var pane = $('[data-pane="draw"]');
+        pop.pending = null;
+        $('#popInsert').disabled = true;
+        pane.innerHTML = '<div class="canvas-wrap"><canvas></canvas><div class="ph">Write with your finger, stylus or mouse</div></div><div style="display:flex;gap:8px"><button class="btn sm clear">Clear</button><span class="fake" style="align-self:center">Converts when you pause writing</span></div><div class="out"></div>';
+        attachCanvas($('canvas', pane), $('.ph', pane), $('.clear', pane), function (canvas) {
+          var out = $('.out', pane);
+          out.innerHTML = '';
+          var latex = DRAW_RESULTS[renderDraw.n++ % DRAW_RESULTS.length];
+          converting(out, 'Reading your handwriting…', function () {
+            reviewBlock(out, '<img alt="Drawing" src="' + canvas.toDataURL() + '" />', latex, 'Prototype: sample result. The real version sends the drawing to a vision model.');
+          });
+        });
+        place();
+      }
+      renderDraw.n = 0;
+
+      function attachCanvas(canvas, placeholder, clearBtn, onPause) {
+        var ctx, drawing = false, timer = null, hasInk = false;
+        function size() {
+          var r = canvas.getBoundingClientRect();
+          canvas.width = r.width * 2;
+          canvas.height = r.height * 2;
+          ctx = canvas.getContext('2d');
+          ctx.scale(2, 2);
+          ctx.lineWidth = 2.6;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.strokeStyle = '#1e3a8a';
+        }
+        setTimeout(size, 0);
+        canvas.addEventListener('pointerdown', function (e) {
+          drawing = true;
+          hasInk = true;
+          placeholder.hidden = true;
+          clearTimeout(timer);
+          var r = canvas.getBoundingClientRect();
+          ctx.beginPath();
+          ctx.moveTo(e.clientX - r.left, e.clientY - r.top);
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener('pointermove', function (e) {
+          if (!drawing) return;
+          var r = canvas.getBoundingClientRect();
+          ctx.lineTo(e.clientX - r.left, e.clientY - r.top);
+          ctx.stroke();
+        });
+        canvas.addEventListener('pointerup', function () {
+          drawing = false;
+          clearTimeout(timer);
+          if (onPause) timer = setTimeout(function () { if (hasInk) onPause(canvas); }, 900);
+        });
+        clearBtn.addEventListener('click', function () {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          hasInk = false;
+          placeholder.hidden = false;
+        });
+      }
+
+      function renderAi() {
+        var pane = $('[data-pane="ai"]');
+        pop.pending = null;
+        $('#popInsert').disabled = true;
+        pane.innerHTML = '<div class="field"><span class="label">Describe the math you want</span><input class="input prompt" placeholder="e.g. a quadratic with roots 3 and −2, not factored" /></div><div class="samples" style="justify-content:flex-start"></div><button class="btn sm primary go" style="align-self:flex-start">Generate</button><div class="out"></div>';
+        ['a quadratic with roots 3 and −2, not factored', 'equation of a circle', 'compound interest formula', 'gradient between two points'].forEach(function (s) {
+          var b = document.createElement('button');
+          b.className = 'btn sm';
+          b.textContent = s;
+          b.addEventListener('click', function () { $('.prompt', pane).value = s; go(); });
+          $('.samples', pane).appendChild(b);
+        });
+        function go() {
+          var p = $('.prompt', pane).value.trim();
+          if (!p) return;
+          var latex = AI_RESULTS.find(function (r) { return r[0].test(p); })[1];
+          var out = $('.out', pane);
+          out.innerHTML = '';
+          converting(out, 'Writing it…', function () {
+            reviewBlock(out, '<div style="padding:8px;font-size:12px;color:#525252">“' + esc(p) + '”</div>', latex, 'Prototype: sample result. The real version asks the model, then the engine checks the result.');
+          });
+        }
+        $('.go', pane).addEventListener('click', go);
+        $('.prompt', pane).addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+        setTimeout(function () { $('.prompt', pane).focus(); }, 30);
+        place();
+      }
+
+      /* ---------- Student view ---------- */
+
+      var st = { idx: 0, answers: { q1: '', q2: '', q3: null, q4: { a: '', workTab: 'type', work: ['', '', ''], photo: false, drew: false } }, submitted: false, sheet: null };
+      var KEYPADS = {
+        numbers: { cols: 4, keys: [['7'], ['8'], ['9'], ['⌫', 'del', 'fn'], ['4'], ['5'], ['6'], ['a/b', '\\frac{#@}{#?}', 'fn'], ['1'], ['2'], ['3'], ['−', '-'], ['0'], ['.'], ['←', 'left', 'fn'], ['→', 'right', 'fn']] },
+        algebra: { cols: 5, keys: [['x'], ['y'], ['('], [')'], ['⌫', 'del', 'fn'], ['7'], ['8'], ['9'], ['÷', '\\div'], ['x²', '^2', 'fn'], ['4'], ['5'], ['6'], ['×', '\\times'], ['√', '\\sqrt{#0}', 'fn'], ['1'], ['2'], ['3'], ['−', '-'], ['a/b', '\\frac{#@}{#?}', 'fn'], ['0'], ['.'], ['='], ['+'], ['←', 'left', 'fn']] }
+      };
+      KEYPADS.calculus = KEYPADS.algebra;
+      KEYPADS.greek = KEYPADS.algebra;
+
+      function keypad(field, layout) {
+        var k = KEYPADS[layout] || KEYPADS.algebra;
+        var pad = document.createElement('div');
+        pad.className = 'keypad';
+        pad.style.gridTemplateColumns = 'repeat(' + k.cols + ', 1fr)';
+        k.keys.forEach(function (key) {
+          var b = document.createElement('button');
+          b.textContent = key[0];
+          if (key[2]) b.className = key[2];
+          b.addEventListener('pointerdown', function (e) { e.preventDefault(); });
+          b.addEventListener('click', function () {
+            var v = key[1] || key[0];
+            if (v === 'del') field.executeCommand('deleteBackward');
+            else if (v === 'left') field.executeCommand('moveToPreviousChar');
+            else if (v === 'right') field.executeCommand('moveToNextChar');
+            else field.insert(v, { selectionMode: 'placeholder', focus: true });
+            field.dispatchEvent(new Event('input'));
+          });
+          pad.appendChild(b);
+        });
+        return pad;
+      }
+
+      function renderStudent() {
+        var phone = $('#phone');
+        if (st.submitted) return renderStudentResult(phone);
+        var q = QUESTIONS[st.idx];
+        phone.innerHTML =
+          '<div class="ph-head"><div class="t">Week 3 quiz</div><div class="dots">' + QUESTIONS.map(function (_, i) { return '<span class="' + (i === st.idx ? 'on' : i < st.idx ? 'done' : '') + '"></span>'; }).join('') + '</div></div>' +
+          '<div class="ph-body"><div class="ph-meta"><span>Question ' + (st.idx + 1) + ' of ' + QUESTIONS.length + '</span><span>' + q.points + (q.points === 1 ? ' point' : ' points') + '</span></div><div class="ph-q">' + mathText(q.title) + '</div>' + (q.description ? '<div class="fake" style="font-size:13px">' + q.description.replace(/<[^>]+>/g, '') + '</div>' : '') + '<div class="ans"></div><button class="tutor-btn">💡 Get a hint from the AI tutor</button></div>' +
+          '<div class="kp"></div>' +
+          '<div class="ph-foot"><button class="btn prev"' + (st.idx === 0 ? ' disabled' : '') + '>Back</button><button class="btn primary next">' + (st.idx === QUESTIONS.length - 1 ? 'Submit' : 'Next') + '</button></div>';
+        var ans = $('.ans', phone), kp = $('.kp', phone);
+        var field = null;
+        if (q.type === 'RADIO') {
+          ans.className = 'ph-opts';
+          q.options.forEach(function (o, k) {
+            var b = document.createElement('button');
+            b.className = 'ph-opt';
+            b.setAttribute('aria-pressed', String(st.answers.q3 === k));
+            b.innerHTML = mathText(o);
+            b.addEventListener('click', function () { st.answers.q3 = k; renderStudent(); });
+            ans.appendChild(b);
+          });
+        } else {
+          var label = q.type === 'WORKED_SOLUTION' ? 'Final answer' : 'Your answer';
+          ans.innerHTML = '<div class="field"><span class="label">' + label + '</span><div class="mfh"></div></div>';
+          field = mf({ value: q.type === 'WORKED_SOLUTION' ? st.answers.q4.a : st.answers[q.id] });
+          field.style.fontSize = '22px';
+          $('.mfh', ans).appendChild(field);
+          field.addEventListener('input', function () {
+            if (q.type === 'WORKED_SOLUTION') st.answers.q4.a = field.value; else st.answers[q.id] = field.value;
+          });
+          kp.appendChild(keypad(field, q.keyboard));
+          setTimeout(function () { field.focus(); }, 50);
+          if (q.type === 'WORKED_SOLUTION') renderWorking(ans, kp, field);
+        }
+        $('.tutor-btn', phone).addEventListener('click', function () { showHint(phone, q); });
+        $('.prev', phone).addEventListener('click', function () { st.idx--; renderStudent(); });
+        $('.next', phone).addEventListener('click', function () {
+          if (st.idx < QUESTIONS.length - 1) { st.idx++; renderStudent(); } else submitStudent();
+        });
+      }
+
+      function renderWorking(ans, kp, answerField) {
+        var w = st.answers.q4;
+        var box = document.createElement('div');
+        box.className = 'field';
+        box.innerHTML = '<span class="label">Show your working (3 points, marked by your teacher)</span><div class="worktabs"><button data-w="type">Type</button><button data-w="photo">Photo</button><button data-w="draw">Draw</button></div><div class="wbody field"></div>';
+        ans.appendChild(box);
+        function paint() {
+          $$('.worktabs button', box).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.w === w.workTab)); });
+          var body = $('.wbody', box);
+          body.innerHTML = '';
+          kp.innerHTML = '';
+          if (w.workTab === 'type') {
+            var focusField = answerField;
+            w.work.forEach(function (line, i) {
+              var f = mf({ value: line, placeholder: '\\text{Step ' + (i + 1) + '}' });
+              f.style.fontSize = '18px';
+              f.addEventListener('input', function () { w.work[i] = f.value; });
+              f.addEventListener('focusin', function () { kp.innerHTML = ''; kp.appendChild(keypad(f, 'algebra')); });
+              body.appendChild(f);
+            });
+            answerField.addEventListener('focusin', function () { kp.innerHTML = ''; kp.appendChild(keypad(answerField, 'algebra')); });
+            kp.appendChild(keypad(focusField, 'algebra'));
+          } else if (w.workTab === 'photo') {
+            if (w.photo) {
+              body.innerHTML = '<div class="imgwrap" style="cursor:default">' + notebookSvg(['2x + 3 = 11', '2x = 8', 'x = 4']) + '</div><button class="btn sm retake" style="align-self:flex-start">Retake</button>';
+              $('.retake', body).addEventListener('click', function () { w.photo = false; paint(); });
+            } else {
+              body.innerHTML = '<div class="drop"><b>Take a photo of your paper working</b><button class="btn sm primary snap">Use a sample photo</button></div>';
+              $('.snap', body).addEventListener('click', function () { w.photo = true; paint(); });
+            }
+          } else {
+            body.innerHTML = '<div class="canvas-wrap"><canvas></canvas><div class="ph">Write your working here</div></div><button class="btn sm clear" style="align-self:flex-start">Clear</button>';
+            attachCanvas($('canvas', body), $('.ph', body), $('.clear', body), function () { w.drew = true; });
+          }
+        }
+        $$('.worktabs button', box).forEach(function (b) { b.addEventListener('click', function () { w.workTab = b.dataset.w; paint(); }); });
+        paint();
+      }
+
+      function showHint(phone, q) {
+        var old = $('.sheet', phone);
+        if (old) old.remove();
+        var msg;
+        if (q.type === 'RADIO') {
+          msg = st.answers.q3 === null ? 'Start by adding 5 to both sides. What does $3x$ equal then?' : st.answers.q3 === q.correct ? 'Check it: put your value back into $3x - 5$. Do you get 10?' : 'Try putting your choice back into $3x - 5$. Does it give 10? If not, add 5 to both sides first.';
+        } else {
+          var latex = q.type === 'WORKED_SOLUTION' ? st.answers.q4.a : st.answers[q.id];
+          var r = gradeMath(q, latex);
+          if (r.status === 'empty') msg = q.id === 'q1' ? 'The bracket means "2 times everything inside". What is $2 \\times x$? What is $2 \\times 1$?' : q.id === 'q2' ? 'To undo "times $\\frac{3}{4}$", you can multiply both sides by $\\frac{4}{3}$.' : 'First get $2x$ on its own: what do you do to both sides to remove the $+3$?';
+          else if (r.status === 'correct') msg = 'Your answer checks out. Can you explain each step to yourself before you move on?';
+          else if (r.status === 'form') msg = 'You are right that it equals $' + latex + '$, but the question asks you to expand. Multiply out the bracket.';
+          else if (r.status === 'invalid') msg = 'I cannot read that as math yet. Check your brackets.';
+          else msg = q.id === 'q1' ? 'Not quite. Try $x = 1$: the original gives $2(1+1) = 4$. What does your answer give?' : 'Not quite. Put your answer back into the equation and see if both sides match.';
+        }
+        var sheet = document.createElement('div');
+        sheet.className = 'sheet';
+        sheet.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><b>AI tutor</b><span class="pill">Hint only. It will not give the answer</span></div><div class="bubble">' + mathText(msg) + '</div><div class="fake">Prototype: hint text is scripted, but whether your answer is right comes from the math engine, not the model.</div><button class="btn sm close" style="align-self:flex-end">Close</button>';
+        phone.appendChild(sheet);
+        $('.close', sheet).addEventListener('click', function () { sheet.remove(); });
+      }
+
+      function studentRecord() {
+        var a = st.answers;
+        var steps = a.q4.work.filter(Boolean).length >= 2 || a.q4.photo || a.q4.drew ? [1, 1, gradeMath(Q.q4, a.q4.a).status === 'correct' ? 1 : 0] : [0, 0, 0];
+        var work = a.q4.work.filter(Boolean).length ? ['2x + 3 = 11'].concat(a.q4.work.filter(Boolean).map(function (l) { return l.replace(/\\frac\{(\w+)\}\{(\w+)\}/g, '$1/$2'); })) : a.q4.photo ? ['2x + 3 = 11', '2x = 8', 'x = 4'] : ['(drawing)'];
+        return { name: 'You (from tab 2)', you: true, answers: { q1: a.q1, q2: a.q2, q3: a.q3, q4: { a: a.q4.a, work: work, ai: aiFor(steps) } }, overrides: {}, workingAccepted: null };
+      }
+
+      function submitStudent() {
+        st.submitted = true;
+        you = studentRecord();
+        renderStudent();
+        renderResults();
+      }
+
+      function renderStudentResult(phone) {
+        var s = scoreStudent(you);
+        phone.innerHTML = '<div class="ph-head"><div class="t">Week 3 quiz · submitted</div></div><div class="ph-body"><div><div class="label">Score so far</div><div class="score-big">' + s.earned + ' / ' + (s.max - Q.q4.workingPoints) + '</div><div class="fake">Plus up to ' + Q.q4.workingPoints + ' points for your working, once your teacher marks it.</div></div><div class="rlist" style="display:flex;flex-direction:column;gap:10px"></div><button class="btn again" style="align-self:flex-start">Try again</button><button class="btn primary see" style="align-self:flex-start">See what the teacher sees →</button></div>';
+        var list = $('.rlist', phone);
+        QUESTIONS.forEach(function (q, i) {
+          var c = cellFor(you, q);
+          var d = document.createElement('div');
+          d.className = 'resq';
+          var answer = q.type === 'RADIO' ? (you.answers.q3 === null ? 'No answer' : mathText(q.options[you.answers.q3])) : (q.type === 'WORKED_SOLUTION' ? you.answers.q4.a : you.answers[q.id]) ? tex(q.type === 'WORKED_SOLUTION' ? you.answers.q4.a : you.answers[q.id]) : 'No answer';
+          d.innerHTML = '<div style="display:flex;justify-content:space-between;gap:8px"><b>Q' + (i + 1) + '</b><span class="pill ' + c.pill + '">' + c.label + '</span></div><div>' + mathText(q.title) + '</div><div class="fake">Your answer: ' + answer + '</div><div class="fake">' + esc(c.reason) + '</div>';
+          list.appendChild(d);
+        });
+        $('.again', phone).addEventListener('click', function () { st.submitted = false; st.idx = 0; renderStudent(); });
+        $('.see', phone).addEventListener('click', function () { showFlow('results'); });
+      }
+
+      /* ---------- Scoring for results ---------- */
+
+      function cellFor(stu, q) {
+        var a = stu.answers[q.id];
+        if (q.type === 'RADIO') {
+          if (a === null || a === undefined) return { pts: 0, max: q.points, cls: 'none', pill: '', label: '—', reason: 'No answer' };
+          var ok = a === q.correct;
+          return { pts: ok ? q.points : 0, max: q.points, cls: ok ? 'good' : 'bad', pill: ok ? 'good' : 'bad', label: (ok ? q.points : 0) + '/' + q.points, reason: ok ? 'Correct option' : 'Chose ' + q.options[a].replace(/\$/g, ''), key: String(a) };
+        }
+        var latex = q.type === 'WORKED_SOLUTION' ? a.a : a;
+        var r = gradeMath(q, latex);
+        var pts = r.points;
+        if (stu.overrides[q.id] != null) pts = stu.overrides[q.id];
+        else if (q.overrides && q.overrides[r.key] != null) pts = q.overrides[r.key];
+        if (q.type === 'WORKED_SOLUTION') {
+          var max = q.points;
+          if (stu.workingAccepted == null) return { pts: pts, max: max, cls: 'pending', pill: 'pending', label: pts + ' + ?', reason: 'Answer ' + (pts ? 'correct' : 'wrong') + '. Working awaits teacher (AI suggestion ready)', key: r.key, status: r.status };
+          var total = pts + stu.workingAccepted;
+          return { pts: total, max: max, cls: total === max ? 'good' : total > 0 ? 'part' : 'bad', pill: total === max ? 'good' : total > 0 ? 'warn' : 'bad', label: total + '/' + max, reason: 'Answer ' + pts + '/' + q.answerPoints + ', working ' + stu.workingAccepted + '/' + q.workingPoints, key: r.key, status: r.status };
+        }
+        var cls = pts === q.points ? 'good' : pts > 0 ? 'part' : r.status === 'empty' ? 'none' : 'bad';
+        return { pts: pts, max: q.points, cls: cls, pill: cls === 'good' ? 'good' : cls === 'part' ? 'warn' : cls === 'none' ? '' : 'bad', label: r.status === 'empty' ? '—' : pts + '/' + q.points, reason: pts !== r.points ? 'Regraded by teacher' : r.reason, key: r.key, status: r.status };
+      }
+      function scoreStudent(stu) {
+        var earned = 0, max = 0;
+        QUESTIONS.forEach(function (q) { var c = cellFor(stu, q); earned += c.pts; max += q.points; });
+        return { earned: earned, max: max };
+      }
+      function roster() { return (you ? [you] : []).concat(STUDENTS); }
+
+      /* ---------- Results view ---------- */
+
+      var res = { wrongOnly: false };
+
+      function answerLatex(stu, q) {
+        var a = stu.answers[q.id];
+        if (q.type === 'RADIO') return a === null || a === undefined ? '' : q.options[a].replace(/\$/g, '');
+        return q.type === 'WORKED_SOLUTION' ? a.a : a;
+      }
+
+      function renderResults() {
+        var root = $('#results');
+        var list = roster();
+        var totals = list.map(scoreStudent);
+        var avg = Math.round((totals.reduce(function (s, t) { return s + t.earned / t.max; }, 0) / list.length) * 100);
+        var auto = 0, pendingWork = 0;
+        list.forEach(function (s) { auto += 4; if (s.workingAccepted == null) pendingWork++; });
+        root.innerHTML =
+          '<div class="bar-row"><div><div class="crumbs">Algebra Foundations / Exercises / Week 3 quiz / Results</div><h1 style="font-size:22px;margin-top:4px">Week 3 quiz · ' + list.length + ' submissions</h1></div><label class="toggle"><input type="checkbox" class="wo"' + (res.wrongOnly ? ' checked' : '') + ' /> Show only students who got something wrong</label></div>' +
+          '<div class="stats"><div class="stat"><small>Average score</small><b>' + avg + '%</b></div><div class="stat"><small>Answers graded automatically</small><b>' + auto + ' of ' + (auto + pendingWork) + '</b></div><div class="stat"><small>Working to review</small><b>' + pendingWork + '</b><small>AI suggestions ready</small></div><div class="stat"><small>Hardest question</small><b>' + hardest(list) + '</b></div></div>' +
+          '<p class="fake">Click a question header to see answer clusters and regrade. Hover a cell to see the answer. Click a Q4 cell to review working with the AI suggestion.</p>' +
+          '<div class="gridwrap"><table class="grid"><thead><tr><th>Student</th>' + QUESTIONS.map(function (q, i) { return '<th class="q" data-q="' + q.id + '">Q' + (i + 1) + ' · ' + q.points + ' pts<span class="qt">' + mathText(q.title) + '</span></th>'; }).join('') + '<th>Total</th></tr></thead><tbody></tbody></table></div>' +
+          '<h2 style="font-size:16px">Skills</h2><div class="skills"></div>';
+        var tbody = $('tbody', root);
+        list.forEach(function (stu, si) {
+          var cells = QUESTIONS.map(function (q) { return cellFor(stu, q); });
+          if (res.wrongOnly && cells.every(function (c) { return c.cls === 'good' || c.cls === 'pending' && c.pts === Q.q4.answerPoints; })) return;
+          var tr = document.createElement('tr');
+          if (stu.you) tr.className = 'you';
+          var t = scoreStudent(stu);
+          tr.innerHTML = '<td>' + esc(stu.name) + '</td>' + cells.map(function (c, k) { return '<td class="c"><button class="cell ' + c.cls + '" data-s="' + si + '" data-q="' + QUESTIONS[k].id + '">' + c.label + '</button></td>'; }).join('') + '<td><b>' + t.earned + '</b> / ' + t.max + '</td>';
+          tbody.appendChild(tr);
+        });
+        $('.wo', root).addEventListener('change', function (e) { res.wrongOnly = e.target.checked; renderResults(); });
+        $$('th.q', root).forEach(function (th) { th.addEventListener('click', function () { openClusters(Q[th.dataset.q]); }); });
+        $$('.cell', root).forEach(function (b) {
+          var stu = list[Number(b.dataset.s)], q = Q[b.dataset.q];
+          b.addEventListener('mouseenter', function () { showTip(b, stu, q); });
+          b.addEventListener('mouseleave', hideTip);
+          b.addEventListener('click', function () { hideTip(); if (q.type === 'WORKED_SOLUTION') openWorking(stu); else openClusters(q); });
+        });
+        renderSkills($('.skills', root), list);
+      }
+
+      function hardest(list) {
+        var worst = null, worstRate = 2;
+        QUESTIONS.forEach(function (q, i) {
+          var rate = list.reduce(function (s, stu) { var c = cellFor(stu, q); return s + (q.type === 'WORKED_SOLUTION' ? (c.pts >= q.answerPoints ? 1 : 0) : c.pts === q.points ? 1 : 0); }, 0) / list.length;
+          if (rate < worstRate) { worstRate = rate; worst = 'Q' + (i + 1) + ' · ' + Math.round(rate * 100) + '% right'; }
+        });
+        return worst;
+      }
+
+      function showTip(target, stu, q) {
+        var tip = $('#tip');
+        var latex = answerLatex(stu, q);
+        var c = cellFor(stu, q);
+        tip.innerHTML = '<div style="font-size:12px;opacity:.7">' + esc(stu.name) + '</div><div style="font-size:17px;margin:4px 0">' + (latex ? tex(latex) : 'No answer') + '</div><div style="font-size:12px;opacity:.85">' + esc(c.reason) + '</div>';
+        tip.hidden = false;
+        var r = target.getBoundingClientRect();
+        tip.style.left = Math.min(r.left, window.innerWidth - 290) + 'px';
+        tip.style.top = r.bottom + 6 + 'px';
+      }
+      function hideTip() { $('#tip').hidden = true; }
+
+      function closeDrawer() { var d = $('.drawer'); if (d) d.remove(); }
+      function drawer(title, sub) {
+        closeDrawer();
+        var d = document.createElement('div');
+        d.className = 'drawer';
+        d.innerHTML = '<div class="drawer-head"><div><b>' + title + '</b><div class="fake" style="margin-top:4px">' + sub + '</div></div><button class="btn sm ghost x" aria-label="Close">✕</button></div><div class="drawer-body"></div>';
+        document.body.appendChild(d);
+        $('.x', d).addEventListener('click', closeDrawer);
+        return $('.drawer-body', d);
+      }
+
+      function openClusters(q) {
+        var list = roster();
+        var i = QUESTIONS.indexOf(q);
+        var body = drawer('Q' + (i + 1) + ' · answer clusters', mathText(q.title));
+        var groups = {};
+        list.forEach(function (stu) {
+          var c = cellFor(stu, q);
+          var latex = answerLatex(stu, q);
+          var key = c.key || latex || 'none';
+          if (!groups[key]) groups[key] = { latex: latex, students: [], cell: c };
+          groups[key].students.push(stu.name);
+        });
+        var arr = Object.keys(groups).map(function (k) { groups[k].key = k; return groups[k]; }).sort(function (a, b) { return b.students.length - a.students.length; });
+        body.insertAdjacentHTML('beforeend', '<p class="fake">Answers are grouped by the math engine, so <code>2+2x</code> and <code>2x+2</code> land in the same group. ' + (q.type === 'RADIO' ? '' : 'Regrading applies to everyone in a group, including future submissions.') + '</p>');
+        arr.forEach(function (g) {
+          var c = g.cell;
+          var div = document.createElement('div');
+          div.className = 'cluster';
+          var statusLabel = q.type === 'WORKED_SOLUTION' ? (c.pts >= q.answerPoints ? 'Answer correct' : 'Answer wrong') : c.pts === q.points ? (c.reason === 'Regraded by teacher' ? 'Accepted by teacher' : 'Correct') : c.status === 'form' ? 'Equal, wrong form' : c.cls === 'none' ? 'No answer' : c.pts > 0 ? 'Partial credit' : 'Wrong';
+          var pill = statusLabel.indexOf('Correct') === 0 || statusLabel === 'Accepted by teacher' || statusLabel === 'Answer correct' ? 'good' : statusLabel === 'Equal, wrong form' || statusLabel === 'Partial credit' ? 'warn' : 'bad';
+          div.innerHTML = '<div class="top"><span class="ans">' + (g.latex ? tex(g.latex) : '—') + '</span><span class="pill ' + pill + '">' + statusLabel + '</span></div><div class="bar"><i style="width:' + Math.round((g.students.length / list.length) * 100) + '%"></i></div><div class="fake">' + g.students.length + ' student' + (g.students.length === 1 ? '' : 's') + ': ' + esc(g.students.join(', ')) + '</div><div class="fake">' + esc(c.reason) + '</div><div class="acts"></div>';
+          var acts = $('.acts', div);
+          if (q.type !== 'RADIO' && q.type !== 'WORKED_SOLUTION' && c.pts < q.points && g.latex) {
+            addAct(acts, 'Mark correct for all ' + g.students.length, function () { regrade(q, g, q.points); });
+            if (q.points > 1) addAct(acts, 'Give partial credit (' + Math.floor(q.points / 2) + ' pt)', function () { regrade(q, g, Math.floor(q.points / 2)); });
+          }
+          if (q.type !== 'RADIO' && q.overrides && q.overrides[g.key] != null) addAct(acts, 'Undo regrade', function () { delete q.overrides[g.key]; renderResults(); openClusters(q); toast('Regrade undone'); });
+          if (c.pts < q.points && g.latex) addAct(acts, 'Send feedback to this group', function () { toast('Feedback sent to ' + g.students.length + ' student' + (g.students.length === 1 ? '' : 's')); });
+          body.appendChild(div);
+        });
+      }
+      function addAct(acts, label, fn) {
+        var b = document.createElement('button');
+        b.className = 'btn sm';
+        b.textContent = label;
+        b.addEventListener('click', fn);
+        acts.appendChild(b);
+      }
+      function regrade(q, g, pts) {
+        q.overrides = q.overrides || {};
+        q.overrides[g.key] = pts;
+        renderResults();
+        openClusters(q);
+        toast(g.students.length + ' answer' + (g.students.length === 1 ? '' : 's') + ' regraded to ' + pts + '/' + q.points);
+      }
+
+      function openWorking(stu) {
+        var q = Q.q4;
+        var ai = stu.answers.q4.ai;
+        var c = cellFor(stu, q);
+        var body = drawer(esc(stu.name) + ' · Q4 working', mathText(q.title));
+        body.innerHTML =
+          '<div class="field"><span class="label">Final answer (auto-graded)</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:18px">' + (stu.answers.q4.a ? tex(stu.answers.q4.a) : '—') + '</span><span class="pill ' + (gradeMath(q, stu.answers.q4.a).status === 'correct' ? 'good">' + q.answerPoints + '/' + q.answerPoints : 'bad">0/' + q.answerPoints) + '</span></div></div>' +
+          '<div class="field"><span class="label">Student working (photo)</span><div class="imgwrap" style="cursor:default">' + notebookSvg(stu.answers.q4.work) + '</div></div>' +
+          '<div class="field"><span class="label">AI suggestion · ' + ai.confidence + ' confidence</span><div class="steps">' + ai.steps.map(function (s, i) { return '<div class="step"><span class="m ' + (s.ok ? 'y">✓' : 'n">✗') + '</span><div><div>' + mathText(q.rubric[i]) + '</div><div class="fake">' + esc(s.note) + '</div></div></div>'; }).join('') + '</div><div class="bubble" style="margin-top:6px">Suggested working mark: <b>' + ai.marks + ' / ' + q.workingPoints + '</b>. ' + esc(ai.comment) + '</div></div>' +
+          '<div class="field"><span class="label">Your mark for the working</span><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="number" class="input mark" min="0" max="' + q.workingPoints + '" value="' + (stu.workingAccepted != null ? stu.workingAccepted : ai.marks) + '" style="width:80px" /><button class="btn primary accept">' + (stu.workingAccepted != null ? 'Update mark' : 'Accept') + '</button><button class="btn reject">Reject suggestion</button></div><span class="fake">Nothing reaches the student until you accept. Prototype: the AI suggestion is sample data.</span></div>' +
+          '<div class="field"><span class="label">Current cell</span><span class="pill ' + c.pill + '" style="align-self:flex-start">' + c.label + '</span></div>';
+        $('.accept', body).addEventListener('click', function () {
+          stu.workingAccepted = Math.max(0, Math.min(q.workingPoints, Number($('.mark', body).value) || 0));
+          renderResults();
+          openWorking(stu);
+          toast('Working marked ' + stu.workingAccepted + '/' + q.workingPoints);
+        });
+        $('.reject', body).addEventListener('click', function () { $('.mark', body).value = 0; $('.mark', body).focus(); toast('Suggestion cleared. Enter your own mark'); });
+      }
+
+      function renderSkills(root, list) {
+        var skills = {};
+        QUESTIONS.forEach(function (q) { (skills[q.skill] = skills[q.skill] || []).push(q); });
+        Object.keys(skills).forEach(function (name) {
+          var qs = skills[name];
+          var counts = [0, 0, 0], weak = [];
+          list.forEach(function (stu) {
+            var earned = 0, max = 0;
+            qs.forEach(function (q) { var c = cellFor(stu, q); earned += c.pts; max += q.type === 'WORKED_SOLUTION' && stu.workingAccepted == null ? q.answerPoints : q.points; });
+            var r = max ? earned / max : 0;
+            if (r >= 0.8) counts[0]++; else if (r >= 0.5) counts[1]++; else { counts[2]++; weak.push(stu.name.split(' ')[0]); }
+          });
+          var n = list.length;
+          var div = document.createElement('div');
+          div.className = 'skill';
+          div.innerHTML = '<div style="display:flex;justify-content:space-between;gap:8px"><b>' + esc(name) + '</b><span class="fake">' + qs.length + ' question' + (qs.length === 1 ? '' : 's') + '</span></div><div class="stack"><i style="width:' + (counts[0] / n) * 100 + '%"></i><i style="width:' + (counts[1] / n) * 100 + '%"></i><i style="width:' + (counts[2] / n) * 100 + '%"></i></div><div class="legend"><span style="color:var(--good)">' + counts[0] + ' mastered</span><span style="color:#f59e0b">' + counts[1] + ' developing</span><span style="color:#ef4444">' + counts[2] + ' need work</span></div>' + (weak.length ? '<div class="fake">Need work: ' + esc(weak.join(', ')) + '</div>' : '') + '<div></div>';
+          if (weak.length) addAct(div.lastChild, 'Assign 5 practice questions to these ' + weak.length, function () { toast('Practice set with fresh numbers assigned to ' + weak.length + ' student' + (weak.length === 1 ? '' : 's')); });
+          root.appendChild(div);
+        });
+      }
+
+      /* ---------- Flows and start-up ---------- */
+
+      function showFlow(name) {
+        closePop(false);
+        closeDrawer();
+        hideTip();
+        $$('[data-flow]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.flow === name)); });
+        ['author', 'student', 'results'].forEach(function (f) { $('#flow-' + f).hidden = f !== name; });
+        if (name === 'student') renderStudent();
+        if (name === 'results') renderResults();
+        window.scrollTo(0, 0);
+      }
+      $$('[data-flow]').forEach(function (b) { b.addEventListener('click', function () { showFlow(b.dataset.flow); }); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeDrawer(); } });
+
+      customElements.whenDefined('math-field').then(function () {
+        renderAuthor();
+        try {
+          ce.parse('x+1').N();
+          engineReady = true;
+          var en = $('#engine');
+          en.classList.add('ready');
+          $('span', en).textContent = 'Math engine ready';
+          QUESTIONS.forEach(function (q) { if (q._runTry) q._runTry(); });
+        } catch (e) {
+          $('span', $('#engine')).textContent = 'Math engine failed to load';
+        }
+      });
+    </script>
+  </body>
+</html>

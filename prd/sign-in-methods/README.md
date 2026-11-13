@@ -54,7 +54,7 @@ An org admin looking at a member today cannot tell how that person gets into the
 | Any read of `provider_id` | `hasVerifiedEmailProvider()`, `packages/db/src/queries/auth/profile.ts:10` | Only consumer in the codebase |
 | Login recording | `trackLoginHook`, `packages/db/src/auth/hooks/track-login.ts:13` → `analytics_login_events` | `unique(user_id, logged_in_date)` + `onConflictDoNothing`: at most one row per user per day, and no provider column |
 | Session hooks | `databaseHooks.session.create.after` / `.update.after`, `packages/db/src/auth.ts:97-126` | Both call `trackLoginHook`; `update` fires on session refresh (`updateAge` = 1 day), which is not a sign-in |
-| Magic link (`login-link` plugin) | `packages/db/src/auth/plugins/login-link.ts:77` raw-inserts a session with `impersonatedBy: 'login-link'` | Creates no `account` row, and bypasses `databaseHooks` entirely. Only caller is `createViewAsStudentToken` |
+| Magic link (`login-link` plugin) | `packages/db/src/auth/plugins/login-link.ts:81` raw-inserts a session with `impersonatedBy: 'login-link'` | Creates no `account` row, and bypasses `databaseHooks` entirely. Only caller is `createViewAsStudentToken` |
 | Token auth (`token-exchange` plugin) | `packages/db/src/auth/plugins/token-exchange.ts:86` raw-inserts a session. `packages/db/src/auth/token-exchange.ts:73-86` branches: existing users are reused as-is, new users go through `signUpEmail` with a random password | New users get a `credential` row they can never use; existing users get no identity row at all. Neither branch records token auth |
 | Member profile page | `/org/[slug]/audience/[profileId]` → `user-analytics.svelte`, header is `hero-profile-card.svelte` | Header shows avatar, name, email, last seen. No badges |
 | Audience list | `audience.svelte:44` header array + `audience-member-row.svelte` | Columns are positional; header and cell order kept in sync manually |
@@ -240,7 +240,7 @@ trackSignInMethodHook(session, ctx):
 Three guards, each covering a trap found in the audit:
 
 - **Wire it to `session.create.after` only, never `session.update.after`.** The update hook fires on every session refresh (`updateAge` = 1 day). Recording there would make "last signed in" mean "last used the app", duplicating the existing last-seen field.
-- **`login-link` must not record.** It raw-inserts a session (`plugins/login-link.ts:77`) so no hook fires today, and that is the correct behavior: its only caller is "view as student". An admin impersonating a learner must not overwrite that learner's sign-in record.
+- **`login-link` must not record.** It raw-inserts a session (`plugins/login-link.ts:81`) so no hook fires today, and that is the correct behavior: its only caller is "view as student". An admin impersonating a learner must not overwrite that learner's sign-in record.
 - **`token-exchange` must record explicitly.** It also raw-inserts (`plugins/token-exchange.ts:86`), so it calls the recorder directly with `('token_auth', 'token-exchange')` at that write site.
 
 ### Shared types
