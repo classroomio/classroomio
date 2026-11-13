@@ -23,18 +23,17 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 
 ## HTTP status codes
 
-| Status        | Meaning                                                                                                               |
-| ------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `200` / `201` | The request worked                                                                                                    |
-| `400`         | The request body or query is invalid                                                                                  |
-| `401`         | The credential (API key or OAuth token) is missing, invalid, expired, or revoked                                      |
-| `403`         | The credential can't call this endpoint — missing scope, or a plan without API access                                 |
-| `404`         | The resource doesn't exist, or belongs to another organization                                                        |
-| `409`         | The request conflicts with the resource's current state                                                               |
-| `429`         | Too many requests. See [Rate limits](/api/rate-limits)                                                                |
-| `503`         | The rate limit could not be checked, so a fail-closed analytics, reminder, or email-template test request was refused |
-| `500`         | Something went wrong on our side                                                                                      |
-| `503`         | A safety check, such as a rate limit, couldn't run. Retry later                                                       |
+| Status        | Meaning                                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `200` / `201` | The request worked                                                                                                                                           |
+| `400`         | The request body or query is invalid                                                                                                                         |
+| `401`         | The credential (API key or OAuth token) is missing, invalid, expired, or revoked                                                                             |
+| `403`         | The credential can't call this endpoint — missing scope, read-only connection, or a plan without API access                                                  |
+| `404`         | The resource doesn't exist, or belongs to another organization                                                                                               |
+| `409`         | The request conflicts with the resource's current state                                                                                                      |
+| `429`         | Too many requests. See [Rate limits](/api/rate-limits)                                                                                                       |
+| `500`         | Something went wrong on our side                                                                                                                             |
+| `503`         | A safety check, such as a rate limit, couldn't run. A fail-closed analytics, reminder, email-template test, or course-invite request is refused; retry later |
 
 ## Common errors
 
@@ -77,7 +76,7 @@ An OAuth connection, such as Zapier, gets `INSUFFICIENT_SCOPE` instead, with the
 }
 ```
 
-**Fix:** Reconnect the app and grant the permission.
+**Fix:** Reconnect the app and grant the permission. A connection made read-only can't call endpoints whose scopes change workspace data, but it keeps `webhook:subscription:write` so it can still manage the subscriptions its triggers need.
 
 ### Resource not found
 
