@@ -174,6 +174,10 @@ ${assessmentLine}
 
 ${codePolicyLine}
 
+## Math Notation
+
+- Write every mathematical expression as LaTeX so it renders as formatted math: \`$…$\` inline and \`$$…$$\` on its own line (\`\\(…\\)\` and \`\\[…\\]\` also render). Never write math as plain text such as x^2 or sqrt(2) outside the delimiters.
+
 ## Citations & Grounding
 
 ${citationsLine || '- Ground every answer in this course\u2019s content. If the answer is not in the course, say so plainly.'}
