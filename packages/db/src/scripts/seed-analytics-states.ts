@@ -1,21 +1,27 @@
 import 'dotenv/config';
 
 import type { PgTable } from 'drizzle-orm/pg-core';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, or, sql } from 'drizzle-orm';
 
 import type { AnswerData } from '@cio/question-types';
 
 import {
   account,
+  aiChatConversation,
+  aiChatModelContext,
   analyticsLoginEvents,
   cohort,
   cohortCourse,
   cohortGoal,
   cohortGoalAssignment,
   cohortMember,
+  communityAnswer,
+  communityQuestion,
   course,
   courseCertificateIssue,
   courseCompletionRecord,
+  courseNewsfeed,
+  courseNewsfeedComment,
   courseSection,
   db,
   exercise,
@@ -23,10 +29,13 @@ import {
   groupAttendance,
   groupmember,
   lesson,
+  lessonComment,
   lessonCompletion,
   lessonVideoProgress,
   option,
   organization,
+  organizationInvite,
+  organizationInviteAudit,
   organizationPlan,
   organizationmember,
   profile,
@@ -42,6 +51,7 @@ import {
 const ORG_SITE_NAME = 'analytics-states';
 const ORG_NAME = 'Analytics States';
 const EMAIL_DOMAIN = 'analytics-states.demo';
+const PERSON_ID_PREFIX = 0x1e000002;
 const PASSWORD_HASH = '$2a$10$dgxySj.k12gDKhLx7X4x6./J.Nzhz7WQrwh5lkjLKwIwWW4o5GJcW';
 
 const ROLE_ADMIN = 1;
@@ -1781,7 +1791,7 @@ const STUDENTS: StudentDef[] = [
 ];
 
 const ADMIN: PersonDef = {
-  id: seedId(0x1e000002, 1),
+  id: seedId(PERSON_ID_PREFIX, 1),
   fullname: 'Analytics Admin',
   username: 'analytics-admin',
   email: `admin@${EMAIL_DOMAIN}`,
@@ -1793,7 +1803,7 @@ const ADMIN: PersonDef = {
 };
 
 const TUTOR: PersonDef = {
-  id: seedId(0x1e000002, 2),
+  id: seedId(PERSON_ID_PREFIX, 2),
   fullname: 'Analytics Tutor',
   username: 'analytics-tutor',
   email: `tutor@${EMAIL_DOMAIN}`,
@@ -1805,7 +1815,7 @@ const TUTOR: PersonDef = {
 };
 
 const STUDENT_PEOPLE: PersonDef[] = STUDENTS.map((student, index) => ({
-  id: seedId(0x1e000002, index + 10),
+  id: seedId(PERSON_ID_PREFIX, index + 10),
   fullname: student.fullname,
   username: student.username,
   email: student.email,
@@ -1933,11 +1943,26 @@ function courseAverageScore(courseDef: CourseDef, plan: CoursePlan): number | nu
   return Math.round(scores.reduce((total, score) => total + score, 0) / scores.length);
 }
 
+/**
+ * Deletes course memberships and the rows that reference them, so a reused seed person can be removed.
+ */
+async function deleteGroupMembers(groupMemberIds: string[]): Promise<void> {
+  if (groupMemberIds.length === 0) return;
+
+  await db.delete(courseNewsfeedComment).where(inArray(courseNewsfeedComment.authorId, groupMemberIds));
+  await db.delete(courseNewsfeed).where(inArray(courseNewsfeed.authorId, groupMemberIds));
+  await db.delete(lessonComment).where(inArray(lessonComment.groupmemberId, groupMemberIds));
+  await db.delete(questionAnswer).where(inArray(questionAnswer.groupMemberId, groupMemberIds));
+  await db.delete(submission).where(inArray(submission.submittedBy, groupMemberIds));
+  await db.delete(groupAttendance).where(inArray(groupAttendance.studentId, groupMemberIds));
+  await db.delete(groupmember).where(inArray(groupmember.id, groupMemberIds));
+}
+
 async function resetSeedData(): Promise<void> {
   const [existingOrg] = await db
     .select({ id: organization.id })
     .from(organization)
-    .where(eq(organization.siteName, ORG_SITE_NAME))
+    .where(or(eq(organization.id, ORG_ID), eq(organization.siteName, ORG_SITE_NAME)))
     .limit(1);
 
   const existingGroupIds = existingOrg
@@ -1951,6 +1976,15 @@ async function resetSeedData(): Promise<void> {
           (row) => row.id
         )
       : [];
+  const existingGroupMemberIds =
+    existingGroupIds.length > 0
+      ? (
+          await db
+            .select({ id: groupmember.id })
+            .from(groupmember)
+            .where(inArray(groupmember.groupId, existingGroupIds))
+        ).map((row) => row.id)
+      : [];
   const existingExerciseIds =
     existingCourseIds.length > 0
       ? (await db.select({ id: exercise.id }).from(exercise).where(inArray(exercise.courseId, existingCourseIds))).map(
@@ -1959,6 +1993,33 @@ async function resetSeedData(): Promise<void> {
       : [];
 
   if (existingCourseIds.length > 0) {
+    const existingNewsfeedIds = (
+      await db
+        .select({ id: courseNewsfeed.id })
+        .from(courseNewsfeed)
+        .where(inArray(courseNewsfeed.courseId, existingCourseIds))
+    ).map((row) => row.id);
+    const existingCommunityQuestionIds = (
+      await db
+        .select({ id: communityQuestion.id })
+        .from(communityQuestion)
+        .where(inArray(communityQuestion.courseId, existingCourseIds))
+    ).map((row) => row.id);
+
+    if (existingNewsfeedIds.length > 0) {
+      await db
+        .delete(courseNewsfeedComment)
+        .where(inArray(courseNewsfeedComment.courseNewsfeedId, existingNewsfeedIds));
+    }
+
+    if (existingCommunityQuestionIds.length > 0) {
+      await db.delete(communityAnswer).where(inArray(communityAnswer.questionId, existingCommunityQuestionIds));
+    }
+
+    await db.delete(courseNewsfeed).where(inArray(courseNewsfeed.courseId, existingCourseIds));
+    await db.delete(communityQuestion).where(inArray(communityQuestion.courseId, existingCourseIds));
+    await db.delete(aiChatModelContext).where(inArray(aiChatModelContext.courseId, existingCourseIds));
+    await db.delete(aiChatConversation).where(inArray(aiChatConversation.courseId, existingCourseIds));
     await db.delete(courseCertificateIssue).where(inArray(courseCertificateIssue.courseId, existingCourseIds));
     await db.delete(courseCompletionRecord).where(inArray(courseCompletionRecord.courseId, existingCourseIds));
     await db.delete(submission).where(inArray(submission.courseId, existingCourseIds));
@@ -1973,9 +2034,7 @@ async function resetSeedData(): Promise<void> {
     await db.delete(courseSection).where(inArray(courseSection.courseId, existingCourseIds));
   }
 
-  if (existingGroupIds.length > 0) {
-    await db.delete(groupmember).where(inArray(groupmember.groupId, existingGroupIds));
-  }
+  await deleteGroupMembers(existingGroupMemberIds);
 
   if (existingOrg) {
     await db.delete(cohort).where(eq(cohort.organizationId, existingOrg.id));
@@ -1995,12 +2054,37 @@ async function resetSeedData(): Promise<void> {
     await db.delete(organization).where(eq(organization.id, existingOrg.id));
   }
 
-  await db.delete(lessonCompletion).where(inArray(lessonCompletion.profileId, PERSON_IDS));
-  await db.delete(lessonVideoProgress).where(inArray(lessonVideoProgress.profileId, PERSON_IDS));
-  await db.delete(analyticsLoginEvents).where(inArray(analyticsLoginEvents.userId, PERSON_IDS));
-  await db.delete(account).where(inArray(account.userId, PERSON_IDS));
-  await db.delete(profile).where(inArray(profile.id, PERSON_IDS));
-  await db.delete(user).where(inArray(user.id, PERSON_IDS));
+  const seedPersonIdPattern = `${seedId(PERSON_ID_PREFIX, 0).slice(0, -12)}%`;
+  const legacyPersonIds = (
+    await db
+      .select({ id: profile.id })
+      .from(profile)
+      .where(sql`${profile.id}::text like ${seedPersonIdPattern}`)
+  ).map((row) => row.id);
+  const personIds = [...new Set([...PERSON_IDS, ...legacyPersonIds])];
+
+  const personGroupMemberIds = (
+    await db.select({ id: groupmember.id }).from(groupmember).where(inArray(groupmember.profileId, personIds))
+  ).map((row) => row.id);
+
+  await deleteGroupMembers(personGroupMemberIds);
+  await db.delete(cohortMember).where(inArray(cohortMember.profileId, personIds));
+  await db
+    .update(organizationInvite)
+    .set({ acceptedByProfileId: null })
+    .where(inArray(organizationInvite.acceptedByProfileId, personIds));
+  await db
+    .update(organizationInviteAudit)
+    .set({ actorProfileId: null })
+    .where(inArray(organizationInviteAudit.actorProfileId, personIds));
+  await db.update(cohort).set({ createdByProfileId: null }).where(inArray(cohort.createdByProfileId, personIds));
+  await db.delete(organizationmember).where(inArray(organizationmember.profileId, personIds));
+  await db.delete(lessonCompletion).where(inArray(lessonCompletion.profileId, personIds));
+  await db.delete(lessonVideoProgress).where(inArray(lessonVideoProgress.profileId, personIds));
+  await db.delete(analyticsLoginEvents).where(inArray(analyticsLoginEvents.userId, personIds));
+  await db.delete(account).where(inArray(account.userId, personIds));
+  await db.delete(profile).where(inArray(profile.id, personIds));
+  await db.delete(user).where(inArray(user.id, personIds));
 }
 
 async function seedReferenceRows(): Promise<void> {
