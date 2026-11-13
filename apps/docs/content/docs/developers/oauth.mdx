@@ -27,20 +27,20 @@ The same document is also served at `/.well-known/openid-configuration` and unde
 
 ## Register a client
 
-Clients register themselves with [Dynamic Client Registration](https://datatracker.ietf.org/doc/html/rfc7591) at `registration_endpoint`. Registration is rate limited, and every registered client is untrusted. The consent screen shows unless a stored grant already covers the requested scopes.
+Clients register themselves with [Dynamic Client Registration](https://datatracker.ietf.org/doc/html/rfc7591) at `registration_endpoint`. Registration is rate limited, and every registered client is untrusted: it cannot call the public API until an administrator grants it access.
 
 Trusted clients, such as ClassroomIO's native Zapier integration, are pre-registered confidential clients configured by ClassroomIO.
 
 ### Trusted clients
 
-Two API environment variables configure first-party integrations. Trusted clients are registered out of band by ClassroomIO (never through the dynamic registration endpoint below):
+Two API environment variables configure first-party integrations. Trusted clients are registered by an operator running a script on the server (`pnpm --filter @cio/db oauth:register-client`), never by the third-party platform itself:
 
 | Variable                   | Purpose                                                                                                                                                                                                 |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `OAUTH_TRUSTED_CLIENT_IDS` | Comma-separated OAuth client IDs treated as first-party; they cannot be modified through the dynamic client CRUD endpoints. Leave empty unless deploying ClassroomIO's own integration. |
-| `ZAPIER_OAUTH_CLIENT_ID`   | The client ID of ClassroomIO's Zapier OAuth client. Identifies Zapier grants in the dashboard, `/me` responses, and managed webhook subscriptions.                                                        |
+| `ZAPIER_OAUTH_CLIENT_ID`   | The client ID of ClassroomIO's Zapier OAuth client, used to identify Zapier grants.                                                       |
 
-Store only client IDs issued to ClassroomIO's own integrations in `OAUTH_TRUSTED_CLIENT_IDS`. Third-party clients registered through dynamic registration must stay untrusted; note that repeat requests whose scopes the stored grant already covers skip the consent screen unless the client sends `prompt=consent`.
+Store only client IDs issued to ClassroomIO's own integrations in `OAUTH_TRUSTED_CLIENT_IDS`. Third-party clients registered through dynamic registration must stay untrusted.
 
 Register a third-party platform with dynamic client registration (this path always creates an untrusted client):
 
