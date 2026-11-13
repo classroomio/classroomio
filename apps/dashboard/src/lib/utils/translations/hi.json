@@ -3585,7 +3585,7 @@
     "distribute": "बांटो",
     "tools": "उपकरण",
     "marketing": "विपणन",
-    "org_analytics": "Academy"
+    "org_analytics": "अकादमी"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -7147,7 +7147,7 @@
       "students_capped": "छात्र सूची पहली {limit} पंक्तियों तक सीमित है।",
       "exercises_capped": "अभ्यास स्कोर पहले {limit} परिणामों तक सीमित हैं।"
     },
-    "org_page_title": "Academy"
+    "org_page_title": "अकादमी"
   },
   "oauth": {
     "consent": {

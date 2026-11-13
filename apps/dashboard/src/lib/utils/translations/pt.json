@@ -3585,7 +3585,7 @@
     "distribute": "Distribuir",
     "tools": "Ferramentas",
     "marketing": "Marketing",
-    "org_analytics": "Academy"
+    "org_analytics": "Academia"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -7147,7 +7147,7 @@
       "students_capped": "A lista de alunos está limitada às primeiras {limit} linhas.",
       "exercises_capped": "As pontuações dos exercícios estão limitadas aos primeiros {limit} resultados."
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Academia"
   },
   "oauth": {
     "consent": {

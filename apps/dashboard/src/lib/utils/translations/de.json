@@ -3585,7 +3585,7 @@
     "distribute": "Verteilen",
     "tools": "Werkzeuge",
     "marketing": "Marketing",
-    "org_analytics": "Academy"
+    "org_analytics": "Akademie"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",
@@ -7147,7 +7147,7 @@
       "students_capped": "Die Studierendenliste ist auf die ersten {limit} Zeilen begrenzt.",
       "exercises_capped": "Übungsergebnisse sind auf die ersten {limit} Ergebnisse begrenzt."
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Akademie"
   },
   "oauth": {
     "consent": {

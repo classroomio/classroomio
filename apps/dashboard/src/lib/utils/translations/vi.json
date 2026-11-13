@@ -3585,7 +3585,7 @@
     "distribute": "phân phối",
     "tools": "Công cụ",
     "marketing": "Tiếp thị",
-    "org_analytics": "Academy"
+    "org_analytics": "Học viện"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -7147,7 +7147,7 @@
       "students_capped": "Danh sách học viên được giới hạn ở {limit} dòng đầu tiên.",
       "exercises_capped": "Điểm bài tập được giới hạn ở {limit} kết quả đầu tiên."
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Học viện"
   },
   "oauth": {
     "consent": {

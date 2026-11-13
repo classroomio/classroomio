@@ -3585,7 +3585,7 @@
     "distribute": "Distribuer",
     "tools": "Outils",
     "marketing": "Commercialisation",
-    "org_analytics": "Academy"
+    "org_analytics": "Académie"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -7147,7 +7147,7 @@
       "students_capped": "La liste des étudiants est limitée aux {limit} premières lignes.",
       "exercises_capped": "Les résultats des exercices sont limités aux {limit} premiers résultats."
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Académie"
   },
   "oauth": {
     "consent": {
