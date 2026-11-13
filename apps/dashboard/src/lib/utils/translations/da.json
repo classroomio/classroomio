@@ -553,6 +553,9 @@
     },
     "oauth": {
       "revoked": "Appens adgang er fjernet"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Akademiet kunne ikke åbnes. Prøv igen."
     }
   },
   "explore": {
@@ -3491,6 +3494,26 @@
     "sitename": "Academy-underdomænet findes allerede",
     "error_organization": "Noget gik galt under oprettelsen af denne organisation. Genindlæs og prøv igen"
   },
+  "org_chooser": {
+    "page_title": "Dine organisationer",
+    "title": "Vælg et akademi for at fortsætte",
+    "subtitle": "Du har adgang til {count, plural, one {# akademi} other {# akademier}}. Vælg, hvor du vil lande.",
+    "managed_heading": "Organisationer, du administrerer",
+    "learning_heading": "Lærer i",
+    "invites_heading": "Ventende invitationer",
+    "open_dashboard": "Åbn {name}-dashboardet",
+    "open_academy": "Åbn {name} på {host}",
+    "invited_as": "Inviteret som {role}",
+    "accept_invite": "Acceptér",
+    "invites_error": "Dine invitationer kunne ikke indlæses. Tjek din forbindelse, og prøv igen.",
+    "invites_retry": "Prøv igen",
+    "create_heading": "Driv dit eget akademi",
+    "create_description": "Opret en organisation, udgiv kurser og inviter dine egne elever.",
+    "create_cta": "Opret organisation",
+    "for_teams": "For teams",
+    "different_account": "Kan du ikke finde dit akademi?",
+    "different_account_cta": "Prøv en anden e-mailadresse"
+  },
   "setup": {
     "your_checklist": "Din tjekliste",
     "get_started": "Kom i gang",
@@ -4661,7 +4684,11 @@
       "heading": "Ny adgangskode",
       "description": "Indtast dine nye adgangskodeoplysninger"
     },
-    "continue_with": "Eller fortsæt med"
+    "continue_with": "Eller fortsæt med",
+    "existing_account": {
+      "message": "Der findes allerede en konto med denne e-mailadresse.",
+      "cta": "Log ind i stedet"
+    }
   },
   "app": {
     "search": {
@@ -5855,7 +5882,10 @@
     },
     "switcher": {
       "your_account": "Din konto",
-      "other_organizations": "Andre organisationer"
+      "other_organizations": "Andre organisationer",
+      "learning": "Læring",
+      "add_organization": "Tilføj organisation",
+      "current": "Nuværende organisation"
     }
   },
   "aiTutor": {

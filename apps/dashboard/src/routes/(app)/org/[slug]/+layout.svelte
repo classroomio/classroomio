@@ -10,6 +10,7 @@
   import { appInitApi } from '$features/app/init.svelte';
   import { AppHeader, PaymentFailedBanner } from '$features/ui';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+  import { isOrgChooserAvailable, ORG_CHOOSER_PATH } from '$features/app/utils/post-auth-destination';
 
   import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
   import SettingsSidebar from '$features/ui/sidebar/settings-sidebar.svelte';
@@ -20,6 +21,11 @@
   const ACCOUNT_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
   const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
   const isCoursesList = $derived(/\/courses\/?$/.test(page.url.pathname));
+  const studentDestination = $derived(
+    isOrgChooserAvailable({ isCloud: PUBLIC_IS_SELFHOSTED !== 'true', isOrgSite: !!data.isOrgSite })
+      ? ORG_CHOOSER_PATH
+      : '/lms'
+  );
 
   function redirect(siteName: string | null) {
     if (!siteName) return;
@@ -49,10 +55,10 @@
   });
 
   $effect(() => {
-    // Students must not use the admin org dashboard on app.* — send them to LMS.
+    // Students must not use the admin org dashboard on app.*.
     // isStudentExperience is false on the app host in cloud mode even for students.
     if (appInitApi.isInitializedAndReady && $isOrgStudent) {
-      goto(resolve('/lms', {}));
+      goto(resolve(studentDestination, {}));
     }
   });
 </script>

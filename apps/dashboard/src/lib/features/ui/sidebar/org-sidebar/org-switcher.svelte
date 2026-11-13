@@ -2,31 +2,22 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import * as Breadcrumb from '@cio/ui/base/breadcrumb';
-  import PlusIcon from '@lucide/svelte/icons/plus';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { useSidebar } from '@cio/ui/base/sidebar';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import { shortenName } from '$lib/utils/functions/string';
-  import type { AccountOrg } from '$features/app/types';
-  import { mediaUploadManager } from '$features/media/api';
 
-  import { setTheme } from '$lib/utils/functions/theme';
-  import {
-    currentOrg,
-    currentOrgPath,
-    currentOrgPlan,
-    managedOrgs,
-    mergeAccountOrgFromServer
-  } from '$lib/utils/store/org';
-  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg, currentOrgPath, currentOrgPlan } from '$lib/utils/store/org';
 
-  import ComingSoon from '$features/ui/coming-soon.svelte';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+  import OrgSwitcherMenu from './org-switcher-menu.svelte';
 
   const sidebar = useSidebar();
   const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
+  const MENU_CONTENT_CLASS =
+    'max-h-[min(70vh,36rem)] w-(--bits-dropdown-menu-anchor-width) min-w-64 overflow-y-auto rounded-lg';
 
   interface Props {
     variant?: 'sidebar' | 'breadcrumb';
@@ -34,32 +25,7 @@
 
   let { variant = 'sidebar' }: Props = $props();
 
-  function rootIdFor(org: Pick<AccountOrg, 'id' | 'parentOrganizationId'>): string {
-    return org.parentOrganizationId ?? org.id;
-  }
-
-  const accountRootId = $derived(rootIdFor($currentOrg));
   const currentPlanName = $derived($currentOrgPlan?.planName || 'Free');
-
-  const switchableOrgs = $derived($managedOrgs);
-  const accountWorkspaces = $derived(switchableOrgs.filter((org) => rootIdFor(org) === accountRootId));
-  const otherOrgs = $derived(switchableOrgs.filter((org) => rootIdFor(org) !== accountRootId));
-
-  function onClick(org: AccountOrg) {
-    if (org.id === $currentOrg.id) return;
-
-    if (mediaUploadManager.isUploading) {
-      if (!window.confirm($t('media_manager.upload.switch_organization_confirm'))) return;
-
-      mediaUploadManager.cancelAll();
-    }
-
-    localStorage.setItem('classroomio_org_sitename', org.siteName!);
-    currentOrg.set(mergeAccountOrgFromServer(org));
-
-    setTheme(org.theme!);
-    window.location.href = $currentOrgPath;
-  }
 </script>
 
 {#if isSelfHosted}
@@ -116,53 +82,12 @@
       {/snippet}
     </DropdownMenu.Trigger>
     <DropdownMenu.Content
-      class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
+      class={MENU_CONTENT_CLASS}
       align="start"
       side={sidebar.isMobile ? 'bottom' : 'right'}
       sideOffset={4}
     >
-      <DropdownMenu.Label class="ui:text-muted-foreground text-xs"
-        >{$t('account.switcher.your_account')}</DropdownMenu.Label
-      >
-
-      {#each accountWorkspaces as org (org.id)}
-        <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
-          <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
-            <Avatar.Image src={org.avatarUrl} alt={org.name} />
-            <Avatar.Fallback class="rounded-lg">{shortenName(org.name)}</Avatar.Fallback>
-          </Avatar.Root>
-
-          {org.name}
-        </DropdownMenu.Item>
-      {/each}
-
-      {#if otherOrgs.length > 0}
-        <DropdownMenu.Separator />
-        <DropdownMenu.Label class="ui:text-muted-foreground text-xs"
-          >{$t('account.switcher.other_organizations')}</DropdownMenu.Label
-        >
-        {#each otherOrgs as org (org.id)}
-          <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
-            <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
-              <Avatar.Image src={org.avatarUrl} alt={org.name} />
-              <Avatar.Fallback class="rounded-lg">{shortenName(org.name)}</Avatar.Fallback>
-            </Avatar.Root>
-
-            {org.name}
-          </DropdownMenu.Item>
-        {/each}
-      {/if}
-
-      <DropdownMenu.Separator />
-
-      <DropdownMenu.Item class="cursor-not-allowed gap-2 p-2 opacity-50">
-        <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
-          <PlusIcon class="size-4" />
-        </div>
-        <div class="ui:text-muted-foreground font-normal">Add Organization</div>
-
-        <ComingSoon />
-      </DropdownMenu.Item>
+      <OrgSwitcherMenu />
     </DropdownMenu.Content>
   </DropdownMenu.Root>
 {:else}
@@ -202,53 +127,12 @@
           {/snippet}
         </DropdownMenu.Trigger>
         <DropdownMenu.Content
-          class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
+          class={MENU_CONTENT_CLASS}
           align="start"
           side={sidebar.isMobile ? 'bottom' : 'right'}
           sideOffset={4}
         >
-          <DropdownMenu.Label class="ui:text-muted-foreground text-xs"
-            >{$t('account.switcher.your_account')}</DropdownMenu.Label
-          >
-
-          {#each accountWorkspaces as org (org.id)}
-            <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
-              <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
-                <Avatar.Image src={org.avatarUrl} alt={org.name} />
-                <Avatar.Fallback class="rounded-lg">{shortenName(org.name)}</Avatar.Fallback>
-              </Avatar.Root>
-
-              {org.name}
-            </DropdownMenu.Item>
-          {/each}
-
-          {#if otherOrgs.length > 0}
-            <DropdownMenu.Separator />
-            <DropdownMenu.Label class="ui:text-muted-foreground text-xs"
-              >{$t('account.switcher.other_organizations')}</DropdownMenu.Label
-            >
-            {#each otherOrgs as org (org.id)}
-              <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
-                <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
-                  <Avatar.Image src={org.avatarUrl} alt={org.name} />
-                  <Avatar.Fallback class="rounded-lg">{shortenName(org.name)}</Avatar.Fallback>
-                </Avatar.Root>
-
-                {org.name}
-              </DropdownMenu.Item>
-            {/each}
-          {/if}
-
-          <DropdownMenu.Separator />
-
-          <DropdownMenu.Item class="cursor-not-allowed gap-2 p-2 opacity-50">
-            <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
-              <PlusIcon class="size-4" />
-            </div>
-            <div class="ui:text-muted-foreground font-normal">Add Organization</div>
-
-            <ComingSoon />
-          </DropdownMenu.Item>
+          <OrgSwitcherMenu />
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </Sidebar.MenuItem>

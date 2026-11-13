@@ -131,7 +131,10 @@
   "account": {
     "switcher": {
       "your_account": "Hesabınız",
-      "other_organizations": "Diğer kuruluşlar"
+      "other_organizations": "Diğer kuruluşlar",
+      "learning": "Öğrenme",
+      "add_organization": "Kuruluş ekle",
+      "current": "Mevcut kuruluş"
     },
     "workspaces": {
       "page_title": "Çalışma Alanları",
@@ -571,6 +574,10 @@
     "reset_password": {
       "heading": "Yeni Şifre",
       "description": "Yeni şifre ayrıntılarınızı girin"
+    },
+    "existing_account": {
+      "message": "Bu e-postayla zaten bir hesap var.",
+      "cta": "Bunun yerine giriş yap"
     }
   },
   "profileMenu": {
@@ -2058,6 +2065,26 @@
     "create": "Oluşturun",
     "sitename": "Akademi alt alan adı zaten var",
     "error_organization": "Bu kuruluş oluşturulurken bir şeyler ters gitti. Lütfen yeniden yükleyin ve tekrar deneyin"
+  },
+  "org_chooser": {
+    "page_title": "Kuruluşlarınız",
+    "title": "Devam etmek için bir akademi seçin",
+    "subtitle": "{count, plural, one {# akademiye} other {# akademiye}} erişiminiz var. Nereye gitmek istediğinizi seçin.",
+    "managed_heading": "Yönettiğiniz kuruluşlar",
+    "learning_heading": "Öğrenim yaptığınız",
+    "invites_heading": "Bekleyen davetler",
+    "open_dashboard": "{name} panosunu aç",
+    "open_academy": "{name} adlı akademiyi {host} üzerinde aç",
+    "invited_as": "{role} olarak davet edildi",
+    "accept_invite": "Kabul et",
+    "invites_error": "Davetlerin yüklenemedi. Bağlantını kontrol edip tekrar dene.",
+    "invites_retry": "Tekrar dene",
+    "create_heading": "Kendi akademinizi yönetin",
+    "create_description": "Bir kuruluş oluşturun, kurs yayınlayın ve kendi öğrencilerinizi davet edin.",
+    "create_cta": "Kuruluş oluştur",
+    "for_teams": "Ekipler için",
+    "different_account": "Akademinizi göremiyor musunuz?",
+    "different_account_cta": "Farklı bir e-posta deneyin"
   },
   "navigation": {
     "goto": "Şuraya gidin",
@@ -5558,6 +5585,9 @@
       "reminders_truncated": "{count, plural, one {# hatırlatma gönderildi} other {# hatırlatma gönderildi}}. Tek seferde göndermek için çok fazla gecikmiş öğrenci var — kalanlara ulaşmak için kursu daraltın.",
       "students_refresh_failed": "Öğrenci listesi yenilenemedi",
       "refresh_failed": "Analizler yenilenemedi"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Akademi açılamadı. Lütfen tekrar deneyin."
     }
   },
   "specialization": {

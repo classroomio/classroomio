@@ -553,6 +553,9 @@
     },
     "oauth": {
       "revoked": "App-Zugriff entfernt"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Diese Akademie konnte nicht geöffnet werden. Bitte versuchen Sie es erneut."
     }
   },
   "explore": {
@@ -3491,6 +3494,26 @@
     "sitename": "Die Academy-Subdomain existiert bereits",
     "error_organization": "Beim Erstellen dieser Organisation ist ein Fehler aufgetreten. Bitte laden Sie es neu und versuchen Sie es erneut"
   },
+  "org_chooser": {
+    "page_title": "Ihre Organisationen",
+    "title": "Wählen Sie eine Akademie, um fortzufahren",
+    "subtitle": "Sie haben Zugriff auf {count, plural, one {# Akademie} other {# Akademien}}. Wählen Sie, wo Sie landen möchten.",
+    "managed_heading": "Organisationen, die Sie verwalten",
+    "learning_heading": "Lernen in",
+    "invites_heading": "Ausstehende Einladungen",
+    "open_dashboard": "Das {name}-Dashboard öffnen",
+    "open_academy": "{name} auf {host} öffnen",
+    "invited_as": "Eingeladen als {role}",
+    "accept_invite": "Annehmen",
+    "invites_error": "Deine Einladungen konnten nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+    "invites_retry": "Erneut versuchen",
+    "create_heading": "Betreiben Sie Ihre eigene Akademie",
+    "create_description": "Erstellen Sie eine Organisation, veröffentlichen Sie Kurse und laden Sie Ihre eigenen Lernenden ein.",
+    "create_cta": "Organisation erstellen",
+    "for_teams": "Für Teams",
+    "different_account": "Ist Ihre Akademie nicht dabei?",
+    "different_account_cta": "Versuchen Sie eine andere E-Mail-Adresse"
+  },
   "setup": {
     "your_checklist": "Ihre Checkliste",
     "get_started": "Legen Sie los",
@@ -4661,7 +4684,11 @@
       "heading": "Neues Passwort",
       "description": "Geben Sie Ihre neuen Passwortdaten ein"
     },
-    "continue_with": "Oder fahren Sie mit fort"
+    "continue_with": "Oder fahren Sie mit fort",
+    "existing_account": {
+      "message": "Ein Konto mit dieser E-Mail-Adresse existiert bereits.",
+      "cta": "Stattdessen anmelden"
+    }
   },
   "app": {
     "search": {
@@ -5855,7 +5882,10 @@
     },
     "switcher": {
       "your_account": "Ihr Konto",
-      "other_organizations": "Andere Organisationen"
+      "other_organizations": "Andere Organisationen",
+      "learning": "Lernen",
+      "add_organization": "Organisation hinzufügen",
+      "current": "Aktuelle Organisation"
     }
   },
   "aiTutor": {

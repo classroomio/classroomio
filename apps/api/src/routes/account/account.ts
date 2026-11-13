@@ -1,5 +1,5 @@
 import {
-  createViewAsStudentToken,
+  createSelfLoginLinkToken,
   getAccountData,
   listPendingInvitesForAccount,
   updateUser
@@ -71,13 +71,11 @@ export const accountRouter = new Hono()
       return handleError(c, error, 'Failed to update profile');
     }
   })
-  .post('/view-as-student-token', authMiddleware, async (c) => {
+  .post('/login-link-token', authMiddleware, async (c) => {
     const user = c.get('user')!;
 
     try {
-      // Self sign-in only — mints a login-link token for the current user so they
-      // can be auto-authenticated on the org domain to preview the student experience.
-      const token = await createViewAsStudentToken({ id: user.id, email: user.email });
+      const token = await createSelfLoginLinkToken({ id: user.id, email: user.email });
 
       return c.json(
         {
@@ -87,7 +85,7 @@ export const accountRouter = new Hono()
         200
       );
     } catch (error) {
-      return handleError(c, error, 'Failed to create view-as-student token');
+      return handleError(c, error, 'Failed to create login link token');
     }
   })
   .get('/profile', authMiddleware, async (c) => {

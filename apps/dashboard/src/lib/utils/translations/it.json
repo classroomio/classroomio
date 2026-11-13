@@ -131,7 +131,10 @@
   "account": {
     "switcher": {
       "your_account": "Il tuo conto",
-      "other_organizations": "Altre organizzazioni"
+      "other_organizations": "Altre organizzazioni",
+      "learning": "Apprendimento",
+      "add_organization": "Aggiungi organizzazione",
+      "current": "Organizzazione corrente"
     },
     "workspaces": {
       "page_title": "Spazi di lavoro",
@@ -561,6 +564,10 @@
     "reset_password": {
       "heading": "Nuova parola d'ordine",
       "description": "Inserisci i dettagli della tua nuova password"
+    },
+    "existing_account": {
+      "message": "Esiste già un account con questo indirizzo email.",
+      "cta": "Accedi invece"
     }
   },
   "profileMenu": {
@@ -2048,6 +2055,26 @@
     "create": "Creare",
     "sitename": "Il sottodominio Academy esiste già",
     "error_organization": "Qualcosa è andato storto durante la creazione di questa organizzazione. Ricarica e riprova"
+  },
+  "org_chooser": {
+    "page_title": "Le tue organizzazioni",
+    "title": "Scegli un'accademia per continuare",
+    "subtitle": "Hai accesso a {count, plural, one {# accademia} other {# accademie}}. Scegli dove vuoi entrare.",
+    "managed_heading": "Organizzazioni che gestisci",
+    "learning_heading": "Dove impari",
+    "invites_heading": "Inviti in sospeso",
+    "open_dashboard": "Apri la dashboard di {name}",
+    "open_academy": "Apri {name} su {host}",
+    "invited_as": "Invitato come {role}",
+    "accept_invite": "Accetta",
+    "invites_error": "Impossibile caricare i tuoi inviti. Controlla la connessione e riprova.",
+    "invites_retry": "Riprova",
+    "create_heading": "Gestisci la tua accademia",
+    "create_description": "Crea un'organizzazione, pubblica corsi e invita i tuoi studenti.",
+    "create_cta": "Crea organizzazione",
+    "for_teams": "Per i team",
+    "different_account": "Non vedi la tua accademia?",
+    "different_account_cta": "Prova con un altro indirizzo email"
   },
   "navigation": {
     "goto": "Vai a",
@@ -5548,6 +5575,9 @@
     },
     "oauth": {
       "revoked": "Accesso dell'app rimosso"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Impossibile aprire l'accademia. Riprova."
     }
   },
   "specialization": {

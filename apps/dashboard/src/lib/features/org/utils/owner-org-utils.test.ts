@@ -4,7 +4,7 @@ import type { AccountOrg } from '$features/app/types';
 import { findOwnerOrgToSwitch } from './owner-org-utils';
 
 const udemy = { id: 'org-udemy', siteName: 'udemy-test' } as AccountOrg;
-const states = { id: 'org-states', siteName: 'insights-states' } as AccountOrg;
+const states = { id: 'org-states', siteName: 'analytics-states' } as AccountOrg;
 
 describe('findOwnerOrgToSwitch', () => {
   it('returns the owner org when the user belongs to it and another org is current', () => {
