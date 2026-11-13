@@ -10,7 +10,7 @@ The API limits how many requests each API key can make, so one integration can't
 
 Each API key can make **100 requests per minute**. Every key has its own budget, so traffic on one key doesn't use up another's.
 
-Insights and reminder endpoints have stricter per-minute budgets on top of that baseline: **60 insights queries per minute**, **20 insights snapshots per minute**, and **20 overdue-goal reminders per minute**. Going over an insights or reminder budget returns a `429` until the minute resets. Sending a test email is capped separately at **5 per organization per 15 minutes**.
+Insights and reminder endpoints have stricter per-minute budgets on top of that baseline: **60 insights queries per minute**, **20 insights snapshots per minute**, and **20 overdue-goal reminders per minute**. Going over an insights or reminder budget returns a `429` until capacity frees up again, at most a minute later. Sending a test email is capped separately at **5 per organization per 15 minutes**.
 
 ## Rate limit headers
 
@@ -30,7 +30,7 @@ X-RateLimit-Reset: 2026-10-23T14:05:00.000Z
 
 ## Exceeding the limit
 
-Once you go over the limit, requests fail with `429 Too Many Requests` until the minute resets. The `Retry-After` header and the `retryAfter` field both give the number of seconds to wait.
+Once you go over the limit, requests fail with `429 Too Many Requests` until capacity frees up again, at most a minute later. The `Retry-After` header and the `retryAfter` field both give the number of seconds to wait, as an upper bound.
 
 ```json
 {
