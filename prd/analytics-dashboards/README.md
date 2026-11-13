@@ -6,6 +6,10 @@
 
 Give admins, tutors and executives live learner analytics at three levels (a **cohort**, a **course** and the whole **organization**) from one shared definition, without hard-coding a chart per page. Dashboards are built from stored **query specs** over a small registry of metrics, so the same widget works at every scope and users can later build their own.
 
+## Naming
+
+The org menu is **Analytics**, with **Academy**, **Marketing** and **Compliance** under it. Course and cohort pages are each called **Analytics**. Code, routes and the public API follow that naming. The plan, decisions and rename map are in [`../analytics-naming/README.md`](../analytics-naming/README.md).
+
 ## Problem Statement
 
 Enterprise training teams run many cohorts of learners at once and need to answer, without downloading files:
@@ -89,8 +93,8 @@ The section-by-section scorecard has one row per `course_section`, ordered by `o
 | Logins | `analytics_login_events`, one row per user per day | `schema.ts` |
 | Page events | Marketing events only (landing, course page, sign-in, pricing, CTA, enrollment, completion, certificate). **No lesson or exercise events** (tracked in #1299) | `packages/tracking/src/events/taxonomy.ts` |
 | Time spent | `course_completion_record.time_spent_minutes` exists but is **always written as 0** | `apps/api/src/services/course/compliance.ts` |
-| Last active | Member last-active timestamp bumped from page events | `queries/tracking/tracking.ts` |
-| Public API | `v1/analytics` routes for org, course and learner summaries | `apps/api/src/routes/v1/analytics` |
+| Last active | Member last-active timestamp bumped from page events | `packages/db/src/queries/tracking/tracking.ts` |
+| Public API | `v1/analytics` routes for org, course and student summaries | `apps/api/src/routes/v1/analytics` |
 
 ## Product Goals
 
@@ -176,24 +180,25 @@ Each section below needs data the product does not collect today. A ticket track
 | --- | --- | --- |
 | Cohort | A new "Analytics" item in the cohort sidebar at `/cohorts/[id]/analytics`, beside Newsfeed, Courses, People and Settings | Nothing exists today, so nothing is replaced |
 | Course | `/courses/[id]/analytics`, the existing "Analytics" item in the course sidebar | **Replaced.** Same route and nav item, new content. The new course dashboard covers what the page shows today: course KPIs and the per-student table, with filters and export |
-| Organization | `/org/[slug]/analytics`, labelled "Analytics" in the org navigation | The page at that path today shows landing-page and marketing stats (views, enrollments, funnel, countries, top courses). It is **renamed "Marketing"** and moves to `/org/[slug]/marketing`. The new learner dashboard takes the "Analytics" name and path |
+| Organization | A new **Analytics** menu in the org navigation with three pages: **Academy** at `/org/[slug]/analytics/academy` (the new student dashboard, admins only), **Marketing** at `/org/[slug]/analytics/marketing` (the page that used to be "Analytics", admins and tutors) and **Compliance** at `/org/[slug]/analytics/compliance` (admins only) | The old org "Analytics" page, which showed landing-page and marketing stats (views, enrollments, funnel, countries, top courses), is **renamed "Marketing"** and moves under the menu. The compliance page moves from `/org/[slug]/compliance` to `/org/[slug]/analytics/compliance`. `/org/[slug]/analytics` redirects: admins to `academy`, tutors to `marketing` |
 
 The prototype (`prototypes/analytics-dashboards`) draws each dashboard inside the real app navigation for its page, with the route and the files to touch, so the placement above can be checked on screen.
 
-Unchanged: the course and organization compliance pages, course marks, course attendance, and the per-user analytics in the audience page. The audience page links into the new learner list.
+Unchanged: course marks, course attendance, and the per-user analytics in the audience page, which links into the new learner list. The organization compliance page keeps its content and moves under **Analytics**.
 
 Notes for the change:
 
-- **API stays.** `GET /course/:courseId/analytics` and the `v1/analytics` routes keep serving the public API and MCP. Only the dashboard page is replaced, and the page moves onto `/analytics`.
-- **Navigation and copy.** The org navigation (`org-navigation.ts`) gets a new "Marketing" item for the renamed page and keeps "Analytics" for the new one. The `org_navigation` translation keys change in `en.json`, so every other dashboard locale needs updating (see the translation rule in `CLAUDE.md`).
-- **Order.** The rename ships first and on its own (Phase 0), so the Analytics path is free before the new dashboard arrives. Anyone with a bookmark to the old marketing page lands on the new Analytics page after Phase 1, so release notes should say so.
+- **API (Phase 3, #1495).** The public API will mirror the menu: `/analytics/academy`, `/analytics/marketing` and `/analytics/compliance`, plus `/courses/{courseId}/analytics` and `/cohorts/{cohortId}/analytics`. Nothing will answer `GET /analytics` itself. The old `GET /course/:courseId/analytics` internal route is removed with the old course page.
+- **Navigation and copy.** The org navigation (`org-navigation.ts`) has one **Analytics** menu item with the three children above. The `org_navigation` translation keys change in `en.json`, so every other dashboard locale needs updating (see the translation rule in `CLAUDE.md`).
+- **Redirects.** `/org/[slug]/compliance` redirects to `/org/[slug]/analytics/compliance`, and `/org/[slug]/analytics` redirects by role, so existing bookmarks keep working.
+- **Order.** The Marketing and Compliance moves ship first (Phase 0), so the Academy path is free before the new dashboard arrives.
 
 ## Architecture
 
 Follows the layering in `CLAUDE.md`:
 
 1. **Validation:** `packages/utils/src/validation/analytics/` holds the spec, result and dashboard schemas.
-2. **Queries:** `packages/db/src/queries/analytics/` holds the registry, scope resolver and compiler. Page-event ingestion and rollups live in `queries/tracking`, landing-page stats in `queries/marketing`, and per-student progress reads in `queries/student-progress`. Each query accepts an optional `DbOrTxClient` and logs the original error with its function name.
+2. **Queries:** `packages/db/src/queries/analytics/` holds the registry, scope resolver and compiler. Page-event collection lives in `queries/tracking`, traffic and funnel reads in `queries/marketing`, and per-student progress in `queries/student-progress`, so `analytics` names only this engine. Each query accepts an optional `DbOrTxClient` and logs the original error with its function name.
 3. **Service:** `apps/api/src/services/analytics/` handles authorization, caching (see Caching) and orchestration. It throws `AppError`.
 4. **Routes:** one `/analytics` root mounted in `app.ts`.
    - `POST /analytics/query` returns `{ columns, rows }` with `generatedAt`, `cached` and `refreshThrottled` (one type).
@@ -206,7 +211,7 @@ Follows the layering in `CLAUDE.md`:
    - Charts use the browser-only dynamic import (see Chart Imports and SSR in `CLAUDE.md`).
    - All copy goes through translations.
    - Filters and search follow the live-update form rules (`DebouncedSearch` for server-backed search).
-6. **Public API and MCP (Phase 3):** expose `POST /analytics/query` through `v1/analytics` with the existing scopes.
+6. **Public API and MCP (Phase 3):** expose the query as `POST /analytics/academy/query` in the public API, with the `analytics:read` scope.
 
 ### Security
 
@@ -233,7 +238,7 @@ Dashboards are read by many people at once (a CEO's page, every head of L&D, a s
 
 ### Keys
 
-`analytics:{section}:{orgId}:{scopeType}:{scopeId}:{specHash}`, built by `analyticsKey()` in `packages/core/src/utils/redis/analytics-cache.ts`. This is a separate namespace from `public-api:analytics:*`, which keeps its own entries and TTLs.
+`analytics:{section}:{orgId}:{scopeType}:{scopeId}:{specHash}`, built by one `analyticsKey()` helper in `packages/core/src/utils/redis/analytics-cache.ts`. This is a separate namespace from `public-api:analytics:*`, which keeps its own entries and TTLs.
 
 - `orgId` is always in the key and always comes from the server-side scope, never from the request. Two organizations can never share an entry, even for identical specs.
 - `specHash` is a hash of the spec **after** scope injection and canonicalization (sorted keys, defaults applied, filter order normalized), so two requests that mean the same thing hit the same entry.
@@ -285,10 +290,12 @@ Phase 2 adds an `analytics_dashboard` table (`org_id`, `scope_type`, `definition
 
 ## Implementation Plan
 
-### Phase 0: rename the marketing page
+### Phase 0: move the existing pages under the Analytics menu
 
-- [ ] Rename the org "Analytics" page to "Marketing": route `/org/[slug]/marketing`, org navigation item and `org_navigation` translation keys, and all dashboard locales.
-- [ ] Rename the `features/analytics` folder to `features/marketing` so it is not confused with the new learner analytics.
+- [ ] Rename the old org "Analytics" page to "Marketing": route `/org/[slug]/analytics/marketing`, org navigation item and `org_navigation` translation keys, and all dashboard locales.
+- [ ] Move the compliance page to `/org/[slug]/analytics/compliance`, with a redirect from `/org/[slug]/compliance`.
+- [ ] Rename the old `features/analytics` folder to `features/marketing`, so the name `analytics` is free for this engine.
+- [ ] Add the **Analytics** menu and the role-aware redirect at `/org/[slug]/analytics`.
 
 ### Phase 1: cohort scope, then course and org
 
@@ -301,7 +308,7 @@ Phase 2 adds an `analytics_dashboard` table (`org_id`, `scope_type`, `definition
 - [ ] Cohort dashboard: KPIs, course picker, courses table (all courses), scores by exercise, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
 - [ ] Caching per the Caching section: key builder and TTL constants, `generatedAt` in the response, "Updated Ns ago" indicator, visibility-aware auto-refresh, rate-limited refresh.
 - [ ] Course dashboard and organization dashboard from the same widgets.
-- [ ] Placement: new `/cohorts/[id]/analytics` page with its cohort sidebar item, new `/org/[slug]/analytics` page, and the course analytics page at `/courses/[id]/analytics` replaced (remove its old components and export utils once the new page ships).
+- [ ] Placement: new `/cohorts/[id]/analytics` page with its cohort sidebar item, new `/org/[slug]/analytics/academy` page, and the course analytics page at `/courses/[id]/analytics` replaced (remove its old components and export utils once the new page ships).
 - [ ] Rollback-sensitive and cache tests, and a seeded 5,000-learner performance check.
 
 <!--
@@ -331,7 +338,7 @@ Blocked by #1302 (supervisor of a learner, https://github.com/classroomio/classr
 - [ ] Custom metrics as formulas over registry metrics (for example final exam score minus the first exercise score).
 - [ ] Scheduled email digests and threshold alerts.
 - [ ] Read-only share links or a viewer role for executives.
-- [ ] Expose `POST /analytics/query` through the public API and MCP.
+- [ ] Expose `POST /analytics/academy/query` through the public API and MCP (`query_academy_analytics`).
 
 ## Open Decisions
 

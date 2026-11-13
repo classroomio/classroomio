@@ -77,10 +77,10 @@
   let openFilterSection = $state<FilterSection | string[] | undefined>('types');
 
   const COURSE_TYPES = [
-    { value: 'SELF_PACED', label: t.get('analytics.popularTypes.types.SELF_PACED') },
-    { value: 'LIVE_CLASS', label: t.get('analytics.popularTypes.types.LIVE_CLASS') },
-    { value: 'COMPLIANCE', label: t.get('analytics.popularTypes.types.COMPLIANCE') },
-    { value: 'PUBLIC', label: t.get('analytics.popularTypes.types.PUBLIC') }
+    { value: 'SELF_PACED', label: t.get('marketing.popularTypes.types.SELF_PACED') },
+    { value: 'LIVE_CLASS', label: t.get('marketing.popularTypes.types.LIVE_CLASS') },
+    { value: 'COMPLIANCE', label: t.get('marketing.popularTypes.types.COMPLIANCE') },
+    { value: 'PUBLIC', label: t.get('marketing.popularTypes.types.PUBLIC') }
   ] as const;
 
   const landingSettings = $derived(normalizeLandingPageSettings(data.org.landingpage));

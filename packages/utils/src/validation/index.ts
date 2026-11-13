@@ -19,6 +19,8 @@ export * from './public-api';
 export * from './report';
 export * from './submission';
 export * from './dash';
+export * from './marketing';
+export * from './compliance';
 export * from './tag';
 export * from './cohort';
 export * from './widget';

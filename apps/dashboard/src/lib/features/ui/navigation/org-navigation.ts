@@ -14,6 +14,7 @@ import {
 import WidgetsIcon from '@cio/ui/custom/moving-icons/widgets.svelte';
 
 import type { AccountOrg } from '$features/app/types';
+import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 import BotIcon from '@lucide/svelte/icons/bot';
 import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
@@ -114,22 +115,28 @@ export const baseNavConfig: NavItemConfig[] = [
   },
   {
     group: null,
-    titleKey: 'org_navigation.stats',
-    path: '/stats',
+    titleKey: 'org_navigation.analytics',
+    path: '/analytics',
     icon: ChartColumnIcon,
     useHashUrl: true,
-    matchPattern: '^/org/[^/]+/(analytics|compliance)(/.*)?$',
+    matchPattern: '^/org/[^/]+/analytics(/.*)?$',
     items: [
       {
-        titleKey: 'org_navigation.analytics',
-        path: '/analytics',
-        matchPattern: '^/org/[^/]+/analytics(/.*)?$'
+        titleKey: 'org_navigation.org_analytics',
+        path: `/analytics/${ORG_ANALYTICS_PAGE.slug}`,
+        requiresAdmin: true,
+        matchPattern: `^/org/[^/]+/analytics/${ORG_ANALYTICS_PAGE.slug}(/.*)?$`
+      },
+      {
+        titleKey: 'org_navigation.marketing',
+        path: '/analytics/marketing',
+        matchPattern: '^/org/[^/]+/analytics/marketing(/.*)?$'
       },
       {
         titleKey: 'org_navigation.compliance',
-        path: '/compliance',
+        path: '/analytics/compliance',
         requiresAdmin: true,
-        matchPattern: '^/org/[^/]+/compliance(/.*)?$'
+        matchPattern: '^/org/[^/]+/analytics/compliance(/.*)?$'
       }
     ]
   },
