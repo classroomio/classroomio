@@ -1,5 +1,6 @@
 import { PLANS } from '@cio/utils/plans';
 import { faqs } from '$lib/utils/faqs';
+import type { ChangelogEntry } from '$lib/utils/types';
 import { SITE_ORIGIN } from './upstreams';
 
 type ResourceLink = { title: string; path: string; description: string };
@@ -245,7 +246,16 @@ const LLMS_SECTIONS: ResourceSection[] = [
       { title: 'Pricing', path: '/pricing.md', description: 'Plans, prices and included limits as Markdown.' },
       { title: 'Answers', path: '/answers.md', description: 'Frequently asked questions as Markdown.' },
       { title: 'Sitemap', path: '/sitemap.md', description: 'Every public page, grouped by site.' },
-      { title: 'Changelog', path: '/changelog', description: 'Release notes for every update.' },
+      {
+        title: 'Changelog',
+        path: '/changelog.md',
+        description: 'Every release, newest first, with ISO dates. The first entry is the latest release.'
+      },
+      {
+        title: 'Changelog feed',
+        path: '/changelog.xml',
+        description: 'Atom feed of releases. Check it for anything newer than a cached copy of the changelog.'
+      },
       { title: 'Blog', path: '/blog', description: 'Product news and guides.' }
     ]
   }
@@ -346,9 +356,83 @@ ${pages}
 `;
 }
 
-export function buildSitemapXml(blogSlugs: string[]): string {
-  const paths = [...SITE_PAGES.map((page) => page.path), ...blogSlugs.map((slug) => `/blog/${slug}`)];
-  const urls = paths.map((path) => `  <url><loc>${absolute(path)}</loc></url>`).join('\n');
+export type SitemapBlogPost = { slug: string; date: string };
+
+function toIsoDay(date: string): string | null {
+  const parsed = new Date(date);
+
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
+}
+
+function renderSitemapEntry(path: string, lastModified: string | null): string {
+  const lastModifiedTag = lastModified ? `<lastmod>${lastModified}</lastmod>` : '';
+
+  return `  <url><loc>${absolute(path)}</loc>${lastModifiedTag}</url>`;
+}
+
+export function buildSitemapXml(blogPosts: SitemapBlogPost[], changelogLastModified: string | null): string {
+  const pageEntries = SITE_PAGES.map((page) => {
+    const lastModified = page.path === '/changelog' ? changelogLastModified : null;
+
+    return renderSitemapEntry(page.path, lastModified);
+  });
+  const blogEntries = blogPosts.map((post) => renderSitemapEntry(`/blog/${post.slug}`, toIsoDay(post.date)));
+  const urls = [...pageEntries, ...blogEntries].join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
+function entryPublicUrl(entry: ChangelogEntry): string {
+  return entry.url || absolute('/changelog');
+}
+
+export function buildChangelogMarkdown(entries: ChangelogEntry[], generatedAt: Date): string {
+  const latest = entries[0];
+  const latestLine = latest
+    ? `The latest release is **${latest.title}**, published ${latest.publishedAt.slice(0, 10)}.`
+    : 'No releases are published yet.';
+  const blocks = entries.map((entry) => {
+    const tags = entry.tags.length > 0 ? `\n\nTags: ${entry.tags.join(', ')}` : '';
+    const summary = entry.summary ? `\n\n${entry.summary}` : '';
+
+    return `## ${entry.publishedAt.slice(0, 10)} · ${entry.title}${summary}${tags}\n\n[Read the full update](${entryPublicUrl(entry)})`;
+  });
+
+  return `# ClassroomIO changelog
+
+> Releases are listed newest first. ${latestLine} Generated ${generatedAt.toISOString()}. Canonical page: ${absolute('/changelog')}. Atom feed: ${absolute('/changelog.xml')}.
+
+${blocks.join('\n\n')}
+`;
+}
+
+function escapeXml(value: string): string {
+  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+}
+
+export function buildChangelogFeed(entries: ChangelogEntry[], generatedAt: Date): string {
+  const updated = entries[0]?.publishedAt ?? generatedAt.toISOString();
+  const items = entries
+    .map(
+      (entry) => `  <entry>
+    <id>${escapeXml(entry.id)}</id>
+    <title>${escapeXml(entry.title)}</title>
+    <link href="${escapeXml(entryPublicUrl(entry))}"/>
+    <published>${entry.publishedAt}</published>
+    <updated>${entry.publishedAt}</updated>
+    <summary>${escapeXml(entry.summary ?? '')}</summary>
+  </entry>`
+    )
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>${absolute('/changelog')}</id>
+  <title>ClassroomIO changelog</title>
+  <link href="${absolute('/changelog')}"/>
+  <link rel="self" href="${absolute('/changelog.xml')}"/>
+  <updated>${updated}</updated>
+${items}
+</feed>
+`;
 }

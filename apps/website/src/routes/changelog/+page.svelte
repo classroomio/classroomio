@@ -16,6 +16,8 @@
     name="description"
     content="Every new feature, improvement and fix we ship to ClassroomIO, updated every week."
   />
+  <link rel="alternate" type="text/markdown" href="/changelog.md" />
+  <link rel="alternate" type="application/atom+xml" title="ClassroomIO changelog" href="/changelog.xml" />
 </svelte:head>
 
 <section>
