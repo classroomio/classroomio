@@ -145,6 +145,26 @@ pnpm seed --organizations --organization-members --organization-plan
 | `--questions`            | Questions                                              |
 | `--templates`            | Exercise templates                                     |
 
+### Analytics states seed
+
+`db:seed:analytics-states` creates a dedicated `analytics-states` organization with one of every analytics state: active, empty and archived cohorts, including an empty cohort with a course and one without; a cohort linked to 11 courses to test horizontal chart scrolling and searchable course selection; a shared course linked across 13 cohorts to test cohort table pagination; pending invites; learners who are completed, on track, lagging or at risk; recent, inactive and never-used logins; graded, awaiting-grade, still-to-pass and passed-after-retry attempts; overdue goals, compliance records and exercises; certificates; grouped and ungrouped courses; a course without a pass mark; an empty course; and an archived course. It deletes and recreates that organization on each run, so it is deterministic and safe to repeat. The reset also removes an organization left by the older `insights-states` version of this seed, which used the same ids, and the seed people's memberships, posts and comments in other organizations, so the seed can be rerun on a database that has been used.
+
+```bash
+pnpm --filter @cio/db db:seed:analytics-states
+```
+
+Sign in with `admin@analytics-states.demo`, `tutor@analytics-states.demo`, or a learner such as `priya@analytics-states.demo`. Every account uses `123456`.
+
+### Analytics load seed
+
+`db:seed:analytics-load` creates an `analytics-load` organization sized for performance checks: 5,000 students in 20 cohorts of 250, each cohort on 3 courses with lessons, exercises, attempts, attendance and logins. Sign in with `admin@analytics-load.demo` or `tutor@analytics-load.demo` (password `123456`).
+
+```bash
+pnpm --filter @cio/db db:seed:analytics-load
+```
+
+To time every preset widget against it, run `apps/api/scripts/measure-analytics.ts` with `tsx` from `apps/api`. `ANALYTICS_LOAD_ORG` picks another organization by site name, `ANALYTICS_BENCHMARK_RUNS` sets the runs per widget (default 5), and `ANALYTICS_EXPLAIN_WIDGET=<widget id>` prints that widget's query plan.
+
 ### Demo accounts
 
 | Email                            | Password | Role    | Plan          |

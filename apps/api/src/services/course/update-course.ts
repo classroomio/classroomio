@@ -1,4 +1,5 @@
 import { updateCourse } from '@cio/core/services/course/course';
+import { invalidateAnalyticsCourseStructure } from '@cio/core/utils/redis/analytics-cache';
 import { db } from '@cio/db/drizzle';
 import { getCourseByIdForUpdate } from '@cio/db/queries/course';
 import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
@@ -16,7 +17,7 @@ export async function updateCourseWithTags(
     updatedByUserId: string;
   } & TCourseTagChange
 ) {
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     // The row lock makes concurrent tag changes on one course wait, so addTagIds reads the tags the previous call saved.
     const [lockedCourse] = await getCourseByIdForUpdate(params.courseId, tx);
     if (!lockedCourse) {
@@ -25,10 +26,16 @@ export async function updateCourseWithTags(
 
     // A tags-only change skips updateCourse, whose checks on unrelated settings
     // (payment link, compliance deadline) would otherwise block tagging.
-    const { course, conversionOffenders, publishedNow, publishChange } =
+    const { course, conversionOffenders, publishedNow, publishChange, groupingChanged } =
       Object.keys(params.courseData).length > 0
         ? await updateCourse(params.courseId, params.courseData, tx)
-        : { course: lockedCourse, conversionOffenders: null, publishedNow: false, publishChange: null };
+        : {
+            course: lockedCourse,
+            conversionOffenders: null,
+            publishedNow: false,
+            publishChange: null,
+            groupingChanged: false
+          };
 
     const tagIds = params.addTagIds
       ? [
@@ -44,6 +51,12 @@ export async function updateCourseWithTags(
       { updatedByUserId: params.updatedByUserId, dbClient: tx }
     );
 
-    return { course, conversionOffenders, publishedNow, publishChange, tags };
+    return { course, conversionOffenders, publishedNow, publishChange, groupingChanged, tags };
   });
+
+  if (result.groupingChanged) {
+    void invalidateAnalyticsCourseStructure(params.courseId);
+  }
+
+  return result;
 }

@@ -45,7 +45,7 @@ Today, every exercise in a course is implicitly available to every enrolled stud
 - `packages/db/src/queries/exercise/exercise.ts`
 - `packages/db/src/queries/exercise/lms.ts`
 - `packages/db/src/queries/course/course.ts`
-- `packages/db/src/queries/analytics/analytics.ts`
+- `packages/db/src/queries/student-progress/student-progress.ts`
 - `apps/api/src/routes/course/exercise.ts`
 - `apps/api/src/services/exercise/exercise.ts`
 - `apps/api/src/routes/course/course.ts`
@@ -248,7 +248,7 @@ Update these functions to use assignment-aware exercise sets:
 - `packages/db/src/queries/course/course.ts`
 1. `getCourseProgress(courseId, profileId)`
 
-- `packages/db/src/queries/analytics/analytics.ts`
+- `packages/db/src/queries/student-progress/student-progress.ts`
 1. `getUserExercisesStats(courseId, userId)`
 2. `getProfileCourseProgress(courseId, profileId)`
 

@@ -25,3 +25,4 @@ export * from './widget';
 export * from './jobs';
 export * from './invite-link';
 export * from './webhook';
+export * from './analytics';

@@ -67,7 +67,7 @@ Everything below was checked in the code on `main` (commit `8805c0f05`).
 | --- | --- | --- |
 | Exercise submissions | `apps/dashboard/src/lib/features/course/components/exercise/submissions/` (summary by question, individual by student) | No student × question grid, no grouping of identical wrong answers, no "accept this answer for everyone and regrade" |
 | Gradebook | `apps/api/src/services/mark/gradebook.ts` | Exercise totals only |
-| Analytics | `prd/insights-analytics` (draft) plans a metric registry, cohort/course/org dashboards and a "hardest questions" widget | No skill or standard dimension, no time-on-question, no misconception data to feed it |
+| Analytics | `prd/analytics-dashboards` plans a metric registry, cohort/course/org dashboards and a "hardest questions" widget | No skill or standard dimension, no time-on-question, no misconception data to feed it |
 
 ### What we can build on
 
@@ -77,7 +77,7 @@ The foundation is good, so this plan extends it instead of replacing it:
 - Renderers are organised by mode (`edit`, `take`, `preview`, `review`, `view`, `submission`), in per-type folders under `packages/ui/src/custom/exercise-question/renderers/`, so a new type plugs into authoring, taking and grading in one place.
 - `question.settings` and `question_answer.answer_data` are jsonb, so most new types need no schema change.
 - The tutor already supports hint-only and Socratic modes, which is exactly what math teachers ask for.
-- The insights-analytics registry is the right place for mastery and item-analysis metrics.
+- The analytics registry is the right place for mastery and item-analysis metrics.
 
 ## Primary Users
 
@@ -235,7 +235,7 @@ The rule for every AI feature: **the language model writes and explains, the Com
 1. **Exercise results grid.** Students down, questions across, each cell coloured by score, with the student's answer rendered as math on hover. Filters: wrong only, awaiting grading, by cohort. Clicking a cell opens the review renderer. Builds on `submissions/summary.svelte` and `individual.svelte`.
 2. **Answer clusters per question.** Group answers by normalised MathJSON so teachers see "14 students answered `x = -3`, 6 answered `x = 3`". One click on a cluster marks it correct (or partially correct) for everyone and **regrades retroactively**, or attaches feedback to all of them.
 3. **Skills and standards.** Add `skill` and `question_skill` tables (org-scoped, hierarchical, importable as CSV from Common Core, the UK National Curriculum, WAEC/NECO, IB and other syllabuses). Tag questions manually or by AI suggestion. Each student gets a mastery level per skill from their recent attempts.
-4. **Mastery and item analysis in the insights registry.** Add `skill_mastery`, `question_facility` (share correct), `question_discrimination` (how well it separates strong and weak students), `common_wrong_answers` and `time_on_question` as registry metrics, so they work at cohort, course and org scope with no bespoke charts. Time-on-question needs `startedAt` / `answeredAt` recorded in `answer_data` by the take view.
+4. **Mastery and item analysis in the analytics registry.** Add `skill_mastery`, `question_facility` (share correct), `question_discrimination` (how well it separates strong and weak students), `common_wrong_answers` and `time_on_question` as registry metrics, so they work at cohort, course and org scope with no bespoke charts. Time-on-question needs `startedAt` / `answeredAt` recorded in `answer_data` by the take view.
 5. **Student and parent report.** A one-page PDF or share link per student per period: skills mastered, skills to work on, recent scores and a teacher comment, branded with the org's theme.
 6. **"Assign practice" from results.** From a weak skill or a wrong-answer cluster, generate a short practice set (parameterised variants from Phase 2) and assign it to only those students. Depends on `prd/selective-exercise-assignment`.
 

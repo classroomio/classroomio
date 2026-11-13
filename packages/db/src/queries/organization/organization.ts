@@ -901,6 +901,24 @@ export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient 
 }
 
 /**
+ * Seat-holding student memberships whose person has not joined yet: added or invited, with no account linked and no
+ * revoked or expired latest invite. A subset of `countActiveStudents`.
+ */
+export async function countNotJoinedSeatHolders(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
+  try {
+    const [row] = await dbClient
+      .select({ count: count(schema.organizationmember.id) })
+      .from(schema.organizationmember)
+      .where(and(unarchivedStudentConditions(orgId), isNull(schema.organizationmember.profileId), inviteHoldsSeatSql));
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countNotJoinedSeatHolders error:', error);
+    throw new Error('Failed to count students who have not joined');
+  }
+}
+
+/**
  * True for an unarchived student who never joined and whose latest invite was
  * revoked or expired: they hold no seat until re-invited or linked to an account.
  */

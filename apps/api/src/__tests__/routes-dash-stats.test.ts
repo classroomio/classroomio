@@ -11,7 +11,7 @@ vi.mock('@api/middlewares/auth', () => ({
 
 vi.mock('@api/services/dash', () => ({
   getCurrentUserLoginStreak: vi.fn(),
-  getOrganisationAnalytics: vi.fn().mockResolvedValue({}),
+  getOrganizationOverview: vi.fn().mockResolvedValue({}),
   getStudentLoginActivity: vi.fn().mockResolvedValue([])
 }));
 
@@ -19,18 +19,21 @@ vi.mock('@api/services/course/compliance', () => ({
   getOrgComplianceOverview: vi.fn().mockResolvedValue({})
 }));
 
-vi.mock('@api/services/analytics', () => ({
+vi.mock('@api/services/marketing', () => ({
   getCountryBreakdown: vi.fn().mockResolvedValue([]),
   getCourseFunnel: vi.fn().mockResolvedValue({ steps: [] }),
   getLandingStats: vi.fn().mockResolvedValue({}),
   getPopularTypes: vi.fn().mockResolvedValue([]),
-  getTopCoursesByViews: vi.fn().mockResolvedValue([]),
+  getTopCoursesByViews: vi.fn().mockResolvedValue([])
+}));
+
+vi.mock('@api/services/tracking', () => ({
   ingestEventBatch: vi.fn()
 }));
 
-import { getOrganisationAnalytics, getStudentLoginActivity } from '@api/services/dash';
+import { getOrganizationOverview, getStudentLoginActivity } from '@api/services/dash';
 import { getOrgComplianceOverview } from '@api/services/course/compliance';
-import { getCountryBreakdown, getCourseFunnel, getLandingStats, getPopularTypes } from '@api/services/analytics';
+import { getCountryBreakdown, getCourseFunnel, getLandingStats, getPopularTypes } from '@api/services/marketing';
 import { dashAnalyticsRouter } from '@api/routes/dash';
 
 const OWN_ORG = 'org-own';
@@ -47,8 +50,8 @@ describe('dash analytics routes read the org verified by the middleware', () => 
     await get(`/stats?orgId=${OTHER_ORG}`);
     await get('/stats?siteName=someone-else');
 
-    expect(getOrganisationAnalytics).toHaveBeenNthCalledWith(1, OWN_ORG, undefined, false);
-    expect(getOrganisationAnalytics).toHaveBeenNthCalledWith(2, OWN_ORG, undefined, false);
+    expect(getOrganizationOverview).toHaveBeenNthCalledWith(1, OWN_ORG, undefined, false);
+    expect(getOrganizationOverview).toHaveBeenNthCalledWith(2, OWN_ORG, undefined, false);
   });
 
   it.each([

@@ -381,7 +381,7 @@ pnpm format:check
 - **Risk**: A member's SSO identity leaks another org's connection name.
   - **Mitigation**: The label is resolved by comparing `organization_sso_config.organization_id` to the requesting org, in the query layer rather than at render time, so no route can opt out. Acceptance criterion 4 tests the response body, not just the UI.
 - **Risk**: Adding methods to the audience list introduces an N+1 across a paginated list.
-  - **Mitigation**: The query is batched by `inArray(userIds)` and returns a map, mirroring the existing batched last-seen lookup in `packages/db/src/queries/analytics/analytics.ts:90`. Acceptance criterion 13 covers it.
+  - **Mitigation**: The query is batched by `inArray(userIds)` and returns a map, mirroring the existing batched last-seen lookup in `packages/db/src/queries/student-progress/student-progress.ts:90`. Acceptance criterion 13 covers it.
 - **Risk**: Read-only identities invite the immediate follow-up "let me unlink Google", and shipping that carelessly locks users out.
   - **Mitigation**: Explicitly a non-goal. When it is picked up it needs a last-method guard, a set-a-password step, and re-authentication — a PRD of its own.
 - **Risk**: Rendering the Google brand mark inline pulls a third-party logo into the design system.
