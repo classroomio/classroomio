@@ -85,6 +85,7 @@ export const MCP_TOOL_CREDIT_COST = {
   get_course_member_analytics: 0,
   list_course_invites: 0,
   add_course_member: 1,
+  enroll_course_student: 1,
   update_course_member: 1,
   delete_course_member: 1,
   reset_course_member_progress: 1,

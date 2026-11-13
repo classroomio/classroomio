@@ -63,7 +63,7 @@ To get a local copy up and running, please follow these simple steps.
 
 Here is what you need to be able to run Cal.com.
 
-- [Node.js](https://nodejs.org/) (Version: >=22.x)
+- [Node.js](https://nodejs.org/) (Version: 24.22.1, see `.nvmrc`)
 - [Docker](https://docs.docker.com/engine/install/) (for local database if needed)
 - [NPM](https://www.npmjs.com/)
 

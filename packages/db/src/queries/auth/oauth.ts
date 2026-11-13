@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, eq, gt, max } from 'drizzle-orm';
+import { and, eq, gt, inArray, max, ne } from 'drizzle-orm';
 
 import { createHash, randomBytes } from 'crypto';
 
@@ -125,13 +125,14 @@ export async function findActiveOAuthConsent(
   userId: string,
   clientId: string,
   organizationId: string
-): Promise<{ id: string; createdAt: Date; clientName: string | null } | null> {
+): Promise<{ id: string; createdAt: Date; clientName: string | null; scopes: string[] } | null> {
   try {
     const [row] = await db
       .select({
         id: schema.oauthConsent.id,
         createdAt: schema.oauthConsent.createdAt,
-        clientName: schema.oauthClient.name
+        clientName: schema.oauthClient.name,
+        scopes: schema.oauthConsent.scopes
       })
       .from(schema.oauthConsent)
       .leftJoin(schema.oauthClient, eq(schema.oauthClient.clientId, schema.oauthConsent.clientId))
@@ -148,6 +149,77 @@ export async function findActiveOAuthConsent(
   } catch (error) {
     console.error('findActiveOAuthConsent error:', error);
     throw new Error('Failed to check OAuth grant');
+  }
+}
+
+/**
+ * Deletes the grant's access and refresh tokens that carry a scope outside
+ * `grantedScopes`, so a refresh token cannot outlive a narrowed grant.
+ * Returns how many tokens were deleted.
+ */
+export async function revokeStaleOAuthTokens(
+  userId: string,
+  clientId: string,
+  organizationId: string,
+  grantedScopes: readonly string[]
+): Promise<number> {
+  try {
+    return await db.transaction(async (tx) => {
+      const refreshTokens = await tx
+        .select({ id: schema.oauthRefreshToken.id, scopes: schema.oauthRefreshToken.scopes })
+        .from(schema.oauthRefreshToken)
+        .where(
+          and(
+            eq(schema.oauthRefreshToken.userId, userId),
+            eq(schema.oauthRefreshToken.clientId, clientId),
+            eq(schema.oauthRefreshToken.referenceId, organizationId)
+          )
+        );
+
+      const staleRefreshIds = refreshTokens
+        .filter((token) => !token.scopes.every((scope) => grantedScopes.includes(scope)))
+        .map((token) => token.id);
+
+      let removed = 0;
+
+      if (staleRefreshIds.length > 0) {
+        const deletedRefresh = await tx
+          .delete(schema.oauthRefreshToken)
+          .where(inArray(schema.oauthRefreshToken.id, staleRefreshIds))
+          .returning({ id: schema.oauthRefreshToken.id });
+
+        removed += deletedRefresh.length;
+      }
+
+      const accessTokens = await tx
+        .select({ id: schema.oauthAccessToken.id, scopes: schema.oauthAccessToken.scopes })
+        .from(schema.oauthAccessToken)
+        .where(
+          and(
+            eq(schema.oauthAccessToken.userId, userId),
+            eq(schema.oauthAccessToken.clientId, clientId),
+            eq(schema.oauthAccessToken.referenceId, organizationId)
+          )
+        );
+
+      const staleAccessIds = accessTokens
+        .filter((token) => !token.scopes.every((scope) => grantedScopes.includes(scope)))
+        .map((token) => token.id);
+
+      if (staleAccessIds.length > 0) {
+        const deletedAccess = await tx
+          .delete(schema.oauthAccessToken)
+          .where(inArray(schema.oauthAccessToken.id, staleAccessIds))
+          .returning({ id: schema.oauthAccessToken.id });
+
+        removed += deletedAccess.length;
+      }
+
+      return removed;
+    });
+  } catch (error) {
+    console.error('revokeStaleOAuthTokens error:', error);
+    throw new Error('Failed to revoke stale OAuth tokens');
   }
 }
 
@@ -199,8 +271,20 @@ export async function getOrCreateOAuthGrantKey(data: {
   }
 }
 
-export async function listOAuthConnectedApps(organizationId: string): Promise<OAuthConnectedApp[]> {
+/**
+ * The organization's OAuth grants, limited to `clientId` or leaving out `excludeClientId` when given.
+ */
+export async function listOAuthConnectedApps(
+  organizationId: string,
+  filter: { clientId?: string; excludeClientId?: string } = {}
+): Promise<OAuthConnectedApp[]> {
   try {
+    const consentFilter = and(
+      eq(schema.oauthConsent.referenceId, organizationId),
+      filter.clientId ? eq(schema.oauthConsent.clientId, filter.clientId) : undefined,
+      filter.excludeClientId ? ne(schema.oauthConsent.clientId, filter.excludeClientId) : undefined
+    );
+
     const consents = await db
       .select({
         consentId: schema.oauthConsent.id,
@@ -216,7 +300,7 @@ export async function listOAuthConnectedApps(organizationId: string): Promise<OA
       .from(schema.oauthConsent)
       .innerJoin(schema.oauthClient, eq(schema.oauthClient.clientId, schema.oauthConsent.clientId))
       .leftJoin(schema.profile, eq(schema.profile.id, schema.oauthConsent.userId))
-      .where(eq(schema.oauthConsent.referenceId, organizationId));
+      .where(consentFilter);
 
     const lastUsedRows = await db
       .select({
@@ -301,6 +385,43 @@ export async function revokeUserOAuthGrantsInOrganization(userId: string, organi
   } catch (error) {
     console.error('revokeUserOAuthGrantsInOrganization error:', error);
     throw new Error('Failed to revoke OAuth grants');
+  }
+}
+
+/**
+ * Sets the scopes a registered client may request, for clients registered through dynamic
+ * registration, which always stores every scope the provider supports.
+ */
+export async function updateOAuthClientScopes(clientId: string, scopes: readonly string[]): Promise<boolean> {
+  try {
+    const updated = await db
+      .update(schema.oauthClient)
+      .set({ scopes: [...scopes] })
+      .where(eq(schema.oauthClient.clientId, clientId))
+      .returning({ clientId: schema.oauthClient.clientId });
+
+    return updated.length > 0;
+  } catch (error) {
+    console.error('updateOAuthClientScopes error:', error);
+    throw new Error('Failed to update OAuth client scopes');
+  }
+}
+
+/**
+ * Deletes a registered OAuth client. Its consents, grants and keys follow through
+ * cascading foreign keys, so nothing wide-scoped is left behind.
+ */
+export async function deleteOAuthClient(clientId: string): Promise<boolean> {
+  try {
+    const deleted = await db
+      .delete(schema.oauthClient)
+      .where(eq(schema.oauthClient.clientId, clientId))
+      .returning({ clientId: schema.oauthClient.clientId });
+
+    return deleted.length > 0;
+  } catch (error) {
+    console.error('deleteOAuthClient error:', error);
+    throw new Error('Failed to delete OAuth client');
   }
 }
 

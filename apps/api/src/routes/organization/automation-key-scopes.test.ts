@@ -23,8 +23,11 @@ describe('ZCreateOrganizationApiKey scopes', () => {
     expect(ZCreateOrganizationApiKey.safeParse({ type: 'mcp' }).success).toBe(true);
   });
 
-  it('allows public_api:* on API and Zapier keys', () => {
+  it('allows public_api:* on API keys', () => {
     expect(ZCreateOrganizationApiKey.safeParse({ type: 'api', scopes: ['public_api:*'] }).success).toBe(true);
-    expect(ZCreateOrganizationApiKey.safeParse({ type: 'zapier', scopes: ['public_api:*'] }).success).toBe(true);
+  });
+
+  it('rejects creating a zapier key directly', () => {
+    expect(ZCreateOrganizationApiKey.safeParse({ type: 'zapier', scopes: ['public_api:*'] }).success).toBe(false);
   });
 });

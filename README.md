@@ -79,7 +79,7 @@ To get a local copy up and running, please follow these simple steps.
 
 Here is what you need to be able to run ClassroomIO.com
 
-- **[Node.js](https://nodejs.org/)** (Version: >=20.19.3) — _required_
+- **[Node.js](https://nodejs.org/)** (Version: 24.22.1, see `.nvmrc`) — _required_
 - **[pnpm](https://pnpm.io/installation)** (v10) — _required_; the package scripts call `pnpm` directly, so npm/yarn are not substitutes
 - **[Docker](https://docs.docker.com/engine/install/)** — _required_; runs Postgres + Redis (no local install of those needed)
 
@@ -230,7 +230,7 @@ The repository also contains shared packages under `packages/` (for example `pac
 
    - **website**: `pnpm website:dev`
    - **docs**: `CHOKIDAR_USEPOLLING=true pnpm dev --filter=@cio/docs`
-     (Requires Node ≥ 22.12: `nvm use 22.12` first. The polling flag prevents
+     (Requires Node 24: `nvm use 24.22.1` first, per `.nvmrc`. The polling flag prevents
      an `EMFILE` error on macOS when other dev servers are already consuming
      file descriptors.)
 
