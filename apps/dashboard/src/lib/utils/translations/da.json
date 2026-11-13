@@ -5219,7 +5219,7 @@
       "disabled_description": "Kun organisationsadministratorer kan administrere automatisering, herunder tilsluttede apps og nøgler."
     },
     "zapier": {
-      "page_subtitle": "Automatiser ClassroomIO med tusindvis af apps via Zapier. Kommer snart.",
+      "page_subtitle": "Automatiser ClassroomIO med tusindvis af apps via Zapier.",
       "permissions_description": "Kun organisationsadministratorer kan forbinde Zapier og administrere forbindelserne.",
       "create_zap": "Opret en Zap",
       "upgrade": {

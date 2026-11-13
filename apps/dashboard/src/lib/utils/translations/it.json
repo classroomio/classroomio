@@ -5129,7 +5129,7 @@
       }
     },
     "zapier": {
-      "page_subtitle": "Automatizza ClassroomIO con migliaia di app tramite Zapier. Prossimamente.",
+      "page_subtitle": "Automatizza ClassroomIO con migliaia di app tramite Zapier.",
       "permissions_description": "Solo gli amministratori dell'organizzazione possono connettere Zapier e gestirne le connessioni.",
       "create_zap": "Crea uno Zap",
       "upgrade": {

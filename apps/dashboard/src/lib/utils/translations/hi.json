@@ -5219,7 +5219,7 @@
       "disabled_description": "केवल संगठन के एडमिन ऑटोमेशन प्रबंधित कर सकते हैं, जिसमें कनेक्टेड ऐप्स और कुंजियाँ शामिल हैं।"
     },
     "zapier": {
-      "page_subtitle": "Zapier के माध्यम से हज़ारों ऐप्स के साथ ClassroomIO को स्वचालित करें। जल्द आ रहा है।",
+      "page_subtitle": "Zapier के माध्यम से हज़ारों ऐप्स के साथ ClassroomIO को स्वचालित करें।",
       "permissions_description": "केवल संगठन व्यवस्थापक ही Zapier को कनेक्ट और इसके कनेक्शन प्रबंधित कर सकते हैं।",
       "create_zap": "एक Zap बनाएं",
       "upgrade": {

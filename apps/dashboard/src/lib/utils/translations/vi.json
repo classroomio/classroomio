@@ -5219,7 +5219,7 @@
       "disabled_description": "Chỉ quản trị viên tổ chức mới có thể quản lý tự động hóa, bao gồm các ứng dụng đã kết nối và khóa."
     },
     "zapier": {
-      "page_subtitle": "Tự động hóa ClassroomIO với hàng nghìn ứng dụng qua Zapier. Sắp ra mắt.",
+      "page_subtitle": "Tự động hóa ClassroomIO với hàng nghìn ứng dụng qua Zapier.",
       "permissions_description": "Chỉ quản trị viên tổ chức mới có thể kết nối Zapier và quản lý các kết nối của tổ chức.",
       "create_zap": "Tạo một Zap",
       "upgrade": {

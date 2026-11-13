@@ -5139,7 +5139,7 @@
       }
     },
     "zapier": {
-      "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında.",
+      "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin.",
       "permissions_description": "Yalnızca kuruluş yöneticileri Zapier'ı bağlayabilir ve bağlantılarını yönetebilir.",
       "create_zap": "Bir Zap oluştur",
       "upgrade": {

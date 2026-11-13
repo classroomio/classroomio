@@ -5219,7 +5219,7 @@
       "disabled_description": "Nur Organisationsadministratoren können Automatisierungen verwalten, einschließlich verbundener Apps und Schlüssel."
     },
     "zapier": {
-      "page_subtitle": "Automatisieren Sie ClassroomIO mit Tausenden von Apps über Zapier. Demnächst verfügbar.",
+      "page_subtitle": "Automatisieren Sie ClassroomIO mit Tausenden von Apps über Zapier.",
       "permissions_description": "Nur Organisations-Admins können Zapier verbinden und dessen Verbindungen verwalten.",
       "create_zap": "Einen Zap erstellen",
       "upgrade": {
