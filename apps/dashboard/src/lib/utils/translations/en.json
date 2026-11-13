@@ -131,7 +131,10 @@
   "account": {
     "switcher": {
       "your_account": "Your account",
-      "other_organizations": "Other organizations"
+      "other_organizations": "Other organizations",
+      "learning": "Learning",
+      "add_organization": "Add organization",
+      "current": "Current organization"
     },
     "workspaces": {
       "page_title": "Workspaces",
@@ -553,6 +556,10 @@
     "reset_password": {
       "heading": "New Password",
       "description": "Enter your new password details"
+    },
+    "existing_account": {
+      "message": "An account with this email already exists.",
+      "cta": "Log in instead"
     }
   },
   "profileMenu": {
@@ -2039,6 +2046,26 @@
     "create": "Create",
     "sitename": "Academy subdomain already exists",
     "error_organization": "Something went wrong while creating this organization. Please reload and try again"
+  },
+  "org_chooser": {
+    "page_title": "Your organizations",
+    "title": "Pick an academy to continue",
+    "subtitle": "You have access to {count, plural, one {# academy} other {# academies}}. Choose where you want to land.",
+    "managed_heading": "Organizations you manage",
+    "learning_heading": "Learning in",
+    "invites_heading": "Pending invitations",
+    "open_dashboard": "Open the {name} dashboard",
+    "open_academy": "Open {name} on {host}",
+    "invited_as": "Invited as {role}",
+    "accept_invite": "Accept",
+    "invites_error": "Couldn't load your invitations. Check your connection and try again.",
+    "invites_retry": "Try again",
+    "create_heading": "Run your own academy",
+    "create_description": "Create an organization, publish courses and invite your own learners.",
+    "create_cta": "Create organization",
+    "for_teams": "For teams",
+    "different_account": "Not seeing your academy?",
+    "different_account_cta": "Try a different email"
   },
   "navigation": {
     "goto": "Go to",
@@ -5630,6 +5657,9 @@
     },
     "oauth": {
       "revoked": "App access removed"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Couldn't open that academy. Please try again."
     }
   },
   "specialization": {
