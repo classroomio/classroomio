@@ -53,7 +53,9 @@ describe('public API lesson live-session date', () => {
   it('clears the date when lessonAt is null', async () => {
     await updatePublicApiLessonService(ORG_ID, ACTOR_ID, params, { lessonAt: null });
 
-    expect(mocks.updateLessonService).toHaveBeenCalledWith(LESSON_ID, expect.objectContaining({ lessonAt: null }));
+    expect(mocks.updateLessonService).toHaveBeenCalledWith(LESSON_ID, expect.objectContaining({ lessonAt: null }), {
+      actorProfileId: ACTOR_ID
+    });
   });
 
   it('sets the date when lessonAt is a timestamp', async () => {
@@ -61,7 +63,8 @@ describe('public API lesson live-session date', () => {
 
     expect(mocks.updateLessonService).toHaveBeenCalledWith(
       LESSON_ID,
-      expect.objectContaining({ lessonAt: '2026-11-05T18:00:00+01:00' })
+      expect.objectContaining({ lessonAt: '2026-11-05T18:00:00+01:00' }),
+      { actorProfileId: ACTOR_ID }
     );
   });
 

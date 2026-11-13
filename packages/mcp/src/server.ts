@@ -43,6 +43,11 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
     version: MCP_VERSION
   });
   returnApiErrorsAsToolResults(server);
+  server.server.oninitialized = () => {
+    const clientName = server.server.getClientVersion()?.name;
+
+    if (clientName) apiClient.setClientName(clientName);
+  };
 
   registerCourseDraftTools(server, apiClient);
   registerCourseTools(server, apiClient);

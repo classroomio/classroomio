@@ -1830,6 +1830,8 @@
           "restore_lesson_confirm": "Заменить весь урок этой версией?",
           "by_assistant": "Ассистент",
           "by_restore": "Восстановление",
+          "by_ai_client": "ИИ-клиент",
+          "by_api": "API",
           "change_kind": {
             "added": "Добавлено",
             "removed": "Удалено",

@@ -553,6 +553,10 @@ Read-only `InputGroup` that shows a value with an inline Copy button. Focusing t
 />
 ```
 
+### AI client badge (`src/custom/ai-client-badge/`)
+
+`AiClientBadge` shows which AI client or integration made a change: the product's logo and name for Claude and ChatGPT, and a generic sparkles icon with the reported name for any other client. Pass the stored `clientName`; matching is case-insensitive and loose (`Claude`, `claude-ai` and `Claude Code` all show Claude). `resolveAiClient(name)` returns the `claude`, `chatgpt` or `generic` kind for logic outside the badge. The logos are inline SVGs in this folder, so nothing is fetched at render time.
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.

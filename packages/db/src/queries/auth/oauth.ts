@@ -125,11 +125,16 @@ export async function findActiveOAuthConsent(
   userId: string,
   clientId: string,
   organizationId: string
-): Promise<{ id: string; createdAt: Date } | null> {
+): Promise<{ id: string; createdAt: Date; clientName: string | null } | null> {
   try {
     const [row] = await db
-      .select({ id: schema.oauthConsent.id, createdAt: schema.oauthConsent.createdAt })
+      .select({
+        id: schema.oauthConsent.id,
+        createdAt: schema.oauthConsent.createdAt,
+        clientName: schema.oauthClient.name
+      })
       .from(schema.oauthConsent)
+      .leftJoin(schema.oauthClient, eq(schema.oauthClient.clientId, schema.oauthConsent.clientId))
       .where(
         and(
           eq(schema.oauthConsent.userId, userId),

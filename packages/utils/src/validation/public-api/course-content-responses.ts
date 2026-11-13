@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { BLOCK_CHANGE_SOURCE_VALUES } from '../../constants/lesson-version';
 import { ZPublicApiLessonBlockResponse } from './course-lesson-block';
 
 // Response shapes for OpenAPI docs only; handlers don't validate against them.
@@ -101,6 +102,15 @@ export const ZPublicApiCourseLessonHistoryResponse = z.object({
       isSealed: z.boolean().nullable(),
       authorId: z.string().uuid().nullable(),
       authorName: z.string().nullable(),
+      source: z
+        .enum(BLOCK_CHANGE_SOURCE_VALUES)
+        .describe(
+          'Who made the change: editor (a person), assistant, restore, mcp (an AI client) or api (an integration)'
+        ),
+      clientName: z
+        .string()
+        .nullable()
+        .describe('Name of the AI client or integration that made an mcp or api change, such as Claude or ChatGPT'),
       blockId: z
         .uuid()
         .nullable()

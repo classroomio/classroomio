@@ -2325,6 +2325,7 @@ export const blockLocaleHistory = pgTable(
     editCount: integer('edit_count').default(1).notNull(),
     isSealed: boolean('is_sealed').default(false).notNull(),
     source: varchar().default('editor').notNull().$type<TBlockChangeSource>(),
+    clientName: varchar('client_name', { length: 120 }),
     changeSetId: uuid('change_set_id')
   },
   (table) => [
@@ -2377,6 +2378,7 @@ export const lessonRevision = pgTable(
     placements: jsonb().notNull().$type<TLessonRevisionPlacement[]>(),
     authorId: uuid('author_id'),
     source: varchar().default('editor').notNull().$type<TBlockChangeSource>(),
+    clientName: varchar('client_name', { length: 120 }),
     changeSetId: uuid('change_set_id'),
     sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -3176,9 +3178,10 @@ export const blockVersions = pgView('block_versions', {
   locale: locale(),
   blockId: uuid('block_id'),
   source: varchar().$type<TBlockChangeSource>(),
+  clientName: varchar('client_name', { length: 120 }),
   changeSetId: uuid('change_set_id')
 }).as(
-  sql`SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id, bh.source, bh.change_set_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id`
+  sql`SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id, bh.source, bh.client_name, bh.change_set_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id`
 );
 
 export const exerciseTemplate = pgTable('exercise_template', {

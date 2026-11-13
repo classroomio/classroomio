@@ -54,6 +54,7 @@ function buildLatest(overrides: Partial<BlockVersionSessionState> = {}): BlockVe
     editCount: 3,
     isSealed: false,
     source: 'editor',
+    clientName: null,
     changeSetId: null,
     // Elapsed times come from Postgres, not from parsing the timestamps above.
     msSinceLastEdit: 60_000,
@@ -83,6 +84,15 @@ describe('canExtendVersionSession', () => {
 
   it('gives a different author their own entry', () => {
     expect(canExtendVersionSession(buildLatest({ authorId: OTHER_AUTHOR_ID }), baseInput)).toBe(false);
+  });
+
+  it('gives each AI client its own entry, even for the same author', () => {
+    const claudeSession = buildLatest({ source: 'mcp', clientName: 'Claude' });
+    const mcpInput = { ...baseInput, source: 'mcp' as const };
+
+    expect(canExtendVersionSession(claudeSession, { ...mcpInput, clientName: 'Claude' })).toBe(true);
+    expect(canExtendVersionSession(claudeSession, { ...mcpInput, clientName: 'ChatGPT' })).toBe(false);
+    expect(canExtendVersionSession(claudeSession, { ...mcpInput, clientName: null })).toBe(false);
   });
 
   it('gives a system write its own entry when the session belongs to a person', () => {
@@ -148,6 +158,22 @@ describe('recordBlockLocaleVersion', () => {
     expect(result).toBeNull();
     expect(getLatestBlockLocaleVersion).not.toHaveBeenCalled();
     expect(insertBlockLocaleVersion).not.toHaveBeenCalled();
+  });
+
+  it('stores the source and client name of an AI client write', async () => {
+    await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
+      content: '<p>from claude</p>',
+      authorId: AUTHOR_ID,
+      intent: 'auto',
+      source: 'mcp',
+      clientName: 'Claude'
+    });
+
+    expect(vi.mocked(insertBlockLocaleVersion).mock.calls[0]?.[0]).toMatchObject({
+      source: 'mcp',
+      clientName: 'Claude'
+    });
   });
 
   it('opens an unsealed session for the first autosave', async () => {

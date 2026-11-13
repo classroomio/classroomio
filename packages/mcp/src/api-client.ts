@@ -201,6 +201,7 @@ export type ClassroomIoApiClientOptions = {
 export class ClassroomIoApiClient {
   private readonly fetchImpl: typeof fetch;
   private readonly extraHeaders: Record<string, string>;
+  private clientName: string | null = null;
 
   constructor(
     private readonly config: McpServerConfig,
@@ -208,6 +209,13 @@ export class ClassroomIoApiClient {
   ) {
     this.fetchImpl = options.fetch ?? fetch;
     this.extraHeaders = options.headers ?? {};
+  }
+
+  /**
+   * Names the MCP client (its `clientInfo.name`) on every later API call so the server can attribute edits to it.
+   */
+  setClientName(name: string) {
+    this.clientName = name;
   }
 
   async createCourseDraft(payload: TCourseImportDraftCreate) {
@@ -1284,6 +1292,7 @@ export class ClassroomIoApiClient {
         Authorization: `Bearer ${this.config.CLASSROOMIO_API_KEY}`,
         'content-type': 'application/json',
         'user-agent': this.config.CLASSROOMIO_USER_AGENT,
+        ...(this.clientName ? { 'x-mcp-client-name': this.clientName } : {}),
         ...this.extraHeaders
       },
       body: options.body ? JSON.stringify(options.body) : undefined
