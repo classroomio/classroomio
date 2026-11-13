@@ -2,6 +2,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { describe, expect, it } from 'vitest';
 
+import { ORG_ANALYTICS_TOOLS } from '@cio/utils/constants/analytics-pages';
 import { ClassroomIoApiClient } from './api-client';
 import { createMcpServer } from './server';
 
@@ -96,7 +97,7 @@ describe('createMcpServer', () => {
   });
 
   it.each([{ includeLocalFileTools: true }, { includeLocalFileTools: false }])(
-    'registers the insights tools in %s mode',
+    'registers the analytics tools in %s mode',
     async (options) => {
       const client = await connect(options);
       const { tools } = await client.listTools();
@@ -104,10 +105,20 @@ describe('createMcpServer', () => {
 
       expect(names).toEqual(
         expect.arrayContaining([
-          'get_insights_catalog',
-          'query_insights',
-          'get_insights_dashboard',
-          'list_insights_students',
+          ORG_ANALYTICS_TOOLS.snapshot,
+          ORG_ANALYTICS_TOOLS.students,
+          ORG_ANALYTICS_TOOLS.catalog,
+          ORG_ANALYTICS_TOOLS.query,
+          'get_course_analytics',
+          'list_course_analytics_students',
+          'get_cohort_analytics',
+          'list_cohort_analytics_students',
+          'get_marketing_analytics',
+          'get_course_marketing_analytics',
+          'get_compliance_analytics',
+          'list_compliance_students',
+          'get_org_overview',
+          'get_student_analytics',
           'remind_overdue_cohort_goals'
         ])
       );

@@ -25,7 +25,7 @@ import {
   getLessonsWithCompletion,
   getProfileCourseProgress,
   getUserExercisesStats
-} from '@cio/db/queries/analytics/analytics';
+} from '@cio/db/queries/student-progress';
 import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/reset-progress';
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
@@ -53,7 +53,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getStudentLimit, isPaymentBlocked } from '@cio/utils/plans';
 import { env } from '../../config/env';
-import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
+import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { captureCourseEvent, captureServerEvent, type TEventSource } from '../posthog';
 import { annotateCourseContentWithProgression } from './progression';
@@ -73,7 +73,7 @@ export interface UpdateCourseResult {
   publishedNow: boolean;
   publishChange?: 'published' | 'unpublished' | null;
   /**
-   * True when the content-grouping setting changed. Callers that pass a transaction must drop the cached insights
+   * True when the content-grouping setting changed. Callers that pass a transaction must drop the cached analytics
    * structure after it commits; this call skips the invalidation while it does not own the transaction.
    */
   groupingChanged: boolean;
@@ -520,7 +520,7 @@ export async function updateCourse(
       (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING);
 
     if (groupingChanged && dbClient === db) {
-      void invalidateInsightsCourseStructure(courseId);
+      void invalidateAnalyticsCourseStructure(courseId);
     }
 
     const publishChange = resolvePublishChange(currentCourse.isPublished, updated.isPublished);
@@ -602,158 +602,6 @@ export async function getCourseProgress(courseId: string, profileId: string) {
     }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to get course progress',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-type TCourseAnalyticsMember = {
-  profileId: string | null;
-  profile?: { fullname?: string | null; email?: string | null; avatarUrl?: string | null } | null;
-};
-
-/**
- * Builds per-student progress, exercise and grade rows for the given course members. Members without a profile,
- * and members whose stats fail to load, are left out. With `failOnError`, a failed load throws instead.
- */
-export async function buildCourseStudentAnalytics(
-  courseId: string,
-  students: TCourseAnalyticsMember[],
-  options: { failOnError?: boolean } = {}
-) {
-  const studentsWithProfile = students.filter(
-    (student): student is TCourseAnalyticsMember & { profileId: string } => student.profileId !== null
-  );
-  const lastSeenByProfileId = await getLastSeenForUserIds(studentsWithProfile.map((student) => student.profileId));
-
-  const studentAnalytics = await Promise.all(
-    studentsWithProfile.map(async (student) => {
-      try {
-        const [courseProgress, userExercisesStats] = await Promise.all([
-          getCourseProgressQuery(courseId, student.profileId),
-          getUserExercisesStats(courseId, student.profileId, options)
-        ]);
-
-        if (!courseProgress) {
-          return null;
-        }
-
-        const progressExerciseStats = (userExercisesStats ?? []).filter(
-          (exercise) => exercise.completionPolicy !== 'none'
-        );
-        const completedExercises = progressExerciseStats.filter((exercise) => exercise.isCompleted).length;
-        const totalExercises = progressExerciseStats.length;
-
-        const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
-        const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
-        const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
-
-        const lessonsCompleted = courseProgress.lessonsCompleted || 0;
-        const totalLessons = courseProgress.lessonsCount || 0;
-        // Lessons and exercises together, matching `calcCourseProgress` in
-        // the dashboard and the audience roster. Counting lessons alone
-        // reported a learner who had submitted nothing as fully complete.
-        const progressPercentage = calcPercentageWithRounding(
-          lessonsCompleted + completedExercises,
-          totalLessons + totalExercises
-        );
-        const lastSeen = lastSeenByProfileId.get(student.profileId) ?? undefined;
-
-        return {
-          id: student.profileId,
-          profile: {
-            fullname: student.profile?.fullname || 'Unknown',
-            email: student.profile?.email || '',
-            avatar_url: student.profile?.avatarUrl || ''
-          },
-          lessonsCompleted,
-          totalLessons,
-          exercisesSubmitted: completedExercises,
-          totalExercises,
-          averageGrade,
-          lastSeen,
-          progressPercentage
-        };
-      } catch (error) {
-        console.error('Error getting student overview:', error);
-        if (options.failOnError) {
-          throw new AppError('Failed to load student analytics', ErrorCodes.INTERNAL_ERROR, 500);
-        }
-        return null;
-      }
-    })
-  );
-
-  return studentAnalytics.filter((student): student is NonNullable<typeof student> => student !== null);
-}
-
-/**
- * Gets course analytics including student progress, completion rates, and grades
- * @param courseId Course ID
- * @returns Course analytics data
- */
-export async function getCourseAnalytics(courseId: string) {
-  try {
-    // Get course with members (no profileId needed for analytics)
-    const course = await getCourseWithRelations(courseId);
-    if (!course) {
-      throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-    }
-
-    // Get all members
-    const members = course.group?.members || [];
-
-    // Filter students and tutors
-    const students = members.filter((member) => member.roleId === ROLE.STUDENT);
-    const tutors = members.filter((member) => member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR);
-
-    // Get lessons and exercises
-    const lessons = course.contentItems.filter((item) => item.type === ContentType.Lesson);
-    const exercises = course.contentItems.filter((item) => item.type === ContentType.Exercise);
-
-    const validStudentAnalytics = await buildCourseStudentAnalytics(courseId, students);
-
-    // Calculate aggregated metrics
-    let lessonCompletionRate = 0;
-    let exerciseCompletionRate = 0;
-    let averageGrade = 0;
-
-    if (validStudentAnalytics.length > 0) {
-      lessonCompletionRate = Math.round(
-        validStudentAnalytics.reduce((sum, student) => sum + student.progressPercentage, 0) /
-          validStudentAnalytics.length
-      );
-
-      exerciseCompletionRate = Math.round(
-        validStudentAnalytics.reduce((sum, student) => {
-          const completionRate =
-            student.totalExercises > 0 ? (student.exercisesSubmitted / student.totalExercises) * 100 : 0;
-          return sum + completionRate;
-        }, 0) / validStudentAnalytics.length
-      );
-
-      averageGrade = Math.round(
-        validStudentAnalytics.reduce((sum, student) => sum + student.averageGrade, 0) / validStudentAnalytics.length
-      );
-    }
-
-    return {
-      totalTutors: tutors.length,
-      totalStudents: students.length,
-      totalLessons: lessons.length,
-      totalExercises: exercises.length,
-      lessonCompletionRate,
-      exerciseCompletionRate,
-      averageGrade,
-      students: validStudentAnalytics
-    };
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get course analytics',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

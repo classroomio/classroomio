@@ -13,7 +13,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import { t } from '$lib/utils/functions/translations';
-  import { AnalyticsPanelCard } from '$features/ui';
+  import { StatsPanelCard } from '$features/ui';
   import type { LandingStatsData } from '../utils/types';
   import { bucketSparkline, formatChartTooltipDate, getBucketSize, zeroFillRange } from '../utils/marketing-utils';
 
@@ -46,11 +46,11 @@
 
   const chartConfig = $derived({
     views: {
-      label: $t('analytics.trend.views'),
+      label: $t('marketing.trend.views'),
       color: 'var(--chart-4)'
     },
     enrollments: {
-      label: $t('analytics.trend.enrollments'),
+      label: $t('marketing.trend.enrollments'),
       color: 'var(--chart-2)'
     }
   } satisfies ChartConfig);
@@ -76,7 +76,7 @@
   const hasData = $derived((chartData?.length ?? 0) > 0 && chartData?.some((r) => r.views > 0 || r.enrollments > 0));
 </script>
 
-<AnalyticsPanelCard title={$t('analytics.trend.heading')} description={$t('analytics.trend.description')}>
+<StatsPanelCard title={$t('marketing.trend.heading')} description={$t('marketing.trend.description')}>
   <div bind:this={containerRef} class="w-full">
     {#if loading && !hasData}
       <div class="flex h-[280px] items-center justify-center">
@@ -119,7 +119,7 @@
         <Spinner class="ui:text-muted-foreground size-6" />
       </div>
     {:else}
-      <Empty icon={TrendingUpIcon} title={$t('analytics.trend.empty')} class="h-[280px]" />
+      <Empty icon={TrendingUpIcon} title={$t('marketing.trend.empty')} class="h-[280px]" />
     {/if}
   </div>
-</AnalyticsPanelCard>
+</StatsPanelCard>

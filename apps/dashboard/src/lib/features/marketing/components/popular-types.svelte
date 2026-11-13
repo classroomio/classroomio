@@ -3,7 +3,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import LayersIcon from '@lucide/svelte/icons/layers';
   import { t } from '$lib/utils/functions/translations';
-  import { AnalyticsPanelCard } from '$features/ui';
+  import { StatsPanelCard } from '$features/ui';
   import type { PopularTypesData } from '../utils/types';
 
   interface Props {
@@ -17,15 +17,15 @@
   const totalEnrollments = $derived(data.reduce((sum, row) => sum + row.enrollments, 0));
 
   function typeLabel(type: string) {
-    return $t(`analytics.popularTypes.types.${type}`, { default: type });
+    return $t(`marketing.popularTypes.types.${type}`, { default: type });
   }
 </script>
 
-<AnalyticsPanelCard
-  title={$t('analytics.popularTypes.heading')}
+<StatsPanelCard
+  title={$t('marketing.popularTypes.heading')}
   description={data.length > 0
-    ? $t('analytics.popularTypes.subtitle', { total: totalEnrollments.toLocaleString() })
-    : $t('analytics.popularTypes.description')}
+    ? $t('marketing.popularTypes.subtitle', { total: totalEnrollments.toLocaleString() })
+    : $t('marketing.popularTypes.description')}
 >
   {#snippet children()}
     {#if loading && data.length === 0}
@@ -33,7 +33,7 @@
         <Spinner class="ui:text-muted-foreground size-6" />
       </div>
     {:else if data.length === 0}
-      <Empty icon={LayersIcon} title={$t('analytics.popularTypes.empty')} />
+      <Empty icon={LayersIcon} title={$t('marketing.popularTypes.empty')} />
     {:else}
       <ul class="ui:divide-border divide-y">
         {#each data as row (row.type)}
@@ -47,7 +47,7 @@
               <div class="min-w-0">
                 <p class="ui:text-foreground text-sm font-medium">{typeLabel(row.type)}</p>
                 <p class="ui:text-muted-foreground text-xs">
-                  {$t('analytics.popularTypes.course_count', { count: row.courseCount })}
+                  {$t('marketing.popularTypes.course_count', { count: row.courseCount })}
                 </p>
               </div>
               <div class="text-right">
@@ -56,7 +56,7 @@
                 </p>
                 <p class="ui:text-muted-foreground text-xs tabular-nums">
                   {row.views.toLocaleString()}
-                  {$t('analytics.popularTypes.views_short')}
+                  {$t('marketing.popularTypes.views_short')}
                 </p>
               </div>
             </div>
@@ -65,4 +65,4 @@
       </ul>
     {/if}
   {/snippet}
-</AnalyticsPanelCard>
+</StatsPanelCard>

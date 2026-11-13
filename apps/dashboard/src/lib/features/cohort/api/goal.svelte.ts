@@ -139,7 +139,7 @@ class CohortGoalApi extends BaseApiWithErrors {
     cohortId: string,
     target: { courseId?: string | null; profileId?: string }
   ): Promise<RemindOverdueGoalsResult> {
-    const toastId = snackbar.loading(t.get('snackbar.insights.reminders_sending'));
+    const toastId = snackbar.loading(t.get('snackbar.analytics.reminders_sending'));
     const courseId = target.courseId ?? undefined;
 
     const response = await this.execute<RemindOverdueGoalsRequest>({
@@ -152,18 +152,18 @@ class CohortGoalApi extends BaseApiWithErrors {
       onSuccess: (result) => {
         const { enqueued, truncated } = result.data;
         if (enqueued === 0) {
-          snackbar.info('snackbar.insights.reminder_not_sent', toastId);
+          snackbar.info('snackbar.analytics.reminder_not_sent', toastId);
           return;
         }
 
         if (truncated) {
-          snackbar.info(t.get('snackbar.insights.reminders_truncated', { count: enqueued }), toastId);
+          snackbar.info(t.get('snackbar.analytics.reminders_truncated', { count: enqueued }), toastId);
           return;
         }
 
-        snackbar.success(t.get('snackbar.insights.reminders_sent', { count: enqueued }), toastId);
+        snackbar.success(t.get('snackbar.analytics.reminders_sent', { count: enqueued }), toastId);
       },
-      onError: () => snackbar.error('snackbar.insights.reminder_failed', toastId)
+      onError: () => snackbar.error('snackbar.analytics.reminder_failed', toastId)
     });
 
     return response?.data ?? { enqueued: 0, skipped: 0, truncated: false };

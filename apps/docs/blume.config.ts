@@ -68,7 +68,7 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
   },
   {
     label: 'Analytics',
-    tags: [{ tag: 'Analytics', flat: true }, { tag: 'Analytics Insights', label: 'Insights' }]
+    tags: [{ tag: 'Academy' }, { tag: 'Marketing' }, { tag: 'Compliance' }]
   },
   { label: 'Media', tags: [{ tag: 'Public API Assets', flat: true }] }
 ];
@@ -329,7 +329,7 @@ export default defineConfig({
           {
             label: 'Getting started',
             display: 'flat',
-            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types', '/api/insights']
+            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types', '/api/analytics']
           },
           { label: 'Reference', display: 'flat', items: [API_REFERENCE_ROUTE] },
           ...apiSidebarSections

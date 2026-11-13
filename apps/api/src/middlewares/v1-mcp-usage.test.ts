@@ -3,6 +3,7 @@ import type { Context, Next } from 'hono';
 import { Hono } from '@api/utils/hono';
 import { AppError } from '@api/utils/errors';
 import { getMcpAutomationCategory } from '@cio/utils/plans';
+import { ORG_ANALYTICS_PAGE, ORG_ANALYTICS_TOOLS } from '@cio/utils/constants/analytics-pages';
 
 const mocks = vi.hoisted(() => ({
   reserve: vi.fn(),
@@ -35,7 +36,7 @@ function buildApp() {
     .post('/public-api/v1/cohorts/:cohortId/members', (c) => c.json({ success: false }, 400))
     .get('/public-api/v1/courses/:courseId', (c) => c.json({ success: true }, 200))
     .get('/public-api/v1/courses', (c) => c.json({ success: true }, 200))
-    .post('/public-api/v1/analytics/insights/query', (c) => c.json({ success: true }, 200));
+    .post(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`, (c) => c.json({ success: true }, 200));
 }
 
 describe('v1McpUsageMiddleware', () => {
@@ -149,24 +150,28 @@ describe('v1McpUsageMiddleware', () => {
     }
   });
 
-  it('bills a read only through GET, except query_insights', () => {
+  it('bills a read only through GET, except the analytics query', () => {
     const readTools = Object.entries(MCP_V1_ROUTE_TOOL_MAP).flatMap(([routePath, methods]) =>
       Object.entries(methods)
         .filter(([, toolName]) => getMcpAutomationCategory(toolName!) === 'read')
         .map(([method, toolName]) => `${method} ${routePath} ${toolName}`)
     );
 
-    expect(readTools).toContain('POST /public-api/v1/analytics/insights/query query_insights');
+    expect(readTools).toContain(
+      `POST /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query ${ORG_ANALYTICS_TOOLS.query}`
+    );
 
     for (const entry of readTools) {
-      if (entry.endsWith('query_insights')) continue;
+      if (entry.endsWith(ORG_ANALYTICS_TOOLS.query)) continue;
 
       expect(entry.startsWith('GET')).toBe(true);
     }
   });
 
-  it('reserves query_insights as a read even though it is a POST', async () => {
-    const response = await buildApp().request('/public-api/v1/analytics/insights/query', { method: 'POST' });
+  it('reserves the analytics query as a read even though it is a POST', async () => {
+    const response = await buildApp().request(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`, {
+      method: 'POST'
+    });
 
     expect(response.status).toBe(200);
     expect(mocks.reserve).toHaveBeenCalledWith(expect.objectContaining({ id: 'key-id' }), 'read', 'pending POST');

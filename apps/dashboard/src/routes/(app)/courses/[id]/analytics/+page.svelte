@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { ROLE } from '@cio/utils/constants';
-  import { CourseInsightsPage } from '$features/insights';
+  import { CourseAnalyticsPage } from '$features/analytics';
   import { RoleBasedSecurity } from '$features/ui';
 
   let { data } = $props();
@@ -12,5 +12,5 @@
   allowedRoles={[ROLE.ADMIN, ROLE.TUTOR]}
   onDenied={() => goto(resolve(`/courses/${data.courseId}/lessons?next=true`, {}))}
 >
-  <CourseInsightsPage courseId={data.courseId} />
+  <CourseAnalyticsPage courseId={data.courseId} />
 </RoleBasedSecurity>

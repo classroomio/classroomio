@@ -1,3 +1,5 @@
+import { ORG_ANALYTICS_PAGE } from '../constants/analytics-pages';
+
 export const PUBLIC_API_BASE_URL = 'https://api.classroomio.com/public-api/v1';
 export const PUBLIC_API_OPENAPI_URL = 'https://api.cdn.clsrio.com/openapi/public-api/openapi-latest.json';
 export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
@@ -232,15 +234,20 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/cohorts/{cohortId}/invite-link': 'Get the cohort join link',
   'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
   'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link',
-  'GET /public-api/v1/analytics': 'Get organization analytics',
-  'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
-  'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
-  'GET /public-api/v1/analytics/insights/catalog': 'List insights sources, metrics and filters',
-  'POST /public-api/v1/analytics/insights/query': 'Run an insights query',
-  'GET /public-api/v1/analytics/insights/dashboards/{scopeType}/{scopeId}': 'Get an insights dashboard snapshot',
-  'GET /public-api/v1/analytics/insights/students': 'List students with their insights',
-  'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
-  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics',
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}`]: `Get the ${ORG_ANALYTICS_PAGE.label} dashboard for the organization`,
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/students`]: `List students on the ${ORG_ANALYTICS_PAGE.label} page`,
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`]: `List ${ORG_ANALYTICS_PAGE.label} sources, metrics and filters`,
+  [`POST /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`]: `Query ${ORG_ANALYTICS_PAGE.label} analytics`,
+  'GET /public-api/v1/courses/{courseId}/analytics': "Get a course's analytics",
+  'GET /public-api/v1/courses/{courseId}/analytics/students': "List a course's students with analytics",
+  'GET /public-api/v1/cohorts/{cohortId}/analytics': "Get a cohort's analytics",
+  'GET /public-api/v1/cohorts/{cohortId}/analytics/students': "List a cohort's students with analytics",
+  'GET /public-api/v1/analytics/marketing': 'Get marketing analytics',
+  'GET /public-api/v1/analytics/marketing/courses/{courseId}': "Get a course's marketing funnel",
+  'GET /public-api/v1/analytics/compliance': 'Get compliance analytics',
+  'GET /public-api/v1/analytics/compliance/students': 'List compliance status per student',
+  'GET /public-api/v1/organization/overview': 'Get the organization overview',
+  'GET /public-api/v1/audience/{profileId}/analytics': "Get a student's analytics",
   'GET /public-api/v1/tags': 'List tag groups and tags',
   'POST /public-api/v1/tags': 'Create a tag',
   'PUT /public-api/v1/tags/{tagId}': 'Update a tag',
@@ -309,11 +316,15 @@ const OPERATION_TAGS = [
   { name: 'Cohort Newsfeed', description: 'Post, react, and moderate a cohort newsfeed.' },
   { name: 'Cohort Newsfeed Comments', description: 'Manage comments on cohort newsfeed posts.' },
   { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
-  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' },
   {
-    name: 'Analytics Insights',
-    description: 'Query the analytics behind the cohort, course and organization dashboards.'
-  }
+    name: ORG_ANALYTICS_PAGE.label,
+    description: `The numbers on the organization's ${ORG_ANALYTICS_PAGE.label} page and on each course's and cohort's Analytics page.`
+  },
+  {
+    name: 'Marketing',
+    description: "The numbers on the organization's Marketing page: traffic, countries and funnel."
+  },
+  { name: 'Compliance', description: "The numbers on the organization's Compliance page." }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {

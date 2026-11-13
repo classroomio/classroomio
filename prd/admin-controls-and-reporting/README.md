@@ -58,7 +58,7 @@ One gap to close while we are here: `deleteOrganizationAudienceMember` (`organiz
 
 | Capability | Today | File |
 | --- | --- | --- |
-| Last login | Computed, never filterable. `getLastLogin` / `getLastSeenForUserIds` used only on the single-user page. | `packages/db/src/queries/analytics/analytics.ts:45,78` |
+| Last login | Computed, never filterable. `getLastLogin` / `getLastSeenForUserIds` used only on the single-user page. | `packages/db/src/queries/student-progress/student-progress.ts:45,78` |
 | Last activity | No concept. Raw events in `analytics_page_event (org_id, user_id, occurred_at)`. | `packages/db/src/schema.ts:203` |
 | Enrollment | Only *invite* status shown (`active/pending/expired/revoked`), derived in the service, not filterable. Course enrolment (`groupmember`) not surfaced. | `apps/api/src/utils/audience-member-status.ts` |
 | Completion | Not surfaced. `course_completion_record.status` exists, indexed. | `packages/db/src/schema.ts:792` |
@@ -98,7 +98,7 @@ CREATE INDEX idx_analytics_login_events_user_logged_in ON analytics_login_events
 ```
 
 - **`status` replaces nothing.** `verified` means "invite accepted", not "allowed in".
-- **`last_active_at` is load-bearing at this scale.** Filtering and sorting a paginated list of 20 000 learners against a raw event table will not hold up. Maintained by `insertPageEvents` (`analytics.ts:427`) on ingest, reconciled nightly in the existing maintenance worker (`apps/jobs/src/workers/maintenance.ts`) from `analytics_page_event` and `lesson_completion.updated_at`. Backfill both in the migration.
+- **`last_active_at` is load-bearing at this scale.** Filtering and sorting a paginated list of 20 000 learners against a raw event table will not hold up. Maintained by `insertPageEvents` (`queries/tracking/tracking.ts:12`) on ingest, reconciled nightly in the existing maintenance worker (`apps/jobs/src/workers/maintenance.ts`) from `analytics_page_event` and `lesson_completion.updated_at`. Backfill both in the migration.
 - **Last login stays a lateral** `MAX(logged_in_at)` against `analytics_login_events` — cheap with the new index. `session.updated_at` is a fallback inside `getLastLogin`, but sessions are pruned on expiry, so login events are the durable source and the only thing we filter on.
 - **Enforce status in the access gate** — add `status = 'ACTIVE'` to the org-membership join in `isUserCourseMemberOrOrgAdmin` and `isCourseTeamMemberOrOrgAdmin` (Finding 2), and treat non-`ACTIVE` as not-a-member in `getAccountData` (`apps/api/src/services/account/profile.ts`) and `orgMemberMiddleware` / `orgTeamMemberMiddleware`.
 - **Exclude `ARCHIVED` from `countActiveStudents`** (Finding 1).

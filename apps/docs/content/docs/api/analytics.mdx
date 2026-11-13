@@ -1,0 +1,143 @@
+---
+title: Analytics
+description: Read the numbers behind the Analytics pages (Academy, Marketing, and Compliance), plus course, cohort, and student analytics.
+last_reviewed: '2026-11-13'
+---
+
+The API mirrors the **Analytics** menu in the dashboard, which has three pages: **Academy**, **Marketing**, and **Compliance**. Every public path is the dashboard page path without `/org/[slug]`, and every call needs the `analytics:read` scope.
+
+| Dashboard page | Endpoint |
+| --- | --- |
+| **Analytics → Academy** | `GET /analytics/academy`, `GET /analytics/academy/students`, `GET /analytics/academy/catalog`, `POST /analytics/academy/query` |
+| A course's **Analytics** | `GET /courses/{courseId}/analytics`, `GET /courses/{courseId}/analytics/students` |
+| A cohort's **Analytics** | `GET /cohorts/{cohortId}/analytics`, `GET /cohorts/{cohortId}/analytics/students` |
+| **Analytics → Marketing** | `GET /analytics/marketing`, `GET /analytics/marketing/courses/{courseId}` |
+| **Analytics → Compliance** | `GET /analytics/compliance`, `GET /analytics/compliance/students` |
+| **Dashboard** (organization overview) | `GET /organization/overview` |
+| A student's analytics | `GET /audience/{profileId}/analytics` |
+
+There is no endpoint at `/analytics` itself: it is the menu, not a page. Who can call each endpoint:
+
+| Endpoint | Key creator must be |
+| --- | --- |
+| Academy snapshot and students | an org admin |
+| Academy catalog | an org admin or tutor |
+| Academy query | an org admin for organization scope, a cohort admin or tutor for cohort scope, a course admin or tutor for course scope (an org admin can read any scope) |
+| Course analytics | a course admin or tutor, or an org admin |
+| Cohort analytics | a cohort admin or tutor, or an org admin |
+| Marketing | an org admin or tutor (the course funnel: a course admin or tutor, or an org admin) |
+| Compliance | an org admin |
+| Organization overview | an org admin or tutor (`loginActivity`: an org admin) |
+| Student analytics | an org admin or tutor |
+
+The Academy endpoints expose the same numbers as the Academy page, and as each course's and cohort's Analytics page. Start from the catalog, run ad-hoc queries, snapshot a whole dashboard, or page the students table when you need every row.
+
+Base URL for every example:
+
+```text
+https://api.classroomio.com/public-api/v1
+```
+
+## Academy
+
+### The catalog
+
+`GET /analytics/academy/catalog` lists every queryable source with the scope types it supports, its dimensions (with `hasLabel` and `hasRank`), metrics (with `valueType` and allowed aggregations), and filters (with ops and value type). Widget presets are listed separately; they describe what each kind of widget in the dashboards shows.
+
+```bash cURL
+curl https://api.classroomio.com/public-api/v1/analytics/academy/catalog \
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
+```
+
+The catalog never drifts from the query engine: it is generated from the same registry that compiles the queries.
+
+### A worked query
+
+`POST /analytics/academy/query` runs one query for a cohort, course, or organization scope, named in the body.
+Ask for at-risk students in a cohort, worst first, for example:
+
+```json
+{
+  "scope": { "type": "cohort", "id": "22222222-2222-4222-8222-222222222222" },
+  "spec": {
+    "source": "student",
+    "dimensions": ["student"],
+    "measures": [
+      { "metric": "name", "agg": "value" },
+      { "metric": "avg_score_pct", "agg": "avg" }
+    ],
+    "filters": [{ "field": "status", "op": "eq", "value": "at_risk" }],
+    "sort": [{ "field": "avg_score_pct__avg", "dir": "asc" }],
+    "limit": 25
+  }
+}
+```
+
+The spec takes 1 to 16 measures, up to 2 dimensions, up to 10 filters, and up to 3 sort columns. `limit` caps at 1000 rows (default 25) and `page` at 4000. The starting row offset, `(page - 1) * limit`, cannot exceed 100,000. Paging a snapshot widget through the query endpoint accepts the same bounded `minGroupRows`, so its group cutoff keeps the same groups. A filter value starting with `$` is rejected: placeholders are dashboard-internal.
+
+The response carries the columns, the rows, a `meta` block, and a `pagination` block:
+
+```json
+{
+  "success": true,
+  "data": {
+    "columns": [
+      { "key": "student_id", "role": "dimension", "valueType": "id" },
+      { "key": "student_label", "role": "dimension", "valueType": "text" },
+      { "key": "name__value", "role": "measure", "valueType": "text" },
+      { "key": "avg_score_pct__avg", "role": "measure", "valueType": "percent" }
+    ],
+    "rows": [{ "student_id": "33333333-3333-4333-8333-333333333333", "student_label": "Ana", "name__value": "Ana", "avg_score_pct__avg": 42 }]
+  },
+  "meta": { "generatedAt": "2026-11-06T10:00:00.000Z", "cached": false, "range": "7d" },
+  "pagination": { "page": 1, "limit": 25, "total": 1, "totalPages": 1 }
+}
+```
+
+This stays a read: it has no side effects and costs no credits. Results are cached per scope and spec, except a query with free-text `search`, which is always computed fresh. Queries are limited to 60 per minute for each key.
+
+### The snapshot
+
+`GET /analytics/academy` returns the organization's dashboard snapshot: the scope summary, the effective selection, and the first page of every visible widget. A widget that could not be computed has a null `result` and carries its `errorCode`; the others still carry their result. For one course use `GET /courses/{courseId}/analytics`, and for one cohort use `GET /cohorts/{cohortId}/analytics`; the three share the same response and the same query parameters, except that the course endpoint takes its course from the path.
+
+```bash cURL
+curl "https://api.classroomio.com/public-api/v1/analytics/academy?range=30d&breakdown=cohorts" \
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
+```
+
+Pass `courseId` or `exerciseId` to focus the per-course and per-exercise widgets (a course snapshot uses its own course; organization and cohort snapshots leave per-course widgets out unless you pass a `courseId`, and `exerciseId` defaults to the last pass-required exercise of the selected course, or the last exercise if none is pass-required), `range` (`all`, `7d`, `30d` or `90d`) for the data range, and `breakdown` (`courses` or `cohorts`) for how split widgets break a course or organization scope down (cohort snapshots ignore it). A `courseId` or `exerciseId` outside the scope fails with `404`. The students table has its own endpoint and is skipped inside the snapshot; page it with the students endpoint below. Snapshots are limited to 20 per minute for each key.
+
+### Students paging for export
+
+`GET /analytics/academy/students` lists the students of the organization with progress, score, status, and last login, from the same table the dashboards show. `GET /courses/{courseId}/analytics/students` and `GET /cohorts/{cohortId}/analytics/students` list one course's or cohort's students. Page through them for exports:
+
+```bash cURL
+curl "https://api.classroomio.com/public-api/v1/cohorts/22222222-2222-4222-8222-222222222222/analytics/students?sort=lastLogin&limit=100&page=1" \
+  -H "Authorization: Bearer $CLASSROOMIO_API_KEY"
+```
+
+`sort` is `status`, `name`, `progress`, `score`, or `lastLogin` (default `status`), with an optional `dir`. Without `dir` every sort uses its natural direction: at-risk students first for `status`, lowest progress or score first, names A–Z, and most recent login first. Filter with `courseId` (organization and cohort endpoints), `search` (name or email, at most 100 characters), `status`, or `isOverdue`. `limit` caps at 100 (default 20) and `page` at 4000. The starting row offset, `(page - 1) * limit`, cannot exceed 100,000. The response is the usual `{ data, pagination }` shape.
+
+### The effective range and freshness
+
+Every external surface reports the range actually used. The Free plan reads at most the last 7 days, so `meta.range` (queries) and each widget's spec range (snapshots) may be narrower than requested. Results are cached per scope and spec hash for 30 seconds (60 seconds for the organization); a query or students search with free-text `search` bypasses the cache. For queries, `meta.generatedAt` says when the result was computed and `meta.cached` says whether it came from the cache. For snapshots, `generatedAt` says when the snapshot was assembled, not when its cached widget results were computed.
+
+## Marketing
+
+`GET /analytics/marketing` returns the numbers on the **Analytics → Marketing** page. Pick the sections with `include` (comma-separated; default `traffic`): `traffic`, `countries`, `funnel`, `courseTypes`, `topCourses`. `days` is 7, 30, 90, or 365 (default 30), and `limit` (1-20, default 5) caps the list sections. `GET /analytics/marketing/courses/{courseId}` returns one course's funnel (page view, enrollment, completion) over `days`. Each section is cached for up to 10 minutes, and `meta.generatedAt` says when the oldest one was computed.
+
+## Compliance
+
+`GET /analytics/compliance` returns the compliance status counts, overall and per course, from the **Analytics → Compliance** page. `GET /analytics/compliance/students` pages each student's latest cycle status, due date, and validity in every compliance course, ordered by course title and then student name.
+
+## Organization overview
+
+`GET /organization/overview` returns the totals on the organization **Dashboard** page. Pick the sections with `include` (default `summary`): `summary` (courses, students, certificates, top courses, recent certificates) and `loginActivity` (student logins by day of week). `days` and `limit` work as for Marketing. `loginActivity` needs an org admin; for a tutor it is left out and listed in `meta.omitted`.
+
+## A student's analytics
+
+`GET /audience/{profileId}/analytics` returns one student's progress and grades across their courses, with per-exercise results. The path takes the student's uuid `profileId`, which the compliance and students lists return, not the numeric `memberId` that `GET /audience/{memberId}` takes.
+
+## Reminders
+
+For goal reminders, see `POST /cohorts/{cohortId}/goals/remind-overdue`, which emails the students with overdue goal assignments now.

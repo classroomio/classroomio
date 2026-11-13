@@ -733,7 +733,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     const type = typeof courseRecord.type === 'string' ? courseRecord.type : undefined;
     const typeLabel =
       type && ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC'].includes(type)
-        ? t.get(`analytics.popularTypes.types.${type}`)
+        ? t.get(`marketing.popularTypes.types.${type}`)
         : undefined;
     const isPublished = typeof courseRecord.isPublished === 'boolean' ? courseRecord.isPublished : true;
 
@@ -790,14 +790,14 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
     learningPathsHeading: t.get('common.restricted_page.learning_paths_heading'),
     browseLearningPathsLabel: t.get('dashboard.view_more'),
     learningPathLabel: t.get('common.restricted_page.learning_path_label'),
-    learningPathCourseCountLabel: (count) => t.get('analytics.popularTypes.course_count', { count }),
+    learningPathCourseCountLabel: (count) => t.get('marketing.popularTypes.course_count', { count }),
     learningPathsEmptyTitle: t.get('public_courses.catalog_empty.title'),
     learningPathsEmptyDescription: t.get('public_courses.catalog_empty.description'),
     learningPathHoursLabel: (hours) => `${hours}h`,
     learningPathCertificateLabel: t.get('course.navItem.landing_page.certificate'),
     courseOutlineHeading: t.get('course.navItem.landing_page.course_content'),
     courseOutlineDescription: t.get('public_courses.subtitle'),
-    courseCountLabel: (count) => t.get('analytics.popularTypes.course_count', { count }),
+    courseCountLabel: (count) => t.get('marketing.popularTypes.course_count', { count }),
     learnersLabel: (count) => t.get('audience.learner_count', { count }),
     tracksLabel: (count) => t.get('common.restricted_page.tracks_label', { count }),
     terminalEnrollLabel: t.get('course.navItem.landing_page.pricing_section.enroll')

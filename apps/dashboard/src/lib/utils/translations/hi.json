@@ -37,7 +37,15 @@
         "caption": "आपके पाठ्यक्रम, छात्र और सेटिंग्स तैयार की जा रही हैं।"
       }
     },
-    "back": "वापस"
+    "back": "वापस",
+    "range": {
+      "7d": "पिछले 7 दिन",
+      "30d": "पिछले 30 दिन",
+      "90d": "पिछले 90 दिन",
+      "all": "पूरे समय",
+      "label": "समय सीमा",
+      "locked": "इस अवधि को अनलॉक करने के लिए अपग्रेड करें"
+    }
   },
   "validations": {
     "generic": {
@@ -530,7 +538,7 @@
       "test_failed": "टेस्ट इवेंट विफल रहा। कारण देखने के लिए डिलीवरी लॉग खोलें।",
       "redelivered": "इवेंट दोबारा डिलीवरी के लिए कतार में है।"
     },
-    "insights": {
+    "analytics": {
       "reminder_sent": "अनुस्मारक भेजा गया",
       "reminder_not_sent": "अनुस्मारक नहीं भेजा गया: आज पहले ही भेजा जा चुका है, या शिक्षार्थी ने इन ईमेल सेवाओं को बंद कर दिया है।",
       "reminder_failed": "रिमाइंडर नहीं भेजा जा सका",
@@ -608,8 +616,7 @@
     "unlock_field": "इस सेटिंग को अनलॉक करने के लिए अपग्रेड करें",
     "webhooks_required": "Webhooks का उपयोग करने के लिए Early Adopter या Enterprise में अपग्रेड करें।"
   },
-  "analytics": {
-    "title": "विश्लेषिकी",
+  "student_progress": {
     "courses": "पाठ्यक्रम",
     "progress": "प्रगति",
     "progress_description": "{value, number} का {total, number} पूर्ण",
@@ -640,77 +647,6 @@
     "loading_chart": "चार्ट लोड हो रहा है...",
     "no_data_default": "कोई डेटा उपलब्ध नहीं है",
     "no_data_default_description": "इस समय प्रदर्शित करने के लिए कोई डेटा नहीं है.",
-    "subtitle": "समझें कि विज़िटर आपके पाठ्यक्रमों को कैसे खोजते हैं और छात्रों में परिवर्तित होते हैं।",
-    "refresh": "ताज़ा करें",
-    "popularTypes": {
-      "heading": "लोकप्रिय पाठ्यक्रम प्रकार",
-      "description": "नामांकन पाठ्यक्रम प्रकार के आधार पर समूहीकृत किए गए",
-      "subtitle": "सभी प्रकार के लिए {total} नामांकन",
-      "empty": "अभी तक कोई नामांकन डेटा नहीं है",
-      "course_count": "{count, plural, one {# पाठ्यक्रम} other {# पाठ्यक्रम}}",
-      "views_short": "विचार",
-      "types": {
-        "SELF_PACED": "स्वयं गतिमान",
-        "LIVE_CLASS": "लाइव क्लास",
-        "COMPLIANCE": "अनुपालन",
-        "PUBLIC": "सार्वजनिक"
-      }
-    },
-    "topCourses": {
-      "heading": "पेज व्यू के अनुसार शीर्ष पाठ्यक्रम",
-      "description": "पेज व्यू के आधार पर रैंक किए गए पाठ्यक्रम",
-      "subtitle": "इस अवधि में पेज व्यू के आधार पर रैंक किया गया",
-      "empty": "अभी तक कोई पाठ्यक्रम पेज व्यू नहीं है",
-      "course": "पाठ्यक्रम",
-      "views": "व्यू"
-    },
-    "countries": {
-      "heading": "शीर्ष देश",
-      "subtitle": "कुल {total} विज़िटर",
-      "empty": "अभी तक कोई स्थान डेटा नहीं",
-      "country": "देश",
-      "visitors": "आगंतुक",
-      "enrollments_short": "नामांकित"
-    },
-    "funnel": {
-      "heading": "रूपांतरण फ़नल",
-      "description": "प्रथम विजिट से लेकर कोर्स पूरा होने तक",
-      "empty": "अभी तक कोई फ़नल डेटा नहीं",
-      "step": {
-        "landing_view": "लैंडिंग दृश्य",
-        "course_page_view": "पाठ्यक्रम पृष्ठ दृश्य",
-        "enrollment_completed": "नामांकन",
-        "course_completed": "पूर्णताएँ"
-      }
-    },
-    "trend": {
-      "heading": "समय के साथ यातायात",
-      "description": "दिन के अनुसार पृष्ठ दृश्य और नामांकन",
-      "empty": "चयनित सीमा में कोई ट्रैफ़िक नहीं",
-      "views": "दृश्य",
-      "enrollments": "नामांकन"
-    },
-    "kpi": {
-      "landing_views": "लैंडिंग दृश्य",
-      "unique_visitors": "अद्वितीय आगंतुक",
-      "course_page_views": "पाठ्यक्रम पृष्ठ दृश्य",
-      "enrollments": "नामांकन",
-      "range_description": "चयनित रेंज में"
-    },
-    "range": {
-      "7d": "पिछले 7 दिन",
-      "30d": "पिछले 30 दिन",
-      "90d": "पिछले 90 दिन",
-      "all": "पूरे समय",
-      "label": "समय सीमा",
-      "locked": "इस अवधि को अनलॉक करने के लिए अपग्रेड करें"
-    },
-    "tabs": {
-      "overview": "सिंहावलोकन",
-      "funnel": "फ़नल",
-      "geography": "भूगोल",
-      "course_types": "पाठ्यक्रम के प्रकार"
-    },
     "exercises_completed": "अभ्यास पूरे हुए",
     "course_progress": "पाठ्यक्रम प्रगति",
     "just_now": "अभी-अभी",
@@ -3634,7 +3570,6 @@
     "tags": "टैग",
     "automation": "स्वचालन",
     "widgets": "विजेट्स",
-    "stats": "आँकड़े",
     "analytics": "विश्लेषिकी",
     "compliance": "अनुपालन",
     "cohorts": "कोहोर्ट",
@@ -3649,7 +3584,8 @@
     "create": "बनाएँ",
     "distribute": "बांटो",
     "tools": "उपकरण",
-    "marketing": "विपणन"
+    "marketing": "विपणन",
+    "org_analytics": "Academy"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -6575,9 +6511,70 @@
   },
   "marketing": {
     "title": "विपणन",
-    "subtitle": "समझें कि आगंतुक आपके पाठ्यक्रमों को कैसे खोजते हैं और छात्रों में परिवर्तित होते हैं।"
+    "subtitle": "समझें कि आगंतुक आपके पाठ्यक्रमों को कैसे खोजते हैं और छात्रों में परिवर्तित होते हैं।",
+    "popularTypes": {
+      "heading": "लोकप्रिय पाठ्यक्रम प्रकार",
+      "description": "नामांकन पाठ्यक्रम प्रकार के आधार पर समूहीकृत किए गए",
+      "subtitle": "सभी प्रकार के लिए {total} नामांकन",
+      "empty": "अभी तक कोई नामांकन डेटा नहीं है",
+      "course_count": "{count, plural, one {# पाठ्यक्रम} other {# पाठ्यक्रम}}",
+      "views_short": "विचार",
+      "types": {
+        "SELF_PACED": "स्वयं गतिमान",
+        "LIVE_CLASS": "लाइव क्लास",
+        "COMPLIANCE": "अनुपालन",
+        "PUBLIC": "सार्वजनिक"
+      }
+    },
+    "topCourses": {
+      "heading": "पेज व्यू के अनुसार शीर्ष पाठ्यक्रम",
+      "description": "पेज व्यू के आधार पर रैंक किए गए पाठ्यक्रम",
+      "subtitle": "इस अवधि में पेज व्यू के आधार पर रैंक किया गया",
+      "empty": "अभी तक कोई पाठ्यक्रम पेज व्यू नहीं है",
+      "course": "पाठ्यक्रम",
+      "views": "व्यू"
+    },
+    "countries": {
+      "heading": "शीर्ष देश",
+      "subtitle": "कुल {total} विज़िटर",
+      "empty": "अभी तक कोई स्थान डेटा नहीं",
+      "country": "देश",
+      "visitors": "आगंतुक",
+      "enrollments_short": "नामांकित"
+    },
+    "funnel": {
+      "heading": "रूपांतरण फ़नल",
+      "description": "प्रथम विजिट से लेकर कोर्स पूरा होने तक",
+      "empty": "अभी तक कोई फ़नल डेटा नहीं",
+      "step": {
+        "landing_view": "लैंडिंग दृश्य",
+        "course_page_view": "पाठ्यक्रम पृष्ठ दृश्य",
+        "enrollment_completed": "नामांकन",
+        "course_completed": "पूर्णताएँ"
+      }
+    },
+    "trend": {
+      "heading": "समय के साथ यातायात",
+      "description": "दिन के अनुसार पृष्ठ दृश्य और नामांकन",
+      "empty": "चयनित सीमा में कोई ट्रैफ़िक नहीं",
+      "views": "दृश्य",
+      "enrollments": "नामांकन"
+    },
+    "kpi": {
+      "landing_views": "लैंडिंग दृश्य",
+      "unique_visitors": "अद्वितीय आगंतुक",
+      "course_page_views": "पाठ्यक्रम पृष्ठ दृश्य",
+      "enrollments": "नामांकन",
+      "range_description": "चयनित रेंज में"
+    },
+    "tabs": {
+      "overview": "सिंहावलोकन",
+      "funnel": "फ़नल",
+      "geography": "भूगोल",
+      "course_types": "पाठ्यक्रम के प्रकार"
+    }
   },
-  "insights": {
+  "analytics": {
     "title": "एनालिटिक्स",
     "updated_seconds_ago": "{count}s पहले अपडेट किया गया",
     "updated_minutes_ago": "{count, plural, one {# मिनट पहले अपडेट किया गया} other {# मिनट पहले अपडेट किया गया}}",
@@ -7010,9 +7007,6 @@
       "attempts_unavailable": "यह जाँच नहीं हो सकी कि किन अभ्यासों में प्रयास हैं, इसलिए कुछ लॉक किए गए अभ्यास छिपे हो सकते हैं।"
     },
     "empty": {
-      "no_data": "अभी तक कोई डेटा उपलब्ध नहीं है",
-      "no_overdue": "कोई भी छात्र अनुपलब्ध नहीं है",
-      "no_cohorts": "अभी तक कोई समूह नहीं",
       "failed": "यह चार्ट लोड नहीं हो सका",
       "dashboard_failed": "एनालिटिक्स लोड नहीं हो सका",
       "not_permitted": "आपको इन एनालिटिक्स तक पहुंच नहीं है।",
@@ -7152,7 +7146,8 @@
     "export": {
       "students_capped": "छात्र सूची पहली {limit} पंक्तियों तक सीमित है।",
       "exercises_capped": "अभ्यास स्कोर पहले {limit} परिणामों तक सीमित हैं।"
-    }
+    },
+    "org_page_title": "Academy"
   },
   "oauth": {
     "consent": {

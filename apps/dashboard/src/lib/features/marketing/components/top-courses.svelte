@@ -4,7 +4,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import { t } from '$lib/utils/functions/translations';
-  import { AnalyticsPanelCard } from '$features/ui';
+  import { StatsPanelCard } from '$features/ui';
   import type { TopCoursesData } from '../utils/types';
 
   interface Props {
@@ -17,20 +17,20 @@
   const maxViews = $derived(Math.max(1, ...data.map((row) => row.views)));
 </script>
 
-<AnalyticsPanelCard
-  title={$t('analytics.topCourses.heading')}
-  description={data.length > 0 ? $t('analytics.topCourses.subtitle') : $t('analytics.topCourses.description')}
+<StatsPanelCard
+  title={$t('marketing.topCourses.heading')}
+  description={data.length > 0 ? $t('marketing.topCourses.subtitle') : $t('marketing.topCourses.description')}
 >
   {#if loading && data.length === 0}
     <div class="flex h-32 items-center justify-center">
       <Spinner class="ui:text-muted-foreground size-6" />
     </div>
   {:else if data.length === 0}
-    <Empty icon={BookOpenIcon} title={$t('analytics.topCourses.empty')} />
+    <Empty icon={BookOpenIcon} title={$t('marketing.topCourses.empty')} />
   {:else}
     <div class="ui:text-muted-foreground mb-2 flex justify-between text-xs font-medium tracking-wide uppercase">
-      <span>{$t('analytics.topCourses.course')}</span>
-      <span>{$t('analytics.topCourses.views')}</span>
+      <span>{$t('marketing.topCourses.course')}</span>
+      <span>{$t('marketing.topCourses.views')}</span>
     </div>
     <ol class="ui:divide-border divide-y">
       {#each data as row, index (row.courseId)}
@@ -62,4 +62,4 @@
       {/each}
     </ol>
   {/if}
-</AnalyticsPanelCard>
+</StatsPanelCard>

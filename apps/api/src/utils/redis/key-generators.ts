@@ -148,16 +148,16 @@ export const agentUploadKeyGenerator = (c: Context): string => {
 };
 
 /**
- * Redis keys for engagement analytics read endpoints (landing-stats, funnel,
+ * Redis keys for marketing read endpoints (landing-stats, funnel,
  * country breakdown, popular types, top courses). Value: JSON.
  */
-export function dashAnalyticsKey(route: string, orgId: string, days: number, extra?: string): string {
+export function marketingKey(route: string, orgId: string, days: number, extra?: string): string {
   const suffix = extra ? `:${extra}` : '';
-  return `dash:analytics:${route}:${orgId}:${days}${suffix}`;
+  return `marketing:${route}:${orgId}:${days}${suffix}`;
 }
 
-/** TTL for engagement analytics caches (10 min). */
-export const DASH_ANALYTICS_TTL_SECONDS = 600;
+/** TTL for marketing caches (10 min). */
+export const MARKETING_TTL_SECONDS = 600;
 
 /**
  * Redis key for one public API analytics section, e.g. `public-api:analytics:traffic:{orgId}:30`.

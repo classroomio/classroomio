@@ -3,7 +3,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import TrendingDownIcon from '@lucide/svelte/icons/trending-down';
-  import { AnalyticsPanelCard } from '$features/ui';
+  import { StatsPanelCard } from '$features/ui';
   import type { CourseFunnelData } from '../utils/types';
 
   interface Props {
@@ -13,19 +13,19 @@
 
   let { data, loading = false }: Props = $props();
 
-  const stepLabel = (name: string) => $t(`analytics.funnel.step.${name}`);
+  const stepLabel = (name: string) => $t(`marketing.funnel.step.${name}`);
 
   const topCount = $derived(data?.steps[0]?.count ?? 0);
 </script>
 
-<AnalyticsPanelCard title={$t('analytics.funnel.heading')} description={$t('analytics.funnel.description')}>
+<StatsPanelCard title={$t('marketing.funnel.heading')} description={$t('marketing.funnel.description')}>
   {#snippet children()}
     {#if loading && !data}
       <div class="flex h-32 items-center justify-center">
         <Spinner class="ui:text-muted-foreground size-6" />
       </div>
     {:else if !data || data.steps.length === 0 || topCount === 0}
-      <Empty icon={TrendingDownIcon} title={$t('analytics.funnel.empty')} />
+      <Empty icon={TrendingDownIcon} title={$t('marketing.funnel.empty')} />
     {:else}
       <ol class="space-y-3">
         {#each data.steps as step, index (step.name)}
@@ -57,4 +57,4 @@
       </ol>
     {/if}
   {/snippet}
-</AnalyticsPanelCard>
+</StatsPanelCard>

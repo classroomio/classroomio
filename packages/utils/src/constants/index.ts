@@ -9,5 +9,5 @@ export * from './error-codes';
 export * from './b64-envelope';
 export * from './live-session-reminder';
 export * from './webhook';
-export * from './insights';
-export * from './insights-catalog';
+export * from './analytics';
+export * from './analytics-catalog';

@@ -539,7 +539,7 @@ Pass `onCommit` for follow-up work that must run only on blur or Enter with the 
 
 ### Chart legend (`src/base/chart/chart-legend.svelte`, `chart-legend-item.svelte`)
 
-Legend row for the Insights charts. `ChartLegend` renders one `ChartLegendItem` per entry and keys each row by label plus index, so two series with the same label still render. Items truncate their label and reveal the full text in a tooltip on hover or focus.
+Legend row for the Analytics charts. `ChartLegend` renders one `ChartLegendItem` per entry and keys each row by label plus index, so two series with the same label still render. Items truncate their label and reveal the full text in a tooltip on hover or focus.
 
 | Prop        | Type                      | Default     | Purpose                                                |
 | ----------- | ------------------------- | ----------- | ------------------------------------------------------ |

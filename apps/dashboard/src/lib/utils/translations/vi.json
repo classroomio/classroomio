@@ -37,7 +37,15 @@
         "caption": "Đang chuẩn bị khóa học, học viên và cài đặt của bạn."
       }
     },
-    "back": "Quay lại"
+    "back": "Quay lại",
+    "range": {
+      "7d": "7 ngày qua",
+      "30d": "30 ngày qua",
+      "90d": "90 ngày qua",
+      "all": "Mọi lúc",
+      "label": "Phạm vi thời gian",
+      "locked": "Nâng cấp để mở khóa khoảng thời gian này"
+    }
   },
   "validations": {
     "generic": {
@@ -530,7 +538,7 @@
       "test_failed": "Sự kiện thử nghiệm thất bại. Mở nhật ký gửi để xem lý do.",
       "redelivered": "Sự kiện đã được đưa vào hàng đợi để gửi lại."
     },
-    "insights": {
+    "analytics": {
       "reminder_sent": "Đã gửi lời nhắc",
       "reminder_not_sent": "Thông báo nhắc nhở không được gửi: đã được gửi hôm nay hoặc người học đã tắt chức năng nhận email này.",
       "reminder_failed": "Không thể gửi lời nhắc",
@@ -608,8 +616,7 @@
     "unlock_field": "Nâng cấp để mở khóa cài đặt này",
     "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook."
   },
-  "analytics": {
-    "title": "Phân tích",
+  "student_progress": {
     "courses": "Khóa học",
     "progress": "Tiến độ",
     "progress_description": "{value, number} của {total, number} đã hoàn thành",
@@ -640,77 +647,6 @@
     "loading_chart": "Đang tải biểu đồ...",
     "no_data_default": "Không có sẵn dữ liệu",
     "no_data_default_description": "Không có dữ liệu để hiển thị tại thời điểm này.",
-    "subtitle": "Hiểu cách khách truy cập khám phá các khóa học của bạn và chuyển đổi thành sinh viên.",
-    "refresh": "Làm mới",
-    "popularTypes": {
-      "heading": "Các loại khóa học phổ biến",
-      "description": "Tuyển sinh được nhóm theo loại khóa học",
-      "subtitle": "{total} lượt đăng ký trên tất cả các loại",
-      "empty": "Chưa có dữ liệu tuyển sinh",
-      "course_count": "{count, plural, one {# khóa học} other {# khóa học}}",
-      "views_short": "lượt xem",
-      "types": {
-        "SELF_PACED": "Tự nhịp độ",
-        "LIVE_CLASS": "Lớp học trực tiếp",
-        "COMPLIANCE": "Tuân thủ",
-        "PUBLIC": "công cộng"
-      }
-    },
-    "topCourses": {
-      "heading": "Khóa học hàng đầu theo lượt xem",
-      "description": "Khóa học xếp hạng theo lượt xem trang",
-      "subtitle": "Xếp hạng theo lượt xem trang trong khoảng này",
-      "empty": "Chưa có lượt xem trang khóa học",
-      "course": "Khóa học",
-      "views": "Lượt xem"
-    },
-    "countries": {
-      "heading": "Các quốc gia hàng đầu",
-      "subtitle": "tổng số {total} khách truy cập",
-      "empty": "Chưa có dữ liệu vị trí",
-      "country": "Quốc gia",
-      "visitors": "Du khách",
-      "enrollments_short": "đã ghi danh"
-    },
-    "funnel": {
-      "heading": "Phễu chuyển đổi",
-      "description": "Từ lần truy cập đầu tiên đến khi hoàn thành khóa học",
-      "empty": "Chưa có dữ liệu kênh",
-      "step": {
-        "landing_view": "Lượt xem đích",
-        "course_page_view": "Lượt xem trang khóa học",
-        "enrollment_completed": "tuyển sinh",
-        "course_completed": "Hoàn thành"
-      }
-    },
-    "trend": {
-      "heading": "Lưu lượng truy cập theo thời gian",
-      "description": "Lượt xem trang và đăng ký theo ngày",
-      "empty": "Không có lưu lượng truy cập trong phạm vi đã chọn",
-      "views": "Lượt xem",
-      "enrollments": "tuyển sinh"
-    },
-    "kpi": {
-      "landing_views": "Lượt xem đích",
-      "unique_visitors": "Số lượng khách truy cập",
-      "course_page_views": "Lượt xem trang khóa học",
-      "enrollments": "tuyển sinh",
-      "range_description": "Trong phạm vi đã chọn"
-    },
-    "range": {
-      "7d": "7 ngày qua",
-      "30d": "30 ngày qua",
-      "90d": "90 ngày qua",
-      "all": "Mọi lúc",
-      "label": "Phạm vi thời gian",
-      "locked": "Nâng cấp để mở khóa khoảng thời gian này"
-    },
-    "tabs": {
-      "overview": "Tổng quan",
-      "funnel": "Kênh",
-      "geography": "Địa lý",
-      "course_types": "Các loại khóa học"
-    },
     "exercises_completed": "Bài tập đã hoàn thành",
     "course_progress": "Tiến độ khóa học",
     "just_now": "vừa mới đây",
@@ -3634,7 +3570,6 @@
     "tags": "Thẻ",
     "automation": "Tự động hóa",
     "widgets": "Widget",
-    "stats": "Thống kê",
     "analytics": "Phân tích",
     "compliance": "Tuân thủ",
     "cohorts": "Nhóm học tập",
@@ -3649,7 +3584,8 @@
     "create": "Tạo",
     "distribute": "phân phối",
     "tools": "Công cụ",
-    "marketing": "Tiếp thị"
+    "marketing": "Tiếp thị",
+    "org_analytics": "Academy"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -6575,9 +6511,70 @@
   },
   "marketing": {
     "title": "Tiếp thị",
-    "subtitle": "Hiểu cách khách truy cập tìm thấy các khóa học của bạn và chuyển đổi thành học viên."
+    "subtitle": "Hiểu cách khách truy cập tìm thấy các khóa học của bạn và chuyển đổi thành học viên.",
+    "popularTypes": {
+      "heading": "Các loại khóa học phổ biến",
+      "description": "Tuyển sinh được nhóm theo loại khóa học",
+      "subtitle": "{total} lượt đăng ký trên tất cả các loại",
+      "empty": "Chưa có dữ liệu tuyển sinh",
+      "course_count": "{count, plural, one {# khóa học} other {# khóa học}}",
+      "views_short": "lượt xem",
+      "types": {
+        "SELF_PACED": "Tự nhịp độ",
+        "LIVE_CLASS": "Lớp học trực tiếp",
+        "COMPLIANCE": "Tuân thủ",
+        "PUBLIC": "công cộng"
+      }
+    },
+    "topCourses": {
+      "heading": "Khóa học hàng đầu theo lượt xem",
+      "description": "Khóa học xếp hạng theo lượt xem trang",
+      "subtitle": "Xếp hạng theo lượt xem trang trong khoảng này",
+      "empty": "Chưa có lượt xem trang khóa học",
+      "course": "Khóa học",
+      "views": "Lượt xem"
+    },
+    "countries": {
+      "heading": "Các quốc gia hàng đầu",
+      "subtitle": "tổng số {total} khách truy cập",
+      "empty": "Chưa có dữ liệu vị trí",
+      "country": "Quốc gia",
+      "visitors": "Du khách",
+      "enrollments_short": "đã ghi danh"
+    },
+    "funnel": {
+      "heading": "Phễu chuyển đổi",
+      "description": "Từ lần truy cập đầu tiên đến khi hoàn thành khóa học",
+      "empty": "Chưa có dữ liệu kênh",
+      "step": {
+        "landing_view": "Lượt xem đích",
+        "course_page_view": "Lượt xem trang khóa học",
+        "enrollment_completed": "tuyển sinh",
+        "course_completed": "Hoàn thành"
+      }
+    },
+    "trend": {
+      "heading": "Lưu lượng truy cập theo thời gian",
+      "description": "Lượt xem trang và đăng ký theo ngày",
+      "empty": "Không có lưu lượng truy cập trong phạm vi đã chọn",
+      "views": "Lượt xem",
+      "enrollments": "tuyển sinh"
+    },
+    "kpi": {
+      "landing_views": "Lượt xem đích",
+      "unique_visitors": "Số lượng khách truy cập",
+      "course_page_views": "Lượt xem trang khóa học",
+      "enrollments": "tuyển sinh",
+      "range_description": "Trong phạm vi đã chọn"
+    },
+    "tabs": {
+      "overview": "Tổng quan",
+      "funnel": "Kênh",
+      "geography": "Địa lý",
+      "course_types": "Các loại khóa học"
+    }
   },
-  "insights": {
+  "analytics": {
     "title": "Phân tích",
     "updated_seconds_ago": "đã cập nhật {count} giây trước",
     "updated_minutes_ago": "{count, plural, one {đã cập nhật # phút trước} other {đã cập nhật # phút trước}}",
@@ -7010,9 +7007,6 @@
       "attempts_unavailable": "Không thể kiểm tra bài tập nào có lượt làm, nên một số bài tập bị khóa có thể bị ẩn."
     },
     "empty": {
-      "no_data": "Chưa có dữ liệu",
-      "no_overdue": "Không có người học quá hạn",
-      "no_cohorts": "Chưa có nhóm thuần tập nào",
       "failed": "Không thể tải biểu đồ này",
       "dashboard_failed": "Phân tích không thể tải",
       "not_permitted": "Bạn không có quyền truy cập vào những phân tích này",
@@ -7152,7 +7146,8 @@
     "export": {
       "students_capped": "Danh sách học viên được giới hạn ở {limit} dòng đầu tiên.",
       "exercises_capped": "Điểm bài tập được giới hạn ở {limit} kết quả đầu tiên."
-    }
+    },
+    "org_page_title": "Academy"
   },
   "oauth": {
     "consent": {

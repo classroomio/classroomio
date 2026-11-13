@@ -1,25 +1,150 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`public API analytics request contract > ZPublicApiCourseAnalyticsQuery keeps its published shape > ZPublicApiCourseAnalyticsQuery 1`] = `
+exports[`public API analytics request contract > ZPublicApiAnalyticsSnapshotQuery keeps its published shape > ZPublicApiAnalyticsSnapshotQuery 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
-    "days": {
-      "default": 30,
-      "description": "Days counted back from today (UTC): 7, 30, 90 or 365. Default: 30.",
-      "type": "number",
+    "breakdown": {
+      "description": "Course or org scope: how split widgets break the scope down, 'courses' or 'cohorts'. Cohort scope ignores it. Defaults to the split the dashboard picks.",
+      "enum": [
+        "courses",
+        "cohorts",
+      ],
+      "type": "string",
     },
-    "include": {
-      "description": "Sections to return, comma-separated: summary, funnel. Default: summary.",
-      "items": {
-        "enum": [
-          "summary",
-          "funnel",
-        ],
-        "type": "string",
-      },
-      "minItems": 1,
-      "type": "array",
+    "courseId": {
+      "description": "Course the per-course widgets focus on; organization and cohort snapshots leave per-course widgets out unless you pass it. A course outside the scope fails with 404.",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "exerciseId": {
+      "description": "Per-exercise widgets focus on this exercise; defaults to the last pass-required exercise. Outside the selected course it fails with 404.",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "range": {
+      "description": "Data range for every widget: 'all', '7d', '30d' or '90d'. Default: 'all'.",
+      "enum": [
+        "all",
+        "7d",
+        "30d",
+        "90d",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API analytics request contract > ZPublicApiAnalyticsStudentsQuery keeps its published shape > ZPublicApiAnalyticsStudentsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "description": "Limit the table to one course inside the scope.",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "dir": {
+      "description": "Sort direction; without it at-risk comes first for status, lowest progress or score first, names A–Z, newest login first.",
+      "enum": [
+        "asc",
+        "desc",
+      ],
+      "type": "string",
+    },
+    "isOverdue": {
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
+      ],
+      "description": "true lists only students with an overdue item, false only those without; omit to list both.",
+    },
+    "limit": {
+      "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "description": "Page number, starting at 1, at most 4000.",
+      "maximum": 4000,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "search": {
+      "description": "Match the student name or email, at most 100 characters.",
+      "maxLength": 100,
+      "type": "string",
+    },
+    "sort": {
+      "default": "status",
+      "description": "'status', 'name', 'progress', 'score' or 'lastLogin'. Default: 'status'.",
+      "enum": [
+        "status",
+        "name",
+        "progress",
+        "score",
+        "lastLogin",
+      ],
+      "type": "string",
+    },
+    "status": {
+      "description": "'at_risk', 'lagging', 'on_track' or 'completed'.",
+      "enum": [
+        "at_risk",
+        "lagging",
+        "on_track",
+        "completed",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API analytics request contract > ZPublicApiCourseAnalyticsSnapshotQuery keeps its published shape > ZPublicApiCourseAnalyticsSnapshotQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "breakdown": {
+      "description": "Course or org scope: how split widgets break the scope down, 'courses' or 'cohorts'. Cohort scope ignores it. Defaults to the split the dashboard picks.",
+      "enum": [
+        "courses",
+        "cohorts",
+      ],
+      "type": "string",
+    },
+    "exerciseId": {
+      "description": "Per-exercise widgets focus on this exercise; defaults to the last pass-required exercise. Outside the selected course it fails with 404.",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "range": {
+      "description": "Data range for every widget: 'all', '7d', '30d' or '90d'. Default: 'all'.",
+      "enum": [
+        "all",
+        "7d",
+        "30d",
+        "90d",
+      ],
+      "type": "string",
     },
   },
   "type": "object",
@@ -30,44 +155,90 @@ exports[`public API analytics request contract > ZPublicApiCourseAnalyticsStuden
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
+    "dir": {
+      "description": "Sort direction; without it at-risk comes first for status, lowest progress or score first, names A–Z, newest login first.",
+      "enum": [
+        "asc",
+        "desc",
+      ],
+      "type": "string",
+    },
+    "isOverdue": {
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
+      ],
+      "description": "true lists only students with an overdue item, false only those without; omit to list both.",
+    },
     "limit": {
       "default": 20,
-      "description": "Items per page, 1-50. Default: 20.",
-      "maximum": 50,
+      "description": "Items per page, 1-100. Default: 20.",
+      "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
-      "description": "Page number, starting at 1. Default: 1.",
-      "maximum": 9007199254740991,
+      "description": "Page number, starting at 1, at most 4000.",
+      "maximum": 4000,
       "minimum": 1,
       "type": "integer",
     },
-  },
-  "type": "object",
-}
-`;
-
-exports[`public API analytics request contract > ZPublicApiLearnerAnalyticsParam keeps its published shape > ZPublicApiLearnerAnalyticsParam 1`] = `
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "properties": {
-    "profileId": {
-      "description": "The profileId returned by the compliance and course student lists.",
-      "format": "uuid",
-      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+    "search": {
+      "description": "Match the student name or email, at most 100 characters.",
+      "maxLength": 100,
+      "type": "string",
+    },
+    "sort": {
+      "default": "status",
+      "description": "'status', 'name', 'progress', 'score' or 'lastLogin'. Default: 'status'.",
+      "enum": [
+        "status",
+        "name",
+        "progress",
+        "score",
+        "lastLogin",
+      ],
+      "type": "string",
+    },
+    "status": {
+      "description": "'at_risk', 'lagging', 'on_track' or 'completed'.",
+      "enum": [
+        "at_risk",
+        "lagging",
+        "on_track",
+        "completed",
+      ],
       "type": "string",
     },
   },
-  "required": [
-    "profileId",
-  ],
   "type": "object",
 }
 `;
 
-exports[`public API analytics request contract > ZPublicApiOrgAnalyticsQuery keeps its published shape > ZPublicApiOrgAnalyticsQuery 1`] = `
+exports[`public API analytics request contract > ZPublicApiCourseMarketingQuery keeps its published shape > ZPublicApiCourseMarketingQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "days": {
+      "default": 30,
+      "description": "Days counted back from today (UTC): 7, 30, 90 or 365. Default: 30.",
+      "type": "number",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API analytics request contract > ZPublicApiMarketingQuery keeps its published shape > ZPublicApiMarketingQuery 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
@@ -77,17 +248,14 @@ exports[`public API analytics request contract > ZPublicApiOrgAnalyticsQuery kee
       "type": "number",
     },
     "include": {
-      "description": "Sections to return, comma-separated: overview, traffic, countries, funnel, courseTypes, topCourses, loginActivity, compliance. Default: overview.",
+      "description": "Sections to return, comma-separated: traffic, countries, funnel, courseTypes, topCourses. Default: traffic.",
       "items": {
         "enum": [
-          "overview",
           "traffic",
           "countries",
           "funnel",
           "courseTypes",
           "topCourses",
-          "loginActivity",
-          "compliance",
         ],
         "type": "string",
       },
@@ -96,12 +264,63 @@ exports[`public API analytics request contract > ZPublicApiOrgAnalyticsQuery kee
     },
     "limit": {
       "default": 5,
-      "description": "Max rows in list sections (overview lists, topCourses, countries). 1-20, default 5.",
+      "description": "Max rows in list sections (topCourses, countries). 1-20, default 5.",
       "maximum": 20,
       "minimum": 1,
       "type": "integer",
     },
   },
+  "type": "object",
+}
+`;
+
+exports[`public API analytics request contract > ZPublicApiOrganizationOverviewQuery keeps its published shape > ZPublicApiOrganizationOverviewQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "days": {
+      "default": 30,
+      "description": "Days counted back from today (UTC): 7, 30, 90 or 365. Default: 30.",
+      "type": "number",
+    },
+    "include": {
+      "description": "Sections to return, comma-separated: summary, loginActivity. Default: summary.",
+      "items": {
+        "enum": [
+          "summary",
+          "loginActivity",
+        ],
+        "type": "string",
+      },
+      "minItems": 1,
+      "type": "array",
+    },
+    "limit": {
+      "default": 5,
+      "description": "Max rows in the summary lists (top courses and recent certificates). 1-20, default 5.",
+      "maximum": 20,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API analytics request contract > ZPublicApiStudentAnalyticsParam keeps its published shape > ZPublicApiStudentAnalyticsParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "profileId": {
+      "description": "The uuid profileId returned by the compliance and analytics student lists, not the numeric memberId.",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "profileId",
+  ],
   "type": "object",
 }
 `;

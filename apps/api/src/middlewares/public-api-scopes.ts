@@ -2,6 +2,7 @@ import { Context, Next } from 'hono';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
 import { ErrorCodes } from '@api/utils/errors';
+import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
@@ -18,8 +19,9 @@ const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
 const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
 const ORGANIZATION_DOMAIN_PATH = /^(?:\/public-api\/v1)?\/organization\/domain(?:\/|$)/;
 const ORGANIZATION_PATH = /^(?:\/public-api\/v1)?\/organization(?:\/|$)/;
-const ANALYTICS_INSIGHTS_QUERY_PATH = /^(?:\/public-api\/v1)?\/analytics\/insights\/query\/?$/;
-const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
+const ANALYTICS_QUERY_PATH = new RegExp(`^(?:/public-api/v1)?/analytics/${ORG_ANALYTICS_PAGE.slug}/query/?$`);
+const ANALYTICS_PATH =
+  /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics|\/cohorts\/[^/]+\/analytics|\/organization\/overview|\/audience\/[^/]+\/analytics)(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
 const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
 const COURSE_ITEM_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/?$/;
@@ -28,9 +30,15 @@ const COURSE_LIST_PATH = /^(?:\/public-api\/v1)?\/courses\/?$/;
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
   const isRead = method === 'GET' || method === 'HEAD';
 
-  // The insights query is a POST body, but it stays a read; it must be mapped before the analytics rule,
+  // The analytics query is a POST body, but it stays a read; it must be mapped before the analytics rule,
   // which only covers GET analytics, so any other analytics POST still falls through to null.
-  if (ANALYTICS_INSIGHTS_QUERY_PATH.test(path) && method === 'POST') {
+  if (ANALYTICS_QUERY_PATH.test(path) && method === 'POST') {
+    return 'analytics:read';
+  }
+
+  // The analytics pages of cohorts, the organization and the audience sit under paths the family rules below
+  // would claim, so they are mapped first.
+  if (ANALYTICS_PATH.test(path) && isRead) {
     return 'analytics:read';
   }
 
@@ -52,10 +60,6 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (ORGANIZATION_PATH.test(path)) {
     return isRead ? 'organization:read' : 'organization:write';
-  }
-
-  if (ANALYTICS_PATH.test(path) && isRead) {
-    return 'analytics:read';
   }
 
   if (COURSE_STUDENT_PATH.test(path)) {

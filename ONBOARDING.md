@@ -41,8 +41,9 @@ Open these pages in a new tab so you understand the product before clicking arou
 
 - [ ] Log in and land on `/org/[slug]` — note the sidebar groups (Home, Content, People, Automation, Settings).
 - [ ] Visit **Dashboard** (`/org/[slug]/dash`) and observe the overview cards.
-- [ ] Open **Stats → Analytics** (`/org/[slug]/stats/analytics`) and change the date range picker (7, 30, 90 days). Note the landing page KPIs, country breakdown, and course funnel.
-- [ ] Visit **Stats → Compliance** (`/org/[slug]/stats/compliance`) — this is admin-only, so you may not see course data yet. You'll come back after creating a compliance course.
+- [ ] Open **Analytics → Marketing** (`/org/[slug]/analytics/marketing`) and change the date range picker (7, 30, 90 days). Note the landing page KPIs, country breakdown, and course funnel.
+- [ ] Open **Analytics → Academy** (`/org/[slug]/analytics/academy`) — this is admin-only. Note how the student progress and cohort health cards read before you have students.
+- [ ] Visit **Analytics → Compliance** (`/org/[slug]/analytics/compliance`) — this is admin-only, so you may not see course data yet. You'll come back after creating a compliance course.
 - [ ] Click through every Settings page (Profile, Notifications, Domains, Teams, Customize LMS, Landing Page, Billing, AI Credits, AI Tutor) to get a feel for what lives where.
 - 📸 **Screenshot:** The main dashboard page (`/org/[slug]/dash`) with the overview cards visible.
 
@@ -100,7 +101,7 @@ then complete the type-specific checklist below.
   - [ ] Reminder days before the deadline.
   - [ ] Mark the course as mandatory (if applicable).
 - [ ] Go to **Compliance** in the course sidebar — verify the compliance dashboard tiles are shown (compliant, non-compliant, in progress, not started, etc.).
-- [ ] Go back to **Stats → Compliance** at the org level — confirm this course now appears in the course breakdown table.
+- [ ] Go back to **Analytics → Compliance** at the org level — confirm this course now appears in the course breakdown table.
 - 📸 **Screenshot:** The course compliance dashboard with status tiles.
 - 📸 **Screenshot:** The org-level compliance page showing the course in the breakdown table.
 
@@ -445,10 +446,11 @@ Ask your agent to create a course using the MCP tools. Try prompts like:
 
 ## Part 13 — Analytics
 
-- [ ] Go to **Stats → Analytics** at the org level — review landing page KPIs, country breakdown, course funnel, popular course types, and trend charts. Change the date range and refresh the data.
+- [ ] Go to **Analytics → Marketing** (`/org/[slug]/analytics/marketing`) at the org level — review landing page KPIs, country breakdown, course funnel, popular course types, and trend charts. Change the date range and refresh the data.
+- [ ] Go to **Analytics → Academy** (`/org/[slug]/analytics/academy`) — review how students are doing across every course and cohort: progress, scores, logins, and overdue work.
 - [ ] Go to a specific course → **Analytics** — review enrollment count, completion rate, average score, and per-student progress table.
 - [ ] Go to a specific course → **Exercise** → open the submissions view — review the summary charts and individual student submissions.
-- [ ] If you created a compliance course (Part 2.3), go to **Stats → Compliance** and review the status tiles, course breakdown, and learner table with status filters.
+- [ ] If you created a compliance course (Part 2.3), go to **Analytics → Compliance** (`/org/[slug]/analytics/compliance`) and review the status tiles, course breakdown, and student table with status filters.
 - 📸 **Screenshot:** The org-level analytics page with KPIs and charts populated with data.
 - 📸 **Screenshot:** A course analytics page showing enrollment and progress data.
 

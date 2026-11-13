@@ -28,7 +28,9 @@ import { agentRouter } from '@api/routes/agent';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
 import { courseRouter } from '@api/routes/course';
-import { dashAnalyticsRouter } from '@api/routes/dash';
+import { dashRouter } from '@api/routes/dash';
+import { marketingRouter } from '@api/routes/marketing';
+import { orgComplianceRouter } from '@api/routes/compliance';
 import { domainRouter } from '@api/routes/domain/domain';
 import { internalRouter } from '@api/routes/internal';
 import { inviteRouter } from '@api/routes/invite';
@@ -54,7 +56,7 @@ import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
 import { prettyJSON } from 'hono/pretty-json';
 import { cohortRouter } from '@api/routes/cohort';
-import { insightsRouter } from '@api/routes/insights';
+import { analyticsRouter } from '@api/routes/analytics';
 import { publicCourseRouter, orgSiteOgRouter } from '@api/routes/org-site';
 import { publicWidgetsRouter } from '@api/routes/widgets';
 import { reportRouter } from '@api/routes/report';
@@ -273,13 +275,15 @@ export const app = new Hono()
   .route('/organization/sso', organizationSsoRouter)
   .route('/organization/token-auth', organizationTokenAuthRouter)
   .route('/sso', ssoDiscoveryRouter)
-  .route('/dash', dashAnalyticsRouter)
+  .route('/dash', dashRouter)
+  .route('/marketing', marketingRouter)
+  .route('/compliance', orgComplianceRouter)
   .route('/community', communityRouter)
   .route('/invite', inviteRouter)
   .route('/org-site/course', publicCourseRouter)
   .route('/org-site/og', orgSiteOgRouter)
   .route('/cohort', cohortRouter)
-  .route('/insights', insightsRouter)
+  .route('/analytics', analyticsRouter)
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)
   .route('/report', reportRouter)

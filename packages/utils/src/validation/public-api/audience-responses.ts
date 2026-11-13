@@ -25,7 +25,7 @@ export const ZPublicApiAudienceMemberResponse = z.object({
   enrolledCount: z.number(),
   completedCount: z.number(),
   progressPercent: z.number(),
-  certificateCount: z.number().describe('Courses in this organization where the learner has earned a certificate')
+  certificateCount: z.number().describe('Courses in this organization where the student has earned a certificate')
 });
 
 export const ZPublicApiCreateAudienceResponse = z.object({
@@ -96,4 +96,46 @@ export const ZPublicApiRemoveAudienceMemberResponse = z.object({
   statusChangedBy: z.string().uuid().nullable(),
   lastActiveAt: nullableTimestamp,
   createdAt: timestamp
+});
+
+const ZExerciseStat = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  lessonId: z.string().uuid().nullable(),
+  lessonTitle: z.string(),
+  status: z.number().nullable().describe('Submission status id; null when not submitted'),
+  score: z.number(),
+  totalPoints: z.number(),
+  isCompleted: z.boolean()
+});
+
+export const ZPublicApiStudentAnalyticsResponse = z.object({
+  user: z.object({
+    id: z.string().uuid(),
+    fullName: z.string(),
+    email: z.string(),
+    avatarUrl: z.string(),
+    lastSeen: nullableTimestamp
+  }),
+  overallCourseProgress: z.number().describe('Percentage of lessons and exercises completed across all courses'),
+  overallAverageGrade: z.number().nullable().describe('Average of per-course grades; null when nothing is graded'),
+  courses: z.array(
+    z.object({
+      id: z.string().uuid(),
+      title: z.string(),
+      type: z.string().nullable(),
+      lessonsCount: z.number(),
+      lessonsCompleted: z.number(),
+      exercisesCount: z.number(),
+      exercisesCompleted: z.number(),
+      progressPercentage: z.number(),
+      progressFailed: z
+        .boolean()
+        .describe('True when progress could not be loaded; the course is left out of overall progress'),
+      averageGrade: z.number().nullable(),
+      certificateEarnedAt: nullableTimestamp,
+      complianceStatus: z.string().nullable(),
+      exercises: z.array(ZExerciseStat).nullable().describe('null when exercise stats could not be loaded')
+    })
+  )
 });

@@ -7,6 +7,7 @@ import {
   reserveMcpAutomationUsage
 } from '@api/services/organization/automation-usage';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { ORG_ANALYTICS_PAGE, ORG_ANALYTICS_TOOLS } from '@cio/utils/constants/analytics-pages';
 import {
   MCP_TOOL_CREDIT_COST,
   getMcpAutomationCategory,
@@ -181,15 +182,20 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     DELETE: 'delete_cohort_goal'
   },
   '/public-api/v1/cohorts/:cohortId/goals/:goalId/archive': { POST: 'archive_cohort_goal' },
-  '/public-api/v1/analytics': { GET: 'get_org_analytics' },
-  '/public-api/v1/analytics/compliance/learners': { GET: 'list_compliance_learners' },
-  '/public-api/v1/analytics/learners/:profileId': { GET: 'get_learner_analytics' },
-  '/public-api/v1/analytics/insights/catalog': { GET: 'get_insights_catalog' },
-  '/public-api/v1/analytics/insights/query': { POST: 'query_insights' },
-  '/public-api/v1/analytics/insights/dashboards/:scopeType/:scopeId': { GET: 'get_insights_dashboard' },
-  '/public-api/v1/analytics/insights/students': { GET: 'list_insights_students' },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}`]: { GET: ORG_ANALYTICS_TOOLS.snapshot },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/students`]: { GET: ORG_ANALYTICS_TOOLS.students },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`]: { GET: ORG_ANALYTICS_TOOLS.catalog },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`]: { POST: ORG_ANALYTICS_TOOLS.query },
   '/public-api/v1/courses/:courseId/analytics': { GET: 'get_course_analytics' },
   '/public-api/v1/courses/:courseId/analytics/students': { GET: 'list_course_analytics_students' },
+  '/public-api/v1/cohorts/:cohortId/analytics': { GET: 'get_cohort_analytics' },
+  '/public-api/v1/cohorts/:cohortId/analytics/students': { GET: 'list_cohort_analytics_students' },
+  '/public-api/v1/analytics/marketing': { GET: 'get_marketing_analytics' },
+  '/public-api/v1/analytics/marketing/courses/:courseId': { GET: 'get_course_marketing_analytics' },
+  '/public-api/v1/analytics/compliance': { GET: 'get_compliance_analytics' },
+  '/public-api/v1/analytics/compliance/students': { GET: 'list_compliance_students' },
+  '/public-api/v1/organization/overview': { GET: 'get_org_overview' },
+  '/public-api/v1/audience/:profileId/analytics': { GET: 'get_student_analytics' },
   '/public-api/v1/cohorts/:cohortId/goals/remind-overdue': { POST: 'remind_overdue_cohort_goals' }
 };
 

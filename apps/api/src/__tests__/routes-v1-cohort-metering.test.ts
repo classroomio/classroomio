@@ -79,25 +79,29 @@ vi.mock('@api/services/v1/cohorts/invites', () => ({
   createPublicApiCohortInviteLinkService: mocks.ok(),
   setPublicApiCohortInviteLinkRevokedService: mocks.ok()
 }));
-vi.mock('@api/services/v1/analytics/org', () => ({
-  getPublicApiOrgAnalyticsService: mocks.ok(),
-  listPublicApiComplianceLearnersService: mocks.ok()
+vi.mock('@api/services/v1/marketing', () => ({
+  getPublicApiMarketingAnalyticsService: mocks.ok(),
+  getPublicApiCourseMarketingService: mocks.ok()
 }));
-vi.mock('@api/services/v1/analytics/course', () => ({
-  getPublicApiCourseAnalyticsService: mocks.ok(),
-  listPublicApiCourseAnalyticsStudentsService: mocks.ok()
+vi.mock('@api/services/v1/compliance', () => ({
+  getPublicApiComplianceAnalyticsService: mocks.ok(),
+  listPublicApiComplianceStudentsService: mocks.ok()
 }));
-vi.mock('@api/services/v1/analytics/learner', () => ({
-  getPublicApiLearnerAnalyticsService: mocks.ok()
+vi.mock('@api/services/v1/organization/overview', () => ({
+  getPublicApiOrganizationOverviewService: mocks.ok()
 }));
-vi.mock('@api/services/v1/analytics/insights', () => ({
-  getPublicApiInsightsCatalogService: mocks.ok(),
-  queryPublicApiInsightsService: mocks.ok(),
-  getPublicApiInsightsSnapshotService: mocks.ok(),
-  listPublicApiInsightsStudentsService: mocks.ok()
+vi.mock('@api/services/v1/audience/analytics', () => ({
+  getPublicApiStudentAnalyticsService: mocks.ok()
+}));
+vi.mock('@api/services/v1/analytics', () => ({
+  getPublicApiAnalyticsCatalogService: mocks.ok(),
+  queryPublicApiAnalyticsService: mocks.ok(),
+  getPublicApiAnalyticsSnapshotService: mocks.ok(),
+  listPublicApiAnalyticsStudentsService: mocks.ok()
 }));
 
 import { v1Router } from '@api/routes/v1';
+import { ORG_ANALYTICS_PAGE, ORG_ANALYTICS_TOOLS } from '@cio/utils/constants/analytics-pages';
 
 const C = '11111111-1111-4111-8111-111111111111';
 const X = '22222222-2222-4222-8222-222222222222';
@@ -146,27 +150,34 @@ const CASES: [string, string, unknown, string][] = [
   ['POST', `/cohorts/${C}/goals/remind-overdue`, {}, 'remind_overdue_cohort_goals']
 ];
 
+const PAGE = ORG_ANALYTICS_PAGE.slug;
+
 const ANALYTICS_CASES: [string, string][] = [
-  ['/analytics', 'get_org_analytics'],
-  ['/analytics?include=traffic,compliance&days=7', 'get_org_analytics'],
-  ['/analytics/compliance/learners', 'list_compliance_learners'],
-  [`/analytics/learners/${X}`, 'get_learner_analytics'],
+  [`/analytics/${PAGE}`, ORG_ANALYTICS_TOOLS.snapshot],
+  [`/analytics/${PAGE}/students`, ORG_ANALYTICS_TOOLS.students],
+  [`/analytics/${PAGE}/catalog`, ORG_ANALYTICS_TOOLS.catalog],
   [`/courses/${C}/analytics`, 'get_course_analytics'],
-  [`/courses/${C}/analytics/students`, 'list_course_analytics_students']
+  [`/courses/${C}/analytics/students`, 'list_course_analytics_students'],
+  [`/cohorts/${C}/analytics`, 'get_cohort_analytics'],
+  [`/cohorts/${C}/analytics/students`, 'list_cohort_analytics_students'],
+  ['/analytics/marketing', 'get_marketing_analytics'],
+  ['/analytics/marketing?include=traffic,topCourses&days=7', 'get_marketing_analytics'],
+  [`/analytics/marketing/courses/${C}`, 'get_course_marketing_analytics'],
+  ['/analytics/compliance', 'get_compliance_analytics'],
+  ['/analytics/compliance/students', 'list_compliance_students'],
+  ['/organization/overview', 'get_org_overview'],
+  ['/organization/overview?include=summary,loginActivity&days=7', 'get_org_overview'],
+  [`/audience/${X}/analytics`, 'get_student_analytics']
 ];
 
-// [method, path, expected tool, expected credits]
-const INSIGHTS_CASES: [string, string, unknown, string, number][] = [
-  ['GET', '/analytics/insights/catalog', undefined, 'get_insights_catalog', 0],
+const ANALYTICS_QUERY_CASES: [string, string, unknown, string, number][] = [
   [
     'POST',
-    '/analytics/insights/query',
+    `/analytics/${PAGE}/query`,
     { scope: { type: 'org', id: X }, spec: { source: 'student', measures: [{ metric: 'rows', agg: 'value' }] } },
-    'query_insights',
+    ORG_ANALYTICS_TOOLS.query,
     0
-  ],
-  ['GET', `/analytics/insights/dashboards/org/${X}`, undefined, 'get_insights_dashboard', 0],
-  ['GET', `/analytics/insights/students?scopeType=org&scopeId=${X}`, undefined, 'list_insights_students', 0]
+  ]
 ];
 
 const app = new Hono().route('/public-api/v1', v1Router);
@@ -194,6 +205,24 @@ describe('default MCP key through the real v1 cohort routers (scopes and meterin
     expect(response.status).toBeLessThan(300);
     expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, expect.any(Number));
   });
+
+  it.each([
+    ['GET', `/cohorts/${C}/analytics`],
+    ['GET', `/cohorts/${C}/analytics/students`],
+    ['GET', '/organization/overview'],
+    ['GET', `/audience/${X}/analytics`]
+  ])(
+    'keeps the analytics:read scope on %s %s even though the cohort, organization and audience families are broader',
+    async (method, path) => {
+      const response = await app.request(`/public-api/v1${path}`, {
+        method,
+        headers: { Authorization: 'Bearer cio_mcp_test' }
+      });
+
+      expect(response.status).toBe(403);
+      expect(mocks.complete).not.toHaveBeenCalled();
+    }
+  );
 
   it.each([
     ['PUT', `/courses/${C}`],
@@ -232,16 +261,19 @@ describe('default MCP key through the real v1 analytics routers (scopes and mete
     expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, 0);
   });
 
-  it.each(INSIGHTS_CASES)('%s %s is metered as %s with %s credits', async (method, path, body, toolName, credits) => {
-    const response = await app.request(`/public-api/v1${path}`, {
-      method,
-      headers: { Authorization: 'Bearer cio_mcp_test', 'content-type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body)
-    });
+  it.each(ANALYTICS_QUERY_CASES)(
+    '%s %s is metered as %s with %s credits',
+    async (method, path, body, toolName, credits) => {
+      const response = await app.request(`/public-api/v1${path}`, {
+        method,
+        headers: { Authorization: 'Bearer cio_mcp_test', 'content-type': 'application/json' },
+        body: body === undefined ? undefined : JSON.stringify(body)
+      });
 
-    expect(response.status).toBe(200);
-    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, credits);
-  });
+      expect(response.status).toBe(200);
+      expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, credits);
+    }
+  );
 
   it.each([`/courses/${C}`, `/courses/${C}/students`])('keeps analytics:read out of GET %s', async (path) => {
     const response = await app.request(`/public-api/v1${path}`, {

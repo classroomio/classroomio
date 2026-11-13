@@ -37,7 +37,15 @@
         "caption": "Ihre Kurse, Lernenden und Einstellungen werden vorbereitet."
       }
     },
-    "back": "Zurück"
+    "back": "Zurück",
+    "range": {
+      "7d": "Letzte 7 Tage",
+      "30d": "Letzte 30 Tage",
+      "90d": "Letzte 90 Tage",
+      "all": "Alle Zeiten",
+      "label": "Zeitbereich",
+      "locked": "Upgrade, um diesen Zeitraum freizuschalten"
+    }
   },
   "validations": {
     "generic": {
@@ -530,7 +538,7 @@
       "test_failed": "Das Testereignis ist fehlgeschlagen. Öffnen Sie das Zustellungsprotokoll, um den Grund zu sehen.",
       "redelivered": "Ereignis für die erneute Zustellung eingereiht."
     },
-    "insights": {
+    "analytics": {
       "reminder_sent": "Erinnerung gesendet",
       "reminder_not_sent": "Erinnerung nicht gesendet: Wurde bereits heute versendet oder der/die Lernende hat diese E-Mails deaktiviert",
       "reminder_failed": "Die Erinnerung konnte nicht gesendet werden.",
@@ -608,8 +616,7 @@
     "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten",
     "webhooks_required": "Upgraden Sie auf Early Adopter oder Enterprise, um Webhooks zu nutzen."
   },
-  "analytics": {
-    "title": "Analysen",
+  "student_progress": {
     "courses": "Kurse",
     "progress": "Fortschritt",
     "progress_description": "{value, number} von {total, number} abgeschlossen",
@@ -640,77 +647,6 @@
     "loading_chart": "Diagramm wird geladen...",
     "no_data_default": "Keine Daten verfügbar",
     "no_data_default_description": "Derzeit sind keine Daten zum Anzeigen vorhanden.",
-    "subtitle": "Verstehen Sie, wie Besucher Ihre Kurse entdecken und zu Studenten werden.",
-    "refresh": "Aktualisieren",
-    "popularTypes": {
-      "heading": "Beliebte Kurstypen",
-      "description": "Anmeldungen gruppiert nach Kurstyp",
-      "subtitle": "{total} Anmeldungen für alle Typen",
-      "empty": "Noch keine Anmeldedaten",
-      "course_count": "{count, plural, one {# Kurs} other {# Kurse}}",
-      "views_short": "Ansichten",
-      "types": {
-        "SELF_PACED": "Im eigenen Tempo",
-        "LIVE_CLASS": "Live-Klasse",
-        "COMPLIANCE": "Compliance",
-        "PUBLIC": "Öffentlich"
-      }
-    },
-    "topCourses": {
-      "heading": "Top-Kurse nach Aufrufen",
-      "description": "Kurse nach Seitenaufrufen sortiert",
-      "subtitle": "Rangfolge nach Seitenaufrufen in diesem Zeitraum",
-      "empty": "Noch keine Kursseitenaufrufe",
-      "course": "Kurs",
-      "views": "Aufrufe"
-    },
-    "countries": {
-      "heading": "Top-Länder",
-      "subtitle": "{total} Besucher insgesamt",
-      "empty": "Noch keine Standortdaten",
-      "country": "Land",
-      "visitors": "Besucher",
-      "enrollments_short": "eingeschrieben"
-    },
-    "funnel": {
-      "heading": "Conversion-Trichter",
-      "description": "Vom ersten Besuch bis zum Kursabschluss",
-      "empty": "Noch keine Funnel-Daten",
-      "step": {
-        "landing_view": "Landungsansichten",
-        "course_page_view": "Kursseitenaufrufe",
-        "enrollment_completed": "Anmeldungen",
-        "course_completed": "Abschlüsse"
-      }
-    },
-    "trend": {
-      "heading": "Verkehr im Zeitverlauf",
-      "description": "Seitenaufrufe und Anmeldungen pro Tag",
-      "empty": "Kein Verkehr im ausgewählten Bereich",
-      "views": "Ansichten",
-      "enrollments": "Anmeldungen"
-    },
-    "kpi": {
-      "landing_views": "Landungsansichten",
-      "unique_visitors": "Einzigartige Besucher",
-      "course_page_views": "Kursseitenaufrufe",
-      "enrollments": "Anmeldungen",
-      "range_description": "Im ausgewählten Bereich"
-    },
-    "range": {
-      "7d": "Letzte 7 Tage",
-      "30d": "Letzte 30 Tage",
-      "90d": "Letzte 90 Tage",
-      "all": "Alle Zeiten",
-      "label": "Zeitbereich",
-      "locked": "Upgrade, um diesen Zeitraum freizuschalten"
-    },
-    "tabs": {
-      "overview": "Übersicht",
-      "funnel": "Trichter",
-      "geography": "Geographie",
-      "course_types": "Kurstypen"
-    },
     "exercises_completed": "Übungen abgeschlossen",
     "course_progress": "Kursfortschritt",
     "just_now": "Gerade eben",
@@ -3634,7 +3570,6 @@
     "tags": "Tags",
     "automation": "Automatisierung",
     "widgets": "Widgets",
-    "stats": "Statistiken",
     "analytics": "Analysen",
     "compliance": "Compliance",
     "cohorts": "Kohorten",
@@ -3649,7 +3584,8 @@
     "create": "Erstellen",
     "distribute": "Verteilen",
     "tools": "Werkzeuge",
-    "marketing": "Marketing"
+    "marketing": "Marketing",
+    "org_analytics": "Academy"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",
@@ -6575,9 +6511,70 @@
   },
   "marketing": {
     "title": "Marketing",
-    "subtitle": "Verstehen Sie, wie Besucher Ihre Kurse entdecken und zu Studenten werden."
+    "subtitle": "Verstehen Sie, wie Besucher Ihre Kurse entdecken und zu Studenten werden.",
+    "popularTypes": {
+      "heading": "Beliebte Kurstypen",
+      "description": "Anmeldungen gruppiert nach Kurstyp",
+      "subtitle": "{total} Anmeldungen für alle Typen",
+      "empty": "Noch keine Anmeldedaten",
+      "course_count": "{count, plural, one {# Kurs} other {# Kurse}}",
+      "views_short": "Ansichten",
+      "types": {
+        "SELF_PACED": "Im eigenen Tempo",
+        "LIVE_CLASS": "Live-Klasse",
+        "COMPLIANCE": "Compliance",
+        "PUBLIC": "Öffentlich"
+      }
+    },
+    "topCourses": {
+      "heading": "Top-Kurse nach Aufrufen",
+      "description": "Kurse nach Seitenaufrufen sortiert",
+      "subtitle": "Rangfolge nach Seitenaufrufen in diesem Zeitraum",
+      "empty": "Noch keine Kursseitenaufrufe",
+      "course": "Kurs",
+      "views": "Aufrufe"
+    },
+    "countries": {
+      "heading": "Top-Länder",
+      "subtitle": "{total} Besucher insgesamt",
+      "empty": "Noch keine Standortdaten",
+      "country": "Land",
+      "visitors": "Besucher",
+      "enrollments_short": "eingeschrieben"
+    },
+    "funnel": {
+      "heading": "Conversion-Trichter",
+      "description": "Vom ersten Besuch bis zum Kursabschluss",
+      "empty": "Noch keine Funnel-Daten",
+      "step": {
+        "landing_view": "Landungsansichten",
+        "course_page_view": "Kursseitenaufrufe",
+        "enrollment_completed": "Anmeldungen",
+        "course_completed": "Abschlüsse"
+      }
+    },
+    "trend": {
+      "heading": "Verkehr im Zeitverlauf",
+      "description": "Seitenaufrufe und Anmeldungen pro Tag",
+      "empty": "Kein Verkehr im ausgewählten Bereich",
+      "views": "Ansichten",
+      "enrollments": "Anmeldungen"
+    },
+    "kpi": {
+      "landing_views": "Landungsansichten",
+      "unique_visitors": "Einzigartige Besucher",
+      "course_page_views": "Kursseitenaufrufe",
+      "enrollments": "Anmeldungen",
+      "range_description": "Im ausgewählten Bereich"
+    },
+    "tabs": {
+      "overview": "Übersicht",
+      "funnel": "Trichter",
+      "geography": "Geographie",
+      "course_types": "Kurstypen"
+    }
   },
-  "insights": {
+  "analytics": {
     "title": "Analysen",
     "updated_seconds_ago": "aktualisiert vor {count}s",
     "updated_minutes_ago": "{count, plural, one {vor # Minute aktualisiert} other {vor # Minuten aktualisiert}}",
@@ -7010,9 +7007,6 @@
       "attempts_unavailable": "Es konnte nicht geprüft werden, welche Übungen Versuche haben, daher sind einige gesperrte Übungen möglicherweise ausgeblendet."
     },
     "empty": {
-      "no_data": "Noch keine Daten.",
-      "no_overdue": "Keine überfälligen Studierenden",
-      "no_cohorts": "Noch keine Kohorten.",
       "failed": "Dieses Diagramm konnte nicht geladen werden.",
       "dashboard_failed": "Die Analysedaten konnten nicht geladen werden.",
       "not_permitted": "Sie haben keinen Zugriff auf diese Analysen.",
@@ -7152,7 +7146,8 @@
     "export": {
       "students_capped": "Die Studierendenliste ist auf die ersten {limit} Zeilen begrenzt.",
       "exercises_capped": "Übungsergebnisse sind auf die ersten {limit} Ergebnisse begrenzt."
-    }
+    },
+    "org_page_title": "Academy"
   },
   "oauth": {
     "consent": {

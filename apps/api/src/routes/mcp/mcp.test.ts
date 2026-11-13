@@ -6,6 +6,7 @@ import { setInternalDispatch } from '@api/utils/internal-dispatch';
 import { isInternalRequest } from '@api/utils/internal-request';
 import { mcpCors } from '@api/middlewares/cors';
 
+import { ORG_ANALYTICS_PAGE, ORG_ANALYTICS_TOOLS } from '@cio/utils/constants/analytics-pages';
 import { mcpRouter } from './mcp';
 
 const mocks = vi.hoisted(() => ({
@@ -125,7 +126,7 @@ describe('POST /mcp', () => {
     const names: string[] = body.result.tools.map((tool: { name: string }) => tool.name);
 
     expect(names).toContain('list_team_members');
-    expect(names).toContain('query_insights');
+    expect(names).toContain(ORG_ANALYTICS_TOOLS.query);
     expect(names).not.toContain('upload_video');
   });
 
@@ -165,10 +166,10 @@ describe('POST /mcp', () => {
     expect(isInternalRequest(forwarded.headers)).toBe(true);
   });
 
-  it('dispatches get_insights_catalog to the insights catalog route', async () => {
+  it(`dispatches ${ORG_ANALYTICS_TOOLS.catalog} to the ${ORG_ANALYTICS_PAGE.label} catalog route`, async () => {
     const response = await rpc(
       'tools/call',
-      { name: 'get_insights_catalog', arguments: {} },
+      { name: ORG_ANALYTICS_TOOLS.catalog, arguments: {} },
       { Authorization: 'Bearer eyJhbGciOi' }
     );
 
@@ -177,7 +178,7 @@ describe('POST /mcp', () => {
 
     const forwarded = dispatched.mock.calls[0]![0];
 
-    expect(new URL(forwarded.url).pathname).toBe('/public-api/v1/analytics/insights/catalog');
+    expect(new URL(forwarded.url).pathname).toBe(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`);
     expect(forwarded.headers.get('authorization')).toBe('Bearer eyJhbGciOi');
     expect(isInternalRequest(forwarded.headers)).toBe(true);
   });

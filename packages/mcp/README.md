@@ -127,16 +127,25 @@ Current tools:
 - `get_cohort_invite_link`
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
-- `get_org_analytics`
-- `list_compliance_learners`
-- `get_learner_analytics`
-- `get_course_analytics`
-- `list_course_analytics_students`
-- `get_insights_catalog`
-- `query_insights`
-- `get_insights_dashboard`
-- `list_insights_students`
-- `remind_overdue_cohort_goals`
+- Academy analytics (**Analytics → Academy**, plus each course's and cohort's Analytics page):
+  - `get_academy_analytics`
+  - `list_academy_students`
+  - `get_academy_catalog`
+  - `query_academy_analytics`
+  - `get_course_analytics`
+  - `list_course_analytics_students`
+  - `get_cohort_analytics`
+  - `list_cohort_analytics_students`
+- Marketing analytics (**Analytics → Marketing**):
+  - `get_marketing_analytics`
+  - `get_course_marketing_analytics`
+- Compliance analytics (**Analytics → Compliance**):
+  - `get_compliance_analytics`
+  - `list_compliance_students`
+- Other analytics:
+  - `get_org_overview`
+  - `get_student_analytics`
+  - `remind_overdue_cohort_goals`
 - `list_audience_members`
 - `get_audience_member`
 - `add_audience_member`
@@ -311,7 +320,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. Domain tools call `/public-api/v1/organization/domain/...` and need `organization:read` (reads) and `organization:domain:write` (everything else), also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the course list (`GET /public-api/v1/courses`, with `course:read`), the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, organization customization, email template, landing page and domain, and tag routes, plus a course update that sends only `tagIds` or `addTagIds`. The other course/draft tools above, apart from `list_org_courses`, call internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...`, `/public-api/v1/courses/{courseId}/analytics/...`, `/public-api/v1/cohorts/{cohortId}/analytics/...`, `/public-api/v1/organization/overview` and `/public-api/v1/audience/{profileId}/analytics`, and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. Domain tools call `/public-api/v1/organization/domain/...` and need `organization:read` (reads) and `organization:domain:write` (everything else), also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the course list (`GET /public-api/v1/courses`, with `course:read`), the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, organization customization, email template, landing page and domain, and tag routes, plus a course update that sends only `tagIds` or `addTagIds`. The other course/draft tools above, apart from `list_org_courses`, call internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -364,23 +373,33 @@ Domain tools act as the key creator, who must be an org admin, the same as the d
 - `connect_custom_domain` takes `hostname` and returns the DNS records to add. On ClassroomIO Cloud it needs a paid plan (403 `UPGRADE_REQUIRED`); self-hosted instances have no plan limit but return 409 `CUSTOM_DOMAIN_UNAVAILABLE` until Approximated is configured. To switch domains, remove the current one first.
 - `refresh_custom_domain` checks DNS and SSL again; `remove_custom_domain` disconnects the domain on any plan. Both act only on the organization's own connected domain.
 
-Analytics tools are read-only, cost no credits, and act as the key creator:
+Analytics tools are read-only, cost no credits, and act as the key creator. They mirror the **Analytics** menu in the dashboard: each tool is named after the page it reads.
 
-- `get_org_analytics` returns the sections picked with `include` (default `overview`): `overview`, `traffic`, `countries`, `funnel`, `courseTypes`, `topCourses`, `loginActivity`, `compliance`. It takes `days` (7, 30, 90 or 365; default 30) and `limit` (1-20, default 5) for list sections, and returns `{ data, meta }`.
-- `get_org_analytics` and `get_learner_analytics` need the key creator to be an org admin or tutor. (The dashboard server lets any org member read these; the tools follow the dashboard UI, where only admins and tutors reach the analytics pages.) `loginActivity` and `compliance` need an org admin; for a tutor they are left out and listed in `meta.omitted`.
-- `list_compliance_learners` needs an org admin.
-- `get_course_analytics` (sections `summary`, `funnel`) and `list_course_analytics_students` need a course tutor/admin or an org admin.
-- Each section is cached for up to 10 minutes (login activity: 24 hours); `meta.generatedAt` says when the oldest one was computed.
-- `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50. Both return `{ data, pagination }`.
+Academy tools (**Analytics → Academy** and each course's and cohort's Analytics page):
 
-Insights tools query the numbers behind the cohort, course and organization analytics dashboards, and act as the key creator:
+- `get_academy_catalog` lists the sources, metrics, dimensions and filters you can query; the key creator must be an org admin or tutor. Call it first to choose a source, metrics and filters.
+- `query_academy_analytics` runs one query for a cohort, course or organization scope. The key creator must be an org admin, who can read any scope in their org, or a cohort admin or tutor for cohort scope, or a course admin or tutor for course scope. It takes `limit` (1-1000, default 25) and `page` (1-4000, default 1), and returns `{ data: { columns, rows }, meta, pagination }`.
+- `get_academy_analytics` returns the organization's Academy dashboard snapshot with the first page of every visible widget; the key creator must be an org admin. `get_course_analytics` and `get_cohort_analytics` return the same snapshot for one course (a course tutor/admin or an org admin) or one cohort (a cohort tutor/admin or an org admin). They take optional `exerciseId`, `range` (`all`, `7d`, `30d` or `90d`) and `breakdown` (`courses` or `cohorts`; cohort scope ignores it); the organization and cohort tools also take `courseId` to focus the per-course widgets. The students table is served by the students tools instead of inside the snapshot.
+- `list_academy_students`, `list_course_analytics_students` and `list_cohort_analytics_students` list the students of the organization, a course or a cohort with progress, score, status and last login, with `page` and `limit` (default 20, max 100). They take `sort` (`status`, `name`, `progress`, `score` or `lastLogin`) with an optional `dir`, `search`, `status` and `isOverdue`; the organization and cohort tools also take `courseId`.
+- Results are cached per scope and spec hash for 30 seconds (60 seconds for the organization), except a query or students search that uses free-text `search`, which always reads fresh. For queries, `meta.generatedAt` says when the result was computed and `meta.cached` says whether it came from the cache. For snapshots, top-level `generatedAt` says when the snapshot was assembled, not when its cached widget results were computed. The students tools return `{ data, pagination }` with no freshness metadata. `meta.range` (queries) and each widget's spec range (snapshots) report the range actually used (the Free plan sees at most the last 7 days).
+- `query_academy_analytics` and the snapshot tools count against fixed per-key budgets (60 queries and 20 snapshots per minute) and are refused with 503 when the limit cannot be checked.
 
-- `get_insights_catalog` lists the sources, metrics, dimensions and filters you can query; the key creator must be an org admin or tutor. Call it first to choose a source, metrics and filters.
-- `query_insights` runs one query for a cohort, course or organization scope. The key creator must be an org admin, who can read any scope in their org, or a cohort admin or tutor for cohort scope, or a course admin or tutor for course scope. This is a read: it has no side effects and costs no credits. It takes `limit` (1-1000, default 25) and `page` (1-4000, default 1), and returns `{ data: { columns, rows }, meta, pagination }`.
-- `get_insights_dashboard` returns one dashboard snapshot with the first page of every visible widget. It takes the scope plus optional `courseId`, `exerciseId`, `range` (`all`, `7d`, `30d` or `90d`) and `breakdown` (`courses` or `cohorts`, course or org scope; cohort scope ignores it). The students table is served by `list_insights_students` instead of inside the snapshot.
-- `list_insights_students` lists the students of a scope with progress, score, status and last login, with `page` and `limit` (default 20, max 100). It takes `sort` (`status`, `name`, `progress`, `score` or `lastLogin`) with an optional `dir`.
-- `remind_overdue_cohort_goals` emails the learners with overdue goal assignments now, optionally narrowed with `courseId` or `profileId`; the key creator must be a cohort tutor/admin or an org admin. It costs 1 credit, and each overdue goal assignment is reminded at most once a day.
-- Results are cached per scope and spec hash. For queries, `meta.generatedAt` says when the result was computed and `meta.cached` says whether it came from the cache. For snapshots, top-level `generatedAt` says when the snapshot was assembled, not when its cached widget results were computed. `list_insights_students` returns `{ data, pagination }` with no freshness metadata. `meta.range` (queries) and each widget's spec range (snapshots) report the range actually used (the Free plan sees at most the last 7 days).
+Marketing tools (**Analytics → Marketing**):
+
+- `get_marketing_analytics` returns the sections picked with `include` (default `traffic`): `traffic`, `countries`, `funnel`, `courseTypes`, `topCourses`. It takes `days` (7, 30, 90 or 365; default 30) and `limit` (1-20, default 5) for list sections, and returns `{ data, meta }`. The key creator must be an org admin or tutor.
+- `get_course_marketing_analytics` returns one course's funnel (course page view, enrollment, completion) over `days`. The key creator must be a course tutor/admin or an org admin.
+
+Compliance tools (**Analytics → Compliance**):
+
+- `get_compliance_analytics` returns compliance status counts, overall and per course. The key creator must be an org admin.
+- `list_compliance_students` lists each student's latest status, due date and validity in every compliance course, with `page` and `limit` (default 20, max 100). The key creator must be an org admin.
+
+Other analytics tools:
+
+- `get_org_overview` returns the organization overview (the Dashboard page): the sections picked with `include` (default `summary`): `summary` and `loginActivity`, with `days` and `limit` like the Marketing tool. The key creator must be an org admin or tutor; `loginActivity` needs an org admin and, for a tutor, is left out and listed in `meta.omitted`.
+- `get_student_analytics` returns one student's progress and grades across their courses, with per-exercise results. It takes the uuid `profileId` from `list_compliance_students` or the students lists, not the numeric `memberId`. The key creator must be an org admin or tutor.
+- Marketing, compliance and overview sections are cached for up to 10 minutes (login activity: 24 hours); `meta.generatedAt` says when the oldest one was computed. (The dashboard server lets any org member read some of these; the tools follow the dashboard UI, where only the roles above reach each page.)
+- `remind_overdue_cohort_goals` emails the students with overdue goal assignments now, optionally narrowed with `courseId` or `profileId`; the key creator must be a cohort tutor/admin or an org admin. It costs 1 credit, and each overdue goal assignment is reminded at most once a day.
 
 ## Required Environment Variables
 

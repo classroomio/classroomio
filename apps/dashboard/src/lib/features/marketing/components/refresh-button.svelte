@@ -13,5 +13,5 @@
 
 <Button variant="outline" size="sm" disabled={loading} onclick={onClick}>
   <RefreshIcon class={loading ? 'animate-spin' : ''} />
-  {$t('analytics.refresh')}
+  {$t('common.refresh')}
 </Button>

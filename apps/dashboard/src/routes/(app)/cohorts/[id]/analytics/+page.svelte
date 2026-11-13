@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { CohortInsightsPage } from '$features/insights';
+  import { CohortAnalyticsPage } from '$features/analytics';
 
   let { data } = $props();
 </script>
 
-<CohortInsightsPage cohortId={data.cohortId} />
+<CohortAnalyticsPage cohortId={data.cohortId} />

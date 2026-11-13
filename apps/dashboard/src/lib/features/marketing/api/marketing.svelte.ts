@@ -48,7 +48,7 @@ class MarketingApi extends BaseApi {
   async fetchLanding(orgId: string, bust = false) {
     this.loadingLanding = true;
     await this.execute<LandingStatsRequest>({
-      requestFn: () => classroomio.dash['landing-stats'].$get({ query: this.query(orgId, bust) }),
+      requestFn: () => classroomio.marketing['landing-stats'].$get({ query: this.query(orgId, bust) }),
       logContext: 'fetching analytics landing stats',
       onSuccess: (response) => {
         this.landing = response.data;
@@ -60,7 +60,7 @@ class MarketingApi extends BaseApi {
   async fetchCountry(orgId: string, bust = false) {
     this.loadingCountry = true;
     await this.execute<CountryBreakdownRequest>({
-      requestFn: () => classroomio.dash['country-breakdown'].$get({ query: this.query(orgId, bust) }),
+      requestFn: () => classroomio.marketing['country-breakdown'].$get({ query: this.query(orgId, bust) }),
       logContext: 'fetching analytics country breakdown',
       onSuccess: (response) => {
         this.country = response.data;
@@ -72,7 +72,7 @@ class MarketingApi extends BaseApi {
   async fetchFunnel(orgId: string, bust = false) {
     this.loadingFunnel = true;
     await this.execute<CourseFunnelRequest>({
-      requestFn: () => classroomio.dash['course-funnel'].$get({ query: this.query(orgId, bust) }),
+      requestFn: () => classroomio.marketing['course-funnel'].$get({ query: this.query(orgId, bust) }),
       logContext: 'fetching analytics course funnel',
       onSuccess: (response) => {
         this.funnel = response.data;
@@ -84,7 +84,7 @@ class MarketingApi extends BaseApi {
   async fetchPopularTypes(orgId: string, bust = false) {
     this.loadingPopularTypes = true;
     await this.execute<PopularTypesRequest>({
-      requestFn: () => classroomio.dash['popular-types'].$get({ query: this.query(orgId, bust) }),
+      requestFn: () => classroomio.marketing['popular-types'].$get({ query: this.query(orgId, bust) }),
       logContext: 'fetching analytics popular types',
       onSuccess: (response) => {
         this.popularTypes = response.data;
@@ -98,7 +98,7 @@ class MarketingApi extends BaseApi {
     const query = this.query(orgId, bust);
     this.loadingTopCourses = true;
     await this.execute<TopCoursesRequest>({
-      requestFn: () => classroomio.dash['top-courses'].$get({ query }),
+      requestFn: () => classroomio.marketing['top-courses'].$get({ query }),
       logContext: 'fetching analytics top courses',
       onSuccess: (response) => {
         if (requestSeq !== this.topCoursesRequestSeq) return;

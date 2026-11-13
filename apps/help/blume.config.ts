@@ -797,13 +797,13 @@ export default defineConfig({
             root: '/analytics-and-reporting/monitor-students-across-your-organization'
           },
           {
-            label: 'Use marketing stats',
+            label: 'Use Marketing',
             display: 'group',
             collapsed: true,
             items: [
               {
-                label: 'Read your organization analytics overview',
-                root: '/analytics-and-reporting/read-your-organization-analytics-overview'
+                label: 'Read your marketing overview',
+                root: '/analytics-and-reporting/read-your-marketing-overview'
               },
               {
                 label: 'Analyze landing views, enrollments, and completions',

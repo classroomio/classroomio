@@ -13,7 +13,7 @@ Requests from a connected app are subject to your plan's [rate limits](#limits).
 
 New MCP keys can no longer be created. An existing MCP key belongs to one organization. It can access only the ClassroomIO actions allowed by its selected scopes **and** by the permissions of the person who created it. For example, a tutor's key does not gain organization administrator access. Removing that person's access also removes the key's access.
 
-The client may receive course, learner, or organization data that the key can read. Connect a client you trust, and keep the key private. You can rotate or revoke keys in **Automation → MCP**.
+The client may receive course, student, or organization data that the key can read. Connect a client you trust, and keep the key private. You can rotate or revoke keys in **Automation → MCP**.
 
 MCP keys cannot access the entire public API. If the client says an action is unavailable or unauthorized, check the key's scopes and the creator's role in the relevant course or organization. A key with a custom scope selection does not gain new scopes automatically.
 
@@ -27,7 +27,7 @@ Deleting a section also deletes its lessons and exercises. Deleting an exercise 
 
 Requests are limited per minute, separately for reads, writes, and publishes. The limits depend on your plan and apply to each connected app or MCP key and to your whole organization. The dashboard does not show them. Going over a limit returns a `429`; wait up to a minute, then retry.
 
-Insights queries add fixed per-key budgets on top of the plan limits: **60 insights queries per minute** and **20 dashboard snapshots per minute** for each key, plus **20 overdue-goal reminders per minute**. These limiters are fail-closed: when Redis is unavailable, the request fails with `503` and code `RATE_LIMIT_UNAVAILABLE` instead of going through. See [Rate limits](/api/rate-limits) and [API errors](/api/errors).
+Analytics tools add fixed per-key budgets on top of the plan limits: **60 Academy analytics queries per minute** and **20 analytics snapshots per minute** for each key, plus **20 overdue-goal reminders per minute**. These limiters are fail-closed: when Redis is unavailable, the request fails with `503` and code `RATE_LIMIT_UNAVAILABLE` instead of going through. See [Rate limits](/api/rate-limits) and [API errors](/api/errors).
 
 | Plan | Each app or key (read / write / publish) | Whole organization (read / write / publish) |
 | --- | --- | --- |
