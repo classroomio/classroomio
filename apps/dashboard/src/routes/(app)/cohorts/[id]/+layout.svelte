@@ -6,6 +6,8 @@
   import { CohortSidebar } from '$features/cohort/components/sidebar';
   import CohortHeader from '$features/cohort/components/cohort-header.svelte';
   import { cohortApi } from '$features/cohort/api';
+  import { switchToOwnerOrg } from '$features/org/utils/owner-org';
+  import { currentOrg, orgs } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
 
   interface Props {
@@ -20,6 +22,12 @@
   $effect(() => {
     if (!data.cohortId || !$profile.id) return;
     cohortApi.ensureCohortShell(data.cohortId);
+  });
+
+  $effect(() => {
+    if (cohortApi.cohort?.id !== data.cohortId) return;
+
+    switchToOwnerOrg(cohortApi.cohort.organizationId, $currentOrg.id, $orgs);
   });
 
   const isCohortReady = $derived.by(() => {

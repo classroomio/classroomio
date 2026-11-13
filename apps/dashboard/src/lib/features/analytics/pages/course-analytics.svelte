@@ -3,7 +3,9 @@
   import * as Page from '@cio/ui/base/page';
   import { RefreshPageData } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { courseApi } from '$features/course/api';
+  import { findOwnerOrgToSwitch } from '$features/org/utils/owner-org-utils';
+  import { currentOrg, orgs } from '$lib/utils/store/org';
 
   import { analyticsApi, analyticsStudentsApi } from '../api';
   import AnalyticsDashboard from '../components/analytics-dashboard.svelte';
@@ -20,10 +22,12 @@
   let loadedKey = '';
 
   const scope = $derived({ type: 'course' as const, id: courseId });
+  const ownerOrgId = $derived(courseApi.course?.id === courseId ? courseApi.course.group?.organizationId : undefined);
 
   $effect(() => {
     const organizationId = $currentOrg.id;
-    if (!organizationId) return;
+    if (!organizationId || !ownerOrgId) return;
+    if (findOwnerOrgToSwitch(ownerOrgId, organizationId, $orgs)) return;
 
     const key = `${organizationId}:${courseId}`;
     if (key === loadedKey) return;
