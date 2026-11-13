@@ -32,6 +32,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/scroll-to-top` | draft |
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
 | - | - | `prd/gamification` | draft (prototyped; learner XP, streaks, badges, leaderboards, admin settings) |
+| - | - | `prd/analytics-dashboards` | in progress (engine #1444, dashboards #1445, public API and MCP #1495; naming in `prd/analytics-naming`) |
 | - | - | `prd/math-teaching` | draft (math authoring, Photo and Draw to Math, math input and grading, AI, results) |
 
 ## DONE (Completed PRDs)
@@ -40,7 +41,6 @@ Use this file to keep a single prioritized view of all PRDs.
 | --- | --- |
 | `prd/add-content-created [DONE]` | done |
 | `prd/ai-course-assistant [DONE]` | done |
-| `prd/analytics-dashboards [DONE]` | done |
 | `prd/compliance-training-platform [DONE]` | done |
 | `prd/course-widget-embed [DONE]` | done |
 | `prd/custom-domain-cloudflare [DONE]` | done |
