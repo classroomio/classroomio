@@ -13,7 +13,7 @@ const CREATE: ToolAnnotations = {
 const UPDATE: ToolAnnotations = {
   title: 'Update lesson',
   readOnlyHint: false,
-  destructiveHint: false,
+  destructiveHint: true,
   idempotentHint: true
 };
 

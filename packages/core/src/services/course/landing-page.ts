@@ -62,6 +62,8 @@ export async function resolveCourseUrl(organizationId: string, courseId: string,
   return `${getDashboardBaseUrl(organization)}/course/${encodeURIComponent(slug)}`;
 }
 
+const UNSPLASH_TIMEOUT_MS = 5000;
+
 export type CourseBannerOutcome = {
   applied: boolean;
   imageUrl: string | null;
@@ -132,11 +134,11 @@ export async function resolveUnsplashBannerImage(courseTitle: string, query?: st
   const searchQuery = (query?.trim() || courseTitle.trim() || 'education').slice(0, 120);
   const response = await fetch(
     `https://api.unsplash.com/search/photos?page=1&per_page=15&auto=format&fit=crop&w=2970&q=80&client_id=${env.UNSPLASH_API_KEY}&query=${encodeURIComponent(searchQuery)}`,
-    { method: 'GET' }
+    { method: 'GET', signal: AbortSignal.timeout(UNSPLASH_TIMEOUT_MS) }
   );
 
   if (!response.ok) {
-    return null;
+    throw new Error(`Unsplash search failed with status ${response.status}`);
   }
 
   const data = (await response.json()) as {

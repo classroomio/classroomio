@@ -81,6 +81,7 @@ describe('createMcpServer', () => {
     ['list_org_courses', true, false],
     ['get_course_structure', true, false],
     ['update_course_landing_page', false, false],
+    ['update_lesson', false, true],
     ['create_course', false, false],
     ['publish_course', false, false],
     ['unpublish_course', false, true],
@@ -118,9 +119,18 @@ describe('course tools', () => {
     expect(updateLesson?.annotations).toMatchObject({
       title: 'Update lesson',
       readOnlyHint: false,
-      destructiveHint: false
+      destructiveHint: true,
+      idempotentHint: true
     });
     expect(updateLesson?.description).toContain('directly in the selected course');
+  });
+
+  it('does not mark the landing page tool as idempotent, since banner generation picks a random image', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+
+    expect(tools.find((tool) => tool.name === 'update_course_landing_page')?.annotations).toMatchObject({
+      idempotentHint: false
+    });
   });
 
   it('tells the agent which link to hand the user and that images may be Unsplash URLs', async () => {

@@ -42,7 +42,7 @@
       eyebrow: '04 · Quiz authoring',
       title: 'Add quiz questions to an existing lesson',
       description:
-        'The agent reads the lesson body and generates assessment questions you can review before publishing the course.',
+        'The agent reads the lesson body and generates assessment questions. On a published course they are visible to students immediately, so try it on an unpublished course first.',
       prompt:
         'In the "Acme 101" course, find the "Connecting your data source" lesson. Add an exercise to it with 5 quiz questions covering the key concepts in the lesson body. Use a mix of multiple choice and short answer.'
     },

@@ -65,7 +65,7 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'create_course',
-    `Create a new unpublished course, then fill it with create_course_section, create_lesson, add_lesson_block and the exercise tools; edits land directly in the course and lesson version history lets the team review or undo them. A banner is added by default from an Unsplash search on the title; pass bannerImageUrl (any public image URL, including Unsplash photo URLs) or bannerImageQuery to choose one, and read the banner field to see whether one was applied and why not. ${LINKS_RULE}`,
+    `Create a new unpublished course, then fill it with create_course_section, create_lesson, add_lesson_block and the exercise tools; edits land directly in the course and lesson version history lets the team review or undo content and block changes. A banner is added by default from an Unsplash search on the title; pass bannerImageUrl (any public image URL, including Unsplash photo URLs) or bannerImageQuery to choose one, and read the banner field to see whether one was applied and why not. ${LINKS_RULE}`,
     shape(ZCreateCourseToolInput),
     { title: 'Create course', ...CREATE },
     async (args) => {
@@ -102,7 +102,7 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
     'update_course_landing_page',
     "Update a course's landing page fields: title, description, overview, price and metadata. For the banner pass imageUrl (any public image URL, including Unsplash photo URLs), or generateImage/imageQuery to pick one from Unsplash. The result's courseUrl only opens for students once the course is published; until then give the user the appUrl from create_course.",
     shape(ZUpdateCourseLandingPageToolInput),
-    UPDATE,
+    { ...UPDATE, idempotentHint: false },
     async (args) => {
       const { courseId, ...payload } = ZUpdateCourseLandingPageToolInput.parse(args);
       return jsonContent(await apiClient.updateCourseLandingPage(courseId, payload));

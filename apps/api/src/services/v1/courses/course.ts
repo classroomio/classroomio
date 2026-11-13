@@ -137,16 +137,17 @@ export async function createPublicApiCourseService(
   await assertOrgTeamMember(orgId, actorId);
 
   const { bannerImageUrl, generateBannerImage, bannerImageQuery, ...courseFields } = payload;
-  const created = await createCourseService(actorId, { ...courseFields, organizationId: orgId }, source);
-
-  const banner = await resolveCourseBanner(created.course.title, {
+  const banner = await resolveCourseBanner(courseFields.title, {
     bannerImageUrl,
     generateBannerImage,
     bannerImageQuery
   });
-  const course = banner.imageUrl
-    ? (await updateCourseService(created.course.id, { bannerImage: banner.imageUrl })).course
-    : created.course;
+  const created = await createCourseService(
+    actorId,
+    { ...courseFields, organizationId: orgId, ...(banner.imageUrl ? { bannerImage: banner.imageUrl } : {}) },
+    source
+  );
+  const course = created.course;
   const links = await buildCourseLinks(orgId, course);
 
   return { ...created, course, banner, ...links };

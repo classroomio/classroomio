@@ -55,7 +55,7 @@ The API imports `createMcpServer` and `ClassroomIoApiClient` from `@classroomio/
 2. The MCP package owns transport and input validation.
 3. ClassroomIO API remains the trust boundary for auth, validation, and persistence.
 4. New courses start unpublished, and only `publish_course` makes a course visible to students.
-5. Agents write directly into the course; lesson version history lets the team review or undo each change.
+5. Agents write directly into the course; lesson version history lets the team review or undo changes to lesson content and blocks.
 
 ## Tool Surface
 
@@ -455,7 +455,7 @@ codex mcp add classroomio \
 
 ## Authoring Model
 
-Agents build and edit courses directly. `create_course` makes a new course that is unpublished, and every later tool (`create_course_section`, `create_lesson`, `add_lesson_block`, the exercise tools, `update_course_landing_page`) writes straight into that course. Each lesson change is saved in the lesson's version history (`list_course_lesson_history`), which is how the team reviews or undoes what an agent wrote. Nothing is visible to students until `publish_course` runs.
+Agents build and edit courses directly. `create_course` makes a new course that is unpublished, and every later tool (`create_course_section`, `create_lesson`, `add_lesson_block`, the exercise tools, `update_course_landing_page`) writes straight into that course. Changes to a lesson's content and blocks are saved in the lesson's version history (`list_course_lesson_history`), which is how the team reviews or undoes what an agent wrote there. Title, order and video changes made with `update_lesson` record no revision. Nothing is visible to students until `publish_course` runs.
 
 Lesson authoring rule:
 
@@ -587,7 +587,7 @@ Expected tool sequence:
 1. Agent calls `list_org_courses` if it needs to resolve the course ID from the course name first.
 2. Agent calls `get_course_structure` with the existing `courseId`.
 3. Agent changes the course with `reorder_course_content`, `update_lesson`, the lesson block tools and the exercise tools.
-4. The team reviews or undoes lesson changes through the lesson version history.
+4. The team reviews or undoes lesson content and block changes through the lesson version history.
 
 The changes apply to the course as it is, so a published course stays published while the agent edits it.
 
@@ -667,4 +667,4 @@ Supported `questionTypeId` values for exercise payloads:
 
 ## Recommended Agent Behavior
 
-Read the course with `get_course_structure` before editing it, change only the affected items with the direct tools, and leave publishing to `publish_course` when the user asks for it. Lesson changes are saved in version history, so a wrong edit can be reviewed and undone there.
+Read the course with `get_course_structure` before editing it, change only the affected items with the direct tools, and leave publishing to `publish_course` when the user asks for it. Lesson content and block changes are saved in version history, so a wrong edit to them can be reviewed and undone there.

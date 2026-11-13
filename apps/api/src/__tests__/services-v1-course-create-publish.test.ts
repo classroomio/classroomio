@@ -77,8 +77,10 @@ describe('course create, publish and unpublish services', () => {
       source: 'unsplash',
       reason: null
     });
-    mocks.updateCourse.mockResolvedValue({
-      course: { ...unpublishedCourse, bannerImage: 'https://images.unsplash.com/photo-1' }
+    mocks.createCourse.mockResolvedValue({
+      course: { ...unpublishedCourse, bannerImage: 'https://images.unsplash.com/photo-1' },
+      groupId: 'g',
+      memberId: 'm'
     });
 
     const result = await createPublicApiCourseService('org-1', 'actor-1', {
@@ -91,7 +93,11 @@ describe('course create, publish and unpublish services', () => {
     expect(mocks.assertOrgTeamMember).toHaveBeenCalledWith('org-1', 'actor-1');
     expect(mocks.createCourse.mock.calls[0]![1]).not.toHaveProperty('generateBannerImage');
     expect(mocks.createCourse.mock.calls[0]![1]).toMatchObject({ organizationId: 'org-1', title: 'Safety' });
-    expect(mocks.updateCourse).toHaveBeenCalledWith(COURSE_ID, { bannerImage: 'https://images.unsplash.com/photo-1' });
+    expect(mocks.createCourse.mock.calls[0]![1]).toMatchObject({ bannerImage: 'https://images.unsplash.com/photo-1' });
+    expect(mocks.resolveBanner.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.createCourse.mock.invocationCallOrder[0]!
+    );
+    expect(mocks.updateCourse).not.toHaveBeenCalled();
     expect(result.course.isPublished).toBe(false);
     expect(result.banner).toMatchObject({ applied: true, source: 'unsplash' });
     expect(result).toMatchObject(LINKS);
