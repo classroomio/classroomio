@@ -1,6 +1,8 @@
+import { OFFLINE_ACCESS_SCOPE, isOAuthWriteScope } from '@cio/utils/constants/oauth-scopes';
+
 import type { OAuthScopeAccess, OAuthScopeGroupKey, OAuthScopeSummary } from './types';
 
-export const OFFLINE_ACCESS_SCOPE = 'offline_access';
+export { OFFLINE_ACCESS_SCOPE };
 
 const SCOPE_GROUP_PREFIXES: Array<[string, OAuthScopeGroupKey]> = [
   ['course:exercise:', 'exercises'],
@@ -14,10 +16,9 @@ const SCOPE_GROUP_PREFIXES: Array<[string, OAuthScopeGroupKey]> = [
   ['team:', 'team'],
   ['organization:', 'organization'],
   ['analytics:', 'analytics'],
-  ['media:', 'media']
+  ['media:', 'media'],
+  ['webhook:', 'webhooks']
 ];
-
-const WRITE_SCOPE_SUFFIXES = [':write', ':create', ':update', ':publish'];
 
 function getScopeGroup(scope: string): OAuthScopeGroupKey | null {
   const match = SCOPE_GROUP_PREFIXES.find(([prefix]) => scope.startsWith(prefix));
@@ -26,7 +27,7 @@ function getScopeGroup(scope: string): OAuthScopeGroupKey | null {
 }
 
 function getScopeAccess(scope: string): OAuthScopeAccess {
-  return WRITE_SCOPE_SUFFIXES.some((suffix) => scope.endsWith(suffix)) ? 'write' : 'read';
+  return isOAuthWriteScope(scope) ? 'write' : 'read';
 }
 
 /**
@@ -66,6 +67,26 @@ export function isOAuthAuthorizationQuery(searchParams: URLSearchParams): boolea
   return searchParams.has('client_id') && searchParams.has('sig');
 }
 
+export const OAUTH_CONSENT_PAGE_PATH = '/oauth/consent';
+
+/**
+ * Returns the signed authorization query when `url` points at the consent page, or `null` when it is any other
+ * destination, such as the client's redirect URI carrying an authorization code.
+ */
+export function getOAuthConsentPageQuery(url: string, baseUrl: string): string | null {
+  const parsedUrl = new URL(url, baseUrl);
+  const isConsentPage =
+    parsedUrl.pathname === OAUTH_CONSENT_PAGE_PATH && isOAuthAuthorizationQuery(parsedUrl.searchParams);
+
+  return isConsentPage ? getOAuthQuery(parsedUrl.search) : null;
+}
+
 export function buildOAuthAuthorizeUrl(search: string): string {
   return `/api/auth/oauth2/authorize${search}`;
+}
+
+export const OAUTH_RESOURCE_PARAM = 'resource';
+
+export function getOAuthResource(searchParams: URLSearchParams): string | undefined {
+  return searchParams.get(OAUTH_RESOURCE_PARAM) ?? undefined;
 }

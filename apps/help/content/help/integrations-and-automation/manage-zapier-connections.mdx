@@ -1,0 +1,113 @@
+---
+title: 'Manage Zapier connections'
+description: 'See your Zapier connection, disconnect it, resend events that did not reach Zapier, identify triggers turned off after repeated failures, and troubleshoot integration issues.'
+last_reviewed: '2026-11-14'
+---
+
+Organization administrators can see the Zapier connection, disconnect it, resend events that did not reach Zapier, and identify triggers that repeated failures turned off, all from the ClassroomIO dashboard. Re-enabling a disabled trigger happens in Zapier (see below).
+
+:::info[Plan requirement]
+Connecting Zapier requires an Early Adopter or Enterprise plan on ClassroomIO cloud. Administrators on other plans can still review and remove existing connections.
+:::
+
+![Zapier tab showing the Zapier connection with a Disconnect button, and popular Zaps with Explore apps](./images/manage-zapier-connections/overview.webp)
+
+## Your Zapier connection
+
+Open **Automation** in the admin dashboard and select the **Zapier** tab. The **Connection** section lists each Zapier account an administrator connected to this organization:
+
+- **Access**: **Read and write**, or **Read only** when the administrator turned off **Allow Zapier to make changes** while connecting.
+- **Connected by**: the administrator who connected the account and the date, or **a former admin** when their ClassroomIO account no longer exists.
+
+Your Zaps, their steps and their run history live on Zapier. Select **My Zaps** to open them, or **Explore apps** next to **Popular Zaps** to browse the App Directory for more Zaps to build.
+
+## Resend events that did not reach Zapier
+
+ClassroomIO sends events to Zapier the moment they happen and retries failed deliveries for about 2.6 hours. When events from the last 24 hours still failed on a trigger that is still active, the Zapier tab shows **Some events didn't reach Zapier**. Select **Resend failed events** to send them again.
+
+## Re-enable triggers that were turned off
+
+After repeated delivery failures ClassroomIO stops retrying and turns that trigger off. While its recent failures are still in the 24-hour window, the Zapier tab shows **Some triggers are disabled**, because the trigger is no longer subscribed and has no events to resend:
+
+1. Fix the receiving end in Zapier: check that the Zap is not turned off or errored, and that its owner still has access to the ClassroomIO connection.
+2. Turn the Zap off and back on in Zapier. ClassroomIO resubscribes the trigger and starts delivering events again.
+
+Both warnings can show at the same time, when some triggers are still active and failing while others have been turned off. Resend the failed events for the active triggers, then re-enable the disabled ones.
+
+## Disconnect Zapier
+
+You can disconnect a Zapier account at any time if it is no longer needed, during employee offboarding, or as a security precaution:
+
+1. In the **Connection** section, select **Disconnect**.
+2. A confirmation dialog explains that Zaps using the connection stop and how many active triggers are removed.
+3. Select **Disconnect** to confirm.
+
+When you disconnect:
+
+- The connection's OAuth tokens are invalidated immediately.
+- Its triggers stop receiving events and are removed.
+- Any active Zaps in Zapier using this connection stop receiving triggers and fail with authorization errors if they attempt to run actions.
+- The connection stays listed in your Zapier account. ClassroomIO can't remove it there, so select **Open Zapier connections** in the dialog and delete it in Zapier too.
+
+To reconnect, select **Create a Zap** on the Zapier tab or reconnect ClassroomIO inside Zapier.
+
+## What happens on a plan downgrade
+
+{/* SIGN-OFF DECISION (D7): Plan downgrade pauses connections rather than revoking them immediately. Upgrading restores them without reconnecting. */}
+If your organization moves below the Early Adopter plan (for example, switching to the Basic plan):
+
+- Connected Zapier accounts are **paused, not deleted**.
+- Requests made by Zapier actions fail with an `UPGRADE_REQUIRED` error.
+- Event trigger deliveries to Zapier are suspended while the plan is ineligible.
+- The Zapier tab shows **Zapier is paused**.
+
+When you upgrade back to Early Adopter or Enterprise, your connections automatically unpause and resume delivering events without requiring you to reconnect accounts or re-configure field mappings in Zapier.
+
+## When an administrator leaves the organization
+
+OAuth connections are bound to the administrator account that authorized them:
+
+- If that administrator is demoted to a tutor or student role, or is removed from the organization, their OAuth connections and tokens are deleted immediately for security.
+- Any Zaps connected under that administrator will pause or fail until a current administrator re-authorizes the connection in Zapier.
+
+**Best practice:** When planning team changes, have another administrator re-authorize the connection in Zapier before removing the departing administrator.
+
+## Troubleshooting
+
+### Zapier prompts to reconnect
+
+Refresh tokens expire after 90 days of inactivity. If your Zaps have not made requests or received events in 90 days, if the authorizing administrator is no longer an admin of the workspace, or if you reconnected another Zapier account to the same workspace as read-only, Zapier treats the connection as expired and prompts you to reconnect. Select **Reconnect** in Zapier, sign in, and approve access again on the consent screen.
+
+### 403 Forbidden or "Plan doesn't include Zapier"
+
+Zapier requires an active Early Adopter or Enterprise plan on ClassroomIO cloud. Check your subscription under **Settings → Billing**. If the plan was recently downgraded, upgrade to restore integration access.
+
+### "No student seats left" or a student limit message
+
+Adding a new student, or renewing an invitation that expired or was revoked, needs a free student seat. Free seats by archiving students or revoking pending invitations, or upgrade for more seats. Checking the Zapier plan does not fix this error.
+
+### "This ClassroomIO connection is read-only"
+
+The connection was made with **Allow Zapier to make changes** turned off, so it can run triggers and searches but not actions. Reconnect ClassroomIO in Zapier and leave the switch on.
+
+### 429 Too Many Requests
+
+Zapier requests use the same limit as other public API clients: 100 requests per minute for each ClassroomIO connection. Zapier retries a throttled step automatically. If a high-volume Zap keeps hitting the limit, add delay steps or process items in smaller batches.
+
+### Course invite limits
+
+The admin who connected Zapier can create invites for one course 60 times per hour. **Send Course Invite**, **Enroll Student in Course** when it has to invite someone new, and that admin's invites from the dashboard all count toward it. Enrolling someone who is already enrolled or invited doesn't count.
+
+### Missing trigger events
+
+ClassroomIO retries a failed webhook delivery 5 times over about 2.6 hours (6 attempts in total) before marking it failed. Repeated failures turn the trigger off. If an event did not trigger your Zap:
+
+1. If the Zapier tab shows **Some triggers are disabled**, fix the receiving end in Zapier and turn the Zap off and back on. There is nothing to resend until the trigger is subscribed again.
+2. If the Zapier tab shows **Some events didn't reach Zapier**, select **Resend failed events**.
+3. Check your Zap history in Zapier to verify whether Zapier received the event or experienced an execution error.
+
+### Avoiding infinite loops
+
+If a Zap performs an action in ClassroomIO that triggers another Zap (for example, Zap A enrolls a student, which fires the _New Course Enrollment_ trigger for Zap B), an event loop can occur.
+
+Every ClassroomIO enrollment event includes `source.oauthClientId` in its data payload. In Zapier, you can add a **Filter** step that ignores events where `source.oauthClientId` matches your Zapier integration to prevent accidental loops.

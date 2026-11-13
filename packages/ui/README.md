@@ -448,9 +448,9 @@ See `Molecules/ComboButton` in Storybook.
 
 ### Machines (`src/custom/animation/machines/`)
 
-Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). Two more illustrate product states: `MachineBrokenTrack` (a block tips over a gap it cannot cross) for error pages, and `MachineBlankLesson` (a blank lesson page whose title starts being written) for an empty lesson. The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
+Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). Three more illustrate product states: `MachineBrokenTrack` (a block tips over a gap it cannot cross) for error pages, `MachineBlankLesson` (a blank lesson page whose title starts being written) for an empty lesson, and `MachineZapierNoZaps` (a switchboard where a cable plugs Zapier into Slack, HubSpot and email in turn while events travel out and replies travel back) for a Zapier page with no Zaps. The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
 
-The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use the marketing machines for ClassroomIO-branded surfaces only, not org sites. The two state machines carry no brand text and take the accent from `--primary`, so they are safe on org sites too. `MachineBlankLesson` draws a `LESSON` caption; pass `heading` with translated text.
+The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use the marketing machines for ClassroomIO-branded surfaces only, not org sites. `MachineBrokenTrack` and `MachineBlankLesson` carry no brand text and take the accent from `--primary`, so they are safe on org sites too. `MachineZapierNoZaps` draws fixed, untranslated labels (CLASSROOMIO, ZAPIER, SLACK, HUBSPOT, EMAIL), so keep it on admin screens. `MachineBlankLesson` draws a `LESSON` caption; pass `heading` with translated text.
 
 | Prop      | Type     | Default     | Description                                              |
 | --------- | -------- | ----------- | -------------------------------------------------------- |
@@ -467,7 +467,7 @@ The accent comes from `--primary` and the surface from `--muted`. Place a machin
 
 Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
 
-`stillAt` defaults to `3.9` for `MachineBrokenTrack` and `3` for `MachineBlankLesson`, the frames where each drawing reads best.
+`stillAt` defaults to `3.9` for `MachineBrokenTrack`, `3` for `MachineBlankLesson` and `2.5` for `MachineZapierNoZaps`, the frames where each drawing reads best.
 
 In an empty state, pass the machine through the `media` snippet of `Empty` (`@cio/ui/custom/empty`). With `media`, the `Empty` card grows to fit its content, and a `full-page` layout scrolls rather than clipping, leaving room for the logo when `showLogo` is set. The media is hidden on phones (below the `sm` breakpoint, or shorter than 640px), so the message and actions fit without scrolling. Without `media`, the card keeps its 360px height cap. Off a `--muted` card, set `--machine-face` to the page colour:
 
@@ -562,6 +562,37 @@ Read-only `InputGroup` that shows a value with an inline Copy button. Focusing t
 - Any other name: a monogram of its first letter and the name as reported.
 
 The logos are path data in `ai-client-icons.ts` (simple-icons, CC0, plus the OpenAI mark from lobe-icons, MIT), so nothing is fetched at render time. Each mark stays the property of its brand.
+
+### Checklist item (`src/custom/checklist-item/`)
+
+One row of a checklist: media, title, optional description and an action. A completed item strikes through its text, swaps its media for a green check and its action for a disabled `doneLabel` button, shows a not-allowed cursor, and ignores clicks. Used by the setup checklist and the Zapier invite steps. The host passes translated text.
+
+| Prop          | Type         | Default     | Description                                          |
+| ------------- | ------------ | ----------- | ---------------------------------------------------- |
+| `title`       | `string`     | required    | Item title                                           |
+| `description` | `string`     | `undefined` | Supporting line under the title                      |
+| `completed`   | `boolean`    | `false`     | Shows the done state                                 |
+| `doneLabel`   | `string`     | required    | Label of the disabled button shown once completed    |
+| `media`       | `Snippet`    | `undefined` | Icon or step number while open                       |
+| `action`      | `Snippet`    | `undefined` | Controls while open                                  |
+| `onclick`     | `() => void` | `undefined` | Row click while open; without it the row is inert    |
+| `testId`      | `string`     | `undefined` | `data-testid` on the row                             |
+| `class`       | `string`     | `undefined` | Extra classes on the row                             |
+
+```svelte
+<ChecklistItem title={$t('setup.create_course')} completed={isDone} doneLabel={$t('setup.done')} onclick={open}>
+  {#snippet media()}<BookOpenIcon class="size-5" />{/snippet}
+  {#snippet action()}<Button variant="outline" size="sm">{$t('setup.todo')}</Button>{/snippet}
+</ChecklistItem>
+```
+
+### Alert dismiss (`src/base/alert/`)
+
+`Alert.Root` and `Alert.Callout` take an optional `onDismiss`. With it, the alert shows a close button in its top-right corner that calls the handler; pass `dismissLabel` as the button's accessible name. Remembering the dismissal is the host's job.
+
+```svelte
+<Alert.Callout variant="information" {title} {description} onDismiss={hide} dismissLabel={$t('common.dismiss')} />
+```
 
 ### Hooks (`src/hooks/`)
 

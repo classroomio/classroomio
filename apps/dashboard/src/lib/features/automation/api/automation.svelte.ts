@@ -1,6 +1,7 @@
 import type {
   AutomationKey,
   AutomationKeyType,
+  CreatableAutomationKeyType,
   AutomationUsage,
   ConnectedApp,
   CreateAutomationKeyRequest,
@@ -50,7 +51,7 @@ class AutomationApi extends BaseApiWithErrors {
     });
   }
 
-  async createKey(type: AutomationKeyType, label?: string) {
+  async createKey(type: CreatableAutomationKeyType, label?: string) {
     return this.execute<CreateAutomationKeyRequest>({
       requestFn: () =>
         classroomio.organization.automation.keys.$post({

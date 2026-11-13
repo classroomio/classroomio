@@ -1,0 +1,415 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const mocks = vi.hoisted(() => ({
+  zapierGet: vi.fn(),
+  redeliverBulkPost: vi.fn(),
+  deleteConnection: vi.fn(),
+  snackbarSuccess: vi.fn(),
+  snackbarError: vi.fn()
+}));
+
+vi.mock('$lib/utils/services/api', () => {
+  class BaseApiWithErrors {
+    isLoading = false;
+    error: string | null = null;
+    async execute<TResponse>({
+      requestFn,
+      onSuccess,
+      onError
+    }: {
+      requestFn: () => Promise<{ ok: boolean; json: () => Promise<unknown> }>;
+      logContext?: string;
+      onSuccess?: (body: TResponse) => void | Promise<void>;
+      onError?: (error: unknown) => void | Promise<void>;
+    }): Promise<TResponse | null> {
+      try {
+        const response = await requestFn();
+        const body = (await response.json()) as { success: boolean };
+
+        if (body.success === false) {
+          await onError?.(body);
+
+          return null;
+        }
+
+        await onSuccess?.(body as TResponse);
+
+        return body as TResponse;
+      } catch (e) {
+        await onError?.(e);
+      }
+
+      return null;
+    }
+  }
+
+  const classroomio = {
+    organization: {
+      automation: {
+        zapier: {
+          $get: mocks.zapierGet,
+          triggers: {
+            redeliver: {
+              $post: mocks.redeliverBulkPost
+            }
+          }
+        },
+        'connected-apps': {
+          ':consentId': {
+            $delete: mocks.deleteConnection
+          }
+        }
+      }
+    }
+  };
+
+  return { BaseApiWithErrors, classroomio };
+});
+
+vi.mock('$features/ui/snackbar/store', () => ({
+  snackbar: {
+    success: mocks.snackbarSuccess,
+    error: mocks.snackbarError
+  }
+}));
+
+import { zapierApi } from './zapier.svelte';
+
+describe('zapierApi', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    zapierApi.resetOrganizationState();
+  });
+
+  it('loads Zapier overview connections', async () => {
+    const overviewData = {
+      connections: [
+        {
+          consentId: 'consent-1',
+          authorizedBy: { profileId: 'user-1', fullname: 'Admin' },
+          scopes: ['course:read'],
+          connectedAt: '2026-01-01T00:00:00.000Z',
+          lastUsedAt: null,
+          triggers: [
+            {
+              id: 'trig-1',
+              eventType: 'course.completed',
+              courseId: null,
+              courseTitle: null,
+              cohortId: null,
+              health: 'healthy',
+              isActive: true,
+              lastDeliveryStatus: null,
+              lastDeliveryAt: null,
+              createdAt: '2026-01-01T00:00:00.000Z'
+            }
+          ]
+        }
+      ]
+    };
+
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: overviewData })
+    });
+
+    await zapierApi.load();
+
+    expect(zapierApi.overview).toEqual(overviewData);
+  });
+
+  it('removes a connection and reloads the overview', async () => {
+    const overviewData = {
+      connections: [
+        {
+          consentId: 'consent-1',
+          authorizedBy: { profileId: 'user-1', fullname: 'Admin' },
+          scopes: ['course:read'],
+          connectedAt: '2026-01-01T00:00:00.000Z',
+          lastUsedAt: null,
+          triggers: [
+            {
+              id: 'trig-1',
+              eventType: 'course.completed',
+              courseId: null,
+              courseTitle: null,
+              cohortId: null,
+              health: 'healthy',
+              isActive: true,
+              lastDeliveryStatus: null,
+              lastDeliveryAt: null,
+              createdAt: '2026-01-01T00:00:00.000Z'
+            }
+          ]
+        }
+      ]
+    };
+
+    mocks.zapierGet
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true, data: overviewData })
+      })
+      .mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            connections: []
+          }
+        })
+      });
+    mocks.deleteConnection.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: { consentId: 'consent-1' } })
+    });
+
+    await zapierApi.load();
+    await zapierApi.removeConnection('consent-1');
+
+    expect(mocks.deleteConnection).toHaveBeenCalledWith({ param: { consentId: 'consent-1' } });
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(2);
+    expect(zapierApi.overview?.connections).toHaveLength(0);
+    expect(mocks.snackbarSuccess).toHaveBeenCalledWith('snackbar.zapier.removed');
+  });
+
+  it('discards a stale overview load racing a disconnect', async () => {
+    const staleOverview = {
+      connections: [
+        {
+          consentId: 'consent-1',
+          authorizedBy: { profileId: 'user-1', fullname: 'Admin' },
+          scopes: ['course:read'],
+          connectedAt: '2026-01-01T00:00:00.000Z',
+          lastUsedAt: null,
+          triggers: [
+            {
+              id: 'trig-1',
+              eventType: 'course.completed',
+              courseId: null,
+              courseTitle: null,
+              cohortId: null,
+              health: 'healthy',
+              isActive: true,
+              lastDeliveryStatus: null,
+              lastDeliveryAt: null,
+              createdAt: '2026-01-01T00:00:00.000Z'
+            }
+          ]
+        }
+      ]
+    };
+    const freshOverview = {
+      connections: []
+    };
+
+    let resolveStaleGet!: (value: unknown) => void;
+
+    mocks.zapierGet.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveStaleGet = resolve;
+        })
+    );
+
+    const racingLoad = zapierApi.loadOnce();
+
+    mocks.deleteConnection.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: { consentId: 'consent-1' } })
+    });
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: freshOverview })
+    });
+
+    await zapierApi.removeConnection('consent-1');
+
+    resolveStaleGet({
+      ok: true,
+      json: async () => ({ success: true, data: staleOverview })
+    });
+    await racingLoad;
+
+    expect(zapierApi.overview?.connections).toHaveLength(0);
+  });
+
+  it('shows an error message when removing a connection fails', async () => {
+    mocks.deleteConnection.mockRejectedValue(new Error('Network error'));
+
+    await zapierApi.removeConnection('consent-1');
+
+    expect(mocks.snackbarError).toHaveBeenCalledWith('snackbar.zapier.remove_failed');
+    expect(mocks.zapierGet).not.toHaveBeenCalled();
+  });
+
+  it('resets organization state cleanly', async () => {
+    zapierApi.overview = {
+      connections: []
+    };
+
+    zapierApi.resetOrganizationState();
+    expect(zapierApi.overview).toBeNull();
+  });
+
+  it('leaves overview empty on load error so the page can show a retry state', async () => {
+    mocks.zapierGet.mockRejectedValue(new Error('Network error'));
+
+    await zapierApi.load();
+
+    expect(zapierApi.overview).toBeNull();
+  });
+
+  it('ignores stale load responses when a new request is initiated', async () => {
+    let resolveFirst!: (value: unknown) => void;
+    const firstPromise = new Promise((resolve) => {
+      resolveFirst = resolve;
+    });
+
+    mocks.zapierGet
+      .mockImplementationOnce(() => firstPromise)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            connections: [{ consentId: 'consent-fresh' }]
+          }
+        })
+      });
+
+    const firstLoad = zapierApi.load();
+    const secondLoad = zapierApi.load();
+
+    await secondLoad;
+    expect(zapierApi.overview?.connections[0]?.consentId).toBe('consent-fresh');
+
+    resolveFirst({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: {
+          connections: [{ consentId: 'consent-stale' }]
+        }
+      })
+    });
+    await firstLoad;
+
+    expect(zapierApi.overview?.connections[0]?.consentId).toBe('consent-fresh');
+  });
+
+  it('leaves overview empty when the API reports success: false', async () => {
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: false, error: 'Forbidden' })
+    });
+
+    await zapierApi.load();
+
+    expect(zapierApi.overview).toBeNull();
+  });
+
+  it('reloads the overview on loadOnce even when a connection list is cached', async () => {
+    const overviewData = {
+      connections: []
+    };
+
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, data: overviewData })
+    });
+
+    await zapierApi.load();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+
+    await zapierApi.loadOnce();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(2);
+  });
+
+  it('dedupes concurrent loadOnce calls into one request', async () => {
+    let resolveGet!: (value: unknown) => void;
+
+    mocks.zapierGet.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveGet = resolve;
+        })
+    );
+
+    const first = zapierApi.loadOnce();
+    const second = zapierApi.loadOnce();
+
+    resolveGet({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { connections: [] }
+      })
+    });
+    await Promise.all([first, second]);
+
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+  });
+
+  it('redelivers failed triggers in one bulk call, reports the count and reloads', async () => {
+    mocks.redeliverBulkPost.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: { redelivered: 5, failed: [] } })
+    });
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { connections: [] }
+      })
+    });
+
+    await zapierApi.redeliverFailed(['trig-1', 'trig-2']);
+
+    expect(mocks.redeliverBulkPost).toHaveBeenCalledTimes(1);
+    expect(mocks.redeliverBulkPost).toHaveBeenCalledWith({ json: { triggerIds: ['trig-1', 'trig-2'] } });
+    expect(mocks.snackbarSuccess).toHaveBeenCalledTimes(1);
+    expect(mocks.snackbarError).not.toHaveBeenCalled();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a failure when the bulk redelivery skips triggers', async () => {
+    mocks.redeliverBulkPost.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { redelivered: 2, failed: [{ triggerId: 'trig-2', error: 'Zapier trigger not found' }] }
+      })
+    });
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { connections: [] }
+      })
+    });
+
+    await zapierApi.redeliverFailed(['trig-1', 'trig-2']);
+
+    expect(mocks.snackbarError).toHaveBeenCalledWith('snackbar.zapier.redeliver_failed');
+    expect(mocks.snackbarSuccess).not.toHaveBeenCalled();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a failure when the bulk redelivery request fails', async () => {
+    mocks.redeliverBulkPost.mockRejectedValueOnce(new Error('gone'));
+    mocks.zapierGet.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: { connections: [] }
+      })
+    });
+
+    await zapierApi.redeliverFailed(['trig-1', 'trig-2']);
+
+    expect(mocks.snackbarError).toHaveBeenCalledWith('snackbar.zapier.redeliver_failed');
+    expect(mocks.snackbarSuccess).not.toHaveBeenCalled();
+    expect(mocks.zapierGet).toHaveBeenCalledTimes(1);
+  });
+});

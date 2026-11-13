@@ -1,0 +1,62 @@
+---
+title: 'Connect ClassroomIO to Zapier'
+description: 'Connect your organization to Zapier so Zaps can react to your courses and update your students.'
+last_reviewed: '2026-10-31'
+---
+
+Connect ClassroomIO to Zapier to start Zaps when something happens in your organization, such as a student finishing a course, and to let Zaps enroll, update, or remove students. Only organization administrators can connect Zapier.
+
+:::info[Plan requirement]
+Zapier uses the same entitlement as the public API: Early Adopter or Enterprise on ClassroomIO cloud. It is not available on self-hosted installations.
+:::
+
+![Zapier tab in Automation with the invite note, the Zapier isn't connected yet panel, Create a Zap and Explore apps](./images/connect-classroomio-to-zapier/overview.webp)
+
+## Connect from Zapier
+
+### 1. Add ClassroomIO to a Zap
+
+In the Zapier editor, create a new Zap and search for **ClassroomIO** as the trigger or action app. While the integration is in private access, follow your team's private invite link to add ClassroomIO to your Zapier account.
+
+### 2. Sign in and choose your organization
+
+Select **Sign in** when Zapier prompts for account authorization:
+
+1. Sign in with your ClassroomIO administrator account if you are not already signed in.
+2. If you administer more than one organization, select the organization you want to connect. Organizations that are not on an eligible plan appear disabled with an upgrade prompt. If none of your organizations is on an eligible plan, ClassroomIO shows **No eligible workspace** instead.
+
+### 3. Review the permissions and allow access
+
+The consent screen shows the ClassroomIO integration name, a **Verified** badge confirming the official integration, and the exact permission areas requested.
+
+Zapier requests a fixed, least-privilege permission set required to power its triggers and actions. Review the list and select **Allow access** to complete the connection and return to Zapier.
+
+To give Zapier read-only access, turn off **Allow Zapier to make changes** before you select **Allow access**. A read-only connection can run triggers and searches, but its actions fail with a message saying the connection is read-only. The consent screen shows every time you connect or reconnect, and the access you approve replaces the access Zapier had before. To allow changes later, reconnect ClassroomIO in Zapier and leave the switch on. To make a connection read-only, reconnect it with the switch off. If you connected another Zapier account to the same workspace with the same ClassroomIO login and it allows changes, that account stops working until you reconnect it; reconnecting that account with changes allowed widens the shared grant again.
+
+## Connect from ClassroomIO
+
+You can also start connecting directly from the ClassroomIO dashboard:
+
+1. Open your organization and navigate to **Automation → Zapier**.
+2. Select **Create a Zap** to open the Zap editor, where you can add ClassroomIO as a trigger or action. While the integration is in private access, the first time you do this ClassroomIO asks you to accept the ClassroomIO invite on Zapier. Until you connect, the Zapier tab also shows a note with an **Open the invite on Zapier** link, so you can accept it later if you skipped it. Close the note with its **×** button to hide it for this organization in this browser.
+3. Select **Explore apps** to open the App Directory and browse apps like HubSpot, Slack, Google Sheets, and Mailchimp. Search by name or description, or filter by category. Selecting an app shows its popular Zaps. **Use Zap** opens that Zap in Zapier with both apps already chosen.
+
+## What Zapier can do
+
+When you authorize Zapier, it requests access to the following areas of your organization:
+
+| Permission area           | Access         | What it allows                                                                               |
+| ------------------------- | -------------- | -------------------------------------------------------------------------------------------- |
+| **Audience**              | Read and write | View learners in your organization, invite new students, and update student names or emails. |
+| **Courses**               | Read only      | Read course titles, IDs, and metadata to populate course selection dropdowns in Zaps.        |
+| **Course members**        | Read and write | Enroll students, send or revoke course invites, reset progress, and mark lessons complete.   |
+| **Certificates**          | Read only      | Read issued certificate details, including certificate numbers and download links.           |
+| **Cohorts**               | Read and write | List cohorts, add students to cohorts, and post announcements to cohort discussion feeds.    |
+| **Webhook subscriptions** | Read and write | Register and manage instant trigger subscriptions so your Zaps run in real time.             |
+
+Zapier is never granted administrative permissions: it cannot delete courses, view billing information, modify workspace settings, or manage your team administrators.
+
+## Next steps
+
+- [Manage Zapier connections](/integrations-and-automation/manage-zapier-connections) — See your connection, disconnect it, resend events that did not reach Zapier, and understand plan downgrades.
+- [Zapier triggers and actions](/integrations-and-automation/zapier-triggers-and-actions) — Browse every available instant trigger, action, and search supported in ClassroomIO.

@@ -20,14 +20,20 @@
     title: string;
     description: string;
     class?: string;
-  };
+  } & (
+    | {
+        onDismiss: () => void;
+        dismissLabel: string;
+      }
+    | { onDismiss?: undefined; dismissLabel?: undefined }
+  );
 
-  let { variant = 'default', title, description, class: className }: Props = $props();
+  let { variant = 'default', title, description, class: className, onDismiss, dismissLabel }: Props = $props();
 
   const IconComponent = $derived(variantIcons[variant]);
 </script>
 
-<Root {variant} class={cn(className)}>
+<Root {variant} class={cn(className)} {onDismiss} {dismissLabel}>
   <IconComponent />
   <Title>{title}</Title>
   <Description>{description}</Description>

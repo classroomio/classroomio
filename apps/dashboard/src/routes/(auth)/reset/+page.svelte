@@ -13,6 +13,7 @@
   import { Password } from '@cio/ui/custom/password';
   import { Button } from '@cio/ui/base/button';
   import * as Card from '@cio/ui/base/card';
+  import { PASSWORD_MAX_BYTES } from '@cio/utils/validation/auth/password';
 
   let fields: TResetPasswordForm = $state({
     password: '',
@@ -34,6 +35,11 @@
   });
 
   const confirmPasswordError = $derived(getConfirmPasswordError(fields));
+  const passwordMaxBytesError = $derived(
+    new TextEncoder().encode(fields.password).length > PASSWORD_MAX_BYTES
+      ? 'validations.auth.password.max_bytes'
+      : undefined
+  );
 </script>
 
 <svelte:head>
@@ -60,10 +66,12 @@
           bind:value={fields.password}
           placeholder="************"
           disabled={resetApi.isLoading}
-          aria-invalid={resetApi.errors.password ? 'true' : undefined}
+          aria-invalid={passwordMaxBytesError || resetApi.errors.password ? 'true' : undefined}
           autocomplete="new-password"
         />
-        {#if resetApi.errors.password}
+        {#if passwordMaxBytesError}
+          <Field.Error>{$t(passwordMaxBytesError)}</Field.Error>
+        {:else if resetApi.errors.password}
           <Field.Error>{resetApi.errors.password}</Field.Error>
         {:else}
           <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
