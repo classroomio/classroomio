@@ -367,7 +367,7 @@ function toIsoDay(date: string): string | null {
 function renderSitemapEntry(path: string, lastModified: string | null): string {
   const lastModifiedTag = lastModified ? `<lastmod>${lastModified}</lastmod>` : '';
 
-  return `  <url><loc>${absolute(path)}</loc>${lastModifiedTag}</url>`;
+  return `  <url><loc>${escapeXml(absolute(path))}</loc>${lastModifiedTag}</url>`;
 }
 
 export function buildSitemapXml(blogPosts: SitemapBlogPost[], changelogLastModified: string | null): string {
