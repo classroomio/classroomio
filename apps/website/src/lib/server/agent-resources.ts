@@ -1,46 +1,12 @@
 import { PLANS } from '@cio/utils/plans';
+import { STATIC_SITE_PAGES, type SitePage } from '$lib/data/site-pages';
+import { UI_FEATURE_AREAS } from '$lib/data/ui-feature-map';
 import { faqs } from '$lib/utils/faqs';
+import type { ChangelogEntry } from '$lib/utils/types';
 import { SITE_ORIGIN } from './upstreams';
 
 type ResourceLink = { title: string; path: string; description: string };
 type ResourceSection = { heading: string; intro?: string; links: ResourceLink[] };
-
-const SITE_PAGES: ResourceLink[] = [
-  { title: 'Home', path: '/', description: 'What ClassroomIO is and who it is for.' },
-  { title: 'Pricing', path: '/pricing', description: 'Plans, limits and what each includes.' },
-  { title: 'Teach online', path: '/teach', description: 'Run courses, cohorts and live classes for learners.' },
-  {
-    title: 'Customer education',
-    path: '/customer-education',
-    description: 'Academies that onboard and retain customers.'
-  },
-  {
-    title: 'Customer education vs help docs',
-    path: '/customer-education/vs-help-docs',
-    description: 'When an academy beats a help center.'
-  },
-  {
-    title: 'Partner training',
-    path: '/partner-training',
-    description: 'Certification programs for partners and resellers.'
-  },
-  {
-    title: 'Compliance training',
-    path: '/compliance-training',
-    description: 'Recurring compliance courses with tracked completion.'
-  },
-  {
-    title: 'Company academy vs docs',
-    path: '/docs-vs-company-academy',
-    description: 'Why a company academy complements documentation.'
-  },
-  { title: 'Automation', path: '/automation', description: 'Automate enrollment and learner workflows.' },
-  { title: 'MCP recipes', path: '/mcp-recipes', description: 'Prompts for running ClassroomIO from an AI client.' },
-  { title: 'Public courses', path: '/public-courses', description: 'Catalog of public ClassroomIO courses.' },
-  { title: 'Blog', path: '/blog', description: 'Product news and guides.' },
-  { title: 'Changelog', path: '/changelog', description: 'Release notes for every update.' },
-  { title: 'Open source friends', path: '/oss-friends', description: 'Open source projects we recommend.' }
-];
 
 const LLMS_SECTIONS: ResourceSection[] = [
   {
@@ -245,7 +211,16 @@ const LLMS_SECTIONS: ResourceSection[] = [
       { title: 'Pricing', path: '/pricing.md', description: 'Plans, prices and included limits as Markdown.' },
       { title: 'Answers', path: '/answers.md', description: 'Frequently asked questions as Markdown.' },
       { title: 'Sitemap', path: '/sitemap.md', description: 'Every public page, grouped by site.' },
-      { title: 'Changelog', path: '/changelog', description: 'Release notes for every update.' },
+      {
+        title: 'Changelog',
+        path: '/changelog.md',
+        description: 'Every release, newest first, with ISO dates. The first entry is the latest release.'
+      },
+      {
+        title: 'Changelog feed',
+        path: '/changelog.xml',
+        description: 'Atom feed of releases. Check it for anything newer than a cached copy of the changelog.'
+      },
       { title: 'Blog', path: '/blog', description: 'Product news and guides.' }
     ]
   }
@@ -265,12 +240,120 @@ function renderSection(section: ResourceSection): string {
   return `## ${section.heading}\n\n${intro}${renderLinks(section.links)}`;
 }
 
-export function buildLlmsTxt(): string {
+export type HelpArticleSummary = { title: string; description: string };
+export type HelpArticleIndex = Map<string, HelpArticleSummary>;
+
+const HELP_LINK_PATTERN = /^- \[([^\]]+)\]\(https:\/\/classroomio\.com\/help\/([^)\s]+)\)(?:: (.*))?$/;
+
+/** Parses the help center's own llms.txt into a map from article path to its title and description. */
+export function parseHelpArticleIndex(llmsText: string): HelpArticleIndex {
+  const index: HelpArticleIndex = new Map();
+
+  for (const line of llmsText.split('\n')) {
+    const match = HELP_LINK_PATTERN.exec(line.trim());
+    if (match) index.set(match[2], { title: match[1], description: match[3] ?? '' });
+  }
+
+  return index;
+}
+
+function isHelpArticlePath(path: string): boolean {
+  const isFileOrApiPath = path.includes('.') || path.startsWith('api/');
+
+  return path.includes('/') && !isFileOrApiPath;
+}
+
+function humanizeSlug(path: string): string {
+  const slug = path.split('/').at(-1) ?? path;
+  const words = slug.replaceAll('-', ' ');
+
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+function renderFeatureAreas(helpIndex: HelpArticleIndex): string {
+  const blocks = UI_FEATURE_AREAS.map((area) => {
+    const links = area.articles.map((articlePath) => {
+      const summary = helpIndex.get(articlePath);
+      const title = summary?.title ?? humanizeSlug(articlePath);
+      const description = summary?.description ? `: ${summary.description}` : '';
+
+      return `- [${title}](${absolute(`/help/${articlePath}.md`)})${description}`;
+    });
+
+    return `### ${area.area}\n\n${area.description}\n\n${links.join('\n')}`;
+  });
+
+  const mappedPaths = new Set(UI_FEATURE_AREAS.flatMap((area) => area.articles));
+  const remainingBySection = new Map<string, string[]>();
+
+  for (const [articlePath, summary] of helpIndex) {
+    const [section] = articlePath.split('/');
+    if (!isHelpArticlePath(articlePath) || mappedPaths.has(articlePath)) continue;
+
+    const description = summary.description ? `: ${summary.description}` : '';
+    const line = `- [${summary.title}](${absolute(`/help/${articlePath}.md`)})${description}`;
+    remainingBySection.set(section, [...(remainingBySection.get(section) ?? []), line]);
+  }
+
+  const remainingBlocks = [...remainingBySection].map(
+    ([section, lines]) => `### More: ${humanizeSlug(section)}\n\n${lines.join('\n')}`
+  );
+
+  return `## Everything in the product\n\nEvery area of the ClassroomIO dashboard and the guide that explains it. Each link is a Markdown page. The sections after the product areas list the remaining help articles, so every article is reachable from here.\n\n${[...blocks, ...remainingBlocks].join('\n\n')}`;
+}
+
+function renderLatestReleases(entries: ChangelogEntry[]): string {
+  if (entries.length === 0) {
+    return `## Latest releases\n\n- [Changelog](${absolute('/changelog.md')}): Every release, newest first.`;
+  }
+
+  const latest = entries.slice(0, 5).map((entry) => {
+    const summary = entry.summary ? `: ${entry.summary}` : '';
+
+    return `- [${entry.publishedAt.slice(0, 10)} · ${entry.title}](${entry.url || absolute('/changelog')})${summary}`;
+  });
+  const newest = entries[0];
+
+  return `## Latest releases
+
+The latest release is "${newest.title}", published ${newest.publishedAt.slice(0, 10)}. A new release ships most weeks, so check the feed for anything newer than a cached copy.
+
+${latest.join('\n')}
+- [Full changelog](${absolute('/changelog.md')}): Every release, newest first, with ISO dates.
+- [Changelog Atom feed](${absolute('/changelog.xml')}): Subscribe or poll for new releases.
+- [Public roadmap](https://feedback.classroomio.com/roadmap): What is planned next.`;
+}
+
+function renderWebsitePages(pages: SitePage[]): string {
+  const marketing = pages.filter((page) => !page.path.startsWith('/blog/') && !page.path.startsWith('/alternatives/'));
+  const alternatives = pages.filter((page) => page.path.startsWith('/alternatives/'));
+  const posts = pages.filter((page) => page.path.startsWith('/blog/'));
+  const blocks = [`## Website pages\n\n${renderLinks(marketing)}`];
+
+  if (alternatives.length > 0) {
+    blocks.push(`### ClassroomIO alternatives and comparisons\n\n${renderLinks(alternatives)}`);
+  }
+
+  if (posts.length > 0) {
+    const postLinks = posts.map((post) => ({ ...post, path: `${post.path}.md` }));
+    blocks.push(`### Blog posts\n\n${renderLinks(postLinks)}`);
+  }
+
+  return blocks.join('\n\n');
+}
+
+export type LlmsTxtInput = {
+  entries: ChangelogEntry[];
+  helpIndex: HelpArticleIndex;
+  pages: SitePage[];
+};
+
+export function buildLlmsTxt(input: LlmsTxtInput): string {
   const header = `# ClassroomIO
 
 > ClassroomIO is an open-source learning platform for running customer, partner and employee academies: courses, cohorts, live classes, exercises, certificates, a public API and an MCP server. Use the Cloud product or self-host it.
 
-Use this index to find machine-readable documentation and product resources. Follow the linked indexes when you need individual pages.
+Use this index to find machine-readable documentation and product resources. It lists every area of the product and every public page. Follow the linked indexes when you need individual pages.
 
 ## When to use ClassroomIO
 
@@ -282,13 +365,19 @@ Use this index to find machine-readable documentation and product resources. Fol
 ## How agents should use ClassroomIO
 
 - To answer how-to questions, read the help center. Fetch its index below, then open the matching article as Markdown.
+- To find what is new, read the latest releases below. The changelog and its feed are the source of truth for what shipped and when.
 - For API calls, read the API guide and OpenAPI description before choosing an operation. Ask for approval before changing a user's data.
 - For MCP, use an OAuth-capable client and let the user authorize access to their organization.
-- Help pages live at \`${SITE_ORIGIN}/help\` and developer pages at \`${SITE_ORIGIN}/docs\`.`;
+- Help pages live at \`${SITE_ORIGIN}/help\` and developer pages at \`${SITE_ORIGIN}/docs\`. Append \`.md\` to either to read a page as Markdown.`;
 
-  const sections = LLMS_SECTIONS.map(renderSection).join('\n\n');
+  const sections = [
+    renderLatestReleases(input.entries),
+    ...LLMS_SECTIONS.map(renderSection),
+    renderFeatureAreas(input.helpIndex),
+    renderWebsitePages(input.pages)
+  ];
 
-  return `${header}\n\n${sections}\n`;
+  return `${header}\n\n${sections.join('\n\n')}\n`;
 }
 
 function formatPlanPrice(plan: (typeof PLANS)[keyof typeof PLANS]): string {
@@ -326,14 +415,14 @@ ${entries}
 `;
 }
 
-export function buildSitemapMarkdown(): string {
-  const pages = renderLinks(SITE_PAGES);
+export function buildSitemapMarkdown(pages: SitePage[]): string {
+  const pageLinks = renderLinks(pages);
 
   return `# ClassroomIO sitemap
 
 ## Website
 
-${pages}
+${pageLinks}
 
 ## Other sitemaps
 
@@ -346,9 +435,80 @@ ${pages}
 `;
 }
 
-export function buildSitemapXml(blogSlugs: string[]): string {
-  const paths = [...SITE_PAGES.map((page) => page.path), ...blogSlugs.map((slug) => `/blog/${slug}`)];
-  const urls = paths.map((path) => `  <url><loc>${absolute(path)}</loc></url>`).join('\n');
+function toIsoDay(date: string): string | null {
+  const parsed = new Date(date);
 
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
+}
+
+function renderSitemapEntry(path: string, lastModified: string | null): string {
+  const lastModifiedTag = lastModified ? `<lastmod>${lastModified}</lastmod>` : '';
+
+  return `  <url><loc>${escapeXml(absolute(path))}</loc>${lastModifiedTag}</url>`;
+}
+
+export function buildSitemapXml(pages: SitePage[], lastModifiedByPath: Map<string, string>): string {
+  const entries = pages.map((page) => {
+    const lastModified = lastModifiedByPath.get(page.path);
+
+    return renderSitemapEntry(page.path, lastModified ? toIsoDay(lastModified) : null);
+  });
+
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries.join('\n')}\n</urlset>\n`;
+}
+
+function entryPublicUrl(entry: ChangelogEntry): string {
+  return entry.url || absolute('/changelog');
+}
+
+export function buildChangelogMarkdown(entries: ChangelogEntry[], generatedAt: Date): string {
+  const latest = entries[0];
+  const latestLine = latest
+    ? `The latest release is **${latest.title}**, published ${latest.publishedAt.slice(0, 10)}.`
+    : 'No releases are published yet.';
+  const blocks = entries.map((entry) => {
+    const tags = entry.tags.length > 0 ? `\n\nTags: ${entry.tags.join(', ')}` : '';
+    const summary = entry.summary ? `\n\n${entry.summary}` : '';
+
+    return `## ${entry.publishedAt.slice(0, 10)} · ${entry.title}${summary}${tags}\n\n[Read the full update](${entryPublicUrl(entry)})`;
+  });
+
+  return `# ClassroomIO changelog
+
+> Releases are listed newest first. ${latestLine} Generated ${generatedAt.toISOString()}. Canonical page: ${absolute('/changelog')}. Atom feed: ${absolute('/changelog.xml')}.
+
+${blocks.join('\n\n')}
+`;
+}
+
+function escapeXml(value: string): string {
+  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+}
+
+export function buildChangelogFeed(entries: ChangelogEntry[], generatedAt: Date): string {
+  const updated = entries[0]?.publishedAt ?? generatedAt.toISOString();
+  const items = entries
+    .map(
+      (entry) => `  <entry>
+    <id>${escapeXml(`urn:classroomio:changelog:${encodeURIComponent(entry.id)}`)}</id>
+    <title>${escapeXml(entry.title)}</title>
+    <link href="${escapeXml(entryPublicUrl(entry))}"/>
+    <published>${entry.publishedAt}</published>
+    <updated>${entry.publishedAt}</updated>
+    <summary>${escapeXml(entry.summary ?? '')}</summary>
+  </entry>`
+    )
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>${absolute('/changelog')}</id>
+  <title>ClassroomIO changelog</title>
+  <author><name>ClassroomIO</name></author>
+  <link href="${absolute('/changelog')}"/>
+  <link rel="self" href="${absolute('/changelog.xml')}"/>
+  <updated>${updated}</updated>
+${items}
+</feed>
+`;
 }
