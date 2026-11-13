@@ -1,6 +1,7 @@
 ---
 title: Invite a Team Member
 description: Add admins and tutors to your organization by email invite or a reusable invite link.
+last_reviewed: '2026-11-13'
 ---
 
 Team members are people who help you run your organization — **Admins** have full access, **Tutors** can manage the courses they are assigned to. Both are different from students, who use the LMS and cannot access the admin dashboard.
@@ -58,3 +59,5 @@ Toggle the link off to stop accepting new members through it. You can re-enable 
 In **Settings → Teams**, use the role menu beside a member and confirm **Approve**. Only admins can do this, you cannot change your own role, and the organization must keep at least one admin.
 
 When the role changes, ClassroomIO emails the member (subject: "Your role in Acme Academy has changed", using your organization's name) with the previous role, the new role, who changed it, and when (UTC). This email is always sent and has no notification switch. Members who have not accepted their invite yet are not emailed.
+
+Demoting an admin to tutor also revokes the OAuth grants that administrator authorized in this organization, so any app they connected (for example an MCP client signed in through ClassroomIO, or Zapier) loses access immediately, along with the webhook destinations and subscriptions those connections created. Connections authorized by other administrators are unaffected. This is the same cleanup that happens when you [remove a team member](/account-team-security/remove-a-team-member), and since only an admin can authorize a connection, another administrator has to reconnect any shared app afterwards.
