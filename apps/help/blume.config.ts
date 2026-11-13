@@ -975,10 +975,6 @@ export default defineConfig({
             root: '/integrations-and-automation/understand-classroomio-integrations'
           },
           {
-            label: 'Connect ClassroomIO with Zapier',
-            root: '/integrations-and-automation/connect-classroomio-with-zapier'
-          },
-          {
             label: 'Connect AI tools with MCP',
             display: 'group',
             collapsed: true,

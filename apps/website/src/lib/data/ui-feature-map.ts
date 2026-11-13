@@ -185,11 +185,10 @@ export const UI_FEATURE_AREAS: UiFeatureArea[] = [
     ]
   },
   {
-    area: 'Automation: API, MCP, webhooks and Zapier',
+    area: 'Automation: API, MCP and webhooks',
     description: 'API keys, MCP keys and clients, webhooks, and other integrations.',
     articles: [
       'integrations-and-automation/understand-classroomio-integrations',
-      'integrations-and-automation/connect-classroomio-with-zapier',
       'integrations-and-automation/create-and-manage-api-keys',
       'integrations-and-automation/authenticate-an-api-request',
       'integrations-and-automation/understand-classroomio-mcp',
