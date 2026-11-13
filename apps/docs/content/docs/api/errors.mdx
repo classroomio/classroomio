@@ -27,8 +27,8 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 | --- | --- |
 | `200` / `201` | The request worked |
 | `400` | The request body or query is invalid |
-| `401` | The API key is missing, invalid, or revoked |
-| `403` | The key can't call this endpoint, or your plan doesn't include API access |
+| `401` | The credential (API key or OAuth token) is missing, invalid, expired, or revoked |
+| `403` | The credential can't call this endpoint — missing scope, or a plan without API access |
 | `404` | The resource doesn't exist, or belongs to another organization |
 | `409` | The request conflicts with the resource's current state |
 | `429` | Too many requests. See [Rate limits](/api/rate-limits) |
@@ -36,7 +36,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 
 ## Common errors
 
-### Invalid API key
+### Invalid API key or token
 
 Status `401`
 
@@ -48,7 +48,7 @@ Status `401`
 }
 ```
 
-**Fix:** Check that the header is `Authorization: Bearer <key>` and that the key hasn't been rotated or revoked. See [Authentication](/api/authentication).
+**Fix:** Check that the header is `Authorization: Bearer <credential>` and that it hasn't been rotated, revoked, or — for an OAuth access token — expired. Access tokens last 10 minutes; refresh the token and retry. See [Authentication](/api/authentication).
 
 ### Missing scope
 
@@ -62,7 +62,7 @@ Status `403`
 }
 ```
 
-**Fix:** You're using a key that can't call this endpoint, usually an MCP key or a connected MCP app. Use an API key (`cio_api_...`) instead.
+**Fix:** You're using a key that can't call this endpoint, usually an MCP key or a connected MCP app. Use an API key (`cio_api_...`) instead. An OAuth access token that lacks the route's scope fails the same way; reconnect the app and grant that scope.
 
 ### Resource not found
 
