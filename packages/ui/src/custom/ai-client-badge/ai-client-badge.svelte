@@ -1,10 +1,6 @@
 <script lang="ts">
-  import SparklesIcon from '@lucide/svelte/icons/sparkles';
-
   import { cn } from '../../tools';
-  import { AI_CLIENT_LABELS, resolveAiClient } from './ai-client';
-  import ChatgptIcon from './chatgpt-icon.svelte';
-  import ClaudeIcon from './claude-icon.svelte';
+  import { resolveAiClient } from './ai-client';
 
   interface Props {
     /** Name stored with the change, e.g. `Claude`, `claude-ai` or the name an unknown client reported. */
@@ -14,17 +10,30 @@
 
   let { clientName, class: className = '' }: Props = $props();
 
-  const kind = $derived(resolveAiClient(clientName));
-  const label = $derived(kind === 'generic' ? clientName : AI_CLIENT_LABELS[kind]);
+  const client = $derived(resolveAiClient(clientName));
+  const monogram = $derived((client.label.trim()[0] ?? '?').toUpperCase());
 </script>
 
 <span class={cn('ui:inline-flex ui:items-center ui:gap-1.5', className)}>
-  {#if kind === 'claude'}
-    <ClaudeIcon class="ui:text-[#D97757]" />
-  {:else if kind === 'chatgpt'}
-    <ChatgptIcon />
+  {#if client.iconPath}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="currentColor"
+      aria-hidden="true"
+      class={cn('ui:shrink-0', client.kind.startsWith('claude') && 'ui:text-[#D97757]')}
+    >
+      <path d={client.iconPath} />
+    </svg>
   {:else}
-    <SparklesIcon class="ui:size-4 ui:shrink-0" aria-hidden="true" />
+    <span
+      aria-hidden="true"
+      class="ui:bg-muted ui:text-muted-foreground ui:inline-flex ui:size-4 ui:shrink-0 ui:items-center ui:justify-center ui:rounded-sm ui:text-[10px] ui:leading-none ui:font-semibold"
+    >
+      {monogram}
+    </span>
   {/if}
-  <span class="ui:truncate">{label}</span>
+  <span class="ui:truncate">{client.label}</span>
 </span>

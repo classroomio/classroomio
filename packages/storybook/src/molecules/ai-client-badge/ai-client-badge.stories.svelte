@@ -28,14 +28,38 @@
 
 <Story name="ChatGPT" args={{ clientName: 'ChatGPT' }} />
 
-<Story name="Loose matching">
+<Story name="Clients with a logo">
   {#snippet template()}
     <div class="flex flex-col items-start gap-2">
-      <AiClientBadge clientName="claude-ai" />
-      <AiClientBadge clientName="Claude Code" />
-      <AiClientBadge clientName="openai-mcp" />
+      <AiClientBadge clientName="Claude" />
+      <AiClientBadge clientName="claude-code" />
+      <AiClientBadge clientName="ChatGPT" />
+      <AiClientBadge clientName="cursor-vscode" />
+      <AiClientBadge clientName="opencode" />
+      <AiClientBadge clientName="github-copilot-developer" />
+      <AiClientBadge clientName="gemini-cli-mcp-client" />
+      <AiClientBadge clientName="Zed" />
+      <AiClientBadge clientName="warp" />
+      <AiClientBadge clientName="Windsurf" />
+      <AiClientBadge clientName="amp" />
+      <AiClientBadge clientName="Cline" />
     </div>
   {/snippet}
 </Story>
 
-<Story name="Unknown client" args={{ clientName: 'Cursor' }} />
+<Story name="Clients with a monogram">
+  {#snippet template()}
+    <div class="flex flex-col items-start gap-2">
+      <AiClientBadge clientName="codex-mcp-client" />
+      <AiClientBadge clientName="Visual Studio Code" />
+      <AiClientBadge clientName="goose-cli" />
+      <AiClientBadge clientName="Factory Droid" />
+      <AiClientBadge clientName="Devin" />
+      <AiClientBadge clientName="kiro-cli" />
+      <AiClientBadge clientName="Grok Build" />
+      <AiClientBadge clientName="Muse Code" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Unknown client" args={{ clientName: 'My Custom Agent' }} />
