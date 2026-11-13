@@ -10,10 +10,6 @@ export const OAUTH_API_SCOPES = ZOrganizationApiKeyScope.options.filter(
 );
 
 const OAUTH_API_SCOPE_DESCRIPTIONS: Record<Exclude<TOrganizationApiKeyScope, 'public_api:*'>, string> = {
-  'course_import:draft:create': 'Create course import drafts',
-  'course_import:draft:read': 'Read course import drafts',
-  'course_import:draft:update': 'Update course import drafts',
-  'course_import:draft:publish': 'Publish course import drafts',
   'course:read': 'Read course details and structure',
   'course:write': 'Create courses from templates or clones and manage course content',
   'course:tag:write': 'Manage course tags',
