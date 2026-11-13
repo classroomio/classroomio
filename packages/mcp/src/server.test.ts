@@ -81,14 +81,11 @@ describe('createMcpServer', () => {
   it.each([
     ['list_org_courses', true, false],
     ['get_course_structure', true, false],
-    ['get_course_draft', true, false],
     ['update_course_landing_page', false, false],
-    ['create_course_draft', false, false],
-    ['create_course_draft_from_course', false, false],
-    ['update_course_draft', false, false],
-    ['tag_course_draft', false, true],
-    ['publish_course_draft', false, true],
-    ['publish_course_draft_to_existing_course', false, true],
+    ['update_lesson', false, true],
+    ['create_course', false, false],
+    ['publish_course', false, false],
+    ['unpublish_course', false, true],
     ['tag_courses', false, true]
   ])('annotates %s as readOnly=%s, destructive=%s', async (name, readOnlyHint, destructiveHint) => {
     const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
@@ -126,6 +123,61 @@ describe('createMcpServer', () => {
   );
 });
 
+describe('course tools', () => {
+  it('has no draft tools and only publish_course publishes', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+    const names = tools.map((tool) => tool.name);
+
+    expect(names.filter((name) => name.includes('draft'))).toEqual([]);
+    expect(names.filter((name) => name.includes('publish'))).toEqual(['publish_course', 'unpublish_course']);
+    for (const tool of tools) {
+      expect(tool.description?.toLowerCase()).not.toContain('draft');
+    }
+  });
+
+  it('titles lesson tools and marks them as direct course writes', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+    const createLesson = tools.find((tool) => tool.name === 'create_lesson');
+    const updateLesson = tools.find((tool) => tool.name === 'update_lesson');
+
+    expect(createLesson?.annotations).toMatchObject({
+      title: 'Create lesson',
+      readOnlyHint: false,
+      destructiveHint: false
+    });
+    expect(createLesson?.description).toContain('directly in the selected course');
+    expect(updateLesson?.annotations).toMatchObject({
+      title: 'Update lesson',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true
+    });
+    expect(updateLesson?.description).toContain('directly in the selected course');
+  });
+
+  it('does not mark the landing page tool as idempotent, since banner generation picks a random image', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+
+    expect(tools.find((tool) => tool.name === 'update_course_landing_page')?.annotations).toMatchObject({
+      idempotentHint: false
+    });
+  });
+
+  it('tells the agent which link to hand the user and that images may be Unsplash URLs', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+    const createCourse = tools.find((tool) => tool.name === 'create_course');
+    const publishCourse = tools.find((tool) => tool.name === 'publish_course');
+
+    expect(createCourse?.description).toContain('appUrl');
+    expect(createCourse?.description).toContain('landingPageUrl');
+    expect(createCourse?.description).toContain('Unsplash photo URLs');
+    expect(publishCourse?.description).toContain('landingPageUrl');
+    expect(Object.keys(createCourse?.inputSchema.properties ?? {})).toEqual(
+      expect.arrayContaining(['title', 'description', 'type', 'compliance', 'bannerImageUrl', 'bannerImageQuery'])
+    );
+  });
+});
+
 describe('ClassroomIoApiClient transport', () => {
   it('sends requests through the injected fetch with the extra headers', async () => {
     const requests: Request[] = [];
@@ -150,6 +202,52 @@ describe('ClassroomIoApiClient transport', () => {
     expect(requests).toHaveLength(1);
     expect(requests[0]!.headers.get('authorization')).toBe('Bearer token-1');
     expect(requests[0]!.headers.get('cf-connecting-ip')).toBe('203.0.113.7');
+  });
+
+  it.each(['学习助手', 'Claude 🤖', '100% client'])('sends the client name %s as a header-safe value', async (name) => {
+    const requests: Request[] = [];
+    const apiClient = new ClassroomIoApiClient(
+      {
+        CLASSROOMIO_API_URL: 'https://api.example.com',
+        CLASSROOMIO_API_KEY: 'token-1',
+        CLASSROOMIO_USER_AGENT: 'agent'
+      },
+      {
+        fetch: async (input, init) => {
+          requests.push(new Request(input, init));
+
+          return new Response(JSON.stringify({ success: true, data: [], pagination: {} }));
+        }
+      }
+    );
+    apiClient.setClientName(name);
+
+    await apiClient.listTeamMembers({});
+
+    expect(decodeURIComponent(requests[0]!.headers.get('x-mcp-client-name')!)).toBe(name);
+  });
+
+  it('cuts a very long client name before sending it', async () => {
+    const requests: Request[] = [];
+    const apiClient = new ClassroomIoApiClient(
+      {
+        CLASSROOMIO_API_URL: 'https://api.example.com',
+        CLASSROOMIO_API_KEY: 'token-1',
+        CLASSROOMIO_USER_AGENT: 'agent'
+      },
+      {
+        fetch: async (input, init) => {
+          requests.push(new Request(input, init));
+
+          return new Response(JSON.stringify({ success: true, data: [], pagination: {} }));
+        }
+      }
+    );
+    apiClient.setClientName('x'.repeat(500));
+
+    await apiClient.listTeamMembers({});
+
+    expect(requests[0]!.headers.get('x-mcp-client-name')).toHaveLength(80);
   });
 
   it('lists courses through the public API and keeps the pagination', async () => {

@@ -29,6 +29,8 @@ interface RecordVersionInput {
   label?: string | null;
   /** Who made the change; defaults to `editor` for a dashboard edit. */
   source?: TBlockChangeSource;
+  /** Name of the AI client or integration behind an `mcp` or `api` change. */
+  clientName?: string | null;
   /** Id the caller uses to tie its write batch together, e.g. one assistant run. */
   changeSetId?: string | null;
   dbClient?: DbOrTxClient;
@@ -38,6 +40,7 @@ interface SessionPolicyInput {
   intent: TLessonVersionIntent;
   authorId: string | null;
   source?: TBlockChangeSource;
+  clientName?: string | null;
   changeSetId?: string | null;
 }
 
@@ -50,7 +53,7 @@ interface SessionPolicyInput {
  *   author asked for, and gets its own sealed row;
  * - a sealed session never reopens, which is how publishing resets the window;
  * - a different author gets their own entry, so history stays attributable;
- * - a different actor kind (`source`) or write batch (`changeSetId`) gets its own entry,
+ * - a different actor kind (`source`), AI client (`clientName`) or write batch (`changeSetId`) gets its own entry,
  *   so an assistant run cannot fold into the teacher's typing session;
  * - the session ends after `IDLE_MS` without an edit, and is capped at `MAX_MS`
  *   so continuous writing still checkpoints periodically.
@@ -58,9 +61,16 @@ interface SessionPolicyInput {
 export function canExtendVersionSession(
   latest: Pick<
     BlockVersionSessionState,
-    'kind' | 'isSealed' | 'authorId' | 'msSinceLastEdit' | 'msSinceSessionStart' | 'source' | 'changeSetId'
+    | 'kind'
+    | 'isSealed'
+    | 'authorId'
+    | 'msSinceLastEdit'
+    | 'msSinceSessionStart'
+    | 'source'
+    | 'clientName'
+    | 'changeSetId'
   > | null,
-  { intent, authorId, source = 'editor', changeSetId = null }: SessionPolicyInput
+  { intent, authorId, source = 'editor', clientName = null, changeSetId = null }: SessionPolicyInput
 ): boolean {
   if (!latest) return false;
   if (intent !== 'auto') return false;
@@ -68,6 +78,7 @@ export function canExtendVersionSession(
   if (latest.kind !== 'auto') return false;
   if ((latest.authorId ?? null) !== authorId) return false;
   if ((latest.source ?? 'editor') !== source) return false;
+  if ((latest.clientName ?? null) !== clientName) return false;
   if ((latest.changeSetId ?? null) !== changeSetId) return false;
   if (latest.msSinceLastEdit > LESSON_VERSION_SESSION_IDLE_MS) return false;
 
@@ -90,6 +101,7 @@ export async function recordBlockLocaleVersion({
   intent,
   label = null,
   source = 'editor',
+  clientName = null,
   changeSetId = null,
   dbClient
 }: RecordVersionInput): Promise<TBlockLocaleHistory | null> {
@@ -109,13 +121,16 @@ export async function recordBlockLocaleVersion({
       // An autosave has nothing to record, and a milestone already records this
       // content — promoting it would overwrite a publish snapshot's kind and
       // label, erasing the record of what students were served. Only an open
-      // autosave is upgraded to the milestone the author just asked for.
+      // autosave is upgraded to the milestone the author just asked for, and only
+      // when it was written by the same actor; otherwise the milestone is its own
+      // snapshot so it keeps the attribution of the save that asked for it.
       if (intent === 'auto' || !isOpenAutosave) return latest;
 
-      return promoteBlockLocaleVersion(latest.id, { kind: intent, label }, client);
+      const hasSameAttribution = (latest.source ?? 'editor') === source && (latest.clientName ?? null) === clientName;
+      if (hasSameAttribution) return promoteBlockLocaleVersion(latest.id, { kind: intent, label }, client);
     }
 
-    if (canExtendVersionSession(latest, { intent, authorId, source, changeSetId })) {
+    if (canExtendVersionSession(latest, { intent, authorId, source, clientName, changeSetId })) {
       const extended = await extendBlockLocaleVersion(latest!.id, { newContent: content }, client);
 
       // The session was sealed between the read and the update (a publish, or a
@@ -137,6 +152,7 @@ export async function recordBlockLocaleVersion({
         // session stays open so the next few edits fold into it.
         isSealed: intent !== 'auto',
         source,
+        clientName,
         changeSetId
       },
       client

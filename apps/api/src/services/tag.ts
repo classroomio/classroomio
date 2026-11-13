@@ -1,6 +1,6 @@
 import type {
   TAutomationCourseTagAssignment,
-  TAutomationDraftTagAssignment,
+  TAutomationTagAssignment,
   TCourseTagAssignment,
   TTagCreate,
   TTagGroupCreate,
@@ -381,7 +381,7 @@ export async function replaceCourseTags(
   }
 }
 
-export async function assignCourseTagsByName(orgId: string, courseId: string, data: TAutomationDraftTagAssignment) {
+export async function assignCourseTagsByName(orgId: string, courseId: string, data: TAutomationTagAssignment) {
   const ensuredTags = await ensureAutomationTags(orgId, data.tagNames, data.groupName?.trim() || 'Automation');
   const existingTags = data.mode === 'merge' ? await getCourseTags(orgId, courseId) : [];
   const tagIds = Array.from(new Set([...existingTags.map((tag) => tag.id), ...ensuredTags.map((tag) => tag.id)]));

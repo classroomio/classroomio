@@ -720,6 +720,10 @@
       "csv_hint": "Plik CSV w formacie UTF-8 z kolumną adresu e-mail. Maks. liczba wierszy: {rows}, 5 MB.",
       "download_template": "Pobierz szablon",
       "paste_hint": "Jeden adres w wierszu lub rozdzielony przecinkiem.",
+      "edit_email": "Edytuj adres e-mail",
+      "edit_name": "Edytuj imię i nazwisko",
+      "search_placeholder": "Imię lub e-mail",
+      "search_no_results": "Żaden wiersz nie pasuje do wyszukiwania.",
       "review": "Przegląd",
       "done": "Gotowe",
       "count_ready": "{count} gotowe",
@@ -1731,6 +1735,8 @@
           "undo_change": "Cofnij",
           "by_assistant": "Asystent",
           "by_restore": "Przywróć",
+          "by_ai_client": "Klient AI",
+          "by_api": "API",
           "change_added": "Dodano {name}",
           "change_removed": "Usunięto {name}",
           "change_moved": "Przeniesiono {name}",
@@ -2421,6 +2427,7 @@
                 "loading_library": "Ładowanie biblioteki multimediów...",
                 "no_library_videos": "W Twojej bibliotece multimediów nie ma dostępnych filmów",
                 "add_from_library": "Dodaj",
+                "upload_not_finished": "Przesyłanie nieukończone. Ten film nie ma jeszcze pliku, więc nie można go dodać.",
                 "cancel_upload": "Anuluj przesyłanie",
                 "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
                 "max_files": "{count, plural, one {Możesz przesłać # plik} other {Możesz przesłać # plików}}",
@@ -2611,6 +2618,7 @@
             "empty_description": "Dodaj notatkę, film, slajdy, dokument lub obraz. Możesz dodać dowolną liczbę bloków w dowolnej kolejności.",
             "empty_note": "Ta notatka jest pusta.",
             "scroll_rail": "Bloki lekcji",
+            "save_failed": "Nie udało się zapisać tej zmiany, więc blok został przywrócony. {reason}",
             "go_to_block": "Przejdź do bloku {index}",
             "image": {
               "upload": "Prześlij obraz",
@@ -3661,7 +3669,8 @@
     "status": {
       "active": "Aktywny",
       "archived": "Zarchiwizowane",
-      "processing": "Przetwarzanie"
+      "processing": "Przetwarzanie",
+      "upload_not_finished": "Przesyłanie nieukończone"
     },
     "provider": {
       "upload": "Prześlij",

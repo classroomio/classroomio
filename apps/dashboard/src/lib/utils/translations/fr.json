@@ -720,6 +720,10 @@
       "csv_hint": "Fichier CSV UTF-8 avec une colonne d'adresse e-mail. Jusqu'à {rows} lignes, 5 Mo.",
       "download_template": "Téléchargez le modèle",
       "paste_hint": "Une adresse par ligne, ou séparées par des virgules.",
+      "edit_email": "Modifier l'e-mail",
+      "edit_name": "Modifier le nom",
+      "search_placeholder": "Nom ou e-mail",
+      "search_no_results": "Aucune ligne ne correspond à votre recherche.",
       "review": "Revoir",
       "done": "Fait",
       "count_ready": "{count} prêt",
@@ -1731,6 +1735,8 @@
           "undo_change": "Annuler",
           "by_assistant": "Assistante",
           "by_restore": "Restaurer",
+          "by_ai_client": "Client IA",
+          "by_api": "API",
           "change_added": "Ajout de {name}",
           "change_removed": "Supprimé {name}",
           "change_moved": "Déplacé {name}",
@@ -2421,6 +2427,7 @@
                 "loading_library": "Chargement de la médiathèque...",
                 "no_library_videos": "Aucune vidéo disponible dans votre médiathèque",
                 "add_from_library": "Ajouter",
+                "upload_not_finished": "Téléversement inachevé. Cette vidéo n'a pas encore de fichier et ne peut donc pas être ajoutée.",
                 "cancel_upload": "Annuler le téléchargement",
                 "upload_cancelled": "Téléchargement annulé par l'utilisateur",
                 "max_files": "{count, plural, one {Vous pouvez téléverser # fichier} other {Vous pouvez téléverser # fichiers}}",
@@ -2611,6 +2618,7 @@
             "empty_description": "Ajoutez une note, une vidéo, des diapositives, un document ou une image. Vous pouvez ajouter autant de blocs que nécessaire, dans l'ordre de votre choix.",
             "empty_note": "Cette note est vide.",
             "scroll_rail": "Blocs de leçon",
+            "save_failed": "Ce changement n'a pas pu être enregistré, le bloc a donc été restauré. {reason}",
             "go_to_block": "Aller au bloc {index}",
             "image": {
               "upload": "Télécharger une image",
@@ -3661,7 +3669,8 @@
     "status": {
       "active": "Actif",
       "archived": "Archivé",
-      "processing": "Traitement en cours"
+      "processing": "Traitement en cours",
+      "upload_not_finished": "Téléversement inachevé"
     },
     "provider": {
       "upload": "Téléverser",

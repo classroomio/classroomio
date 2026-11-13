@@ -457,6 +457,42 @@ export async function getLatestOrganizationInviteRowByOrgAndEmail(
   }
 }
 
+/**
+ * The metadata of the latest invite of any status (including revoked) for each email in the organization, newest by
+ * created_at. Emails without an invite are absent from the result.
+ */
+export async function getLatestOrganizationInviteMetadataByEmails(
+  organizationId: string,
+  emails: string[],
+  dbClient: DbOrTxClient = db
+): Promise<{ email: string; metadata: unknown }[]> {
+  const normalized = [...new Set(emails.map((email) => email.toLowerCase().trim()).filter(Boolean))];
+  if (normalized.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await dbClient
+      .selectDistinctOn([schema.organizationInvite.email], {
+        email: schema.organizationInvite.email,
+        metadata: schema.organizationInvite.metadata
+      })
+      .from(schema.organizationInvite)
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          inArray(schema.organizationInvite.email, normalized)
+        )
+      )
+      .orderBy(schema.organizationInvite.email, desc(schema.organizationInvite.createdAt));
+
+    return rows.flatMap((row) => (row.email ? [{ email: row.email, metadata: row.metadata }] : []));
+  } catch (error) {
+    console.error('getLatestOrganizationInviteMetadataByEmails error:', error);
+    throw new Error('Failed to get latest organization invites');
+  }
+}
+
 export type TOrganizationInviteAcceptRow = {
   invite: TOrganizationInvite;
   organization: {

@@ -11,6 +11,8 @@ const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|i
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
 const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
 const COURSE_CLONE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/clone\/?$/;
+const COURSE_STRUCTURE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/structure\/?$/;
+const COURSE_PUBLISH_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:publish|unpublish)\/?$/;
 const COURSE_RELATED_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/related\/?$/;
 const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
 const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
@@ -82,7 +84,19 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? null : 'course:write';
   }
 
-  if (COURSE_RELATED_PATH.test(path) || COURSE_LIST_PATH.test(path)) {
+  if (COURSE_PUBLISH_PATH.test(path)) {
+    return method === 'POST' ? 'course:write' : null;
+  }
+
+  if (COURSE_STRUCTURE_PATH.test(path)) {
+    return isRead ? 'course:read' : null;
+  }
+
+  if (COURSE_LIST_PATH.test(path)) {
+    return isRead ? 'course:read' : method === 'POST' ? 'course:write' : null;
+  }
+
+  if (COURSE_RELATED_PATH.test(path)) {
     return isRead ? 'course:read' : null;
   }
 

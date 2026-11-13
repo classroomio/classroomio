@@ -7,7 +7,7 @@
   import { lessonApi } from '$features/course/api';
   import { addLessonVideos } from '../media-picks';
   import { mediaApi } from '$features/media/api';
-  import type { OrganizationAsset } from '$features/media/utils';
+  import { isUnfinishedVideoUpload, type OrganizationAsset } from '$features/media/utils';
   import { onDestroy, onMount } from 'svelte';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
@@ -144,6 +144,7 @@
   {:else}
     <div class="max-h-[360px] space-y-2 overflow-x-hidden transition-opacity" class:opacity-60={isLoading}>
       {#each visibleAssets as asset (asset.id)}
+        {@const isUnfinished = isUnfinishedVideoUpload(asset)}
         <div
           class="flex items-center justify-between gap-3 rounded-md border p-3"
           animate:flip={{ duration: 250 }}
@@ -161,7 +162,13 @@
             </div>
             <div class="min-w-0 flex-1">
               <p class="truncate text-sm font-medium">{asset.title || asset.storageKey || asset.id}</p>
-              <p class="ui:text-muted-foreground text-xs">{asset.provider}</p>
+              {#if isUnfinished}
+                <p class="ui:text-destructive text-xs">
+                  {$t('course.navItem.lessons.materials.tabs.video.add_video.upload_not_finished')}
+                </p>
+              {:else}
+                <p class="ui:text-muted-foreground text-xs">{asset.provider}</p>
+              {/if}
             </div>
           </div>
           <Button
@@ -169,7 +176,7 @@
             class="shrink-0"
             onclick={() => addFromLibrary(asset)}
             loading={addingAssetId === asset.id}
-            disabled={addingAssetId !== null}
+            disabled={addingAssetId !== null || isUnfinished}
           >
             {$t('course.navItem.lessons.materials.tabs.video.add_video.add_from_library')}
           </Button>

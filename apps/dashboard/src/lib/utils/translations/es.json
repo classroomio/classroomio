@@ -720,6 +720,10 @@
       "csv_hint": "CSV UTF-8 con una columna de correo electrónico. Hasta {rows} filas, 5 MB.",
       "download_template": "Descargar la plantilla",
       "paste_hint": "Una dirección por línea o separadas por comas.",
+      "edit_email": "Editar correo electrónico",
+      "edit_name": "Editar nombre",
+      "search_placeholder": "Nombre o correo",
+      "search_no_results": "Ninguna fila coincide con tu búsqueda.",
       "review": "Revisión",
       "done": "Listo",
       "count_ready": "{count} listos",
@@ -1731,6 +1735,8 @@
           "undo_change": "Deshacer",
           "by_assistant": "Asistente",
           "by_restore": "Restaurar",
+          "by_ai_client": "Cliente de IA",
+          "by_api": "API",
           "change_added": "Añadido {name}",
           "change_removed": "Eliminado {name}",
           "change_moved": "Movido a {name}",
@@ -2421,6 +2427,7 @@
                 "loading_library": "Cargando biblioteca multimedia...",
                 "no_library_videos": "No hay vídeos disponibles en tu biblioteca multimedia",
                 "add_from_library": "Agregar",
+                "upload_not_finished": "Carga sin terminar. Este video aún no tiene archivo, por lo que no se puede agregar.",
                 "cancel_upload": "Cancelar carga",
                 "upload_cancelled": "Subida cancelada por el usuario",
                 "max_files": "{count, plural, one {Puedes subir # archivo} other {Puedes subir # archivos}}",
@@ -2611,6 +2618,7 @@
             "empty_description": "Añade una nota, un vídeo, diapositivas, un documento o una imagen. Puedes añadir tantos bloques como necesites, en cualquier orden.",
             "empty_note": "Esta nota está vacía.",
             "scroll_rail": "Bloques de lecciones",
+            "save_failed": "No se pudo guardar este cambio, así que se restauró el bloque. {reason}",
             "go_to_block": "Ir al bloque {index}",
             "image": {
               "upload": "Subir imagen",
@@ -3661,7 +3669,8 @@
     "status": {
       "active": "Activo",
       "archived": "Archivado",
-      "processing": "Procesando"
+      "processing": "Procesando",
+      "upload_not_finished": "Carga sin terminar"
     },
     "provider": {
       "upload": "Subir",

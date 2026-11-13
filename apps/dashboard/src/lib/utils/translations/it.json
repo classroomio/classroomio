@@ -1511,7 +1511,8 @@
     "status": {
       "active": "Attivo",
       "archived": "Archiviato",
-      "processing": "In elaborazione"
+      "processing": "In elaborazione",
+      "upload_not_finished": "Caricamento non completato"
     },
     "table": {
       "title": "Titolo",
@@ -2956,6 +2957,7 @@
                 "loading_library": "Caricamento catalogo multimediale...",
                 "no_library_videos": "Nessun video disponibile nel tuo catalogo multimediale",
                 "add_from_library": "Aggiungi",
+                "upload_not_finished": "Caricamento non completato. Questo video non ha ancora un file, quindi non può essere aggiunto.",
                 "cancel_upload": "Annulla caricamento",
                 "upload_cancelled": "Caricamento annullato dall'utente",
                 "max_files": "{count, plural, one {Puoi caricare # file} other {Puoi caricare # file}}",
@@ -3065,6 +3067,7 @@
             "empty_description": "Aggiungi una nota, un video, delle diapositive, un documento o un'immagine. Puoi aggiungere tutti i blocchi che ti servono, in qualsiasi ordine.",
             "empty_note": "Questa banconota è vuota.",
             "scroll_rail": "Blocchi di lezione",
+            "save_failed": "Impossibile salvare questa modifica, quindi il blocco è stato ripristinato. {reason}",
             "go_to_block": "Vai al blocco {index}",
             "image": {
               "upload": "Carica immagine",
@@ -3742,6 +3745,8 @@
           "undo_change": "Annulla",
           "by_assistant": "Assistente",
           "by_restore": "Ripristina",
+          "by_ai_client": "Client IA",
+          "by_api": "API",
           "change_added": "Aggiunto {name}",
           "change_removed": "Rimosso {name}",
           "change_moved": "{name} spostato",
@@ -4728,6 +4733,10 @@
       "csv_hint": "CSV UTF-8 con una colonna email. Fino a {rows} righe, 5 MB.",
       "download_template": "Scarica il modello",
       "paste_hint": "Un indirizzo per riga o separato da virgole.",
+      "edit_email": "Modifica email",
+      "edit_name": "Modifica nome",
+      "search_placeholder": "Nome o email",
+      "search_no_results": "Nessuna riga corrisponde alla ricerca.",
       "review": "Revisione",
       "done": "Fatto",
       "submit_count": "Importare {count} studenti",

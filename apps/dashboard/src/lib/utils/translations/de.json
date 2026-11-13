@@ -720,6 +720,10 @@
       "csv_hint": "UTF-8-CSV-Datei mit einer E-Mail-Spalte. Bis zu {rows} Zeilen, 5 MB.",
       "download_template": "Laden Sie die Vorlage herunter",
       "paste_hint": "Eine Adresse pro Zeile oder durch Komma getrennt.",
+      "edit_email": "E-Mail bearbeiten",
+      "edit_name": "Name bearbeiten",
+      "search_placeholder": "Name oder E-Mail",
+      "search_no_results": "Keine Zeilen entsprechen Ihrer Suche.",
       "review": "Rezension",
       "done": "Erledigt",
       "count_ready": "{count} bereit",
@@ -1731,6 +1735,8 @@
           "undo_change": "Rückgängig machen",
           "by_assistant": "Assistent",
           "by_restore": "Wiederherstellen",
+          "by_ai_client": "KI-Client",
+          "by_api": "API",
           "change_added": "{name} hinzugefügt",
           "change_removed": "{name} entfernt",
           "change_moved": "{name} verschoben",
@@ -2421,6 +2427,7 @@
                 "loading_library": "Medienbibliothek wird geladen...",
                 "no_library_videos": "In Ihrer Medienbibliothek sind keine Videos verfügbar",
                 "add_from_library": "Hinzufügen",
+                "upload_not_finished": "Upload nicht abgeschlossen. Dieses Video hat noch keine Datei und kann daher nicht hinzugefügt werden.",
                 "cancel_upload": "Hochladen abbrechen",
                 "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
                 "max_files": "{count, plural, one {Sie können # Datei hochladen} other {Sie können # Dateien hochladen}}",
@@ -2611,6 +2618,7 @@
             "empty_description": "Fügen Sie eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzu. Sie können beliebig viele Blöcke in beliebiger Reihenfolge hinzufügen.",
             "empty_note": "Diese Notiz ist leer.",
             "scroll_rail": "Unterrichtsblöcke",
+            "save_failed": "Diese Änderung konnte nicht gespeichert werden, daher wurde der Block wiederhergestellt. {reason}",
             "go_to_block": "Gehe zu Block {index}",
             "image": {
               "upload": "Bild hochladen",
@@ -3661,7 +3669,8 @@
     "status": {
       "active": "Aktiv",
       "archived": "Archiviert",
-      "processing": "Wird verarbeitet"
+      "processing": "Wird verarbeitet",
+      "upload_not_finished": "Upload nicht abgeschlossen"
     },
     "provider": {
       "upload": "Hochladen",

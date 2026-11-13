@@ -16,18 +16,16 @@ export const AUTOMATION_USAGE_CATEGORY = {
 export const MCP_TOOL_CREDIT_COST = {
   list_org_courses: 0,
   list_related_courses: 0,
+  create_course: 1,
+  publish_course: 1,
+  unpublish_course: 1,
   get_course_structure: 0,
-  get_course_draft: 0,
   list_course_exercises: 0,
   get_course_exercise: 0,
-  create_course_draft: 1,
-  create_course_draft_from_course: 1,
   reorder_course_content: 1,
   clone_course: 1,
   set_featured_courses: 1,
   update_course_landing_page: 1,
-  update_course_draft: 1,
-  tag_course_draft: 1,
   tag_courses: 1,
   create_course_exercise: 1,
   update_course_exercise: 1,
@@ -47,8 +45,6 @@ export const MCP_TOOL_CREDIT_COST = {
   get_course_template: 0,
   create_course_from_template: 1,
   save_course_as_template: 1,
-  publish_course_draft: 5,
-  publish_course_draft_to_existing_course: 5,
   list_org_cohorts: 0,
   get_cohort: 0,
   list_cohort_members: 0,
@@ -252,7 +248,6 @@ export const MCP_AUTOMATION_LIMITS_BY_PLAN: Record<string, McpAutomationLimits> 
 export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsageCategory {
   if (
     toolName === 'get_course_structure' ||
-    toolName === 'get_course_draft' ||
     toolName === 'list_org_courses' ||
     toolName === 'list_related_courses' ||
     toolName === 'list_course_exercises' ||
@@ -318,10 +313,6 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_organization_customization'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
-  }
-
-  if (toolName === 'publish_course_draft' || toolName === 'publish_course_draft_to_existing_course') {
-    return AUTOMATION_USAGE_CATEGORY.PUBLISH;
   }
 
   return AUTOMATION_USAGE_CATEGORY.WRITE;
