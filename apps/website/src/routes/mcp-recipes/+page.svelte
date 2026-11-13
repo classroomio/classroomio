@@ -18,7 +18,7 @@
       eyebrow: '01 · Authoring',
       title: 'Generate a customer onboarding course from a doc URL',
       description:
-        'The agent plans the course, drafts every lesson, and writes the quiz questions, then waits for your approval before publishing.',
+        'The agent plans the course, writes every lesson and the quiz questions into an unpublished course, then waits for your approval before publishing.',
       prompt:
         'Generate a customer onboarding course from https://docs.acme.com/getting-started. Use the "Customer Onboarding" template. Plan the course first, then wait for my approval before implementing the lessons.'
     },
@@ -26,14 +26,15 @@
       eyebrow: '02 · Refresh',
       title: 'Refresh a compliance course after a policy update',
       description:
-        'When the policy changes, the agent identifies the affected lessons and drafts the revisions for your review.',
+        'When the policy changes, the agent identifies the affected lessons and rewrites them; lesson history lets you review or undo each change.',
       prompt:
         'Open the "Annual Security Training" course. Fetch the new policy at https://wiki.acme.com/security/soc2. Update any lessons whose content is contradicted by the policy, tag the course with "needs-review", and report what you changed.'
     },
     {
       eyebrow: '03 · Launches',
       title: 'Tag every course tied to a new product launch',
-      description: 'Bulk-tag drafts and published courses so you can filter, assign, or report on them in one query.',
+      description:
+        'Bulk-tag unpublished and published courses so you can filter, assign, or report on them in one query.',
       prompt:
         'Find every course in my org whose title or description mentions the v3.2 API. Apply the tag "launch-v3.2" to all of them and tell me how many you tagged.'
     },
@@ -41,7 +42,7 @@
       eyebrow: '04 · Quiz authoring',
       title: 'Add quiz questions to an existing lesson',
       description:
-        'The agent reads the lesson body and generates assessment questions you can review before publishing.',
+        'The agent reads the lesson body and generates assessment questions you can review before publishing the course.',
       prompt:
         'In the "Acme 101" course, find the "Connecting your data source" lesson. Add an exercise to it with 5 quiz questions covering the key concepts in the lesson body. Use a mix of multiple choice and short answer.'
     },
@@ -54,11 +55,11 @@
     },
     {
       eyebrow: '06 · Review',
-      title: 'Audit every draft before publish',
+      title: 'Audit every unpublished course before it goes live',
       description:
-        'Get a written summary of what each draft is missing: landing page, quiz questions, certificate rule, or final exam.',
+        'Get a written summary of what each unpublished course is missing: landing page, quiz questions, certificate rule, or final exam.',
       prompt:
-        'List every draft course in my org. For each one, fetch its structure and tell me what is still missing before it can go live (e.g. landing page copy, final exam, certificate rule, lessons without exercises).'
+        'List every unpublished course in my org. For each one, fetch its structure and tell me what is still missing before it can go live (e.g. landing page copy, final exam, certificate rule, lessons without exercises).'
     }
   ];
 

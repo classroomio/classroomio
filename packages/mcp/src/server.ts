@@ -9,7 +9,6 @@ import { registerLessonTools } from './tools/lessons';
 import { registerCohortTools } from './tools/cohorts';
 import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseContentTools } from './tools/course-content';
-import { registerCourseDraftTools } from './tools/course-drafts';
 import { registerCourseLessonTools } from './tools/course-lessons';
 import { registerCourseMemberTools } from './tools/course-members';
 import { registerCourseSectionTools } from './tools/course-sections';
@@ -44,7 +43,6 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
   });
   returnApiErrorsAsToolResults(server);
 
-  registerCourseDraftTools(server, apiClient);
   registerCourseTools(server, apiClient);
   registerCohortTools(server, apiClient);
   registerCohortNewsfeedTools(server, apiClient);

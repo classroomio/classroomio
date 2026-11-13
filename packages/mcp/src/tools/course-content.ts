@@ -29,7 +29,7 @@ const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawS
 export function registerCourseContentTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'reorder_course_content',
-    `Reorder sections and move or reorder lessons and exercises of a live course in one transaction, without a draft; ${COURSE_TEAM_RULE}.`,
+    `Reorder sections and move or reorder lessons and exercises of a course in one transaction; ${COURSE_TEAM_RULE}.`,
     shape(ZReorderCourseContentToolInput),
     UPDATE,
     async (args) => {

@@ -10,7 +10,7 @@ import { env } from '../../config/env';
 import { generateSlug } from '@cio/utils/functions';
 import { getCourseById, isCourseSlugTaken, updateCourseSlug } from '@cio/db/queries/course';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
-import { getDashboardBaseUrl } from '../../config/dashboard-url';
+import { getAppBaseUrl, getDashboardBaseUrl } from '../../config/dashboard-url';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import { updateCourse } from './course';
 
@@ -62,7 +62,69 @@ export async function resolveCourseUrl(organizationId: string, courseId: string,
   return `${getDashboardBaseUrl(organization)}/course/${encodeURIComponent(slug)}`;
 }
 
-async function resolveUnsplashBannerImage(courseTitle: string, query?: string) {
+export type CourseBannerOutcome = {
+  applied: boolean;
+  imageUrl: string | null;
+  source: 'provided' | 'unsplash' | null;
+  reason: 'not_requested' | 'unsplash_not_configured' | 'no_image_found' | 'lookup_failed' | null;
+};
+
+export type CourseLinks = {
+  appUrl: string;
+  landingPageUrl: string | null;
+};
+
+/**
+ * Picks a banner image from an explicit URL or an Unsplash search, and reports why none was chosen.
+ * Never throws: a failed lookup yields `applied: false` so course creation is not blocked by it.
+ */
+export async function resolveCourseBanner(
+  courseTitle: string,
+  options: { bannerImageUrl?: string; generateBannerImage?: boolean; bannerImageQuery?: string }
+): Promise<CourseBannerOutcome> {
+  if (options.bannerImageUrl) {
+    return { applied: true, imageUrl: options.bannerImageUrl, source: 'provided', reason: null };
+  }
+
+  if (!options.generateBannerImage && !options.bannerImageQuery) {
+    return { applied: false, imageUrl: null, source: null, reason: 'not_requested' };
+  }
+
+  if (!env.UNSPLASH_API_KEY) {
+    return { applied: false, imageUrl: null, source: null, reason: 'unsplash_not_configured' };
+  }
+
+  try {
+    const imageUrl = await resolveUnsplashBannerImage(courseTitle, options.bannerImageQuery);
+    if (!imageUrl) {
+      return { applied: false, imageUrl: null, source: null, reason: 'no_image_found' };
+    }
+
+    return { applied: true, imageUrl, source: 'unsplash', reason: null };
+  } catch (error) {
+    console.error('resolveCourseBanner error:', error);
+    return { applied: false, imageUrl: null, source: null, reason: 'lookup_failed' };
+  }
+}
+
+/**
+ * `appUrl` is the staff dashboard page for the course and works at any time; `landingPageUrl` is the public page
+ * and is null until the course is published.
+ */
+export async function buildCourseLinks(
+  organizationId: string,
+  course: Pick<TCourse, 'id' | 'title' | 'isPublished'>
+): Promise<CourseLinks> {
+  const appUrl = `${getAppBaseUrl()}/courses/${course.id}`;
+  if (!course.isPublished) {
+    return { appUrl, landingPageUrl: null };
+  }
+
+  const landingPageUrl = await resolveCourseUrl(organizationId, course.id, course.title);
+  return { appUrl, landingPageUrl };
+}
+
+export async function resolveUnsplashBannerImage(courseTitle: string, query?: string) {
   if (!env.UNSPLASH_API_KEY) {
     return null;
   }

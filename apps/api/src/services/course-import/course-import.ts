@@ -1,7 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { env } from '@cio/core/config/env';
-import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { createCourse, updateCourse } from '@cio/core/services/course/course';
+import { updateCourse } from '@cio/core/services/course/course';
+import { resolveCourseUrl, resolveUnsplashBannerImage } from '@cio/core/services/course/landing-page';
 import { reorderCourseContent, updateCourseContent } from '@cio/core/services/course/content';
 import { DEFAULT_CONTENT_GROUPING } from '@cio/core/services/course/utils';
 import {
@@ -37,12 +36,9 @@ import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
 import type { TCourse, TCourseImportDraft, TLessonLanguage, TLocale, TOrganization } from '@db/types';
 import {
   type TCourseImportDraftCreate,
-  type TCourseImportDraftCreateFromCourse,
   type TCourseImportDraftPayload,
-  type TCourseImportDraftPublish,
   type TCourseImportDraftPublishToCourse,
   type TCourseImportDraftExercise,
-  type TCourseImportDraftUpdate,
   getDraftRootEntries,
   ZCourseImportDraftPayload,
   ZCourseImportWarning
@@ -101,83 +97,9 @@ function buildDraftSummary(draft: TCourseImportDraftPayload): DraftSummary {
   };
 }
 
-async function generateUniqueCourseSlug(baseSlug: string): Promise<string> {
-  let suffix = 0;
-  let candidate = baseSlug;
-
-  while (true) {
-    const taken = await isCourseSlugTaken(candidate);
-    if (!taken) {
-      return candidate;
-    }
-
-    suffix += 1;
-    candidate = `${baseSlug}-${suffix}`;
-  }
-}
-
-async function ensureCourseSlug(courseId: string, title: string | null | undefined): Promise<string> {
-  const [course] = await getCourseById(courseId);
-  if (course?.slug) {
-    return course.slug;
-  }
-
-  const baseSlug = generateSlug(title, { fallback: 'course' });
-  const uniqueSlug = await generateUniqueCourseSlug(baseSlug);
-  const updated = await updateCourseSlug(courseId, uniqueSlug);
-
-  if (!updated) {
-    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-  }
-
-  return updated.slug ?? uniqueSlug;
-}
-
-async function resolveCourseUrl(organizationId: string, courseId: string, title: string) {
-  const organization = await getOrganizationById(organizationId);
-  if (!organization) {
-    throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
-  }
-
-  const slug = await ensureCourseSlug(courseId, title);
-  return `${getDashboardBaseUrl(organization)}/course/${encodeURIComponent(slug)}`;
-}
-
-async function resolveUnsplashBannerImage(courseTitle: string, query?: string) {
-  if (!env.UNSPLASH_API_KEY) {
-    return null;
-  }
-
-  const searchQuery = (query?.trim() || courseTitle.trim() || 'education').slice(0, 120);
-  const response = await fetch(
-    `https://api.unsplash.com/search/photos?page=1&per_page=15&auto=format&fit=crop&w=2970&q=80&client_id=${env.UNSPLASH_API_KEY}&query=${encodeURIComponent(searchQuery)}`,
-    { method: 'GET' }
-  );
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const data = (await response.json()) as {
-    results?: Array<{
-      urls?: {
-        regular?: string;
-      };
-    }>;
-  };
-
-  const photos = data.results ?? [];
-  if (photos.length === 0) {
-    return null;
-  }
-
-  const photo = photos[Math.floor(Math.random() * photos.length)];
-  return photo?.urls?.regular ?? null;
-}
-
 async function resolvePublishBannerImage(
   title: string,
-  overrides: Pick<TCourseImportDraftPublish, 'bannerImageQuery' | 'bannerImageUrl' | 'generateBannerImage'>
+  overrides: Pick<TCourseImportDraftPublishToCourse, 'bannerImageQuery' | 'bannerImageUrl' | 'generateBannerImage'>
 ) {
   if (overrides.bannerImageUrl) {
     return overrides.bannerImageUrl;
@@ -213,43 +135,6 @@ function normalizeDraftTagNames(tagNames: string[]) {
 
 function parseStoredDraft(record: TCourseImportDraft): TCourseImportDraftPayload {
   return ZCourseImportDraftPayload.parse(record.draft);
-}
-
-async function reserveDraftPublishedCourseId(
-  orgId: string,
-  draftId: string,
-  draft: TCourseImportDraftPayload,
-  existingSummary: TCourseImportDraft['summary'],
-  courseId: string
-) {
-  await updateCourseImportDraft(orgId, draftId, {
-    publishedCourseId: courseId,
-    summary: {
-      ...(existingSummary ?? {}),
-      ...buildDraftSummary(draft),
-      publishedCourseId: courseId
-    }
-  });
-}
-
-async function resetCourseContentForDraftRetry(courseId: string) {
-  const [exercises, lessons, sections] = await Promise.all([
-    listExercises(courseId),
-    listLessons(courseId),
-    listCourseSections(courseId)
-  ]);
-
-  for (const exercise of exercises) {
-    await deleteExerciseService(exercise.id);
-  }
-
-  for (const lesson of lessons) {
-    await deleteLessonService(lesson.id);
-  }
-
-  for (const section of sections) {
-    await deleteCourseSectionService(section.id);
-  }
 }
 
 async function assertCourseBelongsToOrganization(orgId: string, courseId: string) {
@@ -681,32 +566,6 @@ export async function createCourseImportDraftService(orgId: string, profileId: s
   }
 }
 
-export async function createCourseImportDraftFromCourseService(
-  orgId: string,
-  profileId: string,
-  data: TCourseImportDraftCreateFromCourse
-) {
-  const snapshot = await buildCourseStructureSnapshot(orgId, data.courseId);
-
-  return createCourseImportDraftService(orgId, profileId, {
-    sourceType: 'course',
-    idempotencyKey: data.idempotencyKey,
-    summary: {
-      sourceCourseId: data.courseId,
-      ...(data.summary ?? {})
-    },
-    sourceArtifacts: [
-      {
-        type: 'course',
-        courseId: data.courseId,
-        label: snapshot.draft.course.title
-      },
-      ...(data.sourceArtifacts ?? [])
-    ],
-    draft: snapshot.draft
-  });
-}
-
 export async function getCourseImportStructureService(orgId: string, courseId: string) {
   try {
     return buildCourseStructureSnapshot(orgId, courseId);
@@ -723,285 +582,13 @@ export async function getCourseImportStructureService(orgId: string, courseId: s
   }
 }
 
-export async function getCourseImportDraftService(orgId: string, draftId: string) {
-  try {
-    const draft = await getCourseImportDraftById(orgId, draftId);
-    if (!draft) {
-      throw new AppError('Course import draft not found', ErrorCodes.COURSE_IMPORT_DRAFT_NOT_FOUND, 404);
-    }
-
-    return draft;
-  } catch (error) {
-    if (error instanceof AppError || error instanceof ZodError) {
-      throw error;
-    }
-
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to fetch course import draft',
-      ErrorCodes.COURSE_IMPORT_FETCH_FAILED,
-      500
-    );
-  }
-}
-
-export async function updateCourseImportDraftService(orgId: string, draftId: string, data: TCourseImportDraftUpdate) {
-  try {
-    const existing = await getCourseImportDraftService(orgId, draftId);
-
-    if (existing.status === 'PUBLISHED') {
-      throw new AppError('Published drafts cannot be edited', ErrorCodes.FORBIDDEN, 403);
-    }
-
-    const nextDraft = data.draft ?? parseStoredDraft(existing);
-    const nextWarnings = data.warnings ?? nextDraft.warnings;
-    const updated = await updateCourseImportDraft(orgId, draftId, {
-      title: nextDraft.course.title,
-      locale: nextDraft.course.locale,
-      draft: nextDraft,
-      warnings: nextWarnings,
-      summary: {
-        ...(existing.summary ?? {}),
-        ...buildDraftSummary(nextDraft),
-        ...(data.summary ?? {})
-      },
-      sourceArtifacts: data.sourceArtifacts ?? existing.sourceArtifacts
-    });
-
-    if (!updated) {
-      throw new AppError('Course import draft not found', ErrorCodes.COURSE_IMPORT_DRAFT_NOT_FOUND, 404);
-    }
-
-    return updated;
-  } catch (error) {
-    if (error instanceof AppError || error instanceof ZodError) {
-      throw error;
-    }
-
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to update course import draft',
-      ErrorCodes.COURSE_IMPORT_UPDATE_FAILED,
-      500
-    );
-  }
-}
-
-export async function updateCourseImportDraftTagsService(
-  orgId: string,
-  draftId: string,
-  tagNames: string[],
-  mode: 'merge' | 'replace'
-) {
-  const existing = await getCourseImportDraftService(orgId, draftId);
-
-  if (existing.status === 'PUBLISHED') {
-    throw new AppError('Published drafts cannot be edited', ErrorCodes.FORBIDDEN, 403);
+async function getCourseImportDraftService(orgId: string, draftId: string) {
+  const draft = await getCourseImportDraftById(orgId, draftId);
+  if (!draft) {
+    throw new AppError('Course import draft not found', ErrorCodes.COURSE_IMPORT_DRAFT_NOT_FOUND, 404);
   }
 
-  const draft = parseStoredDraft(existing);
-  const nextTags =
-    mode === 'replace' ? normalizeDraftTagNames(tagNames) : normalizeDraftTagNames([...draft.tags, ...tagNames]);
-
-  return updateCourseImportDraftService(orgId, draftId, {
-    draft: {
-      ...draft,
-      tags: nextTags
-    }
-  });
-}
-
-export async function publishCourseImportDraftService(
-  orgId: string,
-  profileId: string,
-  draftId: string,
-  overrides: TCourseImportDraftPublish
-): Promise<PublishDraftResult> {
-  try {
-    const existing = await getCourseImportDraftService(orgId, draftId);
-
-    if (existing.status === 'PUBLISHED' && existing.publishedCourseId) {
-      const [publishedCourse] = await getCourseById(existing.publishedCourseId);
-      const courseUrl = await resolveCourseUrl(
-        orgId,
-        existing.publishedCourseId,
-        publishedCourse?.title ?? existing.title
-      );
-      const draft = parseStoredDraft(existing);
-      return {
-        courseId: existing.publishedCourseId,
-        courseUrl,
-        bannerImageUrl: publishedCourse?.bannerImage ?? null,
-        tagNames: normalizeDraftTagNames(draft.tags),
-        createdSections: 0,
-        createdLessons: 0,
-        createdExercises: 0,
-        localeCount: 0
-      };
-    }
-
-    const draft = parseStoredDraft(existing);
-    const courseTitle = overrides.title ?? draft.course.title;
-    const courseDescription = overrides.description ?? draft.course.description;
-    const courseType = overrides.type ?? draft.course.type;
-    const courseMetadata = overrides.metadata ?? draft.course.metadata;
-    const courseCompliance = overrides.compliance ?? draft.course.compliance;
-    const courseUpdateFields: Partial<TCourse> = {
-      title: courseTitle,
-      description: courseDescription,
-      type: courseType
-    };
-    if (courseMetadata) {
-      courseUpdateFields.metadata = courseMetadata;
-    }
-    if (courseCompliance) {
-      courseUpdateFields.compliance = courseCompliance;
-    }
-
-    const sectionExternalIds = new Set(draft.sections.map((section) => section.externalId));
-    draft.lessons.forEach((lesson) => {
-      if (lesson.sectionExternalId && !sectionExternalIds.has(lesson.sectionExternalId)) {
-        throw new AppError(`Lesson "${lesson.title}" references an unknown section`, ErrorCodes.VALIDATION_ERROR, 400);
-      }
-    });
-    const rootOrders = getDraftRootOrders(draft);
-
-    let courseId = existing.publishedCourseId;
-
-    if (courseId) {
-      const [existingCourse] = await getCourseById(courseId);
-      if (!existingCourse || existingCourse.status === 'DELETED') {
-        courseId = null;
-      } else {
-        await updateCourse(courseId, courseUpdateFields);
-        await resetCourseContentForDraftRetry(courseId);
-      }
-    }
-
-    if (!courseId) {
-      const courseResult = await createCourse(
-        profileId,
-        {
-          title: courseTitle,
-          description: courseDescription,
-          type: courseType,
-          organizationId: orgId,
-          compliance: courseCompliance
-        },
-        'import'
-      );
-
-      courseId = courseResult.course.id;
-      await reserveDraftPublishedCourseId(orgId, draftId, draft, existing.summary, courseId);
-      if (courseMetadata) {
-        await updateCourse(courseId, { metadata: courseMetadata });
-      }
-    }
-
-    const bannerImageUrl = await resolvePublishBannerImage(courseTitle, overrides);
-    await maybeApplyCourseBannerImage(courseId, bannerImageUrl);
-
-    const sectionIdMap = new Map<string, string>();
-    for (const section of [...draft.sections].sort((a, b) => a.order - b.order)) {
-      const createdSection = await createCourseSection(courseId, {
-        courseId,
-        title: section.title,
-        order: rootOrders.get(`section:${section.externalId}`)!
-      });
-
-      sectionIdMap.set(section.externalId, createdSection.id);
-    }
-
-    const lessonIdMap = new Map<string, string>();
-    for (const lesson of [...draft.lessons].sort((a, b) => a.order - b.order)) {
-      const sectionId = lesson.sectionExternalId ? sectionIdMap.get(lesson.sectionExternalId) : undefined;
-      if (lesson.sectionExternalId && !sectionId) {
-        throw new AppError('Referenced section was not created', ErrorCodes.VALIDATION_ERROR, 400);
-      }
-
-      const lessonOrder = sectionId ? lesson.order : rootOrders.get(`lesson:${lesson.externalId}`)!;
-      const createdLesson = await createLesson(courseId, {
-        courseId,
-        title: lesson.title,
-        sectionId,
-        order: lessonOrder,
-        isUnlocked: lesson.isUnlocked,
-        public: lesson.public,
-        videos: lesson.videos
-      });
-
-      lessonIdMap.set(lesson.externalId, createdLesson.id);
-    }
-
-    for (const lessonLanguage of draft.lessonLanguages) {
-      const lessonId = lessonIdMap.get(lessonLanguage.lessonExternalId);
-      if (!lessonId) {
-        throw new AppError('Referenced lesson was not created', ErrorCodes.VALIDATION_ERROR, 400);
-      }
-
-      await upsertLessonLanguageService(
-        lessonId,
-        {
-          locale: lessonLanguage.locale as TLocale,
-          content: lessonLanguage.content
-        },
-        // Imported content is a milestone, not an autosave: keep it forever and
-        // don't let a later edit fold into it.
-        { versionIntent: 'manual' }
-      );
-    }
-
-    let createdExercises = 0;
-    for (const exercise of draft.exercises ?? []) {
-      const exerciseOrder = isRootDraftExercise(exercise)
-        ? rootOrders.get(`exercise:${exercise.externalId}`)!
-        : exercise.order;
-      await createExercise({
-        courseId,
-        ...buildExercisePublishPayload(exercise, lessonIdMap, sectionIdMap, exerciseOrder)
-      });
-      createdExercises += 1;
-    }
-
-    const appliedTagNames = normalizeDraftTagNames(draft.tags);
-    if (appliedTagNames.length > 0) {
-      await assignCourseTagsByName(orgId, courseId, {
-        tagNames: appliedTagNames,
-        mode: 'replace'
-      });
-    }
-
-    const courseUrl = await resolveCourseUrl(orgId, courseId, courseTitle);
-
-    await updateCourseImportDraft(orgId, draftId, {
-      status: 'PUBLISHED',
-      publishedCourseId: courseId,
-      summary: {
-        ...(existing.summary ?? {}),
-        ...buildDraftSummary(draft),
-        publishedCourseId: courseId
-      }
-    });
-
-    return {
-      courseId,
-      courseUrl,
-      bannerImageUrl,
-      tagNames: appliedTagNames,
-      createdSections: sectionIdMap.size,
-      createdLessons: lessonIdMap.size,
-      createdExercises,
-      localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
-    };
-  } catch (error) {
-    if (error instanceof AppError || error instanceof ZodError) {
-      throw error;
-    }
-
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to publish course import draft',
-      ErrorCodes.COURSE_IMPORT_PUBLISH_FAILED,
-      500
-    );
-  }
+  return draft;
 }
 
 export async function publishCourseImportDraftToExistingCourseService(
