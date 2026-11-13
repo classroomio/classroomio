@@ -32,20 +32,20 @@ Uploading the file is only the first step. Once the video is attached to a lesso
 ClassroomIO gives you three ways to upload a video:
 
 1. **The dashboard:** an interface where you upload by hand.
-
-   ![classroomio-media-upload-dialog](/blog/how-to-upload-videos-dashboard.png)
-
 2. **The MCP server:** connect your favorite AI agent (Claude, ChatGPT and others) and ask it to do the work.
 3. **The public API:** upload from your own code. That's our focus today.
+
+![classroomio-media-upload-dialog](/blog/how-to-upload-videos-dashboard.png)
+_Uploading a video from the dashboard_
 
 ## Before you start
 
 1. Sign up at [app.classroomio.com](https://app.classroomio.com) and complete the onboarding.
 2. Go to **Automation**, open the **API** tab, and click **Generate API key**. Give the key a name, then create it.
-
-   ![classroomio-api-keys](/blog/how-to-upload-videos-api-keys.png)
-
 3. Copy the key straight away and save it as an environment variable. You'll need it for every request in this article.
+
+![classroomio-api-keys](/blog/how-to-upload-videos-api-keys.png)
+_The API keys page under Automation → API_
 
 ```bash
 CLASSROOMIO_API_KEY=cio_api_your_key_here
