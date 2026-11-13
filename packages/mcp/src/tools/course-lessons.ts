@@ -147,7 +147,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'set_lesson_block_content',
-    `Create or replace a note block's HTML content in one language, recorded in its history as the API key creator. Send the block version you last read as expectedVersion; ${COURSE_TEAM_RULE}.`,
+    `Create or replace a note block's HTML content in one language, recorded in its history under the key creator and the AI client that made the change. Send the block version you last read as expectedVersion; ${COURSE_TEAM_RULE}.`,
     shape(ZSetLessonBlockLocaleToolInput),
     UPDATE,
     async (args) => {
@@ -235,7 +235,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'set_course_lesson_translation',
-    `Create or replace a lesson's HTML content in one language, recorded in the lesson history as the API key creator; ${COURSE_TEAM_RULE}.`,
+    `Create or replace a lesson's HTML content in one language, recorded in the lesson history under the key creator and the AI client that made the change; ${COURSE_TEAM_RULE}.`,
     shape(ZSetCourseLessonTranslationToolInput),
     UPDATE,
     async (args) => {
@@ -246,7 +246,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'list_course_lesson_history',
-    `List saved versions of a lesson's text in one language, newest first; a lesson with several text blocks mixes their versions, and blockId says which block each belongs to; ${COURSE_TEAM_RULE}. ${CURSOR_NOTE}`,
+    `List saved versions of a lesson's text in one language, newest first; a lesson with several text blocks mixes their versions, blockId says which block each belongs to, and source and clientName say who made each change (for an AI client, its name, such as Claude or ChatGPT); ${COURSE_TEAM_RULE}. ${CURSOR_NOTE}`,
     shape(ZListCourseLessonHistoryToolInput),
     READ_ONLY,
     async (args) => {

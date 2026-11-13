@@ -4065,6 +4065,66 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
+    "appUrl": {
+      "description": "Dashboard page where the team edits the course; the link to give the user while it is unpublished",
+      "type": "string",
+    },
+    "banner": {
+      "additionalProperties": false,
+      "properties": {
+        "applied": {
+          "type": "boolean",
+        },
+        "imageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "not_requested",
+                "unsplash_not_configured",
+                "no_image_found",
+                "lookup_failed",
+              ],
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+          "description": "Why no banner was applied; null when one was",
+        },
+        "source": {
+          "anyOf": [
+            {
+              "enum": [
+                "provided",
+                "unsplash",
+              ],
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+      },
+      "required": [
+        "applied",
+        "imageUrl",
+        "source",
+        "reason",
+      ],
+      "type": "object",
+    },
     "course": {
       "additionalProperties": false,
       "properties": {
@@ -4683,6 +4743,17 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
     },
+    "landingPageUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Public landing page; null until the course is published",
+    },
     "memberId": {
       "description": "The key creator's course member id; they are added as a tutor",
       "format": "uuid",
@@ -4691,9 +4762,12 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
     },
   },
   "required": [
+    "appUrl",
+    "landingPageUrl",
     "course",
     "groupId",
     "memberId",
+    "banner",
   ],
   "type": "object",
 }

@@ -1513,7 +1513,8 @@
     "status": {
       "active": "Active",
       "archived": "Archived",
-      "processing": "İşleniyor"
+      "processing": "İşleniyor",
+      "upload_not_finished": "Yükleme tamamlanmadı"
     },
     "table": {
       "title": "Title",
@@ -2955,6 +2956,7 @@
                 "loading_library": "LMedya kitaplığı yükleniyor...",
                 "no_library_videos": "Medya kitaplığınızda video yok",
                 "add_from_library": "Ekle",
+                "upload_not_finished": "Yükleme tamamlanmadı. Bu videonun henüz dosyası yok, bu yüzden eklenemez.",
                 "cancel_upload": "Yüklemeyi iptal et",
                 "upload_cancelled": "Yükleme kullanıcı tarafından iptal edildi",
                 "max_files": "{sayı, çoğul, bir {You can upload # file} diğer {You can upload # files}}",
@@ -3064,6 +3066,7 @@
             "empty_description": "Not, video, slayt, belge veya resim ekleyin. İstediğiniz kadar blok ekleyebilir ve istediğiniz sırayla düzenleyebilirsiniz.",
             "empty_note": "Bu not boş.",
             "scroll_rail": "Ders blokları",
+            "save_failed": "Bu değişiklik kaydedilemedi, bu yüzden blok geri yüklendi. {reason}",
             "go_to_block": "{index} bloğuna git",
             "image": {
               "upload": "Resim yükle",
@@ -3741,6 +3744,8 @@
           "undo_change": "Geri al",
           "by_assistant": "Asistan",
           "by_restore": "Geri yükle",
+          "by_ai_client": "Yapay zeka istemcisi",
+          "by_api": "API",
           "change_added": "{name} eklendi",
           "change_removed": "{name} kaldırıldı",
           "change_moved": "{name} taşındı",
@@ -4729,6 +4734,10 @@
       "csv_hint": "UTF-8 E-posta sütunlu CSV. En fazla {rows} satır, 5 MB.",
       "download_template": "Şablonu indirin",
       "paste_hint": "Satır başına bir adres veya virgülle ayrılmış.",
+      "edit_email": "E-postayı düzenle",
+      "edit_name": "Adı düzenle",
+      "search_placeholder": "Ad veya e-posta",
+      "search_no_results": "Aramanızla eşleşen satır yok.",
       "review": "İnceleme",
       "done": "Done",
       "submit_count": "{count} öğrencilerini içe aktar",

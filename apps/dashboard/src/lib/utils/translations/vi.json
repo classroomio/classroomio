@@ -803,6 +803,10 @@
       "csv_hint": "CSV UTF-8 với cột email. Tối đa {rows} hàng, 5 MB.",
       "download_template": "Tải xuống mẫu",
       "paste_hint": "Một địa chỉ trên mỗi dòng, hoặc phân tách bằng dấu phẩy.",
+      "edit_email": "Chỉnh sửa email",
+      "edit_name": "Chỉnh sửa tên",
+      "search_placeholder": "Tên hoặc email",
+      "search_no_results": "Không có dòng nào khớp với tìm kiếm của bạn.",
       "review": "Xem lại",
       "done": "Hoàn tất",
       "count_ready": "{count} sẵn sàng",
@@ -1814,6 +1818,8 @@
           "undo_change": "Hoàn tác",
           "by_assistant": "Trợ lý",
           "by_restore": "Khôi phục",
+          "by_ai_client": "Ứng dụng AI",
+          "by_api": "API",
           "change_added": "Đã thêm {name}",
           "change_removed": "Đã xóa {name}",
           "change_moved": "Đã di chuyển {name}",
@@ -2504,6 +2510,7 @@
                 "loading_library": "Đang tải thư viện phương tiện...",
                 "no_library_videos": "Không có video nào trong thư viện phương tiện của bạn",
                 "add_from_library": "Thêm",
+                "upload_not_finished": "Tải lên chưa hoàn tất. Video này chưa có tệp nên không thể thêm.",
                 "cancel_upload": "Hủy tải lên",
                 "upload_cancelled": "Tải lên bị người dùng hủy",
                 "max_files": "{count, plural, one {Bạn có thể tải lên # tệp} other {Bạn có thể tải lên # tệp}}",
@@ -2694,6 +2701,7 @@
             "empty_description": "Thêm ghi chú, video, slide, tài liệu hoặc hình ảnh. Bạn có thể thêm bao nhiêu khối tùy thích, theo bất kỳ thứ tự nào.",
             "empty_note": "Ghi chú này trống.",
             "scroll_rail": "Khối bài học",
+            "save_failed": "Không thể lưu thay đổi này nên khối đã được khôi phục. {reason}",
             "go_to_block": "Đi đến khối {index}",
             "image": {
               "upload": "Tải ảnh lên",
@@ -3743,7 +3751,8 @@
     "status": {
       "active": "Đang hoạt động",
       "archived": "Đã lưu trữ",
-      "processing": "Đang xử lý"
+      "processing": "Đang xử lý",
+      "upload_not_finished": "Tải lên chưa hoàn tất"
     },
     "provider": {
       "upload": "Tải lên",

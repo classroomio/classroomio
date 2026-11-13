@@ -1503,7 +1503,8 @@
     "status": {
       "active": "Active",
       "archived": "Archived",
-      "processing": "Processing"
+      "processing": "Processing",
+      "upload_not_finished": "Upload not finished"
     },
     "table": {
       "title": "Title",
@@ -2953,6 +2954,7 @@
                 "loading_library": "Loading media library...",
                 "no_library_videos": "No videos available in your media library",
                 "add_from_library": "Add",
+                "upload_not_finished": "Upload not finished. This video has no file yet, so it can't be added.",
                 "cancel_upload": "Cancel Upload",
                 "upload_cancelled": "Upload cancelled by user",
                 "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
@@ -3078,6 +3080,7 @@
             "empty_learner_description": "Your instructor hasn't added any content to this lesson. Check back soon.",
             "empty_note": "This note is empty.",
             "scroll_rail": "Lesson blocks",
+            "save_failed": "This change couldn't be saved, so the block was restored. {reason}",
             "go_to_block": "Go to block {index}",
             "reading_density": {
               "title": "Reading density",
@@ -3745,6 +3748,8 @@
           "restore_lesson_confirm": "Replace the whole lesson with this version?",
           "by_assistant": "Assistant",
           "by_restore": "Restore",
+          "by_ai_client": "AI client",
+          "by_api": "API",
           "change_kind": {
             "added": "Added",
             "removed": "Removed",
@@ -4721,6 +4726,10 @@
       "csv_hint": "UTF-8 CSV with an email column. Up to {rows} rows, 5 MB.",
       "download_template": "Download the template",
       "paste_hint": "One address per line, or comma separated.",
+      "edit_email": "Edit email",
+      "edit_name": "Edit name",
+      "search_placeholder": "Name or email",
+      "search_no_results": "No rows match your search.",
       "review": "Review",
       "done": "Done",
       "submit_count": "Import {count} students",

@@ -355,8 +355,15 @@
     {
       "idx": 50,
       "version": "7",
-      "when": 1794475749941,
-      "tag": "0050_analytics_performance_indexes",
+      "when": 1794542037000,
+      "tag": "0050_lesson_history_client_name",
+      "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1794581127466,
+      "tag": "0051_analytics_performance_indexes",
       "breakpoints": true
     }
   ]

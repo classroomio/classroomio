@@ -8,6 +8,7 @@
 
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { AiClientBadge } from '@cio/ui/custom/ai-client-badge';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { courseApi, lessonApi } from '$features/course/api';
   import {
@@ -166,6 +167,10 @@
       return t.get('course.navItem.lessons.version_history.by_restore');
     }
 
+    if (version.source === 'api') {
+      return version.clientName ?? t.get('course.navItem.lessons.version_history.by_api');
+    }
+
     return null;
   }
 
@@ -267,6 +272,7 @@
           editCount: item.editCount ?? 1,
           authorName: item.authorName ?? null,
           source: item.source,
+          clientName: item.clientName ?? null,
           changeSetId: item.changeSetId ?? null,
           undoable: item.undoable,
           changes: item.changes,
@@ -546,7 +552,13 @@
                           {$t(`course.navItem.lessons.version_history.kind.${version.kind}`)}
                         </Badge>
                       {/if}
-                      {#if sourceBadgeLabel(version)}
+                      {#if version.source === 'mcp'}
+                        <Badge variant="secondary">
+                          <AiClientBadge
+                            clientName={version.clientName ?? $t('course.navItem.lessons.version_history.by_ai_client')}
+                          />
+                        </Badge>
+                      {:else if sourceBadgeLabel(version)}
                         <Badge variant="secondary">{sourceBadgeLabel(version)}</Badge>
                       {/if}
                     </span>

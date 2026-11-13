@@ -803,6 +803,10 @@
       "csv_hint": "UTF-8 CSV med en e-mail-kolonne. Op til {rows} rækker, 5 MB.",
       "download_template": "Download skabelonen",
       "paste_hint": "Én adresse pr. linje eller kommasepareret.",
+      "edit_email": "Rediger e-mail",
+      "edit_name": "Rediger navn",
+      "search_placeholder": "Navn eller e-mail",
+      "search_no_results": "Ingen rækker matcher din søgning.",
       "review": "Gennemgå",
       "done": "Udført",
       "count_ready": "{count} klar",
@@ -1814,6 +1818,8 @@
           "undo_change": "Fortryd",
           "by_assistant": "Assistent",
           "by_restore": "Gendan",
+          "by_ai_client": "AI-klient",
+          "by_api": "API",
           "change_added": "Tilføjet {name}",
           "change_removed": "Fjernede {name}",
           "change_moved": "Flyttede {name}",
@@ -2504,6 +2510,7 @@
                 "loading_library": "Indlæser mediebibliotek...",
                 "no_library_videos": "Der er ingen tilgængelige videoer i dit mediebibliotek",
                 "add_from_library": "Tilføj",
+                "upload_not_finished": "Upload ikke fuldført. Denne video har ingen fil endnu, så den kan ikke tilføjes.",
                 "cancel_upload": "Annuller upload",
                 "upload_cancelled": "Upload annulleret af brugeren",
                 "max_files": "{count, plural, one {Du kan uploade # fil} other {Du kan uploade # filer}}",
@@ -2694,6 +2701,7 @@
             "empty_description": "Tilføj en note, video, slides, dokument eller billede. Du kan tilføje så mange blokke, som du har brug for, i en hvilken som helst rækkefølge.",
             "empty_note": "Denne note er tom.",
             "scroll_rail": "Lektionsblokke",
+            "save_failed": "Ændringen kunne ikke gemmes, så blokken er blevet gendannet. {reason}",
             "go_to_block": "Gå til blok {index}",
             "image": {
               "upload": "Upload billede",
@@ -3743,7 +3751,8 @@
     "status": {
       "active": "Aktiv",
       "archived": "Arkiveret",
-      "processing": "Behandler"
+      "processing": "Behandler",
+      "upload_not_finished": "Upload ikke fuldført"
     },
     "provider": {
       "upload": "Upload",
