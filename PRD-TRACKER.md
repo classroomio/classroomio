@@ -33,6 +33,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
 | - | - | `prd/gamification` | draft (prototyped; learner XP, streaks, badges, leaderboards, admin settings) |
 | - | - | `prd/insights-analytics` | draft (prototyped in `prototypes/insights-analytics`; learning-time widget blocked on #1299) |
+| - | - | `prd/math-teaching` | draft (math authoring, Photo and Draw to Math, math input and grading, AI, results) |
 
 ## DONE (Completed PRDs)
 
