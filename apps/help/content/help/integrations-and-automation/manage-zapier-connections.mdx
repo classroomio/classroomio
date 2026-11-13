@@ -1,7 +1,7 @@
 ---
 title: 'Manage Zapier connections'
 description: 'See your Zapier connection, disconnect it, resend events that did not reach Zapier, identify triggers turned off after repeated failures, and troubleshoot integration issues.'
-last_reviewed: '2026-11-12'
+last_reviewed: '2026-11-14'
 ---
 
 Organization administrators can see the Zapier connection, disconnect it, resend events that did not reach Zapier, and identify triggers that repeated failures turned off, all from the ClassroomIO dashboard. Re-enabling a disabled trigger happens in Zapier (see below).
@@ -27,12 +27,12 @@ ClassroomIO sends events to Zapier the moment they happen and retries failed del
 
 ## Re-enable triggers that were turned off
 
-After repeated delivery failures ClassroomIO stops retrying and turns that trigger off. While its recent failures are still in the 24-hour window, the Zapier tab shows **Some triggers are disabled** instead of the resend warning, because the trigger is no longer subscribed and has no events to resend:
+After repeated delivery failures ClassroomIO stops retrying and turns that trigger off. While its recent failures are still in the 24-hour window, the Zapier tab shows **Some triggers are disabled**, because the trigger is no longer subscribed and has no events to resend:
 
 1. Fix the receiving end in Zapier: check that the Zap is not turned off or errored, and that its owner still has access to the ClassroomIO connection.
 2. Turn the Zap off and back on in Zapier. ClassroomIO resubscribes the trigger and starts delivering events again.
 
-If both warnings appear, resend the failed events for the active triggers, then re-enable the disabled ones.
+Both warnings can show at the same time, when some triggers are still active and failing while others have been turned off. Resend the failed events for the active triggers, then re-enable the disabled ones.
 
 ## Disconnect Zapier
 
