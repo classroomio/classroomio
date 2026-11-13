@@ -3,6 +3,7 @@ import { InlineMath } from '@tiptap/extension-mathematics';
 import { UndoRedo } from '@tiptap/extensions';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { joinMathText, splitMathText, type MathTextSegment } from '@cio/utils/math';
+import { clipboardMathToMathText } from '../../tools/clipboard-math';
 import 'katex/dist/katex.min.css';
 
 export interface MathNodeClick {
@@ -136,7 +137,8 @@ export function createMathTextEditor(options: MathTextEditorOptions): MathTextEd
     editorProps: {
       attributes: options.attributes,
       handlePaste: (_view, event) => {
-        const pastedText = event.clipboardData?.getData('text/plain');
+        const clipboard = event.clipboardData;
+        const pastedText = clipboard ? (clipboardMathToMathText(clipboard) ?? clipboard.getData('text/plain')) : '';
         if (!pastedText) return false;
 
         const content = toInlineContent(pastedText.replace(/\s*\n\s*/g, ' '));

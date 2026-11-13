@@ -3551,11 +3551,32 @@
   },
   "math_editor": {
     "insert_math": "Mathematik einfügen",
+    "type_tab": "Eingeben",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Mathematik",
+    "palette_label": "Mathematische Strukturen",
     "latex_label": "LaTeX",
     "preview_label": "Vorschau",
     "preview_empty": "LaTeX eingeben, um eine Vorschau zu sehen",
     "done": "Fertig",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "structures": {
+      "fraction": "Bruch",
+      "mixed_number": "Gemischte Zahl",
+      "parentheses": "Klammern",
+      "power": "Potenz",
+      "subscript": "Tiefgestellt",
+      "square_root": "Quadratwurzel",
+      "nth_root": "n-te Wurzel",
+      "absolute_value": "Betrag",
+      "system": "Gleichungssystem",
+      "matrix": "Matrix",
+      "piecewise": "Abschnittsweise Funktion",
+      "integral": "Integral",
+      "sum": "Summe",
+      "limit": "Grenzwert",
+      "derivative": "Ableitung"
+    }
   },
   "navigation": {
     "goto": "Gehe zu",

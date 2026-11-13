@@ -3551,11 +3551,32 @@
   },
   "math_editor": {
     "insert_math": "Chèn công thức toán",
+    "type_tab": "Nhập",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Toán học",
+    "palette_label": "Cấu trúc toán học",
     "latex_label": "LaTeX",
     "preview_label": "Xem trước",
     "preview_empty": "Nhập LaTeX để xem trước",
     "done": "Xong",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "structures": {
+      "fraction": "Phân số",
+      "mixed_number": "Hỗn số",
+      "parentheses": "Dấu ngoặc",
+      "power": "Lũy thừa",
+      "subscript": "Chỉ số dưới",
+      "square_root": "Căn bậc hai",
+      "nth_root": "Căn bậc n",
+      "absolute_value": "Giá trị tuyệt đối",
+      "system": "Hệ phương trình",
+      "matrix": "Ma trận",
+      "piecewise": "Hàm từng khúc",
+      "integral": "Tích phân",
+      "sum": "Tổng",
+      "limit": "Giới hạn",
+      "derivative": "Đạo hàm"
+    }
   },
   "navigation": {
     "goto": "đi đến",

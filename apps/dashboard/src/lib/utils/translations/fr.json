@@ -3551,11 +3551,32 @@
   },
   "math_editor": {
     "insert_math": "Insérer des maths",
+    "type_tab": "Saisir",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Maths",
+    "palette_label": "Structures mathématiques",
     "latex_label": "LaTeX",
     "preview_label": "Aperçu",
     "preview_empty": "Saisissez du LaTeX pour voir un aperçu",
     "done": "Terminé",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "structures": {
+      "fraction": "Fraction",
+      "mixed_number": "Nombre fractionnaire",
+      "parentheses": "Parenthèses",
+      "power": "Puissance",
+      "subscript": "Indice",
+      "square_root": "Racine carrée",
+      "nth_root": "Racine n-ième",
+      "absolute_value": "Valeur absolue",
+      "system": "Système d'équations",
+      "matrix": "Matrice",
+      "piecewise": "Fonction définie par morceaux",
+      "integral": "Intégrale",
+      "sum": "Somme",
+      "limit": "Limite",
+      "derivative": "Dérivée"
+    }
   },
   "navigation": {
     "goto": "Aller à",

@@ -3551,11 +3551,32 @@
   },
   "math_editor": {
     "insert_math": "Indsæt matematik",
+    "type_tab": "Skriv",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Matematik",
+    "palette_label": "Matematiske strukturer",
     "latex_label": "LaTeX",
     "preview_label": "Forhåndsvisning",
     "preview_empty": "Skriv LaTeX for at se en forhåndsvisning",
     "done": "Færdig",
-    "cancel": "Annuller"
+    "cancel": "Annuller",
+    "structures": {
+      "fraction": "Brøk",
+      "mixed_number": "Blandet tal",
+      "parentheses": "Parenteser",
+      "power": "Potens",
+      "subscript": "Sænket skrift",
+      "square_root": "Kvadratrod",
+      "nth_root": "n'te rod",
+      "absolute_value": "Numerisk værdi",
+      "system": "Ligningssystem",
+      "matrix": "Matrix",
+      "piecewise": "Stykvis funktion",
+      "integral": "Integral",
+      "sum": "Sum",
+      "limit": "Grænseværdi",
+      "derivative": "Afledt"
+    }
   },
   "navigation": {
     "goto": "Gå til",

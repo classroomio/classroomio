@@ -2075,11 +2075,32 @@
   },
   "math_editor": {
     "insert_math": "Matematik ekle",
+    "type_tab": "Yaz",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Matematik",
+    "palette_label": "Matematik yapıları",
     "latex_label": "LaTeX",
     "preview_label": "Önizleme",
     "preview_empty": "Önizlemeyi görmek için LaTeX yazın",
     "done": "Bitti",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "structures": {
+      "fraction": "Kesir",
+      "mixed_number": "Tam sayılı kesir",
+      "parentheses": "Parantez",
+      "power": "Üs",
+      "subscript": "Alt simge",
+      "square_root": "Karekök",
+      "nth_root": "n. dereceden kök",
+      "absolute_value": "Mutlak değer",
+      "system": "Denklem sistemi",
+      "matrix": "Matris",
+      "piecewise": "Parçalı fonksiyon",
+      "integral": "İntegral",
+      "sum": "Toplam",
+      "limit": "Limit",
+      "derivative": "Türev"
+    }
   },
   "components": {
     "quiz": {

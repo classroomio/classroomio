@@ -1,6 +1,7 @@
 import type { Editor } from '@tiptap/core';
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
 import { Node } from '@tiptap/pm/model';
+import { clipboardMathToHtml } from '../../tools/clipboard-math';
 
 /**
  * Check if the current browser is in mac or not
@@ -11,12 +12,15 @@ export const isMac =
     : false;
 
 /**
- * Function to handle paste event of an image
+ * Function to handle paste event of math and images. Math (LaTeX, MathML, Word equations) becomes math nodes.
  * @param editor Editor - editor instance
  * @param maxSize number - max size of the image to be pasted in MB, default is 2MB
  */
 export function getHandlePaste(editor: Editor, maxSize: number = 2) {
   return (view: EditorView, event: ClipboardEvent) => {
+    const mathHtml = event.clipboardData ? clipboardMathToHtml(event.clipboardData) : null;
+    if (mathHtml) return editor.commands.insertContent(mathHtml);
+
     const item = event.clipboardData?.items[0];
 
     if (item?.type.indexOf('image') !== 0) {

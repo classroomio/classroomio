@@ -3551,11 +3551,32 @@
   },
   "math_editor": {
     "insert_math": "Вставить формулу",
+    "type_tab": "Ввод",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Формула",
+    "palette_label": "Математические структуры",
     "latex_label": "LaTeX",
     "preview_label": "Предпросмотр",
     "preview_empty": "Введите LaTeX, чтобы увидеть предпросмотр",
     "done": "Готово",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "structures": {
+      "fraction": "Дробь",
+      "mixed_number": "Смешанное число",
+      "parentheses": "Скобки",
+      "power": "Степень",
+      "subscript": "Нижний индекс",
+      "square_root": "Квадратный корень",
+      "nth_root": "Корень n-й степени",
+      "absolute_value": "Модуль",
+      "system": "Система уравнений",
+      "matrix": "Матрица",
+      "piecewise": "Кусочная функция",
+      "integral": "Интеграл",
+      "sum": "Сумма",
+      "limit": "Предел",
+      "derivative": "Производная"
+    }
   },
   "navigation": {
     "goto": "Перейти к",

@@ -26,6 +26,10 @@
   let latex = $state('\\frac{a}{b}');
   let savedLatex = $state('\\frac{a}{b}');
 
+  let primaryAnchor = $state<HTMLElement | null>(null);
+  let isPrimaryOpen = $state(false);
+  let primaryLatex = $state('\\frac{1}{2}');
+
   let emptyFieldValue = $state('');
   let validFieldValue = $state('x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}');
   let invalidFieldValue = $state('\\frac{1}{');
@@ -45,6 +49,31 @@
         labels={DEFAULT_MATH_EDIT_LABELS}
         onSave={(value) => (savedLatex = value)}
         onCancel={() => (latex = savedLatex)}
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Popover Primary Level Numeric Keyboard">
+  {#snippet template()}
+    <div class="flex h-80 flex-col items-start gap-3">
+      <button
+        bind:this={primaryAnchor}
+        type="button"
+        class="rounded border px-3 py-1"
+        onclick={() => (isPrimaryOpen = true)}
+      >
+        Edit fraction
+      </button>
+      <MathEditPopover
+        bind:open={isPrimaryOpen}
+        bind:latex={primaryLatex}
+        anchor={primaryAnchor}
+        keyboard="numeric"
+        level="primary"
+        labels={DEFAULT_MATH_EDIT_LABELS}
+        onSave={() => {}}
+        onCancel={() => {}}
       />
     </div>
   {/snippet}

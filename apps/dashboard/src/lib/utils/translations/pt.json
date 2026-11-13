@@ -3551,11 +3551,32 @@
   },
   "math_editor": {
     "insert_math": "Inserir matemática",
+    "type_tab": "Digitar",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Matemática",
+    "palette_label": "Estruturas matemáticas",
     "latex_label": "LaTeX",
     "preview_label": "Pré-visualização",
     "preview_empty": "Digite LaTeX para ver uma pré-visualização",
     "done": "Concluído",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "structures": {
+      "fraction": "Fração",
+      "mixed_number": "Número misto",
+      "parentheses": "Parênteses",
+      "power": "Potência",
+      "subscript": "Subscrito",
+      "square_root": "Raiz quadrada",
+      "nth_root": "Raiz n-ésima",
+      "absolute_value": "Valor absoluto",
+      "system": "Sistema de equações",
+      "matrix": "Matriz",
+      "piecewise": "Função definida por partes",
+      "integral": "Integral",
+      "sum": "Somatório",
+      "limit": "Limite",
+      "derivative": "Derivada"
+    }
   },
   "navigation": {
     "goto": "Vá para",

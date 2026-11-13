@@ -2065,11 +2065,32 @@
   },
   "math_editor": {
     "insert_math": "Insert math",
+    "type_tab": "Type",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Math",
+    "palette_label": "Math structures",
     "latex_label": "LaTeX",
     "preview_label": "Preview",
     "preview_empty": "Type LaTeX to see a preview",
     "done": "Done",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "structures": {
+      "fraction": "Fraction",
+      "mixed_number": "Mixed number",
+      "parentheses": "Brackets",
+      "power": "Power",
+      "subscript": "Subscript",
+      "square_root": "Square root",
+      "nth_root": "nth root",
+      "absolute_value": "Absolute value",
+      "system": "System of equations",
+      "matrix": "Matrix",
+      "piecewise": "Piecewise function",
+      "integral": "Integral",
+      "sum": "Sum",
+      "limit": "Limit",
+      "derivative": "Derivative"
+    }
   },
   "components": {
     "quiz": {

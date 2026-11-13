@@ -3551,11 +3551,32 @@
   },
   "math_editor": {
     "insert_math": "गणित डालें",
+    "type_tab": "टाइप करें",
+    "latex_tab": "LaTeX",
+    "math_field_label": "गणित",
+    "palette_label": "गणितीय संरचनाएँ",
     "latex_label": "LaTeX",
     "preview_label": "पूर्वावलोकन",
     "preview_empty": "पूर्वावलोकन देखने के लिए LaTeX टाइप करें",
     "done": "हो गया",
-    "cancel": "रद्द करें"
+    "cancel": "रद्द करें",
+    "structures": {
+      "fraction": "भिन्न",
+      "mixed_number": "मिश्र संख्या",
+      "parentheses": "कोष्ठक",
+      "power": "घात",
+      "subscript": "पादांक",
+      "square_root": "वर्गमूल",
+      "nth_root": "n-वाँ मूल",
+      "absolute_value": "निरपेक्ष मान",
+      "system": "समीकरण निकाय",
+      "matrix": "आव्यूह",
+      "piecewise": "खंडशः फलन",
+      "integral": "समाकल",
+      "sum": "योग",
+      "limit": "सीमा",
+      "derivative": "अवकलज"
+    }
   },
   "navigation": {
     "goto": "पर जाएँ",

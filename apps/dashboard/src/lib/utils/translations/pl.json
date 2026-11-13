@@ -3551,11 +3551,32 @@
   },
   "math_editor": {
     "insert_math": "Wstaw wzór",
+    "type_tab": "Wpisz",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Matematyka",
+    "palette_label": "Struktury matematyczne",
     "latex_label": "LaTeX",
     "preview_label": "Podgląd",
     "preview_empty": "Wpisz LaTeX, aby zobaczyć podgląd",
     "done": "Gotowe",
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "structures": {
+      "fraction": "Ułamek",
+      "mixed_number": "Liczba mieszana",
+      "parentheses": "Nawiasy",
+      "power": "Potęga",
+      "subscript": "Indeks dolny",
+      "square_root": "Pierwiastek kwadratowy",
+      "nth_root": "Pierwiastek n-tego stopnia",
+      "absolute_value": "Wartość bezwzględna",
+      "system": "Układ równań",
+      "matrix": "Macierz",
+      "piecewise": "Funkcja przedziałowa",
+      "integral": "Całka",
+      "sum": "Suma",
+      "limit": "Granica",
+      "derivative": "Pochodna"
+    }
   },
   "navigation": {
     "goto": "Idź do",

@@ -2065,11 +2065,32 @@
   },
   "math_editor": {
     "insert_math": "Inserisci matematica",
+    "type_tab": "Digita",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Matematica",
+    "palette_label": "Strutture matematiche",
     "latex_label": "LaTeX",
     "preview_label": "Anteprima",
     "preview_empty": "Digita LaTeX per vedere un'anteprima",
     "done": "Fatto",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "structures": {
+      "fraction": "Frazione",
+      "mixed_number": "Numero misto",
+      "parentheses": "Parentesi",
+      "power": "Potenza",
+      "subscript": "Pedice",
+      "square_root": "Radice quadrata",
+      "nth_root": "Radice n-esima",
+      "absolute_value": "Valore assoluto",
+      "system": "Sistema di equazioni",
+      "matrix": "Matrice",
+      "piecewise": "Funzione definita a tratti",
+      "integral": "Integrale",
+      "sum": "Sommatoria",
+      "limit": "Limite",
+      "derivative": "Derivata"
+    }
   },
   "components": {
     "quiz": {

@@ -543,13 +543,30 @@ Math in plain strings such as question titles, option labels and accepted answer
 
 - **`MathText`** — renders a string with KaTeX. It also renders rich-text editor `data-latex` elements. Every exercise question renderer uses it for titles, options, accepted answers and fill-blank and word-bank tokens.
 - **`MathTextInput`** — one-line editor for text plus inline math, saving `$…$` strings. Typing `$x^2$` turns into a formula; the √ button or a click on a formula opens `MathEditPopover`. TipTap loads lazily on first mount.
-- **`MathEditPopover`** — popover around `MathLatexField` (a LaTeX input with a live KaTeX preview) with Cancel and Done. Done, Enter or a click outside saves; Escape or Cancel discards. The rich-text editor uses the same popover when a formula is clicked. `MathLatexField` is the only part that knows about LaTeX input, so a future MathLive field replaces it without changing the popover's callers.
+- **`MathEditPopover`** — the math box: a **Type** tab with the `MathStructurePalette` above a `MathInput` (MathLive), and a **LaTeX** tab with `MathLatexField` (a LaTeX input with a live KaTeX preview), plus Cancel and Done. Done, Enter or a click outside saves; Escape or Cancel discards. Taps on the MathLive virtual keyboard do not count as a click outside. `keyboard` and `level` choose the keyboard preset and the palette level (defaults `full` and `advanced`). The rich-text editor and `MathTextInput` use the same popover.
 
 Copy is passed as `labels: MathEditLabels` (`DEFAULT_MATH_EDIT_LABELS` holds the English fallbacks). `SafeHtmlContent` and everything built on it (`ZoomableHtmlContent`, block notes, the public lesson view) render editor math through `renderMathInHtml` from `src/tools/render-math.ts`. See `Molecules/MathText`, `Molecules/MathTextInput` and `Molecules/MathEditPopover` in Storybook.
+
+Pasting into the rich-text editor or `MathTextInput` turns math into formulas: LaTeX in `$…$`, `$$…$$`, `\(…\)` and `\[…\]`, MathML (including KaTeX, MathJax and Wikipedia output) and Word equations (OMML in Word's clipboard HTML). Content copied from another ClassroomIO editor pastes as-is, and image paste is unchanged. The conversion lives in `src/tools/clipboard-math.ts`, on top of `ommlToLatex` and `mathmlToLatex` in `@cio/utils/math`.
 
 ```svelte
 <MathText text="Solve $x^2-5x+6=0$" />
 <MathTextInput value={title} {labels} onValueChange={(next) => (title = next)} />
+```
+
+### Math input (`src/custom/math-input/`)
+
+Math entry for students and teachers, built on [MathLive](https://mathlive.io) `<math-field>`. MathLive and the Compute Engine load lazily on first mount (`mathlive-runtime.ts`); until then the component shows a KaTeX preview of `value`, so it is SSR-safe.
+
+- **`MathInput`** — props `value` (LaTeX, bindable), `keyboard`, `placeholder`, `disabled`, `readonly`, `invalid`, `autofocus`, `ariaLabel`. `onInput` fires on every edit with `{ latex, mathjson }`; `onSubmit` fires on Enter or the virtual keyboard's return key. The instance exposes `insert(template)` and `focus()`. On touch devices MathLive shows its virtual keyboard when the field is focused.
+- **`keyboard`** — a preset (`numeric`, `algebra`, `calculus`, `greek`, `sets`, `full`; see `MATH_KEYBOARD_PRESETS`) or an array of built-in MathLive layout names and custom layout objects. The virtual keyboard is shared by the page, so each field applies its layouts when it gains focus.
+- **`MathStructurePalette`** — buttons for structures that are hard to type (fractions, mixed numbers, brackets, powers, subscripts, roots, absolute value, systems, matrices, piecewise functions, integrals, sums, limits, derivatives). `level` (`primary`, `secondary`, `advanced`) shows that level's structures and those of every lower level. `onSelect` receives the structure; pass `structure.insert` to `MathInput.insert`. Copy is `labels: MathStructureLabels` (`DEFAULT_MATH_STRUCTURE_LABELS` holds the English fallbacks).
+
+See `Molecules/MathInput` and `Molecules/MathStructurePalette` in Storybook.
+
+```svelte
+<MathStructurePalette level="secondary" onSelect={(structure) => mathInput.insert(structure.insert)} />
+<MathInput bind:this={mathInput} bind:value={latex} keyboard="algebra" onInput={({ latex, mathjson }) => save(latex, mathjson)} />
 ```
 
 ### Copy input (`src/custom/copy-input/`)
