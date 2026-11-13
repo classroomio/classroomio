@@ -37,6 +37,17 @@ Enables the in-app Unsplash image search.
 |----------|-------------|
 | `UNSPLASH_API_KEY` | Unsplash API access key |
 
+## Zapier and trusted OAuth clients
+
+First-party OAuth clients such as ClassroomIO's native Zapier integration. Register the Zapier client with
+`pnpm --filter @cio/db oauth:register-client` (it prints the client ID and secret once) and store the ID here.
+
+| Variable | Description |
+|----------|-------------|
+| `ZAPIER_OAUTH_CLIENT_ID` | Client ID of the registered Zapier OAuth client — recognizes Zapier grants and restricts their webhook subscription hosts |
+| `ZAPIER_OAUTH_REDIRECT_URIS` | Redirect URIs from the Zapier developer platform, comma-separated — required before running the registration script |
+| `OAUTH_TRUSTED_CLIENT_IDS` | Comma-separated client IDs treated as first-party OAuth clients; they cannot be edited through the client management endpoints |
+
 ## Branding & routing
 
 | Variable | Description |
