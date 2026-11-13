@@ -1818,6 +1818,8 @@
           "undo_change": "Deshacer",
           "by_assistant": "Asistente",
           "by_restore": "Restaurar",
+          "by_ai_client": "Cliente de IA",
+          "by_api": "API",
           "change_added": "Añadido {name}",
           "change_removed": "Eliminado {name}",
           "change_moved": "Movido a {name}",

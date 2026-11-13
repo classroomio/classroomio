@@ -1818,6 +1818,8 @@
           "undo_change": "Cofnij",
           "by_assistant": "Asystent",
           "by_restore": "Przywróć",
+          "by_ai_client": "Klient AI",
+          "by_api": "API",
           "change_added": "Dodano {name}",
           "change_removed": "Usunięto {name}",
           "change_moved": "Przeniesiono {name}",

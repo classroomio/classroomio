@@ -355,8 +355,15 @@
     {
       "idx": 50,
       "version": "7",
+      "when": 1794542037000,
+      "tag": "0050_lesson_history_client_name",
+      "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
       "when": 1794543991662,
-      "tag": "0050_points_numeric",
+      "tag": "0051_points_numeric",
       "breakpoints": true
     }
   ]

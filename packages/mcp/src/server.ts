@@ -9,7 +9,6 @@ import { registerLessonTools } from './tools/lessons';
 import { registerCohortTools } from './tools/cohorts';
 import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseContentTools } from './tools/course-content';
-import { registerCourseDraftTools } from './tools/course-drafts';
 import { registerCourseLessonTools } from './tools/course-lessons';
 import { registerCourseMemberTools } from './tools/course-members';
 import { registerCourseSectionTools } from './tools/course-sections';
@@ -43,8 +42,12 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
     version: MCP_VERSION
   });
   returnApiErrorsAsToolResults(server);
+  server.server.oninitialized = () => {
+    const clientName = server.server.getClientVersion()?.name;
 
-  registerCourseDraftTools(server, apiClient);
+    if (clientName) apiClient.setClientName(clientName);
+  };
+
   registerCourseTools(server, apiClient);
   registerCohortTools(server, apiClient);
   registerCohortNewsfeedTools(server, apiClient);

@@ -1818,6 +1818,8 @@
           "undo_change": "पूर्ववत करें",
           "by_assistant": "सहायक",
           "by_restore": "पुनर्स्थापित करें",
+          "by_ai_client": "एआई क्लाइंट",
+          "by_api": "API",
           "change_added": "{name} जोड़ा गया",
           "change_removed": "{name} हटा दिया गया",
           "change_moved": "{name} ले जाया गया",
