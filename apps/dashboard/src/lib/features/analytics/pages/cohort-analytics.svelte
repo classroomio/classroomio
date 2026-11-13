@@ -7,7 +7,8 @@
   import { cohortApi } from '$features/cohort/api';
   import { RefreshPageData } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
+  import { findOwnerOrgToSwitch } from '$features/org/utils/owner-org-utils';
+  import { currentOrg, isOrgAdmin, orgs } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
 
   import { analyticsApi, analyticsStudentsApi, analyticsStudentSheetApi } from '../api';
@@ -29,10 +30,12 @@
   const canView = $derived($isOrgAdmin === true || (memberRole !== null && memberRole <= ROLE.TUTOR));
   const scope = $derived({ type: 'cohort' as const, id: cohortId });
   const courses = $derived(analyticsApi.dashboard?.scope.courses ?? []);
+  const ownerOrgId = $derived(cohortApi.cohort?.id === cohortId ? cohortApi.cohort.organizationId : undefined);
 
   $effect(() => {
     const organizationId = $currentOrg.id;
     if (!organizationId || !canView) return;
+    if (findOwnerOrgToSwitch(ownerOrgId, organizationId, $orgs)) return;
 
     const key = `${organizationId}:${cohortId}`;
     if (key === loadedKey) return;
