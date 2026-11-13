@@ -3545,6 +3545,14 @@
     "write": "Skriv",
     "preview": "Forhåndsvisning"
   },
+  "math_editor": {
+    "insert_math": "Indsæt matematik",
+    "latex_label": "LaTeX",
+    "preview_label": "Forhåndsvisning",
+    "preview_empty": "Skriv LaTeX for at se en forhåndsvisning",
+    "done": "Færdig",
+    "cancel": "Annuller"
+  },
   "navigation": {
     "goto": "Gå til",
     "courses": "Kurser",

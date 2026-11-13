@@ -112,6 +112,12 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'question.media.next_image': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.next_image'
     ),
+    'question.math.insert': t.get('math_editor.insert_math'),
+    'question.math.latex_label': t.get('math_editor.latex_label'),
+    'question.math.preview_label': t.get('math_editor.preview_label'),
+    'question.math.preview_empty': t.get('math_editor.preview_empty'),
+    'question.math.done': t.get('math_editor.done'),
+    'question.math.cancel': t.get('math_editor.cancel'),
     'radio.edit.helper': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.radio.edit.helper'),
     'radio.edit.correct_selected_tooltip': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.radio.edit.correct_selected_tooltip'

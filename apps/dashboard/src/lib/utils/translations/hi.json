@@ -3545,6 +3545,14 @@
     "write": "लिखो",
     "preview": "पूर्वावलोकन"
   },
+  "math_editor": {
+    "insert_math": "गणित डालें",
+    "latex_label": "LaTeX",
+    "preview_label": "पूर्वावलोकन",
+    "preview_empty": "पूर्वावलोकन देखने के लिए LaTeX टाइप करें",
+    "done": "हो गया",
+    "cancel": "रद्द करें"
+  },
   "navigation": {
     "goto": "पर जाएँ",
     "courses": "पाठ्यक्रम",

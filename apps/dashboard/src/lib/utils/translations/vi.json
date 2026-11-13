@@ -3545,6 +3545,14 @@
     "write": "Viết",
     "preview": "Xem trước"
   },
+  "math_editor": {
+    "insert_math": "Chèn công thức toán",
+    "latex_label": "LaTeX",
+    "preview_label": "Xem trước",
+    "preview_empty": "Nhập LaTeX để xem trước",
+    "done": "Xong",
+    "cancel": "Hủy"
+  },
   "navigation": {
     "goto": "đi đến",
     "courses": "Khóa học",

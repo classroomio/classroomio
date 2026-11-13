@@ -3545,6 +3545,14 @@
     "write": "Napisz",
     "preview": "Podgląd"
   },
+  "math_editor": {
+    "insert_math": "Wstaw wzór",
+    "latex_label": "LaTeX",
+    "preview_label": "Podgląd",
+    "preview_empty": "Wpisz LaTeX, aby zobaczyć podgląd",
+    "done": "Gotowe",
+    "cancel": "Anuluj"
+  },
   "navigation": {
     "goto": "Idź do",
     "courses": "Kursy",

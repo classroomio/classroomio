@@ -3545,6 +3545,14 @@
     "write": "Schreiben",
     "preview": "Vorschau"
   },
+  "math_editor": {
+    "insert_math": "Mathematik einfügen",
+    "latex_label": "LaTeX",
+    "preview_label": "Vorschau",
+    "preview_empty": "LaTeX eingeben, um eine Vorschau zu sehen",
+    "done": "Fertig",
+    "cancel": "Abbrechen"
+  },
   "navigation": {
     "goto": "Gehe zu",
     "courses": "Kurse",

@@ -19,6 +19,7 @@ import MathMatics from '@tiptap/extension-mathematics';
 import AutoJoiner from 'tiptap-extension-auto-joiner';
 import 'katex/dist/katex.min.css';
 import { InlineMathReplacer } from './extensions/InlineMathReplacer';
+import type { MathNodeClickHandler } from './types';
 
 export default (
   element?: HTMLElement,
@@ -26,7 +27,8 @@ export default (
   extensions?: Extensions,
   options?: Partial<EditorOptions>,
   placeholder?: string | ((node: any) => string),
-  emailSafe = false
+  emailSafe = false,
+  onMathClick?: MathNodeClickHandler
 ) => {
   const starterKitConfig = {
     heading: { levels: [1, 2, 3, 4] },
@@ -100,20 +102,10 @@ export default (
           InlineMathReplacer,
           MathMatics.configure({
             blockOptions: {
-              onClick: (node, pos) => {
-                const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
-                if (newCalculation) {
-                  editor.chain().setNodeSelection(pos).updateBlockMath({ latex: newCalculation }).focus().run();
-                }
-              }
+              onClick: (node, pos) => onMathClick?.({ latex: String(node.attrs.latex ?? ''), pos, type: 'block' })
             },
             inlineOptions: {
-              onClick: (node, pos) => {
-                const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
-                if (newCalculation) {
-                  editor.chain().setNodeSelection(pos).updateInlineMath({ latex: newCalculation }).focus().run();
-                }
-              }
+              onClick: (node, pos) => onMathClick?.({ latex: String(node.attrs.latex ?? ''), pos, type: 'inline' })
             }
           }),
           AutoJoiner,

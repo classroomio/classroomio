@@ -2063,6 +2063,14 @@
     "write": "Write",
     "preview": "Preview"
   },
+  "math_editor": {
+    "insert_math": "Insert math",
+    "latex_label": "LaTeX",
+    "preview_label": "Preview",
+    "preview_empty": "Type LaTeX to see a preview",
+    "done": "Done",
+    "cancel": "Cancel"
+  },
   "components": {
     "quiz": {
       "title": "Quizzes",

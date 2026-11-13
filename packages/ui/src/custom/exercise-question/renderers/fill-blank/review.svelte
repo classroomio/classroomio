@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import LabeledValueRow from '../shared/labeled-value-row.svelte';
+  import { MathText } from '../../../math-text';
 
   let { question, answer = null, labels }: ExerciseQuestionRendererProps = $props();
 
@@ -24,6 +25,6 @@
     value={studentJoined || label('common.not_set')}
   />
   <p class="ui:text-muted-foreground ui:text-sm">
-    {label('fill_blank.preview.accepted_answers_label')}: {acceptedRaw || label('common.not_set')}
+    {label('fill_blank.preview.accepted_answers_label')}: <MathText text={acceptedRaw || label('common.not_set')} />
   </p>
 </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { cn } from '../../../../tools';
+  import { MathText } from '../../../math-text';
 
   interface Props {
     /** Muted label (already translated by caller). */
@@ -16,5 +17,5 @@
 <p class={cn('ui:text-sm', className)}>
   <span class="ui:text-muted-foreground">{label}</span>
   {' '}
-  <span class={cn('ui:font-medium', valueClass)}>{value}</span>
+  <span class={cn('ui:font-medium', valueClass)}><MathText text={value} /></span>
 </p>

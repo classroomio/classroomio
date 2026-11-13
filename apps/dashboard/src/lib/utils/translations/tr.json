@@ -2073,6 +2073,14 @@
     "write": "Write",
     "preview": "Önizleme"
   },
+  "math_editor": {
+    "insert_math": "Matematik ekle",
+    "latex_label": "LaTeX",
+    "preview_label": "Önizleme",
+    "preview_empty": "Önizlemeyi görmek için LaTeX yazın",
+    "done": "Bitti",
+    "cancel": "İptal"
+  },
   "components": {
     "quiz": {
       "title": "Sınavlar",

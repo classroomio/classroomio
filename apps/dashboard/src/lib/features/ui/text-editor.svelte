@@ -22,6 +22,7 @@
   import { cn } from '@cio/ui/tools';
   import { uploadImage } from '$lib/utils/services/upload';
   import { queryUnsplash } from './upload-widget/utils';
+  import { t } from '$lib/utils/functions/translations';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
@@ -64,6 +65,15 @@
     expandedTitle = '',
     expandedDescription = ''
   }: Props = $props();
+
+  const mathEditLabels = $derived({
+    insertMath: $t('math_editor.insert_math'),
+    latexLabel: $t('math_editor.latex_label'),
+    previewLabel: $t('math_editor.preview_label'),
+    previewEmpty: $t('math_editor.preview_empty'),
+    done: $t('math_editor.done'),
+    cancel: $t('math_editor.cancel')
+  });
 </script>
 
 {#await loadEditor()}
@@ -99,5 +109,6 @@
     bind:expanded
     {expandedTitle}
     {expandedDescription}
+    mathLabels={mathEditLabels}
   />
 {/await}

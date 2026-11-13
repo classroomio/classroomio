@@ -27,6 +27,7 @@
   import { QUESTION_TYPES } from '$features/ui/question/constants';
   import { ExerciseQuestion } from '@cio/ui';
   import { Badge } from '@cio/ui/base/badge';
+  import { MathText } from '@cio/ui/custom/math-text';
   import * as Tooltip from '@cio/ui/base/tooltip';
 
   import OrderModal from './order-modal.svelte';
@@ -491,7 +492,7 @@
     <span class="ui:text-muted-foreground w-6 text-sm font-medium tabular-nums">{index + 1}</span>
     <div class="min-w-0 flex-1">
       <p class="truncate text-sm font-semibold">
-        {question.title || getExerciseEditorQuestionTypeLabel(question?.questionType)}
+        <MathText text={question.title || getExerciseEditorQuestionTypeLabel(question?.questionType)} />
       </p>
       <p class="ui:text-muted-foreground text-xs">{getExerciseEditorQuestionTypeLabel(question?.questionType)}</p>
     </div>
