@@ -120,7 +120,7 @@ export async function evaluateAllPublicApiCohortGoalsService(
   return evaluateCohortGoals(params.cohortId);
 }
 
-/** Emails the overdue learners of the cohort's active goals now; the reminder run caps the day per assignment. */
+/** Emails the overdue students of the cohort's active goals now; the reminder run caps the day per assignment. */
 export async function remindPublicApiOverdueCohortGoalsService(
   orgId: string,
   actorId: string | null,
