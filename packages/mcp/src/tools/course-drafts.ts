@@ -174,7 +174,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'publish_course_draft_to_existing_course',
-    'Apply a draft back onto an existing live course. Create that draft from the live course first.',
+    'Apply the draft to the selected existing course and finalize it without changing whether that course is published; report this as applied, not published. Create the draft from that course first.',
     publishCourseDraftToExistingCourseShape,
     DESTRUCTIVE,
     async (args) => {

@@ -494,6 +494,8 @@ Lesson authoring rule:
 
 Once a draft has been published, the live course becomes the safer source of truth.
 
+`PUBLISHED` is the draft's workflow status, not a guarantee about the course's visibility. `publish_course_draft` creates and publishes a new course; `publish_course_draft_to_existing_course` applies the draft to an existing course and finalizes the draft without changing whether that course is published. Report the latter as applied to the course, not as the course being published.
+
 Recommended agent rule:
 
 - if the draft is still `DRAFT`, continue editing that draft
@@ -632,9 +634,10 @@ Expected tool sequence:
 5. User reviews the changes.
 6. Agent calls `publish_course_draft_to_existing_course`.
 
-What this publish does today:
+What applying the draft does:
 
 - updates the existing course title, description, type, and metadata
+- leaves the course's published or unpublished state unchanged
 - can set a generated course cover from Unsplash
 - returns the public `courseUrl`
 - updates existing sections when the draft keeps their IDs

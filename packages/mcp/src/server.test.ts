@@ -94,6 +94,33 @@ describe('createMcpServer', () => {
 
     expect(tools.find((tool) => tool.name === name)?.annotations).toMatchObject({ readOnlyHint, destructiveHint });
   });
+
+  it('titles lesson tools and marks them as direct course writes', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+    const createLesson = tools.find((tool) => tool.name === 'create_lesson');
+    const updateLesson = tools.find((tool) => tool.name === 'update_lesson');
+
+    expect(createLesson?.annotations).toMatchObject({
+      title: 'Create lesson',
+      readOnlyHint: false,
+      destructiveHint: false
+    });
+    expect(createLesson?.description).toContain('directly in the selected course, not in a saved course draft');
+    expect(updateLesson?.annotations).toMatchObject({
+      title: 'Update lesson',
+      readOnlyHint: false,
+      destructiveHint: false
+    });
+    expect(updateLesson?.description).toContain('directly in the selected course, not a saved course draft');
+  });
+
+  it('distinguishes applying a draft from publishing a course', async () => {
+    const { tools } = await (await connect({ includeLocalFileTools: false })).listTools();
+    const tool = tools.find((candidate) => candidate.name === 'publish_course_draft_to_existing_course');
+
+    expect(tool?.description).toContain('without changing whether that course is published');
+    expect(tool?.description).toContain('report this as applied, not published');
+  });
 });
 
 describe('ClassroomIoApiClient transport', () => {
