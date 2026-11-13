@@ -1,0 +1,84 @@
+---
+title: Use the AI assistant in the course editor
+description: Open the course assistant, ask it to draft or edit content, review and implement its plan, follow a generation run, and revisit past chats.
+last_reviewed: '2026-11-13'
+---
+
+The **Assistant** panel lets you chat with an AI helper while you work on a course. It can read your course structure, draft and edit lessons and exercises, and work from a plan you approve. To start a brand-new course from a prompt, see [Create a course with AI](/build-courses/create-a-course-with-ai).
+
+## Before you start
+
+The assistant only appears when AI features are enabled for your deployment. Requests use your organization's AI allowance; see [View and manage AI credits](/account-team-security/view-and-manage-ai-credits). Some models are locked on the free plan, and attaching a document shows **Upgrade to upload documents** there.
+
+## Open the assistant
+
+### 1. Use the course header
+
+Open any course and select **Assistant** in the course header. Select it again to close the panel.
+
+### 2. Optional: pop it out
+
+On wider screens, use **Pop out chat** beside the button to float the assistant over the page while you work. In the floating window, use **Close floating chat** to close it, or the expand control to dock it back to the side.
+
+### 3. Or use the Ask AI bar
+
+On a lesson or exercise page (while the assistant panel is closed and you are not editing the lesson), an **Ask AI** bar appears. Select it, or press `Ctrl` + `I` (`⌘` + `I` on Mac), type your question, and press `Enter`. The assistant opens and sends it. Press `Esc` to close the bar.
+
+## What you can ask
+
+The empty chat suggests starting points. Select one, or type your own request:
+
+- **Upload a document to create a course**
+- **Draft a lesson**
+- **Generate questions from this lesson**
+- **Summarize this lesson**
+- **Help me publish this course**
+
+Type `@` in the message box to mention a lesson, exercise, or section so the assistant knows exactly which content you mean. Mentions in replies become links that open that content.
+
+Use the paperclip to attach a document (PDF, DOCX, PPTX, or ODT, up to 5 MB). Pick a model from the model picker next to the send controls. While the assistant is answering, use the stop button to interrupt it.
+
+## Review and implement a plan
+
+For larger work, the assistant proposes a plan card showing sections, lessons, and exercises.
+
+### 1. Adjust the plan
+
+Expand the card with **Expand plan**. Select the plan title, a section name, a lesson or exercise title, or a description to edit it in place.
+
+### 2. Check the estimate
+
+The card shows **Estimated cost** in tokens and, when known, the percentage of your remaining allowance.
+
+### 3. Implement or ask for changes
+
+Select **Implement Plan** to start building. To revise the plan instead, type in **Tell me what to change about the plan…** and send it.
+
+## Follow a generation run
+
+After you implement a plan, the assistant builds the course in the background. A progress card shows the steps completed, and while the run is active the chat input is paused (**Chat is paused while the agent finishes building the course. Cancel or wait for it to complete.**). Don't reload the page while the agent is running.
+
+Use the run controls below the card:
+
+- **Cancel generation** stops the run. Content already created is kept.
+- **Resume** continues a paused, canceled, or waiting run.
+- **Retry** appears after a failure.
+- **Dismiss** leaves a canceled run. You are asked to confirm with **Walk away** or **Stay here**; afterwards the Resume button is gone and further chat will not continue the plan.
+
+If a run waits more than 30 seconds without starting, you see **Worker not responding** and can select **Retry**.
+
+When a run ends, a **changes card** lists the items that were created or edited (for example **{count} items changed**, with a status such as **Completed**, **Failed**, or **Canceled**). Select an item to open that lesson or exercise. The card is a record, not an approval step: there is no accept or reject button, so review each item yourself. To undo a lesson change afterward, see [Recover drafts and use version history](/build-courses/recover-drafts-and-use-version-history).
+
+## Chat history and long conversations
+
+Select the history icon (**Chat History**) in the panel header to reopen an earlier conversation, or the new-chat icon (**New chat**) to start fresh. Select the pencil beside a conversation title to rename it. The header also shows token usage against your allowance.
+
+When a conversation gets too long, the panel shows **Context window is full**. Choose **Compact conversation** to summarize older messages in place, or **Start new chat with summary**.
+
+If your monthly tokens run out, the input shows **Monthly AI token limit reached.** with a **Buy more** link.
+
+## Related guides
+
+- [Create a course with AI](/build-courses/create-a-course-with-ai)
+- [View and manage AI credits](/account-team-security/view-and-manage-ai-credits)
+- [Create an exercise with AI or a template](/build-courses/create-an-exercise-with-ai-or-a-template)

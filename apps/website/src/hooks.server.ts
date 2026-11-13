@@ -49,5 +49,9 @@ export const handle: Handle = async ({ event, resolve }) => {
     return Response.redirect(location.toString(), status);
   }
 
-  return resolve(event);
+  const resolved = await resolve(event);
+  const response = new Response(resolved.body, resolved);
+  response.headers.append('link', '</llms.txt>; rel="describedby"; type="text/plain"');
+
+  return response;
 };
