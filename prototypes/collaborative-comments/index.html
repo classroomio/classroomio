@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Collaborative Comments · Lesson page · ClassroomIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var theme = 'light';
+        try {
+          theme = localStorage.getItem('commentsProtoTheme') || 'light';
+        } catch (e) {}
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+      })();
+    </script>
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="shell.css?v=20" />
+    <link rel="stylesheet" href="comments.css?v=20" />
+  </head>
+  <body>
+    <div class="proto-bar">
+      <strong>Prototype <span class="v2-tag">v2</span></strong>
+      <button class="btn btn-sm story-btn" id="story" title="Watch the whole feature acted out step by step">
+        ▶ Play guided story
+      </button>
+    </div>
+
+    <div class="cs-app">
+      <aside class="cs-side" id="side" aria-label="Course navigation"></aside>
+      <main class="cs-main">
+        <header class="cs-head" id="head"></header>
+        <div class="pg" id="page"></div>
+      </main>
+    </div>
+
+    <aside class="sp" id="panel" aria-label="Comments"></aside>
+    <div class="sp-resize" id="spResize" title="Drag to resize, double-click to reset" aria-hidden="true"></div>
+    <aside class="coach" id="coach" aria-live="polite" hidden></aside>
+
+    <button class="float-comment" id="floatComment" hidden></button>
+    <div class="toast" id="toast" hidden></div>
+    <div class="dialog-overlay" id="dialog" hidden></div>
+
+    <script src="icons.js?v=20"></script>
+    <script src="comments.js?v=20"></script>
+  </body>
+</html>
