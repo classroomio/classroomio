@@ -26,7 +26,7 @@ ClassroomIO API
   |
   | 4. Validates payloads
   | 5. Resolves the organization from the key
-  | 6. Creates drafts or applies changes to a course
+  | 6. Creates courses or applies changes to them directly
   v
 ClassroomIO DB
 ```
@@ -54,8 +54,8 @@ The API imports `createMcpServer` and `ClassroomIoApiClient` from `@classroomio/
 1. The agent owns reasoning.
 2. The MCP package owns transport and input validation.
 3. ClassroomIO API remains the trust boundary for auth, validation, and persistence.
-4. Draft creation and publish are separate operations.
-5. Updating an existing course is done through a seeded draft, not blind writes to the live course.
+4. New courses start unpublished, and only `publish_course` makes a course visible to students.
+5. Agents write directly into the course; lesson version history lets the team review or undo changes to lesson content and blocks.
 
 ## Tool Surface
 
@@ -64,11 +64,9 @@ Current tools:
 - `list_org_courses`
 - `get_course_structure`
 - `update_course_landing_page`
-- `create_course_draft`
-- `create_course_draft_from_course`
-- `get_course_draft`
-- `update_course_draft`
-- `tag_course_draft`
+- `create_course`
+- `publish_course`
+- `unpublish_course`
 - `tag_courses`
 - `clone_course`
 - `list_related_courses`
@@ -79,8 +77,6 @@ Current tools:
 - `create_tag_group`
 - `update_tag_group`
 - `set_course_tags`
-- `publish_course_draft`
-- `publish_course_draft_to_existing_course`
 - `list_course_members`
 - `add_course_member`
 - `get_course_member`
@@ -194,7 +190,7 @@ Course section, lesson and content tools:
 - `list_course_lessons`, `get_course_lesson`, `delete_course_lesson`, `notify_course_lesson_session_update`
 - `list_lesson_blocks`, `add_lesson_block`, `attach_lesson_block`, `update_lesson_block`, `set_lesson_block_content`, `update_lesson_block_placement`, `move_lesson_block`, `remove_lesson_block`, `duplicate_lesson_block`
 - `list_course_lesson_translations`, `set_course_lesson_translation` (these read and write the lesson's first note block)
-- `list_course_lesson_history` (the text versions of every text block in one language, newest first, with `blockId` naming the block; it does not include blocks being added, moved or removed, and there is no MCP restore or undo)
+- `list_course_lesson_history` (the text versions of every text block in one language, newest first, with `blockId` naming the block and `source` and `clientName` naming who made each change, such as Claude or ChatGPT; it does not include blocks being added, moved or removed, and there is no MCP restore or undo)
 - `list_course_lesson_comments`, `create_course_lesson_comment`, `update_course_lesson_comment`, `delete_course_lesson_comment`
 - `reorder_course_content`, `set_course_content_unlocked`, `delete_course_content`
 
@@ -302,11 +298,11 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
-Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course draft tools above call internal-only endpoints and use their own scopes (`course_import:draft:*`, `course:read`/`write`, etc.), except `list_org_courses`, which calls `GET /public-api/v1/courses` with the `course:read` scope. Both kinds count toward the same MCP rate limits. `list_course_members` takes the dashboard People page's filters and sort (`progress`, `membership`, `enrolledWithin`, `lastLoginBefore`, `certificateEarned`, `sortBy`, `sortOrder`).
+Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course tools call the public API too: `list_org_courses` and `get_course_structure` need `course:read`, and `create_course`, `publish_course` and `unpublish_course` need `course:write`, which MCP keys have by default. `update_course_landing_page` calls an internal endpoint with its own scopes. Both kinds count toward the same MCP rate limits. `list_course_members` takes the dashboard People page's filters and sort (`progress`, `membership`, `enrolledWithin`, `lastLoginBefore`, `certificateEarned`, `sortBy`, `sortOrder`).
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. Domain tools call `/public-api/v1/organization/domain/...` and need `organization:read` (reads) and `organization:domain:write` (everything else), also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the course list (`GET /public-api/v1/courses`, with `course:read`), the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, organization customization, email template, landing page and domain, and tag routes, plus a course update that sends only `tagIds` or `addTagIds`. The other course/draft tools above, apart from `list_org_courses`, call internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. Audience and team tools call `/public-api/v1/audience/...` and `/public-api/v1/team/...` and need `audience:read` / `audience:write` and `team:read` / `team:write`, also on by default. Email template tools call `/public-api/v1/organization/email-templates/...` and need `organization:read` / `organization:write`, also on by default. Domain tools call `/public-api/v1/organization/domain/...` and need `organization:read` (reads) and `organization:domain:write` (everything else), also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the course list and course create (`GET` and `POST /public-api/v1/courses`, with `course:read` and `course:write`), a course's structure (`GET /public-api/v1/courses/:id/structure`), publish and unpublish (`POST /public-api/v1/courses/:id/publish` and `/unpublish`, with `course:write`), the cohort, course member and invite, course certificate, course section, lesson and content, course clone, course template, course exercise and exercise template, course submission and marks, student activity, asset upload, analytics, audience, team, organization customization, email template, landing page and domain, and tag routes, plus a course update that sends only `tagIds` or `addTagIds`. `update_course_landing_page` calls an internal endpoint and uses its own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -457,63 +453,32 @@ codex mcp add classroomio \
 }
 ```
 
-## Draft Model
+## Authoring Model
 
-A draft is a saved, structured course proposal. It is not the live course.
-
-Draft payload shape:
-
-```text
-draft
-  course
-  tags[]
-  sections[]
-  lessons[]
-  lessonLanguages[]
-  warnings[]
-  sourceReferences[] optional
-  exercises[] optional
-```
-
-Drafts support:
-
-- review before publish
-- iterative edits from the agent
-- safer updates to existing courses
-- auditability of AI-generated structure
+Agents build and edit courses directly. `create_course` makes a new course that is unpublished, and every later tool (`create_course_section`, `create_lesson`, `add_lesson_block`, the exercise tools, `update_course_landing_page`) writes straight into that course. Changes to a lesson's content and blocks are saved in the lesson's version history (`list_course_lesson_history`), which is how the team reviews or undoes what an agent wrote there. Title, order and video changes made with `update_lesson` record no revision. Nothing is visible to students until `publish_course` runs.
 
 Lesson authoring rule:
 
-- `lessonLanguages[].content` should contain only the lesson body HTML
+- lesson note content should contain only the lesson body HTML
 - do not include the lesson title
 - do not use `h1` or `h2` in lesson content
 - start headings at `h3`
 - ClassroomIO already renders the lesson title in the course UI
 
-## After Publish
+### Links to give the user
 
-Once a draft has been published, the live course becomes the safer source of truth.
+`create_course`, `publish_course` and `unpublish_course` each return two links:
 
-Recommended agent rule:
+- `appUrl`: the dashboard page where the team edits the course. Hand this one to the user while the course is unpublished.
+- `landingPageUrl`: the public landing page. It is `null` until the course is published; hand it to the user only once it is not null.
 
-- if the draft is still `DRAFT`, continue editing that draft
-- if the draft is `PUBLISHED`, do not keep reusing it for major follow-up edits
-- instead, read the live course and create a fresh draft from that course
+### Course banner
 
-Recommended post-publish sequence:
+`create_course` adds a banner by default, picked from an Unsplash search on the course title (it needs `UNSPLASH_API_KEY` on the server). Pass `bannerImageUrl` to use your own image (any public image URL works, including Unsplash photo URLs), `bannerImageQuery` to change the search text, or `generateBannerImage: false` for no banner. The `banner` field in the result says whether one was applied (`applied`, `imageUrl`, `source`) and, when not, why (`reason`: `not_requested`, `unsplash_not_configured`, `no_image_found` or `lookup_failed`). A lookup failure never blocks course creation. `update_course_landing_page` takes the same choices as `imageUrl`, `generateImage` and `imageQuery`. There is no image upload tool; `upload_video` handles video only.
 
-1. `get_course_structure`
-2. `create_course_draft_from_course`
-3. `update_course_draft`
-4. `publish_course_draft_to_existing_course`
+### Publishing
 
-Why:
-
-- teachers may edit the live course in the UI after publish
-- another agent session may have changed the course
-- reusing an old published draft can overwrite newer live changes
-
-For exercises on an already-published course, prefer the direct exercise tools instead of creating a whole new draft when the user only wants to add or revise exercises.
+`publish_course` and `unpublish_course` act as the key creator, who must be a course tutor/admin or an org admin; `create_course` needs an org admin or tutor. `publish_course` runs the go-live readiness check first. A course needs a title, description, landing page overview, description, goals and requirements, a banner, at least one lesson or exercise, content in every lesson, and questions in every exercise (plus a completion deadline for compliance courses). When something is missing the course stays unpublished and the result lists `blockers`, which `update_course_landing_page` and the lesson tools can fix. `published` in the result is the outcome, and `unpublish_course` hides the course again.
 
 ## User Flows
 
@@ -528,19 +493,17 @@ Create a complete course on exponential functions for high school students.
 Expected tool sequence:
 
 1. Agent plans the course.
-2. Agent calls `create_course_draft`.
-3. User asks for revisions.
-4. Agent calls `update_course_draft`.
-5. User approves.
-6. Agent calls `publish_course_draft`.
+2. Agent calls `create_course`.
+3. Agent calls `create_course_section`, `create_lesson`, `add_lesson_block` and the exercise tools to fill it.
+4. Agent calls `update_course_landing_page` for the overview, goals and requirements.
+5. Agent gives the user the `appUrl` to review the course.
+6. When the user asks to publish, agent calls `publish_course` and gives the user the `landingPageUrl`.
 
 Result:
 
-- a new course is created
-- sections and lessons are created
-- localized lesson content is written
-- publish returns the live `courseId` and public `courseUrl`
-- publish can optionally set a random Unsplash-derived course cover
+- the course exists and stays unpublished until step 6
+- sections, lessons and localized lesson content are written directly into the course
+- the course has a banner unless none could be found, as the `banner` field reports
 
 ### Flow 2: Update a landing page with AI-generated copy and media
 
@@ -572,50 +535,46 @@ The tool can either:
 - use an explicit `imageUrl`
 - or generate a random Unsplash-based image with `generateImage` and `imageQuery`
 
-### Flow 3: Create a draft from a PDF
+### Flow 3: Turn a PDF into a course
 
 User says:
 
 ```text
-I have my course in a PDF. Extract it and turn it into a ClassroomIO course draft.
+I have my course in a PDF. Extract it and turn it into a ClassroomIO course.
 ```
 
 Expected tool sequence:
 
 1. Agent reads the PDF itself.
-2. Agent restructures the content into normalized JSON.
-3. Agent calls `create_course_draft`.
-4. User reviews the draft.
-5. Agent calls `update_course_draft` if needed.
-6. User approves.
-7. Agent calls `publish_course_draft`.
+2. Agent calls `create_course`.
+3. Agent adds sections, lessons and exercises with `create_course_section`, `create_lesson`, `add_lesson_block` and the exercise tools.
+4. User reviews the course through the `appUrl`.
+5. Agent revises with the same tools if needed.
+6. Agent calls `publish_course` when the user approves.
 
 Important:
 
 - the PDF does not need to be uploaded to MCP
-- the MCP package only receives structured JSON
+- the agent sends the content as tool input
 
-### Flow 4: Tag a draft before publish
+### Flow 4: Tag courses
 
 User says:
 
 ```text
-Add tags for algebra, beginner, and exponential growth to this draft.
+Add tags for algebra, beginner, and exponential growth to this course.
 ```
 
 Expected tool sequence:
 
-1. Agent calls `tag_course_draft`.
-2. User reviews the updated draft tags.
-3. Agent later calls `publish_course_draft`.
+1. Agent calls `tag_courses` with the course id and the tag names.
 
 Result:
 
-- the draft stores tag names
-- publish ensures the tags exist in ClassroomIO
-- publish assigns those tags to the live course
+- missing tags are created in ClassroomIO
+- the tags are added to the course, keeping its existing tags unless `mode` is `replace`
 
-### Flow 5: Update an existing course safely
+### Flow 5: Update an existing course
 
 User says:
 
@@ -627,23 +586,12 @@ Expected tool sequence:
 
 1. Agent calls `list_org_courses` if it needs to resolve the course ID from the course name first.
 2. Agent calls `get_course_structure` with the existing `courseId`.
-3. Agent optionally calls `create_course_draft_from_course` to persist a seeded draft.
-4. Agent updates the draft with the new structure and content using `update_course_draft`.
-5. User reviews the changes.
-6. Agent calls `publish_course_draft_to_existing_course`.
+3. Agent changes the course with `reorder_course_content`, `update_lesson`, the lesson block tools and the exercise tools.
+4. The team reviews or undoes lesson content and block changes through the lesson version history.
 
-What this publish does today:
+The changes apply to the course as it is, so a published course stays published while the agent edits it.
 
-- updates the existing course title, description, type, and metadata
-- can set a generated course cover from Unsplash
-- returns the public `courseUrl`
-- updates existing sections when the draft keeps their IDs
-- updates existing lessons when the draft keeps their IDs
-- creates new sections and lessons for draft items without matching live IDs
-- upserts lesson language content
-- merges draft tags into the existing course
-
-### Flow 6: Reorder live course content
+### Flow 6: Reorder course content
 
 User says:
 
@@ -655,12 +603,9 @@ Expected tool sequence:
 
 1. Agent calls `reorder_course_content`.
 
-Use this direct path when the live course only needs section ordering or lesson or exercise moves between sections.
-It avoids the full draft round-trip for simple structural changes.
-
 Courses with grouping enabled can mix sections and standalone lessons or exercises. Sections and standalone items share one top-level `order`; items within a section have their own sibling order. Pass `sectionId: null` to move an item outside its section. Omitted fields retain their current values. Include sections and items in one request to save a mixed reorder atomically.
 
-### Flow 7: Add exercises to a live course
+### Flow 7: Add exercises to a course
 
 User says:
 
@@ -675,40 +620,7 @@ Expected tool sequence:
 3. Agent calls `get_course_exercise`, then `update_course_exercise` for later revisions.
 4. Agent calls `notify_course_exercise` if the user wants students emailed.
 
-Use this direct path when the course is already live and the change is exercise-specific.
-
-What it does not do today:
-
-- automatically delete sections or lessons that are absent from the draft
-- automatically delete lesson locales that are absent from the draft
-
-That behavior is intentional. The current update path is non-destructive by default.
-
-## How Existing-Course Updates Work
-
-When a draft is seeded from a live course:
-
-- section `externalId` values are the real section IDs
-- lesson `externalId` values are the real lesson IDs
-
-As long as the agent preserves those IDs while editing the draft, publish-to-existing-course can map draft items back to the live records and update them safely.
-
-If the agent adds a brand new section or lesson, it should assign a new synthetic `externalId`. ClassroomIO will create that record on publish.
-
 ## Input Contract Notes
-
-For large updates, the agent should:
-
-1. call `get_course_structure`
-2. keep existing `externalId` values for records it wants to update
-3. only generate new `externalId` values for new records
-4. avoid deleting records from the draft unless the user explicitly wants omitted content to remain untouched
-
-Publish input also supports:
-
-- `bannerImageUrl`: use this exact course cover
-- `bannerImageQuery`: search Unsplash with this query
-- `generateBannerImage`: fetch a random Unsplash image using the course title or query
 
 Tagging tools use:
 
@@ -716,11 +628,11 @@ Tagging tools use:
 - `mode: "merge" | "replace"`
 - `groupName` optional, defaults to `Automation`
 
-Missing tags are created automatically. `tag_course_draft` stores the names on the draft, and publishing creates the tags. `tag_courses` uses the public API: it reads tags from `/public-api/v1/tags`, matches them by name ignoring case, creates any that are missing, then calls `PUT /public-api/v1/courses/{courseId}` for each course: with `addTagIds` in merge mode, so the server adds them and calls on the same course cannot drop each other's tags, or with `tagIds` in replace mode. It needs `course:read` and `course:tag:write`, which MCP keys have by default, and the key creator must be an org admin. Each course it tags costs one credit, plus one for each tag or group it has to create. Each course is a separate write, so if one fails (for example on the rate limit), the courses before it keep their tags and the error lists which courses were tagged and which were not.
+Missing tags are created automatically. `tag_courses` uses the public API: it reads tags from `/public-api/v1/tags`, matches them by name ignoring case, creates any that are missing, then calls `PUT /public-api/v1/courses/{courseId}` for each course: with `addTagIds` in merge mode, so the server adds them and calls on the same course cannot drop each other's tags, or with `tagIds` in replace mode. It needs `course:read` and `course:tag:write`, which MCP keys have by default, and the key creator must be an org admin. Each course it tags costs one credit, plus one for each tag or group it has to create. Each course is a separate write, so if one fails (for example on the rate limit), the courses before it keep their tags and the error lists which courses were tagged and which were not.
 
 The other tag tools map one-to-one to the public tag endpoints: `list_tags` (free, needs `course:read` and an org-member key creator), and `create_tag`, `update_tag`, `create_tag_group`, `update_tag_group` and `set_course_tags` (one credit each, need `course:tag:write` and an org-admin key creator). `set_course_tags` replaces a course's tags with the ids you send, so `[]` removes them all.
 
-Exercise tools use the live course directly:
+Exercise tools write directly into the course:
 
 - `list_course_exercises`
 - `get_course_exercise`
@@ -753,21 +665,6 @@ Supported `questionTypeId` values for exercise payloads:
 
 `TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `MATCHING` and `HOTSPOT` are disabled and must not be used.
 
-## Operational Notes
-
-- `create_course_draft_from_course` may add warnings if a live course uses legacy lesson notes instead of localized lesson content
-- lessons and exercises outside any section stay at the top level of the draft: a lesson without `sectionExternalId` and an exercise with neither a section nor a lesson share one 1-based `order` sequence with the sections
-- published drafts are treated as finalized snapshots
-
 ## Recommended Agent Behavior
 
-For small edits, an agent can still read the course structure and modify only the affected items in the draft.
-
-For broad revisions, prefer this sequence:
-
-1. `get_course_structure`
-2. `create_course_draft_from_course`
-3. `update_course_draft`
-4. `publish_course_draft_to_existing_course`
-
-That keeps major AI-assisted edits reviewable and explicit.
+Read the course with `get_course_structure` before editing it, change only the affected items with the direct tools, and leave publishing to `publish_course` when the user asks for it. Lesson content and block changes are saved in version history, so a wrong edit to them can be reviewed and undone there.

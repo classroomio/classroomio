@@ -1818,6 +1818,8 @@
           "undo_change": "Desfazer",
           "by_assistant": "Assistente",
           "by_restore": "Restaurar",
+          "by_ai_client": "Cliente de IA",
+          "by_api": "API",
           "change_added": "Adicionado {name}",
           "change_removed": "{name} removido",
           "change_moved": "Mudou {name}",

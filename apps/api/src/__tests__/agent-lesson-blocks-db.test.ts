@@ -20,10 +20,15 @@ import {
   removeAgentLessonTextBlock,
   writeAgentLessonText
 } from '@cio/core/services/agent/lesson-blocks';
-import { attachLessonBlock, createLessonBlock, getLessonBlocks } from '@cio/core/services/block/block';
+import {
+  attachLessonBlock,
+  createLessonBlock,
+  getLessonBlocks,
+  updateLessonBlockLocale
+} from '@cio/core/services/block/block';
 import { ErrorCodes } from '@cio/utils/errors';
 import { undoLessonChangeSet } from '@cio/core/services/block/lesson-structure';
-import { getLessonHistoryService } from '@cio/core/services/lesson/lesson';
+import { getLessonHistoryService, getLessonTextHistoryService } from '@cio/core/services/lesson/lesson';
 
 const hasDatabase = Boolean(
   process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || process.env.PGBOUNCER_DATABASE_URL
@@ -422,5 +427,25 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
     const blocks = await getLessonBlocks(lessonId);
     expect(blocks.map((block) => block.id)).toEqual([intro.id, video.id, outro.id]);
     expect(blocks[0].contents.en).toBe('<p>Intro</p>');
+  });
+  it('records the AI client behind an MCP write in both history views', async () => {
+    const lessonId = await createLesson('client-attribution');
+    const note = await createLessonBlock(lessonId, { type: 'note', data: {}, content: '<p>Before</p>' });
+
+    await updateLessonBlockLocale(
+      lessonId,
+      note.id,
+      'en',
+      { content: '<p>After</p>', expectedVersion: note.version },
+      { source: 'mcp', clientName: 'Claude' }
+    );
+
+    const timeline = await getLessonHistoryService(lessonId, 'en', 10);
+    const textHistory = await getLessonTextHistoryService(lessonId, 'en', 10);
+    const mcpEntry = timeline.items.find((item) => item.entryType === 'text' && item.source === 'mcp');
+
+    expect(mcpEntry).toMatchObject({ clientName: 'Claude', newContent: '<p>After</p>' });
+    expect(textHistory.items[0]).toMatchObject({ source: 'mcp', clientName: 'Claude' });
+    expect(timeline.items.filter((item) => item.entryType === 'text' && item.source === 'editor')).toHaveLength(1);
   });
 });

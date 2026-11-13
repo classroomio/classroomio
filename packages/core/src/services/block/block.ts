@@ -74,6 +74,8 @@ export interface BlockActor {
   actorProfileId?: string | null;
   /** Who made the changes: a dashboard edit, the AI assistant, or a restore. Defaults to `editor`. */
   source?: TBlockChangeSource;
+  /** Name of the AI client or integration behind an `mcp` or `api` change. */
+  clientName?: string | null;
   /** Ties every snapshot and revision of one write batch together, e.g. an assistant run. */
   changeSetId?: string | null;
 }
@@ -230,6 +232,7 @@ interface LocalizedContentOptions {
   intent?: TLessonVersionIntent;
   label?: string | null;
   source?: TBlockChangeSource;
+  clientName?: string | null;
   changeSetId?: string | null;
 }
 
@@ -249,6 +252,7 @@ async function saveLocalizedContent(
     intent: options.intent ?? 'auto',
     label: options.label ?? null,
     source: options.source,
+    clientName: options.clientName,
     changeSetId: options.changeSetId,
     dbClient
   });
@@ -304,7 +308,12 @@ export async function createLessonBlock(
         block.id,
         input.locale ?? DEFAULT_LOCALE,
         content,
-        { authorId: actorProfileId, source: options.source, changeSetId: options.changeSetId },
+        {
+          authorId: actorProfileId,
+          source: options.source,
+          clientName: options.clientName,
+          changeSetId: options.changeSetId
+        },
         tx
       );
     }
@@ -325,6 +334,7 @@ export async function createLessonBlock(
       lessonId,
       authorId: actorProfileId,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -379,6 +389,7 @@ export async function attachLessonBlock(
       lessonId,
       authorId: actorProfileId,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -426,6 +437,7 @@ export async function updateLessonBlock(
         lessonId: affectedLessonId,
         authorId: actorProfileId,
         source: options.source ?? 'editor',
+        clientName: options.clientName,
         changeSetId: options.changeSetId ?? null,
         dbClient: tx
       });
@@ -476,6 +488,7 @@ export async function updateLessonBlockLocale(
         intent: input.versionIntent,
         label: input.versionLabel,
         source: options.source,
+        clientName: options.clientName,
         changeSetId: options.changeSetId
       },
       tx
@@ -518,6 +531,7 @@ export async function updateLessonPlacement(
       lessonId,
       authorId: options.actorProfileId ?? null,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -562,6 +576,7 @@ export async function moveLessonPlacement(
       lessonId,
       authorId: options.actorProfileId ?? null,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -596,6 +611,7 @@ export async function removeLessonPlacement(
       lessonId,
       authorId: options.actorProfileId ?? null,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });
@@ -669,6 +685,7 @@ export async function duplicateLessonBlock(
       lessonId,
       authorId: actorProfileId,
       source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: options.changeSetId ?? null,
       dbClient: tx
     });

@@ -28,6 +28,7 @@ import {
 } from '@api/services/v1/lessons/blocks';
 
 import { Hono } from '@api/utils/hono';
+import { getChangeAttribution } from '@api/utils/change-attribution';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
@@ -86,7 +87,8 @@ export const v1CourseLessonBlocksRouter = new Hono()
           c.get('orgId')!,
           c.get('actorId'),
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: block }, 201);
@@ -118,7 +120,8 @@ export const v1CourseLessonBlocksRouter = new Hono()
           c.get('orgId')!,
           c.get('actorId'),
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: block }, 201);
@@ -149,7 +152,8 @@ export const v1CourseLessonBlocksRouter = new Hono()
           c.get('orgId')!,
           c.get('actorId'),
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: block }, 200);
@@ -180,7 +184,8 @@ export const v1CourseLessonBlocksRouter = new Hono()
           c.get('orgId')!,
           c.get('actorId'),
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: block }, 200);
@@ -209,7 +214,8 @@ export const v1CourseLessonBlocksRouter = new Hono()
         const result = await removePublicApiLessonPlacementService(
           c.get('orgId')!,
           c.get('actorId'),
-          c.req.valid('param')
+          c.req.valid('param'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: result }, 200);
@@ -241,7 +247,8 @@ export const v1CourseLessonBlocksRouter = new Hono()
           c.get('orgId')!,
           c.get('actorId'),
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: block }, 200);
@@ -273,7 +280,8 @@ export const v1CourseLessonBlocksRouter = new Hono()
           c.get('orgId')!,
           c.get('actorId'),
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: block }, 200);
@@ -304,7 +312,8 @@ export const v1CourseLessonBlocksRouter = new Hono()
           c.get('orgId')!,
           c.get('actorId'),
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: block }, 201);

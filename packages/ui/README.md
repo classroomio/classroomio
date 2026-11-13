@@ -568,6 +568,16 @@ Read-only `InputGroup` that shows a value with an inline Copy button. Focusing t
 />
 ```
 
+### AI client badge (`src/custom/ai-client-badge/`)
+
+`AiClientBadge` shows which AI client or integration made a change. Pass the stored `clientName`; matching is case-insensitive and loose, and covers the names clients send as MCP `clientInfo.name` or register as an OAuth client name (`claude-ai`, `claude-code`, `codex-mcp-client`, `cursor-vscode`, `Visual Studio Code`, `gemini-cli-mcp-client`, `goose-cli`, `openai-mcp`, and so on). `resolveAiClient(name)` returns `{ kind, label, iconPath }` for logic outside the badge.
+
+- Logo and display name: Claude, Claude Code, ChatGPT, Cursor, OpenCode, GitHub Copilot, Gemini CLI, Zed, Warp, Windsurf, Amp, Cline.
+- Monogram and display name (no verifiable logo source): Codex, VS Code, Goose, Factory Droid, Devin, Kiro, Grok, Muse Code.
+- Any other name: a monogram of its first letter and the name as reported.
+
+The logos are path data in `ai-client-icons.ts` (simple-icons, CC0, plus the OpenAI mark from lobe-icons, MIT), so nothing is fetched at render time. Each mark stays the property of its brand.
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.

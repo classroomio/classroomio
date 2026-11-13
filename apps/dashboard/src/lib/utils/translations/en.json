@@ -3760,6 +3760,8 @@
           "restore_lesson_confirm": "Replace the whole lesson with this version?",
           "by_assistant": "Assistant",
           "by_restore": "Restore",
+          "by_ai_client": "AI client",
+          "by_api": "API",
           "change_kind": {
             "added": "Added",
             "removed": "Removed",
