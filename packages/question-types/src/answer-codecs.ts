@@ -17,7 +17,10 @@ import type {
   LinkAnswerData,
   HotspotAnswerData,
   StarAnswerData,
-  VideoRecordingAnswerData
+  VideoRecordingAnswerData,
+  MathExpressionAnswerData,
+  WorkedSolutionAnswerData,
+  WorkedSolutionFile
 } from './answer-data';
 
 import { QUESTION_TYPE_KEY } from './question-type-keys';
@@ -125,12 +128,76 @@ const SHORT_ANSWER_CODEC: AnswerCodec<ShortAnswerData> = {
 const NUMERIC_CODEC: AnswerCodec<NumericAnswerData> = {
   type: 'NUMERIC',
   toApiPayload(data, questionId) {
-    return { questionId, answer: JSON.stringify({ type: 'NUMERIC', value: data.value }) };
+    return { questionId, answer: JSON.stringify({ type: 'NUMERIC', value: data.value, latex: data.latex }) };
   },
   fromApiPayload(payload) {
     if (!payload.answer) return null;
-    const { value } = JSON.parse(payload.answer) as { type: 'NUMERIC'; value: number };
-    return { type: 'NUMERIC', value };
+    const { value, latex } = JSON.parse(payload.answer) as { type: 'NUMERIC'; value: number; latex?: unknown };
+    const typedLatex = typeof latex === 'string' ? latex.trim() : '';
+    return typedLatex ? { type: 'NUMERIC', value, latex: typedLatex } : { type: 'NUMERIC', value };
+  }
+};
+
+function parseJsonObject(answer: string | undefined): Record<string, unknown> | null {
+  if (!answer) return null;
+
+  try {
+    const parsed: unknown = JSON.parse(answer);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
+}
+
+function readLatex(parsed: Record<string, unknown>): string {
+  return typeof parsed.latex === 'string' ? parsed.latex.trim() : '';
+}
+
+const MATH_EXPRESSION_CODEC: AnswerCodec<MathExpressionAnswerData> = {
+  type: 'MATH_EXPRESSION',
+  toApiPayload(data, questionId) {
+    return { questionId, answer: JSON.stringify(data) };
+  },
+  fromApiPayload(payload) {
+    const parsed = parseJsonObject(payload.answer);
+    const latex = parsed?.type === 'MATH_EXPRESSION' ? readLatex(parsed) : '';
+    if (!latex) return null;
+
+    return { type: 'MATH_EXPRESSION', latex };
+  }
+};
+
+function readWorkedSolutionFiles(raw: unknown): WorkedSolutionFile[] {
+  if (!Array.isArray(raw)) return [];
+
+  return raw
+    .filter((file): file is Record<string, unknown> => Boolean(file) && typeof file === 'object')
+    .filter((file) => (file.kind === 'drawing' || file.kind === 'photo') && typeof file.fileKey === 'string')
+    .map((file) => ({
+      kind: file.kind as WorkedSolutionFile['kind'],
+      fileKey: String(file.fileKey),
+      fileName: String(file.fileName ?? '')
+    }));
+}
+
+const WORKED_SOLUTION_CODEC: AnswerCodec<WorkedSolutionAnswerData> = {
+  type: 'WORKED_SOLUTION',
+  toApiPayload(data, questionId) {
+    const files = data.working.files.map(({ fileUrl: _fileUrl, ...file }) => file);
+    return { questionId, answer: JSON.stringify({ ...data, working: { ...data.working, files } }) };
+  },
+  fromApiPayload(payload) {
+    const parsed = parseJsonObject(payload.answer);
+    if (parsed?.type !== 'WORKED_SOLUTION') return null;
+
+    const working =
+      parsed.working && typeof parsed.working === 'object' ? (parsed.working as Record<string, unknown>) : {};
+    const lines = Array.isArray(working.lines) ? working.lines.map((line) => String(line ?? '')).filter(Boolean) : [];
+    const files = readWorkedSolutionFiles(working.files);
+    const latex = readLatex(parsed);
+    if (!latex && lines.length === 0 && files.length === 0) return null;
+
+    return { type: 'WORKED_SOLUTION', latex, working: { lines, files } };
   }
 };
 
@@ -359,7 +426,9 @@ export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
   [QUESTION_TYPE_KEY.LINK]: LINK_CODEC,
   [QUESTION_TYPE_KEY.HOTSPOT]: HOTSPOT_CODEC,
   [QUESTION_TYPE_KEY.STAR]: STAR_CODEC,
-  [QUESTION_TYPE_KEY.VIDEO_RECORDING]: VIDEO_RECORDING_CODEC
+  [QUESTION_TYPE_KEY.VIDEO_RECORDING]: VIDEO_RECORDING_CODEC,
+  [QUESTION_TYPE_KEY.MATH_EXPRESSION]: MATH_EXPRESSION_CODEC,
+  [QUESTION_TYPE_KEY.WORKED_SOLUTION]: WORKED_SOLUTION_CODEC
 };
 
 /** Convert any answer to API submission payload */
@@ -406,7 +475,10 @@ export function extractAnswerDisplayValues(data: AnswerData): {
     case 'SHORT_ANSWER':
       return { selectedIds: [], selectedValues: [], text: data.text };
     case 'NUMERIC':
-      return { selectedIds: [], selectedValues: [], text: String(data.value) };
+      return { selectedIds: [], selectedValues: [], text: data.latex ?? String(data.value) };
+    case 'MATH_EXPRESSION':
+    case 'WORKED_SOLUTION':
+      return { selectedIds: [], selectedValues: [], text: data.latex };
     case 'STAR':
       return { selectedIds: [], selectedValues: [data.value], text: String(data.value) };
     case 'FILL_BLANK':

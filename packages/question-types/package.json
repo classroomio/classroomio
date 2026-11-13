@@ -22,7 +22,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@cio/tsconfig": "workspace:*"
+    "@cio/tsconfig": "workspace:*",
+    "@cortex-js/compute-engine": "^0.173.0"
   },
   "devDependencies": {
     "tsc-alias": "^1.8.16",

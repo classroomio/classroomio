@@ -147,6 +147,24 @@ const EXPECTED_REGISTRY = [
     supportsPartialCredit: true,
     manualGradingRequired: false,
     disabled: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.MATH_EXPRESSION,
+    typename: 'MATH_EXPRESSION',
+    id: 17,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false,
+    disabled: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.WORKED_SOLUTION,
+    typename: 'WORKED_SOLUTION',
+    id: 18,
+    autoGradable: false,
+    supportsPartialCredit: true,
+    manualGradingRequired: true,
+    disabled: true
   }
 ] as const;
 

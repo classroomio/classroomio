@@ -8,6 +8,7 @@ export * from './question-answer-payload';
 export * from './question-scoring-rules';
 export * from './question-scoring';
 export * from './points';
+export * from './math-settings';
 
 export * from './exercise-types';
 export * from './exercise-section-types';

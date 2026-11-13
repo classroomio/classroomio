@@ -4,7 +4,8 @@ export type TrueFalseAnswerData = { type: 'TRUE_FALSE'; value: boolean };
 export type ThumbsAnswerData = { type: 'THUMBS'; value: boolean };
 export type TextareaAnswerData = { type: 'TEXTAREA'; text: string };
 export type ShortAnswerData = { type: 'SHORT_ANSWER'; text: string };
-export type NumericAnswerData = { type: 'NUMERIC'; value: number };
+/** `latex` holds what the student typed (e.g. `\frac{3}{4}`); `value` is its numeric value. */
+export type NumericAnswerData = { type: 'NUMERIC'; value: number; latex?: string };
 export type FillBlankAnswerData = { type: 'FILL_BLANK'; values: string[] };
 export type WordBankAnswerData = { type: 'WORD_BANK'; filledBlanks: string[] };
 export type FileUploadAnswerData = {
@@ -35,6 +36,16 @@ export type VideoRecordingAnswerData = {
   playbackUrl?: string;
 };
 
+/** `mathjson` is the canonical MathJSON string from `normaliseMathAnswer`, set by the server for grouping answers. */
+export type MathExpressionAnswerData = { type: 'MATH_EXPRESSION'; latex: string; mathjson?: string };
+export type WorkedSolutionFile = { kind: 'drawing' | 'photo'; fileKey: string; fileName: string; fileUrl?: string };
+export type WorkedSolutionAnswerData = {
+  type: 'WORKED_SOLUTION';
+  latex: string;
+  mathjson?: string;
+  working: { lines: string[]; files: WorkedSolutionFile[] };
+};
+
 export type AnswerData =
   | RadioAnswerData
   | CheckboxAnswerData
@@ -51,4 +62,6 @@ export type AnswerData =
   | LinkAnswerData
   | HotspotAnswerData
   | StarAnswerData
-  | VideoRecordingAnswerData;
+  | VideoRecordingAnswerData
+  | MathExpressionAnswerData
+  | WorkedSolutionAnswerData;

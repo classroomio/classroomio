@@ -151,6 +151,26 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     supportsPartialCredit: true,
     manualGradingRequired: false,
     disabled: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.MATH_EXPRESSION,
+    typename: 'MATH_EXPRESSION',
+    label: 'Math expression',
+    id: 17,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false,
+    disabled: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.WORKED_SOLUTION,
+    typename: 'WORKED_SOLUTION',
+    label: 'Worked solution',
+    id: 18,
+    autoGradable: false,
+    supportsPartialCredit: true,
+    manualGradingRequired: true,
+    disabled: true
   }
 ] as const;
 
