@@ -76,7 +76,7 @@ Two dashboard pages answer the same question — "how is this student doing?" �
 
 11. **The grade for an exercise is its latest submission.** `getUserExercisesStats` selects submissions with no `ORDER BY` and then calls `submissions.find(...)`, and there is **no unique constraint on `submission(exerciseId, submittedBy)`** — only foreign keys. So a student with two submissions for one exercise currently gets whichever row Postgres happens to return first. The query must order deterministically and the policy must be stated: **most recent submission by `created_at`, tie-broken by `id`**.
 
-12. **A failed exercise query must not look like an empty one.** `getUserExercisesStats` catches every error and returns `[]` (`packages/db/src/queries/student-progress/student-progress.ts:213-217`). Exposing that as `exercises: []` would render the Grades tab's "nothing graded yet" empty state on a database failure — the exact confusion this PRD sets out to remove elsewhere. The failure has to reach the caller.
+12. **A failed exercise query must not look like an empty one.** `getUserExercisesStats` catches every error and returns `[]` (`packages/db/src/queries/student-progress/student-progress.ts:219-224`). Exposing that as `exercises: []` would render the Grades tab's "nothing graded yet" empty state on a database failure — the exact confusion this PRD sets out to remove elsewhere. The failure has to reach the caller.
 
 ## Current-State Audit
 

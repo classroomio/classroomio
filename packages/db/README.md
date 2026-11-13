@@ -155,6 +155,16 @@ pnpm --filter @cio/db db:seed:analytics-states
 
 Sign in with `admin@analytics-states.demo`, `tutor@analytics-states.demo`, or a learner such as `priya@analytics-states.demo`. Every account uses `123456`.
 
+### Analytics load seed
+
+`db:seed:analytics-load` creates an `analytics-load` organization sized for performance checks: 5,000 students in 20 cohorts of 250, each cohort on 3 courses with lessons, exercises, attempts, attendance and logins. Sign in with `admin@analytics-load.demo` or `tutor@analytics-load.demo` (password `123456`).
+
+```bash
+pnpm --filter @cio/db db:seed:analytics-load
+```
+
+To time every preset widget against it, run `apps/api/scripts/measure-analytics.ts` with `tsx` from `apps/api`. `ANALYTICS_LOAD_ORG` picks another organization by site name, `ANALYTICS_BENCHMARK_RUNS` sets the runs per widget (default 5), and `ANALYTICS_EXPLAIN_WIDGET=<widget id>` prints that widget's query plan.
+
 ### Demo accounts
 
 | Email                            | Password | Role    | Plan          |

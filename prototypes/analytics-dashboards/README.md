@@ -1,4 +1,4 @@
-# Analytics analytics prototype
+# Analytics dashboards prototype
 
 Static mock of the cohort, course and organization dashboards described in [`prd/analytics-dashboards`](../../prd/analytics-dashboards/README.md).
 
