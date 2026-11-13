@@ -9,6 +9,7 @@ import {
 import { QUESTION_TYPE } from '../constants';
 import { ZSlug } from '../shared/slug';
 import { ZExerciseSection } from './exercise-section';
+import { ZMathExpressionSettings, ZWorkedSolutionSettings } from './math-question';
 
 const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
   z.literal(QUESTION_TYPE.RADIO),
@@ -44,6 +45,13 @@ function requireAtLeastTwoOptions(message: string) {
       return message;
     }
     return null;
+  };
+}
+
+function requireValidSettings(schema: z.ZodType) {
+  return (question: QuestionRuleInput): string | null => {
+    const result = schema.safeParse(question.settings ?? {});
+    return result.success ? null : (result.error.issues[0]?.message ?? 'Invalid question settings');
   };
 }
 
@@ -132,6 +140,8 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
       return null;
     }
   ],
+  [QUESTION_TYPE.MATH_EXPRESSION]: [requireValidSettings(ZMathExpressionSettings)],
+  [QUESTION_TYPE.WORKED_SOLUTION]: [requireValidSettings(ZWorkedSolutionSettings)],
   [QUESTION_TYPE.VIDEO_RECORDING]: [
     (question) => {
       const settings = question.settings ?? {};
