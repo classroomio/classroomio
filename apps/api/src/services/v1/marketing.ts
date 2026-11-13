@@ -25,7 +25,7 @@ const TTL = PUBLIC_API_ANALYTICS_TTL_SECONDS;
  * The public API keeps its own cache entry per section and skips the dashboard's (bustCache), so `generatedAt` is
  * the real compute time. `limit` trims lists after the read, so it never adds cache keys.
  */
-function readSection(
+async function readSection(
   orgId: string,
   section: TPublicApiMarketingSection,
   days: number,
@@ -36,14 +36,20 @@ function readSection(
   switch (section) {
     case 'traffic':
       return cachedRead(key, TTL, () => getLandingStats(orgId, days, true));
-    case 'countries':
-      return cachedRead(key, TTL, async () => (await getCountryBreakdown(orgId, days, true)).slice(0, limit));
+    case 'countries': {
+      const entry = await cachedRead(key, TTL, () => getCountryBreakdown(orgId, days, true));
+
+      return { ...entry, data: entry.data.slice(0, limit) };
+    }
     case 'funnel':
       return cachedRead(key, TTL, () => getCourseFunnel(orgId, days, undefined, true));
     case 'courseTypes':
       return cachedRead(key, TTL, () => getPopularTypes(orgId, days, true));
-    case 'topCourses':
-      return cachedRead(key, TTL, async () => (await getTopCoursesByViews(orgId, days, true)).slice(0, limit));
+    case 'topCourses': {
+      const entry = await cachedRead(key, TTL, () => getTopCoursesByViews(orgId, days, true));
+
+      return { ...entry, data: entry.data.slice(0, limit) };
+    }
   }
 }
 
