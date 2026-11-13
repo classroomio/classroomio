@@ -387,6 +387,20 @@ Media notes:
 
 ## Analytics and reporting
 
+### `content/help/analytics-and-reporting/monitor-students-across-your-organization.mdx` — Monitor students across your organization
+
+- **Article type:** Task and metric reference.
+- **Cover:** The **Analytics → Academy** page; summary cards; the **Courses (N)** and **Cohorts (N)** switch; at-risk and inactive students; the student table and drill-down; date range and plan lock; how it differs from **Analytics → Marketing** and **Analytics → Compliance**.
+- **Images:** Academy overview with safe demo data, the cohorts view, and the students table.
+- **Video:** No video.
+
+### `content/help/analytics-and-reporting/track-a-cohort-with-analytics.mdx` — Track a cohort with analytics
+
+- **Article type:** Task and metric reference.
+- **Cover:** Cohort analytics location; goal progress and overdue goals; the course picker; student drill-down; sending overdue reminders and the per-send cap; permissions.
+- **Images:** Cohort analytics overview and the students tab with safe demo data.
+- **Video:** No video.
+
 ### `content/help/analytics-and-reporting/read-your-marketing-overview.mdx` — Read your marketing overview
 
 - **Article type:** Metric reference and orientation guide.

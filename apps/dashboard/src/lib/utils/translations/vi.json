@@ -540,7 +540,7 @@
     },
     "analytics": {
       "reminder_sent": "Đã gửi lời nhắc",
-      "reminder_not_sent": "Thông báo nhắc nhở không được gửi: đã được gửi hôm nay hoặc người học đã tắt chức năng nhận email này.",
+      "reminder_not_sent": "Lời nhắc chưa được gửi: đã gửi hôm nay, hoặc học viên đã tắt các email này",
       "reminder_failed": "Không thể gửi lời nhắc",
       "reminders_sending": "Đang gửi lời nhắc nhở…",
       "reminders_sent": "{count, plural, one {# lời nhắc đã được gửi} other {# lời nhắc đã được gửi}}",
@@ -6943,7 +6943,7 @@
     "target": {
       "set": "Đặt mục tiêu",
       "edit": "Chỉnh sửa mục tiêu",
-      "label": "Đối tượng người học",
+      "label": "Mục tiêu học viên",
       "helper": "Bạn đang hướng tới có bao nhiêu người học đã đăng ký. Nó hiển thị dưới dạng một đường đứt nét.",
       "clear": "Xóa mục tiêu",
       "save": "Lưu mục tiêu"

@@ -188,7 +188,7 @@ Unchanged: course marks, course attendance, and the per-user analytics in the au
 
 Notes for the change:
 
-- **API.** The public API mirrors the menu: `/analytics/academy`, `/analytics/marketing` and `/analytics/compliance`, plus `/courses/{courseId}/analytics` and `/cohorts/{cohortId}/analytics`. Nothing answers `GET /analytics` itself. The old `GET /course/:courseId/analytics` internal route is removed with the old course page.
+- **API (Phase 3, #1495).** The public API mirrors the menu: `/analytics/academy`, `/analytics/marketing` and `/analytics/compliance`, plus `/courses/{courseId}/analytics` and `/cohorts/{cohortId}/analytics`. Nothing answers `GET /analytics` itself. The old `GET /course/:courseId/analytics` internal route is removed with the old course page.
 - **Navigation and copy.** The org navigation (`org-navigation.ts`) has one **Analytics** menu item with the three children above. The `org_navigation` translation keys change in `en.json`, so every other dashboard locale needs updating (see the translation rule in `CLAUDE.md`).
 - **Redirects.** `/org/[slug]/compliance` redirects to `/org/[slug]/analytics/compliance`, and `/org/[slug]/analytics` redirects by role, so existing bookmarks keep working.
 - **Order.** The Marketing and Compliance moves ship first (Phase 0), so the Academy path is free before the new dashboard arrives.
@@ -201,9 +201,13 @@ Follows the layering in `CLAUDE.md`:
 2. **Queries:** `packages/db/src/queries/analytics/` holds the registry, scope resolver and compiler. Page-event collection lives in `queries/tracking`, traffic and funnel reads in `queries/marketing`, and per-student progress in `queries/student-progress`, so `analytics` names only this engine. Each query accepts an optional `DbOrTxClient` and logs the original error with its function name.
 3. **Service:** `apps/api/src/services/analytics/` handles authorization, caching (see Caching) and orchestration. It throws `AppError`.
 4. **Routes:** one `/analytics` root mounted in `app.ts`.
-   - `POST /analytics/academy/query` returns `{ columns, rows }` (one type).
-   - `GET /analytics/academy`, `GET /courses/{id}/analytics` and `GET /cohorts/{id}/analytics` return the preset dashboard snapshots.
-   - Authorization is scope-aware and runs in the service. The existing `cohortTeamMemberMiddleware` and `courseTeamMemberMiddleware` read `cohortId` and `courseId` from the path, and these routes do not have those params, so the routes use `authMiddleware` only. The service reuses the underlying queries: `getCohortMemberRole` and `isOrgAdminByCohortId` for cohort scope, `isCourseTeamMemberOrOrgAdmin` for course scope, and an org admin check for org scope.
+   - `POST /analytics/query` returns `{ columns, rows }` with `generatedAt`, `cached` and `refreshThrottled` (one type).
+   - `GET /analytics/dashboards/:scopeType/:scopeId` returns the preset specs.
+   - `POST /analytics/export` and `POST /analytics/export/students` return export rows, rate limited to 6 per minute per user.
+   - `POST /analytics/dashboards-refresh` clears a scope's cached results, throttled per user.
+   - `PUT /analytics/settings` saves the organization student target (org admins only).
+   - Authorization is scope-aware and runs in the service. The existing `cohortTeamMemberMiddleware` and `courseTeamMemberMiddleware` read `cohortId` and `courseId` from the path, and these routes do not have those params, so the routes use `authMiddleware` and `orgMemberMiddleware` (`/settings` uses `orgAdminMiddleware`). Scope checks run in the service with `getCohortMemberRole`, `isCourseTeamMemberOrOrgAdmin` and the actor's org role.
+   - The public API has its own routes under `/public-api/v1`, separate from these internal ones: `GET /analytics/academy`, `POST /analytics/academy/query`, `GET /courses/{id}/analytics` and `GET /cohorts/{id}/analytics` (see API below).
 5. **Dashboard app:** `apps/dashboard/src/lib/features/analytics/` with API class, `utils/types.ts` inferred from the RPC client, widget components, and the analytics page for each scope (see Placement).
    - Charts use the browser-only dynamic import (see Chart Imports and SSR in `CLAUDE.md`).
    - All copy goes through translations.
@@ -253,7 +257,7 @@ TTLs are named constants in the same file, tuned after measuring, starting here:
 | Course structure used by the compiler (exercise order, final exam, point totals) | 10 minutes | Changes only when an author edits the course |
 
 - The response carries `generatedAt`, and the page shows "Updated Ns ago" from it. The age shown is the real age of the data, not the time since the last request. An entry never looks fresher than it is.
-- **No event-based invalidation in v1.** Invalidating on every submission, lesson completion and enrollment would couple the dashboard to every write path. Expiry is the rule. The one exception is a deliberate **Refresh** control.
+- **Event-based invalidation is limited.** Invalidating on every submission, lesson completion and enrollment would couple the dashboard to every write path, so expiry is the rule. Only the course structure (content, section and grouping edits, template pulls) and the cached plan are cleared on change, and a deliberate **Refresh** control recomputes on demand.
 - **Refresh** recomputes and rewrites the entry for that widget's scope, with a per-user, per-scope limit (for example once every 15 seconds) so it cannot be used to hammer the database. Because the entry is rewritten, everyone else's next read is fresh too.
 - Editing a course's certificate-required exercise or pass mark clears that course's structure entry, since that change is rare and the result would otherwise stay wrong for 10 minutes.
 
@@ -281,7 +285,7 @@ TTLs are named constants in the same file, tuned after measuring, starting here:
 
 ## Schema Changes
 
-Phase 1 needs no schema change.
+Phase 1 adds the index-only migration `0051_analytics_performance_indexes.sql` and an `analytics.studentTarget` key in `organization.settings` (jsonb, no column change).
 
 Phase 2 adds an `analytics_dashboard` table (`org_id`, `scope_type`, `definition jsonb`, schema version).
 
@@ -300,7 +304,7 @@ Phase 2 adds an `analytics_dashboard` table (`org_id`, `scope_type`, `definition
 - [ ] Scope resolver (cohort, course, org) with tenant-isolation tests.
 - [ ] Registry: `student_course`, `assessment_result`, `section_activity` and the other `ANALYTICS_SOURCES`, with about 15 metrics.
 - [ ] Exercise ordering (section order, then exercise order) and final-exam resolver (`course.certificate.requiredExerciseId`) with edge-case tests.
-- [ ] Query compiler and `POST /analytics/academy/query`, plus the preset dashboard snapshot endpoints.
+- [ ] Query compiler and `POST /analytics/query`, plus the preset dashboard snapshot endpoints.
 - [ ] Widgets: KPI, line with band, bar and distribution, matrix table, horizontal bar.
 - [ ] Cohort dashboard: KPIs, course picker, courses table (all courses), scores by exercise, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
 - [ ] Caching per the Caching section: key builder and TTL constants, `generatedAt` in the response, "Updated Ns ago" indicator, visibility-aware auto-refresh, rate-limited refresh.

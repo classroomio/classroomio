@@ -7,14 +7,19 @@ export type UiFeatureArea = {
 export const UI_FEATURE_AREAS: UiFeatureArea[] = [
   {
     area: 'Organization dashboard and analytics',
-    description: 'The admin home, organization analytics, top courses, countries, and landing-page performance.',
+    description:
+      'The admin home, the Analytics menu (Academy, Marketing and Compliance), and course and cohort analytics.',
     articles: [
       'organization-and-team/admin-dashboard',
       'analytics-and-reporting/understand-the-organization-dashboard',
-      'analytics-and-reporting/read-your-organization-analytics-overview',
+      'analytics-and-reporting/monitor-students-across-your-organization',
+      'analytics-and-reporting/read-your-marketing-overview',
       'analytics-and-reporting/compare-your-top-courses',
       'analytics-and-reporting/view-top-countries-and-popular-course-types',
-      'analytics-and-reporting/analyze-landing-views-enrollments-and-completions'
+      'analytics-and-reporting/analyze-landing-views-enrollments-and-completions',
+      'analytics-and-reporting/review-course-performance-and-student-progress',
+      'analytics-and-reporting/track-a-cohort-with-analytics',
+      'analytics-and-reporting/view-a-students-analytics'
     ]
   },
   {

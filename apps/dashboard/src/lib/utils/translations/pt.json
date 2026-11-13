@@ -540,14 +540,14 @@
     },
     "analytics": {
       "reminder_sent": "Lembrete enviado",
-      "reminder_not_sent": "Lembrete não enviado: já foi enviado hoje ou o aluno desativou o recebimento desses e-mails.",
+      "reminder_not_sent": "Lembrete não enviado: já foi enviado hoje ou o estudante desativou estes e-mails",
       "reminder_failed": "Não foi possível enviar o lembrete.",
       "reminders_sending": "Enviando lembretes…",
       "reminders_sent": "{count, plural, one {# lembrete enviado} other {# lembretes enviados}}",
-      "target_saved": "Alvo do aluno salvo",
-      "target_failed": "Não foi possível salvar a meta do aluno",
+      "target_saved": "Meta de estudantes salva",
+      "target_failed": "Não foi possível salvar a meta de estudantes",
       "target_invalid": "Insira um número inteiro de 1 a 1.000.000",
-      "reminders_truncated": "{count, plural, one {# lembrete enviado} other {# lembretes enviados}}. Há alunos atrasados demais para um único envio — restrinja o curso para alcançar os demais.",
+      "reminders_truncated": "{count, plural, one {# lembrete enviado} other {# lembretes enviados}}. Há estudantes atrasados demais para um único envio — restrinja o curso para alcançar os demais.",
       "students_refresh_failed": "Não foi possível atualizar a lista de alunos",
       "refresh_failed": "Não foi possível atualizar as análises"
     },
@@ -6943,7 +6943,7 @@
     "target": {
       "set": "Definir meta",
       "edit": "Editar meta",
-      "label": "Alvo do aluno",
+      "label": "Meta de estudantes",
       "helper": "Quantos alunos matriculados você deseja. Ele aparece como uma linha tracejada.",
       "clear": "Remover alvo",
       "save": "Salvar meta"
