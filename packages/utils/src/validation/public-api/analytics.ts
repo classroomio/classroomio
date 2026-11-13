@@ -182,7 +182,7 @@ export const ZPublicApiAnalyticsSnapshotQuery = z.object({
     .uuid()
     .optional()
     .describe(
-      'Course the per-course widgets focus on; organization and cohort snapshots leave per-course widgets out unless you pass it. A course outside the scope fails with 404.'
+      'Course the per-course widgets focus on. Organization and cohort snapshots omit per-course widgets unless you pass it. A course outside the scope fails with 404.'
     ),
   exerciseId: z
     .string()
