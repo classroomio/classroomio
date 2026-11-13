@@ -7,11 +7,11 @@ A **course** in ClassroomIO is a container for lessons, exercises, people, and s
 
 ## Course lifecycle
 
-| State                   | Meaning                                                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Draft / unpublished** | Not visible in Explore or on the public landing page; open self-enrollment is blocked, but invite links still work |
-| **Published**           | Live on your academy; visible in Explore and on the public landing page                                            |
-| **Deleted**             | Soft-deleted; no longer appears anywhere in the app                                                                |
+| State                   | Meaning                                                                                                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Draft / unpublished** | Not visible in Explore or on the public landing page; open self-enrollment is blocked, and invite links can be created but only accepted once the course is published |
+| **Published**           | Live on your academy; visible in Explore and on the public landing page                                                                                               |
+| **Deleted**             | Soft-deleted; no longer appears anywhere in the app                                                                                                                   |
 
 Publishing makes a course discoverable. Combine publish state with **Students can enroll themselves**, price, and invites to control who can actually join. See [How Course Enrollment Works](/manage-students/course-enrollment).
 
@@ -34,16 +34,20 @@ Self-paced, Live class, Compliance, and Public types change what admins and stud
 
 When you open a course from the **Courses** list, the sidebar gives you:
 
-| Area             | Purpose                                                       |
-| ---------------- | ------------------------------------------------------------- |
-| **Content**      | Lessons, sections, exercises, media                           |
-| **Analytics**    | Summary cards, score charts, Students table                   |
-| **Submissions**  | Exercise work awaiting or under grading                       |
-| **People**       | Members, invites, pending students                            |
-| **Settings**     | Publish, self-enrollment, course type, links                  |
-| **Landing page** | Public page prospects see before enrolling                    |
-| **Compliance**   | Appears for **Compliance** courses; tracking and bulk actions |
-| **Marks**        | Appears for **Live class** courses; grading                   |
+| Area             | Purpose                                                                               |
+| ---------------- | ------------------------------------------------------------------------------------- |
+| **News Feed**    | Course news feed; students see it when your organization enables the course news feed |
+| **Content**      | Lessons, sections, exercises, media                                                   |
+| **Certificates** | Certificate design and issued certificates; hidden from students on the Free plan     |
+| **Analytics**    | Summary cards, score charts, Students table                                           |
+| **Attendance**   | Appears for **Live class** courses; session attendance                                |
+| **Submissions**  | Exercise work awaiting or under grading                                               |
+| **Marks**        | Every course except templates; per-student grades and grade export                    |
+| **People**       | Members, invites, pending students                                                    |
+| **AI Tutor**     | Appears unless your deployment turns the AI assistant off; course-scoped tutor        |
+| **Settings**     | Publish, self-enrollment, course type, links                                          |
+| **Landing page** | Public page prospects see before enrolling                                            |
+| **Compliance**   | Appears for **Compliance** courses; tracking and bulk actions                         |
 
 ## People and enrollment
 

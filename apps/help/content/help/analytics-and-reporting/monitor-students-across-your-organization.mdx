@@ -20,7 +20,7 @@ The page counts students enrolled in any of your organization's courses, includi
 
 ## When there's nothing to show yet
 
-If your organization has no students, a notice appears at the top explaining that analytics fill in as students open lessons and submit exercises. The notice offers an inline link to **Add students** to open your organization's audience page, then enrol them in courses or cohorts. The summary cards show zeros or dashes, and the cards below show their usual empty states. The range picker remains enabled.
+If your organization has no students, a notice appears at the top asking you to add students to your academy, then enrol them in courses or cohorts. The notice offers an inline link to **Add students** to open your organization's audience page. The summary cards show zeros or dashes, and the cards below show their usual empty states. The range picker remains enabled.
 
 The page keeps checking in the background, so the notice disappears and cards fill in on their own when the first student joins. Reload the page if you need the change immediately.
 
@@ -38,7 +38,7 @@ The five cards under the page header summarize students' work across all of your
 | **Average progress**       | The mean share of required lessons and exercises each student has completed, across all of their courses. Items with a **None** completion rule are left out. The hint shows the change this week, or across the selected range. |
 | **Completions**            | Course completions: each student who finished a course counts once for that course. Under **All time**, the hint shows the share of enrolled students. Under a range, it shows how many completions happened in that range.      |
 | **Certificates issued**    | Certificates students have earned. Under **All time**, the hint shows them as a share of completions. Under a range, it shows how many certificates were issued in that range.                                                   |
-| **Needs attention**        | Students who are not finished and are at risk: no login for 2 or more days, an average score under 50%, or overdue work. The card turns red when at least 5% of students need attention.                                         |
+| **Needs attention**        | Students who are not finished and are at risk: no login for 2 or more days or no login at all, an average score under 50%, or overdue work. The card turns red when at least 5% of students need attention.                      |
 
 ## Choose a time range
 
@@ -65,9 +65,9 @@ On the Free plan, only **Last 7 days** is available and the page opens on it. Th
 
 Select **Cohorts** above the cards to see these figures.
 
-**Cohorts at a glance** lists active cohorts five per page, newest first. Each row shows the cohort's name, when it was **Created**, its **Students** (with invited students underneath when there are any), a progress bar, **Avg score**, **Overdue** students, and a **Health** pill. Empty cohorts are included, so a newly created cohort appears before anyone joins. A cohort with no students yet shows **No students yet** under **Progress**, **–** for **Overdue**, and a muted **No students** pill under **Health**; its **Students** count stays at 0, with any invitations underneath. Select a cohort's name to open that cohort's own **Analytics** page.
+**Cohorts at a glance** lists every cohort that isn't archived, including inactive ones, five per page, newest first. Each row shows the cohort's name, when it was **Created**, its **Students** (with invited students underneath when there are any), a progress bar, **Avg score**, **Overdue** students, and a **Health** pill. Empty cohorts are included, so a newly created cohort appears before anyone joins. A cohort with no students yet shows **No students yet** under **Avg progress**, **–** for **Overdue**, and a muted **No students** pill under **Health**; its **Students** count stays at 0, with any invitations underneath. Select a cohort's name to open that cohort's own **Analytics** page.
 
-When there are more than five active cohorts, the pager under the table reads **Showing 1–5 of N cohorts in organization** and moves through the rest. Every active cohort appears on some page. An archived cohort does not appear here; open it from **Cohorts** to see its own dashboard.
+When there are more than five cohorts, the pager under the table reads **Showing 1–5 of N cohorts in organization** and moves through the rest. Every cohort that isn't archived appears on some page. An archived cohort does not appear here; open it from **Cohorts** to see its own dashboard.
 
 The **Health** column rates each cohort from the same row, checking these rules in order:
 
@@ -113,7 +113,7 @@ The chips show when the figures were last updated. Select **Refresh** to request
 - **The page says there are no students yet:** add students to your audience and enrol them in courses or cohorts, then wait for the page to refresh or select **Refresh**.
 - **A chart says there is no data yet:** no student has matching activity yet, for example no graded attempts for **Average score, by cohort**.
 - **A cohort says No students yet:** the cohort has no active students. Invite students to the cohort, then wait for the page to refresh.
-- **A cohort is missing from Cohorts at a glance:** the table pages through active cohorts five at a time. Use the pager to reach older cohorts. An archived cohort does not appear; open it from **Cohorts** to see its own dashboard.
+- **A cohort is missing from Cohorts at a glance:** the table pages through cohorts that aren't archived five at a time. Use the pager to reach older cohorts. An archived cohort does not appear; open it from **Cohorts** to see its own dashboard.
 - **A student is missing from the counts:** confirm that the student is enrolled in at least one course and that their organization membership is active.
 
 ## Related guides

@@ -41,7 +41,7 @@ The row under the chips summarizes the cohort's students and their work in the s
 The **Status** pill on each student row checks these rules in order:
 
 - **Completed:** the student finished the course or courses.
-- **At risk:** the student has no login for 2 or more days, an average score under 50%, or overdue work.
+- **At risk:** the student has no login for 2 or more days or no login at all, an average score under 50%, or overdue work.
 - **Lagging:** the student has an average score under 65% or video attendance under 60%.
 - **On track:** everyone else.
 
@@ -77,7 +77,7 @@ On the Free plan, only **Last 7 days** is available and the page opens on it. Th
 - **Students** enrolled in the course.
 - **Avg progress** and **Avg score**.
 - **Completed:** students who finished the course.
-- **Took a pass-mark exercise:** students graded on at least one exercise with a pass mark.
+- **Took a pass-mark exercise:** students whose first attempt on at least one exercise with a pass mark has been graded.
 - **Pass rate:** the share of graded first attempts on exercises with a pass mark that reached the mark.
 
 **Pass rate** is – when the course has no exercise with a pass mark. A note under the card explains why and how to set a pass mark on an exercise. The card's other note points you to the course picker for scores by exercise, the section scorecard, and the hardest questions.
@@ -92,7 +92,7 @@ The course detail cards appear below the cohort summary:
 
 - **Scores by exercise, \{course\}** plots the average and middle 50% of scores for each exercise.
 - **Progress distribution** groups students by how much of the course they completed. It always shows the current position.
-- **Scores and attendance by section** and **Section-by-section scorecard** appear when the course is divided into sections. The chart shows four sections per page and the scorecard shows five; each has its own pager. Section labels read **Section 1**, **Section 2**, and so on. The scorecard includes **Pass rate**.
+- **Scores and attendance by section** and **Section-by-section scorecard** appear when the course has content grouping turned on, which is the default, so they show even for a course without sections; items outside a section are grouped under **Not in a section**. The chart shows four sections per page and the scorecard shows five; each has its own pager. The chart labels sections **Section 1**, **Section 2**, and so on; the scorecard adds the section title after the number, such as **Section 1 · Introduction**. The scorecard includes **Pass rate**.
 - **Hardest questions** ranks questions by the share of students who answered correctly and shows the most common wrong answer.
 - **Students logged in per day** groups consecutive days into bars as the time range widens. Each bar adds up the logins in its days, and the note under the chart names the group size. A student counts once per day.
 - The **Students** table adds a **Now at** column and a score column for each exercise in that course.
@@ -128,7 +128,7 @@ The table shows 10 students per page. Numbered pages below it move through the l
 
 The **Overdue, with reminders** card lists overdue students five per page, with students who have an overdue goal first and then the most overdue. When there are more than five, the pager under the card reads **Showing 1–5 of N overdue students in cohort**. Each row shows the student, the course and overdue item, progress, last login, and a **Send reminder** button when the student has an overdue cohort goal.
 
-For a learning goal, select **Send reminder** to email that student now. **Remind all N overdue students** emails every student with an overdue goal in the cohort; when you have picked a course, it covers overdue goals for that course. The button changes to **Queued** after the reminders are queued.
+For a learning goal, select **Send reminder** to email that student now. **Remind all N overdue students** emails every student with an overdue goal in the cohort; when you have picked a course, it covers overdue goals for that course. After the reminders are queued, **Send reminder** reads **Queued** and **Remind all N overdue students** reads **Reminders queued**.
 
 ![Overdue, with reminders card showing Send reminder and Remind all overdue students](./images/track-a-cohort-with-analytics/reminders.webp)
 
