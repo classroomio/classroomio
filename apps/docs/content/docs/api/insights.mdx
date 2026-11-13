@@ -71,7 +71,7 @@ This stays a read: it has no side effects, is cached per scope and spec, and cos
 
 ## The snapshot
 
-`GET /analytics/insights/dashboards/{scopeType}/{scopeId}` returns one dashboard snapshot: the scope summary, the effective selection, and the first page of every visible widget. A widget that could not be computed carries only its `errorCode`; the others still carry their result.
+`GET /analytics/insights/dashboards/{scopeType}/{scopeId}` returns one dashboard snapshot: the scope summary, the effective selection, and the first page of every visible widget. A widget that could not be computed has a null `result` and carries its `errorCode`; the others still carry their result.
 
 ```bash cURL
 curl "https://api.classroomio.com/public-api/v1/analytics/insights/dashboards/org/11111111-1111-4111-8111-111111111111?range=30d&breakdown=cohorts" \

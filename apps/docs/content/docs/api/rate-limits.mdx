@@ -20,7 +20,7 @@ Every response tells you where you stand:
 | --- | --- |
 | `X-RateLimit-Limit` | Requests allowed per minute |
 | `X-RateLimit-Remaining` | Requests left in the current minute |
-| `X-RateLimit-Reset` | When the current minute ends, as an ISO 8601 timestamp |
+| `X-RateLimit-Reset` | Sixty seconds after this request, as an ISO 8601 timestamp |
 
 ```http
 X-RateLimit-Limit: 100
