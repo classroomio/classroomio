@@ -542,7 +542,7 @@ export async function runCohortGoalReminderScan(): Promise<{
 const MAX_MANUAL_REMINDER_PAGES = 10;
 
 /**
- * Emails overdue learners on the cohort's active goals now: everyone, one course's goals, or one learner. Pages
+ * Emails overdue students on the cohort's active goals now: everyone, one course's goals, or one student. Pages
  * through the overdue assignments until they run out, so every learner is reached in one request. `truncated`
  * reports that the page budget ran out with assignments still unread.
  */
