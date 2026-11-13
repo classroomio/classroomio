@@ -240,6 +240,18 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'fill_blank.edit.accepted_answers_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.accepted_answers_placeholder'
     ),
+    'fill_blank.edit.blank_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.blank_label'
+    ),
+    'fill_blank.edit.add_alternative': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.add_alternative'
+    ),
+    'fill_blank.edit.add_blank': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.add_blank'
+    ),
+    'fill_blank.edit.helper': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.helper'
+    ),
     'fill_blank.take.placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.take.placeholder'
     ),

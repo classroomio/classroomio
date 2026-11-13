@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
+  import {
+    getExerciseQuestionLabel,
+    getFillBlankAnswerKey,
+    type ExerciseQuestionRendererProps
+  } from '@cio/question-types';
   import { Input } from '../../../../base/input';
-  import { FieldDraft } from '../../../../hooks/field-draft.svelte';
 
   let {
     question,
@@ -14,24 +17,32 @@
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
-  const blanks = new FieldDraft<string[]>({
-    value: () => (answer?.type === 'FILL_BLANK' ? answer.values : []),
-    format: (values) => values.join(', '),
-    parse: (draft) =>
-      draft
-        .split(',')
-        .map((token) => token.trim())
-        .filter(Boolean),
-    onChange: (values) => onAnswerChange({ type: 'FILL_BLANK', values })
-  });
+  const blankCount = $derived(Math.max(1, getFillBlankAnswerKey(question.settings?.acceptedAnswers).length));
+  const values = $derived(answer?.type === 'FILL_BLANK' ? answer.values : []);
+
+  function blankPlaceholder(blankIndex: number): string {
+    if (blankCount === 1) return label('fill_blank.take.placeholder');
+
+    return `${label('fill_blank.edit.blank_label')} ${blankIndex + 1}`;
+  }
+
+  function setValueAt(blankIndex: number, value: string) {
+    const nextValues = Array.from({ length: blankCount }, (_, index) =>
+      index === blankIndex ? value : (values[index] ?? '')
+    );
+    onAnswerChange({ type: 'FILL_BLANK', values: nextValues });
+  }
 </script>
 
-<div class="ui:space-y-2">
-  <Input
-    class="ui:w-full ui:max-w-[300px]"
-    value={blanks.draft}
-    {disabled}
-    placeholder={label('fill_blank.take.placeholder')}
-    oninput={(event) => blanks.input(event.currentTarget.value)}
-  />
+<div class="ui:flex ui:flex-col ui:gap-2">
+  {#each Array.from({ length: blankCount }, (_, index) => index) as blankIndex (blankIndex)}
+    <Input
+      class="ui:w-full ui:max-w-[300px]"
+      value={values[blankIndex] ?? ''}
+      {disabled}
+      placeholder={blankPlaceholder(blankIndex)}
+      aria-label={blankPlaceholder(blankIndex)}
+      oninput={(event) => setValueAt(blankIndex, event.currentTarget.value)}
+    />
+  {/each}
 </div>

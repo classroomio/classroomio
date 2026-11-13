@@ -2128,10 +2128,14 @@
                   "accepted_answers_label": "Réponses acceptées"
                 },
                 "take": {
-                  "placeholder": "Entrez les réponses séparées par des virgules"
+                  "placeholder": "Votre réponse"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Réponses acceptées (séparées par des virgules)"
+                  "accepted_answers_placeholder": "Réponse acceptée",
+                  "blank_label": "Blanc",
+                  "add_alternative": "Ajouter une réponse acceptée",
+                  "add_blank": "Ajouter un blanc",
+                  "helper": "Les étudiants remplissent les blancs dans l’ordre. Un blanc est correct lorsqu’il correspond à l’une de ses réponses acceptées."
                 },
                 "review": {
                   "your_answer_label": "Soumis :"

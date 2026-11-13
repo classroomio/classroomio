@@ -2128,10 +2128,14 @@
                   "accepted_answers_label": "Respuestas aceptadas"
                 },
                 "take": {
-                  "placeholder": "Introduzca las respuestas separadas por comas"
+                  "placeholder": "Tu respuesta"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Respuestas aceptadas (separadas por comas)"
+                  "accepted_answers_placeholder": "Respuesta aceptada",
+                  "blank_label": "Espacio en blanco",
+                  "add_alternative": "Añadir respuesta aceptada",
+                  "add_blank": "Añadir espacio en blanco",
+                  "helper": "Los estudiantes responden los espacios en blanco en orden. Cada espacio es correcto cuando coincide con cualquiera de sus respuestas aceptadas."
                 },
                 "review": {
                   "your_answer_label": "Enviado:"

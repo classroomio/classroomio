@@ -2134,10 +2134,14 @@
                   "accepted_answers_label": "Принятые ответы"
                 },
                 "take": {
-                  "placeholder": "Введите ответы через запятую"
+                  "placeholder": "Ваш ответ"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Принятые ответы (через запятую)"
+                  "accepted_answers_placeholder": "Принятый ответ",
+                  "blank_label": "Пропуск",
+                  "add_alternative": "Добавить принятый ответ",
+                  "add_blank": "Добавить пропуск",
+                  "helper": "Учащиеся заполняют пропуски по порядку. Пропуск засчитывается, если ответ совпадает с любым из принятых ответов."
                 },
                 "review": {
                   "your_answer_label": "Отправлено:"

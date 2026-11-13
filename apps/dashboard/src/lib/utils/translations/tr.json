@@ -3526,10 +3526,14 @@
               },
               "fill_blank": {
                 "edit": {
-                  "accepted_answers_placeholder": "Kabul edilen cevaplar (virgülle ayrılmış)"
+                  "accepted_answers_placeholder": "Kabul edilen cevap",
+                  "blank_label": "Boş",
+                  "add_alternative": "Kabul edilen cevap ekle",
+                  "add_blank": "Boşluk ekle",
+                  "helper": "Öğrenciler boşlukları sırayla doldurur. Bir boşluk, kabul edilen cevaplarından herhangi biriyle eşleştiğinde doğrudur."
                 },
                 "take": {
-                  "placeholder": "Cevapları virgülle ayırarak girin"
+                  "placeholder": "Cevabınız"
                 },
                 "preview": {
                   "accepted_answers_label": "Kabul edilen cevaplar"

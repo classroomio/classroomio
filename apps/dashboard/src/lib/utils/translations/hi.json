@@ -2128,10 +2128,14 @@
                   "accepted_answers_label": "स्वीकृत उत्तर"
                 },
                 "take": {
-                  "placeholder": "अल्पविराम से अलग किए गए उत्तर दर्ज करें"
+                  "placeholder": "आपका उत्तर"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "स्वीकृत उत्तर (अल्पविराम से अलग)"
+                  "accepted_answers_placeholder": "स्वीकृत उत्तर",
+                  "blank_label": "रिक्त",
+                  "add_alternative": "स्वीकृत उत्तर जोड़ें",
+                  "add_blank": "रिक्त जोड़ें",
+                  "helper": "छात्र रिक्त स्थान क्रम से भरते हैं। कोई रिक्त स्थान तब सही होता है जब वह उसके किसी भी स्वीकृत उत्तर से मेल खाता है।"
                 },
                 "review": {
                   "your_answer_label": "प्रस्तुत:"

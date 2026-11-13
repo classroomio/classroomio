@@ -3518,10 +3518,14 @@
               },
               "fill_blank": {
                 "edit": {
-                  "accepted_answers_placeholder": "Risposte accettate (separate da virgole)"
+                  "accepted_answers_placeholder": "Risposta accettata",
+                  "blank_label": "Vuoto",
+                  "add_alternative": "Aggiungi risposta accettata",
+                  "add_blank": "Aggiungi spazio vuoto",
+                  "helper": "Gli studenti rispondono agli spazi vuoti in ordine. Uno spazio è corretto quando corrisponde a una delle sue risposte accettate."
                 },
                 "take": {
-                  "placeholder": "Inserisci le risposte separate da virgole"
+                  "placeholder": "La tua risposta"
                 },
                 "preview": {
                   "accepted_answers_label": "Risposte accettate"

@@ -142,10 +142,35 @@ const FILL_BLANK_CODEC: AnswerCodec<FillBlankAnswerData> = {
   fromApiPayload(payload) {
     if (!payload.answer) return null;
     const { answers } = JSON.parse(payload.answer) as { type: 'FILL_BLANK'; answers: string[] };
-    const values = answers.map((v) => String(v).trim()).filter(Boolean);
-    return values.length > 0 ? { type: 'FILL_BLANK', values } : null;
+    const values = answers.map((value) => String(value ?? '').trim());
+    return values.some(Boolean) ? { type: 'FILL_BLANK', values } : null;
   }
 };
+
+/**
+ * Reads fill-blank `settings.acceptedAnswers` as blanks × alternatives, keeping empty entries for editing.
+ * The legacy comma-separated string becomes one blank per comma-separated value.
+ */
+export function decodeFillBlankAcceptedAnswers(raw: unknown): string[][] {
+  if (typeof raw === 'string') {
+    return raw
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .map((value) => [value]);
+  }
+
+  if (!Array.isArray(raw)) return [];
+
+  return raw.map((blank) => (Array.isArray(blank) ? blank.map((value) => String(value ?? '')) : [String(blank ?? '')]));
+}
+
+/** Fill-blank answer key: trimmed alternatives per blank, without empty alternatives or blanks that have none. */
+export function getFillBlankAnswerKey(raw: unknown): string[][] {
+  return decodeFillBlankAcceptedAnswers(raw)
+    .map((alternatives) => alternatives.map((value) => value.trim()).filter(Boolean))
+    .filter((alternatives) => alternatives.length > 0);
+}
 
 const WORD_BANK_CODEC: AnswerCodec<WordBankAnswerData> = {
   type: 'WORD_BANK',
@@ -385,7 +410,7 @@ export function extractAnswerDisplayValues(data: AnswerData): {
     case 'STAR':
       return { selectedIds: [], selectedValues: [data.value], text: String(data.value) };
     case 'FILL_BLANK':
-      return { selectedIds: [], selectedValues: [], text: data.values.join(', ') };
+      return { selectedIds: [], selectedValues: [], text: data.values.filter(Boolean).join(', ') };
     case 'WORD_BANK':
       return { selectedIds: [], selectedValues: [], text: data.filledBlanks.filter(Boolean).join(', ') };
     case 'LINK':

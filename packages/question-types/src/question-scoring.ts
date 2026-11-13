@@ -6,6 +6,7 @@ import { QUESTION_TYPE_ID_TO_KEY } from './question-type-registry';
 import { supportsPartialCredit } from './question-type-capabilities';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
+import { getFillBlankAnswerKey } from './answer-codecs';
 import { roundPoints } from './points';
 
 export type DbQuestionForScoring = {
@@ -154,23 +155,18 @@ function scoreFillBlank(
   maxPoints: number,
   partial: boolean
 ): number {
-  const raw = String(question.settings?.acceptedAnswers ?? '');
-  const expected = raw
-    .split(',')
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const studentVals = answer.values.map((v) => String(v).trim().toLowerCase());
-  if (expected.length === 0) return 0;
+  const answerKey = getFillBlankAnswerKey(question.settings?.acceptedAnswers);
+  if (answerKey.length === 0) return 0;
 
-  let correct = 0;
-  for (let i = 0; i < expected.length; i++) {
-    if (studentVals[i] === expected[i]) correct++;
-  }
+  const correct = answerKey.filter((alternatives, blankIndex) => {
+    const studentValue = normalizeText(answer.values[blankIndex]);
+    return alternatives.some((alternative) => normalizeText(alternative) === studentValue);
+  }).length;
 
   if (!partial) {
-    return correct === expected.length && studentVals.length === expected.length ? maxPoints : 0;
+    return correct === answerKey.length ? maxPoints : 0;
   }
-  return (correct / expected.length) * maxPoints;
+  return (correct / answerKey.length) * maxPoints;
 }
 
 function countWordBankTemplateBlanks(template: unknown): number {
