@@ -243,8 +243,22 @@
 
             {#if canCreateOrg}
               <div class="ui:bg-primary relative flex flex-col gap-2 overflow-hidden rounded-lg p-4">
-                <div class="ui:bg-white/10 pointer-events-none absolute -right-8 -bottom-10 size-28 rounded-full"></div>
-                <div class="ui:bg-white/10 pointer-events-none absolute right-6 -bottom-4 size-12 rounded-full"></div>
+                <svg
+                  class="pointer-events-none absolute -right-[23px] -bottom-[29px] h-[107px] w-[147px]"
+                  viewBox="52 180 919 666"
+                  fill="white"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-opacity="0.1"
+                    d="M385 180 H518 Q528 180 528 190 V836 Q528 846 518 846 H385 A333 333 0 0 1 385 180 Z"
+                  />
+                  <circle fill-opacity="0.2" cx="796" cy="353" r="173" />
+                  <path
+                    fill-opacity="0.1"
+                    d="M748 595 H961 Q971 595 971 605 V836 Q971 846 961 846 H601 Q591 846 591 836 V752 A157 157 0 0 1 748 595 Z"
+                  />
+                </svg>
 
                 <p class="ui:text-primary-foreground/70 relative text-xs font-medium tracking-wide uppercase">
                   {$t('org_chooser.for_teams')}
