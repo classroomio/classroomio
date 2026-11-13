@@ -2049,11 +2049,10 @@
   },
   "org_chooser": {
     "page_title": "Le tue organizzazioni",
-    "title": "Scegli dove andare",
-    "subtitle": "Scegli un'organizzazione da aprire.",
-    "signed_in_as": "Accesso effettuato come {email}",
+    "title": "Scegli un'accademia per continuare",
+    "subtitle": "Hai accesso a {count, plural, one {# accademia} other {# accademie}}. Scegli dove vuoi entrare.",
     "managed_heading": "Organizzazioni che gestisci",
-    "learning_heading": "Accademie in cui impari",
+    "learning_heading": "Dove impari",
     "invites_heading": "Inviti in sospeso",
     "open_dashboard": "Apri la dashboard di {name}",
     "open_academy": "Apri {name} su {host}",
@@ -2061,11 +2060,12 @@
     "accept_invite": "Accetta",
     "invites_error": "Impossibile caricare i tuoi inviti. Controlla la connessione e riprova.",
     "invites_retry": "Riprova",
-    "create_heading": "Vuoi gestire la tua accademia?",
-    "create_description": "Crea un'organizzazione per pubblicare corsi e invitare i tuoi studenti.",
+    "create_heading": "Gestisci la tua accademia",
+    "create_description": "Crea un'organizzazione, pubblica corsi e invita i tuoi studenti.",
     "create_cta": "Crea organizzazione",
-    "different_account": "Non vedi la tua organizzazione?",
-    "different_account_cta": "Accedi con un altro indirizzo email"
+    "for_teams": "Per i team",
+    "different_account": "Non vedi la tua accademia?",
+    "different_account_cta": "Prova con un altro indirizzo email"
   },
   "navigation": {
     "goto": "Vai a",

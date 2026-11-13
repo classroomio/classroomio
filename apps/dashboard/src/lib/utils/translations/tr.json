@@ -2059,11 +2059,10 @@
   },
   "org_chooser": {
     "page_title": "Kuruluşlarınız",
-    "title": "Nereye gideceğinizi seçin",
-    "subtitle": "Açmak için bir kuruluş seçin.",
-    "signed_in_as": "{email} olarak giriş yapıldı",
+    "title": "Devam etmek için bir akademi seçin",
+    "subtitle": "{count, plural, one {# akademiye} other {# akademiye}} erişiminiz var. Nereye gitmek istediğinizi seçin.",
     "managed_heading": "Yönettiğiniz kuruluşlar",
-    "learning_heading": "Öğrendiğiniz akademiler",
+    "learning_heading": "Öğrenim yaptığınız",
     "invites_heading": "Bekleyen davetler",
     "open_dashboard": "{name} panosunu aç",
     "open_academy": "{name} adlı akademiyi {host} üzerinde aç",
@@ -2071,11 +2070,12 @@
     "accept_invite": "Kabul et",
     "invites_error": "Davetlerin yüklenemedi. Bağlantını kontrol edip tekrar dene.",
     "invites_retry": "Tekrar dene",
-    "create_heading": "Kendi akademinizi yönetmek mi istiyorsunuz?",
-    "create_description": "Kurs yayınlamak ve kendi öğrencilerinizi davet etmek için bir kuruluş oluşturun.",
+    "create_heading": "Kendi akademinizi yönetin",
+    "create_description": "Bir kuruluş oluşturun, kurs yayınlayın ve kendi öğrencilerinizi davet edin.",
     "create_cta": "Kuruluş oluştur",
-    "different_account": "Kuruluşunuzu göremiyor musunuz?",
-    "different_account_cta": "Farklı bir e-postayla giriş yapın"
+    "for_teams": "Ekipler için",
+    "different_account": "Akademinizi göremiyor musunuz?",
+    "different_account_cta": "Farklı bir e-posta deneyin"
   },
   "navigation": {
     "goto": "Şuraya gidin",

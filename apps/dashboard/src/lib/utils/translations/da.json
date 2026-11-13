@@ -3579,11 +3579,10 @@
   },
   "org_chooser": {
     "page_title": "Dine organisationer",
-    "title": "Vælg, hvor du vil hen",
-    "subtitle": "Vælg en organisation, du vil åbne.",
-    "signed_in_as": "Logget ind som {email}",
+    "title": "Vælg et akademi for at fortsætte",
+    "subtitle": "Du har adgang til {count, plural, one {# akademi} other {# akademier}}. Vælg, hvor du vil lande.",
     "managed_heading": "Organisationer, du administrerer",
-    "learning_heading": "Akademier, hvor du lærer",
+    "learning_heading": "Lærer i",
     "invites_heading": "Ventende invitationer",
     "open_dashboard": "Åbn {name}-dashboardet",
     "open_academy": "Åbn {name} på {host}",
@@ -3591,11 +3590,12 @@
     "accept_invite": "Acceptér",
     "invites_error": "Dine invitationer kunne ikke indlæses. Tjek din forbindelse, og prøv igen.",
     "invites_retry": "Prøv igen",
-    "create_heading": "Vil du drive dit eget akademi?",
-    "create_description": "Opret en organisation for at udgive kurser og invitere dine egne elever.",
+    "create_heading": "Driv dit eget akademi",
+    "create_description": "Opret en organisation, udgiv kurser og inviter dine egne elever.",
     "create_cta": "Opret organisation",
-    "different_account": "Kan du ikke finde din organisation?",
-    "different_account_cta": "Log ind med en anden e-mailadresse"
+    "for_teams": "For teams",
+    "different_account": "Kan du ikke finde dit akademi?",
+    "different_account_cta": "Prøv en anden e-mailadresse"
   },
   "setup": {
     "your_checklist": "Din tjekliste",

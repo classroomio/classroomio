@@ -21,7 +21,6 @@
   import { t } from '$lib/utils/functions/translations';
   import { authClient } from '$lib/utils/services/auth/client';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { profile } from '$lib/utils/store/user';
 
   import { groupOrgMemberships } from '../../utils/org-memberships';
   import {
@@ -112,7 +111,7 @@
     data-testid="org-chooser"
   >
     <Card.Root class="ui:notch-cutout w-full shadow-none">
-      <Card.Header class="flex flex-col items-center gap-4">
+      <Card.Header class="flex flex-col gap-4">
         <a href={resolve(ROUTE.HOME, {})} class="inline-flex" aria-label="ClassroomIO">
           <Avatar.Root>
             <Avatar.Image src="/logo-192.png" alt="ClassroomIO" />
@@ -120,10 +119,11 @@
           </Avatar.Root>
         </a>
 
-        <Card.Title class="text-2xl font-normal!">{$t('org_chooser.title')}</Card.Title>
-        <Card.Description class="text-center">{$t('org_chooser.subtitle')}</Card.Description>
-        {#if $profile.email}
-          <p class="ui:text-muted-foreground text-xs">{$t('org_chooser.signed_in_as', { email: $profile.email })}</p>
+        <Card.Title class="text-2xl font-semibold">{$t('org_chooser.title')}</Card.Title>
+        {#if isReady}
+          <Card.Description>
+            {$t('org_chooser.subtitle', { count: organizations.length })}
+          </Card.Description>
         {/if}
       </Card.Header>
 
@@ -242,15 +242,21 @@
             {/if}
 
             {#if canCreateOrg}
-              <div class="ui:bg-muted/40 flex flex-col gap-3 rounded-lg p-4">
-                <div class="flex flex-col gap-1">
-                  <p class="text-sm font-medium">{$t('org_chooser.create_heading')}</p>
-                  <p class="ui:text-muted-foreground text-sm">{$t('org_chooser.create_description')}</p>
-                </div>
+              <div class="ui:bg-primary relative flex flex-col gap-2 overflow-hidden rounded-lg p-4">
+                <div class="ui:bg-white/10 pointer-events-none absolute -right-8 -bottom-10 size-28 rounded-full"></div>
+                <div class="ui:bg-white/10 pointer-events-none absolute right-6 -bottom-4 size-12 rounded-full"></div>
+
+                <p class="ui:text-primary-foreground/70 relative text-xs font-medium tracking-wide uppercase">
+                  {$t('org_chooser.for_teams')}
+                </p>
+                <p class="ui:text-primary-foreground relative text-lg font-semibold">
+                  {$t('org_chooser.create_heading')}
+                </p>
+                <p class="ui:text-primary-foreground/90 relative text-sm">{$t('org_chooser.create_description')}</p>
+
                 <Button
-                  variant="outline"
                   size="sm"
-                  class="w-full"
+                  class="ui:bg-white ui:text-primary ui:hover:bg-white/90 mt-1 self-start"
                   testId="org-chooser-create"
                   onclick={createOrganization}
                 >

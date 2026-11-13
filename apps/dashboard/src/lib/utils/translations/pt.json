@@ -3579,11 +3579,10 @@
   },
   "org_chooser": {
     "page_title": "As suas organizações",
-    "title": "Escolha para onde ir",
-    "subtitle": "Escolha uma organização para abrir.",
-    "signed_in_as": "Sessão iniciada como {email}",
+    "title": "Escolha uma academia para continuar",
+    "subtitle": "Tem acesso a {count, plural, one {# academia} other {# academias}}. Escolha onde quer entrar.",
     "managed_heading": "Organizações que gere",
-    "learning_heading": "Academias onde aprende",
+    "learning_heading": "Onde aprende",
     "invites_heading": "Convites pendentes",
     "open_dashboard": "Abrir o painel de {name}",
     "open_academy": "Abrir {name} em {host}",
@@ -3591,11 +3590,12 @@
     "accept_invite": "Aceitar",
     "invites_error": "Não foi possível carregar os teus convites. Verifica a tua ligação e tenta novamente.",
     "invites_retry": "Tentar novamente",
-    "create_heading": "Quer gerir a sua própria academia?",
-    "create_description": "Crie uma organização para publicar cursos e convidar os seus próprios alunos.",
+    "create_heading": "Gerir a sua própria academia",
+    "create_description": "Crie uma organização, publique cursos e convide os seus próprios alunos.",
     "create_cta": "Criar organização",
-    "different_account": "Não vê a sua organização?",
-    "different_account_cta": "Inicie sessão com outro e-mail"
+    "for_teams": "Para equipas",
+    "different_account": "Não vê a sua academia?",
+    "different_account_cta": "Tente outro e-mail"
   },
   "setup": {
     "your_checklist": "Sua lista de verificação",

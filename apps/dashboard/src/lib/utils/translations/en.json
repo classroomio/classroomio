@@ -2049,11 +2049,10 @@
   },
   "org_chooser": {
     "page_title": "Your organizations",
-    "title": "Choose where to go",
-    "subtitle": "Choose an organization to open.",
-    "signed_in_as": "Signed in as {email}",
+    "title": "Pick an academy to continue",
+    "subtitle": "You have access to {count, plural, one {# academy} other {# academies}}. Choose where you want to land.",
     "managed_heading": "Organizations you manage",
-    "learning_heading": "Academies you learn in",
+    "learning_heading": "Learning in",
     "invites_heading": "Pending invitations",
     "open_dashboard": "Open the {name} dashboard",
     "open_academy": "Open {name} on {host}",
@@ -2061,11 +2060,12 @@
     "accept_invite": "Accept",
     "invites_error": "Couldn't load your invitations. Check your connection and try again.",
     "invites_retry": "Try again",
-    "create_heading": "Want to run your own academy?",
-    "create_description": "Create an organization to publish courses and invite your own learners.",
+    "create_heading": "Run your own academy",
+    "create_description": "Create an organization, publish courses and invite your own learners.",
     "create_cta": "Create organization",
-    "different_account": "Not seeing your organization?",
-    "different_account_cta": "Sign in with a different email"
+    "for_teams": "For teams",
+    "different_account": "Not seeing your academy?",
+    "different_account_cta": "Try a different email"
   },
   "navigation": {
     "goto": "Go to",

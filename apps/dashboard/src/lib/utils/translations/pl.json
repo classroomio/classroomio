@@ -3579,11 +3579,10 @@
   },
   "org_chooser": {
     "page_title": "Twoje organizacje",
-    "title": "Wybierz, dokąd przejść",
-    "subtitle": "Wybierz organizację do otwarcia.",
-    "signed_in_as": "Zalogowano jako {email}",
+    "title": "Wybierz akademię, aby kontynuować",
+    "subtitle": "Masz dostęp do {count, plural, one {# akademii} few {# akademii} many {# akademii} other {# akademii}}. Wybierz, dokąd chcesz przejść.",
     "managed_heading": "Organizacje, którymi zarządzasz",
-    "learning_heading": "Akademie, w których się uczysz",
+    "learning_heading": "Uczysz się w",
     "invites_heading": "Oczekujące zaproszenia",
     "open_dashboard": "Otwórz panel {name}",
     "open_academy": "Otwórz {name} na {host}",
@@ -3591,11 +3590,12 @@
     "accept_invite": "Akceptuj",
     "invites_error": "Nie można wczytać twoich zaproszeń. Sprawdź połączenie i spróbuj ponownie.",
     "invites_retry": "Spróbuj ponownie",
-    "create_heading": "Chcesz prowadzić własną akademię?",
-    "create_description": "Utwórz organizację, aby publikować kursy i zapraszać własnych kursantów.",
+    "create_heading": "Prowadź własną akademię",
+    "create_description": "Utwórz organizację, publikuj kursy i zapraszaj własnych kursantów.",
     "create_cta": "Utwórz organizację",
-    "different_account": "Nie widzisz swojej organizacji?",
-    "different_account_cta": "Zaloguj się przy użyciu innego adresu e-mail"
+    "for_teams": "Dla zespołów",
+    "different_account": "Nie widzisz swojej akademii?",
+    "different_account_cta": "Spróbuj użyć innego adresu e-mail"
   },
   "setup": {
     "your_checklist": "Twoja lista kontrolna",

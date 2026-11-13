@@ -3579,11 +3579,10 @@
   },
   "org_chooser": {
     "page_title": "Vos organisations",
-    "title": "Choisissez votre destination",
-    "subtitle": "Choisissez une organisation à ouvrir.",
-    "signed_in_as": "Connecté en tant que {email}",
+    "title": "Choisissez une académie pour continuer",
+    "subtitle": "Vous avez accès à {count, plural, one {# académie} other {# académies}}. Choisissez où vous souhaitez aller.",
     "managed_heading": "Organisations que vous gérez",
-    "learning_heading": "Académies où vous apprenez",
+    "learning_heading": "Où vous apprenez",
     "invites_heading": "Invitations en attente",
     "open_dashboard": "Ouvrir le tableau de bord {name}",
     "open_academy": "Ouvrir {name} sur {host}",
@@ -3591,11 +3590,12 @@
     "accept_invite": "Accepter",
     "invites_error": "Impossible de charger vos invitations. Vérifiez votre connexion et réessayez.",
     "invites_retry": "Réessayer",
-    "create_heading": "Vous voulez diriger votre propre académie ?",
-    "create_description": "Créez une organisation pour publier des cours et inviter vos propres apprenants.",
+    "create_heading": "Dirigez votre propre académie",
+    "create_description": "Créez une organisation, publiez des cours et invitez vos propres apprenants.",
     "create_cta": "Créer une organisation",
-    "different_account": "Vous ne voyez pas votre organisation ?",
-    "different_account_cta": "Se connecter avec un autre e-mail"
+    "for_teams": "Pour les équipes",
+    "different_account": "Votre académie n'apparaît pas ?",
+    "different_account_cta": "Essayez une autre adresse e-mail"
   },
   "setup": {
     "your_checklist": "Votre liste de contrôle",

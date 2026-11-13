@@ -3579,11 +3579,10 @@
   },
   "org_chooser": {
     "page_title": "Ihre Organisationen",
-    "title": "Wählen Sie, wohin es gehen soll",
-    "subtitle": "Wählen Sie eine Organisation aus, die Sie öffnen möchten.",
-    "signed_in_as": "Angemeldet als {email}",
+    "title": "Wählen Sie eine Akademie, um fortzufahren",
+    "subtitle": "Sie haben Zugriff auf {count, plural, one {# Akademie} other {# Akademien}}. Wählen Sie, wo Sie landen möchten.",
     "managed_heading": "Organisationen, die Sie verwalten",
-    "learning_heading": "Akademien, in denen Sie lernen",
+    "learning_heading": "Lernen in",
     "invites_heading": "Ausstehende Einladungen",
     "open_dashboard": "Das {name}-Dashboard öffnen",
     "open_academy": "{name} auf {host} öffnen",
@@ -3591,11 +3590,12 @@
     "accept_invite": "Annehmen",
     "invites_error": "Deine Einladungen konnten nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
     "invites_retry": "Erneut versuchen",
-    "create_heading": "Möchten Sie Ihre eigene Akademie betreiben?",
-    "create_description": "Erstellen Sie eine Organisation, um Kurse zu veröffentlichen und Ihre eigenen Lernenden einzuladen.",
+    "create_heading": "Betreiben Sie Ihre eigene Akademie",
+    "create_description": "Erstellen Sie eine Organisation, veröffentlichen Sie Kurse und laden Sie Ihre eigenen Lernenden ein.",
     "create_cta": "Organisation erstellen",
-    "different_account": "Ihre Organisation nicht dabei?",
-    "different_account_cta": "Mit einer anderen E-Mail-Adresse anmelden"
+    "for_teams": "Für Teams",
+    "different_account": "Ist Ihre Akademie nicht dabei?",
+    "different_account_cta": "Versuchen Sie eine andere E-Mail-Adresse"
   },
   "setup": {
     "your_checklist": "Ihre Checkliste",
