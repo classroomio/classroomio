@@ -44,7 +44,7 @@ Add an entry to `QUESTION_TYPE_REGISTRY` with a unique numeric `id`:
   key: QUESTION_TYPE_KEY.MY_NEW_TYPE,
   typename: 'MY_NEW_TYPE',
   label: 'My New Type',
-  id: 13,  // Use the next unused id (currently 1–12 are used)
+  id: 19,  // Use the next unused id (currently 1–18 are used)
   autoGradable: true,       // Can the system auto-grade?
   supportsPartialCredit: true,  // For auto-gradable: allow partial points?
   manualGradingRequired: false  // Must a human grade this?
@@ -316,19 +316,25 @@ In `constants.ts`, you can:
 
 ## Reference: Existing Types
 
-| Key          | Id  | Capabilities                  |
-| ------------ | --- | ----------------------------- |
-| RADIO        | 1   | Auto-gradable                 |
-| CHECKBOX     | 2   | Auto-gradable, partial credit |
-| TEXTAREA     | 3   | Manual grading                |
-| TRUE_FALSE   | 4   | Auto-gradable                 |
-| SHORT_ANSWER | 5   | Manual grading                |
-| NUMERIC      | 6   | Auto-gradable, partial credit |
-| FILL_BLANK   | 7   | Auto-gradable, partial credit |
-| FILE_UPLOAD  | 8   | Manual grading                |
-| MATCHING     | 9   | Auto-gradable, partial credit |
-| ORDERING     | 10  | Auto-gradable, partial credit |
-| HOTSPOT      | 11  | Auto-gradable, partial credit |
-| LINK         | 12  | Manual grading                |
+| Key             | Id  | Capabilities                                     |
+| --------------- | --- | ------------------------------------------------ |
+| RADIO           | 1   | Auto-gradable                                    |
+| CHECKBOX        | 2   | Auto-gradable, partial credit                    |
+| TEXTAREA        | 3   | Manual grading                                   |
+| TRUE_FALSE      | 4   | Auto-gradable                                    |
+| SHORT_ANSWER    | 5   | Manual grading                                   |
+| NUMERIC         | 6   | Auto-gradable, partial credit                    |
+| FILL_BLANK      | 7   | Auto-gradable, partial credit                    |
+| FILE_UPLOAD     | 8   | Manual grading                                   |
+| ORDERING        | 9   | Auto-gradable, partial credit                    |
+| LINK            | 10  | Manual grading                                   |
+| WORD_BANK       | 11  | Auto-gradable, partial credit                    |
+| STAR            | 12  | Auto-gradable                                    |
+| VIDEO_RECORDING | 13  | Manual grading                                   |
+| THUMBS          | 14  | Not graded                                       |
+| MATCHING        | 15  | Auto-gradable, partial credit (disabled)         |
+| HOTSPOT         | 16  | Auto-gradable, partial credit (disabled)         |
+| MATH_EXPRESSION | 17  | Auto-gradable with the math grader (disabled)    |
+| WORKED_SOLUTION | 18  | Answer auto-graded, working manual (disabled)    |
 
 Use the next available id for your new type, keep `QUESTION_TYPE_REGISTRY` and the `questionType` comment in `schema.ts` in sync, and ensure environments that need the row have it inserted (seed or one-off—**not** a committed migration for reference data).

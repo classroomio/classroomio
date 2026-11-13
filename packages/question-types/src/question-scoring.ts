@@ -8,6 +8,14 @@ import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rat
 import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
 import { getFillBlankAnswerKey } from './answer-codecs';
 import { roundPoints } from './points';
+import {
+  getWorkedSolutionPointSplit,
+  isNumericMatch,
+  readMathExpressionSettings,
+  readNumericSettings,
+  type MathGradeResult,
+  type MathGrader
+} from './math-settings';
 
 export type DbQuestionForScoring = {
   id: number;
@@ -137,16 +145,53 @@ function scoreStar(
 function scoreNumeric(
   question: ExerciseQuestionModel,
   answer: Extract<AnswerData, { type: 'NUMERIC' }>,
-  maxPoints: number
+  maxPoints: number,
+  grader: MathGrader | undefined
 ): number {
-  const rawCorrect = question.settings?.correctValue;
-  const correct = typeof rawCorrect === 'number' ? rawCorrect : rawCorrect != null ? Number(rawCorrect) : NaN;
-  if (Number.isNaN(correct)) return 0;
+  const settings = readNumericSettings(question.settings);
+  if (grader) return grader.gradeNumeric(settings, answer) ? maxPoints : 0;
 
-  const rawTol = question.settings?.tolerance;
-  const tol = typeof rawTol === 'number' && Number.isFinite(rawTol) ? rawTol : rawTol != null ? Number(rawTol) : 0;
-  const diff = Math.abs(answer.value - correct);
-  return diff <= tol ? maxPoints : 0;
+  const matched = isNumericMatch(answer.value, Number(settings.correctValue), {
+    absoluteTolerance: settings.tolerance,
+    relativeTolerance: settings.relativeTolerance,
+    significantFigures: settings.significantFigures
+  });
+  return matched ? maxPoints : 0;
+}
+
+export type MathQuestionGrade = {
+  /** Points awarded automatically: the whole question for `MATH_EXPRESSION`, the answer part for `WORKED_SOLUTION`. */
+  points: number;
+  /** Points left for manual grading (the working part of a `WORKED_SOLUTION`). */
+  pendingManualPoints: number;
+  result: MathGradeResult;
+};
+
+/**
+ * Grades a `MATH_EXPRESSION` or `WORKED_SOLUTION` answer with `grader`, returning the reason and matched feedback the
+ * review view and answer clusters show. Returns null for any other question type or answer.
+ */
+export function gradeMathQuestion(
+  question: ExerciseQuestionModel,
+  answer: AnswerData | null | undefined,
+  grader: MathGrader
+): MathQuestionGrade | null {
+  const maxPoints = Math.max(0, Number(question.points ?? 0));
+  const isWorkedSolution = question.questionType === QUESTION_TYPE_KEY.WORKED_SOLUTION;
+  const isMathExpression = question.questionType === QUESTION_TYPE_KEY.MATH_EXPRESSION;
+  if (!isWorkedSolution && !isMathExpression) return null;
+  if (answer?.type !== 'MATH_EXPRESSION' && answer?.type !== 'WORKED_SOLUTION') return null;
+  if (answer.type !== question.questionType) return null;
+
+  const { answerPoints, workingPoints } = isWorkedSolution
+    ? getWorkedSolutionPointSplit(question.settings, maxPoints)
+    : { answerPoints: maxPoints, workingPoints: 0 };
+  const result: MathGradeResult = answer.latex.trim()
+    ? grader.gradeExpression(readMathExpressionSettings(question.settings), answer.latex)
+    : { reason: 'invalid' };
+  const points = result.reason === 'equivalent' ? answerPoints : 0;
+
+  return { points, pendingManualPoints: workingPoints, result };
 }
 
 function scoreFillBlank(
@@ -311,7 +356,15 @@ function scoreHotspot(
   return (hits / hotspots.length) * maxPoints;
 }
 
-export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: AnswerData | null | undefined): number {
+/**
+ * Auto-graded points for one answer. Math answers (`MATH_EXPRESSION`, `WORKED_SOLUTION`, LaTeX `NUMERIC`) need the
+ * Compute Engine `grader` from `@cio/question-types/math-grading`; without it they score 0 and NUMERIC compares numbers.
+ */
+export function scoreAnswerForQuestion(
+  question: ExerciseQuestionModel,
+  answer: AnswerData | null | undefined,
+  grader?: MathGrader
+): number {
   const maxPoints = Number(question.points ?? 0);
   if (maxPoints <= 0) return 0;
   if (!answer || typeof answer !== 'object' || !('type' in answer)) return 0;
@@ -331,7 +384,7 @@ export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: 
       return scoreTrueFalse(question, answer, maxPoints);
     case 'NUMERIC':
       if (key !== QUESTION_TYPE_KEY.NUMERIC) return 0;
-      return scoreNumeric(question, answer, maxPoints);
+      return scoreNumeric(question, answer, maxPoints, grader);
     case 'STAR':
       if (key !== QUESTION_TYPE_KEY.STAR) return 0;
       return scoreStar(question, answer, maxPoints);
@@ -350,6 +403,10 @@ export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: 
     case 'HOTSPOT':
       if (key !== QUESTION_TYPE_KEY.HOTSPOT) return 0;
       return clampPoints(scoreHotspot(question, answer, maxPoints, partial), maxPoints);
+    case 'MATH_EXPRESSION':
+    case 'WORKED_SOLUTION':
+      if (!grader) return 0;
+      return clampPoints(gradeMathQuestion(question, answer, grader)?.points ?? 0, maxPoints);
     default:
       return 0;
   }
@@ -362,11 +419,12 @@ export type ScoreSubmissionResult = {
 
 /**
  * Computes per-question scores and total for auto-graded exercises.
- * Missing answers score 0.
+ * Missing answers score 0. Pass the math `grader` so math answers are graded (see `scoreAnswerForQuestion`).
  */
 export function scoreSubmissionAnswers(
   questions: DbQuestionForScoring[],
-  answersByQuestionId: ReadonlyMap<number, AnswerData | null | undefined>
+  answersByQuestionId: ReadonlyMap<number, AnswerData | null | undefined>,
+  grader?: MathGrader
 ): ScoreSubmissionResult {
   const scores: Array<{ questionId: number; points: number }> = [];
   let total = 0;
@@ -380,7 +438,7 @@ export function scoreSubmissionAnswers(
     }
 
     const answer = answersByQuestionId.get(q.id);
-    const pts = roundPoints(scoreAnswerForQuestion(model, answer ?? null));
+    const pts = roundPoints(scoreAnswerForQuestion(model, answer ?? null, grader));
     scores.push({ questionId: q.id, points: pts });
     total += pts;
   }
