@@ -235,10 +235,6 @@ const state = {
   showVideo: true,
   showPins: true,
   activeId: null,
-  histDays: 7,
-  histPerson: 'all',
-  panelTab: 'threads',
-  activityDot: true,
   versions: seedVersions(),
   verSel: null,
   draft: null,
@@ -784,18 +780,13 @@ function renderPanel() {
     .filter((g) => g.list.length)
     .map((g) => `<div class="group-title">${esc(g.title)}</div>${g.list.map((t) => threadHtml(t)).join('')}`)
     .join('');
-  const inHistory = state.panelTab === 'activity';
   const tipBtn = (tip, extra, attrs, svg, dot = '') =>
     `<button class="btn btn-outline btn-icon-sm tip ${extra}" data-tip="${tip}" aria-label="${tip}" ${attrs}>${svg}${dot}</button>`;
-  panel.innerHTML = `<div class="sp-head"><div class="sp-title"><div class="t">${inHistory ? 'Comment history' : 'Comments'}</div>
-      <div class="sp-icons">${tipBtn('New comment', '', 'data-act="new-general"', icon('plus'))}${inHistory ? '' : tipBtn('Filter comments', '', `data-act="toggle-filter" aria-pressed="${state.filterOpen}"`, icon('listFilter'), filtersActive() ? '<span class="unread-dot" aria-hidden="true"></span>' : '')}${tipBtn('Comment history', '', `data-act="toggle-history" aria-pressed="${inHistory}"`, icon('history'), state.activityDot && !inHistory ? '<span class="unread-dot" aria-hidden="true"></span>' : '')}${tipBtn('Close (Esc)', 'tip-end', 'data-act="close-panel"', icon('x'))}</div></div>
-      ${state.filterOpen && !inHistory ? filterPopHtml() : ''}
+  panel.innerHTML = `<div class="sp-head"><div class="sp-title"><div class="t">Comments</div>
+      <div class="sp-icons">${tipBtn('New comment', '', 'data-act="new-general"', icon('plus'))}${tipBtn('Filter comments', '', `data-act="toggle-filter" aria-pressed="${state.filterOpen}"`, icon('listFilter'), filtersActive() ? '<span class="unread-dot" aria-hidden="true"></span>' : '')}${tipBtn('Close (Esc)', 'tip-end', 'data-act="close-panel"', icon('x'))}</div></div>
+      ${state.filterOpen ? filterPopHtml() : ''}
       <div class="s"><span class="live-pill" title="Comments from teammates appear without refreshing"><i></i>Live</span>${openCount()} open · only admins and tutors see these${hasUnread() ? '<button class="link-btn mark-read" data-act="mark-all-read">Mark all read</button>' : ''}</div></div>
-    ${
-      inHistory
-        ? activityHtml()
-        : `<div class="panel-body">${blockHead}${draftHtml}${body || (draft ? '' : '<div class="empty">No threads match these filters.</div>')}</div>`
-    }`;
+    <div class="panel-body">${blockHead}${draftHtml}${body || (draft ? '' : '<div class="empty">No threads match these filters.</div>')}</div>`;
 }
 
 function renderAll() {
@@ -809,7 +800,6 @@ function startDraft(anchor, keepBlock = false) {
   state.draft = anchor;
   state.pinMode = false;
   if (!keepBlock) state.blockFilter = null;
-  state.panelTab = 'threads';
   state.panelOpen = true;
   renderPage();
   renderPanel();
@@ -835,7 +825,6 @@ function goTo(threadId, opts = {}) {
   if (!thread) return;
   state.activeId = threadId;
   state.panelOpen = true;
-  state.panelTab = 'threads';
   markSeen(thread);
   state.notifs.forEach((n) => {
     if (n.userId === state.viewer && n.threadId === thread.id) n.read = true;
@@ -1104,13 +1093,6 @@ $('panel').addEventListener('click', (e) => {
       state.filterOpen = !state.filterOpen;
       return renderPanel();
     }
-    if (name === 'toggle-history') {
-      state.filterOpen = false;
-      state.panelTab = state.panelTab === 'activity' ? 'threads' : 'activity';
-      if (state.panelTab === 'activity') state.activityDot = false;
-      return renderPanel();
-    }
-    if (name === 'open-versions') return openVersions(true);
     if (name === 'edit') {
       state.editing = `edit:${threadId}:${commentId}`;
       state.activeId = threadId;
@@ -1286,106 +1268,6 @@ function closeDialog() {
   $('dialog').hidden = true;
   $('dialog').innerHTML = '';
 }
-
-const HISTORY_RANGES = [
-  { days: 7, label: 'Last 7 days' },
-  { days: 14, label: 'Last 14 days' },
-  { days: 30, label: 'Last 30 days' }
-];
-
-function ageInDays(when) {
-  if (when === 'Yesterday') return 1;
-  const match = /^(\d+)([mhdw]) ago$/.exec(when);
-  if (!match) return 0;
-  const perUnit = { m: 1 / 1440, h: 1 / 24, d: 1, w: 7 };
-
-  return Number(match[1]) * perUnit[match[2]];
-}
-
-function historyEvents() {
-  return state.threads
-    .flatMap((thread) => thread.log.map((entry) => ({ thread, entry, age: ageInDays(entry.when) })))
-    .filter(({ entry, age }) => age <= state.histDays && (state.histPerson === 'all' || entry.who === state.histPerson))
-    .sort((a, b) => a.age - b.age);
-}
-
-function threadLabel(thread) {
-  const text = thread.anchor.quote || thread.comments[0].body;
-
-  return `“${text.length > 30 ? text.slice(0, 30) + '…' : text}”`;
-}
-
-function threadPlace(thread) {
-  const a = thread.anchor;
-  if (a.type === 'video') return `Video · ${fmt(a.time)}`;
-  if (a.type === 'text') return 'Note';
-  if (a.type === 'question') return 'Question';
-  if (a.type === 'slide') return `Slide ${a.slide}`;
-  if (a.type === 'image') return 'Image';
-  if (a.type === 'course') return 'Whole course';
-
-  return 'Lesson';
-}
-
-function eventSentence({ thread, entry }) {
-  const label = `<b>${esc(threadLabel(thread))}</b>`;
-  const text = entry.text;
-  if (text.startsWith('started')) return `started ${label}`;
-  if (text === 'replied') return `replied to ${label}`;
-  if (text.startsWith('resolved')) return `resolved ${label}`;
-  if (text.startsWith('reopened')) return `reopened ${label}`;
-  if (/^(added|removed) /.test(text)) return esc(text);
-
-  return `${esc(text)} on ${label}`;
-}
-
-function historyRowHtml(ev) {
-  const who = member(ev.entry.who);
-  const resolved = ev.entry.text.startsWith('resolved');
-
-  return `<button class="hv-row" data-hist="goto" data-thread="${ev.thread.id}"><span class="hv-dot ${resolved ? 'ok' : ''}"></span>
-    <span class="hv-text"><span><strong>${esc(who.name.split(' ')[0])}</strong>${formerTag(who.id)} ${eventSentence(ev)}</span>
-    <small>${threadPlace(ev.thread)} · ${esc(ev.entry.when)}</small></span></button>`;
-}
-
-function activityHtml() {
-  const events = historyEvents();
-  const people = TEAM.map(
-    (m) =>
-      `<option value="${m.id}" ${state.histPerson === m.id ? 'selected' : ''}>${esc(m.name.split(' ')[0])}${isFormer(m.id) ? ' (former)' : ''}</option>`
-  ).join('');
-  const ranges = HISTORY_RANGES.map(
-    (r) => `<option value="${r.days}" ${state.histDays === r.days ? 'selected' : ''}>${r.label}</option>`
-  ).join('');
-  const body = events.length
-    ? events.map(historyRowHtml).join('')
-    : '<p class="hc-empty">No activity matches these filters.</p>';
-
-  return `<div class="hv-filters"><select data-hist="person" aria-label="Person"><option value="all">Everyone</option>${people}</select>
-      <select data-hist="range" aria-label="Time range">${ranges}</select></div>
-    <div class="panel-body hv-body">${body}</div>
-    <footer class="hv-foot"><span>${events.length} ${events.length === 1 ? 'event' : 'events'}</span><button class="link-btn" data-act="open-versions">Lesson version history</button></footer>`;
-}
-
-function refreshActivity() {
-  const body = document.querySelector('#panel .hv-body');
-  const scroll = body ? body.scrollTop : 0;
-  renderPanel();
-  document.querySelector('#panel .hv-body').scrollTop = scroll;
-}
-
-$('panel').addEventListener('click', (e) => {
-  const row = e.target.closest('button[data-hist="goto"]');
-  if (row) goTo(row.dataset.thread);
-});
-
-$('panel').addEventListener('input', (e) => {
-  const field = e.target.dataset.hist;
-  if (field === 'range') state.histDays = Number(e.target.value);
-  else if (field === 'person') state.histPerson = e.target.value;
-  else return;
-  refreshActivity();
-});
 
 function wordDiff(before, after) {
   const from = before.match(/\S+\s*/g) || [];
@@ -1689,7 +1571,6 @@ async function liveComment(authorId, threadId) {
 
   thread.comments.push({ id: 'c' + cid++, author: author.id, body, mentions: [], when: 'just now', edited: false });
   logEvent(thread, author.id, 'replied');
-  if (state.panelTab !== 'activity') state.activityDot = true;
   state.typing = null;
   if (new Set(thread.comments.map((cm) => cm.author)).has(state.viewer)) {
     state.notifs.unshift({
@@ -1711,10 +1592,6 @@ function resetAll() {
   setPlaying(false);
   state.questionGone = false;
   removedIds.length = 0;
-  state.histDays = 7;
-  state.histPerson = 'all';
-  state.panelTab = 'threads';
-  state.activityDot = true;
   state.versions = seedVersions();
   state.threads = seed();
   state.notifs = seedNotifs();
@@ -1864,7 +1741,6 @@ const STORY = [
     run: async () => {
       setViewer('u2');
       state.panelOpen = true;
-      state.panelTab = 'threads';
       renderAll();
       await sleep(300);
       spot('#openPanel');
@@ -1898,7 +1774,6 @@ const STORY = [
     run: async () => {
       setViewer('u1');
       setStatusFilter('open');
-      state.panelTab = 'threads';
       renderAll();
       await sleep(300);
       spot('#openPanel');
@@ -1969,17 +1844,6 @@ const STORY = [
     }
   },
   {
-    title: 'Comment history',
-    say: 'The clock icon in the panel header opens the history of the whole course: one short sentence per event, like "Ada replied to “Add a source”", newest first. Pick a person or a time range, and click a line to jump to that thread.',
-    run: async () => {
-      state.panelTab = 'activity';
-      state.activityDot = false;
-      renderPanel();
-      await sleep(500);
-      spot('[data-act="toggle-history"]');
-    }
-  },
-  {
     title: 'What a learner sees',
     say: 'Learners never see comments: not the panel, not the highlights, not the badges. The API refuses to return them too.',
     run: async () => {
@@ -1994,7 +1858,6 @@ const STORY = [
       closeDialog();
       if (isFormer('u3')) removeMember('u3');
       setViewer('u1');
-      state.panelTab = 'threads';
       setStatusFilter('open');
       renderAll();
     }

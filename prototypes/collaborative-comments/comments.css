@@ -1154,12 +1154,6 @@ body.side-collapsed .cs-side {
   max-width: 620px;
 }
 
-.hc-empty {
-  margin: 16px 0 0;
-}
-
-/* ------------------------------------------- comment history drawer */
-
 /* ------------------------------------------- version history */
 
 .ver-card {
@@ -1689,78 +1683,6 @@ body.sp-dragging .cs-main {
 .mark-read {
   margin-left: 8px;
   font-size: 12px;
-}
-
-.hv-filters {
-  display: flex;
-  gap: 8px;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.hv-filters select {
-  height: 30px;
-  padding: 0 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--background);
-  color: var(--foreground);
-  font: inherit;
-  font-size: 13px;
-}
-
-.hv-body {
-  padding: 4px 8px 12px;
-}
-
-.hv-row {
-  display: flex;
-  width: 100%;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 8px;
-  border: 0;
-  border-radius: var(--radius-md);
-  background: none;
-  color: inherit;
-  font: inherit;
-  font-size: 13px;
-  line-height: 1.4;
-  text-align: left;
-  cursor: pointer;
-}
-
-.hv-row:hover {
-  background: var(--accent);
-}
-
-.hv-dot {
-  flex: none;
-  width: 7px;
-  height: 7px;
-  margin-top: 6px;
-  border-radius: 50%;
-  background: var(--primary);
-}
-
-.hv-dot.ok {
-  background: var(--success, #16a34a);
-}
-
-.hv-text small {
-  display: block;
-  color: var(--muted-foreground);
-  font-size: 12px;
-}
-
-.hv-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  border-top: 1px solid var(--border);
-  font-size: 12px;
-  color: var(--muted-foreground);
 }
 
 .stage {

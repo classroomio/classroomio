@@ -14,7 +14,7 @@ This is **not** the existing learner comments on lessons. Learners never see the
 
 ## Prototype
 
-- **Demo video:** [Watch the walkthrough](https://www.awesomescreenshot.com/video/57930902?key=1fde72e0c4b980f105eb488e34fede14)
+- **Demo video:** [Watch the walkthrough](https://www.awesomescreenshot.com/video/58323790?key=3171759b14e97f461e50c39b416faf60)
 - **Clickable prototype:** [`prototypes/collaborative-comments`](../../prototypes/collaborative-comments/README.md).
   Serve the folder over http and press **Play guided story**.
 
@@ -73,7 +73,7 @@ content it is about, so it gets lost and nobody knows what is still open.
 | **Text highlight in a lesson note** | Select text in the editor → "Comment" in the toolbar.  | The text gets a soft highlight. Clicking it opens the thread.                     |
 | **Video timestamp**                 | Pause the video → "Comment at 02:14".                  | A marker on the video timeline. Clicking the thread jumps the video to that time. |
 | **Exercise question**               | Comment button on a question card.                     | Count badge on the question.                                                      |
-| **Slide**                           | Click the comment icon on the Slides block and write. | A comment on the slide on screen.                                                 |
+| **Slide**                           | Click the comment icon on the Slides block and write.  | A comment on the slide on screen.                                                 |
 | **Image**                           | Click the spot on the image.                           | A numbered pin on the image.                                                      |
 
 ### 2. Writing comments
@@ -98,32 +98,13 @@ content it is about, so it gets lost and nobody knows what is still open.
   outline show a dot too. Opening a thread marks it read for you only, and **Mark all read** clears
   everything. Reading never changes whether a thread is open or resolved.
 
-### 3a. Comment history
-
-The clock icon in the Comments panel header switches the panel to the **comment history** of the whole
-course, and back. The lesson stays visible beside it.
-
-- It is a plain feed, newest first, with one sentence per event, for example "Ada replied to
-  “Add a source”". Under each sentence is where it happened (Note, Video at 03:20, Slide 3, Image,
-  Question, Whole course) and when.
-- It records: started, replied, edited a comment, deleted a reply, resolved, reopened (including
-  reopened by a reply), and a team member being removed or added back.
-- Pick a **person** or a time range (last 7, 14 or 30 days). Clicking a line opens that thread.
-- A person who has left the team keeps their name with a "Former member" tag. Edits and deletes appear
-  as events only, and the old text is not kept. History is never deleted when someone leaves. It goes
-  only with the thread.
-- A dot on the clock icon shows activity you have not looked at yet.
-- Same visibility as comments: admins and tutors only, never learners.
-- **Lesson version history** is linked from the history view.
-
 ### 4. The Comments panel
 
 A side panel on the course, opened from the course header. It is the one place to see every thread in
 the course.
 
-- The panel has no tabs. Its header has three icon buttons with tooltips: **+** (new comment), the
-- The panel has no tabs. Its header has four icon buttons with tooltips: **+** (new comment), a
-  **filter**, the clock (comment history) and **×** (close).
+- The panel has no tabs. Its header has three icon buttons with tooltips: **+** (new comment), a
+  **filter** and **×** (close).
 - The filter opens a small checklist. **Status**: Open (with Unread and Read inside it) and Resolved.
   **Person**: Anyone, or one or more team members, to show only threads they took part in. By default
   Open, Unread, Read and Anyone are checked and Resolved is not. A dot on the filter icon shows when
@@ -205,7 +186,7 @@ Comments show up for teammates without a page refresh.
 
 ## Edge Cases
 
-- **Removed from the course team:** the full history stays for everyone who is still on the team.
+- **Removed from the course team:** everything they wrote stays for everyone who is still on the team.
   Their comments, replies, resolves and reopens keep their name and avatar, with a small "Former
   member" tag. Threads they started stay open or resolved as they were, and open threads can still be
   replied to and resolved by others. They can no longer see the comments, or be mentioned. The one
@@ -249,13 +230,13 @@ These are guides, not final decisions.
   of text before and after the quote. If the quote appears more than once, the match with the same
   surrounding words wins; if that is still ambiguous, the thread is marked "Original text was
   removed" instead of guessing.
-- **History survives removal:** a comment points at its author by user id, never through course
+- **Comments survive removal:** a comment points at its author by user id, never through course
   team membership. Removing someone from the team deletes the membership row only, never their
   comments. Whether to show "Former member" is worked out when the panel loads, by checking if the
   author is still on the team. Nothing is written into the comment. Account deletion must not
-  cascade to comments: keep the row and store the display name at that moment. Every history event
-  also stores its actor's user id and a display-name snapshot (replies, resolves,
-  reopens and membership events included), so the actor stays identifiable after an account is deleted.
+  cascade to comments: keep the row and store the display name at that moment. Every resolve and
+  reopen also stores its actor's user id and a display-name snapshot, so the actor stays
+  identifiable after an account is deleted.
 - **Access:** org admins are allowed on every comment endpoint, in addition to admins and tutors on
   the course.
 - **Video anchors:** store the media/asset id and the second. If the lesson's asset id changes, the
