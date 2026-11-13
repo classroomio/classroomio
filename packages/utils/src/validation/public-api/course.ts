@@ -25,10 +25,29 @@ export type TPublicApiCourseParam = z.infer<typeof ZPublicApiCourseParam>;
 
 export const ZPublicApiCreateCourse = ZCourseCreateBase.omit({
   organizationId: true
-}).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
-  message: 'Compliance settings are required for COMPLIANCE courses',
-  path: ['compliance']
-});
+})
+  .extend({
+    bannerImageUrl: z
+      .url()
+      .optional()
+      .describe('Public image URL used as the course banner. Any public image URL works, including Unsplash URLs.'),
+    generateBannerImage: z
+      .boolean()
+      .optional()
+      .describe(
+        'Pick a banner from Unsplash using the title (or bannerImageQuery). Ignored when bannerImageUrl is set.'
+      ),
+    bannerImageQuery: z
+      .string()
+      .min(1)
+      .max(120)
+      .optional()
+      .describe('Unsplash search text for the banner; setting it turns on banner generation.')
+  })
+  .refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
+    message: 'Compliance settings are required for COMPLIANCE courses',
+    path: ['compliance']
+  });
 export type TPublicApiCreateCourse = z.infer<typeof ZPublicApiCreateCourse>;
 
 export const ZPublicApiUpdateCourse = ZCourseUpdateBase.extend({
