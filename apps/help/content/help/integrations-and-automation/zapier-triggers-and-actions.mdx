@@ -200,7 +200,7 @@ All create actions that take a student accept the student's email address, not a
 - **Description**: Cancels a pending course invite so its link stops working.
 - **Inputs**: `Course` (required), `Invite` (required).
 - **Outputs**: `id`, `status`, `isRevoked`.
-- **Repeat behavior**: Revokes the invite. Revoking an already-revoked invite returns not found.
+- **Repeat behavior**: Revokes the invite. Revoking an already-revoked invite succeeds and changes nothing; only an invite that no longer exists returns not found.
 
 ### 8. Reset Student Course Progress
 

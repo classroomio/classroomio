@@ -18,6 +18,8 @@
 
   let { connection, isRemoving, onConfirm, onClose }: Props = $props();
 
+  let activeTriggerCount = $derived(connection?.triggers.filter((trigger) => trigger.isActive).length ?? 0);
+
   function handleOpenChange(isOpen: boolean) {
     if (!isOpen) onClose();
   }
@@ -28,7 +30,7 @@
     <Dialog.Header>
       <Dialog.Title>{$t(`${T}.title`)}</Dialog.Title>
       <Dialog.Description>
-        {$t(`${T}.description`, { count: connection?.triggers.length ?? 0 })}
+        {$t(`${T}.description`, { count: activeTriggerCount })}
       </Dialog.Description>
       <p class="ui:text-muted-foreground text-sm">
         {$t(`${T}.zapier_side`)}
