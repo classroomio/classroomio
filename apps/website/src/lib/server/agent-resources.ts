@@ -504,6 +504,7 @@ export function buildChangelogFeed(entries: ChangelogEntry[], generatedAt: Date)
 <feed xmlns="http://www.w3.org/2005/Atom">
   <id>${absolute('/changelog')}</id>
   <title>ClassroomIO changelog</title>
+  <author><name>ClassroomIO</name></author>
   <link href="${absolute('/changelog')}"/>
   <link rel="self" href="${absolute('/changelog.xml')}"/>
   <updated>${updated}</updated>

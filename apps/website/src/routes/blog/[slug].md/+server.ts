@@ -8,7 +8,8 @@ export function GET({ params }) {
   const source = blogSources[`/src/blog/${params.slug}.md`];
   if (typeof source !== 'string') error(404, 'Blog post not found');
 
-  const published = /^published:\s*true\s*$/m.test(source);
+  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source)?.[1] ?? '';
+  const published = /^published:\s*true\s*$/m.test(frontmatter);
   if (!published) error(404, 'Blog post not found');
 
   return new Response(source, {
