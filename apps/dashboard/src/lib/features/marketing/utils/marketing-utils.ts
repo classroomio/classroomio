@@ -3,7 +3,7 @@ import {
   formatChartTooltipDate,
   getBucketSize,
   type ChartBucket
-} from '$features/ui/analytics/chart-buckets';
+} from '$features/ui/stats/chart-buckets';
 
 export const MARKETING_RANGE_DAYS = [7, 30, 90] as const;
 

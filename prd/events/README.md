@@ -43,7 +43,7 @@ Orgs that run trainings, webinars and community sessions today send people to Lu
 
 ## Terminology note
 
-"Event" is already overloaded in this repo: `COURSE_INVITE_EVENT_TYPE` and `ORGANIZATION_INVITE_EVENT_TYPE` (audit trails), `packages/analytics` (tracking events), and the webhooks PRD (emitted events). There is no `event` table or `/events` route today, so nothing hard-conflicts. Keep the domain unambiguous: the product entity is the `event` table, the dashboard feature folder is `features/events`, and no new audit or analytics concept may be named bare `event`. Webhook payloads about Events are named explicitly (e.g. `event.registration.completed`).
+"Event" is already overloaded in this repo: `COURSE_INVITE_EVENT_TYPE` and `ORGANIZATION_INVITE_EVENT_TYPE` (audit trails), `packages/tracking` (tracking events), and the webhooks PRD (emitted events). There is no `event` table or `/events` route today, so nothing hard-conflicts. Keep the domain unambiguous: the product entity is the `event` table, the dashboard feature folder is `features/events`, and no new audit or analytics concept may be named bare `event`. Webhook payloads about Events are named explicitly (e.g. `event.registration.completed`).
 
 ## Confirmed Decisions
 

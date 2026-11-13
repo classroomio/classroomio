@@ -4,7 +4,7 @@ import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/tracking';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
 import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getProfileByEmail } from '@cio/db/queries/auth';

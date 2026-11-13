@@ -40,7 +40,7 @@
         {#if isComplete(course)}
           <Badge variant="success">
             <CircleCheckIcon class="custom" />
-            {$t('analytics.completed')}
+            {$t('student_progress.completed')}
           </Badge>
         {:else if course.lessons_completed === 0}
           <Badge variant="outline">{$t('audience.user_analytics.not_started')}</Badge>
@@ -58,17 +58,17 @@
     <PercentRingProgress value={course.progress_percentage} />
     <div class="grid flex-1 grid-cols-3 gap-2 text-xs">
       <div class="flex flex-col">
-        <span class="ui:text-muted-foreground">{$t('analytics.lessons')}</span>
+        <span class="ui:text-muted-foreground">{$t('student_progress.lessons')}</span>
         <span class="ui:tabular-nums font-medium">{course.lessons_completed}/{course.lessons_count}</span>
       </div>
       <div class="flex flex-col">
-        <span class="ui:text-muted-foreground">{$t('analytics.exercises')}</span>
+        <span class="ui:text-muted-foreground">{$t('student_progress.exercises')}</span>
         <span class="ui:tabular-nums font-medium">
           {course.exercises_completed}/{course.exercises_count}
         </span>
       </div>
       <div class="flex flex-col">
-        <span class="ui:text-muted-foreground">{$t('analytics.average_grade')}</span>
+        <span class="ui:text-muted-foreground">{$t('student_progress.average_grade')}</span>
         <span class="ui:tabular-nums font-medium">{gradeLabel(course.average_grade)}</span>
       </div>
     </div>

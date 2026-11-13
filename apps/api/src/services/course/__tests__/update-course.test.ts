@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
   updateCourse: vi.fn(),
   replaceCourseTags: vi.fn(),
   getCourseByIdForUpdate: vi.fn(),
-  invalidateInsightsCourseStructure: vi.fn()
+  invalidateAnalyticsCourseStructure: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/course', () => ({
@@ -29,8 +29,8 @@ vi.mock('@api/services/tag', () => ({
   replaceCourseTags: mocks.replaceCourseTags
 }));
 
-vi.mock('@cio/core/utils/redis/insights-cache', () => ({
-  invalidateInsightsCourseStructure: mocks.invalidateInsightsCourseStructure
+vi.mock('@cio/core/utils/redis/analytics-cache', () => ({
+  invalidateAnalyticsCourseStructure: mocks.invalidateAnalyticsCourseStructure
 }));
 
 import { updateCourseWithTags } from '../update-course';
@@ -132,7 +132,7 @@ describe('updateCourseWithTags', () => {
       tagIds: ['tag-1']
     });
 
-    expect(mocks.invalidateInsightsCourseStructure).toHaveBeenCalledWith('course-1');
+    expect(mocks.invalidateAnalyticsCourseStructure).toHaveBeenCalledWith('course-1');
   });
 
   it('does not invalidate cached course structure when groupingChanged is false', async () => {
@@ -150,7 +150,7 @@ describe('updateCourseWithTags', () => {
       tagIds: ['tag-1']
     });
 
-    expect(mocks.invalidateInsightsCourseStructure).not.toHaveBeenCalled();
+    expect(mocks.invalidateAnalyticsCourseStructure).not.toHaveBeenCalled();
   });
 
   it('does not invalidate cached course structure when transaction fails', async () => {
@@ -171,6 +171,6 @@ describe('updateCourseWithTags', () => {
       })
     ).rejects.toThrow('fail');
 
-    expect(mocks.invalidateInsightsCourseStructure).not.toHaveBeenCalled();
+    expect(mocks.invalidateAnalyticsCourseStructure).not.toHaveBeenCalled();
   });
 });

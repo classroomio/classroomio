@@ -37,7 +37,15 @@
         "caption": "Préparation de vos cours, étudiants et paramètres."
       }
     },
-    "back": "Retour"
+    "back": "Retour",
+    "range": {
+      "7d": "7 derniers jours",
+      "30d": "30 derniers jours",
+      "90d": "90 derniers jours",
+      "all": "Tout le temps",
+      "label": "Période",
+      "locked": "Passez à un forfait supérieur pour débloquer cette période"
+    }
   },
   "validations": {
     "generic": {
@@ -530,7 +538,7 @@
       "test_failed": "L'événement de test a échoué. Ouvrez le journal des envois pour en voir la cause.",
       "redelivered": "Événement mis en file d'attente pour un nouvel envoi."
     },
-    "insights": {
+    "analytics": {
       "reminder_sent": "Rappel envoyé",
       "reminder_not_sent": "Rappel non envoyé : déjà envoyé aujourd'hui, ou l'apprenant a désactivé ces emails",
       "reminder_failed": "Impossible d'envoyer le rappel",
@@ -608,8 +616,7 @@
     "unlock_field": "Mettez à niveau pour déverrouiller ce paramètre",
     "webhooks_required": "Passez à Early Adopter ou Enterprise pour utiliser les webhooks."
   },
-  "analytics": {
-    "title": "Analytique",
+  "student_progress": {
     "courses": "Cours",
     "progress": "Progrès",
     "progress_description": "{value, number} sur {total, number} terminé",
@@ -640,77 +647,6 @@
     "loading_chart": "Chargement du graphique...",
     "no_data_default": "Aucune donnée disponible",
     "no_data_default_description": "Il n'y a aucune donnée à afficher pour le moment.",
-    "subtitle": "Comprenez comment les visiteurs découvrent vos cours et se transforment en étudiants.",
-    "refresh": "Actualiser",
-    "popularTypes": {
-      "heading": "Types de cours populaires",
-      "description": "Inscriptions regroupées par type de cours",
-      "subtitle": "{total} inscriptions dans tous les types",
-      "empty": "Aucune donnée d'inscription pour l'instant",
-      "course_count": "{count, plural, one {# cours} other {# cours}}",
-      "views_short": "vues",
-      "types": {
-        "SELF_PACED": "À votre rythme",
-        "LIVE_CLASS": "Cours en direct",
-        "COMPLIANCE": "Conformité",
-        "PUBLIC": "Publique"
-      }
-    },
-    "topCourses": {
-      "heading": "Meilleurs cours par vues",
-      "description": "Cours classés par pages vues",
-      "subtitle": "Classés par pages vues sur cette période",
-      "empty": "Aucune consultation de page de cours pour l'instant",
-      "course": "Cours",
-      "views": "Vues"
-    },
-    "countries": {
-      "heading": "Principaux pays",
-      "subtitle": "{total} visiteurs au total",
-      "empty": "Aucune donnée de localisation pour l'instant",
-      "country": "Pays",
-      "visitors": "Visiteurs",
-      "enrollments_short": "inscrit"
-    },
-    "funnel": {
-      "heading": "Entonnoir de conversion",
-      "description": "De la première visite à la fin du cours",
-      "empty": "Aucune donnée d'entonnoir pour l'instant",
-      "step": {
-        "landing_view": "Vues d'atterrissage",
-        "course_page_view": "Consultations des pages du cours",
-        "enrollment_completed": "Inscriptions",
-        "course_completed": "Achèvements"
-      }
-    },
-    "trend": {
-      "heading": "Trafic au fil du temps",
-      "description": "Pages vues et inscriptions par jour",
-      "empty": "Aucun trafic dans la plage sélectionnée",
-      "views": "Vues",
-      "enrollments": "Inscriptions"
-    },
-    "kpi": {
-      "landing_views": "Vues d'atterrissage",
-      "unique_visitors": "Visiteurs uniques",
-      "course_page_views": "Consultations des pages du cours",
-      "enrollments": "Inscriptions",
-      "range_description": "Dans la plage sélectionnée"
-    },
-    "range": {
-      "7d": "7 derniers jours",
-      "30d": "30 derniers jours",
-      "90d": "90 derniers jours",
-      "all": "Tout le temps",
-      "label": "Période",
-      "locked": "Passez à un forfait supérieur pour débloquer cette période"
-    },
-    "tabs": {
-      "overview": "Aperçu",
-      "funnel": "Entonnoir",
-      "geography": "Géographie",
-      "course_types": "Types de cours"
-    },
     "exercises_completed": "Exercices terminés",
     "course_progress": "Progression du cours",
     "just_now": "À l'instant",
@@ -3634,7 +3570,6 @@
     "tags": "Étiquettes",
     "automation": "Automatisation",
     "widgets": "Widgets",
-    "stats": "Statistiques",
     "analytics": "Analytique",
     "compliance": "Conformité",
     "cohorts": "Cohortes",
@@ -3649,7 +3584,8 @@
     "create": "Créer",
     "distribute": "Distribuer",
     "tools": "Outils",
-    "marketing": "Commercialisation"
+    "marketing": "Commercialisation",
+    "org_analytics": "Academy"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -6575,9 +6511,70 @@
   },
   "marketing": {
     "title": "Commercialisation",
-    "subtitle": "Comprenez comment les visiteurs découvrent vos cours et se transforment en étudiants."
+    "subtitle": "Comprenez comment les visiteurs découvrent vos cours et se transforment en étudiants.",
+    "popularTypes": {
+      "heading": "Types de cours populaires",
+      "description": "Inscriptions regroupées par type de cours",
+      "subtitle": "{total} inscriptions dans tous les types",
+      "empty": "Aucune donnée d'inscription pour l'instant",
+      "course_count": "{count, plural, one {# cours} other {# cours}}",
+      "views_short": "vues",
+      "types": {
+        "SELF_PACED": "À votre rythme",
+        "LIVE_CLASS": "Cours en direct",
+        "COMPLIANCE": "Conformité",
+        "PUBLIC": "Publique"
+      }
+    },
+    "topCourses": {
+      "heading": "Meilleurs cours par vues",
+      "description": "Cours classés par pages vues",
+      "subtitle": "Classés par pages vues sur cette période",
+      "empty": "Aucune consultation de page de cours pour l'instant",
+      "course": "Cours",
+      "views": "Vues"
+    },
+    "countries": {
+      "heading": "Principaux pays",
+      "subtitle": "{total} visiteurs au total",
+      "empty": "Aucune donnée de localisation pour l'instant",
+      "country": "Pays",
+      "visitors": "Visiteurs",
+      "enrollments_short": "inscrit"
+    },
+    "funnel": {
+      "heading": "Entonnoir de conversion",
+      "description": "De la première visite à la fin du cours",
+      "empty": "Aucune donnée d'entonnoir pour l'instant",
+      "step": {
+        "landing_view": "Vues d'atterrissage",
+        "course_page_view": "Consultations des pages du cours",
+        "enrollment_completed": "Inscriptions",
+        "course_completed": "Achèvements"
+      }
+    },
+    "trend": {
+      "heading": "Trafic au fil du temps",
+      "description": "Pages vues et inscriptions par jour",
+      "empty": "Aucun trafic dans la plage sélectionnée",
+      "views": "Vues",
+      "enrollments": "Inscriptions"
+    },
+    "kpi": {
+      "landing_views": "Vues d'atterrissage",
+      "unique_visitors": "Visiteurs uniques",
+      "course_page_views": "Consultations des pages du cours",
+      "enrollments": "Inscriptions",
+      "range_description": "Dans la plage sélectionnée"
+    },
+    "tabs": {
+      "overview": "Aperçu",
+      "funnel": "Entonnoir",
+      "geography": "Géographie",
+      "course_types": "Types de cours"
+    }
   },
-  "insights": {
+  "analytics": {
     "title": "Analytique",
     "updated_seconds_ago": "mis à jour il y a {count}s",
     "updated_minutes_ago": "{count, plural, one {mis à jour il y a # minute} other {mis à jour il y a # minutes}}",
@@ -7010,9 +7007,6 @@
       "attempts_unavailable": "Impossible de vérifier quels exercices ont des tentatives ; certains exercices verrouillés peuvent donc être masqués."
     },
     "empty": {
-      "no_data": "Aucune donnée pour le moment",
-      "no_overdue": "Aucun élève en retard",
-      "no_cohorts": "Aucune cohorte pour le moment",
       "failed": "Ce graphique n'a pas pu être chargé.",
       "dashboard_failed": "Impossible de charger les données analytiques",
       "not_permitted": "Vous n'avez pas accès à ces analyses.",
@@ -7152,7 +7146,8 @@
     "export": {
       "students_capped": "La liste des étudiants est limitée aux {limit} premières lignes.",
       "exercises_capped": "Les résultats des exercices sont limités aux {limit} premiers résultats."
-    }
+    },
+    "org_page_title": "Academy"
   },
   "oauth": {
     "consent": {

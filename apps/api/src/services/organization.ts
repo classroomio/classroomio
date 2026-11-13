@@ -1,5 +1,5 @@
 import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
-import { invalidateInsightsPlan } from '@cio/core/utils/redis/insights-cache';
+import { invalidateAnalyticsPlan } from '@cio/core/utils/redis/analytics-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -57,7 +57,7 @@ import { countCohortsByOrgForProfile } from '@cio/db/queries/cohort';
 import { countAssetsByOrg } from '@cio/db/queries/assets';
 import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
-import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
+import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/student-progress';
 
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
 import { canUseBasicAuthSettings, PLAN } from '@cio/utils/plans';
@@ -729,7 +729,7 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
       isActive: true,
       provider: 'polar'
     });
-    void invalidateInsightsPlan(targetOrgId);
+    void invalidateAnalyticsPlan(targetOrgId);
     return plan;
   } catch (error) {
     if (error instanceof AppError) {
@@ -933,7 +933,7 @@ export async function updateOrgPlan(subscriptionId: string, payload: TOrganizati
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
     }
     if (plan.orgId) {
-      void invalidateInsightsPlan(plan.orgId);
+      void invalidateAnalyticsPlan(plan.orgId);
     }
     return plan;
   } catch (error) {
@@ -964,7 +964,7 @@ export async function activateOrgPlan(data: TNewOrganizationPlan) {
 
     if (activatedPlan) {
       if (activatedPlan.orgId) {
-        void invalidateInsightsPlan(activatedPlan.orgId);
+        void invalidateAnalyticsPlan(activatedPlan.orgId);
       }
       return activatedPlan;
     }
@@ -996,7 +996,7 @@ export async function cancelOrgPlan(subscriptionId: string, payload: TOrganizati
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
     }
     if (plan.orgId) {
-      void invalidateInsightsPlan(plan.orgId);
+      void invalidateAnalyticsPlan(plan.orgId);
     }
     return plan;
   } catch (error) {

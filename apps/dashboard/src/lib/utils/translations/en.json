@@ -462,7 +462,15 @@
       "untitled_lesson": "Untitled lesson",
       "format": "Format"
     },
-    "back": "Back"
+    "back": "Back",
+    "range": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "all": "All time",
+      "label": "Time range",
+      "locked": "Upgrade to unlock this range"
+    }
   },
   "compliance": {
     "title": "Compliance",
@@ -1687,7 +1695,6 @@
     "back_to_app": "Back to app",
     "create": "Create",
     "dashboard": "Dashboard",
-    "stats": "Stats",
     "analytics": "Analytics",
     "marketing": "Marketing",
     "compliance": "Compliance",
@@ -1713,7 +1720,8 @@
     "upgrade_left": "{count} left",
     "cohorts": "Cohorts",
     "exit_course": "Exit this course",
-    "exit_cohort": "Exit this cohort"
+    "exit_cohort": "Exit this cohort",
+    "org_analytics": "Academy"
   },
   "pricing": {
     "plan_names": {
@@ -4853,46 +4861,6 @@
   },
   "marketing": {
     "title": "Marketing",
-    "subtitle": "Understand how visitors discover your courses and convert into students."
-  },
-  "analytics": {
-    "title": "Analytics",
-    "courses": "Courses",
-    "progress": "Progress",
-    "progress_description": "{value, number} of {total, number} complete",
-    "incomplete": "Incomplete",
-    "completed": "Completed",
-    "complete": "complete",
-    "last_seen": "Last seen",
-    "a_while_ago": "a while ago",
-    "just_now": "just now",
-    "minutes_ago": "{count, plural, one {# minute ago} other {# minutes ago}}",
-    "hours_ago": "{count, plural, one {# hour ago} other {# hours ago}}",
-    "days_ago": "{count, plural, one {# day ago} other {# days ago}}",
-    "months_ago": "{count, plural, one {# month ago} other {# months ago}}",
-    "years_ago": "{count, plural, one {# year ago} other {# years ago}}",
-    "exercises": "Exercises",
-    "graded": "Graded",
-    "not_graded": "Not Graded",
-    "enrolled_courses": "Enrolled Courses",
-    "enrolled_courses_description": "All enrolled courses",
-    "overall_course_progress": "Overall Course Progress",
-    "overall_course_progress_description": "Percentage of completed lessons",
-    "total_average_grade": "Total Average Grade",
-    "total_average_grade_description": "Based on exercise grades across all course",
-    "overall_course_progress_user_description": "Based on lesson completion",
-    "assignment_completion": "Assignment Completion",
-    "assignment_completion_description": "Percentage of completed assignments",
-    "average_grade_description": "Average grade of all completed assignments",
-    "lessons": "Lessons",
-    "tutors": "tutors",
-    "avg_grade": "Avg grade",
-    "lessons_completed": "Lessons Completed",
-    "average_grade": "Average Grade",
-    "student": "Student",
-    "loading_chart": "Loading chart...",
-    "no_data_default": "No data available",
-    "no_data_default_description": "There is no data to display at this time.",
     "subtitle": "Understand how visitors discover your courses and convert into students.",
     "tabs": {
       "overview": "Overview",
@@ -4900,15 +4868,6 @@
       "geography": "Geography",
       "course_types": "Course types"
     },
-    "range": {
-      "7d": "Last 7 days",
-      "30d": "Last 30 days",
-      "90d": "Last 90 days",
-      "all": "All time",
-      "label": "Time range",
-      "locked": "Upgrade to unlock this range"
-    },
-    "refresh": "Refresh",
     "kpi": {
       "landing_views": "Landing views",
       "unique_visitors": "Unique visitors",
@@ -4963,7 +4922,45 @@
       "empty": "No course page views yet",
       "course": "Course",
       "views": "Views"
-    },
+    }
+  },
+  "student_progress": {
+    "courses": "Courses",
+    "progress": "Progress",
+    "progress_description": "{value, number} of {total, number} complete",
+    "incomplete": "Incomplete",
+    "completed": "Completed",
+    "complete": "complete",
+    "last_seen": "Last seen",
+    "a_while_ago": "a while ago",
+    "just_now": "just now",
+    "minutes_ago": "{count, plural, one {# minute ago} other {# minutes ago}}",
+    "hours_ago": "{count, plural, one {# hour ago} other {# hours ago}}",
+    "days_ago": "{count, plural, one {# day ago} other {# days ago}}",
+    "months_ago": "{count, plural, one {# month ago} other {# months ago}}",
+    "years_ago": "{count, plural, one {# year ago} other {# years ago}}",
+    "exercises": "Exercises",
+    "graded": "Graded",
+    "not_graded": "Not Graded",
+    "enrolled_courses": "Enrolled Courses",
+    "enrolled_courses_description": "All enrolled courses",
+    "overall_course_progress": "Overall Course Progress",
+    "overall_course_progress_description": "Percentage of completed lessons",
+    "total_average_grade": "Total Average Grade",
+    "total_average_grade_description": "Based on exercise grades across all course",
+    "overall_course_progress_user_description": "Based on lesson completion",
+    "assignment_completion": "Assignment Completion",
+    "assignment_completion_description": "Percentage of completed assignments",
+    "average_grade_description": "Average grade of all completed assignments",
+    "lessons": "Lessons",
+    "tutors": "tutors",
+    "avg_grade": "Avg grade",
+    "lessons_completed": "Lessons Completed",
+    "average_grade": "Average Grade",
+    "student": "Student",
+    "loading_chart": "Loading chart...",
+    "no_data_default": "No data available",
+    "no_data_default_description": "There is no data to display at this time.",
     "course_progress": "Course progress",
     "exercises_completed": "Exercises Completed"
   },
@@ -5592,7 +5589,7 @@
         }
       }
     },
-    "insights": {
+    "analytics": {
       "reminder_sent": "Reminder sent",
       "reminder_not_sent": "Reminder not sent: already sent today, or the learner turned off these emails",
       "reminder_failed": "Couldn't send the reminder",
@@ -6563,7 +6560,7 @@
     "read_full": "Read the full changelog",
     "close": "Close"
   },
-  "insights": {
+  "analytics": {
     "title": "Analytics",
     "updated_seconds_ago": "updated {count}s ago",
     "updated_minutes_ago": "{count, plural, one {updated # minute ago} other {updated # minutes ago}}",
@@ -7135,7 +7132,8 @@
     "export": {
       "students_capped": "Student list limited to the first {limit} rows.",
       "exercises_capped": "Exercise scores limited to the first {limit} results."
-    }
+    },
+    "org_page_title": "Academy"
   },
   "oauth": {
     "consent": {

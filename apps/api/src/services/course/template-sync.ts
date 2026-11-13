@@ -57,7 +57,7 @@ import {
 } from '@cio/utils/validation/course';
 
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { invalidateInsightsCourseStructure } from '@cio/core/utils/redis/insights-cache';
+import { invalidateAnalyticsCourseStructure } from '@cio/core/utils/redis/analytics-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { syncLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
 
@@ -720,7 +720,7 @@ export async function pullCourseTemplateUpdates(
   await invalidateOrgStats(orgId);
 
   if (pulled.groupingChanged || pulled.unitIds.length > 0) {
-    void invalidateInsightsCourseStructure(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
   }
 
   return pulled;

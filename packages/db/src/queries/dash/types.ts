@@ -1,4 +1,4 @@
-export interface OrganisationAnalytics {
+export interface OrganizationOverview {
   totalCertificates: number;
   numberOfCourses: number;
   totalStudents: number;

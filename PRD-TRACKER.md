@@ -32,7 +32,6 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/scroll-to-top` | draft |
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
 | - | - | `prd/gamification` | draft (prototyped; learner XP, streaks, badges, leaderboards, admin settings) |
-| - | - | `prd/insights-analytics` | draft (prototyped in `prototypes/insights-analytics`; learning-time widget blocked on #1299) |
 
 ## DONE (Completed PRDs)
 
@@ -40,12 +39,12 @@ Use this file to keep a single prioritized view of all PRDs.
 | --- | --- |
 | `prd/add-content-created [DONE]` | done |
 | `prd/ai-course-assistant [DONE]` | done |
+| `prd/analytics-dashboards [DONE]` | done |
 | `prd/compliance-training-platform [DONE]` | done |
 | `prd/course-widget-embed [DONE]` | done |
 | `prd/custom-domain-cloudflare [DONE]` | done |
 | `prd/enterprise-sso [DONE]` | done |
 | `prd/exercise-sections [DONE]` | done |
-| `prd/insights-analytics [DONE]` | done |
 | `prd/lesson-edit [DONE]` | done |
 | `prd/lessons-list [DONE]` | done |
 | `prd/media-manager [DONE]` | done |

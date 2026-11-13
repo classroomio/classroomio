@@ -3,7 +3,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { onMount } from 'svelte';
   import { afterNavigate } from '$app/navigation';
-  import { analytics } from '@cio/analytics/client';
+  import { tracking } from '@cio/tracking/client';
   import { getRequestBaseUrl } from '$lib/utils/services/api';
   import type { Snippet } from 'svelte';
   import type { PublicOrg } from '$features/app/types';
@@ -22,18 +22,18 @@
     const apiBaseUrl = getRequestBaseUrl();
     if (!apiBaseUrl) return;
 
-    analytics.init({
+    tracking.init({
       endpoint: `${apiBaseUrl.replace(/\/$/, '')}/dash/track`,
       orgId: data.org?.id ?? undefined
     });
-    analytics.pageView({ kind: 'landing' });
+    tracking.pageView({ kind: 'landing' });
   });
 
   afterNavigate(({ to }) => {
     if (!to) return;
 
     const isCoursePage = /\/course\//.test(to.url.pathname);
-    analytics.pageView({
+    tracking.pageView({
       kind: isCoursePage ? 'course' : 'landing',
       path: to.url.pathname
     });

@@ -30,34 +30,34 @@
 
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
   <KpiCard
-    title={$t('analytics.kpi.landing_views')}
+    title={$t('marketing.kpi.landing_views')}
     value={totals.landingViews.toLocaleString()}
-    description={$t('analytics.kpi.range_description')}
+    description={$t('marketing.kpi.range_description')}
     loading={loading && !data}
     icon={EyeIcon}
     accent="primary"
     sparkline={viewSpark}
   />
   <KpiCard
-    title={$t('analytics.kpi.unique_visitors')}
+    title={$t('marketing.kpi.unique_visitors')}
     value={totals.uniqueVisitors.toLocaleString()}
-    description={$t('analytics.kpi.range_description')}
+    description={$t('marketing.kpi.range_description')}
     loading={loading && !data}
     icon={UsersIcon}
     accent="success"
   />
   <KpiCard
-    title={$t('analytics.kpi.course_page_views')}
+    title={$t('marketing.kpi.course_page_views')}
     value={totals.coursePageViews.toLocaleString()}
-    description={$t('analytics.kpi.range_description')}
+    description={$t('marketing.kpi.range_description')}
     loading={loading && !data}
     icon={BookOpenIcon}
     accent="warning"
   />
   <KpiCard
-    title={$t('analytics.kpi.enrollments')}
+    title={$t('marketing.kpi.enrollments')}
     value={totals.enrollments.toLocaleString()}
-    description={$t('analytics.kpi.range_description')}
+    description={$t('marketing.kpi.range_description')}
     loading={loading && !data}
     icon={UserPlusIcon}
     accent="primary"

@@ -472,7 +472,15 @@
         "caption": "Kurslarınız, öğrencileriniz ve ayarlarınız hazırlanıyor."
       }
     },
-    "back": "Geri"
+    "back": "Geri",
+    "range": {
+      "7d": "Lson 7 gün",
+      "30d": "Lson 30 gün",
+      "90d": "Lson 90 gün",
+      "all": "Tüm zamanlar",
+      "label": "Zaman aralığı",
+      "locked": "Bu aralığın kilidini açmak için yükseltin"
+    }
   },
   "compliance": {
     "title": "Compliance",
@@ -1697,7 +1705,6 @@
     "back_to_app": "Uygulamaya geri dön",
     "create": "Create",
     "dashboard": "Dashboard",
-    "stats": "Stats",
     "analytics": "Analytics",
     "compliance": "Uyumluluk",
     "courses": "Kurslar",
@@ -1723,7 +1730,8 @@
     "cohorts": "Cohorts",
     "exit_course": "Bu kurstan çık",
     "exit_cohort": "Bu gruptan çık",
-    "marketing": "Pazarlama"
+    "marketing": "Pazarlama",
+    "org_analytics": "Academy"
   },
   "pricing": {
     "plan_names": {
@@ -4861,8 +4869,7 @@
     "certificate_earned": "{count} sertifika kazanıldı",
     "certificates_earned": "{count} sertifika kazanıldı"
   },
-  "analytics": {
-    "title": "Analytics",
+  "student_progress": {
     "courses": "Courses",
     "progress": "Progress",
     "progress_description": "{value, number} / {total, number}complete",
@@ -4899,77 +4906,6 @@
     "loading_chart": "LYükleme tablosu...",
     "no_data_default": "Mevcut veri yok",
     "no_data_default_description": "Şu anda görüntülenecek veri yok.",
-    "subtitle": "Ziyaretçilerin kurslarınızı nasıl keşfettiğini ve öğrencilere nasıl dönüştüğünü anlayın.",
-    "tabs": {
-      "overview": "Overview",
-      "funnel": "Funnel",
-      "geography": "Coğrafya",
-      "course_types": "Kurs türleri"
-    },
-    "range": {
-      "7d": "Lson 7 gün",
-      "30d": "Lson 30 gün",
-      "90d": "Lson 90 gün",
-      "all": "Tüm zamanlar",
-      "label": "Zaman aralığı",
-      "locked": "Bu aralığın kilidini açmak için yükseltin"
-    },
-    "refresh": "Yenileme",
-    "kpi": {
-      "landing_views": "Laçılış görünümleri",
-      "unique_visitors": "Benzersiz ziyaretçiler",
-      "course_page_views": "Kurs sayfası görüntülemeleri",
-      "enrollments": "Kayıtlar",
-      "range_description": "Seçili aralıkta"
-    },
-    "trend": {
-      "heading": "Zaman içindeki trafik",
-      "description": "Güne göre sayfa görüntülemeleri ve kayıtları",
-      "empty": "Seçilen aralıkta trafik yok",
-      "views": "Görüntülemeler",
-      "enrollments": "Kayıtlar"
-    },
-    "funnel": {
-      "heading": "Dönüşüm hunisi",
-      "description": "İlk ziyaretten kursun tamamlanmasına kadar",
-      "empty": "Henüz dönüşüm hunisi verisi yok",
-      "step": {
-        "landing_view": "Laçılış görünümleri",
-        "course_page_view": "Kurs sayfası görüntülemeleri",
-        "enrollment_completed": "Kayıtlar",
-        "course_completed": "Tamamlananlar"
-      }
-    },
-    "countries": {
-      "heading": "En iyi ülkeler",
-      "subtitle": "{total} toplam ziyaretçi",
-      "empty": "Henüz konum verisi yok",
-      "country": "Ülke",
-      "visitors": "Ziyaretçiler",
-      "enrollments_short": "kaydedilen"
-    },
-    "popularTypes": {
-      "heading": "Popüler kurs türleri",
-      "description": "Kurs türüne göre gruplandırılmış kayıtlar",
-      "subtitle": "{total} tüm türlerdeki kayıtlar",
-      "empty": "Henüz kayıt verisi yok",
-      "course_count": "{count, plural, one {# kurs} other {# kurs}}",
-      "views_short": "görüntülemeler",
-      "types": {
-        "SELF_PACED": "Self-paced",
-        "LIVE_CLASS": "Live class",
-        "COMPLIANCE": "Compliance",
-        "PUBLIC": "Public"
-      }
-    },
-    "topCourses": {
-      "heading": "Görüntülemelere göre en iyi kurslar",
-      "description": "Sayfa görüntülemelerine göre sıralanan kurslar",
-      "subtitle": "Bu aralıktaki sayfa görüntülemelerine göre sıralanmış",
-      "empty": "Henüz kurs sayfası görüntüleme yok",
-      "course": "Kurs",
-      "views": "Görünümler"
-    },
     "course_progress": "Kurs ilerlemesi",
     "exercises_completed": "Tamamlanan Alıştırmalar"
   },
@@ -5601,7 +5537,7 @@
     "oauth": {
       "revoked": "Uygulama erişimi kaldırıldı"
     },
-    "insights": {
+    "analytics": {
       "reminder_sent": "Hatırlatma gönderildi",
       "reminder_not_sent": "Hatırlatma gönderilmedi: hatırlatma bugün zaten gönderildi veya öğrenci bu e-postaları devre dışı bıraktı.",
       "reminder_failed": "Hatırlatma gönderilemedi.",
@@ -6657,9 +6593,70 @@
   },
   "marketing": {
     "title": "Pazarlama",
-    "subtitle": "Ziyaretçilerin kurslarınızı nasıl keşfettiğini ve öğrenciye nasıl dönüştüğünü anlayın."
+    "subtitle": "Ziyaretçilerin kurslarınızı nasıl keşfettiğini ve öğrenciye nasıl dönüştüğünü anlayın.",
+    "tabs": {
+      "overview": "Overview",
+      "funnel": "Funnel",
+      "geography": "Coğrafya",
+      "course_types": "Kurs türleri"
+    },
+    "kpi": {
+      "landing_views": "Laçılış görünümleri",
+      "unique_visitors": "Benzersiz ziyaretçiler",
+      "course_page_views": "Kurs sayfası görüntülemeleri",
+      "enrollments": "Kayıtlar",
+      "range_description": "Seçili aralıkta"
+    },
+    "trend": {
+      "heading": "Zaman içindeki trafik",
+      "description": "Güne göre sayfa görüntülemeleri ve kayıtları",
+      "empty": "Seçilen aralıkta trafik yok",
+      "views": "Görüntülemeler",
+      "enrollments": "Kayıtlar"
+    },
+    "funnel": {
+      "heading": "Dönüşüm hunisi",
+      "description": "İlk ziyaretten kursun tamamlanmasına kadar",
+      "empty": "Henüz dönüşüm hunisi verisi yok",
+      "step": {
+        "landing_view": "Laçılış görünümleri",
+        "course_page_view": "Kurs sayfası görüntülemeleri",
+        "enrollment_completed": "Kayıtlar",
+        "course_completed": "Tamamlananlar"
+      }
+    },
+    "countries": {
+      "heading": "En iyi ülkeler",
+      "subtitle": "{total} toplam ziyaretçi",
+      "empty": "Henüz konum verisi yok",
+      "country": "Ülke",
+      "visitors": "Ziyaretçiler",
+      "enrollments_short": "kaydedilen"
+    },
+    "popularTypes": {
+      "heading": "Popüler kurs türleri",
+      "description": "Kurs türüne göre gruplandırılmış kayıtlar",
+      "subtitle": "{total} tüm türlerdeki kayıtlar",
+      "empty": "Henüz kayıt verisi yok",
+      "course_count": "{count, plural, one {# kurs} other {# kurs}}",
+      "views_short": "görüntülemeler",
+      "types": {
+        "SELF_PACED": "Self-paced",
+        "LIVE_CLASS": "Live class",
+        "COMPLIANCE": "Compliance",
+        "PUBLIC": "Public"
+      }
+    },
+    "topCourses": {
+      "heading": "Görüntülemelere göre en iyi kurslar",
+      "description": "Sayfa görüntülemelerine göre sıralanan kurslar",
+      "subtitle": "Bu aralıktaki sayfa görüntülemelerine göre sıralanmış",
+      "empty": "Henüz kurs sayfası görüntüleme yok",
+      "course": "Kurs",
+      "views": "Görünümler"
+    }
   },
-  "insights": {
+  "analytics": {
     "title": "Analitik",
     "updated_seconds_ago": "{count}s önce güncellendi",
     "updated_minutes_ago": "{count, plural, one {# dakika önce güncellendi} other {# dakika önce güncellendi}}",
@@ -7092,9 +7089,6 @@
       "attempts_unavailable": "Hangi alıştırmalarda deneme olduğu kontrol edilemedi, bu yüzden bazı kilitli alıştırmalar gizli olabilir."
     },
     "empty": {
-      "no_data": "Henüz veri yok",
-      "no_overdue": "Gecikmiş öğrenci yok",
-      "no_cohorts": "Henüz grup yok",
       "failed": "Bu grafik yüklenemedi",
       "dashboard_failed": "Analytics yüklenemedi",
       "not_permitted": "Bu analizlere erişiminiz yok",
@@ -7234,6 +7228,7 @@
     "export": {
       "students_capped": "Öğrenci listesi ilk {limit} satırla sınırlıdır.",
       "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır."
-    }
+    },
+    "org_page_title": "Academy"
   }
 }

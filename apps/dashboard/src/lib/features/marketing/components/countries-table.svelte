@@ -3,7 +3,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import GlobeIcon from '@lucide/svelte/icons/globe';
-  import { AnalyticsPanelCard } from '$features/ui';
+  import { StatsPanelCard } from '$features/ui';
   import type { CountryBreakdownData } from '../utils/types';
 
   interface Props {
@@ -17,9 +17,9 @@
   const totalViews = $derived(data.reduce((sum, row) => sum + row.views, 0));
 </script>
 
-<AnalyticsPanelCard
-  title={$t('analytics.countries.heading')}
-  description={data.length > 0 ? $t('analytics.countries.subtitle', { total: totalViews.toLocaleString() }) : undefined}
+<StatsPanelCard
+  title={$t('marketing.countries.heading')}
+  description={data.length > 0 ? $t('marketing.countries.subtitle', { total: totalViews.toLocaleString() }) : undefined}
 >
   {#snippet children()}
     {#if loading && data.length === 0}
@@ -27,11 +27,11 @@
         <Spinner class="ui:text-muted-foreground size-6" />
       </div>
     {:else if data.length === 0}
-      <Empty icon={GlobeIcon} title={$t('analytics.countries.empty')} />
+      <Empty icon={GlobeIcon} title={$t('marketing.countries.empty')} />
     {:else}
       <div class="ui:text-muted-foreground mb-2 flex justify-between text-xs font-medium tracking-wide uppercase">
-        <span>{$t('analytics.countries.country')}</span>
-        <span>{$t('analytics.countries.visitors')}</span>
+        <span>{$t('marketing.countries.country')}</span>
+        <span>{$t('marketing.countries.visitors')}</span>
       </div>
       <ul class="ui:divide-border divide-y">
         {#each data.slice(0, 10) as row (row.country)}
@@ -46,7 +46,7 @@
               <div class="flex items-center gap-3">
                 <span class="ui:text-muted-foreground tabular-nums">
                   {row.enrollments.toLocaleString()}
-                  {$t('analytics.countries.enrollments_short')}
+                  {$t('marketing.countries.enrollments_short')}
                 </span>
                 <span class="ui:text-foreground tabular-nums">{row.views.toLocaleString()}</span>
               </div>
@@ -56,4 +56,4 @@
       </ul>
     {/if}
   {/snippet}
-</AnalyticsPanelCard>
+</StatsPanelCard>

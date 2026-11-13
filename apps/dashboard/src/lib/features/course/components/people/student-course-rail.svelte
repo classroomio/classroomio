@@ -36,8 +36,8 @@
     </div>
     <Badge variant="secondary">
       <ClockIcon />
-      {$t('analytics.last_seen')}
-      {formatLastSeen(userCourseAnalytics.user.lastSeen) ?? $t('analytics.a_while_ago')}
+      {$t('student_progress.last_seen')}
+      {formatLastSeen(userCourseAnalytics.user.lastSeen) ?? $t('student_progress.a_while_ago')}
     </Badge>
   </Card.Content>
 
@@ -45,30 +45,30 @@
 
   <Card.Content class="flex flex-col items-center gap-1">
     <PercentRingProgress value={userCourseAnalytics.progressPercentage} size="default" />
-    <p class="ui:text-muted-foreground text-xs">{$t('analytics.course_progress')}</p>
+    <p class="ui:text-muted-foreground text-xs">{$t('student_progress.course_progress')}</p>
   </Card.Content>
 
   <Separator.Root />
 
   <Card.Content>
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
-      <span class="ui:text-muted-foreground">{$t('analytics.lessons')}</span>
+      <span class="ui:text-muted-foreground">{$t('student_progress.lessons')}</span>
       <span class="ui:tabular-nums font-medium">
         {userCourseAnalytics.lessonsCompleted}/{userCourseAnalytics.lessonsCount}
       </span>
     </div>
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
-      <span class="ui:text-muted-foreground">{$t('analytics.exercises')}</span>
+      <span class="ui:text-muted-foreground">{$t('student_progress.exercises')}</span>
       <span class="ui:tabular-nums font-medium">
         {userCourseAnalytics.completedExercises}/{userCourseAnalytics.totalExercises}
       </span>
     </div>
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
-      <span class="ui:text-muted-foreground">{$t('analytics.assignment_completion')}</span>
+      <span class="ui:text-muted-foreground">{$t('student_progress.assignment_completion')}</span>
       <span class="ui:tabular-nums font-medium">{exerciseCompletion}%</span>
     </div>
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
-      <span class="ui:text-muted-foreground">{$t('analytics.average_grade')}</span>
+      <span class="ui:text-muted-foreground">{$t('student_progress.average_grade')}</span>
       <span class="ui:tabular-nums font-medium">{gradeLabel(userCourseAnalytics.averageGrade)}</span>
     </div>
   </Card.Content>

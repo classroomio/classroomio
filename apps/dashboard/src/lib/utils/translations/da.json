@@ -37,7 +37,15 @@
         "caption": "Vi gør dine kurser, elever og indstillinger klar."
       }
     },
-    "back": "Tilbage"
+    "back": "Tilbage",
+    "range": {
+      "7d": "Sidste 7 dage",
+      "30d": "Sidste 30 dage",
+      "90d": "Sidste 90 dage",
+      "all": "Alle tider",
+      "label": "Tidsinterval",
+      "locked": "Opgrader for at låse denne periode op"
+    }
   },
   "validations": {
     "generic": {
@@ -530,7 +538,7 @@
       "test_failed": "Testhændelsen mislykkedes. Åbn leveringsloggen for at se hvorfor.",
       "redelivered": "Hændelsen er sat i kø til ny levering."
     },
-    "insights": {
+    "analytics": {
       "reminder_sent": "Påmindelse sendt",
       "reminder_not_sent": "Påmindelse ikke sendt: allerede sendt i dag, eller eleven har deaktiveret disse e-mails",
       "reminder_failed": "Påmindelsen kunne ikke sendes",
@@ -608,8 +616,7 @@
     "unlock_field": "Opgrader for at låse denne indstilling op",
     "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks."
   },
-  "analytics": {
-    "title": "Analyse",
+  "student_progress": {
     "courses": "Kurser",
     "progress": "Fremskridt",
     "progress_description": "{value, number} af {total, number} fuldført",
@@ -640,77 +647,6 @@
     "loading_chart": "Indlæser diagram...",
     "no_data_default": "Ingen tilgængelige data",
     "no_data_default_description": "Der er ingen data at vise på nuværende tidspunkt.",
-    "subtitle": "Forstå, hvordan besøgende opdager dine kurser og konverterer til studerende.",
-    "refresh": "Opdater",
-    "popularTypes": {
-      "heading": "Populære kursustyper",
-      "description": "Tilmeldinger grupperet efter kursustype",
-      "subtitle": "{total} tilmeldinger på tværs af alle typer",
-      "empty": "Ingen tilmeldingsdata endnu",
-      "course_count": "{count, plural, one {# kursus} other {# kurser}}",
-      "views_short": "visninger",
-      "types": {
-        "SELF_PACED": "Selv-tempo",
-        "LIVE_CLASS": "Live klasse",
-        "COMPLIANCE": "Overholdelse",
-        "PUBLIC": "Offentlig"
-      }
-    },
-    "topCourses": {
-      "heading": "Topkurser efter visninger",
-      "description": "Kurser rangeret efter sidevisninger",
-      "subtitle": "Rangeret efter sidevisninger i dette interval",
-      "empty": "Ingen kursussidevisninger endnu",
-      "course": "Kursus",
-      "views": "Visninger"
-    },
-    "countries": {
-      "heading": "Toplande",
-      "subtitle": "{total} besøgende i alt",
-      "empty": "Ingen placeringsdata endnu",
-      "country": "Land",
-      "visitors": "Besøgende",
-      "enrollments_short": "tilmeldt"
-    },
-    "funnel": {
-      "heading": "Konverteringstragt",
-      "description": "Fra første besøg til kursusafslutning",
-      "empty": "Ingen tragtdata endnu",
-      "step": {
-        "landing_view": "Landingsudsigt",
-        "course_page_view": "Kursussidevisninger",
-        "enrollment_completed": "Tilmeldinger",
-        "course_completed": "Færdiggørelser"
-      }
-    },
-    "trend": {
-      "heading": "Trafik over tid",
-      "description": "Sidevisninger og tilmeldinger efter dag",
-      "empty": "Ingen trafik i det valgte område",
-      "views": "Visninger",
-      "enrollments": "Tilmeldinger"
-    },
-    "kpi": {
-      "landing_views": "Landingsudsigt",
-      "unique_visitors": "Unikke besøgende",
-      "course_page_views": "Kursussidevisninger",
-      "enrollments": "Tilmeldinger",
-      "range_description": "I det valgte område"
-    },
-    "range": {
-      "7d": "Sidste 7 dage",
-      "30d": "Sidste 30 dage",
-      "90d": "Sidste 90 dage",
-      "all": "Alle tider",
-      "label": "Tidsinterval",
-      "locked": "Opgrader for at låse denne periode op"
-    },
-    "tabs": {
-      "overview": "Oversigt",
-      "funnel": "Tragt",
-      "geography": "Geografi",
-      "course_types": "Kursustyper"
-    },
     "exercises_completed": "Øvelser fuldført",
     "course_progress": "Kursusstatus",
     "just_now": "lige nu",
@@ -3634,7 +3570,6 @@
     "tags": "Tags",
     "automation": "Automatisering",
     "widgets": "Widgets",
-    "stats": "Statistik",
     "analytics": "Analyse",
     "compliance": "Overholdelse",
     "cohorts": "Kohorter",
@@ -3649,7 +3584,8 @@
     "create": "Opret",
     "distribute": "Fordel",
     "tools": "Værktøjer",
-    "marketing": "Markedsføring"
+    "marketing": "Markedsføring",
+    "org_analytics": "Academy"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -6575,9 +6511,70 @@
   },
   "marketing": {
     "title": "Markedsføring",
-    "subtitle": "Forstå, hvordan besøgende opdager dine kurser og konverterer til studerende."
+    "subtitle": "Forstå, hvordan besøgende opdager dine kurser og konverterer til studerende.",
+    "popularTypes": {
+      "heading": "Populære kursustyper",
+      "description": "Tilmeldinger grupperet efter kursustype",
+      "subtitle": "{total} tilmeldinger på tværs af alle typer",
+      "empty": "Ingen tilmeldingsdata endnu",
+      "course_count": "{count, plural, one {# kursus} other {# kurser}}",
+      "views_short": "visninger",
+      "types": {
+        "SELF_PACED": "Selv-tempo",
+        "LIVE_CLASS": "Live klasse",
+        "COMPLIANCE": "Overholdelse",
+        "PUBLIC": "Offentlig"
+      }
+    },
+    "topCourses": {
+      "heading": "Topkurser efter visninger",
+      "description": "Kurser rangeret efter sidevisninger",
+      "subtitle": "Rangeret efter sidevisninger i dette interval",
+      "empty": "Ingen kursussidevisninger endnu",
+      "course": "Kursus",
+      "views": "Visninger"
+    },
+    "countries": {
+      "heading": "Toplande",
+      "subtitle": "{total} besøgende i alt",
+      "empty": "Ingen placeringsdata endnu",
+      "country": "Land",
+      "visitors": "Besøgende",
+      "enrollments_short": "tilmeldt"
+    },
+    "funnel": {
+      "heading": "Konverteringstragt",
+      "description": "Fra første besøg til kursusafslutning",
+      "empty": "Ingen tragtdata endnu",
+      "step": {
+        "landing_view": "Landingsudsigt",
+        "course_page_view": "Kursussidevisninger",
+        "enrollment_completed": "Tilmeldinger",
+        "course_completed": "Færdiggørelser"
+      }
+    },
+    "trend": {
+      "heading": "Trafik over tid",
+      "description": "Sidevisninger og tilmeldinger efter dag",
+      "empty": "Ingen trafik i det valgte område",
+      "views": "Visninger",
+      "enrollments": "Tilmeldinger"
+    },
+    "kpi": {
+      "landing_views": "Landingsudsigt",
+      "unique_visitors": "Unikke besøgende",
+      "course_page_views": "Kursussidevisninger",
+      "enrollments": "Tilmeldinger",
+      "range_description": "I det valgte område"
+    },
+    "tabs": {
+      "overview": "Oversigt",
+      "funnel": "Tragt",
+      "geography": "Geografi",
+      "course_types": "Kursustyper"
+    }
   },
-  "insights": {
+  "analytics": {
     "title": "Analyse",
     "updated_seconds_ago": "opdateret for {count}s siden",
     "updated_minutes_ago": "{count, plural, one {opdateret for # minut siden} other {opdateret for # minutter siden}}",
@@ -7010,9 +7007,6 @@
       "attempts_unavailable": "Kunne ikke kontrollere, hvilke øvelser der har forsøg, så nogle låste øvelser kan være skjult."
     },
     "empty": {
-      "no_data": "Ingen data endnu",
-      "no_overdue": "Ingen forsinkede elever",
-      "no_cohorts": "Ingen kohorter endnu",
       "failed": "Dette diagram kunne ikke indlæses",
       "dashboard_failed": "Analytics kunne ikke indlæses",
       "not_permitted": "Du har ikke adgang til disse analyser",
@@ -7152,7 +7146,8 @@
     "export": {
       "students_capped": "Elevlisten er begrænset til de første {limit} rækker.",
       "exercises_capped": "Øvelsesresultater er begrænset til de første {limit} resultater."
-    }
+    },
+    "org_page_title": "Academy"
   },
   "oauth": {
     "consent": {

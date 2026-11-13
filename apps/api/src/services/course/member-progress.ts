@@ -1,7 +1,7 @@
 import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
-import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
+import { getLastSeenForUserIds } from '@cio/db/queries/student-progress';
 import { getCourseById } from '@cio/db/queries/course/course';
 import type { getCourseContentItems } from '@cio/db/queries/course/content';
 import {

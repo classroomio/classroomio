@@ -16,7 +16,7 @@ import type {
 } from '@cio/utils/validation/course/section';
 import { updateUngroupedExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { db } from '@cio/db/drizzle';
-import { invalidateInsightsCourseStructure } from '../../utils/redis/insights-cache';
+import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
 import { claimSectionOrder } from './root-order';
 
 /**
@@ -35,7 +35,7 @@ export async function createCourseSection(courseId: string, data: TCourseSection
       throw new AppError('Failed to create course section', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
-    void invalidateInsightsCourseStructure(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
 
     return section;
   } catch (error) {
@@ -95,7 +95,7 @@ export async function promoteUngroupedSection(
       };
     });
 
-    void invalidateInsightsCourseStructure(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
 
     return result;
   } catch (error) {
@@ -166,7 +166,7 @@ export async function updateCourseSectionService(
     }
 
     if (courseId) {
-      void invalidateInsightsCourseStructure(courseId);
+      void invalidateAnalyticsCourseStructure(courseId);
     }
 
     return updated;
@@ -201,7 +201,7 @@ export async function deleteCourseSectionService(sectionId: string): Promise<TCo
     }
 
     if (section.courseId) {
-      void invalidateInsightsCourseStructure(section.courseId);
+      void invalidateAnalyticsCourseStructure(section.courseId);
     }
 
     return deleted;
@@ -245,7 +245,7 @@ export async function reorderCourseSections(sections: TCourseSectionReorder['sec
     const updatePromises = sections.map(({ id, order }) => updateCourseSection(id, { order }));
 
     const updated = await Promise.all(updatePromises);
-    await invalidateReorderedSectionInsights(sections.map(({ id }) => id));
+    await invalidateReorderedSectionAnalytics(sections.map(({ id }) => id));
 
     return updated.filter((section): section is TCourseSection => section !== null);
   } catch (error) {
@@ -257,13 +257,13 @@ export async function reorderCourseSections(sections: TCourseSectionReorder['sec
   }
 }
 
-async function invalidateReorderedSectionInsights(sectionIds: string[]): Promise<void> {
+async function invalidateReorderedSectionAnalytics(sectionIds: string[]): Promise<void> {
   if (sectionIds.length === 0) return;
 
   const sections = await Promise.all(sectionIds.map((sectionId) => getCourseSectionById(sectionId)));
   const courseIds = new Set(sections.flatMap((section) => (section?.courseId ? [section.courseId] : [])));
 
   for (const courseId of courseIds) {
-    void invalidateInsightsCourseStructure(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
   }
 }

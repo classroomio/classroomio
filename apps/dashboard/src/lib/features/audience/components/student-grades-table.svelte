@@ -82,7 +82,7 @@
               </Table.Cell>
               <Table.Cell>
                 {#if exercise.status === STATUS.GRADED}
-                  <Badge variant="success">{$t('analytics.graded')}</Badge>
+                  <Badge variant="success">{$t('student_progress.graded')}</Badge>
                 {:else if exercise.isCompleted}
                   <Badge variant="secondary">{$t('audience.user_analytics.awaiting_grade')}</Badge>
                 {:else}

@@ -387,11 +387,11 @@ Media notes:
 
 ## Analytics and reporting
 
-### `content/help/analytics-and-reporting/read-your-organization-analytics-overview.mdx` — Read your organization analytics overview
+### `content/help/analytics-and-reporting/read-your-marketing-overview.mdx` — Read your marketing overview
 
 - **Article type:** Metric reference and orientation guide.
-- **Cover:** Date range and data freshness; definition of every summary metric; trend comparison behavior; filter scope; drill-down destinations; permissions; known exclusions.
-- **Images:** Full analytics overview with numbered annotations tied to metric definitions and safe demo data.
+- **Cover:** The **Analytics → Marketing** page; date range and data freshness; definition of every summary metric; trend comparison behavior; filter scope; drill-down destinations; permissions; how it differs from **Analytics → Academy**; known exclusions.
+- **Images:** Full Marketing overview with numbered annotations tied to metric definitions and safe demo data.
 - **Video:** No video.
 
 ### `content/help/analytics-and-reporting/analyze-landing-views-enrollments-and-completions.mdx` — Analyze landing views, enrollments, and completions
@@ -415,11 +415,11 @@ Media notes:
 - **Images:** Top-courses table/chart and an applied metric or date filter.
 - **Video:** No video.
 
-### `content/help/analytics-and-reporting/review-course-performance-and-student-progress.mdx` — Review course performance and learner progress
+### `content/help/analytics-and-reporting/review-course-performance-and-student-progress.mdx` — Review course performance and student progress
 
 - **Article type:** Task and metric reference.
 - **Cover:** Course analytics location; enrollment, active-student, progress, completion, and score metrics; date/filter behavior; cohort or student drill-down; interpreting incomplete and inactive states.
-- **Images:** Course analytics overview and learner-progress table with safe demo data.
+- **Images:** Course analytics overview and student-progress table with safe demo data.
 - **Video:** No video.
 
 ### `content/help/analytics-and-reporting/view-submissions-and-completion-data.mdx` — View submissions and completion data
@@ -429,7 +429,7 @@ Media notes:
 - **Images:** Submission/completion table, filters, and one record detail.
 - **Video:** No video.
 
-### `content/help/analytics-and-reporting/view-a-students-analytics.mdx` — View a learner’s analytics
+### `content/help/analytics-and-reporting/view-a-students-analytics.mdx` — View a student’s analytics
 
 - **Article type:** Task and reference guide.
 - **Cover:** Finding a student; organization-wide and per-course metrics; enrollment, activity, progress, marks, and completion history; date/data freshness; available actions; privacy expectations.

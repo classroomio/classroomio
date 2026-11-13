@@ -1,29 +1,14 @@
 import { Hono } from '@api/utils/hono';
-import {
-  ZDashAnalyticsRange,
-  ZDashComplianceOverview,
-  ZDashCourseFunnel,
-  ZDashStats,
-  ZIngestBatch,
-  ZLoginActivity
-} from '@cio/utils/validation/dash';
+import { ZDashStats, ZIngestBatch, ZLoginActivity } from '@cio/utils/validation/dash';
 import { authMiddleware } from '@api/middlewares/auth';
-import { getCurrentUserLoginStreak, getOrganisationAnalytics, getStudentLoginActivity } from '@api/services/dash';
-import { getOrgComplianceOverview } from '@api/services/course/compliance';
+import { getCurrentUserLoginStreak, getOrganizationOverview, getStudentLoginActivity } from '@api/services/dash';
 import { handleError } from '@api/utils/errors';
+import { ingestEventBatch } from '@api/services/tracking';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { zValidator } from '@hono/zod-validator';
-import {
-  getCountryBreakdown,
-  getCourseFunnel,
-  getLandingStats,
-  getPopularTypes,
-  getTopCoursesByViews,
-  ingestEventBatch
-} from '@api/services/analytics';
 
-export const dashAnalyticsRouter = new Hono()
+export const dashRouter = new Hono()
   .post('/track', zValidator('json', ZIngestBatch), async (c) => {
     try {
       const batch = c.req.valid('json');
@@ -45,7 +30,7 @@ export const dashAnalyticsRouter = new Hono()
       const { bust } = c.req.valid('query');
       const orgId = c.get('orgId')!;
 
-      const result = await getOrganisationAnalytics(orgId, undefined, bust);
+      const result = await getOrganizationOverview(orgId, undefined, bust);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
@@ -73,87 +58,4 @@ export const dashAnalyticsRouter = new Hono()
     } catch (error) {
       return handleError(c, error, 'Failed to load login streak');
     }
-  })
-  .get('/landing-stats', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashAnalyticsRange), async (c) => {
-    try {
-      const { days } = c.req.valid('query');
-      const orgId = c.get('orgId')!;
-      const bust = c.req.query('bust') === '1';
-      const result = await getLandingStats(orgId, days, bust);
-
-      return c.json({ success: true, data: result }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to load landing stats');
-    }
-  })
-  .get(
-    '/country-breakdown',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('query', ZDashAnalyticsRange),
-    async (c) => {
-      try {
-        const { days } = c.req.valid('query');
-        const orgId = c.get('orgId')!;
-        const bust = c.req.query('bust') === '1';
-        const result = await getCountryBreakdown(orgId, days, bust);
-
-        return c.json({ success: true, data: result }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to load country breakdown');
-      }
-    }
-  )
-  .get('/course-funnel', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashCourseFunnel), async (c) => {
-    try {
-      const { days, courseId } = c.req.valid('query');
-      const orgId = c.get('orgId')!;
-      const bust = c.req.query('bust') === '1';
-      const result = await getCourseFunnel(orgId, days, courseId, bust);
-
-      return c.json({ success: true, data: result }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to load course funnel');
-    }
-  })
-  .get('/popular-types', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashAnalyticsRange), async (c) => {
-    try {
-      const { days } = c.req.valid('query');
-      const orgId = c.get('orgId')!;
-      const bust = c.req.query('bust') === '1';
-      const result = await getPopularTypes(orgId, days, bust);
-
-      return c.json({ success: true, data: result }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to load popular course types');
-    }
-  })
-  .get('/top-courses', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashAnalyticsRange), async (c) => {
-    try {
-      const { days } = c.req.valid('query');
-      const orgId = c.get('orgId')!;
-      const bust = c.req.query('bust') === '1';
-      const result = await getTopCoursesByViews(orgId, days, bust);
-
-      c.header('Cache-Control', 'no-store');
-      return c.json({ success: true, data: result }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to load top courses');
-    }
-  })
-  .get(
-    '/compliance-overview',
-    authMiddleware,
-    orgAdminMiddleware,
-    zValidator('query', ZDashComplianceOverview),
-    async (c) => {
-      try {
-        const orgId = c.req.header('cio-org-id')!;
-        const result = await getOrgComplianceOverview(orgId);
-
-        return c.json({ success: true, data: result }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to load compliance overview');
-      }
-    }
-  );
+  });

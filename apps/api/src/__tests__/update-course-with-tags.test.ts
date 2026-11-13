@@ -9,7 +9,7 @@ vi.mock('@cio/core/services/course/course', () => ({ updateCourse: vi.fn() }));
 vi.mock('@cio/db/queries/course', () => ({ getCourseByIdForUpdate: vi.fn() }));
 vi.mock('@cio/db/queries/tag', () => ({ getCourseTagsForOrganization: vi.fn() }));
 vi.mock('@api/services/tag', () => ({ replaceCourseTags: vi.fn() }));
-vi.mock('@cio/core/utils/redis/insights-cache', () => ({ invalidateInsightsCourseStructure: vi.fn() }));
+vi.mock('@cio/core/utils/redis/analytics-cache', () => ({ invalidateAnalyticsCourseStructure: vi.fn() }));
 
 import { updateCourse } from '@cio/core/services/course/course';
 import { getCourseByIdForUpdate } from '@cio/db/queries/course';
