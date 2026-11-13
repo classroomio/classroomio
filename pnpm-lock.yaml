@@ -1559,6 +1559,9 @@ importers:
       '@cio/utils':
         specifier: workspace:*
         version: link:../utils
+      '@cortex-js/compute-engine':
+        specifier: ^0.173.0
+        version: 0.173.0
       '@floating-ui/dom':
         specifier: ^1.7.4
         version: 1.7.4
@@ -1637,6 +1640,9 @@ importers:
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
+      mathlive:
+        specifier: ^0.111.4
+        version: 0.111.4
       plyr:
         specifier: ^3.7.8
         version: 3.8.4
@@ -1770,6 +1776,9 @@ importers:
       katex:
         specifier: ^0.16.25
         version: 0.16.27
+      mathml-to-latex:
+        specifier: ^1.8.0
+        version: 1.8.0
     devDependencies:
       tsc-alias:
         specifier: ^1.8.16
@@ -12752,6 +12761,12 @@ packages:
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
+
+  mathlive@0.111.4:
+    resolution: {integrity: sha512-1E5EOQnUHWn+KfEXaDTmuyxRWZrZw4WlQFyZLzJmjKEPdaX4WAnFqVfZb36mhulykcIl7/W7gKkTmutP2/9wjQ==}
+
+  mathml-to-latex@1.8.0:
+    resolution: {integrity: sha512-gQ0uK3zqB8HwlfaXJkEL5rgaZNbKUiBMmBP/B/W+b+t6KcseLSuYb1b0BjLgS9ZiQa24ePkqTX8/6FaQuDL7wQ==}
 
   mdast-util-definitions@6.0.0:
     resolution: {integrity: sha512-scTllyX6pnYNZH/AIp/0ePz6s4cZtARxImwoPJ7kS42n+MnVsI4XbnG6d4ibehRIldYMWM2LD7ImQblVhUejVQ==}
@@ -29201,6 +29216,12 @@ snapshots:
   marked@7.0.5: {}
 
   math-intrinsics@1.1.0: {}
+
+  mathlive@0.111.4: {}
+
+  mathml-to-latex@1.8.0:
+    dependencies:
+      '@xmldom/xmldom': 0.9.12
 
   mdast-util-definitions@6.0.0:
     dependencies:

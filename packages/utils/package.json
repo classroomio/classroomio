@@ -107,7 +107,8 @@
   "dependencies": {
     "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*",
-    "katex": "^0.16.25"
+    "katex": "^0.16.25",
+    "mathml-to-latex": "^1.8.0"
   },
   "devDependencies": {
     "tsc-alias": "^1.8.16",

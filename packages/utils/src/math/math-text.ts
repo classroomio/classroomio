@@ -103,10 +103,10 @@ function readEditorMathElement(source: string): MathToken | null {
 }
 
 /**
- * Splits a plain string into text and math segments. Math is `$…$`, `$$…$$` or a rich-text editor
- * `data-latex` element; `\$` is a literal dollar sign.
+ * Splits a plain string into text and math segments. Math is `$…$`, `$$…$$` (plus `\(…\)` and `\[…\]` with
+ * `brackets`) or a rich-text editor `data-latex` element; `\$` is a literal dollar sign.
  */
-export function splitMathText(text: string): MathTextSegment[] {
+export function splitMathText(text: string, options: ReadMathTokenOptions = {}): MathTextSegment[] {
   const segments: MathTextSegment[] = [];
   let pendingText = '';
   let index = 0;
@@ -120,10 +120,10 @@ export function splitMathText(text: string): MathTextSegment[] {
       continue;
     }
 
-    const token =
-      char === '$' || char === '<'
-        ? (readMathToken(text.slice(index)) ?? readEditorMathElement(text.slice(index)))
-        : null;
+    const mayStartMath = char === '$' || char === '<' || (options.brackets === true && char === '\\');
+    const token = mayStartMath
+      ? (readMathToken(text.slice(index), options) ?? readEditorMathElement(text.slice(index)))
+      : null;
 
     if (!token) {
       pendingText += char;
