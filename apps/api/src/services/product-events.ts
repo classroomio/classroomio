@@ -129,3 +129,16 @@ export function captureExerciseSubmitted(input: {
     }
   })();
 }
+
+export function captureZapierTriggerSubscribed(input: {
+  organizationId: string;
+  profileId: string;
+  eventType: string;
+}): void {
+  captureServerEvent({
+    event: 'zapier_trigger_subscribed',
+    distinctId: input.profileId,
+    orgId: input.organizationId,
+    properties: { org_id: input.organizationId, event_type: input.eventType }
+  });
+}

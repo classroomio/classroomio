@@ -103,6 +103,7 @@ export async function assertProfileBelongsToOrganization(orgId: string, profileI
 
 /**
  * Email twin of assertProfileBelongsToOrganization. Returns the member's profileId, or null for a pending member.
+ * Archived members are refused here instead of gaining a course seat they cannot use.
  */
 export async function assertEmailBelongsToOrganization(orgId: string, email: string): Promise<string | null> {
   const members = await getOrganizationMembersByNormalizedEmails(orgId, [email]);
@@ -114,7 +115,18 @@ export async function assertEmailBelongsToOrganization(orgId: string, email: str
     );
   }
 
-  return members.find((member) => member.profileId)?.profileId ?? null;
+  const member = members.find((candidate) => candidate.profileId) ?? members[0];
+
+  if (member && member.status !== 'ACTIVE') {
+    throw new AppError(
+      'This email belongs to an archived organization member. Restore them in the dashboard before adding them to a course',
+      ErrorCodes.ORG_MEMBER_ARCHIVED,
+      409,
+      'email'
+    );
+  }
+
+  return member?.profileId ?? null;
 }
 
 /**

@@ -4,7 +4,9 @@ import { ErrorCodes } from '@api/utils/errors';
 
 import {
   authenticateOAuthAccessTokenService,
+  getOAuthClientTrustService,
   listOAuthConnectedAppsService,
+  listOAuthOrganizationsService,
   revokeOAuthConnectedAppService,
   selectOAuthOrganizationService
 } from './oauth';
@@ -21,13 +23,32 @@ const mocks = vi.hoisted(() => ({
   getOrCreateOAuthGrantKey: vi.fn(),
   saveOAuthOrganizationSelection: vi.fn(),
   listOAuthConnectedApps: vi.fn(),
+  listOAuthEligibleOrganizations: vi.fn(),
   revokeOAuthConsent: vi.fn(),
-  revokeUserGrants: vi.fn()
+  revokeStaleOAuthTokens: vi.fn(),
+  revokeUserGrants: vi.fn(),
+  getActiveOrganizationPlan: vi.fn(),
+  refreshOrgHasWebhookEndpoints: vi.fn(),
+  isTrustedOAuthClient: vi.fn()
 }));
 
 vi.mock('@cio/db/auth', () => ({
   verifyOAuthAccessToken: mocks.verifyOAuthAccessToken,
-  InvalidOAuthTokenError: tokenErrors.InvalidOAuthTokenError
+  InvalidOAuthTokenError: tokenErrors.InvalidOAuthTokenError,
+  isTrustedOAuthClient: mocks.isTrustedOAuthClient,
+  PUBLIC_API_RESOURCE: 'http://localhost:3002/public-api/v1'
+}));
+vi.mock('@cio/db/queries/organization', () => ({
+  getActiveOrganizationPlan: mocks.getActiveOrganizationPlan
+}));
+vi.mock('@cio/core/services/webhook/endpoint-cache', () => ({
+  refreshOrgHasWebhookEndpoints: mocks.refreshOrgHasWebhookEndpoints
+}));
+vi.mock('@cio/core/config/env', () => ({
+  env: {
+    PUBLIC_IS_SELFHOSTED: 'false',
+    ZAPIER_OAUTH_CLIENT_ID: 'zapier-client'
+  }
 }));
 vi.mock('@api/services/organization/automation-usage', () => ({
   assertPublicApiAllowed: mocks.assertPublicApiAllowed
@@ -38,8 +59,9 @@ vi.mock('@cio/db/queries/auth', () => ({
   isActiveOrganizationAdmin: mocks.isActiveOrganizationAdmin,
   saveOAuthOrganizationSelection: mocks.saveOAuthOrganizationSelection,
   listOAuthConnectedApps: mocks.listOAuthConnectedApps,
-  listOAuthEligibleOrganizations: vi.fn(),
+  listOAuthEligibleOrganizations: mocks.listOAuthEligibleOrganizations,
   revokeOAuthConsent: mocks.revokeOAuthConsent,
+  revokeStaleOAuthTokens: mocks.revokeStaleOAuthTokens,
   revokeUserOAuthGrantsInOrganization: mocks.revokeUserGrants
 }));
 
@@ -56,7 +78,11 @@ const claims = {
   issuedAt: 1_800_000_100
 };
 
-const CONSENT = { id: CONSENT_ID, createdAt: new Date(1_800_000_000 * 1000) };
+const CONSENT = {
+  id: CONSENT_ID,
+  createdAt: new Date(1_800_000_000 * 1000),
+  scopes: ['course:read']
+};
 
 describe('authenticateOAuthAccessTokenService', () => {
   beforeEach(() => {
@@ -64,6 +90,7 @@ describe('authenticateOAuthAccessTokenService', () => {
     mocks.verifyOAuthAccessToken.mockResolvedValue(claims);
     mocks.isActiveOrganizationAdmin.mockResolvedValue(true);
     mocks.findActiveOAuthConsent.mockResolvedValue(CONSENT);
+    mocks.revokeStaleOAuthTokens.mockResolvedValue(0);
     mocks.getOrCreateOAuthGrantKey.mockResolvedValue({
       id: 'key-1',
       organizationId: ORG_ID,
@@ -74,7 +101,7 @@ describe('authenticateOAuthAccessTokenService', () => {
   });
 
   it('returns the grant key carrying only the token scopes', async () => {
-    const key = await authenticateOAuthAccessTokenService('token', 'any');
+    const { key } = await authenticateOAuthAccessTokenService('token', 'any');
 
     expect(key.scopes).toEqual(['course:read']);
     expect(key.organizationId).toBe(ORG_ID);
@@ -98,10 +125,38 @@ describe('authenticateOAuthAccessTokenService', () => {
   });
 
   it('rejects a token issued before the current grant was created', async () => {
-    mocks.findActiveOAuthConsent.mockResolvedValue({ id: CONSENT_ID, createdAt: new Date(1_800_000_200 * 1000) });
+    mocks.findActiveOAuthConsent.mockResolvedValue({ ...CONSENT, createdAt: new Date(1_800_000_200 * 1000) });
 
     await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
     expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+  });
+
+  it('rejects a token carrying a scope the narrowed grant no longer covers and deletes stale tokens', async () => {
+    mocks.verifyOAuthAccessToken.mockResolvedValue({ ...claims, scopes: ['course:read', 'course:member:write'] });
+
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
+    expect(mocks.revokeStaleOAuthTokens).toHaveBeenCalledWith(USER_ID, 'client-1', ORG_ID, ['course:read']);
+    expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+  });
+
+  it('still rejects the token when deleting stale tokens fails', async () => {
+    mocks.verifyOAuthAccessToken.mockResolvedValue({ ...claims, scopes: ['course:read', 'course:member:write'] });
+    mocks.revokeStaleOAuthTokens.mockRejectedValue(new Error('database unavailable'));
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await expect(authenticateOAuthAccessTokenService('token', 'any')).rejects.toMatchObject({ statusCode: 401 });
+    expect(mocks.getOrCreateOAuthGrantKey).not.toHaveBeenCalled();
+
+    consoleError.mockRestore();
+  });
+
+  it('accepts a token whose scopes the widened grant covers', async () => {
+    mocks.findActiveOAuthConsent.mockResolvedValue({ ...CONSENT, scopes: ['course:read', 'course:member:write'] });
+
+    await authenticateOAuthAccessTokenService('token', 'any');
+
+    expect(mocks.revokeStaleOAuthTokens).not.toHaveBeenCalled();
+    expect(mocks.getOrCreateOAuthGrantKey).toHaveBeenCalled();
   });
 
   it('requires the public API plan for tokens issued for the public API', async () => {
@@ -214,5 +269,86 @@ describe('connected apps', () => {
       statusCode: 404,
       code: ErrorCodes.OAUTH_CONNECTED_APP_NOT_FOUND
     });
+  });
+
+  it('leaves Zapier grants out of the list', async () => {
+    mocks.listOAuthConnectedApps.mockResolvedValue([]);
+
+    await listOAuthConnectedAppsService(ORG_ID);
+
+    expect(mocks.listOAuthConnectedApps).toHaveBeenCalledWith(ORG_ID, { excludeClientId: 'zapier-client' });
+  });
+
+  it('refreshes org webhook endpoints cache when revoking a consent', async () => {
+    mocks.revokeOAuthConsent.mockResolvedValue(true);
+
+    await revokeOAuthConnectedAppService(ORG_ID, CONSENT_ID);
+
+    expect(mocks.revokeOAuthConsent).toHaveBeenCalledWith(CONSENT_ID, ORG_ID);
+    expect(mocks.refreshOrgHasWebhookEndpoints).toHaveBeenCalledWith(ORG_ID);
+  });
+});
+
+describe('listOAuthOrganizationsService', () => {
+  beforeEach(() => {
+    Object.values(mocks).forEach((mock) => mock.mockReset());
+  });
+
+  it('marks Basic orgs as ineligible for public API resource', async () => {
+    mocks.listOAuthEligibleOrganizations.mockResolvedValue([
+      { id: 'org-basic', name: 'Basic Org', siteName: 'basic', avatarUrl: null },
+      { id: 'org-early', name: 'Early Org', siteName: 'early', avatarUrl: null },
+      { id: 'org-ent', name: 'Enterprise Org', siteName: 'enterprise', avatarUrl: null }
+    ]);
+    mocks.getActiveOrganizationPlan.mockImplementation((orgId: string) => {
+      if (orgId === 'org-basic') return Promise.resolve(null);
+      if (orgId === 'org-early') return Promise.resolve({ planName: 'EARLY_ADOPTER' });
+      if (orgId === 'org-ent') return Promise.resolve({ planName: 'ENTERPRISE' });
+      return Promise.resolve(null);
+    });
+
+    const orgs = await listOAuthOrganizationsService(USER_ID, 'http://localhost:3002/public-api/v1');
+
+    expect(orgs).toEqual([
+      { id: 'org-basic', name: 'Basic Org', siteName: 'basic', avatarUrl: null, eligible: false, reason: 'plan' },
+      { id: 'org-early', name: 'Early Org', siteName: 'early', avatarUrl: null, eligible: true, reason: null },
+      { id: 'org-ent', name: 'Enterprise Org', siteName: 'enterprise', avatarUrl: null, eligible: true, reason: null }
+    ]);
+  });
+
+  it('marks all orgs as eligible when no resource is provided', async () => {
+    mocks.listOAuthEligibleOrganizations.mockResolvedValue([
+      { id: 'org-basic', name: 'Basic Org', siteName: 'basic', avatarUrl: null }
+    ]);
+
+    const orgs = await listOAuthOrganizationsService(USER_ID);
+
+    expect(orgs).toEqual([
+      { id: 'org-basic', name: 'Basic Org', siteName: 'basic', avatarUrl: null, eligible: true, reason: null }
+    ]);
+    expect(mocks.getActiveOrganizationPlan).not.toHaveBeenCalled();
+  });
+});
+
+describe('getOAuthClientTrustService', () => {
+  beforeEach(() => {
+    Object.values(mocks).forEach((mock) => mock.mockReset());
+  });
+
+  it('identifies trusted and zapier clients correctly', () => {
+    mocks.isTrustedOAuthClient.mockReturnValue(true);
+
+    const result = getOAuthClientTrustService('zapier-client');
+
+    expect(result).toEqual({ clientId: 'zapier-client', trusted: true, kind: 'zapier' });
+    expect(mocks.isTrustedOAuthClient).toHaveBeenCalledWith('zapier-client');
+  });
+
+  it('identifies untrusted non-zapier clients', () => {
+    mocks.isTrustedOAuthClient.mockReturnValue(false);
+
+    const result = getOAuthClientTrustService('untrusted-client');
+
+    expect(result).toEqual({ clientId: 'untrusted-client', trusted: false, kind: 'app' });
   });
 });

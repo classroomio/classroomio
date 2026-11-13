@@ -29,8 +29,18 @@ vi.mock('@cio/db/queries/organization', async (importOriginal) => {
   };
 });
 
+vi.mock('@cio/db/queries/auth', async (importOriginal) => {
+  const actual = await importOriginal<object>();
+
+  return { ...actual, revokeUserOAuthGrantsInOrganization: vi.fn() };
+});
+
 vi.mock('@cio/core/services/webhook/emit', () => ({
   emitOrganizationMemberWebhookEvent: mocks.emitOrganizationMemberWebhookEvent
+}));
+
+vi.mock('@cio/core/services/webhook/endpoint-cache', () => ({
+  refreshOrgHasWebhookEndpoints: vi.fn()
 }));
 
 vi.mock('@api/services/organization/invite', () => ({

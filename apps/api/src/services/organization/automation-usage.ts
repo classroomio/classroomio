@@ -13,6 +13,7 @@ import {
 } from '@cio/db/queries/organization';
 import type { TOrganizationApiKey, TOrganizationApiKeyType, TPlan } from '@db/types';
 import {
+  AUTOMATION_PLAN_GATE_MESSAGES,
   AUTOMATION_TYPE,
   getMcpAutomationCategory,
   canUsePublicApi,
@@ -55,21 +56,21 @@ async function getOrganizationPlanName(orgId: string): Promise<TPlan> {
 }
 
 /**
- * Throws 403 unless the organization's plan includes the public API.
+ * Throws 403 unless the organization's plan includes the public API; returns that plan.
  */
-export async function assertPublicApiAllowed(organizationId: string): Promise<void> {
+export async function assertPublicApiAllowed(organizationId: string): Promise<TPlan> {
   const planName = await getOrganizationPlanName(organizationId);
   const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
 
   if (!canUsePublicApi(planName, isSelfHosted)) {
     throw new AppError(
-      isSelfHosted
-        ? 'Public API keys require an Enterprise plan'
-        : 'Public API keys require an Early Adopter or Enterprise plan',
+      isSelfHosted ? AUTOMATION_PLAN_GATE_MESSAGES.publicApi.selfHosted : AUTOMATION_PLAN_GATE_MESSAGES.publicApi.cloud,
       ErrorCodes.UPGRADE_REQUIRED,
       403
     );
   }
+
+  return planName;
 }
 
 export async function assertOrganizationAutomationKeyCreationAllowed(

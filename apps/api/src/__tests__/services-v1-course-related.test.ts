@@ -8,6 +8,7 @@ vi.mock('@cio/db/queries/tag', () => ({
 }));
 vi.mock('@cio/db/queries/organization', () => ({ getOrganizationMemberIdByOrgAndProfile: vi.fn() }));
 vi.mock('@cio/db/queries/course', () => ({ getCourseById: vi.fn(), isCourseSlugTaken: vi.fn() }));
+vi.mock('@cio/db/queries/group', () => ({ isCourseTeamMemberOrOrgAdmin: vi.fn() }));
 vi.mock('@cio/core/services/course/course', () => ({ getCourse: vi.fn() }));
 vi.mock('@cio/core/services/course/utils', () => ({ buildCourseOutline: vi.fn(() => []) }));
 vi.mock('@api/services/course-import/course-import', () => ({}));
@@ -24,6 +25,7 @@ import {
 } from '@cio/db/queries/tag';
 import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { getCourse } from '@cio/core/services/course/course';
+import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseService, listRelatedCoursesService } from '@api/services/v1/courses/course';
 
 const ORG_ID = 'org-1';
@@ -38,6 +40,7 @@ const relatedRow = (id: string) =>
 beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
+  vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
   vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue('org-member-1' as never);
   vi.mocked(getCourseTagsForOrganization).mockResolvedValue([tag('a'), tag('b')] as never);
   vi.mocked(getRelatedCourses).mockResolvedValue([relatedRow('course-2')]);
@@ -111,7 +114,7 @@ describe('getCourseService', () => {
   it("returns the course's tags", async () => {
     vi.mocked(getCourse).mockResolvedValue({ id: COURSE_ID, content: {} } as never);
 
-    await expect(getCourseService(ORG_ID, { courseId: COURSE_ID })).resolves.toMatchObject({
+    await expect(getCourseService(ORG_ID, 'actor-1', { courseId: COURSE_ID })).resolves.toMatchObject({
       tags: [preview('a'), preview('b')]
     });
     expect(getCourseTagsForOrganization).toHaveBeenCalledWith(ORG_ID, COURSE_ID);

@@ -6,7 +6,13 @@ import { organizationApiKeyHasScopes } from '@api/services/organization/automati
 
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
 const COURSE_STUDENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/members\/[^/]+\/(?:lessons|exercises)(?:\/|$)/;
-const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
+const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites|enrollments)(?:\/|$)/;
+const WEBHOOK_SUBSCRIPTION_PATH = /^(?:\/public-api\/v1)?\/webhooks(?:\/|$)/;
+const IDENTITY_PATH = /^(?:\/public-api\/v1)?\/me\/?$/;
+
+export function isPublicApiIdentityPath(path: string): boolean {
+  return IDENTITY_PATH.test(path);
+}
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
 const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
 const COURSE_CLONE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/clone\/?$/;
@@ -85,7 +91,12 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? 'course:read' : method === 'POST' ? 'course:write' : null;
   }
 
-  if (COURSE_RELATED_PATH.test(path)) {
+  // The handler limits these keys to a tagIds- or addTagIds-only body; every other course field still needs public_api:*.
+  if (COURSE_ITEM_PATH.test(path) && method === 'PUT') {
+    return 'course:tag:write';
+  }
+
+  if (COURSE_RELATED_PATH.test(path) || COURSE_ITEM_PATH.test(path)) {
     return isRead ? 'course:read' : null;
   }
 
@@ -107,9 +118,8 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? 'course:read' : 'course:tag:write';
   }
 
-  // The handler limits these keys to a tagIds- or addTagIds-only body; every other course field still needs public_api:*.
-  if (COURSE_ITEM_PATH.test(path) && method === 'PUT') {
-    return 'course:tag:write';
+  if (WEBHOOK_SUBSCRIPTION_PATH.test(path)) {
+    return isRead ? 'webhook:subscription:read' : 'webhook:subscription:write';
   }
 
   return null;
@@ -123,6 +133,8 @@ export const publicApiScopesMiddleware = async (c: Context, next: Next) => {
     return c.json({ success: false, error: 'Unauthorized', code: ErrorCodes.UNAUTHORIZED }, 401);
   }
 
+  if (isPublicApiIdentityPath(c.req.path)) return next();
+
   const keyScopes = automationKey.scopes ?? [];
   const routeScope = getPublicApiRouteScope(c.req.method, c.req.path);
   const allowed =
@@ -130,10 +142,13 @@ export const publicApiScopesMiddleware = async (c: Context, next: Next) => {
     (routeScope !== null && organizationApiKeyHasScopes(keyScopes, [routeScope]));
 
   if (!allowed) {
-    return c.json(
-      { success: false, error: 'Automation key is missing required scopes', code: ErrorCodes.FORBIDDEN },
-      403
-    );
+    const isOAuthConnection = Boolean(automationKey.oauthConsentId);
+    const error = isOAuthConnection
+      ? `This connection was not granted the ${routeScope ?? 'required'} permission`
+      : 'Automation key is missing required scopes';
+    const code = isOAuthConnection ? ErrorCodes.INSUFFICIENT_SCOPE : ErrorCodes.FORBIDDEN;
+
+    return c.json({ success: false, error, code, requiredScope: routeScope }, 403);
   }
 
   return next();

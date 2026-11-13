@@ -1,14 +1,14 @@
 ---
 title: Rate limits
-description: How many requests an API key can make, the rate limit headers, and how to handle a 429.
+description: How many requests an API key or OAuth connection can make, the rate limit headers, and how to handle a 429.
 last_reviewed: '2026-10-23'
 ---
 
-The API limits how many requests each API key can make, so one integration can't slow down the others.
+The API limits how many requests each API key or OAuth connection can make, so one integration can't slow down the others.
 
 ## The limit
 
-Each API key can make **100 requests per minute**. Every key has its own budget, so traffic on one key doesn't use up another's.
+Each API key or OAuth connection can make **100 requests per minute**. Every key and connection has its own budget, so traffic on one doesn't use up another's.
 
 ## Rate limit headers
 
@@ -54,6 +54,16 @@ MCP usage also has per-minute limits for each connected app or MCP key (`cio_mcp
 
 Wait up to a minute, because the limit counts the last 60 seconds, then retry.
 
+### Zapier connections
+
+Requests from the ClassroomIO Zapier app use the same limit as every other public API client: **100 requests per minute for each connection**. Over the limit, the API returns `429` with `Retry-After`, and Zapier retries the step.
+
+### Course invites
+
+Creating course invites has a separate limit: each person can create invites for one course 60 times in any hour. For an API key or connection, that person is whoever created the key or connected the app. The dashboard, `POST /courses/{courseId}/invites` and `POST /courses/{courseId}/enrollments` share this budget. Every `/invites` request that passes the course permission check counts. An `/enrollments` call counts only when it has to create a new invite, so a repeat call that returns `already_enrolled` or `already_invited` doesn't.
+
+Over the limit, `/invites` answers with the per-key body shown above, with `Retry-After`. `/enrollments` answers in the [standard error format](/api/errors#error-format) with `code` `COURSE_INVITE_RATE_LIMIT_EXCEEDED` and no `Retry-After`. Wait and retry later.
+
 ## Handle a 429
 
 Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP usage limits, this waits 60 seconds:
@@ -79,7 +89,7 @@ To stay under the limit:
 - Cache responses that don't change often.
 
 :::note[Self-hosted instances]
-Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit.
+Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, most requests go through without a limit. Creating course invites through the public API is the exception: `POST /courses/{courseId}/invites`, and `POST /courses/{courseId}/enrollments` when it needs a new invite, fail with `503` and `code` `RATE_LIMIT_UNAVAILABLE` until Redis is back.
 :::
 
 ## Next steps

@@ -17,9 +17,9 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
-import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { createCourseInviteRateLimit } from '@api/middlewares/course-invite-rate-limit';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { COURSE_TEAM_RULE, forbiddenResponse, mcpRateLimitResponse } from './docs';
+import { COURSE_TEAM_RULE, forbiddenResponse, inviteRateLimitUnavailableResponse, mcpRateLimitResponse } from './docs';
 import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin } from '@api/services/v1/shared';
 import type { Context, Next } from 'hono';
 
@@ -35,11 +35,8 @@ const requireCourseTeamActor = async (c: Context, next: Next) => {
   await next();
 };
 
-const createInviteRateLimit = createRateLimiter({
-  windowMs: 60 * 60 * 1000,
-  maxRequests: 60,
-  message: 'Too many invite creation attempts. Please try again later.',
-  keyGenerator: (c) => `course_invite_create:user:${c.get('actorId')}:${c.req.param('courseId')}`
+const createInviteRateLimit = createCourseInviteRateLimit((c) => ({ userId: c.get('actorId')! }), {
+  failClosed: true
 });
 
 export const v1CourseInvitesRouter = new Hono()
@@ -101,8 +98,9 @@ export const v1CourseInvitesRouter = new Hono()
         404: { description: 'Course not found' },
         429: {
           description:
-            'More than 60 invite requests in an hour for this key creator and course (a limit shared with the dashboard), or (MCP keys) the MCP rate limit was hit'
-        }
+            'The key creator made 60 invite requests for this course in the past hour, counting the dashboard and new-student enrollments; or an MCP key hit its rate limit'
+        },
+        503: inviteRateLimitUnavailableResponse
       }
     }),
     validator('param', ZPublicApiCourseInviteParam),

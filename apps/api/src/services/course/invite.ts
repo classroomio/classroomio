@@ -3,6 +3,7 @@ import {
   countInviteDistinctPreviewIps,
   createCourseInvite,
   createCourseInviteAudit,
+  createEnrollmentInviteIfAbsent,
   getCourseInviteById,
   getCourseInviteByTokenHash,
   getPaginatedCourseInvites,
@@ -30,7 +31,7 @@ import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { ROLE } from '@cio/utils/constants';
 import { isCoursePaid } from '@cio/utils/validation/course';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
-import type { TNewCourseInviteAudit } from '@db/types';
+import type { TCourseInvite, TNewCourseInvite, TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
@@ -363,24 +364,19 @@ async function recordInviteAudit(
   await emitInviteWebhook(inviteId, courseId, eventType, context);
 }
 
-async function createSingleInvite(
+function newStudentInvite(
   courseId: string,
   createdByProfileId: string,
   policy: { expiresAt: string; maxUses: number },
   allowedEmails: string[] | null,
   allowedDomains: string[] | null,
-  metadata: Record<string, unknown> | undefined,
-  targetEmail: string | null,
-  courseSlug: string,
-  org: OrgUrlInfo
-) {
+  metadata: Record<string, unknown> | undefined
+): { token: string; values: TNewCourseInvite } {
   const token = generateToken();
-  const tokenHash = hashToken(token);
-
-  const created = await createCourseInvite({
+  const values: TNewCourseInvite = {
     courseId,
     roleId: ROLE.STUDENT,
-    tokenHash,
+    tokenHash: hashToken(token),
     createdByProfileId,
     expiresAt: policy.expiresAt,
     maxUses: policy.maxUses,
@@ -389,9 +385,20 @@ async function createSingleInvite(
     allowedEmails,
     allowedDomains,
     metadata: metadata || {}
-  });
+  };
 
-  await recordInviteAudit(created.id, courseId, 'CREATED', {
+  return { token, values };
+}
+
+async function recordCreatedInvite(
+  created: TCourseInvite,
+  token: string,
+  createdByProfileId: string,
+  targetEmail: string | null,
+  courseSlug: string,
+  org: OrgUrlInfo
+): Promise<TCourseInviteWithLink> {
+  await recordInviteAudit(created.id, created.courseId, 'CREATED', {
     actorProfileId: createdByProfileId,
     targetEmail,
     metadata: {
@@ -404,6 +411,30 @@ async function createSingleInvite(
     ...created,
     inviteLink: buildEnrollLink(courseSlug, token, org)
   };
+}
+
+async function createSingleInvite(
+  courseId: string,
+  createdByProfileId: string,
+  policy: { expiresAt: string; maxUses: number },
+  allowedEmails: string[] | null,
+  allowedDomains: string[] | null,
+  metadata: Record<string, unknown> | undefined,
+  targetEmail: string | null,
+  courseSlug: string,
+  org: OrgUrlInfo
+) {
+  const { token, values } = newStudentInvite(
+    courseId,
+    createdByProfileId,
+    policy,
+    allowedEmails,
+    allowedDomains,
+    metadata
+  );
+  const created = await createCourseInvite(values);
+
+  return recordCreatedInvite(created, token, createdByProfileId, targetEmail, courseSlug, org);
 }
 
 async function sendStudentJoinEmails(input: {
@@ -468,7 +499,52 @@ async function sendStudentJoinEmails(input: {
   }
 }
 
-async function createEmailInviteAndSend(input: {
+export type TCourseInviteContext = {
+  organizationId: string;
+  orgName: string;
+  courseName: string;
+  courseSlug: string;
+  org: OrgUrlInfo;
+  branding: EmailBranding;
+};
+
+/**
+ * Resolves the course, organization and branding values every course-invite path needs.
+ */
+export async function resolveCourseInviteContext(courseId: string): Promise<TCourseInviteContext> {
+  const course = await getCourseById(courseId);
+  if (!course?.[0]) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  const courseOrgData = await getCourseWithOrgData(courseId);
+  if (!courseOrgData) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  const courseTitle = course[0].title;
+  const courseSlug = course[0].slug ?? (await ensureCourseSlug(course[0].id, courseTitle));
+  const branding = buildEmailBranding({
+    name: courseOrgData.orgName,
+    avatarUrl: courseOrgData.orgAvatarUrl,
+    theme: courseOrgData.orgTheme
+  });
+
+  return {
+    organizationId: courseOrgData.orgId,
+    orgName: courseOrgData.orgName || 'ClassroomIO',
+    courseName: courseOrgData.courseTitle || courseTitle || 'Course',
+    courseSlug,
+    org: {
+      siteName: courseOrgData.orgSiteName ?? null,
+      customDomain: courseOrgData.orgCustomDomain ?? null,
+      isCustomDomainVerified: courseOrgData.orgIsCustomDomainVerified ?? null
+    },
+    branding
+  };
+}
+
+type TCreateEmailInviteInput = {
   courseId: string;
   createdByProfileId: string;
   recipientEmail: string;
@@ -481,73 +557,164 @@ async function createEmailInviteAndSend(input: {
   branding: EmailBranding;
   metadata?: Record<string, unknown>;
   shouldSend: boolean;
-}) {
-  const createdInvite = await createSingleInvite(
+  reuseActiveInvite?: boolean;
+};
+
+type TCourseInviteWithLink = TCourseInvite & { inviteLink: string };
+
+export type TCreateEmailInviteResult =
+  | {
+      created: true;
+      invite: TCourseInviteWithLink;
+      inviteId: string;
+      sent: boolean;
+      error: string | null;
+    }
+  | {
+      created: false;
+      invite: null;
+      inviteId: string | null;
+      sent: false;
+      error: null;
+    };
+
+async function createInviteForEmail(
+  input: TCreateEmailInviteInput,
+  normalizedEmail: string
+): Promise<{ invite: TCourseInviteWithLink | null; existingInviteId: string | null }> {
+  const metadata = { ...(input.metadata || {}), source: 'DIRECT_EMAIL_INVITE' };
+  const singleUsePolicy = { expiresAt: input.policy.expiresAt, maxUses: 1 };
+  const { token, values } = newStudentInvite(
     input.courseId,
     input.createdByProfileId,
-    {
-      expiresAt: input.policy.expiresAt,
-      maxUses: 1
-    },
-    [input.recipientEmail],
+    singleUsePolicy,
+    [normalizedEmail],
     null,
-    {
-      ...(input.metadata || {}),
-      source: 'DIRECT_EMAIL_INVITE'
-    },
-    input.recipientEmail,
-    input.courseSlug,
-    input.org
+    metadata
   );
 
+  if (!input.reuseActiveInvite) {
+    const created = await createCourseInvite(values);
+    const invite = await recordFreshInvite(
+      input.courseId,
+      input.createdByProfileId,
+      normalizedEmail,
+      input.courseSlug,
+      input.org,
+      { invite: created, token }
+    );
+
+    return { invite, existingInviteId: null };
+  }
+
+  const result = await createEnrollmentInviteIfAbsent(input.courseId, normalizedEmail, values);
+
+  if (!result.invite) {
+    return { invite: null, existingInviteId: result.existingInviteId };
+  }
+
+  const invite = await recordFreshInvite(
+    input.courseId,
+    input.createdByProfileId,
+    normalizedEmail,
+    input.courseSlug,
+    input.org,
+    { invite: result.invite, token }
+  );
+
+  return { invite, existingInviteId: null };
+}
+
+/**
+ * Records a freshly committed invite (audit row plus enroll link). The invite
+ * row commits before this step runs, so a failure here revokes it: otherwise a
+ * retry would find the unsent invite and report `already_invited` without ever
+ * sending an email.
+ */
+async function recordFreshInvite(
+  courseId: string,
+  createdByProfileId: string,
+  targetEmail: string | null,
+  courseSlug: string,
+  org: OrgUrlInfo,
+  created: { invite: TCourseInvite; token: string }
+): Promise<TCourseInviteWithLink> {
+  try {
+    return await recordCreatedInvite(created.invite, created.token, createdByProfileId, targetEmail, courseSlug, org);
+  } catch (error) {
+    try {
+      await revokeCourseInvite(courseId, created.invite.id, createdByProfileId);
+    } catch (revokeError) {
+      console.error('createInviteForEmail cleanup failed:', {
+        inviteId: created.invite.id,
+        error: revokeError
+      });
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * Creates the single-use invite for one email and sends it, or returns the usable invite that already
+ * names that email when `reuseActiveInvite` is set. Only a freshly created invite sends an email.
+ */
+export async function createEmailInviteAndSend(input: TCreateEmailInviteInput): Promise<TCreateEmailInviteResult> {
+  const normalizedEmail = input.recipientEmail.trim().toLowerCase();
+  const { invite, existingInviteId } = await createInviteForEmail(input, normalizedEmail);
+
+  if (!invite) {
+    return { created: false, invite: null, inviteId: existingInviteId, sent: false, error: null };
+  }
+
   if (!input.shouldSend) {
-    return {
-      invite: createdInvite,
-      sent: false,
-      error: null as string | null
-    };
+    return { created: true, invite, inviteId: invite.id, sent: false, error: null };
   }
 
   try {
-    await enqueueTransactionalEmail('studentCourseInvite', {
-      to: input.recipientEmail,
+    const { jobIds } = await enqueueTransactionalEmail('studentCourseInvite', {
+      to: normalizedEmail,
       fields: {
         orgName: input.orgName,
         courseName: input.courseName,
-        inviteLink: createdInvite.inviteLink,
-        expiresAt: getExpiryLabel(createdInvite.expiresAt),
+        inviteLink: invite.inviteLink,
+        expiresAt: getExpiryLabel(invite.expiresAt),
         branding: input.branding
       },
       from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
       organizationId: input.organizationId,
-      idempotencyKey: `course-invite-email:${createdInvite.id}`
+      idempotencyKey: `course-invite-email:${invite.id}`
     });
 
-    // Optimistic EMAIL_SENT — see comment in services/organization/invite.ts.
-    await recordInviteAudit(createdInvite.id, input.courseId, 'EMAIL_SENT', {
-      actorProfileId: input.createdByProfileId,
-      targetEmail: input.recipientEmail
-    });
-
-    return {
-      invite: createdInvite,
-      sent: true,
-      error: null as string | null
-    };
+    if (jobIds.length === 0) {
+      throw new Error('Email queue accepted no recipients: invitation email was not queued');
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown email error';
-    await recordInviteAudit(createdInvite.id, input.courseId, 'EMAIL_FAILED', {
-      actorProfileId: input.createdByProfileId,
-      targetEmail: input.recipientEmail,
-      metadata: { error: message }
-    });
 
-    return {
-      invite: createdInvite,
-      sent: false,
-      error: message
-    };
+    try {
+      await recordInviteAudit(invite.id, input.courseId, 'EMAIL_FAILED', {
+        actorProfileId: input.createdByProfileId,
+        targetEmail: normalizedEmail,
+        metadata: { error: message }
+      });
+    } catch (auditError) {
+      console.error(`Failed to record the failed course invite email for ${normalizedEmail}:`, auditError);
+    }
+
+    return { created: true, invite, inviteId: invite.id, sent: false, error: message };
   }
+
+  try {
+    await recordInviteAudit(invite.id, input.courseId, 'EMAIL_SENT', {
+      actorProfileId: input.createdByProfileId,
+      targetEmail: normalizedEmail
+    });
+  } catch (error) {
+    console.error(`Failed to record the queued course invite email for ${normalizedEmail}:`, error);
+  }
+
+  return { created: true, invite, inviteId: invite.id, sent: true, error: null };
 }
 
 /**
@@ -560,16 +727,6 @@ export async function createStudentInvite(
   data: TCreateCourseInvite,
   source: TEventSource = 'dashboard'
 ) {
-  const course = await getCourseById(courseId);
-  if (!course?.[0]) {
-    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-  }
-
-  const courseOrgData = await getCourseWithOrgData(courseId);
-  if (!courseOrgData) {
-    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-  }
-
   const policy = resolveInvitePolicy(data);
   const allowedEmails = normalizeEmails(data.allowedEmails);
   const allowedDomains = normalizeDomains(data.allowedDomains);
@@ -584,13 +741,7 @@ export async function createStudentInvite(
     );
   }
 
-  const courseTitle = course[0].title;
-  const courseSlug = course[0].slug ?? (await ensureCourseSlug(course[0].id, courseTitle));
-  const orgUrlInfo: OrgUrlInfo = {
-    siteName: courseOrgData.orgSiteName ?? null,
-    customDomain: courseOrgData.orgCustomDomain ?? null,
-    isCustomDomainVerified: courseOrgData.orgIsCustomDomainVerified ?? null
-  };
+  const context = await resolveCourseInviteContext(courseId);
 
   if (recipients.valid.length === 0) {
     const createdInvite = await createSingleInvite(
@@ -601,13 +752,13 @@ export async function createStudentInvite(
       allowedDomains,
       data.metadata,
       null,
-      courseSlug,
-      orgUrlInfo
+      context.courseSlug,
+      context.org
     );
 
     captureLearnerInvited({
       profileId: createdByProfileId,
-      orgId: courseOrgData.orgId,
+      orgId: context.organizationId,
       target: 'course',
       inviteType: 'link',
       count: 1,
@@ -629,14 +780,6 @@ export async function createStudentInvite(
     };
   }
 
-  const orgName = courseOrgData.orgName || 'ClassroomIO';
-  const courseName = courseOrgData.courseTitle || course[0].title || 'Course';
-  const orgBranding = buildEmailBranding({
-    name: courseOrgData.orgName,
-    avatarUrl: courseOrgData.orgAvatarUrl,
-    theme: courseOrgData.orgTheme
-  });
-
   const inviteResults = await Promise.all(
     recipients.valid.map((recipientEmail) =>
       createEmailInviteAndSend({
@@ -644,12 +787,12 @@ export async function createStudentInvite(
         createdByProfileId,
         recipientEmail,
         policy,
-        orgName,
-        organizationId: courseOrgData.orgId,
-        courseName,
-        courseSlug,
-        org: orgUrlInfo,
-        branding: orgBranding,
+        orgName: context.orgName,
+        organizationId: context.organizationId,
+        courseName: context.courseName,
+        courseSlug: context.courseSlug,
+        org: context.org,
+        branding: context.branding,
         metadata: data.metadata,
         shouldSend: data.sendEmail
       })
@@ -660,7 +803,7 @@ export async function createStudentInvite(
 
   captureLearnerInvited({
     profileId: createdByProfileId,
-    orgId: courseOrgData.orgId,
+    orgId: context.organizationId,
     target: 'course',
     inviteType: 'email',
     count: inviteResults.length,
@@ -671,14 +814,14 @@ export async function createStudentInvite(
   const failures = inviteResults
     .filter((result) => !result.sent && result.error)
     .map((result) => ({
-      email: result.invite.allowedEmails?.[0] || 'unknown',
+      email: result.invite?.allowedEmails?.[0] || 'unknown',
       error: result.error || 'Failed to send email'
     }));
 
   return {
     mode: 'bulk' as const,
-    invites: inviteResults.map((result) => toInviteResponse(result.invite)),
-    inviteLink: inviteResults[0]?.invite.inviteLink || null,
+    invites: inviteResults.flatMap((result) => (result.created ? [toInviteResponse(result.invite)] : [])),
+    inviteLink: inviteResults[0]?.invite?.inviteLink || null,
     duplicatesSkipped: recipients.duplicates,
     delivery: {
       requested: recipients.valid.length,

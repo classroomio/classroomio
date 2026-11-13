@@ -7,6 +7,7 @@ export type AuthSession = {
     automationKey: TOrganizationApiKey | null;
     /** AI client or integration behind an automation request, for attributing its edits. */
     clientName: string | null;
+    oauthClientId: string | undefined;
     orgId: string | null;
     orgRoles: Record<string, number>;
     /** Asset an encoder job token authorizes, set by `encoderJobMiddleware`. */

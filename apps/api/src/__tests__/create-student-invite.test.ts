@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/course/invite', () => ({
   createCourseInvite: vi.fn(),
-  createCourseInviteAudit: vi.fn()
+  createCourseInviteAudit: vi.fn(),
+  createEnrollmentInviteIfAbsent: vi.fn(),
+  revokeCourseInvite: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/course', () => ({
@@ -19,10 +21,15 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
   emitCourseMemberWebhookEvent: vi.fn()
 }));
 
-import { createCourseInvite, createCourseInviteAudit } from '@cio/db/queries/course/invite';
+import {
+  createCourseInvite,
+  createCourseInviteAudit,
+  createEnrollmentInviteIfAbsent,
+  revokeCourseInvite
+} from '@cio/db/queries/course/invite';
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { createStudentInvite } from '@api/services/course/invite';
+import { createEmailInviteAndSend, createStudentInvite } from '@api/services/course/invite';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const ACTOR_ID = 'actor-1';
@@ -54,7 +61,7 @@ describe('createStudentInvite (course invite onboarding)', () => {
       } as never;
     });
     vi.mocked(createCourseInviteAudit).mockResolvedValue(undefined as never);
-    vi.mocked(enqueueTransactionalEmail).mockResolvedValue(undefined as never);
+    vi.mocked(enqueueTransactionalEmail).mockResolvedValue({ jobIds: ['job-1'] });
   });
 
   it('invites an email with no account yet, bound to that email, without looking anyone up', async () => {
@@ -129,5 +136,197 @@ describe('createStudentInvite (course invite onboarding)', () => {
       createStudentInvite(COURSE_ID, ACTOR_ID, { ...baseInvite, recipientCsv: 'a@example.com, not-an-email' })
     ).rejects.toMatchObject({ statusCode: 400 });
     expect(createCourseInvite).not.toHaveBeenCalled();
+  });
+});
+
+describe('createEmailInviteAndSend with reuseActiveInvite', () => {
+  const inviteInput = {
+    courseId: COURSE_ID,
+    createdByProfileId: ACTOR_ID,
+    recipientEmail: 'New.Person@Example.com',
+    policy: { expiresAt: '2026-12-01T00:00:00.000Z', maxUses: 1 },
+    orgName: 'Org',
+    organizationId: 'org-1',
+    courseName: 'Course',
+    courseSlug: 'course',
+    org: { siteName: 'org', customDomain: null, isCustomDomainVerified: null },
+    branding: {} as never,
+    shouldSend: true,
+    reuseActiveInvite: true
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(createCourseInviteAudit).mockResolvedValue(undefined as never);
+    vi.mocked(enqueueTransactionalEmail).mockResolvedValue({ jobIds: ['job-1'] });
+  });
+
+  it('returns the invite already naming the email without creating or emailing another', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: false,
+      invite: null,
+      existingInviteId: 'invite-existing'
+    });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(result).toEqual({ created: false, invite: null, inviteId: 'invite-existing', sent: false, error: null });
+    expect(createCourseInvite).not.toHaveBeenCalled();
+    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(createCourseInviteAudit).not.toHaveBeenCalled();
+  });
+
+  it('creates one invite and sends one email when no usable invite exists', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: true,
+      invite: {
+        id: 'invite-new',
+        courseId: COURSE_ID,
+        roleId: 3,
+        expiresAt: inviteInput.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        allowedEmails: ['new.person@example.com'],
+        allowedDomains: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        isRevoked: false
+      } as never,
+      existingInviteId: null
+    });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(createEnrollmentInviteIfAbsent).toHaveBeenCalledWith(
+      COURSE_ID,
+      'new.person@example.com',
+      expect.objectContaining({
+        allowedEmails: ['new.person@example.com'],
+        maxUses: 1,
+        expiresAt: inviteInput.policy.expiresAt,
+        metadata: { source: 'DIRECT_EMAIL_INVITE' }
+      })
+    );
+    expect(result).toMatchObject({ created: true, inviteId: 'invite-new', sent: true, error: null });
+    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
+    expect(createCourseInviteAudit).toHaveBeenCalledWith(
+      expect.objectContaining({ inviteId: 'invite-new', eventType: 'CREATED' })
+    );
+  });
+
+  it('reports a queue failure when the email service accepts no recipients', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: true,
+      invite: {
+        id: 'invite-new',
+        courseId: COURSE_ID,
+        roleId: 3,
+        expiresAt: inviteInput.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        allowedEmails: ['new.person@example.com'],
+        allowedDomains: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        isRevoked: false
+      } as never,
+      existingInviteId: null
+    });
+    vi.mocked(enqueueTransactionalEmail).mockResolvedValueOnce({ jobIds: [] });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(result).toMatchObject({ created: true, inviteId: 'invite-new', sent: false });
+    expect(result.error).toMatch(/not queued/);
+    expect(createCourseInviteAudit).toHaveBeenCalledWith(
+      expect.objectContaining({ inviteId: 'invite-new', eventType: 'EMAIL_FAILED' })
+    );
+  });
+
+  it('keeps a queued invite usable when the EMAIL_SENT audit fails', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: true,
+      invite: {
+        id: 'invite-new',
+        courseId: COURSE_ID,
+        roleId: 3,
+        expiresAt: inviteInput.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        allowedEmails: ['new.person@example.com'],
+        allowedDomains: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        isRevoked: false
+      } as never,
+      existingInviteId: null
+    });
+    vi.mocked(createCourseInviteAudit).mockImplementation(async (values) => {
+      if (values.eventType === 'EMAIL_SENT') {
+        throw new Error('audit down');
+      }
+
+      return undefined as never;
+    });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(enqueueTransactionalEmail).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({ created: true, inviteId: 'invite-new', sent: true, error: null });
+    expect(createCourseInviteAudit).not.toHaveBeenCalledWith(
+      expect.objectContaining({ inviteId: 'invite-new', eventType: 'EMAIL_FAILED' })
+    );
+  });
+
+  it('reports the queue failure even when the EMAIL_FAILED audit fails', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: true,
+      invite: {
+        id: 'invite-new',
+        courseId: COURSE_ID,
+        roleId: 3,
+        expiresAt: inviteInput.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        allowedEmails: ['new.person@example.com'],
+        allowedDomains: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        isRevoked: false
+      } as never,
+      existingInviteId: null
+    });
+    vi.mocked(enqueueTransactionalEmail).mockRejectedValueOnce(new Error('queue down'));
+    vi.mocked(createCourseInviteAudit).mockImplementation(async (values) => {
+      if (values.eventType === 'EMAIL_FAILED') {
+        throw new Error('audit down');
+      }
+
+      return undefined as never;
+    });
+
+    const result = await createEmailInviteAndSend(inviteInput);
+
+    expect(result).toMatchObject({ created: true, inviteId: 'invite-new', sent: false, error: 'queue down' });
+  });
+
+  it('revokes the fresh invite when recording it fails so a retry starts clean', async () => {
+    vi.mocked(createEnrollmentInviteIfAbsent).mockResolvedValue({
+      created: true,
+      invite: {
+        id: 'invite-new',
+        courseId: COURSE_ID,
+        roleId: 3,
+        expiresAt: inviteInput.policy.expiresAt,
+        maxUses: 1,
+        usedCount: 0,
+        allowedEmails: ['new.person@example.com'],
+        allowedDomains: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        isRevoked: false
+      } as never,
+      existingInviteId: null
+    });
+    vi.mocked(createCourseInviteAudit).mockRejectedValueOnce(new Error('audit down'));
+
+    await expect(createEmailInviteAndSend(inviteInput)).rejects.toThrow('audit down');
+    expect(revokeCourseInvite).toHaveBeenCalledWith(COURSE_ID, 'invite-new', ACTOR_ID);
+    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
   });
 });

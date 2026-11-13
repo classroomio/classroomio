@@ -33,6 +33,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 | `409` | The request conflicts with the resource's current state |
 | `429` | Too many requests. See [Rate limits](/api/rate-limits) |
 | `500` | Something went wrong on our side |
+| `503` | A safety check, such as a rate limit, couldn't run. Retry later |
 
 ## Common errors
 
@@ -62,7 +63,20 @@ Status `403`
 }
 ```
 
-**Fix:** You're using a key that can't call this endpoint, usually an MCP key or a connected MCP app. Use an API key (`cio_api_...`) instead. An OAuth access token that lacks the route's scope fails the same way; reconnect the app and grant that scope.
+**Fix:** You're using an MCP key (`cio_mcp_...`) that can't call this endpoint. Use an API key (`cio_api_...`) instead.
+
+An OAuth connection, such as Zapier, gets `INSUFFICIENT_SCOPE` instead, with the missing scope in `requiredScope`:
+
+```json
+{
+  "success": false,
+  "error": "This connection was not granted the course:member:write permission",
+  "code": "INSUFFICIENT_SCOPE",
+  "requiredScope": "course:member:write"
+}
+```
+
+**Fix:** Reconnect the app and grant the permission.
 
 ### Resource not found
 
@@ -95,7 +109,25 @@ Status `400`
 
 ### Rate limit exceeded
 
-Status `429`. The body depends on which limit you hit. The per-key request limit uses its own shape with `retryAfter`. The MCP usage limit uses the standard format with `code` `AUTOMATION_RATE_LIMIT_EXCEEDED`. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit).
+Status `429`. The body depends on which limit you hit. The per-key request limit uses its own shape with `retryAfter`. The MCP usage limit uses the standard format with `code` `AUTOMATION_RATE_LIMIT_EXCEEDED`, and the course invite limit on `POST /courses/{courseId}/enrollments` uses it with `code` `COURSE_INVITE_RATE_LIMIT_EXCEEDED`. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit) and [Course invites](/api/rate-limits#course-invites).
+
+### Rate limit unavailable
+
+Status `503`, with `code` `RATE_LIMIT_UNAVAILABLE`. Creating course invites is refused while the rate limiter can't be checked, rather than letting invites through unlimited.
+
+**Fix:** Retry after a short wait.
+
+### Staff can't be enrolled
+
+Status `409`, with `code` `STAFF_CANNOT_ENROLL`, from `POST /courses/{courseId}/enrollments` when the email belongs to an admin or tutor in your organization.
+
+**Fix:** Add admins and tutors to the course from the dashboard.
+
+### Organization member is archived
+
+Status `409`, with `code` `ORG_MEMBER_ARCHIVED`, from `POST /courses/{courseId}/enrollments` and `POST /courses/{courseId}/members` when the email belongs to an archived organization member. Archived members cannot gain a course seat until they are restored.
+
+**Fix:** Restore the member from **Audience** with the **Archived** status filter, then call the endpoint again.
 
 ## Next steps
 

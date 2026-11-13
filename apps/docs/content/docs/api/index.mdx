@@ -16,8 +16,8 @@ https://api.classroomio.com/public-api/v1
 
 ## Getting started
 
-1. [Generate an API key](/api/authentication#get-your-api-key) in your organization's dashboard.
-2. Send it in the `Authorization` header as a Bearer token.
+1. [Generate an API key](/api/authentication#get-your-api-key) in your organization's dashboard, or [authenticate with OAuth](/api/authentication#authenticate-with-oauth-instead) as the ClassroomIO Zapier integration does.
+2. Send the credential in the `Authorization` header as a Bearer token.
 3. Make your first request from your server, with the key in an environment variable. Never put the key in browser code.
 
 <CodeGroup>
@@ -43,12 +43,14 @@ const { data } = await res.json();
 - **[Cohorts](/api/reference#cohorts)**: cohorts and their members, courses, invites, goals, and newsfeed.
 - **[Analytics](/api/reference#analytics)**: organization, course, and student progress.
 - **[Media](/api/reference#public-api-assets)**: uploads for lesson and course assets.
+- **[Connection](/api/reference#connection)**: identify the organization, connection, and acting admin behind any key or OAuth token with `GET /me`.
+- **[Webhook subscriptions](/api/reference#webhook-subscriptions)**: register instant trigger subscriptions for an OAuth-connected app and preview sample events.
 
 ## Next steps
 
 <CardGroup cols={2}>
   <Card title="Authentication" href="/api/authentication" icon="key-round">
-    Get an API key and send it with every request.
+    Get an API key — or authenticate with OAuth — and send it with every request.
   </Card>
   <Card title="Rate limits" href="/api/rate-limits" icon="gauge">
     How many requests you can make, and what to do when you hit the limit.
