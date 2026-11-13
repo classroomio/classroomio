@@ -490,7 +490,7 @@ export function buildChangelogFeed(entries: ChangelogEntry[], generatedAt: Date)
   const items = entries
     .map(
       (entry) => `  <entry>
-    <id>${escapeXml(entry.id)}</id>
+    <id>${escapeXml(`urn:classroomio:changelog:${encodeURIComponent(entry.id)}`)}</id>
     <title>${escapeXml(entry.title)}</title>
     <link href="${escapeXml(entryPublicUrl(entry))}"/>
     <published>${entry.publishedAt}</published>
