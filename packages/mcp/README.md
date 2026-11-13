@@ -141,7 +141,6 @@ Current tools:
 - Other analytics:
   - `get_org_overview`
   - `get_student_analytics`
-  - `remind_overdue_cohort_goals`
 - `list_audience_members`
 - `get_audience_member`
 - `add_audience_member`
@@ -369,7 +368,7 @@ Domain tools act as the key creator, who must be an org admin, the same as the d
 - `connect_custom_domain` takes `hostname` and returns the DNS records to add. On ClassroomIO Cloud it needs a paid plan (403 `UPGRADE_REQUIRED`); self-hosted instances have no plan limit but return 409 `CUSTOM_DOMAIN_UNAVAILABLE` until Approximated is configured. To switch domains, remove the current one first.
 - `refresh_custom_domain` checks DNS and SSL again; `remove_custom_domain` disconnects the domain on any plan. Both act only on the organization's own connected domain.
 
-Analytics tools are read-only, cost no credits, and act as the key creator. They mirror the **Analytics** menu in the dashboard: each tool is named after the page it reads.
+Analytics read tools are read-only, cost no credits, and act as the key creator. They mirror the **Analytics** menu in the dashboard: each tool is named after the page it reads.
 
 Academy tools (**Analytics → Academy** and each course's and cohort's Analytics page):
 
@@ -395,6 +394,9 @@ Other analytics tools:
 - `get_org_overview` returns the organization overview (the Dashboard page): the sections picked with `include` (default `summary`): `summary` and `loginActivity`, with `days` and `limit` like the Marketing tool. The key creator must be an org admin or tutor; `loginActivity` needs an org admin and, for a tutor, is left out and listed in `meta.omitted`.
 - `get_student_analytics` returns one student's progress and grades across their courses, with per-exercise results. It takes the uuid `profileId` from `list_compliance_students` or the students lists, not the numeric `memberId`. The key creator must be an org admin or tutor.
 - Marketing, compliance and overview sections are cached for up to 10 minutes (login activity: 24 hours); `meta.generatedAt` says when the oldest one was computed. (The dashboard server lets any org member read some of these; the tools follow the dashboard UI, where only the roles above reach each page.)
+
+Cohort goal reminder tool (a write):
+
 - `remind_overdue_cohort_goals` emails the students with overdue goal assignments now, optionally narrowed with `courseId` or `profileId`; the key creator must be a cohort tutor/admin or an org admin. It costs 1 credit, and each overdue goal assignment is reminded at most once a day.
 
 ## Required Environment Variables

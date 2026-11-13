@@ -22,6 +22,8 @@ Every response tells you where you stand:
 | `X-RateLimit-Remaining` | Requests left in the current minute |
 | `X-RateLimit-Reset` | Sixty seconds after this request, as an ISO 8601 timestamp |
 
+On the Academy query, analytics snapshot and overdue-goal reminder endpoints, the headers report that endpoint's stricter per-key budget, not the 100-request baseline.
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 87

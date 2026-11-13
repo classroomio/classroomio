@@ -49,7 +49,7 @@ export const v1OrgAnalyticsPageRouter = new Hono()
       tags: [ORG_ANALYTICS_TAG],
       responses: {
         200: jsonResponse(
-          'Snapshot returned successfully; a widget that could not be computed carries only its errorCode',
+          'Snapshot returned successfully; a widget that could not be computed has a null result and carries its errorCode',
           itemResponse(ZPublicApiAnalyticsSnapshotResponse)
         ),
         400: errorResponses.badRequest,

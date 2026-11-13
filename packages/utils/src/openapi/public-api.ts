@@ -87,7 +87,7 @@ function collapseNullableUnions(value: unknown): void {
 // missing — since every path here starts with `/public-api/v1/...`, every
 // entry in the reference's sidebar rendered as a near-duplicate route string.
 // Keyed by "METHOD /path" (the exact template, including `{param}` braces).
-const OPERATION_SUMMARIES: Record<string, string> = {
+export const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/audience': 'List audience members',
   'POST /public-api/v1/audience': 'Invite audience members',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
@@ -123,6 +123,8 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
   'PUT /public-api/v1/courses/{courseId}': 'Update a course',
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
+  'POST /public-api/v1/courses/{courseId}/publish': 'Publish a course',
+  'POST /public-api/v1/courses/{courseId}/unpublish': 'Unpublish a course',
   'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
   'GET /public-api/v1/courses/{courseId}/related': 'List related courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
@@ -142,6 +144,19 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Delete a course lesson',
   'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/notify-session-update':
     'Notify students of a session update',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks': 'List lesson blocks',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks': 'Add a lesson block',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/attach': 'Reuse a lesson block',
+  'PATCH /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}':
+    'Update a lesson block placement',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}/move':
+    'Move a lesson block',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}':
+    'Remove a lesson block from a lesson',
+  'PATCH /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}': 'Update a lesson block',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}/locale/{locale}':
+    'Save a lesson block translation',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}/duplicate': 'Duplicate a lesson block',
   'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations': 'List lesson translations',
   'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations/{locale}': 'Save a lesson translation',
   'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/history': 'List lesson version history',
@@ -322,7 +337,8 @@ const OPERATION_TAGS = [
   },
   {
     name: 'Marketing',
-    description: "The numbers on the organization's Marketing page: traffic, countries and funnel."
+    description:
+      "The numbers on the organization's Marketing page: traffic, countries, funnel, course types and top courses."
   },
   { name: 'Compliance', description: "The numbers on the organization's Compliance page." }
 ];

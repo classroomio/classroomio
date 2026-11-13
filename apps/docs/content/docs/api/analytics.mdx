@@ -4,7 +4,7 @@ description: Read the numbers behind the Analytics pages (Academy, Marketing, an
 last_reviewed: '2026-11-13'
 ---
 
-The API mirrors the **Analytics** menu in the dashboard, which has three pages: **Academy**, **Marketing**, and **Compliance**. Every public path is the dashboard page path without `/org/[slug]`, and every call needs the `analytics:read` scope.
+The API mirrors the **Analytics** menu in the dashboard, which has three pages: **Academy**, **Marketing**, and **Compliance**. Each Analytics page's endpoint is its dashboard path without `/org/[slug]`, and every call needs the `analytics:read` scope.
 
 | Dashboard page | Endpoint |
 | --- | --- |
@@ -120,7 +120,7 @@ curl "https://api.classroomio.com/public-api/v1/cohorts/22222222-2222-4222-8222-
 
 ### The effective range and freshness
 
-Every external surface reports the range actually used. The Free plan reads at most the last 7 days, so `meta.range` (queries) and each widget's spec range (snapshots) may be narrower than requested. Results are cached per scope and spec hash for 30 seconds (60 seconds for the organization); a query or students search with free-text `search` bypasses the cache. For queries, `meta.generatedAt` says when the result was computed and `meta.cached` says whether it came from the cache. For snapshots, `generatedAt` says when the snapshot was assembled, not when its cached widget results were computed.
+Queries and snapshots report the range actually used. The Free plan reads at most the last 7 days, so `meta.range` (queries) and each widget's spec range (snapshots) may be narrower than requested. Results are cached per scope and spec hash for 30 seconds (60 seconds for the organization); a query or students search with free-text `search` bypasses the cache. For queries, `meta.generatedAt` says when the result was computed and `meta.cached` says whether it came from the cache. For snapshots, `generatedAt` says when the snapshot was assembled, not when its cached widget results were computed.
 
 ## Marketing
 
@@ -140,4 +140,4 @@ Every external surface reports the range actually used. The Free plan reads at m
 
 ## Reminders
 
-For goal reminders, see `POST /cohorts/{cohortId}/goals/remind-overdue`, which emails the students with overdue goal assignments now.
+For goal reminders, see `POST /cohorts/{cohortId}/goals/remind-overdue` (needs `cohort:write`), which emails the students with overdue goal assignments now.

@@ -135,11 +135,11 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/remind-overdue',
     describeRoute({
-      description: `Email the learners with overdue goals now; ${COHORT_TEAM_RULE}. Narrow with courseId or profileId; reminders repeat at most once a day per overdue goal.`,
+      description: `Email the students with overdue goals now; ${COHORT_TEAM_RULE}. Narrow with courseId or profileId; reminders repeat at most once a day per overdue goal.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse(
-          'Reminders handled: enqueued lists the emails queued, skipped the overdue learners not emailed now',
+          'Reminders handled: enqueued lists the emails queued, skipped the overdue students not emailed now',
           RemindResponse
         ),
         400: errorResponses.badRequest,
