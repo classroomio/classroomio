@@ -3,7 +3,7 @@ import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { accountApi } from '$features/account/api/account.svelte';
-import { currentOrg, getOrgPublicOrigin } from '$lib/utils/store/org';
+import { currentOrg, getOrgHandoffOrigin, getOrgPublicOrigin } from '$lib/utils/store/org';
 
 interface OpenCoursePreviewOptions {
   courseId: string;
@@ -13,7 +13,6 @@ interface OpenCoursePreviewOptions {
 
 interface ViewAsStudentOptions {
   courseId?: string | null;
-  currentOrgDomain?: string;
 }
 
 /** Absolute URL for the org-site public course page (`/course/{slug}`). Client-only. */
@@ -57,9 +56,9 @@ export function openCoursePreview({ courseId, courseSlug, currentOrgDomain = '' 
  * One flow for cloud and self-hosted: on cloud the tenant-router worker fronts
  * `/api/auth/*`→API and `/course/*`→dashboard under the tenant host; on self-hosted the
  * dashboard's own `hooks.server.ts` proxies `/api/auth/*` to the API. Either way the
- * cookie lands on `currentOrgDomain` and the relative `redirect` resolves there.
+ * cookie lands on the handoff origin and the relative `redirect` resolves there.
  */
-export async function viewAsStudent({ courseId, currentOrgDomain = '' }: ViewAsStudentOptions) {
+export async function viewAsStudent({ courseId }: ViewAsStudentOptions) {
   if (typeof window === 'undefined') {
     return false;
   }
@@ -68,15 +67,21 @@ export async function viewAsStudent({ courseId, currentOrgDomain = '' }: ViewAsS
     return false;
   }
 
-  const token = await accountApi.createViewAsStudentToken();
+  const handoffOrigin = getOrgHandoffOrigin(get(currentOrg));
+  if (!handoffOrigin) {
+    snackbar.error('snackbar.view_as_student.failed');
+
+    return false;
+  }
+
+  const token = await accountApi.createLoginLinkToken();
   if (!token) {
     snackbar.error('snackbar.view_as_student.failed');
 
     return false;
   }
 
-  const origin = currentOrgDomain?.trim() || getOrgPublicOrigin(get(currentOrg));
-  const loginLinkUrl = new URL('/api/auth/login-link', origin);
+  const loginLinkUrl = new URL('/api/auth/login-link', handoffOrigin);
   loginLinkUrl.searchParams.set('token', token);
   loginLinkUrl.searchParams.set('redirect', `/courses/${courseId}/lessons?next=true`);
 
