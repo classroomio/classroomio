@@ -13,7 +13,7 @@ published: true
 ![how-to-upload-videos-to-classroomio](/blog/how-to-upload-videos-to-classroomio.png)
 _How to Upload Videos to ClassroomIO_
 
-For those who don't know, ClassroomIO is an open-source platform that companies use to run training across their organization, from customer training to employee onboarding and more.
+For those who don't know, [ClassroomIO](https://classroomio.com) is an [open-source platform](https://github.com/classroomio/classroomio) that companies use to run training across their organization, from customer training to employee onboarding and more.
 
 This is a technical article for developers who want to learn about file uploads, and for developers who want to add training videos to their product without building video hosting, streaming and progress tracking themselves.
 
@@ -32,10 +32,10 @@ Uploading the file is only the first step. Once the video is attached to a lesso
 ClassroomIO gives you three ways to upload a video:
 
 1. **The dashboard:** an interface where you upload by hand.
-2. **The MCP server:** connect your favorite AI agent (Claude, ChatGPT and others) and ask it to do the work.
-3. **The public API:** upload from your own code. That's our focus today.
+2. **[The MCP server](https://classroomio.com/docs/developers/mcp):** connect your favorite AI agent (Claude, ChatGPT and others) and ask it to do the work.
+3. **[The public API](https://classroomio.com/docs/api):** upload from your own code. That's our focus today.
 
-![classroomio-media-upload-dialog](/blog/how-to-upload-videos-dashboard.png)
+![classroomio-media-upload-dialog](/blog/how-to-upload-videos-upload-dialog.png)
 _Uploading a video from the dashboard_
 
 ## Before you start
@@ -44,7 +44,7 @@ _Uploading a video from the dashboard_
 2. Go to **Automation**, open the **API** tab, and click **Generate API key**. Give the key a name, then create it.
 3. Copy the key straight away and save it as an environment variable. You'll need it for every request in this article.
 
-![classroomio-api-keys](/blog/how-to-upload-videos-api-keys.png)
+![classroomio-api-keys](/blog/how-to-upload-videos-api-key-page.png)
 _The API keys page under Automation → API_
 
 ```bash
