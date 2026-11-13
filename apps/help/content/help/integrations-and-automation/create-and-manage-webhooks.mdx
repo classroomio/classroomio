@@ -66,7 +66,7 @@ The webhooks table shows how each destination is doing:
 | **Failing**       | 20 deliveries in a row have failed.                                         |
 | **Auto-disabled** | 100 deliveries in a row have failed, so ClassroomIO turned the webhook off. |
 
-The **Error rate (24h)** column shows how many deliveries failed in the last 24 hours. ClassroomIO also emails every organization administrator when a webhook becomes **Failing** and again when it is auto-disabled.
+The **Error rate (24h)** column shows how many deliveries failed in the last 24 hours. ClassroomIO also emails every organization administrator when a webhook becomes **Failing** and again when it is auto-disabled. Zapier-managed trigger subscriptions never trigger these admin emails.
 
 ## Find and resend a delivery
 
@@ -93,7 +93,7 @@ ClassroomIO tries a failed delivery up to six times: right away, then again afte
 ## Pause, edit, or delete a webhook
 
 - **Pause**: use the **Active** switch in the table. A paused webhook receives no new events, and a retry that comes due while it is paused is marked **Failed** and is not resumed when you turn the webhook back on. Redeliver those events from the delivery history.
-- **Re-enable an auto-disabled webhook**: fix your server, then turn the **Active** switch back on. This resets its failure count.
+- **Re-enable an auto-disabled webhook**: fix your server, then turn the **Active** switch back on. This resets its failure count. Zapier-managed trigger subscriptions don't appear in this table; resubscribing from the connected Zapier app turns a disabled one back on.
 - **Edit**: open the **⋮** menu and select **Edit** to change the name, URL, events, or other settings.
 - **Regenerate secret**: open the **⋮** menu and select **Regenerate secret**. The old secret stops working immediately, so update your server first or right after.
 - **Delete**: open the **⋮** menu and select **Delete**. The webhook and its delivery history are removed.
