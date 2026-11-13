@@ -63,7 +63,7 @@ Status `403`
 }
 ```
 
-**Fix:** You're using a key that can't call this endpoint, usually an MCP key or a connected MCP app. Use an API key (`cio_api_...`) instead. An OAuth access token that lacks the route's scope also fails with `403`, but with `INSUFFICIENT_SCOPE` and the missing scope in `requiredScope`.
+**Fix:** You're using an MCP key (`cio_mcp_...`) that can't call this endpoint. Use an API key (`cio_api_...`) instead.
 
 An OAuth connection, such as Zapier, gets `INSUFFICIENT_SCOPE` instead, with the missing scope in `requiredScope`:
 
