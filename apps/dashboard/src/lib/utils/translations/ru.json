@@ -3585,7 +3585,7 @@
     "distribute": "Распространение",
     "tools": "Инструменты",
     "marketing": "Маркетинг",
-    "org_analytics": "Academy"
+    "org_analytics": "Академия"
   },
   "media_manager": {
     "page_title": "Медиаменеджер — ClassroomIO",
@@ -7249,6 +7249,6 @@
       "students_capped": "Список студентов ограничен первыми {limit} строками.",
       "exercises_capped": "Результаты упражнений ограничены первыми {limit} результатами."
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Академия"
   }
 }

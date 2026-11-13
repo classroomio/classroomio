@@ -1731,7 +1731,7 @@
     "exit_course": "Bu kurstan çık",
     "exit_cohort": "Bu gruptan çık",
     "marketing": "Pazarlama",
-    "org_analytics": "Academy"
+    "org_analytics": "Akademi"
   },
   "pricing": {
     "plan_names": {
@@ -7229,6 +7229,6 @@
       "students_capped": "Öğrenci listesi ilk {limit} satırla sınırlıdır.",
       "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır."
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Akademi"
   }
 }

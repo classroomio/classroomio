@@ -3585,7 +3585,7 @@
     "distribute": "Fordel",
     "tools": "Værktøjer",
     "marketing": "Markedsføring",
-    "org_analytics": "Academy"
+    "org_analytics": "Akademi"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -7147,7 +7147,7 @@
       "students_capped": "Elevlisten er begrænset til de første {limit} rækker.",
       "exercises_capped": "Øvelsesresultater er begrænset til de første {limit} resultater."
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Akademi"
   },
   "oauth": {
     "consent": {

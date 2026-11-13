@@ -1721,7 +1721,7 @@
     "exit_course": "Esci da questo corso",
     "exit_cohort": "Esci da questa coorte",
     "marketing": "Marketing",
-    "org_analytics": "Academy"
+    "org_analytics": "Accademia"
   },
   "pricing": {
     "plan_names": {
@@ -7117,7 +7117,7 @@
       "students_capped": "L'elenco degli studenti è limitato alle prime {limit} righe.",
       "exercises_capped": "I punteggi degli esercizi sono limitati ai primi {limit} risultati."
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Accademia"
   },
   "oauth": {
     "consent": {
