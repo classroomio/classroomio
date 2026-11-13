@@ -174,6 +174,52 @@ describe('ClassroomIoApiClient transport', () => {
     expect(requests[0]!.headers.get('cf-connecting-ip')).toBe('203.0.113.7');
   });
 
+  it.each(['学习助手', 'Claude 🤖', '100% client'])('sends the client name %s as a header-safe value', async (name) => {
+    const requests: Request[] = [];
+    const apiClient = new ClassroomIoApiClient(
+      {
+        CLASSROOMIO_API_URL: 'https://api.example.com',
+        CLASSROOMIO_API_KEY: 'token-1',
+        CLASSROOMIO_USER_AGENT: 'agent'
+      },
+      {
+        fetch: async (input, init) => {
+          requests.push(new Request(input, init));
+
+          return new Response(JSON.stringify({ success: true, data: [], pagination: {} }));
+        }
+      }
+    );
+    apiClient.setClientName(name);
+
+    await apiClient.listTeamMembers({});
+
+    expect(decodeURIComponent(requests[0]!.headers.get('x-mcp-client-name')!)).toBe(name);
+  });
+
+  it('cuts a very long client name before sending it', async () => {
+    const requests: Request[] = [];
+    const apiClient = new ClassroomIoApiClient(
+      {
+        CLASSROOMIO_API_URL: 'https://api.example.com',
+        CLASSROOMIO_API_KEY: 'token-1',
+        CLASSROOMIO_USER_AGENT: 'agent'
+      },
+      {
+        fetch: async (input, init) => {
+          requests.push(new Request(input, init));
+
+          return new Response(JSON.stringify({ success: true, data: [], pagination: {} }));
+        }
+      }
+    );
+    apiClient.setClientName('x'.repeat(500));
+
+    await apiClient.listTeamMembers({});
+
+    expect(requests[0]!.headers.get('x-mcp-client-name')).toHaveLength(80);
+  });
+
   it('lists courses through the public API and keeps the pagination', async () => {
     const requests: Request[] = [];
     const pagination = { page: 2, limit: 20, total: 21, totalPages: 2 };

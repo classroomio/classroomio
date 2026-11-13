@@ -3,6 +3,7 @@ import type { TLessonSlide, TLessonVideoItem } from '@cio/utils/validation/lesso
 import type { TBlockType } from '@cio/utils/validation/block';
 import { parseBlockData } from '@cio/utils/validation/block';
 import type { TLocale } from '@cio/db/types';
+import type { TBlockChangeSource } from '@cio/utils/constants/lesson-version';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   createBlock,
@@ -241,11 +242,17 @@ async function replaceBlocksOfType(
   }
 }
 
+interface LegacyContentAttribution {
+  source?: TBlockChangeSource;
+  clientName?: string | null;
+}
+
 async function replaceLegacyNote(
   lessonId: string,
   organizationId: string,
   note: string,
   actorProfileId: string | null,
+  attribution: LegacyContentAttribution,
   tx: DbOrTxClient
 ): Promise<void> {
   const content = sanitizeOptionalHtml(note) ?? '';
@@ -276,6 +283,8 @@ async function replaceLegacyNote(
     content: saved.content,
     authorId: actorProfileId,
     intent: 'auto',
+    source: attribution.source,
+    clientName: attribution.clientName,
     dbClient: tx
   });
 }
@@ -288,7 +297,7 @@ async function replaceLegacyNote(
 export async function applyLegacyLessonContent(
   lessonId: string,
   patch: LegacyLessonContentPatch,
-  options: { actorProfileId?: string | null; dbClient?: DbOrTxClient } = {}
+  options: { actorProfileId?: string | null; dbClient?: DbOrTxClient } & LegacyContentAttribution = {}
 ): Promise<boolean> {
   const hasContent =
     patch.note !== undefined ||
@@ -315,14 +324,15 @@ export async function applyLegacyLessonContent(
     }
 
     if (patch.note !== undefined) {
-      await replaceLegacyNote(lessonId, scope.organizationId, patch.note, actorProfileId, tx);
+      await replaceLegacyNote(lessonId, scope.organizationId, patch.note, actorProfileId, options, tx);
     }
 
     await syncLessonAssetUsages(lessonId, scope.organizationId, actorProfileId, tx);
     await recordLessonRevision({
       lessonId,
       authorId: actorProfileId,
-      source: 'editor',
+      source: options.source ?? 'editor',
+      clientName: options.clientName,
       changeSetId: null,
       dbClient: tx
     });
