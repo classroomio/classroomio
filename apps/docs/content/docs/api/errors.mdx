@@ -76,7 +76,7 @@ An OAuth connection, such as Zapier, gets `INSUFFICIENT_SCOPE` instead, with the
 }
 ```
 
-**Fix:** Reconnect the app and grant the permission. A connection made read-only can't call write endpoints.
+**Fix:** Reconnect the app and grant the permission. A connection made read-only can't call endpoints whose scopes change workspace data, but it keeps `webhook:subscription:write` so it can still manage the subscriptions its triggers need.
 
 ### Resource not found
 
