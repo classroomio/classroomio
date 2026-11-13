@@ -68,7 +68,7 @@ export async function revokeOAuthConnectedAppService(organizationId: string, con
 export async function authenticateOAuthAccessTokenService(
   token: string,
   resource: OAuthResourceKind
-): Promise<TOrganizationApiKey> {
+): Promise<TOrganizationApiKey & { clientName: string | null }> {
   const claims = await verifyOAuthAccessToken(token, resource).catch((error: unknown) => {
     if (error instanceof InvalidOAuthTokenError) {
       throw new AppError('Invalid or expired access token', ErrorCodes.UNAUTHORIZED, 401);
@@ -105,5 +105,5 @@ export async function authenticateOAuthAccessTokenService(
     label: 'OAuth connection'
   });
 
-  return { ...grantKey, scopes: claims.scopes };
+  return { ...grantKey, scopes: claims.scopes, clientName: consent.clientName ?? null };
 }

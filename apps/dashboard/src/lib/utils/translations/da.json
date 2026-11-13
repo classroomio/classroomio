@@ -1818,6 +1818,8 @@
           "undo_change": "Fortryd",
           "by_assistant": "Assistent",
           "by_restore": "Gendan",
+          "by_ai_client": "AI-klient",
+          "by_api": "API",
           "change_added": "Tilføjet {name}",
           "change_removed": "Fjernede {name}",
           "change_moved": "Flyttede {name}",

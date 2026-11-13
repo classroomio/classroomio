@@ -3748,6 +3748,8 @@
           "undo_change": "Annulla",
           "by_assistant": "Assistente",
           "by_restore": "Ripristina",
+          "by_ai_client": "Client IA",
+          "by_api": "API",
           "change_added": "Aggiunto {name}",
           "change_removed": "Rimosso {name}",
           "change_moved": "{name} spostato",

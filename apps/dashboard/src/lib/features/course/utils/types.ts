@@ -184,6 +184,7 @@ export interface LessonVersionEntry {
   editCount: number;
   authorName: string | null;
   source: LessonHistoryRow['source'];
+  clientName: string | null;
   changeSetId: string | null;
   undoable: boolean;
   changes: LessonHistoryRow['changes'];

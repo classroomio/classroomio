@@ -3756,6 +3756,8 @@
           "undo_change": "Geri al",
           "by_assistant": "Asistan",
           "by_restore": "Geri yükle",
+          "by_ai_client": "Yapay zeka istemcisi",
+          "by_api": "API",
           "change_added": "{name} eklendi",
           "change_removed": "{name} kaldırıldı",
           "change_moved": "{name} taşındı",

@@ -1818,6 +1818,8 @@
           "undo_change": "Annuler",
           "by_assistant": "Assistante",
           "by_restore": "Restaurer",
+          "by_ai_client": "Client IA",
+          "by_api": "API",
           "change_added": "Ajout de {name}",
           "change_removed": "Supprimé {name}",
           "change_moved": "Déplacé {name}",
