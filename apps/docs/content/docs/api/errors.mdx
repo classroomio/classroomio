@@ -28,7 +28,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 | `200` / `201` | The request worked |
 | `400` | The request body or query is invalid |
 | `401` | The credential (API key or OAuth token) is missing, invalid, expired, or revoked |
-| `403` | The credential can't call this endpoint — missing scope, read-only connection, or a plan without API access |
+| `403` | The credential can't call this endpoint — missing scope, or a plan without API access |
 | `404` | The resource doesn't exist, or belongs to another organization |
 | `409` | The request conflicts with the resource's current state |
 | `429` | Too many requests. See [Rate limits](/api/rate-limits) |
@@ -76,7 +76,7 @@ An OAuth connection, such as Zapier, gets `INSUFFICIENT_SCOPE` instead, with the
 }
 ```
 
-**Fix:** Reconnect the app and grant the permission. A connection made read-only can't call endpoints whose scopes change workspace data, but it keeps `webhook:subscription:write` so it can still manage the subscriptions its triggers need.
+**Fix:** Reconnect the app and grant the permission.
 
 ### Resource not found
 

@@ -60,7 +60,7 @@ Requests from the ClassroomIO Zapier app use the same limit as every other publi
 
 ### Course invites
 
-Creating course invites has a separate limit: each person can create invites for one course 60 times in any hour. For an API key or connection, that person is whoever created the key or connected the app. The dashboard, `POST /courses/{courseId}/invites` and `POST /courses/{courseId}/enrollments` share this budget. Every `/invites` request counts. An `/enrollments` call counts only when it has to send a new invite, so a repeat call that returns `already_enrolled` or `already_invited` doesn't.
+Creating course invites has a separate limit: each person can create invites for one course 60 times in any hour. For an API key or connection, that person is whoever created the key or connected the app. The dashboard, `POST /courses/{courseId}/invites` and `POST /courses/{courseId}/enrollments` share this budget. Every `/invites` request that passes the course permission check counts. An `/enrollments` call counts only when it has to create a new invite, so a repeat call that returns `already_enrolled` or `already_invited` doesn't.
 
 Over the limit, `/invites` answers with the per-key body shown above, with `Retry-After`. `/enrollments` answers in the [standard error format](/api/errors#error-format) with `code` `COURSE_INVITE_RATE_LIMIT_EXCEEDED` and no `Retry-After`. Wait and retry later.
 
