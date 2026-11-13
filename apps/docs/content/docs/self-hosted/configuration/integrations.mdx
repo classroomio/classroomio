@@ -39,8 +39,10 @@ Enables the in-app Unsplash image search.
 
 ## Zapier and trusted OAuth clients
 
-First-party OAuth clients such as ClassroomIO's native Zapier integration. Register the Zapier client with
-`pnpm --filter @cio/db oauth:register-client` (it prints the client ID and secret once) and store the ID here.
+ClassroomIO's Zapier app connects to ClassroomIO Cloud only, and a self-hosted dashboard says so on the Zapier tab. On a self-hosted install, use [Webhooks](/developers/webhooks) with Zapier's Webhooks by Zapier trigger, and an [API key](/api/authentication) for actions.
+
+These variables configure first-party OAuth clients, the role the Zapier client plays on ClassroomIO Cloud. Leave them unset unless you register your own first-party client with
+`pnpm --filter @cio/db oauth:register-client` (it prints the client ID and secret once).
 
 | Variable | Description |
 |----------|-------------|
