@@ -15,6 +15,8 @@ printf 'Authorization: Bearer %s\n' "$CLASSROOMIO_API_KEY" |
 
 The header must contain the full key, including its `cio_api_` prefix. A successful response returns course data for the key's organization according to the endpoint's permissions. The [API reference](https://classroomio.com/docs/api) documents response shapes and other routes.
 
-For **401 Unauthorized**, check that the secret is complete, active, and sent after `Bearer`. For **403 Forbidden**, check the account's API access, the key's scope, and whether the request is allowed in that organization. A revoked or rotated key must be replaced in the calling application's secret store.
+An OAuth access token authenticates the same requests when the integration connected through OAuth instead of a key: send it in the same `Authorization: Bearer` header, and it acts as the admin who authorized the connection with the scopes the grant carries. The ClassroomIO Zapier integration authenticates this way. `GET /public-api/v1/me` identifies the workspace, connection, and granted scopes behind any credential.
+
+For **401 Unauthorized**, check that the secret is complete, active, and sent after `Bearer` — an OAuth token that has expired (they last 10 minutes) must be refreshed. For **403 Forbidden**, check the account's API access, the credential's scope, and whether the request is allowed in that organization. A revoked or rotated key must be replaced in the calling application's secret store.
 
 Keep requests on your server. Do not place an API key in a browser bundle or send it as a query parameter. [Manage API keys](/integrations-and-automation/create-and-manage-api-keys) explains rotation and revocation.
