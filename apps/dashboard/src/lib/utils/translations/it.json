@@ -5535,12 +5535,12 @@
     },
     "analytics": {
       "reminder_sent": "Promemoria inviato",
-      "reminder_not_sent": "Promemoria non inviato: già inviato oggi oppure l'utente ha disattivato la ricezione di queste email.",
+      "reminder_not_sent": "Promemoria non inviato: già inviato oggi, oppure lo studente ha disattivato queste email",
       "reminder_failed": "Impossibile inviare il promemoria",
       "reminders_sending": "Invio di promemoria…",
       "reminders_sent": "{count, plural, one {# promemoria inviato} other {# promemoria inviati}}",
-      "target_saved": "Obiettivo dello studente salvato",
-      "target_failed": "Impossibile salvare l'obiettivo di apprendimento",
+      "target_saved": "Obiettivo di studenti salvato",
+      "target_failed": "Impossibile salvare l'obiettivo di studenti",
       "target_invalid": "Inserisci un numero intero compreso tra 1 e 1.000.000",
       "reminders_truncated": "{count, plural, one {# promemoria inviato} other {# promemoria inviati}}. Troppi studenti in ritardo per un solo invio — limita il corso per raggiungere gli altri.",
       "students_refresh_failed": "Impossibile aggiornare l'elenco degli studenti",
@@ -6913,7 +6913,7 @@
     "target": {
       "set": "Imposta l'obiettivo",
       "edit": "Modifica destinazione",
-      "label": "Obiettivo di apprendimento",
+      "label": "Obiettivo di studenti",
       "helper": "Il numero di studenti iscritti che si intende raggiungere. Viene indicato con una linea tratteggiata.",
       "clear": "Rimuovi il bersaglio",
       "save": "Salva obiettivo"

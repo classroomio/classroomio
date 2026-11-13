@@ -5,7 +5,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { cn } from '@cio/ui/tools';
-  import { AnalyticsPanelCard } from '$features/ui';
+  import { StatsPanelCard } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
 
   import { analyticsApi } from '../api';
@@ -66,7 +66,7 @@
   <NowTag />
 {/snippet}
 
-<AnalyticsPanelCard {title} class={cn('col-span-1 min-w-0', spanClass)} action={showNowTag ? nowTag : undefined}>
+<StatsPanelCard {title} class={cn('col-span-1 min-w-0', spanClass)} action={showNowTag ? nowTag : undefined}>
   {#if showExercisePicker}
     <div class="mb-3 flex justify-end">
       <ExercisePicker
@@ -109,4 +109,4 @@
   {#each notes as note (note)}
     <p class="ui:text-muted-foreground mt-3 text-xs">{note}</p>
   {/each}
-</AnalyticsPanelCard>
+</StatsPanelCard>

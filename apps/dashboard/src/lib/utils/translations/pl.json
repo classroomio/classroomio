@@ -540,14 +540,14 @@
     },
     "analytics": {
       "reminder_sent": "Przypomnienie wysłane",
-      "reminder_not_sent": "Przypomnienie nie zostało wysłane: zostało już wysłane dzisiaj lub uczeń wyłączył te wiadomości e-mail",
+      "reminder_not_sent": "Przypomnienie nie zostało wysłane: zostało już dziś wysłane lub student wyłączył te wiadomości e-mail",
       "reminder_failed": "Nie udało się wysłać przypomnienia",
       "reminders_sending": "Wysyłanie przypomnień…",
       "reminders_sent": "{count, plural, one {# wysłane przypomnienie} other {# wysłanych przypomnień}}",
-      "target_saved": "Cel ucznia zapisany",
-      "target_failed": "Nie udało się zapisać celu ucznia",
+      "target_saved": "Cel studentów zapisany",
+      "target_failed": "Nie udało się zapisać celu studentów",
       "target_invalid": "Wprowadź liczbę całkowitą od 1 do 1 000 000",
-      "reminders_truncated": "{count, plural, one {Wysłano # przypomnienie} other {Wysłano # przypomnień}}. Zbyt wielu spóźnionych uczniów na jedną wysyłkę — zawęź kurs, aby dotrzeć do pozostałych.",
+      "reminders_truncated": "{count, plural, one {Wysłano # przypomnienie} other {Wysłano # przypomnień}}. Zbyt wielu spóźnionych studentów na jedną wysyłkę — zawęź kurs, aby dotrzeć do pozostałych.",
       "students_refresh_failed": "Nie udało się odświeżyć listy uczniów",
       "refresh_failed": "Nie udało się odświeżyć analiz"
     },
@@ -6943,7 +6943,7 @@
     "target": {
       "set": "Ustaw cel",
       "edit": "Edytuj cel",
-      "label": "Cel studenta",
+      "label": "Cel studentów",
       "helper": "Do jakiej liczby zapisanych studentów dążysz? Wyświetlana jest linią przerywaną.",
       "clear": "Usuń cel",
       "save": "Zapisz cel"

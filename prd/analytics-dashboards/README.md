@@ -188,7 +188,7 @@ Unchanged: course marks, course attendance, and the per-user analytics in the au
 
 Notes for the change:
 
-- **API.** The public API mirrors the menu: `/analytics/academy`, `/analytics/marketing` and `/analytics/compliance`, plus `/courses/{courseId}/analytics` and `/cohorts/{cohortId}/analytics`. Nothing answers `GET /analytics` itself. The old `GET /course/:courseId/analytics` internal route is removed with the old course page.
+- **API (Phase 3, #1495).** The public API will mirror the menu: `/analytics/academy`, `/analytics/marketing` and `/analytics/compliance`, plus `/courses/{courseId}/analytics` and `/cohorts/{cohortId}/analytics`. Nothing will answer `GET /analytics` itself. The old `GET /course/:courseId/analytics` internal route is removed with the old course page.
 - **Navigation and copy.** The org navigation (`org-navigation.ts`) has one **Analytics** menu item with the three children above. The `org_navigation` translation keys change in `en.json`, so every other dashboard locale needs updating (see the translation rule in `CLAUDE.md`).
 - **Redirects.** `/org/[slug]/compliance` redirects to `/org/[slug]/analytics/compliance`, and `/org/[slug]/analytics` redirects by role, so existing bookmarks keep working.
 - **Order.** The Marketing and Compliance moves ship first (Phase 0), so the Academy path is free before the new dashboard arrives.

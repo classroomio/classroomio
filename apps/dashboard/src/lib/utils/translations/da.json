@@ -540,14 +540,14 @@
     },
     "analytics": {
       "reminder_sent": "Påmindelse sendt",
-      "reminder_not_sent": "Påmindelse ikke sendt: allerede sendt i dag, eller eleven har deaktiveret disse e-mails",
+      "reminder_not_sent": "Påmindelse ikke sendt: allerede sendt i dag, eller den studerende har slået disse e-mails fra",
       "reminder_failed": "Påmindelsen kunne ikke sendes",
       "reminders_sending": "Sender påmindelser…",
       "reminders_sent": "{count, plural, one {# påmindelse sendt} other {# påmindelser sendt}}",
-      "target_saved": "Elevmål gemt",
-      "target_failed": "Kunne ikke gemme elevens mål",
+      "target_saved": "Mål for antal studerende gemt",
+      "target_failed": "Kunne ikke gemme målet for antal studerende",
       "target_invalid": "Indtast et helt tal fra 1 til 1.000.000",
-      "reminders_truncated": "{count, plural, one {# påmindelse sendt} other {# påmindelser sendt}}. For mange forsinkede elever til én udsendelse — afgræns kurset for at nå resten.",
+      "reminders_truncated": "{count, plural, one {# påmindelse sendt} other {# påmindelser sendt}}. For mange forsinkede studerende til én udsendelse — afgræns kurset for at nå resten.",
       "students_refresh_failed": "Kunne ikke opdatere elevlisten",
       "refresh_failed": "Kunne ikke opdatere analyser"
     },
@@ -6943,7 +6943,7 @@
     "target": {
       "set": "Sæt mål",
       "edit": "Rediger mål",
-      "label": "Elevmål",
+      "label": "Mål for antal studerende",
       "helper": "Hvor mange tilmeldte elever du sigter mod. Det vises som en stiplet linje.",
       "clear": "Fjern mål",
       "save": "Gem mål"

@@ -5600,15 +5600,15 @@
     },
     "analytics": {
       "reminder_sent": "Reminder sent",
-      "reminder_not_sent": "Reminder not sent: already sent today, or the learner turned off these emails",
+      "reminder_not_sent": "Reminder not sent: already sent today, or the student turned off these emails",
       "reminder_failed": "Couldn't send the reminder",
       "reminders_sending": "Sending reminders…",
       "reminders_sent": "{count, plural, one {# reminder sent} other {# reminders sent}}",
-      "reminders_truncated": "{count, plural, one {# reminder sent} other {# reminders sent}}. Too many overdue learners to send at once — narrow the course to reach the rest.",
+      "reminders_truncated": "{count, plural, one {# reminder sent} other {# reminders sent}}. Too many overdue students to send at once — narrow the course to reach the rest.",
       "students_refresh_failed": "Couldn't refresh the student list",
       "refresh_failed": "Couldn't refresh analytics",
-      "target_saved": "Learner target saved",
-      "target_failed": "Couldn't save the learner target",
+      "target_saved": "Student target saved",
+      "target_failed": "Couldn't save the student target",
       "target_invalid": "Enter a whole number from 1 to 1,000,000"
     },
     "oauth": {

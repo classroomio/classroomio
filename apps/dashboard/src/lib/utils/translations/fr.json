@@ -540,14 +540,14 @@
     },
     "analytics": {
       "reminder_sent": "Rappel envoyé",
-      "reminder_not_sent": "Rappel non envoyé : déjà envoyé aujourd'hui, ou l'apprenant a désactivé ces emails",
+      "reminder_not_sent": "Rappel non envoyé : déjà envoyé aujourd'hui, ou l'étudiant a désactivé ces e-mails",
       "reminder_failed": "Impossible d'envoyer le rappel",
       "reminders_sending": "Envoi de rappels…",
       "reminders_sent": "{count, plural, one {# rappel envoyé} other {# rappels envoyés}}",
-      "target_saved": "Objectif d'apprentissage enregistré",
-      "target_failed": "Impossible de sauvegarder l'objectif de l'apprenant",
+      "target_saved": "Objectif d'étudiants enregistré",
+      "target_failed": "Impossible d'enregistrer l'objectif d'étudiants",
       "target_invalid": "Saisissez un nombre entier compris entre 1 et 1 000 000",
-      "reminders_truncated": "{count, plural, one {# rappel envoyé} other {# rappels envoyés}}. Trop d'apprenants en retard pour un seul envoi — limitez le cours pour atteindre les autres.",
+      "reminders_truncated": "{count, plural, one {# rappel envoyé} other {# rappels envoyés}}. Trop d'étudiants en retard pour un seul envoi — limitez le cours pour atteindre les autres.",
       "students_refresh_failed": "Impossible d'actualiser la liste des étudiants",
       "refresh_failed": "Impossible d'actualiser les analyses"
     },
@@ -6943,7 +6943,7 @@
     "target": {
       "set": "Définir un objectif",
       "edit": "Modifier la cible",
-      "label": "Objectif d'apprentissage",
+      "label": "Objectif d'étudiants",
       "helper": "Le nombre d'étudiants inscrits que vous visez est indiqué par une ligne pointillée.",
       "clear": "Supprimer la cible",
       "save": "Enregistrer l'objectif"

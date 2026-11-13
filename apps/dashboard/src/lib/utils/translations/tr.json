@@ -5548,7 +5548,7 @@
     },
     "analytics": {
       "reminder_sent": "Hatırlatma gönderildi",
-      "reminder_not_sent": "Hatırlatma gönderilmedi: hatırlatma bugün zaten gönderildi veya öğrenci bu e-postaları devre dışı bıraktı.",
+      "reminder_not_sent": "Hatırlatma gönderilmedi: bugün zaten gönderildi veya öğrenci bu e-postaları kapattı",
       "reminder_failed": "Hatırlatma gönderilemedi.",
       "reminders_sending": "Hatırlatma gönderiliyor…",
       "reminders_sent": "{count, plural, one {# hatırlatma gönderildi} other {# hatırlatma gönderildi}}",
