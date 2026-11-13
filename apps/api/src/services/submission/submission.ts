@@ -47,7 +47,7 @@ import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/co
 import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { canAccessCourseSubmissions, getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 
-import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
+import { formatPoints, QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
@@ -1231,7 +1231,7 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
   const maxMark = (fullSubmission.exercise.questions || []).reduce((sum: number, q: any) => sum + (q.points || 0), 0);
 
   const isGraded = newStatusId === 3;
-  const score = isGraded ? `${totalMark}/${maxMark}` : undefined;
+  const score = isGraded ? `${formatPoints(totalMark)}/${formatPoints(maxMark)}` : undefined;
 
   try {
     await enqueueTransactionalEmail('submissionGraded', {

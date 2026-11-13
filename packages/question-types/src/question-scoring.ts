@@ -6,6 +6,7 @@ import { QUESTION_TYPE_ID_TO_KEY } from './question-type-registry';
 import { supportsPartialCredit } from './question-type-capabilities';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
+import { roundPoints } from './points';
 
 export type DbQuestionForScoring = {
   id: number;
@@ -63,7 +64,7 @@ export function isExerciseAutoGradable(questionTypeIds: number[]): boolean {
 
 function clampPoints(raw: number, max: number): number {
   if (!Number.isFinite(raw) || raw < 0) return 0;
-  return Math.min(Math.round(raw * 100) / 100, max);
+  return Math.min(roundPoints(raw), max);
 }
 
 function scoreRadio(
@@ -383,10 +384,10 @@ export function scoreSubmissionAnswers(
     }
 
     const answer = answersByQuestionId.get(q.id);
-    const pts = Math.round(scoreAnswerForQuestion(model, answer ?? null));
+    const pts = roundPoints(scoreAnswerForQuestion(model, answer ?? null));
     scores.push({ questionId: q.id, points: pts });
     total += pts;
   }
 
-  return { scores, total };
+  return { scores, total: roundPoints(total) };
 }

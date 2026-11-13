@@ -7,6 +7,7 @@
   import { lmsExercisesApi, type LMSExercise } from '$features/lms/api/exercises.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
+  import { formatPoints } from '@cio/question-types';
 
   const defaultSections = [
     {
@@ -75,7 +76,8 @@
       const lessonURL = lesson.id ? `${courseURL}/lessons/${lesson.id}` : null;
       const exerciseURL = `${courseURL}/exercises/${id}`;
 
-      const grade = `${submissionItem.total}/${questions.reduce((acc, cur) => (acc += cur.points), 0)}`;
+      const maxPoints = questions.reduce((acc, cur) => acc + cur.points, 0);
+      const grade = `${formatPoints(submissionItem.total)}/${formatPoints(maxPoints)}`;
 
       const item: ExerciseItem = {
         exerciseId: id,

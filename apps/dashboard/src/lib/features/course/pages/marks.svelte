@@ -5,6 +5,7 @@
   import * as Table from '@cio/ui/base/table';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { t } from '$lib/utils/functions/translations';
+  import { formatPoints } from '@cio/question-types';
   import { calculateStudentAverage, type MarksPageData, type ExerciseInfo } from '$features/course/utils/marks-utils';
   import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
 
@@ -20,7 +21,7 @@
 
   function gradePercent(pointsStr: string | undefined, exercise: ExerciseInfo): number | null {
     if (pointsStr == null || exercise.points === 0) return null;
-    const n = parseInt(pointsStr, 10);
+    const n = Number(pointsStr);
     if (Number.isNaN(n)) return null;
     return Math.round((n / exercise.points) * 100);
   }
@@ -89,8 +90,13 @@
                     pct
                   )}"
                 >
-                  <span class="font-medium">
-                    {pct != null ? pct : pointsStr != null ? pointsStr : '-'}
+                  <span
+                    class="font-medium"
+                    title={pointsStr != null
+                      ? `${formatPoints(pointsStr)}/${formatPoints(exercise.points)}`
+                      : undefined}
+                  >
+                    {pct != null ? pct : pointsStr != null ? formatPoints(pointsStr) : '-'}
                   </span>
                 </Table.Cell>
               {/each}
