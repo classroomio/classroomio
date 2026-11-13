@@ -1028,6 +1028,9 @@ importers:
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       tsc-alias:
         specifier: ^1.8.16
@@ -1761,6 +1764,9 @@ importers:
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      katex:
+        specifier: ^0.16.25
+        version: 0.16.27
     devDependencies:
       tsc-alias:
         specifier: ^1.8.16

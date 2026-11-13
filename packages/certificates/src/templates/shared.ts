@@ -1,3 +1,5 @@
+import { renderMathTextToMathml } from '@cio/utils/math';
+
 import type { CertificateDesign, CertificateRenderData, CertificateSignatory } from '../types';
 import { CERTIFICATE_HEIGHT, CERTIFICATE_WIDTH } from '../constants';
 import { computeFieldFontSizes, computeFitFontSize, type FitFontSizeOptions } from '../font-metrics';
@@ -17,6 +19,11 @@ export function escapeHtml(input: unknown): string {
         return '&#39;';
     }
   });
+}
+
+/** Escapes `input` like `escapeHtml` and renders its `$…$` math as MathML. */
+export function escapeHtmlWithMath(input: unknown): string {
+  return renderMathTextToMathml(String(input ?? ''));
 }
 
 export function getYear(value: string | undefined | null): string {

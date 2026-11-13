@@ -2,6 +2,7 @@ import { CERTIFICATE_WIDTH } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
+  escapeHtmlWithMath,
   prepareCertificateRenderContext,
   renderSealBlock,
   renderSignatoryBlock,
@@ -110,14 +111,14 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
       <div class="header-area">
         <div class="top-tag" style="font-size: ${fontSizes.org}px;">${escapeHtml(data.orgName)}</div>
         <div class="ornament">&#10086;</div>
-        <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtml(data.courseName)}</div>
+        <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtmlWithMath(data.courseName)}</div>
         ${subtitle ? `<div class="subtitle" style="font-size: ${fontSizes.subtitle}px;">${escapeHtml(subtitle)}</div>` : ''}
       </div>
 
       <div class="body-area">
         <div class="presented">&mdash; this is to certify that &mdash;</div>
         <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
-        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtmlWithMath(description)}</div>` : ''}
       </div>
 
       <div class="footer">
