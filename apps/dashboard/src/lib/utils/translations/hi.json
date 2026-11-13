@@ -532,6 +532,9 @@
     },
     "oauth": {
       "revoked": "ऐप का एक्सेस हटा दिया गया"
+    },
+    "org_switcher": {
+      "open_academy_failed": "वह अकादमी नहीं खोली जा सकी। कृपया पुनः प्रयास करें।"
     }
   },
   "explore": {
@@ -3574,6 +3577,26 @@
     "sitename": "अकादमी उपडोमेन पहले से मौजूद है",
     "error_organization": "इस संगठन को बनाते समय कुछ गलत हो गया. कृपया पुनः लोड करें और पुनः प्रयास करें"
   },
+  "org_chooser": {
+    "page_title": "आपके संगठन",
+    "title": "जारी रखने के लिए एक अकादमी चुनें",
+    "subtitle": "आपके पास {count, plural, one {# अकादमी} other {# अकादमियाँ}} तक पहुँच है। चुनें कि आप कहाँ पहुँचना चाहते हैं।",
+    "managed_heading": "आपके प्रबंधित संगठन",
+    "learning_heading": "जहाँ आप सीखते हैं",
+    "invites_heading": "लंबित निमंत्रण",
+    "open_dashboard": "{name} डैशबोर्ड खोलें",
+    "open_academy": "{host} पर {name} खोलें",
+    "invited_as": "{role} के रूप में आमंत्रित",
+    "accept_invite": "स्वीकार करें",
+    "invites_error": "आपके निमंत्रण लोड नहीं हो सके। अपना कनेक्शन जाँचें और पुनः प्रयास करें।",
+    "invites_retry": "पुनः प्रयास करें",
+    "create_heading": "अपनी अकादमी चलाएँ",
+    "create_description": "संगठन बनाएँ, पाठ्यक्रम प्रकाशित करें और अपने शिक्षार्थियों को आमंत्रित करें।",
+    "create_cta": "संगठन बनाएँ",
+    "for_teams": "टीमों के लिए",
+    "different_account": "आपकी अकादमी नहीं दिख रही?",
+    "different_account_cta": "कोई दूसरा ईमेल आज़माएँ"
+  },
   "setup": {
     "your_checklist": "आपकी चेकलिस्ट",
     "get_started": "आरंभ करें",
@@ -4743,7 +4766,11 @@
       "heading": "नया पासवर्ड",
       "description": "अपना नया पासवर्ड विवरण दर्ज करें"
     },
-    "continue_with": "या साथ जारी रखें"
+    "continue_with": "या साथ जारी रखें",
+    "existing_account": {
+      "message": "इस ईमेल से पहले से एक खाता मौजूद है।",
+      "cta": "इसके बजाय लॉग इन करें"
+    }
   },
   "app": {
     "search": {
@@ -5937,7 +5964,10 @@
     },
     "switcher": {
       "your_account": "आपका खाता",
-      "other_organizations": "अन्य संगठन"
+      "other_organizations": "अन्य संगठन",
+      "learning": "सीखना",
+      "add_organization": "संगठन जोड़ें",
+      "current": "वर्तमान संगठन"
     }
   },
   "aiTutor": {

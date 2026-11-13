@@ -11,10 +11,12 @@ import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils
 
 import type { AccountResponse, AccountSuccess } from './types';
 import { type AppOrgParams } from './resolve-app-org-params';
+import { ORG_CHOOSER_PATH, shouldShowOrgChooser } from './utils/post-auth-destination';
 import type { PendingOrgInvite } from '$features/lms/utils/types';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
 import { authClient } from '$lib/utils/services/auth/client';
+import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { activateLocale, handleLocaleChange } from '$lib/utils/functions/translations';
@@ -320,7 +322,7 @@ class AppInitApi extends BaseApi {
     );
   }
 
-  routeUserToNextPage(params: AppSetupParams) {
+  async routeUserToNextPage(params: AppSetupParams): Promise<void> {
     console.log('routeUserToNextPage', window.location.pathname);
     if (!this.data?.success) {
       return;
@@ -379,6 +381,18 @@ class AppInitApi extends BaseApi {
     if (isCloud) {
       const shouldRedirectToOnboarding = !userHasOrganizations && !isOrgSite;
       if (shouldRedirectToOnboarding) {
+        if (path.includes('/onboarding')) {
+          return;
+        }
+
+        await pendingInvitesApi.fetchPendingInvites();
+
+        const hasPendingInvites = pendingInvitesApi.invites.length > 0;
+        const invitesFailedToLoad = pendingInvitesApi.lastError !== null;
+        if (hasPendingInvites || invitesFailedToLoad) {
+          return goto(resolve(ORG_CHOOSER_PATH, {}));
+        }
+
         console.log('cloud: redirecting to onboarding');
         return goto(resolve(`/onboarding`, {}));
       }
@@ -399,6 +413,10 @@ class AppInitApi extends BaseApi {
 
     if (path.includes('/onboarding') && ((isStudent && userHasOrganizations) || needsOnboarding)) {
       return;
+    }
+
+    if (shouldShowOrgChooser({ isCloud, isOrgSite, organizations: this.data.organizations })) {
+      return goto(resolve(ORG_CHOOSER_PATH, {}));
     }
 
     const shouldGoToLMS = isCloud ? isOrgSite || !!isStudent : !!isStudent;

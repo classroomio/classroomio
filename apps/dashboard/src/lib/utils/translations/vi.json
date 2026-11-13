@@ -532,6 +532,9 @@
     },
     "oauth": {
       "revoked": "Đã gỡ quyền truy cập của ứng dụng"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Không thể mở học viện đó. Vui lòng thử lại."
     }
   },
   "explore": {
@@ -3574,6 +3577,26 @@
     "sitename": "Tên miền phụ của học viện đã tồn tại",
     "error_organization": "Đã xảy ra lỗi khi tạo tổ chức này. Vui lòng tải lại và thử lại"
   },
+  "org_chooser": {
+    "page_title": "Các tổ chức của bạn",
+    "title": "Chọn một học viện để tiếp tục",
+    "subtitle": "Bạn có quyền truy cập vào {count, plural, other {# học viện}}. Chọn nơi bạn muốn đến.",
+    "managed_heading": "Tổ chức bạn quản lý",
+    "learning_heading": "Nơi bạn học",
+    "invites_heading": "Lời mời đang chờ",
+    "open_dashboard": "Mở bảng điều khiển {name}",
+    "open_academy": "Mở {name} trên {host}",
+    "invited_as": "Được mời với vai trò {role}",
+    "accept_invite": "Chấp nhận",
+    "invites_error": "Không tải được lời mời của bạn. Kiểm tra kết nối và thử lại.",
+    "invites_retry": "Thử lại",
+    "create_heading": "Điều hành học viện riêng của bạn",
+    "create_description": "Tạo tổ chức, xuất bản khóa học và mời học viên của riêng bạn.",
+    "create_cta": "Tạo tổ chức",
+    "for_teams": "Dành cho nhóm",
+    "different_account": "Không thấy học viện của bạn?",
+    "different_account_cta": "Thử email khác"
+  },
   "setup": {
     "your_checklist": "Danh sách kiểm tra của bạn",
     "get_started": "Bắt đầu",
@@ -4743,7 +4766,11 @@
       "heading": "Mật khẩu mới",
       "description": "Nhập chi tiết mật khẩu mới của bạn"
     },
-    "continue_with": "Hoặc tiếp tục với"
+    "continue_with": "Hoặc tiếp tục với",
+    "existing_account": {
+      "message": "Đã có tài khoản với email này.",
+      "cta": "Đăng nhập"
+    }
   },
   "app": {
     "search": {
@@ -5937,7 +5964,10 @@
     },
     "switcher": {
       "your_account": "Tài khoản của bạn",
-      "other_organizations": "Các tổ chức khác"
+      "other_organizations": "Các tổ chức khác",
+      "learning": "Học tập",
+      "add_organization": "Thêm tổ chức",
+      "current": "Tổ chức hiện tại"
     }
   },
   "aiTutor": {
