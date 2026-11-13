@@ -121,10 +121,13 @@ export async function recordBlockLocaleVersion({
       // An autosave has nothing to record, and a milestone already records this
       // content — promoting it would overwrite a publish snapshot's kind and
       // label, erasing the record of what students were served. Only an open
-      // autosave is upgraded to the milestone the author just asked for.
+      // autosave is upgraded to the milestone the author just asked for, and only
+      // when it was written by the same actor; otherwise the milestone is its own
+      // snapshot so it keeps the attribution of the save that asked for it.
       if (intent === 'auto' || !isOpenAutosave) return latest;
 
-      return promoteBlockLocaleVersion(latest.id, { kind: intent, label }, client);
+      const hasSameAttribution = (latest.source ?? 'editor') === source && (latest.clientName ?? null) === clientName;
+      if (hasSameAttribution) return promoteBlockLocaleVersion(latest.id, { kind: intent, label }, client);
     }
 
     if (canExtendVersionSession(latest, { intent, authorId, source, clientName, changeSetId })) {

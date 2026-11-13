@@ -301,6 +301,29 @@ describe('recordBlockLocaleVersion', () => {
     expect(insertBlockLocaleVersion).not.toHaveBeenCalled();
   });
 
+  it('keeps the incoming attribution by inserting a separate milestone when the open autosave came from someone else', async () => {
+    const latest = buildLatest({ newContent: '<p>same</p>', source: 'editor', clientName: null });
+    vi.mocked(getLatestBlockLocaleVersion).mockResolvedValue(latest);
+
+    await recordBlockLocaleVersion({
+      blockLocaleId: LESSON_LANGUAGE_ID,
+      content: '<p>same</p>',
+      authorId: AUTHOR_ID,
+      intent: 'manual',
+      label: 'Reviewed',
+      source: 'mcp',
+      clientName: 'Claude'
+    });
+
+    expect(promoteBlockLocaleVersion).not.toHaveBeenCalled();
+    expect(vi.mocked(insertBlockLocaleVersion).mock.calls[0]?.[0]).toMatchObject({
+      kind: 'manual',
+      label: 'Reviewed',
+      source: 'mcp',
+      clientName: 'Claude'
+    });
+  });
+
   it('promotes the existing snapshot when a save adds no new content', async () => {
     const latest = buildLatest();
     vi.mocked(getLatestBlockLocaleVersion).mockResolvedValue(latest);

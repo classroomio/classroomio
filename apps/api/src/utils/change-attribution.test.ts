@@ -33,6 +33,14 @@ describe('resolveKeyClientName', () => {
     expect(resolveKeyClientName(buildKey({}), 'claude-ai')).toBe('claude-ai');
   });
 
+  it('decodes the percent-encoded name the MCP server sends', () => {
+    expect(resolveKeyClientName(buildKey({}), encodeURIComponent('学习助手'))).toBe('学习助手');
+  });
+
+  it('uses a header that is not valid percent-encoding as it is', () => {
+    expect(resolveKeyClientName(buildKey({}), '100% client')).toBe('100% client');
+  });
+
   it('falls back to the key label', () => {
     expect(resolveKeyClientName(buildKey({}), undefined)).toBe('Laptop key');
   });

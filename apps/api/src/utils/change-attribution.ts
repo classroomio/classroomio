@@ -18,11 +18,24 @@ export function normalizeClientName(raw: string | null | undefined): string | nu
 }
 
 /**
+ * Reads the percent-encoded name the MCP server sends. A value that is not valid percent-encoding is used as is.
+ */
+function decodeClientNameHeader(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
+/**
  * Names the client behind a key request. An MCP client that identified itself (the `clientInfo` a stdio server
  * forwards in a header) wins over the key's label, which the key's creator typed; any other key uses its label.
  */
 export function resolveKeyClientName(key: TOrganizationApiKey, mcpClientHeader?: string | null): string | null {
-  const reported = key.type === 'mcp' ? normalizeClientName(mcpClientHeader) : null;
+  const reported = key.type === 'mcp' ? normalizeClientName(decodeClientNameHeader(mcpClientHeader)) : null;
 
   return reported ?? normalizeClientName(key.label);
 }

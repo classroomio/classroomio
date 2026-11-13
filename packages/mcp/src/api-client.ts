@@ -191,6 +191,8 @@ export class ClassroomIoApiError extends Error {
   }
 }
 
+const MAX_CLIENT_NAME_LENGTH = 80;
+
 export type ClassroomIoApiClientOptions = {
   /** Transport for API calls; defaults to the global fetch. */
   fetch?: typeof fetch;
@@ -213,9 +215,17 @@ export class ClassroomIoApiClient {
 
   /**
    * Names the MCP client (its `clientInfo.name`) on every later API call so the server can attribute edits to it.
+   * The name is cut to a bounded length and percent-encoded so any Unicode name is a safe header value;
+   * a name that cannot be encoded is not sent.
    */
   setClientName(name: string) {
-    this.clientName = name;
+    const bounded = Array.from(name).slice(0, MAX_CLIENT_NAME_LENGTH).join('');
+
+    try {
+      this.clientName = encodeURIComponent(bounded);
+    } catch {
+      this.clientName = null;
+    }
   }
 
   async createCourseDraft(payload: TCourseImportDraftCreate) {
