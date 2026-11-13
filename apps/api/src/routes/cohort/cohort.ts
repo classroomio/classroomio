@@ -840,7 +840,7 @@ export const cohortRouter = new Hono()
 
   /**
    * POST /cohort/:cohortId/goal-assignments/remind-overdue
-   * Email every overdue learner on the cohort's active goals.
+   * Email every overdue student on the cohort's active goals.
    */
   .post(
     '/:cohortId/goal-assignments/remind-overdue',
