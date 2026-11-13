@@ -556,9 +556,10 @@ exports[`public API course exercise request contract > ZPublicApiGradeCourseSubm
       "items": {
         "properties": {
           "points": {
-            "maximum": 9007199254740991,
+            "description": "Up to two decimals, such as 0.5",
+            "maximum": 99999999.99,
             "minimum": 0,
-            "type": "integer",
+            "type": "number",
           },
           "questionId": {
             "description": "A question of the submission's exercise",
@@ -580,9 +581,10 @@ exports[`public API course exercise request contract > ZPublicApiGradeCourseSubm
       "type": "string",
     },
     "total": {
-      "maximum": 9007199254740991,
+      "description": "Up to two decimals, such as 2.5",
+      "maximum": 99999999.99,
       "minimum": 0,
-      "type": "integer",
+      "type": "number",
     },
   },
   "required": [
