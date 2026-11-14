@@ -343,6 +343,18 @@
   {/snippet}
 </Story>
 
+<Story name="MachineBrokenTrackStatic">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineBrokenTrack
+        playable={false}
+        label="A block rides up to a gap in the line, tips over the edge and cannot cross"
+        class="h-64"
+      />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="MachineBlankLesson">
   {#snippet template()}
     <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
