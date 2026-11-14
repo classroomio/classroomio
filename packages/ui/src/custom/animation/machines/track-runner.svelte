@@ -67,6 +67,7 @@
   let canFullscreen = $state(false);
   let isMuted = $state(false);
   let soundPlayer: Promise<RunnerSoundPlayer> | undefined;
+  let isDisposed = false;
 
   onMount(() => {
     canFullscreen = document.fullscreenEnabled;
@@ -77,7 +78,11 @@
 
     document.addEventListener('fullscreenchange', syncFullscreen);
 
-    return () => document.removeEventListener('fullscreenchange', syncFullscreen);
+    return () => {
+      isDisposed = true;
+      document.removeEventListener('fullscreenchange', syncFullscreen);
+      soundPlayer?.then((player) => player.dispose()).catch(() => undefined);
+    };
   });
 
   onMount(() => {
@@ -111,10 +116,10 @@
       const across = isBeam ? CUBE_LANE : PILLAR_LANE;
       const width = isBeam ? CUBE_SIZE : PILLAR_WIDTH;
 
-      return {
-        id: obstacle.id,
-        faces: projectBox(obstacle.x, obstacle.width, across, width, RAIL_HEIGHT, obstacle.height * rise)
-      };
+      const risenHeight = obstacle.height * rise;
+      const faces = projectBox(obstacle.x, obstacle.width, across, width, RAIL_HEIGHT, risenHeight);
+
+      return { id: obstacle.id, faces };
     })
   );
 
@@ -127,8 +132,19 @@
   function playSound(sound: RunnerSoundName) {
     if (isMuted) return;
 
-    soundPlayer ??= import('./runner-sound').then((module) => module.createSoundPlayer());
-    void soundPlayer.then((player) => player.play(sound));
+    soundPlayer ??= import('./runner-sound').then((module) => {
+      const player = module.createSoundPlayer();
+      if (isDisposed) player.dispose();
+
+      return player;
+    });
+
+    soundPlayer
+      .then((player) => player.play(sound))
+      .catch((error) => {
+        console.error('MachineBrokenTrack: sound failed', error);
+        soundPlayer = undefined;
+      });
   }
 
   function toggleMute(event: MouseEvent) {
@@ -142,14 +158,18 @@
   async function toggleFullscreen(event: MouseEvent) {
     (event.currentTarget as HTMLElement).blur();
 
-    if (document.fullscreenElement) {
-      await document.exitFullscreen();
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
 
-      return;
+        return;
+      }
+
+      const card = hostElement?.closest('[data-slot="empty"]') ?? hostElement;
+      await card?.requestFullscreen();
+    } catch (error) {
+      console.error('MachineBrokenTrack: full screen failed', error);
     }
-
-    const card = hostElement?.closest('[data-slot="empty"]') ?? hostElement;
-    await card?.requestFullscreen();
   }
 
   function easeInOut(progress: number) {
@@ -250,7 +270,7 @@
   $effect(() => {
     if (status !== 'countdown') return;
 
-    playSound('tick');
+    untrack(() => playSound('tick'));
 
     const timerId = setInterval(() => {
       countdown -= 1;
@@ -305,8 +325,8 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div bind:this={hostElement} class="ui:flex ui:w-full ui:justify-center">
-  <div class="ui:absolute ui:top-3 ui:right-3 ui:z-10 ui:flex ui:gap-2">
+<div bind:this={hostElement} class="ui:flex ui:w-full ui:flex-col ui:items-center ui:gap-2">
+  <div class="ui:flex ui:w-full ui:justify-end ui:gap-2">
     <Button
       variant="secondary"
       size="icon-sm"

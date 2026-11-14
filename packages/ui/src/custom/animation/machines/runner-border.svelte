@@ -26,13 +26,18 @@
     Math.max(FASTEST_MARCH_SECONDS, START_MARCH_SECONDS - snapshot.passed * MARCH_SECONDS_SAVED_PER_POINT)
   );
   const tone = $derived(isRecord ? 'record' : isCrashed ? 'crash' : 'live');
-  const geometry = $derived({
-    x: STROKE_WIDTH / 2,
-    y: STROKE_WIDTH / 2,
-    width: Math.max(width - STROKE_WIDTH, 0),
-    height: Math.max(height - STROKE_WIDTH, 0),
-    rx: CORNER_RADIUS,
-    fill: 'none'
+  const geometry = $derived.by(() => {
+    const innerWidth = Math.max(width - STROKE_WIDTH, 0);
+    const innerHeight = Math.max(height - STROKE_WIDTH, 0);
+
+    return {
+      x: STROKE_WIDTH / 2,
+      y: STROKE_WIDTH / 2,
+      width: innerWidth,
+      height: innerHeight,
+      rx: CORNER_RADIUS,
+      fill: 'none'
+    };
   });
   const dashPattern = `${DASH_LENGTH} ${DASH_GAP}`;
 </script>

@@ -43,6 +43,8 @@
     compoundVariants: [{ hasMedia: true, showLogo: true, class: 'ui:pt-28' }]
   });
 
+  const hideWhenMediaShown = 'ui:sm:[@media(min-height:640px)]:hidden';
+
   type EmptyVariant = VariantProps<typeof emptyVariants>['variant'];
 
   interface Props {
@@ -115,17 +117,17 @@
           <Icon class={iconClass} />
         </EmptyBase.Media>
       {/if}
-      {#if title && !mediaOnly}
-        <EmptyBase.Title>{title}</EmptyBase.Title>
+      {#if title}
+        <EmptyBase.Title class={mediaOnly ? hideWhenMediaShown : ''}>{title}</EmptyBase.Title>
       {/if}
-      {#if description && !mediaOnly}
-        <EmptyBase.Description class={size === 'lg' ? 'ui:mx-auto ui:max-w-lg' : ''}
+      {#if description}
+        <EmptyBase.Description class={cn(size === 'lg' && 'ui:mx-auto ui:max-w-lg', mediaOnly && hideWhenMediaShown)}
           >{description}</EmptyBase.Description
         >
       {/if}
     </EmptyBase.Header>
-    {#if children && !mediaOnly}
-      <EmptyBase.Content class={contentClass}>
+    {#if children}
+      <EmptyBase.Content class={cn(contentClass, mediaOnly && hideWhenMediaShown)}>
         {@render children()}
       </EmptyBase.Content>
     {/if}

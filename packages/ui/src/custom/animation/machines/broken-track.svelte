@@ -14,11 +14,16 @@
 
   let Runner: Component<RunnerProps> | undefined = $state();
   let isLoading = false;
+  let hostElement: HTMLDivElement | undefined = $state();
   let hostWidth = $state(0);
   let baseWidth = $state(0);
 
+  function isIllustrationVisible() {
+    return hostElement !== undefined && hostElement.getClientRects().length > 0;
+  }
+
   async function startGame() {
-    if (!playable || Runner || isLoading) return;
+    if (!playable || Runner || isLoading || !isIllustrationVisible()) return;
 
     isLoading = true;
     baseWidth = hostWidth;
@@ -26,6 +31,8 @@
     try {
       const module = await import('./track-runner.svelte');
       Runner = module.default;
+    } catch (error) {
+      console.error('MachineBrokenTrack: failed to load the game', error);
     } finally {
       isLoading = false;
     }
@@ -37,6 +44,7 @@
 
     const target = event.target as HTMLElement | null;
     if (target?.closest('input, textarea, select, button, a, [contenteditable="true"]')) return;
+    if (!isIllustrationVisible()) return;
 
     event.preventDefault();
     if (event.repeat) return;
@@ -53,6 +61,7 @@
   <div
     class="ui:h-full ui:w-full {playable ? 'ui:cursor-pointer ui:touch-manipulation ui:select-none' : ''}"
     role="presentation"
+    bind:this={hostElement}
     bind:clientWidth={hostWidth}
     onpointerdown={startGame}
   >

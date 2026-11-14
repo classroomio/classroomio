@@ -34,13 +34,11 @@ export function viewFor(extension: number): RunnerView {
   const width = ORIGINAL_VIEW_WIDTH + extension * Math.cos(Math.PI / 6);
   const height = ORIGINAL_VIEW_HEIGHT + (ORIGINAL_VIEW_TOP - top) + extension * 0.5;
 
-  return {
-    box: `${VIEW_LEFT} ${top.toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)}`,
-    width,
-    height,
-    centerX: VIEW_LEFT + width / 2,
-    rightEdge: VIEW_LEFT + width
-  };
+  const box = `${VIEW_LEFT} ${top.toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)}`;
+  const centerX = VIEW_LEFT + width / 2;
+  const rightEdge = VIEW_LEFT + width;
+
+  return { box, width, height, centerX, rightEdge };
 }
 
 const ORIGIN_Y = -8;
@@ -87,26 +85,26 @@ export function projectBox(
   const acrossEnd = across + width;
   const topLift = lift + height;
 
-  return {
-    top: pointList([
-      [along, across, topLift],
-      [alongEnd, across, topLift],
-      [alongEnd, acrossEnd, topLift],
-      [along, acrossEnd, topLift]
-    ]),
-    left: pointList([
-      [along, acrossEnd, lift],
-      [alongEnd, acrossEnd, lift],
-      [alongEnd, acrossEnd, topLift],
-      [along, acrossEnd, topLift]
-    ]),
-    right: pointList([
-      [alongEnd, across, lift],
-      [alongEnd, acrossEnd, lift],
-      [alongEnd, acrossEnd, topLift],
-      [alongEnd, across, topLift]
-    ])
-  };
+  const top = pointList([
+    [along, across, topLift],
+    [alongEnd, across, topLift],
+    [alongEnd, acrossEnd, topLift],
+    [along, acrossEnd, topLift]
+  ]);
+  const left = pointList([
+    [along, acrossEnd, lift],
+    [alongEnd, acrossEnd, lift],
+    [alongEnd, acrossEnd, topLift],
+    [along, acrossEnd, topLift]
+  ]);
+  const right = pointList([
+    [alongEnd, across, lift],
+    [alongEnd, acrossEnd, lift],
+    [alongEnd, acrossEnd, topLift],
+    [alongEnd, across, topLift]
+  ]);
+
+  return { top, left, right };
 }
 
 /** How much of an obstacle has risen out of the board, from 0 at either end of the rail to 1 in the middle. */

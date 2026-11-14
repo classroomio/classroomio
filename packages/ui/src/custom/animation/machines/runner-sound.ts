@@ -2,6 +2,7 @@ export type RunnerSoundName = 'tick' | 'go' | 'jump' | 'point' | 'crash' | 'reco
 
 export interface RunnerSoundPlayer {
   play: (sound: RunnerSoundName) => void;
+  dispose: () => void;
 }
 
 interface ToneStep {
@@ -36,7 +37,7 @@ const SOUNDS: Record<RunnerSoundName, ToneStep[]> = {
   ]
 };
 
-const silentPlayer: RunnerSoundPlayer = { play: () => undefined };
+const silentPlayer: RunnerSoundPlayer = { play: () => undefined, dispose: () => undefined };
 
 /**
  * Creates a player that synthesizes the game's sound effects with the Web Audio API, so no audio files load.
@@ -70,6 +71,9 @@ export function createSoundPlayer(): RunnerSoundPlayer {
         oscillator.start(begin);
         oscillator.stop(end + TAIL_SECONDS);
       }
+    },
+    dispose() {
+      if (context.state !== 'closed') void context.close();
     }
   };
 }
