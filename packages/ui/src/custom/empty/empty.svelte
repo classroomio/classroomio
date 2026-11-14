@@ -16,9 +16,16 @@
       hasMedia: {
         false: 'ui:max-h-90',
         true: 'ui:flex-none'
+      },
+      size: {
+        default: '',
+        lg: ''
       }
     },
-    compoundVariants: [{ variant: 'page', hasMedia: false, class: 'ui:h-full' }]
+    compoundVariants: [
+      { variant: 'page', hasMedia: false, class: 'ui:h-full' },
+      { variant: 'page', size: 'lg', class: 'ui:max-w-4xl ui:min-h-[28rem]' }
+    ]
   });
 
   const fullPageVariants = tv({
@@ -36,6 +43,8 @@
     compoundVariants: [{ hasMedia: true, showLogo: true, class: 'ui:pt-28' }]
   });
 
+  const hideWhenMediaShown = 'ui:sm:[@media(min-height:640px)]:hidden';
+
   type EmptyVariant = VariantProps<typeof emptyVariants>['variant'];
 
   interface Props {
@@ -51,6 +60,9 @@
     layout?: 'block' | 'full-page';
     showLogo?: boolean;
     animatedBackground?: boolean;
+    mediaOnly?: boolean;
+    overlay?: Snippet;
+    size?: VariantProps<typeof emptyVariants>['size'];
   }
 
   let {
@@ -66,11 +78,19 @@
     layout = 'block',
     showLogo = false,
     animatedBackground = false,
+    mediaOnly = false,
+    overlay,
+    size = 'default',
     ...restProps
   }: Props & Omit<ComponentProps<typeof EmptyBase.Root>, 'class' | 'children'> = $props();
 
   const mergedProps = $derived({
-    class: cn(emptyVariants({ variant, hasMedia: Boolean(media) }), className),
+    class: cn(
+      emptyVariants({ variant, hasMedia: Boolean(media), size }),
+      overlay &&
+        'ui:relative ui:overflow-hidden ui:border-transparent ui:[&:fullscreen]:max-w-none ui:[&:fullscreen]:min-h-screen ui:[&:fullscreen]:rounded-none ui:[&:fullscreen]:bg-background',
+      className
+    ),
     'data-slot': 'empty',
     'data-variant': variant,
     animatedBackground,
@@ -80,7 +100,10 @@
 
 {#snippet content()}
   <EmptyBase.Root {...mergedProps}>
-    <EmptyBase.Header class="">
+    {#if overlay}
+      {@render overlay()}
+    {/if}
+    <EmptyBase.Header class={size === 'lg' || mediaOnly ? 'ui:w-full ui:max-w-none' : ''}>
       {#if media}
         <EmptyBase.Media
           variant="default"
@@ -95,14 +118,16 @@
         </EmptyBase.Media>
       {/if}
       {#if title}
-        <EmptyBase.Title>{title}</EmptyBase.Title>
+        <EmptyBase.Title class={mediaOnly ? hideWhenMediaShown : ''}>{title}</EmptyBase.Title>
       {/if}
       {#if description}
-        <EmptyBase.Description>{description}</EmptyBase.Description>
+        <EmptyBase.Description class={cn(size === 'lg' && 'ui:mx-auto ui:max-w-lg', mediaOnly && hideWhenMediaShown)}
+          >{description}</EmptyBase.Description
+        >
       {/if}
     </EmptyBase.Header>
     {#if children}
-      <EmptyBase.Content class={contentClass}>
+      <EmptyBase.Content class={cn(contentClass, mediaOnly && hideWhenMediaShown)}>
         {@render children()}
       </EmptyBase.Content>
     {/if}
