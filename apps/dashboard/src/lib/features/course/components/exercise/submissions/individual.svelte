@@ -13,7 +13,7 @@
   import { getQuestionsForSection, questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
-  import type { AnswerData } from '@cio/question-types';
+  import { formatPoints, type AnswerData } from '@cio/question-types';
   import { toExerciseQuestionModel } from '../question-type-utils';
   import { getExerciseQuestionLabels } from '../question-labels';
   import { getExerciseSectionDisplayTitle } from '$features/course/utils/exercise-section-utils';
@@ -350,7 +350,7 @@
                   -
                   {getStatusLabel(attempt.submission)}
                   -
-                  {attemptScore}/{getTotalPossiblePoints()}
+                  {formatPoints(attemptScore)}/{formatPoints(getTotalPossiblePoints())}
                   -
                   {getAttemptPassLabel(attempt.submission)}
                 </Select.Item>
@@ -363,7 +363,7 @@
       <div class="mb-4 flex flex-wrap items-center gap-2">
         <Badge variant="outline">{getStatusLabel(selectedSubmission)}</Badge>
         <Badge variant="secondary">
-          {getTotalScore(selectedSubmission)}/{getTotalPossiblePoints()}
+          {formatPoints(getTotalScore(selectedSubmission))}/{formatPoints(getTotalPossiblePoints())}
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}
         </Badge>
         <Badge variant={didAttemptCompleteExercise(selectedSubmission) ? 'success' : 'warning'}>
@@ -412,7 +412,9 @@
               {/each}
 
               <p class="border-t pt-2 text-sm font-medium">
-                {getSectionScore(selectedSubmission, sectionQuestions)}/{getSectionMaxPoints(sectionQuestions)}
+                {formatPoints(getSectionScore(selectedSubmission, sectionQuestions))}/{formatPoints(
+                  getSectionMaxPoints(sectionQuestions)
+                )}
                 {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}
               </p>
             </section>

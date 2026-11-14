@@ -2133,10 +2133,14 @@
                   "accepted_answers_label": "Akzeptierte Antworten"
                 },
                 "take": {
-                  "placeholder": "Geben Sie die Antworten durch Kommas getrennt ein"
+                  "placeholder": "Ihre Antwort"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Akzeptierte Antworten (durch Kommas getrennt)"
+                  "accepted_answers_placeholder": "Akzeptierte Antwort",
+                  "blank_label": "Lücke",
+                  "add_alternative": "Akzeptierte Antwort hinzufügen",
+                  "add_blank": "Lücke hinzufügen",
+                  "helper": "Lernende füllen die Lücken der Reihe nach aus. Eine Lücke ist richtig, wenn sie einer ihrer akzeptierten Antworten entspricht."
                 },
                 "review": {
                   "your_answer_label": "Eingereicht:"
@@ -3549,6 +3553,14 @@
   "markdown_editor": {
     "write": "Schreiben",
     "preview": "Vorschau"
+  },
+  "math_editor": {
+    "insert_math": "Mathematik einfügen",
+    "latex_label": "LaTeX",
+    "preview_label": "Vorschau",
+    "preview_empty": "LaTeX eingeben, um eine Vorschau zu sehen",
+    "done": "Fertig",
+    "cancel": "Abbrechen"
   },
   "navigation": {
     "goto": "Gehe zu",

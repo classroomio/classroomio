@@ -1,7 +1,7 @@
 ---
 title: Add math and LaTeX
 description: Insert inline expressions and block equations in a lesson's note blocks using LaTeX.
-last_reviewed: '2026-11-08'
+last_reviewed: '2026-11-13'
 ---
 
 Use **Inline Expression** for math within a sentence and **Block Expression** for a standalone equation in a lesson's note block. ClassroomIO renders the LaTeX expression so students see formatted math.
@@ -20,13 +20,19 @@ Use inline math for expressions that belong in the surrounding sentence.
 
 ## Insert a block equation
 
-Use **Block Expression** in the toolbar, or type `/` and choose **Block Expression** under **Insert**. Replace the initial expression with your equation.
+Use **Block Expression** in the toolbar, or type `/` and choose **Block Expression** under **Insert**. The editor inserts a sample expression; click it to replace it with your equation.
 
 For example, `\frac{a}{b}` produces a fraction, while `a^2 + b^2 = c^2` uses superscripts. Enter LaTeX in the expression editor rather than pasting an image of an equation when students need clear, scalable math.
 
 ## Edit an expression
 
-Select an existing inline or block expression. Update the LaTeX in the prompt and confirm to render it again. If the result is incorrect, reopen the expression and check its braces and command spelling.
+Click an existing inline or block expression. A popover opens with a **LaTeX** field and a live **Preview**. Edit the LaTeX, then select **Done**, press Enter, or click outside the popover to save. Select **Cancel** or press Escape to discard your changes. Saving an empty field removes the expression. If the preview shows an error, check the braces and command spelling.
+
+## Math in question titles and options
+
+Exercise question titles and answer options are one-line fields that accept math. Type an expression between single dollar signs, such as `$x^2$`, and it becomes a formula. Select the √ button at the end of the field, or click a formula, to open the same LaTeX popover. Write `\$` for a literal dollar sign; a lone amount such as `$5` stays plain text. Students see the formatted math when they take and review the exercise.
+
+Accepted answers stay plain text, because students type their answers without dollar signs.
 
 ## Save and check the reading view
 

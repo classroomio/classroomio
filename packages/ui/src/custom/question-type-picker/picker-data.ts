@@ -228,7 +228,7 @@ const QUESTION_TYPE_PICKER_ENTRIES: QuestionTypePickerEntry[] = [
       title:
         'Every strong course begins with a ___ of learner needs, then aligns ___ and practice activities to stated goals.',
       questionType: 'FILL_BLANK',
-      settings: { acceptedAnswers: 'analysis,content' }
+      settings: { acceptedAnswers: [['analysis', 'needs analysis'], ['content']] }
     }
   },
   {

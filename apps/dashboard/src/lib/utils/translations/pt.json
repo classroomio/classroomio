@@ -2133,10 +2133,14 @@
                   "accepted_answers_label": "Respostas aceitas"
                 },
                 "take": {
-                  "placeholder": "Digite as respostas separadas por vírgulas"
+                  "placeholder": "Sua resposta"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Respostas aceitas (separadas por vírgula)"
+                  "accepted_answers_placeholder": "Resposta aceita",
+                  "blank_label": "Lacuna",
+                  "add_alternative": "Adicionar resposta aceita",
+                  "add_blank": "Adicionar lacuna",
+                  "helper": "Os alunos respondem às lacunas em ordem. Uma lacuna está correta quando corresponde a qualquer uma das respostas aceitas."
                 },
                 "review": {
                   "your_answer_label": "Enviado:"
@@ -3549,6 +3553,14 @@
   "markdown_editor": {
     "write": "Escreva",
     "preview": "Visualização"
+  },
+  "math_editor": {
+    "insert_math": "Inserir matemática",
+    "latex_label": "LaTeX",
+    "preview_label": "Pré-visualização",
+    "preview_empty": "Digite LaTeX para ver uma pré-visualização",
+    "done": "Concluído",
+    "cancel": "Cancelar"
   },
   "navigation": {
     "goto": "Vá para",

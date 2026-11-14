@@ -450,7 +450,7 @@
         case 'SHORT_ANSWER':
           return answerValue.text.trim().length > 0;
         case 'FILL_BLANK':
-          return answerValue.values.length > 0;
+          return answerValue.values.some((value) => value.trim().length > 0);
         case 'WORD_BANK': {
           const filled = answerValue.filledBlanks ?? [];
           return filled.length > 0 && filled.every((v) => String(v).trim().length > 0);

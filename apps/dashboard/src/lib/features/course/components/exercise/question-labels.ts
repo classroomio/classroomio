@@ -112,6 +112,12 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'question.media.next_image': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.next_image'
     ),
+    'question.math.insert': t.get('math_editor.insert_math'),
+    'question.math.latex_label': t.get('math_editor.latex_label'),
+    'question.math.preview_label': t.get('math_editor.preview_label'),
+    'question.math.preview_empty': t.get('math_editor.preview_empty'),
+    'question.math.done': t.get('math_editor.done'),
+    'question.math.cancel': t.get('math_editor.cancel'),
     'radio.edit.helper': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.radio.edit.helper'),
     'radio.edit.correct_selected_tooltip': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.radio.edit.correct_selected_tooltip'
@@ -233,6 +239,18 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     ),
     'fill_blank.edit.accepted_answers_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.accepted_answers_placeholder'
+    ),
+    'fill_blank.edit.blank_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.blank_label'
+    ),
+    'fill_blank.edit.add_alternative': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.add_alternative'
+    ),
+    'fill_blank.edit.add_blank': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.add_blank'
+    ),
+    'fill_blank.edit.helper': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.helper'
     ),
     'fill_blank.take.placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.take.placeholder'

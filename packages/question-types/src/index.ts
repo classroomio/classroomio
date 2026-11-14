@@ -7,6 +7,7 @@ export * from './question-type-capabilities';
 export * from './question-answer-payload';
 export * from './question-scoring-rules';
 export * from './question-scoring';
+export * from './points';
 
 export * from './exercise-types';
 export * from './exercise-section-types';

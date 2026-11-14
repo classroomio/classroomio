@@ -20,7 +20,6 @@
   import { HoverableItem, MaximizeIcon } from '../moving-icons';
   import * as Dialog from '../../base/dialog';
   import * as DropdownMenu from '../../base/dropdown-menu';
-  import { Input } from '../../base/input';
   import { IconButton } from '../icon-button';
   import { MediaPlayer, getVideoMediaType, isYoutubeUrl, isVimeoUrl } from '../media-player';
   import { dedupe } from '@cio/utils';
@@ -29,6 +28,8 @@
   import { YoutubeLinkForm } from '../youtube-link-form';
   import { ImageLightbox, ZoomableHtmlContent, ZoomableImage, type LightboxImage } from '../image-lightbox';
   import { getQuestionLightboxLabels } from './lightbox-labels';
+  import { getQuestionMathEditLabels } from './math-edit-labels';
+  import { MathTextInput } from '../math-text';
   import { hasQuestionDescriptionContent, toQuestionDescriptionHtml } from './question-description';
   import QuestionSurface from './question-surface.svelte';
   import { getExerciseQuestionRenderer } from './renderer-contract';
@@ -63,6 +64,7 @@
   }: Props = $props();
 
   const Renderer = $derived(getExerciseQuestionRenderer(contract.question.questionType, contract.mode));
+  const mathEditLabels = $derived(getQuestionMathEditLabels(contract.labels));
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(contract.labels, key, fallback);
 
@@ -308,13 +310,14 @@
       <div class="ui:flex ui:min-w-0 ui:flex-col ui:items-stretch ui:gap-2 ui:sm:flex-row ui:sm:items-end">
         <div class="ui:min-w-0 ui:flex-1 ui:space-y-1">
           <p class="ui:text-sm ui:font-medium">{label('question.edit.title_label')}</p>
-          <Input
-            class="ui:w-full"
+          <MathTextInput
             value={contract.question.title}
             placeholder={label('question.edit.title_placeholder')}
+            ariaLabel={label('question.edit.title_label')}
             disabled={contract.disabled}
-            aria-invalid={titleError ? true : undefined}
-            oninput={(event) => patchQuestion({ title: event.currentTarget.value })}
+            invalid={Boolean(titleError)}
+            labels={mathEditLabels}
+            onValueChange={(title) => patchQuestion({ title })}
           />
           {#if titleError}
             <p class="ui:text-destructive ui:text-xs">{titleError}</p>
@@ -378,6 +381,7 @@
               showDragHandle={false}
               onContentChange={(html) => patchSettings({ description: html })}
               onImageUpload={uploadQuestionImage}
+              mathLabels={mathEditLabels}
               expandable
               bind:expanded={isDescriptionExpanded}
               expandedTitle={exerciseTitle || label('question.edit.description_label')}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import LabeledValueRow from '../shared/labeled-value-row.svelte';
+  import { MathText } from '../../../math-text';
 
   let { question, answer = null, labels }: ExerciseQuestionRendererProps = $props();
 
@@ -37,7 +38,7 @@
   />
   {#if acceptedList.length > 0}
     <p class="ui:text-muted-foreground ui:text-sm">
-      {label('short_answer.review.accepted_label')}: {acceptedList.join(', ')}
+      {label('short_answer.review.accepted_label')}: <MathText text={acceptedList.join(', ')} />
     </p>
   {:else}
     <p class="ui:text-muted-foreground ui:text-sm">{label('short_answer.preview.helper')}</p>

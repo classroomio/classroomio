@@ -2,6 +2,7 @@
   import { extractAnswerDisplayValues, type AnswerData, type ExerciseQuestionRendererProps } from '@cio/question-types';
 
   import { getAnswerForQuestion, getSubmissionLabel, normalizeLabel } from './submission-utils';
+  import { MathText } from '../../math-text';
 
   let {
     question,
@@ -81,7 +82,7 @@
     <div class="ui:max-h-80 ui:space-y-2 ui:overflow-y-auto ui:pr-1">
       {#each responseRows as row (`${row.label}-${row.responses}`)}
         <div class="ui:flex ui:items-center ui:justify-between ui:gap-3 ui:rounded-md ui:border ui:px-3 ui:py-2">
-          <p class="ui:text-sm">{row.label}</p>
+          <p class="ui:text-sm"><MathText text={row.label} /></p>
           <span class="ui:text-muted-foreground ui:text-xs">{row.responses}</span>
         </div>
       {/each}

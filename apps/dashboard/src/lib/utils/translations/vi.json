@@ -2133,10 +2133,14 @@
                   "accepted_answers_label": "Câu trả lời được chấp nhận"
                 },
                 "take": {
-                  "placeholder": "Nhập các câu trả lời cách nhau bằng dấu phẩy"
+                  "placeholder": "Câu trả lời của bạn"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Câu trả lời được chấp nhận (được phân tách bằng dấu phẩy)"
+                  "accepted_answers_placeholder": "Câu trả lời được chấp nhận",
+                  "blank_label": "Chỗ trống",
+                  "add_alternative": "Thêm câu trả lời được chấp nhận",
+                  "add_blank": "Thêm chỗ trống",
+                  "helper": "Học viên điền các chỗ trống theo thứ tự. Một chỗ trống đúng khi khớp với bất kỳ câu trả lời được chấp nhận nào của nó."
                 },
                 "review": {
                   "your_answer_label": "Đã gửi:"
@@ -3549,6 +3553,14 @@
   "markdown_editor": {
     "write": "Viết",
     "preview": "Xem trước"
+  },
+  "math_editor": {
+    "insert_math": "Chèn công thức toán",
+    "latex_label": "LaTeX",
+    "preview_label": "Xem trước",
+    "preview_empty": "Nhập LaTeX để xem trước",
+    "done": "Xong",
+    "cancel": "Hủy"
   },
   "navigation": {
     "goto": "đi đến",

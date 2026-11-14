@@ -6,6 +6,8 @@ import { QUESTION_TYPE_ID_TO_KEY } from './question-type-registry';
 import { supportsPartialCredit } from './question-type-capabilities';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
+import { getFillBlankAnswerKey } from './answer-codecs';
+import { roundPoints } from './points';
 
 export type DbQuestionForScoring = {
   id: number;
@@ -63,7 +65,7 @@ export function isExerciseAutoGradable(questionTypeIds: number[]): boolean {
 
 function clampPoints(raw: number, max: number): number {
   if (!Number.isFinite(raw) || raw < 0) return 0;
-  return Math.min(Math.round(raw * 100) / 100, max);
+  return Math.min(roundPoints(raw), max);
 }
 
 function scoreRadio(
@@ -153,23 +155,18 @@ function scoreFillBlank(
   maxPoints: number,
   partial: boolean
 ): number {
-  const raw = String(question.settings?.acceptedAnswers ?? '');
-  const expected = raw
-    .split(',')
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const studentVals = answer.values.map((v) => String(v).trim().toLowerCase());
-  if (expected.length === 0) return 0;
+  const answerKey = getFillBlankAnswerKey(question.settings?.acceptedAnswers);
+  if (answerKey.length === 0) return 0;
 
-  let correct = 0;
-  for (let i = 0; i < expected.length; i++) {
-    if (studentVals[i] === expected[i]) correct++;
-  }
+  const correct = answerKey.filter((alternatives, blankIndex) => {
+    const studentValue = normalizeText(answer.values[blankIndex]);
+    return alternatives.some((alternative) => normalizeText(alternative) === studentValue);
+  }).length;
 
   if (!partial) {
-    return correct === expected.length && studentVals.length === expected.length ? maxPoints : 0;
+    return correct === answerKey.length ? maxPoints : 0;
   }
-  return (correct / expected.length) * maxPoints;
+  return (correct / answerKey.length) * maxPoints;
 }
 
 function countWordBankTemplateBlanks(template: unknown): number {
@@ -383,10 +380,10 @@ export function scoreSubmissionAnswers(
     }
 
     const answer = answersByQuestionId.get(q.id);
-    const pts = Math.round(scoreAnswerForQuestion(model, answer ?? null));
+    const pts = roundPoints(scoreAnswerForQuestion(model, answer ?? null));
     scores.push({ questionId: q.id, points: pts });
     total += pts;
   }
 
-  return { scores, total };
+  return { scores, total: roundPoints(total) };
 }

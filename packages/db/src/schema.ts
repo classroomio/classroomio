@@ -9,6 +9,7 @@ import {
   integer,
   json,
   jsonb,
+  numeric,
   pgEnum,
   pgTable,
   pgView,
@@ -791,8 +792,7 @@ export const submission = pgTable(
     statusId: bigint('status_id', { mode: 'number' }).default(sql`'1'`),
     gradingState: varchar('grading_state').default('queued').notNull(),
     overallStatus: varchar('overall_status').default('manual_required').notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    total: bigint({ mode: 'number' }).default(sql`'0'`),
+    total: numeric({ precision: 10, scale: 2, mode: 'number' }).default(0),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     exerciseId: uuid('exercise_id').notNull(),
@@ -2563,8 +2563,7 @@ export const questionAnswer = pgTable(
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
     groupMemberId: uuid('group_member_id').notNull(),
     submissionId: uuid('submission_id'),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    point: bigint({ mode: 'number' }).default(sql`'0'`)
+    point: numeric({ precision: 10, scale: 2, mode: 'number' }).default(0)
   },
   (table) => [
     foreignKey({

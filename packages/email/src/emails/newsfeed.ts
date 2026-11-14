@@ -4,6 +4,7 @@ import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
 import { ZEmailBranding } from '../core/branding';
 import { renderStudentEmail, renderStudentEmailSubject } from '../core/student-email';
+import { renderEditorMathToMathml } from '@cio/utils/math';
 
 export const newsfeedPostEmail = defineEmail({
   id: 'newsfeedPost',
@@ -24,7 +25,9 @@ export const newsfeedPostEmail = defineEmail({
         course_name: fields.courseTitle,
         teacher_name: fields.teacherName
       },
-      trustedHtml: { post_content: `<div style="font-style:italic;margin-top:10px;">${fields.content}</div>` },
+      trustedHtml: {
+        post_content: `<div style="font-style:italic;margin-top:10px;">${renderEditorMathToMathml(fields.content)}</div>`
+      },
       actionUrl: fields.postLink,
       branding: fields.branding,
       context

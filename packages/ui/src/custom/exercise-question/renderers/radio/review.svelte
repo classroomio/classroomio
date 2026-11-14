@@ -5,6 +5,7 @@
   import { getMcqReviewRowBorderClass, getOptionNumericId } from '../option-review-utils';
   import OptionCorrectnessBadges from '../shared/option-correctness-badges.svelte';
   import { cn } from '../../../../tools';
+  import { MathText } from '../../../math-text';
 
   let { question, answer = null, labels }: ExerciseQuestionRendererProps = $props();
 
@@ -49,9 +50,11 @@
             style={`box-shadow: inset 0 0 0 3px ${isSelected ? 'var(--foreground)' : 'transparent'}`}
           ></span>
           <div class="ui:text-sm ui:font-normal">
-            {option.label ||
-              option.value ||
-              [label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ')}
+            <MathText
+              text={option.label ||
+                option.value ||
+                [label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ')}
+            />
             <OptionCorrectnessBadges {labels} showCorrect={isCorrect} showIncorrect={isSelected && !isCorrect} />
           </div>
         </div>

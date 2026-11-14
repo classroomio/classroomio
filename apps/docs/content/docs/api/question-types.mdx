@@ -16,7 +16,7 @@ Exercises are made of questions. When you create or edit a question, its `questi
 | `4` | True/false | Yes, with `settings.correctValue` (boolean) |
 | `5` | Short answer | No |
 | `6` | Numeric | Yes |
-| `7` | Fill in the blank | Yes |
+| `7` | Fill in the blank | Yes, with `settings.acceptedAnswers`: one array of accepted answers per blank, such as `[["1,000","1000"],["(2, 3)"]]` |
 | `8` | File upload | No |
 | `9` | Ordering | Yes |
 | `10` | Link | No |
@@ -39,7 +39,7 @@ Single choice answers use `optionId`. File upload and video recording questions 
 | Short answer, paragraph | The plain text |
 | Multiple choice | `{"type":"CHECKBOX","optionIds":[30,31]}` |
 | Numeric | `{"type":"NUMERIC","value":2}` |
-| Fill in the blank | `{"type":"FILL_BLANK","answers":["Paris"]}` |
+| Fill in the blank | `{"type":"FILL_BLANK","answers":["Paris","1,000"]}`, one entry per blank in order |
 | Word bank | `{"type":"WORD_BANK","filledBlanks":["Paris"]}` |
 | Ordering | `{"type":"ORDERING","value":["first","second"]}` |
 | Link | `{"type":"LINK","links":["https://example.com"]}` |

@@ -174,7 +174,7 @@ export const FILL_BLANK_FIXTURE: QuestionStoryFixture = {
     key: 'q-fill-blank',
     title: 'An ___ endpoint should be idempotent when using PUT. [FILL_BLANK]',
     questionType: 'FILL_BLANK',
-    settings: { acceptedAnswers: 'API,endpoint' }
+    settings: { acceptedAnswers: [['API', 'endpoint']] }
   },
   answer: { type: 'FILL_BLANK', values: ['API'] },
   wrongAnswer: { type: 'FILL_BLANK', values: ['SOAP'] }

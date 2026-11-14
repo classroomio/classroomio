@@ -1,7 +1,17 @@
 import katex from 'katex';
+import { renderEditorMath } from '@cio/utils/math';
 import 'katex/dist/katex.min.css';
 
 const MATH_NODE_SELECTOR = '[data-type="inline-math"], [data-type="block-math"]';
+
+export function renderLatexToHtml(latex: string, display = false): string {
+  return katex.renderToString(latex, { displayMode: display, throwOnError: false });
+}
+
+/** Returns trusted HTML with every rich-text editor math element filled with KaTeX output. */
+export function renderMathInHtml(html: string): string {
+  return renderEditorMath(html, renderLatexToHtml);
+}
 
 export function renderMathInElement(root: ParentNode): void {
   const mathNodes = root.querySelectorAll<HTMLElement>(MATH_NODE_SELECTOR);

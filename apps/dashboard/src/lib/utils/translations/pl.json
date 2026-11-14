@@ -2133,10 +2133,14 @@
                   "accepted_answers_label": "Zaakceptowane odpowiedzi"
                 },
                 "take": {
-                  "placeholder": "Wpisz odpowiedzi oddzielone przecinkami"
+                  "placeholder": "Twoja odpowiedź"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Zaakceptowane odpowiedzi (oddzielone przecinkami)"
+                  "accepted_answers_placeholder": "Zaakceptowana odpowiedź",
+                  "blank_label": "Luka",
+                  "add_alternative": "Dodaj zaakceptowaną odpowiedź",
+                  "add_blank": "Dodaj lukę",
+                  "helper": "Uczniowie uzupełniają luki po kolei. Luka jest poprawna, gdy pasuje do dowolnej z zaakceptowanych odpowiedzi."
                 },
                 "review": {
                   "your_answer_label": "Przesłane:"
@@ -3549,6 +3553,14 @@
   "markdown_editor": {
     "write": "Napisz",
     "preview": "Podgląd"
+  },
+  "math_editor": {
+    "insert_math": "Wstaw wzór",
+    "latex_label": "LaTeX",
+    "preview_label": "Podgląd",
+    "preview_empty": "Wpisz LaTeX, aby zobaczyć podgląd",
+    "done": "Gotowe",
+    "cancel": "Anuluj"
   },
   "navigation": {
     "goto": "Idź do",

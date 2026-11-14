@@ -7,7 +7,7 @@ export const ENABLED_QUESTION_TYPE_ID_DESCRIPTION = ENABLED_QUESTION_TYPE_REGIST
 
 /** Shared hint for `settings` on create/add/update question tool schemas. */
 export const QUESTION_SETTINGS_SCHEMA_HINT =
-  'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean } with exactly two options labeled True and False (factual statements). THUMBS: open-ended sentiment/poll — no correct answer; omit settings or use {}. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.';
+  'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean } with exactly two options labeled True and False (factual statements). THUMBS: open-ended sentiment/poll — no correct answer; omit settings or use {}. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. FILL_BLANK: { acceptedAnswers: string[][] } with one array of accepted alternatives per blank, in blank order, e.g. [["1,000", "1000"], ["(2, 3)"]]. WORD_BANK: { correctAnswers: string[], template: string }.';
 
 /** Shared hint for `options` on create/add question tool schemas. */
 export const QUESTION_OPTIONS_SCHEMA_HINT =

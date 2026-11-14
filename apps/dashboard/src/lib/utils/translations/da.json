@@ -2133,10 +2133,14 @@
                   "accepted_answers_label": "Accepterede svar"
                 },
                 "take": {
-                  "placeholder": "Indtast svar adskilt af kommaer"
+                  "placeholder": "Dit svar"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Accepterede svar (kommasepareret)"
+                  "accepted_answers_placeholder": "Accepteret svar",
+                  "blank_label": "Tomt felt",
+                  "add_alternative": "Tilføj accepteret svar",
+                  "add_blank": "Tilføj tomt felt",
+                  "helper": "Eleverne besvarer de tomme felter i rækkefølge. Et felt er korrekt, når det matcher et af dets accepterede svar."
                 },
                 "review": {
                   "your_answer_label": "Indsendt:"
@@ -3549,6 +3553,14 @@
   "markdown_editor": {
     "write": "Skriv",
     "preview": "Forhåndsvisning"
+  },
+  "math_editor": {
+    "insert_math": "Indsæt matematik",
+    "latex_label": "LaTeX",
+    "preview_label": "Forhåndsvisning",
+    "preview_empty": "Skriv LaTeX for at se en forhåndsvisning",
+    "done": "Færdig",
+    "cancel": "Annuller"
   },
   "navigation": {
     "goto": "Gå til",

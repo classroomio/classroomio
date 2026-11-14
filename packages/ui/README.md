@@ -537,6 +537,21 @@ Pass `onCommit` for follow-up work that must run only on blur or Enter with the 
 <NumberField label="Points" integer min={1} bind:value={points} />
 ```
 
+### Math text (`src/custom/math-text/`)
+
+Math in plain strings such as question titles, option labels and accepted answers. Strings stay strings: math is wrapped in `$…$` (inline) or `$$…$$` (display), and `\$` is a literal dollar sign. A `$` that cannot close (`It costs $5 and $10`) stays text, so strings without math render exactly as before. Parsing lives in `@cio/utils/math` (`splitMathText`, `joinMathText`), shared with the API's MathML rendering for email and certificates.
+
+- **`MathText`** — renders a string with KaTeX. It also renders rich-text editor `data-latex` elements. Every exercise question renderer uses it for titles, options, accepted answers and fill-blank and word-bank tokens.
+- **`MathTextInput`** — one-line editor for text plus inline math, saving `$…$` strings. Typing `$x^2$` turns into a formula; the √ button or a click on a formula opens `MathEditPopover`. TipTap loads lazily on first mount.
+- **`MathEditPopover`** — popover around `MathLatexField` (a LaTeX input with a live KaTeX preview) with Cancel and Done. Done, Enter or a click outside saves; Escape or Cancel discards. The rich-text editor uses the same popover when a formula is clicked. `MathLatexField` is the only part that knows about LaTeX input, so a future MathLive field replaces it without changing the popover's callers.
+
+Copy is passed as `labels: MathEditLabels` (`DEFAULT_MATH_EDIT_LABELS` holds the English fallbacks). `SafeHtmlContent` and everything built on it (`ZoomableHtmlContent`, block notes, the public lesson view) render editor math through `renderMathInHtml` from `src/tools/render-math.ts`. See `Molecules/MathText`, `Molecules/MathTextInput` and `Molecules/MathEditPopover` in Storybook.
+
+```svelte
+<MathText text="Solve $x^2-5x+6=0$" />
+<MathTextInput value={title} {labels} onValueChange={(next) => (title = next)} />
+```
+
 ### Copy input (`src/custom/copy-input/`)
 
 Read-only `InputGroup` that shows a value with an inline Copy button. Focusing the input selects the value; the button switches to the copied label for two seconds. Use it to reveal a one-time secret, an invite link, or any value the user should copy rather than edit. The host passes translated labels.

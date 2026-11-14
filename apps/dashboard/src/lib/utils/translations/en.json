@@ -2090,6 +2090,14 @@
     "write": "Write",
     "preview": "Preview"
   },
+  "math_editor": {
+    "insert_math": "Insert math",
+    "latex_label": "LaTeX",
+    "preview_label": "Preview",
+    "preview_empty": "Type LaTeX to see a preview",
+    "done": "Done",
+    "cancel": "Cancel"
+  },
   "components": {
     "quiz": {
       "title": "Quizzes",
@@ -3545,10 +3553,14 @@
               },
               "fill_blank": {
                 "edit": {
-                  "accepted_answers_placeholder": "Accepted answers (comma separated)"
+                  "accepted_answers_placeholder": "Accepted answer",
+                  "blank_label": "Blank",
+                  "add_alternative": "Add accepted answer",
+                  "add_blank": "Add blank",
+                  "helper": "Students answer the blanks in order. Each blank is correct when it matches any of its accepted answers."
                 },
                 "take": {
-                  "placeholder": "Enter answers separated by commas"
+                  "placeholder": "Your answer"
                 },
                 "preview": {
                   "accepted_answers_label": "Accepted answers"

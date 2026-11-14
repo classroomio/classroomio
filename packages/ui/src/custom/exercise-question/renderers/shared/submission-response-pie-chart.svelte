@@ -9,6 +9,7 @@
   import { Spinner } from '../../../../base/spinner';
   import type { ChartConfig } from '../../../../base/chart/types';
   import { CHART_COLORS } from '../submission-utils';
+  import { mathTextToPlainText } from '@cio/utils/math';
 
   const isBrowser = typeof window !== 'undefined';
 
@@ -26,15 +27,17 @@
   }
 
   let { chartData, chartConfig, emptyLabel }: Props = $props();
+
+  const plainChartData = $derived(chartData.map((row) => ({ ...row, label: mathTextToPlainText(row.label) })));
 </script>
 
 {#if chartData.length > 0}
   {#if isBrowser}
     {#await loadChart() then C}
       <C.ChartContainer config={chartConfig} class="ui:h-[280px] ui:w-full ui:flex-col ui:items-center">
-        <C.PieChart data={chartData} key="key" label="label" value="responses" c="color" />
+        <C.PieChart data={plainChartData} key="key" label="label" value="responses" c="color" />
         <C.ChartLegend
-          items={chartData.map((d) => ({
+          items={plainChartData.map((d) => ({
             label: d.label,
             color: d.color ?? CHART_COLORS[0],
             value: d.responses

@@ -6,6 +6,7 @@
   import { getOptionImageUrl, hasOptionImages } from '../option-image-utils';
   import { cn } from '../../../../tools';
   import { isOptionCardControlClick } from '../shared/option-card';
+  import { MathText } from '../../../math-text';
 
   let {
     question,
@@ -96,9 +97,11 @@
             onCheckedChange={() => toggleOption(optionValue)}
           />
           <Label class="ui:cursor-pointer ui:font-normal ui:w-full" for={optionId}>
-            {option.label ||
-              option.value ||
-              [label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ')}
+            <MathText
+              text={option.label ||
+                option.value ||
+                [label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ')}
+            />
           </Label>
         </div>
       </div>

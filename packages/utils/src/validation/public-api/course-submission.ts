@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
+import { ZAwardedPoints } from '../submission/submission';
 
 export const ZPublicApiSubmissionGradingState = z.enum([
   'queued',
@@ -29,11 +30,11 @@ export const ZPublicApiGradeCourseSubmission = z
       .array(
         z.object({
           questionId: z.number().int().positive().describe("A question of the submission's exercise"),
-          points: z.number().int().min(0)
+          points: ZAwardedPoints.describe('Up to two decimals, such as 0.5')
         })
       )
       .max(500),
-    total: z.number().int().min(0),
+    total: ZAwardedPoints.describe('Up to two decimals, such as 2.5'),
     feedback: z.string().optional()
   })
   .refine((data) => new Set(data.answers.map((answer) => answer.questionId)).size === data.answers.length, {

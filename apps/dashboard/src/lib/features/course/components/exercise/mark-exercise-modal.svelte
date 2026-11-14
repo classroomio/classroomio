@@ -8,7 +8,7 @@
   import { STATUS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import type { SubmissionIdData } from '$features/course/utils/types';
-  import type { AnswerData } from '@cio/question-types';
+  import { formatPoints, roundPoints, type AnswerData } from '@cio/question-types';
 
   import Preview from './preview.svelte';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -85,7 +85,8 @@
   let total = $derived(calculateTotal(data.questionAnswerByPoint));
   function calculateTotal(grades: Record<string, string>): number {
     if (!grades) return 0;
-    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || '0'), 0);
+    const sum = Object.values(grades).reduce((acc, grade) => acc + (Number(grade) || 0), 0);
+    return roundPoints(sum);
   }
 
   function handleStatusChange(value: string) {
@@ -315,7 +316,7 @@
             </p>
 
             <Badge class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white">
-              {total}/{maxPoints}
+              {formatPoints(total)}/{formatPoints(maxPoints)}
             </Badge>
           </div>
           <!-- <div class="flex items-center text-sm p-3">

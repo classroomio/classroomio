@@ -19,6 +19,7 @@
     type SubmissionFilterOption
   } from '$features/course/utils/submission-board-filters';
   import { t } from '$lib/utils/functions/translations';
+  import { roundPoints } from '@cio/question-types';
 
   import { Chip } from '@cio/ui/custom/chip';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
@@ -296,7 +297,7 @@
       questionId: Number(questionId),
       points: Number(point)
     }));
-    const total = answers.reduce((sum, { points }) => sum + points, 0);
+    const total = roundPoints(answers.reduce((sum, { points }) => sum + points, 0));
 
     await submissionApi.updateGrades(courseId, subId, {
       answers,

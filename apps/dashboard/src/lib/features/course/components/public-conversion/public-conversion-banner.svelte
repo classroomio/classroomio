@@ -21,6 +21,7 @@
   import { getActiveExerciseQuestions } from '../../utils/exercise-progression-utils';
   import { getQuestionTypeId } from '../exercise/question-type-utils';
   import { getManualQuestionsFromList } from '../../utils/public-conversion-utils';
+  import { MathText } from '@cio/ui/custom/math-text';
 
   interface Props {
     exerciseId: string;
@@ -256,8 +257,10 @@
                   <div class="flex min-w-0 flex-1 items-center gap-2">
                     <QuestionTypeIcon {typeId} class="size-5 shrink-0 rounded text-[9px]" />
                     <span class="truncate font-medium"
-                      >{q.title ||
-                        $t('course.navItem.settings.public_conversion.question_fallback', { number: index + 1 })}</span
+                      ><MathText
+                        text={q.title ||
+                          $t('course.navItem.settings.public_conversion.question_fallback', { number: index + 1 })}
+                      /></span
                     >
                   </div>
                   {#if questionTypeMeta?.label}

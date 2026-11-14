@@ -2,6 +2,7 @@
   import * as Select from '../../base/select';
   import {
     getExerciseQuestionContractKey,
+    getFillBlankAnswerKey,
     isAutoGradableQuestionTypeId,
     QUESTION_TYPE_KEY,
     scoreAnswerForQuestion,
@@ -143,7 +144,7 @@
         return answer.type === 'NUMERIC' && Number.isFinite(answer.value);
       case QUESTION_TYPE_KEY.FILL_BLANK: {
         if (answer.type !== 'FILL_BLANK') return false;
-        const blankSlots = (question.options ?? []).filter((option) => option.isCorrect !== false).length;
+        const blankSlots = getFillBlankAnswerKey(question.settings?.acceptedAnswers).length;
         if (blankSlots === 0) return false;
 
         return (
@@ -241,18 +242,13 @@
       }
       case QUESTION_TYPE_KEY.FILL_BLANK: {
         if (answer.type !== 'FILL_BLANK') return false;
-        const accepted = (question.options ?? [])
-          .filter((option) => option.isCorrect !== false)
-          .map((option) =>
-            String(option.label ?? option.value ?? '')
-              .trim()
-              .toLowerCase()
-          );
-        if (accepted.length === 0) return null;
-        return answer.values.every((value, index) => {
-          const expected = accepted[index];
-          if (expected === undefined) return false;
-          return value.trim().toLowerCase() === expected;
+        const answerKey = getFillBlankAnswerKey(question.settings?.acceptedAnswers);
+        if (answerKey.length === 0) return null;
+        return answerKey.every((alternatives, blankIndex) => {
+          const value = String(answer.values[blankIndex] ?? '')
+            .trim()
+            .toLowerCase();
+          return alternatives.some((alternative) => alternative.toLowerCase() === value);
         });
       }
       case QUESTION_TYPE_KEY.ORDERING: {

@@ -4,6 +4,7 @@
   import { dndzone } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
   import { applyOrderingAnswer, getOrderingItemsFromQuestion, type OrderingRenderItem } from '../ordering-utils';
+  import { MathText } from '../../../math-text';
 
   const flipDurationMs = 150;
 
@@ -87,7 +88,7 @@
           <span class="ui:bg-muted ui:text-muted-foreground ui:rounded-full ui:px-2 ui:py-1 ui:text-xs"
             >{index + 1}</span
           >
-          <p class="ui:text-sm">{item.label}</p>
+          <p class="ui:text-sm"><MathText text={item.label} /></p>
         </div>
       {/each}
     {/if}

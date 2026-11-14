@@ -7,6 +7,7 @@
   import { slide } from 'svelte/transition';
   import { cn } from '$src/tools';
   import * as Sheet from '../../base/sheet';
+  import type { MathEditLabels } from '../math-text';
 
   interface Props {
     // Content of the editor
@@ -41,6 +42,7 @@
     expanded?: boolean;
     expandedTitle?: string;
     expandedDescription?: string;
+    mathLabels?: MathEditLabels;
   }
 
   let {
@@ -63,7 +65,8 @@
     expandable = false,
     expanded = $bindable(false),
     expandedTitle = '',
-    expandedDescription = ''
+    expandedDescription = '',
+    mathLabels
   }: Props = $props();
 
   const editors = $state<{ inline?: Editor; expanded?: Editor }>({});
@@ -198,6 +201,7 @@
         {placeholder}
         {onImageUpload}
         {onSearchUnsplash}
+        {mathLabels}
       />
     </div>
   </div>
