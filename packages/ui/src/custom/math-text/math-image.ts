@@ -69,7 +69,7 @@ export interface MathImageConverter {
   convert: (image: MathImagePayload, source: MathImageSource) => Promise<MathImageConversion>;
 }
 
-const MATH_IMAGE_CONVERTER_KEY = Symbol('math-image-converter');
+const MATH_IMAGE_CONVERTER_KEY = Symbol.for('cio.math-image-converter');
 
 /** Makes the Photo and Draw tabs available to every math box below the calling component. */
 export function setMathImageConverter(converter: MathImageConverter) {

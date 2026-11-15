@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, tick } from 'svelte';
+  import { onDestroy } from 'svelte';
   import CameraIcon from '@lucide/svelte/icons/camera';
   import EraserIcon from '@lucide/svelte/icons/eraser';
   import ImageUpIcon from '@lucide/svelte/icons/image-up';
@@ -207,7 +207,9 @@
   function startStroke(event: PointerEvent) {
     if (!drawCanvas) return;
 
+    event.preventDefault();
     clearTimeout(drawTimer);
+    drawCanvas.focus();
     drawCanvas.setPointerCapture(event.pointerId);
     lastPoint = canvasPoint(event);
     const context = drawCanvas.getContext('2d')!;
@@ -249,7 +251,12 @@
   $effect(() => {
     if (mode !== 'draw' || !drawCanvas) return;
 
-    tick().then(prepareCanvas);
+    const observer = new ResizeObserver(() => {
+      if (!hasInk) prepareCanvas();
+    });
+    observer.observe(drawCanvas);
+
+    return () => observer.disconnect();
   });
 
   onDestroy(() => {
@@ -373,8 +380,9 @@
   <div class="ui:space-y-3">
     <canvas
       bind:this={drawCanvas}
-      class="ui:h-40 ui:w-full ui:touch-none ui:rounded-md ui:border ui:bg-white ui:cursor-crosshair"
+      class="ui:h-40 ui:w-full ui:select-none ui:touch-none ui:rounded-md ui:border ui:bg-white ui:cursor-crosshair"
       aria-label={labels.drawHint}
+      tabindex="-1"
       onpointerdown={startStroke}
       onpointermove={continueStroke}
       onpointerup={endStroke}
