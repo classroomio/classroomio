@@ -16,10 +16,10 @@ import {
   writeOrgStatsCache
 } from '@cio/core/utils/redis/org-stats-cache';
 
-import type { OrganisationAnalytics } from '@api/types';
+import type { OrganizationOverview } from '@api/types';
 import { getOrgIdBySiteName } from '@cio/db/queries';
 
-async function loadOrganisationAnalyticsFromDatabase(orgId: string): Promise<OrganisationAnalytics> {
+async function loadOrganisationAnalyticsFromDatabase(orgId: string): Promise<OrganizationOverview> {
   const [stats, topCourses, recentCertificationRows, certificateCountRows] = await Promise.all([
     getDashOrgStats(orgId),
     getCourseStats(orgId),
@@ -27,7 +27,7 @@ async function loadOrganisationAnalyticsFromDatabase(orgId: string): Promise<Org
     getTotalCertificatesIssued(orgId)
   ]);
 
-  const analytics: OrganisationAnalytics = {
+  const analytics: OrganizationOverview = {
     totalCertificates: certificateCountRows[0]?.count ?? 0,
     numberOfCourses: stats?.[0]?.noOfCourses ?? 0,
     totalStudents: stats?.[0]?.enrolledStudents ?? 0,
@@ -51,11 +51,11 @@ async function loadOrganisationAnalyticsFromDatabase(orgId: string): Promise<Org
   return analytics;
 }
 
-export async function getOrganisationAnalytics(
+export async function getOrganizationOverview(
   orgId?: string,
   siteName?: string,
   bustCache = false
-): Promise<OrganisationAnalytics> {
+): Promise<OrganizationOverview> {
   let resolvedOrgId = orgId;
 
   if (!resolvedOrgId && siteName) {
@@ -73,7 +73,7 @@ export async function getOrganisationAnalytics(
   }
 
   try {
-    const { version, data: cached } = await readOrgStatsVersionAndCache<OrganisationAnalytics>(resolvedOrgId);
+    const { version, data: cached } = await readOrgStatsVersionAndCache<OrganizationOverview>(resolvedOrgId);
 
     if (!bustCache && cached) {
       return cached;

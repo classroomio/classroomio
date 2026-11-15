@@ -1,4 +1,3 @@
-export { default as AnalyticsPage } from './analytics.svelte';
 export { default as AttendancePage } from './attendance.svelte';
 export { default as CertificatesPage } from './certificates.svelte';
 export { default as CompliancePage } from './compliance.svelte';
