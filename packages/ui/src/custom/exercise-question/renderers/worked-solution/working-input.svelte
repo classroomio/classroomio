@@ -15,6 +15,7 @@
   import { DrawingCanvas } from '../../../drawing-canvas';
   import { IconButton } from '../../../icon-button';
   import { MathInput, type MathKeyboardPreset } from '../../../math-input';
+  import { MathImagePopover } from '../../../math-text';
 
   interface Props {
     inputs: WorkedSolutionWorkingInput[];
@@ -94,10 +95,17 @@
           {/if}
         </div>
       {/each}
-      <Button type="button" variant="ghost" size="sm" {disabled} onclick={() => setLines([...lineValues, ''])}>
-        <PlusIcon class="ui:mr-1 ui:size-4" />
-        {label('math.worked.take.add_line')}
-      </Button>
+      <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">
+        <Button type="button" variant="ghost" size="sm" {disabled} onclick={() => setLines([...lineValues, ''])}>
+          <PlusIcon class="ui:mr-1 ui:size-4" />
+          {label('math.worked.take.add_line')}
+        </Button>
+        <MathImagePopover
+          {keyboard}
+          {disabled}
+          onInsert={(converted) => setLines([...lineValues.filter((value) => value.trim()), converted])}
+        />
+      </div>
     </div>
   {/if}
 

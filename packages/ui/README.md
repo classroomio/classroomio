@@ -557,27 +557,28 @@ Math in plain strings such as question titles, option labels and accepted answer
 
 - **`MathText`** — renders a string with KaTeX. It also renders rich-text editor `data-latex` elements. Every exercise question renderer uses it for titles, options, accepted answers and fill-blank and word-bank tokens.
 - **`MathTextInput`** — one-line editor for text plus inline math, saving `$…$` strings. Typing `$x^2$` turns into a formula; the √ button or a click on a formula opens `MathEditPopover`. TipTap loads lazily on first mount.
-- **`MathEditPopover`** — the math box: a **Type** tab with the `MathStructurePalette` above a `MathInput` (MathLive), and a **LaTeX** tab with `MathLatexField` (a LaTeX input with a live KaTeX preview), plus Cancel and Done. Done, Enter or a click outside saves; Escape or Cancel discards. Taps on the MathLive virtual keyboard do not count as a click outside. `keyboard` and `level` choose the keyboard preset and the palette level (defaults `full` and `advanced`). The rich-text editor and `MathTextInput` use the same popover.
+- **`MathEditPopover`** — the math box: a **Type** tab with the `MathStructurePalette` above a `MathInput` (MathLive), and a **LaTeX** tab with `MathLatexField` (a LaTeX input with a live KaTeX preview), plus Cancel and Done. Done, Enter or a click outside saves; Escape or Cancel discards. Taps on the MathLive virtual keyboard do not count as a click outside. `keyboard` and `level` choose the keyboard preset and the palette level (defaults `full` and `advanced`). The rich-text editor and `MathTextInput` use the same popover. When an ancestor has called `setMathImageConverter` (the dashboard does in the course layout), the popover also shows **Photo** and **Draw** tabs (see below) and hides Cancel and Done on them, since each has its own Insert.
+- **`MathImageInput`** — the Photo and Draw panels. `mode="photo"` takes an uploaded image, a pasted screenshot (Ctrl/Cmd+V), a dropped file or a phone camera capture, with a drag-a-box crop; `mode="draw"` is a pointer-event canvas for finger, stylus or mouse that converts 1.2 seconds after the last stroke, never per stroke. Both end in a review step: an editable `MathInput` with the converted LaTeX. The Compute Engine re-checks every edit, and Insert stays disabled while the math does not parse. Images are downscaled to at most 1600px and sent through `MathImageConverter.convert`; the converter (labels plus an async `convert(image, source)`) comes from context, so the package never calls an API itself.
+- **`MathImagePopover`** — a Photo or draw button that opens the same two panels in a popover and calls `onInsert(latex)`. It renders nothing without a converter. `MATH_EXPRESSION` and `WORKED_SOLUTION` answer boxes show it when the question's `allowImageInput` setting is on, and `WORKED_SOLUTION` working always offers it to add a typed line from a photo or drawing.
 
-Copy is passed as `labels: MathEditLabels` (`DEFAULT_MATH_EDIT_LABELS` holds the English fallbacks). `SafeHtmlContent` and everything built on it (`ZoomableHtmlContent`, block notes, the public lesson view) render editor math through `renderMathInHtml` from `src/tools/render-math.ts`. See `Molecules/MathText`, `Molecules/MathTextInput` and `Molecules/MathEditPopover` in Storybook.
+Copy is passed as `labels: MathEditLabels` (`DEFAULT_MATH_EDIT_LABELS` holds the English fallbacks). `SafeHtmlContent` and everything built on it (`ZoomableHtmlContent`, block notes, the public lesson view) render editor math through `renderMathInHtml` from `src/tools/render-math.ts`. See `Molecules/MathText`, `Molecules/MathTextInput`, `Molecules/MathEditPopover` and `Molecules/MathImageInput` in Storybook.
 
 Pasting into the rich-text editor or `MathTextInput` turns math into formulas: LaTeX in `$…$`, `$$…$$`, `\(…\)` and `\[…\]`, MathML (including KaTeX, MathJax and Wikipedia output) and Word equations (OMML in Word's clipboard HTML). Content copied from another ClassroomIO editor pastes as-is, and image paste is unchanged. The conversion lives in `src/tools/clipboard-math.ts`, on top of `ommlToLatex` and `mathmlToLatex` in `@cio/utils/math`.
 
 ```svelte
 <MathText text="Solve $x^2-5x+6=0$" />
 <MathTextInput value={title} {labels} onValueChange={(next) => (title = next)} />
-
 ```
 
 ### Chart legend (`src/base/chart/chart-legend.svelte`, `chart-legend-item.svelte`)
 
 Legend row for the Analytics charts. `ChartLegend` renders one `ChartLegendItem` per entry and keys each row by label plus index, so two series with the same label still render. Items truncate their label and reveal the full text in a tooltip on hover or focus.
 
-| Prop        | Type                      | Default     | Purpose                                                |
-| ----------- | ------------------------- | ----------- | ------------------------------------------------------ |
-| `items`     | `ChartLegendItem[]`       | —           | Series to list: `label`, `color`, optional `value`, `dashed` |
-| `showValue` | `boolean`                 | `true`      | Show each item's `value` in parentheses                |
-| `class`     | `string`                  | `'ui:mt-4'` | Extra classes on the row                               |
+| Prop        | Type                | Default     | Purpose                                                      |
+| ----------- | ------------------- | ----------- | ------------------------------------------------------------ |
+| `items`     | `ChartLegendItem[]` | —           | Series to list: `label`, `color`, optional `value`, `dashed` |
+| `showValue` | `boolean`           | `true`      | Show each item's `value` in parentheses                      |
+| `class`     | `string`            | `'ui:mt-4'` | Extra classes on the row                                     |
 
 `ChartLegendItem` takes a single `item` plus the same `showValue`. A `dashed` item draws a dashed swatch instead of a solid one, for reference lines such as a target or pass mark. Import it directly rather than through the `@cio/ui/base/chart` barrel when a host renders on the server (the barrel pulls in layerchart).
 
@@ -601,7 +602,12 @@ See `Molecules/MathInput` and `Molecules/MathStructurePalette` in Storybook.
 
 ```svelte
 <MathStructurePalette level="secondary" onSelect={(structure) => mathInput.insert(structure.insert)} />
-<MathInput bind:this={mathInput} bind:value={latex} keyboard="algebra" onInput={({ latex, mathjson }) => save(latex, mathjson)} />
+<MathInput
+  bind:this={mathInput}
+  bind:value={latex}
+  keyboard="algebra"
+  onInput={({ latex, mathjson }) => save(latex, mathjson)}
+/>
 ```
 
 ### Copy input (`src/custom/copy-input/`)

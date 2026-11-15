@@ -7,7 +7,8 @@
   } from '@cio/question-types';
   import { Label } from '../../../../base/label';
   import { MathInput } from '../../../math-input';
-  import { readMathKeyboardPreset } from '../math/math-question-utils';
+  import { MathImagePopover } from '../../../math-text';
+  import { readAllowImageInput, readMathKeyboardPreset } from '../math/math-question-utils';
   import WorkingInput from './working-input.svelte';
 
   let {
@@ -39,15 +40,20 @@
 <div class="ui:space-y-4">
   <div class="ui:space-y-2">
     <Label>{getMathQuestionLabel(labels, 'math.worked.take.answer_label')}</Label>
-    <MathInput
-      class="ui:w-full ui:max-w-xl"
-      value={latex}
-      {keyboard}
-      {disabled}
-      placeholder={getMathQuestionLabel(labels, 'math.take.placeholder')}
-      ariaLabel={getMathQuestionLabel(labels, 'math.worked.take.answer_label')}
-      onInput={(next) => emit({ latex: next.latex, lines, files })}
-    />
+    <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">
+      <MathInput
+        class="ui:w-full ui:max-w-xl"
+        value={latex}
+        {keyboard}
+        {disabled}
+        placeholder={getMathQuestionLabel(labels, 'math.take.placeholder')}
+        ariaLabel={getMathQuestionLabel(labels, 'math.worked.take.answer_label')}
+        onInput={(next) => emit({ latex: next.latex, lines, files })}
+      />
+      {#if readAllowImageInput(question.settings)}
+        <MathImagePopover {keyboard} {disabled} onInsert={(converted) => emit({ latex: converted, lines, files })} />
+      {/if}
+    </div>
   </div>
 
   <WorkingInput

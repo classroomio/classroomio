@@ -23,6 +23,10 @@ export const MATH_KEYBOARD_PRESET_KEYS: readonly MathKeyboardPreset[] = [
   'full'
 ];
 
+export function readAllowImageInput(settings: Record<string, unknown> | undefined): boolean {
+  return settings?.allowImageInput === true;
+}
+
 export function readMathKeyboardPreset(settings: Record<string, unknown> | undefined): MathKeyboardPreset {
   const keyboard = settings?.keyboard;
 

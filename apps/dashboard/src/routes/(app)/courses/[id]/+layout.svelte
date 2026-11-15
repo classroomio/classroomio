@@ -32,6 +32,9 @@
   import { getCourseProgress } from '$features/course/utils/content';
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
+  import { setMathImageConverter } from '@cio/ui/custom/math-text';
+  import { mathVisionApi } from '$features/math/api/math-vision.svelte';
+  import { getMathImageLabels } from '$features/math/utils/math-image-labels';
   import { ContentType } from '@cio/utils/constants/content';
   import type { CourseMember } from '$features/course/utils/types';
   import {
@@ -59,6 +62,14 @@
 
   let { children, data }: Props = $props();
   const courseId = $derived(data.courseId);
+  const mathImageLabels = $derived(getMathImageLabels($t));
+
+  setMathImageConverter({
+    get labels() {
+      return mathImageLabels;
+    },
+    convert: (image, source) => mathVisionApi.convertImage(courseId, image, source)
+  });
   const loadedCourseId = $derived(courseApi.course?.id);
   const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);

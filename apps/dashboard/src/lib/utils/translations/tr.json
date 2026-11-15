@@ -7429,7 +7429,9 @@
       "try_placeholder": "Örnek bir öğrenci cevabı yazın",
       "try_button": "Kontrol et",
       "try_checking": "Kontrol ediliyor…",
-      "try_needs_answer": "Önce kabul edilen bir cevap ekleyin."
+      "try_needs_answer": "Önce kabul edilen bir cevap ekleyin.",
+      "allow_image_label": "Öğrencilerin fotoğraf veya çizimle yanıtlamasına izin ver",
+      "allow_image_helper": "Yanıt kutusuna Fotoğraf veya çizim düğmesi ekler. Yazılan yanıtlar daha güvenilir notlandığı için varsayılan olarak kapalıdır."
     },
     "verdict": {
       "equivalent": "Doğru",
@@ -7552,6 +7554,65 @@
     "desmos": {
       "label": "Desmos API anahtarı",
       "helper": "İsteğe bağlı. Grafik olarak ayarlanan alıştırmalarda Desmos grafik hesap makinesini etkinleştirir. Anahtar yoksa öğrenciler bilimsel hesap makinesini kullanır."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Fotoğraf veya çizim",
+      "photo_tab": "Fotoğraf",
+      "draw_tab": "Çiz",
+      "upload": "Görsel yükle",
+      "take_photo": "Fotoğraf çek",
+      "photo_hint": "Ekran görüntüsü yapıştırın, bir görsel bırakın veya yükleyin.",
+      "crop_hint": "İstediğiniz matematiğin etrafına bir kutu çizin.",
+      "reset_crop": "Tüm görseli kullan",
+      "convert": "Dönüştür",
+      "converting": "Matematik okunuyor…",
+      "draw_hint": "Matematiği buraya parmağınız, kalem veya fareyle yazın.",
+      "clear": "Temizle",
+      "original": "Orijinal",
+      "converted": "Dönüştürülen matematik",
+      "insert": "Ekle",
+      "no_math_found": "Bu görselde matematik bulunamadı.",
+      "parse_failed": "Bu geçerli matematik olarak okunamadı. Aşağıda düzeltin veya yeniden deneyin.",
+      "invalid_math": "Bu henüz geçerli matematik değil.",
+      "unsupported_file": "PNG, JPEG veya WebP görseli kullanın.",
+      "image_too_large": "Bu görsel çok büyük.",
+      "conversion_failed": "Dönüştürme başarısız oldu. Yeniden deneyin."
+    },
+    "errors": {
+      "limit_reached": "Ücretsiz planın aylık fotoğraf ve çalışma sayfası dönüştürme hakkı doldu. Devam etmek için planınızı yükseltin.",
+      "token_limit": "Bu çalışma alanı bu ayki yapay zekâ kotasını doldurdu.",
+      "not_configured": "Bu platformda yapay zekâ kurulu değil."
+    },
+    "worksheet": {
+      "import_button": "Çalışma sayfasından içe aktar",
+      "title": "Çalışma sayfası içe aktar",
+      "description": "Bir çalışma sayfasının fotoğrafını veya PDF’sini yükleyin. Her soru matematik olarak okunur, bir tür ve önerilen bir yanıt alır; yanıt içe aktarmadan önce kontrol edilir.",
+      "drop_hint": "10 MB’a kadar PNG, JPEG, WebP veya PDF dosyası seçin.",
+      "choose_file": "Dosya seç",
+      "choose_another": "Başka dosya seç",
+      "original": "Orijinal",
+      "questions": "Bulunan sorular",
+      "reading": "Çalışma sayfası okunuyor…",
+      "verified": "Yanıt doğrulandı",
+      "unverified": "Kontrol gerekli",
+      "unverified_hint": "Motor bu yanıtı doğrulayamadı. Kontrol edin, ardından içe aktarmak için soruyu işaretleyin.",
+      "question_label": "Soru metni",
+      "option_label": "Seçenek",
+      "answer_label": "Yanıt",
+      "correct_option": "Doğru seçenek",
+      "import_selected": "{count} soruyu içe aktar",
+      "cancel": "İptal",
+      "imported": "Sorular içe aktarıldı. Gözden geçirin, ardından alıştırmayı kaydedin.",
+      "no_questions": "Bu dosyada soru bulunamadı.",
+      "unsupported_file": "PNG, JPEG, WebP veya PDF dosyası kullanın.",
+      "file_too_large": "Bu dosya 10 MB’tan büyük.",
+      "type": {
+        "MATH_EXPRESSION": "Matematiksel ifade",
+        "NUMERIC": "Sayısal",
+        "RADIO": "Tek yanıt"
+      }
     }
   }
 }

@@ -7349,7 +7349,9 @@
       "try_placeholder": "Type a sample student answer",
       "try_button": "Check",
       "try_checking": "Checking…",
-      "try_needs_answer": "Add an accepted answer first."
+      "try_needs_answer": "Add an accepted answer first.",
+      "allow_image_label": "Let students answer with a photo or drawing",
+      "allow_image_helper": "Adds a Photo or draw button to the answer box. Typed answers grade more reliably, so this is off by default."
     },
     "verdict": {
       "equivalent": "Correct",
@@ -7472,6 +7474,65 @@
     "desmos": {
       "label": "Desmos API key",
       "helper": "Optional. Enables the Desmos graphing calculator in exercises set to Graphing. Without a key, students get the scientific calculator instead."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Photo or draw",
+      "photo_tab": "Photo",
+      "draw_tab": "Draw",
+      "upload": "Upload an image",
+      "take_photo": "Take a photo",
+      "photo_hint": "Paste a screenshot, drop an image or upload one.",
+      "crop_hint": "Drag a box around the math you want.",
+      "reset_crop": "Use the whole image",
+      "convert": "Convert",
+      "converting": "Reading the math…",
+      "draw_hint": "Write the math here with your finger, a stylus or the mouse.",
+      "clear": "Clear",
+      "original": "Original",
+      "converted": "Converted math",
+      "insert": "Insert",
+      "no_math_found": "No math was found in this image.",
+      "parse_failed": "This could not be read as valid math. Fix it below or try again.",
+      "invalid_math": "This is not valid math yet.",
+      "unsupported_file": "Use a PNG, JPEG or WebP image.",
+      "image_too_large": "This image is too large.",
+      "conversion_failed": "The conversion failed. Try again."
+    },
+    "errors": {
+      "limit_reached": "The free plan’s monthly photo and worksheet conversions are used up. Upgrade to keep converting.",
+      "token_limit": "This workspace has used up its AI allowance for the month.",
+      "not_configured": "AI is not set up for this platform."
+    },
+    "worksheet": {
+      "import_button": "Import from worksheet",
+      "title": "Import a worksheet",
+      "description": "Upload a photo or PDF of a worksheet. Each question is read as math, given a type and a proposed answer, and the answer is checked before you import.",
+      "drop_hint": "Choose a PNG, JPEG, WebP or PDF file up to 10 MB.",
+      "choose_file": "Choose a file",
+      "choose_another": "Choose another file",
+      "original": "Original",
+      "questions": "Questions found",
+      "reading": "Reading the worksheet…",
+      "verified": "Answer verified",
+      "unverified": "Needs checking",
+      "unverified_hint": "The engine could not confirm this answer. Check it, then tick the question to import it.",
+      "question_label": "Question text",
+      "option_label": "Option",
+      "answer_label": "Answer",
+      "correct_option": "Correct option",
+      "import_selected": "Import {count} questions",
+      "cancel": "Cancel",
+      "imported": "Questions imported. Review them, then save the exercise.",
+      "no_questions": "No questions were found in this file.",
+      "unsupported_file": "Use a PNG, JPEG, WebP or PDF file.",
+      "file_too_large": "This file is larger than 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Math expression",
+        "NUMERIC": "Numeric",
+        "RADIO": "Single answer"
+      }
     }
   }
 }

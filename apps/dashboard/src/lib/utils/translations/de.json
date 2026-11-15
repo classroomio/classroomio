@@ -7379,7 +7379,9 @@
       "try_placeholder": "Beispielantwort eingeben",
       "try_button": "Prüfen",
       "try_checking": "Wird geprüft…",
-      "try_needs_answer": "Fügen Sie zuerst eine akzeptierte Antwort hinzu."
+      "try_needs_answer": "Fügen Sie zuerst eine akzeptierte Antwort hinzu.",
+      "allow_image_label": "Schüler dürfen mit Foto oder Zeichnung antworten",
+      "allow_image_helper": "Fügt dem Antwortfeld eine Schaltfläche für Foto oder Zeichnung hinzu. Getippte Antworten werden zuverlässiger bewertet, daher ist dies standardmäßig aus."
     },
     "verdict": {
       "equivalent": "Richtig",
@@ -7502,6 +7504,65 @@
     "desmos": {
       "label": "Desmos-API-Schlüssel",
       "helper": "Optional. Aktiviert den Desmos-Grafikrechner in Übungen mit Grafikrechner. Ohne Schlüssel erhalten Lernende den wissenschaftlichen Taschenrechner."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Foto oder Zeichnung",
+      "photo_tab": "Foto",
+      "draw_tab": "Zeichnen",
+      "upload": "Bild hochladen",
+      "take_photo": "Foto aufnehmen",
+      "photo_hint": "Füge einen Screenshot ein, ziehe ein Bild hierher oder lade eines hoch.",
+      "crop_hint": "Ziehe einen Rahmen um die gewünschte Mathematik.",
+      "reset_crop": "Ganzes Bild verwenden",
+      "convert": "Umwandeln",
+      "converting": "Mathematik wird gelesen …",
+      "draw_hint": "Schreibe die Mathematik hier mit dem Finger, einem Stift oder der Maus.",
+      "clear": "Löschen",
+      "original": "Original",
+      "converted": "Umgewandelte Mathematik",
+      "insert": "Einfügen",
+      "no_math_found": "In diesem Bild wurde keine Mathematik gefunden.",
+      "parse_failed": "Das ließ sich nicht als gültige Mathematik lesen. Korrigiere es unten oder versuche es erneut.",
+      "invalid_math": "Das ist noch keine gültige Mathematik.",
+      "unsupported_file": "Verwende ein PNG-, JPEG- oder WebP-Bild.",
+      "image_too_large": "Dieses Bild ist zu groß.",
+      "conversion_failed": "Die Umwandlung ist fehlgeschlagen. Versuche es erneut."
+    },
+    "errors": {
+      "limit_reached": "Die monatlichen Foto- und Arbeitsblatt-Umwandlungen des kostenlosen Tarifs sind aufgebraucht. Wechsle den Tarif, um weiterzumachen.",
+      "token_limit": "Dieser Arbeitsbereich hat sein KI-Kontingent für den Monat aufgebraucht.",
+      "not_configured": "KI ist auf dieser Plattform nicht eingerichtet."
+    },
+    "worksheet": {
+      "import_button": "Aus Arbeitsblatt importieren",
+      "title": "Arbeitsblatt importieren",
+      "description": "Lade ein Foto oder PDF eines Arbeitsblatts hoch. Jede Frage wird als Mathematik gelesen, erhält einen Typ und eine vorgeschlagene Antwort, und die Antwort wird vor dem Import geprüft.",
+      "drop_hint": "Wähle eine PNG-, JPEG-, WebP- oder PDF-Datei bis 10 MB.",
+      "choose_file": "Datei auswählen",
+      "choose_another": "Andere Datei auswählen",
+      "original": "Original",
+      "questions": "Gefundene Fragen",
+      "reading": "Arbeitsblatt wird gelesen …",
+      "verified": "Antwort geprüft",
+      "unverified": "Muss geprüft werden",
+      "unverified_hint": "Die Engine konnte diese Antwort nicht bestätigen. Prüfe sie und hake die Frage dann zum Importieren an.",
+      "question_label": "Fragetext",
+      "option_label": "Option",
+      "answer_label": "Antwort",
+      "correct_option": "Richtige Option",
+      "import_selected": "{count} Fragen importieren",
+      "cancel": "Abbrechen",
+      "imported": "Fragen importiert. Prüfe sie und speichere dann die Übung.",
+      "no_questions": "In dieser Datei wurden keine Fragen gefunden.",
+      "unsupported_file": "Verwende eine PNG-, JPEG-, WebP- oder PDF-Datei.",
+      "file_too_large": "Diese Datei ist größer als 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Mathematischer Ausdruck",
+        "NUMERIC": "Numerisch",
+        "RADIO": "Einzelne Antwort"
+      }
     }
   }
 }

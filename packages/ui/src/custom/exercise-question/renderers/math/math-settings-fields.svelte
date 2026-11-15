@@ -23,6 +23,7 @@
     MATH_KEYBOARD_PRESET_KEYS,
     MATH_REQUIRED_FORMS,
     changeCompareMode,
+    readAllowImageInput,
     readMathKeyboardPreset
   } from './math-question-utils';
 
@@ -40,6 +41,7 @@
   const parsed = $derived(readMathExpressionSettings(settings));
   const acceptedAnswers = $derived(parsed.acceptedAnswers.length > 0 ? parsed.acceptedAnswers : ['']);
   const keyboard = $derived(readMathKeyboardPreset(settings));
+  const allowImageInput = $derived(readAllowImageInput(settings));
   const compare = $derived(parsed.compare);
   const feedbackRows = $derived(parsed.wrongAnswerFeedback);
   const variablesText = $derived(parsed.variables.join(', '));
@@ -227,6 +229,18 @@
       </div>
     </div>
   {/if}
+
+  <div class="ui:flex ui:items-start ui:gap-2">
+    <Checkbox
+      {disabled}
+      checked={allowImageInput}
+      onCheckedChange={(checked) => onPatchSettings({ allowImageInput: checked === true })}
+    />
+    <div class="ui:space-y-1">
+      <Label>{label('math.edit.allow_image_label')}</Label>
+      <p class="ui:text-muted-foreground ui:text-xs">{label('math.edit.allow_image_helper')}</p>
+    </div>
+  </div>
 
   <div class="ui:grid ui:gap-3 ui:md:grid-cols-2">
     <div class="ui:space-y-1">

@@ -31,6 +31,8 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import PlusIcon from '@lucide/svelte/icons/plus';
+  import FileUpIcon from '@lucide/svelte/icons/file-up';
+  import WorksheetImportDialog from '$features/math/components/worksheet-import-dialog.svelte';
   import { MathText } from '@cio/ui/custom/math-text';
   import * as Tooltip from '@cio/ui/base/tooltip';
 
@@ -93,6 +95,7 @@
     isPublicCourse ? QUESTION_TYPES.filter((type) => type.autoGradable) : QUESTION_TYPES
   );
 
+  let isWorksheetImportOpen = $state(false);
   let questionIdToDelete = $state(null);
   let sectionIdToDelete = $state<string | null>(null);
   let deleteConfirmationType = $state<'question' | 'section'>('question');
@@ -535,6 +538,14 @@
     </div>
   {/if}
   <div class="questions px-6 pt-6">
+    {#if !reorderQuestions}
+      <div class="mb-4 flex justify-end">
+        <Button variant="outline" size="sm" onclick={() => (isWorksheetImportOpen = true)}>
+          <FileUpIcon class="size-4" />
+          {$t('math_vision.worksheet.import_button')}
+        </Button>
+      </div>
+    {/if}
     {#if hasSections($questionnaire.sections)}
       <div class="space-y-5">
         {#each activeSections as section, sectionIndex (section.id)}
@@ -625,6 +636,8 @@
     {/if}
   </div>
 </div>
+
+<WorksheetImportDialog bind:open={isWorksheetImportOpen} />
 
 <style>
   :global(#dnd-action-dragged-el div) {

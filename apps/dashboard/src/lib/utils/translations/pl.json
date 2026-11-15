@@ -7379,7 +7379,9 @@
       "try_placeholder": "Wpisz przykładową odpowiedź ucznia",
       "try_button": "Sprawdź",
       "try_checking": "Sprawdzanie…",
-      "try_needs_answer": "Najpierw dodaj zaakceptowaną odpowiedź."
+      "try_needs_answer": "Najpierw dodaj zaakceptowaną odpowiedź.",
+      "allow_image_label": "Pozwól uczniom odpowiadać zdjęciem lub rysunkiem",
+      "allow_image_helper": "Dodaje przycisk zdjęcia lub rysunku do pola odpowiedzi. Wpisane odpowiedzi są oceniane pewniej, dlatego opcja jest domyślnie wyłączona."
     },
     "verdict": {
       "equivalent": "Poprawna",
@@ -7502,6 +7504,65 @@
     "desmos": {
       "label": "Klucz API Desmos",
       "helper": "Opcjonalne. Włącza kalkulator graficzny Desmos w ćwiczeniach ustawionych na Graficzny. Bez klucza uczniowie dostają kalkulator naukowy."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Zdjęcie lub rysunek",
+      "photo_tab": "Zdjęcie",
+      "draw_tab": "Rysuj",
+      "upload": "Prześlij obraz",
+      "take_photo": "Zrób zdjęcie",
+      "photo_hint": "Wklej zrzut ekranu, upuść obraz lub prześlij go.",
+      "crop_hint": "Przeciągnij ramkę wokół potrzebnego zapisu.",
+      "reset_crop": "Użyj całego obrazu",
+      "convert": "Konwertuj",
+      "converting": "Odczytywanie zapisu…",
+      "draw_hint": "Napisz tu zapis palcem, rysikiem lub myszą.",
+      "clear": "Wyczyść",
+      "original": "Oryginał",
+      "converted": "Przekonwertowany zapis",
+      "insert": "Wstaw",
+      "no_math_found": "Na obrazie nie znaleziono zapisu matematycznego.",
+      "parse_failed": "Nie udało się odczytać tego jako poprawnego zapisu. Popraw go poniżej lub spróbuj ponownie.",
+      "invalid_math": "To nie jest jeszcze poprawny zapis.",
+      "unsupported_file": "Użyj obrazu PNG, JPEG lub WebP.",
+      "image_too_large": "Ten obraz jest zbyt duży.",
+      "conversion_failed": "Konwersja się nie powiodła. Spróbuj ponownie."
+    },
+    "errors": {
+      "limit_reached": "Miesięczny limit konwersji zdjęć i arkuszy w planie darmowym został wykorzystany. Przejdź na wyższy plan, aby kontynuować.",
+      "token_limit": "Ten obszar roboczy wykorzystał miesięczny limit AI.",
+      "not_configured": "AI nie jest skonfigurowane na tej platformie."
+    },
+    "worksheet": {
+      "import_button": "Importuj z arkusza",
+      "title": "Importuj arkusz",
+      "description": "Prześlij zdjęcie lub plik PDF arkusza. Każde pytanie jest odczytywane jako zapis matematyczny, dostaje typ i proponowaną odpowiedź, a odpowiedź jest sprawdzana przed importem.",
+      "drop_hint": "Wybierz plik PNG, JPEG, WebP lub PDF do 10 MB.",
+      "choose_file": "Wybierz plik",
+      "choose_another": "Wybierz inny plik",
+      "original": "Oryginał",
+      "questions": "Znalezione pytania",
+      "reading": "Odczytywanie arkusza…",
+      "verified": "Odpowiedź zweryfikowana",
+      "unverified": "Wymaga sprawdzenia",
+      "unverified_hint": "Silnik nie mógł potwierdzić tej odpowiedzi. Sprawdź ją, a potem zaznacz pytanie, aby je zaimportować.",
+      "question_label": "Treść pytania",
+      "option_label": "Opcja",
+      "answer_label": "Odpowiedź",
+      "correct_option": "Poprawna opcja",
+      "import_selected": "Importuj pytania: {count}",
+      "cancel": "Anuluj",
+      "imported": "Pytania zaimportowane. Przejrzyj je, a potem zapisz ćwiczenie.",
+      "no_questions": "W tym pliku nie znaleziono pytań.",
+      "unsupported_file": "Użyj pliku PNG, JPEG, WebP lub PDF.",
+      "file_too_large": "Ten plik jest większy niż 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Wyrażenie matematyczne",
+        "NUMERIC": "Liczbowe",
+        "RADIO": "Jedna odpowiedź"
+      }
     }
   }
 }

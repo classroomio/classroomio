@@ -7379,7 +7379,9 @@
       "try_placeholder": "Skriv et eksempel på et elevsvar",
       "try_button": "Tjek",
       "try_checking": "Tjekker…",
-      "try_needs_answer": "Tilføj først et accepteret svar."
+      "try_needs_answer": "Tilføj først et accepteret svar.",
+      "allow_image_label": "Lad eleverne svare med et foto eller en tegning",
+      "allow_image_helper": "Tilføjer en Foto eller tegn-knap til svarfeltet. Indtastede svar bedømmes mere pålideligt, så dette er slået fra som standard."
     },
     "verdict": {
       "equivalent": "Korrekt",
@@ -7502,6 +7504,65 @@
     "desmos": {
       "label": "Desmos API-nøgle",
       "helper": "Valgfri. Aktiverer Desmos-grafregneren i øvelser sat til Graf. Uden nøgle får eleverne den videnskabelige lommeregner."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Foto eller tegning",
+      "photo_tab": "Foto",
+      "draw_tab": "Tegn",
+      "upload": "Upload et billede",
+      "take_photo": "Tag et billede",
+      "photo_hint": "Indsæt et skærmbillede, slip et billede eller upload et.",
+      "crop_hint": "Træk en boks rundt om den matematik, du vil bruge.",
+      "reset_crop": "Brug hele billedet",
+      "convert": "Konverter",
+      "converting": "Læser matematikken …",
+      "draw_hint": "Skriv matematikken her med fingeren, en pen eller musen.",
+      "clear": "Ryd",
+      "original": "Original",
+      "converted": "Konverteret matematik",
+      "insert": "Indsæt",
+      "no_math_found": "Der blev ikke fundet matematik i billedet.",
+      "parse_failed": "Dette kunne ikke læses som gyldig matematik. Ret det nedenfor, eller prøv igen.",
+      "invalid_math": "Dette er endnu ikke gyldig matematik.",
+      "unsupported_file": "Brug et PNG-, JPEG- eller WebP-billede.",
+      "image_too_large": "Billedet er for stort.",
+      "conversion_failed": "Konverteringen mislykkedes. Prøv igen."
+    },
+    "errors": {
+      "limit_reached": "Den gratis plans månedlige foto- og arbejdsarkskonverteringer er brugt. Opgrader for at fortsætte.",
+      "token_limit": "Dette arbejdsområde har brugt sin AI-kvote for måneden.",
+      "not_configured": "AI er ikke sat op på denne platform."
+    },
+    "worksheet": {
+      "import_button": "Importér fra arbejdsark",
+      "title": "Importér et arbejdsark",
+      "description": "Upload et foto eller en PDF af et arbejdsark. Hvert spørgsmål læses som matematik, får en type og et foreslået svar, og svaret kontrolleres, før du importerer.",
+      "drop_hint": "Vælg en PNG-, JPEG-, WebP- eller PDF-fil på op til 10 MB.",
+      "choose_file": "Vælg en fil",
+      "choose_another": "Vælg en anden fil",
+      "original": "Original",
+      "questions": "Fundne spørgsmål",
+      "reading": "Læser arbejdsarket …",
+      "verified": "Svar bekræftet",
+      "unverified": "Skal kontrolleres",
+      "unverified_hint": "Motoren kunne ikke bekræfte dette svar. Kontrollér det, og sæt kryds ved spørgsmålet for at importere det.",
+      "question_label": "Spørgsmålstekst",
+      "option_label": "Svarmulighed",
+      "answer_label": "Svar",
+      "correct_option": "Korrekt svarmulighed",
+      "import_selected": "Importér {count} spørgsmål",
+      "cancel": "Annuller",
+      "imported": "Spørgsmål importeret. Gennemgå dem, og gem derefter øvelsen.",
+      "no_questions": "Der blev ikke fundet spørgsmål i filen.",
+      "unsupported_file": "Brug en PNG-, JPEG-, WebP- eller PDF-fil.",
+      "file_too_large": "Filen er større end 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Matematisk udtryk",
+        "NUMERIC": "Numerisk",
+        "RADIO": "Enkelt svar"
+      }
     }
   }
 }

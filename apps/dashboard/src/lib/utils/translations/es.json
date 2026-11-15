@@ -7379,7 +7379,9 @@
       "try_placeholder": "Escribe una respuesta de ejemplo",
       "try_button": "Comprobar",
       "try_checking": "Comprobando…",
-      "try_needs_answer": "Añade primero una respuesta aceptada."
+      "try_needs_answer": "Añade primero una respuesta aceptada.",
+      "allow_image_label": "Permitir que los estudiantes respondan con una foto o un dibujo",
+      "allow_image_helper": "Añade un botón de foto o dibujo al cuadro de respuesta. Las respuestas escritas se califican con más fiabilidad, por eso está desactivado por defecto."
     },
     "verdict": {
       "equivalent": "Correcta",
@@ -7502,6 +7504,65 @@
     "desmos": {
       "label": "Clave de API de Desmos",
       "helper": "Opcional. Activa la calculadora gráfica de Desmos en los ejercicios con calculadora gráfica. Sin clave, los estudiantes usan la calculadora científica."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Foto o dibujo",
+      "photo_tab": "Foto",
+      "draw_tab": "Dibujar",
+      "upload": "Subir una imagen",
+      "take_photo": "Hacer una foto",
+      "photo_hint": "Pega una captura, suelta una imagen o sube una.",
+      "crop_hint": "Arrastra un recuadro alrededor de las matemáticas que quieras.",
+      "reset_crop": "Usar toda la imagen",
+      "convert": "Convertir",
+      "converting": "Leyendo las matemáticas…",
+      "draw_hint": "Escribe aquí las matemáticas con el dedo, un lápiz óptico o el ratón.",
+      "clear": "Borrar",
+      "original": "Original",
+      "converted": "Matemáticas convertidas",
+      "insert": "Insertar",
+      "no_math_found": "No se encontraron matemáticas en esta imagen.",
+      "parse_failed": "No se pudo leer como matemáticas válidas. Corrígelo abajo o inténtalo de nuevo.",
+      "invalid_math": "Esto todavía no son matemáticas válidas.",
+      "unsupported_file": "Usa una imagen PNG, JPEG o WebP.",
+      "image_too_large": "Esta imagen es demasiado grande.",
+      "conversion_failed": "La conversión falló. Inténtalo de nuevo."
+    },
+    "errors": {
+      "limit_reached": "Se agotaron las conversiones mensuales de fotos y hojas del plan gratuito. Mejora tu plan para seguir convirtiendo.",
+      "token_limit": "Este espacio de trabajo ha agotado su cuota de IA del mes.",
+      "not_configured": "La IA no está configurada en esta plataforma."
+    },
+    "worksheet": {
+      "import_button": "Importar desde una hoja",
+      "title": "Importar una hoja de ejercicios",
+      "description": "Sube una foto o un PDF de una hoja. Cada pregunta se lee como matemáticas, recibe un tipo y una respuesta propuesta, y la respuesta se comprueba antes de importar.",
+      "drop_hint": "Elige un archivo PNG, JPEG, WebP o PDF de hasta 10 MB.",
+      "choose_file": "Elegir un archivo",
+      "choose_another": "Elegir otro archivo",
+      "original": "Original",
+      "questions": "Preguntas encontradas",
+      "reading": "Leyendo la hoja…",
+      "verified": "Respuesta verificada",
+      "unverified": "Requiere revisión",
+      "unverified_hint": "El motor no pudo confirmar esta respuesta. Revísala y marca la pregunta para importarla.",
+      "question_label": "Texto de la pregunta",
+      "option_label": "Opción",
+      "answer_label": "Respuesta",
+      "correct_option": "Opción correcta",
+      "import_selected": "Importar {count} preguntas",
+      "cancel": "Cancelar",
+      "imported": "Preguntas importadas. Revísalas y guarda el ejercicio.",
+      "no_questions": "No se encontraron preguntas en este archivo.",
+      "unsupported_file": "Usa un archivo PNG, JPEG, WebP o PDF.",
+      "file_too_large": "Este archivo supera los 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Expresión matemática",
+        "NUMERIC": "Numérica",
+        "RADIO": "Respuesta única"
+      }
     }
   }
 }

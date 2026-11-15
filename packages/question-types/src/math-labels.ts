@@ -41,6 +41,9 @@ export const MATH_QUESTION_LABEL_DEFAULTS = {
   'math.edit.feedback_text_placeholder': 'Hint for the student',
   'math.edit.add_feedback': 'Add feedback',
   'math.edit.remove': 'Remove',
+  'math.edit.allow_image_label': 'Let students answer with a photo or drawing',
+  'math.edit.allow_image_helper':
+    'Adds a Photo or draw button to the answer box. Typed answers grade more reliably, so this is off by default.',
   'math.edit.try_label': 'Try an answer',
   'math.edit.try_helper': 'Check how a student answer would be marked before you publish.',
   'math.edit.try_placeholder': 'Type a sample student answer',

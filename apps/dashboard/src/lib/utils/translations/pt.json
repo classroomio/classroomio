@@ -7379,7 +7379,9 @@
       "try_placeholder": "Digite uma resposta de exemplo",
       "try_button": "Verificar",
       "try_checking": "Verificando…",
-      "try_needs_answer": "Adicione primeiro uma resposta aceita."
+      "try_needs_answer": "Adicione primeiro uma resposta aceita.",
+      "allow_image_label": "Permitir que os alunos respondam com uma foto ou um desenho",
+      "allow_image_helper": "Adiciona um botão de foto ou desenho à caixa de resposta. As respostas digitadas são corrigidas com mais fiabilidade, por isso está desativado por predefinição."
     },
     "verdict": {
       "equivalent": "Correta",
@@ -7502,6 +7504,65 @@
     "desmos": {
       "label": "Chave de API do Desmos",
       "helper": "Opcional. Ativa a calculadora gráfica Desmos em exercícios definidos como Gráfica. Sem chave, os alunos usam a calculadora científica."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Foto ou desenho",
+      "photo_tab": "Foto",
+      "draw_tab": "Desenhar",
+      "upload": "Enviar uma imagem",
+      "take_photo": "Tirar uma foto",
+      "photo_hint": "Cole uma captura de ecrã, largue uma imagem ou envie uma.",
+      "crop_hint": "Arraste uma caixa em volta da matemática que quer.",
+      "reset_crop": "Usar a imagem toda",
+      "convert": "Converter",
+      "converting": "A ler a matemática…",
+      "draw_hint": "Escreva aqui a matemática com o dedo, uma caneta ou o rato.",
+      "clear": "Limpar",
+      "original": "Original",
+      "converted": "Matemática convertida",
+      "insert": "Inserir",
+      "no_math_found": "Não foi encontrada matemática nesta imagem.",
+      "parse_failed": "Não foi possível ler isto como matemática válida. Corrija abaixo ou tente de novo.",
+      "invalid_math": "Isto ainda não é matemática válida.",
+      "unsupported_file": "Use uma imagem PNG, JPEG ou WebP.",
+      "image_too_large": "Esta imagem é demasiado grande.",
+      "conversion_failed": "A conversão falhou. Tente de novo."
+    },
+    "errors": {
+      "limit_reached": "As conversões mensais de fotos e fichas do plano gratuito acabaram. Mude de plano para continuar.",
+      "token_limit": "Este espaço de trabalho esgotou a quota de IA do mês.",
+      "not_configured": "A IA não está configurada nesta plataforma."
+    },
+    "worksheet": {
+      "import_button": "Importar de uma ficha",
+      "title": "Importar uma ficha de exercícios",
+      "description": "Envie uma foto ou um PDF de uma ficha. Cada pergunta é lida como matemática, recebe um tipo e uma resposta proposta, e a resposta é verificada antes de importar.",
+      "drop_hint": "Escolha um ficheiro PNG, JPEG, WebP ou PDF até 10 MB.",
+      "choose_file": "Escolher um ficheiro",
+      "choose_another": "Escolher outro ficheiro",
+      "original": "Original",
+      "questions": "Perguntas encontradas",
+      "reading": "A ler a ficha…",
+      "verified": "Resposta verificada",
+      "unverified": "Requer verificação",
+      "unverified_hint": "O motor não conseguiu confirmar esta resposta. Verifique-a e marque a pergunta para a importar.",
+      "question_label": "Texto da pergunta",
+      "option_label": "Opção",
+      "answer_label": "Resposta",
+      "correct_option": "Opção correta",
+      "import_selected": "Importar {count} perguntas",
+      "cancel": "Cancelar",
+      "imported": "Perguntas importadas. Reveja-as e guarde o exercício.",
+      "no_questions": "Não foram encontradas perguntas neste ficheiro.",
+      "unsupported_file": "Use um ficheiro PNG, JPEG, WebP ou PDF.",
+      "file_too_large": "Este ficheiro tem mais de 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Expressão matemática",
+        "NUMERIC": "Numérica",
+        "RADIO": "Resposta única"
+      }
     }
   }
 }

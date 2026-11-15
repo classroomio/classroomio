@@ -1,6 +1,7 @@
 import { countMathVisionRequests, MATH_VISION_USAGE_PREFIX } from '@cio/db/queries/agent';
 import { enforceTokenBalance, isOrgOnPaidPlan, recordTokenUsage } from '@cio/core/services/agent/usage';
 import { MATH_FREE_PLAN_MONTHLY_CONVERSIONS } from '@cio/utils/validation/math';
+import { ErrorCodes } from '@cio/utils/constants';
 import { AppError } from '@api/utils/errors';
 
 function startOfCurrentMonthUtc(): Date {
@@ -21,7 +22,11 @@ export async function enforceMathVisionAllowance(orgId: string): Promise<void> {
   const used = await countMathVisionRequests(orgId, startOfCurrentMonthUtc());
   if (used < MATH_FREE_PLAN_MONTHLY_CONVERSIONS) return;
 
-  throw new AppError('Free plan image conversions are used up for this month', 'MATH_VISION_LIMIT_REACHED', 402);
+  throw new AppError(
+    'Free plan image conversions are used up for this month',
+    ErrorCodes.MATH_VISION_LIMIT_REACHED,
+    402
+  );
 }
 
 export async function recordMathVisionUsage(

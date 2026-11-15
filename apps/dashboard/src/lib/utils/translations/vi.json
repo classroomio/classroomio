@@ -7379,7 +7379,9 @@
       "try_placeholder": "Nhập một câu trả lời mẫu",
       "try_button": "Kiểm tra",
       "try_checking": "Đang kiểm tra…",
-      "try_needs_answer": "Hãy thêm một câu trả lời được chấp nhận trước."
+      "try_needs_answer": "Hãy thêm một câu trả lời được chấp nhận trước.",
+      "allow_image_label": "Cho phép học viên trả lời bằng ảnh hoặc hình vẽ",
+      "allow_image_helper": "Thêm nút ảnh hoặc vẽ vào ô trả lời. Đáp án gõ được chấm đáng tin cậy hơn nên mặc định tắt."
     },
     "verdict": {
       "equivalent": "Đúng",
@@ -7502,6 +7504,65 @@
     "desmos": {
       "label": "Khóa API Desmos",
       "helper": "Tùy chọn. Bật máy tính đồ thị Desmos trong các bài tập đặt ở chế độ Đồ thị. Không có khóa, học viên dùng máy tính khoa học."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Ảnh hoặc vẽ",
+      "photo_tab": "Ảnh",
+      "draw_tab": "Vẽ",
+      "upload": "Tải ảnh lên",
+      "take_photo": "Chụp ảnh",
+      "photo_hint": "Dán ảnh chụp màn hình, thả ảnh vào hoặc tải ảnh lên.",
+      "crop_hint": "Kéo một khung quanh phần toán bạn muốn.",
+      "reset_crop": "Dùng toàn bộ ảnh",
+      "convert": "Chuyển đổi",
+      "converting": "Đang đọc phần toán…",
+      "draw_hint": "Viết phần toán ở đây bằng ngón tay, bút cảm ứng hoặc chuột.",
+      "clear": "Xóa",
+      "original": "Bản gốc",
+      "converted": "Toán đã chuyển đổi",
+      "insert": "Chèn",
+      "no_math_found": "Không tìm thấy phần toán nào trong ảnh này.",
+      "parse_failed": "Không đọc được đây là biểu thức toán hợp lệ. Hãy sửa bên dưới hoặc thử lại.",
+      "invalid_math": "Đây chưa phải biểu thức toán hợp lệ.",
+      "unsupported_file": "Hãy dùng ảnh PNG, JPEG hoặc WebP.",
+      "image_too_large": "Ảnh này quá lớn.",
+      "conversion_failed": "Chuyển đổi không thành công. Hãy thử lại."
+    },
+    "errors": {
+      "limit_reached": "Lượt chuyển đổi ảnh và phiếu bài tập hằng tháng của gói miễn phí đã hết. Hãy nâng cấp để tiếp tục.",
+      "token_limit": "Không gian làm việc này đã dùng hết hạn mức AI trong tháng.",
+      "not_configured": "AI chưa được thiết lập trên nền tảng này."
+    },
+    "worksheet": {
+      "import_button": "Nhập từ phiếu bài tập",
+      "title": "Nhập phiếu bài tập",
+      "description": "Tải lên ảnh hoặc PDF của phiếu bài tập. Mỗi câu hỏi được đọc dưới dạng toán, được gán loại và đáp án đề xuất, và đáp án được kiểm tra trước khi nhập.",
+      "drop_hint": "Chọn tệp PNG, JPEG, WebP hoặc PDF tối đa 10 MB.",
+      "choose_file": "Chọn tệp",
+      "choose_another": "Chọn tệp khác",
+      "original": "Bản gốc",
+      "questions": "Câu hỏi tìm thấy",
+      "reading": "Đang đọc phiếu bài tập…",
+      "verified": "Đã xác minh đáp án",
+      "unverified": "Cần kiểm tra",
+      "unverified_hint": "Công cụ không xác nhận được đáp án này. Hãy kiểm tra rồi đánh dấu câu hỏi để nhập.",
+      "question_label": "Nội dung câu hỏi",
+      "option_label": "Lựa chọn",
+      "answer_label": "Đáp án",
+      "correct_option": "Lựa chọn đúng",
+      "import_selected": "Nhập {count} câu hỏi",
+      "cancel": "Hủy",
+      "imported": "Đã nhập câu hỏi. Hãy xem lại rồi lưu bài tập.",
+      "no_questions": "Không tìm thấy câu hỏi nào trong tệp này.",
+      "unsupported_file": "Hãy dùng tệp PNG, JPEG, WebP hoặc PDF.",
+      "file_too_large": "Tệp này lớn hơn 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Biểu thức toán",
+        "NUMERIC": "Số",
+        "RADIO": "Một đáp án"
+      }
     }
   }
 }
