@@ -108,6 +108,13 @@
           </li>
           <li>
             <a
+              href="/customer-academy-roi-calculator"
+              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
+              >Academy ROI Calculator</a
+            >
+          </li>
+          <li>
+            <a
               href="/public-courses"
               class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Public Courses</a
             >

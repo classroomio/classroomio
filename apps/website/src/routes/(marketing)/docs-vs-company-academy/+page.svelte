@@ -359,6 +359,13 @@
         </BlurFade>
       {/each}
     </div>
+
+    <p class="mt-8 text-center text-[15px] text-gray-500">
+      Weighing the cost of an academy?
+      <a class="text-blue-700 hover:underline" href="/customer-academy-roi-calculator"
+        >Try the customer academy ROI calculator.</a
+      >
+    </p>
   </Section>
 
   <PageSignupCTA
