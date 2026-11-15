@@ -663,8 +663,11 @@ Supported `questionTypeId` values for exercise payloads:
 - `12` `STAR` - Star rating
 - `13` `VIDEO_RECORDING` - Video recording
 - `14` `THUMBS` - Thumbs up/down (open-ended poll with customizable Yes/No labels; no correct answer)
+- `15` `MATCHING` - Matching
+- `17` `MATH_EXPRESSION` - Math expression
+- `18` `WORKED_SOLUTION` - Worked solution
 
-`TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `MATCHING` and `HOTSPOT` are disabled and must not be used.
+`TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `HOTSPOT` is disabled and must not be used.
 
 ## Recommended Agent Behavior
 
