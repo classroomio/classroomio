@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { QUESTION_TYPE_IDS } from '@cio/question-types';
 
-import { getQuestionOptionIssues } from '../src/validation/exercise';
+import { ZExerciseQuestionTypeId, getQuestionOptionIssues } from '../src/validation/exercise';
 
 describe('math question settings validation', () => {
   it('requires an accepted answer for MATH_EXPRESSION', () => {
@@ -43,5 +43,12 @@ describe('math question settings validation', () => {
     expect(issues({ acceptedAnswers: ['4'], answerPoints: 2, workingInputs: ['typed', 'photo'] })).toEqual([]);
     expect(issues({ acceptedAnswers: ['4'], answerPoints: -1 })).toHaveLength(1);
     expect(issues({ acceptedAnswers: ['4'], workingInputs: ['video'] })).toHaveLength(1);
+  });
+});
+
+describe('ZExerciseQuestionTypeId', () => {
+  it('accepts the math question types', () => {
+    expect(ZExerciseQuestionTypeId.safeParse(QUESTION_TYPE_IDS.MATH_EXPRESSION).success).toBe(true);
+    expect(ZExerciseQuestionTypeId.safeParse(QUESTION_TYPE_IDS.WORKED_SOLUTION).success).toBe(true);
   });
 });
