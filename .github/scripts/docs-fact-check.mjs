@@ -6,14 +6,23 @@ import { posix, resolve, sep } from 'node:path';
 const marker = '<!-- classroomio-docs-fact-check -->';
 const checkedShaPattern = /<!-- classroomio-docs-fact-check-sha:([0-9a-f]{40}) -->/;
 const botLogin = 'github-actions[bot]';
+const resolveOnly = process.argv.includes('--resolve-only');
 const repository = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
-const event = JSON.parse(readFileSync(process.env.REVIEW_EVENT_PATH, 'utf8'));
+let event;
 const [owner, repo] = repository.split('/');
 const apiBase = `https://api.github.com/repos/${owner}/${repo}`;
 
-if (!token || !process.env.OPENCODE_API_KEY) {
-  throw new Error('GITHUB_TOKEN and OPENCODE_API_KEY are required');
+if (!token) {
+  throw new Error('GITHUB_TOKEN is required');
+}
+
+if (!resolveOnly) {
+  if (!process.env.OPENCODE_API_KEY) {
+    throw new Error('OPENCODE_API_KEY is required');
+  }
+
+  event = JSON.parse(readFileSync(process.env.REVIEW_EVENT_PATH, 'utf8'));
 }
 
 async function githubRequest(path, options = {}) {
@@ -111,42 +120,63 @@ function shouldResolveFinding(docPath, { resolveAll, activeDocPaths, revalidated
 }
 
 /**
- * Resolves fact-check review threads and removes fallback finding comments.
+ * Builds the list of threads to resolve and fallback comments to remove.
  *
  * `resolveAll` clears everything, which is what a full clean check does.
  * `activeDocPaths` keeps pages that are still reported open.
  * `revalidatedDocPaths` limits resolution to pages the current run actually
  * rechecked; null means the run checked the whole PR.
  */
-async function resolveFactCheckFindings(
-  pullNumber,
+function buildResolutionPlan(
   threads,
   fallbackComments,
   { resolveAll = false, activeDocPaths = new Set(), revalidatedDocPaths = null } = {}
 ) {
   const options = { resolveAll, activeDocPaths, revalidatedDocPaths };
+  const resolveThreadIds = [];
+  const deleteCommentIds = [];
 
   for (const thread of threads) {
     if (thread.isResolved) continue;
-    if (!shouldResolveFinding(docPathFromThreadBody(thread.body), options)) continue;
-
-    // The job token may not be allowed to resolve threads; don't fail the review over it.
-    try {
-      await githubGraphQL(`mutation($id:ID!) { resolveReviewThread(input:{threadId:$id}) { thread { id } } }`, {
-        id: thread.id
-      });
-    } catch (error) {
-      console.warn(`Could not resolve fact-check thread ${thread.id}:`, error.message);
-    }
+    if (shouldResolveFinding(docPathFromThreadBody(thread.body), options)) resolveThreadIds.push(thread.id);
   }
 
   for (const comment of fallbackComments) {
-    if (!shouldResolveFinding(comment.docPath, options)) continue;
+    if (shouldResolveFinding(comment.docPath, options)) deleteCommentIds.push(comment.id);
+  }
 
+  return { resolveThreadIds, deleteCommentIds };
+}
+
+function writeResolutionPlan(plan) {
+  const planPath = process.env.RESOLUTION_PLAN_PATH;
+
+  if (planPath) {
+    writeFileSync(planPath, JSON.stringify(plan));
+  }
+}
+
+/**
+ * Applies a plan produced by the review job. This runs in its own job so the
+ * token that can resolve threads never shares a job with PR content.
+ */
+async function applyResolutionPlan({ resolveThreadIds = [], deleteCommentIds = [] }) {
+  for (const threadId of resolveThreadIds) {
+    // Best-effort: a permission or API failure must not fail the resolution job.
     try {
-      await githubRequest(`/issues/comments/${comment.id}`, { method: 'DELETE' });
+      await githubGraphQL(`mutation($id:ID!) { resolveReviewThread(input:{threadId:$id}) { thread { id } } }`, {
+        id: threadId
+      });
     } catch (error) {
-      console.warn(`Could not remove fact-check comment ${comment.id}:`, error.message);
+      console.warn(`Could not resolve fact-check thread ${threadId}:`, error.message);
+    }
+  }
+
+  for (const commentId of deleteCommentIds) {
+    try {
+      await githubRequest(`/issues/comments/${commentId}`, { method: 'DELETE' });
+    } catch (error) {
+      console.warn(`Could not remove fact-check comment ${commentId}:`, error.message);
     }
   }
 }
@@ -662,21 +692,17 @@ async function reviewPullRequest(pullRequest, replyContext) {
       });
 
       if (hasNewCommits) {
-        await resolveFactCheckFindings(pullRequest.number, threads, fallbackComments, {
-          resolveAll: !isIncremental && result.score === 5,
-          activeDocPaths,
-          revalidatedDocPaths
-        });
+        writeResolutionPlan(
+          buildResolutionPlan(threads, fallbackComments, {
+            resolveAll: !isIncremental && result.score === 5,
+            activeDocPaths,
+            revalidatedDocPaths
+          })
+        );
       }
 
       return;
     }
-
-    await resolveFactCheckFindings(pullRequest.number, threads, fallbackComments, {
-      resolveAll: !isIncremental && result.score === 5,
-      activeDocPaths,
-      revalidatedDocPaths
-    });
 
     const firstChangedPath = pullRequestChangedLines.keys().next().value;
     if (firstChangedPath && result.score !== 5) {
@@ -692,6 +718,14 @@ async function reviewPullRequest(pullRequest, replyContext) {
       method: 'POST',
       body: JSON.stringify({ commit_id: headSha, event: 'COMMENT', body: withCheckedSha(result.body, headSha) })
     });
+
+    writeResolutionPlan(
+      buildResolutionPlan(threads, fallbackComments, {
+        resolveAll: !isIncremental && result.score === 5,
+        activeDocPaths,
+        revalidatedDocPaths
+      })
+    );
   } finally {
     rmSync(resolve(worktree, '.docs-review-diff.patch'), { force: true });
     rmSync(resolve(worktree, '.docs-review-images.json'), { force: true });
@@ -718,4 +752,11 @@ async function main() {
   }
 }
 
-await main();
+if (resolveOnly) {
+  const plan = JSON.parse(readFileSync(process.env.RESOLUTION_PLAN_PATH, 'utf8'));
+
+  await applyResolutionPlan(plan);
+} else {
+  writeResolutionPlan({ resolveThreadIds: [], deleteCommentIds: [] });
+  await main();
+}
