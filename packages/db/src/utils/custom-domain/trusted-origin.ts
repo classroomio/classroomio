@@ -10,6 +10,34 @@ const FIRST_PARTY_ROOTS: readonly string[] = [BRAND_ROOT_DOMAIN, TENANT_ROOT_DOM
 /** Lowercase hostnames with verified custom domains ( warmed at API boot + updated on domain routes ). */
 const verifiedCustomDomainHostnames = new Set<string>();
 
+const UNVERIFIED_HOSTNAME_TTL_MS = 60_000;
+const UNVERIFIED_HOSTNAME_MAX_ENTRIES = 1_000;
+
+const unverifiedHostnameExpiries = new Map<string, number>();
+
+function isRecentlyUnverified(hostname: string): boolean {
+  const expiresAt = unverifiedHostnameExpiries.get(hostname);
+
+  if (expiresAt === undefined) {
+    return false;
+  }
+
+  if (expiresAt <= Date.now()) {
+    unverifiedHostnameExpiries.delete(hostname);
+    return false;
+  }
+
+  return true;
+}
+
+function rememberUnverified(hostname: string): void {
+  if (unverifiedHostnameExpiries.size >= UNVERIFIED_HOSTNAME_MAX_ENTRIES) {
+    unverifiedHostnameExpiries.clear();
+  }
+
+  unverifiedHostnameExpiries.set(hostname, Date.now() + UNVERIFIED_HOSTNAME_TTL_MS);
+}
+
 function originMatchesStaticEntry(origin: string, entry: string): boolean {
   const trimmedEntry = entry.trim();
 
@@ -38,6 +66,7 @@ export function trustCustomDomainHostname(hostname: string): void {
 
   if (normalized) {
     verifiedCustomDomainHostnames.add(normalized);
+    unverifiedHostnameExpiries.delete(normalized);
   }
 }
 
@@ -128,11 +157,18 @@ export async function resolveTrustedCallbackOrigin(
     return trusted;
   }
 
-  if (parsed.protocol !== 'https:' || !(await isVerifiedCustomDomainHostname(parsed.hostname))) {
+  const hostname = parsed.hostname.toLowerCase();
+
+  if (parsed.protocol !== 'https:' || isRecentlyUnverified(hostname)) {
     return undefined;
   }
 
-  trustCustomDomainHostname(parsed.hostname);
+  if (!(await isVerifiedCustomDomainHostname(hostname))) {
+    rememberUnverified(hostname);
+    return undefined;
+  }
+
+  trustCustomDomainHostname(hostname);
 
   return parsed.origin;
 }
