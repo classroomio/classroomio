@@ -1,3 +1,5 @@
+import { ORG_ANALYTICS_PAGE } from '../constants/analytics-pages';
+
 export const PUBLIC_API_BASE_URL = 'https://api.classroomio.com/public-api/v1';
 export const PUBLIC_API_OPENAPI_URL = 'https://api.cdn.clsrio.com/openapi/public-api/openapi-latest.json';
 export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
@@ -85,7 +87,7 @@ function collapseNullableUnions(value: unknown): void {
 // missing — since every path here starts with `/public-api/v1/...`, every
 // entry in the reference's sidebar rendered as a near-duplicate route string.
 // Keyed by "METHOD /path" (the exact template, including `{param}` braces).
-const OPERATION_SUMMARIES: Record<string, string> = {
+export const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/audience': 'List audience members',
   'POST /public-api/v1/audience': 'Invite audience members',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
@@ -121,6 +123,8 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
   'PUT /public-api/v1/courses/{courseId}': 'Update a course',
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
+  'POST /public-api/v1/courses/{courseId}/publish': 'Publish a course',
+  'POST /public-api/v1/courses/{courseId}/unpublish': 'Unpublish a course',
   'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
   'GET /public-api/v1/courses/{courseId}/related': 'List related courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
@@ -140,6 +144,19 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Delete a course lesson',
   'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/notify-session-update':
     'Notify students of a session update',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks': 'List lesson blocks',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks': 'Add a lesson block',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/attach': 'Reuse a lesson block',
+  'PATCH /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}':
+    'Update a lesson block placement',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}/move':
+    'Move a lesson block',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}':
+    'Remove a lesson block from a lesson',
+  'PATCH /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}': 'Update a lesson block',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}/locale/{locale}':
+    'Save a lesson block translation',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}/duplicate': 'Duplicate a lesson block',
   'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations': 'List lesson translations',
   'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations/{locale}': 'Save a lesson translation',
   'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/history': 'List lesson version history',
@@ -223,6 +240,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/archive': 'Archive a cohort goal',
   'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/evaluate': 'Re-evaluate a cohort goal',
   'POST /public-api/v1/cohorts/{cohortId}/goals/evaluate-all': 'Re-evaluate all cohort goals',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/remind-overdue': 'Send overdue goal reminders now',
   'GET /public-api/v1/cohorts/goals/overview': 'Get the organization goals overview',
   'GET /public-api/v1/cohorts/my/goals': 'List your cohort goal assignments',
   'GET /public-api/v1/cohorts/enrolled': 'List cohorts you are enrolled in',
@@ -231,11 +249,20 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/cohorts/{cohortId}/invite-link': 'Get the cohort join link',
   'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
   'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link',
-  'GET /public-api/v1/analytics': 'Get organization analytics',
-  'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
-  'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
-  'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
-  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics',
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}`]: `Get the ${ORG_ANALYTICS_PAGE.label} dashboard for the organization`,
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/students`]: `List students on the ${ORG_ANALYTICS_PAGE.label} page`,
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`]: `List ${ORG_ANALYTICS_PAGE.label} sources, metrics and filters`,
+  [`POST /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`]: `Query ${ORG_ANALYTICS_PAGE.label} analytics`,
+  'GET /public-api/v1/courses/{courseId}/analytics': "Get a course's analytics",
+  'GET /public-api/v1/courses/{courseId}/analytics/students': "List a course's students with analytics",
+  'GET /public-api/v1/cohorts/{cohortId}/analytics': "Get a cohort's analytics",
+  'GET /public-api/v1/cohorts/{cohortId}/analytics/students': "List a cohort's students with analytics",
+  'GET /public-api/v1/analytics/marketing': 'Get marketing analytics',
+  'GET /public-api/v1/analytics/marketing/courses/{courseId}': "Get a course's marketing funnel",
+  'GET /public-api/v1/analytics/compliance': 'Get compliance analytics',
+  'GET /public-api/v1/analytics/compliance/students': 'List compliance status per student',
+  'GET /public-api/v1/organization/overview': 'Get the organization overview',
+  'GET /public-api/v1/audience/{profileId}/analytics': "Get a student's analytics",
   'GET /public-api/v1/tags': 'List tag groups and tags',
   'POST /public-api/v1/tags': 'Create a tag',
   'PUT /public-api/v1/tags/{tagId}': 'Update a tag',
@@ -304,7 +331,16 @@ const OPERATION_TAGS = [
   { name: 'Cohort Newsfeed', description: 'Post, react, and moderate a cohort newsfeed.' },
   { name: 'Cohort Newsfeed Comments', description: 'Manage comments on cohort newsfeed posts.' },
   { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
-  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' }
+  {
+    name: ORG_ANALYTICS_PAGE.label,
+    description: `The numbers on the organization's ${ORG_ANALYTICS_PAGE.label} page and on each course's and cohort's Analytics page.`
+  },
+  {
+    name: 'Marketing',
+    description:
+      "The numbers on the organization's Marketing page: traffic, countries, funnel, course types and top courses."
+  },
+  { name: 'Compliance', description: "The numbers on the organization's Compliance page." }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {

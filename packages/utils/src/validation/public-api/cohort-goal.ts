@@ -101,3 +101,10 @@ export const ZPublicApiUpdateCohortGoal = z
   })
   .refine((data) => Object.keys(data).length > 0, { message: 'No fields to update' });
 export type TPublicApiUpdateCohortGoal = z.infer<typeof ZPublicApiUpdateCohortGoal>;
+
+/** The public copy of the dashboard remind request: `{ courseId?, profileId? }`. */
+export const ZPublicApiRemindOverdueCohortGoals = z.object({
+  courseId: z.string().uuid().optional().describe('Remind only the overdue goals of this course.'),
+  profileId: z.string().uuid().optional().describe('Remind only this student.')
+});
+export type TPublicApiRemindOverdueCohortGoals = z.infer<typeof ZPublicApiRemindOverdueCohortGoals>;
