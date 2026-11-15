@@ -12,8 +12,6 @@ published: true
 
 We make ClassroomIO, so we are on this list and we know it best. We tried to judge every platform on the same questions: what it costs on the public price list, what it is strongest at, and who should pick something else. Prices were checked on 15 November 2026 unless noted, and vendors change them, so confirm on their pricing pages before you buy.
 
-If you want the definition first, read [what a customer academy is](/blog/what-is-a-customer-academy).
-
 ## How we compared them
 
 - Is there a published price, and what is the first paid tier?
@@ -41,11 +39,11 @@ It is a weaker fit if you need native Salesforce or Gainsight connectors, which 
 
 ## Disco
 
-Disco is a learning and community platform. Its Create plan is $399 a month billed annually ($499 billed monthly) and includes 250 active members and one branded academy. Scale starts at $999 a month and adds SSO and branded mobile apps. If your academy is built around live events, chat and leaderboards, Disco is the stronger choice. If you mainly need to teach customers a product, the starting price is high. See [ClassroomIO as a Disco alternative](/alternatives/disco).
+Disco is a learning and community platform. Its Create plan is $399 a month billed annually ($499 billed monthly) and includes 250 active members and one branded academy. Scale starts at $999 a month and adds SSO and branded mobile apps. If your academy is built around live events, chat and leaderboards, Disco is the stronger choice. If you mainly need to teach customers a product, the starting price is high.
 
 ## Trainn
 
-Trainn starts from content creation: screen recording, videos, step-by-step guides and in-app tutorials, with a knowledge hub on top. The LMS appears on the Scale plan at $10,000 a year with 100 monthly active learners. Launch is $2,400 a year for 3 users and 120 videos and guides. There is no free plan, only a 14-day trial. It lists SOC 2 Type II as verified. If most of your work is making videos and guides, it is a good fit. See [ClassroomIO as a Trainn alternative](/alternatives/trainn).
+Trainn starts from content creation: screen recording, videos, step-by-step guides and in-app tutorials, with a knowledge hub on top. The LMS appears on the Scale plan at $10,000 a year with 100 monthly active learners. Launch is $2,400 a year for 3 users and 120 videos and guides. There is no free plan, only a 14-day trial. It lists SOC 2 Type II as verified. If most of your work is making videos and guides, it is a good fit.
 
 ## Thinkific
 
@@ -70,4 +68,4 @@ Intellum is a modular enterprise platform that quotes each product separately: L
 - If your bottleneck is making videos and guides, look at Trainn.
 - If procurement requires SOC 2 documents, a CRM integration or a sales-led contract, look at Skilljar or Intellum.
 
-Whichever you pick, launch one onboarding course first. The [30-day launch plan](/blog/customer-academy-launch-plan) shows how, and ClassroomIO's [free plan](/signup) is enough to build it.
+Whichever you pick, launch one onboarding course first. ClassroomIO's [free plan](/signup) is enough to build it.
