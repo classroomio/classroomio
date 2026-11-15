@@ -23,7 +23,7 @@ vi.mock('@cio/db/queries/group', () => ({
   isUserCourseMemberOrOrgAdmin: vi.fn()
 }));
 
-vi.mock('@api/services/analytics', () => ({
+vi.mock('@api/services/marketing', () => ({
   getCountryBreakdown: vi.fn(),
   getCourseFunnel: vi.fn(),
   getLandingStats: vi.fn(),
@@ -32,7 +32,7 @@ vi.mock('@api/services/analytics', () => ({
 }));
 
 vi.mock('@api/services/dash', () => ({
-  getOrganisationAnalytics: vi.fn(),
+  getOrganizationOverview: vi.fn(),
   getStudentLoginActivity: vi.fn()
 }));
 
@@ -61,8 +61,8 @@ vi.mock('@api/utils/redis/cached-read', () => ({
 }));
 
 import { getOrganizationMemberIdByOrgAndProfile, getOrganizationMemberRoleId } from '@cio/db/queries/organization';
-import { getCountryBreakdown, getCourseFunnel, getLandingStats, getTopCoursesByViews } from '@api/services/analytics';
-import { getOrganisationAnalytics, getStudentLoginActivity } from '@api/services/dash';
+import { getCountryBreakdown, getCourseFunnel, getLandingStats, getTopCoursesByViews } from '@api/services/marketing';
+import { getOrganizationOverview, getStudentLoginActivity } from '@api/services/dash';
 import { buildCourseStudentAnalytics, getCourseAnalytics } from '@cio/core/services/course/course';
 import { getPaginatedCourseMembers } from '@cio/db/queries/course/people';
 import {
@@ -123,7 +123,7 @@ describe('public API analytics services', () => {
 
   describe('GET /analytics', () => {
     it('returns only the requested sections, keyed by section, with the oldest generatedAt', async () => {
-      vi.mocked(getOrganisationAnalytics).mockResolvedValue({ topCourses: [], recentCertifications: [] } as never);
+      vi.mocked(getOrganizationOverview).mockResolvedValue({ topCourses: [], recentCertifications: [] } as never);
 
       const result = await getPublicApiOrgAnalyticsService(ORG_ID, ACTOR_ID, orgQuery(['overview', 'traffic']));
 
@@ -212,7 +212,7 @@ describe('public API analytics services', () => {
 
     it('applies limit to list sections after the read, without putting it in the cache key', async () => {
       const rows = (n: number) => Array.from({ length: n }, (_, index) => ({ id: index }));
-      vi.mocked(getOrganisationAnalytics).mockResolvedValue({
+      vi.mocked(getOrganizationOverview).mockResolvedValue({
         totalStudents: 9,
         topCourses: rows(5),
         recentCertifications: rows(5)

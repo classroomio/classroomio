@@ -54,6 +54,7 @@ import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
 import { prettyJSON } from 'hono/pretty-json';
 import { cohortRouter } from '@api/routes/cohort';
+import { analyticsRouter } from '@api/routes/analytics';
 import { publicCourseRouter, orgSiteOgRouter } from '@api/routes/org-site';
 import { publicWidgetsRouter } from '@api/routes/widgets';
 import { reportRouter } from '@api/routes/report';
@@ -278,6 +279,7 @@ export const app = new Hono()
   .route('/org-site/course', publicCourseRouter)
   .route('/org-site/og', orgSiteOgRouter)
   .route('/cohort', cohortRouter)
+  .route('/analytics', analyticsRouter)
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)
   .route('/report', reportRouter)

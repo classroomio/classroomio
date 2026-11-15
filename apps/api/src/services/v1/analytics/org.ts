@@ -16,8 +16,8 @@ import {
   getLandingStats,
   getPopularTypes,
   getTopCoursesByViews
-} from '@api/services/analytics';
-import { getOrganisationAnalytics, getStudentLoginActivity } from '@api/services/dash';
+} from '@api/services/marketing';
+import { getOrganizationOverview, getStudentLoginActivity } from '@api/services/dash';
 import { ROLE } from '@cio/utils/constants';
 import { getOrgComplianceOverview } from '@api/services/course/compliance';
 
@@ -42,7 +42,7 @@ async function readSection(
 
   switch (section) {
     case 'overview': {
-      const entry = await cachedRead(key(), TTL, () => getOrganisationAnalytics(orgId, undefined, true));
+      const entry = await cachedRead(key(), TTL, () => getOrganizationOverview(orgId, undefined, true));
       const { topCourses, recentCertifications, ...totals } = entry.data;
       return {
         ...entry,
