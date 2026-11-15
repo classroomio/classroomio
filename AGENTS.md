@@ -210,12 +210,12 @@ export const app = new Hono().route('/account', accountRouter);
 ```typescript
 // apps/api/src/routes/internal/index.ts
 import { Hono } from '@api/utils/hono';
-import { internalAnalyticsRouter } from './analytics';
+import { internalAccountRouter } from './account';
 import { internalComplianceRouter } from './compliance';
 
 export const internalRouter = new Hono()
   .route('/compliance', internalComplianceRouter)
-  .route('/analytics', internalAnalyticsRouter);
+  .route('/account', internalAccountRouter);
 
 // apps/api/src/app.ts
 import { internalRouter } from '@api/routes/internal';
@@ -227,12 +227,12 @@ export const app = new Hono().route('/internal', internalRouter);
 ```typescript
 // apps/api/src/routes/internal/index.ts
 import { Hono } from '@api/utils/hono';
-import { internalAnalyticsRouter } from './analytics';
+import { internalAccountRouter } from './account';
 import { internalComplianceRouter } from './compliance';
 
 export const internalRouter = new Hono()
   .route('/compliance', internalComplianceRouter)
-  .route('/analytics', internalAnalyticsRouter);
+  .route('/account', internalAccountRouter);
 
 // apps/api/src/app.ts
 import { internalRouter } from '@api/routes/internal';

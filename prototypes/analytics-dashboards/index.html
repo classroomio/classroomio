@@ -765,19 +765,19 @@ function shell() {
   const orgNav = () => {
     const onAnalytics = orgPage === 'analytics';
     return {
-      route: onAnalytics ? `/org/[slug]/analytics` : `/org/[slug]/marketing`,
-      kind: onAnalytics ? 'New page, takes the "Analytics" name' : 'Existing page, renamed to "Marketing"',
+      route: onAnalytics ? `/org/[slug]/analytics/academy` : `/org/[slug]/analytics/marketing`,
+      kind: onAnalytics ? 'New page, "Academy" under the Analytics menu' : 'Existing page, renamed to "Marketing" and moved under the Analytics menu',
       tag: onAnalytics ? 'new' : 'renamed',
       files: [
-        ['Move the current page to /marketing and build the new /analytics page', 'apps/dashboard/src/routes/(app)/org/[slug]/'],
-        ['Add the "Marketing" item under Stats', 'apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts'],
+        ['Move the current page to /analytics/marketing and build the new /analytics/academy page', 'apps/dashboard/src/routes/(app)/org/[slug]/'],
+        ['Add the "Analytics" menu with Academy, Marketing and Compliance', 'apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts'],
         ['Add the org_navigation.marketing key in every locale', 'apps/dashboard/src/lib/utils/translations/en.json']
       ],
       side: `<div class="who"><b>${CUSTOMER ? 'Your organization' : 'Example Co'}</b><span>${ORG_SLUG}</span></div>
         ${plain(['Home', 'Dashboard']).join('')}
-        ${navItem({ l: 'Stats', head: true })}
+        ${navItem({ l: 'Analytics', head: true })}
+        ${navItem({ l: 'Academy', on: onAnalytics, tag: 'new', go: 'analytics' }, true)}
         ${navItem({ l: 'Marketing', on: !onAnalytics, tag: 'renamed', go: 'marketing' }, true)}
-        ${navItem({ l: 'Analytics', on: onAnalytics, tag: 'new', go: 'analytics' }, true)}
         ${navItem({ l: 'Compliance' }, true)}
         ${navGroup('Create', plain(['Courses', 'Cohorts', 'Media', 'Tags']))}
         ${navGroup('Distribute', plain(['Widgets', 'Landing page']))}
@@ -787,7 +787,7 @@ function shell() {
   };
   const cfg = { cohort: cohortNav, course: courseNav, org: orgNav }[scope]();
   $('#side').innerHTML = cfg.side;
-  const title = scope === 'org' && orgPage === 'marketing' ? 'Marketing' : 'Analytics';
+  const title = scope === 'org' ? (orgPage === 'marketing' ? 'Marketing' : 'Academy') : 'Analytics';
   $('#pagehead').innerHTML = `<h1>${title}</h1>${CUSTOMER ? '' : `<code>${cfg.route}</code>`}`;
   $('#place').style.display = CUSTOMER ? 'none' : '';
   $('#place').innerHTML = CUSTOMER ? '' : `<div class="pt"><span class="nt ${cfg.tag}">${TAGS[cfg.tag]}</span>${cfg.kind}<code>${cfg.route}</code></div>

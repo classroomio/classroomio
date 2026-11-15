@@ -48,7 +48,7 @@
 <Card.Root class="ui:gap-0 ui:overflow-hidden ui:py-0">
   <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
     <div class="flex items-center gap-2">
-      <h2 class="text-sm font-semibold">{$t('analytics.exercises')}</h2>
+      <h2 class="text-sm font-semibold">{$t('student_progress.exercises')}</h2>
       <Badge variant="outline" class="ui:tabular-nums">{totalExercises}</Badge>
     </div>
     {#if trackableExercises > 0}
@@ -111,7 +111,7 @@
               {#if exercise.status === STATUS.GRADED}
                 <Badge variant="success">
                   <CircleCheckIcon />
-                  {$t('analytics.graded')}
+                  {$t('student_progress.graded')}
                 </Badge>
               {:else if exercise.isCompleted}
                 <Badge variant="secondary">{$t('audience.user_analytics.awaiting_grade')}</Badge>

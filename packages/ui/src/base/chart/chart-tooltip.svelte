@@ -39,7 +39,16 @@
     labelClassName?: string;
     labelFormatter?: // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ((value: any, payload: TooltipPayload[]) => string | number | Snippet) | null;
-    valueFormatter?: (value: number) => string;
+    valueFormatter?: (
+      value: any,
+      context?: {
+        item: TooltipPayload;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: any;
+        index: number;
+        payload: TooltipPayload[];
+      }
+    ) => string;
     formatter?: Snippet<
       [
         {
@@ -162,7 +171,14 @@
               </div>
               {#if item.value !== undefined}
                 <span class="ui:text-foreground ui:font-mono ui:font-medium tabular-nums">
-                  {item.value === null ? '–' : valueFormatter(item.value)}
+                  {item.value === null
+                    ? '–'
+                    : valueFormatter(item.value, {
+                        item,
+                        data: chartCtx.tooltip.data,
+                        index: i,
+                        payload: visibleSeries
+                      })}
                 </span>
               {/if}
             </div>

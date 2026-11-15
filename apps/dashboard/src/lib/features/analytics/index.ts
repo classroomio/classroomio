@@ -1,2 +1,2 @@
-export * from './components';
-export { analyticsApi } from './api/analytics.svelte';
+export { analyticsApi, analyticsStudentsApi } from './api';
+export * from './pages';
