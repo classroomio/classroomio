@@ -155,7 +155,7 @@ Open every generated file with the agent's file-viewing tool right after saving.
 ## Step 5: Wire it in with full image SEO
 
 1. **Keyword kebab-case filenames** naming the subject (`postgres-zfs-branch-spinup-benchmark.webp`). Never `image1.png`, `hero.webp`, `screenshot-2026.png`, or UUIDs, because the filename is one of the few text signals image search reads.
-2. **`alt` text of 80-160 characters** stating what the image shows in the post's terms. Never start with `"Image of"`, `"Picture of"`, or `"An infographic showing"`; screen readers already announce the image.
+2. **`alt` text of 80-160 characters** stating what the image shows in the post's terms. Never start with `"Image of"`, `"Picture of"`, or `"An infographic showing"`; screen readers already announce the image. Decorative images, or images fully described by the text next to them, use `alt=""` and skip the length rule.
    - *Bad:* `"An infographic of database branching speed"` (43 chars, generic).
    - *Good:* `"Comparison of 50GB Postgres CI branch creation times showing ZFS copy-on-write cloning in 1.8 seconds versus 14 minutes for pg_restore"` (134 chars).
 3. **Explicit `width` and `height`** equal to the intrinsic pixels the script printed, on every `<img>` and `<Image>`, so the browser reserves the space and the layout does not shift.
@@ -193,7 +193,7 @@ for f in "$dir"/*; do
   [ "$kb" -gt 220 ] && echo "  CHECK: only the cover may exceed 220 KB"
   echo "$n" | grep -qiE '^(image|img|hero|screenshot|untitled)[-_.0-9]|^[0-9a-f]{8}-' && echo "  FAIL: generic filename"
 done
-grep -oE 'alt="[^"]*"' "$post" | awk '{ l = length($0) - 6; s = (l < 80 || l > 160) ? "FAIL" : "ok"; print s, l, $0 }'
+grep -oE 'alt="[^"]*"' "$post" | awk '{ l = length($0) - 6; s = (l == 0) ? "decorative" : (l < 80 || l > 160) ? "FAIL" : "ok"; print s, l, $0 }'
 ```
 
 Done means:

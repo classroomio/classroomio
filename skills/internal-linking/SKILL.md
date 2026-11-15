@@ -33,10 +33,10 @@ Copy `scripts/internal-link-graph.mjs` from this skill folder into the repo's `s
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, sep } from 'node:path'
 
-const ROOTS = ['app', 'pages', 'content', 'src', 'components']
-const EXT = /\.(mdx?|[jt]sx?|astro)$/
+const ROOTS = ['app', 'pages', 'content', 'src', 'components', 'apps/website/src']
+const EXT = /\.(mdx?|[jt]sx?|astro|svelte)$/
 // Files whose links appear on every page (nav, footer, layouts). Counted as sitewide, not contextual.
-const CHROME = /(layout\.[jt]sx?$|(nav|header|footer|sidebar)[^/]*\.[jt]sx?$)/i
+const CHROME = /(layout\.(?:[jt]sx?|svelte)$|(nav|header|footer|sidebar)[^/]*\.(?:[jt]sx?|svelte)$)/i
 const MONEY = /^\/(pricing|use-cases|vs|alternatives|tools|features|integrations|compare)(\/|$)|-alternative$/
 const SITE = (process.env.SITE ?? '').replace(/\/+$/, '')
 
@@ -65,6 +65,11 @@ function routeOf(file) {
     if (/^(_|api\/)/.test(m[1]) || m[1].includes('[')) return null
     return norm('/' + m[1].replace(/(^|\/)index$/, ''))
   }
+  if ((m = f.match(/(?:^|\/)routes\/(?:(.*)\/)?\+page\.svelte$/))) {
+    const r = (m[1] ?? '').replace(/\([^)]*\)\/?/g, '')
+    return r.includes('[') ? null : norm('/' + r)
+  }
+  if ((m = f.match(/(?:^|\/)src\/blog\/([^/]+)\.md$/))) return '/blog/' + m[1]
   return null
 }
 
@@ -75,11 +80,16 @@ for (const file of [...new Set(ROOTS.flatMap((r) => walk(r)))]) {
   const links = new Set()
   for (const re of [/\]\((\/[^)\s"'#?]*)/g, /href=\{?\s*["'`](\/[^"'`#?\s]*)/g])
     for (const m of text.matchAll(re)) if (!m[1].includes('${')) links.add(norm(m[1])) // skip `/blog/${slug}` template literals
-  if (CHROME.test(file)) { links.forEach((l) => sitewide.add(l)); continue }
   const route = routeOf(file)
+  if (!route && CHROME.test(file)) { links.forEach((l) => sitewide.add(l)); continue }
   if (!route) continue
   pages.set(route, file)
   for (const l of links) if (l !== route) (inbound.get(l) ?? inbound.set(l, new Set()).get(l)).add(route)
+}
+
+if (pages.size === 0) {
+  console.error('No pages found. Run from the repo root and adjust ROOTS and routeOf() for this repo.')
+  process.exit(1)
 }
 
 const rows = [...pages].map(([route, file]) => ({

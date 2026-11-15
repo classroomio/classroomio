@@ -155,12 +155,13 @@ Copy `scripts/verify-redirects.sh` from this skill folder into the repo (full so
 set -uo pipefail
 MAP="${1:-seo/redirect-map.csv}"
 HTTP_MAX_HOPS="${HTTP_MAX_HOPS:-1}"
+[[ -r "$MAP" ]] || { echo "Cannot read redirect map: $MAP" >&2; exit 2; }
 pass=0; fail=0
 
 check() {
   local old="$1" new="$2" max="${3:-1}" code loc hops final landed
-  read -r code loc < <(curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' "$old")
-  read -r hops final landed < <(curl -sL -o /dev/null -w '%{num_redirects} %{http_code} %{url_effective}\n' "$old")
+  read -r code loc < <(curl -s --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code} %{redirect_url}\n' "$old")
+  read -r hops final landed < <(curl -sL --connect-timeout 10 --max-time 30 -o /dev/null -w '%{num_redirects} %{http_code} %{url_effective}\n' "$old")
   if [[ "$code" =~ ^30[18]$ && ( "$loc" == "$new" || "$max" != "1" ) && "$landed" == "$new" && "$hops" -le "$max" && "$final" == "200" ]]; then
     pass=$((pass + 1))
   else
@@ -179,6 +180,7 @@ while IFS=, read -r old new || [[ -n "${old:-}" ]]; do
 done < "$MAP"
 
 echo "$pass passed, $fail failed"
+(( pass + fail > 0 )) || { echo "No redirects were checked. Is the map empty?" >&2; exit 2; }
 [[ "$fail" -eq 0 ]]
 ```
 

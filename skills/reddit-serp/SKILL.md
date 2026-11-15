@@ -36,7 +36,7 @@ Which data source is connected?
 │   └── Organic keywords for reddit.com filtered by your keyword list, position <= 10
 └── Web search only
     └── Query: site:reddit.com "[keyword]"  and  "[keyword] reddit"
-        Cap at 15 queries. Record the visible Google position for each thread.
+        Cap at 15 queries. A `site:` query only shows the thread is indexed, so confirm the ranking with a plain query for the keyword and record the visible Google position for each thread.
 ```
 
 Record per thread: URL, subreddit, title, ranking keyword, Google position or AI citation source, post age.
@@ -62,7 +62,7 @@ Thread
 │   Read /r/<sub>/about/rules.json (or the sidebar). Do rules ban software mentions,
 │   self-promotion, or require a flair or karma minimum?
 │   ├── Hard ban on product mentions → DROP
-│   ├── "No self-promo" but recommendations allowed → KEEP, disclosure line required
+│   ├── "No self-promo" but recommendations allowed → KEEP only when the reply discloses your affiliation in its first line, otherwise DROP
 │   └── No relevant rule → KEEP
 └── Gate 4: Intent
     Is the OP asking for a recommendation, a comparison, or help solving a problem

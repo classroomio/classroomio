@@ -67,7 +67,7 @@ Disallow: /admin/
 Sitemap: https://example.com/sitemap.xml
 ```
 
-Never disallow `/_next/`, `/static/`, or CSS/JS paths. Why: Google renders the page with those files, and blocking them makes it see a broken layout. For blocking AI training crawlers while keeping AI search, use the block-ai-scrapers skill instead of a blanket deny.
+Never disallow `/_next/`, `/static/`, or CSS/JS paths. Why: Google renders the page with those files, and blocking them makes it see a broken layout. To block only AI training crawlers (GPTBot, CCBot, Google-Extended, ClaudeBot), add a separate Disallow group for each and keep search crawlers such as OAI-SearchBot and PerplexityBot allowed. Do not use block-ai-scrapers for this, because it blocks every crawler except verified Google ones.
 
 Disallow only private paths that exist in this repo (`/api/` yes, `/app/` only if the dashboard lives there). If `curl -s https://example.com/sitemap.xml` does not return XML, ship a sitemap (`app/sitemap.ts` in Next.js) in the same PR. Why: a `Sitemap:` line pointing at a 404 or an HTML page wastes the fix.
 
@@ -197,7 +197,7 @@ Strip scripts, comments, and `<head>` before grepping. Why: Next.js inlines its 
 pricing page raw HTML
 ├── no prices in the HTML (JS-only slider, client-fetched plans) → FAIL
 ├── docs or specs behind login → FAIL
-├── crawler gets 403 / challenge page → FAIL (check WAF and bot rules)
+├── crawler gets 403 / challenge page → FAIL (check WAF and bot rules), unless the block is intentional and the agent is one the site's block-ai-scrapers policy blocks on purpose
 └── plans, prices, and limits present as plain text → PASS
 ```
 

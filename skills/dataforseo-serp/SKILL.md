@@ -136,12 +136,12 @@ A hex color picker or a generic word counter pulls six-figure monthly volume and
 
    ```
    tool keyword
-   ├── cpc >= 3 and volume >= 300 → BUILD candidate
+   ├── volume < 300 and cpc < 15 → REJECT (cpc >= 15 is the high-ticket B2B exception)
+   ├── cpc >= 3 → BUILD candidate
    ├── cpc < 0.5 → REJECT regardless of volume. Vanity traffic.
-   ├── 0.5 <= cpc < 3
-   │   ├── the tool's output feeds the product's core action (calculator result → invoice) → BUILD candidate
-   │   └── otherwise → REJECT
-   └── volume < 300 → REJECT unless cpc >= 15 (high-ticket B2B)
+   └── 0.5 <= cpc < 3
+       ├── the tool's output feeds the product's core action (calculator result → invoice) → BUILD candidate
+       └── otherwise → REJECT
    ```
 
 4. **Confirm the SERP wants a tool:** run Workflow D on each BUILD candidate. If fewer than 3 of the Top-5 are interactive tools, downgrade it to a guide. Why: building a tool for a SERP full of articles wastes a sprint on a format Google does not rank there.
