@@ -45,7 +45,7 @@ You do not need all four on day one. One onboarding path is enough to launch.
 
 ## What to measure
 
-Measure the things the academy is supposed to change. Completion rate shows whether the content works. Time to first result shows whether onboarding is faster. Support tickets on topics the academy covers show whether customers are finding answers there first. Use the [calculator](/customer-academy-roi-calculator) to put your own ticket numbers against the cost of running one.
+Measure the things the academy is supposed to change. Completion rate shows whether the content works. Time to first result shows whether onboarding is faster. Support tickets on topics the academy covers show whether customers are finding answers there first.
 
 ## Common mistakes
 
