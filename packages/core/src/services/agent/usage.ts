@@ -6,6 +6,7 @@ import {
   getMonthlyTokenUsage,
   getOrgCreditBalance,
   insertTokenUsageAndDrainCredits,
+  MATH_VISION_USAGE_PREFIX,
   summarizePurchases,
   upsertCreditBalance
 } from '@cio/db/queries/agent';
@@ -48,7 +49,7 @@ const MODEL_COST_MULTIPLIER: Record<string, number> = {
 };
 
 function computeCostUnits(promptTokens: number, completionTokens: number, model: string): number {
-  const multiplier = MODEL_COST_MULTIPLIER[model] ?? 1;
+  const multiplier = MODEL_COST_MULTIPLIER[model.replace(MATH_VISION_USAGE_PREFIX, '')] ?? 1;
   return Math.round((promptTokens + completionTokens) * multiplier);
 }
 

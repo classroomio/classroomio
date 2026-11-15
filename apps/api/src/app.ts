@@ -25,6 +25,7 @@ import { setInternalDispatch } from '@api/utils/internal-dispatch';
 import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
+import { mathRouter } from '@api/routes/math';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
 import { courseRouter } from '@api/routes/course';
@@ -289,6 +290,7 @@ export const app = new Hono()
   .route('/report', reportRouter)
   .route('/internal', internalRouter)
   .route('/agent', agentRouter)
+  .route('/math', mathRouter)
   .route('/oauth', oauthRouter)
 
   // Error handling

@@ -50,6 +50,32 @@ export async function aggregateTokenUsageByUser(orgId: string, since: Date): Pro
   }
 }
 
+export const MATH_VISION_USAGE_PREFIX = 'math-vision/';
+
+/**
+ * Counts the org's Photo, Draw and worksheet-import conversions since a date. They are recorded in ai_token_usage
+ * under a model name starting with MATH_VISION_USAGE_PREFIX.
+ */
+export async function countMathVisionRequests(orgId: string, since: Date): Promise<number> {
+  try {
+    const [row] = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(schema.aiTokenUsage)
+      .where(
+        and(
+          eq(schema.aiTokenUsage.orgId, orgId),
+          gte(schema.aiTokenUsage.createdAt, since.toISOString()),
+          sql`${schema.aiTokenUsage.model} LIKE ${MATH_VISION_USAGE_PREFIX + '%'}`
+        )
+      );
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countMathVisionRequests error:', error);
+    throw new Error('Failed to count math vision requests');
+  }
+}
+
 /**
  * Total request count for an org since a given date — used for the chart header.
  */

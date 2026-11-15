@@ -3,6 +3,7 @@ export * from './shared';
 
 export * from './account';
 export * from './agent';
+export * from './math';
 export * from './attendance';
 export * from './block';
 export * from './assets';
