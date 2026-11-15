@@ -334,11 +334,10 @@
     }
 
     if (hasSectionedExercise) {
-      const activeQuestionCount = $questionnaire.questions.filter((question) => !question.deletedAt).length;
       const answeredCount = Object.values($questionnaireMetaData.answers).filter((answer) =>
         hasAnswerValue(answer)
       ).length;
-      return Math.round((answeredCount / activeQuestionCount) * 100) || 0;
+      return Math.round((answeredCount / answerableQuestionCount) * 100) || 0;
     }
 
     return Math.round(((currentQuestionIndex - 1) / topLevelQuestions.length) * 100) || 0;
@@ -696,6 +695,9 @@
       : []
   );
   const topLevelQuestions = $derived($questionnaire.questions.filter((question) => !question.parentQuestionId));
+  const answerableQuestionCount = $derived(
+    $questionnaire.questions.filter((question) => getPartsOf($questionnaire.questions, question.id).length === 0).length
+  );
   const currentSectionDisplayTitle = $derived(
     currentSection
       ? getExerciseSectionDisplayTitle({
@@ -881,9 +883,9 @@
     <span class="ui:text-muted-foreground shrink-0 text-sm tabular-nums">
       {#if hasSectionedExercise}
         {Object.values($questionnaireMetaData.answers).filter((answer) => hasAnswerValue(answer))
-          .length}/{$questionnaire.questions.length}
+          .length}/{answerableQuestionCount}
       {:else}
-        {$questionnaireMetaData.currentQuestionIndex}/{$questionnaire.questions.length}
+        {$questionnaireMetaData.currentQuestionIndex}/{topLevelQuestions.length}
       {/if}
     </span>
     <Progress class="min-w-0 flex-1" value={$questionnaireMetaData.progressValue} />
@@ -939,7 +941,7 @@
 
           <div class="flex items-center">
             <p class="mx-2 dark:text-white">
-              <strong>{$questionnaire.questions.length}</strong>
+              <strong>{topLevelQuestions.length}</strong>
               {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
             </p>
             |

@@ -1,13 +1,15 @@
 <script lang="ts">
   import { getMathQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
+  import { untrack } from 'svelte';
   import { MathInput } from '../../../math-input';
   import { latexToNumber } from './numeric-utils';
 
   let { answer = null, disabled = false, labels, onAnswerChange = () => {} }: ExerciseQuestionRendererProps = $props();
 
-  const latex = $derived(answer?.type === 'NUMERIC' ? (answer.latex ?? String(answer.value)) : '');
+  let draftLatex = $state(untrack(() => (answer?.type === 'NUMERIC' ? (answer.latex ?? String(answer.value)) : '')));
 
   function handleInput(nextLatex: string) {
+    draftLatex = nextLatex;
     const value = latexToNumber(nextLatex);
     if (value === null) {
       onAnswerChange(null);
@@ -20,7 +22,7 @@
 
 <MathInput
   class="ui:w-full ui:max-w-xs"
-  value={latex}
+  value={draftLatex}
   keyboard="numeric"
   {disabled}
   placeholder={getMathQuestionLabel(labels, 'math.take.placeholder')}

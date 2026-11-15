@@ -270,7 +270,9 @@ export function handleAddPart(stemId: string | number) {
       options: [{ id: '1-form', label: '', value: null, isCorrect: false }]
     };
 
-    return { ...q, questions: [...q.questions, part] };
+    const questions = q.questions.map((question) => (question.id === stem.id ? { ...question, points: 0 } : question));
+
+    return { ...q, questions: [...questions, part] };
   });
 
   return nextQuestionId;
