@@ -1,239 +1,171 @@
 import * as z from 'zod';
-import { PUBLIC_API_COURSE_ANALYTICS_SECTIONS, PUBLIC_API_ORG_ANALYTICS_SECTIONS } from './analytics';
+
+import {
+  ANALYTICS_AGGS,
+  ANALYTICS_BREAKDOWN_GROUPS,
+  ANALYTICS_DIMENSIONS,
+  ANALYTICS_FILTER_FIELDS,
+  ANALYTICS_FILTER_OPS,
+  ANALYTICS_METRICS,
+  ANALYTICS_RANGES,
+  ANALYTICS_SCOPE_TYPES,
+  ANALYTICS_SOURCES,
+  ANALYTICS_STATUSES,
+  ANALYTICS_VIZ_TYPES
+} from '../../constants/analytics';
+import { ZPublicApiAnalyticsQuerySpec } from './analytics';
 
 // Response shapes for OpenAPI docs only; handlers don't validate against them. Timestamps are Postgres text, not strict ISO.
-const timestamp = z.string();
-const nullableTimestamp = z.string().nullable();
-
-const COMPLIANCE_STATUSES = [
-  'compliant',
-  'expiring_soon',
-  'in_grace_period',
-  'non_compliant',
-  'waived',
-  'in_progress',
-  'not_started',
-  'no_record'
+const ANALYTICS_VALUE_TYPE_VALUES = [
+  'id',
+  'text',
+  'integer',
+  'number',
+  'percent',
+  'boolean',
+  'date',
+  'datetime'
 ] as const;
+const ZAnalyticsValueType = z.enum(ANALYTICS_VALUE_TYPE_VALUES).describe('The kind of value a column holds.');
+const timestamp = z.string();
 
-const complianceCounts = z.object(
-  Object.fromEntries(COMPLIANCE_STATUSES.map((status) => [status, z.number()])) as Record<
-    (typeof COMPLIANCE_STATUSES)[number],
-    z.ZodNumber
-  >
-);
-
-export const ZPublicApiAnalyticsOverviewResponse = z.object({
-  totalCertificates: z.number(),
-  numberOfCourses: z.number(),
-  totalStudents: z.number(),
-  topCourses: z
-    .array(
-      z.object({
-        id: z.string().uuid(),
-        title: z.string(),
-        enrollments: z.number(),
-        completion: z.number().describe('Percentage of enrolled students who completed the course'),
-        certification: z.number().describe('Percentage of enrolled students who earned the certificate')
-      })
-    )
-    .describe('Up to 5 courses with the most students'),
-  recentCertifications: z
-    .array(
-      z.object({
-        id: z.string().uuid().describe('Profile id of the learner'),
-        avatarUrl: z.string().nullable(),
-        name: z.string(),
-        courseId: z.string().uuid(),
-        course: z.string(),
-        date: timestamp
-      })
-    )
-    .describe('Up to 5 most recent certificates')
+export const ZPublicApiAnalyticsMetricDescriptionResponse = z.object({
+  valueType: ZAnalyticsValueType,
+  aggs: z.array(z.enum(ANALYTICS_AGGS)),
+  description: z.string()
 });
 
-export const ZPublicApiAnalyticsTrafficResponse = z.object({
-  totals: z.object({
-    landingViews: z.number(),
-    coursePageViews: z.number(),
-    uniqueVisitors: z.number(),
-    enrollments: z.number(),
-    completions: z.number()
-  }),
-  sparkline: z
-    .array(z.object({ date: z.string().describe('YYYY-MM-DD'), views: z.number(), enrollments: z.number() }))
-    .describe('One entry per rolled-up day, oldest first; days with no rollup row are omitted')
+export const ZPublicApiAnalyticsDimensionDescriptionResponse = z.object({
+  valueType: ZAnalyticsValueType,
+  hasLabel: z.boolean(),
+  hasRank: z.boolean(),
+  description: z.string()
 });
 
-export const ZPublicApiAnalyticsCountryResponse = z.object({
-  country: z.string().describe('ISO 3166-1 alpha-2 code'),
-  views: z.number(),
-  enrollments: z.number()
+export const ZPublicApiAnalyticsFilterDescriptionResponse = z.object({
+  kind: z.enum(['pushdown', 'predicate']),
+  valueType: ZAnalyticsValueType,
+  ops: z.array(z.enum(ANALYTICS_FILTER_OPS)),
+  allowedValues: z.array(z.string()).optional(),
+  description: z.string()
 });
 
-export const ZPublicApiAnalyticsFunnelResponse = z.object({
-  steps: z.array(
-    z.object({
-      name: z.enum(['landing_view', 'course_page_view', 'enrollment_completed', 'course_completed']),
-      count: z.number(),
-      conversionFromPrev: z.number().nullable().describe('Ratio (0-1) to the previous step; null for the first step')
-    })
-  )
+export const ZPublicApiAnalyticsCatalogSourceResponse = z.object({
+  id: z.enum(ANALYTICS_SOURCES),
+  description: z.string(),
+  scopeTypes: z.array(z.enum(ANALYTICS_SCOPE_TYPES)),
+  hasSearch: z.boolean(),
+  dimensions: z.partialRecord(z.enum(ANALYTICS_DIMENSIONS), ZPublicApiAnalyticsDimensionDescriptionResponse),
+  metrics: z.partialRecord(z.enum(ANALYTICS_METRICS), ZPublicApiAnalyticsMetricDescriptionResponse),
+  filters: z.partialRecord(z.enum(ANALYTICS_FILTER_FIELDS), ZPublicApiAnalyticsFilterDescriptionResponse)
 });
 
-export const ZPublicApiAnalyticsCourseTypeResponse = z.object({
-  type: z.string(),
-  enrollments: z.number(),
-  views: z.number(),
-  completions: z.number(),
-  courseCount: z.number()
+export const ZPublicApiAnalyticsCatalogResponse = z.object({
+  sources: z.record(z.enum(ANALYTICS_SOURCES), ZPublicApiAnalyticsCatalogSourceResponse),
+  widgets: z
+    .record(z.string(), z.string())
+    .describe('Preset widget ids with what each kind of widget in the dashboards shows.')
 });
 
-export const ZPublicApiAnalyticsTopCourseResponse = z.object({
-  courseId: z.string().uuid(),
-  title: z.string(),
-  views: z.number()
+export const ZPublicApiAnalyticsColumnResponse = z.object({
+  key: z.string().describe('Column key, the same key rows use, and what sort fields address.'),
+  role: z.enum(['dimension', 'measure']),
+  valueType: ZAnalyticsValueType
 });
 
-export const ZPublicApiLoginActivityResponse = z.object({
-  day: z.enum(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']),
-  count: z.number()
+export const ZPublicApiAnalyticsQueryDataResponse = z.object({
+  columns: z.array(ZPublicApiAnalyticsColumnResponse),
+  rows: z
+    .array(z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])))
+    .describe('One object per result row, keyed by column key.')
 });
 
-export const ZPublicApiComplianceOverviewResponse = z.object({
-  summary: z.object({
-    totalLearners: z.number(),
-    totalCourses: z.number(),
-    counts: complianceCounts
-  }),
-  courses: z.array(
-    z.object({
-      courseId: z.string().uuid(),
-      courseTitle: z.string(),
-      learnerCount: z.number(),
-      counts: complianceCounts
-    })
-  )
+export const ZPublicApiAnalyticsQueryMeta = z.object({
+  generatedAt: timestamp.describe('When the result was computed (ISO 8601).'),
+  cached: z.boolean().describe('Whether the response came from the cache for this scope and spec.'),
+  range: z.enum(ANALYTICS_RANGES).describe('The range actually used; the Free plan sees at most the last 7 days.')
 });
 
-export const ZPublicApiComplianceLearnerResponse = z.object({
-  groupMemberId: z.string().uuid(),
-  profileId: z.string().uuid().nullable(),
-  fullname: z.string().nullable(),
-  email: z.string().nullable(),
-  avatarUrl: z.string().nullable(),
-  courseId: z.string().uuid(),
-  courseTitle: z.string(),
-  status: z.enum(COMPLIANCE_STATUSES),
-  cycleNumber: z.number().nullable(),
-  dueDate: nullableTimestamp,
-  completedAt: nullableTimestamp,
-  validUntil: nullableTimestamp
+export const ZPublicApiAnalyticsWidgetResultResponse = ZPublicApiAnalyticsQueryDataResponse.extend({
+  total: z.number().describe('Total rows matched, across all pages.')
 });
 
-const ZExerciseStat = z.object({
+export const ZPublicApiAnalyticsScopeCourseResponse = z.object({
   id: z.string().uuid(),
   title: z.string(),
-  lessonId: z.string().uuid().nullable(),
-  lessonTitle: z.string(),
-  status: z.number().nullable().describe('Submission status id; null when not submitted'),
-  score: z.number(),
-  totalPoints: z.number(),
-  isCompleted: z.boolean()
+  isGrouped: z.boolean(),
+  hasPassRequired: z.boolean()
 });
 
-export const ZPublicApiLearnerAnalyticsResponse = z.object({
-  user: z.object({
-    id: z.string().uuid(),
-    fullName: z.string(),
-    email: z.string(),
-    avatarUrl: z.string(),
-    lastSeen: nullableTimestamp
-  }),
-  overallCourseProgress: z.number().describe('Percentage of lessons and exercises completed across all courses'),
-  overallAverageGrade: z.number().nullable().describe('Average of per-course grades; null when nothing is graded'),
-  courses: z.array(
-    z.object({
-      id: z.string().uuid(),
-      title: z.string(),
-      type: z.string().nullable(),
-      lessonsCount: z.number(),
-      lessonsCompleted: z.number(),
-      exercisesCount: z.number(),
-      exercisesCompleted: z.number(),
-      progressPercentage: z.number(),
-      progressFailed: z
-        .boolean()
-        .describe('True when progress could not be loaded; the course is left out of overall progress'),
-      averageGrade: z.number().nullable(),
-      certificateEarnedAt: nullableTimestamp,
-      complianceStatus: z.string().nullable(),
-      exercises: z.array(ZExerciseStat).nullable().describe('null when exercise stats could not be loaded')
-    })
-  )
+export const ZPublicApiAnalyticsScopeResponse = z.object({
+  type: z.enum(ANALYTICS_SCOPE_TYPES),
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().nullable(),
+  studentCount: z.number(),
+  pendingCount: z.number(),
+  cohortCount: z.number(),
+  activeCohortCount: z.number(),
+  studentTarget: z.number().nullable(),
+  seatsUsed: z
+    .number()
+    .nullable()
+    .describe(
+      "Student seats in use under the plan's student limit, including students who have not joined yet. Org scope only; null otherwise."
+    ),
+  seatsNotJoined: z
+    .number()
+    .nullable()
+    .describe(
+      'Seats held by students who were added or invited but have not joined, while their invitation is not revoked or expired. Org scope only; null otherwise.'
+    ),
+  courses: z.array(ZPublicApiAnalyticsScopeCourseResponse)
 });
 
-export const ZPublicApiCourseAnalyticsSummaryResponse = z.object({
-  totalTutors: z.number(),
-  totalStudents: z.number(),
-  totalLessons: z.number(),
-  totalExercises: z.number(),
-  averageProgress: z.number().describe('Average per-student progress (lessons and exercises), as a percentage'),
-  averageExerciseCompletion: z.number().describe('Average share of exercises submitted per student, as a percentage'),
-  averageGrade: z.number().describe('Average per-student grade, as a percentage')
+export const ZPublicApiAnalyticsSnapshotSelectionResponse = z.object({
+  courseId: z.string().uuid().nullable(),
+  exerciseId: z.string().uuid().nullable(),
+  breakdown: z.enum(ANALYTICS_BREAKDOWN_GROUPS),
+  range: z.enum(ANALYTICS_RANGES)
 });
 
-export const ZPublicApiCourseAnalyticsStudentResponse = z.object({
-  profileId: z.string().uuid(),
-  fullname: z.string(),
-  email: z.string(),
-  avatarUrl: z.string(),
-  lessonsCompleted: z.number(),
-  totalLessons: z.number(),
-  exercisesSubmitted: z.number(),
-  totalExercises: z.number(),
-  averageGrade: z.number(),
-  progressPercentage: z.number(),
-  lastSeen: nullableTimestamp
+export const ZPublicApiAnalyticsSnapshotWidgetSpecResponse = ZPublicApiAnalyticsQuerySpec.safeExtend({
+  minGroupRows: z.number().int().min(1).max(1000).optional()
 });
 
-const ZGeneratedAt = z
-  .string()
-  .nullable()
-  .describe('When the oldest returned section was computed (ISO 8601); null when no section was returned');
-
-export const ZPublicApiOrgAnalyticsResponse = z
-  .object({
-    overview: ZPublicApiAnalyticsOverviewResponse.optional(),
-    traffic: ZPublicApiAnalyticsTrafficResponse.optional(),
-    countries: z.array(ZPublicApiAnalyticsCountryResponse).optional(),
-    funnel: ZPublicApiAnalyticsFunnelResponse.optional(),
-    courseTypes: z.array(ZPublicApiAnalyticsCourseTypeResponse).optional(),
-    topCourses: z.array(ZPublicApiAnalyticsTopCourseResponse).optional(),
-    loginActivity: z.array(ZPublicApiLoginActivityResponse).optional(),
-    compliance: ZPublicApiComplianceOverviewResponse.optional()
-  })
-  .describe('Only the requested sections the caller may see are present');
-
-export const ZPublicApiOrgAnalyticsMeta = z.object({
-  include: z.array(z.enum(PUBLIC_API_ORG_ANALYTICS_SECTIONS)),
-  days: z.number(),
-  limit: z.number(),
-  omitted: z
-    .array(z.object({ section: z.enum(PUBLIC_API_ORG_ANALYTICS_SECTIONS), reason: z.enum(['requires_org_admin']) }))
-    .describe('Requested sections left out because the key creator may not see them'),
-  generatedAt: ZGeneratedAt
+export const ZPublicApiAnalyticsSnapshotWidgetResponse = z.object({
+  id: z.string(),
+  viz: z.enum(ANALYTICS_VIZ_TYPES),
+  description: z.string(),
+  spec: ZPublicApiAnalyticsSnapshotWidgetSpecResponse,
+  result: ZPublicApiAnalyticsWidgetResultResponse.nullable(),
+  errorCode: z
+    .string()
+    .nullable()
+    .describe('Set when this widget could not be computed; the other widgets still carry their result.')
 });
 
-export const ZPublicApiCourseAnalyticsResponse = z
-  .object({
-    summary: ZPublicApiCourseAnalyticsSummaryResponse.optional(),
-    funnel: ZPublicApiAnalyticsFunnelResponse.optional()
-  })
-  .describe('Only the requested sections are present');
+export const ZPublicApiAnalyticsSnapshotResponse = z.object({
+  scope: ZPublicApiAnalyticsScopeResponse,
+  selection: ZPublicApiAnalyticsSnapshotSelectionResponse,
+  generatedAt: timestamp.describe('When the snapshot was assembled (ISO 8601).'),
+  widgets: z.array(ZPublicApiAnalyticsSnapshotWidgetResponse)
+});
 
-export const ZPublicApiCourseAnalyticsMeta = z.object({
-  include: z.array(z.enum(PUBLIC_API_COURSE_ANALYTICS_SECTIONS)),
-  days: z.number(),
-  generatedAt: ZGeneratedAt
+export const ZPublicApiAnalyticsStudentRowResponse = z.object({
+  id: z.string().uuid(),
+  name: z.string().nullable(),
+  email: z.string().nullable(),
+  avatarUrl: z.string().nullable(),
+  progressPct: z.number().nullable(),
+  avgScorePct: z.number().nullable(),
+  coursesCompleted: z.number().nullable(),
+  coursesTotal: z.number().nullable(),
+  videoPct: z.number().nullable(),
+  attendancePct: z.number().nullable(),
+  certificates: z.number().nullable(),
+  lastLoginAt: timestamp.nullable(),
+  isOverdue: z.boolean().nullable(),
+  status: z.enum(ANALYTICS_STATUSES).nullable(),
+  nowAt: z.string().nullable().describe('Title of the item the student should do next.')
 });

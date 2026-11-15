@@ -18,7 +18,7 @@ vi.mock('@cio/db/queries/organization', () => ({
 vi.mock('@cio/core/services/webhook/emit', () => ({ emitCourseWebhookEvent: mocks.emitCourseWebhookEvent }));
 vi.mock('@cio/core/config/dashboard-url', () => ({ getAppBaseUrl: () => 'https://app.test' }));
 vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmail: mocks.enqueueTransactionalEmail }));
-vi.mock('@cio/analytics', () => ({ trackServerEvent: vi.fn(), SERVER_EVENTS: { ENROLLMENT_STARTED: 'x' } }));
+vi.mock('@cio/tracking', () => ({ trackServerEvent: vi.fn(), SERVER_EVENTS: { ENROLLMENT_STARTED: 'x' } }));
 vi.mock('@cio/email', () => ({
   buildEmailFromName: (name: string) => name,
   buildEmailBranding: () => ({})

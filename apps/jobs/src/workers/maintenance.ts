@@ -2,7 +2,7 @@ import './../bootstrap';
 
 import { Queue, Worker } from 'bullmq';
 
-import { runAnalyticsRollupDaily } from '@cio/analytics';
+import { runTrackingRollupDaily } from '@cio/tracking';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { sendInstanceTelemetry } from '@cio/core/services/instance-telemetry';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
@@ -150,7 +150,7 @@ const worker = new Worker(
 
     if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {
       const data = ZAnalyticsDailyRollupPayload.parse(job.data ?? {});
-      const result = await runAnalyticsRollupDaily({ daysAgo: data.daysAgo });
+      const result = await runTrackingRollupDaily({ daysAgo: data.daysAgo });
       log.info('analytics-rollup-done', result);
       return result;
     }

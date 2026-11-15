@@ -362,8 +362,15 @@
     {
       "idx": 51,
       "version": "7",
-      "when": 1794543991662,
-      "tag": "0051_points_numeric",
+      "when": 1794581127466,
+      "tag": "0051_analytics_performance_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1794650000000,
+      "tag": "0052_points_numeric",
       "breakpoints": true
     },
     {

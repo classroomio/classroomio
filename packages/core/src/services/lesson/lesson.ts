@@ -40,6 +40,7 @@ import {
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
+import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
 import { emitCourseWebhookEvent } from '../webhook/emit';
 import { captureCourseEvent } from '../posthog';
 
@@ -95,6 +96,7 @@ export async function createLesson(
     const lesson = await attachBlocksToLesson(createdLesson);
 
     await touchCourseUpdatedAt(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
 
     if (data.lessonAt) {
       await emitCourseWebhookEvent(courseId, 'lesson.session.scheduled', {
@@ -217,6 +219,16 @@ export async function updateLessonService(
 
     if (updated.courseId) {
       await touchCourseUpdatedAt(updated.courseId);
+
+      const hasStructureChange =
+        payload.title !== undefined ||
+        payload.order !== undefined ||
+        payload.sectionId !== undefined ||
+        payload.isUnlocked !== undefined;
+
+      if (hasStructureChange) {
+        void invalidateAnalyticsCourseStructure(updated.courseId);
+      }
     }
 
     if (existing && hasSessionMoved(existing, updated)) {
@@ -274,6 +286,7 @@ export async function deleteLessonService(lessonId: string): Promise<TLesson> {
 
     if (deleted.courseId) {
       await touchCourseUpdatedAt(deleted.courseId);
+      void invalidateAnalyticsCourseStructure(deleted.courseId);
     }
 
     return deleted;
