@@ -436,7 +436,7 @@ export async function updateSubmissionGrades(
   try {
     return await db.transaction(async (tx) => {
       if (data.answers.length > 0) {
-        const valueRows = data.answers.map((a) => sql`(${a.questionId}::bigint, ${a.points}::bigint)`);
+        const valueRows = data.answers.map((a) => sql`(${a.questionId}::bigint, ${a.points}::numeric(10,2))`);
         await tx.execute(sql`
           UPDATE question_answer AS qa
           SET point = v.point

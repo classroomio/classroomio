@@ -365,6 +365,13 @@
       "when": 1794543991662,
       "tag": "0051_points_numeric",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1794700000000,
+      "tag": "0052_math_question_types",
+      "breakpoints": true
     }
   ]
 }

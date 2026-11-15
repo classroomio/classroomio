@@ -1433,6 +1433,7 @@ export const exercise = pgTable(
     dueBy: timestamp('due_by', { mode: 'string' }),
     allowMultipleAttempts: boolean('allow_multiple_attempts').default(false).notNull(),
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
+    calculatorPolicy: varchar('calculator_policy').default('none').notNull(),
     completionPolicy: varchar('completion_policy').default('submitted').notNull(),
     passThreshold: integer('pass_threshold'),
     slug: varchar().notNull(),
@@ -2521,7 +2522,10 @@ export const question = pgTable(
     points: doublePrecision(),
     settings: jsonb().default({}),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' })
+    order: bigint({ mode: 'number' }),
+    parentQuestionId: bigint('parent_question_id', { mode: 'number' }).references((): AnyPgColumn => question.id, {
+      onDelete: 'cascade'
+    })
   },
   (table) => [
     foreignKey({
@@ -2539,7 +2543,8 @@ export const question = pgTable(
       foreignColumns: [questionType.id],
       name: 'question_question_type_id_fkey'
     }),
-    index('idx_question_exercise_id').on(table.exerciseId)
+    index('idx_question_exercise_id').on(table.exerciseId),
+    index('idx_question_parent_question_id').on(table.parentQuestionId)
   ]
 );
 
@@ -2587,8 +2592,9 @@ export const questionAnswer = pgTable(
 /**
  * Exercise question kinds (`typename` matches `@cio/question-types` keys). Expected ids:
  * 1 RADIO, 2 CHECKBOX, 3 TEXTAREA, 4 TRUE_FALSE, 5 SHORT_ANSWER, 6 NUMERIC, 7 FILL_BLANK,
- * 8 FILE_UPLOAD, 9 ORDERING, 10 LINK, 11 WORD_BANK, 12 STAR, 13 VIDEO_RECORDING, 14 THUMBS.
- * Disabled (no DB row): 15 MATCHING, 16 HOTSPOT.
+ * 8 FILE_UPLOAD, 9 ORDERING, 10 LINK, 11 WORD_BANK, 12 STAR, 13 VIDEO_RECORDING, 14 THUMBS,
+ * 15 MATCHING, 17 MATH_EXPRESSION, 18 WORKED_SOLUTION.
+ * Disabled (no DB row): 16 HOTSPOT.
  */
 export const questionType = pgTable(
   'question_type',

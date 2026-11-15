@@ -332,9 +332,9 @@ In `constants.ts`, you can:
 | STAR            | 12  | Auto-gradable                                    |
 | VIDEO_RECORDING | 13  | Manual grading                                   |
 | THUMBS          | 14  | Not graded                                       |
-| MATCHING        | 15  | Auto-gradable, partial credit (disabled)         |
+| MATCHING        | 15  | Auto-gradable, partial credit                    |
 | HOTSPOT         | 16  | Auto-gradable, partial credit (disabled)         |
-| MATH_EXPRESSION | 17  | Auto-gradable with the math grader (disabled)    |
-| WORKED_SOLUTION | 18  | Answer auto-graded, working manual (disabled)    |
+| MATH_EXPRESSION | 17  | Auto-gradable with the math grader               |
+| WORKED_SOLUTION | 18  | Answer auto-graded, working manual               |
 
 Use the next available id for your new type, keep `QUESTION_TYPE_REGISTRY` and the `questionType` comment in `schema.ts` in sync, and ensure environments that need the row have it inserted (seed or one-off—**not** a committed migration for reference data).
