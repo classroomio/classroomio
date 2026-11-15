@@ -4,11 +4,11 @@ Docs drift because the "does this need docs?" checklist defaults to "no," and sh
 
 ## Three mechanisms
 
-The API reference is generated from the OpenAPI spec. `upload-openapi-spec.yml` regenerates and republishes it on every push to `main`, so it can't drift: there's nothing hand-written to forget.
+The API reference is generated from the OpenAPI spec. `upload-openapi-spec.yml` regenerates and republishes it on every push to `main` that touches `apps/api/**` or `packages/utils/src/openapi/**`, so it can't drift: there's nothing hand-written to forget.
 
 Everything else user-facing (routes, nav, components, copy) is hand-written and can drift. That's what `needs-docs-review` is for.
 
-The PR docs fact check uses OpenCode with DeepSeek V4.1 Flash to compare each PR diff with the hand-written Help Center, Developers, and relevant README pages. It also checks screenshots referenced by affected guides against changed screens. After the first successful check, later runs review only the commits added on top of the last checked commit and revalidate the pages whose fact-check threads are still open; a force-push or unavailable commit falls back to a full PR review. It posts a 1–5 score as a GitHub review and adds replyable review comments for each confirmed stale page or image, or a regular PR comment when that finding's file is no longer in the PR diff. A reply to one of its review threads triggers a response in that thread. A clean check says ✅ 5/5 and “All good,” and resolves the fact-check's open review threads.
+The PR docs fact check uses OpenCode with DeepSeek V4.1 Flash to compare each PR diff with the hand-written Help Center, Developers, and relevant README pages. It also checks screenshots referenced by affected guides against changed screens. After the first successful check, later runs review only the commits added on top of the last checked commit and revalidate the pages with open fact-check findings (review threads and fallback PR comments); a force-push or unavailable commit falls back to a full PR review. It posts a 1–5 score as a GitHub review and adds replyable review comments for each confirmed stale page or image, or a regular PR comment when that finding's file is no longer in the PR diff. A reply to one of its review threads triggers a response in that thread. A full clean check says ✅ 5/5 and “All good,” and resolves all of the fact-check's open review threads; an incremental clean check resolves only the findings it revalidated and removes the fallback comments it revalidated.
 
 `apps/api/**` should never end up in `.github/docs-review/globs.yml`. It would just relabel PRs whose docs already regenerate themselves.
 
@@ -44,7 +44,7 @@ pnpm docs:check-stale
 pnpm help:check-stale
 ```
 
-Swap `apps/docs` for `apps/help` (and its own `.vale.ini`) to run Vale against the Help Center content instead.
+Swap `apps/docs` for `apps/help` and `content/docs` for `content/help` (with its own `.vale.ini`) to run Vale against the Help Center content instead.
 
 ## Deferred for later
 

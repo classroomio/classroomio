@@ -83,22 +83,52 @@ async function getFactCheckThreads(pullNumber) {
 }
 
 /**
- * Resolves fact-check review threads on the PR.
- *
- * `resolveAll` clears every thread, which is what a clean 5/5 check does.
- * With `activeDocPaths` set, threads for pages still reported stay open and
- * every other thread is resolved. With `activeDocPaths` null, only the
- * superseded summary threads (which carry no page path) are resolved.
+ * Finding comments that could not be posted as review threads (their file left
+ * the PR diff) are stored as regular PR comments instead.
  */
-async function resolveFactCheckThreads(threads, { resolveAll = false, activeDocPaths = null } = {}) {
+async function getFactCheckIssueComments(pullNumber) {
+  const comments = [];
+
+  for (let page = 1; ; page += 1) {
+    const batch = await githubRequest(`/issues/${pullNumber}/comments?per_page=100&page=${page}`);
+    comments.push(...batch);
+    if (batch.length < 100) break;
+  }
+
+  return comments
+    .filter((comment) => comment.user?.login === botLogin && comment.body?.includes(marker))
+    .map((comment) => ({ id: comment.id, body: comment.body, docPath: docPathFromThreadBody(comment.body) }))
+    .filter((comment) => comment.docPath);
+}
+
+function shouldResolveFinding(docPath, { resolveAll, activeDocPaths, revalidatedDocPaths }) {
+  if (!docPath) return true;
+  if (activeDocPaths.has(docPath)) return false;
+  if (resolveAll) return true;
+  if (revalidatedDocPaths === null) return true;
+
+  return revalidatedDocPaths.has(docPath);
+}
+
+/**
+ * Resolves fact-check review threads and removes fallback finding comments.
+ *
+ * `resolveAll` clears everything, which is what a full clean check does.
+ * `activeDocPaths` keeps pages that are still reported open.
+ * `revalidatedDocPaths` limits resolution to pages the current run actually
+ * rechecked; null means the run checked the whole PR.
+ */
+async function resolveFactCheckFindings(
+  pullNumber,
+  threads,
+  fallbackComments,
+  { resolveAll = false, activeDocPaths = new Set(), revalidatedDocPaths = null } = {}
+) {
+  const options = { resolveAll, activeDocPaths, revalidatedDocPaths };
+
   for (const thread of threads) {
     if (thread.isResolved) continue;
-
-    if (!resolveAll) {
-      const docPath = docPathFromThreadBody(thread.body);
-
-      if (docPath && (activeDocPaths === null || activeDocPaths.has(docPath))) continue;
-    }
+    if (!shouldResolveFinding(docPathFromThreadBody(thread.body), options)) continue;
 
     // The job token may not be allowed to resolve threads; don't fail the review over it.
     try {
@@ -107,6 +137,16 @@ async function resolveFactCheckThreads(threads, { resolveAll = false, activeDocP
       });
     } catch (error) {
       console.warn(`Could not resolve fact-check thread ${thread.id}:`, error.message);
+    }
+  }
+
+  for (const comment of fallbackComments) {
+    if (!shouldResolveFinding(comment.docPath, options)) continue;
+
+    try {
+      await githubRequest(`/issues/comments/${comment.id}`, { method: 'DELETE' });
+    } catch (error) {
+      console.warn(`Could not remove fact-check comment ${comment.id}:`, error.message);
     }
   }
 }
@@ -510,6 +550,7 @@ async function reviewPullRequest(pullRequest, replyContext) {
     ? diffScope(pullRequest.base.sha, headSha).changedLines
     : reviewScope.changedLines;
   const threads = await getFactCheckThreads(pullRequest.number);
+  const fallbackComments = await getFactCheckIssueComments(pullRequest.number);
   const openThreads = threads.filter((thread) => !thread.isResolved);
   const worktree = mkdtempSync(resolve(tmpdir(), 'classroomio-docs-review-'));
   let worktreeAdded = false;
@@ -528,19 +569,25 @@ async function reviewPullRequest(pullRequest, replyContext) {
       : isIncremental
         ? `\nThis check covers only the commits added since the previous fact check (${lastCheckedSha}...${headSha}). Earlier commits were already reviewed; judge the new commits and revalidate any open findings listed below.\n`
         : '';
-    const openFindings = isIncremental
-      ? openThreads
-          .map((thread) => {
-            const docPath = docPathFromThreadBody(thread.body);
-
-            return docPath ? { doc_path: docPath, thread: thread.body.replace(marker, '').trim() } : null;
-          })
-          .filter(Boolean)
-          .slice(0, 30)
+    const revalidationCandidates = isIncremental
+      ? [
+          ...openThreads.map((thread) => ({ doc_path: docPathFromThreadBody(thread.body), body: thread.body })),
+          ...fallbackComments.map((comment) => ({ doc_path: comment.docPath, body: comment.body }))
+        ]
       : [];
+    const openFindings = [];
+
+    for (const candidate of revalidationCandidates) {
+      if (!candidate.doc_path || openFindings.some((entry) => entry.doc_path === candidate.doc_path)) continue;
+
+      openFindings.push({ doc_path: candidate.doc_path, thread: candidate.body.replace(marker, '').trim() });
+      if (openFindings.length === 30) break;
+    }
+
+    const revalidatedDocPaths = isIncremental ? new Set(openFindings.map((finding) => finding.doc_path)) : null;
     const revalidateNote =
       openFindings.length > 0
-        ? `\nThese pages were flagged earlier and their threads are still open. Revalidate each against the current checkout and include it in findings only if it is still stale: ${JSON.stringify(openFindings)}\n`
+        ? `\nThese pages were flagged earlier and are still open. Revalidate each against the current checkout and include it in findings only if it is still stale: ${JSON.stringify(openFindings)}\n`
         : '';
     const conversation = replyContext
       ? `\nRe-review requested in this existing review thread. Address the latest reply in a short \"reply\" field in your JSON. Thread: ${JSON.stringify(replyContext.thread.map((entry) => ({ author: entry.user.login, body: entry.body })))}\n`
@@ -561,7 +608,9 @@ async function reviewPullRequest(pullRequest, replyContext) {
       (finding) =>
         isDocumentationPath(finding.doc_path) &&
         existsSync(resolve(worktree, finding.doc_path)) &&
-        reviewScope.changedLines.has(finding.change_path) &&
+        (revalidatedDocPaths?.has(finding.doc_path) ? pullRequestChangedLines : reviewScope.changedLines).has(
+          finding.change_path
+        ) &&
         typeof finding.explanation === 'string' &&
         finding.explanation.trim() &&
         (finding.kind === 'text' ||
@@ -587,6 +636,11 @@ async function reviewPullRequest(pullRequest, replyContext) {
     }
 
     const result = formatScore({ ...review, findings });
+    const activeDocPaths = new Set(findings.map((finding) => finding.doc_path));
+
+    for (const image of imageInventory) {
+      if (review.unverified_images.includes(image.image_path)) activeDocPaths.add(image.doc_path);
+    }
 
     if (replyContext) {
       if (hasNewCommits && findings.length > 0) {
@@ -607,20 +661,22 @@ async function reviewPullRequest(pullRequest, replyContext) {
         body: JSON.stringify({ body: hasNewCommits ? withCheckedSha(replyBody, headSha) : replyBody })
       });
 
-      if (hasNewCommits && result.score === 5) {
-        await resolveFactCheckThreads(threads, { resolveAll: true });
+      if (hasNewCommits) {
+        await resolveFactCheckFindings(pullRequest.number, threads, fallbackComments, {
+          resolveAll: !isIncremental && result.score === 5,
+          activeDocPaths,
+          revalidatedDocPaths
+        });
       }
 
       return;
     }
 
-    if (result.score === 5) {
-      await resolveFactCheckThreads(threads, { resolveAll: true });
-    } else {
-      const activeDocPaths = new Set(findings.map((finding) => finding.doc_path));
-
-      await resolveFactCheckThreads(threads, { activeDocPaths });
-    }
+    await resolveFactCheckFindings(pullRequest.number, threads, fallbackComments, {
+      resolveAll: !isIncremental && result.score === 5,
+      activeDocPaths,
+      revalidatedDocPaths
+    });
 
     const firstChangedPath = pullRequestChangedLines.keys().next().value;
     if (firstChangedPath && result.score !== 5) {
