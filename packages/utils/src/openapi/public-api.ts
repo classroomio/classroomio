@@ -180,6 +180,7 @@ export const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections': 'Add an exercise section',
   'PATCH /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Update an exercise section',
   'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Delete an exercise section',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/regrade': 'Regrade an exercise',
   'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify': 'Notify course members about an exercise',
   'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify/{jobId}': 'Get an exercise notification status',
   'GET /public-api/v1/exercise-templates': 'List exercise templates',
