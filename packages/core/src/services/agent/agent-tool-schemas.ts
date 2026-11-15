@@ -434,6 +434,12 @@ export const updateQuestionPatchSchema = z
     }
   );
 
+export const makeQuestionVariantsParam = z.object({
+  exerciseId: z.string(),
+  questionId: z.number().int().describe('A question of this exercise whose settings.parameters define the variables.'),
+  count: z.number().int().min(2).max(10).describe('How many separate questions to create, each with different numbers.')
+});
+
 export const updateQuestionsParam = z.object({
   exerciseId: z.string(),
   questions: z.array(updateQuestionPatchSchema).min(1)

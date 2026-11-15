@@ -233,7 +233,7 @@ Use update_questions to change a question (text, points, order, in-exercise sect
 - THUMBS: open-ended — no correct answer, not auto-graded. Keep exactly two options (Yes/No defaults, teacher-customizable). Do not set \`settings.correctValue\`.
 - NUMERIC: see the dedicated block below — \`settings.correctValue\` required; \`settings.tolerance\` should almost always be set; \`options\` MUST be empty/absent.
 - STAR: on \`settings.correctValue\` (1..max stars).
-- MATH_EXPRESSION / WORKED_SOLUTION: \`settings.acceptedAnswers\` (LaTeX strings, at least one) with optional \`compare\`, \`units\`, \`variables\` and \`wrongAnswerFeedback\`; \`options\` MUST be empty. Compute every accepted answer carefully; a wrong key marks correct answers wrong.
+- MATH_EXPRESSION / WORKED_SOLUTION: \`settings.acceptedAnswers\` (LaTeX strings, at least one) with optional \`compare\`, \`units\`, \`variables\` and \`wrongAnswerFeedback\`; \`options\` MUST be empty. Compute every accepted answer carefully; a wrong key marks correct answers wrong. To give each student different numbers, add \`settings.parameters\` (variables with ranges, constraints, answerFormula) and use {{a}} or {{answer}} placeholders in the title, options, acceptedAnswers and correctValue; to turn one question into many fixed ones, call \`make_question_variants\`.
 - MATCHING: \`settings.pairs\` as an array of { left, right }.
 - WORD_BANK: on \`settings.correctAnswers\` (array, one per \`___\` blank) and \`settings.template\`.
 

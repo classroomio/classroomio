@@ -4,6 +4,7 @@ import { tool } from 'ai';
 import { CoursePlanSchema, getCourseTemplate } from '@cio/ai-assistant';
 import { getBlockRecipeMarkup } from '@cio/ai-assistant/tools';
 import { ADD_QUESTIONS_TOOL_DESCRIPTION, UPDATE_QUESTIONS_BINARY_TYPES_HINT } from '@cio/question-types';
+import { makeFixedVariants } from '@cio/question-types/variant-preview';
 import { AppError } from '@cio/utils/errors';
 import { assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
 import { assertAnswerKeysVerified } from '../exercise/answer-key';
@@ -94,6 +95,7 @@ import {
   updateLessonBlockRequirementsParam,
   updateLessonBlockSettingsParam,
   updateLessonParam,
+  makeQuestionVariantsParam,
   updateQuestionsParam,
   updateSectionParam
 } from './agent-tool-schemas';
@@ -127,6 +129,7 @@ const DURABLE_AGENT_TOOL_NAMES = new Set([
   'update_exercise_section',
   'create_exercise_section',
   'add_questions',
+  'make_question_variants',
   'update_questions',
   'reorder_content',
   'update_course_landing_page',
@@ -1259,6 +1262,78 @@ export function buildAgentTools(
             exerciseId: args.exerciseId,
             exerciseTitle: existingExercise.title,
             addedCount: args.questions.length,
+            totalCount: allQuestions.length
+          };
+        });
+      }
+    }),
+
+    make_question_variants: tool({
+      description:
+        'Make N separate questions from one parameterised question. The source question (an id from get_exercise_details) must define settings.parameters and {{placeholders}}; each copy is the question with different numbers filled in, its answer key computed by the Compute Engine and verified before anything is saved. The copies are added to the same exercise block and are fixed questions with no parameters.',
+      inputSchema: makeQuestionVariantsParam,
+      execute: async (args) => {
+        return executeAgentTool('make_question_variants', { orgId, userId, courseId, args }, async () => {
+          await verifyExerciseBelongsToCourse(args.exerciseId, courseId);
+
+          const existing = await getExercise(args.exerciseId);
+          const existingQuestions = existing.questions || [];
+          const source = existingQuestions.find((question) => Number(question.id) === args.questionId);
+          if (!source) {
+            throw new AppError('That question was not found on this exercise.', 'VALIDATION_ERROR', 404);
+          }
+
+          const variants = makeFixedVariants(
+            {
+              title: source.title,
+              settings: source.settings as Record<string, unknown> | null,
+              options: source.options.map((option) => ({ label: option.label ?? '', isCorrect: option.isCorrect }))
+            },
+            args.count
+          );
+          if (variants.length === 0) {
+            throw new AppError(
+              'That question has no settings.parameters. Add variables and {{placeholders}} with update_questions first.',
+              'VALIDATION_ERROR',
+              400
+            );
+          }
+
+          const newQuestions = variants.map(({ question }, index) => ({
+            question: question.title ?? '',
+            questionTypeId: source.questionTypeId,
+            points: Number(source.points),
+            order: existingQuestions.length + index,
+            settings: question.settings ?? {},
+            ...(source.exerciseSectionId ? { exerciseSectionId: source.exerciseSectionId } : {}),
+            options: (question.options ?? []).map((option) => ({
+              label: option.label ?? '',
+              isCorrect: Boolean((option as { isCorrect?: boolean }).isCorrect)
+            }))
+          }));
+
+          assertAnswerKeysVerified(newQuestions);
+
+          const allQuestions = [
+            ...existingQuestions.map((eq) => ({
+              id: Number(eq.id),
+              question: eq.title,
+              questionTypeId: eq.questionTypeId,
+              points: eq.points,
+              order: eq.order,
+              settings: eq.settings,
+              options: eq.options.map((o) => ({ id: Number(o.id), label: o.label || '', isCorrect: o.isCorrect }))
+            })),
+            ...newQuestions
+          ];
+
+          await updateExerciseService(args.exerciseId, { questions: allQuestions });
+
+          return {
+            exerciseId: args.exerciseId,
+            exerciseTitle: existing.title,
+            addedCount: newQuestions.length,
+            requestedCount: args.count,
             totalCount: allQuestions.length
           };
         });

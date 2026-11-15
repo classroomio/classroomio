@@ -73,6 +73,40 @@ A numeric question's `settings.correctValue` can be LaTeX or a fraction such as 
 
 Each graded math answer stores its result in `answerData.grading`, which the submission's answers return: `reason` is `equivalent`, `not_simplified`, `wrong_form`, `wrong_units`, `wrong`, `needs_review` or `invalid`, plus `matchedAnswer` and the `feedback` you set for a known wrong answer.
 
+## Parameterised questions
+
+A numeric, math expression or worked solution question can draw different numbers for every attempt. Add `settings.parameters` and write `{{name}}` placeholders in the title, the options and the answer key:
+
+```json
+{
+  "question": "A rope of {{b}} m is cut into {{a}} equal pieces. How long is each piece, in metres?",
+  "questionTypeId": 17,
+  "points": 1,
+  "settings": {
+    "acceptedAnswers": ["{{answer}}"],
+    "parameters": {
+      "variables": [
+        { "name": "a", "type": "int", "min": 2, "max": 9 },
+        { "name": "b", "type": "int", "min": 1, "max": 20 }
+      ],
+      "constraints": ["a != 0"],
+      "answerFormula": "b / a"
+    }
+  }
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `variables` | Up to 8 variables named by one letter other than `e` and `i`. `type` is `int`, `decimal` or `choice`; `min`, `max` and `step` bound the draw and `choices` lists the values of a `choice` variable |
+| `constraints` | Conditions every draw must satisfy, such as `a != 0` or `b > a`. Draws repeat until they hold |
+| `answerFormula` | The answer as an expression of the variables. `{{answer}}` stands for its exact value in any text |
+| `requireIntegerAnswer`, `requireNonzeroAnswer` | Reject draws whose answer is not a whole number, or is zero |
+
+A placeholder can also hold a formula, such as `{{a * b}}`. The Compute Engine evaluates it, and a whole-number result is written plainly while a fraction is written as LaTeX.
+
+Each attempt gets a seed. The dashboard stores it in `answerData.seed`, and the server re-derives the numbers and the answer key from it, so a client never sends a key. When you submit answers through the API for a parameterised question, send the `seed` of the variant the student saw next to `answer`. A submission without a seed for such a question is rejected, and a new attempt should use a new seed.
+
 ## Multi-part questions
 
 A multi-part question is a stem with parts (a), (b) and so on. Each part is a normal question with its own type, answer and points, and has `parentQuestionId` set to the stem's id. The stem is not answered or graded, so give it 0 points; deleting it deletes its parts. Send `parts` on a new question to create the stem and its parts together:

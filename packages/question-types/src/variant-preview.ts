@@ -36,3 +36,33 @@ export function previewVariants(question: VariantPreviewInput, count = 5, seedPr
     return { seed, values: instance.values, title: instantiated.title ?? '', answer: instance.answer, issues };
   });
 }
+
+const MAX_SEED_TRIES_PER_VARIANT = 40;
+
+/**
+ * Turns one parameterised question into `count` fixed questions with different numbers: each copy has its placeholders
+ * filled in and no `parameters`, so it stands alone. Fewer copies come back when the ranges hold fewer distinct draws.
+ */
+export function makeFixedVariants<Question extends VariantQuestion>(
+  question: Question,
+  count: number
+): Array<{ seed: string; values: Record<string, number>; question: Question }> {
+  const parameters = readQuestionParameters(question.settings);
+  if (!parameters) return [];
+
+  const seenDraws = new Set<string>();
+  const variants: Array<{ seed: string; values: Record<string, number>; question: Question }> = [];
+
+  for (let attempt = 0; attempt < count * MAX_SEED_TRIES_PER_VARIANT && variants.length < count; attempt++) {
+    const seed = 'variant-' + attempt;
+    const instance = instantiateVariant(parameters, seed);
+    const drawKey = JSON.stringify(instance.values);
+    if (!instance.satisfiesConstraints || seenDraws.has(drawKey)) continue;
+
+    seenDraws.add(drawKey);
+    const { parameters: _parameters, ...settings } = instantiateQuestion(question, seed).settings ?? {};
+    variants.push({ seed, values: instance.values, question: { ...instantiateQuestion(question, seed), settings } });
+  }
+
+  return variants;
+}

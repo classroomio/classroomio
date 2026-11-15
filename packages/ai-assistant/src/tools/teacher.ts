@@ -325,6 +325,17 @@ export const addQuestionsSchema = {
   })
 };
 
+export const makeQuestionVariantsSchema = {
+  description:
+    'Make N separate questions from one parameterised question. The source question (an id from get_exercise_details) must define settings.parameters and {{placeholders}}; each copy has different numbers filled in, its answer key computed and verified by the Compute Engine before anything is saved.',
+  parameters: z.object({
+    courseId: z.string().describe('The course ID'),
+    exerciseId: z.string().describe('The existing exercise ID'),
+    questionId: z.number().int().describe('The parameterised question to copy'),
+    count: z.number().int().min(2).max(10).describe('How many separate questions to create')
+  })
+};
+
 export const updateQuestionsSchema = {
   description: `Update existing questions in an exercise. Pass only the fields you want to change; \`id\` identifies the question. Optional \`exerciseSectionId\` (from get_exercise_details sections) moves the question to another in-exercise block; use null to clear section assignment. ${UPDATE_QUESTIONS_BINARY_TYPES_HINT} For NUMERIC the correct answer is \`settings.correctValue\` (a number), not an option — do NOT add options to NUMERIC questions. For STAR use \`settings.correctValue\` (1..max). For WORD_BANK use \`settings.correctAnswers\` and \`settings.template\`. RADIO/CHECKBOX use \`options[].isCorrect\`: include an option \`id\` to edit it, omit \`id\` to add a new one. \`settings\` is shallow-merged with the existing settings. Omit \`options\` entirely to leave existing options unchanged — if you pass an options array, any existing option not listed in it will be removed.`,
   parameters: z.object({
