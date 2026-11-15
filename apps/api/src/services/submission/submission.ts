@@ -540,6 +540,7 @@ export async function listSubmissionsForGrading(courseId: string) {
           order: q.order,
           points: q.points,
           questionTypeId: q.questionTypeId,
+          parentQuestionId: q.parentQuestionId,
           settings: q.settings ?? {},
           options: (q.options || []).map((opt: any) => ({
             id: opt.id,
