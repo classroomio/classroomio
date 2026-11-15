@@ -10,7 +10,7 @@ tags: ['Customer Education', 'Guides']
 published: true
 ---
 
-This is a 30-day plan for launching a first customer academy with one course. Copy it into your own doc and change the names. If you want the background first, read [what a customer academy is](/blog/what-is-a-customer-academy).
+This is a 30-day plan for launching a first customer academy with one course. Copy it into your own doc and change the names.
 
 ## Before you start
 
@@ -74,4 +74,4 @@ Everything below serves that sentence. If a lesson does not help, cut it.
 
 Fix the lesson where most learners stop. Then add a second course on the next most common support topic. Do not add more courses until the first one has a completion rate you are happy with.
 
-Use the [calculator](/customer-academy-roi-calculator) to estimate what deflected tickets are worth with your own numbers. To build the course in ClassroomIO, [start on the free plan](/signup).
+To build the course in ClassroomIO, [start on the free plan](/signup).
