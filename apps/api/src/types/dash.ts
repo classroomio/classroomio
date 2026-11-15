@@ -15,7 +15,7 @@ export interface RecentCertification {
   date: string;
 }
 
-export interface OrganisationAnalytics {
+export interface OrganizationOverview {
   totalCertificates: number;
   numberOfCourses: number;
   totalStudents: number;

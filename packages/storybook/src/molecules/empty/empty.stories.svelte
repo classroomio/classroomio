@@ -11,7 +11,7 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import { Button } from '@cio/ui/base/button';
   import { Empty as EmptyState } from '@cio/ui/custom/empty';
-  import { MachineBlankLesson, MachineBrokenTrack } from '@cio/ui/custom/animation';
+  import { MachineBlankLesson, MachineBrokenTrack, MachineRunnerBorder } from '@cio/ui/custom/animation';
 
   import { FIELDS } from './fields';
 
@@ -164,6 +164,63 @@
           <Button variant="secondary">Explore our changelog</Button>
           <Button>Go home</Button>
         </div>
+      </EmptyState>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Page while playing">
+  {#snippet template()}
+    {#snippet overlay()}
+      <MachineRunnerBorder snapshot={{ status: 'running', passed: 12, isNewRecord: false }} />
+    {/snippet}
+    <div class="flex h-[640px] w-[720px] flex-col items-center justify-center">
+      <EmptyState
+        title="This page failed to load"
+        description="Hidden while the game is on."
+        variant="page"
+        mediaOnly
+        {overlay}
+      >
+        {#snippet media()}
+          <div class="mx-auto w-full" style:--machine-face="var(--background)">
+            <MachineBrokenTrack />
+          </div>
+        {/snippet}
+      </EmptyState>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Page after a crash">
+  {#snippet template()}
+    {#snippet overlay()}
+      <MachineRunnerBorder snapshot={{ status: 'over', passed: 12, isNewRecord: false }} />
+    {/snippet}
+    <div class="flex h-[640px] w-[720px] flex-col items-center justify-center">
+      <EmptyState variant="page" mediaOnly {overlay}>
+        {#snippet media()}
+          <div class="mx-auto h-52 w-full max-w-[340px]" style:--machine-face="var(--background)">
+            <MachineBrokenTrack playable={false} />
+          </div>
+        {/snippet}
+      </EmptyState>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Page with a new record">
+  {#snippet template()}
+    {#snippet overlay()}
+      <MachineRunnerBorder snapshot={{ status: 'over', passed: 12, isNewRecord: true }} />
+    {/snippet}
+    <div class="flex h-[640px] w-[720px] flex-col items-center justify-center">
+      <EmptyState variant="page" mediaOnly {overlay}>
+        {#snippet media()}
+          <div class="mx-auto h-52 w-full max-w-[340px]" style:--machine-face="var(--background)">
+            <MachineBrokenTrack playable={false} />
+          </div>
+        {/snippet}
       </EmptyState>
     </div>
   {/snippet}

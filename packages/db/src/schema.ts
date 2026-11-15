@@ -569,7 +569,9 @@ export const groupAttendance = pgTable(
       columns: [table.studentId],
       foreignColumns: [groupmember.id],
       name: 'group_attendance_student_id_fkey'
-    })
+    }),
+    index('idx_group_attendance_course_id_lesson_id').on(table.courseId, table.lessonId),
+    index('idx_group_attendance_student_id').on(table.studentId)
   ]
 );
 
@@ -1296,6 +1298,7 @@ export const lesson = pgTable(
       name: 'lesson_teacher_id_fkey'
     }),
     index('idx_lesson_course_slug').on(table.courseId, table.slug),
+    index('idx_lesson_section_id').on(table.sectionId),
     index('lesson_source_id_idx')
       .on(table.sourceId)
       .where(sql`${table.sourceId} is not null`)
@@ -1457,6 +1460,7 @@ export const exercise = pgTable(
       name: 'exercise_section_id_fkey'
     }),
     index('idx_exercise_course_slug').on(table.courseId, table.slug),
+    index('idx_exercise_section_id').on(table.sectionId),
     index('exercise_source_id_idx')
       .on(table.sourceId)
       .where(sql`${table.sourceId} is not null`),
@@ -1526,7 +1530,8 @@ export const groupmember = pgTable(
     }),
     unique('unique_entries').on(table.groupId, table.profileId, table.email),
     unique('unique_group_email').on(table.groupId, table.email),
-    unique('unique_group_profile').on(table.groupId, table.profileId)
+    unique('unique_group_profile').on(table.groupId, table.profileId),
+    index('idx_groupmember_profile_id').on(table.profileId)
   ]
 );
 
@@ -1849,7 +1854,8 @@ export const lessonCompletion = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_completion_profile_id_fkey'
     }),
-    unique('unique_lesson_profile').on(table.lessonId, table.profileId)
+    unique('unique_lesson_profile').on(table.lessonId, table.profileId),
+    index('idx_lesson_completion_profile_id_lesson_id').on(table.profileId, table.lessonId)
   ]
 );
 
@@ -2585,7 +2591,8 @@ export const questionAnswer = pgTable(
       columns: [table.submissionId],
       foreignColumns: [submission.id],
       name: 'question_answer_submission_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    index('idx_question_answer_submission_id').on(table.submissionId)
   ]
 );
 
@@ -2684,6 +2691,9 @@ export const organization = pgTable(
         session?: boolean;
         enrollmentWelcome?: boolean;
         courseCompletion?: boolean;
+      };
+      analytics?: {
+        studentTarget?: number | null;
       };
     }>(),
     landingpage: jsonb().default({}).$type<{
@@ -3766,7 +3776,8 @@ export const cohortCourse = pgTable(
       name: 'cohort_course_course_id_fkey'
     }).onDelete('cascade'),
     unique('cohort_course_cohort_id_course_id_unique').on(table.cohortId, table.courseId),
-    index('idx_cohort_course_cohort_id').on(table.cohortId)
+    index('idx_cohort_course_cohort_id').on(table.cohortId),
+    index('idx_cohort_course_course_id').on(table.courseId)
   ]
 );
 

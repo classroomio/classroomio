@@ -33,7 +33,7 @@ vi.mock('@cio/db/queries/organization', () => ({
 }));
 
 vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({ invalidateOrgStats: vi.fn() }));
-vi.mock('@cio/analytics', () => ({ trackServerEvent: vi.fn(), SERVER_EVENTS: {} }));
+vi.mock('@cio/tracking', () => ({ trackServerEvent: vi.fn(), SERVER_EVENTS: {} }));
 vi.mock('@api/utils/course-completion', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@api/utils/course-completion')>();
 

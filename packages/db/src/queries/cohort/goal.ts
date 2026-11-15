@@ -1,8 +1,8 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, count, eq, inArray, lt, notInArray, sql, type SQL } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TCohortListPage } from './cohort';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -117,79 +117,134 @@ export async function listAllActiveCohortGoals(): Promise<TCohortGoal[]> {
   }
 }
 
-/**
- * For the reminder scan: every assignment whose `dueDate` is in the future and
- * whose status is not yet completed/waived. The caller decides the cadence
- * (compares daysUntilDue against goal.reminderDaysBefore).
- */
-export async function listAssignmentsForReminderScan(): Promise<
-  Array<{
-    assignment: TCohortGoalAssignment;
-    goal: TCohortGoal;
-    profileId: string;
-    email: string | null;
-    cohortId: string;
-    cohortName: string;
-    organizationId: string;
-    organizationName: string;
-    organizationSiteName: string | null;
-    organizationCustomDomain: string | null;
-    organizationIsCustomDomainVerified: boolean | null;
-    organizationAvatarUrl: string | null;
-    organizationTheme: string | null;
-  }>
-> {
-  try {
-    const result = await db
-      .select({
-        assignment: schema.cohortGoalAssignment,
-        goal: schema.cohortGoal,
-        profileId: schema.cohortMember.profileId,
-        email: schema.cohortMember.email,
-        cohortId: schema.cohort.id,
-        cohortName: schema.cohort.name,
-        organizationId: schema.organization.id,
-        organizationName: schema.organization.name,
-        organizationSiteName: schema.organization.siteName,
-        organizationCustomDomain: schema.organization.customDomain,
-        organizationIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
-        organizationAvatarUrl: schema.organization.avatarUrl,
-        organizationTheme: schema.organization.theme
-      })
-      .from(schema.cohortGoalAssignment)
-      .innerJoin(schema.cohortMember, eq(schema.cohortGoalAssignment.cohortMemberId, schema.cohortMember.id))
-      .innerJoin(schema.cohortGoal, eq(schema.cohortGoalAssignment.goalId, schema.cohortGoal.id))
-      .innerJoin(schema.cohort, eq(schema.cohortGoal.cohortId, schema.cohort.id))
-      .innerJoin(schema.organization, eq(schema.cohort.organizationId, schema.organization.id))
-      .where(
-        and(
-          eq(schema.cohortGoal.status, 'active'),
-          inArray(schema.cohortGoalAssignment.status, ['not_started', 'in_progress', 'at_risk', 'overdue'])
-        )
-      );
+export const COHORT_GOAL_OPEN_ASSIGNMENT_STATUSES = ['not_started', 'in_progress', 'at_risk', 'overdue'] as const;
+export const COHORT_GOAL_CLOSED_ASSIGNMENT_STATUSES = ['completed', 'waived'] as const;
+export const COHORT_GOAL_MAX_BULK_REMINDERS = 500;
 
-    return result
-      .filter((row) => row.profileId != null)
-      .map((row) => ({
-        assignment: row.assignment,
-        goal: row.goal,
-        profileId: row.profileId!,
-        email: row.email,
-        cohortId: row.cohortId,
-        cohortName: row.cohortName,
-        organizationId: row.organizationId,
-        organizationName: row.organizationName,
-        organizationSiteName: row.organizationSiteName,
-        organizationCustomDomain: row.organizationCustomDomain,
-        organizationIsCustomDomainVerified: row.organizationIsCustomDomainVerified,
-        organizationAvatarUrl: row.organizationAvatarUrl,
-        organizationTheme: row.organizationTheme
-      }));
+export type CohortGoalReminderContext = {
+  assignment: TCohortGoalAssignment;
+  goal: TCohortGoal;
+  profileId: string;
+  email: string | null;
+  cohortId: string;
+  cohortName: string;
+  organizationId: string;
+  organizationName: string;
+  organizationSiteName: string | null;
+  organizationCustomDomain: string | null;
+  organizationIsCustomDomainVerified: boolean | null;
+  organizationAvatarUrl: string | null;
+  organizationTheme: string | null;
+};
+
+function selectReminderContexts(dbClient: DbOrTxClient, where: SQL | undefined) {
+  return dbClient
+    .select({
+      assignment: schema.cohortGoalAssignment,
+      goal: schema.cohortGoal,
+      profileId: schema.cohortMember.profileId,
+      email: sql<string | null>`COALESCE(${schema.profile.email}, ${schema.cohortMember.email})`,
+      cohortId: schema.cohort.id,
+      cohortName: schema.cohort.name,
+      organizationId: schema.organization.id,
+      organizationName: schema.organization.name,
+      organizationSiteName: schema.organization.siteName,
+      organizationCustomDomain: schema.organization.customDomain,
+      organizationIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
+      organizationAvatarUrl: schema.organization.avatarUrl,
+      organizationTheme: schema.organization.theme
+    })
+    .from(schema.cohortGoalAssignment)
+    .innerJoin(schema.cohortMember, eq(schema.cohortGoalAssignment.cohortMemberId, schema.cohortMember.id))
+    .innerJoin(schema.cohortGoal, eq(schema.cohortGoalAssignment.goalId, schema.cohortGoal.id))
+    .innerJoin(schema.cohort, eq(schema.cohortGoal.cohortId, schema.cohort.id))
+    .innerJoin(schema.organization, eq(schema.cohort.organizationId, schema.organization.id))
+    .leftJoin(schema.profile, eq(schema.cohortMember.profileId, schema.profile.id))
+    .where(where);
+}
+
+type ReminderContextRow = Awaited<ReturnType<typeof selectReminderContexts>>[number];
+
+function toReminderContexts(rows: ReminderContextRow[]): CohortGoalReminderContext[] {
+  return rows.flatMap((row) => (row.profileId ? [{ ...row, profileId: row.profileId }] : []));
+}
+
+/**
+ * Every open assignment on an active goal. The scan decides which ones are due a reminder today.
+ */
+export async function listAssignmentsForReminderScan(
+  dbClient: DbOrTxClient = db
+): Promise<CohortGoalReminderContext[]> {
+  try {
+    const rows = await selectReminderContexts(
+      dbClient,
+      and(
+        eq(schema.cohortGoal.status, 'active'),
+        inArray(schema.cohortGoalAssignment.status, [...COHORT_GOAL_OPEN_ASSIGNMENT_STATUSES])
+      )
+    );
+
+    return toReminderContexts(rows);
   } catch (error) {
     console.error('listAssignmentsForReminderScan error:', error);
     throw new Error(
       `Failed to list assignments for reminder scan: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * Where the previous page of overdue assignments stopped, so the next page can continue past it. Both values come
+ * from the last row of that page.
+ */
+export type CohortGoalReminderCursor = { dueDate: string; assignmentId: string };
+
+/**
+ * One page of overdue, still-open assignments on the cohort's active goals, oldest due date first, optionally limited
+ * to goals that cover one course and to one learner. `nextCursor` is set when more rows follow this page.
+ */
+export async function listOverdueAssignmentReminderContexts(
+  cohortId: string,
+  filters: { courseId?: string; profileId?: string },
+  cursor?: CohortGoalReminderCursor,
+  dbClient: DbOrTxClient = db
+): Promise<{ contexts: CohortGoalReminderContext[]; nextCursor: CohortGoalReminderCursor | null }> {
+  const courseCondition = filters.courseId
+    ? sql`(jsonb_array_length(${schema.cohortGoal.courseIds}) = 0 OR ${schema.cohortGoal.courseIds} ? ${filters.courseId})`
+    : undefined;
+  const learnerCondition = filters.profileId ? eq(schema.cohortMember.profileId, filters.profileId) : undefined;
+  const cursorCondition = cursor
+    ? sql`(${schema.cohortGoalAssignment.dueDate}, ${schema.cohortGoalAssignment.id}) > (${cursor.dueDate}::timestamptz, ${cursor.assignmentId}::uuid)`
+    : undefined;
+
+  try {
+    const rows = await selectReminderContexts(
+      dbClient,
+      and(
+        eq(schema.cohortGoal.cohortId, cohortId),
+        eq(schema.cohortGoal.status, 'active'),
+        lt(schema.cohortGoalAssignment.dueDate, sql`now()`),
+        notInArray(schema.cohortGoalAssignment.status, [...COHORT_GOAL_CLOSED_ASSIGNMENT_STATUSES]),
+        courseCondition,
+        learnerCondition,
+        cursorCondition
+      )
+    )
+      .orderBy(asc(schema.cohortGoalAssignment.dueDate), asc(schema.cohortGoalAssignment.id))
+      .limit(COHORT_GOAL_MAX_BULK_REMINDERS + 1);
+
+    const hasMore = rows.length > COHORT_GOAL_MAX_BULK_REMINDERS;
+    const pageRows = hasMore ? rows.slice(0, COHORT_GOAL_MAX_BULK_REMINDERS) : rows;
+    const lastRow = pageRows[pageRows.length - 1];
+    const nextCursor =
+      hasMore && lastRow?.assignment.dueDate
+        ? { dueDate: lastRow.assignment.dueDate, assignmentId: lastRow.assignment.id }
+        : null;
+
+    return { contexts: toReminderContexts(pageRows), nextCursor };
+  } catch (error) {
+    console.error('listOverdueAssignmentReminderContexts error:', error);
+    throw new Error(`Failed to list overdue assignments: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

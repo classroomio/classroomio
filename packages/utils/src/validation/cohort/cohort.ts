@@ -182,6 +182,12 @@ export const ZCreateCohortGoal = z
 
 export type TCreateCohortGoal = z.infer<typeof ZCreateCohortGoal>;
 
+export const ZRemindOverdueCohortGoals = z.object({
+  courseId: z.string().uuid().optional(),
+  profileId: z.string().uuid().optional()
+});
+export type TRemindOverdueCohortGoals = z.infer<typeof ZRemindOverdueCohortGoals>;
+
 export const ZUpdateCohortGoal = z
   .object({
     type: z.enum(COHORT_GOAL_TYPES).optional(),

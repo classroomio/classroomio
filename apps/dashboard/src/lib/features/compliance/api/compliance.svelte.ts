@@ -13,7 +13,7 @@ class ComplianceApi extends BaseApi {
     this.loading = true;
     this.lastFetchedOrgId = orgId;
     await this.execute<ComplianceOverviewRequest>({
-      requestFn: () => classroomio.dash['compliance-overview'].$get({ query: { orgId } }),
+      requestFn: () => classroomio.compliance.overview.$get({ query: { orgId } }),
       logContext: 'fetching org compliance overview',
       onSuccess: (response) => {
         this.overview = response.data;

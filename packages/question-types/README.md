@@ -112,7 +112,7 @@ Registry source: `src/question-type-registry.ts`
 | `MATH_EXPRESSION` |  17 | Math expression   |          yes |                    no |                    no |       no |
 | `WORKED_SOLUTION` |  18 | Worked solution   |           no |                   yes |                   yes |       no |
 
-Disabled types are built but have no `question_type` row, so they stay out of the type picker, the AI tool enum and validation. Only `HOTSPOT` is disabled; migration `0052_math_question_types` added the rows for `MATCHING`, `MATH_EXPRESSION` and `WORKED_SOLUTION`.
+Disabled types are built but have no `question_type` row, so they stay out of the type picker, the AI tool enum and validation. Only `HOTSPOT` is disabled; migration `0053_math_question_types` added the rows for `MATCHING`, `MATH_EXPRESSION` and `WORKED_SOLUTION`.
 
 ## Math grading
 
