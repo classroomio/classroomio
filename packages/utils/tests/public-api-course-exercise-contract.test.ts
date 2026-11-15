@@ -70,7 +70,7 @@ describe('public API course exercise request contract', () => {
       ZPublicApiCreateCourseExercise.safeParse({
         title: 'Quiz',
         order: 1,
-        questions: [{ question: 'Q', questionTypeId: 15, points: 1 }]
+        questions: [{ question: 'Q', questionTypeId: 16, points: 1 }]
       }).success
     ).toBe(false);
     expect(

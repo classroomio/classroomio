@@ -21,6 +21,7 @@ export const ZPublicApiCourseExerciseResponse = z.object({
   dueBy: nullableTimestamp,
   allowMultipleAttempts: z.boolean(),
   sectionDisplayMode: z.string().nullable().describe('one_question | all_questions'),
+  calculatorPolicy: z.string().describe('none | four_function | scientific | graphing'),
   completionPolicy: z.string().describe('submitted | passed | none'),
   passThreshold: z.number().nullable(),
   createdAt: nullableTimestamp,
@@ -36,6 +37,10 @@ export const ZPublicApiExerciseQuestionResponse = z.object({
   order: z.number(),
   settings,
   exerciseSectionId: z.string().uuid().nullable(),
+  parentQuestionId: z
+    .number()
+    .nullable()
+    .describe('The stem question this question is a part of; null for ordinary questions and stems'),
   options: z.array(
     z.object({
       id: z.number(),
@@ -60,6 +65,12 @@ export const ZPublicApiExerciseSectionResponse = z.object({
 export const ZPublicApiCourseExerciseDetailResponse = ZPublicApiCourseExerciseResponse.extend({
   questions: z.array(ZPublicApiExerciseQuestionResponse),
   sections: z.array(ZPublicApiExerciseSectionResponse)
+});
+
+export const ZPublicApiRegradeExerciseResponse = z.object({
+  submissionsChecked: z.number(),
+  submissionsChanged: z.number(),
+  answersChanged: z.number().describe('Answers whose points or stored grading changed')
 });
 
 export const ZPublicApiCourseExerciseNotifyResponse = z.object({

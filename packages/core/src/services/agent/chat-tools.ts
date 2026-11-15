@@ -1132,6 +1132,7 @@ export function buildAgentTools(
             isUnlocked: args.isUnlocked,
             allowMultipleAttempts: args.allowMultipleAttempts,
             completionPolicy: args.completionPolicy,
+            calculatorPolicy: args.calculatorPolicy,
             passThreshold: args.passThreshold
           });
 
@@ -1141,6 +1142,7 @@ export function buildAgentTools(
             description: updated.description ?? null,
             dueBy: updated.dueBy ?? null,
             completionPolicy: updated.completionPolicy ?? null,
+            calculatorPolicy: updated.calculatorPolicy,
             passThreshold: updated.passThreshold ?? null,
             updated: true
           };
@@ -1229,6 +1231,7 @@ export function buildAgentTools(
             points: q.points,
             order: q.order ?? nextOrder + i,
             settings: q.settings,
+            ...(q.parentQuestionId !== undefined ? { parentQuestionId: q.parentQuestionId } : {}),
             ...(args.exerciseSectionId !== undefined ? { exerciseSectionId: args.exerciseSectionId } : {}),
             options: q.options.map((o) => ({ label: o.label, isCorrect: o.isCorrect }))
           }));

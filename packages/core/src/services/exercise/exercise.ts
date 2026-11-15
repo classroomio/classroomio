@@ -38,7 +38,9 @@ import type { DbOrTxClient } from '@cio/db/drizzle';
 import {
   buildExerciseUpdateFields,
   computeExerciseDiff,
+  assertValidQuestionParents,
   createNewQuestionsWithOptions,
+  createQuestionsWithParents,
   fetchQuestionsAndOptions,
   transformQuestions,
   type QuestionWithRelations
@@ -237,6 +239,7 @@ async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
     sectionId: sanitizedData.sectionId || null,
     order: sanitizedData.order,
     dueBy: sanitizedData.dueBy || null,
+    calculatorPolicy: sanitizedData.calculatorPolicy ?? 'none',
     slug
   };
 }
@@ -283,16 +286,8 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
       const exercise = await insertExerciseRow(exerciseData, txClient);
 
       if (sanitizedData.questions && sanitizedData.questions.length > 0) {
-        const questionsData: TNewQuestion[] = sanitizedData.questions!.map((q) => ({
-          exerciseId: exercise.id,
-          title: q.question,
-          questionTypeId: q.questionTypeId || 1,
-          points: q.points ?? 1,
-          order: typeof q.order === 'number' ? q.order : undefined,
-          settings: q.settings ?? {}
-        }));
-
-        const questions = await createQuestions(questionsData, txClient);
+        assertValidQuestionParents([], sanitizedData.questions);
+        const questions = await createQuestionsWithParents(exercise.id, sanitizedData.questions, txClient);
         const hasOptions = sanitizedData.questions!.some((question) => (question.options?.length ?? 0) > 0);
 
         if (hasOptions) {
@@ -453,6 +448,11 @@ export async function updateExerciseService(
           ...q,
           options: currentOptions.filter((opt) => opt.questionId === q.id)
         }));
+
+        assertValidQuestionParents(
+          currentQuestions.filter((question): question is typeof question & { id: number } => question.id != null),
+          sanitizedData.questions
+        );
 
         // Compute diff between current DB state and incoming data
         const diff = computeExerciseDiff(currentQuestionsWithOptions, sanitizedData.questions);

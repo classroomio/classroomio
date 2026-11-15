@@ -8,6 +8,7 @@ import {
 } from '@cio/ai-assistant/tools';
 import {
   ADD_QUESTIONS_TOOL_DESCRIPTION,
+  CALCULATOR_POLICIES,
   ENABLED_QUESTION_TYPE_REGISTRY,
   QUESTION_SETTINGS_SCHEMA_HINT,
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
@@ -238,6 +239,14 @@ export const questionSchema = z.object({
   points: z.number().min(1).default(1),
   order: z.number().int().min(0),
   settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
+  parentQuestionId: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe(
+      'Only with add_questions: the id of an existing stem question, to add this question as one of its parts.'
+    ),
   options: z.array(z.object({ label: z.string().min(1), isCorrect: z.boolean() }))
 });
 
@@ -294,6 +303,12 @@ export const updateExerciseParam = z
       .optional()
       .describe(
         'Passing score percentage from 0 to 100. Use with completionPolicy "passed" when the teacher asks students to pass a threshold before progressing.'
+      ),
+    calculatorPolicy: z
+      .enum(CALCULATOR_POLICIES)
+      .optional()
+      .describe(
+        'The calculator students may use in this exercise: none, four_function, scientific or graphing. Use it for math exercises.'
       )
   })
   .refine(
@@ -307,6 +322,7 @@ export const updateExerciseParam = z
       data.isUnlocked !== undefined ||
       data.allowMultipleAttempts !== undefined ||
       data.completionPolicy !== undefined ||
+      data.calculatorPolicy !== undefined ||
       data.passThreshold !== undefined,
     {
       message: 'Provide at least one field to update'

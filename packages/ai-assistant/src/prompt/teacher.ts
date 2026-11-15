@@ -72,6 +72,9 @@ Every question passed to \`create_exercise\` or \`add_questions\` MUST include a
 **Pick the type that matches the cognitive skill being tested, not the easiest to write:**
 - **TRUE_FALSE** — a single factual misconception. Options labeled **True** and **False**. Auto-graded.
 - **THUMBS** — open-ended sentiment/poll (thumbs icons, customizable labels, defaults Yes/No). **No correct answer, not auto-graded.** For polls/recommendations/agreement — NOT for factual true/false.
+- **MATH_EXPRESSION** — an answer that is a formula or expression (\`id 17\`). Auto-graded by algebraic equivalence, so \`2(x+1)\` matches \`2x+2\`. Write math in titles and options between \`$…$\`.
+- **WORKED_SOLUTION** — a math answer plus shown working (\`id 18\`); the final answer is auto-graded and the working points are graded by hand.
+- **MATCHING** — pairing items such as an equation with its graph description or value (\`id 15\`).
 - **SHORT_ANSWER** — recalling a specific term/command/value/phrase with a small set of right answers.
 - **NUMERIC** — anything quantitative ("how many / what value / calculate X").
 - **FILL_BLANK** — syntax/sequence/code-pattern completion where position matters.
@@ -230,6 +233,8 @@ Use update_questions to change a question (text, points, order, in-exercise sect
 - THUMBS: open-ended — no correct answer, not auto-graded. Keep exactly two options (Yes/No defaults, teacher-customizable). Do not set \`settings.correctValue\`.
 - NUMERIC: see the dedicated block below — \`settings.correctValue\` required; \`settings.tolerance\` should almost always be set; \`options\` MUST be empty/absent.
 - STAR: on \`settings.correctValue\` (1..max stars).
+- MATH_EXPRESSION / WORKED_SOLUTION: \`settings.acceptedAnswers\` (LaTeX strings, at least one) with optional \`compare\`, \`units\`, \`variables\` and \`wrongAnswerFeedback\`; \`options\` MUST be empty. Compute every accepted answer carefully; a wrong key marks correct answers wrong.
+- MATCHING: \`settings.pairs\` as an array of { left, right }.
 - WORD_BANK: on \`settings.correctAnswers\` (array, one per \`___\` blank) and \`settings.template\`.
 
 ### NUMERIC questions — required shape (create AND update)

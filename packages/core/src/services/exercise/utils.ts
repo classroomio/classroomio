@@ -37,6 +37,7 @@ export type QuestionWithRelations = {
   value: string;
   name: string;
   title: string;
+  parentQuestionId?: number | null;
   type: number;
   points: number;
   order: number;
@@ -112,6 +113,7 @@ export function buildExerciseUpdateFields(data: TExerciseUpdate): Partial<TExerc
   if (data.completionPolicy !== undefined) exerciseUpdate.completionPolicy = data.completionPolicy;
   if (data.passThreshold !== undefined) exerciseUpdate.passThreshold = data.passThreshold;
   if (data.sectionDisplayMode !== undefined) exerciseUpdate.sectionDisplayMode = data.sectionDisplayMode;
+  if (data.calculatorPolicy !== undefined) exerciseUpdate.calculatorPolicy = data.calculatorPolicy;
   if (data.slug !== undefined) exerciseUpdate.slug = data.slug;
   return exerciseUpdate;
 }
@@ -217,6 +219,10 @@ function diffQuestion(
   }
   if (incoming.exerciseSectionId !== undefined && incoming.exerciseSectionId !== current.exerciseSectionId) {
     changes.exerciseSectionId = incoming.exerciseSectionId;
+    hasChanges = true;
+  }
+  if (incoming.parentQuestionId !== undefined && incoming.parentQuestionId !== (current.parentQuestionId ?? null)) {
+    changes.parentQuestionId = incoming.parentQuestionId;
     hasChanges = true;
   }
   if (!areSettingsEqual(current.settings, incoming.settings)) {
@@ -372,6 +378,112 @@ export function computeExerciseDiff(
   };
 }
 
+type CurrentParentLink = { id: number; parentQuestionId?: number | null };
+
+/**
+ * Throws 400 unless every part of a multi-part question points at a stem in this exercise. A stem is a question that
+ * has no parent itself, so parts cannot nest and a part cannot also be a stem. New questions name a new stem with
+ * `parentRef`, matching the `ref` of a question in the same payload.
+ */
+export function assertValidQuestionParents(
+  currentQuestions: CurrentParentLink[],
+  incomingQuestions: ExerciseUpdateQuestion[]
+): void {
+  const fail = (message: string) => new AppError(message, ErrorCodes.VALIDATION_ERROR, 400);
+  const deletedIds = new Set(incomingQuestions.filter((q) => q.deletedAt && q.id).map((q) => q.id as number));
+  const parentById = new Map<number, number | null>(
+    currentQuestions.filter((q) => !deletedIds.has(q.id)).map((q) => [q.id, q.parentQuestionId ?? null])
+  );
+  const refs = new Map<string, ExerciseUpdateQuestion>();
+
+  for (const question of incomingQuestions) {
+    if (question.deletedAt) continue;
+
+    if (question.id && question.parentQuestionId !== undefined && parentById.has(question.id)) {
+      parentById.set(question.id, question.parentQuestionId);
+    }
+    if (question.ref) refs.set(question.ref, question);
+  }
+
+  const isNewQuestion = (question: ExerciseUpdateQuestion) => !question.id || !parentById.has(question.id);
+
+  for (const question of incomingQuestions) {
+    if (question.deletedAt) continue;
+
+    if (question.parentRef) {
+      const stem = refs.get(question.parentRef);
+      if (!stem || !isNewQuestion(stem)) {
+        throw fail(`parentRef "${question.parentRef}" must match the ref of a new question in the same request`);
+      }
+      if (stem.parentRef || (stem.parentQuestionId ?? null) !== null) {
+        throw fail('A part of a multi-part question cannot also be a stem');
+      }
+    }
+
+    const parentId = question.parentQuestionId;
+    if (parentId == null) continue;
+
+    if (parentId === question.id) throw fail('A question cannot be its own parent');
+    if (!parentById.has(parentId)) {
+      throw fail(`Parent question ${parentId} was not found in this exercise`);
+    }
+    if (parentById.get(parentId) != null) {
+      throw fail(`Question ${parentId} is a part itself, so it cannot be a stem`);
+    }
+  }
+
+  const stemIds = new Set([...parentById.values()].filter((id): id is number => id != null));
+  const partWithParts = [...parentById].find(([id, parentId]) => parentId != null && stemIds.has(id));
+  if (partWithParts) {
+    throw fail(`Question ${partWithParts[0]} has parts, so it cannot be a part of another question`);
+  }
+}
+
+/**
+ * Inserts questions so stems exist before their parts, and returns the created rows in the order of `questions`.
+ */
+export async function createQuestionsWithParents(
+  exerciseId: string,
+  questions: ExerciseUpdateQuestion[],
+  txClient: DbOrTxClient
+) {
+  const toRow = (question: ExerciseUpdateQuestion, parentQuestionId: number | null): TNewQuestion => ({
+    exerciseId,
+    title: question.question,
+    questionTypeId: question.questionTypeId || 1,
+    points: question.points ?? 1,
+    order: typeof question.order === 'number' ? question.order : undefined,
+    exerciseSectionId: question.exerciseSectionId ?? null,
+    settings: normalizeSettings(question.settings),
+    parentQuestionId
+  });
+  const stemIndexes = questions.flatMap((question, index) => (question.parentRef ? [] : [index]));
+  const partIndexes = questions.flatMap((question, index) => (question.parentRef ? [index] : []));
+
+  const createdStems = await createQuestions(
+    stemIndexes.map((index) => toRow(questions[index], questions[index].parentQuestionId ?? null)),
+    txClient
+  );
+  const createdByIndex = new Map(stemIndexes.map((questionIndex, row) => [questionIndex, createdStems[row]]));
+  const stemIdByRef = new Map<string, number>();
+  for (const [questionIndex, created] of createdByIndex) {
+    const ref = questions[questionIndex].ref;
+    if (ref) stemIdByRef.set(ref, created.id);
+  }
+
+  if (partIndexes.length > 0) {
+    const createdParts = await createQuestions(
+      partIndexes.map((index) =>
+        toRow(questions[index], stemIdByRef.get(questions[index].parentRef as string) ?? null)
+      ),
+      txClient
+    );
+    partIndexes.forEach((questionIndex, row) => createdByIndex.set(questionIndex, createdParts[row]));
+  }
+
+  return questions.map((_, index) => createdByIndex.get(index)!);
+}
+
 /**
  * Creates new questions and their options in batch
  */
@@ -381,18 +493,7 @@ export async function createNewQuestionsWithOptions(
   txClient: DbOrTxClient
 ): Promise<number[]> {
   const normalizedQuestions = newQuestions.map((question) => normalizeBinaryBooleanQuestion(question));
-  const createdQuestions = await createQuestions(
-    normalizedQuestions.map((q) => ({
-      exerciseId,
-      title: q.question,
-      questionTypeId: q.questionTypeId || 1,
-      points: q.points ?? 1,
-      order: typeof q.order === 'number' ? q.order : undefined,
-      exerciseSectionId: q.exerciseSectionId ?? null,
-      settings: normalizeSettings(q.settings)
-    })),
-    txClient
-  );
+  const createdQuestions = await createQuestionsWithParents(exerciseId, normalizedQuestions, txClient);
 
   const newOptions: TNewOption[] = [];
   createdQuestions.forEach((newQuestion, index) => {
@@ -470,6 +571,7 @@ export function transformQuestion(
     value: question.title || '', // value field defaults to title
     name: question.name || '',
     title: question.title,
+    parentQuestionId: question.parentQuestionId ?? null,
     type: questionTypeId, // type field (same as questionTypeId)
     points: question.points ?? 1,
     order: question.order || 0,

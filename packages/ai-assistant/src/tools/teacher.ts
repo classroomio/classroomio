@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  CALCULATOR_POLICIES,
   ENABLED_QUESTION_TYPE_REGISTRY,
   ENABLED_QUESTION_TYPE_ID_DESCRIPTION,
   QUESTION_OPTIONS_SCHEMA_HINT,
@@ -240,6 +241,12 @@ export const updateExerciseSchema = {
         .optional()
         .describe(
           'Passing score percentage from 0 to 100. Use with completionPolicy "passed" when the teacher asks students to pass a threshold before progressing.'
+        ),
+      calculatorPolicy: z
+        .enum(CALCULATOR_POLICIES)
+        .optional()
+        .describe(
+          'The calculator students may use in this exercise: none, four_function, scientific or graphing. Use it for math exercises.'
         )
     })
     .refine(
@@ -253,6 +260,7 @@ export const updateExerciseSchema = {
         data.isUnlocked !== undefined ||
         data.allowMultipleAttempts !== undefined ||
         data.completionPolicy !== undefined ||
+        data.calculatorPolicy !== undefined ||
         data.passThreshold !== undefined,
       {
         message: 'Provide at least one field to update'
@@ -287,6 +295,12 @@ export const addQuestionsSchema = {
         points: z.number().min(1).default(1).describe('Points for this question'),
         order: z.number().int().min(0).describe('Display order'),
         settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
+        parentQuestionId: z
+          .number()
+          .int()
+          .positive()
+          .optional()
+          .describe('The id of an existing stem question, to add this question as one of its parts.'),
         options: z
           .array(
             z.object({
