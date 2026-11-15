@@ -57,6 +57,7 @@ export const ZUpdateExerciseSectionToolInput = ZPublicApiUpdateExerciseSectionFi
   ZPublicApiExerciseSectionParam.shape
 );
 export const ZDeleteExerciseSectionToolInput = ZPublicApiExerciseSectionParam;
+export const ZRegradeCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
 export const ZNotifyCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
 export const ZGetCourseExerciseNotifyStatusToolInput = ZPublicApiCourseExerciseNotifyParam.extend(
   ZPublicApiCourseExerciseNotifyStatusQuery.shape
@@ -187,6 +188,17 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
     async (args) => {
       const { courseId, exerciseId, sectionId } = ZDeleteExerciseSectionToolInput.parse(args);
       return jsonContent(await apiClient.deleteExerciseSection(courseId, exerciseId, sectionId));
+    }
+  );
+
+  server.tool(
+    'regrade_course_exercise',
+    `Re-score every submission of an exercise against its current answer key, for example after fixing a wrong accepted answer; ${COURSE_TEAM_RULE}. Points a teacher gave to manually graded questions and to the working of worked solutions are kept.`,
+    shape(ZRegradeCourseExerciseToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, exerciseId } = ZRegradeCourseExerciseToolInput.parse(args);
+      return jsonContent(await apiClient.regradeCourseExercise(courseId, exerciseId));
     }
   );
 

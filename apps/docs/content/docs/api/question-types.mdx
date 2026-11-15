@@ -1,7 +1,7 @@
 ---
 title: Question types
 description: Question type ids, which ones need a paid plan, and the answer format for each type when you submit for a student.
-last_reviewed: '2026-11-04'
+last_reviewed: '2026-11-15'
 ---
 
 Exercises are made of questions. When you create or edit a question, its `questionTypeId` says what kind it is. When you submit an exercise for a student, each `answer` uses the format for that question's type.
@@ -24,9 +24,14 @@ Exercises are made of questions. When you create or edit a question, its `questi
 | `12` | Star rating | Yes |
 | `13` | Video recording | No |
 | `14` | Thumbs up/down | No, it is open-ended |
+| `15` | Matching | Yes, with `settings.pairs`: an array of `{ "left": "...", "right": "..." }` |
+| `17` | Math expression | Yes, by algebraic equivalence, with the settings under [Math questions](#math-questions) |
+| `18` | Worked solution | The final answer is; the working points wait for manual grading |
 
-- File upload, ordering, link, star rating and video recording need a paid plan. On the Basic plan they return `403` with `UPGRADE_REQUIRED`.
-- `PUBLIC` courses only accept auto-graded types.
+Id `16` (hotspot) is not offered.
+
+- Math expression, worked solution, matching and the numeric upgrades are free on every plan. File upload, ordering, link, star rating and video recording need a paid plan. On the Basic plan they return `403` with `UPGRADE_REQUIRED`.
+- `PUBLIC` courses only accept auto-graded types, so worked solutions are not available there.
 - A new question is single choice (`1`) unless you set a type.
 
 ## Answer formats
@@ -44,5 +49,49 @@ Single choice answers use `optionId`. File upload and video recording questions 
 | Ordering | `{"type":"ORDERING","value":["first","second"]}` |
 | Link | `{"type":"LINK","links":["https://example.com"]}` |
 | Star rating | `{"type":"STAR","value":4}` |
+| Matching | `{"type":"MATCHING","value":[{"left":"2+2","right":"4"}]}` |
+| Math expression | `{"type":"MATH_EXPRESSION","latex":"2(x+1)"}` |
+| Worked solution | `{"type":"WORKED_SOLUTION","latex":"4","working":{"lines":["2x=8","x=4"]}}`; drawings and photos of working can only be added in the dashboard |
 
-The JSON formats are sent as a JSON string inside `answer`.
+The JSON formats are sent as a JSON string inside `answer`. A numeric answer can also carry LaTeX, such as `{"type":"NUMERIC","value":0.75,"latex":"\frac{3}{4}"}`.
+
+## Math questions
+
+Wrap math in question titles and options in `$...$`, for example `Solve $x^2-5x+6=0$`. Math expression and worked solution questions use these `settings`:
+
+| Setting | Meaning |
+| --- | --- |
+| `acceptedAnswers` | Required. One or more answers as LaTeX. Any of them can match |
+| `compare` | `{"mode":"equivalent"}` (default) accepts any algebraically equal form, so `2(x+1)` matches `2x+2`. `{"mode":"exact_form","form":"expanded"}` also needs a form: `simplified`, `factored`, `expanded`, `lowest_terms` or `rationalised_denominator`. `{"mode":"numeric"}` takes `absoluteTolerance`, `relativeTolerance` or `significantFigures`. `{"mode":"set"}` ignores order in lists |
+| `units` | `{"unit":"m","allowConversion":true}` expects a unit and, with `allowConversion`, accepts `200 cm` for `2 m` |
+| `variables` | Letters to treat as variables, so `e` and `i` are not read as constants |
+| `wrongAnswerFeedback` | Known wrong answers with a hint: `[{"answer":"2x+1","feedback":"Distribute the 2"}]` |
+
+A worked solution also takes `answerPoints` (default half of the question's points) for the final answer and `workingInputs`, a list of `typed`, `drawing` and `photo`. The answer part is graded when the student submits; the submission then waits for grading until a teacher scores the working.
+
+A numeric question's `settings.correctValue` can be LaTeX or a fraction such as `"3/4"`, with `relativeTolerance` and `significantFigures` next to `tolerance`.
+
+Each graded math answer stores its result in `answerData.grading`, which the submission's answers return: `reason` is `equivalent`, `not_simplified`, `wrong_form`, `wrong_units`, `wrong`, `needs_review` or `invalid`, plus `matchedAnswer` and the `feedback` you set for a known wrong answer.
+
+## Multi-part questions
+
+A multi-part question is a stem with parts (a), (b) and so on. Each part is a normal question with its own type, answer and points, and has `parentQuestionId` set to the stem's id. The stem is not answered or graded, so give it 0 points; deleting it deletes its parts. Send `parts` on a new question to create the stem and its parts together:
+
+```json
+{
+  "question": "Expand and simplify",
+  "points": 0,
+  "parts": [
+    { "question": "$2(x+1)$", "questionTypeId": 17, "points": 2, "settings": { "acceptedAnswers": ["2x+2"] } },
+    { "question": "$3(x-1)$", "questionTypeId": 17, "points": 2, "settings": { "acceptedAnswers": ["3x-3"] } }
+  ]
+}
+```
+
+Add up the points of a stem's parts for a total per question; the submission total counts only the parts.
+
+## Calculator policy and regrading
+
+An exercise has a `calculatorPolicy` of `none` (default), `four_function`, `scientific` or `graphing`. Send it when you create or update the exercise. It is stored on the exercise and returned with it; the take view uses it to decide which calculator to offer.
+
+Changing an answer key does not change past grades. `POST /courses/{courseId}/exercises/{exerciseId}/regrade`, or the `regrade_course_exercise` MCP tool, re-scores every submission against the current key. It keeps the points a teacher gave to manually graded questions and to the working of worked solutions.

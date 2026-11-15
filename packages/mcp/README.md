@@ -225,6 +225,7 @@ Course exercise tools:
 - `add_exercise_section`
 - `update_exercise_section`
 - `delete_exercise_section`
+- `regrade_course_exercise`
 - `notify_course_exercise`
 - `get_course_exercise_notify_status`
 - `list_exercise_templates`
@@ -248,7 +249,7 @@ These tools act as the person who created the key:
 
 `create_course_exercise` takes either `title` and `questions`, or a `templateId` from `list_exercise_templates`; with a template, only `sectionId`, `lessonId` and `order` may be sent alongside it. `create_course_exercise_from_template` was merged into it. `update_course_exercise` is a diff: send a question with its `id` to edit it, with `id` and `delete: true` to remove it, and without an `id` to add it; options work the same way. Question, option, and section ids must belong to the exercise. File upload, ordering, link, star rating, and video recording questions need a paid plan (403 `UPGRADE_REQUIRED` on Basic).
 
-For one question or exercise section, use `add_exercise_question`, `update_exercise_question` and `delete_exercise_question`, or `add_exercise_section`, `update_exercise_section` and `delete_exercise_section`. They never delete anything you leave out. `delete_exercise_question` and `update_course_exercise` fail with 409 when they would delete a question students have answered, unless `force` is true, which also deletes their answers. In `update_course_exercise`, sections follow the same diff rules as questions: sections you leave out are kept. Exercise changes apply immediately, also on published courses, and past submissions are not regraded.
+For one question or exercise section, use `add_exercise_question`, `update_exercise_question` and `delete_exercise_question`, or `add_exercise_section`, `update_exercise_section` and `delete_exercise_section`. They never delete anything you leave out. `delete_exercise_question` and `update_course_exercise` fail with 409 when they would delete a question students have answered, unless `force` is true, which also deletes their answers. In `update_course_exercise`, sections follow the same diff rules as questions: sections you leave out are kept. Exercise changes apply immediately, also on published courses, and past submissions are not regraded until you call `regrade_course_exercise`, which re-scores them against the current answer key and keeps manually awarded points. Math expression (17), worked solution (18) and matching (15) questions are accepted like the other types; `parentQuestionId` or `parts` build multi-part questions and `calculatorPolicy` sets the exercise calculator.
 
 `delete_course_exercise` and `delete_course_submission` are hard deletes. Deleting an exercise also deletes every submission for it.
 

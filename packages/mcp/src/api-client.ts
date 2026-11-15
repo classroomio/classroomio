@@ -335,6 +335,10 @@ export class ClassroomIoApiClient {
     });
   }
 
+  async regradeCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/regrade`, { method: 'POST' });
+  }
+
   async notifyCourseExercise(courseId: string, exerciseId: string) {
     return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/notify`, { method: 'POST' });
   }

@@ -10,6 +10,7 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiCreateCourseExercise,
   ZPublicApiForceQuery,
+  ZPublicApiRegradeExerciseResponse,
   ZPublicApiUpdateCourseExercise
 } from '@cio/utils/validation/public-api';
 import {
@@ -19,6 +20,7 @@ import {
   getCourseExerciseService,
   listCourseExercisesService,
   notifyCourseExerciseStudentsService,
+  regradeCourseExerciseService,
   updateCourseExerciseService
 } from '@api/services/v1/courses/exercises';
 
@@ -178,6 +180,36 @@ export const v1CourseExercisesRouter = new Hono()
         return c.json({ success: true, data: exercise }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to delete course exercise');
+      }
+    }
+  )
+  .post(
+    '/:exerciseId/regrade',
+    describeRoute({
+      description: `Re-score every submission of this exercise against its current answer key; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        200: jsonResponse(
+          'Points awarded by a teacher for manually graded questions and for the working of a worked solution are kept',
+          itemResponse(ZPublicApiRegradeExerciseResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: exerciseForbiddenResponses.write,
+        404: { description: 'Course or exercise not found' },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('param', ZPublicApiCourseExerciseParam),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const result = await regradeCourseExerciseService(orgId, actorId, c.req.valid('param'));
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to regrade exercise submissions');
       }
     }
   )

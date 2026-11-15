@@ -10,6 +10,7 @@ import {
   createLessons,
   createOptions,
   createQuestions,
+  updateQuestions,
   deleteExerciseChildren,
   getCourseById,
   getCourseOrganizationId,
@@ -429,6 +430,14 @@ async function copyExerciseBody(
     if (question.id !== undefined && createdId !== undefined) questionIds.set(question.id, createdId);
   });
 
+  const partLinks = questions.flatMap((question) => {
+    const id = question.id === undefined ? undefined : questionIds.get(question.id);
+    const parentId = question.parentQuestionId == null ? undefined : questionIds.get(question.parentQuestionId);
+
+    return id !== undefined && parentId !== undefined ? [{ id, data: { parentQuestionId: parentId } }] : [];
+  });
+  await updateQuestions(partLinks, client);
+
   const options = templateGraph.options.filter((option) => questionIds.has(option.questionId));
   const remappedOptions = await remapContentAssets(options, templateOrgId, courseOrgId, userId, client);
   const optionsToCreate = remappedOptions
@@ -630,6 +639,7 @@ export async function pullCourseTemplateUpdates(
               description: remapped.description,
               dueBy: remapped.dueBy,
               sectionDisplayMode: remapped.sectionDisplayMode,
+              calculatorPolicy: remapped.calculatorPolicy,
               isUnlocked: remapped.isUnlocked,
               allowMultipleAttempts: remapped.allowMultipleAttempts,
               completionPolicy: remapped.completionPolicy,
@@ -675,6 +685,7 @@ export async function pullCourseTemplateUpdates(
               courseId: course.id,
               sectionId: parentSectionId,
               sectionDisplayMode: remapped.sectionDisplayMode,
+              calculatorPolicy: remapped.calculatorPolicy,
               order,
               isUnlocked: remapped.isUnlocked,
               allowMultipleAttempts: remapped.allowMultipleAttempts,
