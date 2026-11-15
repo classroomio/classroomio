@@ -48,3 +48,15 @@ export function aggregateMultiPartScores(
 
   return [...rollups.values()];
 }
+
+/** Label of the part at `index` under its stem: (a), (b), … (z), then (aa). */
+export function getPartLabel(index: number): string {
+  let remaining = index;
+  let letters = '';
+  do {
+    letters = String.fromCharCode(97 + (remaining % 26)) + letters;
+    remaining = Math.floor(remaining / 26) - 1;
+  } while (remaining >= 0);
+
+  return `(${letters})`;
+}

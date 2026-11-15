@@ -211,3 +211,44 @@ export function renderEditorMath(html: string, renderLatex: RenderLatex): string
     return `<${tag}${attributes} data-math-rendered="true">${rendered}</${tag}>`;
   });
 }
+
+const TAG_START = /<(?=[a-zA-Z/!?])/g;
+
+/** Rewrites every `<` that could open an HTML tag as `\lt `, so LaTeX such as `x<5` stays literal and `a<b` can never form markup. */
+export function neutraliseLatexMarkup(latex: string): string {
+  return latex.replace(TAG_START, '\\lt ');
+}
+
+/**
+ * Cleans a plain-string field that is displayed as text with `$…$` math (question titles, option labels): markup
+ * outside math goes through `stripMarkup`, while math passes through untouched apart from `neutraliseLatexMarkup`,
+ * so `<`, `>` and `&` survive inside formulas.
+ */
+export function sanitizeMathPlainText(text: string, stripMarkup: (text: string) => string): string {
+  let result = '';
+  let pendingText = '';
+  let index = 0;
+
+  while (index < text.length) {
+    const char = text[index];
+
+    if (char === '\\' && text[index + 1] === '$') {
+      pendingText += '\\$';
+      index += 2;
+      continue;
+    }
+
+    const token = char === '$' ? readMathToken(text.slice(index)) : null;
+    if (!token) {
+      pendingText += char;
+      index += 1;
+      continue;
+    }
+
+    result += stripMarkup(pendingText) + neutraliseLatexMarkup(token.raw);
+    pendingText = '';
+    index += token.raw.length;
+  }
+
+  return result + stripMarkup(pendingText);
+}

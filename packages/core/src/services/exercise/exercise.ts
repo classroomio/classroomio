@@ -1,5 +1,10 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
-import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '../../utils/sanitize-html';
+import {
+  sanitizeHtml,
+  sanitizeMathText,
+  sanitizeOptionalHtml,
+  sanitizeQuestionSettings
+} from '../../utils/sanitize-html';
 import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@cio/db/types';
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
 import { getLessonById } from '@cio/db/queries/lesson';
@@ -69,12 +74,12 @@ type ExerciseWithCompletion = TExercise & {
 function sanitizeExerciseQuestions(questions: TExerciseCreate['questions'] | TExerciseUpdate['questions']) {
   return questions?.map((question) => ({
     ...question,
-    question: sanitizeHtml(question.question),
-    settings: question.settings ? sanitizeUnknownStrings(question.settings) : question.settings,
+    question: sanitizeMathText(question.question),
+    settings: question.settings ? sanitizeQuestionSettings(question.settings) : question.settings,
     options: question.options?.map((option) => ({
       ...option,
-      label: sanitizeHtml(option.label),
-      settings: option.settings ? sanitizeUnknownStrings(option.settings) : option.settings
+      label: sanitizeMathText(option.label),
+      settings: option.settings ? sanitizeQuestionSettings(option.settings) : option.settings
     }))
   }));
 }
@@ -984,7 +989,7 @@ export async function createExerciseFromTemplate(
 
         for (const question of questions) {
           const { title, question_type, options, order, points } = question;
-          const questionSettings = sanitizeUnknownStrings(
+          const questionSettings = sanitizeQuestionSettings(
             (question as { settings?: Record<string, unknown> }).settings ?? {}
           );
 
@@ -993,7 +998,7 @@ export async function createExerciseFromTemplate(
             [
               {
                 exerciseId: exercise.id,
-                title: sanitizeHtml(title),
+                title: sanitizeMathText(title),
                 questionTypeId: question_type.id,
                 points: points ?? 1,
                 order: order || 0,
@@ -1012,9 +1017,9 @@ export async function createExerciseFromTemplate(
             // value column is UUID (default gen_random_uuid()); label is the display text only
             const optionsData: TNewOption[] = options.map((opt) => ({
               questionId: newQuestion.id,
-              label: sanitizeHtml(opt.label || ''),
+              label: sanitizeMathText(opt.label || ''),
               isCorrect: opt.is_correct || false,
-              settings: sanitizeUnknownStrings((opt as { settings?: Record<string, unknown> }).settings ?? {})
+              settings: sanitizeQuestionSettings((opt as { settings?: Record<string, unknown> }).settings ?? {})
             }));
 
             await createOptions(optionsData, txClient);

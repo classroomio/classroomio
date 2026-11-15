@@ -10,6 +10,7 @@ export * from './question-scoring';
 export * from './points';
 export * from './math-settings';
 export * from './multi-part';
+export * from './math-labels';
 
 export * from './exercise-types';
 export * from './exercise-section-types';

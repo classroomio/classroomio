@@ -1,5 +1,6 @@
 import type { QuestionTypeKey } from './question-type-keys';
 import type { AnswerData, VideoRecordingAnswerData } from './answer-data';
+import type { MathQuestionLabelKey } from './math-labels';
 
 export type ExerciseQuestionTypeKey = QuestionTypeKey;
 
@@ -226,7 +227,7 @@ export type ExerciseQuestionLabelKey =
   | 'submission.list.unknown_student'
   | 'submission.list.no_file';
 
-export type ExerciseQuestionLabels = Partial<Record<ExerciseQuestionLabelKey, string>>;
+export type ExerciseQuestionLabels = Partial<Record<ExerciseQuestionLabelKey | MathQuestionLabelKey, string>>;
 
 export interface ExerciseQuestionOption {
   id?: number | string;
@@ -243,6 +244,8 @@ export interface ExerciseQuestionModel {
   questionType: ExerciseQuestionTypeKey;
   points?: number;
   required?: boolean;
+  /** Set on a part of a multi-part question: the id of its stem question. */
+  parentQuestionId?: number | string | null;
   options?: ExerciseQuestionOption[];
   settings?: Record<string, unknown>;
 }

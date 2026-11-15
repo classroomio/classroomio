@@ -13,6 +13,7 @@ import type {
   WordBankAnswerData,
   FileUploadAnswerData,
   MatchingAnswerData,
+  MathAnswerGrading,
   OrderingAnswerData,
   LinkAnswerData,
   HotspotAnswerData,
@@ -153,6 +154,14 @@ function readLatex(parsed: Record<string, unknown>): string {
   return typeof parsed.latex === 'string' ? parsed.latex.trim() : '';
 }
 
+function readGrading(parsed: Record<string, unknown>): { grading: MathAnswerGrading } | Record<string, never> {
+  const grading = parsed.grading;
+  const isGrading =
+    Boolean(grading) && typeof grading === 'object' && typeof (grading as MathAnswerGrading).reason === 'string';
+
+  return isGrading ? { grading: grading as MathAnswerGrading } : {};
+}
+
 const MATH_EXPRESSION_CODEC: AnswerCodec<MathExpressionAnswerData> = {
   type: 'MATH_EXPRESSION',
   toApiPayload(data, questionId) {
@@ -160,10 +169,12 @@ const MATH_EXPRESSION_CODEC: AnswerCodec<MathExpressionAnswerData> = {
   },
   fromApiPayload(payload) {
     const parsed = parseJsonObject(payload.answer);
-    const latex = parsed?.type === 'MATH_EXPRESSION' ? readLatex(parsed) : '';
+    if (parsed?.type !== 'MATH_EXPRESSION') return null;
+
+    const latex = readLatex(parsed);
     if (!latex) return null;
 
-    return { type: 'MATH_EXPRESSION', latex };
+    return { type: 'MATH_EXPRESSION', latex, ...readGrading(parsed) };
   }
 };
 
@@ -176,7 +187,8 @@ function readWorkedSolutionFiles(raw: unknown): WorkedSolutionFile[] {
     .map((file) => ({
       kind: file.kind as WorkedSolutionFile['kind'],
       fileKey: String(file.fileKey),
-      fileName: String(file.fileName ?? '')
+      fileName: String(file.fileName ?? ''),
+      ...(typeof file.fileUrl === 'string' ? { fileUrl: file.fileUrl } : {})
     }));
 }
 
@@ -197,7 +209,7 @@ const WORKED_SOLUTION_CODEC: AnswerCodec<WorkedSolutionAnswerData> = {
     const latex = readLatex(parsed);
     if (!latex && lines.length === 0 && files.length === 0) return null;
 
-    return { type: 'WORKED_SOLUTION', latex, working: { lines, files } };
+    return { type: 'WORKED_SOLUTION', latex, working: { lines, files }, ...readGrading(parsed) };
   }
 };
 
