@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { posix, resolve, sep } from 'node:path';
 
 const marker = '<!-- classroomio-docs-fact-check -->';
+const checkedShaPattern = /<!-- classroomio-docs-fact-check-sha:([0-9a-f]{40}) -->/;
 const repository = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
 const event = JSON.parse(readFileSync(process.env.REVIEW_EVENT_PATH, 'utf8'));
@@ -54,10 +55,23 @@ async function githubGraphQL(query, variables = {}) {
   return payload.data;
 }
 
+function docPathFromThreadBody(body) {
+  const imageMatch = body.match(/\*\*Documentation image out of date:\*\* `[^`]+` in `([^`]+)`/);
+  if (imageMatch) return imageMatch[1];
+
+  return body.match(/\*\*Documentation out of date:\*\* `([^`]+)`/)?.[1];
+}
+
 /**
- * Resolves prior fact-check threads whose documented path is absent from the current findings.
+ * Resolves fact-check review threads on the PR.
+ *
+ * `resolveAll` clears every thread, which is what a clean 5/5 check does.
+ * With `activeDocPaths` set, threads for pages still reported stay open and
+ * every other thread is resolved. With `activeDocPaths` null, only the
+ * superseded summary threads (which carry no page path) are resolved, so
+ * earlier findings are left untouched when a run covers only new commits.
  */
-async function resolveFixedThreads(pullNumber, activeDocPaths) {
+async function resolveFactCheckThreads(pullNumber, { resolveAll = false, activeDocPaths = null } = {}) {
   const data = await githubGraphQL(
     `query($owner:String!, $repo:String!, $number:Int!) {
       repository(owner:$owner, name:$repo) {
@@ -80,9 +94,11 @@ async function resolveFixedThreads(pullNumber, activeDocPaths) {
 
     if (!body.includes(marker)) continue;
 
-    const docPath = body.match(/`([^`]+)`/)?.[1];
+    if (!resolveAll) {
+      const docPath = docPathFromThreadBody(body);
 
-    if (docPath && activeDocPaths.has(docPath)) continue;
+      if (docPath && (activeDocPaths === null || activeDocPaths.has(docPath))) continue;
+    }
 
     // The job token may not be allowed to resolve threads; don't fail the review over it.
     try {
@@ -110,6 +126,52 @@ function gitFetch(ref) {
       GIT_CONFIG_VALUE_0: `AUTHORIZATION: basic ${credentials}`
     }
   });
+}
+
+function commitExists(sha) {
+  return spawnSync('git', ['cat-file', '-e', `${sha}^{commit}`]).status === 0;
+}
+
+function isAncestor(ancestor, descendant) {
+  return spawnSync('git', ['merge-base', '--is-ancestor', ancestor, descendant]).status === 0;
+}
+
+/**
+ * Records the checked commit in the posted body so the next run can review only
+ * the commits added after this one.
+ */
+function withCheckedSha(body, sha) {
+  return `${body}\n<!-- classroomio-docs-fact-check-sha:${sha} -->`;
+}
+
+/**
+ * Finds the commit checked by the most recent fact-check review or reply.
+ */
+async function getLastCheckedSha(pullNumber) {
+  const entries = [];
+
+  for (let page = 1; ; page += 1) {
+    const reviews = await githubRequest(`/pulls/${pullNumber}/reviews?per_page=100&page=${page}`);
+    entries.push(...reviews.map((review) => ({ body: review.body ?? '', createdAt: review.submitted_at ?? '' })));
+    if (reviews.length < 100) break;
+  }
+
+  for (let page = 1; ; page += 1) {
+    const comments = await githubRequest(`/pulls/${pullNumber}/comments?per_page=100&page=${page}`);
+    entries.push(...comments.map((comment) => ({ body: comment.body ?? '', createdAt: comment.created_at ?? '' })));
+    if (comments.length < 100) break;
+  }
+
+  let latest = null;
+
+  for (const entry of entries) {
+    const match = entry.body.match(checkedShaPattern);
+
+    if (!match) continue;
+    if (!latest || entry.createdAt >= latest.createdAt) latest = { sha: match[1], createdAt: entry.createdAt };
+  }
+
+  return latest?.sha ?? null;
 }
 
 function assertContainedSymlinks(worktree) {
@@ -149,6 +211,15 @@ function parseChangedLines(diff, paths) {
   }
 
   return changedLines;
+}
+
+function diffScope(baseSha, headSha) {
+  const diff = git('diff', '--no-ext-diff', '--unified=0', `${baseSha}...${headSha}`);
+  const paths = git('diff', '--no-ext-diff', '--name-only', '-z', `${baseSha}...${headSha}`)
+    .split('\0')
+    .filter(Boolean);
+
+  return { diff, paths, changedLines: parseChangedLines(diff, paths) };
 }
 
 class ReviewParseError extends Error {
@@ -378,11 +449,18 @@ async function reviewPullRequest(pullRequest, replyContext) {
     throw new Error('PR head changed while preparing the review');
   }
 
-  const diff = git('diff', '--no-ext-diff', '--unified=0', `${pullRequest.base.sha}...${headSha}`);
-  const paths = git('diff', '--no-ext-diff', '--name-only', '-z', `${pullRequest.base.sha}...${headSha}`)
-    .split('\0')
-    .filter(Boolean);
-  const changedLines = parseChangedLines(diff, paths);
+  const lastCheckedSha = await getLastCheckedSha(pullRequest.number);
+  const hasNewCommits = !lastCheckedSha || lastCheckedSha !== headSha;
+  const isIncremental =
+    hasNewCommits && Boolean(lastCheckedSha) && commitExists(lastCheckedSha) && isAncestor(lastCheckedSha, headSha);
+  const reviewBaseSha = !hasNewCommits ? headSha : isIncremental ? lastCheckedSha : pullRequest.base.sha;
+
+  if (!hasNewCommits && !replyContext) return;
+
+  const reviewScope = diffScope(reviewBaseSha, headSha);
+  const pullRequestChangedLines = isIncremental
+    ? diffScope(pullRequest.base.sha, headSha).changedLines
+    : reviewScope.changedLines;
   const worktree = mkdtempSync(resolve(tmpdir(), 'classroomio-docs-review-'));
   let worktreeAdded = false;
 
@@ -390,16 +468,21 @@ async function reviewPullRequest(pullRequest, replyContext) {
     git('worktree', 'add', '--detach', worktree, headSha);
     worktreeAdded = true;
     assertContainedSymlinks(worktree);
-    writeFileSync(resolve(worktree, '.docs-review-diff.patch'), diff, { flag: 'wx' });
+    writeFileSync(resolve(worktree, '.docs-review-diff.patch'), reviewScope.diff, { flag: 'wx' });
     const imageInventory = buildImageInventory(worktree);
     writeFileSync(resolve(worktree, '.docs-review-images.json'), JSON.stringify(imageInventory), { flag: 'wx' });
 
     const instructions = readFileSync('.github/prompts/docs-fact-check.md', 'utf8');
+    const scopeNote = !hasNewCommits
+      ? '\nThere are no new commits since the previous fact check. Do not re-review the PR. Answer the latest reply briefly and return score 5 with no findings.\n'
+      : isIncremental
+        ? `\nThis check covers only the commits added since the previous fact check (${lastCheckedSha}...${headSha}). Earlier commits were already reviewed; do not re-report them.\n`
+        : '';
     const conversation = replyContext
       ? `\nRe-review requested in this existing review thread. Address the latest reply in a short \"reply\" field in your JSON. Thread: ${JSON.stringify(replyContext.thread.map((entry) => ({ author: entry.user.login, body: entry.body })))}\n`
       : '';
-    const prompt = `${instructions}${conversation}`;
-    const stepBudget = stepBudgetFor(paths.length);
+    const prompt = `${instructions}${scopeNote}${conversation}`;
+    const stepBudget = stepBudgetFor(reviewScope.paths.length);
     let review;
 
     try {
@@ -414,7 +497,7 @@ async function reviewPullRequest(pullRequest, replyContext) {
       (finding) =>
         isDocumentationPath(finding.doc_path) &&
         existsSync(resolve(worktree, finding.doc_path)) &&
-        changedLines.has(finding.change_path) &&
+        reviewScope.changedLines.has(finding.change_path) &&
         typeof finding.explanation === 'string' &&
         finding.explanation.trim() &&
         (finding.kind === 'text' ||
@@ -440,42 +523,53 @@ async function reviewPullRequest(pullRequest, replyContext) {
     }
 
     const result = formatScore({ ...review, findings });
+    const checkedBody = withCheckedSha(result.body, headSha);
 
     if (replyContext) {
       const answer =
         typeof review.reply === 'string' && review.reply.trim()
           ? review.reply.trim()
           : result.body.replace(marker, '').trim();
-      const body = `${marker}\n${result.score === 5 ? '✅' : '📝'} **Re-review: ${result.score}/5**\n\n${answer}`;
+      const heading = hasNewCommits
+        ? `${result.score === 5 ? '✅' : '📝'} **Re-review: ${result.score}/5**`
+        : '💬 **Docs fact check reply**';
+      const body = withCheckedSha(`${marker}\n${heading}\n\n${answer}`, headSha);
       await githubRequest(`/pulls/${pullRequest.number}/comments/${replyContext.root.id}/replies`, {
         method: 'POST',
         body: JSON.stringify({ body })
       });
 
+      if (hasNewCommits && result.score === 5) {
+        await resolveFactCheckThreads(pullRequest.number, { resolveAll: true });
+      }
+
       return;
     }
 
-    await resolveFixedThreads(
-      pullRequest.number,
-      new Set(findings.map((finding) => finding.doc_path))
-    );
+    if (result.score === 5) {
+      await resolveFactCheckThreads(pullRequest.number, { resolveAll: true });
+    } else {
+      const activeDocPaths = isIncremental ? null : new Set(findings.map((finding) => finding.doc_path));
+
+      await resolveFactCheckThreads(pullRequest.number, { activeDocPaths });
+    }
 
     await githubRequest(`/pulls/${pullRequest.number}/reviews`, {
       method: 'POST',
-      body: JSON.stringify({ commit_id: headSha, event: 'COMMENT', body: result.body })
+      body: JSON.stringify({ commit_id: headSha, event: 'COMMENT', body: checkedBody })
     });
 
-    const firstChangedPath = changedLines.keys().next().value;
-    if (firstChangedPath) {
+    const firstChangedPath = reviewScope.changedLines.keys().next().value;
+    if (firstChangedPath && result.score !== 5) {
       await githubRequest(`/pulls/${pullRequest.number}/comments`, {
         method: 'POST',
-        body: JSON.stringify({ commit_id: headSha, path: firstChangedPath, subject_type: 'file', body: result.body })
+        body: JSON.stringify({ commit_id: headSha, path: firstChangedPath, subject_type: 'file', body: checkedBody })
       });
     }
 
     for (const finding of findings) {
       const line = Number(finding.change_line);
-      const hasLine = Number.isInteger(line) && changedLines.get(finding.change_path).has(line);
+      const hasLine = Number.isInteger(line) && pullRequestChangedLines.get(finding.change_path)?.has(line);
       const target =
         finding.kind === 'image'
           ? `**Documentation image out of date:** \`${finding.image_path}\` in \`${finding.doc_path}\``
