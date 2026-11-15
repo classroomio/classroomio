@@ -1,6 +1,9 @@
 import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { isLocalOrPrivateHost } from '@cio/utils/functions';
-import { getVerifiedCustomDomainHostnames } from '../../queries/organization/organization';
+import {
+  getVerifiedCustomDomainHostnames,
+  isVerifiedCustomDomainHostname
+} from '../../queries/organization/organization';
 
 const FIRST_PARTY_ROOTS: readonly string[] = [BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN];
 
@@ -97,4 +100,39 @@ export function resolveTrustedBrowserOrigin(
   }
 
   return undefined;
+}
+
+/**
+ * Like `resolveTrustedBrowserOrigin`, but falls back to the database for hosts missing from the
+ * in-memory registry (cold start, other API instance). Only https verified custom domains qualify.
+ */
+export async function resolveTrustedCallbackOrigin(
+  callbackUrl: string | undefined | null,
+  staticTrustedOriginEntries: readonly string[]
+): Promise<string | undefined> {
+  if (!callbackUrl) {
+    return undefined;
+  }
+
+  let parsed: URL;
+
+  try {
+    parsed = new URL(callbackUrl);
+  } catch {
+    return undefined;
+  }
+
+  const trusted = resolveTrustedBrowserOrigin(parsed.origin, staticTrustedOriginEntries);
+
+  if (trusted) {
+    return trusted;
+  }
+
+  if (parsed.protocol !== 'https:' || !(await isVerifiedCustomDomainHostname(parsed.hostname))) {
+    return undefined;
+  }
+
+  trustCustomDomainHostname(parsed.hostname);
+
+  return parsed.origin;
 }
