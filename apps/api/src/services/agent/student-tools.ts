@@ -5,6 +5,9 @@ import { z } from 'zod';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import type { AiTutorSettings } from '@cio/ai-assistant';
+import { getQuestionTypeById, type DbQuestionForScoring } from '@cio/question-types';
+import { checkMathSteps, compareMathExpressions } from '@cio/question-types/math-grading';
+import type { TAgentCurrentAttempt } from '@cio/utils/validation/agent';
 
 import { getLesson } from '@cio/core/services/lesson/lesson';
 import { getLessonNoteHtml } from '@cio/core/services/block/block-text';
@@ -13,6 +16,14 @@ import { getExercise } from '@cio/core/services/exercise/exercise';
 import { getCourseOutlineSummary } from '@cio/core/services/course/outline';
 import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
 import { AppError } from '@api/utils/errors';
+import {
+  BLOCKED_GUIDANCE,
+  answerGuidance,
+  describeMisconception,
+  gradeCurrentInput,
+  isHelpBlocked,
+  stepsGuidance
+} from './math-tutor';
 import { AgentEvent, trackAgentEvent } from '@cio/core/utils/tinybird';
 import { verifyExerciseBelongsToCourse, verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
 
@@ -129,13 +140,52 @@ const readMySubmissionsParam = z.object({
   exerciseId: z.string(),
   attempt: z.number().int().min(1).optional()
 });
+const emptyParam = z.object({});
+const checkMathStepParam = z.object({
+  lines: z.array(z.string().min(1).max(500)).max(30).optional(),
+  startingExpression: z.string().max(500).optional()
+});
+const compareMathExpressionsParam = z.object({ left: z.string().min(1).max(500), right: z.string().min(1).max(500) });
 const searchCourseParam = z.object({
   query: z.string().min(1).max(200),
   limit: z.number().int().min(1).max(20).default(8)
 });
 
+export type StudentAttemptContext = { exerciseId?: string; currentAttempt?: TAgentCurrentAttempt };
+
 /** Builds the read-only student tools scoped to one course and learner. */
-export function buildStudentAgentTools(orgId: string, userId: string, courseId: string, _settings: AiTutorSettings) {
+export function buildStudentAgentTools(
+  orgId: string,
+  userId: string,
+  courseId: string,
+  settings: AiTutorSettings,
+  attemptContext: StudentAttemptContext = {}
+) {
+  const mode = settings.assessmentMode;
+
+  async function loadCurrentAttempt() {
+    const { exerciseId, currentAttempt } = attemptContext;
+    if (!exerciseId || !currentAttempt) return null;
+
+    await verifyExerciseBelongsToCourse(exerciseId, courseId);
+    const exercise = await getExercise(exerciseId);
+    const question = (exercise.questions ?? []).find((candidate) => Number(candidate.id) === currentAttempt.questionId);
+    if (!question) return null;
+
+    return {
+      exerciseTitle: exercise.title,
+      question: question as unknown as DbQuestionForScoring,
+      input: currentAttempt.answer ?? { type: '' }
+    };
+  }
+
+  const noAttempt = {
+    available: false as const,
+    guidance:
+      'The learner has no unsubmitted question open. Ask which question they mean, or use read_exercise for the exercise prompt.'
+  };
+  const blocked = { available: false as const, allowed: false as const, guidance: BLOCKED_GUIDANCE };
+
   return {
     list_course_outline: tool({
       description:
@@ -225,6 +275,106 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
             exerciseId: args.exerciseId,
             attempt: args.attempt
           });
+        });
+      }
+    }),
+
+    read_current_attempt: tool({
+      description:
+        'Read the question the learner is working on right now and what they have typed so far (unsubmitted). Call this first when they ask for help with or a check of their current exercise question. Never returns the answer key.',
+      inputSchema: emptyParam,
+      execute: async () => {
+        return executeStudentTool('read_current_attempt', { orgId, userId, courseId }, async () => {
+          const attempt = await loadCurrentAttempt();
+          if (!attempt) return noAttempt;
+
+          const { question, input, exerciseTitle } = attempt;
+          const typeName = getQuestionTypeById(question.questionTypeId)?.typename ?? null;
+
+          return {
+            available: true as const,
+            exerciseTitle,
+            question: {
+              id: question.id,
+              question: question.title,
+              type: typeName,
+              points: question.points,
+              options: (question.options ?? []).filter((option) => option.label != null).map((option) => option.label)
+            },
+            currentInput: input,
+            assessmentMode: mode,
+            guidance: isHelpBlocked(mode)
+              ? BLOCKED_GUIDANCE
+              : 'Use check_math_answer for "is this right?" and check_math_step for working. Never reveal the answer key.'
+          };
+        });
+      }
+    }),
+
+    check_math_answer: tool({
+      description:
+        'Grade the learner\'s current, unsubmitted input with the math engine and answer "is this right?". Returns whether it is correct, the reason, and any known slip it matches. Never returns the answer key.',
+      inputSchema: emptyParam,
+      execute: async () => {
+        return executeStudentTool('check_math_answer', { orgId, userId, courseId }, async () => {
+          if (isHelpBlocked(mode)) return blocked;
+
+          const attempt = await loadCurrentAttempt();
+          if (!attempt) return noAttempt;
+
+          const verdict = gradeCurrentInput(attempt.question, attempt.input);
+          const guidance = answerGuidance(mode, verdict);
+          if (verdict.status === 'unavailable') return { available: true as const, checked: false as const, guidance };
+
+          return {
+            available: true as const,
+            checked: true as const,
+            isCorrect: verdict.isCorrect,
+            reason: verdict.reason,
+            misconceptionHint: verdict.misconception ? describeMisconception(verdict.misconception) : undefined,
+            teacherFeedback: verdict.teacherFeedback,
+            guidance
+          };
+        });
+      }
+    }),
+
+    check_math_step: tool({
+      description:
+        "Check the learner's working line by line with the math engine. Each line is compared with the line before it; the result names the first line that does not follow. Omit lines to check the working in the learner's current attempt; pass startingExpression (LaTeX from the question) to check the first line against the problem.",
+      inputSchema: checkMathStepParam,
+      execute: async (args) => {
+        return executeStudentTool('check_math_step', { orgId, userId, courseId, args }, async () => {
+          if (isHelpBlocked(mode)) return blocked;
+
+          const attempt = args.lines ? null : await loadCurrentAttempt();
+          const currentLines = [...(attempt?.input.working?.lines ?? []), attempt?.input.latex ?? ''].filter((line) =>
+            line.trim()
+          );
+          const lines = args.lines ?? currentLines;
+          if (lines.length === 0) return noAttempt;
+
+          const { steps, firstIncorrectIndex } = checkMathSteps(lines, { startingExpression: args.startingExpression });
+
+          return {
+            available: true as const,
+            steps: steps.map((step, index) => ({ line: index + 1, latex: step.latex, status: step.status })),
+            firstIncorrectLine: firstIncorrectIndex === null ? null : firstIncorrectIndex + 1,
+            guidance: stepsGuidance(mode, firstIncorrectIndex)
+          };
+        });
+      }
+    }),
+
+    compare_math_expressions: tool({
+      description:
+        'Ask the math engine whether two expressions or equations (LaTeX without $ delimiters) are equivalent. Returns equal, different, disputed or invalid.',
+      inputSchema: compareMathExpressionsParam,
+      execute: async (args) => {
+        return executeStudentTool('compare_math_expressions', { orgId, userId, courseId, args }, async () => {
+          if (isHelpBlocked(mode)) return blocked;
+
+          return { verdict: compareMathExpressions(args.left, args.right) };
         });
       }
     }),

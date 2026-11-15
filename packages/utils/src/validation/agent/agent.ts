@@ -19,6 +19,27 @@ export type TAgentRunStatus = z.infer<typeof ZAgentRunStatus>;
 
 // ─── POST /agent/chat ────────────────────────────────────────────────────────
 
+const ZAgentAttemptLines = z.array(z.string().max(500)).max(30);
+
+/** What a learner has typed into the question they are working on but not yet submitted; read by the tutor's math tools. */
+export const ZAgentCurrentAttempt = z.object({
+  questionId: z.number().int().positive(),
+  answer: z
+    .object({
+      type: z.string().max(40),
+      latex: z.string().max(2000).optional(),
+      value: z.number().optional(),
+      text: z.string().max(4000).optional(),
+      optionId: z.number().int().optional(),
+      optionIds: z.array(z.number().int()).max(50).optional(),
+      values: ZAgentAttemptLines.optional(),
+      working: z.object({ lines: ZAgentAttemptLines }).optional()
+    })
+    .optional()
+});
+
+export type TAgentCurrentAttempt = z.infer<typeof ZAgentCurrentAttempt>;
+
 export const ZAgentChatBody = z.object({
   courseId: ZAgentCourseId,
   conversationId: z.string().uuid().optional(),
@@ -28,6 +49,7 @@ export const ZAgentChatBody = z.object({
     .object({
       lessonId: z.string().uuid().optional(),
       exerciseId: z.string().uuid().optional(),
+      currentAttempt: ZAgentCurrentAttempt.optional(),
       documentId: z.string().optional()
     })
     .optional()

@@ -491,7 +491,12 @@ const agentCoreRouter = new Hono()
       }
 
       const studentAgentTools =
-        role === AgentRole.STUDENT ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings) : null;
+        role === AgentRole.STUDENT
+          ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings, {
+              exerciseId: context?.exerciseId,
+              currentAttempt: context?.currentAttempt
+            })
+          : null;
       let studentSubmission: unknown;
       if (role === AgentRole.STUDENT && context?.exerciseId) {
         try {

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { get } from 'svelte/store';
-  import { untrack } from 'svelte';
+  import { onDestroy, untrack } from 'svelte';
+  import { clearCurrentAttemptFocus, setCurrentAttemptFocus } from '$features/ai-assistant/utils/current-attempt';
   import { MediaQuery } from 'svelte/reactivity';
   import { fly } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
@@ -486,8 +487,32 @@
     return false;
   }
 
+  function trackAttemptFocus(model: ExerciseQuestionModel) {
+    const questionId = Number(model.id);
+    if (!exerciseId || !Number.isInteger(questionId) || questionId <= 0) return;
+
+    setCurrentAttemptFocus({
+      exerciseId,
+      questionId,
+      questionKey: getExerciseQuestionContractKey(model)
+    });
+  }
+
+  $effect(() => {
+    if (!isTakingQuestions || !sharedQuestionModel || currentParts.length > 0) return;
+
+    trackAttemptFocus(sharedQuestionModel);
+  });
+
+  $effect(() => {
+    if ($questionnaireMetaData.isFinished) clearCurrentAttemptFocus();
+  });
+
+  onDestroy(clearCurrentAttemptFocus);
+
   function onSharedAnswerChange(answerValue: AnswerData | null) {
     if (!sharedCurrentQuestionKey) return;
+    if (sharedQuestionModel) trackAttemptFocus(sharedQuestionModel);
 
     questionnaireMetaData.update((metaData) => {
       const answers = { ...metaData.answers };
@@ -556,7 +581,9 @@
   }
 
   function onSectionQuestionAnswerChange(question: Question, answerValue: AnswerData | null) {
-    const questionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(question));
+    const questionModel = toExerciseQuestionModel(question);
+    const questionKey = getExerciseQuestionContractKey(questionModel);
+    trackAttemptFocus(questionModel);
     questionnaireMetaData.update((metaData) => {
       const answers = { ...metaData.answers };
       if (answerValue === null) {
@@ -574,6 +601,7 @@
 
   function onPartAnswerChange(part: ExerciseQuestionModel, answerValue: AnswerData | null) {
     const partKey = getExerciseQuestionContractKey(part);
+    trackAttemptFocus(part);
     questionnaireMetaData.update((metaData) => {
       const answers = { ...metaData.answers };
       if (answerValue === null) {

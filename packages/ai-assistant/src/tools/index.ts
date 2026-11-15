@@ -26,6 +26,10 @@ import {
   readLessonSchema,
   readExerciseSchema,
   readMySubmissionsSchema,
+  readCurrentAttemptSchema,
+  checkMathStepSchema,
+  checkMathAnswerSchema,
+  compareMathExpressionsSchema,
   searchCourseSchema
 } from './student';
 
@@ -77,6 +81,10 @@ const studentTools: ToolRegistry = {
   [ToolName.READ_LESSON]: readLessonSchema,
   [ToolName.READ_EXERCISE]: readExerciseSchema,
   [ToolName.READ_MY_SUBMISSIONS]: readMySubmissionsSchema,
+  [ToolName.READ_CURRENT_ATTEMPT]: readCurrentAttemptSchema,
+  [ToolName.CHECK_MATH_STEP]: checkMathStepSchema,
+  [ToolName.CHECK_MATH_ANSWER]: checkMathAnswerSchema,
+  [ToolName.COMPARE_MATH_EXPRESSIONS]: compareMathExpressionsSchema,
   [ToolName.SEARCH_COURSE]: searchCourseSchema
 };
 
@@ -123,5 +131,9 @@ export {
   readLessonSchema,
   readExerciseSchema,
   readMySubmissionsSchema,
+  readCurrentAttemptSchema,
+  checkMathStepSchema,
+  checkMathAnswerSchema,
+  compareMathExpressionsSchema,
   searchCourseSchema
 };

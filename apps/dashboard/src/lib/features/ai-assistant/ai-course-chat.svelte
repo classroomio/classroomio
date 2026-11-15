@@ -36,6 +36,8 @@
     clearInitialChatTemplateId
   } from '$features/ai-assistant/utils/store';
   import { get } from 'svelte/store';
+  import { questionnaireMetaData } from '$features/course/components/exercise/store';
+  import { buildCurrentAttempt, currentAttemptFocus } from '$features/ai-assistant/utils/current-attempt';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { Chat } from '@ai-sdk/svelte';
@@ -392,6 +394,11 @@
         context: {
           lessonId: page.params?.lessonId,
           exerciseId: page.params?.exerciseId,
+          currentAttempt: buildCurrentAttempt(
+            get(currentAttemptFocus),
+            get(questionnaireMetaData).answers,
+            page.params?.exerciseId
+          ),
           documentId: uploadedDocument?.id
         }
       }),
