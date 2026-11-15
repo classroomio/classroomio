@@ -292,6 +292,10 @@ export default defineConfig({
                 root: '/build-courses/choose-an-exercise-question-type'
               },
               {
+                label: 'Create math questions',
+                root: '/build-courses/create-math-questions'
+              },
+              {
                 label: 'Set answers, points, and automatic grading',
                 root: '/build-courses/set-answers-points-and-automatic-grading'
               },
