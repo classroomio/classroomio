@@ -3,6 +3,7 @@ import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/or
 import { getNextStep, getPreviousStep, ONBOARDING_STEPS } from '../utils/constants';
 import { validateMetadata, validateOrgSetup, validateQuestionStep } from '../utils/validations';
 import { hasManagedOrganization } from '../utils/completeness';
+import { findOrgById } from '$features/org/utils/org-memberships';
 
 import { BaseApiWithErrors, classroomio, matchesError } from '$lib/utils/services/api';
 import { ErrorCodes } from '@cio/utils/constants';
@@ -79,10 +80,13 @@ export class OnboardingApi extends BaseApiWithErrors {
       requestFn: () => classroomio.onboarding['create-org'].$post({ json: data }),
       logContext: 'submitting organization setup',
       onSuccess: (result) => {
-        const { organizations } = result.data;
+        const { organization, organizations } = result.data;
+        const createdOrg = findOrgById(organizations, organization.id);
 
         orgs.set(organizations.map((org) => mergeAccountOrgFromServer(org)));
-        currentOrg.set(mergeAccountOrgFromServer(organizations[0]));
+        if (createdOrg) {
+          currentOrg.set(mergeAccountOrgFromServer(createdOrg));
+        }
         profile.update((current) => ({ ...current, fullname: data.fullname }));
 
         this.errors = {};

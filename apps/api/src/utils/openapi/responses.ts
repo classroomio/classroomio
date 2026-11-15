@@ -51,6 +51,17 @@ export const itemWithMetaResponse = (schema: z.ZodType, meta: z.ZodType) => ({
   required: ['success', 'data', 'meta']
 });
 
+export const itemWithMetaAndPaginationResponse = (schema: z.ZodType, meta: z.ZodType) => ({
+  type: 'object' as const,
+  properties: {
+    success: { type: 'boolean' as const },
+    data: toResponseJsonSchema(schema),
+    meta: toResponseJsonSchema(meta),
+    pagination: PaginationSchema
+  },
+  required: ['success', 'data', 'meta', 'pagination']
+});
+
 export const nullableItemResponse = (schema: z.ZodType) => itemResponse(schema.nullable());
 
 export const paginatedResponse = (schema: z.ZodType, extra?: z.ZodObject) => {

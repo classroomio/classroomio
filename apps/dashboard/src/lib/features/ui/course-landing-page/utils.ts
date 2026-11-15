@@ -236,7 +236,7 @@ export function buildCourseLandingPageProps(
   const hasCertificate = Boolean(metadata?.certificate?.templateUrl || course.certificate?.design?.templateId);
 
   const courseTypeLabel = course.type
-    ? t.get(`analytics.popularTypes.types.${course.type}`)
+    ? t.get(`marketing.popularTypes.types.${course.type}`)
     : t.get('course.navItem.settings.self_paced');
 
   const includeRequirement = isVisible(NAV_ITEM_KEY.REQUIREMENT) && Boolean(metadata?.requirements);
