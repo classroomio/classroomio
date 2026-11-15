@@ -110,39 +110,47 @@ async function getFactCheckIssueComments(pullNumber) {
     .filter((comment) => comment.docPath);
 }
 
-function shouldResolveFinding(docPath, { resolveAll, activeDocPaths, revalidatedDocPaths }) {
-  if (!docPath) return true;
-  if (activeDocPaths.has(docPath)) return false;
-  if (resolveAll) return true;
-  if (revalidatedDocPaths === null) return true;
-
-  return revalidatedDocPaths.has(docPath);
-}
-
 /**
  * Builds the list of threads to resolve and fallback comments to remove.
  *
  * `resolveAll` clears everything, which is what a full clean check does.
- * `activeDocPaths` keeps pages that are still reported open.
- * `revalidatedDocPaths` limits resolution to pages the current run actually
- * rechecked; null means the run checked the whole PR.
+ * `fullReview` means every finding was rechecked, not just the listed ones.
+ * `activeDocPaths` keeps pages that are still reported open. On an incremental
+ * run, only the specific threads and comments passed to the reviewer resolve;
+ * anything omitted (for example by the 30-entry cap) stays open.
  */
 function buildResolutionPlan(
   threads,
   fallbackComments,
-  { resolveAll = false, activeDocPaths = new Set(), revalidatedDocPaths = null } = {}
+  {
+    resolveAll = false,
+    fullReview = false,
+    activeDocPaths = new Set(),
+    revalidatedThreadIds = new Set(),
+    revalidatedCommentIds = new Set()
+  } = {}
 ) {
-  const options = { resolveAll, activeDocPaths, revalidatedDocPaths };
   const resolveThreadIds = [];
   const deleteCommentIds = [];
+  const canResolve = (docPath, wasRevalidated) => {
+    if (!docPath) return true;
+    if (activeDocPaths.has(docPath)) return false;
+    if (resolveAll || fullReview) return true;
+
+    return wasRevalidated;
+  };
 
   for (const thread of threads) {
     if (thread.isResolved) continue;
-    if (shouldResolveFinding(docPathFromThreadBody(thread.body), options)) resolveThreadIds.push(thread.id);
+    if (canResolve(docPathFromThreadBody(thread.body), revalidatedThreadIds.has(thread.id))) {
+      resolveThreadIds.push(thread.id);
+    }
   }
 
   for (const comment of fallbackComments) {
-    if (shouldResolveFinding(comment.docPath, options)) deleteCommentIds.push(comment.id);
+    if (canResolve(comment.docPath, revalidatedCommentIds.has(comment.id))) {
+      deleteCommentIds.push(comment.id);
+    }
   }
 
   return { resolveThreadIds, deleteCommentIds };
@@ -601,16 +609,28 @@ async function reviewPullRequest(pullRequest, replyContext) {
         : '';
     const revalidationCandidates = isIncremental
       ? [
-          ...openThreads.map((thread) => ({ doc_path: docPathFromThreadBody(thread.body), body: thread.body })),
-          ...fallbackComments.map((comment) => ({ doc_path: comment.docPath, body: comment.body }))
+          ...openThreads.map((thread) => ({
+            doc_path: docPathFromThreadBody(thread.body),
+            body: thread.body,
+            threadId: thread.id
+          })),
+          ...fallbackComments.map((comment) => ({
+            doc_path: comment.docPath,
+            body: comment.body,
+            commentId: comment.id
+          }))
         ]
       : [];
     const openFindings = [];
+    const revalidatedThreadIds = new Set();
+    const revalidatedCommentIds = new Set();
 
     for (const candidate of revalidationCandidates) {
       if (!candidate.doc_path || openFindings.some((entry) => entry.doc_path === candidate.doc_path)) continue;
 
       openFindings.push({ doc_path: candidate.doc_path, thread: candidate.body.replace(marker, '').trim() });
+      if (candidate.threadId) revalidatedThreadIds.add(candidate.threadId);
+      if (candidate.commentId) revalidatedCommentIds.add(candidate.commentId);
       if (openFindings.length === 30) break;
     }
 
@@ -695,8 +715,10 @@ async function reviewPullRequest(pullRequest, replyContext) {
         writeResolutionPlan(
           buildResolutionPlan(threads, fallbackComments, {
             resolveAll: !isIncremental && result.score === 5,
+            fullReview: !isIncremental,
             activeDocPaths,
-            revalidatedDocPaths
+            revalidatedThreadIds,
+            revalidatedCommentIds
           })
         );
       }
@@ -722,8 +744,10 @@ async function reviewPullRequest(pullRequest, replyContext) {
     writeResolutionPlan(
       buildResolutionPlan(threads, fallbackComments, {
         resolveAll: !isIncremental && result.score === 5,
+        fullReview: !isIncremental,
         activeDocPaths,
-        revalidatedDocPaths
+        revalidatedThreadIds,
+        revalidatedCommentIds
       })
     );
   } finally {
