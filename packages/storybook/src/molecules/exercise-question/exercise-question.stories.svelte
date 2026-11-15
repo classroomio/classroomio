@@ -9,6 +9,11 @@
     HOTSPOT_FIXTURE,
     LINK_FIXTURE,
     MATCHING_FIXTURE,
+    MATCHING_MATH_FIXTURE,
+    MATH_EXPRESSION_FIXTURE,
+    MULTI_PART_FIXTURE,
+    NUMERIC_FRACTION_FIXTURE,
+    WORKED_SOLUTION_FIXTURE,
     NUMERIC_FIXTURE,
     ORDERING_FIXTURE,
     RADIO_FIXTURE,
@@ -41,6 +46,59 @@
     colorTheme: 'blue' as const
   };
 </script>
+
+<Story name="Math expression">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={MATH_EXPRESSION_FIXTURE.question}
+      answer={MATH_EXPRESSION_FIXTURE.answer}
+      wrongAnswer={MATH_EXPRESSION_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Worked solution">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={WORKED_SOLUTION_FIXTURE.question}
+      answer={WORKED_SOLUTION_FIXTURE.answer}
+      wrongAnswer={WORKED_SOLUTION_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Numeric fraction">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={NUMERIC_FRACTION_FIXTURE.question}
+      answer={NUMERIC_FRACTION_FIXTURE.answer}
+      wrongAnswer={NUMERIC_FRACTION_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Matching with math">
+  {#snippet template()}
+    <QuestionTypeModes question={MATCHING_MATH_FIXTURE.question} answer={MATCHING_MATH_FIXTURE.answer} />
+  {/snippet}
+</Story>
+
+<Story name="Multi-part question">
+  {#snippet template()}
+    <ExerciseQuestion.QuestionList
+      contract={{
+        mode: 'review',
+        questions: MULTI_PART_FIXTURE,
+        answersByKey: {
+          'q-part-a': { type: 'MATH_EXPRESSION', latex: '4x+6' },
+          'q-part-b': { type: 'NUMERIC', value: 4 }
+        },
+        scoresByKey: { 'q-part-a': 2, 'q-part-b': 0 },
+        disabled: true
+      }}
+    />
+  {/snippet}
+</Story>
 
 <Story name="Checkbox">
   {#snippet template()}

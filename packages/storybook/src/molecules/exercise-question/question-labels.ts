@@ -5,7 +5,10 @@
  * which provides translated values via getExerciseQuestionLabels(). When adding or changing labels for a question type,
  * update both files.
  */
+import { MATH_QUESTION_LABEL_DEFAULTS } from '@cio/question-types';
+
 export const QUESTION_LABELS = {
+  ...MATH_QUESTION_LABEL_DEFAULTS,
   'common.option_prefix': 'Option',
   'common.remove': 'Remove',
   'common.add_option': 'Add option',

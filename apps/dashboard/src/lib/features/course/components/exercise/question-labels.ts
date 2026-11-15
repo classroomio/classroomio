@@ -1,5 +1,15 @@
 import type { ExerciseQuestionLabels } from '@cio/question-types';
+import { MATH_QUESTION_LABEL_DEFAULTS, type MathQuestionLabelKey } from '@cio/question-types';
 import { t } from '$lib/utils/functions/translations';
+
+function getMathLabels(): Partial<Record<MathQuestionLabelKey, string>> {
+  const labels: Partial<Record<MathQuestionLabelKey, string>> = {};
+  for (const key of Object.keys(MATH_QUESTION_LABEL_DEFAULTS) as MathQuestionLabelKey[]) {
+    labels[key] = t.get(`math_question.${key.slice('math.'.length)}`);
+  }
+
+  return labels;
+}
 
 /**
  * Returns translated labels for ExerciseQuestion UI components.
@@ -10,6 +20,7 @@ import { t } from '$lib/utils/functions/translations';
  */
 export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
   return {
+    ...getMathLabels(),
     'common.option_prefix': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.common.option_prefix'
     ),

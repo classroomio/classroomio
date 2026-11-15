@@ -1,26 +1,29 @@
 <script lang="ts">
-  import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
-  import { NumberField } from '../../../number-field';
+  import { getMathQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
+  import { MathInput } from '../../../math-input';
+  import { latexToNumber } from './numeric-utils';
 
-  let {
-    question,
-    answer = null,
-    disabled = false,
-    labels,
-    onAnswerChange = () => {}
-  }: ExerciseQuestionRendererProps = $props();
+  let { answer = null, disabled = false, labels, onAnswerChange = () => {} }: ExerciseQuestionRendererProps = $props();
 
-  const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
-    getExerciseQuestionLabel(labels, key, fallback);
+  const latex = $derived(answer?.type === 'NUMERIC' ? (answer.latex ?? String(answer.value)) : '');
+
+  function handleInput(nextLatex: string) {
+    const value = latexToNumber(nextLatex);
+    if (value === null) {
+      onAnswerChange(null);
+      return;
+    }
+
+    onAnswerChange({ type: 'NUMERIC', value, latex: nextLatex.trim() });
+  }
 </script>
 
-<div class="ui:space-y-2">
-  <NumberField
-    className="ui:w-full ui:max-w-[300px]"
-    value={answer?.type === 'NUMERIC' ? answer.value : null}
-    isDisabled={disabled}
-    placeholder={label('numeric.take.placeholder')}
-    allowEmpty
-    onValueChange={(next) => onAnswerChange(next === null ? null : { type: 'NUMERIC', value: next })}
-  />
-</div>
+<MathInput
+  class="ui:w-full ui:max-w-xs"
+  value={latex}
+  keyboard="numeric"
+  {disabled}
+  placeholder={getMathQuestionLabel(labels, 'math.take.placeholder')}
+  ariaLabel={getMathQuestionLabel(labels, 'math.take.sr_label')}
+  onInput={(next) => handleInput(next.latex)}
+/>

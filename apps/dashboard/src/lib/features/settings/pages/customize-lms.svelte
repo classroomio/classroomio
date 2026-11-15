@@ -308,6 +308,12 @@
             : $t('components.settings.customize_lms.disabled')}
         </Field.Description>
       </Field.Field>
+
+      <Field.Field>
+        <Field.Label for="desmos-api-key">{$t('math_question.desmos.label')}</Field.Label>
+        <Input id="desmos-api-key" bind:value={customization.course.desmosApiKey} autocomplete="off" />
+        <Field.Description>{$t('math_question.desmos.helper')}</Field.Description>
+      </Field.Field>
     </Field.Group>
   </Field.Set>
 

@@ -1,5 +1,5 @@
 import type { ExerciseSectionAfterBehavior, ExerciseSectionColorTheme } from '@cio/question-types';
-import { QUESTION_TYPE_KEY, normalizeThumbsQuestion } from '@cio/question-types';
+import { QUESTION_TYPE_KEY, normalizeThumbsQuestion, type CalculatorPolicy } from '@cio/question-types';
 import type { ExerciseCompletionPolicy } from './exercise-progression-utils';
 import {
   clearQuestionnaireValidation,
@@ -108,6 +108,7 @@ export function hydrateExercisePageData(exercise: Exercise, exerciseId: string) 
     allowMultipleAttempts: !!exercise.allowMultipleAttempts,
     completionPolicy: (exercise.completionPolicy as ExerciseCompletionPolicy | undefined) ?? 'submitted',
     passThreshold: exercise.passThreshold ?? 100,
+    calculatorPolicy: (exercise.calculatorPolicy as CalculatorPolicy | undefined) ?? 'none',
     slug: exercise.slug ?? ''
   });
 

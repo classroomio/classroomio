@@ -1,10 +1,11 @@
-import type { ExerciseQuestionLabels } from '@cio/question-types';
+import { MATH_QUESTION_LABEL_DEFAULTS, type ExerciseQuestionLabels } from '@cio/question-types';
 
 /**
  * English labels for QuestionTypePicker embed demos (no dashboard i18n).
  * Keep aligned with packages/storybook/src/molecules/exercise-question/question-labels.ts.
  */
 export const QUESTION_TYPE_PICKER_EXERCISE_LABELS: ExerciseQuestionLabels = {
+  ...MATH_QUESTION_LABEL_DEFAULTS,
   'common.option_prefix': 'Option',
   'common.remove': 'Remove',
   'common.add_option': 'Add option',

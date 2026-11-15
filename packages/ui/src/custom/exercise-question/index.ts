@@ -2,6 +2,7 @@ export { default as QuestionFormRoot } from './question-form-root.svelte';
 export { default as QuestionNavigation } from './question-navigation.svelte';
 export { default as QuestionRenderer } from './question-renderer.svelte';
 export { default as QuestionList } from './question-list.svelte';
+export { default as MultiPartQuestion } from './multi-part-question.svelte';
 export { default as QuestionSurface } from './question-surface.svelte';
 export { default as QuestionTitle } from './question-title.svelte';
 export { default as SectionAfterBehavior } from './section-after-behavior.svelte';

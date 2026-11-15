@@ -269,8 +269,128 @@ export const MATCHING_FIXTURE: QuestionStoryFixture = {
       ]
     }
   },
-  answer: { API: 'request validation', DB: 'persistent storage' }
+  answer: {
+    type: 'MATCHING',
+    pairs: [
+      { left: 'API', right: 'request validation' },
+      { left: 'DB', right: 'persistent storage' }
+    ]
+  },
+  wrongAnswer: {
+    type: 'MATCHING',
+    pairs: [
+      { left: 'API', right: 'persistent storage' },
+      { left: 'DB', right: 'request validation' }
+    ]
+  }
 };
+
+export const MATCHING_MATH_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-matching-math',
+    key: 'q-matching-math',
+    title: 'Match each expression to its value.',
+    questionType: 'MATCHING',
+    settings: {
+      pairs: [
+        { left: '$\\frac{1}{2}+\\frac{1}{4}$', right: '$\\frac{3}{4}$' },
+        { left: '$\\sqrt{49}$', right: '$7$' }
+      ]
+    }
+  },
+  answer: {
+    type: 'MATCHING',
+    pairs: [
+      { left: '$\\frac{1}{2}+\\frac{1}{4}$', right: '$\\frac{3}{4}$' },
+      { left: '$\\sqrt{49}$', right: '$7$' }
+    ]
+  }
+};
+
+export const NUMERIC_FRACTION_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-numeric-fraction',
+    key: 'q-numeric-fraction',
+    title: 'What is $\\frac{1}{2}+\\frac{1}{4}$?',
+    questionType: 'NUMERIC',
+    settings: { correctValue: '\\frac{3}{4}', relativeTolerance: 0 }
+  },
+  answer: { type: 'NUMERIC', value: 0.75, latex: '\\frac{3}{4}' },
+  wrongAnswer: { type: 'NUMERIC', value: 0.5, latex: '\\frac{1}{2}' }
+};
+
+export const MATH_EXPRESSION_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-math',
+    key: 'q-math',
+    title: 'Expand $2(x+1)$.',
+    questionType: 'MATH_EXPRESSION',
+    settings: {
+      acceptedAnswers: ['2x+2'],
+      compare: { mode: 'equivalent' },
+      variables: ['x'],
+      wrongAnswerFeedback: []
+    }
+  },
+  answer: { type: 'MATH_EXPRESSION', latex: '2x+2' },
+  wrongAnswer: { type: 'MATH_EXPRESSION', latex: '2x+1' }
+};
+
+export const WORKED_SOLUTION_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-worked',
+    key: 'q-worked',
+    title: 'Solve $3x-4=11$ and show your working.',
+    questionType: 'WORKED_SOLUTION',
+    points: 4,
+    settings: {
+      acceptedAnswers: ['5'],
+      compare: { mode: 'equivalent' },
+      variables: ['x'],
+      wrongAnswerFeedback: [],
+      answerPoints: 2,
+      workingInputs: ['typed', 'drawing', 'photo']
+    }
+  },
+  answer: {
+    type: 'WORKED_SOLUTION',
+    latex: '5',
+    working: { lines: ['3x-4=11', '3x=15', 'x=5'], files: [] }
+  },
+  wrongAnswer: {
+    type: 'WORKED_SOLUTION',
+    latex: '4',
+    working: { lines: ['3x=11-4'], files: [] }
+  }
+};
+
+export const MULTI_PART_FIXTURE: Record<string, unknown>[] = [
+  {
+    id: 101,
+    key: 'q-stem',
+    title: 'A rectangle has length $x+3$ and width $x$.',
+    questionType: 'SHORT_ANSWER',
+    points: 0
+  },
+  {
+    id: 102,
+    key: 'q-part-a',
+    parentQuestionId: 101,
+    title: 'Write an expression for its perimeter.',
+    questionType: 'MATH_EXPRESSION',
+    points: 2,
+    settings: { acceptedAnswers: ['4x+6'], compare: { mode: 'equivalent' }, variables: ['x'], wrongAnswerFeedback: [] }
+  },
+  {
+    id: 103,
+    key: 'q-part-b',
+    parentQuestionId: 101,
+    title: 'Find $x$ when the perimeter is $26$.',
+    questionType: 'NUMERIC',
+    points: 2,
+    settings: { correctValue: 5 }
+  }
+];
 
 export const ORDERING_FIXTURE: QuestionStoryFixture = {
   question: {

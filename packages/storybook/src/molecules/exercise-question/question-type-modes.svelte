@@ -129,6 +129,18 @@
           retakeCount: index % 4,
           playbackUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
         };
+      case 'MATH_EXPRESSION': {
+        const accepted = toStringArray(storyQuestion.settings?.acceptedAnswers);
+        return { type: 'MATH_EXPRESSION', latex: index % 3 === 0 ? 'x+1' : (accepted[0] ?? 'x') };
+      }
+      case 'WORKED_SOLUTION': {
+        const accepted = toStringArray(storyQuestion.settings?.acceptedAnswers);
+        return {
+          type: 'WORKED_SOLUTION',
+          latex: index % 3 === 0 ? '0' : (accepted[0] ?? 'x'),
+          working: { lines: ['Rearrange', 'Divide both sides'], files: [] }
+        };
+      }
       case 'MATCHING': {
         const pairs = Array.isArray(storyQuestion.settings?.pairs)
           ? (storyQuestion.settings?.pairs as Array<{ left: string; right: string }>)

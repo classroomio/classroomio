@@ -49,6 +49,10 @@
     titleError?: string | null;
     /** Heading of the expanded description sheet in edit mode. */
     exerciseTitle?: string;
+    /** Hides the answer area, for the stem of a multi-part question that its parts answer. */
+    hideAnswer?: boolean;
+    /** Label such as (a) shown before the title of a part of a multi-part question. */
+    partLabel?: string;
   }
 
   let {
@@ -60,7 +64,9 @@
     questionNumber,
     questionNumberActive = true,
     titleError = null,
-    exerciseTitle = ''
+    exerciseTitle = '',
+    hideAnswer = false,
+    partLabel = ''
   }: Props = $props();
 
   const Renderer = $derived(getExerciseQuestionRenderer(contract.question.questionType, contract.mode));
@@ -488,6 +494,9 @@
 
   {#if contract.mode !== 'edit'}
     <div class="ui:mb-4 ui:space-y-3">
+      {#if partLabel}
+        <p class="ui:text-muted-foreground ui:text-sm ui:font-semibold" data-testid="part-label">{partLabel}</p>
+      {/if}
       {#if questionNumber !== undefined}
         <div class="ui:flex ui:items-center ui:gap-2">
           <NumberBadge number={questionNumber} active={questionNumberActive} />
@@ -554,20 +563,22 @@
     </div>
   {/if}
 
-  <Renderer
-    question={contract.question}
-    answer={contract.answer}
-    submissions={contract.submissions}
-    maxSubmissionItems={contract.maxSubmissionItems}
-    disabled={contract.disabled}
-    labels={contract.labels}
-    platformMaxFileSizeMb={contract.platformMaxFileSizeMb}
-    onImageUpload={contract.onImageUpload}
-    onFileUpload={contract.onFileUpload}
-    onVideoRecordingUpload={contract.onVideoRecordingUpload}
-    {onAnswerChange}
-    {onQuestionChange}
-  />
+  {#if !hideAnswer}
+    <Renderer
+      question={contract.question}
+      answer={contract.answer}
+      submissions={contract.submissions}
+      maxSubmissionItems={contract.maxSubmissionItems}
+      disabled={contract.disabled}
+      labels={contract.labels}
+      platformMaxFileSizeMb={contract.platformMaxFileSizeMb}
+      onImageUpload={contract.onImageUpload}
+      onFileUpload={contract.onFileUpload}
+      onVideoRecordingUpload={contract.onVideoRecordingUpload}
+      {onAnswerChange}
+      {onQuestionChange}
+    />
+  {/if}
 {/snippet}
 
 {#if showContainer}

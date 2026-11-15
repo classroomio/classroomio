@@ -452,6 +452,7 @@
       const allowMultipleAttempts = !!$questionnaire.allowMultipleAttempts;
       const completionPolicy = $questionnaire.completionPolicy ?? 'submitted';
       const passThreshold = $questionnaire.passThreshold ?? 100;
+      const calculatorPolicy = $questionnaire.calculatorPolicy ?? 'none';
 
       await exerciseApi.update(courseApi.course.id, exerciseId, {
         title: $questionnaire.title ?? '',
@@ -462,7 +463,8 @@
         sectionDisplayMode: $questionnaire.sectionDisplayMode,
         allowMultipleAttempts,
         completionPolicy,
-        passThreshold
+        passThreshold,
+        calculatorPolicy
       });
 
       // Check if there are validation errors from the API

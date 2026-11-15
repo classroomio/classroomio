@@ -164,7 +164,7 @@ export function transformQuestionsToApiFormat(
 
   const filteredQuestions = (questions || []).filter(isPersistedOrActive);
 
-  return filteredQuestions.map((q, index) => {
+  const formattedQuestions = filteredQuestions.map((q, index) => {
     const questionTypeKey = getQuestionTypeKey(q);
     const settings = getQuestionSettings(q);
     const formattedOptions = questionTypeSupportsOptions(questionTypeKey) ? formatOptions(q.options) : [];
@@ -215,5 +215,33 @@ export function transformQuestionsToApiFormat(
       options: formattedOptions,
       ...(shouldIncludeDeleted && q.deletedAt ? { deletedAt: q.deletedAt } : {})
     };
+  });
+
+  return linkQuestionParts(filteredQuestions, formattedQuestions);
+}
+
+/**
+ * Adds the multi-part links to the API payload. A part of a saved stem names it by id; a part of a stem that is not
+ * saved yet names it by `parentRef`, and the stem carries the matching `ref`.
+ */
+function linkQuestionParts(sources: Question[], formatted: TExerciseUpdate['questions']): TExerciseUpdate['questions'] {
+  const isSaved = (id: unknown) => Boolean(id) && !isNaN(Number(id));
+  const unsavedStemIds = new Set(
+    sources
+      .filter((source) => source.parentQuestionId != null && !isSaved(source.parentQuestionId))
+      .map((source) => String(source.parentQuestionId))
+  );
+
+  return formatted.map((question, index) => {
+    const source = sources[index];
+    const parentId = source.parentQuestionId;
+    if (parentId != null) {
+      return isSaved(parentId)
+        ? { ...question, parentQuestionId: Number(parentId) }
+        : { ...question, parentRef: String(parentId) };
+    }
+    if (unsavedStemIds.has(String(source.id))) return { ...question, ref: String(source.id) };
+
+    return question;
   });
 }

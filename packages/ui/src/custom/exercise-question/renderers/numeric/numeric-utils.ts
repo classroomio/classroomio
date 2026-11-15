@@ -1,3 +1,4 @@
+import { ComputeEngine } from '@cortex-js/compute-engine';
 import type { NumericSettings } from '@cio/question-types';
 
 const PLAIN_NUMBER = /^-?\d+(\.\d+)?$/;
@@ -17,4 +18,31 @@ export function latexToCorrectValue(latex: string): number | string | undefined 
 
 export function isPlainNumber(latex: string): boolean {
   return PLAIN_NUMBER.test(latex.trim());
+}
+
+const computeEngine = new ComputeEngine();
+
+/** The number a typed expression such as `\\frac{3}{4}` or `2\\sqrt{2}` evaluates to, or null when it is not a number. */
+export function latexToNumber(latex: string): number | null {
+  const trimmed = latex.trim();
+  if (!trimmed) return null;
+
+  const value = computeEngine.parse(trimmed).N().re;
+
+  return Number.isFinite(value) ? value : null;
+}
+
+/** True when student is within the absolute or relative tolerance of correct. */
+export function isWithinTolerance(student: number, correct: number, settings: NumericSettings): boolean {
+  const absolute = settings.tolerance ?? 0;
+  const relative = (settings.relativeTolerance ?? 0) * Math.abs(correct);
+
+  return Math.abs(student - correct) <= Math.max(absolute, relative);
+}
+
+/** The correct value as text for MathText, wrapping an expression in dollar signs. */
+export function correctValueToMathText(correctValue: NumericSettings['correctValue']): string {
+  if (correctValue === undefined) return '';
+
+  return typeof correctValue === 'number' ? String(correctValue) : `$${correctValue}$`;
 }

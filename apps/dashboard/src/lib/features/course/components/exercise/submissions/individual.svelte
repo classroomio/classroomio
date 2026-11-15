@@ -13,7 +13,7 @@
   import { getQuestionsForSection, questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
-  import { formatPoints, type AnswerData } from '@cio/question-types';
+  import { formatPoints, getExerciseQuestionContractKey, type AnswerData } from '@cio/question-types';
   import { toExerciseQuestionModel } from '../question-type-utils';
   import { getExerciseQuestionLabels } from '../question-labels';
   import { getExerciseSectionDisplayTitle } from '$features/course/utils/exercise-section-utils';
@@ -163,6 +163,31 @@
       return undefined;
 
     return submittedAnswer.answerData;
+  }
+
+  function getReviewContract(submission: SubmissionListItem, questions: Question[]) {
+    const answersByKey: Record<string, AnswerData> = {};
+    const scoresByKey: Record<string, number> = {};
+    const questionModels = questions.map(toExerciseQuestionModel);
+
+    questions.forEach((question, index) => {
+      const questionKey = getExerciseQuestionContractKey(questionModels[index], index);
+      const answer = getStudentAnswerForQuestion(submission, question);
+      if (answer) answersByKey[questionKey] = answer;
+
+      const questionId = toNumericQuestionId(question);
+      const submitted = submission.answers?.find((item) => item.questionId === questionId);
+      scoresByKey[questionKey] = Number(submitted?.point ?? 0);
+    });
+
+    return {
+      mode: 'review' as const,
+      questions: questionModels,
+      answersByKey,
+      scoresByKey,
+      labels: questionLabels,
+      disabled: true
+    };
   }
 
   function getSectionScore(submission: SubmissionListItem, questions: Question[]) {
@@ -395,21 +420,10 @@
                 }}
               />
 
-              {#each sectionQuestions as q, i (`${q.id}-${i}`)}
-                <div class="pb-4">
-                  <ExerciseQuestion.QuestionRenderer
-                    contract={{
-                      mode: 'review',
-                      question: toExerciseQuestionModel(q),
-                      answer: getStudentAnswerForQuestion(selectedSubmission, q),
-                      labels: questionLabels,
-                      disabled: true
-                    }}
-                    questionNumber={i + 1}
-                    questionNumberActive={false}
-                  />
-                </div>
-              {/each}
+              <ExerciseQuestion.QuestionList
+                contract={getReviewContract(selectedSubmission, sectionQuestions)}
+                itemClass="pb-4"
+              />
 
               <p class="border-t pt-2 text-sm font-medium">
                 {formatPoints(getSectionScore(selectedSubmission, sectionQuestions))}/{formatPoints(
@@ -421,21 +435,13 @@
           {/each}
         </div>
       {:else if $questionnaire.questions}
-        {#each $questionnaire.questions as q, i (`${q.id}-${i}`)}
-          <div class="pb-4">
-            <ExerciseQuestion.QuestionRenderer
-              contract={{
-                mode: 'review',
-                question: toExerciseQuestionModel(q),
-                answer: getStudentAnswerForQuestion(selectedSubmission, q),
-                labels: questionLabels,
-                disabled: true
-              }}
-              questionNumber={i + 1}
-              questionNumberActive={false}
-            />
-          </div>
-        {/each}
+        <ExerciseQuestion.QuestionList
+          contract={getReviewContract(
+            selectedSubmission,
+            $questionnaire.questions.filter((question) => !question.deletedAt)
+          )}
+          itemClass="pb-4"
+        />
       {/if}
     {/if}
   {/if}

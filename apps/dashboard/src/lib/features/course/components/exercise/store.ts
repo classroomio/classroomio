@@ -1,6 +1,7 @@
 import { DEFAULT_QUESTION_TYPE, QUESTION_TEMPLATE } from '$features/ui/question/constants';
 import type {
   AnswerData,
+  CalculatorPolicy,
   ExerciseSectionAfterBehavior,
   ExerciseSectionColorTheme,
   ExerciseSectionDisplayMode
@@ -71,6 +72,7 @@ export interface QuestionnaireState {
   allowMultipleAttempts?: boolean;
   completionPolicy?: 'submitted' | 'passed' | 'none';
   passThreshold?: number | null;
+  calculatorPolicy?: CalculatorPolicy;
   slug?: string | null;
 }
 
@@ -106,6 +108,7 @@ export const questionnaire: Writable<QuestionnaireState> = writable({
   allowMultipleAttempts: false,
   completionPolicy: 'submitted',
   passThreshold: 100,
+  calculatorPolicy: 'none',
   slug: ''
 });
 
@@ -234,6 +237,40 @@ export function handleAddQuestion(exerciseSectionId?: string | null) {
         }
       ]
     };
+  });
+
+  return nextQuestionId;
+}
+
+export function getPartsOf(questions: Question[], stemId: string | number) {
+  return questions
+    .filter((question) => !question.deletedAt && String(question.parentQuestionId ?? '') === String(stemId))
+    .sort(compareQuestionsByOrder);
+}
+
+export function handleAddPart(stemId: string | number) {
+  let nextQuestionId: string | number = '';
+
+  questionnaire.update((q) => {
+    const stem = q.questions.find((question) => question.id === stemId);
+    if (!stem) return q;
+
+    nextQuestionId = `${q.questions.length + 1}-form`;
+    const part = {
+      ...QUESTION_TEMPLATE,
+      id: nextQuestionId,
+      name: `${nextQuestionId}`,
+      value: '',
+      points: 1,
+      order: q.questions.length,
+      exerciseSectionId: stem.exerciseSectionId ?? null,
+      parentQuestionId: stem.id,
+      questionType: DEFAULT_QUESTION_TYPE,
+      questionTypeId: DEFAULT_QUESTION_TYPE.id,
+      options: [{ id: '1-form', label: '', value: null, isCorrect: false }]
+    };
+
+    return { ...q, questions: [...q.questions, part] };
   });
 
   return nextQuestionId;
@@ -501,7 +538,11 @@ export function handleRemoveQuestion(questionId) {
       const questionIndex = q.questions.findIndex((qItem) => qItem.id === questionId);
       if (questionIndex === -1) return q;
 
-      q.questions[questionIndex].deletedAt = new Date().toString();
+      const deletedAt = new Date().toString();
+      q.questions[questionIndex].deletedAt = deletedAt;
+      for (const question of q.questions) {
+        if (String(question.parentQuestionId ?? '') === String(questionId)) question.deletedAt = deletedAt;
+      }
 
       return q;
     });

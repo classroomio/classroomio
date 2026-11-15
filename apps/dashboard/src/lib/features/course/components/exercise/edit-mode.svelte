@@ -14,6 +14,8 @@
     handleRemoveQuestion,
     handleCode,
     handleAddQuestion,
+    handleAddPart,
+    getPartsOf,
     handleRemoveSection,
     handleReorderSections,
     handleReorderQuestionsInSection,
@@ -27,6 +29,8 @@
   import { QUESTION_TYPES } from '$features/ui/question/constants';
   import { ExerciseQuestion } from '@cio/ui';
   import { Badge } from '@cio/ui/base/badge';
+  import { Button } from '@cio/ui/base/button';
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import { MathText } from '@cio/ui/custom/math-text';
   import * as Tooltip from '@cio/ui/base/tooltip';
 
@@ -48,7 +52,12 @@
     questionTypeSupportsOptions,
     toExerciseQuestionModel
   } from './question-type-utils';
-  import { QUESTION_TYPE_KEY, resolveTrueFalseCorrectValue, syncTrueFalseOptions } from '@cio/question-types';
+  import {
+    QUESTION_TYPE_KEY,
+    getPartLabel,
+    resolveTrueFalseCorrectValue,
+    syncTrueFalseOptions
+  } from '@cio/question-types';
   import { getExerciseQuestionLabels } from './question-labels';
   import SectionEditor from './section-editor.svelte';
   import type { Question } from '$features/course/types';
@@ -324,7 +333,10 @@
 
   function syncReorderQuestionItems() {
     reorderQuestionItemsBySectionId = Object.fromEntries(
-      activeSections.map((section) => [section.id, getQuestionsForSection($questionnaire.questions, section.id)])
+      activeSections.map((section) => [
+        section.id,
+        getQuestionsForSection($questionnaire.questions, section.id).filter((item) => !item.parentQuestionId)
+      ])
     );
   }
 
@@ -485,6 +497,23 @@
       </div>
     </QuestionContainer>
   </AttentionHighlight>
+
+  {#if !question.parentQuestionId}
+    {@const parts = getPartsOf($questionnaire.questions, question.id)}
+    <div class="ui:border-border mb-6 ml-4 border-l-2 pl-4">
+      {#each parts as part, partIndex (part.id)}
+        <p class="ui:text-muted-foreground mb-2 text-sm font-semibold">{getPartLabel(partIndex)}</p>
+        {@render questionEditor(part, partIndex)}
+      {/each}
+      <Button variant="secondary" size="sm" onclick={() => handleAddPart(question.id)}>
+        <PlusIcon class="size-4" />
+        {$t('math_question.parts.add')}
+      </Button>
+      {#if parts.length === 0}
+        <p class="ui:text-muted-foreground mt-2 text-xs">{$t('math_question.parts.helper')}</p>
+      {/if}
+    </div>
+  {/if}
 {/snippet}
 
 {#snippet compactQuestionRow(question, index)}
@@ -509,7 +538,9 @@
     {#if hasSections($questionnaire.sections)}
       <div class="space-y-5">
         {#each activeSections as section, sectionIndex (section.id)}
-          {@const sectionQuestions = getQuestionsForSection($questionnaire.questions, section.id)}
+          {@const sectionQuestions = getQuestionsForSection($questionnaire.questions, section.id).filter(
+            (item) => !item.parentQuestionId
+          )}
           {@const reorderSectionQuestions = getReorderQuestionsForSection(section.id, sectionQuestions)}
           <SectionEditor
             exerciseSectionId={section.id}
@@ -587,7 +618,7 @@
       </div>
     {:else}
       {#each $questionnaire.questions as question, index (question.id)}
-        {#if !question.deletedAt}
+        {#if !question.deletedAt && !question.parentQuestionId}
           {@render questionEditor(question, index)}
         {/if}
       {/each}

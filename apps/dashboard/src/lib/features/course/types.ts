@@ -56,7 +56,9 @@ type QuestionOption = ApiOption & {
 };
 
 // Extended question type with client-side fields
-export type Question = Omit<ApiQuestion, 'options'> & {
+export type Question = Omit<ApiQuestion, 'options' | 'parentQuestionId'> & {
+  /** Set on a part of a multi-part question: the id of its stem question. */
+  parentQuestionId?: number | string | null;
   exerciseSectionId?: string | null;
   isDirty?: boolean;
   deletedAt?: string;

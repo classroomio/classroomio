@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { AnswerData, ExerciseQuestionListRenderContract, ExerciseQuestionModel } from '@cio/question-types';
-  import { getExerciseQuestionContractKey, getPartLabel } from '@cio/question-types';
+  import { getExerciseQuestionContractKey, getMathQuestionLabel, getPartLabel } from '@cio/question-types';
   import QuestionRenderer from './question-renderer.svelte';
 
   interface Props {
@@ -19,7 +19,7 @@
     parts,
     contract,
     questionNumber,
-    scoreLabel = '',
+    scoreLabel = getMathQuestionLabel(contract.labels, 'math.parts.score'),
     onAnswerChange = () => {},
     showContainer = true
   }: Props = $props();

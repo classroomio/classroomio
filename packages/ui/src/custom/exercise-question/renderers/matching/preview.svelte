@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
+  import type { ExerciseQuestionRendererProps } from '@cio/question-types';
+  import { MathText } from '../../../math-text';
+  import { readMatchingPairs } from './matching-utils';
 
-  let { question, labels }: ExerciseQuestionRendererProps = $props();
-  const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
-    getExerciseQuestionLabel(labels, key, fallback);
+  let { question }: ExerciseQuestionRendererProps = $props();
+
+  const pairs = $derived(readMatchingPairs(question));
 </script>
 
 <div class="ui:space-y-1">
-  <p class="ui:text-muted-foreground ui:text-sm">{label('matching.preview.helper')}</p>
+  {#each pairs as pair, index (index)}
+    <p class="ui:text-sm"><MathText text={pair.left} /> ↔ <MathText text={pair.right} /></p>
+  {/each}
 </div>
