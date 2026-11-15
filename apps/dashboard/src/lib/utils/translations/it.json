@@ -3319,7 +3319,9 @@
                 "link": "Collegamenti",
                 "word_bank": "Banca delle parole",
                 "star": "Valutazione in stelle",
-                "video_recording": "Registrazione video"
+                "video_recording": "Registrazione video",
+                "math_expression": "Espressione matematica",
+                "worked_solution": "Soluzione svolta"
               }
             },
             "view_mode": {
@@ -6703,5 +6705,177 @@
     },
     "close": "Chiudi",
     "dismiss": "Capito"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Risposte accettate",
+      "accepted_answers_helper": "Digita ogni risposta corretta come la scriverebbe uno studente. Ne viene accettata una qualsiasi.",
+      "add_answer": "Aggiungi un’altra risposta accettata",
+      "answer_placeholder": "Digita la risposta",
+      "compare_label": "Come devono essere confrontate le risposte?",
+      "compare": {
+        "equivalent": "Equivalente",
+        "exact_form": "Forma esatta",
+        "numeric": "Numerica",
+        "set": "Insieme o elenco",
+        "equivalent_hint": "Si accetta qualsiasi forma algebricamente uguale, quindi 2(x+1) corrisponde a 2x+2.",
+        "exact_form_hint": "La risposta deve essere uguale e scritta nella forma scelta.",
+        "numeric_hint": "La risposta deve rientrare nella tolleranza impostata.",
+        "set_hint": "L’ordine non conta, quindi (1, 2) corrisponde a (2, 1)."
+      },
+      "form_label": "Forma richiesta",
+      "form": {
+        "simplified": "Semplificata",
+        "factored": "Fattorizzata",
+        "expanded": "Sviluppata",
+        "lowest_terms": "Ridotta ai minimi termini",
+        "rationalised_denominator": "Denominatore razionalizzato"
+      },
+      "absolute_tolerance_label": "Tolleranza assoluta",
+      "relative_tolerance_label": "Tolleranza relativa",
+      "significant_figures_label": "Cifre significative",
+      "units_label": "Unità attesa",
+      "units_placeholder": "Per esempio m, km/h o kg",
+      "units_allow_conversion": "Accetta altre unità dello stesso tipo, come 200 cm per 2 m",
+      "variables_label": "Variabili",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Lettere da trattare come variabili. Lascia vuoto per rilevarle.",
+      "keyboard_label": "Tastiera",
+      "keyboard": {
+        "numeric": "Solo numeri",
+        "algebra": "Algebra",
+        "calculus": "Analisi",
+        "greek": "Lettere greche",
+        "sets": "Insiemi",
+        "full": "Tutto"
+      },
+      "feedback_label": "Feedback per risposte errate note",
+      "feedback_helper": "Mostra un suggerimento quando uno studente dà una specifica risposta errata.",
+      "feedback_answer_placeholder": "Risposta errata",
+      "feedback_text_placeholder": "Suggerimento per lo studente",
+      "add_feedback": "Aggiungi feedback",
+      "remove": "Rimuovi",
+      "try_label": "Prova una risposta",
+      "try_helper": "Controlla come verrebbe valutata la risposta di uno studente prima di pubblicare.",
+      "try_placeholder": "Digita una risposta di esempio",
+      "try_button": "Controlla",
+      "try_checking": "Controllo in corso…",
+      "try_needs_answer": "Aggiungi prima una risposta accettata."
+    },
+    "verdict": {
+      "equivalent": "Corretta",
+      "not_simplified": "Il valore è giusto, ma la risposta non è semplificata.",
+      "wrong_form": "Il valore è giusto, ma non è nella forma richiesta.",
+      "wrong_units": "Il valore è giusto, ma le unità sono sbagliate.",
+      "wrong": "Errata",
+      "needs_review": "Impossibile controllare automaticamente. Un insegnante la rivedrà.",
+      "invalid": "Questa risposta non è stata letta come matematica.",
+      "matched_label": "Corrisponde"
+    },
+    "take": {
+      "placeholder": "Digita la tua risposta",
+      "sr_label": "La tua risposta"
+    },
+    "preview": {
+      "accepted_label": "Risposte accettate",
+      "compare_label": "Confronto",
+      "empty": "Nessuna risposta accettata per ora."
+    },
+    "review": {
+      "your_answer": "La tua risposta",
+      "expected": "Risposte accettate",
+      "result": "Risultato",
+      "not_graded": "Non ancora valutata",
+      "feedback": "Feedback"
+    },
+    "numeric": {
+      "correct_value_hint": "Sono accettati frazioni, numeri misti, π e radici."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Punti per la risposta finale",
+        "working_points_label": "Punti per lo svolgimento",
+        "working_points_helper": "Valutato a mano. La parte della risposta è valutata automaticamente.",
+        "working_inputs_label": "Come possono gli studenti mostrare lo svolgimento?"
+      },
+      "input": {
+        "typed": "Righe scritte",
+        "drawing": "Disegno",
+        "photo": "Foto"
+      },
+      "take": {
+        "answer_label": "Risposta finale",
+        "working_label": "Il tuo svolgimento",
+        "line_placeholder": "Scrivi un passaggio",
+        "add_line": "Aggiungi un passaggio",
+        "remove_line": "Rimuovi passaggio",
+        "draw_label": "Disegna il tuo svolgimento",
+        "upload_photo": "Carica una foto del tuo svolgimento",
+        "remove_file": "Rimuovi",
+        "uploading": "Caricamento…",
+        "upload_failed": "Caricamento non riuscito. Riprova.",
+        "draw_canvas": "Area di disegno",
+        "draw_undo": "Annulla",
+        "draw_clear": "Cancella",
+        "draw_save": "Aggiungi disegno",
+        "draw_saving": "Salvataggio…",
+        "drawing_alt": "Il tuo svolgimento disegnato",
+        "photo_alt": "La tua foto dello svolgimento"
+      },
+      "review": {
+        "working_label": "Svolgimento",
+        "no_working": "Nessuno svolgimento mostrato",
+        "answer_points": "Risposta finale",
+        "working_points": "Svolgimento, valutato dal tuo insegnante"
+      }
+    },
+    "parts": {
+      "score": "Punteggio delle parti",
+      "add": "Aggiungi parte",
+      "helper": "Le parti (a), (b), (c) hanno risposte e punteggi separati. La domanda sopra è mostrata come testo comune."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Aggiungi le coppie che gli studenti devono abbinare. Usa $…$ per la matematica.",
+        "left_placeholder": "Elemento",
+        "right_placeholder": "Il suo abbinamento",
+        "add_pair": "Aggiungi coppia",
+        "remove_pair": "Rimuovi coppia"
+      },
+      "take": {
+        "choose": "Scegli l’abbinamento per ogni elemento."
+      },
+      "review": {
+        "expected": "Abbinamento corretto",
+        "not_matched": "Non abbinato"
+      }
+    },
+    "calculator_policy": {
+      "label": "Calcolatrice",
+      "helper": "Scegli quale calcolatrice gli studenti possono aprire durante questo esercizio.",
+      "none": "Nessuna calcolatrice",
+      "four_function": "Quattro operazioni",
+      "scientific": "Scientifica",
+      "graphing": "Grafica"
+    },
+    "calculator": {
+      "open": "Calcolatrice",
+      "close": "Chiudi calcolatrice",
+      "title": "Calcolatrice",
+      "display": "Display della calcolatrice",
+      "clear": "Cancella",
+      "backspace": "Elimina",
+      "equals": "Uguale",
+      "degrees": "Gradi",
+      "radians": "Radianti",
+      "answer": "Risposta",
+      "error": "Errore",
+      "graphing_loading": "Caricamento della calcolatrice grafica…",
+      "graphing_failed": "Impossibile caricare la calcolatrice grafica."
+    },
+    "desmos": {
+      "label": "Chiave API di Desmos",
+      "helper": "Facoltativo. Abilita la calcolatrice grafica Desmos negli esercizi impostati su Grafica. Senza chiave, gli studenti usano la calcolatrice scientifica."
+    }
   }
 }

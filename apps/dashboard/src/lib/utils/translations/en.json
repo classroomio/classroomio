@@ -3327,7 +3327,9 @@
                 "link": "Links",
                 "word_bank": "Word bank",
                 "star": "Star rating",
-                "video_recording": "Video recording"
+                "video_recording": "Video recording",
+                "math_expression": "Math expression",
+                "worked_solution": "Worked solution"
               }
             },
             "view_mode": {
@@ -6702,6 +6704,178 @@
       "permissions_count": "{count} areas",
       "revoke": "Remove access",
       "revoke_confirm": "Remove this app's access? It will stop working immediately."
+    }
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Accepted answers",
+      "accepted_answers_helper": "Type each correct answer the way a student would. Any of them is accepted.",
+      "add_answer": "Add another accepted answer",
+      "answer_placeholder": "Type the answer",
+      "compare_label": "How should answers be compared?",
+      "compare": {
+        "equivalent": "Equivalent",
+        "exact_form": "Exact form",
+        "numeric": "Numeric",
+        "set": "Set or list",
+        "equivalent_hint": "Any algebraically equal form is accepted, so 2(x+1) matches 2x+2.",
+        "exact_form_hint": "The answer must be equal and written in the form you choose.",
+        "numeric_hint": "The answer must be within the tolerance you set.",
+        "set_hint": "Order does not matter, so (1, 2) matches (2, 1)."
+      },
+      "form_label": "Required form",
+      "form": {
+        "simplified": "Simplified",
+        "factored": "Factored",
+        "expanded": "Expanded",
+        "lowest_terms": "Lowest terms",
+        "rationalised_denominator": "Rationalised denominator"
+      },
+      "absolute_tolerance_label": "Absolute tolerance",
+      "relative_tolerance_label": "Relative tolerance",
+      "significant_figures_label": "Significant figures",
+      "units_label": "Expected unit",
+      "units_placeholder": "For example m, km/h or kg",
+      "units_allow_conversion": "Accept other units of the same kind, such as 200 cm for 2 m",
+      "variables_label": "Variables",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Letters to treat as variables. Leave empty to detect them.",
+      "keyboard_label": "Keyboard",
+      "keyboard": {
+        "numeric": "Numbers only",
+        "algebra": "Algebra",
+        "calculus": "Calculus",
+        "greek": "Greek letters",
+        "sets": "Sets",
+        "full": "Everything"
+      },
+      "feedback_label": "Feedback for known wrong answers",
+      "feedback_helper": "Show a hint when a student gives a specific wrong answer.",
+      "feedback_answer_placeholder": "Wrong answer",
+      "feedback_text_placeholder": "Hint for the student",
+      "add_feedback": "Add feedback",
+      "remove": "Remove",
+      "try_label": "Try an answer",
+      "try_helper": "Check how a student answer would be marked before you publish.",
+      "try_placeholder": "Type a sample student answer",
+      "try_button": "Check",
+      "try_checking": "Checking…",
+      "try_needs_answer": "Add an accepted answer first."
+    },
+    "verdict": {
+      "equivalent": "Correct",
+      "not_simplified": "The value is right, but the answer is not simplified.",
+      "wrong_form": "The value is right, but it is not in the required form.",
+      "wrong_units": "The value is right, but the units are wrong.",
+      "wrong": "Incorrect",
+      "needs_review": "Could not be checked automatically. A teacher will review it.",
+      "invalid": "This answer could not be read as math.",
+      "matched_label": "Matched"
+    },
+    "take": {
+      "placeholder": "Type your answer",
+      "sr_label": "Your answer"
+    },
+    "preview": {
+      "accepted_label": "Accepted answers",
+      "compare_label": "Comparison",
+      "empty": "No accepted answers yet."
+    },
+    "review": {
+      "your_answer": "Your answer",
+      "expected": "Accepted answers",
+      "result": "Result",
+      "not_graded": "Not graded yet",
+      "feedback": "Feedback"
+    },
+    "numeric": {
+      "correct_value_hint": "Fractions, mixed numbers, π and roots are accepted."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Points for the final answer",
+        "working_points_label": "Points for the working",
+        "working_points_helper": "Graded by hand. The answer part is graded automatically.",
+        "working_inputs_label": "How can students show their working?"
+      },
+      "input": {
+        "typed": "Typed lines",
+        "drawing": "Drawing",
+        "photo": "Photo"
+      },
+      "take": {
+        "answer_label": "Final answer",
+        "working_label": "Your working",
+        "line_placeholder": "Write a step",
+        "add_line": "Add a step",
+        "remove_line": "Remove step",
+        "draw_label": "Draw your working",
+        "upload_photo": "Upload a photo of your working",
+        "remove_file": "Remove",
+        "uploading": "Uploading…",
+        "upload_failed": "The upload failed. Try again.",
+        "draw_canvas": "Drawing area",
+        "draw_undo": "Undo",
+        "draw_clear": "Clear",
+        "draw_save": "Add drawing",
+        "draw_saving": "Saving…",
+        "drawing_alt": "Your drawn working",
+        "photo_alt": "Your photo of working"
+      },
+      "review": {
+        "working_label": "Working",
+        "no_working": "No working shown",
+        "answer_points": "Final answer",
+        "working_points": "Working, graded by your teacher"
+      }
+    },
+    "parts": {
+      "score": "Parts score",
+      "add": "Add part",
+      "helper": "Parts (a), (b), (c) are answered and scored separately. The question above is shown as their shared stem."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Add the pairs students must match. Use $…$ for math.",
+        "left_placeholder": "Item",
+        "right_placeholder": "Its match",
+        "add_pair": "Add pair",
+        "remove_pair": "Remove pair"
+      },
+      "take": {
+        "choose": "Choose the match for each item."
+      },
+      "review": {
+        "expected": "Correct match",
+        "not_matched": "Not matched"
+      }
+    },
+    "calculator_policy": {
+      "label": "Calculator",
+      "helper": "Choose which calculator students can open while taking this exercise.",
+      "none": "No calculator",
+      "four_function": "Four-function",
+      "scientific": "Scientific",
+      "graphing": "Graphing"
+    },
+    "calculator": {
+      "open": "Calculator",
+      "close": "Close calculator",
+      "title": "Calculator",
+      "display": "Calculator display",
+      "clear": "Clear",
+      "backspace": "Delete",
+      "equals": "Equals",
+      "degrees": "Degrees",
+      "radians": "Radians",
+      "answer": "Answer",
+      "error": "Error",
+      "graphing_loading": "Loading graphing calculator…",
+      "graphing_failed": "The graphing calculator could not load."
+    },
+    "desmos": {
+      "label": "Desmos API key",
+      "helper": "Optional. Enables the Desmos graphing calculator in exercises set to Graphing. Without a key, students get the scientific calculator instead."
     }
   }
 }

@@ -2003,7 +2003,9 @@
                 "link": "Links",
                 "word_bank": "Ordbank",
                 "star": "Stjernebedømmelse",
-                "video_recording": "Videooptagelse"
+                "video_recording": "Videooptagelse",
+                "math_expression": "Matematisk udtryk",
+                "worked_solution": "Udregnet løsning"
               },
               "select_type": "Vælg type",
               "question_type_auto_gradable": "Auto",
@@ -6733,5 +6735,177 @@
     },
     "close": "Luk",
     "dismiss": "Forstået"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Accepterede svar",
+      "accepted_answers_helper": "Skriv hvert korrekt svar, som en elev ville skrive det. Et hvilket som helst af dem accepteres.",
+      "add_answer": "Tilføj endnu et accepteret svar",
+      "answer_placeholder": "Skriv svaret",
+      "compare_label": "Hvordan skal svar sammenlignes?",
+      "compare": {
+        "equivalent": "Ækvivalent",
+        "exact_form": "Præcis form",
+        "numeric": "Numerisk",
+        "set": "Mængde eller liste",
+        "equivalent_hint": "Enhver algebraisk ens form accepteres, så 2(x+1) matcher 2x+2.",
+        "exact_form_hint": "Svaret skal være ens og skrevet i den form, du vælger.",
+        "numeric_hint": "Svaret skal ligge inden for den tolerance, du angiver.",
+        "set_hint": "Rækkefølgen er ligegyldig, så (1, 2) matcher (2, 1)."
+      },
+      "form_label": "Påkrævet form",
+      "form": {
+        "simplified": "Forenklet",
+        "factored": "Faktoriseret",
+        "expanded": "Udvidet",
+        "lowest_terms": "Forkortet mest muligt",
+        "rationalised_denominator": "Rationaliseret nævner"
+      },
+      "absolute_tolerance_label": "Absolut tolerance",
+      "relative_tolerance_label": "Relativ tolerance",
+      "significant_figures_label": "Betydende cifre",
+      "units_label": "Forventet enhed",
+      "units_placeholder": "For eksempel m, km/t eller kg",
+      "units_allow_conversion": "Accepter andre enheder af samme type, som 200 cm for 2 m",
+      "variables_label": "Variabler",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Bogstaver, der behandles som variabler. Lad feltet være tomt for at finde dem automatisk.",
+      "keyboard_label": "Tastatur",
+      "keyboard": {
+        "numeric": "Kun tal",
+        "algebra": "Algebra",
+        "calculus": "Analyse",
+        "greek": "Græske bogstaver",
+        "sets": "Mængder",
+        "full": "Alt"
+      },
+      "feedback_label": "Feedback til kendte forkerte svar",
+      "feedback_helper": "Viser et hint, når en elev giver et bestemt forkert svar.",
+      "feedback_answer_placeholder": "Forkert svar",
+      "feedback_text_placeholder": "Hint til eleven",
+      "add_feedback": "Tilføj feedback",
+      "remove": "Fjern",
+      "try_label": "Prøv et svar",
+      "try_helper": "Se, hvordan en elevs svar ville blive bedømt, før du udgiver.",
+      "try_placeholder": "Skriv et eksempel på et elevsvar",
+      "try_button": "Tjek",
+      "try_checking": "Tjekker…",
+      "try_needs_answer": "Tilføj først et accepteret svar."
+    },
+    "verdict": {
+      "equivalent": "Korrekt",
+      "not_simplified": "Værdien er rigtig, men svaret er ikke forenklet.",
+      "wrong_form": "Værdien er rigtig, men den har ikke den påkrævede form.",
+      "wrong_units": "Værdien er rigtig, men enhederne er forkerte.",
+      "wrong": "Forkert",
+      "needs_review": "Kunne ikke tjekkes automatisk. En lærer gennemgår det.",
+      "invalid": "Dette svar kunne ikke læses som matematik.",
+      "matched_label": "Matchede"
+    },
+    "take": {
+      "placeholder": "Skriv dit svar",
+      "sr_label": "Dit svar"
+    },
+    "preview": {
+      "accepted_label": "Accepterede svar",
+      "compare_label": "Sammenligning",
+      "empty": "Ingen accepterede svar endnu."
+    },
+    "review": {
+      "your_answer": "Dit svar",
+      "expected": "Accepterede svar",
+      "result": "Resultat",
+      "not_graded": "Endnu ikke bedømt",
+      "feedback": "Feedback"
+    },
+    "numeric": {
+      "correct_value_hint": "Brøker, blandede tal, π og rødder accepteres."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Point for det endelige svar",
+        "working_points_label": "Point for udregningen",
+        "working_points_helper": "Bedømmes manuelt. Svardelen bedømmes automatisk.",
+        "working_inputs_label": "Hvordan kan eleverne vise deres udregning?"
+      },
+      "input": {
+        "typed": "Skrevne linjer",
+        "drawing": "Tegning",
+        "photo": "Foto"
+      },
+      "take": {
+        "answer_label": "Endeligt svar",
+        "working_label": "Din udregning",
+        "line_placeholder": "Skriv et trin",
+        "add_line": "Tilføj et trin",
+        "remove_line": "Fjern trin",
+        "draw_label": "Tegn din udregning",
+        "upload_photo": "Upload et foto af din udregning",
+        "remove_file": "Fjern",
+        "uploading": "Uploader…",
+        "upload_failed": "Uploadet mislykkedes. Prøv igen.",
+        "draw_canvas": "Tegneområde",
+        "draw_undo": "Fortryd",
+        "draw_clear": "Ryd",
+        "draw_save": "Tilføj tegning",
+        "draw_saving": "Gemmer…",
+        "drawing_alt": "Din tegnede udregning",
+        "photo_alt": "Dit foto af udregningen"
+      },
+      "review": {
+        "working_label": "Udregning",
+        "no_working": "Ingen udregning vist",
+        "answer_points": "Endeligt svar",
+        "working_points": "Udregning, bedømt af din lærer"
+      }
+    },
+    "parts": {
+      "score": "Point for delene",
+      "add": "Tilføj del",
+      "helper": "Delene (a), (b), (c) besvares og bedømmes hver for sig. Spørgsmålet ovenfor vises som deres fælles opgavetekst."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Tilføj de par, eleverne skal matche. Brug $…$ til matematik.",
+        "left_placeholder": "Element",
+        "right_placeholder": "Dets match",
+        "add_pair": "Tilføj par",
+        "remove_pair": "Fjern par"
+      },
+      "take": {
+        "choose": "Vælg match for hvert element."
+      },
+      "review": {
+        "expected": "Korrekt match",
+        "not_matched": "Ikke matchet"
+      }
+    },
+    "calculator_policy": {
+      "label": "Lommeregner",
+      "helper": "Vælg, hvilken lommeregner eleverne kan åbne under denne øvelse.",
+      "none": "Ingen lommeregner",
+      "four_function": "Fire regningsarter",
+      "scientific": "Videnskabelig",
+      "graphing": "Grafregner"
+    },
+    "calculator": {
+      "open": "Lommeregner",
+      "close": "Luk lommeregner",
+      "title": "Lommeregner",
+      "display": "Lommeregnerens display",
+      "clear": "Ryd",
+      "backspace": "Slet",
+      "equals": "Er lig med",
+      "degrees": "Grader",
+      "radians": "Radianer",
+      "answer": "Svar",
+      "error": "Fejl",
+      "graphing_loading": "Indlæser grafregner…",
+      "graphing_failed": "Grafregneren kunne ikke indlæses."
+    },
+    "desmos": {
+      "label": "Desmos API-nøgle",
+      "helper": "Valgfri. Aktiverer Desmos-grafregneren i øvelser sat til Graf. Uden nøgle får eleverne den videnskabelige lommeregner."
+    }
   }
 }

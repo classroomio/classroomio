@@ -2003,7 +2003,9 @@
                 "link": "कड़ियाँ",
                 "word_bank": "वर्ड बैंक",
                 "star": "स्टार रेटिंग",
-                "video_recording": "वीडियो रिकार्डिंग"
+                "video_recording": "वीडियो रिकार्डिंग",
+                "math_expression": "गणितीय व्यंजक",
+                "worked_solution": "विस्तृत हल"
               },
               "select_type": "प्रकार चुनें",
               "question_type_auto_gradable": "स्वचालित",
@@ -6733,5 +6735,177 @@
     },
     "close": "बंद करें",
     "dismiss": "समझ गया"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "स्वीकृत उत्तर",
+      "accepted_answers_helper": "हर सही उत्तर वैसे लिखें जैसे कोई छात्र लिखेगा। उनमें से कोई भी स्वीकार किया जाता है।",
+      "add_answer": "एक और स्वीकृत उत्तर जोड़ें",
+      "answer_placeholder": "उत्तर लिखें",
+      "compare_label": "उत्तरों की तुलना कैसे हो?",
+      "compare": {
+        "equivalent": "समतुल्य",
+        "exact_form": "सटीक रूप",
+        "numeric": "संख्यात्मक",
+        "set": "समुच्चय या सूची",
+        "equivalent_hint": "बीजगणितीय रूप से बराबर कोई भी रूप स्वीकार है, इसलिए 2(x+1) और 2x+2 मेल खाते हैं।",
+        "exact_form_hint": "उत्तर बराबर होना चाहिए और आपके चुने रूप में लिखा होना चाहिए।",
+        "numeric_hint": "उत्तर आपकी तय सहनसीमा के भीतर होना चाहिए।",
+        "set_hint": "क्रम मायने नहीं रखता, इसलिए (1, 2) और (2, 1) मेल खाते हैं।"
+      },
+      "form_label": "आवश्यक रूप",
+      "form": {
+        "simplified": "सरलीकृत",
+        "factored": "गुणनखंडित",
+        "expanded": "विस्तारित",
+        "lowest_terms": "न्यूनतम पदों में",
+        "rationalised_denominator": "परिमेयीकृत हर"
+      },
+      "absolute_tolerance_label": "निरपेक्ष सहनसीमा",
+      "relative_tolerance_label": "सापेक्ष सहनसीमा",
+      "significant_figures_label": "सार्थक अंक",
+      "units_label": "अपेक्षित इकाई",
+      "units_placeholder": "उदाहरण के लिए m, km/h या kg",
+      "units_allow_conversion": "उसी प्रकार की अन्य इकाइयाँ स्वीकार करें, जैसे 2 m के लिए 200 cm",
+      "variables_label": "चर",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "जिन अक्षरों को चर माना जाए। अपने-आप पहचानने के लिए खाली छोड़ें।",
+      "keyboard_label": "कीबोर्ड",
+      "keyboard": {
+        "numeric": "केवल संख्याएँ",
+        "algebra": "बीजगणित",
+        "calculus": "कलन",
+        "greek": "यूनानी अक्षर",
+        "sets": "समुच्चय",
+        "full": "सब कुछ"
+      },
+      "feedback_label": "ज्ञात गलत उत्तरों के लिए फीडबैक",
+      "feedback_helper": "जब कोई छात्र कोई विशेष गलत उत्तर देता है तो संकेत दिखाएँ।",
+      "feedback_answer_placeholder": "गलत उत्तर",
+      "feedback_text_placeholder": "छात्र के लिए संकेत",
+      "add_feedback": "फीडबैक जोड़ें",
+      "remove": "हटाएँ",
+      "try_label": "उत्तर आज़माएँ",
+      "try_helper": "प्रकाशित करने से पहले जाँचें कि छात्र के उत्तर को कैसे अंक मिलेंगे।",
+      "try_placeholder": "नमूना छात्र उत्तर लिखें",
+      "try_button": "जाँचें",
+      "try_checking": "जाँच हो रही है…",
+      "try_needs_answer": "पहले एक स्वीकृत उत्तर जोड़ें।"
+    },
+    "verdict": {
+      "equivalent": "सही",
+      "not_simplified": "मान सही है, पर उत्तर सरलीकृत नहीं है।",
+      "wrong_form": "मान सही है, पर आवश्यक रूप में नहीं है।",
+      "wrong_units": "मान सही है, पर इकाइयाँ गलत हैं।",
+      "wrong": "गलत",
+      "needs_review": "अपने-आप जाँचा नहीं जा सका। शिक्षक इसकी समीक्षा करेंगे।",
+      "invalid": "इस उत्तर को गणित के रूप में नहीं पढ़ा जा सका।",
+      "matched_label": "मेल खाया"
+    },
+    "take": {
+      "placeholder": "अपना उत्तर लिखें",
+      "sr_label": "आपका उत्तर"
+    },
+    "preview": {
+      "accepted_label": "स्वीकृत उत्तर",
+      "compare_label": "तुलना",
+      "empty": "अभी कोई स्वीकृत उत्तर नहीं।"
+    },
+    "review": {
+      "your_answer": "आपका उत्तर",
+      "expected": "स्वीकृत उत्तर",
+      "result": "परिणाम",
+      "not_graded": "अभी अंक नहीं दिए गए",
+      "feedback": "फीडबैक"
+    },
+    "numeric": {
+      "correct_value_hint": "भिन्न, मिश्र संख्याएँ, π और मूल स्वीकार किए जाते हैं।"
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "अंतिम उत्तर के अंक",
+        "working_points_label": "हल के चरणों के अंक",
+        "working_points_helper": "हाथ से जाँचा जाता है। उत्तर वाला भाग अपने-आप जाँचा जाता है।",
+        "working_inputs_label": "छात्र अपना हल कैसे दिखा सकते हैं?"
+      },
+      "input": {
+        "typed": "टाइप की गई पंक्तियाँ",
+        "drawing": "चित्र",
+        "photo": "फोटो"
+      },
+      "take": {
+        "answer_label": "अंतिम उत्तर",
+        "working_label": "आपका हल",
+        "line_placeholder": "एक चरण लिखें",
+        "add_line": "एक चरण जोड़ें",
+        "remove_line": "चरण हटाएँ",
+        "draw_label": "अपना हल बनाएँ",
+        "upload_photo": "अपने हल की फोटो अपलोड करें",
+        "remove_file": "हटाएँ",
+        "uploading": "अपलोड हो रहा है…",
+        "upload_failed": "अपलोड विफल रहा। फिर कोशिश करें।",
+        "draw_canvas": "चित्र क्षेत्र",
+        "draw_undo": "पूर्ववत करें",
+        "draw_clear": "साफ़ करें",
+        "draw_save": "चित्र जोड़ें",
+        "draw_saving": "सहेजा जा रहा है…",
+        "drawing_alt": "आपका बनाया हुआ हल",
+        "photo_alt": "आपके हल की फोटो"
+      },
+      "review": {
+        "working_label": "हल",
+        "no_working": "कोई हल नहीं दिखाया गया",
+        "answer_points": "अंतिम उत्तर",
+        "working_points": "हल, आपके शिक्षक द्वारा जाँचा गया"
+      }
+    },
+    "parts": {
+      "score": "भागों के अंक",
+      "add": "भाग जोड़ें",
+      "helper": "भाग (a), (b), (c) के उत्तर और अंक अलग-अलग होते हैं। ऊपर का प्रश्न उनके साझा प्रश्न-आधार के रूप में दिखता है।"
+    },
+    "matching": {
+      "edit": {
+        "helper": "वे जोड़े जोड़ें जिन्हें छात्रों को मिलाना है। गणित के लिए $…$ का उपयोग करें।",
+        "left_placeholder": "मद",
+        "right_placeholder": "उसका मिलान",
+        "add_pair": "जोड़ा जोड़ें",
+        "remove_pair": "जोड़ा हटाएँ"
+      },
+      "take": {
+        "choose": "हर मद के लिए मिलान चुनें।"
+      },
+      "review": {
+        "expected": "सही मिलान",
+        "not_matched": "मिलान नहीं हुआ"
+      }
+    },
+    "calculator_policy": {
+      "label": "कैलकुलेटर",
+      "helper": "चुनें कि इस अभ्यास में छात्र कौन सा कैलकुलेटर खोल सकते हैं।",
+      "none": "कोई कैलकुलेटर नहीं",
+      "four_function": "चार-फलन",
+      "scientific": "वैज्ञानिक",
+      "graphing": "ग्राफ़िंग"
+    },
+    "calculator": {
+      "open": "कैलकुलेटर",
+      "close": "कैलकुलेटर बंद करें",
+      "title": "कैलकुलेटर",
+      "display": "कैलकुलेटर डिस्प्ले",
+      "clear": "साफ़ करें",
+      "backspace": "मिटाएँ",
+      "equals": "बराबर",
+      "degrees": "डिग्री",
+      "radians": "रेडियन",
+      "answer": "उत्तर",
+      "error": "त्रुटि",
+      "graphing_loading": "ग्राफ़िंग कैलकुलेटर लोड हो रहा है…",
+      "graphing_failed": "ग्राफ़िंग कैलकुलेटर लोड नहीं हो सका।"
+    },
+    "desmos": {
+      "label": "Desmos API कुंजी",
+      "helper": "वैकल्पिक। ग्राफ़िंग पर सेट अभ्यासों में Desmos ग्राफ़िंग कैलकुलेटर चालू करता है। कुंजी के बिना छात्रों को वैज्ञानिक कैलकुलेटर मिलता है।"
+    }
   }
 }

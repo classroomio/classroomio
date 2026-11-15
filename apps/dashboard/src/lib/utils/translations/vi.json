@@ -2003,7 +2003,9 @@
                 "link": "Liên kết",
                 "word_bank": "Ngân hàng từ",
                 "star": "Xếp hạng sao",
-                "video_recording": "Quay video"
+                "video_recording": "Quay video",
+                "math_expression": "Biểu thức toán",
+                "worked_solution": "Lời giải chi tiết"
               },
               "select_type": "Chọn loại",
               "question_type_auto_gradable": "Tự động",
@@ -6733,5 +6735,177 @@
     },
     "close": "Đóng",
     "dismiss": "Hiểu rồi"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Câu trả lời được chấp nhận",
+      "accepted_answers_helper": "Nhập từng câu trả lời đúng như học viên sẽ nhập. Câu nào cũng được chấp nhận.",
+      "add_answer": "Thêm câu trả lời được chấp nhận khác",
+      "answer_placeholder": "Nhập câu trả lời",
+      "compare_label": "So sánh câu trả lời như thế nào?",
+      "compare": {
+        "equivalent": "Tương đương",
+        "exact_form": "Dạng chính xác",
+        "numeric": "Số",
+        "set": "Tập hợp hoặc danh sách",
+        "equivalent_hint": "Mọi dạng bằng nhau về đại số đều được chấp nhận, nên 2(x+1) khớp với 2x+2.",
+        "exact_form_hint": "Câu trả lời phải bằng nhau và viết theo dạng bạn chọn.",
+        "numeric_hint": "Câu trả lời phải nằm trong sai số bạn đặt.",
+        "set_hint": "Thứ tự không quan trọng, nên (1, 2) khớp với (2, 1)."
+      },
+      "form_label": "Dạng yêu cầu",
+      "form": {
+        "simplified": "Rút gọn",
+        "factored": "Phân tích thành nhân tử",
+        "expanded": "Khai triển",
+        "lowest_terms": "Phân số tối giản",
+        "rationalised_denominator": "Khử căn ở mẫu"
+      },
+      "absolute_tolerance_label": "Sai số tuyệt đối",
+      "relative_tolerance_label": "Sai số tương đối",
+      "significant_figures_label": "Chữ số có nghĩa",
+      "units_label": "Đơn vị mong đợi",
+      "units_placeholder": "Ví dụ m, km/h hoặc kg",
+      "units_allow_conversion": "Chấp nhận đơn vị khác cùng loại, như 200 cm cho 2 m",
+      "variables_label": "Biến",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Các chữ cái được coi là biến. Để trống để tự động phát hiện.",
+      "keyboard_label": "Bàn phím",
+      "keyboard": {
+        "numeric": "Chỉ số",
+        "algebra": "Đại số",
+        "calculus": "Giải tích",
+        "greek": "Chữ cái Hy Lạp",
+        "sets": "Tập hợp",
+        "full": "Tất cả"
+      },
+      "feedback_label": "Phản hồi cho các câu trả lời sai đã biết",
+      "feedback_helper": "Hiển thị gợi ý khi học viên đưa ra một câu trả lời sai cụ thể.",
+      "feedback_answer_placeholder": "Câu trả lời sai",
+      "feedback_text_placeholder": "Gợi ý cho học viên",
+      "add_feedback": "Thêm phản hồi",
+      "remove": "Xóa",
+      "try_label": "Thử một câu trả lời",
+      "try_helper": "Kiểm tra câu trả lời của học viên sẽ được chấm thế nào trước khi xuất bản.",
+      "try_placeholder": "Nhập một câu trả lời mẫu",
+      "try_button": "Kiểm tra",
+      "try_checking": "Đang kiểm tra…",
+      "try_needs_answer": "Hãy thêm một câu trả lời được chấp nhận trước."
+    },
+    "verdict": {
+      "equivalent": "Đúng",
+      "not_simplified": "Giá trị đúng nhưng câu trả lời chưa được rút gọn.",
+      "wrong_form": "Giá trị đúng nhưng không theo dạng yêu cầu.",
+      "wrong_units": "Giá trị đúng nhưng đơn vị sai.",
+      "wrong": "Sai",
+      "needs_review": "Không thể kiểm tra tự động. Giáo viên sẽ xem xét.",
+      "invalid": "Không thể đọc câu trả lời này như toán học.",
+      "matched_label": "Khớp"
+    },
+    "take": {
+      "placeholder": "Nhập câu trả lời của bạn",
+      "sr_label": "Câu trả lời của bạn"
+    },
+    "preview": {
+      "accepted_label": "Câu trả lời được chấp nhận",
+      "compare_label": "So sánh",
+      "empty": "Chưa có câu trả lời được chấp nhận."
+    },
+    "review": {
+      "your_answer": "Câu trả lời của bạn",
+      "expected": "Câu trả lời được chấp nhận",
+      "result": "Kết quả",
+      "not_graded": "Chưa được chấm",
+      "feedback": "Phản hồi"
+    },
+    "numeric": {
+      "correct_value_hint": "Chấp nhận phân số, hỗn số, π và căn."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Điểm cho đáp án cuối cùng",
+        "working_points_label": "Điểm cho phần trình bày lời giải",
+        "working_points_helper": "Chấm thủ công. Phần đáp án được chấm tự động.",
+        "working_inputs_label": "Học viên có thể trình bày lời giải bằng cách nào?"
+      },
+      "input": {
+        "typed": "Các dòng gõ",
+        "drawing": "Vẽ",
+        "photo": "Ảnh"
+      },
+      "take": {
+        "answer_label": "Đáp án cuối cùng",
+        "working_label": "Lời giải của bạn",
+        "line_placeholder": "Viết một bước",
+        "add_line": "Thêm một bước",
+        "remove_line": "Xóa bước",
+        "draw_label": "Vẽ lời giải của bạn",
+        "upload_photo": "Tải lên ảnh lời giải của bạn",
+        "remove_file": "Xóa",
+        "uploading": "Đang tải lên…",
+        "upload_failed": "Tải lên thất bại. Hãy thử lại.",
+        "draw_canvas": "Vùng vẽ",
+        "draw_undo": "Hoàn tác",
+        "draw_clear": "Xóa hết",
+        "draw_save": "Thêm hình vẽ",
+        "draw_saving": "Đang lưu…",
+        "drawing_alt": "Lời giải bạn đã vẽ",
+        "photo_alt": "Ảnh lời giải của bạn"
+      },
+      "review": {
+        "working_label": "Lời giải",
+        "no_working": "Không có lời giải",
+        "answer_points": "Đáp án cuối cùng",
+        "working_points": "Lời giải, do giáo viên chấm"
+      }
+    },
+    "parts": {
+      "score": "Điểm các phần",
+      "add": "Thêm phần",
+      "helper": "Các phần (a), (b), (c) được trả lời và chấm điểm riêng. Câu hỏi bên trên là đề dùng chung."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Thêm các cặp mà học viên phải ghép. Dùng $…$ cho toán học.",
+        "left_placeholder": "Mục",
+        "right_placeholder": "Cặp ghép",
+        "add_pair": "Thêm cặp",
+        "remove_pair": "Xóa cặp"
+      },
+      "take": {
+        "choose": "Chọn cặp ghép cho từng mục."
+      },
+      "review": {
+        "expected": "Cặp ghép đúng",
+        "not_matched": "Chưa ghép"
+      }
+    },
+    "calculator_policy": {
+      "label": "Máy tính",
+      "helper": "Chọn máy tính mà học viên có thể mở khi làm bài tập này.",
+      "none": "Không có máy tính",
+      "four_function": "Bốn phép tính",
+      "scientific": "Khoa học",
+      "graphing": "Đồ thị"
+    },
+    "calculator": {
+      "open": "Máy tính",
+      "close": "Đóng máy tính",
+      "title": "Máy tính",
+      "display": "Màn hình máy tính",
+      "clear": "Xóa",
+      "backspace": "Xóa lùi",
+      "equals": "Bằng",
+      "degrees": "Độ",
+      "radians": "Radian",
+      "answer": "Đáp án",
+      "error": "Lỗi",
+      "graphing_loading": "Đang tải máy tính đồ thị…",
+      "graphing_failed": "Không thể tải máy tính đồ thị."
+    },
+    "desmos": {
+      "label": "Khóa API Desmos",
+      "helper": "Tùy chọn. Bật máy tính đồ thị Desmos trong các bài tập đặt ở chế độ Đồ thị. Không có khóa, học viên dùng máy tính khoa học."
+    }
   }
 }

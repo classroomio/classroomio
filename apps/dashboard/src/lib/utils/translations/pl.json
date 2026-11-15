@@ -2003,7 +2003,9 @@
                 "link": "Linki",
                 "word_bank": "Bank słów",
                 "star": "Ocena gwiazdkowa",
-                "video_recording": "Nagrywanie wideo"
+                "video_recording": "Nagrywanie wideo",
+                "math_expression": "Wyrażenie matematyczne",
+                "worked_solution": "Rozwiązanie z tokiem"
               },
               "select_type": "Wybierz typ",
               "question_type_auto_gradable": "Auto",
@@ -6733,5 +6735,177 @@
     },
     "close": "Zamknij",
     "dismiss": "Rozumiem"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Zaakceptowane odpowiedzi",
+      "accepted_answers_helper": "Wpisz każdą poprawną odpowiedź tak, jak zrobiłby to uczeń. Akceptowana jest każda z nich.",
+      "add_answer": "Dodaj kolejną zaakceptowaną odpowiedź",
+      "answer_placeholder": "Wpisz odpowiedź",
+      "compare_label": "Jak porównywać odpowiedzi?",
+      "compare": {
+        "equivalent": "Równoważna",
+        "exact_form": "Dokładna postać",
+        "numeric": "Liczbowa",
+        "set": "Zbiór lub lista",
+        "equivalent_hint": "Akceptowana jest każda algebraicznie równa postać, więc 2(x+1) pasuje do 2x+2.",
+        "exact_form_hint": "Odpowiedź musi być równa i zapisana w wybranej postaci.",
+        "numeric_hint": "Odpowiedź musi mieścić się w ustawionej tolerancji.",
+        "set_hint": "Kolejność nie ma znaczenia, więc (1, 2) pasuje do (2, 1)."
+      },
+      "form_label": "Wymagana postać",
+      "form": {
+        "simplified": "Uproszczona",
+        "factored": "Rozłożona na czynniki",
+        "expanded": "Rozwinięta",
+        "lowest_terms": "Ułamek nieskracalny",
+        "rationalised_denominator": "Usunięta niewymierność z mianownika"
+      },
+      "absolute_tolerance_label": "Tolerancja bezwzględna",
+      "relative_tolerance_label": "Tolerancja względna",
+      "significant_figures_label": "Cyfry znaczące",
+      "units_label": "Oczekiwana jednostka",
+      "units_placeholder": "Na przykład m, km/h lub kg",
+      "units_allow_conversion": "Akceptuj inne jednostki tego samego rodzaju, np. 200 cm zamiast 2 m",
+      "variables_label": "Zmienne",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Litery traktowane jako zmienne. Zostaw puste, aby wykryć je automatycznie.",
+      "keyboard_label": "Klawiatura",
+      "keyboard": {
+        "numeric": "Tylko liczby",
+        "algebra": "Algebra",
+        "calculus": "Rachunek różniczkowy",
+        "greek": "Litery greckie",
+        "sets": "Zbiory",
+        "full": "Wszystko"
+      },
+      "feedback_label": "Informacja zwrotna dla znanych błędnych odpowiedzi",
+      "feedback_helper": "Pokazuje wskazówkę, gdy uczeń poda konkretną błędną odpowiedź.",
+      "feedback_answer_placeholder": "Błędna odpowiedź",
+      "feedback_text_placeholder": "Wskazówka dla ucznia",
+      "add_feedback": "Dodaj informację zwrotną",
+      "remove": "Usuń",
+      "try_label": "Wypróbuj odpowiedź",
+      "try_helper": "Sprawdź, jak zostałaby oceniona odpowiedź ucznia, zanim opublikujesz.",
+      "try_placeholder": "Wpisz przykładową odpowiedź ucznia",
+      "try_button": "Sprawdź",
+      "try_checking": "Sprawdzanie…",
+      "try_needs_answer": "Najpierw dodaj zaakceptowaną odpowiedź."
+    },
+    "verdict": {
+      "equivalent": "Poprawna",
+      "not_simplified": "Wartość jest dobra, ale odpowiedź nie jest uproszczona.",
+      "wrong_form": "Wartość jest dobra, ale nie ma wymaganej postaci.",
+      "wrong_units": "Wartość jest dobra, ale jednostki są błędne.",
+      "wrong": "Niepoprawna",
+      "needs_review": "Nie udało się sprawdzić automatycznie. Nauczyciel przejrzy odpowiedź.",
+      "invalid": "Tej odpowiedzi nie udało się odczytać jako matematyki.",
+      "matched_label": "Dopasowano"
+    },
+    "take": {
+      "placeholder": "Wpisz swoją odpowiedź",
+      "sr_label": "Twoja odpowiedź"
+    },
+    "preview": {
+      "accepted_label": "Zaakceptowane odpowiedzi",
+      "compare_label": "Porównanie",
+      "empty": "Brak zaakceptowanych odpowiedzi."
+    },
+    "review": {
+      "your_answer": "Twoja odpowiedź",
+      "expected": "Zaakceptowane odpowiedzi",
+      "result": "Wynik",
+      "not_graded": "Jeszcze nie oceniono",
+      "feedback": "Informacja zwrotna"
+    },
+    "numeric": {
+      "correct_value_hint": "Akceptowane są ułamki, liczby mieszane, π i pierwiastki."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Punkty za odpowiedź końcową",
+        "working_points_label": "Punkty za tok rozwiązania",
+        "working_points_helper": "Oceniane ręcznie. Część z odpowiedzią jest oceniana automatycznie.",
+        "working_inputs_label": "Jak uczniowie mogą pokazać tok rozwiązania?"
+      },
+      "input": {
+        "typed": "Wpisane linie",
+        "drawing": "Rysunek",
+        "photo": "Zdjęcie"
+      },
+      "take": {
+        "answer_label": "Odpowiedź końcowa",
+        "working_label": "Twój tok rozwiązania",
+        "line_placeholder": "Napisz krok",
+        "add_line": "Dodaj krok",
+        "remove_line": "Usuń krok",
+        "draw_label": "Narysuj tok rozwiązania",
+        "upload_photo": "Prześlij zdjęcie toku rozwiązania",
+        "remove_file": "Usuń",
+        "uploading": "Przesyłanie…",
+        "upload_failed": "Przesyłanie nie powiodło się. Spróbuj ponownie.",
+        "draw_canvas": "Obszar rysowania",
+        "draw_undo": "Cofnij",
+        "draw_clear": "Wyczyść",
+        "draw_save": "Dodaj rysunek",
+        "draw_saving": "Zapisywanie…",
+        "drawing_alt": "Twój narysowany tok rozwiązania",
+        "photo_alt": "Twoje zdjęcie toku rozwiązania"
+      },
+      "review": {
+        "working_label": "Tok rozwiązania",
+        "no_working": "Nie pokazano toku rozwiązania",
+        "answer_points": "Odpowiedź końcowa",
+        "working_points": "Tok rozwiązania, oceniany przez nauczyciela"
+      }
+    },
+    "parts": {
+      "score": "Wynik za podpunkty",
+      "add": "Dodaj podpunkt",
+      "helper": "Podpunkty (a), (b), (c) mają osobne odpowiedzi i punkty. Pytanie powyżej jest ich wspólnym wstępem."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Dodaj pary, które uczniowie mają dopasować. Użyj $…$ dla matematyki.",
+        "left_placeholder": "Element",
+        "right_placeholder": "Jego dopasowanie",
+        "add_pair": "Dodaj parę",
+        "remove_pair": "Usuń parę"
+      },
+      "take": {
+        "choose": "Wybierz dopasowanie dla każdego elementu."
+      },
+      "review": {
+        "expected": "Poprawne dopasowanie",
+        "not_matched": "Niedopasowano"
+      }
+    },
+    "calculator_policy": {
+      "label": "Kalkulator",
+      "helper": "Wybierz, jakiego kalkulatora uczniowie mogą używać podczas tego ćwiczenia.",
+      "none": "Bez kalkulatora",
+      "four_function": "Czterodziałaniowy",
+      "scientific": "Naukowy",
+      "graphing": "Graficzny"
+    },
+    "calculator": {
+      "open": "Kalkulator",
+      "close": "Zamknij kalkulator",
+      "title": "Kalkulator",
+      "display": "Wyświetlacz kalkulatora",
+      "clear": "Wyczyść",
+      "backspace": "Usuń",
+      "equals": "Równa się",
+      "degrees": "Stopnie",
+      "radians": "Radiany",
+      "answer": "Wynik",
+      "error": "Błąd",
+      "graphing_loading": "Ładowanie kalkulatora graficznego…",
+      "graphing_failed": "Nie udało się załadować kalkulatora graficznego."
+    },
+    "desmos": {
+      "label": "Klucz API Desmos",
+      "helper": "Opcjonalne. Włącza kalkulator graficzny Desmos w ćwiczeniach ustawionych na Graficzny. Bez klucza uczniowie dostają kalkulator naukowy."
+    }
   }
 }

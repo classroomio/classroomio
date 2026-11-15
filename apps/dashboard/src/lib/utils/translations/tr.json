@@ -3327,7 +3327,9 @@
                 "link": "Links",
                 "word_bank": "Kelime bankası",
                 "star": "Yıldız derecelendirmesi",
-                "video_recording": "Video kaydı"
+                "video_recording": "Video kaydı",
+                "math_expression": "Matematik ifadesi",
+                "worked_solution": "Adım adım çözüm"
               }
             },
             "view_mode": {
@@ -6713,5 +6715,177 @@
     },
     "close": "Kapat",
     "dismiss": "Anladım"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Kabul edilen cevaplar",
+      "accepted_answers_helper": "Her doğru cevabı bir öğrencinin yazacağı gibi yazın. Herhangi biri kabul edilir.",
+      "add_answer": "Başka bir kabul edilen cevap ekle",
+      "answer_placeholder": "Cevabı yazın",
+      "compare_label": "Cevaplar nasıl karşılaştırılsın?",
+      "compare": {
+        "equivalent": "Denk",
+        "exact_form": "Tam biçim",
+        "numeric": "Sayısal",
+        "set": "Küme veya liste",
+        "equivalent_hint": "Cebirsel olarak eşit her biçim kabul edilir, yani 2(x+1) ifadesi 2x+2 ile eşleşir.",
+        "exact_form_hint": "Cevap eşit olmalı ve seçtiğiniz biçimde yazılmalıdır.",
+        "numeric_hint": "Cevap belirlediğiniz tolerans içinde olmalıdır.",
+        "set_hint": "Sıra önemli değildir, yani (1, 2) ile (2, 1) eşleşir."
+      },
+      "form_label": "Gerekli biçim",
+      "form": {
+        "simplified": "Sadeleştirilmiş",
+        "factored": "Çarpanlarına ayrılmış",
+        "expanded": "Açılmış",
+        "lowest_terms": "En sade kesir",
+        "rationalised_denominator": "Paydası rasyonel yapılmış"
+      },
+      "absolute_tolerance_label": "Mutlak tolerans",
+      "relative_tolerance_label": "Bağıl tolerans",
+      "significant_figures_label": "Anlamlı basamak",
+      "units_label": "Beklenen birim",
+      "units_placeholder": "Örneğin m, km/sa veya kg",
+      "units_allow_conversion": "Aynı türden diğer birimleri kabul et, örneğin 2 m yerine 200 cm",
+      "variables_label": "Değişkenler",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Değişken sayılacak harfler. Otomatik algılamak için boş bırakın.",
+      "keyboard_label": "Klavye",
+      "keyboard": {
+        "numeric": "Yalnızca sayılar",
+        "algebra": "Cebir",
+        "calculus": "Analiz",
+        "greek": "Yunan harfleri",
+        "sets": "Kümeler",
+        "full": "Hepsi"
+      },
+      "feedback_label": "Bilinen yanlış cevaplar için geri bildirim",
+      "feedback_helper": "Bir öğrenci belirli bir yanlış cevap verdiğinde ipucu gösterir.",
+      "feedback_answer_placeholder": "Yanlış cevap",
+      "feedback_text_placeholder": "Öğrenci için ipucu",
+      "add_feedback": "Geri bildirim ekle",
+      "remove": "Kaldır",
+      "try_label": "Bir cevap dene",
+      "try_helper": "Yayınlamadan önce bir öğrenci cevabının nasıl puanlanacağını kontrol edin.",
+      "try_placeholder": "Örnek bir öğrenci cevabı yazın",
+      "try_button": "Kontrol et",
+      "try_checking": "Kontrol ediliyor…",
+      "try_needs_answer": "Önce kabul edilen bir cevap ekleyin."
+    },
+    "verdict": {
+      "equivalent": "Doğru",
+      "not_simplified": "Değer doğru ama cevap sadeleştirilmemiş.",
+      "wrong_form": "Değer doğru ama gerekli biçimde değil.",
+      "wrong_units": "Değer doğru ama birimler yanlış.",
+      "wrong": "Yanlış",
+      "needs_review": "Otomatik olarak kontrol edilemedi. Bir öğretmen inceleyecek.",
+      "invalid": "Bu cevap matematik olarak okunamadı.",
+      "matched_label": "Eşleşti"
+    },
+    "take": {
+      "placeholder": "Cevabınızı yazın",
+      "sr_label": "Cevabınız"
+    },
+    "preview": {
+      "accepted_label": "Kabul edilen cevaplar",
+      "compare_label": "Karşılaştırma",
+      "empty": "Henüz kabul edilen cevap yok."
+    },
+    "review": {
+      "your_answer": "Cevabınız",
+      "expected": "Kabul edilen cevaplar",
+      "result": "Sonuç",
+      "not_graded": "Henüz puanlanmadı",
+      "feedback": "Geri bildirim"
+    },
+    "numeric": {
+      "correct_value_hint": "Kesirler, bileşik kesirler, π ve kökler kabul edilir."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Son cevap için puan",
+        "working_points_label": "Çözüm adımları için puan",
+        "working_points_helper": "Elle puanlanır. Cevap kısmı otomatik puanlanır.",
+        "working_inputs_label": "Öğrenciler çözüm adımlarını nasıl gösterebilir?"
+      },
+      "input": {
+        "typed": "Yazılan satırlar",
+        "drawing": "Çizim",
+        "photo": "Fotoğraf"
+      },
+      "take": {
+        "answer_label": "Son cevap",
+        "working_label": "Çözüm adımlarınız",
+        "line_placeholder": "Bir adım yazın",
+        "add_line": "Adım ekle",
+        "remove_line": "Adımı kaldır",
+        "draw_label": "Çözüm adımlarınızı çizin",
+        "upload_photo": "Çözüm adımlarınızın fotoğrafını yükleyin",
+        "remove_file": "Kaldır",
+        "uploading": "Yükleniyor…",
+        "upload_failed": "Yükleme başarısız oldu. Tekrar deneyin.",
+        "draw_canvas": "Çizim alanı",
+        "draw_undo": "Geri al",
+        "draw_clear": "Temizle",
+        "draw_save": "Çizim ekle",
+        "draw_saving": "Kaydediliyor…",
+        "drawing_alt": "Çizdiğiniz çözüm adımları",
+        "photo_alt": "Çözüm adımlarınızın fotoğrafı"
+      },
+      "review": {
+        "working_label": "Çözüm adımları",
+        "no_working": "Çözüm adımı gösterilmedi",
+        "answer_points": "Son cevap",
+        "working_points": "Çözüm adımları, öğretmeniniz tarafından puanlanır"
+      }
+    },
+    "parts": {
+      "score": "Bölüm puanı",
+      "add": "Bölüm ekle",
+      "helper": "(a), (b), (c) bölümleri ayrı yanıtlanır ve puanlanır. Yukarıdaki soru ortak soru kökü olarak gösterilir."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Öğrencilerin eşleştireceği çiftleri ekleyin. Matematik için $…$ kullanın.",
+        "left_placeholder": "Öğe",
+        "right_placeholder": "Eşleşmesi",
+        "add_pair": "Çift ekle",
+        "remove_pair": "Çifti kaldır"
+      },
+      "take": {
+        "choose": "Her öğe için eşleşmeyi seçin."
+      },
+      "review": {
+        "expected": "Doğru eşleşme",
+        "not_matched": "Eşleşmedi"
+      }
+    },
+    "calculator_policy": {
+      "label": "Hesap makinesi",
+      "helper": "Öğrencilerin bu alıştırmada hangi hesap makinesini açabileceğini seçin.",
+      "none": "Hesap makinesi yok",
+      "four_function": "Dört işlem",
+      "scientific": "Bilimsel",
+      "graphing": "Grafik"
+    },
+    "calculator": {
+      "open": "Hesap makinesi",
+      "close": "Hesap makinesini kapat",
+      "title": "Hesap makinesi",
+      "display": "Hesap makinesi ekranı",
+      "clear": "Temizle",
+      "backspace": "Sil",
+      "equals": "Eşittir",
+      "degrees": "Derece",
+      "radians": "Radyan",
+      "answer": "Cevap",
+      "error": "Hata",
+      "graphing_loading": "Grafik hesap makinesi yükleniyor…",
+      "graphing_failed": "Grafik hesap makinesi yüklenemedi."
+    },
+    "desmos": {
+      "label": "Desmos API anahtarı",
+      "helper": "İsteğe bağlı. Grafik olarak ayarlanan alıştırmalarda Desmos grafik hesap makinesini etkinleştirir. Anahtar yoksa öğrenciler bilimsel hesap makinesini kullanır."
+    }
   }
 }

@@ -2003,7 +2003,9 @@
                 "link": "Links",
                 "word_bank": "Wortbank",
                 "star": "Sternebewertung",
-                "video_recording": "Videoaufzeichnung"
+                "video_recording": "Videoaufzeichnung",
+                "math_expression": "Mathematischer Ausdruck",
+                "worked_solution": "Ausgearbeitete Lösung"
               },
               "select_type": "Typ auswählen",
               "question_type_auto_gradable": "Auto",
@@ -6733,5 +6735,177 @@
     },
     "close": "Schließen",
     "dismiss": "Verstanden"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Akzeptierte Antworten",
+      "accepted_answers_helper": "Geben Sie jede richtige Antwort so ein, wie Lernende sie eingeben würden. Jede davon wird akzeptiert.",
+      "add_answer": "Weitere akzeptierte Antwort hinzufügen",
+      "answer_placeholder": "Antwort eingeben",
+      "compare_label": "Wie sollen Antworten verglichen werden?",
+      "compare": {
+        "equivalent": "Äquivalent",
+        "exact_form": "Genaue Form",
+        "numeric": "Numerisch",
+        "set": "Menge oder Liste",
+        "equivalent_hint": "Jede algebraisch gleiche Form wird akzeptiert, also entspricht 2(x+1) dem Term 2x+2.",
+        "exact_form_hint": "Die Antwort muss gleich sein und in der gewählten Form vorliegen.",
+        "numeric_hint": "Die Antwort muss innerhalb der festgelegten Toleranz liegen.",
+        "set_hint": "Die Reihenfolge spielt keine Rolle, also entspricht (1, 2) dem Paar (2, 1)."
+      },
+      "form_label": "Erforderliche Form",
+      "form": {
+        "simplified": "Vereinfacht",
+        "factored": "Faktorisiert",
+        "expanded": "Ausmultipliziert",
+        "lowest_terms": "Vollständig gekürzt",
+        "rationalised_denominator": "Rationalisierter Nenner"
+      },
+      "absolute_tolerance_label": "Absolute Toleranz",
+      "relative_tolerance_label": "Relative Toleranz",
+      "significant_figures_label": "Signifikante Stellen",
+      "units_label": "Erwartete Einheit",
+      "units_placeholder": "Zum Beispiel m, km/h oder kg",
+      "units_allow_conversion": "Andere Einheiten derselben Art akzeptieren, etwa 200 cm für 2 m",
+      "variables_label": "Variablen",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Buchstaben, die als Variablen behandelt werden. Leer lassen, um sie zu erkennen.",
+      "keyboard_label": "Tastatur",
+      "keyboard": {
+        "numeric": "Nur Zahlen",
+        "algebra": "Algebra",
+        "calculus": "Analysis",
+        "greek": "Griechische Buchstaben",
+        "sets": "Mengen",
+        "full": "Alles"
+      },
+      "feedback_label": "Rückmeldung zu bekannten falschen Antworten",
+      "feedback_helper": "Zeigt einen Hinweis, wenn Lernende eine bestimmte falsche Antwort geben.",
+      "feedback_answer_placeholder": "Falsche Antwort",
+      "feedback_text_placeholder": "Hinweis für Lernende",
+      "add_feedback": "Rückmeldung hinzufügen",
+      "remove": "Entfernen",
+      "try_label": "Antwort ausprobieren",
+      "try_helper": "Prüfen Sie vor der Veröffentlichung, wie eine Antwort bewertet würde.",
+      "try_placeholder": "Beispielantwort eingeben",
+      "try_button": "Prüfen",
+      "try_checking": "Wird geprüft…",
+      "try_needs_answer": "Fügen Sie zuerst eine akzeptierte Antwort hinzu."
+    },
+    "verdict": {
+      "equivalent": "Richtig",
+      "not_simplified": "Der Wert stimmt, aber die Antwort ist nicht vereinfacht.",
+      "wrong_form": "Der Wert stimmt, aber er hat nicht die erforderliche Form.",
+      "wrong_units": "Der Wert stimmt, aber die Einheiten sind falsch.",
+      "wrong": "Falsch",
+      "needs_review": "Konnte nicht automatisch geprüft werden. Eine Lehrkraft schaut es sich an.",
+      "invalid": "Diese Antwort konnte nicht als Mathematik gelesen werden.",
+      "matched_label": "Übereinstimmung"
+    },
+    "take": {
+      "placeholder": "Antwort eingeben",
+      "sr_label": "Ihre Antwort"
+    },
+    "preview": {
+      "accepted_label": "Akzeptierte Antworten",
+      "compare_label": "Vergleich",
+      "empty": "Noch keine akzeptierten Antworten."
+    },
+    "review": {
+      "your_answer": "Ihre Antwort",
+      "expected": "Akzeptierte Antworten",
+      "result": "Ergebnis",
+      "not_graded": "Noch nicht bewertet",
+      "feedback": "Rückmeldung"
+    },
+    "numeric": {
+      "correct_value_hint": "Brüche, gemischte Zahlen, π und Wurzeln werden akzeptiert."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Punkte für die Endantwort",
+        "working_points_label": "Punkte für den Lösungsweg",
+        "working_points_helper": "Wird von Hand bewertet. Der Antwortteil wird automatisch bewertet.",
+        "working_inputs_label": "Wie können Lernende ihren Lösungsweg zeigen?"
+      },
+      "input": {
+        "typed": "Getippte Zeilen",
+        "drawing": "Zeichnung",
+        "photo": "Foto"
+      },
+      "take": {
+        "answer_label": "Endantwort",
+        "working_label": "Ihr Lösungsweg",
+        "line_placeholder": "Schreiben Sie einen Schritt",
+        "add_line": "Schritt hinzufügen",
+        "remove_line": "Schritt entfernen",
+        "draw_label": "Zeichnen Sie Ihren Lösungsweg",
+        "upload_photo": "Foto Ihres Lösungswegs hochladen",
+        "remove_file": "Entfernen",
+        "uploading": "Wird hochgeladen…",
+        "upload_failed": "Der Upload ist fehlgeschlagen. Versuchen Sie es erneut.",
+        "draw_canvas": "Zeichenfläche",
+        "draw_undo": "Rückgängig",
+        "draw_clear": "Löschen",
+        "draw_save": "Zeichnung hinzufügen",
+        "draw_saving": "Wird gespeichert…",
+        "drawing_alt": "Ihr gezeichneter Lösungsweg",
+        "photo_alt": "Ihr Foto des Lösungswegs"
+      },
+      "review": {
+        "working_label": "Lösungsweg",
+        "no_working": "Kein Lösungsweg gezeigt",
+        "answer_points": "Endantwort",
+        "working_points": "Lösungsweg, von Ihrer Lehrkraft bewertet"
+      }
+    },
+    "parts": {
+      "score": "Punkte der Teilaufgaben",
+      "add": "Teilaufgabe hinzufügen",
+      "helper": "Die Teilaufgaben (a), (b), (c) werden getrennt beantwortet und bewertet. Die Frage darüber dient als gemeinsame Aufgabenstellung."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Fügen Sie die Paare hinzu, die Lernende zuordnen müssen. Verwenden Sie $…$ für Mathematik.",
+        "left_placeholder": "Element",
+        "right_placeholder": "Passende Zuordnung",
+        "add_pair": "Paar hinzufügen",
+        "remove_pair": "Paar entfernen"
+      },
+      "take": {
+        "choose": "Wählen Sie die Zuordnung für jedes Element."
+      },
+      "review": {
+        "expected": "Richtige Zuordnung",
+        "not_matched": "Nicht zugeordnet"
+      }
+    },
+    "calculator_policy": {
+      "label": "Taschenrechner",
+      "helper": "Wählen Sie, welchen Taschenrechner Lernende in dieser Übung öffnen dürfen.",
+      "none": "Kein Taschenrechner",
+      "four_function": "Grundrechenarten",
+      "scientific": "Wissenschaftlich",
+      "graphing": "Grafikfähig"
+    },
+    "calculator": {
+      "open": "Taschenrechner",
+      "close": "Taschenrechner schließen",
+      "title": "Taschenrechner",
+      "display": "Anzeige des Taschenrechners",
+      "clear": "Löschen",
+      "backspace": "Entfernen",
+      "equals": "Ist gleich",
+      "degrees": "Grad",
+      "radians": "Bogenmaß",
+      "answer": "Antwort",
+      "error": "Fehler",
+      "graphing_loading": "Grafikrechner wird geladen…",
+      "graphing_failed": "Der Grafikrechner konnte nicht geladen werden."
+    },
+    "desmos": {
+      "label": "Desmos-API-Schlüssel",
+      "helper": "Optional. Aktiviert den Desmos-Grafikrechner in Übungen mit Grafikrechner. Ohne Schlüssel erhalten Lernende den wissenschaftlichen Taschenrechner."
+    }
   }
 }
