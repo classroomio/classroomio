@@ -435,21 +435,8 @@
     </SectionHeader>
 
     <ul class="mx-auto grid max-w-[900px] grid-cols-1 gap-3 text-[15px] text-gray-700 md:grid-cols-2">
-      <li>
-        <a class="text-blue-700 hover:underline" href="/blog/what-is-a-customer-academy">What is a customer academy?</a>
-      </li>
-      <li>
-        <a class="text-blue-700 hover:underline" href="/blog/best-customer-academy-software"
-          >Best customer academy software in 2026</a
-        >
-      </li>
       <li><a class="text-blue-700 hover:underline" href="/alternatives/disco">Disco alternative</a></li>
       <li><a class="text-blue-700 hover:underline" href="/alternatives/trainn">Trainn alternative</a></li>
-      <li>
-        <a class="text-blue-700 hover:underline" href="/blog/customer-academy-launch-plan"
-          >30-day launch plan template</a
-        >
-      </li>
       <li>
         <a class="text-blue-700 hover:underline" href="/customer-academy-roi-calculator"
           >Customer academy ROI calculator</a

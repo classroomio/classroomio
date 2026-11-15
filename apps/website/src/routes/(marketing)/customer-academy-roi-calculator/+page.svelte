@@ -85,7 +85,7 @@
             <dd class="text-h3 text-gray-950">{money.format(monthlySaving)} a month</dd>
           </div>
           <div>
-            <dt class="text-label font-mono text-gray-500 uppercase">After the academy cost</dt>
+            <dt class="text-label font-mono text-gray-500 uppercase">Net of the academy cost, per year</dt>
             <dd class="text-h3 text-gray-950">{money.format(yearlyNet)} a year</dd>
           </div>
         </dl>
@@ -96,31 +96,10 @@
         </p>
         <div class="flex flex-wrap gap-3">
           <CtaButton href="/signup">Start free</CtaButton>
-          <CtaButton href="/blog/customer-academy-launch-plan" variant="secondary">Get the launch plan</CtaButton>
+          <CtaButton href="/customer-education" variant="secondary">See customer academy software</CtaButton>
         </div>
       </div>
     </div>
-  </Section>
-
-  <Section class="bg-gray-50">
-    <SectionHeader eyebrow="Next steps" eyebrowClass="text-blue-700" titleClass="" class="mb-8">
-      {#snippet title()}New to customer academies?{/snippet}
-    </SectionHeader>
-    <ul class="mx-auto flex max-w-[700px] flex-col gap-3 text-[15px] text-gray-700">
-      <li>
-        <a class="text-blue-700 hover:underline" href="/blog/what-is-a-customer-academy">What is a customer academy?</a>
-      </li>
-      <li>
-        <a class="text-blue-700 hover:underline" href="/customer-education"
-          >Customer academy software from ClassroomIO</a
-        >
-      </li>
-      <li>
-        <a class="text-blue-700 hover:underline" href="/blog/best-customer-academy-software"
-          >Best customer academy software in 2026</a
-        >
-      </li>
-    </ul>
   </Section>
 
   <PageSignupCTA
