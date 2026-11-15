@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getExerciseQuestionContractKey } from '@cio/question-types';
+  import { getExerciseQuestionContractKey, getPartLabel } from '@cio/question-types';
   import type { AnswerData, ExerciseQuestionModel } from '@cio/question-types';
   import type { Question } from '$features/course/types';
   import { Grade, ReasonBox } from '$features/ui/question';
@@ -65,6 +65,29 @@
     )
   );
 
+  const questionIds = $derived(new Set(questions.map((question) => String(question.id))));
+  const topLevelQuestions = $derived(
+    questions.filter(
+      (question) => question.parentQuestionId == null || !questionIds.has(String(question.parentQuestionId))
+    )
+  );
+
+  function getParts(stem: Question) {
+    return questions.filter(
+      (question) => question.parentQuestionId != null && String(question.parentQuestionId) === String(stem.id)
+    );
+  }
+
+  function getPartsGrade(parts: Question[]) {
+    const earned = parts.reduce((total, part) => total + Number(grades[part.id] ?? 0), 0);
+
+    return Math.round(earned * 100) / 100;
+  }
+
+  function getPartsMax(parts: Question[]) {
+    return parts.reduce((total, part) => total + Number(part.points ?? 0), 0);
+  }
+
   function getQuestionsForSection(exerciseSectionId: string) {
     return questions.filter((question) => !question.deletedAt && question.exerciseSectionId === exerciseSectionId);
   }
@@ -117,53 +140,69 @@
     contract={{ mode: 'review', questions: questionModels, answersByKey, labels: questionLabels, disabled: true }}
     itemClass="mb-4"
   />
-{:else if disableGrading && Object.keys(grades || {}).length}
-  {#each questions as currentQuestion, index (currentQuestion.id)}
-    {@const questionModel = questionModels[index]}
-    <div class="mb-4 space-y-3">
-      <div class="flex items-center justify-between gap-2">
-        <NumberBadge number={index + 1} active />
-        <Grade grade={grades[currentQuestion.id]} gradeMax={currentQuestion.points} disableGrading={true} />
-      </div>
-
-      <ExerciseQuestion.QuestionRenderer
-        contract={{
-          mode: 'review',
-          question: questionModel,
-          answer: getAnswerForQuestion(questionModel, index),
-          labels: questionLabels,
-          disabled: true
-        }}
-      />
-    </div>
-  {/each}
 {:else}
-  {#each questions as currentQuestion, index (currentQuestion.id)}
-    {@const questionModel = questionModels[index]}
-    <div class="mb-4 space-y-3">
-      <div class="flex items-center justify-between gap-2">
-        <NumberBadge number={index + 1} active />
-        <Grade bind:grade={grades[currentQuestion.id]} gradeMax={currentQuestion.points} {disableGrading} />
-      </div>
-
-      <ExerciseQuestion.QuestionRenderer
-        contract={{
-          mode: 'review',
-          question: questionModel,
-          answer: getAnswerForQuestion(questionModel, index),
-          labels: questionLabels,
-          disabled: true
-        }}
-      />
-
-      {#if isGradeWithAI}
-        <ReasonBox
-          reason={reasons[currentQuestion.id]}
-          {isLoading}
-          acceptGrade={acceptGradeSuggestion}
-          rejectGrade={() => rejectGradeSuggestion(currentQuestion.id)}
+  {#each topLevelQuestions as currentQuestion, index (currentQuestion.id)}
+    {@const parts = getParts(currentQuestion)}
+    {#if parts.length > 0}
+      <div class="mb-4 space-y-3" data-testid="multi-part-question">
+        <div class="flex items-center justify-between gap-2">
+          <NumberBadge number={index + 1} active />
+          <Grade grade={getPartsGrade(parts)} gradeMax={getPartsMax(parts)} disableGrading={true} />
+        </div>
+        <ExerciseQuestion.QuestionRenderer
+          contract={{
+            mode: 'review',
+            question: toExerciseQuestionModel(currentQuestion),
+            labels: questionLabels,
+            disabled: true
+          }}
+          hideAnswer
         />
-      {/if}
-    </div>
+        <div class="ml-3 space-y-4 border-l-2 pl-4">
+          {#each parts as part, partIndex (part.id)}
+            {@render gradedQuestion(part, getPartLabel(partIndex))}
+          {/each}
+        </div>
+      </div>
+    {:else}
+      {@render gradedQuestion(currentQuestion, index + 1)}
+    {/if}
   {/each}
 {/if}
+
+{#snippet gradedQuestion(currentQuestion: Question, badge: number | string)}
+  {@const questionModel = toExerciseQuestionModel(currentQuestion)}
+  <div class="mb-4 space-y-3">
+    <div class="flex items-center justify-between gap-2">
+      {#if typeof badge === 'number'}
+        <NumberBadge number={badge} active />
+      {:else}
+        <NumberBadge active>{badge}</NumberBadge>
+      {/if}
+      {#if disableGrading}
+        <Grade grade={grades[currentQuestion.id]} gradeMax={currentQuestion.points} disableGrading={true} />
+      {:else}
+        <Grade bind:grade={grades[currentQuestion.id]} gradeMax={currentQuestion.points} {disableGrading} />
+      {/if}
+    </div>
+
+    <ExerciseQuestion.QuestionRenderer
+      contract={{
+        mode: 'review',
+        question: questionModel,
+        answer: getAnswerForQuestion(questionModel),
+        labels: questionLabels,
+        disabled: true
+      }}
+    />
+
+    {#if isGradeWithAI && !disableGrading}
+      <ReasonBox
+        reason={reasons[currentQuestion.id]}
+        {isLoading}
+        acceptGrade={acceptGradeSuggestion}
+        rejectGrade={() => rejectGradeSuggestion(currentQuestion.id)}
+      />
+    {/if}
+  </div>
+{/snippet}

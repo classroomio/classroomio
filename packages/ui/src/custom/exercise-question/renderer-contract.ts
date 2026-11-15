@@ -88,6 +88,17 @@ import { default as OrderingReview } from './renderers/ordering/review.svelte';
 import { default as ThumbsReview } from './renderers/thumbs/review.svelte';
 import { default as TrueFalseReview } from './renderers/true-false/review.svelte';
 import { default as StarReview } from './renderers/star/review.svelte';
+import { default as MathExpressionEdit } from './renderers/math-expression/edit.svelte';
+import { default as MathExpressionTake } from './renderers/math-expression/take.svelte';
+import { default as MathExpressionPreview } from './renderers/math-expression/preview.svelte';
+import { default as MathExpressionSubmission } from './renderers/math-expression/submission.svelte';
+import { default as MathExpressionReview } from './renderers/math-expression/review.svelte';
+import { default as WorkedSolutionEdit } from './renderers/worked-solution/edit.svelte';
+import { default as WorkedSolutionTake } from './renderers/worked-solution/take.svelte';
+import { default as WorkedSolutionPreview } from './renderers/worked-solution/preview.svelte';
+import { default as WorkedSolutionSubmission } from './renderers/worked-solution/submission.svelte';
+import { default as WorkedSolutionReview } from './renderers/worked-solution/review.svelte';
+import { default as MatchingReview } from './renderers/matching/review.svelte';
 
 type SharedRendererComponent = Component<ExerciseQuestionRendererProps>;
 
@@ -158,7 +169,8 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     edit: MatchingEdit,
     take: MatchingTake,
     preview: MatchingPreview,
-    submission: MatchingSubmission
+    submission: MatchingSubmission,
+    review: MatchingReview
   },
   [QUESTION_TYPE_KEY.ORDERING]: {
     edit: OrderingEdit,
@@ -199,6 +211,20 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     preview: VideoRecordingPreview,
     submission: VideoRecordingSubmission,
     review: VideoRecordingSubmission
+  },
+  [QUESTION_TYPE_KEY.MATH_EXPRESSION]: {
+    edit: MathExpressionEdit,
+    take: MathExpressionTake,
+    preview: MathExpressionPreview,
+    submission: MathExpressionSubmission,
+    review: MathExpressionReview
+  },
+  [QUESTION_TYPE_KEY.WORKED_SOLUTION]: {
+    edit: WorkedSolutionEdit,
+    take: WorkedSolutionTake,
+    preview: WorkedSolutionPreview,
+    submission: WorkedSolutionSubmission,
+    review: WorkedSolutionReview
   }
 };
 

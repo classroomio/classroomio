@@ -19,6 +19,7 @@ import MathMatics from '@tiptap/extension-mathematics';
 import AutoJoiner from 'tiptap-extension-auto-joiner';
 import 'katex/dist/katex.min.css';
 import { InlineMathReplacer } from './extensions/InlineMathReplacer';
+import { MathBoxTrigger } from './extensions/MathBoxTrigger';
 import type { MathNodeClickHandler } from './types';
 
 export default (
@@ -100,6 +101,7 @@ export default (
           }),
           SearchAndReplace,
           InlineMathReplacer,
+          MathBoxTrigger,
           MathMatics.configure({
             blockOptions: {
               onClick: (node, pos) => onMathClick?.({ latex: String(node.attrs.latex ?? ''), pos, type: 'block' })

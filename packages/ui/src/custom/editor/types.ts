@@ -13,6 +13,16 @@ export interface MathNodeClick {
   type: 'inline' | 'block';
 }
 
+/** A request to open the math box for a new formula at `from`–`to`. */
+export interface MathBoxRequest {
+  type: 'inline' | 'block';
+  latex: string;
+  from: number;
+  to: number;
+  /** `dollar` when opened by typing `$`; cancelling then inserts the literal dollar sign. */
+  trigger?: 'dollar';
+}
+
 export type MathNodeClickHandler = (click: MathNodeClick) => void;
 
 export interface EdraEditorProps {

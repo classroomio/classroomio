@@ -31,7 +31,7 @@
   import SlashCommandList from './components/SlashCommandList.svelte';
   import ImageUploadModal from './components/image-upload-modal.svelte';
   import { DEFAULT_MATH_EDIT_LABELS, MathEditPopover } from '../../math-text';
-  import type { MathNodeClick } from '../types';
+  import type { MathBoxRequest, MathNodeClick } from '../types';
 
   import '../editor.css';
   import '../extensions/callout/callout.css';
@@ -63,11 +63,47 @@
   let isMathPopoverOpen = $state(false);
   let mathDraft = $state('');
   let mathAnchor = $state<HTMLElement | null>(null);
+  let mathCaretAnchor = $state<HTMLElement | null>(null);
   let mathTarget: Omit<MathNodeClick, 'latex'> | null = null;
+  let newMathTarget: MathBoxRequest | null = null;
+
+  function openNewMathBox(request: MathBoxRequest) {
+    if (!editor?.isEditable || !mathCaretAnchor) return;
+
+    const caret = editor.view.coordsAtPos(request.from);
+    mathCaretAnchor.style.left = `${caret.left}px`;
+    mathCaretAnchor.style.top = `${caret.bottom}px`;
+
+    mathTarget = null;
+    newMathTarget = request;
+    mathDraft = request.latex;
+    mathAnchor = mathCaretAnchor;
+    isMathPopoverOpen = true;
+  }
+
+  function saveNewMath(request: MathBoxRequest, latex: string) {
+    if (!editor) return;
+
+    const trimmedLatex = latex.trim();
+    const chain = editor.chain().focus().deleteRange({ from: request.from, to: request.to });
+
+    if (!trimmedLatex) {
+      chain.run();
+      return;
+    }
+
+    if (request.type === 'block') {
+      chain.insertBlockMath({ latex: trimmedLatex }).run();
+      return;
+    }
+
+    chain.insertInlineMath({ latex: trimmedLatex }).run();
+  }
 
   function openMathPopover(click: MathNodeClick) {
     if (!editor?.isEditable) return;
 
+    newMathTarget = null;
     mathTarget = { pos: click.pos, type: click.type };
     mathDraft = click.latex;
     mathAnchor = editor.view.nodeDOM(click.pos) as HTMLElement | null;
@@ -75,6 +111,12 @@
   }
 
   function saveMath(latex: string) {
+    if (newMathTarget) {
+      saveNewMath(newMathTarget, latex);
+      newMathTarget = null;
+      return;
+    }
+
     const target = mathTarget;
     if (!editor || !target) return;
 
@@ -95,7 +137,14 @@
   }
 
   function cancelMath() {
-    editor?.commands.focus();
+    const request = newMathTarget;
+    newMathTarget = null;
+    if (!request?.trigger) {
+      editor?.commands.focus();
+      return;
+    }
+
+    editor?.chain().focus().insertContentAt({ from: request.from, to: request.to }, '$').run();
   }
 
   onMount(() => {
@@ -140,6 +189,7 @@
       emailSafe,
       openMathPopover
     );
+    if (editor.storage.mathBoxTrigger) editor.storage.mathBoxTrigger.openBox = openNewMathBox;
   });
 
   onDestroy(() => {
@@ -152,6 +202,7 @@
   <TableCol {editor} />
   <TableRow {editor} />
 {/if}
+<span bind:this={mathCaretAnchor} aria-hidden="true" class="ui:pointer-events-none ui:fixed ui:size-0"></span>
 <div
   bind:this={element}
   role="button"

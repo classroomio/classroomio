@@ -28,9 +28,16 @@ import Undo from '@lucide/svelte/icons/undo-2';
 import Video from '@lucide/svelte/icons/video';
 import Radical from '@lucide/svelte/icons/radical';
 import SquareRadical from '@lucide/svelte/icons/square-radical';
-import { isTextSelection } from '@tiptap/core';
+import { isTextSelection, type Editor } from '@tiptap/core';
 import Pilcrow from '@lucide/svelte/icons/pilcrow';
 import { isMac } from '../utils';
+
+function openMathBox(editor: Editor, type: 'inline' | 'block') {
+  const { from, to } = editor.view.state.selection;
+  const latex = isTextSelection(editor.view.state.selection) ? editor.view.state.doc.textBetween(from, to) : '';
+
+  editor.storage.mathBoxTrigger?.openBox?.({ type, latex, from, to });
+}
 
 const commands: Record<string, EdraToolBarCommands[]> = {
   'undo-redo': [
@@ -475,26 +482,14 @@ const commands: Record<string, EdraToolBarCommands[]> = {
       icon: Radical,
       name: 'mathematics',
       tooltip: 'Inline Expression',
-      onClick: (editor) => {
-        let latex = 'a^2 + b^2 = c^2';
-        const chain = editor.chain().focus();
-        if (isTextSelection(editor.view.state.selection)) {
-          const { from, to } = editor.view.state.selection;
-          latex = editor.view.state.doc.textBetween(from, to);
-          chain.deleteRange({ from, to });
-        }
-        chain.insertInlineMath({ latex }).run();
-      },
+      onClick: (editor) => openMathBox(editor, 'inline'),
       isActive: (editor) => editor.isActive('inlineMath')
     },
     {
       icon: SquareRadical,
       name: 'mathematics',
       tooltip: 'Block Expression',
-      onClick: (editor) => {
-        const latex = 'a^2 + b^2 = c^2';
-        editor.chain().focus().insertBlockMath({ latex }).run();
-      },
+      onClick: (editor) => openMathBox(editor, 'block'),
       isActive: (editor) => editor.isActive('blockMath')
     }
   ]
