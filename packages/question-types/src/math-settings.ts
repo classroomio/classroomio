@@ -10,6 +10,9 @@ export const MATH_REQUIRED_FORMS = [
 ] as const;
 export type MathRequiredForm = (typeof MATH_REQUIRED_FORMS)[number];
 
+export const CALCULATOR_POLICIES = ['none', 'four_function', 'scientific', 'graphing'] as const;
+export type CalculatorPolicy = (typeof CALCULATOR_POLICIES)[number];
+
 export type NumericTolerance = {
   absoluteTolerance?: number;
   relativeTolerance?: number;

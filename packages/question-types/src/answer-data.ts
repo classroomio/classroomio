@@ -1,3 +1,5 @@
+import type { MathGradeReason, MathRequiredForm } from './math-settings';
+
 export type RadioAnswerData = { type: 'RADIO'; optionId: number };
 export type CheckboxAnswerData = { type: 'CHECKBOX'; optionIds: number[] };
 export type TrueFalseAnswerData = { type: 'TRUE_FALSE'; value: boolean };
@@ -36,13 +38,27 @@ export type VideoRecordingAnswerData = {
   playbackUrl?: string;
 };
 
+/** How the server graded a math answer: the reason the review view shows and the results grid groups by. */
+export type MathAnswerGrading = {
+  reason: MathGradeReason;
+  matchedAnswer?: string;
+  requiredForm?: MathRequiredForm;
+  feedback?: string;
+};
+
 /** `mathjson` is the canonical MathJSON string from `normaliseMathAnswer`, set by the server for grouping answers. */
-export type MathExpressionAnswerData = { type: 'MATH_EXPRESSION'; latex: string; mathjson?: string };
+export type MathExpressionAnswerData = {
+  type: 'MATH_EXPRESSION';
+  latex: string;
+  mathjson?: string;
+  grading?: MathAnswerGrading;
+};
 export type WorkedSolutionFile = { kind: 'drawing' | 'photo'; fileKey: string; fileName: string; fileUrl?: string };
 export type WorkedSolutionAnswerData = {
   type: 'WORKED_SOLUTION';
   latex: string;
   mathjson?: string;
+  grading?: MathAnswerGrading;
   working: { lines: string[]; files: WorkedSolutionFile[] };
 };
 

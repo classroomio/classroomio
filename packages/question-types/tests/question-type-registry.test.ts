@@ -136,8 +136,7 @@ const EXPECTED_REGISTRY = [
     id: 15,
     autoGradable: true,
     supportsPartialCredit: true,
-    manualGradingRequired: false,
-    disabled: true
+    manualGradingRequired: false
   },
   {
     key: QUESTION_TYPE_KEY.HOTSPOT,
@@ -154,8 +153,7 @@ const EXPECTED_REGISTRY = [
     id: 17,
     autoGradable: true,
     supportsPartialCredit: false,
-    manualGradingRequired: false,
-    disabled: true
+    manualGradingRequired: false
   },
   {
     key: QUESTION_TYPE_KEY.WORKED_SOLUTION,
@@ -163,14 +161,13 @@ const EXPECTED_REGISTRY = [
     id: 18,
     autoGradable: false,
     supportsPartialCredit: true,
-    manualGradingRequired: true,
-    disabled: true
+    manualGradingRequired: true
   }
 ] as const;
 
 // Canonical `question_type` rows in the database (the source of truth ids are
-// resolved against). Ids 1-14 are the live rows in insertion order; MATCHING and
-// HOTSPOT are intentionally absent (built-but-disabled). This list guards against
+// resolved against). Ids 1-15, 17 and 18 are the live rows; HOTSPOT (16) is
+// intentionally absent (built-but-disabled). This list guards against
 // the registry id ever drifting from the DB again.
 const CANONICAL_DB_QUESTION_TYPES: ReadonlyArray<{ id: number; typename: string }> = [
   { id: 1, typename: 'RADIO' },
@@ -186,7 +183,10 @@ const CANONICAL_DB_QUESTION_TYPES: ReadonlyArray<{ id: number; typename: string 
   { id: 11, typename: 'WORD_BANK' },
   { id: 12, typename: 'STAR' },
   { id: 13, typename: 'VIDEO_RECORDING' },
-  { id: 14, typename: 'THUMBS' }
+  { id: 14, typename: 'THUMBS' },
+  { id: 15, typename: 'MATCHING' },
+  { id: 17, typename: 'MATH_EXPRESSION' },
+  { id: 18, typename: 'WORKED_SOLUTION' }
 ];
 
 describe('question type registry', () => {
@@ -233,15 +233,12 @@ describe('question type registry', () => {
     }
   });
 
-  it('keeps disabled types appended after every DB-backed type', () => {
+  it('keeps disabled types off every DB-backed id', () => {
     const dbIds = new Set(CANONICAL_DB_QUESTION_TYPES.map((row) => row.id));
-    const maxDbId = Math.max(...CANONICAL_DB_QUESTION_TYPES.map((row) => row.id));
 
     for (const entry of QUESTION_TYPE_REGISTRY) {
       if (entry.disabled) {
-        // Disabled types have no DB row and must sit past the live id range.
         expect(dbIds.has(entry.id), `disabled ${entry.typename} must not reuse a DB id`).toBe(false);
-        expect(entry.id).toBeGreaterThan(maxDbId);
       } else {
         expect(dbIds.has(entry.id), `enabled ${entry.typename} must map to a DB row`).toBe(true);
       }

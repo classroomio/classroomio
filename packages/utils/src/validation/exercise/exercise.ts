@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import {
+  CALCULATOR_POLICIES,
   VIDEO_RECORDING_PLATFORM_MAX_DURATION_SECONDS,
   getStarRatingMaxFromSettings,
   isValidStarRatingValue
@@ -161,12 +162,27 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
 };
 
 // Base schema for exercise update question (without refinement)
+const ZQuestionParentFields = {
+  parentQuestionId: z
+    .number()
+    .int()
+    .positive()
+    .nullable()
+    .optional()
+    .describe('The stem question this question is a part of; null detaches it'),
+  ref: z.string().min(1).optional().describe('A key for a new stem question, so new parts can name it in parentRef'),
+  parentRef: z.string().min(1).optional().describe('The ref of a new stem question in the same request')
+};
+
+export const ZCalculatorPolicy = z.enum(CALCULATOR_POLICIES);
+
 const ZExerciseUpdateQuestionBase = z.object({
   id: z.number().int().optional(),
   exerciseSectionId: z.string().uuid().nullable().optional(),
   question: z.string().min(1),
   questionTypeId: ZExerciseQuestionTypeId.optional(),
-  points: z.number().int().min(1),
+  points: z.number().int().min(0),
+  ...ZQuestionParentFields,
   order: z.number().int().min(0).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
   deletedAt: z.string().optional(), // Marks question as deleted
@@ -211,7 +227,8 @@ const ZExerciseUpdateQuestion = ZExerciseUpdateQuestionBase.superRefine(validate
 const ZExerciseCreateQuestionBase = z.object({
   question: z.string().min(1),
   questionTypeId: ZExerciseQuestionTypeId.optional(),
-  points: z.number().int().min(1),
+  points: z.number().int().min(0),
+  ...ZQuestionParentFields,
   order: z.number().int().min(0).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
   options: z
@@ -236,6 +253,7 @@ export const ZExerciseCreate = z.object({
   courseId: z.string().min(1),
   dueBy: z.string().optional(),
   slug: ZSlug.optional(),
+  calculatorPolicy: ZCalculatorPolicy.optional(),
   questions: z.array(ZExerciseCreateQuestion).optional()
 });
 export type TExerciseCreate = z.infer<typeof ZExerciseCreate>;
@@ -253,6 +271,7 @@ export const ZExerciseUpdate = z.object({
   questions: z.array(ZExerciseUpdateQuestion).optional(),
   sections: z.array(ZExerciseSection).optional(),
   sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
+  calculatorPolicy: ZCalculatorPolicy.optional(),
   completionPolicy: z.enum(['submitted', 'passed', 'none']).optional(),
   passThreshold: z.number().int().min(0).max(100).optional()
 });

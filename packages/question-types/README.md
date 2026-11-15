@@ -107,13 +107,12 @@ Registry source: `src/question-type-registry.ts`
 | `STAR`            |  12 | Star rating       |          yes |                    no |                    no |       no |
 | `VIDEO_RECORDING` |  13 | Video recording   |           no |                    no |                   yes |       no |
 | `THUMBS`          |  14 | Thumbs up/down    |           no |                    no |                    no |       no |
-| `MATCHING`        |  15 | Matching          |          yes |                   yes |                    no |      yes |
+| `MATCHING`        |  15 | Matching          |          yes |                   yes |                    no |       no |
 | `HOTSPOT`         |  16 | Hotspot           |          yes |                   yes |                    no |      yes |
-| `MATH_EXPRESSION` |  17 | Math expression   |          yes |                    no |                    no |      yes |
-| `WORKED_SOLUTION` |  18 | Worked solution   |           no |                   yes |                   yes |      yes |
+| `MATH_EXPRESSION` |  17 | Math expression   |          yes |                    no |                    no |       no |
+| `WORKED_SOLUTION` |  18 | Worked solution   |           no |                   yes |                   yes |       no |
 
-Disabled types are built but have no `question_type` row yet, so they stay out of the type picker and the AI tool enum.
-`MATH_EXPRESSION` and `WORKED_SOLUTION` are also left out of the exercise validation id list.
+Disabled types are built but have no `question_type` row, so they stay out of the type picker, the AI tool enum and validation. Only `HOTSPOT` is disabled; migration `0052_math_question_types` added the rows for `MATCHING`, `MATH_EXPRESSION` and `WORKED_SOLUTION`.
 
 ## Math grading
 
@@ -123,6 +122,11 @@ import. Pass its `mathGrader` to `scoreAnswerForQuestion` / `scoreSubmissionAnsw
 `MATH_EXPRESSION` and `WORKED_SOLUTION` answers score 0, and `NUMERIC` compares the numeric `value` using
 `tolerance`, `relativeTolerance` and `significantFigures`; LaTeX answers and a LaTeX `correctValue` need the grader.
 
+- `scoreAutoGradedPart(questions, answers, grader)` scores a submission that also holds manually graded work: auto-graded
+  questions in full and the answer part of worked solutions, plus the points still waiting for a teacher.
+- `annotateMathAnswer(question, answer)` attaches the canonical MathJSON and the grading `reason` to a stored math answer.
+- Multi-part questions: a question whose `parentQuestionId` names another question is a part scored as a normal
+  question; the stem is skipped. `aggregateMultiPartScores` rolls part scores up to their stem for display.
 - `scoreMathExpression(settings, latex)` returns a reason (`equivalent`, `not_simplified`, `wrong_form`,
   `wrong_units`, `wrong`, `needs_review`, `invalid`) and the teacher's `wrongAnswerFeedback` when the answer
   matches a known wrong answer. It checks symbolic identity first and samples random real points second, and returns

@@ -8,6 +8,7 @@ import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rat
 import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
 import { getFillBlankAnswerKey } from './answer-codecs';
 import { roundPoints } from './points';
+import { getMultiPartStemIds } from './multi-part';
 import {
   getWorkedSolutionPointSplit,
   isNumericMatch,
@@ -21,6 +22,7 @@ export type DbQuestionForScoring = {
   id: number;
   title?: string | null;
   questionTypeId: number;
+  parentQuestionId?: number | null;
   points: number | null;
   settings?: Record<string, unknown> | null;
   options: Array<{
@@ -417,6 +419,11 @@ export type ScoreSubmissionResult = {
   total: number;
 };
 
+export type AutoScoreSubmissionResult = ScoreSubmissionResult & {
+  /** Points still awaiting a teacher: the working part of worked solutions and every manually graded question. */
+  pendingManualPoints: number;
+};
+
 /**
  * Computes per-question scores and total for auto-graded exercises.
  * Missing answers score 0. Pass the math `grader` so math answers are graded (see `scoreAnswerForQuestion`).
@@ -427,9 +434,12 @@ export function scoreSubmissionAnswers(
   grader?: MathGrader
 ): ScoreSubmissionResult {
   const scores: Array<{ questionId: number; points: number }> = [];
+  const stemIds = getMultiPartStemIds(questions);
   let total = 0;
 
   for (const q of questions) {
+    if (stemIds.has(q.id)) continue;
+
     const model = dbQuestionToExerciseQuestionModel(q);
     const meta = getQuestionTypeById(q.questionTypeId);
     if (!meta?.autoGradable) {
@@ -444,4 +454,49 @@ export function scoreSubmissionAnswers(
   }
 
   return { scores, total: roundPoints(total) };
+}
+
+/**
+ * Scores what can be graded without a teacher in a submission that may also hold manually graded questions: auto-graded
+ * questions in full and the answer part of worked solutions. Stems of multi-part questions are skipped; their parts
+ * are scored as normal questions.
+ */
+export function scoreAutoGradedPart(
+  questions: DbQuestionForScoring[],
+  answersByQuestionId: ReadonlyMap<number, AnswerData | null | undefined>,
+  grader: MathGrader
+): AutoScoreSubmissionResult {
+  const scorable = questions.filter((q) => getQuestionTypeById(q.questionTypeId)?.autoGradable === true);
+  const { scores, total } = scoreSubmissionAnswers(scorable, answersByQuestionId, grader);
+  const scoreByQuestionId = new Map(scores.map((score) => [score.questionId, score.points]));
+  const stemIds = getMultiPartStemIds(questions);
+  let autoTotal = total;
+  let pendingManualPoints = 0;
+  const allScores: Array<{ questionId: number; points: number }> = [];
+
+  for (const q of questions) {
+    if (stemIds.has(q.id)) continue;
+
+    const meta = getQuestionTypeById(q.questionTypeId);
+    const maxPoints = Math.max(0, Number(q.points ?? 0));
+    if (meta?.autoGradable) {
+      allScores.push({ questionId: q.id, points: scoreByQuestionId.get(q.id) ?? 0 });
+      continue;
+    }
+
+    const model = dbQuestionToExerciseQuestionModel(q);
+    const grade = gradeMathQuestion(model, answersByQuestionId.get(q.id), grader);
+    if (!grade) {
+      allScores.push({ questionId: q.id, points: 0 });
+      if (meta?.manualGradingRequired) pendingManualPoints += maxPoints;
+      continue;
+    }
+
+    const points = roundPoints(clampPoints(grade.points, maxPoints));
+    allScores.push({ questionId: q.id, points });
+    autoTotal += points;
+    pendingManualPoints += grade.pendingManualPoints;
+  }
+
+  return { scores: allScores, total: roundPoints(autoTotal), pendingManualPoints: roundPoints(pendingManualPoints) };
 }

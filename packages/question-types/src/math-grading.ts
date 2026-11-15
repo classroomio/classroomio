@@ -1,10 +1,13 @@
 import { isNumber, type Expression } from '@cortex-js/compute-engine';
 
-import type { NumericAnswerData } from './answer-data';
+import type { AnswerData, NumericAnswerData } from './answer-data';
+import type { ExerciseQuestionModel } from './exercise-types';
+import { gradeMathQuestion } from './question-scoring';
 import {
   compareMath,
   computeEngine,
   evaluateComplex,
+  normaliseMathAnswer,
   operandsOf,
   parseMath,
   parseMathNumber,
@@ -14,6 +17,7 @@ import {
 import { isInRequiredForm } from './math-forms';
 import {
   isNumericMatch,
+  readMathExpressionSettings,
   type MathCompare,
   type MathExpressionSettings,
   type MathGradeReason,
@@ -208,3 +212,18 @@ export const mathGrader: MathGrader = {
   gradeExpression: scoreMathExpression,
   gradeNumeric: scoreNumericAnswer
 };
+
+/**
+ * Returns a `MATH_EXPRESSION` or `WORKED_SOLUTION` answer with its canonical MathJSON and grading outcome attached, so
+ * review views show the reason and results can group equal answers. Any other answer is returned unchanged.
+ */
+export function annotateMathAnswer(question: ExerciseQuestionModel, answer: AnswerData): AnswerData {
+  const grade = gradeMathQuestion(question, answer, mathGrader);
+  if (!grade || (answer.type !== 'MATH_EXPRESSION' && answer.type !== 'WORKED_SOLUTION')) return answer;
+
+  const { reason, matchedAnswer, requiredForm, feedback } = grade.result;
+  const mathjson = normaliseMathAnswer(answer.latex, readMathExpressionSettings(question.settings).variables);
+  const grading = { reason, matchedAnswer, requiredForm, feedback };
+
+  return { ...answer, mathjson: mathjson ?? undefined, grading };
+}
