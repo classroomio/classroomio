@@ -55,6 +55,15 @@ export const MATH_QUESTION_LABEL_DEFAULTS = {
   'math.verdict.needs_review': 'Could not be checked automatically. A teacher will review it.',
   'math.verdict.invalid': 'This answer could not be read as math.',
   'math.verdict.matched_label': 'Matched',
+  'math.misconception.sign_error': 'Check the signs: your answer has the right size but the opposite sign.',
+  'math.misconception.forgot_distribute':
+    'It looks like a factor or minus sign was not applied to every term inside the brackets.',
+  'math.misconception.inverted_fraction':
+    'Your answer looks like the reciprocal of the right one. Check which number goes on top.',
+  'math.misconception.forgot_flip_inequality':
+    'Remember to reverse the inequality sign when you multiply or divide both sides by a negative number.',
+  'math.misconception.dropped_factor':
+    'A factor seems to have been dropped along the way. Compare each term with the original.',
   'math.take.placeholder': 'Type your answer',
   'math.take.sr_label': 'Your answer',
   'math.preview.accepted_label': 'Accepted answers',

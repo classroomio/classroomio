@@ -7361,6 +7361,13 @@
       "invalid": "Questa risposta non è stata letta come matematica.",
       "matched_label": "Corrisponde"
     },
+    "misconception": {
+      "sign_error": "Controlla i segni: la tua risposta ha il valore giusto ma il segno opposto.",
+      "forgot_distribute": "Sembra che un fattore o un segno meno non sia stato applicato a ogni termine tra parentesi.",
+      "inverted_fraction": "La tua risposta sembra il reciproco di quella corretta. Controlla quale numero va al numeratore.",
+      "forgot_flip_inequality": "Ricorda di invertire il verso della disuguaglianza quando moltiplichi o dividi entrambi i membri per un numero negativo.",
+      "dropped_factor": "Sembra che un fattore sia andato perso lungo il percorso. Confronta ogni termine con l'originale."
+    },
     "take": {
       "placeholder": "Digita la tua risposta",
       "sr_label": "La tua risposta"

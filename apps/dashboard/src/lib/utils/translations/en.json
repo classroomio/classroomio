@@ -7361,6 +7361,13 @@
       "invalid": "This answer could not be read as math.",
       "matched_label": "Matched"
     },
+    "misconception": {
+      "sign_error": "Check the signs: your answer has the right size but the opposite sign.",
+      "forgot_distribute": "It looks like a factor or minus sign was not applied to every term inside the brackets.",
+      "inverted_fraction": "Your answer looks like the reciprocal of the right one. Check which number goes on top.",
+      "forgot_flip_inequality": "Remember to reverse the inequality sign when you multiply or divide both sides by a negative number.",
+      "dropped_factor": "A factor seems to have been dropped along the way. Compare each term with the original."
+    },
     "take": {
       "placeholder": "Type your answer",
       "sr_label": "Your answer"

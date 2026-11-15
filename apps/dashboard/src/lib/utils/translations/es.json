@@ -7391,6 +7391,13 @@
       "invalid": "Esta respuesta no se pudo leer como matemáticas.",
       "matched_label": "Coincide"
     },
+    "misconception": {
+      "sign_error": "Revisa los signos: tu respuesta tiene el valor correcto pero el signo opuesto.",
+      "forgot_distribute": "Parece que un factor o un signo menos no se aplicó a todos los términos del paréntesis.",
+      "inverted_fraction": "Tu respuesta parece el inverso de la correcta. Revisa qué número va arriba.",
+      "forgot_flip_inequality": "Recuerda invertir el signo de la desigualdad al multiplicar o dividir ambos lados por un número negativo.",
+      "dropped_factor": "Parece que se perdió un factor por el camino. Compara cada término con el original."
+    },
     "take": {
       "placeholder": "Escribe tu respuesta",
       "sr_label": "Tu respuesta"

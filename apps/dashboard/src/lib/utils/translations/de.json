@@ -7391,6 +7391,13 @@
       "invalid": "Diese Antwort konnte nicht als Mathematik gelesen werden.",
       "matched_label": "Übereinstimmung"
     },
+    "misconception": {
+      "sign_error": "Prüfe die Vorzeichen: Deine Antwort hat den richtigen Betrag, aber das falsche Vorzeichen.",
+      "forgot_distribute": "Es sieht so aus, als wäre ein Faktor oder ein Minuszeichen nicht auf jeden Term in der Klammer angewendet worden.",
+      "inverted_fraction": "Deine Antwort sieht aus wie der Kehrwert der richtigen. Prüfe, welche Zahl oben stehen muss.",
+      "forgot_flip_inequality": "Denke daran, das Ungleichheitszeichen umzukehren, wenn du beide Seiten mit einer negativen Zahl multiplizierst oder dividierst.",
+      "dropped_factor": "Anscheinend ging unterwegs ein Faktor verloren. Vergleiche jeden Term mit dem Original."
+    },
     "take": {
       "placeholder": "Antwort eingeben",
       "sr_label": "Ihre Antwort"

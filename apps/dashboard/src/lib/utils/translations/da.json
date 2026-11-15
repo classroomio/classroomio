@@ -7391,6 +7391,13 @@
       "invalid": "Dette svar kunne ikke læses som matematik.",
       "matched_label": "Matchede"
     },
+    "misconception": {
+      "sign_error": "Tjek fortegnene: dit svar har den rigtige størrelse, men det modsatte fortegn.",
+      "forgot_distribute": "Det ser ud til, at en faktor eller et minus ikke er ganget ind på alle led i parentesen.",
+      "inverted_fraction": "Dit svar ligner den omvendte brøk af det rigtige svar. Tjek, hvilket tal der skal stå øverst.",
+      "forgot_flip_inequality": "Husk at vende uligheden, når du ganger eller dividerer begge sider med et negativt tal.",
+      "dropped_factor": "Det ser ud til, at en faktor er faldet ud undervejs. Sammenlign hvert led med det oprindelige."
+    },
     "take": {
       "placeholder": "Skriv dit svar",
       "sr_label": "Dit svar"

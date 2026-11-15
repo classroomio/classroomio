@@ -189,7 +189,7 @@ export function gradeMathQuestion(
     ? getWorkedSolutionPointSplit(question.settings, maxPoints)
     : { answerPoints: maxPoints, workingPoints: 0 };
   const result: MathGradeResult = answer.latex.trim()
-    ? grader.gradeExpression(readMathExpressionSettings(question.settings), answer.latex)
+    ? grader.gradeExpression(readMathExpressionSettings(question.settings), answer.latex, { title: question.title })
     : { reason: 'invalid' };
   const points = result.reason === 'equivalent' ? answerPoints : 0;
 

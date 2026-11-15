@@ -15,6 +15,7 @@ import {
   type ParsedMath
 } from './math-engine';
 import { isInRequiredForm } from './math-forms';
+import { detectMisconception } from './math-misconceptions';
 import {
   isNumericMatch,
   readMathExpressionSettings,
@@ -22,6 +23,7 @@ import {
   type MathExpressionSettings,
   type MathGradeReason,
   type MathGradeResult,
+  type MathGradeContext,
   type MathGrader,
   type MathRequiredForm,
   type MathUnitsSetting,
@@ -30,6 +32,8 @@ import {
 } from './math-settings';
 
 export { normaliseMathAnswer, parseMathNumber } from './math-engine';
+export { detectMisconception } from './math-misconceptions';
+export { checkMathSteps, compareMathExpressions } from './math-steps';
 
 type Comparison = Exclude<MathGradeReason, 'not_simplified' | 'wrong_form' | 'invalid'>;
 
@@ -166,15 +170,21 @@ function matchWrongAnswerFeedback(student: ParsedMath, settings: MathExpressionS
  * Grades a LaTeX answer to a `MATH_EXPRESSION` question against every accepted answer and returns the best outcome,
  * with the teacher's wrong-answer feedback when the answer matches a known wrong answer.
  */
-export function scoreMathExpression(settings: MathExpressionSettings, latex: string): MathGradeResult {
+export function scoreMathExpression(
+  settings: MathExpressionSettings,
+  latex: string,
+  context: MathGradeContext = {}
+): MathGradeResult {
   const student = parseMath(latex, settings.variables);
   if (!student) return { reason: 'invalid' };
 
   let best: MathGradeResult = { reason: 'wrong' };
+  const parsedAnswers: ParsedMath[] = [];
   for (const acceptedLatex of settings.acceptedAnswers) {
     const accepted = parseMath(acceptedLatex, settings.variables);
     if (!accepted) continue;
 
+    parsedAnswers.push(accepted);
     const result = { ...gradeAgainst(student, accepted, settings), matchedAnswer: acceptedLatex };
     if (REASON_RANK[result.reason] < REASON_RANK[best.reason]) best = result;
     if (best.reason === 'equivalent') return best;
@@ -183,8 +193,12 @@ export function scoreMathExpression(settings: MathExpressionSettings, latex: str
   const feedback = matchWrongAnswerFeedback(student, settings);
   const { matchedAnswer, ...withoutMatch } = best;
   const result = best.reason === 'wrong' ? withoutMatch : { ...withoutMatch, matchedAnswer };
+  if (feedback) return { ...result, feedback };
+  if (best.reason !== 'wrong') return result;
 
-  return feedback ? { ...result, feedback } : result;
+  const misconception = detectMisconception(student, parsedAnswers, { settings, title: context.title });
+
+  return misconception ? { ...result, misconception } : result;
 }
 
 function resolveCorrectValue(correctValue: NumericSettings['correctValue']): number {
@@ -221,9 +235,9 @@ export function annotateMathAnswer(question: ExerciseQuestionModel, answer: Answ
   const grade = gradeMathQuestion(question, answer, mathGrader);
   if (!grade || (answer.type !== 'MATH_EXPRESSION' && answer.type !== 'WORKED_SOLUTION')) return answer;
 
-  const { reason, matchedAnswer, requiredForm, feedback } = grade.result;
+  const { reason, matchedAnswer, requiredForm, feedback, misconception } = grade.result;
   const mathjson = normaliseMathAnswer(answer.latex, readMathExpressionSettings(question.settings).variables);
-  const grading = { reason, matchedAnswer, requiredForm, feedback };
+  const grading = { reason, matchedAnswer, requiredForm, feedback, misconception };
 
   return { ...answer, mathjson: mathjson ?? undefined, grading };
 }

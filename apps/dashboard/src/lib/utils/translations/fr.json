@@ -7391,6 +7391,13 @@
       "invalid": "Cette réponse n’a pas pu être lue comme des maths.",
       "matched_label": "Correspond"
     },
+    "misconception": {
+      "sign_error": "Vérifie les signes : ta réponse a la bonne valeur mais le signe opposé.",
+      "forgot_distribute": "Il semble qu'un facteur ou un signe moins n'ait pas été appliqué à chaque terme entre parenthèses.",
+      "inverted_fraction": "Ta réponse ressemble à l'inverse de la bonne. Vérifie quel nombre doit être au numérateur.",
+      "forgot_flip_inequality": "N'oublie pas d'inverser le sens de l'inégalité quand tu multiplies ou divises les deux côtés par un nombre négatif.",
+      "dropped_factor": "Un facteur semble avoir disparu en cours de route. Compare chaque terme avec l'original."
+    },
     "take": {
       "placeholder": "Saisissez votre réponse",
       "sr_label": "Votre réponse"

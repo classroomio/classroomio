@@ -3,6 +3,7 @@
     getMathQuestionLabel,
     type ExerciseQuestionLabels,
     type MathGradeReason,
+    type MathMisconception,
     type MathQuestionLabelKey,
     type MathRequiredForm
   } from '@cio/question-types';
@@ -18,9 +19,10 @@
     requiredForm?: MathRequiredForm;
     feedback?: string;
     matchedAnswer?: string;
+    misconception?: MathMisconception;
   }
 
-  let { reason, labels, requiredForm, feedback, matchedAnswer }: Props = $props();
+  let { reason, labels, requiredForm, feedback, matchedAnswer, misconception }: Props = $props();
 
   const label = (key: MathQuestionLabelKey) => getMathQuestionLabel(labels, key);
 
@@ -62,6 +64,8 @@
     {/if}
     {#if feedback}
       <p class="ui:text-xs"><MathText text={feedback} /></p>
+    {:else if misconception}
+      <p class="ui:text-xs" data-testid="math-misconception">{label(`math.misconception.${misconception}`)}</p>
     {/if}
   </div>
 </div>

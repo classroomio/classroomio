@@ -7441,6 +7441,13 @@
       "invalid": "Bu cevap matematik olarak okunamadı.",
       "matched_label": "Eşleşti"
     },
+    "misconception": {
+      "sign_error": "İşaretleri kontrol edin: cevabınızın değeri doğru ama işareti ters.",
+      "forgot_distribute": "Bir çarpanın veya eksi işaretinin parantez içindeki her terime uygulanmadığı görünüyor.",
+      "inverted_fraction": "Cevabınız doğru cevabın çarpmaya göre tersine benziyor. Hangi sayının üstte olması gerektiğini kontrol edin.",
+      "forgot_flip_inequality": "Eşitsizliğin iki tarafını negatif bir sayıyla çarparken veya bölerken eşitsizlik işaretini ters çevirmeyi unutmayın.",
+      "dropped_factor": "Yol boyunca bir çarpan düşmüş gibi görünüyor. Her terimi orijinaliyle karşılaştırın."
+    },
     "take": {
       "placeholder": "Cevabınızı yazın",
       "sr_label": "Cevabınız"

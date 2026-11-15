@@ -31,6 +31,7 @@
       reason={current.grading.reason}
       requiredForm={current.grading.requiredForm}
       feedback={current.grading.feedback}
+      misconception={current.grading.misconception}
       matchedAnswer={current.grading.matchedAnswer}
       {labels}
     />

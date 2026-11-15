@@ -7391,6 +7391,13 @@
       "invalid": "Không thể đọc câu trả lời này như toán học.",
       "matched_label": "Khớp"
     },
+    "misconception": {
+      "sign_error": "Hãy kiểm tra dấu: đáp án của bạn có giá trị đúng nhưng ngược dấu.",
+      "forgot_distribute": "Có vẻ một thừa số hoặc dấu trừ chưa được áp dụng cho mọi số hạng trong ngoặc.",
+      "inverted_fraction": "Đáp án của bạn giống nghịch đảo của đáp án đúng. Hãy kiểm tra số nào nằm ở trên.",
+      "forgot_flip_inequality": "Hãy nhớ đổi chiều dấu bất đẳng thức khi nhân hoặc chia cả hai vế cho một số âm.",
+      "dropped_factor": "Có vẻ một thừa số đã bị bỏ sót trong quá trình tính. Hãy so sánh từng số hạng với bài gốc."
+    },
     "take": {
       "placeholder": "Nhập câu trả lời của bạn",
       "sr_label": "Câu trả lời của bạn"

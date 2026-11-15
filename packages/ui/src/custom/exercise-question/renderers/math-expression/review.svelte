@@ -26,6 +26,7 @@
       reason={grading.reason}
       requiredForm={grading.requiredForm}
       feedback={grading.feedback}
+      misconception={grading.misconception}
       matchedAnswer={grading.matchedAnswer}
       {labels}
     />

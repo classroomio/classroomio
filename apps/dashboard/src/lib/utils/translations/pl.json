@@ -7391,6 +7391,13 @@
       "invalid": "Tej odpowiedzi nie udało się odczytać jako matematyki.",
       "matched_label": "Dopasowano"
     },
+    "misconception": {
+      "sign_error": "Sprawdź znaki: Twoja odpowiedź ma właściwą wartość, ale przeciwny znak.",
+      "forgot_distribute": "Wygląda na to, że czynnik lub minus nie został zastosowany do każdego składnika w nawiasie.",
+      "inverted_fraction": "Twoja odpowiedź wygląda jak odwrotność poprawnej. Sprawdź, która liczba powinna być w liczniku.",
+      "forgot_flip_inequality": "Pamiętaj, aby odwrócić znak nierówności, gdy mnożysz lub dzielisz obie strony przez liczbę ujemną.",
+      "dropped_factor": "Wygląda na to, że po drodze zgubił się czynnik. Porównaj każdy składnik z oryginałem."
+    },
     "take": {
       "placeholder": "Wpisz swoją odpowiedź",
       "sr_label": "Twoja odpowiedź"

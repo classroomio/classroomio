@@ -1,4 +1,4 @@
-import type { MathGradeReason, MathRequiredForm } from './math-settings';
+import type { MathGradeReason, MathMisconception, MathRequiredForm } from './math-settings';
 
 export type RadioAnswerData = { type: 'RADIO'; optionId: number };
 export type CheckboxAnswerData = { type: 'CHECKBOX'; optionIds: number[] };
@@ -44,6 +44,7 @@ export type MathAnswerGrading = {
   matchedAnswer?: string;
   requiredForm?: MathRequiredForm;
   feedback?: string;
+  misconception?: MathMisconception;
 };
 
 /** `mathjson` is the canonical MathJSON string from `normaliseMathAnswer`, set by the server for grouping answers. */

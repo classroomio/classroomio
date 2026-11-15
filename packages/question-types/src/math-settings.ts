@@ -68,17 +68,30 @@ export type MathGradeReason =
   | 'needs_review'
   | 'invalid';
 
+export const MATH_MISCONCEPTIONS = [
+  'sign_error',
+  'forgot_distribute',
+  'inverted_fraction',
+  'forgot_flip_inequality',
+  'dropped_factor'
+] as const;
+export type MathMisconception = (typeof MATH_MISCONCEPTIONS)[number];
+
+export type MathGradeContext = { title?: string };
+
 export type MathGradeResult = {
   reason: MathGradeReason;
   /** The accepted answer the student's answer was matched against, when one matched. */
   matchedAnswer?: string;
   requiredForm?: MathRequiredForm;
   feedback?: string;
+  /** The known slip a wrong answer matches; absent when the teacher's feedback applies or nothing matches. */
+  misconception?: MathMisconception;
 };
 
 /** Grades math answers with the Compute Engine; implemented by `@cio/question-types/math-grading`. */
 export interface MathGrader {
-  gradeExpression(settings: MathExpressionSettings, latex: string): MathGradeResult;
+  gradeExpression(settings: MathExpressionSettings, latex: string, context?: MathGradeContext): MathGradeResult;
   gradeNumeric(settings: NumericSettings, answer: NumericAnswerData): boolean;
 }
 

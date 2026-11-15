@@ -73,6 +73,7 @@
       reason={result.reason}
       requiredForm={result.requiredForm}
       feedback={result.feedback}
+      misconception={result.misconception}
       matchedAnswer={result.matchedAnswer}
       {labels}
     />
