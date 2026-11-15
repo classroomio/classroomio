@@ -33,7 +33,7 @@ const BLOCK_RECIPES: Record<BlockRecipeType, BlockRecipe> = {
   inline_math: {
     summary: 'A short mathematical expression inside a sentence (a variable, a small formula).',
     markup:
-      'Use <span data-type="inline-math" data-latex="LATEX"></span> inside a <p>, where LATEX is raw LaTeX with no $ delimiters and no markdown math syntax.\n\nExample:\n<p>The area is <span data-type="inline-math" data-latex="A = \\pi r^2"></span> square units.</p>'
+      'Use <span data-type="inline-math" data-latex="LATEX"></span> inside a <p>, where LATEX is raw LaTeX with no $ delimiters and no markdown math syntax. This is for lesson notes only: exercise question titles and options wrap math in $...$ instead, and answer keys are bare LaTeX.\n\nExample:\n<p>The area is <span data-type="inline-math" data-latex="A = \\pi r^2"></span> square units.</p>'
   },
   block_math: {
     summary: 'A standalone equation on its own line, not inside a sentence.',

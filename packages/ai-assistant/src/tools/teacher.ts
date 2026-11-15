@@ -5,6 +5,7 @@ import {
   ENABLED_QUESTION_TYPE_ID_DESCRIPTION,
   QUESTION_OPTIONS_SCHEMA_HINT,
   QUESTION_SETTINGS_SCHEMA_HINT,
+  QUESTION_VERIFY_SCHEMA_HINT,
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
 import { CoursePlanSchema } from '../types';
@@ -15,6 +16,14 @@ import {
   LANDING_PAGE_SECTION_HTML_AGENT_HINT
 } from './landing-page-html-hint';
 import { BLOCK_RECIPE_TYPES } from './block-recipes';
+
+const questionVerifySchema = z
+  .object({
+    expression: z.string().min(1).optional(),
+    equation: z.string().min(1).optional()
+  })
+  .optional()
+  .describe(QUESTION_VERIFY_SCHEMA_HINT);
 
 const ENABLED_QUESTION_TYPE_MAX_ID = Math.max(...ENABLED_QUESTION_TYPE_REGISTRY.map((type) => type.id));
 
@@ -159,6 +168,7 @@ export const createExerciseSchema = {
           points: z.number().min(1).default(1).describe('Points for this question'),
           order: z.number().int().min(0).describe('Display order'),
           settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
+          verify: questionVerifySchema,
           options: z
             .array(
               z.object({
@@ -295,6 +305,7 @@ export const addQuestionsSchema = {
         points: z.number().min(1).default(1).describe('Points for this question'),
         order: z.number().int().min(0).describe('Display order'),
         settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
+        verify: questionVerifySchema,
         parentQuestionId: z
           .number()
           .int()
@@ -344,6 +355,7 @@ export const updateQuestionsSchema = {
           .record(z.string(), z.unknown())
           .optional()
           .describe(`${QUESTION_SETTINGS_SCHEMA_HINT} Shallow-merged with existing settings.`),
+        verify: questionVerifySchema,
         options: z
           .array(
             z.object({

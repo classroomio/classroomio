@@ -8,6 +8,7 @@ import {
   updateExerciseService
 } from '@cio/core/services/exercise/exercise';
 import { assertNoPremiumQuestionTypes } from '@cio/core/services/exercise/premium-guard';
+import { assertAnswerKeysVerified } from '@cio/core/services/exercise/answer-key';
 import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
 import { getCourseItemRanks } from '@cio/core/services/course/outline';
 import { getCourseSectionById } from '@cio/db/queries/course';
@@ -521,6 +522,7 @@ export async function createCourseExerciseService(
   }
 
   const questions = expandQuestionParts(payload.questions ?? []);
+  assertAnswerKeysVerified(questions);
   await assertQuestionTypesAllowed(
     orgId,
     questions.map((question) => question.questionTypeId)
@@ -579,10 +581,10 @@ export async function applyCourseExerciseUpdate(
     (payload.questions ?? []).filter((question) => !question.delete).map((question) => question.questionTypeId)
   );
 
-  const { createdQuestionIds = [], ...updated } = await updateExerciseService(
-    params.exerciseId,
-    toInternalUpdate(payload, current)
-  );
+  const internalUpdate = toInternalUpdate(payload, current);
+  assertAnswerKeysVerified((internalUpdate.questions ?? []).filter((question) => !question.deletedAt));
+
+  const { createdQuestionIds = [], ...updated } = await updateExerciseService(params.exerciseId, internalUpdate);
   const exercise = toPublicExerciseDetail(updated as ExerciseDetail);
 
   return { exercise, createdQuestionIds };

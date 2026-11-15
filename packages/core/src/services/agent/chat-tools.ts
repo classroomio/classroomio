@@ -6,6 +6,7 @@ import { getBlockRecipeMarkup } from '@cio/ai-assistant/tools';
 import { ADD_QUESTIONS_TOOL_DESCRIPTION, UPDATE_QUESTIONS_BINARY_TYPES_HINT } from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
 import { assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
+import { assertAnswerKeysVerified } from '../exercise/answer-key';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
   createAgentRunEvent,
@@ -1077,6 +1078,8 @@ export function buildAgentTools(
             isOrgOnPaidPlan
           );
 
+          assertAnswerKeysVerified(args.questions);
+
           if (args.lessonId) {
             await verifyLessonBelongsToCourse(args.lessonId, courseId);
           }
@@ -1204,6 +1207,8 @@ export function buildAgentTools(
             isOrgOnPaidPlan
           );
 
+          assertAnswerKeysVerified(args.questions);
+
           await verifyExerciseBelongsToCourse(args.exerciseId, courseId);
 
           if (args.exerciseSectionId !== undefined) {
@@ -1312,6 +1317,11 @@ export function buildAgentTools(
             })),
             args.questions,
             args.exerciseId
+          );
+
+          const verifyByQuestionId = new Map(args.questions.map((patch) => [patch.id, patch.verify]));
+          assertAnswerKeysVerified(
+            merged.map((question) => ({ ...question, verify: verifyByQuestionId.get(question.id) }))
           );
 
           await updateExerciseService(args.exerciseId, { questions: merged });

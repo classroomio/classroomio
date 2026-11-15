@@ -11,6 +11,7 @@ import {
   CALCULATOR_POLICIES,
   ENABLED_QUESTION_TYPE_REGISTRY,
   QUESTION_SETTINGS_SCHEMA_HINT,
+  QUESTION_VERIFY_SCHEMA_HINT,
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
 import { IMAGE_BLOCK_FITS, ZBlockLocale, ZBlockType } from '@cio/utils/validation/block';
@@ -231,6 +232,14 @@ export const getBlockRecipeParam = z.object({
   blockType: z.enum(BLOCK_RECIPE_TYPES).describe('The block type to fetch exact lesson-body markup for.')
 });
 
+const questionVerifySchema = z
+  .object({
+    expression: z.string().min(1).optional(),
+    equation: z.string().min(1).optional()
+  })
+  .optional()
+  .describe(QUESTION_VERIFY_SCHEMA_HINT);
+
 export const questionSchema = z.object({
   question: z.string().min(1),
   questionTypeId: zEnabledQuestionTypeId.describe(
@@ -239,6 +248,7 @@ export const questionSchema = z.object({
   points: z.number().min(1).default(1),
   order: z.number().int().min(0),
   settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
+  verify: questionVerifySchema,
   parentQuestionId: z
     .number()
     .int()
@@ -407,6 +417,7 @@ export const updateQuestionPatchSchema = z
         'Move the question to this in-exercise block (get_exercise_details sections[].id). Use null to clear section assignment.'
       ),
     settings: updateQuestionSettingsSchema.optional(),
+    verify: questionVerifySchema,
     options: z.array(updateOptionSchema).optional()
   })
   .refine(
