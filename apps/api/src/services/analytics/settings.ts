@@ -18,6 +18,6 @@ export async function updateAnalyticsSettings(
 
     return { studentTarget };
   } catch (error) {
-    throw toAnalyticsError(error, ErrorCodes.ANALYTICS_QUERY_FAILED);
+    throw toAnalyticsError(error, ErrorCodes.ANALYTICS_SETTINGS_FAILED);
   }
 }

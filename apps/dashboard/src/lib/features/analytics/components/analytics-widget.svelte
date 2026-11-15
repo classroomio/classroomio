@@ -2,6 +2,7 @@
   import ChartNoAxesColumnIcon from '@lucide/svelte/icons/chart-no-axes-column';
   import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
   import MousePointerClickIcon from '@lucide/svelte/icons/mouse-pointer-click';
+  import { missingSelection, widgetUsesPlaceholder } from '@cio/utils/analytics';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { cn } from '@cio/ui/tools';
@@ -12,14 +13,12 @@
   import {
     isEmptyResult,
     isNowCard,
-    missingSelection,
     pagerOwnerId,
     SELF_LOADING_WIDGET_IDS,
     WIDGET_SPAN_CLASS,
     widgetEmptyState,
     widgetNotes,
-    widgetTitle,
-    widgetUsesPlaceholder
+    widgetTitle
   } from '../utils/analytics-utils';
   import type { AnalyticsWidget, AnalyticsWidgetContext } from '../utils/types';
   import ExercisePicker from './exercise-picker.svelte';

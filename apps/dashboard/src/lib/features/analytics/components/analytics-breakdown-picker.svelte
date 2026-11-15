@@ -1,10 +1,10 @@
 <script lang="ts">
+  import { activeBreakdownGroup } from '@cio/utils/analytics';
   import type { TAnalyticsBreakdownGroup } from '@cio/utils/constants/analytics';
   import { RangePicker } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
 
   import { analyticsApi } from '../api';
-  import { activeBreakdownGroup } from '../utils/analytics-utils';
 
   const available = $derived(analyticsApi.availableBreakdowns);
   const selected = $derived(activeBreakdownGroup(analyticsApi.selection, available));

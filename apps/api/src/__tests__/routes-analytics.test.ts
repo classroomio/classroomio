@@ -19,6 +19,18 @@ vi.mock('@api/services/analytics', () => ({
   updateAnalyticsSettings: vi.fn()
 }));
 
+vi.mock('@api/services/analytics/authorize', () => ({
+  resolveAuthorizedScope: vi.fn()
+}));
+
+vi.mock('@api/services/analytics/dashboards', () => ({
+  getAnalyticsDashboardForScope: vi.fn()
+}));
+
+vi.mock('@cio/core/utils/redis/analytics-cache', () => ({
+  claimAnalyticsRefresh: vi.fn()
+}));
+
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
@@ -28,6 +40,9 @@ import {
   runAnalyticsQueryForActor,
   updateAnalyticsSettings
 } from '@api/services/analytics';
+import { resolveAuthorizedScope } from '@api/services/analytics/authorize';
+import { getAnalyticsDashboardForScope } from '@api/services/analytics/dashboards';
+import { claimAnalyticsRefresh } from '@cio/core/utils/redis/analytics-cache';
 import { analyticsRouter } from '@api/routes/analytics';
 
 const OWN_ORG = 'org-own';
@@ -371,7 +386,9 @@ describe('analytics routes', () => {
     });
 
     it('forwards the refresh route to the dashboard service', async () => {
-      vi.mocked(getAnalyticsDashboardForActor).mockResolvedValueOnce(MOCK_DASHBOARD_RESULT as any);
+      vi.mocked(resolveAuthorizedScope).mockResolvedValueOnce({ orgId: OWN_ORG } as never);
+      vi.mocked(claimAnalyticsRefresh).mockResolvedValueOnce(true);
+      vi.mocked(getAnalyticsDashboardForScope).mockResolvedValueOnce(MOCK_DASHBOARD_RESULT as never);
 
       const response = await analyticsRouter.request('/dashboards-refresh', {
         method: 'POST',
@@ -383,11 +400,36 @@ describe('analytics routes', () => {
       });
 
       expect(response.status).toBe(200);
-      expect(getAnalyticsDashboardForActor).toHaveBeenCalledWith(
-        expect.anything(),
-        { scopeType: 'cohort', scopeId: COHORT_ID },
-        { refresh: true }
-      );
+      expect(resolveAuthorizedScope).toHaveBeenCalledWith(expect.anything(), { type: 'cohort', id: COHORT_ID });
+      expect(claimAnalyticsRefresh).toHaveBeenCalledWith('user-1', 'cohort', COHORT_ID, 'dashboard');
+      expect(getAnalyticsDashboardForScope).toHaveBeenCalledWith({ orgId: OWN_ORG }, { refresh: true });
+    });
+
+    it('authorizes the refresh route before claiming the refresh slot', async () => {
+      const calls: string[] = [];
+      vi.mocked(resolveAuthorizedScope).mockImplementationOnce(async () => {
+        calls.push('authorize');
+
+        throw new AppError('You do not have access to these analytics', ErrorCodes.ANALYTICS_SCOPE_FORBIDDEN, 403);
+      });
+      vi.mocked(claimAnalyticsRefresh).mockImplementationOnce(async () => {
+        calls.push('claim');
+
+        return true;
+      });
+
+      const response = await analyticsRouter.request('/dashboards-refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'cio-org-id': OWN_ORG
+        },
+        body: JSON.stringify({ type: 'cohort', id: COHORT_ID })
+      });
+
+      expect(response.status).toBe(403);
+      expect(calls).toEqual(['authorize']);
+      expect(getAnalyticsDashboardForScope).not.toHaveBeenCalled();
     });
 
     it('rejects invalid scope type with 400', async () => {

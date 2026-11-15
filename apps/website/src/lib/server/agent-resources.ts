@@ -123,6 +123,11 @@ const LLMS_SECTIONS: ResourceSection[] = [
         description: 'Authentication, pagination, errors, rate limits and question types.'
       },
       {
+        title: 'Analytics API',
+        path: '/docs/api/analytics.md',
+        description: 'Read the Academy, Marketing and Compliance numbers, plus course, cohort and student analytics.'
+      },
+      {
         title: 'API reference',
         path: '/docs/api/reference.md',
         description: 'Endpoint reference for the public API at `https://api.classroomio.com/public-api/v1`.'
@@ -135,7 +140,7 @@ const LLMS_SECTIONS: ResourceSection[] = [
       {
         title: 'MCP overview',
         path: '/docs/developers/mcp.md',
-        description: 'Connect an MCP client to manage courses, learners and cohorts.'
+        description: 'Connect an MCP client to manage courses, students and cohorts.'
       },
       {
         title: 'Connect an MCP client',

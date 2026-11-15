@@ -3,6 +3,7 @@ import {
   ZPublicApiCohortParam,
   ZPublicApiCreateCohortGoal,
   ZPublicApiPaginationQuery,
+  ZPublicApiRemindOverdueCohortGoals,
   ZPublicApiUpdateCohortGoal
 } from '@cio/utils/validation/public-api';
 
@@ -28,6 +29,10 @@ export const ZArchiveCohortGoalToolInput = ZPublicApiCohortGoalParam;
 
 export const ZDeleteCohortGoalToolInput = ZPublicApiCohortGoalParam;
 
+export const ZRemindOverdueCohortGoalsToolInput = ZPublicApiCohortParam.extend(
+  ZPublicApiRemindOverdueCohortGoals.shape
+);
+
 export const ZEvaluateCohortGoalToolInput = ZPublicApiCohortGoalParam;
 
 export const ZEvaluateAllCohortGoalsToolInput = ZPublicApiCohortParam;
@@ -40,6 +45,7 @@ const archiveCohortGoalShape = ZArchiveCohortGoalToolInput.shape as unknown as Z
 const deleteCohortGoalShape = ZDeleteCohortGoalToolInput.shape as unknown as ZodRawShapeCompat;
 const evaluateCohortGoalShape = ZEvaluateCohortGoalToolInput.shape as unknown as ZodRawShapeCompat;
 const evaluateAllCohortGoalsShape = ZEvaluateAllCohortGoalsToolInput.shape as unknown as ZodRawShapeCompat;
+const remindOverdueCohortGoalsShape = ZRemindOverdueCohortGoalsToolInput.shape as unknown as ZodRawShapeCompat;
 const paginationShape = ZPublicApiPaginationQuery.shape as unknown as ZodRawShapeCompat;
 
 const CREATE_COHORT_GOAL_DESCRIPTION = `Create a progress goal for a cohort; ${COHORT_TEAM_RULE}. The fields that type and deadlineKind require are listed on those two fields, and every course must already be linked to the cohort (see add_cohort_course).`;
@@ -153,6 +159,18 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
     READ_ONLY,
     async (args) => {
       const result = await apiClient.listMyCohortGoals(ZPublicApiPaginationQuery.parse(args));
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'remind_overdue_cohort_goals',
+    `Email overdue goal reminders now to a cohort's overdue students, or one student; ${COHORT_TEAM_RULE}. Each overdue goal assignment is reminded at most once a day.`,
+    remindOverdueCohortGoalsShape,
+    { ...WRITE, idempotentHint: true },
+    async (args) => {
+      const { cohortId, ...payload } = ZRemindOverdueCohortGoalsToolInput.parse(args);
+      const result = await apiClient.remindOverdueCohortGoals(cohortId, payload);
       return jsonContent(result);
     }
   );

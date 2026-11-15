@@ -246,3 +246,13 @@ export const ZPublicApiCohortInviteLinkResponse = z.object({
   joinCount: z.number(),
   lastUsedAt: nullableTimestamp
 });
+
+export const ZPublicApiRemindOverdueCohortGoalsResponse = z.object({
+  enqueued: z.number().describe('Email reminders queued for overdue goal assignments.'),
+  skipped: z
+    .number()
+    .describe(
+      'Overdue students not emailed now: no email address or due date, already reminded today, or the enqueue failed.'
+    ),
+  truncated: z.boolean().describe('True when the reminder run hit its page budget with assignments still unread.')
+});

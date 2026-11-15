@@ -113,7 +113,7 @@ exports[`public API audience and course response contract > ZPublicApiAudienceMe
       "type": "string",
     },
     "certificateCount": {
-      "description": "Courses in this organization where the learner has earned a certificate",
+      "description": "Courses in this organization where the student has earned a certificate",
       "type": "number",
     },
     "completedCount": {

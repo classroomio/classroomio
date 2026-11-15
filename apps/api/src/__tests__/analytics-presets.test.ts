@@ -6,6 +6,7 @@ import {
   ANALYTICS_PLACEHOLDERS,
   type TAnalyticsBreakdownGroup
 } from '@cio/utils/constants/analytics';
+import { ANALYTICS_WIDGET_DESCRIPTIONS } from '@cio/utils/constants/analytics-catalog';
 import { ZAnalyticsWidget, type TAnalyticsWidget } from '@cio/utils/validation/analytics';
 
 import { ANALYTICS_PRESETS } from '@api/services/analytics/presets';
@@ -197,6 +198,29 @@ describe('analytics presets', () => {
       const ids = widgets.map((widget) => widget.id);
       expect(new Set(ids).size).toBe(ids.length);
     }
+  });
+
+  describe('catalog descriptions', () => {
+    it('gives every preset widget a non-empty description', () => {
+      for (const widgetId of [...ANALYTICS_PRESETS.cohort, ...ANALYTICS_PRESETS.course, ...ANALYTICS_PRESETS.org].map(
+        (widget) => widget.id
+      )) {
+        const description = ANALYTICS_WIDGET_DESCRIPTIONS[widgetId];
+
+        expect(description, widgetId).toBeDefined();
+        expect(description?.trim().length, widgetId).toBeGreaterThan(0);
+      }
+    });
+
+    it('never describes a widget id no preset uses', () => {
+      const presetIds = new Set(
+        [...ANALYTICS_PRESETS.cohort, ...ANALYTICS_PRESETS.course, ...ANALYTICS_PRESETS.org].map((widget) => widget.id)
+      );
+
+      for (const widgetId of Object.keys(ANALYTICS_WIDGET_DESCRIPTIONS)) {
+        expect(presetIds.has(widgetId), widgetId).toBe(true);
+      }
+    });
   });
 
   describe('breakdown groups', () => {
