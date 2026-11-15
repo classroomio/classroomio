@@ -8,6 +8,11 @@ import {
   scoreSubmissionAnswers
 } from '@cio/question-types';
 import { annotateMathAnswer, mathGrader } from '@cio/question-types/math-grading';
+import { instantiateQuestion } from '@cio/question-types/variants';
+import { isSeedValid, readQuestionParameters } from '@cio/question-types';
+import { AppError, ErrorCodes } from '@api/utils/errors';
+
+const FALLBACK_SEED = 'default';
 
 export type GradableQuestion = {
   id?: number | null;
@@ -32,6 +37,69 @@ export function toScoringQuestions(questions: GradableQuestion[]): DbQuestionFor
       settings: (question.settings as Record<string, unknown> | null) ?? {},
       options: question.options ?? []
     }));
+}
+
+/**
+ * The variant seed each parameterised question was answered with. A missing seed falls back to a fixed one, or is
+ * rejected when `strict`, because an API client that never saw the numbers cannot have answered them.
+ */
+export function resolveAnswerSeeds(
+  questions: GradableQuestion[],
+  inputs: ReadonlyArray<{ questionId: number; seed?: string }>,
+  strict: boolean
+): Map<number, string> {
+  const seedByQuestionId = new Map<number, string>();
+  const parameterisedIds = new Set(
+    questions
+      .filter((question): question is GradableQuestion & { id: number } => question.id != null)
+      .filter((question) => readQuestionParameters(question.settings as Record<string, unknown> | null) !== null)
+      .map((question) => question.id)
+  );
+
+  for (const input of inputs) {
+    if (!parameterisedIds.has(input.questionId)) continue;
+
+    if (input.seed !== undefined && !isSeedValid(input.seed)) {
+      throw new AppError(`Question ${input.questionId}: the seed is not valid`, ErrorCodes.VALIDATION_ERROR, 400);
+    }
+    if (input.seed === undefined && strict) {
+      throw new AppError(
+        `Question ${input.questionId}: this question has variables, so the answer needs the seed the student was shown`,
+        ErrorCodes.VALIDATION_ERROR,
+        400
+      );
+    }
+
+    seedByQuestionId.set(input.questionId, input.seed ?? FALLBACK_SEED);
+  }
+
+  return seedByQuestionId;
+}
+
+/** Fills each question's placeholders with the numbers its seed produces, so scoring uses the student's own key. */
+export function instantiateScoringQuestions(
+  questions: DbQuestionForScoring[],
+  seedByQuestionId: ReadonlyMap<number, string>
+): DbQuestionForScoring[] {
+  return questions.map((question) => {
+    const seed = seedByQuestionId.get(question.id);
+
+    return seed ? instantiateQuestion(question, seed) : question;
+  });
+}
+
+/** Stores each seed with its answer so review and regrade reproduce the student's instance. */
+export function attachSeeds(
+  answerByQuestionId: ReadonlyMap<number, AnswerData>,
+  seedByQuestionId: ReadonlyMap<number, string>
+): Map<number, AnswerData> {
+  return new Map(
+    [...answerByQuestionId].map(([questionId, answer]) => {
+      const seed = seedByQuestionId.get(questionId);
+
+      return [questionId, seed ? { ...answer, seed } : answer];
+    })
+  );
 }
 
 /** The questions a student answers: every question except the stems of multi-part questions. */
@@ -68,10 +136,12 @@ export function annotateMathAnswers(
  * already awarded: they are the stored points minus the answer points its previous grading earned.
  */
 export function regradeStoredAnswer(
-  question: DbQuestionForScoring,
+  storedQuestion: DbQuestionForScoring,
   answer: AnswerData,
   storedPoints: number
 ): { answer: AnswerData; points: number } | null {
+  const isParameterised = readQuestionParameters(storedQuestion.settings) !== null;
+  const question = isParameterised ? instantiateQuestion(storedQuestion, answer.seed ?? FALLBACK_SEED) : storedQuestion;
   const regraded = annotateMathAnswers([question], new Map([[question.id, answer]])).get(question.id) ?? answer;
   const answerByQuestionId = new Map([[question.id, regraded]]);
 

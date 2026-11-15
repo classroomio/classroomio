@@ -30,7 +30,15 @@ export const ZPublicApiCreateStudentSubmission = z.object({
         answer: z
           .string()
           .optional()
-          .describe('Any type except single choice; the Question types guide shows the format for each type.')
+          .describe('Any type except single choice; the Question types guide shows the format for each type.'),
+        seed: z
+          .string()
+          .min(1)
+          .max(64)
+          .optional()
+          .describe(
+            'Parameterised questions only: the variant seed the student was shown, which the server uses to re-derive the numbers and the answer key. Required for a question that defines variables.'
+          )
       })
     )
     .min(1)

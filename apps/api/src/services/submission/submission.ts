@@ -57,7 +57,14 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
-import { annotateMathAnswers, getAnswerableQuestions, toScoringQuestions } from './auto-grading';
+import {
+  annotateMathAnswers,
+  attachSeeds,
+  getAnswerableQuestions,
+  instantiateScoringQuestions,
+  resolveAnswerSeeds,
+  toScoringQuestions
+} from './auto-grading';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
 import type { TEventSource } from '@cio/core/services/posthog';
@@ -572,7 +579,7 @@ export async function listSubmissionsForGrading(courseId: string) {
   }
 }
 
-type SubmissionAnswerInput = { questionId: number; optionId?: number; answer?: string };
+type SubmissionAnswerInput = { questionId: number; optionId?: number; answer?: string; seed?: string };
 type ExerciseQuestionRow = Awaited<ReturnType<typeof getExerciseWithRelationsOptimized>>['questions'][number];
 
 export type CreateSubmissionOptions = {
@@ -808,8 +815,9 @@ export async function createSubmissionService(
     const answerableQuestions = getAnswerableQuestions(exerciseWithRelations.questions);
     const questionById = toQuestionModelsById(answerableQuestions);
     const decodedAnswers = decodeSubmissionAnswers(questionById, answers, options);
-    const dbQuestions = toScoringQuestions(answerableQuestions);
-    const answerByQuestionId = annotateMathAnswers(dbQuestions, decodedAnswers);
+    const seedByQuestionId = resolveAnswerSeeds(answerableQuestions, answers, options.strict === true);
+    const dbQuestions = instantiateScoringQuestions(toScoringQuestions(answerableQuestions), seedByQuestionId);
+    const answerByQuestionId = attachSeeds(annotateMathAnswers(dbQuestions, decodedAnswers), seedByQuestionId);
     const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
     const wasCompleteBefore = await wasExerciseCompleteForMember(exerciseId, submittedBy);
 

@@ -53,6 +53,8 @@ import {
 import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getCourseById } from '@cio/db/queries/course';
 import { createSubmissionService } from '@api/services/submission/submission';
+import { readQuestionParameters } from '@cio/question-types';
+import { instantiateVariant } from '@cio/question-types/variants';
 
 const COURSE_ID = 'course-1';
 const EXERCISE_ID = 'exercise-1';
@@ -206,5 +208,67 @@ describe('createSubmissionService math grading', () => {
     ).rejects.toMatchObject({
       statusCode: 404
     });
+  });
+});
+
+describe('createSubmissionService parameterised questions', () => {
+  const parameterised = (id: number): TestQuestion => ({
+    id,
+    typename: 'MATH_EXPRESSION',
+    questionTypeId: 17,
+    points: 1,
+    settings: {
+      acceptedAnswers: ['{{answer}}'],
+      parameters: {
+        variables: [
+          { name: 'a', type: 'int', min: 2, max: 9, step: 1 },
+          { name: 'b', type: 'int', min: 10, max: 20, step: 1 }
+        ],
+        answerFormula: 'a * b'
+      }
+    }
+  });
+  const answerFor = (seed: string) => {
+    const instance = instantiateVariant(readQuestionParameters(parameterised(1).settings)!, seed);
+
+    return instance.answer!;
+  };
+
+  it('grades against the key re-derived from the seed and stores the seed with the answer', async () => {
+    mockExercise(parameterised(1));
+
+    await createSubmissionService(
+      COURSE_ID,
+      EXERCISE_ID,
+      MEMBER_ID,
+      [{ questionId: 1, answer: JSON.stringify({ type: 'MATH_EXPRESSION', latex: answerFor('seed-a') }), seed: 'seed-a' }],
+      { strict: true, allowUploads: false }
+    );
+
+    expect(updateSubmissionGrades).toHaveBeenCalledWith('submission-1', expect.objectContaining({ total: 1 }));
+    expect(insertedRows()[0].answerData.seed).toBe('seed-a');
+  });
+
+  it('marks the answer of a different seed wrong', async () => {
+    const otherSeed = Array.from({ length: 30 }, (_, index) => 'other' + index).find(
+      (candidate) => answerFor(candidate) !== answerFor('seed-a')
+    )!;
+    mockExercise(parameterised(1));
+
+    await createSubmissionService(
+      COURSE_ID,
+      EXERCISE_ID,
+      MEMBER_ID,
+      [{ questionId: 1, answer: JSON.stringify({ type: 'MATH_EXPRESSION', latex: answerFor(otherSeed) }), seed: 'seed-a' }],
+      { strict: true, allowUploads: false }
+    );
+
+    expect(updateSubmissionGrades).toHaveBeenCalledWith('submission-1', expect.objectContaining({ total: 0 }));
+  });
+
+  it('rejects a strict answer to a parameterised question that has no seed', async () => {
+    mockExercise(parameterised(1));
+
+    await expect(submit([mathAnswer(1, '12')])).rejects.toMatchObject({ statusCode: 400 });
   });
 });

@@ -27,7 +27,7 @@ import type {
 import { QUESTION_TYPE_KEY } from './question-type-keys';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 
-export type ApiPayload = { questionId: number; optionId?: number; answer?: string };
+export type ApiPayload = { questionId: number; optionId?: number; answer?: string; seed?: string };
 
 export interface AnswerCodec<T extends AnswerData = AnswerData> {
   type: T['type'];
@@ -445,7 +445,9 @@ export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
 
 /** Convert any answer to API submission payload */
 export function toApiPayload(data: AnswerData, questionId: number): ApiPayload {
-  return ANSWER_CODECS[data.type].toApiPayload(data as any, questionId);
+  const payload = ANSWER_CODECS[data.type].toApiPayload(data as any, questionId);
+
+  return data.seed ? { ...payload, seed: data.seed } : payload;
 }
 
 /** Convert API payload to AnswerData (for API write path) */

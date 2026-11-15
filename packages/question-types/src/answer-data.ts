@@ -63,7 +63,34 @@ export type WorkedSolutionAnswerData = {
   working: { lines: string[]; files: WorkedSolutionFile[] };
 };
 
-export type AnswerData =
+/** One step of a teacher rubric, as the AI reviewer and the grading popup read it. */
+export type AiReviewStepMark = { stepId: string; awarded: number; max: number; comment?: string };
+
+/** An AI suggestion for the working part of an answer; nothing here is a grade until a teacher accepts it. */
+export type AiReview = {
+  model: string;
+  reviewedAt: string;
+  rubricVersion: string;
+  stepMarks: AiReviewStepMark[];
+  /** Points suggested for the working: the sum of `stepMarks`. */
+  suggestedPoints: number;
+  maxPoints: number;
+  firstWrongStep: string | null;
+  comment: string;
+  /** The reviewer's own certainty from 0 to 1. */
+  confidence: number;
+  /** Set when a teacher acted on the suggestion. */
+  decision?: { status: 'accepted' | 'edited' | 'rejected'; decidedAt: string; decidedBy: string; awardedPoints?: number };
+};
+
+/** Fields any answer can carry beside its type-specific data. */
+export type AnswerExtras = {
+  /** The variant seed the student answered, for parameterised questions. */
+  seed?: string;
+  aiReview?: AiReview;
+};
+
+export type AnswerData = (
   | RadioAnswerData
   | CheckboxAnswerData
   | TrueFalseAnswerData
@@ -81,4 +108,6 @@ export type AnswerData =
   | StarAnswerData
   | VideoRecordingAnswerData
   | MathExpressionAnswerData
-  | WorkedSolutionAnswerData;
+  | WorkedSolutionAnswerData
+) &
+  AnswerExtras;
