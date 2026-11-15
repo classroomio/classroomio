@@ -185,7 +185,7 @@
 
       <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
         <CtaButton data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</CtaButton>
-        <CtaButton href="/customer-education" variant="secondary">Explore academies</CtaButton>
+        <CtaButton href="/customer-education" variant="secondary">See customer academy software</CtaButton>
       </div>
     </div>
 

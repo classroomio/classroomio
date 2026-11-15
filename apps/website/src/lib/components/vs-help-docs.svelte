@@ -146,6 +146,9 @@
 
   <p class="text-caption mt-6 text-gray-500">
     Compared against typical capabilities of Intercom Articles, Zendesk Guide, and Confluence at time of writing. Run
-    your own academy alongside your existing help center. Most teams who launch a customer academy keep both.
+    your own academy alongside your existing help center. Most teams who launch a <a
+      class="text-blue-700 hover:underline"
+      href="/customer-education">customer academy</a
+    > keep both.
   </p>
 </Section>

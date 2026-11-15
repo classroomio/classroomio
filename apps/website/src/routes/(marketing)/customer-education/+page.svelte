@@ -17,6 +17,7 @@
     WorkflowSteps
   } from '$lib/components';
   import { CtaButton, Section, SectionHeader } from '$lib/components/ui';
+  import * as Accordion from '@cio/ui/base/accordion';
   import { Badge } from '@cio/ui/base/badge';
   import { Meteors } from '@cio/ui/custom/animation/meteors';
   import BarChart3 from '@lucide/svelte/icons/bar-chart-3';
@@ -29,6 +30,52 @@
   import MessagesSquare from '@lucide/svelte/icons/messages-square';
   import MonitorPlay from '@lucide/svelte/icons/monitor-play';
   import PanelTop from '@lucide/svelte/icons/panel-top';
+
+  const faqs = [
+    {
+      question: 'What is customer academy software?',
+      answer:
+        'Customer academy software is a learning platform for teaching customers your product. You publish onboarding courses, feature training, and certifications on your own domain, then track who finished. ClassroomIO adds an AI tutor to every lesson.'
+    },
+    {
+      question: 'How is a customer academy different from a help center?',
+      answer:
+        'A help center answers one question at a time. An academy gives a new customer a path to follow, checks that they understood it, and records completion. Most teams run both, and the academy links back to the docs.'
+    },
+    {
+      question: 'Can the academy run on our own domain?',
+      answer:
+        'Yes. The academy runs on a custom domain such as learn.yourcompany.com, with your logo, colors, and fonts on the catalog and course pages.'
+    },
+    {
+      question: 'Can we embed lessons in our help center or app?',
+      answer:
+        'Yes. Any course can be published as a widget with one script tag. Progress, marks, and certificates sync back to ClassroomIO.'
+    },
+    {
+      question: 'Can customers earn certificates?',
+      answer:
+        'Yes. You can bundle courses into cohorts, require an exercise to pass, and issue branded certificates with verifiable IDs.'
+    },
+    {
+      question: 'Can I try it before booking a demo?',
+      answer: 'Yes. You can start free from the sign-up page, or book a demo if you want a walkthrough first.'
+    }
+  ];
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(({ question, answer }) => ({
+      '@type': 'Question',
+      name: question,
+      acceptedAnswer: { '@type': 'Answer', text: answer }
+    }))
+  };
+
+  function jsonLdScript(value) {
+    return '<script type="application/ld+json">' + JSON.stringify(value) + '<' + '/script>';
+  }
 
   const workflow = [
     {
@@ -201,11 +248,12 @@
 </script>
 
 <svelte:head>
-  <title>Customer academy software for SaaS | ClassroomIO</title>
+  <title>Customer academy software for SaaS teams | ClassroomIO</title>
   <meta
     name="description"
-    content="Launch a branded academy. Onboarding, feature adoption, admin training, and certification under your own domain, with an AI tutor in every lesson."
+    content="Customer academy software that runs on your own domain. Train customers on onboarding and features, certify power users, and put an AI tutor in every lesson."
   />
+  {@html jsonLdScript(faqJsonLd)}
 </svelte:head>
 
 <section class="bg-white">
@@ -216,12 +264,13 @@
         Customer Education
       </Badge>
       <h1 class="text-display text-balance text-gray-950">
-        Launch an academy<br />
-        <em class="text-blue-700 not-italic">customers actually love.</em>
+        Customer academy software<br />
+        <em class="text-blue-700 not-italic">customers actually finish.</em>
       </h1>
       <HeroSubtitle class="mx-auto">
-        Turn your help docs, onboarding videos, and product knowledge into a branded learning portal. Train customers,
-        certify power users, and drive adoption under your own domain, with an AI tutor in every lesson.
+        Customer academy software is a learning platform where you teach customers your product: onboarding courses,
+        feature training, and certifications on your own domain. ClassroomIO adds an AI tutor to every lesson and shows
+        you who finished.
       </HeroSubtitle>
       <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
         <CtaButton data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</CtaButton>
@@ -379,6 +428,23 @@
   <VsHelpDocs bgClass="bg-white" />
 
   <MultiAcademySection />
+
+  <Section class="bg-white">
+    <SectionHeader eyebrow="FAQ" eyebrowClass="text-blue-700" titleClass="" class="mb-12">
+      {#snippet title()}Customer academy software, answered.{/snippet}
+    </SectionHeader>
+
+    <Accordion.Root type="single" class="mx-auto flex w-full max-w-[800px] flex-col gap-2">
+      {#each faqs as faq, index (faq.question)}
+        <Accordion.Item value="faq-{index}" class="rounded-md border-b-0! bg-gray-50">
+          <Accordion.Trigger class="items-center! px-6 py-5! hover:no-underline!">
+            <h3 class="text-card-title">{faq.question}</h3>
+          </Accordion.Trigger>
+          <Accordion.Content class="px-6 pb-6! text-[15px] leading-relaxed">{faq.answer}</Accordion.Content>
+        </Accordion.Item>
+      {/each}
+    </Accordion.Root>
+  </Section>
 
   <PageSignupCTA
     variant="brand"
