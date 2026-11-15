@@ -15,7 +15,8 @@ const saasDefaults = {
     'https://youtube.com',
     'https://google.com',
     'https://apis.google.com',
-    'https://accounts.google.com'
+    'https://accounts.google.com',
+    'https://www.desmos.com'
   ],
   styleSrc: [
     'https://cdn.plyr.io',
@@ -44,7 +45,8 @@ const saasDefaults = {
     'https://o476906.ingest.us.sentry.io',
     'https://*.vimeo.com',
     'https://vimeo.com',
-    'https://*.vimeocdn.com'
+    'https://*.vimeocdn.com',
+    'https://www.desmos.com'
   ],
   frameSrc: [
     'https://www.youtube.com',
