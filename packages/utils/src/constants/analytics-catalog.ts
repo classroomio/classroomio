@@ -74,7 +74,7 @@ export const ANALYTICS_METRIC_DESCRIPTIONS: Record<TAnalyticsMetric, string> = {
   is_inactive: 'Whether the learner has not signed in for two or more days, or has never signed in.',
   is_low_score: 'Whether the learner average score is under 50 percent.',
   is_low_video: 'Whether the learner video completion is under 60 percent.',
-  is_at_risk: 'Whether the learner is inactive, low-scoring, overdue, or has not logged in for two or more days.',
+  is_at_risk: 'Whether is_completed_all is false and the learner is inactive, low-scoring or overdue.',
   status: 'The derived learner status: completed, at_risk, lagging or on_track.',
   status_rank: 'A sort rank next to the status so at_risk sorts first, then lagging, on_track and completed.',
   correct_pct: 'Percentage of the question points earned on the best graded submission.',
