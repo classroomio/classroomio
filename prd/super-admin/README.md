@@ -20,7 +20,7 @@ The panel has no user account of its own. Access is controlled by a single `SUPE
 2. **Auth pattern**: `X-Super-Admin-Key` request header checked against `SUPER_ADMIN_PASSWORD` env var via timing-safe comparison on the API side. Same approach as `QUEUE_DASHBOARD_PASSWORD` in `apps/api/src/routes/admin/queues.ts`.
 3. **Password gate UX**: Custom login form in the admin app. Password stored in `sessionStorage` — survives page refresh, cleared on tab close.
 4. **API proxy**: `apps/admin/src/hooks.server.ts` forwards `/api/*` → `PRIVATE_SERVER_URL`. Client code calls `/api/admin/users` etc. No tenant routing complexity needed — this is internal only.
-5. **Impersonation**: Reuses `mintLoginLinkToken` from `packages/db/src/auth/login-link.ts`. Admin opens the resulting URL (`https://app.classroomio.com/api/auth/login-link?token=...&redirect=/home`) in a new tab. TTL: 60 minutes.
+5. **Impersonation**: Reuses `mintLoginLinkToken` from `packages/db/src/auth/login-link.ts`. Admin opens the resulting URL (`https://app.classroomio.com/api/auth/login-link?token=...&redirect=/home`) in a new tab. TTL: 60 minutes, and each URL can be opened once, so mint a new link for each impersonation.
 6. **AI credits**: `aiCreditBalance` is per-org. The UI shows a user's admin orgs with current credit balance; operator enters an amount to add. Calls existing `upsertCreditBalance` query.
 7. **Org creation**: Reuses `createOrganization` + `createOrganizationMember` query pattern, accepting a target `userId` instead of the session user.
 

@@ -50,7 +50,7 @@ Query parameters:
 | Parameter | Required | Description |
 | --- | --- | --- |
 | `token` | Yes | The signed JWT. |
-| `redirect` | No | A ClassroomIO path to open after login. Must start with `/`. Invalid external URLs are ignored and users are sent to `/`. |
+| `redirect` | No | A ClassroomIO path to open after login, such as `/courses/my-course`. Must be a same-origin path that starts with a single `/`. Absolute URLs, protocol-relative values (`//host`), and values containing backslashes or control characters are ignored and users are sent to `/`. |
 
 Example:
 
@@ -149,7 +149,7 @@ Verify that the JWT includes `sub`, `email`, `iat`, and `exp`, and that `email` 
 
 ### Redirect sends users to `/`
 
-The `redirect` value must be a relative path that starts with `/`. External URLs are ignored for safety.
+The `redirect` value must be a same-origin path that starts with a single `/`, such as `/courses/my-course`. External URLs, protocol-relative values such as `//example.com`, and values containing backslashes or control characters are ignored for safety.
 
 ## Security Notes
 

@@ -34,13 +34,11 @@ export class LiveSessionReminderApi extends BaseApiWithErrors {
         this.pagination = response.pagination;
         this.success = true;
       },
-      onError: (result) => {
+      onError: () => {
         if (requestSeq !== this.requestSeq) return;
 
         this.deliveries ??= [];
-        if (typeof result === 'string') {
-          snackbar.error('course.navItem.settings.live_session_reminders.log.load_error');
-        }
+        snackbar.error('course.navItem.settings.live_session_reminders.log.load_error');
       }
     });
   }

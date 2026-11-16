@@ -23,7 +23,6 @@ import {
   createCourse,
   deleteCourse,
   getCourse,
-  getCourseAnalytics,
   updateCourse
 } from '@cio/core/services/course/course';
 import { getCourseProgressForRequester } from '@api/services/course/progress-access';
@@ -39,6 +38,7 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { getEventSource } from '@api/utils/event-source';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
+import { getCourseLandingPage } from '@api/services/course/landing-page';
 import {
   courseTemplateActionsRouter,
   courseTemplateRouter,
@@ -126,11 +126,7 @@ export const courseRouter = new Hono()
   .get('/slug/:slug', zValidator('param', ZCourseGetBySlugParam), async (c) => {
     try {
       const { slug } = c.req.valid('param');
-      const course = await getCourse(undefined, slug);
-
-      if (!course.isPublished) {
-        throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-      }
+      const course = await getCourseLandingPage(slug);
 
       return c.json(
         {
@@ -517,33 +513,6 @@ export const courseRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to evaluate certification');
-      }
-    }
-  )
-  /**
-   * GET /course/:courseId/analytics
-   * Gets course analytics including student progress, completion rates, and grades
-   * Requires authentication and course membership (admin/tutor role)
-   */
-  .get(
-    '/:courseId/analytics',
-    authMiddleware,
-    courseTeamMemberMiddleware,
-    zValidator('param', ZCourseProgressParam),
-    async (c) => {
-      try {
-        const { courseId } = c.req.valid('param');
-        const analytics = await getCourseAnalytics(courseId);
-
-        return c.json(
-          {
-            success: true,
-            data: analytics
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch course analytics');
       }
     }
   )

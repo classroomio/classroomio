@@ -12,13 +12,13 @@
   const exportDocument = $derived(
     data.analytics
       ? buildUserAnalyticsExportDocument(data.analytics, {
-          course: $t('analytics.courses'),
-          lessonsCompleted: $t('analytics.lessons_completed'),
+          course: $t('student_progress.courses'),
+          lessonsCompleted: $t('student_progress.lessons_completed'),
           lessons: $t('course.navItem.lessons.heading_v2'),
-          exercisesCompleted: $t('analytics.exercises_completed'),
-          exercises: $t('analytics.exercises'),
-          progress: $t('analytics.progress'),
-          averageGrade: $t('analytics.total_average_grade')
+          exercisesCompleted: $t('student_progress.exercises_completed'),
+          exercises: $t('student_progress.exercises'),
+          progress: $t('student_progress.progress'),
+          averageGrade: $t('student_progress.total_average_grade')
         })
       : null
   );

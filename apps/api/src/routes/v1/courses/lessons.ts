@@ -20,6 +20,7 @@ import {
 import { createPublicApiLessonService, updatePublicApiLessonService } from '@api/services/v1/lessons/lesson';
 
 import { Hono } from '@api/utils/hono';
+import { getChangeAttribution } from '@api/utils/change-attribution';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
@@ -181,7 +182,13 @@ export const v1CourseLessonsRouter = new Hono()
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
-        const lesson = await createPublicApiLessonService(orgId, actorId, c.req.valid('param'), c.req.valid('json'));
+        const lesson = await createPublicApiLessonService(
+          orgId,
+          actorId,
+          c.req.valid('param'),
+          c.req.valid('json'),
+          getChangeAttribution(c)
+        );
 
         return c.json({ success: true, data: lesson }, 201);
       } catch (error) {
@@ -208,7 +215,13 @@ export const v1CourseLessonsRouter = new Hono()
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
-        const lesson = await updatePublicApiLessonService(orgId, actorId, c.req.valid('param'), c.req.valid('json'));
+        const lesson = await updatePublicApiLessonService(
+          orgId,
+          actorId,
+          c.req.valid('param'),
+          c.req.valid('json'),
+          getChangeAttribution(c)
+        );
 
         return c.json({ success: true, data: lesson }, 200);
       } catch (error) {

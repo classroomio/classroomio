@@ -74,9 +74,11 @@ vi.mock('@api/services/v1/tags', () => ({
 }));
 
 vi.mock('@api/services/v1/courses/course', () => ({
-  createPublicApiCourseService: vi.fn(),
+  createPublicApiCourseService: vi.fn().mockResolvedValue({ course: { isPublished: false } }),
   deletePublicApiCourseService: vi.fn(),
-  exportCourseService: vi.fn(),
+  exportCourseService: vi.fn().mockResolvedValue({ courseId: 'course-id', draft: {} }),
+  publishPublicApiCourseService: vi.fn().mockResolvedValue({ published: true, course: {}, blockers: [] }),
+  unpublishPublicApiCourseService: vi.fn().mockResolvedValue({ course: {} }),
   getCourseService: vi.fn(),
   listCoursesService: vi.fn().mockResolvedValue({ items: [], pagination: {}, query: {} }),
   listCourseStudentsService: vi.fn(),
@@ -96,10 +98,6 @@ const TAG_ID = '22222222-2222-4222-8222-222222222222';
 
 // DEFAULT_SCOPES.mcp in services/organization/automation-key.ts.
 const MCP_DEFAULT_SCOPES = [
-  'course_import:draft:create',
-  'course_import:draft:read',
-  'course_import:draft:update',
-  'course_import:draft:publish',
   'course:read',
   'course:write',
   'course:tag:write',
@@ -167,9 +165,11 @@ describe('default MCP key across the cohort, course member, certificate, exercis
 
   it.each([
     ['GET', `/courses/${COURSE_ID}`],
-    ['POST', '/courses']
+    ['DELETE', `/courses/${COURSE_ID}`],
+    ['PUT', `/courses/${COURSE_ID}/structure`],
+    ['GET', `/courses/${COURSE_ID}/publish`]
   ])('is kept out of %s %s', async (method, path) => {
-    const response = await request(path, method, method === 'POST' ? { title: 'New course' } : undefined);
+    const response = await request(path, method);
 
     expect(response.status).toBe(403);
     expect(mocks.complete).not.toHaveBeenCalled();
@@ -182,7 +182,11 @@ describe('default MCP key across the cohort, course member, certificate, exercis
     ['POST', '/tags/groups', 'create_tag_group', 1, 201, { name: 'Topics' }],
     ['PUT', `/tags/groups/${TAG_ID}`, 'update_tag_group', 1, 200, { order: 1 }],
     ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { tagIds: [TAG_ID] }],
-    ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { addTagIds: [TAG_ID] }]
+    ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { addTagIds: [TAG_ID] }],
+    ['POST', '/courses', 'create_course', 1, 201, { title: 'New course', description: 'About it', type: 'SELF_PACED' }],
+    ['GET', `/courses/${COURSE_ID}/structure`, 'get_course_structure', 0, 200, undefined],
+    ['POST', `/courses/${COURSE_ID}/publish`, 'publish_course', 1, 200, undefined],
+    ['POST', `/courses/${COURSE_ID}/unpublish`, 'unpublish_course', 1, 200, undefined]
   ])('reaches %s %s and meters it as %s (%i credits)', async (method, path, toolName, credits, status, body) => {
     const response = await request(path, method, body);
 

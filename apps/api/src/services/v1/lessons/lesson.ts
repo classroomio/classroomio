@@ -5,6 +5,7 @@ import type {
   TPublicApiUpdateLesson
 } from '@cio/utils/validation/public-api';
 
+import type { TBlockChangeAttribution } from '@cio/utils/constants/lesson-version';
 import { createLesson, updateLessonService } from '@cio/core/services/lesson/lesson';
 import { createAssetUsage, deleteAssetUsagesByTargetSlots } from '@cio/db/queries/assets';
 import { db } from '@cio/db/drizzle';
@@ -74,22 +75,27 @@ export async function createPublicApiLessonService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseParam,
-  payload: TPublicApiCreateLesson
+  payload: TPublicApiCreateLesson,
+  attribution: TBlockChangeAttribution = {}
 ) {
   assertAutomationActor(actorId);
   await assertCourseBelongsToOrganization(orgId, params.courseId);
 
   const videos = payload.videos?.length ? await resolveLessonVideos(orgId, actorId, payload.videos) : undefined;
 
-  const lesson = await createLesson(params.courseId, {
-    title: payload.title,
-    courseId: params.courseId,
-    order: payload.order,
-    sectionId: payload.sectionId,
-    isUnlocked: payload.isUnlocked,
-    public: payload.public,
-    ...(videos ? { videos } : {})
-  });
+  const lesson = await createLesson(
+    params.courseId,
+    {
+      title: payload.title,
+      courseId: params.courseId,
+      order: payload.order,
+      sectionId: payload.sectionId,
+      isUnlocked: payload.isUnlocked,
+      public: payload.public,
+      ...(videos ? { videos } : {})
+    },
+    { actorProfileId: actorId, ...attribution }
+  );
 
   if (videos) {
     await recordLessonVideoUsage(orgId, actorId, lesson.id, videos);
@@ -102,7 +108,8 @@ export async function updatePublicApiLessonService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiLessonParam,
-  payload: TPublicApiUpdateLesson
+  payload: TPublicApiUpdateLesson,
+  attribution: TBlockChangeAttribution = {}
 ) {
   assertAutomationActor(actorId);
   await assertCourseBelongsToOrganization(orgId, params.courseId);
@@ -110,14 +117,18 @@ export async function updatePublicApiLessonService(
 
   const videos = payload.videos ? await resolveLessonVideos(orgId, actorId, payload.videos) : undefined;
 
-  const lesson = await updateLessonService(params.lessonId, {
-    title: payload.title,
-    order: payload.order,
-    isUnlocked: payload.isUnlocked,
-    public: payload.public,
-    lessonAt: payload.lessonAt,
-    ...(videos ? { videos } : {})
-  });
+  const lesson = await updateLessonService(
+    params.lessonId,
+    {
+      title: payload.title,
+      order: payload.order,
+      isUnlocked: payload.isUnlocked,
+      public: payload.public,
+      lessonAt: payload.lessonAt,
+      ...(videos ? { videos } : {})
+    },
+    { actorProfileId: actorId, ...attribution }
+  );
 
   if (videos) {
     await recordLessonVideoUsage(orgId, actorId, params.lessonId, videos);

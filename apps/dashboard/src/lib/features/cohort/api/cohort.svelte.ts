@@ -150,8 +150,7 @@ class CohortApi extends BaseApiWithErrors {
         snackbar.success(t.get('cohorts.update_success'));
       },
       onError: (result) => {
-        const message = typeof result === 'string' ? result : result.error;
-        snackbar.error(message || 'Failed to update cohort');
+        snackbar.error(result.message || 'Failed to update cohort');
       },
       logContext: 'updateCohort'
     });

@@ -173,13 +173,7 @@ export class CoursesApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          console.error('Failed to fetch recommended courses:', result);
-          return;
-        }
-        if ('error' in result) {
-          console.error('Failed to fetch recommended courses:', result.error);
-        }
+        console.error('Failed to fetch recommended courses:', result.message);
       }
     });
   }

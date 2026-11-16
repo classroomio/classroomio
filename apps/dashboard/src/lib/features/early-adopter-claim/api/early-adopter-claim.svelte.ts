@@ -43,7 +43,7 @@ class EarlyAdopterClaimApi extends BaseApi {
         this.status = 'failed';
         this.attemptedOrgId = null;
 
-        if (typeof result === 'string' || !('code' in result)) return;
+        if (!result.code) return;
 
         const terminalKey = getTerminalClaimErrorKey(result.code);
 

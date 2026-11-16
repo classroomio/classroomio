@@ -3,10 +3,12 @@ import { v1DomainRouter } from './domain';
 import { v1OrganizationCustomizationRouter } from './customization';
 import { v1EmailTemplatesRouter } from './email-templates';
 import { v1LandingPageRouter } from './landing-page';
+import { v1OrganizationOverviewRouter } from './overview';
 import { v1OrganizationProfileRouter } from './organization';
 
 export const v1OrganizationRouter = new Hono()
   .route('/', v1OrganizationProfileRouter)
+  .route('/overview', v1OrganizationOverviewRouter)
   .route('/domain', v1DomainRouter)
   .route('/customization', v1OrganizationCustomizationRouter)
   .route('/email-templates', v1EmailTemplatesRouter)

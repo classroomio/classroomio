@@ -40,8 +40,7 @@ export class ContentApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (error) => {
-        const errorMessage = typeof error === 'string' ? error : (error as any)?.error;
-        snackbar.error(errorMessage || 'Failed to update content');
+        snackbar.error(error.message || 'Failed to update content');
       }
     });
 
@@ -64,8 +63,7 @@ export class ContentApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (error) => {
-        const errorMessage = typeof error === 'string' ? error : (error as any)?.error;
-        snackbar.error(errorMessage || 'Failed to delete content');
+        snackbar.error(error.message || 'Failed to delete content');
       }
     });
 

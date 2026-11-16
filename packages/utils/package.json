@@ -49,6 +49,10 @@
       "types": "./dist/validation/*/index.d.ts",
       "default": "./dist/validation/*/index.js"
     },
+    "./validation/course/*": {
+      "types": "./dist/validation/course/*.d.ts",
+      "default": "./dist/validation/course/*.js"
+    },
     "./functions": {
       "types": "./dist/functions/index.d.ts",
       "default": "./dist/functions/index.js"
@@ -96,6 +100,10 @@
     "./certificate/*": {
       "types": "./dist/certificate/*.d.ts",
       "default": "./dist/certificate/*.js"
+    },
+    "./analytics": {
+      "types": "./dist/analytics/index.d.ts",
+      "default": "./dist/analytics/index.js"
     }
   },
   "scripts": {

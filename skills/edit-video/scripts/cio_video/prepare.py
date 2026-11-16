@@ -31,9 +31,13 @@ def denoise_filter():
     return f'arnndn=m={denoise_model()},afftdn=nf=-35'
 
 
-def master_filter(loudness):
+def master_filter(audio):
+    """The recording's own sound with one fixed gain, unless the project opts in to mastering."""
+    if not audio['master']:
+        return f"volume={audio['gain_db']:.2f}dB"
+
     return ('highpass=f=80,lowpass=f=14000,acompressor=threshold=-22dB:ratio=3:attack=5:release=120:makeup=2,'
-            f'loudnorm=I={loudness}:TP=-1.5:LRA=9')
+            f"loudnorm=I={audio['loudness']}:TP=-1.5:LRA=9")
 
 
 def resolve_window(project, clip, words):
@@ -160,8 +164,8 @@ def timeline_info(clip, tokens, raw_duration, removed, trimmed):
     }
 
 
-def mix_audio(trimmed, hook, duration, total, loudness, out_path):
-    """Hook (optional) + main audio, mastered, faded out at the end and padded to `total`."""
+def mix_audio(trimmed, hook, duration, total, audio, out_path):
+    """Hook (optional) + main audio, faded out at the end and padded to `total`."""
     lead = 0.0 if hook is None else hook['end'] - hook['start']
     parts, labels = [], []
     if hook:
@@ -170,7 +174,7 @@ def mix_audio(trimmed, hook, duration, total, loudness, out_path):
         labels.append('[h]')
     parts.append('[0:a]asetpts=PTS-STARTPTS,afade=t=in:d=0.03[m];')
     labels.append('[m]')
-    graph = (''.join(parts) + ''.join(labels) + f'concat=n={len(labels)}:v=0:a=1,{master_filter(loudness)},'
+    graph = (''.join(parts) + ''.join(labels) + f'concat=n={len(labels)}:v=0:a=1,{master_filter(audio)},'
              f'afade=t=out:st={lead + duration - 0.6:.3f}:d=0.6,apad=whole_dur={total:.3f}[a]')
     run(['ffmpeg', '-y', '-v', 'error', '-i', trimmed, '-filter_complex', graph, '-map', '[a]', '-ar', '48000',
          '-c:a', 'pcm_s16le', out_path])

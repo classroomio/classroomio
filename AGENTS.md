@@ -149,6 +149,8 @@ export type TUpdateProfile = z.infer<typeof ZUpdateProfile>;
 ### Step 2: Database query
 Put all direct database access in pure query functions under `packages/db/src/queries/{domain}/`. Routes and services never call Drizzle/`db` (or equivalent) directly—they import and compose these helpers.
 
+**Exercises are standalone course items.** Exercises belong directly to courses and sections (`course_id` and `section_id`), not lessons. Never join `lesson` or read `exercise.lesson_id` to resolve an exercise's course, section, or progress.
+
 ```typescript
 // packages/db/src/queries/auth/profile.ts
 export async function updateProfile(userId: string, data: Partial<TProfile>) {
@@ -208,12 +210,12 @@ export const app = new Hono().route('/account', accountRouter);
 ```typescript
 // apps/api/src/routes/internal/index.ts
 import { Hono } from '@api/utils/hono';
-import { internalAnalyticsRouter } from './analytics';
+import { internalAccountRouter } from './account';
 import { internalComplianceRouter } from './compliance';
 
 export const internalRouter = new Hono()
   .route('/compliance', internalComplianceRouter)
-  .route('/analytics', internalAnalyticsRouter);
+  .route('/account', internalAccountRouter);
 
 // apps/api/src/app.ts
 import { internalRouter } from '@api/routes/internal';
@@ -225,12 +227,12 @@ export const app = new Hono().route('/internal', internalRouter);
 ```typescript
 // apps/api/src/routes/internal/index.ts
 import { Hono } from '@api/utils/hono';
-import { internalAnalyticsRouter } from './analytics';
+import { internalAccountRouter } from './account';
 import { internalComplianceRouter } from './compliance';
 
 export const internalRouter = new Hono()
   .route('/compliance', internalComplianceRouter)
-  .route('/analytics', internalAnalyticsRouter);
+  .route('/account', internalAccountRouter);
 
 // apps/api/src/app.ts
 import { internalRouter } from '@api/routes/internal';
@@ -313,6 +315,18 @@ For response shapes that need a small normalization (e.g. API returns `JSONValue
 
 ### API Class Pattern
 API classes handle all logic; components should be thin.
+
+### Dashboard API error handling
+- `BaseApi.execute()` normalizes every failure (except aborted requests,
+  which return silently) to `NormalizedApiError`
+  (`apps/dashboard/src/lib/utils/services/api/errors.ts`) before calling
+  `onError`. Handlers receive one typed shape — never a bare `string`.
+- Use `hasErrorCode(error, ...)` / `matchesError(error, { code, field })`
+  instead of hand-rolled `typeof` / `in` narrowing. Read `error.message`,
+  `error.code`, `error.field` directly, and use `ErrorCodes` constants.
+- Structured errors cross into components only as `NormalizedApiError`
+  (via `api.lastError`). `api.error` is a plain display string — never
+  parse it as JSON.
 
 ### Translations (UI copy)
 
@@ -810,6 +824,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 ### ❌ DON'T
 - Put business logic in routes or queries
 - Include validation in queries (belongs in routes)
+- **Link exercises to lessons in database queries** — exercises are standalone course items that belong directly to courses and sections (`course_id` and `section_id`); `exercise.lesson_id` is deprecated and must never be joined or used to resolve an exercise's course, section, or progress
 - Handle HTTP concerns in services
 - Skip client-side validation
 - Let components handle validation, navigation, or snackbar

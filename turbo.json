@@ -6,7 +6,7 @@
       "outputs": ["src/output.css"]
     },
     "@cio/dashboard#build": {
-      "dependsOn": ["@cio/api#build", "@cio/ui#build", "@cio/db#build", "@cio/analytics#build"],
+      "dependsOn": ["@cio/api#build", "@cio/ui#build", "@cio/db#build", "@cio/tracking#build"],
       "outputs": [".svelte-kit/**", "build/**"]
     },
     "build": {

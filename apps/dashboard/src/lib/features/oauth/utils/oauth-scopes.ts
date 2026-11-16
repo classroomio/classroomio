@@ -3,7 +3,6 @@ import type { OAuthScopeAccess, OAuthScopeGroupKey, OAuthScopeSummary } from './
 export const OFFLINE_ACCESS_SCOPE = 'offline_access';
 
 const SCOPE_GROUP_PREFIXES: Array<[string, OAuthScopeGroupKey]> = [
-  ['course_import:', 'courses'],
   ['course:exercise:', 'exercises'],
   ['course:member:', 'course_members'],
   ['course:student:', 'course_members'],

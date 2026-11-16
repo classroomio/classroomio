@@ -49,7 +49,7 @@
         if (cohortNewsfeedApi.success) {
           resetEditor();
         } else {
-          snackbar.error(getErrorKey(cohortNewsfeedApi.error, 'update'));
+          snackbar.error(getErrorKey(cohortNewsfeedApi.lastError, 'update'));
         }
       } else {
         await cohortNewsfeedApi.create(cohortId, {
@@ -60,11 +60,11 @@
         if (cohortNewsfeedApi.success) {
           resetEditor();
         } else {
-          snackbar.error(getErrorKey(cohortNewsfeedApi.error, 'create'));
+          snackbar.error(getErrorKey(cohortNewsfeedApi.lastError, 'create'));
         }
       }
     } catch {
-      snackbar.error(getErrorKey(cohortNewsfeedApi.error, edit ? 'update' : 'create'));
+      snackbar.error(getErrorKey(cohortNewsfeedApi.lastError, edit ? 'update' : 'create'));
     } finally {
       isLoading = false;
     }

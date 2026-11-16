@@ -18,7 +18,7 @@ import type {
   WebhookFormFields
 } from '$features/automation/utils/types';
 import { WEBHOOK_DELIVERIES_PAGE_SIZE } from '$features/automation/utils/webhook-utils';
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, type NormalizedApiError } from '$lib/utils/services/api';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation/validation';
 
 import { snackbar } from '$features/ui/snackbar/store';
@@ -252,13 +252,11 @@ class WebhookApi extends BaseApiWithErrors {
     this.webhooks = (this.webhooks ?? []).map((webhook) => (webhook.id === updated.id ? updated : webhook));
   }
 
-  private applyServerError(result: Parameters<BaseApiWithErrors['handleValidationError']>[0] | string) {
-    if (typeof result === 'string') return;
-
+  private applyServerError(result: NormalizedApiError) {
     this.handleValidationError(result);
 
-    if ('field' in result && result.field) {
-      this.errors[result.field] = result.error;
+    if (result.field) {
+      this.errors[result.field] = result.message;
     }
   }
 }

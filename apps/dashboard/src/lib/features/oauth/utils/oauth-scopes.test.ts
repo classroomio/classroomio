@@ -11,12 +11,7 @@ import {
 
 describe('summarizeOAuthScopes', () => {
   it('collapses scopes of the same area and keeps the highest access', () => {
-    const summary = summarizeOAuthScopes([
-      'course:read',
-      'course:write',
-      'course:tag:write',
-      'course_import:draft:read'
-    ]);
+    const summary = summarizeOAuthScopes(['course:read', 'course:write', 'course:tag:write']);
 
     expect(summary).toEqual([{ group: 'courses', access: 'write' }]);
   });

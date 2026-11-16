@@ -64,15 +64,10 @@ export class CourseCloneApi extends BaseApiWithErrors {
         snackbar.success(t.get('courses.copy_course.success.course_cloned'));
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-        if ('error' in result && 'field' in result) {
-          // Field-specific error automatically mapped to this.errors[field]
-          this.errors[result.field as string] = result.error;
-        } else if ('error' in result) {
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          snackbar.error(result.message);
         }
       }
     });

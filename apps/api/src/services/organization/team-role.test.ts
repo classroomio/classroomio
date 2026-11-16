@@ -19,7 +19,12 @@ vi.mock('@cio/core/services/organization/course-roles', () => ({
   scheduleCourseRoleReconcile: vi.fn()
 }));
 
+vi.mock('./team-role-email', () => ({
+  sendTeamRoleChangedEmail: vi.fn()
+}));
+
 import { updateTeamMemberRole } from './team-role';
+import { sendTeamRoleChangedEmail } from './team-role-email';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { db } from '@cio/db/drizzle';
 import {
@@ -120,6 +125,25 @@ describe('updateTeamMemberRole', () => {
     expect(updateActiveOrganizationInviteRoleByEmail).toHaveBeenCalledWith(ORG_ID, 'tutor@example.com', ROLE.ADMIN, tx);
     expect(scheduleCourseRoleReconcile).toHaveBeenCalledWith(ORG_ID, 'profile-2');
     expect(result.roleId).toBe(ROLE.ADMIN);
+  });
+
+  it('emails the member about the role change', async () => {
+    await updateTeamMemberRole(ORG_ID, MEMBER_ID, ROLE.ADMIN, ACTOR_ID);
+
+    expect(sendTeamRoleChangedEmail).toHaveBeenCalledWith({
+      orgId: ORG_ID,
+      memberEmail: 'tutor@example.com',
+      memberProfileId: 'profile-2',
+      previousRoleId: ROLE.TUTOR,
+      roleId: ROLE.ADMIN,
+      actorProfileId: ACTOR_ID
+    });
+  });
+
+  it('does not email when the role is unchanged', async () => {
+    await updateTeamMemberRole(ORG_ID, MEMBER_ID, ROLE.TUTOR, ACTOR_ID);
+
+    expect(sendTeamRoleChangedEmail).not.toHaveBeenCalled();
   });
 
   it('skips invite and course-role sync when the member has not joined', async () => {

@@ -11,6 +11,7 @@ import type {
   TPublicApiCourseLessonTranslationsQuery,
   TPublicApiSetCourseLessonTranslation
 } from '@cio/utils/validation/public-api';
+import type { TBlockChangeAttribution } from '@cio/utils/constants/lesson-version';
 import { assertAutomationActor, assertCourseTeamAccess, assertLessonInCourse } from '../shared';
 import { toPublicTranslation } from './lessons';
 
@@ -35,7 +36,8 @@ export async function setPublicApiCourseLessonTranslationService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseLessonTranslationParam,
-  payload: TPublicApiSetCourseLessonTranslation
+  payload: TPublicApiSetCourseLessonTranslation,
+  attribution: TBlockChangeAttribution = {}
 ) {
   assertAutomationActor(actorId);
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
@@ -44,7 +46,7 @@ export async function setPublicApiCourseLessonTranslationService(
   const language = await upsertLessonLanguageService(
     params.lessonId,
     { locale: params.locale, content: payload.content },
-    { authorId: actorId, versionIntent: payload.versionIntent, versionLabel: payload.versionLabel }
+    { authorId: actorId, versionIntent: payload.versionIntent, versionLabel: payload.versionLabel, ...attribution }
   );
 
   return toPublicTranslation(language);
@@ -62,20 +64,22 @@ export async function listPublicApiCourseLessonHistoryService(
   const page = await getLessonTextHistoryService(params.lessonId, query.locale, query.limit, query.cursor);
 
   return {
-    items: page.items.map((version: Record<string, unknown>) => ({
-      id: version.id as number,
-      locale: version.locale as string,
-      kind: version.kind as string,
-      label: version.label as string | null,
-      oldContent: version.oldContent as string | null,
-      newContent: version.newContent as string | null,
-      timestamp: version.timestamp as string,
-      sessionStartedAt: version.sessionStartedAt as string,
-      editCount: version.editCount as number,
-      isSealed: version.isSealed as boolean,
-      authorId: version.authorId as string | null,
-      authorName: version.authorName as string | null,
-      blockId: version.blockId as string
+    items: page.items.map((version) => ({
+      id: version.id,
+      locale: version.locale,
+      kind: version.kind,
+      label: version.label,
+      oldContent: version.oldContent,
+      newContent: version.newContent,
+      timestamp: version.timestamp,
+      sessionStartedAt: version.sessionStartedAt,
+      editCount: version.editCount,
+      isSealed: version.isSealed,
+      authorId: version.authorId,
+      authorName: version.authorName,
+      source: version.source ?? 'editor',
+      clientName: version.clientName,
+      blockId: version.blockId
     })),
     nextCursor: page.nextCursor ? `${page.nextCursor.timestamp}|${page.nextCursor.id}` : null
   };

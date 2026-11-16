@@ -4,8 +4,11 @@
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { ExternalLinkIcon, HomeIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
-  import { MachineBrokenTrack } from '@cio/ui/custom/animation';
+  import { MachineBrokenTrack, MachineRunnerBorder } from '@cio/ui/custom/animation';
 
+  let runnerState = $state({ status: 'idle', passed: 0, isNewRecord: false });
+
+  const isPlaying = $derived(runnerState.status !== 'idle');
   const isNotFound = $derived(page.status === 404);
   const isOrgSite = $derived(Boolean(page.data.isOrgSite));
 
@@ -30,9 +33,13 @@
   <title>{isNotFound ? 'Page not found' : 'Something unexpected occurred'}</title>
 </svelte:head>
 
+{#snippet gameBorder()}
+  <MachineRunnerBorder snapshot={runnerState} />
+{/snippet}
+
 {#snippet brokenTrack()}
-  <div class="mx-auto h-52 w-full max-w-[340px]" style:--machine-face="var(--background)">
-    <MachineBrokenTrack />
+  <div class="mx-auto w-full {isPlaying ? '' : 'h-72 max-w-[480px]'}" style:--machine-face="var(--background)">
+    <MachineBrokenTrack onstatechange={(next) => (runnerState = next)} />
   </div>
 {/snippet}
 
@@ -44,6 +51,9 @@
     layout="full-page"
     showLogo={true}
     media={brokenTrack}
+    size="lg"
+    mediaOnly={isPlaying}
+    overlay={isPlaying ? gameBorder : undefined}
   >
     <div class="flex items-center gap-2">
       {#if isOrgSite}
@@ -67,6 +77,9 @@
     layout="full-page"
     showLogo={true}
     media={brokenTrack}
+    size="lg"
+    mediaOnly={isPlaying}
+    overlay={isPlaying ? gameBorder : undefined}
   >
     <div class="flex gap-2">
       <HoverableItem>

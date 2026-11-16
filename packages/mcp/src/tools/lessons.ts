@@ -1,7 +1,21 @@
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 import * as z from 'zod';
+
+const CREATE: ToolAnnotations = {
+  title: 'Create lesson',
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: false
+};
+const UPDATE: ToolAnnotations = {
+  title: 'Update lesson',
+  readOnlyHint: false,
+  destructiveHint: true,
+  idempotentHint: true
+};
 
 const ZLessonVideo = z.union([
   z.object({
@@ -55,8 +69,9 @@ const updateLessonShape = ZUpdateLessonToolInput.shape as unknown as ZodRawShape
 export function registerLessonTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'create_lesson',
-    'Create a lesson in a course, optionally with videos (each becomes a video block; add notes and slides with add_lesson_block). Attaching an uploaded video here is what starts its thumbnail and adaptive-bitrate encoding, plus a transcript when the server has it configured.',
+    'Create a lesson directly in the selected course; videos become video blocks, and add notes and slides with add_lesson_block. Attaching an uploaded video starts thumbnailing and adaptive-bitrate encoding, plus transcription when configured.',
     createLessonShape,
+    CREATE,
     async (args) => {
       const { courseId, ...payload } = ZCreateLessonToolInput.parse(args);
       const result = await apiClient.createLesson(courseId, payload);
@@ -67,8 +82,9 @@ export function registerLessonTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'update_lesson',
-    "Update a lesson, leaving omitted fields unchanged. Supplying videos replaces the lesson's video blocks entirely; prefer the block tools to change one block.",
+    "Update a lesson directly in the selected course; omitted fields stay unchanged. Supplying videos replaces the lesson's video blocks entirely, so prefer the block tools to change one block.",
     updateLessonShape,
+    UPDATE,
     async (args) => {
       const { courseId, lessonId, ...payload } = ZUpdateLessonToolInput.parse(args);
       const result = await apiClient.updateLesson(courseId, lessonId, payload);

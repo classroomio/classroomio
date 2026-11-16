@@ -1,4 +1,4 @@
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, hasErrorCode, type NormalizedApiError } from '$lib/utils/services/api';
 import { ErrorCodes } from '@cio/utils/constants';
 import { ZCreateCourseFromTemplate, ZSaveCourseTemplate } from '@cio/utils/validation/course';
 import type { SyncableSettingKey } from '@cio/utils/validation/course';
@@ -341,21 +341,12 @@ export class CourseTemplateApi extends BaseApiWithErrors {
     }
   }
 
-  private reportError(result: unknown) {
-    if (typeof result === 'string') {
-      snackbar.error(result);
-      return;
-    }
-
-    if (!result || typeof result !== 'object') return;
-
-    if ('code' in result && result.code === ErrorCodes.UPGRADE_REQUIRED) {
+  private reportError(result: NormalizedApiError) {
+    if (hasErrorCode(result, ErrorCodes.UPGRADE_REQUIRED)) {
       markTemplateLimitReached();
     }
 
-    if ('error' in result && typeof result.error === 'string') {
-      snackbar.error(result.error);
-    }
+    snackbar.error(result.message);
   }
 }
 

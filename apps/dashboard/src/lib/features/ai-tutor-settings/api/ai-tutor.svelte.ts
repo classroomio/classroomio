@@ -64,8 +64,8 @@ class AiTutorApi extends BaseApiWithErrors {
           snackbar.success('aiTutor.snackbar.saved');
         },
         onError: (result) => {
-          if (typeof result !== 'string' && 'field' in result && result.field) {
-            this.errors[result.field] = result.error;
+          if (result.field) {
+            this.errors[result.field] = result.message;
           }
         }
       });

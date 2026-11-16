@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { sanitizeHtml } from '../../utils/sanitize-html';
 import type { TLesson, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
+import type { TBlockChangeSource } from '@cio/utils/constants/lesson-version';
 import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
 import {
   createLessonComment,
@@ -39,6 +40,7 @@ import {
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
+import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
 import { emitCourseWebhookEvent } from '../webhook/emit';
 import { captureCourseEvent } from '../posthog';
 
@@ -53,7 +55,7 @@ export { getLessonHistoryService, getLessonTextHistoryService, type LessonStruct
 export async function createLesson(
   courseId: string,
   data: TLessonCreate,
-  options: { actorProfileId?: string | null } = {}
+  options: { actorProfileId?: string | null; source?: TBlockChangeSource; clientName?: string | null } = {}
 ): Promise<TLesson> {
   try {
     const slug = await resolveItemSlug({
@@ -77,7 +79,12 @@ export async function createLesson(
         await applyLegacyLessonContent(
           inserted.id,
           { note, videos },
-          { actorProfileId: options.actorProfileId, dbClient: tx }
+          {
+            actorProfileId: options.actorProfileId,
+            source: options.source,
+            clientName: options.clientName,
+            dbClient: tx
+          }
         );
       }
 
@@ -89,6 +96,7 @@ export async function createLesson(
     const lesson = await attachBlocksToLesson(createdLesson);
 
     await touchCourseUpdatedAt(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
 
     if (data.lessonAt) {
       await emitCourseWebhookEvent(courseId, 'lesson.session.scheduled', {
@@ -159,7 +167,7 @@ function hasSessionMoved(
 export async function updateLessonService(
   lessonId: string,
   data: TLessonUpdate,
-  options: { actorProfileId?: string | null } = {}
+  options: { actorProfileId?: string | null; source?: TBlockChangeSource; clientName?: string | null } = {}
 ): Promise<TLesson> {
   try {
     const { patch: contentPatch, rest } = splitLegacyContent(data);
@@ -196,6 +204,8 @@ export async function updateLessonService(
       if (row) {
         await applyLegacyLessonContent(lessonId, contentPatch, {
           actorProfileId: options.actorProfileId,
+          source: options.source,
+          clientName: options.clientName,
           dbClient: tx
         });
       }
@@ -209,6 +219,16 @@ export async function updateLessonService(
 
     if (updated.courseId) {
       await touchCourseUpdatedAt(updated.courseId);
+
+      const hasStructureChange =
+        payload.title !== undefined ||
+        payload.order !== undefined ||
+        payload.sectionId !== undefined ||
+        payload.isUnlocked !== undefined;
+
+      if (hasStructureChange) {
+        void invalidateAnalyticsCourseStructure(updated.courseId);
+      }
     }
 
     if (existing && hasSessionMoved(existing, updated)) {
@@ -266,6 +286,7 @@ export async function deleteLessonService(lessonId: string): Promise<TLesson> {
 
     if (deleted.courseId) {
       await touchCourseUpdatedAt(deleted.courseId);
+      void invalidateAnalyticsCourseStructure(deleted.courseId);
     }
 
     return deleted;
