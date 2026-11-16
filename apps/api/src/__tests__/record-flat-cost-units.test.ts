@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/agent', () => ({
+  MATH_VISION_USAGE_PREFIX: 'math-vision/',
+  MATH_VISION_USAGE_PREFIX: 'math-vision/',
   aggregateTokenUsageByUser: vi.fn(),
   countRequests: vi.fn(),
   getDailyTokenUsageHistory: vi.fn(),

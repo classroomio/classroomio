@@ -83,7 +83,7 @@ exports[`public API course student contract > ZPublicApiCreateStudentSubmission 
             "type": "integer",
           },
           "seed": {
-            "description": "Parameterised questions only: the variant seed the student was shown, which the server uses to re-derive the numbers and the answer key. Required for a question that defines variables.",
+            "description": "Parameterised questions only: the variant seed the student was shown, used to re-derive the numbers and answer key. Required when the question has variables.",
             "maxLength": 64,
             "minLength": 1,
             "type": "string",
