@@ -26,6 +26,7 @@ import {
   type TPublicApiCourseExerciseNotifyParam,
   type TPublicApiCourseExerciseNotifyStatusQuery,
   type TPublicApiCourseExerciseParam,
+  type TPublicApiExerciseQuestionParam,
   type TPublicApiCourseExercisesQuery,
   type TPublicApiCourseParam,
   type TPublicApiForceQuery,
@@ -39,6 +40,8 @@ import {
 } from '@api/services/course/notify-exercise';
 import { fetchTemplateById } from '@api/services/exercise/template';
 import { regradeExerciseSubmissions } from '@api/services/submission/regrade';
+import { getAnswerClusters, resetClusterOverride, setClusterOverride } from '@api/services/submission/results';
+import type { TClusterOverrideBody, TClusterResetBody } from '@cio/utils/validation/math';
 import { createPracticeSetService } from '@api/services/practice/practice';
 import type { TPracticeCreate } from '@cio/utils/validation/practice';
 import { expandQuestionParts } from './question-parts';
@@ -624,6 +627,44 @@ export async function regradeCourseExerciseService(
   await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
 
   return regradeExerciseSubmissions(params.courseId, params.exerciseId);
+}
+
+/** Groups every student's latest answer to a question into clusters of equal answers. */
+export async function getCourseExerciseAnswerClustersService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiExerciseQuestionParam
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
+
+  return getAnswerClusters(params.courseId, params.exerciseId, params.questionId);
+}
+
+/** Records a verdict or feedback for one answer cluster and regrades the question's stored answers. */
+export async function setCourseExerciseClusterDecisionService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiExerciseQuestionParam,
+  body: TClusterOverrideBody
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
+
+  return setClusterOverride({ ...params, body, actorProfileId: actorId ?? 'public-api' });
+}
+
+/** Removes the decision on one answer cluster and regrades so its answers return to what the answer key gives. */
+export async function resetCourseExerciseClusterDecisionService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiExerciseQuestionParam,
+  body: TClusterResetBody
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
+
+  return resetClusterOverride({ ...params, key: body.key });
 }
 
 /** Builds a practice exercise from a skill or chosen questions and assigns it to the chosen students. Needs a paid plan. */

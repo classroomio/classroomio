@@ -180,6 +180,12 @@ export const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections': 'Add an exercise section',
   'PATCH /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Update an exercise section',
   'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Delete an exercise section',
+  'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}/answer-clusters':
+    'Group the answers to a question',
+  'PUT /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}/answer-clusters':
+    'Decide an answer group',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}/answer-clusters/reset':
+    'Undo the decision on an answer group',
   'POST /public-api/v1/courses/{courseId}/exercises/practice': 'Create a practice exercise',
   'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/regrade': 'Regrade an exercise',
   'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify': 'Notify course members about an exercise',

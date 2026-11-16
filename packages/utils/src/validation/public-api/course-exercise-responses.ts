@@ -73,6 +73,23 @@ export const ZPublicApiRegradeExerciseResponse = z.object({
   answersChanged: z.number().describe('Answers whose points or stored grading changed')
 });
 
+export const ZPublicApiAnswerClustersResponse = z.object({
+  questionId: z.number(),
+  points: z.number(),
+  canScore: z.boolean().describe('False for question types whose answers cannot be scored by a group decision'),
+  isParameterised: z.boolean(),
+  answered: z.number(),
+  blank: z.number(),
+  clusters: z
+    .array(z.record(z.string(), z.unknown()))
+    .describe('Groups of equal answers; each has a key, a label, a count and the students in it')
+});
+
+export const ZPublicApiClusterDecisionResponse = z.object({
+  regrade: ZPublicApiRegradeExerciseResponse,
+  clusters: ZPublicApiAnswerClustersResponse
+});
+
 export const ZPublicApiPracticeSetResponse = z.object({
   exerciseId: z.string(),
   title: z.string(),

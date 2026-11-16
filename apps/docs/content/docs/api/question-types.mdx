@@ -32,7 +32,7 @@ Exercises are made of questions. When you create or edit a question, its `questi
 
 Id `16` (hotspot) is not offered.
 
-- Math expression, worked solution, matching, graph plot, graph reading and the numeric upgrades are free on every plan. File upload, ordering, link, star rating and video recording need a paid plan. On the Basic plan they return `403` with `UPGRADE_REQUIRED`.
+- Math expression, worked solution, matching, graph plot, graph reading and the numeric upgrades are free on every plan. File upload, ordering, link, star rating and video recording need a paid plan. Variants (`settings.parameters`) and AI-suggested marking (`settings.aiGrading`) also need a paid plan. On the Basic plan these return `403` with `UPGRADE_REQUIRED`.
 - `PUBLIC` courses only accept auto-graded types, so worked solutions are not available there.
 - A new question is single choice (`1`) unless you set a type.
 
@@ -183,3 +183,10 @@ Add up the points of a stem's parts for a total per question; the submission tot
 An exercise has a `calculatorPolicy` of `none` (default), `four_function`, `scientific` or `graphing`. Send it when you create or update the exercise. It is stored on the exercise and returned with it; the take view uses it to decide which calculator to offer.
 
 Changing an answer key does not change past grades. `POST /courses/{courseId}/exercises/{exerciseId}/regrade`, or the `regrade_course_exercise` MCP tool, re-scores every submission against the current key. It keeps the points a teacher gave to manually graded questions and to the working of worked solutions.
+
+
+## Practice exercises and answer groups
+
+`POST /courses/{courseId}/exercises/practice`, or the `create_course_practice` MCP tool, builds a short practice exercise from a skill or chosen questions and assigns it to chosen students. Questions with variables get fresh numbers. It needs a paid plan.
+
+To review answers in bulk, `GET /courses/{courseId}/exercises/{exerciseId}/questions/{questionId}/answer-clusters` (MCP: `get_exercise_answer_clusters`) groups every student's latest answer into clusters of equal answers. `PUT` the same path with a group's `key` and a `verdict` (`correct`, `partial` with `points`, or `wrong`) or `feedback` (MCP: `set_answer_cluster_decision`) to decide a group. That regrades the stored answers, and later matching answers get the same decision. `POST` to `.../answer-clusters/reset` with the `key` (MCP: `reset_answer_cluster_decision`) removes the decision.

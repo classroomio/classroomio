@@ -245,6 +245,9 @@ Course exercise tools:
 - `update_exercise_section`
 - `delete_exercise_section`
 - `create_course_practice`
+- `get_exercise_answer_clusters`
+- `set_answer_cluster_decision`
+- `reset_answer_cluster_decision`
 - `regrade_course_exercise`
 - `notify_course_exercise`
 - `get_course_exercise_notify_status`

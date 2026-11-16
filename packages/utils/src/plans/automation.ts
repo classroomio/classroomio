@@ -38,6 +38,9 @@ export const MCP_TOOL_CREDIT_COST = {
   update_exercise_section: 1,
   delete_exercise_section: 1,
   create_course_practice: 1,
+  get_exercise_answer_clusters: 1,
+  set_answer_cluster_decision: 1,
+  reset_answer_cluster_decision: 1,
   regrade_course_exercise: 1,
   notify_course_exercise: 1,
   get_course_exercise_notify_status: 0,
@@ -319,6 +322,7 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_tags' ||
     toolName === 'list_skills' ||
     toolName === 'get_exercise_skill_mastery' ||
+    toolName === 'get_exercise_answer_clusters' ||
     toolName === 'get_domain' ||
     toolName === 'get_organization_customization'
   ) {

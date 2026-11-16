@@ -130,6 +130,13 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     PUT: 'update_course_exercise',
     DELETE: 'delete_course_exercise'
   },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions/:questionId/answer-clusters': {
+    GET: 'get_exercise_answer_clusters',
+    PUT: 'set_answer_cluster_decision'
+  },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions/:questionId/answer-clusters/reset': {
+    POST: 'reset_answer_cluster_decision'
+  },
   '/public-api/v1/courses/:courseId/exercises/practice': { POST: 'create_course_practice' },
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/regrade': { POST: 'regrade_course_exercise' },
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify': { POST: 'notify_course_exercise' },
