@@ -7474,6 +7474,52 @@
     "desmos": {
       "label": "Desmos API key",
       "helper": "Optional. Enables the Desmos graphing calculator in exercises set to Graphing. Without a key, students get the scientific calculator instead."
+    },
+    "variables": {
+      "heading": "Variables",
+      "helper": "Give every student different numbers. Use the variable names in double curly braces in the question and the answer key.",
+      "enable": "Make this question parameterised",
+      "disable": "Remove variables",
+      "add": "Add variable",
+      "remove": "Remove variable",
+      "name_label": "Name",
+      "type_label": "Type",
+      "type": {
+        "int": "Whole number",
+        "decimal": "Decimal",
+        "choice": "Choice"
+      },
+      "min_label": "Min",
+      "max_label": "Max",
+      "step_label": "Step",
+      "choices_label": "Values",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Constraints",
+      "constraints_helper": "One condition per line, for example a != 0 or b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Answer formula",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "The answer as an expression of the variables. Write the word answer in double curly braces anywhere to show its value.",
+      "integer_answer": "The answer must be a whole number",
+      "nonzero_answer": "The answer must not be zero",
+      "use_answer": "Use the computed answer as the answer key",
+      "preview": "Preview variants",
+      "previewing": "Checking…",
+      "preview_answer": "Answer",
+      "preview_ok": "Key verified",
+      "preview_problem": "Check this variant"
+    },
+    "rubric": {
+      "heading": "Marking rubric",
+      "helper": "List the steps a complete solution shows, with the points each is worth. The AI reviewer marks working against these steps.",
+      "step_placeholder": "For example: sets up the equation correctly",
+      "points_label": "Points",
+      "add_step": "Add step",
+      "remove_step": "Remove step",
+      "total": "Total",
+      "total_mismatch": "The steps add up to a different total than the points for the working.",
+      "ai_label": "Suggest marks with AI",
+      "ai_helper": "A model reads the working against the rubric and suggests marks. Students see nothing until you accept them. Off by default."
     }
   },
   "math_vision": {
@@ -7534,5 +7580,28 @@
         "RADIO": "Single answer"
       }
     }
+  },
+  "ai_review": {
+    "title": "AI suggestion",
+    "request": "Suggest marks with AI",
+    "requesting": "Reviewing…",
+    "confidence": "Confidence {confidence}%",
+    "first_wrong_step": "First step that goes wrong: {step}",
+    "rubric_changed": "The rubric changed after this suggestion was made.",
+    "suggested_points": "Suggested working points: {points} of {max}",
+    "model": "Model: {model}",
+    "student_hidden": "Students see nothing until you accept or grade this.",
+    "accept": "Accept",
+    "applied": "Added to the grade",
+    "reject": "Reject",
+    "decision": {
+      "accepted": "Accepted",
+      "edited": "Accepted with edits",
+      "rejected": "Rejected"
+    },
+    "bulk_hint": "{count} high-confidence AI suggestions are waiting for you.",
+    "bulk_accept": "Accept {count} high-confidence suggestions",
+    "bulk_accepting": "Accepting…",
+    "bulk_done": "{count} suggestions accepted"
   }
 }

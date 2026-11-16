@@ -356,6 +356,15 @@ export type DeleteSubmissionRequest =
   (typeof classroomio.course)[':courseId']['submission'][':submissionId']['$delete'];
 export type UpdateSubmissionAnswerRequest =
   (typeof classroomio.course)[':courseId']['submission'][':submissionId']['answer']['$put'];
+export type RequestAiReviewRequest =
+  (typeof classroomio.course)[':courseId']['submission'][':submissionId']['ai-review']['$post'];
+export type RequestAiReviewSuccess = Extract<InferResponseType<RequestAiReviewRequest>, { success: true }>;
+export type AiReviewData = RequestAiReviewSuccess['data'];
+export type DecideAiReviewRequest =
+  (typeof classroomio.course)[':courseId']['submission'][':submissionId']['ai-review']['decision']['$put'];
+export type BulkAcceptAiReviewsRequest =
+  (typeof classroomio.course)[':courseId']['submission']['ai-review']['accept'][':exerciseId']['$post'];
+export type BulkAcceptAiReviewsSuccess = Extract<InferResponseType<BulkAcceptAiReviewsRequest>, { success: true }>;
 export type UpdateSubmissionGradesRequest =
   (typeof classroomio.course)[':courseId']['submission'][':submissionId']['grades']['$put'];
 

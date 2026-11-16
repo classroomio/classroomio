@@ -7504,6 +7504,52 @@
     "desmos": {
       "label": "Clé API Desmos",
       "helper": "Facultatif. Active la calculatrice graphique Desmos dans les exercices réglés sur Graphique. Sans clé, les étudiants utilisent la calculatrice scientifique."
+    },
+    "variables": {
+      "heading": "Variables",
+      "helper": "Donnez à chaque élève des nombres différents. Utilisez les noms des variables entre doubles accolades dans la question et dans la clé de réponse.",
+      "enable": "Paramétrer cette question",
+      "disable": "Supprimer les variables",
+      "add": "Ajouter une variable",
+      "remove": "Supprimer la variable",
+      "name_label": "Nom",
+      "type_label": "Type",
+      "type": {
+        "int": "Nombre entier",
+        "decimal": "Décimal",
+        "choice": "Choix"
+      },
+      "min_label": "Min",
+      "max_label": "Max",
+      "step_label": "Pas",
+      "choices_label": "Valeurs",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Contraintes",
+      "constraints_helper": "Une condition par ligne, par exemple a != 0 ou b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Formule de la réponse",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "La réponse sous forme d'expression des variables. Écrivez le mot answer entre doubles accolades pour afficher sa valeur.",
+      "integer_answer": "La réponse doit être un nombre entier",
+      "nonzero_answer": "La réponse ne doit pas être nulle",
+      "use_answer": "Utiliser la réponse calculée comme clé",
+      "preview": "Aperçu des variantes",
+      "previewing": "Vérification…",
+      "preview_answer": "Réponse",
+      "preview_ok": "Clé vérifiée",
+      "preview_problem": "Vérifiez cette variante"
+    },
+    "rubric": {
+      "heading": "Barème de notation",
+      "helper": "Listez les étapes d'une solution complète avec leurs points. L'IA note la démarche selon ces étapes.",
+      "step_placeholder": "Par exemple : pose correctement l'équation",
+      "points_label": "Points",
+      "add_step": "Ajouter une étape",
+      "remove_step": "Supprimer l'étape",
+      "total": "Total",
+      "total_mismatch": "Les étapes totalisent un autre nombre que les points de la démarche.",
+      "ai_label": "Suggérer des notes avec l'IA",
+      "ai_helper": "Un modèle lit la démarche selon le barème et suggère des notes. Les élèves ne voient rien tant que vous ne les acceptez pas. Désactivé par défaut."
     }
   },
   "math_vision": {
@@ -7564,5 +7610,28 @@
         "RADIO": "Réponse unique"
       }
     }
+  },
+  "ai_review": {
+    "title": "Suggestion de l'IA",
+    "request": "Suggérer des notes avec l'IA",
+    "requesting": "Analyse…",
+    "confidence": "Confiance {confidence} %",
+    "first_wrong_step": "Première étape fausse : {step}",
+    "rubric_changed": "Le barème a changé après cette suggestion.",
+    "suggested_points": "Points suggérés pour la démarche : {points} sur {max}",
+    "model": "Modèle : {model}",
+    "student_hidden": "Les élèves ne voient rien tant que vous n'acceptez ou ne notez pas.",
+    "accept": "Accepter",
+    "applied": "Ajouté à la note",
+    "reject": "Refuser",
+    "decision": {
+      "accepted": "Acceptée",
+      "edited": "Acceptée avec modifications",
+      "rejected": "Refusée"
+    },
+    "bulk_hint": "{count} suggestions de l'IA très fiables vous attendent.",
+    "bulk_accept": "Accepter {count} suggestions très fiables",
+    "bulk_accepting": "Acceptation…",
+    "bulk_done": "{count} suggestions acceptées"
   }
 }

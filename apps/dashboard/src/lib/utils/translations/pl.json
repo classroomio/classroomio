@@ -7504,6 +7504,52 @@
     "desmos": {
       "label": "Klucz API Desmos",
       "helper": "Opcjonalne. Włącza kalkulator graficzny Desmos w ćwiczeniach ustawionych na Graficzny. Bez klucza uczniowie dostają kalkulator naukowy."
+    },
+    "variables": {
+      "heading": "Zmienne",
+      "helper": "Daj każdemu uczniowi inne liczby. Używaj nazw zmiennych w podwójnych nawiasach klamrowych w pytaniu i w kluczu odpowiedzi.",
+      "enable": "Sparametryzuj to pytanie",
+      "disable": "Usuń zmienne",
+      "add": "Dodaj zmienną",
+      "remove": "Usuń zmienną",
+      "name_label": "Nazwa",
+      "type_label": "Typ",
+      "type": {
+        "int": "Liczba całkowita",
+        "decimal": "Liczba dziesiętna",
+        "choice": "Wybór"
+      },
+      "min_label": "Min",
+      "max_label": "Maks",
+      "step_label": "Krok",
+      "choices_label": "Wartości",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Ograniczenia",
+      "constraints_helper": "Jeden warunek w wierszu, na przykład a != 0 lub b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Wzór odpowiedzi",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "Odpowiedź jako wyrażenie zmiennych. Wpisz słowo answer w podwójnych nawiasach klamrowych w dowolnym miejscu, aby pokazać jej wartość.",
+      "integer_answer": "Odpowiedź musi być liczbą całkowitą",
+      "nonzero_answer": "Odpowiedź nie może być zerem",
+      "use_answer": "Użyj obliczonej odpowiedzi jako klucza",
+      "preview": "Podgląd wariantów",
+      "previewing": "Sprawdzanie…",
+      "preview_answer": "Odpowiedź",
+      "preview_ok": "Klucz sprawdzony",
+      "preview_problem": "Sprawdź ten wariant"
+    },
+    "rubric": {
+      "heading": "Kryteria oceny",
+      "helper": "Wypisz kroki pełnego rozwiązania wraz z punktami za każdy. AI ocenia tok rozwiązania według tych kroków.",
+      "step_placeholder": "Na przykład: poprawnie układa równanie",
+      "points_label": "Punkty",
+      "add_step": "Dodaj krok",
+      "remove_step": "Usuń krok",
+      "total": "Razem",
+      "total_mismatch": "Kroki sumują się do innej liczby niż punkty za tok rozwiązania.",
+      "ai_label": "Proponuj punkty z pomocą AI",
+      "ai_helper": "Model czyta tok rozwiązania według kryteriów i proponuje punkty. Uczniowie nic nie widzą, dopóki ich nie zaakceptujesz. Domyślnie wyłączone."
     }
   },
   "math_vision": {
@@ -7564,5 +7610,28 @@
         "RADIO": "Jedna odpowiedź"
       }
     }
+  },
+  "ai_review": {
+    "title": "Propozycja AI",
+    "request": "Proponuj punkty z pomocą AI",
+    "requesting": "Sprawdzanie…",
+    "confidence": "Pewność {confidence}%",
+    "first_wrong_step": "Pierwszy błędny krok: {step}",
+    "rubric_changed": "Kryteria zmieniły się po tej propozycji.",
+    "suggested_points": "Proponowane punkty za tok rozwiązania: {points} z {max}",
+    "model": "Model: {model}",
+    "student_hidden": "Uczniowie nic nie widzą, dopóki tego nie zaakceptujesz lub nie ocenisz.",
+    "accept": "Zaakceptuj",
+    "applied": "Dodano do oceny",
+    "reject": "Odrzuć",
+    "decision": {
+      "accepted": "Zaakceptowano",
+      "edited": "Zaakceptowano ze zmianami",
+      "rejected": "Odrzucono"
+    },
+    "bulk_hint": "Czeka na Ciebie {count} propozycji AI o wysokiej pewności.",
+    "bulk_accept": "Zaakceptuj {count} pewnych propozycji",
+    "bulk_accepting": "Akceptowanie…",
+    "bulk_done": "Zaakceptowano propozycje: {count}"
   }
 }

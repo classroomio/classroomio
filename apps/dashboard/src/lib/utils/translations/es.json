@@ -7504,6 +7504,52 @@
     "desmos": {
       "label": "Clave de API de Desmos",
       "helper": "Opcional. Activa la calculadora gráfica de Desmos en los ejercicios con calculadora gráfica. Sin clave, los estudiantes usan la calculadora científica."
+    },
+    "variables": {
+      "heading": "Variables",
+      "helper": "Da a cada estudiante números distintos. Usa los nombres de las variables entre dobles llaves en la pregunta y en la clave de respuesta.",
+      "enable": "Parametrizar esta pregunta",
+      "disable": "Quitar variables",
+      "add": "Añadir variable",
+      "remove": "Quitar variable",
+      "name_label": "Nombre",
+      "type_label": "Tipo",
+      "type": {
+        "int": "Número entero",
+        "decimal": "Decimal",
+        "choice": "Opción"
+      },
+      "min_label": "Mín.",
+      "max_label": "Máx.",
+      "step_label": "Paso",
+      "choices_label": "Valores",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Restricciones",
+      "constraints_helper": "Una condición por línea, por ejemplo a != 0 o b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Fórmula de la respuesta",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "La respuesta como expresión de las variables. Escribe la palabra answer entre dobles llaves en cualquier lugar para mostrar su valor.",
+      "integer_answer": "La respuesta debe ser un número entero",
+      "nonzero_answer": "La respuesta no debe ser cero",
+      "use_answer": "Usar la respuesta calculada como clave",
+      "preview": "Ver variantes",
+      "previewing": "Comprobando…",
+      "preview_answer": "Respuesta",
+      "preview_ok": "Clave verificada",
+      "preview_problem": "Revisa esta variante"
+    },
+    "rubric": {
+      "heading": "Rúbrica de calificación",
+      "helper": "Enumera los pasos de una solución completa con los puntos de cada uno. La IA califica el procedimiento según estos pasos.",
+      "step_placeholder": "Por ejemplo: plantea bien la ecuación",
+      "points_label": "Puntos",
+      "add_step": "Añadir paso",
+      "remove_step": "Quitar paso",
+      "total": "Total",
+      "total_mismatch": "Los pasos suman un total distinto a los puntos del procedimiento.",
+      "ai_label": "Sugerir notas con IA",
+      "ai_helper": "Un modelo lee el procedimiento según la rúbrica y sugiere notas. Los estudiantes no ven nada hasta que las aceptes. Desactivado por defecto."
     }
   },
   "math_vision": {
@@ -7564,5 +7610,28 @@
         "RADIO": "Respuesta única"
       }
     }
+  },
+  "ai_review": {
+    "title": "Sugerencia de IA",
+    "request": "Sugerir notas con IA",
+    "requesting": "Revisando…",
+    "confidence": "Confianza {confidence} %",
+    "first_wrong_step": "Primer paso incorrecto: {step}",
+    "rubric_changed": "La rúbrica cambió después de esta sugerencia.",
+    "suggested_points": "Puntos sugeridos para el procedimiento: {points} de {max}",
+    "model": "Modelo: {model}",
+    "student_hidden": "Los estudiantes no ven nada hasta que aceptes o califiques esto.",
+    "accept": "Aceptar",
+    "applied": "Añadido a la nota",
+    "reject": "Rechazar",
+    "decision": {
+      "accepted": "Aceptada",
+      "edited": "Aceptada con cambios",
+      "rejected": "Rechazada"
+    },
+    "bulk_hint": "{count} sugerencias de IA de alta confianza te esperan.",
+    "bulk_accept": "Aceptar {count} sugerencias de alta confianza",
+    "bulk_accepting": "Aceptando…",
+    "bulk_done": "{count} sugerencias aceptadas"
   }
 }

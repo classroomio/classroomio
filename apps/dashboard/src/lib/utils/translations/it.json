@@ -7474,6 +7474,52 @@
     "desmos": {
       "label": "Chiave API di Desmos",
       "helper": "Facoltativo. Abilita la calcolatrice grafica Desmos negli esercizi impostati su Grafica. Senza chiave, gli studenti usano la calcolatrice scientifica."
+    },
+    "variables": {
+      "heading": "Variabili",
+      "helper": "Dai a ogni studente numeri diversi. Usa i nomi delle variabili tra doppie parentesi graffe nella domanda e nella chiave di risposta.",
+      "enable": "Rendi parametrica questa domanda",
+      "disable": "Rimuovi variabili",
+      "add": "Aggiungi variabile",
+      "remove": "Rimuovi variabile",
+      "name_label": "Nome",
+      "type_label": "Tipo",
+      "type": {
+        "int": "Numero intero",
+        "decimal": "Decimale",
+        "choice": "Scelta"
+      },
+      "min_label": "Min",
+      "max_label": "Max",
+      "step_label": "Passo",
+      "choices_label": "Valori",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Vincoli",
+      "constraints_helper": "Una condizione per riga, ad esempio a != 0 oppure b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Formula della risposta",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "La risposta come espressione delle variabili. Scrivi la parola answer tra doppie graffe ovunque per mostrarne il valore.",
+      "integer_answer": "La risposta deve essere un numero intero",
+      "nonzero_answer": "La risposta non deve essere zero",
+      "use_answer": "Usa la risposta calcolata come chiave",
+      "preview": "Anteprima varianti",
+      "previewing": "Verifica in corso…",
+      "preview_answer": "Risposta",
+      "preview_ok": "Chiave verificata",
+      "preview_problem": "Controlla questa variante"
+    },
+    "rubric": {
+      "heading": "Griglia di valutazione",
+      "helper": "Elenca i passaggi di una soluzione completa con i punti di ciascuno. L'IA valuta lo svolgimento in base a questi passaggi.",
+      "step_placeholder": "Ad esempio: imposta correttamente l'equazione",
+      "points_label": "Punti",
+      "add_step": "Aggiungi passaggio",
+      "remove_step": "Rimuovi passaggio",
+      "total": "Totale",
+      "total_mismatch": "I passaggi sommano un totale diverso dai punti dello svolgimento.",
+      "ai_label": "Suggerisci voti con l'IA",
+      "ai_helper": "Un modello legge lo svolgimento secondo la griglia e suggerisce i voti. Gli studenti non vedono nulla finché non li accetti. Disattivato per impostazione predefinita."
     }
   },
   "math_vision": {
@@ -7534,5 +7580,28 @@
         "RADIO": "Risposta singola"
       }
     }
+  },
+  "ai_review": {
+    "title": "Suggerimento dell'IA",
+    "request": "Suggerisci voti con l'IA",
+    "requesting": "Revisione in corso…",
+    "confidence": "Affidabilità {confidence}%",
+    "first_wrong_step": "Primo passaggio sbagliato: {step}",
+    "rubric_changed": "La griglia è cambiata dopo questo suggerimento.",
+    "suggested_points": "Punti suggeriti per lo svolgimento: {points} su {max}",
+    "model": "Modello: {model}",
+    "student_hidden": "Gli studenti non vedono nulla finché non accetti o valuti questo.",
+    "accept": "Accetta",
+    "applied": "Aggiunto al voto",
+    "reject": "Rifiuta",
+    "decision": {
+      "accepted": "Accettato",
+      "edited": "Accettato con modifiche",
+      "rejected": "Rifiutato"
+    },
+    "bulk_hint": "{count} suggerimenti dell'IA molto affidabili ti aspettano.",
+    "bulk_accept": "Accetta {count} suggerimenti affidabili",
+    "bulk_accepting": "Accettazione…",
+    "bulk_done": "{count} suggerimenti accettati"
   }
 }

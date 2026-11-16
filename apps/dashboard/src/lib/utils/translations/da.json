@@ -7504,6 +7504,52 @@
     "desmos": {
       "label": "Desmos API-nøgle",
       "helper": "Valgfri. Aktiverer Desmos-grafregneren i øvelser sat til Graf. Uden nøgle får eleverne den videnskabelige lommeregner."
+    },
+    "variables": {
+      "heading": "Variabler",
+      "helper": "Giv hver elev forskellige tal. Brug variabelnavnene i dobbelte tuborgklammer i spørgsmålet og i svarnøglen.",
+      "enable": "Gør dette spørgsmål parametriseret",
+      "disable": "Fjern variabler",
+      "add": "Tilføj variabel",
+      "remove": "Fjern variabel",
+      "name_label": "Navn",
+      "type_label": "Type",
+      "type": {
+        "int": "Heltal",
+        "decimal": "Decimaltal",
+        "choice": "Valg"
+      },
+      "min_label": "Min",
+      "max_label": "Maks",
+      "step_label": "Trin",
+      "choices_label": "Værdier",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Begrænsninger",
+      "constraints_helper": "Én betingelse pr. linje, for eksempel a != 0 eller b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Svarformel",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "Svaret som et udtryk af variablerne. Skriv ordet answer i dobbelte tuborgklammer hvor som helst for at vise dets værdi.",
+      "integer_answer": "Svaret skal være et heltal",
+      "nonzero_answer": "Svaret må ikke være nul",
+      "use_answer": "Brug det beregnede svar som svarnøgle",
+      "preview": "Vis varianter",
+      "previewing": "Kontrollerer…",
+      "preview_answer": "Svar",
+      "preview_ok": "Nøgle bekræftet",
+      "preview_problem": "Tjek denne variant"
+    },
+    "rubric": {
+      "heading": "Bedømmelsesskema",
+      "helper": "List trinene i en fuldstændig løsning med point for hvert trin. AI bedømmer udregningen efter disse trin.",
+      "step_placeholder": "For eksempel: stiller ligningen korrekt op",
+      "points_label": "Point",
+      "add_step": "Tilføj trin",
+      "remove_step": "Fjern trin",
+      "total": "I alt",
+      "total_mismatch": "Trinene giver en anden sum end pointene for udregningen.",
+      "ai_label": "Foreslå point med AI",
+      "ai_helper": "En model læser udregningen efter skemaet og foreslår point. Eleverne ser intet, før du accepterer dem. Slået fra som standard."
     }
   },
   "math_vision": {
@@ -7564,5 +7610,28 @@
         "RADIO": "Enkelt svar"
       }
     }
+  },
+  "ai_review": {
+    "title": "AI-forslag",
+    "request": "Foreslå point med AI",
+    "requesting": "Gennemgår…",
+    "confidence": "Sikkerhed {confidence} %",
+    "first_wrong_step": "Første forkerte trin: {step}",
+    "rubric_changed": "Skemaet er ændret efter dette forslag.",
+    "suggested_points": "Foreslåede point for udregningen: {points} af {max}",
+    "model": "Model: {model}",
+    "student_hidden": "Eleverne ser intet, før du accepterer eller bedømmer dette.",
+    "accept": "Accepter",
+    "applied": "Tilføjet til karakteren",
+    "reject": "Afvis",
+    "decision": {
+      "accepted": "Accepteret",
+      "edited": "Accepteret med rettelser",
+      "rejected": "Afvist"
+    },
+    "bulk_hint": "{count} AI-forslag med høj sikkerhed venter på dig.",
+    "bulk_accept": "Accepter {count} sikre forslag",
+    "bulk_accepting": "Accepterer…",
+    "bulk_done": "{count} forslag accepteret"
   }
 }

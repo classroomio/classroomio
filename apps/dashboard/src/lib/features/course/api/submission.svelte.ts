@@ -1,6 +1,11 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
+  BulkAcceptAiReviewsRequest,
+  BulkAcceptAiReviewsSuccess,
+  DecideAiReviewRequest,
   DeleteSubmissionRequest,
+  RequestAiReviewRequest,
+  RequestAiReviewSuccess,
   UpdateSubmissionAnswerRequest,
   UpdateSubmissionGradesRequest,
   UpdateSubmissionRequest
@@ -12,6 +17,7 @@ import type {
 } from '@cio/utils/validation/submission';
 import { ZSubmissionAnswerUpdate, ZSubmissionGradesUpdate, ZSubmissionUpdate } from '@cio/utils/validation/submission';
 
+import type { TAiReviewDecisionBody } from '@cio/utils/validation/math';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { snackbar } from '$features/ui/snackbar/store';
 
@@ -146,5 +152,78 @@ export class SubmissionApi extends BaseApiWithErrors {
     });
   }
 }
+
+/**
+ * API class for the AI suggestions on worked-solution and paragraph working
+ */
+export class AiReviewApi extends BaseApiWithErrors {
+  /** Last suggestion returned by `request`. */
+  review = $state<RequestAiReviewSuccess['data'] | null>(null);
+  /** Last bulk accept result. */
+  bulkResult = $state<BulkAcceptAiReviewsSuccess['data'] | null>(null);
+
+  async request(courseId: string, submissionId: string, questionId: number) {
+    this.review = null;
+
+    await this.execute<RequestAiReviewRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].submission[':submissionId']['ai-review'].$post({
+          param: { courseId, submissionId },
+          json: { questionId }
+        }),
+      logContext: 'requesting an AI review of working',
+      onSuccess: (response) => {
+        this.review = response.data;
+        this.success = true;
+      },
+      onError: (result) => {
+        snackbar.error(result.message);
+      }
+    });
+
+    return this.review;
+  }
+
+  async decide(courseId: string, submissionId: string, decision: TAiReviewDecisionBody) {
+    await this.execute<DecideAiReviewRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].submission[':submissionId']['ai-review'].decision.$put({
+          param: { courseId, submissionId },
+          json: decision
+        }),
+      logContext: 'recording a decision on an AI suggestion',
+      onSuccess: () => {
+        this.success = true;
+      },
+      onError: (result) => {
+        snackbar.error(result.message);
+      }
+    });
+  }
+
+  async acceptConfident(courseId: string, exerciseId: string) {
+    this.bulkResult = null;
+
+    await this.execute<BulkAcceptAiReviewsRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].submission['ai-review'].accept[':exerciseId'].$post({
+          param: { courseId, exerciseId },
+          json: {}
+        }),
+      logContext: 'accepting confident AI suggestions',
+      onSuccess: (response) => {
+        this.bulkResult = response.data;
+        this.success = true;
+      },
+      onError: (result) => {
+        snackbar.error(result.message);
+      }
+    });
+
+    return this.bulkResult;
+  }
+}
+
+export const aiReviewApi = /* @__PURE__ */ new AiReviewApi();
 
 export const submissionApi = /* @__PURE__ */ new SubmissionApi();

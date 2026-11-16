@@ -19,11 +19,12 @@
     type SubmissionFilterOption
   } from '$features/course/utils/submission-board-filters';
   import { t } from '$lib/utils/functions/translations';
-  import { roundPoints } from '@cio/question-types';
+  import { isBulkAcceptable, roundPoints, type AnswerData } from '@cio/question-types';
 
   import { Chip } from '@cio/ui/custom/chip';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import MarkExerciseModal from '$features/course/components/exercise/mark-exercise-modal.svelte';
+  import AiReviewBulkAccept from '$features/course/components/submissions/ai-review-bulk-accept.svelte';
   import SubmissionFilterBar from '$features/course/components/submissions/submission-filter-bar.svelte';
   import { STATUS } from '$features/course/components/exercise/constants';
 
@@ -171,6 +172,20 @@
       items: section.items.filter((item) => matchesBoardItem(item))
     }))
   );
+  const confidentCountByExerciseId = $derived.by(() => {
+    const counts: Record<string, number> = {};
+    for (const section of sections) {
+      for (const item of section.items) {
+        if (item.gradingState !== 'awaiting_manual') continue;
+
+        const answers = Object.values(submissionIdData[item.id]?.answers ?? {}) as AnswerData[];
+        const confident = answers.filter((answer) => isBulkAcceptable(answer.aiReview)).length;
+        if (confident > 0) counts[item.exercise.id] = (counts[item.exercise.id] ?? 0) + confident;
+      }
+    }
+
+    return counts;
+  });
   const totalCount = $derived(sections.reduce((sum, section) => sum + section.items.length, 0));
   const visibleCount = $derived(visibleSections.reduce((sum, section) => sum + section.items.length, 0));
   const selectedStudentIdList = $derived([...selectedStudentIds]);
@@ -359,6 +374,12 @@
   deleteSubmission={handleDeleteSubmission}
   bind:isGradeWithAI
   {isSaving}
+/>
+
+<AiReviewBulkAccept
+  {courseId}
+  countByExerciseId={confidentCountByExerciseId}
+  onAccepted={() => window.location.reload()}
 />
 
 <SubmissionFilterBar

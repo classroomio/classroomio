@@ -7504,6 +7504,52 @@
     "desmos": {
       "label": "Khóa API Desmos",
       "helper": "Tùy chọn. Bật máy tính đồ thị Desmos trong các bài tập đặt ở chế độ Đồ thị. Không có khóa, học viên dùng máy tính khoa học."
+    },
+    "variables": {
+      "heading": "Biến",
+      "helper": "Cho mỗi học sinh những số khác nhau. Dùng tên biến trong dấu ngoặc nhọn kép ở câu hỏi và đáp án.",
+      "enable": "Tham số hóa câu hỏi này",
+      "disable": "Xóa các biến",
+      "add": "Thêm biến",
+      "remove": "Xóa biến",
+      "name_label": "Tên",
+      "type_label": "Loại",
+      "type": {
+        "int": "Số nguyên",
+        "decimal": "Số thập phân",
+        "choice": "Lựa chọn"
+      },
+      "min_label": "Tối thiểu",
+      "max_label": "Tối đa",
+      "step_label": "Bước",
+      "choices_label": "Giá trị",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Ràng buộc",
+      "constraints_helper": "Mỗi dòng một điều kiện, ví dụ a != 0 hoặc b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Công thức đáp án",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "Đáp án dưới dạng biểu thức của các biến. Viết từ answer trong dấu ngoặc nhọn kép ở bất kỳ đâu để hiển thị giá trị của nó.",
+      "integer_answer": "Đáp án phải là số nguyên",
+      "nonzero_answer": "Đáp án không được bằng không",
+      "use_answer": "Dùng đáp án đã tính làm đáp án chuẩn",
+      "preview": "Xem trước các biến thể",
+      "previewing": "Đang kiểm tra…",
+      "preview_answer": "Đáp án",
+      "preview_ok": "Đáp án đã được xác minh",
+      "preview_problem": "Hãy kiểm tra biến thể này"
+    },
+    "rubric": {
+      "heading": "Thang chấm điểm",
+      "helper": "Liệt kê các bước của một lời giải đầy đủ cùng điểm của từng bước. AI chấm bài làm theo các bước này.",
+      "step_placeholder": "Ví dụ: lập phương trình đúng",
+      "points_label": "Điểm",
+      "add_step": "Thêm bước",
+      "remove_step": "Xóa bước",
+      "total": "Tổng",
+      "total_mismatch": "Tổng các bước khác với điểm của phần bài làm.",
+      "ai_label": "Gợi ý điểm bằng AI",
+      "ai_helper": "Một mô hình đọc bài làm theo thang chấm và gợi ý điểm. Học sinh không thấy gì cho đến khi bạn chấp nhận. Mặc định tắt."
     }
   },
   "math_vision": {
@@ -7564,5 +7610,28 @@
         "RADIO": "Một đáp án"
       }
     }
+  },
+  "ai_review": {
+    "title": "Gợi ý của AI",
+    "request": "Gợi ý điểm bằng AI",
+    "requesting": "Đang xem xét…",
+    "confidence": "Độ tin cậy {confidence}%",
+    "first_wrong_step": "Bước sai đầu tiên: {step}",
+    "rubric_changed": "Thang chấm đã thay đổi sau gợi ý này.",
+    "suggested_points": "Điểm gợi ý cho bài làm: {points}/{max}",
+    "model": "Mô hình: {model}",
+    "student_hidden": "Học sinh không thấy gì cho đến khi bạn chấp nhận hoặc chấm điểm.",
+    "accept": "Chấp nhận",
+    "applied": "Đã thêm vào điểm",
+    "reject": "Từ chối",
+    "decision": {
+      "accepted": "Đã chấp nhận",
+      "edited": "Đã chấp nhận sau khi sửa",
+      "rejected": "Đã từ chối"
+    },
+    "bulk_hint": "Có {count} gợi ý AI độ tin cậy cao đang chờ bạn.",
+    "bulk_accept": "Chấp nhận {count} gợi ý tin cậy",
+    "bulk_accepting": "Đang chấp nhận…",
+    "bulk_done": "Đã chấp nhận {count} gợi ý"
   }
 }

@@ -7504,6 +7504,52 @@
     "desmos": {
       "label": "Desmos-API-Schlüssel",
       "helper": "Optional. Aktiviert den Desmos-Grafikrechner in Übungen mit Grafikrechner. Ohne Schlüssel erhalten Lernende den wissenschaftlichen Taschenrechner."
+    },
+    "variables": {
+      "heading": "Variablen",
+      "helper": "Geben Sie jedem Lernenden andere Zahlen. Verwenden Sie die Variablennamen in doppelten geschweiften Klammern in der Frage und im Antwortschlüssel.",
+      "enable": "Diese Frage parametrisieren",
+      "disable": "Variablen entfernen",
+      "add": "Variable hinzufügen",
+      "remove": "Variable entfernen",
+      "name_label": "Name",
+      "type_label": "Typ",
+      "type": {
+        "int": "Ganze Zahl",
+        "decimal": "Dezimalzahl",
+        "choice": "Auswahl"
+      },
+      "min_label": "Min",
+      "max_label": "Max",
+      "step_label": "Schritt",
+      "choices_label": "Werte",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Bedingungen",
+      "constraints_helper": "Eine Bedingung pro Zeile, zum Beispiel a != 0 oder b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Antwortformel",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "Die Antwort als Ausdruck der Variablen. Schreiben Sie das Wort answer in doppelten geschweiften Klammern, um ihren Wert anzuzeigen.",
+      "integer_answer": "Die Antwort muss eine ganze Zahl sein",
+      "nonzero_answer": "Die Antwort darf nicht null sein",
+      "use_answer": "Die berechnete Antwort als Antwortschlüssel verwenden",
+      "preview": "Varianten ansehen",
+      "previewing": "Wird geprüft…",
+      "preview_answer": "Antwort",
+      "preview_ok": "Schlüssel geprüft",
+      "preview_problem": "Diese Variante prüfen"
+    },
+    "rubric": {
+      "heading": "Bewertungsraster",
+      "helper": "Listen Sie die Schritte einer vollständigen Lösung mit ihren Punkten auf. Die KI bewertet den Lösungsweg anhand dieser Schritte.",
+      "step_placeholder": "Zum Beispiel: stellt die Gleichung richtig auf",
+      "points_label": "Punkte",
+      "add_step": "Schritt hinzufügen",
+      "remove_step": "Schritt entfernen",
+      "total": "Gesamt",
+      "total_mismatch": "Die Schritte ergeben eine andere Summe als die Punkte für den Lösungsweg.",
+      "ai_label": "Punkte mit KI vorschlagen",
+      "ai_helper": "Ein Modell liest den Lösungsweg anhand des Rasters und schlägt Punkte vor. Lernende sehen erst etwas, wenn Sie es übernehmen. Standardmäßig aus."
     }
   },
   "math_vision": {
@@ -7564,5 +7610,28 @@
         "RADIO": "Einzelne Antwort"
       }
     }
+  },
+  "ai_review": {
+    "title": "KI-Vorschlag",
+    "request": "Punkte mit KI vorschlagen",
+    "requesting": "Wird geprüft…",
+    "confidence": "Sicherheit {confidence} %",
+    "first_wrong_step": "Erster fehlerhafter Schritt: {step}",
+    "rubric_changed": "Das Raster wurde nach diesem Vorschlag geändert.",
+    "suggested_points": "Vorgeschlagene Punkte für den Lösungsweg: {points} von {max}",
+    "model": "Modell: {model}",
+    "student_hidden": "Lernende sehen nichts, bis Sie dies übernehmen oder bewerten.",
+    "accept": "Übernehmen",
+    "applied": "Zur Note hinzugefügt",
+    "reject": "Ablehnen",
+    "decision": {
+      "accepted": "Übernommen",
+      "edited": "Mit Änderungen übernommen",
+      "rejected": "Abgelehnt"
+    },
+    "bulk_hint": "{count} KI-Vorschläge mit hoher Sicherheit warten auf Sie.",
+    "bulk_accept": "{count} sichere Vorschläge übernehmen",
+    "bulk_accepting": "Wird übernommen…",
+    "bulk_done": "{count} Vorschläge übernommen"
   }
 }
