@@ -83,6 +83,40 @@ export const ZAiReviewBulkAcceptBody = z.object({
 });
 export type TAiReviewBulkAcceptBody = z.infer<typeof ZAiReviewBulkAcceptBody>;
 
+export const EXERCISE_RESULTS_FILTERS = ['all', 'wrong', 'awaiting'] as const;
+
+export const ZExerciseResultsQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(25),
+  filter: z.enum(EXERCISE_RESULTS_FILTERS).default('all'),
+  cohortId: z.string().uuid().optional()
+});
+export type TExerciseResultsQuery = z.infer<typeof ZExerciseResultsQuery>;
+
+export const ZAnswerClustersParam = z.object({
+  exerciseId: z.string().uuid(),
+  questionId: z.coerce.number().int()
+});
+
+export const ZClusterOverrideBody = z
+  .object({
+    key: z.string().min(1).max(2000),
+    verdict: z.enum(['correct', 'partial', 'wrong']).optional(),
+    points: z.number().min(0).max(99_999_999.99).optional(),
+    feedback: z.string().trim().max(2000).optional()
+  })
+  .refine((body) => body.verdict !== undefined || Boolean(body.feedback), {
+    message: 'Choose a verdict or write feedback'
+  })
+  .refine((body) => body.verdict !== 'partial' || body.points !== undefined, {
+    message: 'A partial verdict needs points',
+    path: ['points']
+  });
+export type TClusterOverrideBody = z.infer<typeof ZClusterOverrideBody>;
+
+export const ZClusterResetBody = z.object({ key: z.string().min(1).max(2000) });
+export type TClusterResetBody = z.infer<typeof ZClusterResetBody>;
+
 export const ZAiReviewModelOutput = z.object({
   stepMarks: z.array(
     z.object({
@@ -96,6 +130,10 @@ export const ZAiReviewModelOutput = z.object({
     .nullable()
     .describe('The id of the first rubric step the student gets wrong or leaves out; null when every step is right'),
   comment: z.string().describe('Two sentences at most for the teacher: what is good and what went wrong'),
-  confidence: z.number().min(0).max(1).describe('How sure you are of these marks; use below 0.6 when the writing is hard to read')
+  confidence: z
+    .number()
+    .min(0)
+    .max(1)
+    .describe('How sure you are of these marks; use below 0.6 when the writing is hard to read')
 });
 export type TAiReviewModelOutput = z.infer<typeof ZAiReviewModelOutput>;

@@ -62,6 +62,7 @@ import {
   attachSeeds,
   getAnswerableQuestions,
   instantiateScoringQuestions,
+  stampClusterOverrides,
   resolveAnswerSeeds,
   withoutAiReview,
   toScoringQuestions
@@ -822,7 +823,10 @@ export async function createSubmissionService(
     const decodedAnswers = decodeSubmissionAnswers(questionById, answers, options);
     const seedByQuestionId = resolveAnswerSeeds(answerableQuestions, answers, options.strict === true);
     const dbQuestions = instantiateScoringQuestions(toScoringQuestions(answerableQuestions), seedByQuestionId);
-    const answerByQuestionId = attachSeeds(annotateMathAnswers(dbQuestions, decodedAnswers), seedByQuestionId);
+    const answerByQuestionId = stampClusterOverrides(
+      dbQuestions,
+      attachSeeds(annotateMathAnswers(dbQuestions, decodedAnswers), seedByQuestionId)
+    );
     const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
     const wasCompleteBefore = await wasExerciseCompleteForMember(exerciseId, submittedBy);
 

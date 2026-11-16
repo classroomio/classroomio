@@ -2,11 +2,14 @@ import type { AnswerData, DbQuestionForScoring, ExerciseQuestionModel } from '@c
 import {
   dbQuestionToExerciseQuestionModel,
   getMultiPartStemIds,
+  readClusterOverrides,
+  toAnswerClusterOverride,
   getWorkedSolutionPointSplit,
   roundPoints,
   scoreAutoGradedPart,
   scoreSubmissionAnswers
 } from '@cio/question-types';
+import { getAnswerClusterKey } from '@cio/question-types/answer-clusters';
 import { annotateMathAnswer, mathGrader } from '@cio/question-types/math-grading';
 import { instantiateQuestion } from '@cio/question-types/variants';
 import { isSeedValid, readQuestionParameters } from '@cio/question-types';
@@ -112,6 +115,34 @@ export function withoutAiReview<Answer extends { answerData?: unknown }>(answer:
   return { ...answer, answerData: rest };
 }
 
+/**
+ * Stamps the teacher's cluster decision onto an answer when the question has a rule for its cluster, and clears a stale
+ * stamp when it has none, so scoring and the student's review both read the current rules.
+ */
+export function stampClusterOverride(question: DbQuestionForScoring, answer: AnswerData): AnswerData {
+  const key = getAnswerClusterKey(dbQuestionToExerciseQuestionModel(question), answer);
+  const rule = key ? readClusterOverrides(question.settings).find((candidate) => candidate.key === key) : undefined;
+  const { clusterOverride: _previous, ...rest } = answer;
+
+  return (rule ? { ...rest, clusterOverride: toAnswerClusterOverride(rule) } : rest) as AnswerData;
+}
+
+/** Applies `stampClusterOverride` to each answer of a submission. */
+export function stampClusterOverrides(
+  questions: DbQuestionForScoring[],
+  answerByQuestionId: ReadonlyMap<number, AnswerData>
+): Map<number, AnswerData> {
+  const questionById = new Map(questions.map((question) => [question.id, question]));
+
+  return new Map(
+    [...answerByQuestionId].map(([questionId, answer]) => {
+      const question = questionById.get(questionId);
+
+      return [questionId, question ? stampClusterOverride(question, answer) : answer];
+    })
+  );
+}
+
 /** The questions a student answers: every question except the stems of multi-part questions. */
 export function getAnswerableQuestions<Question extends { id?: number | null; parentQuestionId?: number | null }>(
   questions: Question[]
@@ -152,7 +183,8 @@ export function regradeStoredAnswer(
 ): { answer: AnswerData; points: number } | null {
   const isParameterised = readQuestionParameters(storedQuestion.settings) !== null;
   const question = isParameterised ? instantiateQuestion(storedQuestion, answer.seed ?? FALLBACK_SEED) : storedQuestion;
-  const regraded = annotateMathAnswers([question], new Map([[question.id, answer]])).get(question.id) ?? answer;
+  const annotated = annotateMathAnswers([question], new Map([[question.id, answer]])).get(question.id) ?? answer;
+  const regraded = stampClusterOverride(question, annotated);
   const answerByQuestionId = new Map([[question.id, regraded]]);
 
   if (answer.type !== 'WORKED_SOLUTION') {

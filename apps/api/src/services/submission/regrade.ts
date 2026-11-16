@@ -7,18 +7,26 @@ import {
   updateSubmission
 } from '@cio/db/queries/submission';
 
-import { getAnswerableQuestions, regradeStoredAnswer, toScoringQuestions } from './auto-grading';
+import { getAnswerableQuestions, regradeStoredAnswer, stampClusterOverride, toScoringQuestions } from './auto-grading';
 
 export type RegradeResult = { submissionsChecked: number; submissionsChanged: number; answersChanged: number };
 
 /**
- * Re-scores every stored answer of an exercise against its current answer key, so a corrected key reaches students who
- * already submitted. Points a teacher gave to manually graded questions, and to the working part of worked solutions,
- * are kept. Updates each answer's stored grading and each submission's total.
+ * Re-scores every stored answer of an exercise against its current answer key and cluster rules, so a corrected key
+ * or a teacher's cluster decision reaches students who already submitted. Points a teacher gave to manually graded
+ * questions, and to the working part of worked solutions, are kept. Updates each answer's stored grading and each
+ * submission's total. With `questionId`, only that question's answers are re-scored.
  */
-export async function regradeExerciseSubmissions(courseId: string, exerciseId: string): Promise<RegradeResult> {
+export async function regradeExerciseSubmissions(
+  courseId: string,
+  exerciseId: string,
+  options: { questionId?: number } = {}
+): Promise<RegradeResult> {
   const { questions } = await getExerciseWithRelationsOptimized(exerciseId);
-  const scoringQuestions = toScoringQuestions(getAnswerableQuestions(questions));
+  const scoringQuestions = toScoringQuestions(getAnswerableQuestions(questions)).filter(
+    (question) => options.questionId === undefined || question.id === options.questionId
+  );
+  const questionById = new Map(scoringQuestions.map((question) => [question.id, question]));
   const regradableById = new Map(
     scoringQuestions
       .filter((question) => {
@@ -42,6 +50,15 @@ export async function regradeExerciseSubmissions(courseId: string, exerciseId: s
       const regraded = question && answerData ? regradeStoredAnswer(question, answerData, storedPoints) : null;
       if (!regraded) {
         total += storedPoints;
+
+        const ungraded = questionById.get(stored.questionId);
+        if (!ungraded || !answerData || question) continue;
+
+        const stamped = stampClusterOverride(ungraded, answerData);
+        if (JSON.stringify(stamped) === JSON.stringify(answerData)) continue;
+
+        await updateQuestionAnswer(submission.id, stored.questionId, { answerData: stamped });
+        changedInSubmission += 1;
         continue;
       }
 

@@ -80,11 +80,27 @@ export type AiReview = {
   /** The reviewer's own certainty from 0 to 1. */
   confidence: number;
   /** Set when a teacher acted on the suggestion. */
-  decision?: { status: 'accepted' | 'edited' | 'rejected'; decidedAt: string; decidedBy: string; awardedPoints?: number };
+  decision?: {
+    status: 'accepted' | 'edited' | 'rejected';
+    decidedAt: string;
+    decidedBy: string;
+    awardedPoints?: number;
+  };
+};
+
+/** The teacher's decision for this answer's cluster, stamped from the question's `clusterOverrides` rule. */
+export type AnswerClusterOverride = {
+  key: string;
+  verdict?: 'correct' | 'partial' | 'wrong';
+  points?: number;
+  feedback?: string;
+  setBy: string;
+  setAt: string;
 };
 
 /** Fields any answer can carry beside its type-specific data. */
 export type AnswerExtras = {
+  clusterOverride?: AnswerClusterOverride;
   /** The variant seed the student answered, for parameterised questions. */
   seed?: string;
   aiReview?: AiReview;

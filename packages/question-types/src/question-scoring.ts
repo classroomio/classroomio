@@ -9,6 +9,7 @@ import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
 import { getFillBlankAnswerKey } from './answer-codecs';
 import { roundPoints } from './points';
 import { getMultiPartStemIds } from './multi-part';
+import { resolveClusterOverridePoints } from './cluster-override';
 import {
   getWorkedSolutionPointSplit,
   isNumericMatch,
@@ -370,6 +371,11 @@ export function scoreAnswerForQuestion(
   const maxPoints = Number(question.points ?? 0);
   if (maxPoints <= 0) return 0;
   if (!answer || typeof answer !== 'object' || !('type' in answer)) return 0;
+
+  if (answer.clusterOverride && answer.type !== 'WORKED_SOLUTION') {
+    const overridePoints = resolveClusterOverridePoints(answer.clusterOverride, maxPoints);
+    if (overridePoints !== null) return overridePoints;
+  }
 
   const key = question.questionType;
   const partial = supportsPartialCredit(key);

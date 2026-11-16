@@ -4,12 +4,24 @@ import {
   ZSubmissionGradesUpdate,
   ZSubmissionUpdate
 } from '@cio/utils/validation/submission';
-import { ZAiReviewBulkAcceptBody, ZAiReviewDecisionBody, ZAiReviewRequestBody } from '@cio/utils/validation/math';
+import {
+  ZAiReviewBulkAcceptBody,
+  ZAiReviewDecisionBody,
+  ZAiReviewRequestBody,
+  ZAnswerClustersParam,
+  ZClusterOverrideBody,
+  ZClusterResetBody,
+  ZExerciseResultsQuery
+} from '@cio/utils/validation/math';
 import * as z from 'zod';
 import {
   bulkAcceptAiReviews,
   deleteSubmissionService,
+  getAnswerClusters,
+  getExerciseResultsGrid,
   listSubmissionsForGrading,
+  resetClusterOverride,
+  setClusterOverride,
   recordAiReviewDecision,
   requestAiReview,
   updateSubmissionAnswer,
@@ -33,6 +45,82 @@ export const submissionRouter = new Hono()
       return handleError(c, error, 'Failed to list submissions for grading');
     }
   })
+  .get(
+    '/results/:exerciseId',
+    courseGraderMiddleware,
+    zValidator('param', z.object({ exerciseId: z.string().uuid() })),
+    zValidator('query', ZExerciseResultsQuery),
+    async (c) => {
+      try {
+        const { exerciseId } = c.req.valid('param');
+        const query = c.req.valid('query');
+        const courseId = c.req.param('courseId')!;
+        const data = await getExerciseResultsGrid(courseId, exerciseId, query);
+
+        return c.json({ success: true as const, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load exercise results');
+      }
+    }
+  )
+  .get(
+    '/clusters/:exerciseId/:questionId',
+    courseGraderMiddleware,
+    zValidator('param', ZAnswerClustersParam),
+    async (c) => {
+      try {
+        const { exerciseId, questionId } = c.req.valid('param');
+        const courseId = c.req.param('courseId')!;
+        const data = await getAnswerClusters(courseId, exerciseId, questionId);
+
+        return c.json({ success: true as const, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to group the answers');
+      }
+    }
+  )
+  .put(
+    '/clusters/:exerciseId/:questionId',
+    courseGraderMiddleware,
+    zValidator('param', ZAnswerClustersParam),
+    zValidator('json', ZClusterOverrideBody),
+    async (c) => {
+      try {
+        const { exerciseId, questionId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const courseId = c.req.param('courseId')!;
+        const data = await setClusterOverride({
+          courseId,
+          exerciseId,
+          questionId,
+          body,
+          actorProfileId: c.get('user')!.id
+        });
+
+        return c.json({ success: true as const, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to apply the decision to the answer group');
+      }
+    }
+  )
+  .post(
+    '/clusters/:exerciseId/:questionId/reset',
+    courseGraderMiddleware,
+    zValidator('param', ZAnswerClustersParam),
+    zValidator('json', ZClusterResetBody),
+    async (c) => {
+      try {
+        const { exerciseId, questionId } = c.req.valid('param');
+        const { key } = c.req.valid('json');
+        const courseId = c.req.param('courseId')!;
+        const data = await resetClusterOverride({ courseId, exerciseId, questionId, key });
+
+        return c.json({ success: true as const, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to undo the decision');
+      }
+    }
+  )
   .post(
     '/ai-review/accept/:exerciseId',
     courseGraderMiddleware,
