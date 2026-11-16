@@ -5,6 +5,7 @@
   import { goto } from '$app/navigation';
   import { dndzone } from 'svelte-dnd-action';
   import { SvelteSet } from 'svelte/reactivity';
+  import { invalidateAll } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
 
   import { submissionApi } from '$features/course/api';
@@ -48,6 +49,12 @@
     sections = initialSections;
     submissionIdData = { ...initialSubmissionIdData };
   });
+
+  async function refreshFromServer() {
+    await invalidateAll();
+    sections = initialSections;
+    submissionIdData = { ...initialSubmissionIdData };
+  }
 
   const ALLOWED_BOARD_TRANSITIONS: Record<number, number[]> = {
     1: [2],
@@ -376,11 +383,7 @@
   {isSaving}
 />
 
-<AiReviewBulkAccept
-  {courseId}
-  countByExerciseId={confidentCountByExerciseId}
-  onAccepted={() => window.location.reload()}
-/>
+<AiReviewBulkAccept {courseId} countByExerciseId={confidentCountByExerciseId} onAccepted={refreshFromServer} />
 
 <SubmissionFilterBar
   {studentOptions}

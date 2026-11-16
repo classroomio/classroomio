@@ -3,6 +3,7 @@ import type {
   BulkAcceptAiReviewsRequest,
   BulkAcceptAiReviewsSuccess,
   DecideAiReviewRequest,
+  DecideAiReviewSuccess,
   DeleteSubmissionRequest,
   RequestAiReviewRequest,
   RequestAiReviewSuccess,
@@ -185,6 +186,8 @@ export class AiReviewApi extends BaseApiWithErrors {
   }
 
   async decide(courseId: string, submissionId: string, decision: TAiReviewDecisionBody) {
+    let decided: DecideAiReviewSuccess['data'] | null = null;
+
     await this.execute<DecideAiReviewRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].submission[':submissionId']['ai-review'].decision.$put({
@@ -192,13 +195,16 @@ export class AiReviewApi extends BaseApiWithErrors {
           json: decision
         }),
       logContext: 'recording a decision on an AI suggestion',
-      onSuccess: () => {
+      onSuccess: (response) => {
+        decided = response.data;
         this.success = true;
       },
       onError: (result) => {
         snackbar.error(result.message);
       }
     });
+
+    return decided;
   }
 
   async acceptConfident(courseId: string, exerciseId: string) {

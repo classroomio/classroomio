@@ -115,13 +115,10 @@
     const courseId = courseApi.course?.id;
     if (!courseId) return;
 
-    await aiReviewApi.decide(courseId, data.id, { questionId: question.id, status, awardedPoints });
-    if (!aiReviewApi.success) return;
+    const decided = await aiReviewApi.decide(courseId, data.id, { questionId: question.id, status, awardedPoints });
+    if (!decided?.decision) return;
 
-    setLocalAiReview(question, {
-      ...review,
-      decision: { status, decidedAt: new Date().toISOString(), decidedBy: '', awardedPoints }
-    });
+    setLocalAiReview(question, { ...review, decision: decided.decision });
   }
 
   function applySuggestion(question: { id: number }, points: number) {

@@ -96,7 +96,9 @@ beforeEach(() => {
 
 describe('collectWorkingEvidence', () => {
   it('lets the engine judge typed lines', () => {
-    const evidence = collectWorkingEvidence(workedAnswer({ working: { lines: ['2x+3=11', '2x=9'], files: [] } }) as never);
+    const evidence = collectWorkingEvidence(
+      workedAnswer({ working: { lines: ['2x+3=11', '2x=9'], files: [] } }) as never
+    );
 
     expect(evidence.engineCheck?.firstIncorrectIndex).toBe(1);
   });
@@ -119,7 +121,13 @@ describe('requestAiReview', () => {
     const review = await requestAiReview({ courseId: COURSE_ID, submissionId: 'sub-1', questionId: 5, userId: 'u1' });
 
     expect(enforceMathVisionAllowance).toHaveBeenCalledWith('org-1');
-    expect(recordMathVisionUsage).toHaveBeenCalledWith('org-1', 'u1', COURSE_ID, { promptTokens: 100, completionTokens: 40 }, 'mock-vision');
+    expect(recordMathVisionUsage).toHaveBeenCalledWith(
+      'org-1',
+      'u1',
+      COURSE_ID,
+      { promptTokens: 100, completionTokens: 40 },
+      'mock-vision'
+    );
     expect(review).toMatchObject({ model: 'mock-vision', suggestedPoints: 3, maxPoints: 3, confidence: 0.93 });
     expect(setAnswerAiReview).toHaveBeenCalledWith(7, review);
   });
@@ -157,7 +165,9 @@ describe('requestAiReview', () => {
 
 describe('recordAiReviewDecision', () => {
   it('stores who decided what beside the suggestion', async () => {
-    vi.mocked(getAnswerForAiReview).mockResolvedValue(row({ answerData: workedAnswer({ aiReview: { suggestedPoints: 3 } }) }) as never);
+    vi.mocked(getAnswerForAiReview).mockResolvedValue(
+      row({ answerData: workedAnswer({ aiReview: { suggestedPoints: 3 } }) }) as never
+    );
 
     const review = await recordAiReviewDecision({
       courseId: COURSE_ID,
@@ -172,7 +182,17 @@ describe('recordAiReviewDecision', () => {
 });
 
 describe('bulkAcceptAiReviews', () => {
-  const suggestion = (confidence: number) => ({ suggestedPoints: 3, confidence, stepMarks: [], model: 'm', reviewedAt: 'x', rubricVersion: 'v', maxPoints: 3, firstWrongStep: null, comment: '' });
+  const suggestion = (confidence: number) => ({
+    suggestedPoints: 3,
+    confidence,
+    stepMarks: [],
+    model: 'm',
+    reviewedAt: 'x',
+    rubricVersion: 'v',
+    maxPoints: 3,
+    firstWrongStep: null,
+    comment: ''
+  });
 
   it('accepts confident suggestions, grades the submission and leaves unsure ones alone', async () => {
     vi.mocked(getAnswersWithAiReviewByExercise).mockResolvedValue([
@@ -185,7 +205,13 @@ describe('bulkAcceptAiReviews', () => {
 
     const result = await bulkAcceptAiReviews({ courseId: COURSE_ID, exerciseId: 'ex-1', actorProfileId: 't1' });
 
-    expect(result).toEqual({ acceptedCount: 1, completedSubmissionCount: 1 });
+    expect(result).toMatchObject({ acceptedCount: 1, completedSubmissionIds: ['sub-1'] });
+    expect(result.accepted[0]).toMatchObject({
+      submissionId: 'sub-1',
+      questionId: 5,
+      points: 5,
+      decision: { decidedBy: 't1' }
+    });
     expect(setAnswerAiReview).toHaveBeenCalledTimes(1);
     expect(updateSubmissionGradesBatch).toHaveBeenCalledWith(
       'sub-1',
@@ -206,7 +232,7 @@ describe('bulkAcceptAiReviews', () => {
 
     const result = await bulkAcceptAiReviews({ courseId: COURSE_ID, exerciseId: 'ex-1', actorProfileId: 't1' });
 
-    expect(result).toEqual({ acceptedCount: 1, completedSubmissionCount: 0 });
+    expect(result).toMatchObject({ acceptedCount: 1, completedSubmissionIds: [] });
     expect(updateSubmissionGradesBatch).not.toHaveBeenCalled();
     expect(updateSubmissionGrades).toHaveBeenCalledWith('sub-1', { answers: [{ questionId: 5, points: 5 }], total: 5 });
   });

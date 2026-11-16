@@ -120,7 +120,8 @@ export function describeEvidence(evidence: WorkingEvidence): string {
 export function reconcileWithEngine(review: AiReview, engineCheck: MathStepsCheck | null): AiReview {
   if (!engineCheck || engineCheck.firstIncorrectIndex === null || review.firstWrongStep !== null) return review;
 
-  const note = 'The engine found that line ' + (engineCheck.firstIncorrectIndex + 1) + ' does not follow from the line before it.';
+  const note =
+    'The engine found that line ' + (engineCheck.firstIncorrectIndex + 1) + ' does not follow from the line before it.';
 
   return { ...review, confidence: Math.min(review.confidence, 0.4), comment: (review.comment + ' ' + note).trim() };
 }
@@ -191,7 +192,10 @@ export async function requestAiReview(params: {
     throw new AppError('AI suggestions are not turned on for this question', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  const question = instantiateQuestion({ title: row.questionTitle, settings: storedSettings }, answer.seed ?? 'default');
+  const question = instantiateQuestion(
+    { title: row.questionTitle, settings: storedSettings },
+    answer.seed ?? 'default'
+  );
   const rubric = readMarkingRubric(question.settings);
   const evidence = collectWorkingEvidence(answer);
   const images = await loadWorkingImages(evidence.imageKeys);
@@ -208,7 +212,11 @@ export async function requestAiReview(params: {
   const rubricText = rubric.steps
     .map((step) => 'id=' + step.id + ' (' + step.points + ' points): ' + step.description)
     .join('\n');
-  const prompt = ['Question: ' + (question.title ?? ''), 'Rubric steps:\n' + rubricText, describeEvidence(evidence)].join('\n\n');
+  const prompt = [
+    'Question: ' + (question.title ?? ''),
+    'Rubric steps:\n' + rubricText,
+    describeEvidence(evidence)
+  ].join('\n\n');
 
   const { object, usage } = await generateObject({
     model,
@@ -273,7 +281,10 @@ export async function recordAiReviewDecision(params: {
 }
 
 function needsTeacher(row: AnswerForAiReview): boolean {
-  return row.questionTypeId === WORKED_SOLUTION_TYPE_ID || getQuestionTypeById(row.questionTypeId)?.manualGradingRequired === true;
+  return (
+    row.questionTypeId === WORKED_SOLUTION_TYPE_ID ||
+    getQuestionTypeById(row.questionTypeId)?.manualGradingRequired === true
+  );
 }
 
 function isDecided(answerData: AnswerData | null): boolean {
@@ -282,7 +293,16 @@ function isDecided(answerData: AnswerData | null): boolean {
   return status === 'accepted' || status === 'edited';
 }
 
-export type BulkAcceptResult = { acceptedCount: number; completedSubmissionCount: number };
+export type BulkAcceptResult = {
+  acceptedCount: number;
+  completedSubmissionIds: string[];
+  accepted: Array<{
+    submissionId: string;
+    questionId: number;
+    points: number;
+    decision: NonNullable<AiReview['decision']>;
+  }>;
+};
 
 /**
  * Accepts every undecided suggestion at or above ${minConfidence} in an exercise that is still awaiting manual grading.
@@ -309,8 +329,8 @@ export async function bulkAcceptAiReviews(params: {
     rowsBySubmission.set(row.submissionId, [...(rowsBySubmission.get(row.submissionId) ?? []), row]);
   }
 
-  let acceptedCount = 0;
-  let completedSubmissionCount = 0;
+  const acceptedAnswers: BulkAcceptResult['accepted'] = [];
+  const completedSubmissionIds: string[] = [];
 
   for (const [submissionId, accepted] of rowsBySubmission) {
     const allAnswers = await getAnswersWithQuestionBySubmissionId(submissionId);
@@ -324,28 +344,38 @@ export async function bulkAcceptAiReviews(params: {
       const nextPoints = roundPoints(Math.min(maxPoints, Number(row.point ?? 0) + review.suggestedPoints));
       pointByQuestionId.set(row.questionId, nextPoints);
 
-      const decided: AiReview = {
-        ...review,
-        decision: { status: 'accepted', decidedAt, decidedBy: params.actorProfileId, awardedPoints: review.suggestedPoints }
+      const decision = {
+        status: 'accepted' as const,
+        decidedAt,
+        decidedBy: params.actorProfileId,
+        awardedPoints: review.suggestedPoints
       };
-      await setAnswerAiReview(row.answerId, decided);
-      acceptedCount += 1;
+      await setAnswerAiReview(row.answerId, { ...review, decision });
+      acceptedAnswers.push({ submissionId, questionId: row.questionId, points: nextPoints, decision });
     }
 
     const isComplete = allAnswers
       .filter(needsTeacher)
       .every((row) => acceptedQuestionIds.has(row.questionId) || isDecided(row.answerData as AnswerData | null));
     const total = roundPoints([...pointByQuestionId.values()].reduce((sum, points) => sum + points, 0));
-    const gradedAnswers = accepted.map((row) => ({ questionId: row.questionId, points: pointByQuestionId.get(row.questionId) ?? 0 }));
+    const gradedAnswers = accepted.map((row) => ({
+      questionId: row.questionId,
+      points: pointByQuestionId.get(row.questionId) ?? 0
+    }));
 
     if (isComplete) {
-      await updateSubmissionGradesBatch(submissionId, params.courseId, { answers: gradedAnswers, total }, { actorProfileId: params.actorProfileId });
-      completedSubmissionCount += 1;
+      await updateSubmissionGradesBatch(
+        submissionId,
+        params.courseId,
+        { answers: gradedAnswers, total },
+        { actorProfileId: params.actorProfileId }
+      );
+      completedSubmissionIds.push(submissionId);
       continue;
     }
 
     await updateSubmissionGrades(submissionId, { answers: gradedAnswers, total });
   }
 
-  return { acceptedCount, completedSubmissionCount };
+  return { acceptedCount: acceptedAnswers.length, completedSubmissionIds, accepted: acceptedAnswers };
 }
