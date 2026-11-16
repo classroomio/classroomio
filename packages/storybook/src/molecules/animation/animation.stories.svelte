@@ -20,6 +20,7 @@
     MachineGlassBox,
     MachineRepeater,
     MachineSpectrum,
+    MachineTrackRunner,
     MachineTrainingLine,
     MagicCard,
     Meteors,
