@@ -261,10 +261,45 @@ export const ZPublicApiCourseDetailResponse = ZPublicApiCourseResponse.extend({
     .optional()
 });
 
-export const ZPublicApiCreateCourseResponse = z.object({
+export const ZPublicApiCourseLinksResponse = z.object({
+  appUrl: z
+    .string()
+    .describe('Dashboard page where the team edits the course; the link to give the user while it is unpublished'),
+  landingPageUrl: z.string().nullable().describe('Public landing page; null until the course is published')
+});
+
+export const ZPublicApiCourseBannerResponse = z.object({
+  applied: z.boolean(),
+  imageUrl: z.string().nullable(),
+  source: z.enum(['provided', 'unsplash']).nullable(),
+  reason: z
+    .enum(['not_requested', 'unsplash_not_configured', 'no_image_found', 'lookup_failed'])
+    .nullable()
+    .describe('Why no banner was applied; null when one was')
+});
+
+export const ZPublicApiCreateCourseResponse = ZPublicApiCourseLinksResponse.extend({
   course: ZPublicApiCourseResponse,
   groupId: z.string().uuid(),
-  memberId: z.string().uuid().describe("The key creator's course member id; they are added as a tutor")
+  memberId: z.string().uuid().describe("The key creator's course member id; they are added as a tutor"),
+  banner: ZPublicApiCourseBannerResponse
+});
+
+export const ZPublicApiCourseReadinessIssueResponse = z.object({
+  code: z.string(),
+  message: z.string(),
+  target: z.string().optional()
+});
+
+export const ZPublicApiPublishCourseResponse = ZPublicApiCourseLinksResponse.extend({
+  published: z.boolean().describe('False when the go-live check found blockers; the course stays unpublished'),
+  course: ZPublicApiCourseResponse,
+  blockers: z.array(ZPublicApiCourseReadinessIssueResponse),
+  warnings: z.array(ZPublicApiCourseReadinessIssueResponse)
+});
+
+export const ZPublicApiUnpublishCourseResponse = ZPublicApiCourseLinksResponse.extend({
+  course: ZPublicApiCourseResponse
 });
 
 export const ZPublicApiCourseConversionOffenderResponse = z.object({

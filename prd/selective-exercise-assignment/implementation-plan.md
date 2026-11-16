@@ -37,8 +37,8 @@
 | SEA-C2 | Exercise List | Filter unassigned exercises in list endpoint for students | `packages/db/src/queries/exercise/exercise.ts`, `apps/api/src/services/exercise/exercise.ts` | SEA-A5 | Student list endpoint returns only assigned exercises |
 | SEA-C3 | LMS Exercises | Filter unassigned exercises in org LMS exercises query | `packages/db/src/queries/exercise/lms.ts` | SEA-A5 | Student LMS exercise page excludes unassigned items |
 | SEA-C4 | Progress Query | Make `getCourseProgress` assignment-aware | `packages/db/src/queries/course/course.ts` | SEA-A5 | Denominator uses assigned exercise set |
-| SEA-C5 | Analytics Query | Make `getUserExercisesStats` assignment-aware | `packages/db/src/queries/analytics/analytics.ts` | SEA-A5 | Stats only include assigned exercises |
-| SEA-C6 | Analytics Query | Make `getProfileCourseProgress` assignment-aware | `packages/db/src/queries/analytics/analytics.ts` | SEA-A5 | Profile progress excludes unassigned exercises |
+| SEA-C5 | Analytics Query | Make `getUserExercisesStats` assignment-aware | `packages/db/src/queries/student-progress/student-progress.ts` | SEA-A5 | Stats only include assigned exercises |
+| SEA-C6 | Analytics Query | Make `getProfileCourseProgress` assignment-aware | `packages/db/src/queries/student-progress/student-progress.ts` | SEA-A5 | Profile progress excludes unassigned exercises |
 | SEA-D1 | Dashboard Types | Add request/response assignment types in course feature `utils/types.ts` | `apps/dashboard/src/lib/features/course/utils/types.ts` | SEA-B5, SEA-B6 | Types inferred from API RPC contract |
 | SEA-D2 | Dashboard API | Add `getAssignment` + `updateAssignment` methods | `apps/dashboard/src/lib/features/course/api/exercise.svelte.ts` | SEA-D1 | API class handles loading/success/error states |
 | SEA-D3 | Dashboard UI | Build instructor assignment panel component | `apps/dashboard/src/lib/features/course/components/exercise/exercise-assignment-panel.svelte` | SEA-D2 | Instructor can set mode + selected students |

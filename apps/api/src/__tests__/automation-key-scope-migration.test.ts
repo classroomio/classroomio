@@ -32,6 +32,13 @@ function scopesInFirstJsonbArray(sql: string, afterOperator: string): string[] {
   return JSON.parse(sql.slice(open, close + 1)) as string[];
 }
 
+const RETIRED_SCOPES = [
+  'course_import:draft:create',
+  'course_import:draft:read',
+  'course_import:draft:update',
+  'course_import:draft:publish'
+];
+
 // In migration order. A new backfill goes at the end.
 const SCOPE_BACKFILLS = [
   {
@@ -59,7 +66,9 @@ const SCOPE_BACKFILLS = [
 describe.each(SCOPE_BACKFILLS.map((backfill, index) => ({ ...backfill, index })))('$tag', ({ tag, added, index }) => {
   const sql = readMigration(tag);
   const addedLater = SCOPE_BACKFILLS.slice(index + 1).flatMap((backfill) => backfill.added);
-  const defaultAfter = DEFAULT_SCOPES.mcp.filter((scope: string) => !addedLater.includes(scope));
+  const defaultAfter = [...RETIRED_SCOPES, ...DEFAULT_SCOPES.mcp].filter(
+    (scope: string) => !addedLater.includes(scope)
+  );
 
   it('requires exactly the MCP default set as it stood before the new scopes', () => {
     const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');

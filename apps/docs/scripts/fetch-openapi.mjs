@@ -40,6 +40,18 @@ const reuseExistingSpec = async () => {
   await writeDocsSpec(cachedSpec);
 };
 
+if (process.argv.includes('--skip-fetch')) {
+  if (!(await exists(OUTPUT))) {
+    throw new Error(
+      `--skip-fetch needs a spec at ${OUTPUT}. Generate one from the API checkout with "pnpm --filter @cio/api upload:openapi --docs".`
+    );
+  }
+
+  await reuseExistingSpec();
+  console.log(`[docs] Reused the local OpenAPI spec at ${OUTPUT}`);
+  process.exit(0);
+}
+
 let response;
 
 try {

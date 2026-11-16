@@ -568,7 +568,9 @@ export const groupAttendance = pgTable(
       columns: [table.studentId],
       foreignColumns: [groupmember.id],
       name: 'group_attendance_student_id_fkey'
-    })
+    }),
+    index('idx_group_attendance_course_id_lesson_id').on(table.courseId, table.lessonId),
+    index('idx_group_attendance_student_id').on(table.studentId)
   ]
 );
 
@@ -1296,6 +1298,7 @@ export const lesson = pgTable(
       name: 'lesson_teacher_id_fkey'
     }),
     index('idx_lesson_course_slug').on(table.courseId, table.slug),
+    index('idx_lesson_section_id').on(table.sectionId),
     index('lesson_source_id_idx')
       .on(table.sourceId)
       .where(sql`${table.sourceId} is not null`)
@@ -1456,6 +1459,7 @@ export const exercise = pgTable(
       name: 'exercise_section_id_fkey'
     }),
     index('idx_exercise_course_slug').on(table.courseId, table.slug),
+    index('idx_exercise_section_id').on(table.sectionId),
     index('exercise_source_id_idx')
       .on(table.sourceId)
       .where(sql`${table.sourceId} is not null`),
@@ -1525,7 +1529,8 @@ export const groupmember = pgTable(
     }),
     unique('unique_entries').on(table.groupId, table.profileId, table.email),
     unique('unique_group_email').on(table.groupId, table.email),
-    unique('unique_group_profile').on(table.groupId, table.profileId)
+    unique('unique_group_profile').on(table.groupId, table.profileId),
+    index('idx_groupmember_profile_id').on(table.profileId)
   ]
 );
 
@@ -1848,7 +1853,8 @@ export const lessonCompletion = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_completion_profile_id_fkey'
     }),
-    unique('unique_lesson_profile').on(table.lessonId, table.profileId)
+    unique('unique_lesson_profile').on(table.lessonId, table.profileId),
+    index('idx_lesson_completion_profile_id_lesson_id').on(table.profileId, table.lessonId)
   ]
 );
 
@@ -2325,6 +2331,7 @@ export const blockLocaleHistory = pgTable(
     editCount: integer('edit_count').default(1).notNull(),
     isSealed: boolean('is_sealed').default(false).notNull(),
     source: varchar().default('editor').notNull().$type<TBlockChangeSource>(),
+    clientName: varchar('client_name', { length: 120 }),
     changeSetId: uuid('change_set_id')
   },
   (table) => [
@@ -2377,6 +2384,7 @@ export const lessonRevision = pgTable(
     placements: jsonb().notNull().$type<TLessonRevisionPlacement[]>(),
     authorId: uuid('author_id'),
     source: varchar().default('editor').notNull().$type<TBlockChangeSource>(),
+    clientName: varchar('client_name', { length: 120 }),
     changeSetId: uuid('change_set_id'),
     sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -2579,7 +2587,8 @@ export const questionAnswer = pgTable(
       columns: [table.submissionId],
       foreignColumns: [submission.id],
       name: 'question_answer_submission_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    index('idx_question_answer_submission_id').on(table.submissionId)
   ]
 );
 
@@ -2677,6 +2686,9 @@ export const organization = pgTable(
         session?: boolean;
         enrollmentWelcome?: boolean;
         courseCompletion?: boolean;
+      };
+      analytics?: {
+        studentTarget?: number | null;
       };
     }>(),
     landingpage: jsonb().default({}).$type<{
@@ -3176,9 +3188,10 @@ export const blockVersions = pgView('block_versions', {
   locale: locale(),
   blockId: uuid('block_id'),
   source: varchar().$type<TBlockChangeSource>(),
+  clientName: varchar('client_name', { length: 120 }),
   changeSetId: uuid('change_set_id')
 }).as(
-  sql`SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id, bh.source, bh.change_set_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id`
+  sql`SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id, bh.source, bh.client_name, bh.change_set_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id`
 );
 
 export const exerciseTemplate = pgTable('exercise_template', {
@@ -3758,7 +3771,8 @@ export const cohortCourse = pgTable(
       name: 'cohort_course_course_id_fkey'
     }).onDelete('cascade'),
     unique('cohort_course_cohort_id_course_id_unique').on(table.cohortId, table.courseId),
-    index('idx_cohort_course_cohort_id').on(table.cohortId)
+    index('idx_cohort_course_cohort_id').on(table.cohortId),
+    index('idx_cohort_course_course_id').on(table.courseId)
   ]
 );
 

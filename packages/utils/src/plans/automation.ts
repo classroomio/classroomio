@@ -1,3 +1,4 @@
+import { ORG_ANALYTICS_TOOLS } from '../constants/analytics-pages';
 import { PLAN } from './constants';
 
 export const AUTOMATION_TYPE = {
@@ -15,18 +16,16 @@ export const AUTOMATION_USAGE_CATEGORY = {
 export const MCP_TOOL_CREDIT_COST = {
   list_org_courses: 0,
   list_related_courses: 0,
+  create_course: 1,
+  publish_course: 1,
+  unpublish_course: 1,
   get_course_structure: 0,
-  get_course_draft: 0,
   list_course_exercises: 0,
   get_course_exercise: 0,
-  create_course_draft: 1,
-  create_course_draft_from_course: 1,
   reorder_course_content: 1,
   clone_course: 1,
   set_featured_courses: 1,
   update_course_landing_page: 1,
-  update_course_draft: 1,
-  tag_course_draft: 1,
   tag_courses: 1,
   create_course_exercise: 1,
   update_course_exercise: 1,
@@ -46,8 +45,6 @@ export const MCP_TOOL_CREDIT_COST = {
   get_course_template: 0,
   create_course_from_template: 1,
   save_course_as_template: 1,
-  publish_course_draft: 5,
-  publish_course_draft_to_existing_course: 5,
   list_org_cohorts: 0,
   get_cohort: 0,
   list_cohort_members: 0,
@@ -130,11 +127,21 @@ export const MCP_TOOL_CREDIT_COST = {
   update_course_submission: 1,
   delete_course_submission: 1,
   get_course_marks: 0,
-  get_org_analytics: 0,
-  list_compliance_learners: 0,
-  get_learner_analytics: 0,
+  [ORG_ANALYTICS_TOOLS.snapshot]: 0,
+  [ORG_ANALYTICS_TOOLS.students]: 0,
+  [ORG_ANALYTICS_TOOLS.catalog]: 0,
+  [ORG_ANALYTICS_TOOLS.query]: 0,
   get_course_analytics: 0,
   list_course_analytics_students: 0,
+  get_cohort_analytics: 0,
+  list_cohort_analytics_students: 0,
+  get_marketing_analytics: 0,
+  get_course_marketing_analytics: 0,
+  get_compliance_analytics: 0,
+  list_compliance_students: 0,
+  get_org_overview: 0,
+  get_student_analytics: 0,
+  remind_overdue_cohort_goals: 1,
   list_audience_members: 0,
   get_audience_member: 0,
   add_audience_member: 1,
@@ -241,7 +248,6 @@ export const MCP_AUTOMATION_LIMITS_BY_PLAN: Record<string, McpAutomationLimits> 
 export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsageCategory {
   if (
     toolName === 'get_course_structure' ||
-    toolName === 'get_course_draft' ||
     toolName === 'list_org_courses' ||
     toolName === 'list_related_courses' ||
     toolName === 'list_course_exercises' ||
@@ -280,11 +286,20 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_course_submissions' ||
     toolName === 'get_course_submission' ||
     toolName === 'get_course_marks' ||
-    toolName === 'get_org_analytics' ||
-    toolName === 'list_compliance_learners' ||
-    toolName === 'get_learner_analytics' ||
+    toolName === ORG_ANALYTICS_TOOLS.snapshot ||
+    toolName === ORG_ANALYTICS_TOOLS.students ||
+    toolName === ORG_ANALYTICS_TOOLS.catalog ||
+    toolName === ORG_ANALYTICS_TOOLS.query ||
     toolName === 'get_course_analytics' ||
     toolName === 'list_course_analytics_students' ||
+    toolName === 'get_cohort_analytics' ||
+    toolName === 'list_cohort_analytics_students' ||
+    toolName === 'get_marketing_analytics' ||
+    toolName === 'get_course_marketing_analytics' ||
+    toolName === 'get_compliance_analytics' ||
+    toolName === 'list_compliance_students' ||
+    toolName === 'get_org_overview' ||
+    toolName === 'get_student_analytics' ||
     toolName === 'list_audience_members' ||
     toolName === 'get_audience_member' ||
     toolName === 'list_team_members' ||
@@ -298,10 +313,6 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_organization_customization'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
-  }
-
-  if (toolName === 'publish_course_draft' || toolName === 'publish_course_draft_to_existing_course') {
-    return AUTOMATION_USAGE_CATEGORY.PUBLISH;
   }
 
   return AUTOMATION_USAGE_CATEGORY.WRITE;

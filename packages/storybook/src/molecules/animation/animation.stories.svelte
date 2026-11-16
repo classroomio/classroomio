@@ -13,6 +13,7 @@
     GradualSpacing,
     HeroVideoDialog,
     MachineBlankLesson,
+    MachineCabinet,
     MachineBrandStand,
     MachineBrokenTrack,
     MachineCertificatePress,
@@ -20,6 +21,7 @@
     MachineGlassBox,
     MachineRepeater,
     MachineSpectrum,
+    MachineTrackRunner,
     MachineTrainingLine,
     MagicCard,
     Meteors,
@@ -343,10 +345,38 @@
   {/snippet}
 </Story>
 
+<Story name="MachineBrokenTrackStatic">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineBrokenTrack
+        playable={false}
+        label="A block rides up to a gap in the line, tips over the edge and cannot cross"
+        class="h-64"
+      />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="MachineBlankLesson">
   {#snippet template()}
     <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
       <MachineBlankLesson label="An empty lesson page where a cursor starts writing the title" class="h-64" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineCabinet">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineCabinet label="A filing cabinet whose drawers slide open one by one and are empty inside" class="h-64" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineCabinet with drawer labels">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineCabinet lessons="LECCIONES" exercises="EJERCICIOS" certificates="CERTIFICADOS" class="h-64" />
     </div>
   {/snippet}
 </Story>
@@ -380,6 +410,7 @@
         class="h-64"
       />
       <MachineBlankLesson label="An empty lesson page where a cursor starts writing the title" class="h-64" />
+      <MachineCabinet label="A filing cabinet whose drawers slide open one by one and are empty inside" class="h-64" />
     </div>
   {/snippet}
 </Story>

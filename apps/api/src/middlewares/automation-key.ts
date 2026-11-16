@@ -1,5 +1,6 @@
 import { Context, Next } from 'hono';
 
+import { MCP_CLIENT_HEADER, resolveKeyClientName } from '@api/utils/change-attribution';
 import {
   authenticateOrganizationApiKeyService,
   touchOrganizationApiKeyLastUsedService
@@ -26,6 +27,7 @@ export const automationKeyMiddleware = async (c: Context, next: Next) => {
     c.set('automationKey', automationKey);
     c.set('orgId', automationKey.organizationId);
     c.set('actorId', automationKey.createdByProfileId);
+    c.set('clientName', resolveKeyClientName(automationKey, c.req.header(MCP_CLIENT_HEADER)));
 
     await touchOrganizationApiKeyLastUsedService(automationKey);
     await next();

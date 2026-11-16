@@ -76,9 +76,9 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
-      '@cio/analytics':
+      '@cio/tracking':
         specifier: workspace:*
-        version: link:../../packages/analytics
+        version: link:../../packages/tracking
       '@cio/certificates':
         specifier: workspace:*
         version: link:../../packages/certificates
@@ -318,9 +318,9 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
-      '@cio/analytics':
+      '@cio/tracking':
         specifier: workspace:*
-        version: link:../../packages/analytics
+        version: link:../../packages/tracking
       '@cio/api':
         specifier: workspace:*
         version: link:../api
@@ -799,9 +799,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.675.0
         version: 3.958.0
-      '@cio/analytics':
+      '@cio/tracking':
         specifier: workspace:*
-        version: link:../../packages/analytics
+        version: link:../../packages/tracking
       '@cio/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -998,7 +998,7 @@ importers:
         specifier: ^5.5.2
         version: 5.9.3
 
-  packages/analytics:
+  packages/tracking:
     dependencies:
       '@cio/db':
         specifier: workspace:*

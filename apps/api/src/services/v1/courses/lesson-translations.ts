@@ -11,6 +11,7 @@ import type {
   TPublicApiCourseLessonTranslationsQuery,
   TPublicApiSetCourseLessonTranslation
 } from '@cio/utils/validation/public-api';
+import type { TBlockChangeAttribution } from '@cio/utils/constants/lesson-version';
 import { assertAutomationActor, assertCourseTeamAccess, assertLessonInCourse } from '../shared';
 import { toPublicTranslation } from './lessons';
 
@@ -35,7 +36,8 @@ export async function setPublicApiCourseLessonTranslationService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseLessonTranslationParam,
-  payload: TPublicApiSetCourseLessonTranslation
+  payload: TPublicApiSetCourseLessonTranslation,
+  attribution: TBlockChangeAttribution = {}
 ) {
   assertAutomationActor(actorId);
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
@@ -44,7 +46,7 @@ export async function setPublicApiCourseLessonTranslationService(
   const language = await upsertLessonLanguageService(
     params.lessonId,
     { locale: params.locale, content: payload.content },
-    { authorId: actorId, versionIntent: payload.versionIntent, versionLabel: payload.versionLabel }
+    { authorId: actorId, versionIntent: payload.versionIntent, versionLabel: payload.versionLabel, ...attribution }
   );
 
   return toPublicTranslation(language);
@@ -75,6 +77,8 @@ export async function listPublicApiCourseLessonHistoryService(
       isSealed: version.isSealed,
       authorId: version.authorId,
       authorName: version.authorName,
+      source: version.source ?? 'editor',
+      clientName: version.clientName,
       blockId: version.blockId
     })),
     nextCursor: page.nextCursor ? `${page.nextCursor.timestamp}|${page.nextCursor.id}` : null

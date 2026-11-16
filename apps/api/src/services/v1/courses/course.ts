@@ -27,6 +27,8 @@ import {
 import type { UpdateCourseResult } from '@cio/core/services/course/course';
 import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { buildCourseOutline } from '@cio/core/services/course/utils';
+import { getCourseGoLiveReadiness, publishCourseWhenReady } from '@cio/core/services/course/go-live-readiness';
+import { buildCourseLinks, resolveCourseBanner } from '@cio/core/services/course/landing-page';
 import type { TEventSource } from '@cio/core/services/posthog';
 import {
   createCourseImportDraftService,
@@ -40,6 +42,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   assertAutomationActor,
   assertCourseBelongsToOrganization,
+  assertCourseTeamAccess,
   assertOrgTeamMember,
   assertProfileBelongsToOrganization
 } from '@api/services/v1/shared';
@@ -131,14 +134,70 @@ export async function createPublicApiCourseService(
     throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
   }
 
-  return createCourseService(
+  await assertOrgTeamMember(orgId, actorId);
+
+  const { bannerImageUrl, generateBannerImage, bannerImageQuery, ...courseFields } = payload;
+  const banner = await resolveCourseBanner(courseFields.title, {
+    bannerImageUrl,
+    generateBannerImage,
+    bannerImageQuery
+  });
+  const created = await createCourseService(
     actorId,
-    {
-      ...payload,
-      organizationId: orgId
-    },
+    { ...courseFields, organizationId: orgId, ...(banner.imageUrl ? { bannerImage: banner.imageUrl } : {}) },
     source
   );
+  const course = created.course;
+  const links = await buildCourseLinks(orgId, course);
+
+  return { ...created, course, banner, ...links };
+}
+
+export async function publishPublicApiCourseService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseParam
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+
+  const readiness = await getCourseGoLiveReadiness(params.courseId);
+  if (!readiness.ready) {
+    const [current] = await getCourseById(params.courseId);
+    const links = await buildCourseLinks(orgId, current!);
+
+    return {
+      published: Boolean(current!.isPublished),
+      course: current!,
+      blockers: readiness.blockers,
+      warnings: readiness.warnings,
+      ...links
+    };
+  }
+
+  const result = await publishCourseWhenReady(params.courseId, actorId);
+  const links = await buildCourseLinks(orgId, result.course);
+
+  return {
+    published: Boolean(result.course.isPublished),
+    course: result.course,
+    blockers: result.readiness.blockers,
+    warnings: result.readiness.warnings,
+    ...links
+  };
+}
+
+export async function unpublishPublicApiCourseService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseParam
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+
+  const { course, publishChange } = await updateCourseService(params.courseId, { isPublished: false });
+  await emitCoursePublishWebhookEvent(params.courseId, publishChange, actorId);
+  const links = await buildCourseLinks(orgId, course);
+
+  return { course, ...links };
 }
 
 const toCourseTag = ({ id, name, slug, color }: TTag) => ({ id, name, slug, color });

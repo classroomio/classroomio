@@ -4,6 +4,7 @@ import {
   ZPublicApiAudienceMemberParam,
   ZPublicApiAudienceQuery,
   ZPublicApiCreateAudience,
+  ZPublicApiStudentAnalyticsParam,
   ZPublicApiUpdateAudience
 } from '@cio/utils/validation/public-api';
 import { AUDIENCE_BULK_IDS_MAX, AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
@@ -14,6 +15,11 @@ import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-com
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 
 const ORG_ADMIN_RULE = 'the API key creator must be an org admin';
+
+const ORG_TEAM_RULE = 'the API key creator must be an org admin or tutor';
+
+export const ZGetStudentAnalyticsToolInput = ZPublicApiStudentAnalyticsParam;
+const getStudentAnalyticsShape = ZGetStudentAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
 
 const READ_ONLY: ToolAnnotations = { readOnlyHint: true, destructiveHint: false };
 const WRITE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false };
@@ -88,6 +94,18 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
     async (args) => {
       const { memberId } = ZGetAudienceMemberToolInput.parse(args);
       const result = await apiClient.getAudienceMember(memberId);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'get_student_analytics',
+    `Get a student's progress and grades across their courses in the organization, with per-exercise results; ${ORG_TEAM_RULE}. Takes the uuid profileId from list_compliance_students or the students lists, not the numeric memberId.`,
+    getStudentAnalyticsShape,
+    READ_ONLY,
+    async (args) => {
+      const { profileId } = ZGetStudentAnalyticsToolInput.parse(args);
+      const result = await apiClient.getStudentAnalytics(profileId);
       return jsonContent(result);
     }
   );

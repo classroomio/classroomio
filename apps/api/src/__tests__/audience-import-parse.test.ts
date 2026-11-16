@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { parseFullnameFromInviteMetadata } from '@api/utils/org';
 
 import {
   AUDIENCE_IMPORT_MAX_ROWS,
+  filterImportRowIndexes,
   isImportableEmail,
-  parseAudienceImportCsv
+  parseAudienceImportCsv,
+  reclassifyImportRows
 } from '@cio/utils/validation/organization';
 
 describe('parseAudienceImportCsv — headers', () => {
@@ -143,5 +146,96 @@ describe('isImportableEmail', () => {
 
     expect(isImportableEmail(`a@${'a'.repeat(100_000)}`)).toBe(false);
     expect(performance.now() - started).toBeLessThan(50);
+  });
+});
+
+describe('parseAudienceImportCsv — names on rows that need fixing', () => {
+  it('keeps the name and courses on an invalid row so correcting the email loses nothing', () => {
+    const parsed = parseAudienceImportCsv('email,name,courses\nada@,Ada Lovelace,"React,Data"');
+    const [row] = parsed.rows;
+
+    expect(row).toMatchObject({ status: 'invalid_email', name: 'Ada Lovelace', courses: ['React', 'Data'] });
+    expect(reclassifyImportRows([{ ...row, email: 'ada@test.dev' }])[0]).toMatchObject({
+      status: 'ready',
+      name: 'Ada Lovelace'
+    });
+  });
+
+  it('keeps the name on a row with a blank email', () => {
+    const [row] = parseAudienceImportCsv('email,name\n,Ada Lovelace').rows;
+
+    expect(row).toMatchObject({ status: 'missing_email', name: 'Ada Lovelace' });
+  });
+});
+
+describe('reclassifyImportRows', () => {
+  it('marks a corrected address ready and flags a broken one', () => {
+    const parsed = parseAudienceImportCsv('ada@test.dev\nnot-an-email');
+    const edited = parsed.rows.map((row) =>
+      row.status === 'invalid_email' ? { ...row, email: 'grace@test.dev' } : { ...row, email: 'ada@' }
+    );
+
+    expect(reclassifyImportRows(edited).map((row) => row.status)).toEqual(['invalid_email', 'ready']);
+  });
+
+  it('flags the later row when an edit creates a duplicate, ignoring case and spacing', () => {
+    const rows = parseAudienceImportCsv('ada@test.dev\ngrace@test.dev').rows;
+    rows[1] = { ...rows[1], email: '  ADA@test.dev ' };
+
+    expect(reclassifyImportRows(rows).map((row) => row.status)).toEqual(['ready', 'duplicate_in_file']);
+  });
+
+  it('promotes the next copy to ready once the first copy is changed', () => {
+    const rows = parseAudienceImportCsv('ada@test.dev\nada@test.dev').rows;
+    rows[0] = { ...rows[0], email: 'grace@test.dev' };
+
+    expect(reclassifyImportRows(rows).map((row) => row.status)).toEqual(['ready', 'ready']);
+  });
+
+  it('reports a cleared address as missing and keeps the typed text', () => {
+    const rows = parseAudienceImportCsv('ada@test.dev').rows;
+    rows[0] = { ...rows[0], email: '  ' };
+
+    expect(reclassifyImportRows(rows)).toEqual([expect.objectContaining({ email: '  ', status: 'missing_email' })]);
+  });
+});
+
+describe('parseFullnameFromInviteMetadata', () => {
+  it('returns the trimmed stored name', () => {
+    expect(parseFullnameFromInviteMetadata({ source: 'AUDIENCE_IMPORT', fullname: '  Ada Lovelace ' })).toBe(
+      'Ada Lovelace'
+    );
+  });
+
+  it('reads metadata stored as a JSON string', () => {
+    expect(parseFullnameFromInviteMetadata('{"fullname":"Ada Lovelace"}')).toBe('Ada Lovelace');
+  });
+
+  it.each([null, undefined, {}, { fullname: '   ' }, { fullname: 7 }, 'not json'])('ignores %j', (metadata) => {
+    expect(parseFullnameFromInviteMetadata(metadata)).toBeUndefined();
+  });
+});
+
+describe('filterImportRowIndexes', () => {
+  const rows = parseAudienceImportCsv(
+    'email,name\nada@test.dev,Ada Lovelace\ngrace@example.com,Grace Hopper\nlin@test.dev,'
+  ).rows;
+
+  it('returns every index for a blank query', () => {
+    expect(filterImportRowIndexes(rows, '')).toEqual([0, 1, 2]);
+    expect(filterImportRowIndexes(rows, '   ')).toEqual([0, 1, 2]);
+  });
+
+  it('matches the email or the name, ignoring case and surrounding spaces', () => {
+    expect(filterImportRowIndexes(rows, ' TEST.DEV ')).toEqual([0, 2]);
+    expect(filterImportRowIndexes(rows, 'hopper')).toEqual([1]);
+  });
+
+  it('returns nothing when no row matches', () => {
+    expect(filterImportRowIndexes(rows, 'zzz')).toEqual([]);
+  });
+
+  it('returns indexes into the full list so edits stay attached to their rows', () => {
+    expect(filterImportRowIndexes(rows, 'grace')).toEqual([1]);
   });
 });

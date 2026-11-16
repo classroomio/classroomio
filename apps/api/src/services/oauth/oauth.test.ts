@@ -83,6 +83,14 @@ describe('authenticateOAuthAccessTokenService', () => {
     );
   });
 
+  it('returns the name the OAuth client registered with, for attributing edits', async () => {
+    mocks.findActiveOAuthConsent.mockResolvedValue({ ...CONSENT, clientName: 'Claude' });
+
+    const key = await authenticateOAuthAccessTokenService('token', 'any');
+
+    expect(key.clientName).toBe('Claude');
+  });
+
   it('verifies the token against the requested resource', async () => {
     await authenticateOAuthAccessTokenService('token', 'api');
 

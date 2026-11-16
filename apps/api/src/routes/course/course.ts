@@ -23,7 +23,6 @@ import {
   createCourse,
   deleteCourse,
   getCourse,
-  getCourseAnalytics,
   updateCourse
 } from '@cio/core/services/course/course';
 import { getCourseProgressForRequester } from '@api/services/course/progress-access';
@@ -516,33 +515,6 @@ export const courseRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to evaluate certification');
-      }
-    }
-  )
-  /**
-   * GET /course/:courseId/analytics
-   * Gets course analytics including student progress, completion rates, and grades
-   * Requires authentication and course membership (admin/tutor role)
-   */
-  .get(
-    '/:courseId/analytics',
-    authMiddleware,
-    courseTeamMemberMiddleware,
-    zValidator('param', ZCourseProgressParam),
-    async (c) => {
-      try {
-        const { courseId } = c.req.valid('param');
-        const analytics = await getCourseAnalytics(courseId);
-
-        return c.json(
-          {
-            success: true,
-            data: analytics
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch course analytics');
       }
     }
   )

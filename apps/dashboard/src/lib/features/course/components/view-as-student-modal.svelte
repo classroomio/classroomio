@@ -25,7 +25,7 @@
     isNavigating = true;
 
     // Opens the student view in a new tab; close the modal once the handoff starts.
-    const ok = await viewAsStudent({ courseId, currentOrgDomain });
+    const ok = await viewAsStudent({ courseId });
     isNavigating = false;
 
     if (ok) {

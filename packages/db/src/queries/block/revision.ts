@@ -22,6 +22,7 @@ export interface LessonTimelineRow {
   label: string | null;
   isSealed: boolean;
   source: TBlockChangeSource;
+  clientName: string | null;
   changeSetId: string | null;
   authorId: string | null;
   authorName: string | null;
@@ -483,6 +484,7 @@ export async function listLessonTimeline(
       label: string | null;
       is_sealed: boolean;
       source: TBlockChangeSource;
+      client_name: string | null;
       change_set_id: string | null;
       author_id: string | null;
       author_name: string | null;
@@ -495,14 +497,14 @@ export async function listLessonTimeline(
     }>(sql`
       SELECT * FROM (
         SELECT 'text' AS entry_type, v.id, v."timestamp", v.session_started_at, v.edit_count, v.kind, v.label,
-               v.is_sealed, v.source, v.change_set_id, v.author_id, v.author_name, v.block_id, v.locale::text AS locale,
+               v.is_sealed, v.source, v.client_name, v.change_set_id, v.author_id, v.author_name, v.block_id, v.locale::text AS locale,
                v.old_content, v.new_content, NULL::jsonb AS placements, NULL::jsonb AS previous_placements
         FROM block_versions v
         WHERE ${textBlockFilter} AND v.locale::text = ${locale}
         UNION ALL
         SELECT 'structure' AS entry_type, r.id, r."timestamp", r.session_started_at, r.edit_count,
                (CASE WHEN r.is_sealed THEN 'manual' ELSE 'auto' END)::"LESSON_VERSION_KIND" AS kind, NULL AS label,
-               r.is_sealed, r.source, r.change_set_id, r.author_id, p.fullname AS author_name, NULL::uuid AS block_id,
+               r.is_sealed, r.source, r.client_name, r.change_set_id, r.author_id, p.fullname AS author_name, NULL::uuid AS block_id,
                NULL AS locale, NULL AS old_content, NULL AS new_content, r.placements,
                lag(r.placements) OVER (ORDER BY r."timestamp", r.id) AS previous_placements
         FROM lesson_revision r
@@ -524,6 +526,7 @@ export async function listLessonTimeline(
       label: row.label,
       isSealed: row.is_sealed,
       source: row.source,
+      clientName: row.client_name,
       changeSetId: row.change_set_id,
       authorId: row.author_id,
       authorName: row.author_name,
