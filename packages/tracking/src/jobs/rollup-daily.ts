@@ -19,8 +19,7 @@ type RollupResult = {
  * Compute UTC midnight boundaries for the day `daysAgo` before today.
  * daysAgo=1 → yesterday (full day window).
  */
-function getDayBoundsUtc(daysAgo: number): { startIso: string; endIso: string } {
-  const now = new Date();
+function getDayBoundsUtc(daysAgo: number, now: Date): { startIso: string; endIso: string } {
   const target = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - daysAgo));
   const next = new Date(target);
   next.setUTCDate(next.getUTCDate() + 1);
@@ -32,9 +31,9 @@ function getDayBoundsUtc(daysAgo: number): { startIso: string; endIso: string } 
  * country) for one UTC day. `daysAgo: 0` is today so far, `1` is yesterday.
  * Idempotent: rows are upserted on their unique keys, so re-running is safe.
  */
-export async function runTrackingRollupDaily(opts: { daysAgo?: number } = {}): Promise<RollupResult> {
+export async function runTrackingRollupDaily(opts: { daysAgo?: number; now?: Date } = {}): Promise<RollupResult> {
   const daysAgo = opts.daysAgo ?? 1;
-  const { startIso, endIso } = getDayBoundsUtc(daysAgo);
+  const { startIso, endIso } = getDayBoundsUtc(daysAgo, opts.now ?? new Date());
 
   const [orgAgg, courseAgg, countryAgg] = await Promise.all([
     selectOrgDailyAggregates(startIso, endIso),
@@ -96,8 +95,9 @@ export async function runTrackingRollupDaily(opts: { daysAgo?: number } = {}): P
  * landed after the previous day's last run still count.
  */
 export async function runTrackingRollupRecent(): Promise<RollupResult[]> {
-  const yesterday = await runTrackingRollupDaily({ daysAgo: 1 });
-  const today = await runTrackingRollupDaily({ daysAgo: 0 });
+  const now = new Date();
+  const yesterday = await runTrackingRollupDaily({ daysAgo: 1, now });
+  const today = await runTrackingRollupDaily({ daysAgo: 0, now });
 
   return [yesterday, today];
 }
