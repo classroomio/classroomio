@@ -1,5 +1,11 @@
 <script lang="ts">
-  import type { AnswerData, ExerciseQuestionListRenderContract, ExerciseQuestionModel } from '@cio/question-types';
+  import type { Snippet } from 'svelte';
+  import type {
+    AnswerData,
+    ExerciseQuestionListRenderContract,
+    ExerciseQuestionModel,
+    ExerciseQuestionRendererProps
+  } from '@cio/question-types';
   import { getExerciseQuestionContractKey } from '@cio/question-types';
   import { cn } from '../../tools';
   import QuestionRenderer from './question-renderer.svelte';
@@ -10,6 +16,7 @@
     onQuestionChange?: (question: ExerciseQuestionModel, updatedQuestion: ExerciseQuestionModel) => void;
     itemClass?: string;
     showContainer?: boolean;
+    pluginRenderer?: Snippet<[ExerciseQuestionRendererProps]>;
   }
 
   let {
@@ -17,7 +24,8 @@
     onAnswerChange = () => {},
     onQuestionChange = () => {},
     itemClass = '',
-    showContainer = true
+    showContainer = true,
+    pluginRenderer
   }: Props = $props();
 </script>
 
@@ -43,6 +51,7 @@
       questionNumber={index + 1}
       questionNumberActive={false}
       {showContainer}
+      {pluginRenderer}
     />
   </div>
 {/each}

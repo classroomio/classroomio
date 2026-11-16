@@ -88,6 +88,11 @@ import { default as OrderingReview } from './renderers/ordering/review.svelte';
 import { default as ThumbsReview } from './renderers/thumbs/review.svelte';
 import { default as TrueFalseReview } from './renderers/true-false/review.svelte';
 import { default as StarReview } from './renderers/star/review.svelte';
+import { default as PluginCustomEdit } from './renderers/plugin-custom/edit.svelte';
+import { default as PluginCustomTake } from './renderers/plugin-custom/take.svelte';
+import { default as PluginCustomPreview } from './renderers/plugin-custom/preview.svelte';
+import { default as PluginCustomSubmission } from './renderers/plugin-custom/submission.svelte';
+import { default as PluginCustomReview } from './renderers/plugin-custom/review.svelte';
 
 type SharedRendererComponent = Component<ExerciseQuestionRendererProps>;
 
@@ -199,6 +204,13 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     preview: VideoRecordingPreview,
     submission: VideoRecordingSubmission,
     review: VideoRecordingSubmission
+  },
+  [QUESTION_TYPE_KEY.PLUGIN_CUSTOM]: {
+    edit: PluginCustomEdit,
+    take: PluginCustomTake,
+    preview: PluginCustomPreview,
+    submission: PluginCustomSubmission,
+    review: PluginCustomReview
   }
 };
 

@@ -40,6 +40,8 @@
     onQuestionChange?: (question: ExerciseQuestionRendererProps['question']) => void;
     showContainer?: boolean;
     questionTypeSelect?: Snippet;
+    /** Slot for host-specific plugin custom question rendering (e.g. sandboxed iframe). */
+    pluginRenderer?: Snippet<[ExerciseQuestionRendererProps]>;
     /** When set, a numbered badge is shown to the left of the title (non-edit modes). */
     questionNumber?: number;
     /** When false, the badge uses muted styling (e.g. question lists). Defaults to true. */
@@ -56,6 +58,7 @@
     onQuestionChange = () => {},
     showContainer = true,
     questionTypeSelect,
+    pluginRenderer,
     questionNumber,
     questionNumberActive = true,
     titleError = null,
@@ -550,20 +553,40 @@
     </div>
   {/if}
 
-  <Renderer
-    question={contract.question}
-    answer={contract.answer}
-    submissions={contract.submissions}
-    maxSubmissionItems={contract.maxSubmissionItems}
-    disabled={contract.disabled}
-    labels={contract.labels}
-    platformMaxFileSizeMb={contract.platformMaxFileSizeMb}
-    onImageUpload={contract.onImageUpload}
-    onFileUpload={contract.onFileUpload}
-    onVideoRecordingUpload={contract.onVideoRecordingUpload}
-    {onAnswerChange}
-    {onQuestionChange}
-  />
+  {@const rendererProps: ExerciseQuestionRendererProps = {
+    mode: contract.mode,
+    question: contract.question,
+    answer: contract.answer,
+    submissions: contract.submissions,
+    maxSubmissionItems: contract.maxSubmissionItems,
+    disabled: contract.disabled,
+    labels: contract.labels,
+    platformMaxFileSizeMb: contract.platformMaxFileSizeMb,
+    onImageUpload: contract.onImageUpload,
+    onFileUpload: contract.onFileUpload,
+    onVideoRecordingUpload: contract.onVideoRecordingUpload,
+    onAnswerChange,
+    onQuestionChange
+  }}
+
+  {#if contract.question.questionType === 'PLUGIN_CUSTOM' && pluginRenderer}
+    {@render pluginRenderer(rendererProps)}
+  {:else}
+    <Renderer
+      question={rendererProps.question}
+      answer={rendererProps.answer}
+      submissions={rendererProps.submissions}
+      maxSubmissionItems={rendererProps.maxSubmissionItems}
+      disabled={rendererProps.disabled}
+      labels={rendererProps.labels}
+      platformMaxFileSizeMb={rendererProps.platformMaxFileSizeMb}
+      onImageUpload={rendererProps.onImageUpload}
+      onFileUpload={rendererProps.onFileUpload}
+      onVideoRecordingUpload={rendererProps.onVideoRecordingUpload}
+      {onAnswerChange}
+      {onQuestionChange}
+    />
+  {/if}
 {/snippet}
 
 {#if showContainer}
