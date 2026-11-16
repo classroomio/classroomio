@@ -150,6 +150,11 @@ export const pluginAssetsRouter = new Hono()
       }
       const csp = buildPluginCsp(manifest);
 
+      const cacheControl =
+        process.env.NODE_ENV === 'production'
+          ? 'public, max-age=31536000, immutable'
+          : 'no-cache, no-store, must-revalidate';
+
       return new Response(fileBytes, {
         status: 200,
         headers: {
@@ -157,7 +162,7 @@ export const pluginAssetsRouter = new Hono()
           'X-Content-Type-Options': 'nosniff',
           'Content-Security-Policy': csp,
           'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'public, max-age=31536000, immutable'
+          'Cache-Control': cacheControl
         }
       });
     } catch (error) {
