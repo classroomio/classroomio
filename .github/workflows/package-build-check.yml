@@ -57,10 +57,10 @@ jobs:
 
       - name: Add swap for dashboard build
         run: |
-          sudo fallocate -l 8G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
+          sudo fallocate -l 8G /mnt/extra.swap
+          sudo chmod 600 /mnt/extra.swap
+          sudo mkswap /mnt/extra.swap
+          sudo swapon /mnt/extra.swap
 
       - name: Build dashboard
         run: pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
