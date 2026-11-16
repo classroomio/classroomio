@@ -6,7 +6,6 @@
 
 <svelte:head>
   <title>{data.report.studentName} · {data.report.organization.name}</title>
-  <meta name="robots" content="noindex, nofollow" />
   <meta name="referrer" content="no-referrer" />
 </svelte:head>
 

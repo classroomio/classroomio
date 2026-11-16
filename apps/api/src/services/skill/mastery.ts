@@ -38,9 +38,14 @@ export async function getStudentSkillMastery(courseId: string, profileId: string
 
 /**
  * Mastery per student for the skills tagged on one exercise, counted over each student's attempts across the course,
- * plus how many students sit at each level for every skill.
+ * plus how many students sit at each level for every skill. `includeNames` adds each student's name for the dashboard;
+ * the public API leaves it out.
  */
-export async function getExerciseSkillMastery(courseId: string, exerciseId: string) {
+export async function getExerciseSkillMastery(
+  courseId: string,
+  exerciseId: string,
+  options: { includeNames?: boolean } = {}
+) {
   await assertExerciseBelongsToCourse(courseId, exerciseId);
 
   const tagged = await getExerciseQuestionSkills(exerciseId);
@@ -58,10 +63,12 @@ export async function getExerciseSkillMastery(courseId: string, exerciseId: stri
     attemptsByStudent.set(attempt.profileId, [...(attemptsByStudent.get(attempt.profileId) ?? []), attempt]);
   }
 
-  const names = await getProfileNamesByIds([...attemptsByStudent.keys()]);
+  const names = options.includeNames
+    ? await getProfileNamesByIds([...attemptsByStudent.keys()])
+    : new Map<string, string>();
   const students = [...attemptsByStudent].map(([profileId, rows]) => ({
     profileId,
-    name: names.get(profileId) ?? '',
+    ...(options.includeNames ? { name: names.get(profileId) ?? '' } : {}),
     mastery: Object.fromEntries(masteryBySkill(rows))
   }));
 

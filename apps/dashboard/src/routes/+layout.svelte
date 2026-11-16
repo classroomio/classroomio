@@ -28,7 +28,7 @@
 
   setUploadLimitsContext(data.uploadLimits);
 
-  const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
+  const metaTags = $derived(merge({}, data.baseMetaTags, page.data.pageMetaTags));
 
   onMount(() => {
     const sessionUser = data?.locals?.user;

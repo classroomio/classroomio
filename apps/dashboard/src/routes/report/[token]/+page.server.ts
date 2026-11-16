@@ -20,5 +20,5 @@ export const load = async ({ params, getClientAddress, setHeaders }) => {
 
   if (!result.ok) throw error(result.status === 429 ? 429 : 404, 'Not found');
 
-  return { report: result.body.data };
+  return { report: result.body.data, pageMetaTags: { robots: 'noindex,nofollow' } };
 };

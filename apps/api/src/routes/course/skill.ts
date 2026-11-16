@@ -59,7 +59,7 @@ export const courseSkillRouter = new Hono()
       try {
         const courseId = c.req.param('courseId')!;
         const { exerciseId } = c.req.valid('param');
-        const data = await getExerciseSkillMastery(courseId, exerciseId);
+        const data = await getExerciseSkillMastery(courseId, exerciseId, { includeNames: true });
 
         return c.json({ success: true as const, data }, 200);
       } catch (error) {

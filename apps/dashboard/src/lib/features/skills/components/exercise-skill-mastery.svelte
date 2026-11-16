@@ -22,7 +22,7 @@
   function weakStudents(skillId: string) {
     return (mastery?.students ?? [])
       .filter((student) => student.mastery[skillId]?.level === 'learning')
-      .map((student) => ({ profileId: student.profileId, name: student.name }));
+      .map((student) => ({ profileId: student.profileId, name: student.name ?? '' }));
   }
 
   function openPractice(skill: { id: string; code: string }) {
