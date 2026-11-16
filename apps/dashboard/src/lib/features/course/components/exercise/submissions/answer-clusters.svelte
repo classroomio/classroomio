@@ -166,13 +166,7 @@
             {$t('exercise_results.clusters.add_feedback')}
           </Button>
           {#if cluster.override}
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={isSaving}
-              onclick={() => undo(cluster)}
-              testId="cluster-undo"
-            >
+            <Button size="sm" variant="outline" disabled={isSaving} onclick={() => undo(cluster)} testId="cluster-undo">
               {$t('exercise_results.clusters.undo')}
             </Button>
           {/if}
