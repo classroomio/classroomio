@@ -13,6 +13,7 @@
     GradualSpacing,
     HeroVideoDialog,
     MachineBlankLesson,
+    MachineCabinet,
     MachineBrandStand,
     MachineBrokenTrack,
     MachineCertificatePress,
@@ -364,6 +365,22 @@
   {/snippet}
 </Story>
 
+<Story name="MachineCabinet">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineCabinet label="A filing cabinet whose drawers slide open one by one and are empty inside" class="h-64" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineCabinet with drawer labels">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineCabinet lessons="LECCIONES" exercises="EJERCICIOS" certificates="CERTIFICADOS" class="h-64" />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="MachineBlankLesson with heading">
   {#snippet template()}
     <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
@@ -393,6 +410,7 @@
         class="h-64"
       />
       <MachineBlankLesson label="An empty lesson page where a cursor starts writing the title" class="h-64" />
+      <MachineCabinet label="A filing cabinet whose drawers slide open one by one and are empty inside" class="h-64" />
     </div>
   {/snippet}
 </Story>
