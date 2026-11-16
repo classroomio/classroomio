@@ -3183,7 +3183,23 @@
                 "link": "Links",
                 "word_bank": "Word bank",
                 "star": "Star rating",
-                "video_recording": "Video recording"
+                "video_recording": "Video recording",
+                "plugin_custom": "Custom (Plugin)"
+              },
+              "plugin_question": {
+                "select_title": "Select a question plugin",
+                "no_plugins": "No question plugins available",
+                "no_plugins_description": "No active plugins with a custom question type are installed in your organization.",
+                "browse_plugins": "Browse plugins",
+                "checking_plugins": "Checking installed plugins...",
+                "plugin_label": "Question Plugin",
+                "change_plugin": "Change plugin",
+                "loading": "Loading plugin question...",
+                "unconfigured": "This question type has not been configured yet.",
+                "disabled": "This question plugin is currently disabled by your organization.",
+                "uninstalled": "This question plugin is no longer installed.",
+                "revoked": "This question plugin has been revoked and cannot be displayed.",
+                "unavailable": "The question plugin artifact is currently unavailable."
               }
             },
             "view_mode": {

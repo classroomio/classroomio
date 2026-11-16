@@ -224,6 +224,20 @@
           requireGrantedScope('certificate.template:write');
           return dispatchSurfaceAction('apply', { id: templateId, document, name });
         },
+        onQuestionSetAnswer: async ({ value }) => {
+          return dispatchSurfaceAction('setAnswer', { value });
+        },
+        onQuestionUpdatePublicConfig: async ({ value }) => {
+          return dispatchSurfaceAction('updatePublicConfig', { value });
+        },
+        onQuestionUpdateAuthorConfig: async ({ value }) => {
+          return dispatchSurfaceAction('updateAuthorConfig', { value });
+        },
+        onQuestionResize: async ({ height }) => {
+          if (!Number.isFinite(height)) return;
+          frameHeight = Math.min(surfaceContract.maxHeight, Math.max(surfaceContract.minHeight, Math.ceil(height)));
+          void dispatchSurfaceAction('resize', { height: frameHeight });
+        },
         onStorageGet: async ({ key, namespace, scope }) => {
           const orgId = requireOrganizationId();
           const targetScope: PluginStorageScope = scope ?? 'organization';

@@ -48,11 +48,13 @@
     toExerciseQuestionModel
   } from './question-type-utils';
   import { QUESTION_TYPE_KEY, resolveTrueFalseCorrectValue, syncTrueFalseOptions } from '@cio/question-types';
+  import type { ExerciseQuestionRendererProps } from '@cio/question-types';
   import { getExerciseQuestionLabels } from './question-labels';
   import SectionEditor from './section-editor.svelte';
   import type { Question } from '$features/course/types';
   import type { ExerciseEditorErrors } from './store';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
+  import QuestionPluginAdapter from './question-plugin-adapter.svelte';
 
   const flipDurationMs = 200;
   const uploadLimits = getResolvedUploadLimits();
@@ -366,6 +368,17 @@
   });
 </script>
 
+{#snippet pluginCustomRenderer(props: ExerciseQuestionRendererProps)}
+  <QuestionPluginAdapter
+    question={props.question}
+    answer={props.answer}
+    mode={props.mode}
+    disabled={props.disabled}
+    onAnswerChange={props.onAnswerChange}
+    onQuestionChange={props.onQuestionChange}
+  />
+{/snippet}
+
 <DeleteConfirmationModal
   title={deleteConfirmationType === 'section'
     ? $t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.section_title')
@@ -466,6 +479,7 @@
             platformMaxFileSizeMb,
             onImageUpload: uploadImage
           }}
+          pluginRenderer={pluginCustomRenderer}
           onQuestionChange={(nextQuestion) => onSharedQuestionChange(question.id, nextQuestion)}
         >
           {#snippet questionTypeSelect()}

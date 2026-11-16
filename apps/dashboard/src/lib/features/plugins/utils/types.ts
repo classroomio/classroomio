@@ -42,13 +42,26 @@ export type PluginUninstallImpact = GetPluginUninstallImpactSuccess['data'];
 export type UninstallPluginRequest =
   (typeof classroomio.plugins.installations)[':installationId']['uninstall']['$post'];
 
+export type ResolveQuestionPluginRequest = (typeof classroomio.plugins.installations)['resolve-question']['$post'];
+export type ResolveQuestionPluginResponse = InferResponseType<ResolveQuestionPluginRequest>;
+export type ResolveQuestionPluginSuccess = Extract<ResolveQuestionPluginResponse, { success: true }>;
+export type QuestionPluginResolutionData = ResolveQuestionPluginSuccess['data'];
+
 export interface PluginResourceContext {
-  type: 'lesson' | 'course' | 'certificate' | 'organization';
+  type: 'lesson' | 'course' | 'certificate' | 'organization' | 'exercise' | 'question';
   id: string;
   selectedTemplateId?: string;
   selectedTemplateName?: string;
   selectedTemplateDocument?: unknown;
   appearance?: unknown;
+  questionId?: string;
+  mode?: 'edit' | 'take' | 'preview' | 'review' | 'submission';
+  publicConfig?: unknown;
+  authorConfig?: unknown;
+  currentAnswer?: unknown;
+  readOnly?: boolean;
+  points?: number;
+  contributionId?: string;
   [key: string]: unknown;
 }
 

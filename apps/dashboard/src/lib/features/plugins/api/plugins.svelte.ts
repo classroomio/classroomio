@@ -11,6 +11,7 @@ import type {
   ListCatalogPluginsRequest,
   ListInstallationsRequest,
   ListContributionsRequest,
+  ResolveQuestionPluginRequest,
   UpdateInstallationSettingsRequest,
   UpdateInstallationStatusRequest,
   UpdateOrgApprovalRequest,
@@ -46,7 +47,7 @@ export class PluginsApi extends BaseApiWithErrors {
   }
 
   async listOrgInstallations(orgId: string) {
-    return this.execute<ListInstallationsRequest>({
+    const response = await this.execute<ListInstallationsRequest>({
       requestFn: () =>
         classroomio.plugins.installations.$get(undefined, {
           headers: { 'cio-org-id': orgId }
@@ -56,6 +57,8 @@ export class PluginsApi extends BaseApiWithErrors {
         this.installations = response.data;
       }
     });
+
+    return response?.data ?? [];
   }
 
   async listOrgContributions(orgId: string, target?: string) {
@@ -73,6 +76,38 @@ export class PluginsApi extends BaseApiWithErrors {
     });
 
     return response?.data ?? [];
+  }
+
+  async resolveQuestionPlugin(
+    orgId: string,
+    params: {
+      pluginId: string;
+      installationId: string;
+      pluginVersion: string;
+      artifactDigest: string;
+      contributionId: string;
+      mode?: 'edit' | 'take' | 'preview' | 'review' | 'submission';
+    }
+  ) {
+    const response = await this.execute<ResolveQuestionPluginRequest>({
+      requestFn: () =>
+        classroomio.plugins.installations['resolve-question'].$post(
+          {
+            json: {
+              pluginId: params.pluginId,
+              installationId: params.installationId,
+              pluginVersion: params.pluginVersion,
+              artifactDigest: params.artifactDigest,
+              contributionId: params.contributionId,
+              mode: params.mode ?? 'take'
+            }
+          },
+          { headers: { 'cio-org-id': orgId } }
+        ),
+      logContext: 'resolving question plugin'
+    });
+
+    return response?.data ?? null;
   }
 
   async install(pluginId: string, version: string, orgId: string, settings?: Record<string, unknown>) {

@@ -13,10 +13,11 @@
   import { getQuestionsForSection, questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
-  import type { AnswerData } from '@cio/question-types';
+  import type { AnswerData, ExerciseQuestionRendererProps } from '@cio/question-types';
   import { toExerciseQuestionModel } from '../question-type-utils';
   import { getExerciseQuestionLabels } from '../question-labels';
   import { getExerciseSectionDisplayTitle } from '$features/course/utils/exercise-section-utils';
+  import QuestionPluginAdapter from '../question-plugin-adapter.svelte';
   import {
     shouldCompleteExerciseFromSubmission,
     type ExerciseSubmissionStudentGroup
@@ -262,6 +263,17 @@
   }
 </script>
 
+{#snippet pluginCustomRenderer(props: ExerciseQuestionRendererProps)}
+  <QuestionPluginAdapter
+    question={props.question}
+    answer={props.answer}
+    mode={props.mode}
+    disabled={props.disabled}
+    onAnswerChange={props.onAnswerChange}
+    onQuestionChange={props.onQuestionChange}
+  />
+{/snippet}
+
 {#if isLoading}
   <Spinner />
 {:else if submissionGroups?.length}
@@ -399,6 +411,7 @@
                       labels: questionLabels,
                       disabled: true
                     }}
+                    pluginRenderer={pluginCustomRenderer}
                     questionNumber={i + 1}
                     questionNumberActive={false}
                   />
@@ -423,6 +436,7 @@
                 labels: questionLabels,
                 disabled: true
               }}
+              pluginRenderer={pluginCustomRenderer}
               questionNumber={i + 1}
               questionNumberActive={false}
             />

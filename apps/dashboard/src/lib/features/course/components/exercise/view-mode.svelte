@@ -31,6 +31,7 @@
     getTextareaAnswerCharacterCount,
     toApiPayload,
     type AnswerData,
+    type ExerciseQuestionRendererProps,
     type ExerciseQuestionVideoRecordingUploader,
     validateTextareaAnswer
   } from '@cio/question-types';
@@ -41,6 +42,7 @@
   import { toggleConfetti } from '$features/ui/confetti/store';
   import { ContentType } from '@cio/utils/constants/content';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import QuestionPluginAdapter from './question-plugin-adapter.svelte';
   import {
     openCourseCompletionModal,
     updateCourseCompletionModal,
@@ -467,6 +469,14 @@
           return answerValue.urls.length > 0;
         case 'HOTSPOT':
           return answerValue.coordinates.length > 0;
+        case 'PLUGIN_CUSTOM': {
+          if (answerValue.value === null || answerValue.value === undefined) return false;
+          if (typeof answerValue.value === 'string') return answerValue.value.trim().length > 0;
+          if (typeof answerValue.value === 'object' && 'code' in (answerValue.value as Record<string, unknown>)) {
+            return String((answerValue.value as Record<string, unknown>).code ?? '').trim().length > 0;
+          }
+          return true;
+        }
         default:
           return false;
       }
@@ -810,6 +820,17 @@
 
 <svelte:window onkeydown={handleEnterKey} />
 
+{#snippet pluginCustomRenderer(props: ExerciseQuestionRendererProps)}
+  <QuestionPluginAdapter
+    question={props.question}
+    answer={props.answer}
+    mode={props.mode}
+    disabled={props.disabled}
+    onAnswerChange={props.onAnswerChange}
+    onQuestionChange={props.onQuestionChange}
+  />
+{/snippet}
+
 {#if isTakingQuestions}
   <div class="mb-6 flex min-w-0 items-center gap-3">
     <span class="ui:text-muted-foreground shrink-0 text-sm tabular-nums">
@@ -1112,6 +1133,7 @@
                 onFileUpload: handleFileUpload,
                 onVideoRecordingUpload: handleVideoRecordingUpload
               }}
+              pluginRenderer={pluginCustomRenderer}
               questionNumber={sectionQuestionIndex + 1}
               questionNumberActive={false}
               onAnswerChange={(answerValue) => onSectionQuestionAnswerChange(sectionQuestion, answerValue)}
@@ -1169,6 +1191,7 @@
                       onFileUpload: handleFileUpload,
                       onVideoRecordingUpload: handleVideoRecordingUpload
                     }}
+                    pluginRenderer={pluginCustomRenderer}
                     questionNumber={$questionnaireMetaData.currentQuestionIndex}
                     onAnswerChange={onSharedAnswerChange}
                   />

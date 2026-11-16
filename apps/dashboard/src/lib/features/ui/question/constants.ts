@@ -21,7 +21,9 @@ const QUESTION_TYPE_LABEL_KEYS: Partial<Record<QuestionTypeKey, string>> = {
   [QUESTION_TYPE_KEY.WORD_BANK]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.word_bank',
   [QUESTION_TYPE_KEY.STAR]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.star',
   [QUESTION_TYPE_KEY.VIDEO_RECORDING]:
-    'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.video_recording'
+    'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.video_recording',
+  [QUESTION_TYPE_KEY.PLUGIN_CUSTOM]:
+    'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.plugin_custom'
 };
 
 export const QUESTION_TYPES = QUESTION_TYPE_REGISTRY.filter((qt) => !qt.disabled).map((questionType) => ({

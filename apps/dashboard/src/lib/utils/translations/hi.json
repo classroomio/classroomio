@@ -1999,14 +1999,30 @@
                 "link": "कड़ियाँ",
                 "word_bank": "वर्ड बैंक",
                 "star": "स्टार रेटिंग",
-                "video_recording": "वीडियो रिकार्डिंग"
+                "video_recording": "वीडियो रिकार्डिंग",
+                "plugin_custom": "कस्टम (प्लगइन)"
               },
               "select_type": "प्रकार चुनें",
               "question_type_auto_gradable": "स्वचालित",
               "question_type_auto_gradable_description": "सिस्टम द्वारा स्वचालित रूप से अंकित",
               "question_type_manual_grading": "मैन्युअल",
               "question_type_manual_grading_description": "अंक देने के लिए मानव समीक्षा आवश्यक",
-              "premium_question_type": "इस प्रश्न प्रकार का उपयोग करने के लिए अपग्रेड करें"
+              "premium_question_type": "इस प्रश्न प्रकार का उपयोग करने के लिए अपग्रेड करें",
+              "plugin_question": {
+                "loading": "Loading plugin question...",
+                "unconfigured": "This question type has not been configured yet.",
+                "disabled": "This question plugin is currently disabled by your organization.",
+                "uninstalled": "This question plugin is no longer installed.",
+                "revoked": "This question plugin has been revoked and cannot be displayed.",
+                "unavailable": "The question plugin artifact is currently unavailable.",
+                "select_title": "Select a question plugin",
+                "no_plugins": "No question plugins available",
+                "no_plugins_description": "No active plugins with a custom question type are installed in your organization.",
+                "browse_plugins": "Browse plugins",
+                "checking_plugins": "Checking installed plugins...",
+                "plugin_label": "Question Plugin",
+                "change_plugin": "Change plugin"
+              }
             },
             "delete_confirmation": {
               "title": "प्रश्न हटाएँ",

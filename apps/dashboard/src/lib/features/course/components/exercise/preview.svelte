@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getExerciseQuestionContractKey } from '@cio/question-types';
-  import type { AnswerData, ExerciseQuestionModel } from '@cio/question-types';
+  import type { AnswerData, ExerciseQuestionModel, ExerciseQuestionRendererProps } from '@cio/question-types';
   import type { Question } from '$features/course/types';
   import { Grade, ReasonBox } from '$features/ui/question';
   import { toExerciseQuestionModel } from './question-type-utils';
@@ -10,6 +10,7 @@
   import type { ExerciseSectionState, QuestionnaireMetaData } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { getExerciseSectionDisplayTitle } from '$features/course/utils/exercise-section-utils';
+  import QuestionPluginAdapter from './question-plugin-adapter.svelte';
 
   interface Props {
     questions?: Question[];
@@ -65,6 +66,8 @@
     )
   );
 
+  const effectiveRendererMode = $derived(disableGrading && !Object.keys(grades || {}).length ? 'preview' : 'review');
+
   function getQuestionsForSection(exerciseSectionId: string) {
     return questions.filter((question) => !question.deletedAt && question.exerciseSectionId === exerciseSectionId);
   }
@@ -73,6 +76,17 @@
     return sectionQuestions.reduce((total, question) => total + Number(question.points ?? 0), 0);
   }
 </script>
+
+{#snippet pluginCustomRenderer(props: ExerciseQuestionRendererProps)}
+  <QuestionPluginAdapter
+    question={props.question}
+    answer={props.answer}
+    mode={props.mode}
+    disabled={props.disabled}
+    onAnswerChange={props.onAnswerChange}
+    onQuestionChange={props.onQuestionChange}
+  />
+{/snippet}
 
 {#if hasSectionGroups}
   <div class="space-y-6">
@@ -101,12 +115,13 @@
 
         <ExerciseQuestion.QuestionList
           contract={{
-            mode: disableGrading ? 'review' : 'review',
+            mode: effectiveRendererMode,
             questions: sectionQuestionModels,
             answersByKey,
             labels: questionLabels,
             disabled: true
           }}
+          pluginRenderer={pluginCustomRenderer}
           itemClass="mb-4"
         />
       </section>
@@ -114,7 +129,8 @@
   </div>
 {:else if disableGrading && !Object.keys(grades || {}).length}
   <ExerciseQuestion.QuestionList
-    contract={{ mode: 'review', questions: questionModels, answersByKey, labels: questionLabels, disabled: true }}
+    contract={{ mode: 'preview', questions: questionModels, answersByKey, labels: questionLabels, disabled: true }}
+    pluginRenderer={pluginCustomRenderer}
     itemClass="mb-4"
   />
 {:else if disableGrading && Object.keys(grades || {}).length}
@@ -134,6 +150,7 @@
           labels: questionLabels,
           disabled: true
         }}
+        pluginRenderer={pluginCustomRenderer}
       />
     </div>
   {/each}
@@ -154,6 +171,7 @@
           labels: questionLabels,
           disabled: true
         }}
+        pluginRenderer={pluginCustomRenderer}
       />
 
       {#if isGradeWithAI}
