@@ -41,11 +41,15 @@ export const certificateManageRouter = new Hono()
         }
 
         const profile = await getProfileById(profileId);
+        const revokedByProfile = certificate.revokedBy ? await getProfileById(certificate.revokedBy) : null;
 
         return c.json({
           success: true as const,
           data: {
-            certificate,
+            certificate: {
+              ...certificate,
+              revokedByName: revokedByProfile?.fullname ?? null
+            },
             profile: profile ? { id: profile.id, fullname: profile.fullname, email: profile.email } : null,
             course: { id: courseRow.id, title: courseRow.title }
           }

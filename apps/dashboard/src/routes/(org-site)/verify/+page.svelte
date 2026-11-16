@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
   import { LandingThemeScope, OrgLandingPageFooter } from '@cio/ui/custom/org-landing-page';
@@ -8,6 +9,8 @@
   import { resolveOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
   import { resolveOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
   import { user, profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   let { data } = $props();
 
@@ -38,14 +41,24 @@
     code = data.code ?? '';
   });
 
-  function handleSubmit(event: SubmitEvent) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     const normalized = code.trim();
     if (!normalized) {
-      goto('/verify');
+      try {
+        await goto(resolve('/verify'));
+      } catch {
+        snackbar.error('verify.snackbar_failed');
+      }
+
       return;
     }
-    goto(`/verify?code=${encodeURIComponent(normalized)}`);
+
+    try {
+      await goto(`${resolve('/verify')}?code=${encodeURIComponent(normalized)}`);
+    } catch {
+      snackbar.error('verify.snackbar_failed');
+    }
   }
 
   const status = $derived(data.verify?.status ?? null);
@@ -79,15 +92,12 @@
           <div class="flex items-center gap-4 border-b px-7 py-6">
             <div class="ui:bg-muted flex size-12 items-center justify-center rounded-full">🔍</div>
             <div>
-              <h1 class="text-[22px] font-semibold tracking-tight">We couldn't find that certificate</h1>
-              <p class="ui:text-muted-foreground text-sm">Check the code printed on the certificate and try again.</p>
+              <h1 class="text-[22px] font-semibold tracking-tight">{$t('verify.not_found_title')}</h1>
+              <p class="ui:text-muted-foreground text-sm">{$t('verify.not_found_subtitle')}</p>
             </div>
           </div>
           <div class="px-7 py-4">
-            <p class="ui:text-muted-foreground text-[13px]">
-              Codes have 8 characters and are not case-sensitive. They never contain the letters I, L, O or the digits
-              0, 1.
-            </p>
+            <p class="ui:text-muted-foreground text-[13px]">{$t('verify.not_found_hint')}</p>
           </div>
         </div>
       {:else}
@@ -111,51 +121,57 @@
             </div>
             <div>
               {#if isValid}
-                <h1 class="text-[22px] font-semibold text-emerald-700">Valid certificate</h1>
+                <h1 class="text-[22px] font-semibold text-emerald-700">{$t('verify.valid_title')}</h1>
                 <p class="ui:text-muted-foreground text-sm">
-                  This certificate was issued by {data.verify.orgName} and is currently valid.
+                  {$t('verify.valid_subtitle', { orgName: data.verify.orgName })}
                 </p>
               {:else if isExpired}
                 <h1 class="text-[22px] font-semibold text-amber-700">
-                  Expired on {new Date(data.verify.expiresAt ?? '').toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
+                  {$t('verify.expired_title', {
+                    date: new Date(data.verify.expiresAt ?? '').toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
                   })}
                 </h1>
-                <p class="ui:text-muted-foreground text-sm">
-                  This certificate was genuine, but its validity period has ended.
-                </p>
+                <p class="ui:text-muted-foreground text-sm">{$t('verify.expired_subtitle')}</p>
               {:else if isRevoked}
                 <h1 class="text-[22px] font-semibold text-red-700">
-                  Revoked on {new Date(data.verify.revokedAt ?? '').toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
+                  {$t('verify.revoked_title', {
+                    date: new Date(data.verify.revokedAt ?? '').toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
                   })}
                 </h1>
                 <p class="ui:text-muted-foreground text-sm">
-                  {data.verify.orgName} has withdrawn this certificate. It should no longer be relied on.
+                  {$t('verify.revoked_subtitle', { orgName: data.verify.orgName })}
                 </p>
               {/if}
             </div>
           </div>
 
           <div class="px-7 pt-7">
-            <div class="ui:text-muted-foreground text-[13px]">This certifies that</div>
+            <div class="ui:text-muted-foreground text-[13px]">{$t('verify.certifies_that')}</div>
             <div class="text-[28px] font-semibold tracking-tight">{data.verify.recipientName}</div>
-            <p class="mt-2 text-[16px] font-medium">completed <b>{data.verify.courseTitle}</b></p>
+            <p class="mt-2 text-[16px] font-medium">
+              {$t('verify.completed', { courseTitle: data.verify.courseTitle })}
+            </p>
             <div class="ui:text-muted-foreground mt-1 flex items-center gap-2 text-sm">
               <span class="ui:bg-muted flex size-[22px] items-center justify-center rounded-full text-[11px]"
                 >{data.verify.orgName.charAt(0)}</span
               >
-              Issued by {data.verify.orgName}
+              {$t('verify.issued_by', { orgName: data.verify.orgName })}
             </div>
           </div>
 
           <dl class="mx-7 mt-5 grid grid-cols-2 gap-0 border-t">
             <div class="border-b py-3.5">
-              <dt class="ui:text-muted-foreground text-[12px] font-semibold tracking-[0.06em] uppercase">Issued</dt>
+              <dt class="ui:text-muted-foreground text-[12px] font-semibold tracking-[0.06em] uppercase">
+                {$t('verify.issued')}
+              </dt>
               <dd class="text-[15px] font-medium">
                 {new Date(data.verify.issuedAt).toLocaleDateString('en-US', {
                   month: 'long',
@@ -167,7 +183,7 @@
             <div class="border-b py-3.5">
               {#if isRevoked}
                 <dt class="ui:text-muted-foreground text-[12px] font-semibold tracking-[0.06em] uppercase">
-                  Revoked on
+                  {$t('verify.revoked_on')}
                 </dt>
                 <dd class="text-[15px] font-medium">
                   {new Date(data.verify.revokedAt ?? '').toLocaleDateString('en-US', {
@@ -178,7 +194,7 @@
                 </dd>
               {:else if isExpired}
                 <dt class="ui:text-muted-foreground text-[12px] font-semibold tracking-[0.06em] uppercase">
-                  Expired on
+                  {$t('verify.expired_on')}
                 </dt>
                 <dd class="text-[15px] font-medium">
                   {new Date(data.verify.expiresAt ?? '').toLocaleDateString('en-US', {
@@ -188,7 +204,9 @@
                   })}
                 </dd>
               {:else}
-                <dt class="ui:text-muted-foreground text-[12px] font-semibold tracking-[0.06em] uppercase">Expires</dt>
+                <dt class="ui:text-muted-foreground text-[12px] font-semibold tracking-[0.06em] uppercase">
+                  {$t('verify.expires')}
+                </dt>
                 <dd class="text-[15px] font-medium">
                   {data.verify.expiresAt
                     ? new Date(data.verify.expiresAt).toLocaleDateString('en-US', {
@@ -196,23 +214,20 @@
                         day: 'numeric',
                         year: 'numeric'
                       })
-                    : 'Does not expire'}
+                    : $t('verify.does_not_expire')}
                 </dd>
               {/if}
             </div>
             <div class="col-span-2 border-b py-3.5">
               <dt class="ui:text-muted-foreground text-[12px] font-semibold tracking-[0.06em] uppercase">
-                Certificate code
+                {$t('verify.certificate_code')}
               </dt>
               <dd class="font-mono text-[15px] font-semibold tracking-[0.08em]">{data.verify.certificateCode}</dd>
             </div>
           </dl>
 
           <div class="ui:text-muted-foreground flex items-center justify-between gap-4 px-7 py-5 text-[12.5px]">
-            <span
-              >This page confirms that {data.verify.orgName} issued this certificate. It does not say whether the course
-              is accredited by any outside body.</span
-            >
+            <span>{$t('verify.page_disclaimer', { orgName: data.verify.orgName })}</span>
             {#if data.verify.orgLogoUrl}
               <img src={data.verify.orgLogoUrl} alt={data.verify.orgName} class="h-6 w-auto" />
             {/if}
@@ -222,21 +237,20 @@
     {/if}
 
     <div class="ui:bg-card ui:border-border bg-card rounded-xl border p-7">
-      <h1 class="text-2xl font-semibold tracking-tight">Verify a certificate</h1>
+      <h1 class="text-2xl font-semibold tracking-tight">{$t('verify.verify_title')}</h1>
       <p class="ui:text-muted-foreground mt-2 text-[15px]">
-        Enter the code printed under the QR code on a {data.org?.name ?? 'certificate'}, or scan the QR code to open its
-        page directly.
+        {$t('verify.verify_subtitle', { orgName: data.org?.name ?? $t('verify.certificate_fallback') })}
       </p>
       <form class="mt-5 flex gap-2" onsubmit={handleSubmit}>
         <Input
           bind:value={code}
-          placeholder="Enter a code, e.g. 7KQM-4XH2"
-          aria-label="Certificate code"
+          placeholder={$t('verify.placeholder')}
+          aria-label={$t('verify.aria_label')}
           class="font-mono text-[17px] tracking-[0.08em] uppercase"
           autocomplete="off"
           autofocus={!data.code}
         />
-        <Button type="submit" variant="default">Verify</Button>
+        <Button type="submit" variant="default">{$t('verify.button')}</Button>
       </form>
     </div>
   </div>

@@ -98,11 +98,14 @@
       expiresAt: string | null;
       revokedAt: string | null;
       revokeReason: string | null;
+      revokedBy?: string | null;
+      revokedByName?: string | null;
       status: string;
     };
     profile: { id: string; fullname: string | null; email: string | null } | null;
   } | null>(null);
   let isLoadingCertificate = $state(false);
+  let certificateDrawerRequestId = 0;
   let revokeDialogOpen = $state(false);
   let revokeReason = $state('');
   let revokeNote = $state('');
@@ -213,6 +216,7 @@
     if (!person.profileId) return;
     const courseId = courseApi.course?.id;
     if (!courseId) return;
+    const requestId = ++certificateDrawerRequestId;
     certificateDrawerPerson = person;
     certificateDetails = null;
     isLoadingCertificate = true;
@@ -222,6 +226,8 @@
         { param: { courseId, memberId: person.profileId } },
         {}
       );
+      if (requestId !== certificateDrawerRequestId) return;
+
       const result = (await response.json()) as {
         success: boolean;
         data?: {
@@ -246,6 +252,8 @@
               expiresAt: string | null;
               revokedAt: string | null;
               revokeReason: string | null;
+              revokedBy?: string | null;
+              revokedByName?: string | null;
               status: string;
               metadata: Record<string, unknown> | null;
             };
@@ -261,10 +269,14 @@
         certificateDetails = null;
       }
     } catch (e) {
+      if (requestId !== certificateDrawerRequestId) return;
+
       console.error('Failed to load certificate', e);
       snackbar.error('course.navItem.people.snackbar.failed_load_certificate');
     } finally {
-      isLoadingCertificate = false;
+      if (requestId === certificateDrawerRequestId) {
+        isLoadingCertificate = false;
+      }
     }
   }
 
@@ -283,7 +295,9 @@
               issuedAt: updated.issuedAt,
               expiresAt: updated.expiresAt,
               revokedAt: updated.revokedAt,
-              revokeReason: updated.revokeReason
+              revokeReason: updated.revokeReason,
+              revokedBy: (updated as unknown as { revokedBy?: string | null }).revokedBy ?? null,
+              revokedByName: (updated as unknown as { revokedByName?: string | null }).revokedByName ?? null
             }
           } as CourseMember)
         : member
@@ -1019,7 +1033,7 @@
               <dt class="text-muted-foreground">
                 {$t('course.navItem.people.certificate_drawer.revoked_by')}
               </dt>
-              <dd>{$t('course.navItem.people.certificate_drawer.revoked_by_system')}</dd>
+              <dd>{cert.revokedByName ?? $t('course.navItem.people.certificate_drawer.revoked_by_system')}</dd>
               <dt class="text-muted-foreground">{$t('course.navItem.people.certificate_drawer.on')}</dt>
               <dd>{new Date(cert.revokedAt).toLocaleDateString()}</dd>
               {#if cert.revokeReason}<dt class="text-muted-foreground">
@@ -1122,7 +1136,15 @@
                 if (reason !== 'Other') revokeNote = '';
               }}
             >
-              {reason}
+              {#if reason === 'Issued by mistake'}{$t(
+                  'course.navItem.people.certificate_drawer.reason_issued_by_mistake'
+                )}{:else if reason === 'Assessment not passed'}{$t(
+                  'course.navItem.people.certificate_drawer.reason_assessment_not_passed'
+                )}{:else if reason === 'Fraud or policy violation'}{$t(
+                  'course.navItem.people.certificate_drawer.reason_fraud'
+                )}{:else if reason === 'Learner request'}{$t(
+                  'course.navItem.people.certificate_drawer.reason_learner_request'
+                )}{:else}{$t('course.navItem.people.certificate_drawer.reason_other')}{/if}
             </Button>
           {/each}
         </div>
