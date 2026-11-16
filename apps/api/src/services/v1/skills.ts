@@ -13,6 +13,7 @@ import {
   updateSkillService
 } from '@api/services/skill/skill';
 import { getExerciseSkillMastery } from '@api/services/skill/mastery';
+import { assertCourseHasPaidMathFeature } from '@api/services/math/premium';
 import {
   assertCourseBelongsToOrganization,
   assertCourseTeamMemberOrOrgAdmin,
@@ -72,6 +73,7 @@ export async function getPublicApiExerciseSkillMasteryService(
 ) {
   await assertCourseBelongsToOrganization(orgId, courseId);
   await assertCourseTeamMemberOrOrgAdmin(courseId, actorId);
+  await assertCourseHasPaidMathFeature(courseId, 'skill_mastery');
 
   return getExerciseSkillMastery(courseId, exerciseId);
 }

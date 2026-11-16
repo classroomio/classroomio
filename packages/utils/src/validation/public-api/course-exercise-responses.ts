@@ -73,6 +73,13 @@ export const ZPublicApiRegradeExerciseResponse = z.object({
   answersChanged: z.number().describe('Answers whose points or stored grading changed')
 });
 
+export const ZPublicApiPracticeSetResponse = z.object({
+  exerciseId: z.string(),
+  title: z.string(),
+  questionCount: z.number(),
+  assignedCount: z.number().describe('Students the practice exercise is assigned to; it is hidden from everyone else')
+});
+
 export const ZPublicApiCourseExerciseNotifyResponse = z.object({
   jobId: z.string()
 });

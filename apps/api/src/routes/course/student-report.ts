@@ -4,6 +4,7 @@ import {
   ZStudentReportParam
 } from '@cio/utils/validation/student-report';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
+import { assertCourseHasPaidMathFeature } from '@api/services/math/premium';
 import {
   createStudentReportsService,
   listStudentReportsService,
@@ -48,6 +49,8 @@ export const courseStudentReportRouter = new Hono()
         const courseId = c.req.param('courseId')!;
         const orgId = await getOrgIdByCourseId(courseId);
         if (!orgId) throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+
+        await assertCourseHasPaidMathFeature(courseId, 'student_reports');
 
         const data = await createStudentReportsService(courseId, orgId, user.id, c.req.valid('json'));
 

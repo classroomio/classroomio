@@ -31,7 +31,9 @@ function buildQuestionTypeListBlock(isOrgOnPaidPlan: boolean): string {
 
   return `${listing}
 
-Paid-plan only and unavailable here: ${blocked}. Do NOT create them — pick a listed type instead. If asked, say it needs an upgrade and suggest the closest type (e.g. RADIO for STAR).`;
+Paid-plan only and unavailable here: ${blocked}. Do NOT create them — pick a listed type instead. If asked, say it needs an upgrade and suggest the closest type (e.g. RADIO for STAR).
+
+Also paid-plan only: questions with variables (\`settings.parameters\`) and AI marking of working (\`settings.aiGrading\`). Do NOT set them; the save is refused. Write fixed numbers instead.`;
 }
 
 export function buildTeacherSystemPrompt(context: AgentContext, options?: BuildTeacherSystemPromptOptions): string {

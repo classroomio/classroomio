@@ -1,5 +1,7 @@
 import { generateObject } from 'ai';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
+import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
+import { assertPaidMathFeature } from '@cio/core/services/exercise/premium-guard';
 import {
   getAnswerForAiReview,
   getAnswersWithAiReviewByExercise,
@@ -206,6 +208,7 @@ export async function requestAiReview(params: {
   const orgId = await getOrgIdByCourseId(params.courseId);
   if (!orgId) throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
 
+  assertPaidMathFeature('ai_grading', await isOrgOnPaidPlan(orgId));
   await enforceMathVisionAllowance(orgId);
 
   const { provider, model, modelName } = getVisionModel();

@@ -130,6 +130,7 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     PUT: 'update_course_exercise',
     DELETE: 'delete_course_exercise'
   },
+  '/public-api/v1/courses/:courseId/exercises/practice': { POST: 'create_course_practice' },
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/regrade': { POST: 'regrade_course_exercise' },
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify': { POST: 'notify_course_exercise' },
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions': { POST: 'add_exercise_question' },

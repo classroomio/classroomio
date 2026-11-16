@@ -6,6 +6,7 @@ import {
 } from '@cio/utils/validation/skill';
 import { getExerciseQuestionSkillsService, setCourseQuestionSkillsService } from '@api/services/skill/skill';
 import { getExerciseSkillMastery, getStudentSkillMastery } from '@api/services/skill/mastery';
+import { assertCourseHasPaidMathFeature } from '@api/services/math/premium';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -59,6 +60,7 @@ export const courseSkillRouter = new Hono()
       try {
         const courseId = c.req.param('courseId')!;
         const { exerciseId } = c.req.valid('param');
+        await assertCourseHasPaidMathFeature(courseId, 'skill_mastery');
         const data = await getExerciseSkillMastery(courseId, exerciseId, { includeNames: true });
 
         return c.json({ success: true as const, data }, 200);
@@ -76,6 +78,7 @@ export const courseSkillRouter = new Hono()
       try {
         const courseId = c.req.param('courseId')!;
         const { profileId } = c.req.valid('param');
+        await assertCourseHasPaidMathFeature(courseId, 'skill_mastery');
         const data = await getStudentSkillMastery(courseId, profileId);
 
         return c.json({ success: true as const, data }, 200);

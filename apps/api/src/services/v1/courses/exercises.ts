@@ -7,7 +7,11 @@ import {
   resolveExerciseCourseId,
   updateExerciseService
 } from '@cio/core/services/exercise/exercise';
-import { assertNoPremiumQuestionTypes } from '@cio/core/services/exercise/premium-guard';
+import {
+  assertNoPaidQuestionFeatures,
+  assertNoPremiumQuestionTypes,
+  assertPaidMathFeature
+} from '@cio/core/services/exercise/premium-guard';
 import { assertAnswerKeysVerified } from '@cio/core/services/exercise/answer-key';
 import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
 import { getCourseItemRanks } from '@cio/core/services/course/outline';
@@ -35,6 +39,8 @@ import {
 } from '@api/services/course/notify-exercise';
 import { fetchTemplateById } from '@api/services/exercise/template';
 import { regradeExerciseSubmissions } from '@api/services/submission/regrade';
+import { createPracticeSetService } from '@api/services/practice/practice';
+import type { TPracticeCreate } from '@cio/utils/validation/practice';
 import { expandQuestionParts } from './question-parts';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin, paginateInMemory } from '../shared';
@@ -151,10 +157,19 @@ async function assertPlacementBelongsToCourse(courseId: string, placement: { sec
   }
 }
 
-async function assertQuestionTypesAllowed(orgId: string, questionTypeIds: Array<number | undefined>) {
-  if (questionTypeIds.length === 0) return;
+async function assertQuestionTypesAllowed(
+  orgId: string,
+  questions: Array<{ questionTypeId?: number; settings?: unknown }>
+) {
+  if (questions.length === 0) return;
 
-  assertNoPremiumQuestionTypes(questionTypeIds, await isOrgOnPaidPlan(orgId));
+  const isPaid = await isOrgOnPaidPlan(orgId);
+
+  assertNoPremiumQuestionTypes(
+    questions.map((question) => question.questionTypeId),
+    isPaid
+  );
+  assertNoPaidQuestionFeatures(questions, isPaid);
 }
 
 /** Throws 404 if the update references another exercise's question, option or section, or 400 if a kept question would lose its section. */
@@ -507,7 +522,7 @@ export async function createCourseExerciseService(
 
     await assertQuestionTypesAllowed(
       orgId,
-      template.questionnaire.questions.map((question) => question.question_type.id)
+      template.questionnaire.questions.map((question) => ({ questionTypeId: question.question_type.id }))
     );
 
     const exercise = await createExerciseFromTemplate(
@@ -523,10 +538,7 @@ export async function createCourseExerciseService(
 
   const questions = expandQuestionParts(payload.questions ?? []);
   assertAnswerKeysVerified(questions);
-  await assertQuestionTypesAllowed(
-    orgId,
-    questions.map((question) => question.questionTypeId)
-  );
+  await assertQuestionTypesAllowed(orgId, questions);
 
   const exercise = await createExercise({
     courseId: params.courseId,
@@ -578,7 +590,7 @@ export async function applyCourseExerciseUpdate(
 
   await assertQuestionTypesAllowed(
     orgId,
-    (payload.questions ?? []).filter((question) => !question.delete).map((question) => question.questionTypeId)
+    (payload.questions ?? []).filter((question) => !question.delete)
   );
 
   const internalUpdate = toInternalUpdate(payload, current);
@@ -612,6 +624,19 @@ export async function regradeCourseExerciseService(
   await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
 
   return regradeExerciseSubmissions(params.courseId, params.exerciseId);
+}
+
+/** Builds a practice exercise from a skill or chosen questions and assigns it to the chosen students. Needs a paid plan. */
+export async function createCoursePracticeService(
+  orgId: string,
+  actorId: string | null,
+  courseId: string,
+  payload: TPracticeCreate
+) {
+  await assertCourseTeamAccess(orgId, actorId, courseId);
+  assertPaidMathFeature('practice_assignment', await isOrgOnPaidPlan(orgId));
+
+  return createPracticeSetService(courseId, orgId, payload);
 }
 
 export async function deleteCourseExerciseService(

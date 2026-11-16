@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('ai', () => ({ generateObject: vi.fn() }));
 vi.mock('@cio/db/queries/course', () => ({ getOrgIdByCourseId: vi.fn() }));
+vi.mock('@cio/core/services/agent/usage', () => ({ isOrgOnPaidPlan: vi.fn() }));
 vi.mock('@cio/db/queries/submission', () => ({
   getAnswerForAiReview: vi.fn(),
   getAnswersWithAiReviewByExercise: vi.fn(),
@@ -22,6 +23,7 @@ vi.mock('@api/services/submission/submission', () => ({ updateSubmissionGradesBa
 
 import { generateObject } from 'ai';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
+import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
 import {
   getAnswerForAiReview,
   getAnswersWithAiReviewByExercise,
@@ -88,6 +90,7 @@ const modelOutput = {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(getOrgIdByCourseId).mockResolvedValue('org-1' as never);
+  vi.mocked(isOrgOnPaidPlan).mockResolvedValue(true);
   vi.mocked(generateObject).mockResolvedValue({
     object: modelOutput,
     usage: { inputTokens: 100, outputTokens: 40 }
@@ -115,6 +118,16 @@ describe('collectWorkingEvidence', () => {
 });
 
 describe('requestAiReview', () => {
+  it('refuses a free-plan organization before any model call', async () => {
+    vi.mocked(isOrgOnPaidPlan).mockResolvedValue(false);
+    vi.mocked(getAnswerForAiReview).mockResolvedValue(row() as never);
+
+    await expect(
+      requestAiReview({ courseId: COURSE_ID, submissionId: 'sub-1', questionId: 5, userId: 'u1' })
+    ).rejects.toMatchObject({ code: 'UPGRADE_REQUIRED', statusCode: 403 });
+    expect(generateObject).not.toHaveBeenCalled();
+  });
+
   it('stores a normalised suggestion and counts the usage against the org pool', async () => {
     vi.mocked(getAnswerForAiReview).mockResolvedValue(row() as never);
 

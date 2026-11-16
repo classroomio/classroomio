@@ -244,6 +244,7 @@ Course exercise tools:
 - `add_exercise_section`
 - `update_exercise_section`
 - `delete_exercise_section`
+- `create_course_practice`
 - `regrade_course_exercise`
 - `notify_course_exercise`
 - `get_course_exercise_notify_status`

@@ -10,10 +10,13 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiCreateCourseExercise,
   ZPublicApiForceQuery,
+  ZPublicApiPracticeSetResponse,
   ZPublicApiRegradeExerciseResponse,
   ZPublicApiUpdateCourseExercise
 } from '@cio/utils/validation/public-api';
+import { ZPracticeCreate } from '@cio/utils/validation/practice';
 import {
+  createCoursePracticeService,
   createCourseExerciseService,
   deleteCourseExerciseService,
   getCourseExerciseNotifyStatusService,
@@ -180,6 +183,35 @@ export const v1CourseExercisesRouter = new Hono()
         return c.json({ success: true, data: exercise }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to delete course exercise');
+      }
+    }
+  )
+  .post(
+    '/practice',
+    describeRoute({
+      description: `Build a practice exercise from a skill's questions or chosen questions and assign it to chosen students. Needs a paid plan; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        201: jsonResponse('The practice exercise', itemResponse(ZPublicApiPracticeSetResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: exerciseForbiddenResponses.write,
+        404: { description: 'Course, skill or questions not found' },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('json', ZPracticeCreate),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const { courseId } = c.req.valid('param');
+        const result = await createCoursePracticeService(orgId, actorId, courseId, c.req.valid('json'));
+
+        return c.json({ success: true, data: result }, 201);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to create the practice exercise');
       }
     }
   )

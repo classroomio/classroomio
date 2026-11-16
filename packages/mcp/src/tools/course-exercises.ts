@@ -18,6 +18,8 @@ import {
   PUBLIC_API_QUESTION_TYPES_NOTE
 } from '@cio/utils/validation/public-api';
 
+import { ZPracticeCreate } from '@cio/utils/validation/practice';
+
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
@@ -57,6 +59,7 @@ export const ZUpdateExerciseSectionToolInput = ZPublicApiUpdateExerciseSectionFi
   ZPublicApiExerciseSectionParam.shape
 );
 export const ZDeleteExerciseSectionToolInput = ZPublicApiExerciseSectionParam;
+export const ZCreateCoursePracticeToolInput = ZPublicApiCourseParam.extend(ZPracticeCreate.shape);
 export const ZRegradeCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
 export const ZNotifyCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
 export const ZGetCourseExerciseNotifyStatusToolInput = ZPublicApiCourseExerciseNotifyParam.extend(
@@ -188,6 +191,17 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
     async (args) => {
       const { courseId, exerciseId, sectionId } = ZDeleteExerciseSectionToolInput.parse(args);
       return jsonContent(await apiClient.deleteExerciseSection(courseId, exerciseId, sectionId));
+    }
+  );
+
+  server.tool(
+    'create_course_practice',
+    `Build a short practice exercise from the questions behind a skill, or from chosen questions, and assign it to chosen students; questions with variables get fresh numbers. Needs a paid plan; ${COURSE_TEAM_RULE}.`,
+    shape(ZCreateCoursePracticeToolInput),
+    CREATE,
+    async (args) => {
+      const { courseId, ...payload } = ZCreateCoursePracticeToolInput.parse(args);
+      return jsonContent(await apiClient.createCoursePractice(courseId, payload));
     }
   );
 

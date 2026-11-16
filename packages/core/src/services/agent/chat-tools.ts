@@ -6,7 +6,7 @@ import { getBlockRecipeMarkup } from '@cio/ai-assistant/tools';
 import { ADD_QUESTIONS_TOOL_DESCRIPTION, UPDATE_QUESTIONS_BINARY_TYPES_HINT } from '@cio/question-types';
 import { makeFixedVariants } from '@cio/question-types/variant-preview';
 import { AppError } from '@cio/utils/errors';
-import { assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
+import { assertNoPaidQuestionFeatures, assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
 import { assertAnswerKeysVerified } from '../exercise/answer-key';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
@@ -1080,6 +1080,7 @@ export function buildAgentTools(
             args.questions.map((q) => q.questionTypeId),
             isOrgOnPaidPlan
           );
+          assertNoPaidQuestionFeatures(args.questions, isOrgOnPaidPlan);
 
           assertAnswerKeysVerified(args.questions);
 
@@ -1209,6 +1210,7 @@ export function buildAgentTools(
             args.questions.map((q) => q.questionTypeId),
             isOrgOnPaidPlan
           );
+          assertNoPaidQuestionFeatures(args.questions, isOrgOnPaidPlan);
 
           assertAnswerKeysVerified(args.questions);
 
@@ -1349,6 +1351,7 @@ export function buildAgentTools(
             args.questions.map((q) => q.questionTypeId),
             isOrgOnPaidPlan
           );
+          assertNoPaidQuestionFeatures(args.questions, isOrgOnPaidPlan);
 
           await verifyExerciseBelongsToCourse(args.exerciseId, courseId);
 

@@ -1,5 +1,6 @@
 import { ZPracticeCreate } from '@cio/utils/validation/practice';
 import { createPracticeSetService } from '@api/services/practice/practice';
+import { assertCourseHasPaidMathFeature } from '@api/services/math/premium';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -18,6 +19,8 @@ export const coursePracticeRouter = new Hono().post(
       const courseId = c.req.param('courseId')!;
       const orgId = await getOrgIdByCourseId(courseId);
       if (!orgId) throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+
+      await assertCourseHasPaidMathFeature(courseId, 'practice_assignment');
 
       const data = await createPracticeSetService(courseId, orgId, c.req.valid('json'));
 

@@ -4,6 +4,7 @@ import type { TBlockLocaleCode } from '@cio/utils/validation/block';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import { pickTagColor } from '@cio/utils/validation/tag';
 import type { TPublicApiSkillsQuery, TSkillCreate, TSkillImport, TSkillUpdate } from '@cio/utils/validation/skill';
+import type { TPracticeCreate } from '@cio/utils/validation/practice';
 import { ErrorCodes } from '@cio/utils/constants';
 import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 
@@ -341,6 +342,10 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections/${sectionId}`, {
       method: 'DELETE'
     });
+  }
+
+  async createCoursePractice(courseId: string, payload: TPracticeCreate) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/practice`, { method: 'POST', body: payload });
   }
 
   async regradeCourseExercise(courseId: string, exerciseId: string) {
