@@ -16,6 +16,7 @@
   import { Switch } from '../../../../base/switch';
   import { IconButton } from '../../../icon-button';
   import { NumberField } from '../../../number-field';
+  import { mathPlanGate } from '../../../math-text';
 
   interface Props {
     settings: Record<string, unknown> | undefined;
@@ -32,6 +33,7 @@
 
   const rubric = $derived(readMarkingRubric(settings, { keepBlankSteps: true }));
   const total = $derived(getRubricMaxPoints(rubric));
+  const isAiLocked = $derived($mathPlanGate.locked && settings?.aiGrading !== true);
   const isAiEnabled = $derived(settings?.aiGrading === true);
   const hasMismatch = $derived(rubric.steps.length > 0 && total !== roundPoints(workingPoints));
 
@@ -98,13 +100,24 @@
   <div class="ui:flex ui:items-start ui:gap-3 ui:border-t ui:pt-3">
     <Switch
       checked={isAiEnabled}
-      disabled={disabled || rubric.steps.length === 0}
+      disabled={disabled || rubric.steps.length === 0 || isAiLocked}
       aria-label={label('math.rubric.ai_label')}
       onCheckedChange={(checked) => onPatchSettings({ aiGrading: checked })}
     />
     <div class="ui:space-y-1">
       <Label>{label('math.rubric.ai_label')}</Label>
       <p class="ui:text-muted-foreground ui:text-xs">{label('math.rubric.ai_helper')}</p>
+      {#if isAiLocked}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onclick={$mathPlanGate.onUpgrade}
+          data-testid="ai-grading-upgrade"
+        >
+          {label('math.upgrade.required')}
+        </Button>
+      {/if}
     </div>
   </div>
 </div>

@@ -11,7 +11,7 @@
   import type { TLocale } from '@cio/db/types';
   import { LANGUAGES } from '$lib/utils/constants/translation';
 
-  import { AttentionHighlight, UploadWidget, UnsavedChanges } from '$features/ui';
+  import { AttentionHighlight, UploadWidget, UnsavedChanges, UpgradeBanner } from '$features/ui';
   import { StudentHomeField } from '$features/settings/components';
   import { MathNotationCard } from '$features/math-notation';
   import * as Field from '@cio/ui/base/field';
@@ -312,8 +312,14 @@
 
       <Field.Field>
         <Field.Label for="desmos-api-key">{$t('math_question.desmos.label')}</Field.Label>
-        <Input id="desmos-api-key" bind:value={customization.course.desmosApiKey} autocomplete="off" />
+        <Input
+          id="desmos-api-key"
+          bind:value={customization.course.desmosApiKey}
+          autocomplete="off"
+          disabled={$isFreePlan}
+        />
         <Field.Description>{$t('math_question.desmos.helper')}</Field.Description>
+        <UpgradeBanner>{$t('upgrade.paid_math_feature')}</UpgradeBanner>
       </Field.Field>
     </Field.Group>
   </Field.Set>

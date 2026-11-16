@@ -11,6 +11,8 @@
   import { practiceApi } from '$features/practice/api';
   import type { CreatedPractice, PracticeSource, PracticeStudent } from '$features/practice/utils';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { UpgradeBanner } from '$features/ui';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -64,6 +66,8 @@
       <Dialog.Description>{$t('practice.dialog.description')}</Dialog.Description>
     </Dialog.Header>
 
+    <UpgradeBanner>{$t('upgrade.paid_math_feature')}</UpgradeBanner>
+
     <Field.Group>
       <Field.Field>
         <InputField label={$t('practice.dialog.name')} bind:value={title} testId="practice-title" />
@@ -101,7 +105,7 @@
         size="sm"
         onclick={handleSubmit}
         loading={practiceApi.isLoading}
-        disabled={selectedIds.size === 0}
+        disabled={selectedIds.size === 0 || $isFreePlan}
         testId="practice-submit"
       >
         {$t('practice.dialog.submit')}

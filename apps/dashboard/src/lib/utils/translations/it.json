@@ -4985,7 +4985,8 @@
     "enterprise_required": "Questa funzionalità richiede un piano Enterprise.",
     "public_api_required": "Esegui l'upgrade a Early Adopter o Enterprise per accedere all'API pubblica.",
     "unlock_field": "Esegui l'upgrade per sbloccare questa impostazione",
-    "webhooks_required": "Passa a Early Adopter o Enterprise per usare i webhook."
+    "webhooks_required": "Passa a Early Adopter o Enterprise per usare i webhook.",
+    "paid_math_feature": "Incluso nei piani a pagamento. Passa a un piano superiore per usarlo."
   },
   "automation": {
     "title": "Automazione",
@@ -7612,6 +7613,9 @@
       "preview": {
         "empty": "Non è ancora impostata una risposta corretta."
       }
+    },
+    "upgrade": {
+      "required": "Incluso nei piani a pagamento. Passa a un piano superiore per usarlo."
     }
   },
   "math_vision": {

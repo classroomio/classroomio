@@ -25,14 +25,15 @@
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
-  import { currentOrg, isOrgAdmin, orgs } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan, isOrgAdmin, orgs } from '$lib/utils/store/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { CourseMobileBottomNav } from '$features/course/components/mobile';
   import { getCourseProgress } from '$features/course/utils/content';
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
-  import { mathNotation, setMathImageConverter } from '@cio/ui/custom/math-text';
+  import { mathNotation, mathPlanGate, setMathImageConverter } from '@cio/ui/custom/math-text';
   import { resolveMathNotation } from '@cio/question-types';
   import { mathVisionApi } from '$features/math/api/math-vision.svelte';
   import { getMathImageLabels } from '$features/math/utils/math-image-labels';
@@ -78,6 +79,10 @@
   let sidebarOpen = $state(true);
   let hasLoadedSidebarOpen = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
+
+  $effect(() => {
+    mathPlanGate.set({ locked: $isFreePlan, onUpgrade: openUpgradeModal });
+  });
 
   $effect(() => {
     mathNotation.set(resolveMathNotation($currentOrg.settings?.math, courseApi.course?.metadata?.math));

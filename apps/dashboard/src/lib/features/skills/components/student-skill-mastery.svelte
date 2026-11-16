@@ -2,6 +2,7 @@
   import { skillsApi } from '$features/skills/api';
   import { MASTERY_LEVEL_CLASS, type StudentSkillMastery } from '$features/skills/utils';
   import { cn } from '@cio/ui/tools';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -16,6 +17,7 @@
   $effect(() => {
     const currentCourseId = courseId;
     const currentProfileId = profileId;
+    if ($isFreePlan) return;
 
     void skillsApi.getStudentMastery(currentCourseId, currentProfileId).then((result) => {
       mastery = result;

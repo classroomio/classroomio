@@ -617,7 +617,8 @@
     "enterprise_required": "Ta funkcja wymaga planu Enterprise.",
     "public_api_required": "Uaktualnij do Early Adopter lub Enterprise, aby uzyskać dostęp do publicznego API.",
     "unlock_field": "Uaktualnij, aby odblokować to ustawienie",
-    "webhooks_required": "Przejdź na plan Early Adopter lub Enterprise, aby korzystać z webhooków."
+    "webhooks_required": "Przejdź na plan Early Adopter lub Enterprise, aby korzystać z webhooków.",
+    "paid_math_feature": "Dostępne w płatnych planach. Przejdź na wyższy plan, aby z tego korzystać."
   },
   "student_progress": {
     "courses": "Kursy",
@@ -7642,6 +7643,9 @@
       "preview": {
         "empty": "Nie ustawiono jeszcze poprawnej odpowiedzi."
       }
+    },
+    "upgrade": {
+      "required": "Dostępne w płatnych planach. Przejdź na wyższy plan, aby z tego korzystać."
     }
   },
   "math_vision": {

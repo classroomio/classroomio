@@ -118,6 +118,7 @@ export const MATH_QUESTION_LABEL_DEFAULTS = {
   'math.variables.heading': 'Variables',
   'math.variables.helper':
     'Give every student different numbers. Use the variable names in double curly braces in the question and the answer key.',
+  'math.upgrade.required': 'Included in paid plans. Upgrade to use this.',
   'math.variables.enable': 'Make this question parameterised',
   'math.variables.disable': 'Remove variables',
   'math.variables.add': 'Add variable',

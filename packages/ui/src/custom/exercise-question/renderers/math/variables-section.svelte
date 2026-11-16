@@ -22,7 +22,7 @@
   import * as Select from '../../../../base/select';
   import { Textarea } from '../../../../base/textarea';
   import { IconButton } from '../../../icon-button';
-  import { MathText } from '../../../math-text';
+  import { MathText, mathPlanGate } from '../../../math-text';
   import { NumberField } from '../../../number-field';
   import { loadVariantPreview } from './math-question-utils';
 
@@ -136,7 +136,11 @@
     {/if}
   </div>
 
-  {#if !parameters}
+  {#if !parameters && $mathPlanGate.locked}
+    <Button type="button" variant="outline" size="sm" onclick={$mathPlanGate.onUpgrade} data-testid="variables-upgrade">
+      {label('math.upgrade.required')}
+    </Button>
+  {:else if !parameters}
     <Button type="button" variant="outline" size="sm" {disabled} onclick={enable}>
       <PlusIcon class="ui:mr-1 ui:size-4" />
       {label('math.variables.enable')}

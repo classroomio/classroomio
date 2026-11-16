@@ -617,7 +617,8 @@
     "enterprise_required": "Для этой функции требуется план Enterprise.",
     "public_api_required": "Перейдите на Early Adopter или Enterprise, чтобы получить доступ к публичному API.",
     "unlock_field": "Обновите версию, чтобы разблокировать эту настройку.",
-    "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки."
+    "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки.",
+    "paid_math_feature": "Входит в платные тарифы. Перейдите на платный тариф, чтобы использовать."
   },
   "student_progress": {
     "courses": "Курсы",
@@ -7712,6 +7713,9 @@
       "preview": {
         "empty": "Правильный ответ ещё не задан."
       }
+    },
+    "upgrade": {
+      "required": "Входит в платные тарифы. Перейдите на платный тариф, чтобы использовать."
     }
   },
   "math_vision": {

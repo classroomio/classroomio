@@ -5050,7 +5050,8 @@
     "enterprise_required": "This feature requires an Enterprise plan.",
     "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API.",
     "webhooks_required": "Upgrade to Early Adopter or Enterprise to use webhooks.",
-    "unlock_field": "Upgrade to unlock this setting"
+    "unlock_field": "Upgrade to unlock this setting",
+    "paid_math_feature": "Included in paid plans. Upgrade to use this."
   },
   "automation": {
     "title": "Automation",
@@ -7612,6 +7613,9 @@
       "preview": {
         "empty": "No correct answer is set yet."
       }
+    },
+    "upgrade": {
+      "required": "Included in paid plans. Upgrade to use this."
     }
   },
   "math_vision": {

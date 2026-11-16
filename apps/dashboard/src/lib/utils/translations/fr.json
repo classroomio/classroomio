@@ -617,7 +617,8 @@
     "enterprise_required": "Cette fonctionnalité nécessite un forfait Entreprise.",
     "public_api_required": "Passez à Early Adopter ou Enterprise pour accéder à l'API publique.",
     "unlock_field": "Mettez à niveau pour déverrouiller ce paramètre",
-    "webhooks_required": "Passez à Early Adopter ou Enterprise pour utiliser les webhooks."
+    "webhooks_required": "Passez à Early Adopter ou Enterprise pour utiliser les webhooks.",
+    "paid_math_feature": "Inclus dans les forfaits payants. Passez à un forfait supérieur pour l'utiliser."
   },
   "student_progress": {
     "courses": "Cours",
@@ -7642,6 +7643,9 @@
       "preview": {
         "empty": "Aucune réponse correcte n’est encore définie."
       }
+    },
+    "upgrade": {
+      "required": "Inclus dans les forfaits payants. Passez à un forfait supérieur pour l'utiliser."
     }
   },
   "math_vision": {

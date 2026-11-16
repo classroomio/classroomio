@@ -617,7 +617,8 @@
     "enterprise_required": "Tính năng này yêu cầu gói Enterprise.",
     "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai.",
     "unlock_field": "Nâng cấp để mở khóa cài đặt này",
-    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook."
+    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook.",
+    "paid_math_feature": "Có trong các gói trả phí. Nâng cấp để sử dụng."
   },
   "student_progress": {
     "courses": "Khóa học",
@@ -7642,6 +7643,9 @@
       "preview": {
         "empty": "Chưa đặt đáp án đúng."
       }
+    },
+    "upgrade": {
+      "required": "Có trong các gói trả phí. Nâng cấp để sử dụng."
     }
   },
   "math_vision": {

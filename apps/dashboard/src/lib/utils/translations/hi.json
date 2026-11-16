@@ -617,7 +617,8 @@
     "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है.",
     "public_api_required": "सार्वजनिक API तक पहुँचने के लिए Early Adopter या Enterprise में अपग्रेड करें।",
     "unlock_field": "इस सेटिंग को अनलॉक करने के लिए अपग्रेड करें",
-    "webhooks_required": "Webhooks का उपयोग करने के लिए Early Adopter या Enterprise में अपग्रेड करें।"
+    "webhooks_required": "Webhooks का उपयोग करने के लिए Early Adopter या Enterprise में अपग्रेड करें।",
+    "paid_math_feature": "यह सशुल्क योजनाओं में शामिल है। इसका उपयोग करने के लिए अपग्रेड करें।"
   },
   "student_progress": {
     "courses": "पाठ्यक्रम",
@@ -7642,6 +7643,9 @@
       "preview": {
         "empty": "अभी कोई सही उत्तर तय नहीं है।"
       }
+    },
+    "upgrade": {
+      "required": "यह सशुल्क योजनाओं में शामिल है। इसका उपयोग करने के लिए अपग्रेड करें।"
     }
   },
   "math_vision": {

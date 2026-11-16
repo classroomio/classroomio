@@ -4996,7 +4996,8 @@
     "enterprise_required": "Bu özellik bir Kurumsal plan gerektirir.",
     "public_api_required": "Erişim için Erken Benimseyen veya Kurumsal sürümüne yükseltin genel API.",
     "unlock_field": "Bu ayarın kilidini açmak için yükseltme",
-    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin."
+    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin.",
+    "paid_math_feature": "Ücretli planlara dahildir. Kullanmak için planınızı yükseltin."
   },
   "automation": {
     "title": "Automation",
@@ -7692,6 +7693,9 @@
       "preview": {
         "empty": "Henüz doğru bir cevap belirlenmedi."
       }
+    },
+    "upgrade": {
+      "required": "Ücretli planlara dahildir. Kullanmak için planınızı yükseltin."
     }
   },
   "math_vision": {

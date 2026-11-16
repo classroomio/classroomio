@@ -617,7 +617,8 @@
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
     "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
     "unlock_field": "Opgrader for at låse denne indstilling op",
-    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks."
+    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks.",
+    "paid_math_feature": "Inkluderet i betalte abonnementer. Opgrader for at bruge det."
   },
   "student_progress": {
     "courses": "Kurser",
@@ -7642,6 +7643,9 @@
       "preview": {
         "empty": "Der er endnu ikke angivet et rigtigt svar."
       }
+    },
+    "upgrade": {
+      "required": "Inkluderet i betalte abonnementer. Opgrader for at bruge det."
     }
   },
   "math_vision": {

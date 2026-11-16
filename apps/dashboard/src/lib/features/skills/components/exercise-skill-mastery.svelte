@@ -6,6 +6,8 @@
   import { skillsApi } from '$features/skills/api';
   import { MASTERY_LEVEL_CLASS, type ExerciseMastery } from '$features/skills/utils';
   import { cn } from '@cio/ui/tools';
+  import { UpgradeBanner } from '$features/ui';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -33,6 +35,7 @@
   $effect(() => {
     const currentCourseId = courseId;
     const currentExerciseId = exerciseId;
+    if ($isFreePlan) return;
 
     void skillsApi.getExerciseMastery(currentCourseId, currentExerciseId).then((result) => {
       mastery = result;
@@ -40,7 +43,9 @@
   });
 </script>
 
-{#if mastery && mastery.skills.length > 0}
+{#if $isFreePlan}
+  <UpgradeBanner>{$t('upgrade.paid_math_feature')}</UpgradeBanner>
+{:else if mastery && mastery.skills.length > 0}
   <div class="rounded-md border p-4" data-testid="exercise-skill-mastery">
     <p class="text-sm font-medium">{$t('skills.mastery.heading')}</p>
     <p class="ui:text-muted-foreground mb-3 text-xs">{$t('skills.mastery.description')}</p>

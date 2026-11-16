@@ -18,6 +18,8 @@
     type CreatedStudentReport,
     type ReportStudent
   } from '$features/student-report/utils';
+  import { UpgradeBanner } from '$features/ui';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -108,6 +110,8 @@
         </Dialog.Footer>
       </div>
     {:else}
+      <UpgradeBanner>{$t('upgrade.paid_math_feature')}</UpgradeBanner>
+
       <Field.Group>
         <Field.Set>
           <Field.Legend>{$t('student_report.dialog.period')}</Field.Legend>
@@ -203,7 +207,13 @@
 
       <Dialog.Footer>
         <Button size="sm" variant="outline" onclick={() => (open = false)}>{$t('student_report.dialog.cancel')}</Button>
-        <Button size="sm" onclick={handleSubmit} loading={studentReportApi.isLoading} testId="report-submit">
+        <Button
+          size="sm"
+          onclick={handleSubmit}
+          loading={studentReportApi.isLoading}
+          disabled={$isFreePlan}
+          testId="report-submit"
+        >
           {$t('student_report.dialog.submit')}
         </Button>
       </Dialog.Footer>
