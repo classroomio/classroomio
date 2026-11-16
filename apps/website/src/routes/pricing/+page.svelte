@@ -98,6 +98,12 @@
     <p class="mt-6 text-center text-sm text-slate-500">
       Need more AI credits? Purchase additional token packs at $5 per 2M tokens from your dashboard.
     </p>
+    <p class="mt-3 text-center text-sm text-slate-500">
+      Not sure an academy pays for itself?
+      <a class="text-blue-700 hover:underline" href="/customer-academy-roi-calculator"
+        >Estimate the support savings with your own numbers.</a
+      >
+    </p>
   </div>
 </section>
 

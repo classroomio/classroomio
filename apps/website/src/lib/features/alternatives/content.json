@@ -9,7 +9,9 @@
     "thinkific",
     "teachfloor",
     "teachable",
-    "kajabi"
+    "kajabi",
+    "disco",
+    "trainn"
   ],
   "competitors": {
     "skilljar": {
@@ -65,6 +67,18 @@
       "kind": "Creator business suite",
       "angle": "Priced by students, not contacts",
       "blurb": "A creator suite with funnels and email. See what a team that only trains customers would pay for."
+    },
+    "disco": {
+      "name": "Disco",
+      "kind": "Learning and community platform",
+      "angle": "A branded academy from $35",
+      "blurb": "Strong on cohorts, live events and community. See what a customer academy costs without a $399 starting price."
+    },
+    "trainn": {
+      "name": "Trainn",
+      "kind": "Customer enablement platform",
+      "angle": "Courses and an LMS from the free plan",
+      "blurb": "Strong on video, guides and in-app tutorials. See where its LMS starts and what a course-first academy costs."
     }
   },
   "features": {
@@ -336,6 +350,18 @@
       "price": "$179",
       "unit": "a month",
       "text": "The entry plan. Higher plans are $249 and $499 a month, limited by contacts: 2,500, 25,000 and 100,000."
+    },
+    "disco": {
+      "price": "$399",
+      "unit": "a month, billed annually",
+      "text": "Create plan: 250 active members and one branded academy. It is $499 a month billed monthly. Scale starts at $999 a month and adds SSO and branded mobile apps.",
+      "checked": "2026-11-15"
+    },
+    "trainn": {
+      "price": "$10,000",
+      "unit": "a year",
+      "text": "Scale, the first plan that lists an LMS (100 monthly active learners). Launch is $2,400 a year for 3 users and 120 videos and guides, and does not list the LMS. Enterprise is a custom quote.",
+      "checked": "2026-11-15"
     }
   },
   "pricingUrls": {
@@ -347,7 +373,9 @@
     "thinkific": "https://www.thinkific.com/pricing/",
     "teachfloor": "https://www.teachfloor.com/pricing",
     "teachable": "https://www.teachable.com/pricing",
-    "kajabi": "https://www.kajabi.com/pricing"
+    "kajabi": "https://www.kajabi.com/pricing",
+    "disco": "https://www.disco.co/pricing",
+    "trainn": "https://trainn.co/pricing/"
   },
   "pages": {
     "skilljar": {
@@ -990,6 +1018,144 @@
       "compare": {
         "title": "ClassroomIO and Kajabi pricing, side by side",
         "lead": "The two products do different jobs, so read the price rows with care. Kajabi includes funnels, email and communities that ClassroomIO does not."
+      }
+    },
+    "disco": {
+      "seo": {
+        "title": "Disco Alternative for Customer Academies | ClassroomIO",
+        "meta": "Looking for a Disco alternative? ClassroomIO runs a branded customer academy on your own domain from $35 a month, with a free plan and unlimited collaborators."
+      },
+      "headline": "A Disco Alternative for Customer Academies",
+      "mark": "Customer Academies",
+      "sub": "Disco is a learning and community platform that starts at $399 a month. ClassroomIO gives a SaaS team a branded customer academy, certificates and an AI tutor for $35 a month, with a free plan to start on.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "A free plan, then $35 a month",
+        "Unlimited collaborators",
+        "Your own domain and certificates in the $35 plan"
+      ],
+      "pick": {
+        "lead": "Disco is built for communities and live programs. ClassroomIO is built to teach customers your product.",
+        "them": {
+          "title": "Choose Disco if",
+          "points": [
+            "You run cohort programs with live events, community chat and leaderboards.",
+            "You want branded iOS and Android apps, which Disco lists on its Scale plan.",
+            "You want a dedicated customer success manager and a live onboarding workshop."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want a branded academy for customers without a $399 monthly starting price.",
+            "You want every teammate to build courses, with unlimited collaborators.",
+            "You want to start on a free plan, then publish on your own domain with certificates for $35."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "cohort",
+        "frame": "window",
+        "floats": ["domain", "capacity"],
+        "layout": "mirror",
+        "canvas": "dots",
+        "path": "/cohorts/onboarding",
+        "note": "Cohorts on a $35 plan"
+      },
+      "intro": {
+        "title": "Disco combines learning and community. ClassroomIO teaches customers your product.",
+        "text": "ClassroomIO is built for customer education. You turn product knowledge into courses, publish an academy under your brand, and see who finishes what. Community features are not the focus.",
+        "steps": [
+          ["Create", "Draft with AI or start from a template, then edit it together."],
+          ["Distribute", "Publish on your own domain and invite customers."],
+          ["Prove value", "See completions and issue certificates."]
+        ],
+        "viz": "editor"
+      },
+      "showcase": {
+        "eyebrow": "Cohorts",
+        "title": "Run customers through a course together",
+        "text": "A cohort in ClassroomIO has a goal and a news feed. Group the customers who signed up in the same week, post updates, and see who finishes.",
+        "points": [
+          "A goal and a news feed for each cohort",
+          "Completion by cohort and by learner",
+          "Certificates when a course is finished"
+        ],
+        "viz": "academy"
+      },
+      "compare": {
+        "title": "ClassroomIO and Disco pricing, side by side",
+        "lead": "Disco publishes its prices and bills the lower tiers annually. It is stronger on community, live events and mobile apps, so read these rows with that difference in mind."
+      }
+    },
+    "trainn": {
+      "seo": {
+        "title": "Trainn Alternative for Customer Training | ClassroomIO",
+        "meta": "Want an LMS without a $10,000 plan? ClassroomIO is a Trainn alternative with a free plan, a branded academy on your own domain and certificates from $35 a month."
+      },
+      "headline": "A Trainn Alternative for Customer Training",
+      "mark": "Customer Training",
+      "sub": "Trainn starts with video and guide creation, and its LMS appears on the Scale plan at $10,000 a year. ClassroomIO starts with the academy: courses, exercises, certificates and an AI tutor, from a free plan.",
+      "cta": {
+        "primary": ["Get started for free", "/signup"],
+        "secondary": ["Book a demo", "/demo"]
+      },
+      "chips": [
+        "A free plan, not a 14-day trial",
+        "Academy and certificates from $35 a month",
+        "Unlimited collaborators"
+      ],
+      "pick": {
+        "lead": "Trainn is strongest at making videos and guides. ClassroomIO is strongest at running the academy around them.",
+        "them": {
+          "title": "Choose Trainn if",
+          "points": [
+            "You want to record your screen and turn it into videos and step-by-step guides.",
+            "You want in-app tutorials and a help widget inside your product.",
+            "Procurement asks for SOC 2 Type II, which Trainn lists as verified."
+          ]
+        },
+        "us": {
+          "title": "Choose ClassroomIO if",
+          "points": [
+            "You want courses, exercises and certificates without buying the plan that unlocks the LMS.",
+            "You want to build on a free plan, not a 14-day trial that ends with losing your content.",
+            "You want every teammate to build courses, with unlimited collaborators instead of 3 or 5 users."
+          ]
+        }
+      },
+      "hero": {
+        "anchor": "progress",
+        "frame": "panel",
+        "floats": ["certificate", "tutor"],
+        "layout": "cascade",
+        "canvas": "grid",
+        "path": "/courses",
+        "note": "An LMS from the free plan"
+      },
+      "intro": {
+        "title": "Trainn makes the content. ClassroomIO runs the academy it lives in.",
+        "text": "ClassroomIO is built for customer education. You turn product knowledge into courses, publish an academy under your brand, and see who finishes what. Video can sit inside a lesson, but recording is not the focus.",
+        "steps": [
+          ["Create", "Draft with AI or start from a template, then edit it together."],
+          ["Distribute", "Publish on your own domain and invite customers."],
+          ["Prove value", "See completions and issue certificates."]
+        ],
+        "viz": "editor"
+      },
+      "showcase": {
+        "eyebrow": "The learner view",
+        "title": "Courses, exercises and an AI tutor in one place",
+        "text": "Customers open the academy, work through lessons and exercises, and ask the AI tutor when they get stuck.",
+        "points": ["Lesson progress at a glance", "Exercises with auto-grading", "An AI tutor inside the course"],
+        "viz": "learner"
+      },
+      "compare": {
+        "title": "ClassroomIO and Trainn pricing, side by side",
+        "lead": "Trainn publishes its prices, billed yearly. It is stronger on video and guide creation and on published security attestations, so read these rows with that difference in mind."
       }
     }
   }
