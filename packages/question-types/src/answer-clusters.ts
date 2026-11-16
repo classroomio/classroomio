@@ -119,7 +119,12 @@ export function getAnswerClusterKey(
 
 /** True for answer types that can be grouped into clusters. */
 export function isClusterableQuestionType(questionType: string): boolean {
-  return questionType !== QUESTION_TYPE_KEY.TEXTAREA && questionType !== QUESTION_TYPE_KEY.FILE_UPLOAD;
+  return (
+    questionType !== QUESTION_TYPE_KEY.TEXTAREA &&
+    questionType !== QUESTION_TYPE_KEY.FILE_UPLOAD &&
+    questionType !== QUESTION_TYPE_KEY.GRAPH_PLOT &&
+    questionType !== QUESTION_TYPE_KEY.GRAPH_READ
+  );
 }
 
 export type ClusterEntry = {

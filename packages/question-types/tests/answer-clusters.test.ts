@@ -96,6 +96,8 @@ describe('getAnswerClusterKey for other types', () => {
   it('does not cluster paragraph or file answers', () => {
     expect(isClusterableQuestionType(QUESTION_TYPE_KEY.TEXTAREA)).toBe(false);
     expect(isClusterableQuestionType(QUESTION_TYPE_KEY.MATH_EXPRESSION)).toBe(true);
+    expect(isClusterableQuestionType(QUESTION_TYPE_KEY.GRAPH_PLOT)).toBe(false);
+    expect(isClusterableQuestionType(QUESTION_TYPE_KEY.GRAPH_READ)).toBe(false);
   });
 });
 
