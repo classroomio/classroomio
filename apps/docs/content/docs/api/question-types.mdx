@@ -1,7 +1,7 @@
 ---
 title: Question types
 description: Question type ids, which ones need a paid plan, and the answer format for each type when you submit for a student.
-last_reviewed: '2026-11-15'
+last_reviewed: '2026-11-16'
 ---
 
 Exercises are made of questions. When you create or edit a question, its `questionTypeId` says what kind it is. When you submit an exercise for a student, each `answer` uses the format for that question's type.
@@ -27,10 +27,12 @@ Exercises are made of questions. When you create or edit a question, its `questi
 | `15` | Matching | Yes, with `settings.pairs`: an array of `{ "left": "...", "right": "..." }` |
 | `17` | Math expression | Yes, by algebraic equivalence, with the settings under [Math questions](#math-questions) |
 | `18` | Worked solution | The final answer is; the working points wait for manual grading |
+| `19` | Graph plot | Yes, geometrically against `settings.expected`, with partial credit. See [Graph questions](#graph-questions) |
+| `20` | Graph reading | Yes, against `settings.answer`. See [Graph questions](#graph-questions) |
 
 Id `16` (hotspot) is not offered.
 
-- Math expression, worked solution, matching and the numeric upgrades are free on every plan. File upload, ordering, link, star rating and video recording need a paid plan. On the Basic plan they return `403` with `UPGRADE_REQUIRED`.
+- Math expression, worked solution, matching, graph plot, graph reading and the numeric upgrades are free on every plan. File upload, ordering, link, star rating and video recording need a paid plan. On the Basic plan they return `403` with `UPGRADE_REQUIRED`.
 - `PUBLIC` courses only accept auto-graded types, so worked solutions are not available there.
 - A new question is single choice (`1`) unless you set a type.
 
@@ -51,6 +53,8 @@ Single choice answers use `optionId`. File upload and video recording questions 
 | Star rating | `{"type":"STAR","value":4}` |
 | Matching | `{"type":"MATCHING","value":[{"left":"2+2","right":"4"}]}` |
 | Math expression | `{"type":"MATH_EXPRESSION","latex":"2(x+1)"}` |
+| Graph plot | `{"type":"GRAPH_PLOT","elements":[{"kind":"point","x":3,"y":1},{"kind":"line","from":{"x":0,"y":0},"to":{"x":1,"y":2}}]}` |
+| Graph reading | `{"type":"GRAPH_READ","value":4}` for a value, or `{"type":"GRAPH_READ","point":{"x":2,"y":0}}` for a point |
 | Worked solution | `{"type":"WORKED_SOLUTION","latex":"4","working":{"lines":["2x=8","x=4"]}}`; drawings and photos of working can only be added in the dashboard |
 
 The JSON formats are sent as a JSON string inside `answer`. A numeric answer can also carry LaTeX, such as `{"type":"NUMERIC","value":0.75,"latex":"\frac{3}{4}"}`.
@@ -72,6 +76,34 @@ A worked solution also takes `answerPoints` (default half of the question's poin
 A numeric question's `settings.correctValue` can be LaTeX or a fraction such as `"3/4"`, with `relativeTolerance` and `significantFigures` next to `tolerance`.
 
 Each graded math answer stores its result in `answerData.grading`, which the submission's answers return: `reason` is `equivalent`, `not_simplified`, `wrong_form`, `wrong_units`, `wrong`, `needs_review` or `invalid`, plus `matchedAnswer` and the `feedback` you set for a known wrong answer.
+
+## Graph questions
+
+Graph plot (`19`) shows an empty coordinate plane and the student plots points, lines, segments and parabolas on it. Graph reading (`20`) shows a graph you define and the student reads a value or a point off it. Both are graded automatically. Their `settings` share one `board`:
+
+| Setting | Meaning |
+| --- | --- |
+| `board` | `{"xMin":-10,"xMax":10,"yMin":-10,"yMax":10,"grid":true,"snap":1,"xLabel":"x","yLabel":"y"}`. Each minimum must be smaller than its maximum. `snap` is the grid step that placed points snap to; `0` places them freely |
+
+Graph plot also takes:
+
+| Setting | Meaning |
+| --- | --- |
+| `expected` | Required. The correct answer: `{"kind":"point","x":1,"y":2}`, `{"kind":"line","from":{...},"to":{...}}` (an infinite line through two points), `{"kind":"segment","from":{...},"to":{...}}` or `{"kind":"parabola","vertex":{...},"through":{...}}` (the vertex plus one other point on the parabola) |
+| `tools` | The tools students get: any of `point`, `line`, `segment`, `parabola`. All four by default |
+| `tolerance` | How close, in graph units, a student's element must be. Default `0.25` |
+
+A point matches within the tolerance; a segment when both ends do, in either order; a line when it passes within the tolerance of both defining points of the expected line, so any two points on it work; a parabola when its vertex is within the tolerance and its shape stays close to the expected curve across the board. A student's element is matched to at most one expected element of the same kind. Credit is the share of expected elements matched, reduced by extra elements: `matched / (expected + extra)`.
+
+Graph reading also takes:
+
+| Setting | Meaning |
+| --- | --- |
+| `curves` | Functions to draw, `[{"expression":"x^2-4","label":"f"}]`, with `expression` as LaTeX in `x` |
+| `points` | Marked points, `[{"x":2,"y":0,"label":"A"}]`. Add at least one curve or point |
+| `answer` | Required. `{"kind":"value","value":4,"tolerance":0.1}` or `{"kind":"point","x":2,"y":0,"tolerance":0.1}` |
+
+Each graded graph answer stores its result in `answerData.grading`: `reason` is `correct`, `partial`, `extra` (everything needed plus extra elements), `wrong`, `missing` or `not_set`, with `matched`, `total` and `extra` counts.
 
 ## Parameterised questions
 

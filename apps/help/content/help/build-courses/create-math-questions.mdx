@@ -1,7 +1,7 @@
 ---
 title: Create math questions
-description: Add math to questions, grade typed math answers, split a question into parts, and choose a calculator for students.
-last_reviewed: '2026-11-15'
+description: Add math to questions, grade typed math answers, plot and read graphs, split a question into parts, and choose a calculator for students.
+last_reviewed: '2026-11-16'
 ---
 
 Math questions let students type an expression instead of picking an option, and ClassroomIO checks the answer by value, not by exact spelling. Open an exercise's **Questions** tab to add them.
@@ -21,6 +21,34 @@ Choose **Math expression** in the question type picker, then:
 Turn on **Let students answer with a photo or drawing** to add a **Photo or draw** button beside the student's answer box. It is off by default, because typed answers grade more reliably. The student reviews the converted math before it is used as their answer, and it is graded like any typed answer.
 
 Use **Try an answer** to see how a sample student answer would be marked before you publish.
+
+## Graph plot and graph reading
+
+Use a graph question when the answer is a picture or a point on a graph rather than an expression.
+
+### Graph plot
+
+Choose **Graph plot** in the question type picker. Students plot points, lines, segments and parabolas on a coordinate plane, and the plot is graded automatically.
+
+1. Under **Graph board**, set the edges of the graph (**Left edge**, **Right edge**, **Bottom edge**, **Top edge**), the axis labels, whether the grid shows, and **Snap to grid step**. Points snap to multiples of that number; use 0 to let students place points anywhere.
+2. Under **Tools students can use**, choose which of **Point**, **Line**, **Segment** and **Parabola** students get.
+3. Set **Tolerance**: how close, in graph units, a point or line must be to count as correct.
+4. Under **Correct answer**, draw the answer on the board with the same tools. A line is drawn through two points, and a parabola with its vertex and one more point on it. Drag a point to move it. **Undo** removes the last element and **Clear** removes them all.
+5. Check **Student view** to try the board the way students see it.
+
+Students pick a tool, tap the board to place points, and drag a point to adjust it. A line matches when it passes close to both points of your line, so any two points on it work. A segment matches when both ends are close, in either order. A parabola matches when its vertex and its shape are close to yours. The score is the share of your elements the student matched, reduced by extra elements, so plotting everywhere does not earn credit.
+
+In review, the student's graph is drawn over yours: green elements matched, red ones did not, and your correct answer shows dashed. The result says how many elements were correct.
+
+### Graph reading
+
+Choose **Graph reading** to show a graph and ask for a value or a point.
+
+1. Set the **Graph board** as above.
+2. Under **Functions on the graph**, add each function of x, for example `x^2 - 4`. Add a label if you like. Under **Marked points**, add points students can read from.
+3. Choose what students read: **A single value** or **A point (x, y)**, then enter the correct value or coordinates and a tolerance. Answers within the tolerance are accepted.
+
+Graph questions are graded automatically, so they also work in public courses.
 
 ## Import a worksheet
 

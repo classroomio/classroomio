@@ -111,8 +111,14 @@ Registry source: `src/question-type-registry.ts`
 | `HOTSPOT`         |  16 | Hotspot           |          yes |                   yes |                    no |      yes |
 | `MATH_EXPRESSION` |  17 | Math expression   |          yes |                    no |                    no |       no |
 | `WORKED_SOLUTION` |  18 | Worked solution   |           no |                   yes |                   yes |       no |
+| `GRAPH_PLOT`       |  19 | Graph plot        |          yes |                   yes |                    no |       no |
+| `GRAPH_READ`       |  20 | Graph reading     |          yes |                    no |                    no |       no |
 
-Disabled types are built but have no `question_type` row, so they stay out of the type picker, the AI tool enum and validation. Only `HOTSPOT` is disabled; migration `0053_math_question_types` added the rows for `MATCHING`, `MATH_EXPRESSION` and `WORKED_SOLUTION`.
+Disabled types are built but have no `question_type` row, so they stay out of the type picker, the AI tool enum and validation. Only `HOTSPOT` is disabled; migration `0053_math_question_types` added the rows for `MATCHING`, `MATH_EXPRESSION` and `WORKED_SOLUTION`, and `0056_graph_question_types` added `GRAPH_PLOT` and `GRAPH_READ`.
+
+## Graph grading
+
+`GRAPH_PLOT` and `GRAPH_READ` are graded geometrically by plain functions exported from the package index, so `scoreAnswerForQuestion` needs no grader for them. `readGraphPlotSettings` and `readGraphReadSettings` read the settings (`board`, `tools`, `expected`, `tolerance`, `curves`, `points`, `answer`). `gradeGraphPlot` pairs each expected element with the closest unused student element of the same kind within `tolerance` and scores `matched / (expected + extra)`; `gradeGraphRead` compares a value by absolute difference or a point by distance. `annotateGraphAnswer` attaches the `grading` reason the review view shows, and the API calls it on submit and on regrade. `@cio/question-types/graph-functions` holds `compileGraphFunction`, which turns a LaTeX function of `x` into a JavaScript function with the Compute Engine for drawing curves; like `math-grading` it is a separate entry point so the engine stays out of the main bundle.
 
 ## Math grading
 

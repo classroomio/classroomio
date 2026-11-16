@@ -78,7 +78,7 @@ export const v1SkillsRouter = new Hono()
   .post(
     '/import',
     describeRoute({
-      description: `Import skills from CSV text with the columns code, name and optionally parent_code, description and framework. Set dryRun to preview without saving; an import with any error saves nothing; ${ORG_ADMIN_RULE}.`,
+      description: `Import skills from CSV text (code, name, optional parent_code, description, framework). Set dryRun to preview; any error saves nothing; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Preview or result with the rows, counts and errors', itemResponse(ZPublicApiSkillImportResponse)),
