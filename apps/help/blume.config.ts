@@ -847,6 +847,10 @@ export default defineConfig({
               {
                 label: 'View submissions and completion data',
                 root: '/analytics-and-reporting/view-submissions-and-completion-data'
+              },
+              {
+                label: 'Track skill mastery',
+                root: '/analytics-and-reporting/track-skill-mastery'
               }
             ]
           },

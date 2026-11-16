@@ -193,7 +193,14 @@ describe('default MCP key across the cohort, course member, certificate, exercis
     ['POST', '/skills', 'create_skill', 1, 201, { code: 'A.1', name: 'Exponents' }],
     ['PUT', `/skills/${TAG_ID}`, 'update_skill', 1, 200, { name: 'Powers' }],
     ['POST', '/skills/import', 'import_skills', 1, 200, { csv: 'code,name\nA,Algebra', dryRun: true }],
-    ['PUT', `/courses/${COURSE_ID}/exercises/${TAG_ID}/questions/1/skills`, 'set_question_skills', 1, 200, { skillIds: [] }],
+    [
+      'PUT',
+      `/courses/${COURSE_ID}/exercises/${TAG_ID}/questions/1/skills`,
+      'set_question_skills',
+      1,
+      200,
+      { skillIds: [] }
+    ],
     ['GET', `/courses/${COURSE_ID}/exercises/${TAG_ID}/skill-mastery`, 'get_exercise_skill_mastery', 0, 200, undefined],
     ['PUT', `/tags/groups/${TAG_ID}`, 'update_tag_group', 1, 200, { order: 1 }],
     ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { tagIds: [TAG_ID] }],

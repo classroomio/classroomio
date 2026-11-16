@@ -481,10 +481,10 @@ export class ClassroomIoApiClient {
   }
 
   async setQuestionSkills(courseId: string, exerciseId: string, questionId: number, skillIds: string[]) {
-    return this.request(
-      `/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}/skills`,
-      { method: 'PUT', body: { skillIds } }
-    );
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}/skills`, {
+      method: 'PUT',
+      body: { skillIds }
+    });
   }
 
   async getExerciseSkillMastery(courseId: string, exerciseId: string) {

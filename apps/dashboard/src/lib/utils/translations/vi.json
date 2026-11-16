@@ -7732,7 +7732,7 @@
       "starters": {
         "common_core": "Common Core Math (Hoa Kỳ)",
         "heading": "Tệp khởi đầu",
-        "note": "Các tệp khởi đầu chỉ có các mảng chính. Hãy thêm các tiêu chuẩn mà trường bạn giảng dạy, rồi nhập tệp.",
+        "note": "Các tệp khởi đầu chỉ là mẫu nhỏ, không phải toàn bộ khung chương trình. Hãy thêm các tiêu chuẩn mà trường bạn giảng dạy, rồi nhập tệp.",
         "uk": "UK National Curriculum Maths",
         "waec_neco": "WAEC / NECO Mathematics"
       },

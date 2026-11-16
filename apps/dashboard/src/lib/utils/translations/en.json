@@ -7702,7 +7702,7 @@
       "starters": {
         "common_core": "Common Core Math (US)",
         "heading": "Starter files",
-        "note": "Starter files list strands only. Add the standards your school teaches, then import the file.",
+        "note": "Starter files are small samples, not the full framework. Add the standards your school teaches, then import the file.",
         "uk": "UK National Curriculum Maths",
         "waec_neco": "WAEC / NECO Mathematics"
       },

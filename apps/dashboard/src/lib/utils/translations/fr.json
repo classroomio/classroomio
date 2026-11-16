@@ -7732,7 +7732,7 @@
       "starters": {
         "common_core": "Common Core Math (États-Unis)",
         "heading": "Fichiers de départ",
-        "note": "Les fichiers de départ ne contiennent que les grands domaines. Ajoutez les standards enseignés dans votre école, puis importez le fichier.",
+        "note": "Les fichiers de départ sont de petits échantillons, pas le référentiel complet. Ajoutez les standards enseignés dans votre école, puis importez le fichier.",
         "uk": "UK National Curriculum Maths",
         "waec_neco": "WAEC / NECO Mathematics"
       },

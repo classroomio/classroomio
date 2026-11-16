@@ -1,0 +1,36 @@
+---
+title: Skills
+description: List, create, import and tag skills and standards, and read skill mastery for an exercise.
+last_reviewed: '2026-11-16'
+---
+
+Skills are the standards or topics that questions assess. A question can carry up to 20 skills, and skills can have a parent so they form a tree.
+
+| Endpoint | What it does | Scope | Key creator must be |
+| --- | --- | --- | --- |
+| `GET /skills` | List skills; filter with `search` and `framework` | `course:read` | an org member |
+| `POST /skills` | Create a skill from `code`, `name` and optionally `description`, `framework` and `parentId` | `course:tag:write` | an org admin |
+| `PUT /skills/{skillId}` | Update a skill | `course:tag:write` | an org admin |
+| `POST /skills/import` | Import skills from CSV text in `csv`; `dryRun` previews without saving | `course:tag:write` | an org admin |
+| `PUT /courses/{courseId}/exercises/{exerciseId}/questions/{questionId}/skills` | Replace the question's skills with `skillIds` | `course:exercise:write` | a course tutor or admin, or an org admin |
+| `GET /courses/{courseId}/exercises/{exerciseId}/skill-mastery` | Each student's mastery per skill tagged on the exercise, with a count of students at each level | `course:exercise:read` | a course tutor or admin, or an org admin |
+
+The CSV needs the columns `code` and `name`; `parent_code`, `description` and `framework` are optional. A file holds up to 2,000 rows, a row whose code exists updates that skill, and an import with any error saves nothing. `GET /skills` is paginated; see [Pagination](/api/pagination).
+
+## Mastery levels
+
+A level is one of `not_started`, `learning`, `proficient` or `mastered`. The score is the share of points earned on the learner's 10 most recent graded answers to questions tagged with the skill, with newer answers weighted more. Fewer than 3 answers never rates above `learning`, `proficient` needs a score of 60 and `mastered` needs a score of 85 with 5 answers.
+
+## Analytics
+
+The Academy query ([Analytics](/api/analytics)) reads skills and item analysis. Use the `skill_result` source with the measures `skill_mastery`, `mastery_level`, `mastery_evidence` and `skill_proficient`, and the `question_result` source with `question_facility`, `question_discrimination`, `common_wrong_answers` and `time_on_question`. Fetch the catalog for the exact fields.
+
+## Errors
+
+| Code | Status | Meaning |
+| --- | --- | --- |
+| `SKILL_NOT_FOUND` | 404 | The skill is not in the organization |
+| `SKILL_ALREADY_EXISTS` | 409 | Another skill has this code |
+| `SKILL_INVALID_PARENT` | 400 | The parent would make the skill its own ancestor |
+| `SKILL_IMPORT_INVALID` | 400 | The CSV has errors; run it with `dryRun` to see them |
+| `QUESTION_NOT_FOUND` | 404 | The question is not in the exercise |

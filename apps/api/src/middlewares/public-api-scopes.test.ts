@@ -243,7 +243,9 @@ describe('publicApiScopesMiddleware', () => {
 
     expect((await readApp.request('/public-api/v1/skills')).status).toBe(200);
     expect((await readApp.request('/public-api/v1/skills/import', { method: 'POST' })).status).toBe(403);
-    expect((await buildApp(['course:tag:write']).request('/public-api/v1/skills/import', { method: 'POST' })).status).toBe(200);
+    expect(
+      (await buildApp(['course:tag:write']).request('/public-api/v1/skills/import', { method: 'POST' })).status
+    ).toBe(200);
     expect((await buildApp(['course:exercise:write']).request(questionSkills, { method: 'PUT' })).status).toBe(200);
     expect((await readApp.request(questionSkills, { method: 'PUT' })).status).toBe(403);
   });

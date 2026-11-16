@@ -1,9 +1,6 @@
 import { ZExerciseSkillsParam, ZQuestionSkillsParam, ZSetQuestionSkills } from '@cio/utils/validation/skill';
 import { ZPublicApiCourseParam } from '@cio/utils/validation/public-api';
-import {
-  getPublicApiExerciseSkillMasteryService,
-  setPublicApiQuestionSkillsService
-} from '@api/services/v1/skills';
+import { getPublicApiExerciseSkillMasteryService, setPublicApiQuestionSkillsService } from '@api/services/v1/skills';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
@@ -67,7 +64,12 @@ export const v1CourseSkillMasteryRouter = new Hono().get(
   async (c) => {
     try {
       const { courseId, exerciseId } = c.req.valid('param');
-      const result = await getPublicApiExerciseSkillMasteryService(c.get('orgId')!, c.get('actorId'), courseId, exerciseId);
+      const result = await getPublicApiExerciseSkillMasteryService(
+        c.get('orgId')!,
+        c.get('actorId'),
+        courseId,
+        exerciseId
+      );
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
