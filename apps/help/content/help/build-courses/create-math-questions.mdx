@@ -69,6 +69,19 @@ Open the exercise's **Settings** tab and use **Calculator** to choose **No calcu
 
 The graphing calculator uses Desmos. To turn it on, an administrator enters a **Desmos API key** under **Settings**, **Customize LMS**, in the Course section. Without a key, exercises set to Graphing give students the scientific calculator.
 
+## See and fix what students answered
+
+Open the exercise, then **Submissions**, then **Results grid**. Each row is a student's latest attempt and each column is a question, coloured by score: full marks, partial credit, wrong, awaiting grading, or no answer. A **Total** column and the student names stay in view while you scroll across many questions. Point at a cell to see the student's answer as math; for a question with variables it shows that student's own numbers. Select a cell to open the answer as the student sees it in review. Use the filters to show only students with a wrong answer, only attempts awaiting grading, or one cohort of the course. Results load 25 students at a time.
+
+Select a question's column heading to open its **Answer groups**. Answers that mean the same thing are grouped, so `x = -3` and `x=-3.0` count as one group with a student count and the grade they received. Answers are grouped by their written form, so `2(x+1)` and `2x+2` stay in separate groups even when both are right. For each group you can:
+
+- **Mark correct** or **Mark wrong** for everyone in the group.
+- Give **Partial credit** with a number of points up to the question's points, including fractions such as 1.25.
+- **Add feedback** that every student in the group sees under their answer in review.
+- **Undo decision** to return the group to what the answer key gives.
+
+A decision regrades every submission that already has that answer and recalculates each student's total, so the gradebook changes too. It is also kept on the question, so later submissions with the same answer get the same result. Marking a group correct does not change the accepted answers. Verdicts apply to auto-graded questions; for questions you grade by hand you can still add feedback. Paragraph and file answers are not grouped. For a question with variables, groups are separate for each student's numbers.
+
 ## Related guides
 
 - [Choose an exercise question type](/build-courses/choose-an-exercise-question-type)

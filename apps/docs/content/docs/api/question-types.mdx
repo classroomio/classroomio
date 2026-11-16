@@ -125,6 +125,10 @@ A worked solution or paragraph question can ask for an AI suggestion on the stud
 
 The suggestion is only a proposal. A teacher requests it in the grading popup, and it holds points per rubric step, the first wrong step, a comment and a confidence. Nothing reaches the student, and no points count, until the teacher accepts or edits it. Students never see `answerData.aiReview`. A teacher can also accept every suggestion with confidence of 0.85 or more for an exercise at once. Each request for a suggestion counts against the workspace's math AI allowance; accepting does not.
 
+## Answer-group decisions
+
+When a teacher marks a group of equal answers correct, wrong or partially correct in the results grid, the decision is saved in the question's `settings.clusterOverrides` as a list of rules. Each rule has the group's `key`, a readable `label`, an optional `verdict` (`correct`, `partial` or `wrong`), `points` for a partial verdict, optional `feedback`, and who set it (`setBy`) and when (`setAt`). Matching answers carry the same decision in `answerData.clusterOverride`, and a submission is scored from it instead of the answer key. Removing a rule and regrading restores the key's result. Rules apply to answers of auto-graded types other than `WORKED_SOLUTION`; feedback also applies to hand-graded types.
+
 ## Multi-part questions
 
 A multi-part question is a stem with parts (a), (b) and so on. Each part is a normal question with its own type, answer and points, and has `parentQuestionId` set to the stem's id. The stem is not answered or graded, so give it 0 points; deleting it deletes its parts. Send `parts` on a new question to create the stem and its parts together:
