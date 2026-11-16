@@ -365,6 +365,13 @@
       "when": 1794581127466,
       "tag": "0051_analytics_performance_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1794816273700,
+      "tag": "0053_organization_invite_latest_lookup_index",
+      "breakpoints": true
     }
   ]
 }
