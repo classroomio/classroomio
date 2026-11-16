@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/agent', () => ({
   MATH_VISION_USAGE_PREFIX: 'math-vision/',
+<<<<<<< HEAD
+=======
+  MATH_VISION_USAGE_PREFIX: 'math-vision/',
+>>>>>>> origin/math/p3-reports
   aggregateTokenUsageByUser: vi.fn(),
   countRequests: vi.fn(),
   getDailyTokenUsageHistory: vi.fn(),
