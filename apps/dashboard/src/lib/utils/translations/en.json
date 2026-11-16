@@ -1729,7 +1729,8 @@
     "cohorts": "Cohorts",
     "exit_course": "Exit this course",
     "exit_cohort": "Exit this cohort",
-    "org_analytics": "Academy"
+    "org_analytics": "Academy",
+    "skills": "Skills"
   },
   "pricing": {
     "plan_names": {
@@ -7660,6 +7661,97 @@
     "snackbar": {
       "applied": "Regraded {count} answers",
       "undone": "Decision undone, regraded {count} answers"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Cancel",
+      "confirm_delete": "Delete skill \"{name}\"? It is removed from every question it is tagged on.",
+      "create": "Create skill",
+      "delete": "Delete",
+      "edit": "Edit",
+      "import": "Import CSV",
+      "more": "Skill actions",
+      "save": "Save"
+    },
+    "empty": {
+      "description": "Create skills one by one or import a standards framework from a CSV file.",
+      "title": "No skills yet"
+    },
+    "form": {
+      "code": "Code",
+      "create_title": "Create skill",
+      "description": "Description",
+      "edit_title": "Edit skill",
+      "framework": "Framework",
+      "name": "Name",
+      "no_parent": "No parent (top level)",
+      "parent": "Parent skill"
+    },
+    "heading": "Skills",
+    "import": {
+      "action": "Action",
+      "choose_file": "Choose a CSV file",
+      "confirm": "Import {count} skills",
+      "create": "Create",
+      "description": "Check a CSV file first. Nothing is saved until you confirm the preview. Required columns are code and name; optional columns are parent_code, description and framework.",
+      "error_line": "Line {line}: {message}",
+      "errors_heading": "{count} problems found. Fix them and choose the file again.",
+      "more_rows": "and {count} more rows",
+      "parent": "Parent",
+      "starters": {
+        "common_core": "Common Core Math (US)",
+        "heading": "Starter files",
+        "note": "Starter files list strands only. Add the standards your school teaches, then import the file.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} to create, {update} to update",
+      "title": "Import skills from CSV",
+      "update": "Update"
+    },
+    "mastery": {
+      "description": "Weighted by recency, from the share of points earned on questions tagged with each skill.",
+      "heading": "Skill mastery",
+      "level": {
+        "not_started": "Not started",
+        "learning": "Learning",
+        "proficient": "Proficient",
+        "mastered": "Mastered"
+      },
+      "no_data": "No student has answered questions tagged with this skill yet.",
+      "student_heading": "Skill mastery in this course"
+    },
+    "page_subtitle": "Define the skills and standards your questions build on, and see how students master them.",
+    "page_title": "Skills - ClassroomIO",
+    "picker": {
+      "accept": "Add",
+      "accepted": "Added",
+      "add": "Add skills",
+      "description": "Pick the skills this question assesses.",
+      "edit": "Edit skills",
+      "empty": "No skills found. Create skills in Skills settings first.",
+      "save_first": "Save the exercise to tag this question with skills.",
+      "suggest": "Suggest with AI",
+      "suggest_failed": "Could not get suggestions",
+      "suggestions": "Suggested skills",
+      "title": "Question skills"
+    },
+    "search_placeholder": "Search skills",
+    "snackbar": {
+      "created": "Skill created",
+      "deleted": "Skill deleted",
+      "fetch_failed": "Could not load skills",
+      "imported": "Imported {count} skills",
+      "updated": "Skill updated"
+    },
+    "table": {
+      "action": "Action",
+      "code": "Code",
+      "framework": "Framework",
+      "name": "Name",
+      "no_matches": "No skills match your search",
+      "questions": "Questions"
     }
   }
 }

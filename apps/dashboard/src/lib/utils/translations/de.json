@@ -3651,7 +3651,8 @@
     "distribute": "Verteilen",
     "tools": "Werkzeuge",
     "marketing": "Marketing",
-    "org_analytics": "Akademie"
+    "org_analytics": "Akademie",
+    "skills": "Fertigkeiten"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",
@@ -7690,6 +7691,97 @@
     "snackbar": {
       "applied": "{count} Antworten neu bewertet",
       "undone": "Entscheidung rückgängig gemacht, {count} Antworten neu bewertet"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Abbrechen",
+      "confirm_delete": "Fertigkeit „{name}“ löschen? Sie wird von allen Fragen entfernt, denen sie zugeordnet ist.",
+      "create": "Fertigkeit erstellen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "import": "CSV importieren",
+      "more": "Aktionen für Fertigkeit",
+      "save": "Speichern"
+    },
+    "empty": {
+      "description": "Erstelle Fertigkeiten einzeln oder importiere ein Standardsystem aus einer CSV-Datei.",
+      "title": "Noch keine Fertigkeiten"
+    },
+    "form": {
+      "code": "Code",
+      "create_title": "Fertigkeit erstellen",
+      "description": "Beschreibung",
+      "edit_title": "Fertigkeit bearbeiten",
+      "framework": "Rahmenwerk",
+      "name": "Name",
+      "no_parent": "Keine übergeordnete (oberste Ebene)",
+      "parent": "Übergeordnete Fertigkeit"
+    },
+    "heading": "Fertigkeiten",
+    "import": {
+      "action": "Aktion",
+      "choose_file": "CSV-Datei auswählen",
+      "confirm": "{count} Fertigkeiten importieren",
+      "create": "Erstellen",
+      "description": "Prüfe zuerst eine CSV-Datei. Nichts wird gespeichert, bevor du die Vorschau bestätigst. Pflichtspalten sind code und name; optional sind parent_code, description und framework.",
+      "error_line": "Zeile {line}: {message}",
+      "errors_heading": "{count} Probleme gefunden. Behebe sie und wähle die Datei erneut aus.",
+      "more_rows": "und {count} weitere Zeilen",
+      "parent": "Übergeordnet",
+      "starters": {
+        "common_core": "Common Core Math (USA)",
+        "heading": "Startdateien",
+        "note": "Die Startdateien enthalten nur Themenbereiche. Ergänze die Standards, die deine Schule unterrichtet, und importiere dann die Datei.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} werden erstellt, {update} aktualisiert",
+      "title": "Fertigkeiten aus CSV importieren",
+      "update": "Aktualisieren"
+    },
+    "mastery": {
+      "description": "Nach Aktualität gewichtet, aus dem Anteil der erreichten Punkte bei Fragen mit der jeweiligen Fertigkeit.",
+      "heading": "Fertigkeitsbeherrschung",
+      "level": {
+        "not_started": "Nicht begonnen",
+        "learning": "Lernend",
+        "proficient": "Kompetent",
+        "mastered": "Gemeistert"
+      },
+      "no_data": "Noch keine Lernenden haben Fragen mit dieser Fertigkeit beantwortet.",
+      "student_heading": "Fertigkeitsbeherrschung in diesem Kurs"
+    },
+    "page_subtitle": "Lege die Fertigkeiten und Standards fest, auf denen deine Fragen aufbauen, und sieh, wie Lernende sie meistern.",
+    "page_title": "Fertigkeiten - ClassroomIO",
+    "picker": {
+      "accept": "Hinzufügen",
+      "accepted": "Hinzugefügt",
+      "add": "Fertigkeiten hinzufügen",
+      "description": "Wähle die Fertigkeiten, die diese Frage prüft.",
+      "edit": "Fertigkeiten bearbeiten",
+      "empty": "Keine Fertigkeiten gefunden. Erstelle zuerst Fertigkeiten in den Fertigkeiten-Einstellungen.",
+      "save_first": "Speichere die Übung, um dieser Frage Fertigkeiten zuzuordnen.",
+      "suggest": "Mit KI vorschlagen",
+      "suggest_failed": "Vorschläge konnten nicht abgerufen werden",
+      "suggestions": "Vorgeschlagene Fertigkeiten",
+      "title": "Fertigkeiten der Frage"
+    },
+    "search_placeholder": "Fertigkeiten suchen",
+    "snackbar": {
+      "created": "Fertigkeit erstellt",
+      "deleted": "Fertigkeit gelöscht",
+      "fetch_failed": "Fertigkeiten konnten nicht geladen werden",
+      "imported": "{count} Fertigkeiten importiert",
+      "updated": "Fertigkeit aktualisiert"
+    },
+    "table": {
+      "action": "Aktion",
+      "code": "Code",
+      "framework": "Rahmenwerk",
+      "name": "Name",
+      "no_matches": "Keine Fertigkeiten entsprechen deiner Suche",
+      "questions": "Fragen"
     }
   }
 }

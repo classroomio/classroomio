@@ -2,6 +2,7 @@
   import * as Tabs from '@cio/ui/base/tabs';
   import { Empty } from '@cio/ui/custom/empty';
   import ClipboardListIcon from '@lucide/svelte/icons/clipboard-list';
+  import { ExerciseSkillMastery } from '$features/skills/components';
   import Summary from './summary.svelte';
   import ResultsGrid from './results-grid.svelte';
   import Individual from './individual.svelte';
@@ -113,7 +114,10 @@
     </Tabs.List>
 
     <Tabs.Content value="grid" class="pt-2">
-      <ResultsGrid {courseId} {exerciseId} />
+      <div class="flex flex-col gap-4">
+        <ExerciseSkillMastery {courseId} {exerciseId} />
+        <ResultsGrid {courseId} {exerciseId} />
+      </div>
     </Tabs.Content>
 
     <Tabs.Content value="summary" class="pt-2">

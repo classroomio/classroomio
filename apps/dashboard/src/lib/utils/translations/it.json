@@ -1729,7 +1729,8 @@
     "exit_course": "Esci da questo corso",
     "exit_cohort": "Esci da questa coorte",
     "marketing": "Marketing",
-    "org_analytics": "Accademia"
+    "org_analytics": "Accademia",
+    "skills": "Competenze"
   },
   "pricing": {
     "plan_names": {
@@ -7660,6 +7661,97 @@
     "snackbar": {
       "applied": "{count} risposte rivalutate",
       "undone": "Decisione annullata, {count} risposte rivalutate"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Annulla",
+      "confirm_delete": "Eliminare la competenza \"{name}\"? Verrà rimossa da tutte le domande a cui è associata.",
+      "create": "Crea competenza",
+      "delete": "Elimina",
+      "edit": "Modifica",
+      "import": "Importa CSV",
+      "more": "Azioni della competenza",
+      "save": "Salva"
+    },
+    "empty": {
+      "description": "Crea le competenze una alla volta o importa un quadro di standard da un file CSV.",
+      "title": "Ancora nessuna competenza"
+    },
+    "form": {
+      "code": "Codice",
+      "create_title": "Crea competenza",
+      "description": "Descrizione",
+      "edit_title": "Modifica competenza",
+      "framework": "Quadro di riferimento",
+      "name": "Nome",
+      "no_parent": "Nessun genitore (livello principale)",
+      "parent": "Competenza genitore"
+    },
+    "heading": "Competenze",
+    "import": {
+      "action": "Azione",
+      "choose_file": "Scegli un file CSV",
+      "confirm": "Importa {count} competenze",
+      "create": "Crea",
+      "description": "Controlla prima un file CSV. Non viene salvato nulla finché non confermi l'anteprima. Le colonne obbligatorie sono code e name; quelle facoltative sono parent_code, description e framework.",
+      "error_line": "Riga {line}: {message}",
+      "errors_heading": "Trovati {count} problemi. Correggili e scegli di nuovo il file.",
+      "more_rows": "e altre {count} righe",
+      "parent": "Genitore",
+      "starters": {
+        "common_core": "Common Core Math (USA)",
+        "heading": "File di partenza",
+        "note": "I file di partenza contengono solo gli ambiti principali. Aggiungi gli standard insegnati nella tua scuola, poi importa il file.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} da creare, {update} da aggiornare",
+      "title": "Importa competenze da CSV",
+      "update": "Aggiorna"
+    },
+    "mastery": {
+      "description": "Ponderato per recenza, in base alla quota di punti ottenuti nelle domande associate a ciascuna competenza.",
+      "heading": "Padronanza delle competenze",
+      "level": {
+        "not_started": "Non iniziata",
+        "learning": "In apprendimento",
+        "proficient": "Competente",
+        "mastered": "Padroneggiata"
+      },
+      "no_data": "Nessuno studente ha ancora risposto a domande associate a questa competenza.",
+      "student_heading": "Padronanza delle competenze in questo corso"
+    },
+    "page_subtitle": "Definisci le competenze e gli standard su cui si basano le tue domande e osserva come gli studenti li padroneggiano.",
+    "page_title": "Competenze - ClassroomIO",
+    "picker": {
+      "accept": "Aggiungi",
+      "accepted": "Aggiunta",
+      "add": "Aggiungi competenze",
+      "description": "Scegli le competenze valutate da questa domanda.",
+      "edit": "Modifica competenze",
+      "empty": "Nessuna competenza trovata. Crea prima le competenze nelle impostazioni delle competenze.",
+      "save_first": "Salva l'esercizio per associare competenze a questa domanda.",
+      "suggest": "Suggerisci con l'IA",
+      "suggest_failed": "Impossibile ottenere suggerimenti",
+      "suggestions": "Competenze suggerite",
+      "title": "Competenze della domanda"
+    },
+    "search_placeholder": "Cerca competenze",
+    "snackbar": {
+      "created": "Competenza creata",
+      "deleted": "Competenza eliminata",
+      "fetch_failed": "Impossibile caricare le competenze",
+      "imported": "{count} competenze importate",
+      "updated": "Competenza aggiornata"
+    },
+    "table": {
+      "action": "Azione",
+      "code": "Codice",
+      "framework": "Quadro di riferimento",
+      "name": "Nome",
+      "no_matches": "Nessuna competenza corrisponde alla ricerca",
+      "questions": "Domande"
     }
   }
 }

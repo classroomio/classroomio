@@ -1740,7 +1740,8 @@
     "exit_cohort": "Bu gruptan çık",
     "marketing": "Pazarlama",
     "org_analytics": "Akademi",
-    "stats": "Stats"
+    "stats": "Stats",
+    "skills": "Beceriler"
   },
   "pricing": {
     "plan_names": {
@@ -7740,6 +7741,97 @@
     "snackbar": {
       "applied": "{count} cevap yeniden notlandırıldı",
       "undone": "Karar geri alındı, {count} cevap yeniden notlandırıldı"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "İptal",
+      "confirm_delete": "\"{name}\" becerisi silinsin mi? Etiketlendiği tüm sorulardan kaldırılır.",
+      "create": "Beceri oluştur",
+      "delete": "Sil",
+      "edit": "Düzenle",
+      "import": "CSV içe aktar",
+      "more": "Beceri işlemleri",
+      "save": "Kaydet"
+    },
+    "empty": {
+      "description": "Becerileri tek tek oluşturun veya bir CSV dosyasından standart çerçevesi içe aktarın.",
+      "title": "Henüz beceri yok"
+    },
+    "form": {
+      "code": "Kod",
+      "create_title": "Beceri oluştur",
+      "description": "Açıklama",
+      "edit_title": "Beceriyi düzenle",
+      "framework": "Çerçeve",
+      "name": "Ad",
+      "no_parent": "Üst beceri yok (en üst düzey)",
+      "parent": "Üst beceri"
+    },
+    "heading": "Beceriler",
+    "import": {
+      "action": "İşlem",
+      "choose_file": "CSV dosyası seçin",
+      "confirm": "{count} beceriyi içe aktar",
+      "create": "Oluştur",
+      "description": "Önce bir CSV dosyasını kontrol edin. Önizlemeyi onaylayana kadar hiçbir şey kaydedilmez. Zorunlu sütunlar code ve name; isteğe bağlı sütunlar parent_code, description ve framework.",
+      "error_line": "Satır {line}: {message}",
+      "errors_heading": "{count} sorun bulundu. Düzeltip dosyayı yeniden seçin.",
+      "more_rows": "ve {count} satır daha",
+      "parent": "Üst",
+      "starters": {
+        "common_core": "Common Core Math (ABD)",
+        "heading": "Başlangıç dosyaları",
+        "note": "Başlangıç dosyaları yalnızca ana alanları içerir. Okulunuzun öğrettiği standartları ekleyin, sonra dosyayı içe aktarın.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} oluşturulacak, {update} güncellenecek",
+      "title": "CSV'den becerileri içe aktar",
+      "update": "Güncelle"
+    },
+    "mastery": {
+      "description": "Yakınlığa göre ağırlıklandırılır; her beceriyle etiketli sorularda kazanılan puan payına dayanır.",
+      "heading": "Beceri ustalığı",
+      "level": {
+        "not_started": "Başlamadı",
+        "learning": "Öğreniyor",
+        "proficient": "Yeterli",
+        "mastered": "Ustalaştı"
+      },
+      "no_data": "Henüz hiçbir öğrenci bu beceriyle etiketli soruları yanıtlamadı.",
+      "student_heading": "Bu kurstaki beceri ustalığı"
+    },
+    "page_subtitle": "Sorularınızın dayandığı becerileri ve standartları tanımlayın, öğrencilerin bunlarda ne kadar ustalaştığını görün.",
+    "page_title": "Beceriler - ClassroomIO",
+    "picker": {
+      "accept": "Ekle",
+      "accepted": "Eklendi",
+      "add": "Beceri ekle",
+      "description": "Bu sorunun ölçtüğü becerileri seçin.",
+      "edit": "Becerileri düzenle",
+      "empty": "Beceri bulunamadı. Önce beceri ayarlarında beceri oluşturun.",
+      "save_first": "Bu soruyu becerilerle etiketlemek için alıştırmayı kaydedin.",
+      "suggest": "Yapay zekâyla öner",
+      "suggest_failed": "Öneriler alınamadı",
+      "suggestions": "Önerilen beceriler",
+      "title": "Sorunun becerileri"
+    },
+    "search_placeholder": "Becerilerde ara",
+    "snackbar": {
+      "created": "Beceri oluşturuldu",
+      "deleted": "Beceri silindi",
+      "fetch_failed": "Beceriler yüklenemedi",
+      "imported": "{count} beceri içe aktarıldı",
+      "updated": "Beceri güncellendi"
+    },
+    "table": {
+      "action": "İşlem",
+      "code": "Kod",
+      "framework": "Çerçeve",
+      "name": "Ad",
+      "no_matches": "Aramanızla eşleşen beceri yok",
+      "questions": "Sorular"
     }
   }
 }

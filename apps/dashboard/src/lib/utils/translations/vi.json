@@ -3651,7 +3651,8 @@
     "distribute": "phân phối",
     "tools": "Công cụ",
     "marketing": "Tiếp thị",
-    "org_analytics": "Học viện"
+    "org_analytics": "Học viện",
+    "skills": "Kỹ năng"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -7690,6 +7691,97 @@
     "snackbar": {
       "applied": "Đã chấm lại {count} câu trả lời",
       "undone": "Đã hoàn tác, chấm lại {count} câu trả lời"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Hủy",
+      "confirm_delete": "Xóa kỹ năng \"{name}\"? Kỹ năng sẽ bị gỡ khỏi mọi câu hỏi đang gắn nó.",
+      "create": "Tạo kỹ năng",
+      "delete": "Xóa",
+      "edit": "Chỉnh sửa",
+      "import": "Nhập CSV",
+      "more": "Thao tác kỹ năng",
+      "save": "Lưu"
+    },
+    "empty": {
+      "description": "Tạo từng kỹ năng hoặc nhập khung tiêu chuẩn từ tệp CSV.",
+      "title": "Chưa có kỹ năng nào"
+    },
+    "form": {
+      "code": "Mã",
+      "create_title": "Tạo kỹ năng",
+      "description": "Mô tả",
+      "edit_title": "Chỉnh sửa kỹ năng",
+      "framework": "Khung chương trình",
+      "name": "Tên",
+      "no_parent": "Không có cấp trên (cấp cao nhất)",
+      "parent": "Kỹ năng cấp trên"
+    },
+    "heading": "Kỹ năng",
+    "import": {
+      "action": "Thao tác",
+      "choose_file": "Chọn tệp CSV",
+      "confirm": "Nhập {count} kỹ năng",
+      "create": "Tạo",
+      "description": "Hãy kiểm tra tệp CSV trước. Sẽ không có gì được lưu cho đến khi bạn xác nhận bản xem trước. Cột bắt buộc là code và name; cột tùy chọn là parent_code, description và framework.",
+      "error_line": "Dòng {line}: {message}",
+      "errors_heading": "Tìm thấy {count} vấn đề. Hãy sửa và chọn lại tệp.",
+      "more_rows": "và {count} dòng nữa",
+      "parent": "Cấp trên",
+      "starters": {
+        "common_core": "Common Core Math (Hoa Kỳ)",
+        "heading": "Tệp khởi đầu",
+        "note": "Các tệp khởi đầu chỉ có các mảng chính. Hãy thêm các tiêu chuẩn mà trường bạn giảng dạy, rồi nhập tệp.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} sẽ tạo, {update} sẽ cập nhật",
+      "title": "Nhập kỹ năng từ CSV",
+      "update": "Cập nhật"
+    },
+    "mastery": {
+      "description": "Tính theo độ gần đây, dựa trên tỷ lệ điểm đạt được ở các câu hỏi gắn với từng kỹ năng.",
+      "heading": "Mức thành thạo kỹ năng",
+      "level": {
+        "not_started": "Chưa bắt đầu",
+        "learning": "Đang học",
+        "proficient": "Khá",
+        "mastered": "Thành thạo"
+      },
+      "no_data": "Chưa có học viên nào trả lời câu hỏi gắn với kỹ năng này.",
+      "student_heading": "Mức thành thạo kỹ năng trong khóa học này"
+    },
+    "page_subtitle": "Xác định các kỹ năng và tiêu chuẩn mà câu hỏi của bạn dựa vào, và xem học viên thành thạo chúng thế nào.",
+    "page_title": "Kỹ năng - ClassroomIO",
+    "picker": {
+      "accept": "Thêm",
+      "accepted": "Đã thêm",
+      "add": "Thêm kỹ năng",
+      "description": "Chọn các kỹ năng mà câu hỏi này đánh giá.",
+      "edit": "Chỉnh sửa kỹ năng",
+      "empty": "Không tìm thấy kỹ năng. Hãy tạo kỹ năng trong phần cài đặt kỹ năng trước.",
+      "save_first": "Hãy lưu bài tập để gắn kỹ năng cho câu hỏi này.",
+      "suggest": "Gợi ý bằng AI",
+      "suggest_failed": "Không thể lấy gợi ý",
+      "suggestions": "Kỹ năng được gợi ý",
+      "title": "Kỹ năng của câu hỏi"
+    },
+    "search_placeholder": "Tìm kỹ năng",
+    "snackbar": {
+      "created": "Đã tạo kỹ năng",
+      "deleted": "Đã xóa kỹ năng",
+      "fetch_failed": "Không thể tải kỹ năng",
+      "imported": "Đã nhập {count} kỹ năng",
+      "updated": "Đã cập nhật kỹ năng"
+    },
+    "table": {
+      "action": "Thao tác",
+      "code": "Mã",
+      "framework": "Khung chương trình",
+      "name": "Tên",
+      "no_matches": "Không có kỹ năng nào khớp với tìm kiếm",
+      "questions": "Câu hỏi"
     }
   }
 }

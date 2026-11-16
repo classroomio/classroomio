@@ -3651,7 +3651,8 @@
     "distribute": "Distribuer",
     "tools": "Outils",
     "marketing": "Commercialisation",
-    "org_analytics": "Académie"
+    "org_analytics": "Académie",
+    "skills": "Compétences"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -7690,6 +7691,97 @@
     "snackbar": {
       "applied": "{count} réponses recorrigées",
       "undone": "Décision annulée, {count} réponses recorrigées"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Annuler",
+      "confirm_delete": "Supprimer la compétence « {name} » ? Elle sera retirée de toutes les questions auxquelles elle est associée.",
+      "create": "Créer une compétence",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "import": "Importer un CSV",
+      "more": "Actions de la compétence",
+      "save": "Enregistrer"
+    },
+    "empty": {
+      "description": "Créez des compétences une par une ou importez un référentiel depuis un fichier CSV.",
+      "title": "Aucune compétence pour l'instant"
+    },
+    "form": {
+      "code": "Code",
+      "create_title": "Créer une compétence",
+      "description": "Description",
+      "edit_title": "Modifier la compétence",
+      "framework": "Référentiel",
+      "name": "Nom",
+      "no_parent": "Aucun parent (niveau supérieur)",
+      "parent": "Compétence parente"
+    },
+    "heading": "Compétences",
+    "import": {
+      "action": "Action",
+      "choose_file": "Choisir un fichier CSV",
+      "confirm": "Importer {count} compétences",
+      "create": "Créer",
+      "description": "Vérifiez d'abord un fichier CSV. Rien n'est enregistré avant que vous confirmiez l'aperçu. Les colonnes obligatoires sont code et name ; les colonnes facultatives sont parent_code, description et framework.",
+      "error_line": "Ligne {line} : {message}",
+      "errors_heading": "{count} problèmes détectés. Corrigez-les et choisissez à nouveau le fichier.",
+      "more_rows": "et {count} lignes de plus",
+      "parent": "Parent",
+      "starters": {
+        "common_core": "Common Core Math (États-Unis)",
+        "heading": "Fichiers de départ",
+        "note": "Les fichiers de départ ne contiennent que les grands domaines. Ajoutez les standards enseignés dans votre école, puis importez le fichier.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} à créer, {update} à mettre à jour",
+      "title": "Importer des compétences depuis un CSV",
+      "update": "Mettre à jour"
+    },
+    "mastery": {
+      "description": "Pondéré par récence, à partir de la part de points obtenus aux questions associées à chaque compétence.",
+      "heading": "Maîtrise des compétences",
+      "level": {
+        "not_started": "Non commencée",
+        "learning": "En apprentissage",
+        "proficient": "Acquise",
+        "mastered": "Maîtrisée"
+      },
+      "no_data": "Aucun apprenant n'a encore répondu à des questions associées à cette compétence.",
+      "student_heading": "Maîtrise des compétences dans ce cours"
+    },
+    "page_subtitle": "Définissez les compétences et standards sur lesquels reposent vos questions et voyez comment les apprenants les maîtrisent.",
+    "page_title": "Compétences - ClassroomIO",
+    "picker": {
+      "accept": "Ajouter",
+      "accepted": "Ajoutée",
+      "add": "Ajouter des compétences",
+      "description": "Choisissez les compétences évaluées par cette question.",
+      "edit": "Modifier les compétences",
+      "empty": "Aucune compétence trouvée. Créez d'abord des compétences dans les paramètres des compétences.",
+      "save_first": "Enregistrez l'exercice pour associer des compétences à cette question.",
+      "suggest": "Suggérer avec l'IA",
+      "suggest_failed": "Impossible d'obtenir des suggestions",
+      "suggestions": "Compétences suggérées",
+      "title": "Compétences de la question"
+    },
+    "search_placeholder": "Rechercher des compétences",
+    "snackbar": {
+      "created": "Compétence créée",
+      "deleted": "Compétence supprimée",
+      "fetch_failed": "Impossible de charger les compétences",
+      "imported": "{count} compétences importées",
+      "updated": "Compétence mise à jour"
+    },
+    "table": {
+      "action": "Action",
+      "code": "Code",
+      "framework": "Référentiel",
+      "name": "Nom",
+      "no_matches": "Aucune compétence ne correspond à votre recherche",
+      "questions": "Questions"
     }
   }
 }

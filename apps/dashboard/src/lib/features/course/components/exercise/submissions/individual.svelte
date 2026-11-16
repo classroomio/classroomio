@@ -10,6 +10,8 @@
   import { page } from '$app/state';
   import { onMount, untrack } from 'svelte';
 
+  import { courseApi } from '$features/course/api';
+  import { StudentSkillMastery } from '$features/skills/components';
   import { getQuestionsForSection, questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
@@ -336,6 +338,9 @@
       {@const selectedAttemptIndex = getSelectedAttemptIndex(selectedGroup)}
       {@const selectedAttempt = selectedGroup.attempts[selectedAttemptIndex]}
       {@const selectedSubmission = selectedAttempt.submission}
+      {#if courseApi.course?.id}
+        <StudentSkillMastery courseId={courseApi.course.id} profileId={selectedGroup.studentKey} />
+      {/if}
       <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p class="font-medium">

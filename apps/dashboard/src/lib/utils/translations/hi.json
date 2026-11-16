@@ -3651,7 +3651,8 @@
     "distribute": "बांटो",
     "tools": "उपकरण",
     "marketing": "विपणन",
-    "org_analytics": "अकादमी"
+    "org_analytics": "अकादमी",
+    "skills": "कौशल"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -7690,6 +7691,97 @@
     "snackbar": {
       "applied": "{count} उत्तर दोबारा ग्रेड किए गए",
       "undone": "निर्णय वापस लिया गया, {count} उत्तर दोबारा ग्रेड किए गए"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "रद्द करें",
+      "confirm_delete": "कौशल \"{name}\" हटाएं? यह उन सभी प्रश्नों से हट जाएगा जिन पर यह टैग है।",
+      "create": "कौशल बनाएं",
+      "delete": "हटाएं",
+      "edit": "संपादित करें",
+      "import": "CSV आयात करें",
+      "more": "कौशल क्रियाएं",
+      "save": "सहेजें"
+    },
+    "empty": {
+      "description": "कौशल एक-एक करके बनाएं या CSV फ़ाइल से मानक ढांचा आयात करें।",
+      "title": "अभी कोई कौशल नहीं"
+    },
+    "form": {
+      "code": "कोड",
+      "create_title": "कौशल बनाएं",
+      "description": "विवरण",
+      "edit_title": "कौशल संपादित करें",
+      "framework": "ढांचा",
+      "name": "नाम",
+      "no_parent": "कोई पैरेंट नहीं (शीर्ष स्तर)",
+      "parent": "पैरेंट कौशल"
+    },
+    "heading": "कौशल",
+    "import": {
+      "action": "क्रिया",
+      "choose_file": "CSV फ़ाइल चुनें",
+      "confirm": "{count} कौशल आयात करें",
+      "create": "बनाएं",
+      "description": "पहले CSV फ़ाइल जांचें। पूर्वावलोकन की पुष्टि करने तक कुछ सहेजा नहीं जाता। code और name कॉलम ज़रूरी हैं; parent_code, description और framework वैकल्पिक हैं।",
+      "error_line": "पंक्ति {line}: {message}",
+      "errors_heading": "{count} समस्याएं मिलीं। इन्हें ठीक करें और फ़ाइल फिर से चुनें।",
+      "more_rows": "और {count} पंक्तियां",
+      "parent": "पैरेंट",
+      "starters": {
+        "common_core": "Common Core Math (अमेरिका)",
+        "heading": "शुरुआती फ़ाइलें",
+        "note": "शुरुआती फ़ाइलों में केवल मुख्य क्षेत्र हैं। अपने स्कूल में पढ़ाए जाने वाले मानक जोड़ें, फिर फ़ाइल आयात करें।",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} बनेंगे, {update} अपडेट होंगे",
+      "title": "CSV से कौशल आयात करें",
+      "update": "अपडेट करें"
+    },
+    "mastery": {
+      "description": "हर कौशल से टैग किए गए प्रश्नों पर मिले अंकों के हिस्से से, हाल के प्रयासों को अधिक महत्व देकर निकाला गया।",
+      "heading": "कौशल दक्षता",
+      "level": {
+        "not_started": "शुरू नहीं हुआ",
+        "learning": "सीख रहे हैं",
+        "proficient": "कुशल",
+        "mastered": "निपुण"
+      },
+      "no_data": "अभी तक किसी विद्यार्थी ने इस कौशल से टैग किए गए प्रश्नों के उत्तर नहीं दिए हैं।",
+      "student_heading": "इस कोर्स में कौशल दक्षता"
+    },
+    "page_subtitle": "वे कौशल और मानक तय करें जिन पर आपके प्रश्न आधारित हैं, और देखें कि विद्यार्थी उनमें कितने निपुण हैं।",
+    "page_title": "कौशल - ClassroomIO",
+    "picker": {
+      "accept": "जोड़ें",
+      "accepted": "जोड़ा गया",
+      "add": "कौशल जोड़ें",
+      "description": "वे कौशल चुनें जिन्हें यह प्रश्न परखता है।",
+      "edit": "कौशल संपादित करें",
+      "empty": "कोई कौशल नहीं मिला। पहले कौशल सेटिंग में कौशल बनाएं।",
+      "save_first": "इस प्रश्न को कौशल से टैग करने के लिए अभ्यास सहेजें।",
+      "suggest": "AI से सुझाएं",
+      "suggest_failed": "सुझाव नहीं मिल सके",
+      "suggestions": "सुझाए गए कौशल",
+      "title": "प्रश्न के कौशल"
+    },
+    "search_placeholder": "कौशल खोजें",
+    "snackbar": {
+      "created": "कौशल बनाया गया",
+      "deleted": "कौशल हटाया गया",
+      "fetch_failed": "कौशल लोड नहीं हो सके",
+      "imported": "{count} कौशल आयात किए गए",
+      "updated": "कौशल अपडेट किया गया"
+    },
+    "table": {
+      "action": "क्रिया",
+      "code": "कोड",
+      "framework": "ढांचा",
+      "name": "नाम",
+      "no_matches": "आपकी खोज से कोई कौशल मेल नहीं खाता",
+      "questions": "प्रश्न"
     }
   }
 }

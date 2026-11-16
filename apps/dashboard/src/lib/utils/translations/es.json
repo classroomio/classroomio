@@ -3651,7 +3651,8 @@
     "distribute": "Distribuir",
     "tools": "Herramientas",
     "marketing": "Marketing",
-    "org_analytics": "Academia"
+    "org_analytics": "Academia",
+    "skills": "Habilidades"
   },
   "media_manager": {
     "page_title": "Administrador de medios - ClassroomIO",
@@ -7690,6 +7691,97 @@
     "snackbar": {
       "applied": "Se recalificaron {count} respuestas",
       "undone": "Decisión deshecha, se recalificaron {count} respuestas"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Cancelar",
+      "confirm_delete": "¿Eliminar la habilidad \"{name}\"? Se quitará de todas las preguntas en las que está etiquetada.",
+      "create": "Crear habilidad",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "import": "Importar CSV",
+      "more": "Acciones de la habilidad",
+      "save": "Guardar"
+    },
+    "empty": {
+      "description": "Crea habilidades una por una o importa un marco de estándares desde un archivo CSV.",
+      "title": "Aún no hay habilidades"
+    },
+    "form": {
+      "code": "Código",
+      "create_title": "Crear habilidad",
+      "description": "Descripción",
+      "edit_title": "Editar habilidad",
+      "framework": "Marco",
+      "name": "Nombre",
+      "no_parent": "Sin superior (nivel principal)",
+      "parent": "Habilidad superior"
+    },
+    "heading": "Habilidades",
+    "import": {
+      "action": "Acción",
+      "choose_file": "Elige un archivo CSV",
+      "confirm": "Importar {count} habilidades",
+      "create": "Crear",
+      "description": "Revisa primero un archivo CSV. No se guarda nada hasta que confirmes la vista previa. Las columnas obligatorias son code y name; las opcionales son parent_code, description y framework.",
+      "error_line": "Línea {line}: {message}",
+      "errors_heading": "Se encontraron {count} problemas. Corrígelos y elige el archivo de nuevo.",
+      "more_rows": "y {count} filas más",
+      "parent": "Superior",
+      "starters": {
+        "common_core": "Common Core Math (EE. UU.)",
+        "heading": "Archivos de inicio",
+        "note": "Los archivos de inicio solo incluyen ejes. Añade los estándares que enseña tu escuela y luego importa el archivo.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} por crear, {update} por actualizar",
+      "title": "Importar habilidades desde CSV",
+      "update": "Actualizar"
+    },
+    "mastery": {
+      "description": "Ponderado por actualidad, según la proporción de puntos obtenidos en las preguntas etiquetadas con cada habilidad.",
+      "heading": "Dominio de habilidades",
+      "level": {
+        "not_started": "Sin empezar",
+        "learning": "Aprendiendo",
+        "proficient": "Competente",
+        "mastered": "Dominada"
+      },
+      "no_data": "Ningún estudiante ha respondido aún preguntas etiquetadas con esta habilidad.",
+      "student_heading": "Dominio de habilidades en este curso"
+    },
+    "page_subtitle": "Define las habilidades y los estándares en los que se basan tus preguntas y mira cómo los dominan los estudiantes.",
+    "page_title": "Habilidades - ClassroomIO",
+    "picker": {
+      "accept": "Añadir",
+      "accepted": "Añadida",
+      "add": "Añadir habilidades",
+      "description": "Elige las habilidades que evalúa esta pregunta.",
+      "edit": "Editar habilidades",
+      "empty": "No se encontraron habilidades. Crea habilidades primero en los ajustes de habilidades.",
+      "save_first": "Guarda el ejercicio para etiquetar esta pregunta con habilidades.",
+      "suggest": "Sugerir con IA",
+      "suggest_failed": "No se pudieron obtener sugerencias",
+      "suggestions": "Habilidades sugeridas",
+      "title": "Habilidades de la pregunta"
+    },
+    "search_placeholder": "Buscar habilidades",
+    "snackbar": {
+      "created": "Habilidad creada",
+      "deleted": "Habilidad eliminada",
+      "fetch_failed": "No se pudieron cargar las habilidades",
+      "imported": "{count} habilidades importadas",
+      "updated": "Habilidad actualizada"
+    },
+    "table": {
+      "action": "Acción",
+      "code": "Código",
+      "framework": "Marco",
+      "name": "Nombre",
+      "no_matches": "Ninguna habilidad coincide con tu búsqueda",
+      "questions": "Preguntas"
     }
   }
 }

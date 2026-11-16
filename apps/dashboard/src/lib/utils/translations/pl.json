@@ -3651,7 +3651,8 @@
     "distribute": "Rozpowszechniaj",
     "tools": "Narzędzia",
     "marketing": "Marketing",
-    "org_analytics": "Akademia"
+    "org_analytics": "Akademia",
+    "skills": "Umiejętności"
   },
   "media_manager": {
     "page_title": "Menedżer mediów - ClassroomIO",
@@ -7690,6 +7691,97 @@
     "snackbar": {
       "applied": "Oceniono ponownie {count} odpowiedzi",
       "undone": "Cofnięto decyzję, oceniono ponownie {count} odpowiedzi"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Anuluj",
+      "confirm_delete": "Usunąć umiejętność „{name}”? Zostanie usunięta ze wszystkich pytań, do których jest przypisana.",
+      "create": "Utwórz umiejętność",
+      "delete": "Usuń",
+      "edit": "Edytuj",
+      "import": "Importuj CSV",
+      "more": "Akcje umiejętności",
+      "save": "Zapisz"
+    },
+    "empty": {
+      "description": "Twórz umiejętności pojedynczo lub zaimportuj ramy standardów z pliku CSV.",
+      "title": "Brak umiejętności"
+    },
+    "form": {
+      "code": "Kod",
+      "create_title": "Utwórz umiejętność",
+      "description": "Opis",
+      "edit_title": "Edytuj umiejętność",
+      "framework": "Ramy",
+      "name": "Nazwa",
+      "no_parent": "Brak nadrzędnej (najwyższy poziom)",
+      "parent": "Umiejętność nadrzędna"
+    },
+    "heading": "Umiejętności",
+    "import": {
+      "action": "Akcja",
+      "choose_file": "Wybierz plik CSV",
+      "confirm": "Importuj umiejętności: {count}",
+      "create": "Utwórz",
+      "description": "Najpierw sprawdź plik CSV. Nic nie zostanie zapisane, dopóki nie potwierdzisz podglądu. Wymagane kolumny to code i name; opcjonalne to parent_code, description i framework.",
+      "error_line": "Wiersz {line}: {message}",
+      "errors_heading": "Znaleziono problemy: {count}. Popraw je i wybierz plik ponownie.",
+      "more_rows": "i jeszcze {count} wierszy",
+      "parent": "Nadrzędna",
+      "starters": {
+        "common_core": "Common Core Math (USA)",
+        "heading": "Pliki startowe",
+        "note": "Pliki startowe zawierają tylko główne obszary. Dodaj standardy nauczane w Twojej szkole, a potem zaimportuj plik.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "do utworzenia: {create}, do aktualizacji: {update}",
+      "title": "Importuj umiejętności z CSV",
+      "update": "Aktualizuj"
+    },
+    "mastery": {
+      "description": "Ważone aktualnością, na podstawie odsetka punktów zdobytych w pytaniach oznaczonych daną umiejętnością.",
+      "heading": "Opanowanie umiejętności",
+      "level": {
+        "not_started": "Nierozpoczęta",
+        "learning": "W trakcie nauki",
+        "proficient": "Biegły",
+        "mastered": "Opanowana"
+      },
+      "no_data": "Żaden uczeń nie odpowiedział jeszcze na pytania oznaczone tą umiejętnością.",
+      "student_heading": "Opanowanie umiejętności w tym kursie"
+    },
+    "page_subtitle": "Zdefiniuj umiejętności i standardy, na których opierają się Twoje pytania, i sprawdź, jak uczniowie je opanowują.",
+    "page_title": "Umiejętności - ClassroomIO",
+    "picker": {
+      "accept": "Dodaj",
+      "accepted": "Dodano",
+      "add": "Dodaj umiejętności",
+      "description": "Wybierz umiejętności, które sprawdza to pytanie.",
+      "edit": "Edytuj umiejętności",
+      "empty": "Nie znaleziono umiejętności. Najpierw utwórz je w ustawieniach umiejętności.",
+      "save_first": "Zapisz ćwiczenie, aby oznaczyć to pytanie umiejętnościami.",
+      "suggest": "Zasugeruj z AI",
+      "suggest_failed": "Nie udało się pobrać sugestii",
+      "suggestions": "Sugerowane umiejętności",
+      "title": "Umiejętności pytania"
+    },
+    "search_placeholder": "Szukaj umiejętności",
+    "snackbar": {
+      "created": "Utworzono umiejętność",
+      "deleted": "Usunięto umiejętność",
+      "fetch_failed": "Nie udało się wczytać umiejętności",
+      "imported": "Zaimportowano umiejętności: {count}",
+      "updated": "Zaktualizowano umiejętność"
+    },
+    "table": {
+      "action": "Akcja",
+      "code": "Kod",
+      "framework": "Ramy",
+      "name": "Nazwa",
+      "no_matches": "Żadna umiejętność nie pasuje do wyszukiwania",
+      "questions": "Pytania"
     }
   }
 }

@@ -3651,7 +3651,8 @@
     "distribute": "Fordel",
     "tools": "Værktøjer",
     "marketing": "Markedsføring",
-    "org_analytics": "Akademi"
+    "org_analytics": "Akademi",
+    "skills": "Færdigheder"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -7690,6 +7691,97 @@
     "snackbar": {
       "applied": "{count} svar bedømt igen",
       "undone": "Beslutning fortrudt, {count} svar bedømt igen"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Annuller",
+      "confirm_delete": "Slet færdigheden \"{name}\"? Den fjernes fra alle spørgsmål, den er knyttet til.",
+      "create": "Opret færdighed",
+      "delete": "Slet",
+      "edit": "Rediger",
+      "import": "Importér CSV",
+      "more": "Handlinger for færdighed",
+      "save": "Gem"
+    },
+    "empty": {
+      "description": "Opret færdigheder enkeltvis eller importér en standardramme fra en CSV-fil.",
+      "title": "Ingen færdigheder endnu"
+    },
+    "form": {
+      "code": "Kode",
+      "create_title": "Opret færdighed",
+      "description": "Beskrivelse",
+      "edit_title": "Rediger færdighed",
+      "framework": "Ramme",
+      "name": "Navn",
+      "no_parent": "Ingen overordnet (øverste niveau)",
+      "parent": "Overordnet færdighed"
+    },
+    "heading": "Færdigheder",
+    "import": {
+      "action": "Handling",
+      "choose_file": "Vælg en CSV-fil",
+      "confirm": "Importér {count} færdigheder",
+      "create": "Opret",
+      "description": "Tjek først en CSV-fil. Intet gemmes, før du bekræfter forhåndsvisningen. Påkrævede kolonner er code og name; valgfrie kolonner er parent_code, description og framework.",
+      "error_line": "Linje {line}: {message}",
+      "errors_heading": "{count} problemer fundet. Ret dem, og vælg filen igen.",
+      "more_rows": "og {count} rækker mere",
+      "parent": "Overordnet",
+      "starters": {
+        "common_core": "Common Core Math (USA)",
+        "heading": "Startfiler",
+        "note": "Startfilerne indeholder kun hovedområder. Tilføj de standarder, din skole underviser i, og importér derefter filen.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} oprettes, {update} opdateres",
+      "title": "Importér færdigheder fra CSV",
+      "update": "Opdater"
+    },
+    "mastery": {
+      "description": "Vægtet efter aktualitet ud fra andelen af point opnået på spørgsmål mærket med hver færdighed.",
+      "heading": "Færdighedsbeherskelse",
+      "level": {
+        "not_started": "Ikke startet",
+        "learning": "Under læring",
+        "proficient": "Dygtig",
+        "mastered": "Mestret"
+      },
+      "no_data": "Ingen elever har endnu besvaret spørgsmål mærket med denne færdighed.",
+      "student_heading": "Færdighedsbeherskelse i dette kursus"
+    },
+    "page_subtitle": "Definér de færdigheder og standarder, dine spørgsmål bygger på, og se, hvordan eleverne mestrer dem.",
+    "page_title": "Færdigheder - ClassroomIO",
+    "picker": {
+      "accept": "Tilføj",
+      "accepted": "Tilføjet",
+      "add": "Tilføj færdigheder",
+      "description": "Vælg de færdigheder, dette spørgsmål vurderer.",
+      "edit": "Rediger færdigheder",
+      "empty": "Ingen færdigheder fundet. Opret først færdigheder i indstillingerne for færdigheder.",
+      "save_first": "Gem øvelsen for at knytte færdigheder til dette spørgsmål.",
+      "suggest": "Foreslå med AI",
+      "suggest_failed": "Kunne ikke hente forslag",
+      "suggestions": "Foreslåede færdigheder",
+      "title": "Spørgsmålets færdigheder"
+    },
+    "search_placeholder": "Søg efter færdigheder",
+    "snackbar": {
+      "created": "Færdighed oprettet",
+      "deleted": "Færdighed slettet",
+      "fetch_failed": "Kunne ikke indlæse færdigheder",
+      "imported": "{count} færdigheder importeret",
+      "updated": "Færdighed opdateret"
+    },
+    "table": {
+      "action": "Handling",
+      "code": "Kode",
+      "framework": "Ramme",
+      "name": "Navn",
+      "no_matches": "Ingen færdigheder matcher din søgning",
+      "questions": "Spørgsmål"
     }
   }
 }
