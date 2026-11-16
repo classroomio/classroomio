@@ -100,9 +100,15 @@
 
     const handleMessage = (event: MessageEvent) => {
       if (!onEdit && !onBackgroundClick) return;
+      if (event.source !== iframeElement?.contentWindow) return;
+      if (event.origin !== window.location.origin) return;
+
       const data = event.data as { type?: string; key?: string; fixed?: string } | null;
       if (!data || typeof data.type !== 'string') return;
+
+      const allowedKeys = new Set(['subtitle', 'description', 'idFormat', 'fixed', 'sig:0', 'sig:1']);
       if (data.type === 'cio:certificate-edit' && data.key) {
+        if (!allowedKeys.has(data.key) && !/^sig:[01]$/.test(data.key)) return;
         onEdit?.(data.key, data.fixed);
       } else if (data.type === 'cio:certificate-background') {
         onBackgroundClick?.();
