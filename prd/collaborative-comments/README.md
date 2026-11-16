@@ -52,7 +52,7 @@ content it is about, so it gets lost and nobody knows what is still open.
 
 - As a tutor, I can highlight a sentence in a lesson and leave a comment on it, so feedback stays on the exact text.
 - As a tutor, I can leave a comment at a moment in a video, so others can jump straight to it.
-- As a tutor, I can comment on the slide I am looking at, so feedback is tied to that slide. I can drop a pin on an image, so feedback points at the exact spot.
+- As a tutor, I can comment on the slide I am looking at, so feedback is tied to that slide. I can comment on an image and, if I want, pin the comment to a spot on it, so feedback points at the exact place.
 - As anyone on the course team, I can see how many comments each content block has without opening the panel.
 - As an admin, I can @mention a teammate, so they know they need to act.
 - As a teammate, I get notified when I am mentioned or someone replies, so I don't miss feedback.
@@ -70,11 +70,11 @@ content it is about, so it gets lost and nobody knows what is still open.
 | ----------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------- |
 | **Course (general)**                | "Comments" panel → New comment, with no specific spot. | Listed in the panel under "General".                                              |
 | **Lesson / exercise page**          | Comment button on the page header.                     | Count badge on the page and in the course outline.                                |
-| **Text highlight in a lesson note** | Select text in the editor → "Comment" in the toolbar.  | The text gets a soft highlight. Clicking it opens the thread.                     |
-| **Video timestamp**                 | Pause the video → "Comment at 02:14".                  | A marker on the video timeline. Clicking the thread jumps the video to that time. |
+| **Text highlight in a lesson note** | Select text in the note → the "Comment" button that appears by the selection.  | The text gets a soft highlight. Clicking it opens the thread.                     |
+| **Video timestamp**                 | Click the comment icon on the Video block. The comment is tied to the current time.                  | A red marker on the video timeline. Clicking the thread jumps the video to that time. |
 | **Exercise question**               | Comment button on a question card.                     | Count badge on the question.                                                      |
 | **Slide**                           | Click the comment icon on the Slides block and write.  | A comment on the slide on screen.                                                 |
-| **Image**                           | Click the spot on the image.                           | A numbered pin on the image.                                                      |
+| **Image**                           | Click the comment icon on the Image block and write. Optionally **Pin to a spot**, then click the image.                           | A comment on the image, with a red numbered pin if a spot was chosen.                                                      |
 
 ### 2. Writing comments
 
@@ -109,9 +109,16 @@ the course.
   **Person**: Anyone, or one or more team members, to show only threads they took part in. By default
   Open, Unread, Read and Anyone are checked and Resolved is not. A dot on the filter icon shows when
   the list is filtered.
+- The filter also has **Show on content**: Text highlights, Video markers and Image pins, all on by
+  default. Unchecking one hides those marks on the page for you only. The threads stay in the panel,
+  and the mark of the thread you have selected still shows.
 - Grouped by where the thread lives: General, then each lesson/exercise in course order.
 - Clicking a thread takes you to the exact spot: scrolls to the highlight, seeks the video, or opens
   the question.
+- Clicking a highlight, a video marker or an image pin opens the panel on that thread. The selected
+  thread is scrolled into view and outlined in blue, so it is clear which one you clicked. There is
+  no hover preview.
+- Highlights, video markers, image pins and count badges for a thread go away when it is resolved.
 - **Counts on every content block.** Each content block (note, video, slides, image) shows a comment
   icon in its header with the number of open threads on that block, so the team sees them without
   opening the panel. Clicking it opens the panel filtered to that block, with a box to add a comment.
@@ -251,7 +258,7 @@ These are guides, not final decisions.
 - [ ] A tutor can highlight text in a lesson, @mention an admin, and the admin gets a bell notification
       and, if their email preferences allow it, an email that opens the exact highlight.
 - [ ] A tutor can leave a comment at a video timestamp, and clicking it seeks the video.
-- [ ] A tutor can comment on the slide on screen, or click a spot on an image to leave a pinned comment, and each content block shows its open-thread count without opening the panel.
+- [ ] A tutor can comment on the slide on screen, or comment on an image and optionally pin it to a spot, and each content block shows its open-thread count without opening the panel.
 - [ ] Comments can be left on the course (general), a lesson/exercise page, and an exercise question.
 - [ ] The Comments panel lists every open thread in the course and can filter to "Mentions me".
 - [ ] Resolving a thread removes its highlight and badge count; reopening brings them back.
