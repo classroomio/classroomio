@@ -2,7 +2,15 @@
 
 ## Status
 
-Draft (November 12, 2026)
+In progress (updated November 16, 2026). Implemented on the math branches, not yet merged to main: Phases 0 to 3 and Phase 4 items 2 (notation and locale), 6 (graph questions), 7 (API, MCP and webhooks) and 8 (packaging).
+
+**Phase 4 decisions**
+
+- **Shipped:** notation and locale settings per organization and course (`org.settings.math`, `course.metadata.math`, no migration); the graded-submission webhook payload with a `grading` object and per-skill results (API version 2026-11-16); public API and MCP coverage including practice exercises and answer-group decisions; plan gating.
+- **Free on every plan:** math display, `MATH_EXPRESSION`, numeric upgrades, graph plot and graph reading, the results grid and answer groups.
+- **Paid plans:** variants (`settings.parameters`), AI-suggested marking (`settings.aiGrading`), skill mastery, practice assignment, student reports and the Desmos key. The server answers `403 UPGRADE_REQUIRED` on a free plan, and the dashboard shows an upgrade prompt.
+- **Intentionally cut from Phase 4:** the org-level question bank (item 1), exam mode (item 3), printable worksheets (item 4) and QTI, Moodle XML and Word import and export (item 5). They need their own design docs.
+- **`HOTSPOT` (id 16) stays disabled.** Graph plot and graph reading cover the geometry cases for now.
 
 > **UI reference:** the clickable prototype at [`prototypes/math-teaching/`](../../prototypes/math-teaching/index.html) shows math authoring (Type, Photo, Draw, Ask AI), the student quiz with per-question keypads, and the teacher results grid with answer clusters. Grading in the prototype runs the real Compute Engine; AI conversions are sample data.
 

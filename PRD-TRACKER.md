@@ -33,7 +33,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
 | - | - | `prd/gamification` | draft (prototyped; learner XP, streaks, badges, leaderboards, admin settings) |
 | - | - | `prd/analytics-dashboards` | in progress (engine #1444, dashboards #1445, public API and MCP #1495; naming in `prd/analytics-naming`) |
-| - | - | `prd/math-teaching` | draft (math authoring, Photo and Draw to Math, math input and grading, AI, results) |
+| - | - | `prd/math-teaching` | in progress (Phases 0 to 3 and Phase 4 notation, graphs, API/MCP/webhooks and plan gating implemented on math branches; question bank, exam mode, printable worksheets, QTI/Moodle/Word import and export cut; HOTSPOT left disabled) |
 
 ## DONE (Completed PRDs)
 
