@@ -20,9 +20,10 @@
     label: string;
     color?: string;
     percent?: boolean;
+    onSegmentSelect?: (segmentKey: string) => void;
   }
 
-  let { points, valueKey, label, color = ANALYTICS_COLORS.primary, percent = false }: Props = $props();
+  let { points, valueKey, label, color = ANALYTICS_COLORS.primary, percent = false, onSegmentSelect }: Props = $props();
 
   let containerWidth = $state(800);
 
@@ -57,6 +58,7 @@
           {series}
           {yDomain}
           props={{ xAxis: { format: formatTick } }}
+          onBarClick={onSegmentSelect ? (_event, detail) => onSegmentSelect(String(detail.data.key)) : undefined}
         >
           {#snippet tooltip()}
             <Chart.Tooltip labelFormatter={(key: string) => labelByKey.get(key) ?? key} />

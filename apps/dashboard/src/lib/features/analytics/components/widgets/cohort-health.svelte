@@ -5,9 +5,13 @@
   import type { WidgetRendererProps } from '../../utils/types';
   import DonutChart from '../charts/donut-chart.svelte';
 
-  let { result }: WidgetRendererProps = $props();
+  let { result, onSegmentSelect }: WidgetRendererProps = $props();
 
   const segments = $derived(toHealthSegments(result, $t));
 </script>
 
-<DonutChart {segments} centerLabel={$t('analytics.donut.students', { count: donutTotal(segments) })} />
+<DonutChart
+  {segments}
+  centerLabel={$t('analytics.donut.students', { count: donutTotal(segments) })}
+  {onSegmentSelect}
+/>

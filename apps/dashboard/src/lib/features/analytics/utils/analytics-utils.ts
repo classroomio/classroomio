@@ -1,3 +1,4 @@
+import { cohortHealth, type AnalyticsDrilldown, type AnalyticsDrilldownFacet } from '@cio/utils/analytics';
 import {
   ANALYTICS_DEFAULT_PERIOD_DAYS,
   ANALYTICS_LIMITS,
@@ -39,8 +40,11 @@ import type {
   AnalyticsWidget,
   AnalyticsWidgetContext,
   StudentExerciseCell,
+  StudentExportHeaders,
   StudentFilters,
+  StudentRefFilters,
   StudentSort,
+  StudentUrlFilters,
   ScopeEmptyAction,
   ScopeEmptyState,
   SeatUsage,
@@ -561,28 +565,9 @@ export function isAnalyticsStatus(value: AnalyticsCell | undefined): value is TA
   return value === 'at_risk' || value === 'lagging' || value === 'on_track' || value === 'completed';
 }
 
+export { cohortHealth };
+
 export type CohortHealth = TAnalyticsStatus;
-
-/**
- * A cohort's health from its students: completed when nearly everyone finished, at risk when a fifth are at risk,
- * lagging when the average score is low. Null for a cohort with no students yet.
- */
-export function cohortHealth(row: AnalyticsRow): CohortHealth | null {
-  const students = numberCell(row, 'students__value') ?? 0;
-  if (students === 0) return null;
-
-  const completed = numberCell(row, 'completed_students__value') ?? 0;
-  const atRisk = numberCell(row, 'at_risk_students__value') ?? 0;
-  const averageScore = numberCell(row, 'avg_score_pct__value');
-
-  if (completed / students >= 0.95) return 'completed';
-
-  if (atRisk / students >= 0.2) return 'at_risk';
-
-  if (averageScore !== null && averageScore < ANALYTICS_THRESHOLDS.laggingScorePct) return 'lagging';
-
-  return 'on_track';
-}
 
 export function toHealthSegments(result: AnalyticsResult, translate: Translate): DonutSegment[] {
   const studentsByHealth = new Map<CohortHealth, number>();
@@ -1221,10 +1206,24 @@ export const STUDENT_FILTER_OPTIONS: { [Key in keyof StudentFilters]: ReadonlyAr
   status: ['', 'at_risk', 'lagging', 'on_track', 'completed'],
   activity: ['', 'today', 'idle'],
   score: ['', 'lt50', 'mid', 'gte70'],
-  flag: ['', 'overdue', 'certified', 'not_certified']
+  flag: ['', 'overdue', 'certified', 'not_certified'],
+  completion: ['', 'incomplete'],
+  video: ['', 'low']
 };
 
 export const STUDENT_SORTS: readonly StudentSort[] = ['status', 'progress', 'name', 'low_score'];
+
+const STUDENT_URL_PARAM_NAMES = { cohort: 'cohort', lesson: 'lesson', course: 'course' } as const;
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function emptyStudentFilters(): StudentFilters {
+  return { status: '', activity: '', score: '', flag: '', completion: '', video: '' };
+}
+
+export function emptyStudentRefFilters(): StudentRefFilters {
+  return { cohortIds: [], lessonId: null };
+}
 
 export function isStudentFilterValue(key: keyof StudentFilters, value: string): boolean {
   return (STUDENT_FILTER_OPTIONS[key] as readonly string[]).includes(value);
@@ -1234,7 +1233,10 @@ export function isStudentSort(value: string): value is StudentSort {
   return (STUDENT_SORTS as readonly string[]).includes(value);
 }
 
-export function studentQueryParts(filters: StudentFilters): { filters: AnalyticsFilter[] } {
+export function studentQueryParts(
+  filters: StudentFilters,
+  refs: StudentRefFilters = emptyStudentRefFilters()
+): { filters: AnalyticsFilter[] } {
   const specFilters: AnalyticsFilter[] = [];
 
   if (filters.status) specFilters.push({ field: 'status', op: 'eq', value: filters.status });
@@ -1257,11 +1259,268 @@ export function studentQueryParts(filters: StudentFilters): { filters: Analytics
 
   if (filters.flag === 'not_certified') specFilters.push({ field: 'has_certificate', op: 'is_false' });
 
+  if (filters.completion === 'incomplete') specFilters.push({ field: 'is_completed_all', op: 'is_false' });
+
+  if (filters.video === 'low') specFilters.push({ field: 'is_low_video', op: 'is_true' });
+
+  if (refs.cohortIds.length > 0) specFilters.push({ field: 'cohort', op: 'in', value: refs.cohortIds });
+
+  if (refs.lessonId) specFilters.push({ field: 'lesson_incomplete', op: 'eq', value: refs.lessonId });
+
   return { filters: specFilters };
 }
 
-export function countActiveStudentFilters(filters: StudentFilters): number {
-  return Object.values(filters).filter(Boolean).length;
+export function countActiveStudentFilters(
+  filters: StudentFilters,
+  refs: StudentRefFilters = emptyStudentRefFilters()
+): number {
+  const refCount = (refs.cohortIds.length > 0 ? 1 : 0) + (refs.lessonId ? 1 : 0);
+
+  return Object.values(filters).filter(Boolean).length + refCount;
+}
+
+type ScoreBounds = { gte: number | null; lt: number | null };
+
+function scoreFilterFromBounds(bounds: ScoreBounds): StudentFilters['score'] | null {
+  if (bounds.gte === null && bounds.lt === 50) return 'lt50';
+
+  if (bounds.gte === 50 && bounds.lt === 70) return 'mid';
+
+  if (bounds.gte === 70 && bounds.lt === null) return 'gte70';
+
+  return null;
+}
+
+function isStudentStatus(value: unknown): value is TAnalyticsStatus {
+  return (
+    typeof value === 'string' && (STUDENT_FILTER_OPTIONS.status as readonly string[]).includes(value) && value !== ''
+  );
+}
+
+/**
+ * The students table filters that reproduce a drill-down's spec filters, or null when the table cannot express
+ * them exactly. A drill-down only offers its Students link when this returns a value, so the link never shows a
+ * different list than the sheet.
+ */
+export function studentUrlFiltersFromSpec(specFilters: readonly AnalyticsFilter[]): StudentUrlFilters | null {
+  const filters = emptyStudentFilters();
+  const refs = emptyStudentRefFilters();
+  const bounds: ScoreBounds = { gte: null, lt: null };
+  let courseId: string | null = null;
+  let hasScoreBounds = false;
+
+  const setStatus = (status: TAnalyticsStatus) => {
+    if (filters.status && filters.status !== status) return false;
+
+    filters.status = status;
+
+    return true;
+  };
+
+  for (const filter of specFilters) {
+    const key = `${filter.field}:${filter.op}`;
+    const value = filter.value;
+
+    if (key === 'status:eq' && isStudentStatus(value)) {
+      if (!setStatus(value)) return null;
+    } else if (key === 'is_at_risk:is_true') {
+      if (!setStatus('at_risk')) return null;
+    } else if (key === 'is_completed_all:is_true') {
+      if (!setStatus('completed')) return null;
+    } else if (key === 'is_completed_all:is_false') {
+      filters.completion = 'incomplete';
+    } else if (key === 'logged_in_today:is_true') {
+      if (filters.activity) return null;
+
+      filters.activity = 'today';
+    } else if (key === 'is_inactive:is_true') {
+      if (filters.activity) return null;
+
+      filters.activity = 'idle';
+    } else if (key === 'is_overdue:is_true') {
+      filters.flag = 'overdue';
+    } else if (key === 'is_low_video:is_true') {
+      filters.video = 'low';
+    } else if (key === 'is_low_score:is_true') {
+      if (bounds.lt !== null && bounds.lt !== 50) return null;
+
+      hasScoreBounds = true;
+      bounds.lt = 50;
+    } else if (key === 'avg_score_pct:gte' && typeof value === 'number') {
+      hasScoreBounds = true;
+      bounds.gte = value;
+    } else if (key === 'avg_score_pct:lt' && typeof value === 'number') {
+      hasScoreBounds = true;
+      bounds.lt = value;
+    } else if (key === 'course:eq' && typeof value === 'string') {
+      courseId = value;
+    } else if (key === 'cohort:in' && Array.isArray(value)) {
+      refs.cohortIds = [...value];
+    } else if (key === 'cohort:eq' && typeof value === 'string') {
+      refs.cohortIds = [value];
+    } else if (key === 'lesson_incomplete:eq' && typeof value === 'string') {
+      refs.lessonId = value;
+    } else {
+      return null;
+    }
+  }
+
+  if (hasScoreBounds) {
+    const score = scoreFilterFromBounds(bounds);
+    if (!score) return null;
+
+    filters.score = score;
+  }
+
+  if (filters.status === 'at_risk' || filters.status === 'lagging' || filters.status === 'on_track') {
+    filters.completion = '';
+  }
+
+  return { filters, refs, courseId };
+}
+
+export function studentUrlSearchParams(target: StudentUrlFilters): URLSearchParams {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(target.filters)) {
+    if (value) params.set(key, value);
+  }
+
+  if (target.refs.cohortIds.length > 0) params.set(STUDENT_URL_PARAM_NAMES.cohort, target.refs.cohortIds.join(','));
+
+  if (target.refs.lessonId) params.set(STUDENT_URL_PARAM_NAMES.lesson, target.refs.lessonId);
+
+  if (target.courseId) params.set(STUDENT_URL_PARAM_NAMES.course, target.courseId);
+
+  return params;
+}
+
+function validUuid(value: string | null): string | null {
+  return value && UUID_PATTERN.test(value) ? value : null;
+}
+
+/**
+ * Reads the students table filters from a URL. Every value is checked against the allowed options or the uuid
+ * shape, and anything else is dropped, so a hand-edited or stale link can only narrow the list it was meant to.
+ */
+export function parseStudentUrlFilters(params: URLSearchParams): StudentUrlFilters {
+  const filters = emptyStudentFilters();
+  const filterKeys = Object.keys(filters) as Array<keyof StudentFilters>;
+
+  for (const key of filterKeys) {
+    const value = params.get(key);
+    if (value && isStudentFilterValue(key, value)) Object.assign(filters, { [key]: value });
+  }
+
+  const cohortIds = (params.get(STUDENT_URL_PARAM_NAMES.cohort) ?? '')
+    .split(',')
+    .flatMap((id) => validUuid(id.trim()) ?? [])
+    .slice(0, ANALYTICS_LIMITS.maxFilterValues);
+  const refs: StudentRefFilters = {
+    cohortIds: [...new Set(cohortIds)],
+    lessonId: validUuid(params.get(STUDENT_URL_PARAM_NAMES.lesson))
+  };
+
+  return { filters, refs, courseId: validUuid(params.get(STUDENT_URL_PARAM_NAMES.course)) };
+}
+
+export const STUDENTS_TABLE_ANCHOR = 'analytics-students';
+
+/**
+ * Where "Open in Students tab" goes: the students table of the cohort or course page with the drill-down filters
+ * in the query string. Null when the scope has no students table or the table cannot express the drill-down.
+ */
+export function studentsTabTarget(
+  drilldown: AnalyticsDrilldown,
+  scope: AnalyticsScopeRef
+): (StudentUrlFilters & { href: string }) | null {
+  if (scope.type === 'org' || drilldown.range !== 'all') return null;
+
+  const target = studentUrlFiltersFromSpec(drilldown.filters);
+  if (!target) return null;
+
+  const courseId = scope.type === 'cohort' ? target.courseId : null;
+  const params = studentUrlSearchParams({ ...target, courseId });
+  const path = scope.type === 'cohort' ? `/cohorts/${scope.id}/analytics` : `/courses/${scope.id}/analytics`;
+  const query = params.size > 0 ? `?${params}` : '';
+
+  return { ...target, courseId, href: `${path}${query}#${STUDENTS_TABLE_ANCHOR}` };
+}
+
+export function studentExportHeaders(translate: Translate): StudentExportHeaders {
+  return {
+    name: translate('analytics.columns.student'),
+    email: translate('analytics.columns.email'),
+    progress: translate('analytics.columns.progress'),
+    nowAt: translate('analytics.columns.now_at'),
+    finished: translate('analytics.finished'),
+    averageScore: translate('analytics.columns.average_score'),
+    coursesCompleted: translate('analytics.columns.courses_completed'),
+    video: translate('analytics.columns.video'),
+    classroom: translate('analytics.columns.classroom'),
+    certificates: translate('analytics.columns.certificates'),
+    lastLogin: translate('analytics.columns.last_login'),
+    status: translate('analytics.columns.status'),
+    statusLabels: {
+      at_risk: translate('analytics.status.at_risk'),
+      lagging: translate('analytics.status.lagging'),
+      on_track: translate('analytics.status.on_track'),
+      completed: translate('analytics.status.completed')
+    }
+  };
+}
+
+function drilldownFacetLabel(facet: AnalyticsDrilldownFacet, lessonTitle: string | null, translate: Translate): string {
+  switch (facet.kind) {
+    case 'status':
+      return translate(`analytics.status.${facet.status}`);
+    case 'attention':
+      return translate(`analytics.measures.is_${facet.reason}__count_if`);
+    case 'cohort_health':
+      return translate(`analytics.drilldown.cohort_health.${facet.health ?? 'any'}`);
+    case 'overdue':
+      return translate('analytics.flags.overdue');
+    case 'completed':
+      return translate('analytics.status.completed');
+    case 'lesson_incomplete':
+      return translate('analytics.drilldown.lesson_incomplete', {
+        lesson: lessonTitle ?? translate('analytics.drilldown.lesson_fallback')
+      });
+    case 'score_bucket':
+      return translate('analytics.drilldown.score_bucket', {
+        range: translate(`analytics.buckets.score.${facet.bucket}`)
+      });
+    case 'scored':
+      return translate('analytics.drilldown.scored');
+  }
+}
+
+export function drilldownCourseId(drilldown: AnalyticsDrilldown): string | null {
+  const courseFilter = drilldown.filters.find((filter) => filter.field === 'course' && filter.op === 'eq');
+
+  return typeof courseFilter?.value === 'string' ? courseFilter.value : null;
+}
+
+/**
+ * The drill-down sheet title: the student count, the filter in words, and the course and scope it applies to,
+ * e.g. "20 students · At risk · Cohort A".
+ */
+export function drilldownHeading(
+  params: {
+    drilldown: AnalyticsDrilldown;
+    total: number;
+    scopeName: string | null;
+    courseTitle: string | null;
+    lessonTitle: string | null;
+  },
+  translate: Translate
+): string {
+  const { drilldown, total, scopeName, courseTitle, lessonTitle } = params;
+  const facetLabel = drilldown.facet ? drilldownFacetLabel(drilldown.facet, lessonTitle, translate) : null;
+
+  return [translate('analytics.drilldown.count', { count: total }), facetLabel, courseTitle, scopeName]
+    .filter(Boolean)
+    .join(' · ');
 }
 
 function isExerciseState(value: AnalyticsCell | undefined): value is StudentExerciseCell['state'] {

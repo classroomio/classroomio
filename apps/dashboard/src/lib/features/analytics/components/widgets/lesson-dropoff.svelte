@@ -5,9 +5,9 @@
   import type { WidgetRendererProps } from '../../utils/types';
   import HbarList from '../charts/hbar-list.svelte';
 
-  let { result }: WidgetRendererProps = $props();
+  let { result, onSegmentSelect }: WidgetRendererProps = $props();
 
   const items = $derived(toHbarItems(result, 'lesson', $t).map((item) => ({ ...item, tone: dropoffTone(item.value) })));
 </script>
 
-<HbarList {items} />
+<HbarList {items} onSelect={onSegmentSelect} />

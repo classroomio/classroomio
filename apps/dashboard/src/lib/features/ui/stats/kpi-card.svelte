@@ -13,7 +13,9 @@
     accent?: 'primary' | 'success' | 'warning' | 'danger';
     sparkline?: number[];
     badge?: Snippet;
+    action?: Snippet;
     loading?: boolean;
+    onValueClick?: () => void;
     class?: string;
   }
 
@@ -26,7 +28,9 @@
     accent = 'primary',
     sparkline,
     badge,
+    action,
     loading = false,
+    onValueClick,
     class: className
   }: Props = $props();
 
@@ -74,11 +78,21 @@
           <Icon class="h-4 w-4" />
         </div>
       {/if}
+      {@render action?.()}
     </div>
   </Card.Header>
   <Card.Content class="pt-0">
     {#if loading}
       <Skeleton class="h-9 w-24" />
+    {:else if onValueClick}
+      <button
+        type="button"
+        class="ui:text-foreground ui:hover:text-primary ui:focus-visible:ring-ring cursor-pointer rounded text-3xl font-semibold tabular-nums underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
+        data-testid="kpi-value-button"
+        onclick={onValueClick}
+      >
+        {value}
+      </button>
     {:else}
       <p class="ui:text-foreground text-3xl font-semibold tabular-nums">{value}</p>
     {/if}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy, untrack } from 'svelte';
+  import { page } from '$app/state';
   import * as Page from '@cio/ui/base/page';
   import { RefreshPageData } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
@@ -7,7 +8,7 @@
   import { findOwnerOrgToSwitch } from '$features/org/utils/owner-org-utils';
   import { currentOrg, orgs } from '$lib/utils/store/org';
 
-  import { analyticsApi, analyticsStudentsApi } from '../api';
+  import { analyticsApi, analyticsDrilldownApi, analyticsStudentsApi } from '../api';
   import AnalyticsDashboard from '../components/analytics-dashboard.svelte';
   import AnalyticsRangePicker from '../components/analytics-range-picker.svelte';
   import AnalyticsLiveIndicator from '../components/analytics-live-indicator.svelte';
@@ -35,7 +36,9 @@
     loadedKey = key;
     untrack(() => {
       analyticsStudentsApi.reset();
-      void analyticsApi.loadDashboard(scope).then(() => analyticsStudentsApi.load());
+      analyticsDrilldownApi.reset();
+      const url = new URL(page.url);
+      void analyticsApi.loadDashboard(scope).then(() => analyticsStudentsApi.initFromUrl(url));
     });
   });
 
@@ -52,6 +55,7 @@
   onDestroy(() => {
     analyticsApi.reset();
     analyticsStudentsApi.reset();
+    analyticsDrilldownApi.reset();
   });
 
   async function refreshPage(options: { refresh?: boolean } = {}) {

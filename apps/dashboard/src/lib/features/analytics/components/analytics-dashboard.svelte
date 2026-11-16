@@ -13,6 +13,8 @@
   import AnalyticsKpiRow from './analytics-kpi-row.svelte';
   import AnalyticsScopeNotice from './analytics-scope-notice.svelte';
   import AnalyticsWidget from './analytics-widget.svelte';
+  import DrilldownSheet from './drilldown-sheet.svelte';
+  import StudentSheet from './students/student-sheet.svelte';
 
   interface Props {
     scope: AnalyticsScopeRef;
@@ -77,5 +79,9 @@
         <AnalyticsWidget {widget} span={panelSpans.get(widget.id) ?? widget.span} {context} />
       {/each}
     </div>
+    <DrilldownSheet />
+    {#if scope.type !== 'course'}
+      <StudentSheet />
+    {/if}
   </div>
 {/if}
