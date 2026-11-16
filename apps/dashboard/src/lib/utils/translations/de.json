@@ -6435,8 +6435,8 @@
     },
     "empty": {
       "title": "Noch keine Kurse",
-      "description": "Wählen Sie eine Vorlage aus, um zu sehen, wie ein großartiger ClassroomIO-Kurs aussieht, oder beginnen Sie mit einem leeren Kurs.",
-      "browse": "Durchsuchen Sie Vorlagen"
+      "description": "Erstellen Sie einen Kurs einmal und melden Sie anschließend Ihre Kunden dafür an. Legen Sie ihn selbst an oder lassen Sie Ihren Agenten einen Entwurf erstellen.",
+      "enrolled": "Eingeschrieben"
     },
     "editor": {
       "badge": "Vorlage"

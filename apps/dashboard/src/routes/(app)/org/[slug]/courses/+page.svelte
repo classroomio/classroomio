@@ -1,10 +1,8 @@
 <script lang="ts">
   import CoursesPage from '$features/course/pages/courses.svelte';
   import TemplateRow from '$features/course/components/template-row.svelte';
-  import { Button } from '@cio/ui/base/button';
-  import { CreateCourseButton } from '$features/course/components';
+  import { MachineCourseEnroll } from '@cio/ui/custom/animation';
   import { isStudentExperience } from '$lib/utils/store/app';
-  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import CourseFilterPopover from '$features/course/components/course-filter-popover.svelte';
   import { courseMetaDeta } from '$features/course/utils/store';
   import {
@@ -229,6 +227,12 @@
   <title>Courses - ClassroomIO</title>
 </svelte:head>
 
+{#snippet emptyMedia()}
+  <div class="mx-auto h-52 w-full max-w-[340px]">
+    <MachineCourseEnroll enrolled={$t('course_templates.empty.enrolled').toLocaleUpperCase()} />
+  </div>
+{/snippet}
+
 <Page.Root class="w-full gap-0">
   {#if !$isStudentExperience}
     <TemplateRow />
@@ -249,16 +253,8 @@
           emptyDescription={$isStudentExperience || !listIsUnfiltered
             ? undefined
             : $t('course_templates.empty.description')}
+          emptyMedia={$isStudentExperience || !listIsUnfiltered ? undefined : emptyMedia}
         >
-          {#snippet emptyAction()}
-            {#if !$isStudentExperience && listIsUnfiltered && $isOrgAdmin}
-              <Button onclick={() => goto(`${$currentOrgPath}/courses/templates`)}>
-                {$t('course_templates.empty.browse')}
-              </Button>
-            {:else if !$isStudentExperience}
-              <CreateCourseButton isResponsive />
-            {/if}
-          {/snippet}
           {#snippet filterControls()}
             <CourseFilterPopover
               bind:sortKey

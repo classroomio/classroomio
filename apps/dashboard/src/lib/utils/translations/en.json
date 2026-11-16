@@ -6470,8 +6470,8 @@
     },
     "empty": {
       "title": "No courses yet",
-      "description": "Pick a template to see what a great ClassroomIO course looks like, or start from a blank course.",
-      "browse": "Browse templates"
+      "description": "Build a course once, then enroll your customers in it. Create one yourself or let your agent draft it.",
+      "enrolled": "Enrolled"
     },
     "editor": {
       "badge": "Template"

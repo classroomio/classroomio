@@ -6405,8 +6405,8 @@
     },
     "empty": {
       "title": "Nessun corso ancora",
-      "description": "Scegli un modello per vedere come si presenta un fantastico corso ClassroomIO oppure inizia da un corso vuoto.",
-      "browse": "Sfoglia i modelli"
+      "description": "Crea un corso una volta sola, poi iscrivi i tuoi clienti. Crealo tu stesso o lascia che il tuo agente ne prepari una bozza.",
+      "enrolled": "Iscritto"
     },
     "editor": {
       "badge": "Modello"

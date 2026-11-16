@@ -6415,8 +6415,8 @@
     },
     "empty": {
       "title": "Henüz kurs yok",
-      "description": "Harika bir ClassroomIO kursunun neye benzediğini görmek için bir şablon seçin veya boş bir kurstan başlayın.",
-      "browse": "Göz at şablonlar"
+      "description": "Bir kursu bir kez oluşturun, ardından müşterilerinizi kursa kaydedin. Kursu kendiniz oluşturun veya taslağı ajanınıza hazırlatın.",
+      "enrolled": "Kayıtlı"
     },
     "editor": {
       "badge": "Template"

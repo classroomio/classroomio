@@ -6435,8 +6435,8 @@
     },
     "empty": {
       "title": "Chưa có khóa học nào",
-      "description": "Chọn một mẫu để xem khóa học ClassroomIO tuyệt vời trông như thế nào hoặc bắt đầu từ một khóa học trống.",
-      "browse": "Duyệt mẫu"
+      "description": "Tạo khóa học một lần, sau đó ghi danh khách hàng của bạn vào đó. Hãy tự tạo hoặc để tác nhân của bạn soạn bản nháp.",
+      "enrolled": "Đã ghi danh"
     },
     "editor": {
       "badge": "mẫu"
