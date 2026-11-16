@@ -17,6 +17,7 @@ import { overdueItemSource } from './sources/overdue-item';
 import { overdueStudentSource } from './sources/overdue-student';
 import { questionResultSource } from './sources/question-result';
 import { sectionActivitySource } from './sources/section-activity';
+import { skillResultSource } from './sources/skill-result';
 
 export const ANALYTICS_REGISTRY: Record<TAnalyticsSource, AnalyticsSourceDefinition> = {
   student: studentSource,
@@ -29,7 +30,8 @@ export const ANALYTICS_REGISTRY: Record<TAnalyticsSource, AnalyticsSourceDefinit
   overdue_item: overdueItemSource,
   org_member: orgMemberSource,
   cohort_summary: cohortSummarySource,
-  overdue_student: overdueStudentSource
+  overdue_student: overdueStudentSource,
+  skill_result: skillResultSource
 };
 
 export type AnalyticsRegistryMetricDescription = {

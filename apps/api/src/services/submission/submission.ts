@@ -14,6 +14,7 @@ import {
   type ScoreSubmissionResult,
   validateTextareaAnswer
 } from '@cio/question-types';
+import { clampAnswerTiming } from '@cio/question-types/answer-timing';
 import { mathGrader } from '@cio/question-types/math-grading';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isFileTypeAllowed, normalizeAcceptedFileTypes } from '@cio/utils/file-upload';
@@ -585,7 +586,14 @@ export async function listSubmissionsForGrading(courseId: string) {
   }
 }
 
-type SubmissionAnswerInput = { questionId: number; optionId?: number; answer?: string; seed?: string };
+type SubmissionAnswerInput = {
+  questionId: number;
+  optionId?: number;
+  answer?: string;
+  seed?: string;
+  startedAt?: string;
+  answeredAt?: string;
+};
 type ExerciseQuestionRow = Awaited<ReturnType<typeof getExerciseWithRelationsOptimized>>['questions'][number];
 
 export type CreateSubmissionOptions = {
@@ -726,7 +734,8 @@ function decodeSubmissionAnswers(
       }
     }
 
-    answerByQuestionId.set(input.questionId, answerData);
+    const timing = clampAnswerTiming(input);
+    answerByQuestionId.set(input.questionId, timing ? { ...answerData, ...timing } : answerData);
   }
 
   return answerByQuestionId;

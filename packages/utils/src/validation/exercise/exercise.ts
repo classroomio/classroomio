@@ -299,7 +299,9 @@ export const ZExerciseSubmissionCreate = z.object({
         questionId: z.number().int(),
         optionId: z.number().int().optional(),
         answer: z.string().optional(),
-        seed: z.string().min(1).max(64).optional()
+        seed: z.string().min(1).max(64).optional(),
+        startedAt: z.string().max(40).optional(),
+        answeredAt: z.string().max(40).optional()
       })
     )
     .min(1)

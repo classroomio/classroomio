@@ -99,6 +99,13 @@ function aggregateSql(agg: TAnalyticsAgg, metric: AnalyticsMetricDefinition, fir
       return sql`ROUND(SUM(${value}) * 100.0 / NULLIF(SUM(${metric.denominator}), 0), 1)`;
     case 'mode':
       return sql`mode() WITHIN GROUP (ORDER BY ${value})`;
+    case 'upper_lower_gap':
+      return sql`ROUND(
+        (AVG(${value}) FILTER (WHERE ${metric.denominator} = 'upper') - AVG(${value}) FILTER (WHERE ${metric.denominator} = 'lower'))::numeric,
+        2
+      )`;
+    case 'collect_json':
+      return sql`(jsonb_agg(${value}) FILTER (WHERE ${value} IS NOT NULL))::text`;
     case 'running_count':
       if (!firstDimensionKey) throw invalidSpec('running_count needs one dimension');
 

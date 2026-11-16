@@ -10,3 +10,4 @@ export * from './overdue-item';
 export * from './org-member';
 export * from './overdue-student';
 export * from './cohort-summary';
+export * from './skill-result';

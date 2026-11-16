@@ -19,6 +19,7 @@ import { resolveAuthorizedScope } from './authorize';
 import { canonicalizeSpec, hashSpec } from './canonicalize';
 import { toAnalyticsError } from './errors';
 import { resolveAnalyticsRange } from './plan';
+import { groupCommonWrongAnswers } from './wrong-answers';
 import { getAnalyticsCourseStructure, toOrderedItems } from './structure';
 import type { AuthorizedAnalyticsScope, AnalyticsActor, AnalyticsQueryResult } from './types';
 
@@ -72,7 +73,9 @@ export async function computeAnalyticsQuery(
 ): Promise<AnalyticsQueryOutput> {
   const orderedItems = await loadOrderedItems(scope, spec);
 
-  return runAnalyticsQuery(spec, { scope, orderedItems });
+  const output = await runAnalyticsQuery(spec, { scope, orderedItems });
+
+  return groupCommonWrongAnswers(output);
 }
 
 function uncachedResult(output: AnalyticsQueryOutput, range: TAnalyticsRange): AnalyticsQueryResult {

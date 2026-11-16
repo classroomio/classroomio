@@ -103,6 +103,9 @@ export type AnswerExtras = {
   clusterOverride?: AnswerClusterOverride;
   /** The variant seed the student answered, for parameterised questions. */
   seed?: string;
+  /** When the student first saw the question and when they gave this answer, ISO strings clamped by the API. Reporting only, never graded. */
+  startedAt?: string;
+  answeredAt?: string;
   aiReview?: AiReview;
 };
 

@@ -12,7 +12,8 @@ export const ANALYTICS_SOURCE_DESCRIPTIONS: Record<TAnalyticsSource, string> = {
   assessment_result: 'One row per learner and exercise, with attempt, grading and pass state from their submissions.',
   section_activity:
     'One row per learner and course section, with the section score, video watching and attendance results.',
-  question_result: "One row per learner, exercise and scored question, read from the learner's best graded submission.",
+  question_result:
+    "One row per learner, exercise and scored question, read from the learner's best graded submission. Carries the item-analysis metrics: question_facility, question_discrimination, common_wrong_answers and time_on_question.",
   lesson_progress: 'One row per learner and lesson, with whether the learner completed it.',
   login_day: 'One row per learner and day in the login window, marking whether they logged in on that day.',
   overdue_item:
@@ -21,7 +22,9 @@ export const ANALYTICS_SOURCE_DESCRIPTIONS: Record<TAnalyticsSource, string> = {
     'One row per learner who has at least one overdue item, with the courses involved, progress and overdue count.',
   org_member: 'One row per period bucket, with how many students joined in it and the running total.',
   cohort_summary:
-    'One row per cohort in the scope, with member counts, average progress and score, and cumulative pass rates.'
+    'One row per cohort in the scope, with member counts, average progress and score, and cumulative pass rates.',
+  skill_result:
+    'One row per learner and skill tagged on scored questions, with a mastery score and level from their recent graded attempts.'
 };
 
 /** What each metric measures. */
@@ -114,7 +117,21 @@ export const ANALYTICS_METRIC_DESCRIPTIONS: Record<TAnalyticsMetric, string> = {
   course_created_at: 'When the course was created.',
   completed_all_in_period: 'Whether the learner completed all their scope courses inside the selected range.',
   completed_in_window: 'Whether the learner completed this course inside the selected range.',
-  certified_in_period: 'Whether the learner earned a certificate for this course inside the selected range.'
+  certified_in_period: 'Whether the learner earned a certificate for this course inside the selected range.',
+  skill_mastery:
+    'Mastery score from 0 to 100 for one learner and skill: the share of points earned on the last 10 graded attempts, newer attempts weighted more.',
+  mastery_level:
+    'The mastery level for one learner and skill: not_started, learning, proficient or mastered, from the mastery score and how many attempts back it.',
+  mastery_evidence: 'How many graded attempts on questions tagged with the skill the mastery score is based on.',
+  skill_proficient: 'Whether the learner reached proficient or mastered on the skill.',
+  question_facility:
+    'Share of learners who earned full points on the question, from their best graded submission; the higher, the easier the question.',
+  question_discrimination:
+    'Upper-lower discrimination index from -1 to 1: the average question score of the top 27 percent of learners by exercise total minus that of the bottom 27 percent. Above 0.3 separates strong from weak learners; near zero or negative needs review.',
+  common_wrong_answers:
+    'The most common wrong answers to the question as a JSON list of label, count and grade, with equal answers grouped the way the results grid groups them.',
+  time_on_question:
+    'Seconds the learner spent on the question, from the start and answer times the take view records; blank when none was recorded.'
 };
 
 /** What each dimension groups by. */
@@ -126,6 +143,7 @@ export const ANALYTICS_DIMENSION_DESCRIPTIONS: Record<TAnalyticsDimension, strin
   section: 'Groups rows by course section.',
   lesson: 'Groups rows by lesson.',
   question: 'Groups rows by scored exercise question.',
+  skill: 'Groups rows by skill.',
   item: 'Groups rows by outline item, a lesson or exercise in course order.',
   day: 'Groups rows by calendar day.',
   period: 'Groups rows by period bucket: daily inside a 31-day range and weekly otherwise.',
@@ -142,6 +160,7 @@ export const ANALYTICS_FILTER_DESCRIPTIONS: Record<TAnalyticsFilterField, string
   student: 'Only rows for these learners.',
   exercise: 'Only rows for this exercise.',
   section: 'Only rows for this course section.',
+  skill: 'Only rows for these skills.',
   status: 'Only learners with this derived status.',
   overdue_kind: 'Only overdue items of this kind: goal, compliance or exercise.',
   students: 'Only cohorts with this many students.',

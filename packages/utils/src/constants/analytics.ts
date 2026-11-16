@@ -11,7 +11,8 @@ export const ANALYTICS_SOURCES = [
   'overdue_item',
   'org_member',
   'cohort_summary',
-  'overdue_student'
+  'overdue_student',
+  'skill_result'
 ] as const;
 
 export const ANALYTICS_DIMENSIONS = [
@@ -22,6 +23,7 @@ export const ANALYTICS_DIMENSIONS = [
   'section',
   'lesson',
   'question',
+  'skill',
   'item',
   'day',
   'period',
@@ -115,7 +117,15 @@ export const ANALYTICS_METRICS = [
   'logged_in_period',
   'completed_all_in_period',
   'completed_in_window',
-  'certified_in_period'
+  'certified_in_period',
+  'skill_mastery',
+  'mastery_level',
+  'mastery_evidence',
+  'skill_proficient',
+  'question_facility',
+  'question_discrimination',
+  'common_wrong_answers',
+  'time_on_question'
 ] as const;
 
 export const ANALYTICS_AGGS = [
@@ -130,7 +140,9 @@ export const ANALYTICS_AGGS = [
   'rate',
   'pooled',
   'mode',
-  'running_count'
+  'running_count',
+  'upper_lower_gap',
+  'collect_json'
 ] as const;
 
 export const ANALYTICS_FILTER_FIELDS = [
@@ -139,6 +151,7 @@ export const ANALYTICS_FILTER_FIELDS = [
   'student',
   'exercise',
   'section',
+  'skill',
   'status',
   'overdue_kind',
   'students',
