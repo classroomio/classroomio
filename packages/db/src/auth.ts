@@ -18,7 +18,7 @@ import { config as emailAndPassword } from './auth/email-password';
 import { getUserOrgRolesMap } from './queries/organization/organization';
 import { loginLink } from './auth/plugins/login-link';
 import { oAuthProxy } from 'better-auth/plugins/oauth-proxy';
-import { resolveTrustedBrowserOrigin } from './utils';
+import { resolveTrustedBrowserOrigin, resolveTrustedCallbackOrigin } from './utils';
 import { sso } from '@better-auth/sso';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
 import { tokenExchange } from './auth/plugins/token-exchange';
@@ -70,13 +70,19 @@ const authInstance = betterAuth({
       prompt: 'select_account consent'
     }
   },
-  trustedOrigins: (request) => {
+  trustedOrigins: async (request) => {
     const origins = [...CONSTANTS.TRUSTED_ORIGINS];
     const originHeader = request?.headers.get('origin');
-    const resolved = resolveTrustedBrowserOrigin(originHeader, CONSTANTS.TRUSTED_ORIGINS);
+    const callbackUrl = request ? new URL(request.url).searchParams.get('callbackURL') : null;
+    const resolvedOrigins = [
+      resolveTrustedBrowserOrigin(originHeader, CONSTANTS.TRUSTED_ORIGINS),
+      await resolveTrustedCallbackOrigin(callbackUrl, CONSTANTS.TRUSTED_ORIGINS)
+    ];
 
-    if (resolved && !origins.includes(resolved)) {
-      origins.push(resolved);
+    for (const resolved of resolvedOrigins) {
+      if (resolved && !origins.includes(resolved)) {
+        origins.push(resolved);
+      }
     }
 
     return origins;

@@ -2799,6 +2799,9 @@
           "delete_tooltip": "Bu dersi sil",
           "cancel": "İptal"
         },
+        "empty_title": "Bu kurs boş",
+        "empty_description": "Oluşturmaya başlamak için bir ders, alıştırma veya sertifika ekleyin.",
+        "empty_drawer_certificates": "Sertifikalar",
         "add_content": "Add içerik",
         "add_content_description": "Eklemek istediğiniz içerik türünü seçin.",
         "add_content_details": "Bu içeriğe ilişkin ayrıntıları girin.",

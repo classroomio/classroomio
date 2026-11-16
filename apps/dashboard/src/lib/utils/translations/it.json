@@ -2789,6 +2789,9 @@
           "delete_tooltip": "Elimina questa lezione",
           "cancel": "Annulla"
         },
+        "empty_title": "Questo corso è vuoto",
+        "empty_description": "Aggiungi una lezione, un esercizio o un certificato per iniziare a costruirlo.",
+        "empty_drawer_certificates": "Certificati",
         "add_content": "Aggiungi contenuto",
         "expand_content": "Espandi il contenuto",
         "collapse_content": "Comprimi contenuto",
