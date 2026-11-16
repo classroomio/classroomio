@@ -268,7 +268,14 @@ export const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/tags': 'Create a tag',
   'PUT /public-api/v1/tags/{tagId}': 'Update a tag',
   'POST /public-api/v1/tags/groups': 'Create a tag group',
-  'PUT /public-api/v1/tags/groups/{groupId}': 'Update a tag group'
+  'PUT /public-api/v1/tags/groups/{groupId}': 'Update a tag group',
+  'GET /public-api/v1/skills': 'List skills',
+  'POST /public-api/v1/skills': 'Create a skill',
+  'POST /public-api/v1/skills/import': 'Import skills from CSV',
+  'PUT /public-api/v1/skills/{skillId}': 'Update a skill',
+  'PUT /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}/skills':
+    'Set the skills of a question',
+  'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/skill-mastery': 'Get skill mastery for an exercise'
 };
 
 const OPERATION_TAGS = [
@@ -313,6 +320,10 @@ const OPERATION_TAGS = [
   },
   { name: 'Lesson Comments', description: 'Read, post, edit and delete comments on a lesson.' },
   { name: 'Course Content', description: 'Reorder, lock and delete lessons and exercises in bulk.' },
+  {
+    name: 'Skills',
+    description: 'Manage the skills and standards of your organization, tag questions with them and read skill mastery.'
+  },
   { name: 'Course Exercises', description: 'Create and manage course exercises.' },
   { name: 'Exercise Questions', description: 'Manage the questions of a course exercise.' },
   { name: 'Exercise Sections', description: 'Manage the sections of a course exercise.' },

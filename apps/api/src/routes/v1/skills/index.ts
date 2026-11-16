@@ -3,7 +3,10 @@ import {
   ZSkillImport,
   ZSkillParam,
   ZSkillUpdate,
-  ZPublicApiSkillsQuery
+  ZPublicApiSkillsQuery,
+  ZPublicApiSkillImportResponse,
+  ZPublicApiSkillResponse,
+  ZPublicApiSkillWithCountResponse
 } from '@cio/utils/validation/skill';
 import {
   createPublicApiSkillService,
@@ -15,13 +18,12 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { errorResponses, jsonResponse } from '@api/utils/openapi/responses';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { mcpRateLimitResponse } from '../courses/docs';
 import { ORG_ADMIN_RULE } from '../team/docs';
 import { ORG_MEMBER_RULE, tagForbiddenResponses } from '../tags/docs';
 
 const TAG = 'Skills';
-const dataResponse = { type: 'object' as const, properties: { success: { type: 'boolean' as const }, data: {} } };
 
 export const v1SkillsRouter = new Hono()
   .get(
@@ -30,7 +32,7 @@ export const v1SkillsRouter = new Hono()
       description: `List the organization's skills and standards, with how many questions each is tagged on; ${ORG_MEMBER_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Skills ordered by code', dataResponse),
+        200: jsonResponse('Skills ordered by code', paginatedResponse(ZPublicApiSkillWithCountResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.read,
@@ -54,7 +56,7 @@ export const v1SkillsRouter = new Hono()
       description: `Create a skill; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
-        201: jsonResponse('Skill created', dataResponse),
+        201: jsonResponse('Skill created', itemResponse(ZPublicApiSkillResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,
@@ -79,7 +81,7 @@ export const v1SkillsRouter = new Hono()
       description: `Import skills from CSV text with the columns code, name and optionally parent_code, description and framework. Set dryRun to preview without saving; an import with any error saves nothing; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Preview or result with the rows, counts and errors', dataResponse),
+        200: jsonResponse('Preview or result with the rows, counts and errors', itemResponse(ZPublicApiSkillImportResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,
@@ -103,7 +105,7 @@ export const v1SkillsRouter = new Hono()
       description: `Update a skill's code, name, description, framework or parent; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Skill updated', dataResponse),
+        200: jsonResponse('Skill updated', itemResponse(ZPublicApiSkillResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: tagForbiddenResponses.write,

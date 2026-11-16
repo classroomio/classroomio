@@ -1,15 +1,20 @@
-import { ZExerciseSkillsParam, ZQuestionSkillsParam, ZSetQuestionSkills } from '@cio/utils/validation/skill';
+import {
+  ZExerciseSkillsParam,
+  ZPublicApiQuestionSkillsResponse,
+  ZPublicApiSkillMasteryResponse,
+  ZQuestionSkillsParam,
+  ZSetQuestionSkills
+} from '@cio/utils/validation/skill';
 import { ZPublicApiCourseParam } from '@cio/utils/validation/public-api';
 import { getPublicApiExerciseSkillMasteryService, setPublicApiQuestionSkillsService } from '@api/services/v1/skills';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { errorResponses, jsonResponse } from '@api/utils/openapi/responses';
+import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, exerciseForbiddenResponses, mcpRateLimitResponse } from './docs';
 
 const TAG = 'Skills';
-const dataResponse = { type: 'object' as const, properties: { success: { type: 'boolean' as const }, data: {} } };
 
 export const v1CourseQuestionSkillsRouter = new Hono().put(
   '/',
@@ -17,7 +22,7 @@ export const v1CourseQuestionSkillsRouter = new Hono().put(
     description: `Replace the skills a question is tagged with; ${COURSE_TEAM_RULE}. Send an empty list to remove them all.`,
     tags: [TAG],
     responses: {
-      200: jsonResponse('The question and its skill ids', dataResponse),
+      200: jsonResponse('The question and its skill ids', itemResponse(ZPublicApiQuestionSkillsResponse)),
       400: errorResponses.badRequest,
       401: errorResponses.unauthorized,
       403: exerciseForbiddenResponses.write,
@@ -52,7 +57,10 @@ export const v1CourseSkillMasteryRouter = new Hono().get(
     description: `Skill mastery for the skills tagged on an exercise: each student's mastery level per skill and how many students sit at each level; ${COURSE_TEAM_RULE}.`,
     tags: [TAG],
     responses: {
-      200: jsonResponse('Skills, per-student mastery and a per-skill level summary', dataResponse),
+      200: jsonResponse(
+        'Skills, per-student mastery and a per-skill level summary',
+        itemResponse(ZPublicApiSkillMasteryResponse)
+      ),
       400: errorResponses.badRequest,
       401: errorResponses.unauthorized,
       403: exerciseForbiddenResponses.read,
