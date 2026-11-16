@@ -1,7 +1,7 @@
 <script lang="ts">
   import CoursesPage from '$features/course/pages/courses.svelte';
   import TemplateRow from '$features/course/components/template-row.svelte';
-  import { MachineCourseEnroll } from '@cio/ui/custom/animation';
+  import { MachineEmptyCourses } from '@cio/ui/custom/animation';
   import { isStudentExperience } from '$lib/utils/store/app';
   import CourseFilterPopover from '$features/course/components/course-filter-popover.svelte';
   import { courseMetaDeta } from '$features/course/utils/store';
@@ -229,7 +229,7 @@
 
 {#snippet emptyMedia()}
   <div class="mx-auto h-52 w-full max-w-[340px]">
-    <MachineCourseEnroll enrolled={$t('course_templates.empty.enrolled').toLocaleUpperCase()} />
+    <MachineEmptyCourses enrolled={$t('course_templates.empty.enrolled').toLocaleUpperCase()} />
   </div>
 {/snippet}
 
