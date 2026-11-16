@@ -3905,7 +3905,8 @@ export const cohortNewsfeed = pgTable(
       foreignColumns: [cohort.id],
       name: 'cohort_newsfeed_cohort_id_fkey'
     }).onDelete('cascade'),
-    index('idx_cohort_newsfeed_cohort_id').on(table.cohortId)
+    index('idx_cohort_newsfeed_cohort_id').on(table.cohortId),
+    index('idx_cohort_newsfeed_author_id').on(table.authorId)
   ]
 );
 
@@ -3934,7 +3935,8 @@ export const cohortNewsfeedComment = pgTable(
       columns: [table.cohortNewsfeedId],
       foreignColumns: [cohortNewsfeed.id],
       name: 'cohort_newsfeed_comment_cohort_newsfeed_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    index('idx_cohort_newsfeed_comment_author_id').on(table.authorId)
   ]
 );
 

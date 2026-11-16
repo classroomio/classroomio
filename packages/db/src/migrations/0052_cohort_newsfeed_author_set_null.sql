@@ -10,4 +10,7 @@ ALTER TABLE "cohort_newsfeed_comment" DROP CONSTRAINT IF EXISTS "cohort_newsfeed
 ALTER TABLE "cohort_newsfeed_comment"
   ADD CONSTRAINT "cohort_newsfeed_comment_author_id_fkey"
   FOREIGN KEY ("author_id") REFERENCES "cohort_member"("id") ON DELETE SET NULL
-  NOT VALID;
+  NOT VALID;--> statement-breakpoint
+--> Indexes so deleting a cohort_member does not scan both tables to clear the author link.
+CREATE INDEX IF NOT EXISTS "idx_cohort_newsfeed_author_id" ON "cohort_newsfeed" ("author_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_cohort_newsfeed_comment_author_id" ON "cohort_newsfeed_comment" ("author_id");
