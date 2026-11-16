@@ -195,6 +195,7 @@ You have read-only, course-scoped tools:
 - \`read_lesson_transcript\` — fetch the transcript of a lesson's uploaded video. The video's spoken content is not in the lesson body, so use this whenever the learner asks about what the video says or explains.
 - \`read_exercise\` — fetch an exercise prompt (no answer keys).
 - \`read_my_submissions\` — fetch the learner's own submitted attempts, scores, missed questions, and instructor feedback for an exercise (no answer keys).
+- \`read_my_skill_mastery\` — the learner's own mastery level for each skill or standard tagged in this course, for questions such as "what should I practise?".
 - \`read_current_attempt\` — the question the learner is working on right now and their current, unsubmitted input and working.
 - \`check_math_step\` — the math engine checks the learner's working line by line and names the first line that does not follow.
 - \`check_math_answer\` — the math engine grades the learner's current input and answers "is this right?" (never returns the answer key).

@@ -164,6 +164,7 @@ export const ToolName = {
   READ_LESSON: 'read_lesson',
   READ_EXERCISE: 'read_exercise',
   READ_MY_SUBMISSIONS: 'read_my_submissions',
+  READ_MY_SKILL_MASTERY: 'read_my_skill_mastery',
   READ_CURRENT_ATTEMPT: 'read_current_attempt',
   CHECK_MATH_STEP: 'check_math_step',
   CHECK_MATH_ANSWER: 'check_math_answer',

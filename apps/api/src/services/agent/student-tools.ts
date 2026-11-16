@@ -14,6 +14,7 @@ import { getLessonNoteHtml } from '@cio/core/services/block/block-text';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { getCourseOutlineSummary } from '@cio/core/services/course/outline';
+import { getStudentSkillMastery } from '@api/services/skill/mastery';
 import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
 import { AppError } from '@api/utils/errors';
 import {
@@ -134,6 +135,7 @@ function makeSnippet(text: string, query: string, radius: number = SEARCH_SNIPPE
 }
 
 const listCourseOutlineParam = z.object({});
+const readMySkillMasteryParam = z.object({});
 const readLessonParam = z.object({ lessonId: z.string() });
 const readExerciseParam = z.object({ exerciseId: z.string() });
 const readMySubmissionsParam = z.object({
@@ -275,6 +277,17 @@ export function buildStudentAgentTools(
             exerciseId: args.exerciseId,
             attempt: args.attempt
           });
+        });
+      }
+    }),
+
+    read_my_skill_mastery: tool({
+      description:
+        "Read this learner's own mastery of each skill or standard tagged in this course: a level (not started, learning, proficient, mastered), a score from 0 to 100 and how many attempts it rests on. Use it when they ask what to practise or how they are doing on a topic. Never returns another learner's data.",
+      inputSchema: readMySkillMasteryParam,
+      execute: async () => {
+        return executeStudentTool('read_my_skill_mastery', { orgId, userId, courseId }, async () => {
+          return { skills: await getStudentSkillMastery(courseId, userId) };
         });
       }
     }),
