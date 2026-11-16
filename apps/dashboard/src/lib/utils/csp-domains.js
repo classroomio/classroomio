@@ -47,6 +47,7 @@ const saasDefaults = {
     'https://*.vimeocdn.com'
   ],
   frameSrc: [
+    'https://plugins.classroomio.com',
     'https://www.youtube.com',
     'https://youtube.com',
     'https://www.youtube-nocookie.com',

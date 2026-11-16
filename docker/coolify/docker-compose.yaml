@@ -104,6 +104,9 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_SENDER=${SMTP_SENDER}
+      - PLUGIN_ASSET_ORIGIN=${PLUGIN_ASSET_ORIGIN:-https://plugins.classroomio.com}
+      - PLUGIN_ASSET_BUCKET=${PLUGIN_ASSET_BUCKET:-classroomio-plugins}
+      - PLUGIN_RELEASE_DEPLOY_TOKEN=${PLUGIN_RELEASE_DEPLOY_TOKEN:-}
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://localhost:3081/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 10s
@@ -126,6 +129,7 @@ services:
       - PRIVATE_SERVER_KEY=$SERVICE_HEX_64_PRIVATESERVER
       - CSP_MEDIA_SRC_DOMAINS=$SERVICE_URL_STORAGE
       - CSP_CONNECT_SRC_DOMAINS=$SERVICE_URL_STORAGE
+      - PUBLIC_PLUGIN_ASSET_ORIGIN=${PUBLIC_PLUGIN_ASSET_ORIGIN:-https://plugins.classroomio.com}
 
   jobs:
     image: classroomio/jobs:${CIO_VERSION:-latest}
