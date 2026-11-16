@@ -125,7 +125,12 @@ Shared content keeps its base values. A cohort link can override:
 | Lesson | `lesson_at`, `call_url`, `recording_url`, `session_duration_minutes`, `is_unlocked`, `unlock_at` (new, override-only) |
 | Exercise | `due_by`, `is_unlocked`, `unlock_at` (new, override-only) |
 
-- Resolution is `override ?? base`, applied in the read path for students and in the cohort-filtered staff view.
+- Each overridable field has three states:
+  - **Inherit** (default): the cohort uses the course's base value.
+  - **Set**: the cohort uses its own value.
+  - **Cleared**: the cohort has no value (no due date, no recording) even when the base has one.
+- Stored as a nullable column per field plus `cleared_fields text[]` on the override row. Resolution: the field is in `cleared_fields` → null; else the override value if it is not null; else the base value. A plain `override ?? base` is not enough because it cannot express Cleared.
+- Applied in the read path for students and in the cohort-filtered staff view.
 - **Shift schedule:** when linking a course to a new cohort, staff can copy another cohort's overrides and shift every date by N days (default: the difference between the two links' `starts_at`).
 - Live-session reminders (`live_session_reminder_delivery`) are sent per cohort link, using the resolved `lesson_at`. Its unique key `(lesson, profile, offset)` gains the group member, so a student in two cohorts of one course gets both reminders.
 
@@ -203,7 +208,13 @@ Each copy item lands in one class:
 | Missing in copy | Primary item the copy never had (Academy A Week 4) | The cohort gains it. Option: lock it for this cohort |
 | Only in copy | Copy item with no match | Leave in archived copy (default when it has no learner activity), or add to the primary course |
 
-A `due_by` within two minutes of the copy's `created_at` was stamped by duplication, not set by a person. It is treated as unset and not saved as an override.
+A `due_by` within two minutes of the course's `created_at` was stamped by duplication, not set by a person:
+
+- On a copy, the cohort gets a **Cleared** due date (no deadline), so it never inherits a date the copy did not have.
+- On the primary, the base `due_by` is cleared (recorded in the change log, so undo restores it).
+- The review step lists these exercises under "Due dates set by duplication" so the admin can set real dates per cohort afterwards.
+
+When a copy's schedule field is empty and the primary's is not (no recording, no call link), the merge saves it as **Cleared** for that cohort, not as Inherit.
 
 #### 10.5 Moving learner data
 
@@ -218,10 +229,18 @@ For each copy merged into primary course P as cohort K:
    - `course_invite.course_id` (+ `cohort_course_id`), tag assignments
 3. **Answers to questions that do not match** stay attached to the archived copy's question rows. Submission totals, grades and feedback are kept as they were. Grading shows "3 answers belong to questions removed in the merge" with a link to view them.
 4. **Schedule differences** become rows in `cohort_course_item_override`.
-5. **Cohort link:** if the copy was linked to cohort K, the link moves to P (keeping its ID). If not, the admin picks or creates a cohort in the wizard.
+5. **Cohort links:** every link on the copy moves to P, keeping its ID and its group, so no cohort is left linked to the archived course. A copy with no link gets one: the admin picks or creates a cohort in the wizard.
+   - The copy's Direct group (`course.group_id`): if the copy has exactly one cohort link, its Direct students move into that link's group (how per-batch copies are used today). Otherwise they move into P's Direct group. Both are `groupmember.group_id` updates, so IDs are kept.
 6. **Roster sync (optional, on by default):** add course students missing from the cohort roster (A1: 33). Never removes roster members.
 7. **The copy is archived:** `course.status = 'MERGED'`, `merged_into_course_id = P`, unpublished, hidden from course lists and catalogs. Its slug redirects to P.
 8. Cache invalidation, webhooks (`course.merged`), analytics events and emails run after the transaction commits.
+
+**Plan validation (before the merge can start).** `POST /course/merge/plan` rejects the selection, and the wizard's Cohorts step shows why and blocks **Merge courses**, when:
+
+- a cohort is already linked to the primary course and to a selected copy, or to two selected copies (`cohort_course` allows one row per cohort and course);
+- a student would be moved into a group where they already have a `groupmember` row (`unique_group_profile`).
+
+The admin resolves it by unlinking the cohort from one of the courses (the cohort page's existing remove-course action) or by deselecting a copy, then re-runs the plan. Combining two enrollment groups into one is out of scope for v1. Because conflicts are caught in the plan, an accepted plan cannot fail on these constraints partway through the job.
 
 Each copy merges in its own transaction inside a background job (BullMQ). The job reports progress per step. While it runs, all involved courses are read-only and show "Merge in progress".
 
@@ -232,9 +251,11 @@ Each copy merges in its own transaction inside a background job (BullMQ). The jo
 - Undo replays the change log in reverse: restores the copies (`status`, slug, publish state), moves cohort links and groups back, restores remapped references, deletes the created overrides and synced roster rows.
 - Activity created after the merge:
   - on items the copy had: moved back to the copy's item through the match map;
-  - on items the copy never had (gained in the merge): kept on the primary course and listed in the undo preview ("12 lesson completions on Week 4 will stay with Data Analysis").
-- Content edits made to the primary course after the merge stay on the primary course. Copies come back exactly as they were at merge time.
-- After 30 days the merge is finalized: the change log and archived copies' content can be purged by a scheduled job. Finalizing early is an admin action.
+  - on items the copy never had (gained in the merge): undo clones those items into the restored copy (with `source_id` lineage) and moves the activity onto the clones, so the student still sees it in the course they are enrolled in. The undo preview lists them ("Week 4: 10 lessons and 1 project will be added to the restored course, with 12 lesson completions").
+- Content edits made to the primary course after the merge stay on the primary course. Copies come back as they were at merge time, plus any gained items that carry post-merge activity.
+- After 30 days the merge is finalized: a scheduled job purges the change log and the archived copies' unreferenced content. Finalizing early is an admin action.
+  - `question_answer.question_id` cascades on delete, so the purge never deletes a question that has answers. Those questions, their options and their exercise stay as read-only rows on the archived copy, which grading links to ("3 answers belong to questions removed in the merge").
+  - The archived course row itself is kept for the redirect and for those references; only unreferenced sections, lessons, blocks, exercises and questions are purged.
 
 #### 10.7 Merge wizard (UI)
 
@@ -295,6 +316,7 @@ export const cohortCourseItemOverride = pgTable(
     dueBy: timestamp('due_by', { withTimezone: true, mode: 'string' }),
     isUnlocked: boolean('is_unlocked'),
     unlockAt: timestamp('unlock_at', { withTimezone: true, mode: 'string' }), // no base column on lesson/exercise
+    clearedFields: text('cleared_fields').array().notNull().default(sql`'{}'`), // fields resolved to null instead of the base value
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
   (table) => [
@@ -346,8 +368,15 @@ export const courseMergeChange = pgTable('course_merge_change', {
 ### Migration (one file)
 
 1. Add the columns and tables above. Use `'MERGED'` as a new `course.status` value (a free `text` column today with ACTIVE and DELETED, so no DDL).
-2. Backfill `cohort_course.group_id = course.group_id` for every existing link. No member moves, behavior unchanged. The one course already linked to two cohorts keeps both links on its shared group; the cohort filter labels them "Shared enrollment" until an admin splits them.
-3. Backfill `lesson_completion.group_member_id` and `lesson_video_progress.group_member_id` from the profile's groupmember in `course.group_id`. Rows with no groupmember (6 completions in production, from removed students) stay null.
+2. Give every existing cohort link its own group, including courses with a single link, so cohort learners are no longer Direct learners:
+   - Create a group per `cohort_course` row and store it in `cohort_course.group_id`.
+   - **Move** each student `groupmember` in `course.group_id` whose profile is on that link's cohort roster into the link's group by updating `groupmember.group_id`. The row keeps its ID, so submissions, answers, attendance, comments and completion records stay attached.
+   - A student on the rosters of two cohorts linked to the same course (the one production course with two links) keeps their existing row in the earliest link's group and gets a new, empty enrollment in the other.
+   - Students not on any linked roster stay in `course.group_id` and show as **Direct**. Students missing from their cohort's roster (roster drift) therefore show as Direct until an admin adds them to the cohort, or until a merge's roster sync does.
+   - Staff (ADMIN, TUTOR) stay in `course.group_id` and are also inserted into each link group with their cohort role (on conflict do nothing).
+   - The cohort filter labels each link group with its cohort's name and `course.group_id` as "Direct".
+   - Course access, cohort status and the cohort window then apply to cohort learners as FR2 describes, because they no longer hold a Direct enrollment.
+3. Backfill `lesson_completion.group_member_id` and `lesson_video_progress.group_member_id` from the profile's groupmember for that course, whether it is in `course.group_id` or a `cohort_course.group_id`. For a student enrolled in two link groups, use the row moved in step 2 (the earliest link's). Rows with no groupmember (6 completions in production, from removed students) stay null.
 4. Replace unique `(lesson_id, profile_id)` on `lesson_completion` with unique `(lesson_id, group_member_id)` where `group_member_id is not null`, keeping `(lesson_id, profile_id)` unique where it is null. Same for video progress with `asset_id`.
 5. Replace `course_completion_record_course_profile_cycle_key` with unique `(group_member_id, cycle_number)`.
 
@@ -419,8 +448,8 @@ Existing course list endpoints (people, marks, submissions, attendance, analytic
 8. The merge wizard detects the Academy A and Academy B copy groups and recommends a primary with a stated reason.
 9. Merging Academy A's 7 active copies yields one course with 7 cohorts. 126 enrollments, 217 submissions, 1347 answers and 899 lesson completions remain visible under the right cohort.
 10. The two Academy A cohorts missing Week 4 gain it after the merge, locked if the admin chose that.
-11. Answers to questions that did not match remain viewable, and submission totals are unchanged.
-12. Undo within 30 days restores every copy, its enrollments and its activity, and reports any post-merge activity it could not move back.
+11. Answers to questions that did not match remain viewable, before and after finalization, and submission totals are unchanged.
+12. Undo within 30 days restores every copy, its enrollments and its activity. Post-merge activity on gained items moves to clones of those items in the restored copy, and stays visible to the student.
 13. Old copy URLs redirect to the merged course.
 14. All new UI strings use translation keys. API and dashboard builds pass.
 
@@ -429,8 +458,8 @@ Existing course list endpoints (people, marks, submissions, attendance, analytic
 - **Missed read paths leak data across cohorts.** Route every learner query through `getCourseEnrollmentGroups` and add an integration test per endpoint that seeds two cohorts and asserts isolation.
 - **Merge corrupts data.** Per-copy transactions, a change log written in the same transaction, a dry-run plan the admin reviews, read-only lock during the job, and a rollback-sensitive integration test (fail on the last copy, assert earlier copies are intact or fully applied).
 - **Fuzzy matching pairs the wrong items.** Fuzzy matches are never applied silently; they appear as "Matched by similar title" in the review step for the admin to confirm.
-- **Undo after heavy post-merge activity.** The undo preview lists everything that cannot move back before the admin confirms.
-- **Shared-group legacy link.** Labelled in the UI with a "Split enrollment" action.
+- **Undo after heavy post-merge activity.** The undo preview lists the gained items that will be cloned into each restored copy and the activity that moves onto them, before the admin confirms.
+- **Backfill moves the wrong students.** The backfill only moves students whose profile is on the link's cohort roster; everyone else stays Direct. Run it first as a dry run that reports per course how many students move to each cohort and how many stay Direct, and add a migration test with one course, two linked cohorts, a Direct student and a student on both rosters.
 
 ## Customer follow-ups (from the audit)
 
