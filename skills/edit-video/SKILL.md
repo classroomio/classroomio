@@ -15,7 +15,7 @@ Nothing here depends on a particular machine or account. Every input path comes 
 - **ffmpeg 6+** with the `arnndn`, `afftdn`, `silencedetect`, `loudnorm` and `ebur128` filters.
 - **Python 3.10+.** `scripts/cio-video` creates its own venv and installs `scripts/requirements.txt` on first run.
 - **Chrome or Chromium** for screenshots and the guide PDF. It's found on PATH, or set `CIO_VIDEO_CHROME`.
-- **Network on first run** to download the RNNoise `sh` model.
+- **Network** to download the RNNoise `sh` model, only when `audio.denoise` is on.
 - **The `classroomio-design` skill** next to this one (`skills/classroomio-design/`). Fonts, logo geometry and image assets are read from it.
 - Caches live in `$CIO_VIDEO_CACHE`, or `$XDG_CACHE_HOME/cio-video`, or `~/.cache/cio-video`.
 
@@ -45,7 +45,7 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
    - Read the transcript with `cio-video words project.json --start 0 --end 300`.
    - Pick windows that stand alone: one idea, a strong first line, a full-sentence ending.
 3. **Write `project.json`** next to the source. Start from `templates/project.example.json` (talking head) or `templates/project.screen.example.json` (screen recording). `references/project-file.md` lists every field.
-4. **Plan and clean.** Run `cio-video plan project.json --transcript`. It trims pauses and removes noise (cached), prints each cleaned transcript, and lists every explainer and hook with its timing. Add `corrections` until the transcript reads right, then fix every `!` warning.
+4. **Plan and clean.** Run `cio-video plan project.json --transcript`. It trims pauses (cached), prints each cleaned transcript, and lists every explainer and hook with its timing. Add `corrections` until the transcript reads right, then fix every `!` warning.
 5. **Add explainers and hooks.** See `references/explainers.md`.
    - Tie each visual to the phrase that introduces it.
    - For news, verify the claim with web search, capture the real article with `cio-video screenshot`, crop it, and credit it on screen.
@@ -53,7 +53,7 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
    - The hook is a 2–5 s line from the same clip.
 6. **Preview one clip** with `cio-video render project.json --clip 01 --out preview/`, then build its QA sheet. Show the user before rendering the rest: hooks, visual choices and split versus full are taste calls.
 7. **Render everything.** Run `cio-video render project.json --jobs 3`, then `captions`, `thumbnails` and `guide`. Write the copy in each clip's `posts`, following `docs/content.md`.
-8. **QA.** Run `cio-video qa project.json`. Every row must read `ok`: loudness within 1 LU of target and at least 90% of words landing on speech. Then look at every contact sheet in `<work>/qa/`:
+8. **QA.** Run `cio-video qa project.json`. Every row must read `ok`: at least 90% of words landing on speech. Then look at every contact sheet in `<work>/qa/`:
    - captions don't cover a visual
    - text is legible at phone size
    - nothing sits in the 9:16 platform UI zones
@@ -87,7 +87,7 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
 V=skills/edit-video/scripts/cio-video
 $V check
 $V words project.json --start 120 --end 240          # source transcript with times
-$V plan project.json [--clip 01 02] [--transcript]    # trim, denoise, print timelines and warnings
+$V plan project.json [--clip 01 02] [--transcript]    # trim, print timelines and warnings
 $V render project.json [--clip 01] [--format 9x16] [--jobs 3] [--out preview/]
 $V sign-off project.json [--force]                    # standalone sign-off clips (16:9 and 9:16)
 $V thumbnails | captions | qa | guide project.json [--clip …]
