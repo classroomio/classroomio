@@ -1,0 +1,15 @@
+@import url('account.css');
+
+/* Course People tab: page chrome (the table, dialogs and menus come from account.css). */
+.cp2-page {
+  width: 90%;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+@media (max-width: 767px) {
+  .cp2-page {
+    width: 100%;
+    padding: 0 12px 40px;
+  }
+}

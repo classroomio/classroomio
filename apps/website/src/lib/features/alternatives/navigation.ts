@@ -7,7 +7,9 @@ export const ALTERNATIVE_SLUGS = [
   'thinkific',
   'teachfloor',
   'teachable',
-  'kajabi'
+  'kajabi',
+  'disco',
+  'trainn'
 ] as const;
 
 export type CompetitorSlug = (typeof ALTERNATIVE_SLUGS)[number];
@@ -21,5 +23,7 @@ export const COMPETITOR_NAMES: Record<CompetitorSlug, string> = {
   thinkific: 'Thinkific',
   teachfloor: 'Teachfloor',
   teachable: 'Teachable',
-  kajabi: 'Kajabi'
+  kajabi: 'Kajabi',
+  disco: 'Disco',
+  trainn: 'Trainn'
 };

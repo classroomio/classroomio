@@ -1,0 +1,201 @@
+/* Course shell (routes/(app)/courses/[id]): the course sidebar, header and empty states. */
+.cs-side {
+  width: 288px;
+}
+.rd.cs-collapsed .cs-side {
+  display: none;
+}
+.cs-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  color: var(--sidebar-foreground);
+  font-weight: 500;
+  text-decoration: none;
+}
+.cs-back:hover {
+  background: var(--sidebar-accent);
+}
+.cs-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 8px 8px;
+  padding: 10px;
+  border: 1px solid var(--sidebar-border);
+  border-radius: 10px;
+  background: var(--background);
+}
+.cs-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 12px;
+  font-weight: 700;
+}
+.cs-name {
+  display: grid;
+  min-width: 0;
+}
+.cs-name b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+.cs-name small {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.cs-tree {
+  margin: 2px 0 6px 18px;
+  padding-left: 8px;
+  border-left: 1px solid var(--sidebar-border);
+}
+.cs-sec-h {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.cs-sec-h:hover {
+  background: var(--sidebar-accent);
+}
+.cs-lesson {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 20px;
+  border-radius: 6px;
+  color: var(--sidebar-foreground);
+  font-size: 13px;
+  text-decoration: none;
+}
+.cs-lesson span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cs-lesson:hover,
+.cs-lesson.on {
+  background: var(--sidebar-accent);
+}
+.cs-lesson.on {
+  font-weight: 600;
+}
+.cs-crumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.cs-crumb b {
+  font-size: 14px;
+  font-weight: 500;
+}
+.cs-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
+}
+.cs-badge.on {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.cs-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cs-actions .btn {
+  gap: 6px;
+}
+.cs-menu {
+  position: relative;
+}
+.cs-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  min-width: 200px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--popover, #fff);
+  box-shadow: 0 8px 24px rgba(23, 20, 15, 0.1);
+}
+.cs-pop[hidden] {
+  display: none;
+}
+.cs-pop button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13.5px;
+  text-align: left;
+  cursor: pointer;
+}
+.cs-pop button:hover {
+  background: var(--accent);
+}
+.cs-pop .danger {
+  color: var(--destructive);
+}
+.cs-page {
+  padding: 0;
+}
+.cs-empty {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+.cs-empty h1 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.03em;
+}
+.cs-empty p {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+@media (max-width: 900px) {
+  .cs-side {
+    display: none;
+  }
+}

@@ -38,6 +38,7 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { getEventSource } from '@api/utils/event-source';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
+import { getCourseLandingPage } from '@api/services/course/landing-page';
 import {
   courseTemplateActionsRouter,
   courseTemplateRouter,
@@ -128,11 +129,7 @@ export const courseRouter = new Hono()
   .get('/slug/:slug', zValidator('param', ZCourseGetBySlugParam), async (c) => {
     try {
       const { slug } = c.req.valid('param');
-      const course = await getCourse(undefined, slug);
-
-      if (!course.isPublished) {
-        throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-      }
+      const course = await getCourseLandingPage(slug);
 
       return c.json(
         {
