@@ -99,11 +99,11 @@ A numeric, math expression or worked solution question can draw different number
 | Field | Meaning |
 | --- | --- |
 | `variables` | Up to 8 variables named by one letter other than `e` and `i`. `type` is `int`, `decimal` or `choice`; `min`, `max` and `step` bound the draw and `choices` lists the values of a `choice` variable |
-| `constraints` | Conditions every draw must satisfy, such as `a != 0` or `b > a`. Draws repeat until they hold |
+| `constraints` | Conditions every draw must satisfy, such as `a != 0` or `b > a`. Draws repeat (up to 200 times) until they hold |
 | `answerFormula` | The answer as an expression of the variables. `{{answer}}` stands for its exact value in any text |
 | `requireIntegerAnswer`, `requireNonzeroAnswer` | Reject draws whose answer is not a whole number, or is zero |
 
-A placeholder can also hold a formula, such as `{{a * b}}`. The Compute Engine evaluates it, and a whole-number result is written plainly while a fraction is written as LaTeX.
+A placeholder can also hold a formula, such as `{{a * b}}`. The Compute Engine evaluates it, and a whole-number result is written plainly, a fraction of whole numbers is written as LaTeX, and other results are written as decimals.
 
 Each attempt gets a seed. The dashboard stores it in `answerData.seed`, and the server re-derives the numbers and the answer key from it, so a client never sends a key. When you submit answers through the API for a parameterised question, send the `seed` of the variant the student saw next to `answer`. A submission without a seed for such a question is rejected, and a new attempt should use a new seed.
 
@@ -123,7 +123,7 @@ A worked solution or paragraph question can ask for an AI suggestion on the stud
 }
 ```
 
-The suggestion is only a proposal. A teacher requests it in the grading popup, and it holds points per rubric step, the first wrong step, a comment and a confidence. Nothing reaches the student, and no points count, until the teacher accepts or edits it. Students never see `answerData.aiReview`. A teacher can also accept every confident suggestion of an exercise at once, and each use counts against the workspace's AI allowance.
+The suggestion is only a proposal. A teacher requests it in the grading popup, and it holds points per rubric step, the first wrong step, a comment and a confidence. Nothing reaches the student, and no points count, until the teacher accepts or edits it. Students never see `answerData.aiReview`. A teacher can also accept every suggestion with confidence of 0.85 or more for an exercise at once. Each request for a suggestion counts against the workspace's math AI allowance; accepting does not.
 
 ## Multi-part questions
 
