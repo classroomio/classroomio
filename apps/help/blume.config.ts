@@ -851,6 +851,10 @@ export default defineConfig({
               {
                 label: 'Track skill mastery',
                 root: '/analytics-and-reporting/track-skill-mastery'
+              },
+              {
+                label: 'Share reports and assign practice',
+                root: '/analytics-and-reporting/share-reports-and-assign-practice'
               }
             ]
           },

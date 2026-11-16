@@ -1,0 +1,46 @@
+---
+title: Share progress reports and assign practice
+description: Send a student or parent a one-page progress report by link, assign practice to the students who need it, and find questions that did not work.
+last_reviewed: '2026-11-16'
+---
+
+Three tools on an exercise's **Submissions** tab turn results into action: a shareable progress report, practice for selected students, and a question analysis.
+
+## Share a progress report
+
+In the **Results grid**, select **Create report** on a student's row, or select **Generate reports for these students** to make one for every student shown. The **Individual** tab has the same button for the selected student. Choose the period, add an optional **Teacher comment**, and pick how long the link lasts: 7, 30 or 90 days. You can make up to 100 reports at once.
+
+To email a single report to a parent, enter **Parent email (optional)** and turn on **Email the report to the parent**. Bulk reports are not emailed.
+
+Each link is shown only once, right after you create it, so copy it before you close the dialog. The report page shows the student's name, the skills mastered or proficient, the skills still being learned and recent scores for the period. It never shows email addresses. Select **Print or save as PDF** on the report page to get a PDF through your browser's print dialog.
+
+Anyone with the link can open the report without an account. Reports are not indexed by search engines. A link stops working when it expires or when you select **Revoke** under **Previous reports**, which also shows how many times each link has been viewed. A link that is expired, revoked or wrong shows the same "not found" page, so nobody can tell which links exist.
+
+### How report links are protected
+
+The link holds a random secret that ClassroomIO stores only as a hash, so a database leak cannot reveal working links. Every link expires, can be revoked at any time, and the public page limits repeated requests from one address. Reports send no referrer and are not cached. Student names appear on the report page, but not in the public skill-mastery API, which returns no names.
+
+## Assign practice
+
+Next to each skill in the skill summary, select **Assign practice to N learning** to give practice to the students still learning that skill. In the answer drawer that opens from a question header, select **Assign practice to these N** to target the students who gave the same wrong answer. Both open the same dialog. Name the exercise, choose the number of questions (1 to 10) and adjust which students are selected.
+
+ClassroomIO builds a short exercise from fresh-number variants of the skill's or question's math questions and shows it only to the students you selected. Other students do not see it in the course content, the exercise list or the learning feed, and cannot open it by its address. Teachers and admins see every exercise. Questions are only copied when their answer key can be verified.
+
+## Question analysis
+
+Open **Submissions**, then **Question analysis** for one row per question:
+
+| Column               | Meaning                                                                                   |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| Facility             | The share of students who earned full points                                              |
+| Discrimination       | How well the question separates the top 27% of students from the bottom 27%, from 0 to 1  |
+| Median time          | The typical time students spent on the question, when it was recorded                     |
+| Common wrong answers | The most frequent wrong answers and how many students gave each                           |
+| Flags                | **Too hard** under 30% facility, **Too easy** over 90%, **Poor discrimination** under 0.2 |
+
+Flags are a prompt to re-read the question, not a verdict. A question can be hard on purpose.
+
+## Related guides
+
+- [Track skill mastery](/analytics-and-reporting/track-skill-mastery) — define skills and read mastery
+- [Create math questions](/build-courses/create-math-questions) — build questions and use the results grid

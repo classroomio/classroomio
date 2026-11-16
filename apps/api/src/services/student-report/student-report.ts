@@ -118,7 +118,7 @@ export async function revokeStudentReportService(courseId: string, reportId: str
 
 /**
  * The page data behind a share token. A wrong, expired and revoked token all answer with the same 404 so the
- * response never tells a guesser which links exist. Only first name-level identity is returned: no email, no ids.
+ * response never tells a guesser which links exist. Only the student's name is returned: no email, no ids.
  */
 export async function getPublicStudentReport(token: string) {
   const report = await getStudentReportByTokenHash(hashToken(token));
