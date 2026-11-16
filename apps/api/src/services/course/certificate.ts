@@ -67,7 +67,14 @@ export async function assembleCertificateRender(
       if (issue) {
         status = resolveCertificateStatus({ revokedAt: issue.revokedAt, expiresAt: issue.expiresAt });
       }
-    } catch {}
+    } catch (error) {
+      console.error('assembleCertificateRender getLatestCertificateByCourseProfile failed', {
+        courseId,
+        recipientProfileId,
+        error
+      });
+      throw new AppError('Failed to load certificate verification', ErrorCodes.INTERNAL_ERROR, 500);
+    }
   }
 
   return {

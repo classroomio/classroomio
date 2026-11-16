@@ -8,7 +8,8 @@ export {
   type CertificateTemplateMeta,
   type StoredCertificateDesign,
   type StoredCertificateRecord,
-  type StoredCertificateSignatory
+  type StoredCertificateSignatory,
+  type VerifyPlacements
 } from './types';
 
 export {

@@ -238,7 +238,7 @@
     <Field.Legend>{$t('course.navItem.certificates.editor.qr_position')}</Field.Legend>
     <!-- <Field.Description>Current template: {certificateEditorStore.draft.templateId} — defaults to {certificateEditorStore.draft.verifyPlacements?.[certificateEditorStore.draft.templateId]?.anchor ?? 'top-right'} until changed.</Field.Description> -->
     <div class="grid grid-cols-2 gap-2">
-      {#each ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as pos}
+      {#each ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as pos (pos)}
         <Button
           variant={certificateEditorStore.draft.verifyPlacements?.[certificateEditorStore.draft.templateId]?.anchor ===
           pos

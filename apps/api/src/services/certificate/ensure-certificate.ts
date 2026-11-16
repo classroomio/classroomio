@@ -1,7 +1,8 @@
 import {
   getCertificateByCourseProfile,
   verifyCodeExists,
-  createCertificateIssue
+  createCertificateIssue,
+  updateCertificateVerifyCode
 } from '@cio/db/queries/certificate/certificate';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
@@ -37,7 +38,24 @@ export async function ensureCertificateIssue(params: EnsureCertificateIssueParam
   if (!certificatesEnabled) return null;
 
   const existing = await getCertificateByCourseProfile(courseId, profileId, cycleNumber, dbClient);
-  if (existing) return existing;
+  if (existing) {
+    if (existing.verifyCode) return existing;
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const verifyCode = generateVerifyCode();
+      if (await verifyCodeExists(verifyCode, dbClient)) continue;
+      try {
+        const updated = await updateCertificateVerifyCode(existing.id, verifyCode, dbClient);
+        if (updated) return updated;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message.includes('duplicate key') || message.includes('unique')) continue;
+        throw error;
+      }
+    }
+
+    throw new Error('Failed to generate unique verify code for existing certificate after maximum attempts');
+  }
 
   const maxAttempts = 5;
 

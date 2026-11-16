@@ -211,6 +211,27 @@ export async function getVerifyCodeExistsForPrefix(_prefix: string, _dbClient: D
   return false;
 }
 
+export async function updateCertificateVerifyCode(
+  certificateId: string,
+  verifyCode: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCourseCertificateIssue | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.courseCertificateIssue)
+      .set({ verifyCode })
+      .where(eq(schema.courseCertificateIssue.id, certificateId))
+      .returning();
+
+    return updated ?? null;
+  } catch (error) {
+    console.error('updateCertificateVerifyCode error:', error);
+    throw new Error(
+      `Failed to update certificate verify code: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getLatestCertificatesByCourseProfiles(
   courseId: string,
   profileIds: string[],
