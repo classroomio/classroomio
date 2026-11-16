@@ -73,9 +73,16 @@
   const hasParameters = $derived(
     contract.mode !== 'edit' && readQuestionParameters(contract.question.settings) !== null
   );
-  const freshSeed = createVariantSeed();
+  let freshSeed = $state(createVariantSeed());
+  let hadSeededAnswer = false;
   const variantSeed = $derived(hasParameters ? (contract.answer?.seed ?? freshSeed) : null);
   let variantQuestion = $state<ExerciseQuestionModel | null>(null);
+
+  $effect(() => {
+    const hasSeededAnswer = Boolean(contract.answer?.seed);
+    if (hadSeededAnswer && !hasSeededAnswer) freshSeed = createVariantSeed();
+    hadSeededAnswer = hasSeededAnswer;
+  });
 
   $effect(() => {
     if (!hasParameters || !variantSeed) return;
