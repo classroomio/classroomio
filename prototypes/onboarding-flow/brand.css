@@ -401,6 +401,11 @@
   --fg: var(--ink-900);
   --kc: var(--blue-700);
 }
+.tone-soft {
+  --bg: var(--blue-200);
+  --fg: var(--ink-900);
+  --kc: var(--blue-700);
+}
 .tone-blue {
   --bg: var(--blue-700);
   --fg: #fff;
@@ -1193,8 +1198,18 @@
 .blk-empty .blk-kind {
   color: var(--ink-500);
 }
-.blk.drop {
-  animation: block-drop-once 760ms linear both;
+@keyframes block-settle {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.st-stack .blk.drop {
+  animation: block-settle 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .st-count {
   margin: 34px 0 0;

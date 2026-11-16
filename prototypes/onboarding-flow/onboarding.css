@@ -2452,207 +2452,11 @@
   color: var(--foreground);
   font-size: 15px;
 }
-
-/* ---- Quartz, rendered from packages/ui/src/custom/org-landing-page/quartz/vars.ts ---- */
-.qz {
-  --canvas: #f3f3f4;
-  --qz-card: #ffffff;
-  --ink: #111114;
-  --muted: #6e6e77;
-  --faint: #9a9aa3;
-  --rule: #e3e3e6;
-  background: var(--canvas);
-  color: var(--ink);
-  font-size: 13px;
-  letter-spacing: -0.01em;
-}
-.qz-nav {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 12px 24px;
-  border-bottom: 1px solid var(--rule);
-}
-.qz-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  margin-right: auto;
-  min-width: 0;
-}
-.qz-mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: var(--ink);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 10px;
-  font-weight: 700;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.qz-mark img {
+.site-frame {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: #fff;
-}
-.qz-links {
-  display: flex;
-  gap: 20px;
-  color: var(--muted);
-}
-.qz-btn {
-  display: inline-flex;
-  align-items: center;
-  height: 30px;
-  padding: 0 14px;
-  border-radius: 8px;
-  font-weight: 550;
-  background: var(--qz-accent);
-  color: var(--qz-accent-fg);
-  white-space: nowrap;
-}
-.qz-btn.line {
-  background: var(--qz-card);
-  color: var(--ink);
-  border: 1px solid var(--rule);
-}
-.qz-hero {
-  padding: 46px 24px 26px;
-}
-.qz-kicker {
-  color: var(--muted);
-  margin: 0 0 14px;
-}
-.qz-hero h1 {
-  font-size: 34px;
-  line-height: 1.06;
-  letter-spacing: -0.038em;
-  font-weight: 600;
-  margin: 0;
-  max-width: 20ch;
-}
-.qz-hero h1 span {
-  color: var(--faint);
-}
-.qz-lede {
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.6;
-  max-width: 52ch;
-  margin: 14px 0 20px;
-}
-.qz-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.qz-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 24px;
-  flex-wrap: wrap;
-}
-.qz-chips {
-  display: flex;
-  gap: 4px;
-}
-.qz-chips span {
-  padding: 5px 12px;
-  border-radius: 999px;
-  color: var(--muted);
-}
-.qz-chips .on {
-  background: var(--ink);
-  color: #fff;
-}
-.qz-search {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--qz-card);
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  padding: 6px 10px;
-  color: var(--faint);
-  width: 210px;
-}
-.qz-label {
-  background: var(--qz-card);
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  padding: 9px 24px;
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--faint);
-}
-.qz-cells {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  background: var(--qz-card);
-}
-.qz-cell {
-  padding: 20px 22px;
-  border-right: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  display: flex;
-  flex-direction: column;
-  min-height: 170px;
-}
-.qz-cell:nth-child(2n) {
-  border-right: none;
-}
-.qz-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  margin-bottom: 12px;
-}
-.qz-cell h3 {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.026em;
-  line-height: 1.25;
-  margin: 0 0 7px;
-}
-.qz-cell p {
-  color: var(--muted);
-  font-size: 12.5px;
-  line-height: 1.55;
-  margin: 0;
-}
-.qz-cell-foot {
-  margin-top: auto;
-  padding-top: 16px;
-  display: flex;
-  justify-content: space-between;
-  color: var(--faint);
-  font-size: 12px;
-}
-.qz-link {
-  color: var(--qz-accent);
-  font-weight: 600;
-}
-.qz-empty {
-  background: var(--qz-card);
-  padding: 40px;
-  text-align: center;
-  color: var(--muted);
-}
-.qz-foot {
-  display: flex;
-  justify-content: space-between;
-  padding: 18px 24px;
-  color: var(--faint);
-  font-size: 12px;
-  background: var(--qz-card);
+  min-height: 600px;
+  border: 0;
 }
 
 /* ---- modals ---- */
@@ -2843,15 +2647,6 @@
   }
   .up-head {
     flex-wrap: wrap;
-  }
-  .qz-cells {
-    grid-template-columns: 1fr;
-  }
-  .qz-cell {
-    border-right: none;
-  }
-  .qz-links {
-    display: none;
   }
 }
 .seg2 button {
@@ -3453,14 +3248,6 @@ html.dark .mini-nav.on {
   flex-shrink: 0;
   stroke-width: 2.6;
   color: var(--success);
-}
-.qz-brand {
-  cursor: pointer;
-  text-decoration: underline dotted;
-  text-underline-offset: 3px;
-}
-.qz-brand:hover {
-  color: var(--ink);
 }
 @media (max-width: 1100px) {
   .pr-plans {

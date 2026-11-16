@@ -7,6 +7,7 @@ const P = window.proto;
 const M = window.siteModel;
 const S = P.loadState();
 const isEmbed = new URLSearchParams(window.location.search).get('embed') === '1';
+const isThemePreview = new URLSearchParams(window.location.search).get('view') === 'preview';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const esc = P.escapeHtml;
@@ -35,6 +36,26 @@ function paintSite() {
   M.mount($('#site-root'), S, { includeDrafts: true });
 }
 
+/**
+ * The Customise step's preview (`?view=preview`): the real theme, read-only, re-rendered whenever the
+ * parent posts a newer onboarding state (brand name, colour, logo or theme).
+ */
+function mountThemePreview() {
+  const root = $('#site-root');
+
+  const paintAsVisitor = () => M.mount(root, S, { includeDrafts: true, asVisitor: true });
+
+  root.inert = true;
+  paintAsVisitor();
+
+  window.addEventListener('message', (event) => {
+    if (event.origin !== window.location.origin || event.data?.type !== 'preview-state') return;
+
+    Object.assign(S, event.data.state);
+    paintAsVisitor();
+  });
+}
+
 document.addEventListener('click', (event) => {
   const link = event.target.closest?.('#site-root a');
 
@@ -43,7 +64,7 @@ document.addEventListener('click', (event) => {
   const href = link.getAttribute('href') ?? '';
   const routes = window.model.R;
 
-  if (isEmbed) {
+  if (isEmbed || isThemePreview) {
     event.preventDefault();
     return;
   }
@@ -78,6 +99,8 @@ if (!hasWorkspace) {
       <p>An academy lives at the address you choose when you create your workspace. Nothing is created for you until you do.</p>
       <a class="ad-btn ad-primary" href="${esc(window.model.R.onboarding)}">Create your workspace</a>
     </div>`;
+} else if (isThemePreview) {
+  mountThemePreview();
 } else if (isEmbed) {
   document.documentElement.classList.add('ad-embed');
   const LABELS = {
@@ -104,7 +127,8 @@ if (!hasWorkspace) {
     handle.update(M.propsOf(S, { settings: event.data.settings, includeDrafts: true }));
   });
   document.addEventListener('click', (event) => {
-    if (!event.target.closest('[data-landing-section]')) window.parent.postMessage({ type: 'landing-select', key: null }, '*');
+    if (!event.target.closest('[data-landing-section]'))
+      window.parent.postMessage({ type: 'landing-select', key: null }, '*');
   });
 } else {
   paintSite();

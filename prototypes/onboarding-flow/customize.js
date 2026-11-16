@@ -4,8 +4,9 @@
  * A full-width preview of the learning portal sits above a docked strip of the real themes,
  * with a floating pill for brand name, logo and colour. Themes are the real eleven and only
  * Quartz is free (FREE_LANDING_PAGE_THEMES), so a locked tile opens the upgrade popup.
- * Quartz is rendered live from its real tokens; a premium theme can only be previewed as its
- * stock preview image — the preview says so.
+ * The applied theme is the real landing page (site.html?view=preview, the repo's own Svelte components),
+ * kept in step with the brand name, logo and colour; a theme that is only being previewed shows its
+ * stock preview image, and the preview says so.
  */
 
 const P = window.proto;
@@ -57,11 +58,42 @@ function paintTitle() {
 }
 
 /* ---------- preview ---------- */
+function previewUrl() {
+  return `https://${S.siteName || P.slugify(brandName()) || 'your-academy'}.classroomio.com`;
+}
+
+/** Grows the frame to the page inside it, so the preview scrolls with the step instead of inside a box. */
+function fitSiteFrame(frame) {
+  const doc = frame.contentDocument;
+  if (!doc?.body) return;
+
+  const fit = () => {
+    frame.style.height = `${doc.documentElement.scrollHeight}px`;
+  };
+
+  fit();
+  new ResizeObserver(fit).observe(doc.body);
+}
+
+function syncSiteFrame() {
+  $('#site-frame')?.contentWindow?.postMessage({ type: 'preview-state', state: S }, window.location.origin);
+}
+
 function paintPreview() {
   const shown = P.themeById(previewTheme || S.theme);
   const isPreviewOnly = Boolean(previewTheme) && previewTheme !== S.theme;
   const locked = !P.canUseTheme(shown.id, S.plan);
-  const frame = shown.id === 'quartz' ? P.quartzHTML(S) : P.themeShotHTML(shown);
+  const liveFrame = $('#site-frame');
+
+  if (!isPreviewOnly && liveFrame) {
+    $('#preview .preview-url').textContent = previewUrl();
+    syncSiteFrame();
+    return;
+  }
+
+  const frame = isPreviewOnly
+    ? P.themeShotHTML(shown)
+    : '<iframe class="site-frame" id="site-frame" src="site.html?view=preview" title="Your academy, as visitors will see it"></iframe>';
 
   const banner = isPreviewOnly
     ? `<div class="portal-banner">
@@ -71,21 +103,13 @@ function paintPreview() {
           ${locked ? `<button class="btn btn-primary btn-sm" id="preview-upgrade">${icon('zap', 13)} Use this theme</button>` : '<button class="btn btn-primary btn-sm" id="preview-apply">Apply theme</button>'}
         </span>
       </div>`
-    : shown.id === 'quartz'
-      ? ''
-      : `<div class="portal-banner"><span>${icon('info', 14)} <b>${esc(shown.title)}</b> is applied. This is its stock preview. Your name, colours and courses fill it in when published.</span></div>`;
+    : '';
 
   $('#preview').innerHTML = `${banner}
-    <div class="preview-wrap"><div class="preview-chrome"><span class="shot-dot"></span><span class="shot-dot"></span><span class="shot-dot"></span><span class="preview-url">https://${esc(S.siteName || P.slugify(brandName()) || 'your-academy')}.classroomio.com</span></div>${frame}</div>`;
+    <div class="preview-wrap"><div class="preview-chrome"><span class="shot-dot"></span><span class="shot-dot"></span><span class="shot-dot"></span><span class="preview-url">${esc(previewUrl())}</span></div>${frame}</div>`;
 
-  $$('[data-premium]', $('#preview')).forEach((node) => {
-    const run = () => openPremium(node.dataset.premium, paintPreview);
-
-    node.addEventListener('click', run);
-    node.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') run();
-    });
-  });
+  const siteFrame = $('#site-frame');
+  siteFrame?.addEventListener('load', () => fitSiteFrame(siteFrame));
 
   $('#exit-preview')?.addEventListener('click', () => {
     previewTheme = '';
@@ -500,11 +524,6 @@ function mountModal(html, { wide = false } = {}) {
   });
   document.addEventListener('keydown', onModalKey);
   $('[data-close]', modalHost())?.focus();
-}
-
-/* Every premium click opens the same pricing card (pricing.js). */
-function openPremium(item, onUpgrade) {
-  window.pricing.open({ state: S, item, commit, onUpgrade });
 }
 
 function openUpgradeModal(themeId) {

@@ -673,6 +673,7 @@ function isValidSite(value) {
 let openSection = '';
 let advanceTimer = 0;
 const stackSeen = {};
+const stackTones = {};
 
 function goalById(id) {
   return P.GOALS.find((goal) => goal.id === id);
@@ -743,55 +744,77 @@ function requiredSections() {
   return SECTIONS.filter((section) => !section.optional);
 }
 
+/** Settles when the section folds, so the block does not re-drop on every keystroke while it is open. */
+function businessBlockValue() {
+  if (openSection === 'website') return stackSeen.business ?? '';
+  if (!sectionDone('website')) return '';
+  if (S.skipContext) return 'Generic starter set';
+  if (S.siteMode === 'describe') return S.description.trim();
+
+  return S.website
+    .trim()
+    .replace(/^https?:\/\//i, '')
+    .replace(/^www\./i, '')
+    .replace(/\/$/, '');
+}
+
 function stackItems() {
   return [
     { key: 'workspace', kind: 'WORKSPACE', tone: 'ink', width: 300, value: S.company.trim(), empty: 'Your academy' },
     {
-      key: 'outcome',
-      kind: 'FIRST OUTCOME',
+      key: 'business',
+      kind: 'YOUR BUSINESS',
       tone: 'blue',
       width: 340,
+      value: businessBlockValue(),
+      empty: 'Add your website'
+    },
+    {
+      key: 'outcome',
+      kind: 'FIRST OUTCOME',
+      tone: 'soft',
+      width: 300,
       value: goalById(S.goals[0])?.label ?? '',
       empty: 'Choose a first outcome'
     },
     {
       key: 'team',
       kind: 'TEAM',
-      tone: 'tint',
-      width: 300,
+      tone: 'sand',
+      width: 340,
       value: optionById(P.COMPANY_SIZES, S.companySize)?.label ?? '',
       empty: 'Choose a size'
     },
     {
       key: 'role',
       kind: 'ROLE',
-      tone: 'sand',
-      width: 340,
+      tone: 'soft',
+      width: 300,
       value: roleById(S.role)?.label ?? '',
       empty: 'Choose a role'
     },
     {
       key: 'today',
       kind: 'TODAY',
-      tone: 'sand',
-      width: 300,
+      tone: 'blue',
+      width: 340,
       value: SHORT_LEARN[S.learningMethod] ?? '',
       empty: 'Choose one'
     }
   ];
 }
 
-function stackMarkup() {
-  return stackItems()
-    .map((item, index) => {
-      const filled = Boolean(item.value);
+function stackToneFor(item) {
+  return item.value ? item.tone : 'empty';
+}
 
-      return `<div class="blk tone-${item.tone}${filled ? '' : ' blk-empty'}" data-stack="${item.key}" style="--w:${item.width}px;--n:${index};z-index:${index + 1}">
+function stackBlockMarkup(item, index, tone) {
+  const filled = tone !== 'empty';
+
+  return `<div class="blk ${filled ? `tone-${tone}` : 'blk-empty'}" data-stack="${item.key}" style="--w:${item.width}px;--n:${index};z-index:${index + 1}">
         <div class="blk-face${filled ? ' notch-cutout' : ''}"><span class="blk-kind">${esc(item.kind)}</span><b class="blk-title">${esc(item.value || item.empty)}</b></div>
         ${filled && index > 0 ? '<span class="blk-tab" aria-hidden="true"></span>' : ''}
       </div>`;
-    })
-    .join('');
 }
 
 function paintStack() {
@@ -801,19 +824,25 @@ function paintStack() {
   const items = stackItems();
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (!host.children.length) host.innerHTML = stackMarkup();
+  if (!host.children.length) {
+    host.innerHTML = items.map((item, index) => stackBlockMarkup(item, index, 'empty')).join('');
+  }
 
-  const fresh = document.createElement('div');
-  fresh.innerHTML = stackMarkup();
-
-  items.forEach((item) => {
+  items.forEach((item, index) => {
+    const tone = stackToneFor(item);
     const current = $(`[data-stack="${item.key}"]`, host);
-    const next = $(`[data-stack="${item.key}"]`, fresh);
 
-    if (stackSeen[item.key] === item.value && current) return;
+    if (stackSeen[item.key] === item.value && stackTones[item.key] === tone && current) return;
 
-    const changed = item.key in stackSeen || Boolean(item.value);
+    const valueChanged = stackSeen[item.key] !== item.value;
+    const changed = valueChanged && (item.key in stackSeen || Boolean(item.value));
+    const holder = document.createElement('div');
+
+    holder.innerHTML = stackBlockMarkup(item, index, tone);
+    const next = holder.firstElementChild;
+
     stackSeen[item.key] = item.value;
+    stackTones[item.key] = tone;
     current.replaceWith(next);
 
     if (item.value && changed && !reduce) {
@@ -879,6 +908,7 @@ function renderBusiness() {
 
   openSection = requiredSections().find((section) => !sectionDone(section.id))?.id ?? '';
   Object.keys(stackSeen).forEach((key) => delete stackSeen[key]);
+  Object.keys(stackTones).forEach((key) => delete stackTones[key]);
 
   const body = {
     outcome: `

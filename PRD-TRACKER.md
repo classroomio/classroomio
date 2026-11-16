@@ -19,7 +19,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | 7 | - | `prd/selective-exercise-assignment` | todo |
 | - | - | `prd/scorm-support` | todo |
 | - | 4 | `prd/course-content-search` | todo |
-| - | 9 | `prd/onboarding-ai-bootstrap` | todo |
+| - | 9 | `prd/onboarding` | todo |
 | - | 10 | `prd/pricing-improvements` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | - | `prd/walkthrough-widget` | draft |

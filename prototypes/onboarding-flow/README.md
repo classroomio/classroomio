@@ -3,17 +3,16 @@
 Clickable UX exploration for onboarding: sign-up, a business screen, a simulated preparation step,
 customisation, and the admin's first look at their own academy: the real landing page with a short list of next steps.
 
-It joins two drafted specs that currently overlap:
-[`prd/onboarding-ai-bootstrap/`](../../prd/onboarding-ai-bootstrap/README.md) (website → AI-drafted courses → brand)
-and [`prd/onboarding-platform-showcase/`](../../prd/onboarding-platform-showcase/README.md) (theme picker → seeded
-demo courses). Read both before reviewing; §"Where the two specs disagree" needs a product decision.
+It follows [`prd/onboarding/`](../../prd/onboarding/README.md), which merges the earlier AI bootstrap spec (website →
+AI-drafted courses → brand) and platform showcase spec (theme picker → seeded demo courses). Read it before reviewing;
+its § "Decisions needed" and the section below, "Where the two specs disagree", still need a product decision.
 
 | File | What it is |
 | --- | --- |
 | `index.html` | Prototype map — start here |
 | `flow.html` | **Interactive.** Stage 1–2 (account, verify — unchanged), stage 3 (business), stage 4 (the split-screen "Hi, {{user.name}}" step: full name, organisation, academy subdomain with a simulated availability check), and the simulated preparation scene |
 | `customize.html` | **Interactive.** Stage 4, theme-dock layout: full-width portal preview, a floating pill for brand name, logo and colour, a docked strip of the real themes; the upgrade popup; starter-content editor; the integrations modal |
-| `build.html` | **Interactive.** Stage 6, after Customise: a chat pane beside a live preview. A real ClassroomIO YouTube video autoplays over the preview on arrival and docks to the bottom-right corner when it ends, until closed. A starter prompt (or any text) runs a scripted build, the preview fills with a course, then suggestions for connecting content, adding features and publishing. The chat mirrors the dashboard AI assistant: header with new chat and history, quick-action chips, document attach, `@` lesson mentions and the model picker (Kimi K2.6, Gemini 3.1 Flash Lite, GPT-5.4 Mini, Claude Sonnet 4.6). `build.js`, `build.css` and `welcome.css` carry it. Simulated: no model is called and no course is saved |
+| `build.html` | **Interactive.** Stage 6, after Customise: a chat pane beside a live preview. A real ClassroomIO YouTube video autoplays over the preview on arrival and docks to the bottom-right corner when it ends, until closed. A starter prompt (or any text) runs a scripted build, the preview shows the org's Courses dashboard (`courses.html?preview=1`, read-only, no tour) with the new course on it, then suggestions for connecting content, adding features and publishing. The chat mirrors the dashboard AI assistant: header with new chat and history, quick-action chips, document attach, `@` lesson mentions and the model picker (Kimi K2.6, Gemini 3.1 Flash Lite, GPT-5.4 Mini, Claude Sonnet 4.6). `build.js`, `build.css` and `welcome.css` carry it. Simulated: no model is called and no course is saved |
 | `motion.css` | Motion tokens, the one staggered entrance, and the reduced-motion switch |
 | `brand.css` | The brand layer: logo lockup, mono eyebrows, swipe highlight, notch, wash and dotfield, Machine styles, blocks and the block loader, the preparation scene, step 3 blocks, customise chrome |
 | `visuals.js` + `machines.js` | The system's own Machine illustration and block loader. `machines.js` is generated from `packages/ui` by `tools/extract-machines.py` |
@@ -58,7 +57,7 @@ prototype needs a network connection to show them. Offline, each frame degrades 
 
 1. **Create your account** and 2. **Verify your email** — **unchanged** from round 1: layout, visual panel, testimonial
    carousel, validation, resend cooldown and interactions. The verify screen stays focused on the inbox; the discovery question lives in step 3.
-2. **Your business** (stage 3) — one screen, no preview, built from idea 2 of the second design round. A four-section accordion asks the first outcome, company (name and optional website), team (role and company size) and how customers learn today, then an optional fifth, **"How did you hear about us?"** (the production nine sources, an AI-assistant follow-up and an "Other" text box, with a Skip button). It sits last on purpose: it is the one question that gives the user nothing back, so it comes after the four that shape the workspace and never blocks Prepare. The section that needs an answer opens by itself and a finished one folds to a summary line: picking an outcome, a size, a role pair or a learning method advances after 300 ms, and the company section advances on Enter or Next. Each answer drops a notch block into a five-block workspace stack beside it (workspace, first outcome, team, role, today), with dashed blocks for what is still open. Nothing is preselected, so the minimum is four answers; Prepare my workspace opens the first unanswered section if one is missing. Nothing is fetched or analysed. The courses appear on the Courses page once prepared.
+2. **Your business** (stage 3) — one screen, no preview, built from idea 2 of the second design round. A four-section accordion asks the first outcome, company (name and optional website), team (role and company size) and how customers learn today, then an optional fifth, **"How did you hear about us?"** (the production nine sources, an AI-assistant follow-up and an "Other" text box, with a Skip button). It sits last on purpose: it is the one question that gives the user nothing back, so it comes after the four that shape the workspace and never blocks Prepare. The section that needs an answer opens by itself and a finished one folds to a summary line: picking an outcome, a size, a role pair or a learning method advances after 300 ms, and the company section advances on Enter or Next. Each answer drops a notch block into a six-block workspace stack beside it (workspace, your business, first outcome, team, role, today), with dashed blocks for what is still open. Answered blocks mix the brand tones in a fixed rhythm (ink, blue, soft blue, sand, soft blue, blue); the business block settles when its section folds, not on each keystroke. Nothing is preselected, so the minimum is four answers; Prepare my workspace opens the first unanswered section if one is missing. Nothing is fetched or analysed. The courses appear on the Courses page once prepared.
 3. **Preparation** - one phase at a time in large type on the brand wash, while the drafted courses, the path and the workspace drop in as notch blocks (simulated, and says so on screen). With reduced motion it shows the finished state.
 4. **Customise** (stage 4) — a full-width preview of the learning portal with a docked strip of the eleven real themes beneath it. A floating pill holds the workspace name and logo, the five real colour presets, and a custom colour (HEX or RGB). Each theme tile carries its Free or Premium tag; Preview is always allowed, and a locked tile opens the upgrade popup. A **Starter content** button opens a list to rename or remove the drafted courses and path.
 5. **Done customising** lands on the Courses page and starts the product tour (`tour.js`) as a spotlight: the page dims except a cut-out around one real control (course list, first course, templates, Landing Page, Audience, Your Academy), with a glass tip beside it showing "n of m", **Back**, **Next** and **Skip tour**. The page stays clickable, so clicking the highlighted link counts as the step done, and the tour resumes on Courses when the user returns. Steps whose control is hidden at the current width are skipped; on phones the tip is a bottom sheet. **Skip to academy** (top of this step) goes straight to the academy landing page with no tour.
@@ -81,7 +80,7 @@ returning to stage 3 and continuing unchanged keeps any course you removed rathe
 | Pricing card layout (plan cards, billing toggle) | modelled on `apps/dashboard/src/lib/features/ui/upgrade-modal.svelte`, now with five plans |
 | Brand colour: five presets + custom hex, one value | `features/settings/pages/org.svelte` (`themes`, `ColorPicker`) and `app.css` `body[data-theme=…]`; custom hex via `injectCustomTheme()` in `lib/utils/functions/theme.ts` |
 | Logo | `organization.avatarUrl` (`UploadImage` in `org.svelte`) |
-| Quartz rendering | `packages/ui/src/custom/org-landing-page/quartz/vars.ts` — accent and buttons use `var(--primary)`, so brand colour drives them |
+| Quartz rendering | The real `packages/ui/src/custom/org-landing-page` components (`site/bundle.js`) — accent and buttons use `var(--primary)`, so brand colour drives them |
 | Sidebar groups and order | `apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts` (`GROUP_ORDER`) |
 | **Plan names, prices, limits, features** | **The five-plan pricing supplied by the product owner** (Free / Starter $29 / Growth $69 / Scale $139 / Enterprise). Stored in `proto.js` as `PLANS`. **It is a proposal that differs from what ships** — see § Pricing |
 | Integration availability | see next section |
@@ -155,7 +154,7 @@ Labelled on screen wherever it happens, not only here.
   list and choose the path's name. The four-phase preparation is a timer.
 - **Real AI exists but is not reused here.** `prd/ai-course-assistant` is done and `apps/api/src/services/course-import`
   exists. A frontend-only prototype cannot call them, so generation is a simulation. The real implementation should call
-  those services; `prd/onboarding-ai-bootstrap` FR-3 specifies schema-validated output.
+  those services; `prd/onboarding` FR-3 specifies schema-validated output.
 - **Email verification** is advanced by a labelled prototype button. **Google sign-up** fills the form; no OAuth.
 - **Upgrade** records a plan choice. No checkout runs and no payment details are collected.
 - **Connecting a tool** opens a dialog that states it is simulated and requests nothing.
@@ -163,9 +162,10 @@ Labelled on screen wherever it happens, not only here.
 
 ## The theme preview limitation
 
-Quartz is rendered live from its real tokens, so your name, logo, colour and courses appear in it. The other ten themes can
-only be shown as their stock preview image, because rendering them live would need the real Svelte components. The banner says
-so ("stock preview image, not your content"), and an applied premium theme says your content fills it in when published.
+The applied theme (Quartz by default) is the real landing page: `site.html?view=preview` renders the repo's own
+`org-landing-page` Svelte components from `site/bundle.js`, read-only, and re-renders as the name, logo and colour change, so the
+Customise preview matches the academy exactly. A theme that is only being previewed, not applied, shows its stock preview
+image, and the banner says so ("stock preview image, not your content").
 
 The real picker has the same split: **Preview** is always allowed, **Apply** is not for a locked theme. The prototype keeps
 both, and clicking a locked card opens the upgrade popup rather than silently doing nothing.
@@ -228,8 +228,8 @@ option (`maps`) so the gap is visible in code.
 
 ## Where the two specs disagree
 
-`onboarding-ai-bootstrap` FR-3: generate **exactly two** courses from the product context. `onboarding-platform-showcase`
-FR-2: seed **two curated demo courses** matched to the goal. Run both and you get four with no stated relationship.
+The earlier `onboarding-ai-bootstrap` spec (FR-3): generate **exactly two** courses from the product context. The earlier
+`onboarding-platform-showcase` spec (FR-2): seed **two curated demo courses** matched to the goal. Run both and you get four with no stated relationship.
 
 This prototype produces **four starter courses and one path**, in line with the brief's example. Three are drafted from the
 product and the goals can swap in one or two goal-matched courses (badged "Matched to your goal"). **A proposal, not a
@@ -262,7 +262,7 @@ Both PRDs are drafts; the shipped onboarding (`ONBOARDING_STEPS` in `features/on
 - Starter course content is a title and description. The real seed carries sections, lessons and markdown notes.
 - Keyword matching includes the website *string* (a domain like `lumen-analytics.io` matches "analytic"). It never loads the site.
 - "Regenerate" was removed with the review screen; changing any input on stage 3 and continuing re-runs the preparation.
-- The preparation-failure state is in `states.html` only (`prd/onboarding-platform-showcase` FR-4: five-second timeout, never
+- The preparation-failure state is in `states.html` only (`prd/onboarding` FR-5: five-second timeout, never
   strand the user).
 - Logo files are held as data URLs in `localStorage`; a large image can exceed the quota. The write is wrapped in `try/catch`.
 - Out-of-scope controls (sidebar links, Edit, Publish, Invite a teammate) raise a toast naming where the real thing lives.

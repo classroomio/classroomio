@@ -17,7 +17,8 @@
   function heroDefaults() {
     return {
       heading: 'Become a Certified AI Engineer',
-      subheading: 'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
+      subheading:
+        'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
       primaryAction: { label: 'Start Learning', href: '/lms' },
       secondaryAction: { label: 'Browse', href: '/courses' },
       image: 'site/learn-on-cio.jpg'
@@ -125,13 +126,15 @@
   function propsOf(state, overrides = {}) {
     const settings = overrides.settings ?? settingsOf(state);
     const chrome = window.academy ? window.academy.chromeProps(state) : {};
+    const ownerAction = chrome.authAction ?? { label: 'Go to dashboard', href: 'dashboard.html' };
+    const visitorAction = { label: T('navigation.login'), href: '/login' };
 
     return {
       orgName: brandOf(state),
       logoUrl: state.logoDataUrl || undefined,
       navItems: settings.navItems,
-      authAction: chrome.authAction ?? { label: 'Go to dashboard', href: 'dashboard.html' },
-      learnerAccount: chrome.learnerAccount,
+      authAction: overrides.asVisitor ? visitorAction : ownerAction,
+      learnerAccount: overrides.asVisitor ? undefined : chrome.learnerAccount,
       hero: settings.hero,
       links: settings.links,
       embed: settings.embed,

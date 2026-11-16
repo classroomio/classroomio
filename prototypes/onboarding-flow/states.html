@@ -71,7 +71,7 @@
         item('Preparation (checklist fallback)', 'The shipped scene drops the drafted courses in as blocks, which cannot be shown statically. This is the same four phases as a list; the scene says plainly that nothing is fetched, and shows the finished state under reduced motion.',
           `<div class="prep-steps" style="margin:0 auto">${P.PREP_PHASES.map((p, i) => `<div class="prep-step ${i < 2 ? 'done' : i === 2 ? 'active' : ''}"><span class="prep-mark">${ic('check', 10)}</span><span>${p.label}</span></div>`).join('')}</div><p class="text-muted" style="font-size:11.5px;text-align:center;margin-top:16px">Simulated — no website was fetched and no model was called.</p>`),
         item('Preparation failed',
-          '<b>Specified, not wired.</b> prd/onboarding-platform-showcase FR-4: seeding has a five-second timeout and a failure must never strand the user. One retry, or continue with an empty workspace.',
+          '<b>Specified, not wired.</b> prd/onboarding FR-5: seeding has a five-second timeout and a failure must never strand the user. One retry, or continue with an empty workspace.',
           `<div class="prep" style="margin-top:0"><div class="prep-orb" style="background:var(--warning-soft);color:var(--warning)">${ic('warn', 26)}</div><h2>We couldn't prepare your courses</h2><p>Your workspace and branding are safe — only the starter courses failed.</p><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline">Continue without them</button><button class="btn btn-primary">Try again</button></div></div>`)
       ].join('');
 

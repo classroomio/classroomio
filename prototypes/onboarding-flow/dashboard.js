@@ -340,11 +340,26 @@ function wireChrome() {
   P.initTheme();
 }
 
+/* ?preview=1 is the read-only copy the onboarding builder (build.html) shows beside its chat. */
+const IS_PREVIEW = new URLSearchParams(window.location.search).get('preview') === '1';
+
+function lockPreview() {
+  document.addEventListener(
+    'click',
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    true
+  );
+}
+
 renderPage();
 wireChrome();
-if (PAGE === 'courses') window.tour?.init();
+if (IS_PREVIEW) lockPreview();
+if (PAGE === 'courses' && !IS_PREVIEW) window.tour?.init();
 
-if (!S.completedAt) {
+if (!S.completedAt && !IS_PREVIEW) {
   P.toast('No onboarding data found. Showing defaults.', {
     action: 'Run the flow',
     onAction: () => (window.location.href = 'flow.html')

@@ -252,9 +252,7 @@
   }
 
   function paintUrl() {
-    const path = view.course ? `/course/${P.slugify(view.course.title)}` : '';
-
-    $('#url').innerHTML = `https://<b>${esc(SITE)}</b>.classroomio.com${esc(path)}`;
+    $('#url').innerHTML = `https://app.classroomio.com/org/<b>${esc(SITE)}</b>/courses`;
   }
 
   function paintCoach() {
@@ -749,7 +747,7 @@
 
       pushMessage(`
       <div class="bd-msg">
-        <p>Your first course is ready. <b>${esc(course.title)}</b> has ${course.lessons.length} lessons across two sections. This is the course page your learners will see.</p>
+        <p>Your first course is ready. <b>${esc(course.title)}</b> has ${course.lessons.length} lessons across two sections. It is on your Courses dashboard now, next to your other courses.</p>
         <p>It is filled with starter content, so edit it or connect your own material below.</p>
       </div>`);
       pushMessage(rowHTML('Saving draft', '<p>Saved as a draft. Learners cannot see it until you publish.</p>'));
@@ -816,10 +814,10 @@
     }
 
     if (/question|quiz/i.test(text))
-      return 'I would write questions from the lesson you have open. Open a lesson from the preview, then ask again. (Simulated)';
+      return 'I would write questions from the lesson you have open. Open a lesson from your course, then ask again. (Simulated)';
 
     if (/summar/i.test(text))
-      return 'I would summarise the lesson you have open in a few lines. Open a lesson from the preview, then ask again. (Simulated)';
+      return 'I would summarise the lesson you have open in a few lines. Open a lesson from your course, then ask again. (Simulated)';
 
     if (/draft/i.test(text))
       return 'I would draft the lesson in your brand voice and add it to the right section. (Simulated in this prototype.)';
@@ -893,7 +891,7 @@
   }
 
   function previewUrl() {
-    return `${window.model.R.publicCourse(view.courseId)}&preview=1`;
+    return window.model.R.courses({ preview: 1 });
   }
 
   function reloadPreview() {
@@ -921,25 +919,7 @@
       return;
     }
 
-    canvas.innerHTML = `<iframe class="bd-frame" id="preview-frame" title="Course page preview" src="${previewUrl()}"></iframe>`;
-  }
-
-  /* ---------- modals ---------- */
-  function closeModal() {
-    $('#modal-host').innerHTML = '';
-    document.removeEventListener('keydown', onModalKey);
-  }
-
-  function onModalKey(event) {
-    if (event.key === 'Escape') closeModal();
-  }
-
-  function mountScrim(html) {
-    $('#modal-host').innerHTML = `<div class="scrim" id="scrim">${html}</div>`;
-    $('#scrim').addEventListener('click', (event) => {
-      if (event.target.id === 'scrim') closeModal();
-    });
-    document.addEventListener('keydown', onModalKey);
+    canvas.innerHTML = `<iframe class="bd-frame" id="preview-frame" title="Courses dashboard preview" src="${previewUrl()}"></iframe>`;
   }
 
   /* ---------- intro video ---------- */
@@ -1063,33 +1043,11 @@
   }
 
   /* ---------- publish ---------- */
-  function openPublish() {
-    mountScrim(`
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pub-title">
-      <h3 id="pub-title">Publish your academy</h3>
-      <p>${esc(view.course.title)} goes live at <b>${esc(SITE)}.classroomio.com</b>.</p>
-      <div class="field" style="margin-top:16px">
-        <label class="label" for="pub-access">Who can enrol</label>
-        <select class="input" id="pub-access">
-          <option>Anyone with the link</option>
-          <option>Invited learners only</option>
-        </select>
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-outline" data-close>Not yet</button>
-        <button class="btn btn-primary" id="pub-go">Publish</button>
-      </div>
-    </div>`);
-
-    $('[data-close]').addEventListener('click', closeModal);
-    $('#pub-go').addEventListener('click', () => {
-      window.model.setPublished(S, view.courseId, true);
-      commit();
-      closeModal();
-      P.toast('Published (simulated). Taking you to your courses.');
-      setTimeout(goToCourses, REDUCED_MOTION ? 200 : 1100);
-    });
-    $('#pub-go').focus();
+  function publishCourse() {
+    window.model.setPublished(S, view.courseId, true);
+    commit();
+    P.toast('Published (simulated). Taking you to your courses.');
+    setTimeout(goToCourses, REDUCED_MOTION ? 200 : 1100);
   }
 
   /* ---------- navigation ---------- */
@@ -1112,7 +1070,7 @@
   function wire() {
     P.initTheme();
 
-    $('#publish').addEventListener('click', openPublish);
+    $('#publish').addEventListener('click', publishCourse);
     $('#attach-input').addEventListener('change', onAttach);
     document.addEventListener('click', (event) => {
       if (!event.target.closest('#model, #model-pop')) closeModelPop();

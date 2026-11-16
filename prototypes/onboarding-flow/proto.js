@@ -1248,50 +1248,10 @@ function markHTML(state) {
   return state.logoDataUrl ? `<img src="${state.logoDataUrl}" alt="" />` : escapeHtml(initials(brandNameOf(state)));
 }
 
-/* A premium theme can only be shown as its stock preview image: rendering it live would
- * need the real Svelte components. The preview image is the asset the real theme picker uses. */
+/* A theme the user is only previewing, not applying, shows its stock preview image: the asset the
+ * real theme picker uses. */
 function themeShotHTML(theme) {
   return `<div class="theme-shot"><img src="${theme.preview}" alt="${escapeHtml(theme.title)} theme preview" loading="lazy" onerror="this.closest('.theme-shot').classList.add('broken')" /><div class="theme-shot-fallback">${icon('globe', 22)}<b>${escapeHtml(theme.title)}</b><span>${escapeHtml(theme.description)}</span><span class="text-muted" style="font-size:11.5px">Preview image unavailable offline</span></div></div>`;
-}
-
-/* Quartz rendered from packages/ui/src/custom/org-landing-page/quartz/vars.ts. */
-function quartzHTML(state) {
-  const name = brandNameOf(state);
-  const accent = state.primary;
-
-  const cells = state.courses
-    .map(
-      (course) => `
-      <div class="qz-cell">
-        <span class="qz-dot" style="background:${coverFor(course.id, accent)}"></span>
-        <h3>${escapeHtml(course.title)}</h3>
-        <p>${escapeHtml(course.desc)}</p>
-        <div class="qz-cell-foot"><span>${course.lessons} lessons${course.certificate ? ' · Certificate' : ''}</span><span class="qz-link">Enrol &rarr;</span></div>
-      </div>`
-    )
-    .join('');
-
-  return `
-    <div class="qz" style="--qz-accent:${accent};--qz-accent-fg:${readableOn(accent)}">
-      <nav class="qz-nav">
-        <span class="qz-logo"><span class="qz-mark">${markHTML(state)}</span>${escapeHtml(name)}</span>
-        <span class="qz-links"><span>Courses</span><span>Paths</span><span>Help</span></span>
-        <span class="qz-btn">Sign in</span>
-      </nav>
-      <header class="qz-hero">
-        <p class="qz-kicker">${escapeHtml(name)}${/academy$/i.test(name.trim()) ? '' : ' Academy'}</p>
-        <h1>Learn ${escapeHtml(name)} <span>at your own pace</span></h1>
-        <p class="qz-lede">Short, practical courses that take your team from first login to confident every day.</p>
-        <div class="qz-actions"><span class="qz-btn">Browse courses</span>${state.path ? `<span class="qz-btn line">Start: ${escapeHtml(state.path.title)}</span>` : ''}</div>
-      </header>
-      <div class="qz-toolbar">
-        <div class="qz-chips"><span class="on">All</span><span>Self-paced</span><span>Certificate</span></div>
-        <div class="qz-search">${icon('search', 13)} Search courses</div>
-      </div>
-      <div class="qz-label">Courses</div>
-      ${cells ? `<div class="qz-cells">${cells}</div>` : '<div class="qz-empty">No courses published yet.</div>'}
-      <footer class="qz-foot"><span>&copy; ${new Date().getFullYear()} ${escapeHtml(name)}</span>${hasPlan(state.plan, PREMIUM_ITEMS.branding.min) ? '' : '<span class="qz-brand" data-premium="branding" role="button" tabindex="0" title="Remove ClassroomIO branding (Growth)">Powered by ClassroomIO</span>'}</footer>
-    </div>`;
 }
 
 window.proto = {
@@ -1354,8 +1314,7 @@ window.proto = {
   courseCardHTML,
   brandNameOf,
   markHTML,
-  themeShotHTML,
-  quartzHTML
+  themeShotHTML
 };
 
 /* One-shot message left by a page before it navigates (sessionStorage.cioFlash), shown on the next page. */
