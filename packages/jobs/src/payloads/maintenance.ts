@@ -64,11 +64,12 @@ export type TDeadLetterCleanupPayload = z.infer<typeof ZDeadLetterCleanupPayload
  * BullMQ job.
  */
 /**
- * Daily aggregation of raw analytics page events into the daily rollup tables.
- * Defaults to rolling up yesterday's data.
+ * Aggregation of raw analytics page events into the daily rollup tables.
+ * Without `daysAgo` it rolls up yesterday and today so far; with it, only that
+ * one UTC day (`0` is today).
  */
 export const ZAnalyticsDailyRollupPayload = z.object({
-  daysAgo: z.number().int().positive().default(1)
+  daysAgo: z.number().int().nonnegative().optional()
 });
 export type TAnalyticsDailyRollupPayload = z.infer<typeof ZAnalyticsDailyRollupPayload>;
 

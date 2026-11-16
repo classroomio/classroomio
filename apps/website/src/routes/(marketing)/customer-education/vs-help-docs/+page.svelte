@@ -57,7 +57,7 @@
 
       <div class="mt-9 flex flex-wrap items-center gap-3">
         <CtaButton href="/signup">Launch your academy free</CtaButton>
-        <CtaButton href="/customer-education" variant="secondary">See a live academy</CtaButton>
+        <CtaButton href="/customer-education" variant="secondary">See customer academy software</CtaButton>
       </div>
     </div>
   </PageHeader>

@@ -133,6 +133,7 @@ export interface PriceCard {
   price: string;
   unit?: string;
   text: string;
+  checked?: string;
 }
 
 export interface AlternativesContent {
