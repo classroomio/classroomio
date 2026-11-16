@@ -338,6 +338,29 @@ const courseCompletionData = courseCompletionInput.extend({
 
 const certificateIssuedData = courseCompletionData.extend({ certificate: certificateData });
 
+const questionResult = z
+  .object({
+    questionId: z.number(),
+    parentQuestionId: z.number().nullable(),
+    type: z.string(),
+    pointsEarned: z.number(),
+    pointsPossible: z.number(),
+    reason: z.string().nullable()
+  })
+  .strict();
+
+const skillResult = z
+  .object({
+    skillId: z.string(),
+    code: z.string(),
+    name: z.string(),
+    pointsEarned: z.number(),
+    pointsPossible: z.number()
+  })
+  .strict();
+
+const gradingRef = z.object({ questions: z.array(questionResult), skills: z.array(skillResult) }).strict();
+
 const submissionDetails = {
   status: z.string().nullable(),
   course: courseRef,
@@ -350,6 +373,7 @@ const submissionDetails = {
   submittedAt: z.string().nullable(),
   gradedAt: z.string().nullable(),
   isLate: z.boolean().nullable(),
+  grading: gradingRef.nullable(),
   reviewer: personRef.nullable(),
   links: linksRef
 };

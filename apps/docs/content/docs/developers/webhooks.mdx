@@ -60,7 +60,7 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
   "id": "evt_01c9f0a8e2b14d7f9a3b5c6d7e8f9012",
   "type": "course.completed",
   "createdAt": "2026-10-13T12:15:30.000Z",
-  "apiVersion": "2026-10-21",
+  "apiVersion": "2026-11-16",
   "organization": { "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289", "name": "Acme Academy", "siteName": "acme" },
   "data": {
     "courseId": "98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e",
@@ -582,6 +582,7 @@ An exercise submission is created.
   "submittedAt": "2026-10-13T11:58:02.000Z",
   "gradedAt": null,
   "isLate": false,
+  "grading": null,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/submissions?id=000000f1-0000-4000-8000-0000000000f1",
     "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
@@ -643,6 +644,43 @@ A submission status or grading state changes, for example when it is graded.
   "submittedAt": "2026-10-13T11:58:02.000Z",
   "gradedAt": "2026-10-13T12:10:44.000Z",
   "isLate": false,
+  "grading": {
+    "questions": [
+      {
+        "questionId": 101,
+        "parentQuestionId": null,
+        "type": "MATH_EXPRESSION",
+        "pointsEarned": 2,
+        "pointsPossible": 2,
+        "reason": "equivalent"
+      },
+      {
+        "questionId": 102,
+        "parentQuestionId": null,
+        "type": "MATH_EXPRESSION",
+        "pointsEarned": 0,
+        "pointsPossible": 2,
+        "reason": "not_simplified"
+      },
+      {
+        "questionId": 103,
+        "parentQuestionId": null,
+        "type": "WORKED_SOLUTION",
+        "pointsEarned": 3.5,
+        "pointsPossible": 6,
+        "reason": "equivalent"
+      }
+    ],
+    "skills": [
+      {
+        "skillId": "000000e1-0000-4000-8000-0000000000e1",
+        "code": "CCSS.8.EE.C.7",
+        "name": "Solve linear equations",
+        "pointsEarned": 2,
+        "pointsPossible": 4
+      }
+    ]
+  },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/submissions?id=000000f1-0000-4000-8000-0000000000f1",
     "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
@@ -664,6 +702,8 @@ A submission status or grading state changes, for example when it is graded.
 ```
 
 `statusId` and `gradingState` are the new values. `status` and `previousStatus` are the readable names of `statusId` and `previousStatusId`. `percentage` is `total` out of `exercise.maxScore`, and `passed` compares it with `exercise.passThreshold`; both are `null` when the exercise has no points or no threshold. `submittedAt` is when the submission was made, `gradedAt` is when it was last updated once grading finished, and `isLate` compares `submittedAt` with `exercise.dueBy`. `attemptNumber` counts this student's submissions for the exercise. `actor` is the person whose request caused the change. `reviewer` is the last admin or tutor who graded the submission, and is `null` when it was graded automatically or not yet graded.
+
+`grading` is `null` unless the exercise has math or graph questions or skill-tagged questions. When it is set, `grading.questions` lists every answered question with its `type`, `pointsEarned` and `pointsPossible` (partial points keep up to two decimals), `parentQuestionId` for a part of a multi-part question, and the grader's `reason` code such as `equivalent`, `not_simplified`, `wrong_form`, `wrong_units`, `wrong`, `needs_review` or `invalid` (`null` when the answer carries none). `grading.skills` adds up the points of the skill-tagged questions per skill, with the skill `code` and `name`. A submission with parts waiting for a teacher reports the points awarded so far; the later `course.submission.status_changed` event carries the final numbers.
 
 ### Progress
 
@@ -1253,6 +1293,10 @@ If a Standard Webhooks receiver rejects the signature for a webhook created befo
 - Self-hosted installs can allow private-network and plain `http` destinations by setting `WEBHOOK_ALLOW_PRIVATE_NETWORKS=true` on the API and jobs services.
 
 ## Changelog
+
+### 2026-11-16
+
+- Submission events include `grading`: per-question results with grader reason codes and partial points, and per-skill points earned and possible, for exercises with math questions or skill tags. It is `null` for other exercises.
 
 ### 2026-10-21
 
