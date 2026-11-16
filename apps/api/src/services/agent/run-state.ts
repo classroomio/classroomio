@@ -37,6 +37,22 @@ export interface AgentRunDetail {
   run: TAiAgentRun;
   steps: TAiAgentRunStep[];
   events: TAiAgentRunEvent[];
+  queueHealth: AgentRunQueueHealth | null;
+}
+
+export type AgentRunQueueHealthState =
+  | 'active'
+  | 'waiting'
+  | 'delayed'
+  | 'completed'
+  | 'failed'
+  | 'missing'
+  | 'unavailable';
+
+export interface AgentRunQueueHealth {
+  state: AgentRunQueueHealthState;
+  /** How many jobs the queue is processing right now, across every run. */
+  activeJobs: number;
 }
 
 async function assertCourseRunAccess(courseId: string, userId: string, orgId: string): Promise<void> {
@@ -86,9 +102,13 @@ async function getOwnedAgentRun(runId: string, userId: string, orgId: string): P
 }
 
 async function buildAgentRunDetail(run: TAiAgentRun): Promise<AgentRunDetail> {
-  const [steps, events] = await Promise.all([listAgentRunSteps(run.id), listAgentRunEvents(run.id)]);
+  const [steps, events, queueHealth] = await Promise.all([
+    listAgentRunSteps(run.id),
+    listAgentRunEvents(run.id),
+    getRunQueueHealth(run)
+  ]);
 
-  return { run, steps, events };
+  return { run, steps, events, queueHealth };
 }
 
 function getBullmqJobId(run: TAiAgentRun): string | null {
@@ -101,6 +121,62 @@ function getBullmqJobId(run: TAiAgentRun): string | null {
   const jobId = (bullmq as Record<string, unknown>).jobId;
 
   return typeof jobId === 'string' && jobId.length > 0 ? jobId : null;
+}
+
+function toQueueHealthState(jobState: string): AgentRunQueueHealthState {
+  switch (jobState) {
+    case 'active':
+      return 'active';
+    case 'delayed':
+      return 'delayed';
+    case 'completed':
+      return 'completed';
+    case 'failed':
+      return 'failed';
+    case 'unknown':
+      return 'missing';
+    default:
+      return 'waiting';
+  }
+}
+
+/**
+ * Where the run's current BullMQ job actually is. Answers "is the worker
+ * healthy?" with queue data instead of inferring it from a timestamp. Returns
+ * null unless the run is queued, so healthy/running polls cost no Redis calls.
+ */
+async function getRunQueueHealth(run: TAiAgentRun): Promise<AgentRunQueueHealth | null> {
+  if (run.status !== 'queued') return null;
+
+  if (!isRedisConfigured()) {
+    return { state: 'unavailable', activeJobs: 0 };
+  }
+
+  const jobId = getBullmqJobId(run);
+
+  try {
+    const queue = getQueue(QUEUE_NAMES.agentCourseGeneration);
+    const counts = await queue.getJobCounts('active');
+    const activeJobs = counts.active ?? 0;
+
+    if (!jobId) {
+      return { state: 'missing', activeJobs };
+    }
+
+    const job = await queue.getJob(jobId);
+
+    if (!job) {
+      return { state: 'missing', activeJobs };
+    }
+
+    const jobState = await job.getState();
+
+    return { state: toQueueHealthState(jobState), activeJobs };
+  } catch (error) {
+    console.error('getRunQueueHealth error:', error);
+
+    return { state: 'unavailable', activeJobs: 0 };
+  }
 }
 
 async function removeQueuedBullmqJob(run: TAiAgentRun): Promise<void> {
@@ -131,14 +207,24 @@ async function removeQueuedBullmqJob(run: TAiAgentRun): Promise<void> {
 
 async function enqueueAgentRun(run: TAiAgentRun, reason: 'created' | 'resumed' | 'retried'): Promise<TAiAgentRun> {
   if (!isRedisConfigured()) {
+    const message = 'Course generation is unavailable because the background queue is not configured.';
+    const failedRun = await updateOwnedAgentRun(run.id, run.userId, {
+      status: 'failed',
+      phase: 'failed',
+      lastError: { code: 'AGENT_RUN_QUEUE_UNAVAILABLE', message },
+      finishedAt: new Date().toISOString(),
+      workerId: null,
+      lockedAt: null
+    });
+
     await createAgentRunEvent({
       runId: run.id,
       eventType: 'run.enqueue_skipped',
-      message: 'Redis is not configured; run state was saved but no BullMQ job was enqueued',
-      payload: { reason }
+      message: 'Redis is not configured; the run was marked failed instead of staying queued',
+      payload: { reason, error: { code: 'AGENT_RUN_QUEUE_UNAVAILABLE', message } }
     });
 
-    return run;
+    return failedRun;
   }
 
   try {
@@ -283,6 +369,45 @@ export async function cancelAgentRunState(runId: string, userId: string, orgId: 
   return buildAgentRunDetail(updatedRun);
 }
 
+export async function pauseAgentRunState(runId: string, userId: string, orgId: string): Promise<AgentRunDetail> {
+  const run = await getOwnedAgentRun(runId, userId, orgId);
+
+  if (run.status === 'paused') {
+    return buildAgentRunDetail(run);
+  }
+
+  if (run.status === 'completed') {
+    throw new AppError('Completed course generation cannot be paused', 'AGENT_RUN_ALREADY_COMPLETED', 409);
+  }
+
+  if (run.status === 'canceled') {
+    throw new AppError('Canceled course generation cannot be paused', 'AGENT_RUN_ALREADY_CANCELED', 409);
+  }
+
+  if (run.status === 'failed') {
+    throw new AppError('Failed course generation cannot be paused', 'AGENT_RUN_FAILED', 409);
+  }
+
+  await removeQueuedBullmqJob(run);
+
+  const updatedRun = await updateOwnedAgentRun(runId, userId, {
+    status: 'paused',
+    phase: 'paused',
+    currentStepKey: null,
+    workerId: null,
+    lockedAt: null
+  });
+
+  await createAgentRunEvent({
+    runId,
+    eventType: 'run.paused',
+    message: 'Course generation paused',
+    payload: { previousStatus: run.status, previousPhase: run.phase }
+  });
+
+  return buildAgentRunDetail(updatedRun);
+}
+
 export async function resumeAgentRunState(runId: string, userId: string, orgId: string): Promise<AgentRunDetail> {
   const run = await getOwnedAgentRun(runId, userId, orgId);
 
@@ -291,6 +416,8 @@ export async function resumeAgentRunState(runId: string, userId: string, orgId: 
   }
 
   if (run.status === 'queued') {
+    await removeQueuedBullmqJob(run);
+
     const enqueuedRun = await enqueueAgentRun(run, 'resumed');
 
     return buildAgentRunDetail(enqueuedRun);
@@ -310,10 +437,12 @@ export async function resumeAgentRunState(runId: string, userId: string, orgId: 
 
   const updatedRun = await updateOwnedAgentRun(runId, userId, {
     status: 'queued',
+    phase: 'implementing',
     cancelRequestedAt: null,
     finishedAt: null,
     workerId: null,
-    lockedAt: null
+    lockedAt: null,
+    lastError: null
   });
 
   await createAgentRunEvent({

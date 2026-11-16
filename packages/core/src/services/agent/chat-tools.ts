@@ -145,6 +145,12 @@ export interface BuildAgentToolsOptions {
   documentAssets?: { documentId: string; assetId: string | null; fileName: string }[];
   /** Groups every lesson edit of one chat request, so the teacher can undo it as one change. */
   changeSetId?: string;
+  /**
+   * Token for the worker execution driving this run. Pause, cancel, resume and
+   * retry clear `agent_run.workerId`, so a tool call from a superseded execution
+   * cannot keep writing to the run.
+   */
+  workerId?: string;
 }
 
 const HISTORY_EXCERPT_LENGTH = 280;
@@ -308,7 +314,9 @@ function toErrorPayload(error: unknown): { code: string; message: string; detail
   return { code: 'TOOL_ERROR', message: String(error) };
 }
 
-async function assertRunNotCanceled(runId: string): Promise<void> {
+const CONTROL_FLOW_ERROR_CODES = new Set(['AGENT_RUN_CANCELED', 'AGENT_RUN_PAUSED', 'AGENT_RUN_SUPERSEDED']);
+
+async function assertRunNotCanceled(runId: string, workerId?: string): Promise<void> {
   const run = await getAgentRunById(runId);
 
   if (!run) {
@@ -318,15 +326,24 @@ async function assertRunNotCanceled(runId: string): Promise<void> {
   if (run.status === 'canceled' || run.cancelRequestedAt) {
     throw new AppError('Course generation was canceled', 'AGENT_RUN_CANCELED', 409);
   }
+
+  if (run.status === 'paused') {
+    throw new AppError('Course generation was paused', 'AGENT_RUN_PAUSED', 409);
+  }
+
+  if (workerId !== undefined && run.workerId !== workerId) {
+    throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+  }
 }
 
 async function executeCheckpointedAgentTool<TArgs, TResult>(
   toolName: string,
   params: { orgId: string; userId: string; courseId: string; args?: TArgs },
   runId: string,
-  execute: () => Promise<TResult>
+  execute: () => Promise<TResult>,
+  workerId?: string
 ): Promise<TResult> {
-  await assertRunNotCanceled(runId);
+  await assertRunNotCanceled(runId, workerId);
 
   const inputHash = hashToolInput(toolName, params.args ?? {});
   const stepKey = `${toolName}:${inputHash.slice(0, 48)}`;
@@ -349,14 +366,19 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
 
   const now = new Date().toISOString();
 
-  await updateAgentRun({
+  const claimedRun = await updateAgentRun({
     runId,
     userId: params.userId,
     status: 'running',
     phase: 'implementing',
     currentStepKey: stepKey,
-    lockedAt: now
+    lockedAt: now,
+    expectedWorkerId: workerId
   });
+
+  if (!claimedRun) {
+    throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+  }
 
   await upsertAgentRunStep({
     runId,
@@ -407,6 +429,12 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
   } catch (error) {
     const errorPayload = toErrorPayload(error);
 
+    // A pause, cancel or takeover stops the run without the tool failing; the
+    // step stays retryable instead of being recorded as a phantom failure.
+    if (CONTROL_FLOW_ERROR_CODES.has(errorPayload.code)) {
+      throw error;
+    }
+
     await upsertAgentRunStep({
       runId,
       stepKey,
@@ -452,7 +480,7 @@ async function executeAgentToolBase<TArgs, TResult>(
   try {
     const result =
       options.runId && DURABLE_AGENT_TOOL_NAMES.has(toolName)
-        ? await executeCheckpointedAgentTool(toolName, params, options.runId, execute)
+        ? await executeCheckpointedAgentTool(toolName, params, options.runId, execute, options.workerId)
         : await execute();
 
     trackAgentEvent(AgentEvent.TOOL_COMPLETED, {

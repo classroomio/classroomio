@@ -15,6 +15,7 @@ import {
   createAgentRunState,
   getAgentRunState,
   listAgentRunStates,
+  pauseAgentRunState,
   resumeAgentRunState,
   retryAgentRunState
 } from '@api/services/agent/run-state';
@@ -79,6 +80,23 @@ export const agentRunsRouter = new Hono()
       return c.json({ success: true as const, data: run });
     } catch (error) {
       return handleError(c, error, 'Failed to fetch agent run');
+    }
+  })
+
+  /**
+   * POST /agent/runs/:runId/pause
+   * Pause an active or queued generation run.
+   */
+  .post('/:runId/pause', authMiddleware, orgMemberMiddleware, zValidator('param', ZAgentRunParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const orgId = c.req.header('cio-org-id')!;
+      const { runId } = c.req.valid('param');
+      const run = await pauseAgentRunState(runId, user.id, orgId);
+
+      return c.json({ success: true as const, data: run });
+    } catch (error) {
+      return handleError(c, error, 'Failed to pause agent run');
     }
   })
 

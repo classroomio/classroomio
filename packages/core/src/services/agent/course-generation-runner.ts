@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { hostname } from 'node:os';
 
 import { convertToModelMessages, generateText, stepCountIs } from 'ai';
@@ -9,6 +10,7 @@ import {
   updateAgentRun
 } from '@cio/db/queries/agent';
 import { getCourseById } from '@cio/db/queries/course';
+import type { TAiAgentRunStatus } from '@cio/db/types';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { AgentRole, AIProvider, MAX_STEPS_PER_ROUND, getCourseTemplate, type AgentContext } from '@cio/ai-assistant';
 import { createModel, getProviderConfigForProvider } from '@cio/ai-assistant/providers';
@@ -29,6 +31,8 @@ import { sanitizeDanglingToolCalls } from './sanitize-tool-calls';
 import { listCourseSections } from '../course/section';
 
 const MAX_WORKER_ROUNDS = 24;
+/** Statuses a job may legitimately take over. Paused, canceled and completed are never claimable. */
+const CLAIMABLE_RUN_STATUSES: TAiAgentRunStatus[] = ['queued', 'running', 'waiting_for_input', 'failed'];
 const CONTINUE_IMPLEMENTATION_PROMPT =
   'Continue implementing the approved course plan from the durable run checkpoint. Re-read the current course structure before creating anything that might already exist.';
 
@@ -38,8 +42,17 @@ export interface RunAgentCourseGenerationJobInput {
   workerId?: string;
 }
 
-function getWorkerId(inputWorkerId?: string): string {
-  return inputWorkerId ?? `agent-course-generation:${hostname()}:${process.pid}`;
+/**
+ * One distinct token per job execution, including BullMQ re-deliveries of the
+ * same job id. Pause, cancel, resume and retry clear `agent_run.workerId`, so a
+ * worker that no longer owns the run cannot write over the newer state.
+ */
+function getWorkerId(input: RunAgentCourseGenerationJobInput): string {
+  if (input.workerId) return input.workerId;
+
+  const jobContext = input.bullmqJobId ?? 'no-bullmq-job';
+
+  return `agent-course-generation:${hostname()}:${process.pid}:${jobContext}:${randomUUID()}`;
 }
 
 function getErrorPayload(error: unknown): { code: string; message: string; details?: unknown } {
@@ -81,7 +94,10 @@ function buildRunStateMessage(input: {
   ].join('\n');
 }
 
-async function assertRunCanContinue(runId: string): Promise<NonNullable<Awaited<ReturnType<typeof getAgentRunById>>>> {
+async function assertRunCanContinue(
+  runId: string,
+  workerId?: string
+): Promise<NonNullable<Awaited<ReturnType<typeof getAgentRunById>>>> {
   const run = await getAgentRunById(runId);
 
   if (!run) {
@@ -96,15 +112,23 @@ async function assertRunCanContinue(runId: string): Promise<NonNullable<Awaited<
     throw new AppError('Course generation was canceled', 'AGENT_RUN_CANCELED', 409);
   }
 
+  if (run.status === 'paused') {
+    throw new AppError('Course generation was paused', 'AGENT_RUN_PAUSED', 409);
+  }
+
+  if (workerId !== undefined && run.workerId !== workerId) {
+    throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+  }
+
   return run;
 }
 
 export async function runAgentCourseGenerationJob(input: RunAgentCourseGenerationJobInput): Promise<{
   runId: string;
-  status: 'completed' | 'paused' | 'canceled';
+  status: 'completed' | 'paused' | 'canceled' | 'superseded';
   rounds: number;
 }> {
-  const workerId = getWorkerId(input.workerId);
+  const workerId = getWorkerId(input);
   const initialRun = await assertRunCanContinue(input.runId);
 
   const courseOrgId = await getCourseOrganizationId(initialRun.courseId);
@@ -121,7 +145,7 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
 
   const startedAt = initialRun.startedAt ?? new Date().toISOString();
 
-  await updateAgentRun({
+  const claimedRun = await updateAgentRun({
     runId: initialRun.id,
     userId: initialRun.userId,
     status: 'running',
@@ -130,8 +154,13 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
     finishedAt: null,
     workerId,
     lockedAt: new Date().toISOString(),
-    lastError: null
+    lastError: null,
+    expectedStatuses: CLAIMABLE_RUN_STATUSES
   });
+
+  if (!claimedRun) {
+    return { runId: initialRun.id, status: 'superseded', rounds: 0 };
+  }
 
   await createAgentRunEvent({
     runId: initialRun.id,
@@ -213,12 +242,13 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
     const isOrgPaid = await isOrgOnPaidPlan(initialRun.orgId);
     const agentTools = buildAgentTools(initialRun.orgId, initialRun.userId, initialRun.courseId, visibleMessages, {
       runId: initialRun.id,
+      workerId,
       isOrgOnPaidPlan: isOrgPaid,
       documentAssets
     });
 
     for (let roundIndex = 0; roundIndex < MAX_WORKER_ROUNDS; roundIndex += 1) {
-      const latestRun = await assertRunCanContinue(initialRun.id);
+      const latestRun = await assertRunCanContinue(initialRun.id, workerId);
 
       if (latestRun.queuedInstructions.length > 0) {
         const instructionText = latestRun.queuedInstructions.map((instruction) => `- ${instruction.text}`).join('\n');
@@ -230,11 +260,16 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
           ]
         });
 
-        await updateAgentRun({
+        const instructedRun = await updateAgentRun({
           runId: latestRun.id,
           userId: latestRun.userId,
-          queuedInstructions: []
+          queuedInstructions: [],
+          expectedWorkerId: workerId
         });
+
+        if (!instructedRun) {
+          return { runId: initialRun.id, status: 'superseded', rounds: roundIndex };
+        }
 
         await createAgentRunEvent({
           runId: latestRun.id,
@@ -244,7 +279,7 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
         });
       }
 
-      await updateAgentRun({
+      const claimedRun = await updateAgentRun({
         runId: initialRun.id,
         userId: initialRun.userId,
         status: 'running',
@@ -256,8 +291,13 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
           modelId,
           workerRound: roundIndex,
           bullmqJobId: input.bullmqJobId ?? null
-        }
+        },
+        expectedWorkerId: workerId
       });
+
+      if (!claimedRun) {
+        return { runId: initialRun.id, status: 'superseded', rounds: roundIndex };
+      }
 
       const result = await generateText({
         model,
@@ -297,7 +337,7 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
       });
 
       if (result.steps.length < MAX_STEPS_PER_ROUND) {
-        await updateAgentRun({
+        const completedRun = await updateAgentRun({
           runId: initialRun.id,
           userId: initialRun.userId,
           status: 'completed',
@@ -313,8 +353,13 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
             workerRound: roundIndex + 1,
             finishReason: result.finishReason,
             finalText: result.text.slice(0, 4_000)
-          }
+          },
+          expectedWorkerId: workerId
         });
+
+        if (!completedRun) {
+          return { runId: initialRun.id, status: 'superseded', rounds: roundIndex + 1 };
+        }
 
         await createAgentRunEvent({
           runId: initialRun.id,
@@ -332,7 +377,7 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
       });
     }
 
-    await updateAgentRun({
+    const pausedRun = await updateAgentRun({
       runId: initialRun.id,
       userId: initialRun.userId,
       status: 'paused',
@@ -344,8 +389,13 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
         ...initialRun.executionCursor,
         modelId,
         pauseReason: 'max_worker_rounds_reached'
-      }
+      },
+      expectedWorkerId: workerId
     });
+
+    if (!pausedRun) {
+      return { runId: initialRun.id, status: 'superseded', rounds: MAX_WORKER_ROUNDS };
+    }
 
     await createAgentRunEvent({
       runId: initialRun.id,
@@ -358,30 +408,19 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
   } catch (error) {
     const errorPayload = getErrorPayload(error);
 
+    if (errorPayload.code === 'AGENT_RUN_PAUSED') {
+      return { runId: initialRun.id, status: 'paused', rounds: 0 };
+    }
+
     if (errorPayload.code === 'AGENT_RUN_CANCELED') {
-      await updateAgentRun({
-        runId: initialRun.id,
-        userId: initialRun.userId,
-        status: 'canceled',
-        phase: 'canceled',
-        currentStepKey: null,
-        workerId: null,
-        lockedAt: null,
-        finishedAt: new Date().toISOString(),
-        lastError: null
-      });
-
-      await createAgentRunEvent({
-        runId: initialRun.id,
-        eventType: 'run.canceled',
-        message: 'Run canceled before the next checkpoint',
-        payload: {}
-      });
-
       return { runId: initialRun.id, status: 'canceled', rounds: 0 };
     }
 
-    await updateAgentRun({
+    if (errorPayload.code === 'AGENT_RUN_SUPERSEDED') {
+      return { runId: initialRun.id, status: 'superseded', rounds: 0 };
+    }
+
+    const failedRun = await updateAgentRun({
       runId: initialRun.id,
       userId: initialRun.userId,
       status: 'failed',
@@ -390,8 +429,13 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
       workerId: null,
       lockedAt: null,
       finishedAt: new Date().toISOString(),
-      lastError: errorPayload
+      lastError: errorPayload,
+      expectedWorkerId: workerId
     });
+
+    if (!failedRun) {
+      return { runId: initialRun.id, status: 'superseded', rounds: 0 };
+    }
 
     await createAgentRunEvent({
       runId: initialRun.id,

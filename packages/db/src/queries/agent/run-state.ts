@@ -1,4 +1,4 @@
-import { and, asc, desc, eq } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray } from 'drizzle-orm';
 import * as schema from '@db/schema';
 import { db } from '@db/drizzle';
 import type {
@@ -49,6 +49,15 @@ export interface UpdateAgentRunInput {
   cancelRequestedAt?: string | null;
   startedAt?: string | null;
   finishedAt?: string | null;
+  /**
+   * Compare-and-set guard: when supplied, the update only applies while the
+   * row is still owned by this worker execution. Pause, cancel, resume and
+   * retry all clear `workerId`, so a stale worker can no longer overwrite a
+   * newer run state.
+   */
+  expectedWorkerId?: string;
+  /** When supplied, the update only applies while the row is in one of these statuses. */
+  expectedStatuses?: TAiAgentRunStatus[];
 }
 
 export interface UpsertAgentRunStepInput {
@@ -168,10 +177,17 @@ export async function updateAgentRun(input: UpdateAgentRunInput): Promise<TAiAge
     if (hasInputKey(input, 'startedAt')) updateData.startedAt = input.startedAt;
     if (hasInputKey(input, 'finishedAt')) updateData.finishedAt = input.finishedAt;
 
+    const workerGuard =
+      input.expectedWorkerId === undefined ? undefined : eq(schema.aiAgentRun.workerId, input.expectedWorkerId);
+    const statusGuard =
+      input.expectedStatuses === undefined ? undefined : inArray(schema.aiAgentRun.status, input.expectedStatuses);
+
     const [row] = await db
       .update(schema.aiAgentRun)
       .set(updateData)
-      .where(and(eq(schema.aiAgentRun.id, input.runId), eq(schema.aiAgentRun.userId, input.userId)))
+      .where(
+        and(eq(schema.aiAgentRun.id, input.runId), eq(schema.aiAgentRun.userId, input.userId), workerGuard, statusGuard)
+      )
       .returning();
 
     return row ?? null;

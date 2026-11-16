@@ -5835,16 +5835,13 @@
     "run_monitor_aria": "Generazione del corso in corso",
     "run_monitor": {
       "cancel": "Annulla la generazione",
-      "dismiss": "Congedare",
-      "dismiss_confirm": "Allontanati",
-      "dismiss_cancel": "Resta qui",
-      "dismiss_confirm_body": "Allontanarsi da questa generazione cancellata? Il pulsante Riprendi scomparirà: qualsiasi ulteriore chat ricomincerà da capo e non proseguirà il piano.",
       "now_doing": "Ora",
       "input_disabled_hint": "La chat viene messa in pausa mentre l'agente termina di costruire il corso. Annulla o attendi il completamento.",
       "stuck_queued": {
         "title": "Il lavoratore non risponde",
         "body": "La generazione del corso ha atteso più di 30 secondi senza il ritiro del lavoratore. L'operatore in background potrebbe essere inattivo o in fase di riavvio."
-      }
+      },
+      "pause": "Sospendi la generazione"
     },
     "plan_view": {
       "expand": "Espandi il piano",
@@ -6000,7 +5997,12 @@
     "context_full_compacting": "Compattazione...",
     "context_full_new_chat": "Avvia una nuova chat con riepilogo",
     "context_full_summarizing": "Creazione riepilogo...",
-    "context_compacted_badge": "Conversazione compattata ({count} messaggi precedenti)"
+    "context_compacted_badge": "Conversazione compattata ({count} messaggi precedenti)",
+    "run_paused": "Generazione del corso sospesa",
+    "resume_failed": "Impossibile riprendere la generazione del corso. Riprova.",
+    "pause_failed": "Impossibile sospendere la generazione del corso. Riprova.",
+    "cancel_failed": "Impossibile annullare la generazione del corso. Riprova.",
+    "retry_failed": "Impossibile riprovare la generazione del corso. Riprova."
   },
   "side_panel": {
     "close_aria": "Chiudi pannello",

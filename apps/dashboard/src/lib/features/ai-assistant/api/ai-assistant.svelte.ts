@@ -370,6 +370,31 @@ class AiAssistantApi extends BaseApiWithErrors {
         runDetail = result.data as AgentRunDetail;
         this.currentRun = runDetail;
         this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
+      },
+      onError: (error) => {
+        snackbar.error(error.message || t.get('ai_assistant.cancel_failed'));
+      }
+    });
+
+    return runDetail;
+  }
+
+  async pauseRun(runId: string): Promise<AgentRunDetail | null> {
+    let runDetail: AgentRunDetail | null = null;
+
+    await this.execute<(typeof classroomio.agent.runs)[':runId']['pause']['$post']>({
+      requestFn: () =>
+        classroomio.agent.runs[':runId'].pause.$post({
+          param: { runId }
+        }),
+      logContext: 'pausing agent run',
+      onSuccess: (result) => {
+        runDetail = result.data as AgentRunDetail;
+        this.currentRun = runDetail;
+        this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
+      },
+      onError: (error) => {
+        snackbar.error(error.message || t.get('ai_assistant.pause_failed'));
       }
     });
 
@@ -389,6 +414,9 @@ class AiAssistantApi extends BaseApiWithErrors {
         runDetail = result.data as AgentRunDetail;
         this.currentRun = runDetail;
         this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
+      },
+      onError: (error) => {
+        snackbar.error(error.message || t.get('ai_assistant.retry_failed'));
       }
     });
 
@@ -408,6 +436,9 @@ class AiAssistantApi extends BaseApiWithErrors {
         runDetail = result.data as AgentRunDetail;
         this.currentRun = runDetail;
         this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
+      },
+      onError: (error) => {
+        snackbar.error(error.message || t.get('ai_assistant.resume_failed'));
       }
     });
 
