@@ -3497,7 +3497,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                           "type": "number",
                         },
                         {
-                          "const": 15,
+                          "const": 18,
                           "type": "number",
                         },
                         {
@@ -3505,7 +3505,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                           "type": "number",
                         },
                         {
-                          "const": 16,
+                          "const": 19,
                           "type": "number",
                         },
                         {
@@ -3526,6 +3526,10 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                         },
                         {
                           "const": 14,
+                          "type": "number",
+                        },
+                        {
+                          "const": 17,
                           "type": "number",
                         },
                       ],

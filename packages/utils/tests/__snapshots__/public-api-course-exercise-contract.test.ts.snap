@@ -109,9 +109,13 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
           "const": 14,
           "type": "number",
         },
+        {
+          "const": 17,
+          "type": "number",
+        },
       ],
       "default": 1,
-      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down, 17 custom (plugin). True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
     },
     "settings": {
       "additionalProperties": {},
@@ -467,9 +471,13 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
                 "const": 14,
                 "type": "number",
               },
+              {
+                "const": 17,
+                "type": "number",
+              },
             ],
             "default": 1,
-            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down, 17 custom (plugin). True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
           },
           "settings": {
             "additionalProperties": {},
@@ -847,8 +855,12 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                 "const": 14,
                 "type": "number",
               },
+              {
+                "const": 17,
+                "type": "number",
+              },
             ],
-            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types. Defaults to 1 for a new question.",
+            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down, 17 custom (plugin). True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types. Defaults to 1 for a new question.",
           },
           "settings": {
             "additionalProperties": {},
@@ -1126,8 +1138,12 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
           "const": 14,
           "type": "number",
         },
+        {
+          "const": 17,
+          "type": "number",
+        },
       ],
-      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down, 17 custom (plugin). True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
     },
     "removeOptionIds": {
       "description": "Options to remove; options you do not name are kept",
@@ -1502,8 +1518,12 @@ exports[`public API exercise question and section contract > ZPublicApiCourseExe
                 "const": 14,
                 "type": "number",
               },
+              {
+                "const": 17,
+                "type": "number",
+              },
             ],
-            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down, 17 custom (plugin). True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
           },
           "settings": {
             "additionalProperties": {},
@@ -1836,8 +1856,12 @@ exports[`public API exercise question and section contract > ZPublicApiExerciseQ
           "const": 14,
           "type": "number",
         },
+        {
+          "const": 17,
+          "type": "number",
+        },
       ],
-      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
+      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down, 17 custom (plugin). True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
     },
     "settings": {
       "additionalProperties": {},

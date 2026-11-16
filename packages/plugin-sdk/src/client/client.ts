@@ -22,6 +22,9 @@ import {
   type BridgeProgressSetPayload,
   type BridgeTemplateSelectionPayload,
   type BridgeCertificateTemplateApplyPayload,
+  type BridgeQuestionSetAnswerPayload,
+  type BridgeQuestionUpdateConfigPayload,
+  type BridgeQuestionResizePayload,
   applyThemeTokensToRoot,
   DEFAULT_LIGHT_THEME_V1,
   isBridgeHandshakeInit,
@@ -54,6 +57,25 @@ export class PluginBridgeError extends Error {
     this.name = 'PluginBridgeError';
     this.code = code;
   }
+}
+
+export interface ExerciseQuestionContext {
+  mode: 'edit' | 'take' | 'preview' | 'review' | 'submission';
+  publicConfig: unknown;
+  authorConfig?: unknown;
+  currentAnswer?: unknown;
+  readOnly: boolean;
+  questionId?: string;
+  points?: number;
+  contributionId?: string;
+}
+
+export interface ExerciseClient {
+  setAnswer(value: unknown): Promise<void>;
+  updatePublicConfig(value: unknown): Promise<void>;
+  updateAuthorConfig(value: unknown): Promise<void>;
+  resize(height: number): Promise<void>;
+  getContext(): Promise<ExerciseQuestionContext>;
 }
 
 export interface ClassroomIOClientOptions {
@@ -412,6 +434,35 @@ export class ClassroomIOClient {
       }),
     apply: async (payload: BridgeCertificateTemplateApplyPayload): Promise<void> => {
       await this.rpc<void, BridgeCertificateTemplateApplyPayload>('certificate.templates:apply', payload);
+    }
+  };
+
+  public exercise: ExerciseClient = {
+    setAnswer: async (value: unknown): Promise<void> => {
+      return this.rpc<void, BridgeQuestionSetAnswerPayload>('exercise.question:setAnswer', { value });
+    },
+    updatePublicConfig: async (value: unknown): Promise<void> => {
+      return this.rpc<void, BridgeQuestionUpdateConfigPayload>('exercise.question:updatePublicConfig', { value });
+    },
+    updateAuthorConfig: async (value: unknown): Promise<void> => {
+      return this.rpc<void, BridgeQuestionUpdateConfigPayload>('exercise.question:updateAuthorConfig', { value });
+    },
+    resize: async (height: number): Promise<void> => {
+      return this.rpc<void, BridgeQuestionResizePayload>('exercise.question:resize', { height });
+    },
+    getContext: async (): Promise<ExerciseQuestionContext> => {
+      const ctx = await this.contextPromise;
+      const res = ctx.surface?.resource;
+      return {
+        mode: (res?.mode as any) ?? 'take',
+        publicConfig: res?.publicConfig ?? null,
+        authorConfig: res?.authorConfig,
+        currentAnswer: res?.currentAnswer,
+        readOnly: Boolean(res?.readOnly),
+        questionId: res?.questionId ?? res?.id,
+        points: typeof res?.points === 'number' ? res.points : undefined,
+        contributionId: typeof res?.contributionId === 'string' ? res.contributionId : undefined
+      };
     }
   };
 

@@ -17,7 +17,8 @@ import type {
   LinkAnswerData,
   HotspotAnswerData,
   StarAnswerData,
-  VideoRecordingAnswerData
+  VideoRecordingAnswerData,
+  PluginCustomAnswerData
 } from './answer-data';
 
 import { QUESTION_TYPE_KEY } from './question-type-keys';
@@ -318,6 +319,45 @@ const VIDEO_RECORDING_CODEC: AnswerCodec<VideoRecordingAnswerData> = {
   }
 };
 
+const PLUGIN_CUSTOM_CODEC: AnswerCodec<PluginCustomAnswerData> = {
+  type: 'PLUGIN_CUSTOM',
+  toApiPayload(data, questionId) {
+    return {
+      questionId,
+      answer: JSON.stringify({
+        type: 'PLUGIN_CUSTOM',
+        pluginId: data.pluginId,
+        contributionId: data.contributionId,
+        configVersion: data.configVersion,
+        value: data.value
+      })
+    };
+  },
+  fromApiPayload(payload) {
+    if (!payload.answer) return null;
+    try {
+      const parsed = JSON.parse(payload.answer);
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        parsed.type === 'PLUGIN_CUSTOM' &&
+        typeof parsed.pluginId === 'string' &&
+        typeof parsed.contributionId === 'string' &&
+        typeof parsed.configVersion === 'number'
+      ) {
+        return {
+          type: 'PLUGIN_CUSTOM',
+          pluginId: parsed.pluginId,
+          contributionId: parsed.contributionId,
+          configVersion: parsed.configVersion,
+          value: parsed.value
+        };
+      }
+    } catch {}
+    return null;
+  }
+};
+
 export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
   [QUESTION_TYPE_KEY.RADIO]: RADIO_CODEC,
   [QUESTION_TYPE_KEY.CHECKBOX]: CHECKBOX_CODEC,
@@ -334,7 +374,8 @@ export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
   [QUESTION_TYPE_KEY.LINK]: LINK_CODEC,
   [QUESTION_TYPE_KEY.HOTSPOT]: HOTSPOT_CODEC,
   [QUESTION_TYPE_KEY.STAR]: STAR_CODEC,
-  [QUESTION_TYPE_KEY.VIDEO_RECORDING]: VIDEO_RECORDING_CODEC
+  [QUESTION_TYPE_KEY.VIDEO_RECORDING]: VIDEO_RECORDING_CODEC,
+  [QUESTION_TYPE_KEY.PLUGIN_CUSTOM]: PLUGIN_CUSTOM_CODEC
 };
 
 /** Convert any answer to API submission payload */
@@ -396,6 +437,12 @@ export function extractAnswerDisplayValues(data: AnswerData): {
     case 'FILE_UPLOAD':
     case 'VIDEO_RECORDING':
       return { selectedIds: [], selectedValues: [] };
+    case 'PLUGIN_CUSTOM':
+      return {
+        selectedIds: [],
+        selectedValues: [],
+        text: typeof data.value === 'string' ? data.value : JSON.stringify(data.value)
+      };
     default:
       return { selectedIds: [], selectedValues: [] };
   }

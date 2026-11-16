@@ -6,6 +6,7 @@ import { QUESTION_TYPE_ID_TO_KEY } from './question-type-registry';
 import { supportsPartialCredit } from './question-type-capabilities';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
+import type { PluginQuestionSettingsEnvelope } from './plugin-question-types';
 
 export type DbQuestionForScoring = {
   id: number;
@@ -28,7 +29,7 @@ function normalizeText(value: unknown): string {
 }
 
 export function dbQuestionToExerciseQuestionModel(q: DbQuestionForScoring): ExerciseQuestionModel {
-  const key = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId] ?? QUESTION_TYPE_KEY.RADIO;
+  const key = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId];
   const options: ExerciseQuestionOption[] = (q.options ?? [])
     .filter((o) => o.id != null)
     .map((o) => ({
@@ -314,6 +315,43 @@ function scoreHotspot(
   return (hits / hotspots.length) * maxPoints;
 }
 
+function scorePluginCustom(
+  question: ExerciseQuestionModel,
+  answer: Extract<AnswerData, { type: 'PLUGIN_CUSTOM' }>,
+  maxPoints: number
+): number {
+  const pluginSettings = question.settings?.pluginQuestion as PluginQuestionSettingsEnvelope | undefined;
+  const gradingConfig = pluginSettings?.gradingConfig;
+  if (!gradingConfig) return 0;
+
+  if (gradingConfig.strategy === 'declarative-match') {
+    if (gradingConfig.expectedAnswer !== undefined) {
+      if (JSON.stringify(answer.value) === JSON.stringify(gradingConfig.expectedAnswer)) {
+        return maxPoints;
+      }
+    }
+    if (typeof gradingConfig.matchPattern === 'string' && typeof answer.value === 'string') {
+      try {
+        const regex = new RegExp(gradingConfig.matchPattern);
+        if (regex.test(answer.value)) {
+          return maxPoints;
+        }
+      } catch {}
+    }
+    if (
+      typeof gradingConfig.tolerance === 'number' &&
+      typeof answer.value === 'number' &&
+      typeof gradingConfig.expectedAnswer === 'number'
+    ) {
+      if (Math.abs(answer.value - gradingConfig.expectedAnswer) <= gradingConfig.tolerance) {
+        return maxPoints;
+      }
+    }
+  }
+
+  return 0;
+}
+
 export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: AnswerData | null | undefined): number {
   const maxPoints = Number(question.points ?? 0);
   if (maxPoints <= 0) return 0;
@@ -353,6 +391,9 @@ export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: 
     case 'HOTSPOT':
       if (key !== QUESTION_TYPE_KEY.HOTSPOT) return 0;
       return clampPoints(scoreHotspot(question, answer, maxPoints, partial), maxPoints);
+    case 'PLUGIN_CUSTOM':
+      if (key !== QUESTION_TYPE_KEY.PLUGIN_CUSTOM) return 0;
+      return scorePluginCustom(question, answer, maxPoints);
     default:
       return 0;
   }

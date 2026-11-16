@@ -20,4 +20,5 @@ export * from './star-rating-settings';
 export * from './video-recording-settings';
 export * from './true-false-answer-key';
 export * from './thumbs-question';
+export * from './plugin-question-types';
 export * from './agent-question-type-guide';

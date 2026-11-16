@@ -16,7 +16,8 @@ export type QuestionAnswerPayload =
   | HotspotAnswerPayload
   | LinkAnswerPayload
   | StarAnswerPayload
-  | VideoRecordingAnswerPayload;
+  | VideoRecordingAnswerPayload
+  | PluginCustomAnswerPayload;
 
 interface BaseAnswerPayload {
   type: QuestionTypeKey;
@@ -112,4 +113,12 @@ export interface VideoRecordingAnswerPayload extends BaseAnswerPayload {
   uploadedAt: string;
   provider: 'cloudflare';
   retakeCount?: number;
+}
+
+export interface PluginCustomAnswerPayload extends BaseAnswerPayload {
+  type: typeof QUESTION_TYPE_KEY.PLUGIN_CUSTOM;
+  pluginId: string;
+  contributionId: string;
+  configVersion: number;
+  value: unknown;
 }

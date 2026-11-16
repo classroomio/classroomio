@@ -19,7 +19,7 @@ export interface PluginContext {
   surface?: {
     target: string;
     resource?: {
-      type: 'lesson' | 'course' | 'certificate' | 'organization';
+      type: 'lesson' | 'course' | 'certificate' | 'organization' | 'exercise' | 'question';
       id: string;
       title?: string;
       wordCount?: number;
@@ -28,6 +28,13 @@ export interface PluginContext {
       selectedTemplateName?: string;
       selectedTemplateDocument?: unknown;
       appearance?: unknown;
+      questionId?: string;
+      mode?: 'edit' | 'take' | 'preview' | 'review' | 'submission';
+      publicConfig?: unknown;
+      authorConfig?: unknown;
+      currentAnswer?: unknown;
+      readOnly?: boolean;
+      points?: number;
       [key: string]: unknown;
     };
   };
@@ -166,6 +173,18 @@ export interface BridgeCertificateTemplateApplyPayload {
   name?: string;
 }
 
+export interface BridgeQuestionSetAnswerPayload {
+  value: unknown;
+}
+
+export interface BridgeQuestionUpdateConfigPayload {
+  value: unknown;
+}
+
+export interface BridgeQuestionResizePayload {
+  height: number;
+}
+
 export function isBridgeHandshakeInit(message: unknown): message is BridgeHandshakeInit {
   return (
     typeof message === 'object' &&
@@ -297,6 +316,12 @@ export function isValidBridgeRpcPayload(action: string, payload: unknown): boole
     case 'landing.templates:preview':
     case 'landing.templates:select':
       return typeof payload.templateId === 'string' && payload.templateId.length > 0;
+    case 'exercise.question:setAnswer':
+    case 'exercise.question:updatePublicConfig':
+    case 'exercise.question:updateAuthorConfig':
+      return 'value' in payload;
+    case 'exercise.question:resize':
+      return typeof payload.height === 'number' && Number.isFinite(payload.height);
     default:
       return false;
   }

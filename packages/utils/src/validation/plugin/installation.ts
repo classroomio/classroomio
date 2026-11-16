@@ -142,3 +142,13 @@ export const ZPluginStoragePut = z
     }
   });
 export type TPluginStoragePut = z.infer<typeof ZPluginStoragePut>;
+
+export const ZResolveQuestionPlugin = z.object({
+  pluginId: z.string().trim().min(1),
+  installationId: z.string().trim().min(1),
+  pluginVersion: z.string().trim().min(1),
+  artifactDigest: z.string().trim().min(1),
+  contributionId: z.string().trim().min(1),
+  mode: z.enum(['edit', 'take', 'preview', 'review', 'submission']).default('take')
+});
+export type TResolveQuestionPlugin = z.infer<typeof ZResolveQuestionPlugin>;

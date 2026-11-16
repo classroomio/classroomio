@@ -190,4 +190,152 @@ describe('MessageChannel UI host bridge', () => {
     client.destroy();
     host.destroy();
   });
+
+  it('handles exercise.question bridge RPCs and context in take mode', async () => {
+    const channel = new MessageChannel();
+    let receivedAnswer: unknown = null;
+    let resizedHeight: number | null = null;
+
+    const questionContext: PluginContext = {
+      installationId: 'inst_123',
+      pluginId: 'com.example.code-runner',
+      version: '1.0.0',
+      actor: { role: 'learner' },
+      surface: {
+        target: 'exercise.question',
+        resource: {
+          type: 'question',
+          id: 'q_456',
+          questionId: 'q_456',
+          mode: 'take',
+          publicConfig: { starterCode: 'print("hello")' },
+          currentAnswer: { code: 'print("hi")' },
+          readOnly: false,
+          points: 10
+        }
+      }
+    };
+
+    const host = new PluginBridgeHost({
+      iframe: {} as HTMLIFrameElement,
+      targetOrigin: 'https://plugin.example.com',
+      context: questionContext,
+      handlers: {
+        onQuestionSetAnswer: async ({ value }) => {
+          receivedAnswer = value;
+        },
+        onQuestionResize: async ({ height }) => {
+          resizedHeight = height;
+        }
+      }
+    });
+    const client = new ClassroomIOClient();
+
+    host.attachPort(channel.port1);
+    client.attachPort(channel.port2, questionContext);
+
+    const ctx = await client.exercise.getContext();
+    expect(ctx.mode).toBe('take');
+    expect(ctx.questionId).toBe('q_456');
+    expect(ctx.publicConfig).toEqual({ starterCode: 'print("hello")' });
+    expect(ctx.currentAnswer).toEqual({ code: 'print("hi")' });
+    expect(ctx.readOnly).toBe(false);
+    expect(ctx.points).toBe(10);
+
+    await client.exercise.setAnswer({ code: 'print("solved")' });
+    expect(receivedAnswer).toEqual({ code: 'print("solved")' });
+
+    await client.exercise.resize(350);
+    expect(resizedHeight).toBe(350);
+
+    // Learner cannot update config
+    await expect(client.exercise.updatePublicConfig({ test: 123 })).rejects.toThrow(
+      'Only authoring roles can update question configuration'
+    );
+
+    client.destroy();
+    host.destroy();
+  });
+
+  it('allows author to update config in edit mode and blocks answers in read-only mode', async () => {
+    const channel = new MessageChannel();
+    let updatedPublic: unknown = null;
+    let updatedAuthor: unknown = null;
+
+    const editContext: PluginContext = {
+      installationId: 'inst_123',
+      pluginId: 'com.example.code-runner',
+      version: '1.0.0',
+      actor: { role: 'admin' },
+      surface: {
+        target: 'exercise.question',
+        resource: {
+          type: 'question',
+          id: 'q_456',
+          mode: 'edit',
+          publicConfig: { starterCode: 'print()' },
+          authorConfig: { hiddenTests: [] },
+          readOnly: false
+        }
+      }
+    };
+
+    const host = new PluginBridgeHost({
+      iframe: {} as HTMLIFrameElement,
+      targetOrigin: 'https://plugin.example.com',
+      context: editContext,
+      handlers: {
+        onQuestionUpdatePublicConfig: async ({ value }) => {
+          updatedPublic = value;
+        },
+        onQuestionUpdateAuthorConfig: async ({ value }) => {
+          updatedAuthor = value;
+        }
+      }
+    });
+    const client = new ClassroomIOClient();
+
+    host.attachPort(channel.port1);
+    client.attachPort(channel.port2, editContext);
+
+    await client.exercise.updatePublicConfig({ starterCode: 'def main(): pass' });
+    expect(updatedPublic).toEqual({ starterCode: 'def main(): pass' });
+
+    await client.exercise.updateAuthorConfig({ hiddenTests: [{ input: '1', output: '2' }] });
+    expect(updatedAuthor).toEqual({ hiddenTests: [{ input: '1', output: '2' }] });
+
+    client.destroy();
+    host.destroy();
+
+    // Now test read-only mode blocks setAnswer
+    const readOnlyChannel = new MessageChannel();
+    const readOnlyContext: PluginContext = {
+      ...editContext,
+      surface: {
+        target: 'exercise.question',
+        resource: {
+          type: 'question',
+          id: 'q_456',
+          mode: 'review',
+          readOnly: true
+        }
+      }
+    };
+
+    const roHost = new PluginBridgeHost({
+      iframe: {} as HTMLIFrameElement,
+      targetOrigin: 'https://plugin.example.com',
+      context: readOnlyContext,
+      handlers: {}
+    });
+    const roClient = new ClassroomIOClient();
+
+    roHost.attachPort(readOnlyChannel.port1);
+    roClient.attachPort(readOnlyChannel.port2, readOnlyContext);
+
+    await expect(roClient.exercise.setAnswer({ code: 'hack' })).rejects.toThrow('Cannot set answer in read-only mode');
+
+    roClient.destroy();
+    roHost.destroy();
+  });
 });

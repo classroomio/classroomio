@@ -7,9 +7,9 @@ import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
 
 const QUESTION_TYPE_DESCRIPTION =
-  '1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
+  '1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down, 17 custom (plugin). True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
 
-/** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
+/** Question types the public API accepts; MATCHING (18) and HOTSPOT (19) are disabled and excluded. */
 export const ZPublicApiQuestionTypeId = z
   .union([
     z.literal(QUESTION_TYPE.RADIO),
@@ -25,7 +25,8 @@ export const ZPublicApiQuestionTypeId = z
     z.literal(QUESTION_TYPE.WORD_BANK),
     z.literal(QUESTION_TYPE.STAR),
     z.literal(QUESTION_TYPE.VIDEO_RECORDING),
-    z.literal(QUESTION_TYPE.THUMBS)
+    z.literal(QUESTION_TYPE.THUMBS),
+    z.literal(QUESTION_TYPE.PLUGIN_CUSTOM)
   ])
   .describe(QUESTION_TYPE_DESCRIPTION);
 

@@ -26,7 +26,8 @@ const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
   z.literal(QUESTION_TYPE.WORD_BANK),
   z.literal(QUESTION_TYPE.STAR),
   z.literal(QUESTION_TYPE.VIDEO_RECORDING),
-  z.literal(QUESTION_TYPE.THUMBS)
+  z.literal(QUESTION_TYPE.THUMBS),
+  z.literal(QUESTION_TYPE.PLUGIN_CUSTOM)
 ] as const;
 
 export const ZExerciseQuestionTypeId = z.union(EXERCISE_QUESTION_TYPE_ID_LITERALS);
@@ -145,6 +146,22 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
         return `Recording duration cannot exceed ${VIDEO_RECORDING_PLATFORM_MAX_DURATION_SECONDS} seconds`;
       }
 
+      return null;
+    }
+  ],
+  [QUESTION_TYPE.PLUGIN_CUSTOM]: [
+    (question) => {
+      const rawSettings = question.settings?.pluginQuestion;
+      if (!rawSettings || typeof rawSettings !== 'object' || Array.isArray(rawSettings)) {
+        return 'Plugin question requires pluginQuestion settings';
+      }
+      const envelope = rawSettings as Record<string, unknown>;
+      if (!envelope.pluginId || typeof envelope.pluginId !== 'string') {
+        return 'Plugin question requires pluginId';
+      }
+      if (!envelope.contributionId || typeof envelope.contributionId !== 'string') {
+        return 'Plugin question requires contributionId';
+      }
       return null;
     }
   ]

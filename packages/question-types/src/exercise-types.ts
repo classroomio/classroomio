@@ -275,6 +275,7 @@ export interface ExerciseRendererDefinition<TRenderer = unknown> {
 }
 
 export interface ExerciseQuestionRendererProps {
+  mode?: ExerciseRendererMode;
   question: ExerciseQuestionModel;
   answer?: AnswerData | null;
   submissions?: ExerciseSubmissionModel[];

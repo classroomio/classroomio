@@ -34,6 +34,13 @@ export type VideoRecordingAnswerData = {
   retakeCount?: number;
   playbackUrl?: string;
 };
+export type PluginCustomAnswerData = {
+  type: 'PLUGIN_CUSTOM';
+  pluginId: string;
+  contributionId: string;
+  configVersion: number;
+  value: unknown;
+};
 
 export type AnswerData =
   | RadioAnswerData
@@ -51,4 +58,5 @@ export type AnswerData =
   | LinkAnswerData
   | HotspotAnswerData
   | StarAnswerData
-  | VideoRecordingAnswerData;
+  | VideoRecordingAnswerData
+  | PluginCustomAnswerData;

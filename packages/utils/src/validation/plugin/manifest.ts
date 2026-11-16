@@ -76,7 +76,8 @@ export const STABLE_CONTRIBUTION_TARGETS = [
   'certificate.templates',
   'landing.templates',
   'organization.navigation',
-  'plugin.page'
+  'plugin.page',
+  'exercise.question'
 ] as const;
 export type StableContributionTarget = (typeof STABLE_CONTRIBUTION_TARGETS)[number];
 
@@ -106,7 +107,8 @@ export const PLUGIN_SURFACE_CONTRACTS = {
   'certificate.templates': { version: 1, minHeight: 320, maxHeight: 1600, mobile: true, resource: 'course' },
   'landing.templates': { version: 1, minHeight: 320, maxHeight: 1600, mobile: true, resource: 'organization' },
   'organization.navigation': { version: 1, minHeight: 0, maxHeight: 0, mobile: true, resource: 'organization' },
-  'plugin.page': { version: 1, minHeight: 480, maxHeight: 4000, mobile: true, resource: 'organization' }
+  'plugin.page': { version: 1, minHeight: 480, maxHeight: 4000, mobile: true, resource: 'organization' },
+  'exercise.question': { version: 1, minHeight: 60, maxHeight: 3000, mobile: true, resource: 'exercise' }
 } as const;
 
 export const ZPluginNavigationContribution = z
@@ -264,16 +266,6 @@ export const ZPluginSlotContribution = z
     }
   });
 export type TPluginSlotContribution = z.infer<typeof ZPluginSlotContribution>;
-
-export const ZPluginContributions = z
-  .object({
-    navigation: z.array(ZPluginNavigationContribution).optional().default([]),
-    pages: z.array(ZPluginPageContribution).optional().default([]),
-    actions: z.array(ZPluginActionContribution).optional().default([]),
-    slots: z.array(ZPluginSlotContribution).optional().default([])
-  })
-  .strict();
-export type TPluginContributions = z.infer<typeof ZPluginContributions>;
 
 export const ZPluginRuntimeUiEntrypointObject = z
   .object({
@@ -537,6 +529,50 @@ export const ZPluginStorage = z
   });
 export type TPluginStorage = z.infer<typeof ZPluginStorage>;
 
+export const ZPluginQuestionTypeGrading = z
+  .object({
+    strategy: z.enum(['manual', 'declarative-match', 'platform-code-runner']).default('manual'),
+    supportsPartialCredit: z.boolean().default(false)
+  })
+  .strict();
+export type TPluginQuestionTypeGrading = z.infer<typeof ZPluginQuestionTypeGrading>;
+
+export const ZPluginQuestionTypeContribution = z
+  .object({
+    id: z.string().trim().min(1).max(64),
+    title: z.string().trim().min(1).max(100),
+    description: z.string().trim().max(280).optional(),
+    entrypoints: z
+      .object({
+        edit: z.string().trim().min(1).max(64),
+        take: z.string().trim().min(1).max(64),
+        preview: z.string().trim().min(1).max(64),
+        review: z.string().trim().min(1).max(64).optional(),
+        submission: z.string().trim().min(1).max(64).optional()
+      })
+      .strict(),
+    icon: ZPluginIcon.optional(),
+    answerSchema: ZPluginJsonSchema.optional(),
+    publicConfigSchema: ZPluginJsonSchema.optional(),
+    grading: ZPluginQuestionTypeGrading.optional().default({
+      strategy: 'manual',
+      supportsPartialCredit: false
+    })
+  })
+  .strict();
+export type TPluginQuestionTypeContribution = z.infer<typeof ZPluginQuestionTypeContribution>;
+
+export const ZPluginContributions = z
+  .object({
+    navigation: z.array(ZPluginNavigationContribution).optional().default([]),
+    pages: z.array(ZPluginPageContribution).optional().default([]),
+    actions: z.array(ZPluginActionContribution).optional().default([]),
+    slots: z.array(ZPluginSlotContribution).optional().default([]),
+    questionTypes: z.array(ZPluginQuestionTypeContribution).optional().default([])
+  })
+  .strict();
+export type TPluginContributions = z.infer<typeof ZPluginContributions>;
+
 export const ZPluginManifest = z
   .object({
     $schema: z.string().url().optional(),
@@ -571,7 +607,8 @@ export const ZPluginManifest = z
       navigation: [],
       pages: [],
       actions: [],
-      slots: []
+      slots: [],
+      questionTypes: []
     }),
     settings: z
       .object({
@@ -644,6 +681,38 @@ export const ZPluginManifest = z
             code: z.ZodIssueCode.custom,
             message: `Slot "${slot.id}" references undeclared ui.entrypoint "${entrypointName}"`,
             path: ['contributes', 'slots', idx]
+          });
+        }
+      }
+    }
+
+    const questionTypeIds = new Set<string>();
+    for (const [idx, questionType] of (data.contributes.questionTypes ?? []).entries()) {
+      if (questionTypeIds.has(questionType.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Duplicate question type contribution id "${questionType.id}"`,
+          path: ['contributes', 'questionTypes', idx, 'id']
+        });
+      }
+      questionTypeIds.add(questionType.id);
+
+      const entrypointNames = [
+        questionType.entrypoints.edit,
+        questionType.entrypoints.take,
+        questionType.entrypoints.preview,
+        questionType.entrypoints.review,
+        questionType.entrypoints.submission
+      ].filter(
+        (entrypointName): entrypointName is string => typeof entrypointName === 'string' && entrypointName.length > 0
+      );
+
+      for (const entrypointName of entrypointNames) {
+        if (!declaredEntrypoints[entrypointName]) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Question type "${questionType.id}" references undeclared ui.entrypoint "${entrypointName}"`,
+            path: ['contributes', 'questionTypes', idx, 'entrypoints']
           });
         }
       }

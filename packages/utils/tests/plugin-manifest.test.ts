@@ -548,4 +548,121 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
 
     expect(ZPluginManifest.safeParse(invalidLandingTemplatesManifest).success).toBe(false);
   });
+
+  it('validates a questionTypes contribution with valid entrypoints and schemas', () => {
+    const questionPluginManifest = {
+      ...validManifest,
+      runtime: {
+        ui: {
+          entrypoints: {
+            questionEditor: 'dist/editor.html',
+            questionWidget: 'dist/widget.html',
+            questionReview: 'dist/review.html',
+            questionSubmission: 'dist/submission.html'
+          }
+        }
+      },
+      contributes: {
+        questionTypes: [
+          {
+            id: 'python-runner',
+            title: 'Python Code Runner',
+            description: 'Interactive Python code runner with automated unit tests',
+            entrypoints: {
+              edit: 'questionEditor',
+              take: 'questionWidget',
+              preview: 'questionWidget',
+              review: 'questionReview',
+              submission: 'questionSubmission'
+            },
+            icon: {
+              resource: 'assets/python.svg'
+            },
+            answerSchema: {
+              type: 'object',
+              properties: {
+                code: { type: 'string', maxLength: 10000 }
+              },
+              required: ['code'],
+              additionalProperties: false
+            },
+            publicConfigSchema: {
+              type: 'object',
+              properties: {
+                starterCode: { type: 'string' }
+              }
+            },
+            grading: {
+              strategy: 'platform-code-runner',
+              supportsPartialCredit: true
+            }
+          }
+        ]
+      }
+    };
+
+    const result = ZPluginManifest.safeParse(questionPluginManifest);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.contributes.questionTypes).toHaveLength(1);
+      expect(result.data.contributes.questionTypes[0].id).toBe('python-runner');
+      expect(result.data.contributes.questionTypes[0].grading.strategy).toBe('platform-code-runner');
+    }
+  });
+
+  it('rejects questionTypes with duplicate ids', () => {
+    const duplicateManifest = {
+      ...validManifest,
+      runtime: {
+        ui: {
+          entrypoints: {
+            editor: 'dist/editor.html',
+            widget: 'dist/widget.html'
+          }
+        }
+      },
+      contributes: {
+        questionTypes: [
+          {
+            id: 'my-question',
+            title: 'Question 1',
+            entrypoints: { edit: 'editor', take: 'widget', preview: 'widget' }
+          },
+          {
+            id: 'my-question',
+            title: 'Question 2',
+            entrypoints: { edit: 'editor', take: 'widget', preview: 'widget' }
+          }
+        ]
+      }
+    };
+
+    const result = ZPluginManifest.safeParse(duplicateManifest);
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects questionTypes referencing undeclared entrypoints', () => {
+    const undeclaredManifest = {
+      ...validManifest,
+      runtime: {
+        ui: {
+          entrypoints: {
+            editor: 'dist/editor.html'
+          }
+        }
+      },
+      contributes: {
+        questionTypes: [
+          {
+            id: 'math-question',
+            title: 'Math Question',
+            entrypoints: { edit: 'editor', take: 'missingWidget', preview: 'editor' }
+          }
+        ]
+      }
+    };
+
+    const result = ZPluginManifest.safeParse(undeclaredManifest);
+    expect(result.success).toBe(false);
+  });
 });

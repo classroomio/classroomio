@@ -14,6 +14,9 @@ import {
   type BridgeStorageListPayload,
   type BridgeTemplateSelectionPayload,
   type BridgeCertificateTemplateApplyPayload,
+  type BridgeQuestionSetAnswerPayload,
+  type BridgeQuestionUpdateConfigPayload,
+  type BridgeQuestionResizePayload,
   BRIDGE_MAX_REQUEST_BYTES,
   BRIDGE_MAX_RESPONSE_BYTES,
   DEFAULT_LIGHT_THEME_V1,
@@ -39,6 +42,10 @@ export interface PluginBridgeHostHandlers {
   onLandingTemplateSelect?: (payload: BridgeTemplateSelectionPayload) => Promise<unknown>;
   onCertificateTemplateApply?: (payload: BridgeCertificateTemplateApplyPayload) => Promise<unknown>;
   onDataRequest?: (action: string, payload: Record<string, unknown>) => Promise<unknown>;
+  onQuestionSetAnswer?: (payload: BridgeQuestionSetAnswerPayload) => Promise<void>;
+  onQuestionUpdatePublicConfig?: (payload: BridgeQuestionUpdateConfigPayload) => Promise<void>;
+  onQuestionUpdateAuthorConfig?: (payload: BridgeQuestionUpdateConfigPayload) => Promise<void>;
+  onQuestionResize?: (payload: BridgeQuestionResizePayload) => Promise<void>;
 }
 
 export interface PluginBridgeHostOptions {
@@ -252,6 +259,69 @@ export class PluginBridgeHost {
           resultData = await this.options.handlers.onCertificateTemplateApply(
             request.payload as BridgeCertificateTemplateApplyPayload
           );
+          break;
+        }
+        case 'exercise.question:setAnswer': {
+          const surfaceTarget = this.options.context.surface?.target;
+          if (surfaceTarget !== 'exercise.question') {
+            throw { code: 'FORBIDDEN', message: 'Action only allowed in exercise.question surface' };
+          }
+          const mode = this.options.context.surface?.resource?.mode;
+          if (mode === 'submission' || mode === 'review' || this.options.context.surface?.resource?.readOnly) {
+            throw { code: 'FORBIDDEN', message: 'Cannot set answer in read-only mode' };
+          }
+          if (this.options.handlers.onQuestionSetAnswer) {
+            await this.options.handlers.onQuestionSetAnswer(request.payload as BridgeQuestionSetAnswerPayload);
+          }
+          break;
+        }
+        case 'exercise.question:updatePublicConfig': {
+          const surfaceTarget = this.options.context.surface?.target;
+          if (surfaceTarget !== 'exercise.question') {
+            throw { code: 'FORBIDDEN', message: 'Action only allowed in exercise.question surface' };
+          }
+          const role = this.options.context.actor?.role;
+          if (role !== 'admin' && role !== 'tutor') {
+            throw { code: 'UNAUTHORIZED', message: 'Only authoring roles can update question configuration' };
+          }
+          const mode = this.options.context.surface?.resource?.mode;
+          if (mode !== 'edit') {
+            throw { code: 'FORBIDDEN', message: 'Question configuration can only be updated in edit mode' };
+          }
+          if (this.options.handlers.onQuestionUpdatePublicConfig) {
+            await this.options.handlers.onQuestionUpdatePublicConfig(
+              request.payload as BridgeQuestionUpdateConfigPayload
+            );
+          }
+          break;
+        }
+        case 'exercise.question:updateAuthorConfig': {
+          const surfaceTarget = this.options.context.surface?.target;
+          if (surfaceTarget !== 'exercise.question') {
+            throw { code: 'FORBIDDEN', message: 'Action only allowed in exercise.question surface' };
+          }
+          const role = this.options.context.actor?.role;
+          if (role !== 'admin' && role !== 'tutor') {
+            throw { code: 'UNAUTHORIZED', message: 'Only authoring roles can update question configuration' };
+          }
+          const mode = this.options.context.surface?.resource?.mode;
+          if (mode !== 'edit') {
+            throw { code: 'FORBIDDEN', message: 'Question configuration can only be updated in edit mode' };
+          }
+          if (this.options.handlers.onQuestionUpdateAuthorConfig) {
+            await this.options.handlers.onQuestionUpdateAuthorConfig(
+              request.payload as BridgeQuestionUpdateConfigPayload
+            );
+          }
+          break;
+        }
+        case 'exercise.question:resize': {
+          const payload = request.payload as BridgeQuestionResizePayload;
+          if (this.options.handlers.onQuestionResize) {
+            await this.options.handlers.onQuestionResize(payload);
+          } else if (this.options.handlers.onResize) {
+            await this.options.handlers.onResize(payload);
+          }
           break;
         }
         case 'capabilities:list': {

@@ -37,7 +37,8 @@ const ALLOWED_TARGETS = new Set([
   'lesson.after',
   'certificate.actions',
   'certificate.templates',
-  'landing.templates'
+  'landing.templates',
+  'exercise.question'
 ]);
 
 function isSafeRelativePath(p) {
@@ -210,6 +211,53 @@ export function validateManifest(manifest) {
       }
       if (action.entrypoint && !declaredEntrypoints[action.entrypoint]) {
         errors.push(`Action "${action.id}" references undeclared ui.entrypoint "${action.entrypoint}"`);
+      }
+    }
+  }
+
+  if (manifest.contributes?.questionTypes) {
+    const seenQuestionTypeIds = new Set();
+    for (const questionType of manifest.contributes.questionTypes) {
+      if (!questionType.id || typeof questionType.id !== 'string') {
+        errors.push('Each question type in contributes.questionTypes must have an id');
+      } else if (seenQuestionTypeIds.has(questionType.id)) {
+        errors.push(`Duplicate question type id "${questionType.id}"`);
+      } else {
+        seenQuestionTypeIds.add(questionType.id);
+      }
+
+      if (!questionType.title || typeof questionType.title !== 'string') {
+        errors.push(`Question type "${questionType.id || 'unknown'}" must have a title`);
+      }
+
+      if (!questionType.entrypoints || typeof questionType.entrypoints !== 'object') {
+        errors.push(`Question type "${questionType.id || 'unknown'}" must define entrypoints`);
+      } else {
+        const requiredModes = ['edit', 'take', 'preview'];
+        for (const mode of requiredModes) {
+          const entrypointName = questionType.entrypoints[mode];
+          if (!entrypointName || typeof entrypointName !== 'string') {
+            errors.push(`Question type "${questionType.id}" must specify entrypoint "${mode}"`);
+          } else if (!declaredEntrypoints[entrypointName]) {
+            errors.push(
+              `Question type "${questionType.id}" references undeclared ui.entrypoint "${entrypointName}" for mode "${mode}"`
+            );
+          }
+        }
+        for (const mode of ['review', 'submission']) {
+          const entrypointName = questionType.entrypoints[mode];
+          if (entrypointName) {
+            if (typeof entrypointName !== 'string' || !declaredEntrypoints[entrypointName]) {
+              errors.push(
+                `Question type "${questionType.id}" references undeclared ui.entrypoint "${entrypointName}" for mode "${mode}"`
+              );
+            }
+          }
+        }
+      }
+
+      if (questionType.icon?.resource && !isSafeRelativePath(questionType.icon.resource)) {
+        errors.push(`Question type "${questionType.id}" icon.resource must be a safe relative asset path`);
       }
     }
   }
@@ -393,6 +441,25 @@ export function packageSinglePlugin(pluginDir, options = {}) {
       });
     } else {
       console.warn(`Warning: Icon file not found at ${manifest.icon.resource}`);
+    }
+  }
+
+  for (const questionType of manifest.contributes?.questionTypes ?? []) {
+    if (questionType.icon?.resource && !packagedFiles.has(questionType.icon.resource)) {
+      const iconCandidates = [
+        path.join(pluginDir, questionType.icon.resource),
+        path.join(pluginDir, 'public', questionType.icon.resource)
+      ];
+      const iconPath = iconCandidates.find((candidate) => fs.existsSync(candidate));
+      if (iconPath) {
+        packagedFiles.set(questionType.icon.resource, {
+          path: questionType.icon.resource,
+          content: fs.readFileSync(iconPath),
+          mode: 0o644
+        });
+      } else {
+        console.warn(`Warning: Question type icon file not found at ${questionType.icon.resource}`);
+      }
     }
   }
 
@@ -669,6 +736,23 @@ export function verifyArtifacts(targetDir = '.') {
     for (const navigation of manifest.contributes?.navigation ?? []) {
       if (navigation.icon?.resource) {
         checkResource(release, navigation.icon.resource, `navigation ${navigation.id} icon`);
+      }
+    }
+
+    for (const questionType of manifest.contributes?.questionTypes ?? []) {
+      const entrypointsToCheck = [
+        questionType.entrypoints?.edit,
+        questionType.entrypoints?.take,
+        questionType.entrypoints?.preview,
+        questionType.entrypoints?.review,
+        questionType.entrypoints?.submission
+      ].filter(Boolean);
+
+      for (const entrypoint of entrypointsToCheck) {
+        checkResource(release, resolveEntrypoint(manifest, entrypoint), `question type ${questionType.id}`);
+      }
+      if (questionType.icon?.resource) {
+        checkResource(release, questionType.icon.resource, `question type ${questionType.id} icon`);
       }
     }
 

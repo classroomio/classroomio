@@ -131,9 +131,17 @@ const EXPECTED_REGISTRY = [
     manualGradingRequired: false
   },
   {
+    key: QUESTION_TYPE_KEY.PLUGIN_CUSTOM,
+    typename: 'PLUGIN_CUSTOM',
+    id: 17,
+    autoGradable: false,
+    supportsPartialCredit: true,
+    manualGradingRequired: true
+  },
+  {
     key: QUESTION_TYPE_KEY.MATCHING,
     typename: 'MATCHING',
-    id: 15,
+    id: 18,
     autoGradable: true,
     supportsPartialCredit: true,
     manualGradingRequired: false,
@@ -142,7 +150,7 @@ const EXPECTED_REGISTRY = [
   {
     key: QUESTION_TYPE_KEY.HOTSPOT,
     typename: 'HOTSPOT',
-    id: 16,
+    id: 19,
     autoGradable: true,
     supportsPartialCredit: true,
     manualGradingRequired: false,
@@ -151,7 +159,7 @@ const EXPECTED_REGISTRY = [
 ] as const;
 
 // Canonical `question_type` rows in the database (the source of truth ids are
-// resolved against). Ids 1-14 are the live rows in insertion order; MATCHING and
+// resolved against). Ids 1-14 and 17 are the live rows in insertion order; MATCHING and
 // HOTSPOT are intentionally absent (built-but-disabled). This list guards against
 // the registry id ever drifting from the DB again.
 const CANONICAL_DB_QUESTION_TYPES: ReadonlyArray<{ id: number; typename: string }> = [
@@ -168,7 +176,8 @@ const CANONICAL_DB_QUESTION_TYPES: ReadonlyArray<{ id: number; typename: string 
   { id: 11, typename: 'WORD_BANK' },
   { id: 12, typename: 'STAR' },
   { id: 13, typename: 'VIDEO_RECORDING' },
-  { id: 14, typename: 'THUMBS' }
+  { id: 14, typename: 'THUMBS' },
+  { id: 17, typename: 'PLUGIN_CUSTOM' }
 ];
 
 describe('question type registry', () => {

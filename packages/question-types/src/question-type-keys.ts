@@ -14,7 +14,8 @@ export const QUESTION_TYPE_KEY = {
   WORD_BANK: 'WORD_BANK',
   STAR: 'STAR',
   VIDEO_RECORDING: 'VIDEO_RECORDING',
-  THUMBS: 'THUMBS'
+  THUMBS: 'THUMBS',
+  PLUGIN_CUSTOM: 'PLUGIN_CUSTOM'
 } as const;
 
 export type QuestionTypeKey = (typeof QUESTION_TYPE_KEY)[keyof typeof QUESTION_TYPE_KEY];

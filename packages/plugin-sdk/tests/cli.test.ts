@@ -141,6 +141,79 @@ describe('Plugin CLI (cio-plugin)', () => {
     expect(verifyResult.errors).toHaveLength(0);
   });
 
+  it('validates and verifies question type plugins and their entrypoints', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-question-'));
+    const pluginDir = path.join(tempDir, 'code-plugin');
+    const distDir = path.join(pluginDir, 'dist');
+    fs.mkdirSync(path.join(distDir, 'assets'), { recursive: true });
+    fs.writeFileSync(path.join(distDir, 'editor.html'), '<h1>Editor</h1>');
+    fs.writeFileSync(path.join(distDir, 'question.html'), '<h1>Question</h1>');
+    fs.writeFileSync(path.join(distDir, 'review.html'), '<h1>Review</h1>');
+    fs.writeFileSync(path.join(distDir, 'assets', 'icon.svg'), '<svg />');
+
+    const questionManifest = {
+      ...validManifest,
+      id: 'com.example.code-question',
+      slug: 'code-question',
+      runtime: {
+        ui: {
+          entrypoints: {
+            edit: { renderMode: 'custom', resource: 'dist/editor.html' },
+            take: { renderMode: 'custom', resource: 'dist/question.html' },
+            preview: { renderMode: 'custom', resource: 'dist/question.html' },
+            review: { renderMode: 'custom', resource: 'dist/review.html' }
+          }
+        }
+      },
+      contributes: {
+        questionTypes: [
+          {
+            id: 'code-runner',
+            title: 'Code Runner',
+            entrypoints: {
+              edit: 'edit',
+              take: 'take',
+              preview: 'preview',
+              review: 'review'
+            },
+            icon: { resource: 'assets/icon.svg' }
+          }
+        ]
+      }
+    };
+
+    fs.writeFileSync(path.join(pluginDir, 'plugin.json'), JSON.stringify(questionManifest));
+
+    const manifestValidation = validateManifest(questionManifest);
+    expect(manifestValidation.valid).toBe(true);
+
+    const invalidQuestionManifest = {
+      ...questionManifest,
+      contributes: {
+        questionTypes: [
+          {
+            id: 'formula',
+            title: 'Math Formula',
+            entrypoints: {
+              edit: 'missing-edit',
+              take: 'take',
+              preview: 'preview'
+            }
+          }
+        ]
+      }
+    };
+    expect(validateManifest(invalidQuestionManifest).valid).toBe(false);
+
+    const buildResult = buildAllPlugins(tempDir);
+    expect(buildResult.releases).toHaveLength(1);
+
+    const verifyResult = verifyArtifacts(tempDir);
+    expect(verifyResult.valid).toBe(true);
+    expect(verifyResult.count).toBe(1);
+    expect(verifyResult.errors).toHaveLength(0);
+  });
+
   it('scaffolds a buildable plugin starter with the SDK lifecycle scripts', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-scaffold-'));
     const targetDir = path.join(tempDir, 'course-insights');
