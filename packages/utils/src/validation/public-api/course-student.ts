@@ -37,7 +37,7 @@ export const ZPublicApiCreateStudentSubmission = z.object({
           .max(64)
           .optional()
           .describe(
-            'Parameterised questions only: the variant seed the student was shown, which the server uses to re-derive the numbers and the answer key. Required for a question that defines variables.'
+            'Parameterised questions only: the variant seed the student was shown, used to re-derive the numbers and answer key. Required when the question has variables.'
           )
       })
     )
