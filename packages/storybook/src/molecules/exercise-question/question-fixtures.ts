@@ -455,3 +455,84 @@ export const SECTIONED_EXERCISE_FIXTURE: ExerciseSectionStoryFixture[] = [
     questions: [SHORT_ANSWER_FIXTURE.question, ORDERING_FIXTURE.question]
   }
 ];
+
+export const PARAMETERISED_MATH_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-parameterised',
+    key: 'q-parameterised',
+    title: 'A rope of {{b}} m is cut into {{a}} equal pieces. How long is each piece, in metres?',
+    questionType: 'MATH_EXPRESSION',
+    points: 1,
+    settings: {
+      acceptedAnswers: ['{{answer}}'],
+      compare: { mode: 'equivalent' },
+      variables: [],
+      wrongAnswerFeedback: [],
+      parameters: {
+        variables: [
+          { name: 'a', type: 'int', min: 2, max: 9, step: 1 },
+          { name: 'b', type: 'int', min: 1, max: 20, step: 1 }
+        ],
+        constraints: ['a != 0'],
+        answerFormula: 'b / a'
+      }
+    }
+  },
+  answer: { type: 'MATH_EXPRESSION', latex: '\\frac{3}{2}', seed: 'story-seed' },
+  wrongAnswer: { type: 'MATH_EXPRESSION', latex: '7', seed: 'story-seed' }
+};
+
+export const PARAMETERISED_NUMERIC_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-parameterised-numeric',
+    key: 'q-parameterised-numeric',
+    title: 'A pack of {{n}} pens costs {{x}} dollars each. What is the total cost?',
+    questionType: 'NUMERIC',
+    points: 1,
+    settings: {
+      correctValue: '{{answer}}',
+      tolerance: 0.01,
+      parameters: {
+        variables: [
+          { name: 'n', type: 'choice', min: 0, max: 0, step: 1, choices: [10, 20, 50] },
+          { name: 'x', type: 'decimal', min: 0.5, max: 2, step: 0.25 }
+        ],
+        constraints: [],
+        answerFormula: 'n * x',
+        requireNonzeroAnswer: true
+      }
+    }
+  },
+  answer: { type: 'NUMERIC', value: 12.5, seed: 'story-seed' }
+};
+
+export const WORKED_SOLUTION_RUBRIC_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-worked-rubric',
+    key: 'q-worked-rubric',
+    title: 'Solve $2x+3=11$ and show your working.',
+    questionType: 'WORKED_SOLUTION',
+    points: 5,
+    settings: {
+      acceptedAnswers: ['4'],
+      compare: { mode: 'equivalent' },
+      variables: ['x'],
+      wrongAnswerFeedback: [],
+      answerPoints: 2,
+      workingInputs: ['typed', 'photo'],
+      aiGrading: true,
+      rubric: {
+        steps: [
+          { id: 'subtract', description: 'Subtracts 3 from both sides', points: 1 },
+          { id: 'divide', description: 'Divides both sides by 2', points: 1 },
+          { id: 'check', description: 'States the solution clearly', points: 1 }
+        ]
+      }
+    }
+  },
+  answer: {
+    type: 'WORKED_SOLUTION',
+    latex: '4',
+    working: { lines: ['2x+3=11', '2x=8', 'x=4'], files: [] }
+  }
+};

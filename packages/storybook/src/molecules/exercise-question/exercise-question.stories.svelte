@@ -13,6 +13,9 @@
     MATH_EXPRESSION_FIXTURE,
     MULTI_PART_FIXTURE,
     NUMERIC_FRACTION_FIXTURE,
+    PARAMETERISED_MATH_FIXTURE,
+    PARAMETERISED_NUMERIC_FIXTURE,
+    WORKED_SOLUTION_RUBRIC_FIXTURE,
     WORKED_SOLUTION_FIXTURE,
     NUMERIC_FIXTURE,
     ORDERING_FIXTURE,
@@ -63,6 +66,34 @@
       question={WORKED_SOLUTION_FIXTURE.question}
       answer={WORKED_SOLUTION_FIXTURE.answer}
       wrongAnswer={WORKED_SOLUTION_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Parameterised math question">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={PARAMETERISED_MATH_FIXTURE.question}
+      answer={PARAMETERISED_MATH_FIXTURE.answer}
+      wrongAnswer={PARAMETERISED_MATH_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Parameterised numeric question with choice and decimal variables">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={PARAMETERISED_NUMERIC_FIXTURE.question}
+      answer={PARAMETERISED_NUMERIC_FIXTURE.answer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Worked solution with marking rubric">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={WORKED_SOLUTION_RUBRIC_FIXTURE.question}
+      answer={WORKED_SOLUTION_RUBRIC_FIXTURE.answer}
     />
   {/snippet}
 </Story>
