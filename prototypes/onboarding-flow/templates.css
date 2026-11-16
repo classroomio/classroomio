@@ -183,7 +183,9 @@ body[data-page='courses'] .rd-page {
   border-radius: var(--radius-lg);
   background: var(--background);
   color: var(--foreground);
-  box-shadow: 0 10px 15px -3px rgb(23 20 15 / 0.12), 0 4px 6px -4px rgb(23 20 15 / 0.1);
+  box-shadow:
+    0 10px 15px -3px rgb(23 20 15 / 0.12),
+    0 4px 6px -4px rgb(23 20 15 / 0.1);
   animation: cx-zoom 0.2s ease;
 }
 @keyframes cx-zoom {
@@ -318,7 +320,9 @@ body[data-page='courses'] .rd-page {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 .cx-radio:hover {
   background: color-mix(in oklab, var(--primary) 5%, transparent);
@@ -416,7 +420,9 @@ body[data-page='courses'] .rd-page {
   border-radius: var(--radius-md);
   background: var(--popover);
   color: var(--popover-foreground);
-  box-shadow: 0 4px 6px -1px rgb(23 20 15 / 0.1), 0 2px 4px -2px rgb(23 20 15 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(23 20 15 / 0.1),
+    0 2px 4px -2px rgb(23 20 15 / 0.1);
 }
 .cx-pop[hidden] {
   display: none;
@@ -595,7 +601,8 @@ body[data-page='courses'] .rd-page {
   opacity: 0;
   background:
     radial-gradient(circle at 50% 120%, transparent 38%, rgb(255 255 255 / 0.35) 39%, transparent 41%) 0 0 / 28px 14px,
-    radial-gradient(circle at 50% -20%, transparent 38%, rgb(255 255 255 / 0.35) 39%, transparent 41%) 14px 7px / 28px 14px;
+    radial-gradient(circle at 50% -20%, transparent 38%, rgb(255 255 255 / 0.35) 39%, transparent 41%) 14px 7px / 28px
+      14px;
   transition: opacity 0.3s ease-in-out;
 }
 .tc-blank:hover .tc-wave {
@@ -748,7 +755,9 @@ body[data-page='courses'] .rd-page {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--popover);
-  box-shadow: 0 4px 6px -1px rgb(23 20 15 / 0.1), 0 2px 4px -2px rgb(23 20 15 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(23 20 15 / 0.1),
+    0 2px 4px -2px rgb(23 20 15 / 0.1);
 }
 .cx-selpop[hidden] {
   display: none;

@@ -568,7 +568,11 @@ function isValidSite(value) {
     .trim()
     .replace(/^https?:\/\//i, '')
     .replace(/^www\./i, '');
-  const tld = host.split(/[/?#:]/)[0].split('.').pop().toLowerCase();
+  const tld = host
+    .split(/[/?#:]/)[0]
+    .split('.')
+    .pop()
+    .toLowerCase();
 
   return SITE_PATTERN.test(host) && !RESERVED_TLDS.includes(tld);
 }
@@ -761,7 +765,8 @@ function openSectionById(id, { focus = true } = {}) {
   const node = $(`.acc[data-sec="${id}"]`);
 
   node.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  if (focus && id === 'website') (S.siteMode === 'describe' ? $('#f-desc') : $('#f-site')).focus({ preventScroll: true });
+  if (focus && id === 'website')
+    (S.siteMode === 'describe' ? $('#f-desc') : $('#f-site')).focus({ preventScroll: true });
 }
 
 function advanceFrom(id) {
@@ -946,7 +951,9 @@ function wireBusiness() {
     chip.addEventListener('click', () => {
       S.pathChoice = S.pathChoice === chip.dataset.path ? '' : chip.dataset.path;
       commit();
-      $$('#paths .chip').forEach((other) => other.setAttribute('aria-pressed', String(other.dataset.path === S.pathChoice)));
+      $$('#paths .chip').forEach((other) =>
+        other.setAttribute('aria-pressed', String(other.dataset.path === S.pathChoice))
+      );
     })
   );
 

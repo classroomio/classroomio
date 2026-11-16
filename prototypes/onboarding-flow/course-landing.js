@@ -41,12 +41,17 @@
 
   const SECTION_ICONS = {
     header: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/>',
-    requirement: '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/>',
-    description: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    requirement:
+      '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/>',
+    description:
+      '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/>',
     goals: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
-    chips: '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
-    certificate: '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
-    reviews: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
+    chips:
+      '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+    certificate:
+      '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
+    reviews:
+      '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
     instructor: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
     pricing: '<circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/>'
   };
@@ -118,7 +123,10 @@
 
     const grouped = course.contentGrouping !== false;
     const visible = (lesson) => lesson.published !== false;
-    const lessonsIn = (items) => items.filter((item) => item.kind !== 'exercise' && visible(item)).map((item) => ({ id: item.id, title: item.title }));
+    const lessonsIn = (items) =>
+      items
+        .filter((item) => item.kind !== 'exercise' && visible(item))
+        .map((item) => ({ id: item.id, title: item.title }));
     const exercisesIn = (items) => items.filter((item) => item.kind === 'exercise' && visible(item)).length;
 
     if (grouped) {
@@ -132,7 +140,9 @@
 
     const all = course.sections.flatMap((section) => section.lessons);
 
-    return all.length ? [{ id: 'ungrouped', title: course.title, lessons: lessonsIn(all), exerciseCount: exercisesIn(all) }] : [];
+    return all.length
+      ? [{ id: 'ungrouped', title: course.title, lessons: lessonsIn(all), exerciseCount: exercisesIn(all) }]
+      : [];
   }
 
   function plural(word) {
@@ -152,7 +162,9 @@
     const show = (key, fallback = true) => (typeof display[key] === 'boolean' ? display[key] : fallback);
     const sections = sectionsOf(course);
     const totalLessons = sections.reduce((sum, section) => sum + section.lessons.length, 0);
-    const average = reviews.length ? reviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0) / reviews.length : undefined;
+    const average = reviews.length
+      ? reviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0) / reviews.length
+      : undefined;
     const templateUrl = info.certificate?.templateUrl;
     const hasCertificate = Boolean(templateUrl);
     const instructor = info.instructor ?? {};
@@ -160,7 +172,10 @@
     const cost = costOf(course);
     const cta = paid ? 'Buy Now' : 'Enroll Now';
     const href = options.enrollHref ?? M.R.enroll(course.id);
-    const nav = (site.navItems ?? []).map((item) => ({ ...item, href: item.href.startsWith('#') ? `${M.R.home}${item.href}` : item.href }));
+    const nav = (site.navItems ?? []).map((item) => ({
+      ...item,
+      href: item.href.startsWith('#') ? `${M.R.home}${item.href}` : item.href
+    }));
     const selfEnroll = course.selfEnroll !== false;
 
     return {
@@ -285,7 +300,14 @@
   }
 
   function viewOf(course) {
-    return { ...clone({ ...course, sections: undefined }), sections: course.sections, title: ed.title, desc: ed.desc, bannerImage: ed.banner, landing: ed.land };
+    return {
+      ...clone({ ...course, sections: undefined }),
+      sections: course.sections,
+      title: ed.title,
+      desc: ed.desc,
+      bannerImage: ed.banner,
+      landing: ed.land
+    };
   }
 
   function dirty() {
@@ -480,7 +502,14 @@
       <div><p class="cl-lab" style="margin-bottom:8px">Enable Paid</p><div class="cst-row">${K.sw('cl-paid', paid)}<span class="cl-gray">${yes(paid)}</span></div></div>
       ${
         paid
-          ? `<div class="cst-field"><p class="cl-lab">Currency</p>${K.selectHtml({ id: 'currency', value: land.currency === 'NGN' ? 'NGN' : 'USD', options: [{ value: 'NGN', label: 'NGN' }, { value: 'USD', label: 'USD' }] })}</div>
+          ? `<div class="cst-field"><p class="cl-lab">Currency</p>${K.selectHtml({
+              id: 'currency',
+              value: land.currency === 'NGN' ? 'NGN' : 'USD',
+              options: [
+                { value: 'NGN', label: 'NGN' },
+                { value: 'USD', label: 'USD' }
+              ]
+            })}</div>
           <div class="cst-field"><label class="cl-lab" for="cl-cost">Cost</label><input class="input" id="cl-cost" type="number" min="0" step="1" value="${Number(land.cost) || 0}" /></div>
           <div class="cst-field"><label class="cl-lab" for="cl-pay">Payment Link<span class="cl-req">*</span></label><input class="input" id="cl-pay" data-land="paymentLink" value="${esc(land.paymentLink ?? '')}" ${err ? 'aria-invalid="true"' : ''} />
             <p class="${err ? 'cst-error' : 'cst-desc'}" id="cl-pay-note">${esc(err || 'Stripe, Lemon Squeezy or any payment link')}</p></div>`
@@ -519,7 +548,10 @@
 
     frame?.contentWindow?.postMessage({ type: 'cl-select', key: ed.selected === 'header' ? 'hero' : ed.selected }, '*');
     if (scroll && SECTIONS.some((item) => item[0] === ed.selected)) {
-      frame?.contentWindow?.postMessage({ type: 'cl-scroll', key: ed.selected === 'header' ? 'hero' : ed.selected }, '*');
+      frame?.contentWindow?.postMessage(
+        { type: 'cl-scroll', key: ed.selected === 'header' ? 'hero' : ed.selected },
+        '*'
+      );
     }
   }
 
@@ -529,13 +561,18 @@
     if (String(review.name ?? '').trim().length < 5) errors.name = 'Name is too short, min of 5 character';
     if (String(review.avatar_url ?? '').length < 6) errors.avatar_url = 'Upload an image';
     if (!(review.rating >= 1 && review.rating <= 5)) errors.rating = 'Rating must be from 1-5';
-    if (String(review.description ?? '').trim().length < 10) errors.description = "'Description is too short, min of 5 characters";
+    if (String(review.description ?? '').trim().length < 10)
+      errors.description = "'Description is too short, min of 5 characters";
 
     return errors;
   }
 
   function isEmptyReview(review) {
-    return !String(review.name ?? '').trim() && !String(review.description ?? '').trim() && !String(review.avatar_url ?? '').trim();
+    return (
+      !String(review.name ?? '').trim() &&
+      !String(review.description ?? '').trim() &&
+      !String(review.avatar_url ?? '').trim()
+    );
   }
 
   function pickImage(options, onPick) {
@@ -568,9 +605,11 @@
         }
       })
     );
-    side.querySelectorAll('[data-ins]').forEach((input) =>
-      input.addEventListener('input', () => setLand(`instructor.${input.dataset.ins}`, input.value))
-    );
+    side
+      .querySelectorAll('[data-ins]')
+      .forEach((input) =>
+        input.addEventListener('input', () => setLand(`instructor.${input.dataset.ins}`, input.value))
+      );
     side.querySelectorAll('[data-rev]').forEach((input) =>
       input.addEventListener('input', () => {
         const review = land.reviews.find((item) => item.id === ed.openReview);
@@ -580,10 +619,14 @@
         touch();
       })
     );
-    K.wireRich(side, (id, html) => {
-      if (id === 'reward') setLand('reward.description', html);
-      else setLand(id, html);
-    }, document.getElementById('cl-overlay'));
+    K.wireRich(
+      side,
+      (id, html) => {
+        if (id === 'reward') setLand('reward.description', html);
+        else setLand(id, html);
+      },
+      document.getElementById('cl-overlay')
+    );
     K.wireSelects(side, (id, value) => {
       if (id === 'currency') {
         setLand('currency', value);
@@ -688,32 +731,37 @@
       }
 
       window.open(M.R.publicCourse(ed.ctx.course.id), '_blank', 'noopener');
-    } else if (act === 'cover') pickImage({ aspect: 16 / 9, maxBytes: 500 * 1024 }, (url) => {
-      ed.banner = url;
-      touch();
-      paintSide();
-    });
+    } else if (act === 'cover')
+      pickImage({ aspect: 16 / 9, maxBytes: 500 * 1024 }, (url) => {
+        ed.banner = url;
+        touch();
+        paintSide();
+      });
     else if (act === 'cover-remove') {
       ed.banner = '';
       touch();
       paintSide();
-    } else if (act === 'cert') pickImage({ maxWidth: 1400 }, (url) => {
-      setLand('certificate.templateUrl', url);
-      paintSide();
-    });
-    else if (act === 'ins-img') pickImage({ aspect: 1, maxWidth: 320 }, (url) => {
-      setLand('instructor.imgUrl', url);
-      paintSide();
-    });
-    else if (act === 'rev-img') pickImage({ aspect: 1, maxWidth: 240 }, (url) => {
-      const review = land.reviews.find((item) => item.id === ed.openReview);
+    } else if (act === 'cert')
+      pickImage({ maxWidth: 1400 }, (url) => {
+        setLand('certificate.templateUrl', url);
+        paintSide();
+      });
+    else if (act === 'ins-img')
+      pickImage({ aspect: 1, maxWidth: 320 }, (url) => {
+        setLand('instructor.imgUrl', url);
+        paintSide();
+      });
+    else if (act === 'rev-img')
+      pickImage({ aspect: 1, maxWidth: 240 }, (url) => {
+        const review = land.reviews.find((item) => item.id === ed.openReview);
 
-      review.avatar_url = url;
-      delete ed.reviewErrors.avatar_url;
-      touch();
-      paintSide();
-    });
-    else if (act === 'chip-add') addChip(target.dataset.name, document.querySelector(`[data-chip-in="${target.dataset.name}"]`));
+        review.avatar_url = url;
+        delete ed.reviewErrors.avatar_url;
+        touch();
+        paintSide();
+      });
+    else if (act === 'chip-add')
+      addChip(target.dataset.name, document.querySelector(`[data-chip-in="${target.dataset.name}"]`));
     else if (act === 'chip-del') {
       const name = target.dataset.name;
 
@@ -723,7 +771,15 @@
     } else if (act === 'rev-add') {
       const id = Date.now();
 
-      land.reviews.push({ id, hide: false, name: '', avatar_url: '', rating: 1, created_at: Date.now(), description: '' });
+      land.reviews.push({
+        id,
+        hide: false,
+        name: '',
+        avatar_url: '',
+        rating: 1,
+        created_at: Date.now(),
+        description: ''
+      });
       ed.openReview = id;
       ed.reviewErrors = {};
       touch();
@@ -774,7 +830,10 @@
       if (isEmptyReview(review)) continue;
 
       if (Object.keys(validateReview(review)).length) {
-        say('One or more reviews are invalid. Open each review and fix its name, avatar, rating and description before saving.', true);
+        say(
+          'One or more reviews are invalid. Open each review and fix its name, avatar, rating and description before saving.',
+          true
+        );
         ed.openReview = review.id;
         ed.reviewErrors = validateReview(review);
         selectSection('reviews');
@@ -818,7 +877,16 @@
     const course = ctx.course;
 
     if (!ed || ed.ctx.course.id !== course.id) {
-      ed = { ctx, title: course.title ?? '', desc: course.desc ?? '', banner: course.bannerImage || '', land: landingDraft(course), selected: null, reviewErrors: {}, openReview: null };
+      ed = {
+        ctx,
+        title: course.title ?? '',
+        desc: course.desc ?? '',
+        banner: course.bannerImage || '',
+        land: landingDraft(course),
+        selected: null,
+        reviewErrors: {},
+        openReview: null
+      };
       ed.base = JSON.stringify(snapshot());
     }
 
@@ -848,7 +916,11 @@
 
     frame.addEventListener('load', () => {
       pushPreview();
-      if (ed.selected) frame.contentWindow.postMessage({ type: 'cl-select', key: ed.selected === 'header' ? 'hero' : ed.selected }, '*');
+      if (ed.selected)
+        frame.contentWindow.postMessage(
+          { type: 'cl-select', key: ed.selected === 'header' ? 'hero' : ed.selected },
+          '*'
+        );
     });
     window.addEventListener('message', (event) => {
       if (event.data?.type === 'cl-picked') selectSection(event.data.key);
@@ -859,21 +931,25 @@
       event.preventDefault();
       event.returnValue = '';
     });
-    document.addEventListener('click', (event) => {
-      if (ed.leaving || !dirty()) return;
+    document.addEventListener(
+      'click',
+      (event) => {
+        if (ed.leaving || !dirty()) return;
 
-      const link = event.target.closest?.('a[href]');
+        const link = event.target.closest?.('a[href]');
 
-      if (!link || link.target === '_blank' || link.getAttribute('href').startsWith('#')) return;
+        if (!link || link.target === '_blank' || link.getAttribute('href').startsWith('#')) return;
 
-      if (!window.confirm(UNSAVED)) {
-        event.preventDefault();
-        event.stopPropagation();
-        return;
-      }
+        if (!window.confirm(UNSAVED)) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
 
-      ed.leaving = true;
-    }, true);
+        ed.leaving = true;
+      },
+      true
+    );
   }
 
   COURSE_TABS.landingpage = { nav: 'landingpage', title: 'Landing Page', html, wire };

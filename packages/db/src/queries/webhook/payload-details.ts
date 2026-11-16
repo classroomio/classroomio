@@ -22,7 +22,7 @@ export type TWebhookCompletionRecordDetails = {
 export type TWebhookCertificateIssueDetails = {
   id: string;
   issuedAt: string;
-  expiresAt: string;
+  expiresAt: string | null;
   cycleNumber: number;
   status: string;
 };

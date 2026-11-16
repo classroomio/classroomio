@@ -63,7 +63,12 @@
   function orgOf(S) {
     const info = M.orgInfo(S);
 
-    return { name: info.name || 'Your academy', logoUrl: S.logoDataUrl || undefined, siteName: info.siteName, owner: info.owner };
+    return {
+      name: info.name || 'Your academy',
+      logoUrl: S.logoDataUrl || undefined,
+      siteName: info.siteName,
+      owner: info.owner
+    };
   }
 
   function paintRoot(root, S) {
@@ -91,7 +96,10 @@
   }
 
   function signIn(S, account) {
-    S.learner = account.kind === 'owner' ? { signedIn: true } : { signedIn: true, kind: 'learner', fullname: account.fullname, email: account.email };
+    S.learner =
+      account.kind === 'owner'
+        ? { signedIn: true }
+        : { signedIn: true, kind: 'learner', fullname: account.fullname, email: account.email };
     P.saveState(S);
   }
 
@@ -126,7 +134,10 @@
 
     const latest = enrolledIds(S).slice(-1)[0];
 
-    return { label: T('landing.learner_menu.continue_learning'), href: rel(latest ? learnHref(S, M.findCourse(S, latest)) : M.R.publicCatalog) };
+    return {
+      label: T('landing.learner_menu.continue_learning'),
+      href: rel(latest ? learnHref(S, M.findCourse(S, latest)) : M.R.publicCatalog)
+    };
   }
 
   function avatarFor(S, name) {
@@ -147,7 +158,11 @@
     const items = [];
 
     if (latest) {
-      items.push({ key: 'myCourses', label: T('landing.learner_menu.my_courses'), href: rel(learnHref(S, M.findCourse(S, latest))) });
+      items.push({
+        key: 'myCourses',
+        label: T('landing.learner_menu.my_courses'),
+        href: rel(learnHref(S, M.findCourse(S, latest)))
+      });
       items.push({
         key: 'myCertificates',
         label: T('landing.learner_menu.my_certificates'),
@@ -155,7 +170,11 @@
       });
     }
 
-    items.push({ key: 'accountSettings', label: T('landing.learner_menu.account_settings'), href: rel(M.R.accountSettings) });
+    items.push({
+      key: 'accountSettings',
+      label: T('landing.learner_menu.account_settings'),
+      href: rel(M.R.accountSettings)
+    });
 
     return {
       fullname: user.fullname,

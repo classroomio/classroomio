@@ -17,7 +17,8 @@
   function heroDefaults() {
     return {
       heading: 'Become a Certified AI Engineer',
-      subheading: 'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
+      subheading:
+        'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
       primaryAction: { label: 'Start Learning', href: '/lms' },
       secondaryAction: { label: 'Browse', href: '/courses' },
       image: 'site/learn-on-cio.jpg'

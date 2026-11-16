@@ -77,8 +77,13 @@
     const showNoResults = ready && templates.length === 0 && (query.length > 0 || ui.scope === 'global');
     const cards = !ready
       ? [0, 1, 2, 3].map(() => U.skeletonCardHTML()).join('')
-      : templates.map((template) => U.templateCardHTML(template, { overlay: template.global ? '' : cardMenu(template) })).join('');
-    const grid = showBlank || templates.length > 0 || !ready ? `<div class="tg-grid">${showBlank ? U.blankCardHTML() : ''}${cards}</div>` : '';
+      : templates
+          .map((template) => U.templateCardHTML(template, { overlay: template.global ? '' : cardMenu(template) }))
+          .join('');
+    const grid =
+      showBlank || templates.length > 0 || !ready
+        ? `<div class="tg-grid">${showBlank ? U.blankCardHTML() : ''}${cards}</div>`
+        : '';
     const note = showOrgEmpty
       ? '<p class="tg-note">You haven’t made any templates yet. Save any course as a template from its ⋯ menu.</p>'
       : showNoResults
@@ -195,7 +200,10 @@
               ${
                 template.highlights.length
                   ? `<p class="pv-h">Shows off</p><ul class="pv-list">${template.highlights
-                      .map((highlight) => `<li>${icon('check', 16)}<span><b>${esc(highlight.title)}</b><small>${esc(highlight.description)}</small></span></li>`)
+                      .map(
+                        (highlight) =>
+                          `<li>${icon('check', 16)}<span><b>${esc(highlight.title)}</b><small>${esc(highlight.description)}</small></span></li>`
+                      )
                       .join('')}</ul>`
                   : ''
               }
@@ -277,7 +285,8 @@
       P.toast(`Your plan includes ${U.plural(U.templateLimit(S), 'template', 'templates')}`, {
         error: true,
         action: 'Upgrade',
-        onAction: () => window.pricing.open({ state: S, item: 'general', commit, onUpgrade: () => window.location.reload() })
+        onAction: () =>
+          window.pricing.open({ state: S, item: 'general', commit, onUpgrade: () => window.location.reload() })
       });
 
       return;

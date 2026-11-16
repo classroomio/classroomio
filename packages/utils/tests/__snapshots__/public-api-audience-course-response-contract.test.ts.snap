@@ -345,6 +345,111 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           ],
           "type": "string",
         },
+        "verifyPlacements": {
+          "additionalProperties": false,
+          "properties": {
+            "brutalist": {
+              "additionalProperties": false,
+              "properties": {
+                "anchor": {
+                  "enum": [
+                    "top-left",
+                    "top-right",
+                    "bottom-left",
+                    "bottom-right",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "anchor",
+              ],
+              "type": "object",
+            },
+            "classique": {
+              "additionalProperties": false,
+              "properties": {
+                "anchor": {
+                  "enum": [
+                    "top-left",
+                    "top-right",
+                    "bottom-left",
+                    "bottom-right",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "anchor",
+              ],
+              "type": "object",
+            },
+            "minimal": {
+              "additionalProperties": false,
+              "properties": {
+                "anchor": {
+                  "enum": [
+                    "top-left",
+                    "top-right",
+                    "bottom-left",
+                    "bottom-right",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "anchor",
+              ],
+              "type": "object",
+            },
+            "noir": {
+              "additionalProperties": false,
+              "properties": {
+                "anchor": {
+                  "enum": [
+                    "top-left",
+                    "top-right",
+                    "bottom-left",
+                    "bottom-right",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "anchor",
+              ],
+              "type": "object",
+            },
+            "poster": {
+              "additionalProperties": false,
+              "properties": {
+                "anchor": {
+                  "enum": [
+                    "top-left",
+                    "top-right",
+                    "bottom-left",
+                    "bottom-right",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "anchor",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "object",
+        },
+        "verifyPosition": {
+          "enum": [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+          ],
+          "type": "string",
+        },
       },
       "required": [
         "templateId",

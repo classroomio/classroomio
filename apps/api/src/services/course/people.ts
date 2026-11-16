@@ -26,6 +26,7 @@ import { getCourseProgress } from '@cio/db/queries/course/course';
 import { getWebhookLastActiveAt } from '@cio/db/queries/webhook';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
+import { getLatestCertificatesByCourseProfiles } from '@cio/db/queries/certificate/certificate';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
@@ -75,7 +76,31 @@ async function addMemberStages(courseId: string, members: PaginatedCourseMember[
 export async function listPaginatedCourseMembers(courseId: string, query: PaginatedCourseMembersOptions) {
   try {
     const result = await getPaginatedCourseMembers(courseId, query);
-    const items = await addMemberStages(courseId, result.items);
+    const withStages = await addMemberStages(courseId, result.items);
+
+    const profileIds = (withStages as Array<PaginatedCourseMember & { stage?: { kind: string } }>)
+      .filter((m) => m.profileId && (m as unknown as { stage?: { kind: string } }).stage?.kind === 'certificate_earned')
+      .map((m) => m.profileId!);
+    const certificates = profileIds.length ? await getLatestCertificatesByCourseProfiles(courseId, profileIds) : [];
+    const certByProfileId = new Map(certificates.map((c) => [c.profileId, c]));
+
+    const items = withStages.map((member) => {
+      const staged = member as unknown as PaginatedCourseMember & { stage?: { kind: string } };
+      if (!staged.profileId || staged.stage?.kind !== 'certificate_earned') return member;
+      const cert = certByProfileId.get(staged.profileId!);
+      if (!cert) return member;
+      return {
+        ...member,
+        certificate: {
+          id: cert.id,
+          verifyCode: cert.verifyCode,
+          issuedAt: cert.issuedAt,
+          expiresAt: cert.expiresAt,
+          revokedAt: cert.revokedAt,
+          revokeReason: cert.revokeReason
+        }
+      } as PaginatedCourseMember & { certificate?: unknown };
+    });
 
     return {
       ...result,

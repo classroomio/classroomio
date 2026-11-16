@@ -32,6 +32,9 @@ import { emitCourseWebhookEvent, emitWebhookEvent } from '@cio/core/services/web
 import type { TWebhookComplianceTrigger } from '@cio/utils/constants/webhook';
 import { orgHasCertificatesEnabled } from './certificate-plan';
 import { buildCertificateWebhookInput, evaluateCourseCertification } from './completion';
+import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { verifyCodeExists } from '@cio/db/queries/certificate/certificate';
+import { generateVerifyCode } from '@cio/utils/certificate/verify-code';
 
 type ComplianceStatus =
   | 'not_started'
@@ -127,7 +130,13 @@ async function emitComplianceCompletionWebhookEvents(params: {
   previousStatus: string;
   completedAt: string;
   validUntil: string;
-  certificateIssue: { id: string; issuedAt: string; expiresAt: string; cycleNumber: number; status: string } | null;
+  certificateIssue: {
+    id: string;
+    issuedAt: string;
+    expiresAt: string | null;
+    cycleNumber: number;
+    status: string;
+  } | null;
 }) {
   const { courseId, groupMemberId, profileId, record, certificateIssue, completedAt, validUntil } = params;
 
@@ -477,6 +486,21 @@ export async function syncComplianceProgressFromSubmission(
 
     if (!course.certificate?.isDownloadable) return null;
 
+    let verifyCode: string | null = null;
+    const organizationId = await getCourseOrganizationId(courseId, tx);
+    const certificatesEnabled = organizationId ? await orgHasCertificatesEnabled(organizationId) : false;
+
+    if (certificatesEnabled) {
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        const candidate = generateVerifyCode();
+        const exists = await verifyCodeExists(candidate, tx);
+        if (!exists) {
+          verifyCode = candidate;
+          break;
+        }
+      }
+    }
+
     return createCourseCertificateIssue(
       {
         courseId,
@@ -484,7 +508,8 @@ export async function syncComplianceProgressFromSubmission(
         courseCompletionRecordId: latestRecord.id,
         cycleNumber: latestRecord.cycleNumber,
         expiresAt: validUntil,
-        status: 'valid'
+        status: 'valid',
+        verifyCode
       },
       tx
     );

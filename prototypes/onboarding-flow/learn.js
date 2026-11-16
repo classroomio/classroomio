@@ -130,12 +130,20 @@
   window.CioAcademy.mount('learner', root, {
     org: { name: org.name, logoUrl: org.logoUrl, siteName: org.siteName, plan: S.plan || 'FREE' },
     user: { fullname: user.fullname, email: user.email, avatarUrl: A.avatarFor(S, user.fullname) },
-    course: { id: course.id, title: course.title, type: course.type || 'SELF_PACED', certificate: course.certificate || null },
+    course: {
+      id: course.id,
+      title: course.title,
+      type: course.type || 'SELF_PACED',
+      certificate: course.certificate || null
+    },
     sections,
     activeId,
     tab,
     store,
-    hrefs: { exit: M.R.publicCatalog, learn: (itemId, nextTab) => `${M.R.learn(course.id, itemId)}${nextTab ? `&tab=${nextTab}` : ''}` },
+    hrefs: {
+      exit: M.R.publicCatalog,
+      learn: (itemId, nextTab) => `${M.R.learn(course.id, itemId)}${nextTab ? `&tab=${nextTab}` : ''}`
+    },
     notify: (message, kind) => window.CioAcademy.notify(message, kind),
     certificateDocument: (recipient) =>
       window.CioAcademy.certificateHtml(course.certificate || null, {

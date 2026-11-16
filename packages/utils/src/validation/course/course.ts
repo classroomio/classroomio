@@ -74,13 +74,28 @@ export type TCertificateSignatory = z.infer<typeof ZCertificateSignatory>;
 export const ZCertificateTemplateId = z.enum(['classique', 'brutalist', 'noir', 'poster', 'minimal']);
 export type TCertificateTemplateId = z.infer<typeof ZCertificateTemplateId>;
 
+export const ZVerifyAnchor = z.enum(['top-left', 'top-right', 'bottom-left', 'bottom-right']);
+export const ZVerifyPlacement = z.object({ anchor: ZVerifyAnchor });
+export const ZVerifyPlacements = z
+  .object({
+    classique: ZVerifyPlacement.optional(),
+    brutalist: ZVerifyPlacement.optional(),
+    noir: ZVerifyPlacement.optional(),
+    poster: ZVerifyPlacement.optional(),
+    minimal: ZVerifyPlacement.optional()
+  })
+  .partial()
+  .optional();
+
 export const ZCertificateDesign = z.object({
   templateId: ZCertificateTemplateId,
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { message: 'Accent must be a 6-digit hex color' }),
   subtitle: z.string().max(120).optional(),
   descriptionOverride: z.string().max(500).optional(),
   signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]).optional(),
-  idFormat: z.string().max(40).optional()
+  idFormat: z.string().max(40).optional(),
+  verifyPosition: ZVerifyAnchor.optional(),
+  verifyPlacements: ZVerifyPlacements.optional()
 });
 export type TCertificateDesign = z.infer<typeof ZCertificateDesign>;
 
@@ -448,7 +463,9 @@ export const ZCertificationSettings = z.object({
   design: ZCertificateDesign.optional(),
   /** ISO 8601 datetime string or null to clear */
   deadline: z.union([z.string().min(1), z.null()]).optional(),
-  emailMessage: z.string().max(5000).nullable().optional()
+  emailMessage: z.string().max(5000).nullable().optional(),
+  /** Validity for standard courses: null = never expires, number = months after issue */
+  expiresAfterMonths: z.number().int().min(1).max(120).nullable().optional()
 });
 export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;
 

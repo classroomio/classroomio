@@ -43,7 +43,8 @@
     shieldCheck:
       '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
     trendingUp: '<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>',
-    globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    globe:
+      '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
     bookOpen:
       '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     listChecks:
@@ -81,10 +82,30 @@
   };
 
   const COURSE_TYPES = [
-    { value: 'SELF_PACED', id: 'self-paced', label: 'Self Paced', description: 'Best for courses where students can take lessons at their own pace' },
-    { value: 'LIVE_CLASS', id: 'live-class', label: 'Live Class', description: 'Ideal for bootcamps where lessons are time based' },
-    { value: 'COMPLIANCE', id: 'compliance', label: 'Compliance', description: 'Recurring training with retakes, reminders, and renewal tracking' },
-    { value: 'PUBLIC', id: 'public', label: 'Public', description: 'Free, no-signup course pages you can share publicly — great for lead gen' }
+    {
+      value: 'SELF_PACED',
+      id: 'self-paced',
+      label: 'Self Paced',
+      description: 'Best for courses where students can take lessons at their own pace'
+    },
+    {
+      value: 'LIVE_CLASS',
+      id: 'live-class',
+      label: 'Live Class',
+      description: 'Ideal for bootcamps where lessons are time based'
+    },
+    {
+      value: 'COMPLIANCE',
+      id: 'compliance',
+      label: 'Compliance',
+      description: 'Recurring training with retakes, reminders, and renewal tracking'
+    },
+    {
+      value: 'PUBLIC',
+      id: 'public',
+      label: 'Public',
+      description: 'Free, no-signup course pages you can share publicly — great for lead gen'
+    }
   ];
 
   /* en.json: course.navItem... exercise question_types */
@@ -228,7 +249,11 @@
   }
 
   function findTemplate(state, id) {
-    return orgTemplates(state).find((template) => template.id === id) ?? GLOBAL_TEMPLATES.find((template) => template.id === id) ?? null;
+    return (
+      orgTemplates(state).find((template) => template.id === id) ??
+      GLOBAL_TEMPLATES.find((template) => template.id === id) ??
+      null
+    );
   }
 
   function countsOf(template) {
@@ -429,7 +454,8 @@
 
   function studentCountOf(course) {
     if (Array.isArray(course.students)) return course.students.length;
-    if (Array.isArray(course.people)) return course.people.filter((person) => person.role === 'student' || person.role === 'STUDENT').length;
+    if (Array.isArray(course.people))
+      return course.people.filter((person) => person.role === 'student' || person.role === 'STUDENT').length;
 
     return 0;
   }
@@ -468,7 +494,12 @@
         title: section.title,
         lessons: section.lessons
           .filter((lesson) => lesson.kind !== 'exercise')
-          .map((lesson) => ({ id: M.newId('lesson'), title: lesson.title, html: lesson.html ?? '', videos: lesson.videos ?? [] })),
+          .map((lesson) => ({
+            id: M.newId('lesson'),
+            title: lesson.title,
+            html: lesson.html ?? '',
+            videos: lesson.videos ?? []
+          })),
         exercises: section.lessons
           .filter((lesson) => lesson.kind === 'exercise')
           .map((exercise) => ({
@@ -482,7 +513,12 @@
           }))
       })),
       meta: course.templateData
-        ? { metadata: course.templateData.metadata, certificate: course.templateData.certificate, compliance: course.templateData.compliance, callout: course.templateData.callout }
+        ? {
+            metadata: course.templateData.metadata,
+            certificate: course.templateData.certificate,
+            compliance: course.templateData.compliance,
+            callout: course.templateData.callout
+          }
         : {}
     };
   }
@@ -560,7 +596,8 @@
       host.innerHTML = '';
       document.removeEventListener('keydown', onKey);
       onClose?.();
-      if (restoreFocus && typeof restoreFocus.focus === 'function' && document.contains(restoreFocus)) restoreFocus.focus();
+      if (restoreFocus && typeof restoreFocus.focus === 'function' && document.contains(restoreFocus))
+        restoreFocus.focus();
     }
 
     function paint() {
@@ -743,7 +780,10 @@
 
           form.loading = true;
           api.rerender();
-          setTimeout(() => onCreated?.({ title: form.title, description: form.description, type: form.type }, api), 500);
+          setTimeout(
+            () => onCreated?.({ title: form.title, description: form.description, type: form.type }, api),
+            500
+          );
         });
         if (!title.value) title.focus();
       }

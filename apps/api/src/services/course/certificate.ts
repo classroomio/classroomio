@@ -1,7 +1,11 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCourseById, getOrganizationById, getProfileById, getCourseOrganizationId } from '@cio/db/queries';
+import { getLatestCertificateByCourseProfile } from '@cio/db/queries/certificate/certificate';
 import { resolveCertificateDesign, type CertificateRenderInput } from '@api/utils/certificate';
 import type { TCertificateDownloadRequest } from '@cio/utils/validation/course';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { formatVerifyCode } from '@cio/utils/certificate/verify-code';
+import { resolveCertificateStatus } from '@cio/utils/certificate/certificate-status';
 
 /**
  * Loads the design + render data for a given course/student pair so the API
@@ -9,10 +13,14 @@ import type { TCertificateDownloadRequest } from '@cio/utils/validation/course';
  *
  * The client only sends `studentName` (+ optional studentId/issuedAt). Everything
  * else comes from the database: title, description, org name + logo, design.
+ *
+ * @param recipientProfileId server-resolved profile whose issued certificate supplies the verify code; never take it
+ * from the request body, or a learner could print another learner's code.
  */
 export async function assembleCertificateRender(
   courseId: string,
-  body: TCertificateDownloadRequest
+  body: TCertificateDownloadRequest,
+  recipientProfileId?: string | null
 ): Promise<CertificateRenderInput> {
   const [courseRow] = await getCourseById(courseId);
   if (!courseRow) {
@@ -34,6 +42,41 @@ export async function assembleCertificateRender(
     ? formatCertificateId(design.idFormat, body.studentId, issuedAtDate)
     : formatCertificateId(design.idFormat, fallbackSequence(issuedAtDate), issuedAtDate);
 
+  let verifyCode: string | null = null;
+  let verifyUrl: string | null = null;
+  let status: 'valid' | 'expired' | 'revoked' = 'valid';
+  let latestIssue: Awaited<ReturnType<typeof getLatestCertificateByCourseProfile>> | null = null;
+
+  const baseUrl = getDashboardBaseUrl({
+    siteName: organization?.siteName ?? null,
+    customDomain: organization?.customDomain ?? null,
+    isCustomDomainVerified: organization?.isCustomDomainVerified ?? null
+  });
+
+  if (body.previewMode) {
+    verifyCode = '7KQM-4XH2';
+    verifyUrl = `${baseUrl.replace(/\/$/, '')}/verify?code=${encodeURIComponent(verifyCode)}`;
+  } else if (recipientProfileId) {
+    try {
+      const issue = await getLatestCertificateByCourseProfile(courseId, recipientProfileId);
+      latestIssue = issue ?? null;
+      if (issue?.verifyCode) {
+        verifyCode = formatVerifyCode(issue.verifyCode);
+        verifyUrl = `${baseUrl.replace(/\/$/, '')}/verify?code=${encodeURIComponent(verifyCode)}`;
+      }
+      if (issue) {
+        status = resolveCertificateStatus({ revokedAt: issue.revokedAt, expiresAt: issue.expiresAt });
+      }
+    } catch (error) {
+      console.error('assembleCertificateRender getLatestCertificateByCourseProfile failed', {
+        courseId,
+        recipientProfileId,
+        error
+      });
+      throw new AppError('Failed to load certificate verification', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+  }
+
   return {
     design,
     data: {
@@ -43,7 +86,10 @@ export async function assembleCertificateRender(
       orgName: organization?.name ?? '',
       orgLogoUrl: organization?.avatarUrl ?? undefined,
       date,
-      certificateId
+      certificateId,
+      verifyCode,
+      verifyUrl,
+      status
     }
   };
 }

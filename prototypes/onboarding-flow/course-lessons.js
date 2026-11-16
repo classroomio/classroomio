@@ -72,7 +72,12 @@
   let live = null;
 
   const hasText = (html) =>
-    Boolean(html) && (/<svg\b|<img\b|<iframe\b/i.test(html) || html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() !== '');
+    Boolean(html) &&
+    (/<svg\b|<img\b|<iframe\b/i.test(html) ||
+      html
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .trim() !== '');
 
   function grouped(course) {
     return course.metadata?.isContentGroupingEnabled !== false;
@@ -124,19 +129,163 @@
 
   const EXERCISE_TAGS = ['HTML', 'CSS', 'JS', 'Typescript', 'ReactJS', 'VueJS', 'NodeJS', 'Python', 'PHP', 'GIT'];
   const EXERCISE_TEMPLATES = [
-    { id: 't-html-1', tag: 'HTML', title: 'HTML basics', description: 'Tags, elements and document structure.', questions: [radio('What does HTML stand for?', 'Hyper Text Markup Language*', 'High Tech Modern Language', 'Home Tool Markup Language'), radio('Which tag creates a hyperlink?', '<a>*', '<link>', '<href>'), bool('The <img> tag needs a closing tag.', false), multi('Which of these are valid heading tags?', '<h1>*', '<h6>*', '<h7>', '<heading>')] },
-    { id: 't-html-2', tag: 'HTML', title: 'Forms and inputs', description: 'Collect data with form controls.', questions: [radio('Which attribute makes an input required?', 'required*', 'mandatory', 'validate'), radio('Which input type shows a colour picker?', 'type="color"*', 'type="paint"', 'type="palette"'), bool('A <label> can be linked to an input with the for attribute.', true)] },
-    { id: 't-css-1', tag: 'CSS', title: 'CSS selectors', description: 'Target elements with the right selector.', questions: [radio('Which selector targets an element with class "card"?', '.card*', '#card', 'card'), radio('Which property changes text colour?', 'color*', 'font-color', 'text-style'), bool('An id selector has higher specificity than a class selector.', true)] },
-    { id: 't-css-2', tag: 'CSS', title: 'Flexbox and layout', description: 'Lay out a page with flexbox.', questions: [radio('Which value turns an element into a flex container?', 'display: flex*', 'position: flex', 'flex: container'), radio('Which property centres items on the cross axis?', 'align-items*', 'justify-content', 'text-align'), multi('Which are valid flex-direction values?', 'row*', 'column*', 'diagonal', 'grid')] },
-    { id: 't-js-1', tag: 'JS', title: 'JavaScript fundamentals', description: 'Variables, types and functions.', questions: [radio('Which keyword declares a block-scoped variable?', 'let*', 'var', 'define'), radio('What is typeof null?', '"object"*', '"null"', '"undefined"'), bool('=== compares value and type.', true), multi('Which are falsy values?', '0*', '""*', '"0"', '[]')] },
-    { id: 't-js-2', tag: 'JS', title: 'Arrays and objects', description: 'Work with collections.', questions: [radio('Which method adds an item to the end of an array?', 'push()*', 'pop()', 'shift()'), radio('Which method returns a new array of transformed items?', 'map()*', 'forEach()', 'splice()'), bool('Objects can be used as map keys without conversion.', false)] },
-    { id: 't-ts-1', tag: 'Typescript', title: 'TypeScript types', description: 'Annotate and narrow types.', questions: [radio('Which keyword defines an object shape?', 'interface*', 'shape', 'struct'), radio('What does the unknown type require before use?', 'Narrowing*', 'Nothing', 'A cast to any'), bool('TypeScript types exist at runtime.', false)] },
-    { id: 't-react-1', tag: 'ReactJS', title: 'React components', description: 'Props, state and rendering.', questions: [radio('Which hook adds local state to a component?', 'useState*', 'useProps', 'useLocal'), radio('How does a parent pass data to a child?', 'Props*', 'State', 'Refs'), bool('A component must return a single root element or fragment.', true)] },
-    { id: 't-vue-1', tag: 'VueJS', title: 'Vue reactivity', description: 'Refs, computed values and directives.', questions: [radio('Which function creates a reactive primitive?', 'ref()*', 'state()', 'watch()'), radio('Which directive renders a list?', 'v-for*', 'v-list', 'v-each'), bool('computed() values are cached until a dependency changes.', true)] },
-    { id: 't-node-1', tag: 'NodeJS', title: 'Node.js basics', description: 'Modules, the event loop and the file system.', questions: [radio('Which module reads files?', 'fs*', 'http', 'path'), radio('Which command installs a package?', 'npm install*', 'npm get', 'node add'), bool('Node.js runs JavaScript on a single main thread.', true)] },
-    { id: 't-py-1', tag: 'Python', title: 'Python essentials', description: 'Syntax, lists and functions.', questions: [radio('Which keyword defines a function?', 'def*', 'func', 'function'), radio('Which structure is immutable?', 'tuple*', 'list', 'dict'), bool('Python uses indentation to define blocks.', true), multi('Which are Python built-in types?', 'int*', 'str*', 'char', 'float*')] },
-    { id: 't-php-1', tag: 'PHP', title: 'PHP syntax', description: 'Variables, arrays and output.', questions: [radio('How does a PHP variable start?', '$*', '@', '&'), radio('Which function prints text?', 'echo*', 'print_text', 'write'), bool('PHP files must end in .html.', false)] },
-    { id: 't-git-1', tag: 'GIT', title: 'Git workflow', description: 'Commit, branch and merge.', questions: [radio('Which command records staged changes?', 'git commit*', 'git push', 'git add'), radio('Which command creates a branch?', 'git branch name*', 'git new name', 'git fork name'), bool('git pull fetches and merges.', true), multi('Which commands inspect history?', 'git log*', 'git status', 'git diff*')] }
+    {
+      id: 't-html-1',
+      tag: 'HTML',
+      title: 'HTML basics',
+      description: 'Tags, elements and document structure.',
+      questions: [
+        radio(
+          'What does HTML stand for?',
+          'Hyper Text Markup Language*',
+          'High Tech Modern Language',
+          'Home Tool Markup Language'
+        ),
+        radio('Which tag creates a hyperlink?', '<a>*', '<link>', '<href>'),
+        bool('The <img> tag needs a closing tag.', false),
+        multi('Which of these are valid heading tags?', '<h1>*', '<h6>*', '<h7>', '<heading>')
+      ]
+    },
+    {
+      id: 't-html-2',
+      tag: 'HTML',
+      title: 'Forms and inputs',
+      description: 'Collect data with form controls.',
+      questions: [
+        radio('Which attribute makes an input required?', 'required*', 'mandatory', 'validate'),
+        radio('Which input type shows a colour picker?', 'type="color"*', 'type="paint"', 'type="palette"'),
+        bool('A <label> can be linked to an input with the for attribute.', true)
+      ]
+    },
+    {
+      id: 't-css-1',
+      tag: 'CSS',
+      title: 'CSS selectors',
+      description: 'Target elements with the right selector.',
+      questions: [
+        radio('Which selector targets an element with class "card"?', '.card*', '#card', 'card'),
+        radio('Which property changes text colour?', 'color*', 'font-color', 'text-style'),
+        bool('An id selector has higher specificity than a class selector.', true)
+      ]
+    },
+    {
+      id: 't-css-2',
+      tag: 'CSS',
+      title: 'Flexbox and layout',
+      description: 'Lay out a page with flexbox.',
+      questions: [
+        radio(
+          'Which value turns an element into a flex container?',
+          'display: flex*',
+          'position: flex',
+          'flex: container'
+        ),
+        radio('Which property centres items on the cross axis?', 'align-items*', 'justify-content', 'text-align'),
+        multi('Which are valid flex-direction values?', 'row*', 'column*', 'diagonal', 'grid')
+      ]
+    },
+    {
+      id: 't-js-1',
+      tag: 'JS',
+      title: 'JavaScript fundamentals',
+      description: 'Variables, types and functions.',
+      questions: [
+        radio('Which keyword declares a block-scoped variable?', 'let*', 'var', 'define'),
+        radio('What is typeof null?', '"object"*', '"null"', '"undefined"'),
+        bool('=== compares value and type.', true),
+        multi('Which are falsy values?', '0*', '""*', '"0"', '[]')
+      ]
+    },
+    {
+      id: 't-js-2',
+      tag: 'JS',
+      title: 'Arrays and objects',
+      description: 'Work with collections.',
+      questions: [
+        radio('Which method adds an item to the end of an array?', 'push()*', 'pop()', 'shift()'),
+        radio('Which method returns a new array of transformed items?', 'map()*', 'forEach()', 'splice()'),
+        bool('Objects can be used as map keys without conversion.', false)
+      ]
+    },
+    {
+      id: 't-ts-1',
+      tag: 'Typescript',
+      title: 'TypeScript types',
+      description: 'Annotate and narrow types.',
+      questions: [
+        radio('Which keyword defines an object shape?', 'interface*', 'shape', 'struct'),
+        radio('What does the unknown type require before use?', 'Narrowing*', 'Nothing', 'A cast to any'),
+        bool('TypeScript types exist at runtime.', false)
+      ]
+    },
+    {
+      id: 't-react-1',
+      tag: 'ReactJS',
+      title: 'React components',
+      description: 'Props, state and rendering.',
+      questions: [
+        radio('Which hook adds local state to a component?', 'useState*', 'useProps', 'useLocal'),
+        radio('How does a parent pass data to a child?', 'Props*', 'State', 'Refs'),
+        bool('A component must return a single root element or fragment.', true)
+      ]
+    },
+    {
+      id: 't-vue-1',
+      tag: 'VueJS',
+      title: 'Vue reactivity',
+      description: 'Refs, computed values and directives.',
+      questions: [
+        radio('Which function creates a reactive primitive?', 'ref()*', 'state()', 'watch()'),
+        radio('Which directive renders a list?', 'v-for*', 'v-list', 'v-each'),
+        bool('computed() values are cached until a dependency changes.', true)
+      ]
+    },
+    {
+      id: 't-node-1',
+      tag: 'NodeJS',
+      title: 'Node.js basics',
+      description: 'Modules, the event loop and the file system.',
+      questions: [
+        radio('Which module reads files?', 'fs*', 'http', 'path'),
+        radio('Which command installs a package?', 'npm install*', 'npm get', 'node add'),
+        bool('Node.js runs JavaScript on a single main thread.', true)
+      ]
+    },
+    {
+      id: 't-py-1',
+      tag: 'Python',
+      title: 'Python essentials',
+      description: 'Syntax, lists and functions.',
+      questions: [
+        radio('Which keyword defines a function?', 'def*', 'func', 'function'),
+        radio('Which structure is immutable?', 'tuple*', 'list', 'dict'),
+        bool('Python uses indentation to define blocks.', true),
+        multi('Which are Python built-in types?', 'int*', 'str*', 'char', 'float*')
+      ]
+    },
+    {
+      id: 't-php-1',
+      tag: 'PHP',
+      title: 'PHP syntax',
+      description: 'Variables, arrays and output.',
+      questions: [
+        radio('How does a PHP variable start?', '$*', '@', '&'),
+        radio('Which function prints text?', 'echo*', 'print_text', 'write'),
+        bool('PHP files must end in .html.', false)
+      ]
+    },
+    {
+      id: 't-git-1',
+      tag: 'GIT',
+      title: 'Git workflow',
+      description: 'Commit, branch and merge.',
+      questions: [
+        radio('Which command records staged changes?', 'git commit*', 'git push', 'git add'),
+        radio('Which command creates a branch?', 'git branch name*', 'git new name', 'git fork name'),
+        bool('git pull fetches and merges.', true),
+        multi('Which commands inspect history?', 'git log*', 'git status', 'git diff*')
+      ]
+    }
   ];
 
   function materialize(template) {
@@ -164,7 +313,12 @@
         questionType: entry.type,
         questionTypeId: entry.type === 'CHECKBOX' ? 2 : 1,
         settings: {},
-        options: entry.options.map((option) => ({ id: id('o'), label: option.label, value: option.label, isCorrect: option.isCorrect }))
+        options: entry.options.map((option) => ({
+          id: id('o'),
+          label: option.label,
+          value: option.label,
+          isCorrect: option.isCorrect
+        }))
       };
     });
   }
@@ -604,7 +758,8 @@
       canProceed = canCreate;
       primary = 'Next';
     } else {
-      canProceed = (modal.exKind === 'scratch' ? modal.exTitle.trim().length > 0 : Boolean(modal.exTemplate)) && canCreate;
+      canProceed =
+        (modal.exKind === 'scratch' ? modal.exTitle.trim().length > 0 : Boolean(modal.exTemplate)) && canCreate;
       primary = 'Finish';
     }
 
@@ -638,8 +793,18 @@
 
     if (modal.exStep === 0) {
       const options = [
-        ['scratch', 'From Scratch', 'Create your exercise from scratch if you have your questions already prepared', false],
-        ['template', 'Use a Template', 'Select from 100+ templates of predefined exercise to help you get started', false],
+        [
+          'scratch',
+          'From Scratch',
+          'Create your exercise from scratch if you have your questions already prepared',
+          false
+        ],
+        [
+          'template',
+          'Use a Template',
+          'Select from 100+ templates of predefined exercise to help you get started',
+          false
+        ],
         ['ai', 'Use AI', 'You can generate an exercise with AI from your notes', true]
       ];
 
@@ -723,7 +888,12 @@
     }
 
     const active = document.activeElement;
-    const focusKey = active?.getAttribute?.('data-m-title') !== null ? 'title' : active?.getAttribute?.('data-m-extitle') !== null ? 'extitle' : '';
+    const focusKey =
+      active?.getAttribute?.('data-m-title') !== null
+        ? 'title'
+        : active?.getAttribute?.('data-m-extitle') !== null
+          ? 'extitle'
+          : '';
     const caret = active?.selectionStart;
 
     host.innerHTML = `
@@ -744,7 +914,9 @@
         ? host.querySelector('[data-m-title]')
         : focusKey === 'extitle'
           ? host.querySelector('[data-m-extitle]')
-          : host.querySelector('#cc-primary-success') ?? host.querySelector('[data-m-title], [data-m-extitle]') ?? host.querySelector('[role="radio"][aria-checked="true"]');
+          : (host.querySelector('#cc-primary-success') ??
+            host.querySelector('[data-m-title], [data-m-extitle]') ??
+            host.querySelector('[role="radio"][aria-checked="true"]'));
 
     focusTarget?.focus();
 
@@ -781,7 +953,8 @@
 
       return;
     } else {
-      const template = modal.exKind === 'template' ? EXERCISE_TEMPLATES.find((entry) => entry.id === modal.exTemplate) : null;
+      const template =
+        modal.exKind === 'template' ? EXERCISE_TEMPLATES.find((entry) => entry.id === modal.exTemplate) : null;
       const title = template ? template.title : modal.exTitle.trim();
       const exercise = createExercise(ctx, title, flags.requiresSection ? modal.sectionId : '', template);
 
@@ -918,7 +1091,7 @@
     const spot = section ? null : locate(ctx, id);
 
     ui.editingId = id;
-    ui.editTitle = section ? section.title : spot?.item.title ?? '';
+    ui.editTitle = section ? section.title : (spot?.item.title ?? '');
     ui.error = '';
     ctx.rerender();
     document.querySelector('[data-edit-input]')?.focus();
@@ -945,7 +1118,13 @@
     ui.error = '';
     ctx.commit();
     ctx.rerender();
-    ctx.say(section ? 'Course section updated successfully' : spot?.item.kind === 'exercise' ? 'Saved Successfully' : 'Updated successfully');
+    ctx.say(
+      section
+        ? 'Course section updated successfully'
+        : spot?.item.kind === 'exercise'
+          ? 'Saved Successfully'
+          : 'Updated successfully'
+    );
   }
 
   async function removeContent(ctx, id) {
@@ -979,7 +1158,9 @@
     let drag = null;
 
     const clear = () =>
-      root.querySelectorAll('.cc-drop-before, .cc-drop-after, .cc-drop-into, .cc-dragging').forEach((node) => node.classList.remove('cc-drop-before', 'cc-drop-after', 'cc-drop-into', 'cc-dragging'));
+      root
+        .querySelectorAll('.cc-drop-before, .cc-drop-after, .cc-drop-into, .cc-dragging')
+        .forEach((node) => node.classList.remove('cc-drop-before', 'cc-drop-after', 'cc-drop-into', 'cc-dragging'));
 
     root.addEventListener('dragstart', (event) => {
       if (!ui.reorder) return;

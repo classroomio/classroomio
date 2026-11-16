@@ -13,6 +13,7 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { UnsavedChanges } from '$features/ui';
+  import { snackbar } from '$features/ui/snackbar/store';
   import CertificateEditorHeader from './certificate-editor-header.svelte';
   import TemplatesPanel from './panels/templates-panel.svelte';
   import ContentPanel from './panels/content-panel.svelte';
@@ -37,6 +38,8 @@
 
   const previewDesign = $derived(store.toDesign());
 
+  let editorPreviewStatus = $state<'valid' | 'expired' | 'revoked'>('valid');
+
   const sampleRenderData = $derived({
     recipientName: $profile.fullname || $t('course.navItem.certificates.editor.sample_recipient'),
     courseName: courseTitle || $t('course.navItem.certificates.editor.sample_course'),
@@ -47,7 +50,9 @@
     orgName: $currentOrg.name || $t('course.navItem.certificates.editor.sample_org'),
     orgLogoUrl: $currentOrg.avatarUrl || undefined,
     date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' }),
-    certificateId: (store.draft.idFormat || 'N° {seq}').replace('{seq}', '0247')
+    certificateId: (store.draft.idFormat || 'N° {seq}').replace('{seq}', '0247'),
+    verifyCode: '7KQM-4XH2',
+    verifyUrl: 'https://classroomio.com/verify?code=7KQM-4XH2'
   });
 
   function navVariant(panel: CertificateEditorPanel) {
@@ -56,6 +61,59 @@
 
   function setActive(panel: CertificateEditorPanel) {
     store.activePanel = panel;
+  }
+
+  function focusField(targetId: string, attempts = 5) {
+    const el = (document.getElementById(targetId) ||
+      document.querySelector(`[name="${targetId}"]`)) as HTMLElement | null;
+    if (el) {
+      el.focus();
+      if ((el as HTMLInputElement).select) (el as HTMLInputElement).select();
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    if (attempts > 0) {
+      setTimeout(() => focusField(targetId, attempts - 1), 50);
+    }
+  }
+
+  function handleCertEdit(key: string, fixed?: string) {
+    if (key === 'fixed') {
+      const messages: Record<string, string> = {
+        org: t.get('course.navItem.certificates.editor.toast_org'),
+        title: t.get('course.navItem.certificates.editor.toast_title'),
+        recipient: t.get('course.navItem.certificates.editor.toast_recipient'),
+        verify: t.get('course.navItem.certificates.editor.toast_verify')
+      };
+      const msg = (fixed && messages[fixed]) || t.get('course.navItem.certificates.editor.toast_generic');
+      snackbar.info(msg);
+      return;
+    }
+
+    let targetId: string | null = null;
+    if (key === 'subtitle') targetId = 'field-subtitle';
+    else if (key === 'description') targetId = 'field-description';
+    else if (key === 'idFormat') targetId = 'field-idFormat';
+    else if (key.startsWith('sig:')) {
+      const idx = Number(key.split(':')[1]);
+      if (!isNaN(idx)) {
+        targetId = `field-sig-${idx}-name`;
+        if (!store.draft.signatories[idx]?.enabled) {
+          store.draft.signatories[idx].enabled = true;
+        }
+      }
+    }
+
+    store.activePanel = 'content';
+
+    if (!targetId) return;
+
+    focusField(targetId);
+  }
+
+  function handleBackgroundClick() {
+    store.activePanel = 'colors';
   }
 </script>
 
@@ -175,8 +233,71 @@
         class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-auto bg-zinc-100 bg-[radial-gradient(circle,#d4d4d8_1px,transparent_1px)] [background-size:18px_18px] dark:bg-zinc-950 dark:bg-[radial-gradient(circle,rgba(113,113,122,0.4)_1px,transparent_1px)]"
         aria-label={$t('course.navItem.certificates.editor.preview')}
       >
+        <div
+          class="bg-card text-muted-foreground pointer-events-none absolute top-3 left-1/2 z-10 -translate-x-1/2 rounded-full border px-3 py-1 text-xs shadow-md"
+        >
+          {$t('course.navItem.certificates.editor.click_to_edit')}
+        </div>
         <div class="flex min-h-0 flex-1 items-center justify-center p-6 sm:p-10 lg:p-14">
-          <Certificate.Preview design={previewDesign} data={sampleRenderData} showControls />
+          <div
+            class="relative w-full max-w-[900px]"
+            style:opacity={editorPreviewStatus === 'revoked' ? '0.55' : editorPreviewStatus === 'expired' ? '0.8' : '1'}
+            style:filter={editorPreviewStatus === 'revoked' ? 'grayscale(1)' : 'none'}
+          >
+            <Certificate.Preview
+              design={previewDesign}
+              data={sampleRenderData}
+              showControls
+              onEdit={handleCertEdit}
+              onBackgroundClick={handleBackgroundClick}
+            />
+            {#if editorPreviewStatus === 'revoked'}
+              <div class="pointer-events-none absolute inset-0 grid place-items-center">
+                <span
+                  class="border-destructive text-destructive rotate-[-12deg] rounded-lg border-[5px] bg-white/70 px-6 py-2 text-2xl font-extrabold tracking-widest uppercase opacity-80 backdrop-blur-sm"
+                  >{$t('course.navItem.people.certificate_drawer.status_revoked')}</span
+                >
+              </div>
+            {:else if editorPreviewStatus === 'expired'}
+              <div class="pointer-events-none absolute inset-0 grid place-items-center">
+                <span
+                  class="rotate-[-12deg] rounded-lg border-[5px] border-amber-600 bg-white/70 px-6 py-2 text-2xl font-extrabold tracking-widest text-amber-600 opacity-80 backdrop-blur-sm"
+                  >{$t('course.navItem.people.certificate_drawer.status_expired')}</span
+                >
+              </div>
+            {/if}
+          </div>
+        </div>
+        <div
+          class="ui:border-border ui:bg-card absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full border p-1 shadow-md"
+          role="group"
+          aria-label="Preview as"
+        >
+          <span class="text-muted-foreground px-2 text-xs">{$t('course.navItem.certificates.editor.preview_as')}</span>
+          <button
+            type="button"
+            class="h-7 rounded-full px-3 text-xs {editorPreviewStatus === 'valid'
+              ? 'ui:bg-primary ui:text-primary-foreground'
+              : 'text-muted-foreground hover:bg-muted'}"
+            onclick={() => (editorPreviewStatus = 'valid')}
+            >{$t('course.navItem.people.certificate_drawer.status_valid')}</button
+          >
+          <button
+            type="button"
+            class="h-7 rounded-full px-3 text-xs {editorPreviewStatus === 'expired'
+              ? 'ui:bg-primary ui:text-primary-foreground'
+              : 'text-muted-foreground hover:bg-muted'}"
+            onclick={() => (editorPreviewStatus = 'expired')}
+            >{$t('course.navItem.people.certificate_drawer.status_expired')}</button
+          >
+          <button
+            type="button"
+            class="h-7 rounded-full px-3 text-xs {editorPreviewStatus === 'revoked'
+              ? 'ui:bg-primary ui:text-primary-foreground'
+              : 'text-muted-foreground hover:bg-muted'}"
+            onclick={() => (editorPreviewStatus = 'revoked')}
+            >{$t('course.navItem.people.certificate_drawer.status_revoked')}</button
+          >
         </div>
       </section>
     </div>

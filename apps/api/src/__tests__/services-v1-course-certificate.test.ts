@@ -460,11 +460,15 @@ describe('services/v1/courses/certificates', () => {
 
       expect(assertCertificatesEnabled).toHaveBeenCalledWith(ORG_ID);
       expect(getCourseMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
-      expect(assembleCertificateRender).toHaveBeenCalledWith(COURSE_ID, {
-        studentName: 'Ada Lovelace',
-        studentId: 'profile-1',
-        issuedAt: '2026-03-04T05:06:07.000Z'
-      });
+      expect(assembleCertificateRender).toHaveBeenCalledWith(
+        COURSE_ID,
+        {
+          studentName: 'Ada Lovelace',
+          studentId: 'profile-1',
+          issuedAt: '2026-03-04T05:06:07.000Z'
+        },
+        'profile-1'
+      );
       expect(generateCertificatePng).not.toHaveBeenCalled();
       expect(result).toEqual({ file: Buffer.from('pdf'), format: 'pdf', courseName: 'Intro Course' });
     });
@@ -497,7 +501,8 @@ describe('services/v1/courses/certificates', () => {
 
       expect(assembleCertificateRender).toHaveBeenCalledWith(
         COURSE_ID,
-        expect.objectContaining({ studentName: 'Recipient' })
+        expect.objectContaining({ studentName: 'Recipient' }),
+        'profile-1'
       );
     });
 

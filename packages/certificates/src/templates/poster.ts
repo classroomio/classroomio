@@ -1,9 +1,12 @@
+import { CERTIFICATE_WIDTH, TEMPLATE_VERIFY_OFFSETS } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
+  getVerifyPlacementStyle,
   prepareCertificateRenderContext,
   renderFooterMetaBlock,
   renderSignatoryBlock,
+  renderVerifyBlock,
   type TemplateRenderer
 } from './shared';
 
@@ -21,6 +24,7 @@ const descriptionPaddingBottom = 8;
 const bottomGridMaxWidth = 780;
 const bottomGridGap = 30;
 const bottomGridColumnWidth = (bottomGridMaxWidth - bottomGridGap * 2) / 3;
+const verifyQrSize = 60;
 
 const FIELDS = {
   org: {
@@ -95,6 +99,15 @@ const FIELDS = {
     letterSpacingEm: 0.2,
     allowWrap: true,
     textTransform: 'uppercase' as const
+  },
+  verifyCode: {
+    maxWidth: 90,
+    maxHeight: 14,
+    fontFamily: FONTS.mono,
+    basePx: 9,
+    allowWrap: false,
+    letterSpacingEm: 0.08,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
@@ -102,38 +115,44 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
   const certMeta = `${data.certificateId} / ${data.date}`;
   const { accent, subtitle, description, signatoryOne, signatoryTwo, year, fontSizes, roleMinHeight } =
     prepareCertificateRenderContext(design, data, FIELDS, {
-      certMeta
+      certMeta,
+      verifyCode: data.verifyCode ?? ''
     });
 
   const [firstTitleWord, ...restTitleWords] = data.courseName.split(' ');
   const titleEmphasis = restTitleWords.join(' ');
 
+  const placement = design.verifyPlacements?.poster ?? { anchor: 'top-right' as const };
+  const verifyPlacementStyle = getVerifyPlacementStyle(placement.anchor, TEMPLATE_VERIFY_OFFSETS.poster);
+  const verifyBlock = renderVerifyBlock(data.verifyCode, data.verifyUrl, { qrSizePx: verifyQrSize });
+
   const body = `
     <div class="cert t-poster">
       <div class="blob blob-1"></div>
+      ${verifyBlock ? `<div style="position:absolute; ${verifyPlacementStyle}; z-index:3;">${verifyBlock}</div>` : ''}
       <div class="blob blob-2"></div>
       <div class="blob blob-3"></div>
       <div class="content">
         <div class="main-section">
           <div class="top">
             <span class="pill" style="font-size: ${fontSizes.org}px;">${escapeHtml(data.orgName)}</span>
-            <span class="cert-meta" style="font-size: ${fontSizes.certMeta}px;">${escapeHtml(certMeta)}</span>
+            <span class="cert-meta" style="font-size: ${fontSizes.certMeta}px;" data-edit="idFormat" title="Edit certificate ID format">${escapeHtml(certMeta)}</span>
           </div>
           <div class="title-area">
             <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtml(firstTitleWord || 'Award')}${titleEmphasis ? ` <em>${escapeHtml(titleEmphasis)}</em>` : ''}</div>
-            ${subtitle ? `<div class="subtitle" style="font-size: ${fontSizes.subtitle}px;">${escapeHtml(subtitle)}</div>` : ''}
+            ${subtitle ? `<div class="subtitle" style="font-size: ${fontSizes.subtitle}px;" data-edit="subtitle" title="Edit subtitle">${escapeHtml(subtitle)}</div>` : ''}
           </div>
           <div class="recipient-box">
             <div class="lbl">Awarded To</div>
             <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
           </div>
-          ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+          ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;" data-edit="description" title="Edit description">${escapeHtml(description)}</div>` : ''}
         </div>
 
         <div class="footer-section">
           <div class="bottom-grid">
-            ${renderSignatoryBlock(signatoryOne, { nameClass: 'v', roleClass: 'k', roleFirst: true })}
-            ${renderSignatoryBlock(signatoryTwo, { nameClass: 'v', roleClass: 'k', roleFirst: true })}
+            ${renderSignatoryBlock(signatoryOne, { nameClass: 'v', roleClass: 'k', roleFirst: true, dataEdit: 'sig:0' })}
+            ${renderSignatoryBlock(signatoryTwo, { nameClass: 'v', roleClass: 'k', roleFirst: true, dataEdit: 'sig:1' })}
             ${renderFooterMetaBlock('Issued', data.date, { labelClass: 'k', valueClass: 'v' })}
           </div>
           <div class="corner-num">${escapeHtml(year)}</div>

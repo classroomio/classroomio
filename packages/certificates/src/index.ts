@@ -8,7 +8,8 @@ export {
   type CertificateTemplateMeta,
   type StoredCertificateDesign,
   type StoredCertificateRecord,
-  type StoredCertificateSignatory
+  type StoredCertificateSignatory,
+  type VerifyPlacements
 } from './types';
 
 export {
@@ -35,3 +36,10 @@ export {
   type FitFontSizeOptions
 } from './font-metrics';
 export { FONTS_LINK_HREF } from './templates/shared';
+export {
+  DEFAULT_VERIFY_PLACEMENTS,
+  DEFAULT_VERIFY_POSITION,
+  TEMPLATE_VERIFY_OFFSETS,
+  VERIFY_ANCHORS,
+  type VerifyAnchor
+} from './constants';

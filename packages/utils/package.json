@@ -93,6 +93,14 @@
       "types": "./dist/lms/index.d.ts",
       "default": "./dist/lms/index.js"
     },
+    "./certificate": {
+      "types": "./dist/certificate/index.d.ts",
+      "default": "./dist/certificate/index.js"
+    },
+    "./certificate/*": {
+      "types": "./dist/certificate/*.d.ts",
+      "default": "./dist/certificate/*.js"
+    },
     "./analytics": {
       "types": "./dist/analytics/index.d.ts",
       "default": "./dist/analytics/index.js"

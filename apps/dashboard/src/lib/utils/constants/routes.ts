@@ -19,6 +19,7 @@ export const ROUTE = {
   LOGOUT: '/logout',
   AUTH_FAILED: '/auth-failed',
   VERIFY_EMAIL_ERROR: '/verify-email-error',
+  VERIFY_CERTIFICATE: '/verify',
   OAUTH: '/oauth'
 };
 
@@ -37,6 +38,7 @@ export const PUBLIC_ROUTES = [
   `^${ROUTE.COURSES}/?$`,
   '/404',
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
+  `^${ROUTE.VERIFY_CERTIFICATE}/?$`,
   ROUTE.AUTH_FAILED,
   '^/csp-report$'
 ];

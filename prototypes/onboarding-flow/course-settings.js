@@ -57,9 +57,11 @@
     info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
     eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
     bold: '<path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/>',
-    italic: '<line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/>',
+    italic:
+      '<line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/>',
     underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/>',
-    strike: '<path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/>',
+    strike:
+      '<path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/>',
     list: '<path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/>',
     olist:
       '<path d="M11 5h10"/><path d="M11 12h10"/><path d="M11 19h10"/><path d="M4 4h1v5"/><path d="M4 9h2"/><path d="M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02"/>',
@@ -329,7 +331,9 @@
     dialog.el.querySelectorAll('[data-tab]').forEach((button) =>
       button.addEventListener('click', () => {
         tab = button.dataset.tab;
-        dialog.el.querySelectorAll('[data-tab]').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+        dialog.el
+          .querySelectorAll('[data-tab]')
+          .forEach((item) => item.setAttribute('aria-selected', String(item === button)));
         dialog.el.querySelectorAll('[data-pane]').forEach((pane) => {
           pane.hidden = pane.dataset.pane !== tab;
         });
@@ -405,7 +409,10 @@
   }
 
   function cleanRich(html) {
-    const text = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    const text = html
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .trim();
 
     return text || /<(img|iframe|video)\b/i.test(html) ? html : '';
   }
@@ -477,7 +484,9 @@
         event.preventDefault();
         document.execCommand('insertText', false, event.clipboardData.getData('text/plain'));
       });
-      body.addEventListener('focus', () => document.execCommand('defaultParagraphSeparator', false, 'p'), { once: true });
+      body.addEventListener('focus', () => document.execCommand('defaultParagraphSeparator', false, 'p'), {
+        once: true
+      });
     });
   }
 
@@ -571,7 +580,18 @@
     { value: 'COMPLIANCE', label: 'Compliance' },
     { value: 'PUBLIC', label: 'Public' }
   ];
-  const TAG_COLORS = ['#EF4444', '#F97316', '#F59E0B', '#84CC16', '#22C55E', '#14B8A6', '#06B6D4', '#3B82F6', '#8B5CF6', '#EC4899'];
+  const TAG_COLORS = [
+    '#EF4444',
+    '#F97316',
+    '#F59E0B',
+    '#84CC16',
+    '#22C55E',
+    '#14B8A6',
+    '#06B6D4',
+    '#3B82F6',
+    '#8B5CF6',
+    '#EC4899'
+  ];
   const MANUAL_QUESTION_TYPES = {
     TEXTAREA: 'Paragraph',
     SHORT_ANSWER: 'Short answer',
@@ -733,7 +753,11 @@
       threshold: typeof cert.threshold === 'number' ? cert.threshold : 100,
       requiredExerciseId,
       minScore:
-        typeof cert.exerciseMinScorePercent === 'number' ? cert.exerciseMinScorePercent : requiredExerciseId ? 100 : null,
+        typeof cert.exerciseMinScorePercent === 'number'
+          ? cert.exerciseMinScorePercent
+          : requiredExerciseId
+            ? 100
+            : null,
       reminders: offsets.map(reminderRow),
       tabs: [...(course.lessonTabsOrder ?? DEFAULT_TABS)],
       grouping: course.contentGrouping ?? true,
@@ -820,7 +844,10 @@
     const groups = ctx.S.tagGroups ?? [];
     const query = (st.tagQuery ?? '').trim().toLowerCase();
     const filtered = groups
-      .map((group) => ({ ...group, tags: query ? group.tags.filter((tag) => tag.name.toLowerCase().includes(query)) : group.tags }))
+      .map((group) => ({
+        ...group,
+        tags: query ? group.tags.filter((tag) => tag.name.toLowerCase().includes(query)) : group.tags
+      }))
       .filter((group) => group.tags.length > 0);
     const hasNoTags = groups.length > 0 && groups.every((group) => group.tags.length === 0);
     let content;
@@ -961,7 +988,10 @@
           </div>
           ${group.questions
             .map(
-              (question, index) => `<button type="button" class="cst-conv-q" data-act="conv-fix" data-ex="${esc(group.exerciseId)}" data-q="${esc(question.questionId)}" ${locked ? 'disabled' : ''}>
+              (
+                question,
+                index
+              ) => `<button type="button" class="cst-conv-q" data-act="conv-fix" data-ex="${esc(group.exerciseId)}" data-q="${esc(question.questionId)}" ${locked ? 'disabled' : ''}>
               <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(question.questionTitle || `Question ${index + 1}`)}</span>
               <span class="t">${esc(MANUAL_QUESTION_TYPES[question.typeKey])}</span></button>`
             )
@@ -1015,7 +1045,10 @@
         ${selectHtml({
           id: 'finalExercise',
           value: d.requiredExerciseId ?? 'none',
-          options: [{ value: 'none', label: 'none' }, ...exercises.map((item) => ({ value: item.id, label: item.title }))],
+          options: [
+            { value: 'none', label: 'none' },
+            ...exercises.map((item) => ({ value: item.id, label: item.title }))
+          ],
           ariaLabel: 'Final exercise'
         })}
         <p class="cst-desc">When set, students must reach at least the minimum score on this exercise (best attempt counts) in addition to the completion percentage above.</p>
@@ -1053,7 +1086,9 @@
       ${rows.length === 0 ? `<p class="cst-desc" id="cst-rem-empty">No reminders. Students won't get emails before live sessions.</p>` : ''}
       ${rows
         .map(
-          (row) => `<div class="cst-field" style="gap:0" data-row="${row.id}" ${errors[row.id] ? 'data-invalid="true"' : ''}>
+          (
+            row
+          ) => `<div class="cst-field" style="gap:0" data-row="${row.id}" ${errors[row.id] ? 'data-invalid="true"' : ''}>
           <div class="cst-rem-row">
             <input class="input amt" type="number" min="1" step="1" value="${row.amount}" data-rem-amt="${row.id}" aria-label="Amount" placeholder="1" />
             ${selectHtml({
@@ -1099,7 +1134,7 @@
             <label class="cst-label">Delivery log</label>
             <p class="cst-desc">Reminder emails for sessions in the last 30 days and upcoming sessions.</p>
           </div>
-          ${btn('View logs', { variant: 'secondary', size: 'sm', act: 'logs-open', })}
+          ${btn('View logs', { variant: 'secondary', size: 'sm', act: 'logs-open' })}
         </div>
       </div>`
     });
@@ -1158,7 +1193,8 @@
     return card({
       id: 'callout',
       title: 'Public course callout',
-      description: 'Shown at the bottom of each lesson and in place of locked items. Use it to drive students to your site or a paid course.',
+      description:
+        'Shown at the bottom of each lesson and in place of locked items. Use it to drive students to your site or a paid course.',
       body: `<div class="cst-group">
         <div class="cst-field"><label class="cst-label" for="cst-co-title">Title</label>
           <input class="input" id="cst-co-title" data-co="title" placeholder="Want to go deeper on this?" value="${esc(callout.title)}" /></div>
@@ -1192,7 +1228,9 @@
     const free = (S.plan ?? 'FREE') === 'FREE';
     const locked = lockedItems(course);
     const live = d.type === 'LIVE_CLASS';
-    const parts = 'When off, students can only join through an invite link or by being added from {people}.'.split('{people}');
+    const parts = 'When off, students can only join through an invite link or by being added from {people}.'.split(
+      '{people}'
+    );
     const upgrade = (text) =>
       `<button type="button" class="cst-upgrade" data-act="upgrade">${ic('gem', 20)}<span>${esc(text)}</span>${ic('right')}</button>`;
     const parts2 = [];
@@ -1223,7 +1261,7 @@
             ? `<div class="cst-alert ${live ? 'information' : 'warning'}" role="alert">
             ${ic('lock')}
             <div class="at">${locked.length} course item(s) are locked</div>
-            <div class="ad">${live ? "Locked lessons and exercises stay hidden from students until you unlock them — useful if you release content week by week." : "Enrolled students won't be able to take locked lessons or exercises until you unlock them."}
+            <div class="ad">${live ? 'Locked lessons and exercises stay hidden from students until you unlock them — useful if you release content week by week.' : "Enrolled students won't be able to take locked lessons or exercises until you unlock them."}
               ${btn('Unlock all', { variant: 'outline', size: 'sm', act: 'unlock-all', cls: 'fit' })}</div>
           </div>`
             : ''
@@ -1282,7 +1320,8 @@
     return card({
       id: 'template',
       title: 'Template',
-      description: 'This course was created from a template. Pull its changes when you want them — nothing changes on its own.',
+      description:
+        'This course was created from a template. Pull its changes when you want them — nothing changes on its own.',
       body: `<div class="cst-tpl">
         <img src="${esc(course.bannerImage || DEFAULT_COVER)}" alt="" />
         <div style="min-width:0;flex:1">
@@ -1304,7 +1343,16 @@
   }
 
   function bodyHtml(ctx) {
-    return [generalCard(ctx), typeCard(ctx), st.draft.type === 'LIVE_CLASS' ? remindersCard() : '', contentCard(), calloutCard(), accessCard(ctx), templateCard(ctx), deleteCard()].join('');
+    return [
+      generalCard(ctx),
+      typeCard(ctx),
+      st.draft.type === 'LIVE_CLASS' ? remindersCard() : '',
+      contentCard(),
+      calloutCard(),
+      accessCard(ctx),
+      templateCard(ctx),
+      deleteCard()
+    ].join('');
   }
 
   function pageHtml(ctx) {
@@ -1506,7 +1554,8 @@
   function deadlineDialog() {
     const dialog = openDialog({
       title: 'Set Certificate Deadline First',
-      description: 'Compliance courses require a certificate deadline before students can be enrolled. Please set a deadline in the course settings before publishing.',
+      description:
+        'Compliance courses require a certificate deadline before students can be enrolled. Please set a deadline in the course settings before publishing.',
       size: 'ck-dlg-sm',
       footer: `${btn('Cancel', { variant: 'outline', act: 'cancel' })}${btn('Go to Completion Deadline', { act: 'go' })}`
     });
@@ -1550,7 +1599,8 @@
         .join('');
       clearTimeout(timer);
       timer = setTimeout(() => {
-        rows.innerHTML = '<tr><td class="empty" colspan="5">No reminders yet. They appear here as sessions get close.</td></tr>';
+        rows.innerHTML =
+          '<tr><td class="empty" colspan="5">No reminders yet. They appear here as sessions get close.</td></tr>';
       }, 700);
     };
     const close = () => {
@@ -1665,7 +1715,13 @@
 
       if (!group) return;
 
-      const tag = { id: M.newId('tag'), name, description: draft.description.trim(), color: draft.color, groupId: group.id };
+      const tag = {
+        id: M.newId('tag'),
+        name,
+        description: draft.description.trim(),
+        color: draft.color,
+        groupId: group.id
+      };
 
       group.tags.push(tag);
       ctx.commit();
@@ -1754,7 +1810,8 @@
       requiredExerciseId: d.requiredExerciseId,
       exerciseMinScorePercent: d.requiredExerciseId ? d.minScore : null
     };
-    if (course.certificate && typeof course.certificate === 'object') Object.assign(course.certificate, course.certRules);
+    if (course.certificate && typeof course.certificate === 'object')
+      Object.assign(course.certificate, course.certRules);
     if (d.type === 'LIVE_CLASS') course.liveReminderOffsets = d.reminders.map(rowMinutes).sort((a, b) => b - a);
     course.lessonTabsOrder = [...d.tabs];
     course.contentGrouping = d.grouping;
@@ -1978,7 +2035,6 @@
       st.errors.deadline = '';
       paintBar();
     });
-
   }
 
   function wire(ctx) {
@@ -2195,7 +2251,6 @@
     });
 
     applyHighlight();
-
   }
 
   function refreshTags(ctx) {
@@ -2266,5 +2321,4 @@
     },
     wire
   };
-
 })();

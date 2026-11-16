@@ -38,7 +38,10 @@
     }
 
     if (question.type === 'MATCHING') {
-      return `<ul class="td-opts">${options.filter((option) => option.correct).map((option) => `<li class="ok">${esc(option.label)}</li>`).join('')}</ul>`;
+      return `<ul class="td-opts">${options
+        .filter((option) => option.correct)
+        .map((option) => `<li class="ok">${esc(option.label)}</li>`)
+        .join('')}</ul>`;
     }
 
     if (['FILL_BLANK', 'SHORT_ANSWER', 'NUMERIC'].includes(question.type)) {
@@ -50,7 +53,10 @@
     if (!options.length) return '';
 
     return `<ul class="td-opts">${options
-      .map((option) => `<li class="${option.correct ? 'ok' : ''}">${option.correct ? icon('check', 14) : '<span class="td-dot"></span>'}<span>${esc(option.label)}</span></li>`)
+      .map(
+        (option) =>
+          `<li class="${option.correct ? 'ok' : ''}">${option.correct ? icon('check', 14) : '<span class="td-dot"></span>'}<span>${esc(option.label)}</span></li>`
+      )
       .join('')}</ul>`;
   }
 
@@ -135,7 +141,9 @@
   }
 
   function chipsHTML(list) {
-    return list.length ? `<div class="td-chips">${list.map((entry) => `<span class="td-chip">${esc(entry)}</span>`).join('')}</div>` : '';
+    return list.length
+      ? `<div class="td-chips">${list.map((entry) => `<span class="td-chip">${esc(entry)}</span>`).join('')}</div>`
+      : '';
   }
 
   function landingContentHTML() {
@@ -145,9 +153,13 @@
 
     if (metadata.skills?.length) blocks.push(`<p class="pv-h">Skills</p>${chipsHTML(metadata.skills)}`);
     if (metadata.tools?.length) blocks.push(`<p class="pv-h">Tools</p>${chipsHTML(metadata.tools)}`);
-    if (metadata.requirements) blocks.push(`<p class="pv-h">Requirements</p><p class="td-side-p">${esc(metadata.requirements)}</p>`);
+    if (metadata.requirements)
+      blocks.push(`<p class="pv-h">Requirements</p><p class="td-side-p">${esc(metadata.requirements)}</p>`);
     if (metadata.goals) blocks.push(`<p class="pv-h">Goals</p><p class="td-side-p">${esc(metadata.goals)}</p>`);
-    if (callout) blocks.push(`<p class="pv-h">Callout</p><p class="td-side-p"><b>${esc(callout.title)}</b><br />${esc(callout.description)}</p>`);
+    if (callout)
+      blocks.push(
+        `<p class="pv-h">Callout</p><p class="td-side-p"><b>${esc(callout.title)}</b><br />${esc(callout.description)}</p>`
+      );
 
     return blocks.join('');
   }
@@ -242,8 +254,12 @@
 
     const details = () => [...document.querySelectorAll('.td-item')];
 
-    document.querySelector('#td-expand').addEventListener('click', () => details().forEach((item) => (item.open = true)));
-    document.querySelector('#td-collapse').addEventListener('click', () => details().forEach((item) => (item.open = false)));
+    document
+      .querySelector('#td-expand')
+      .addEventListener('click', () => details().forEach((item) => (item.open = true)));
+    document
+      .querySelector('#td-collapse')
+      .addEventListener('click', () => details().forEach((item) => (item.open = false)));
 
     const name = document.querySelector('#td-name');
     const use = document.querySelector('#td-use');
@@ -272,7 +288,8 @@
         P.toast(`Your plan includes ${U.plural(U.templateLimit(S), 'template', 'templates')}`, {
           error: true,
           action: 'Upgrade',
-          onAction: () => window.pricing.open({ state: S, item: 'general', commit: helpers.commit, onUpgrade: helpers.rerender })
+          onAction: () =>
+            window.pricing.open({ state: S, item: 'general', commit: helpers.commit, onUpgrade: helpers.rerender })
         });
 
         return;

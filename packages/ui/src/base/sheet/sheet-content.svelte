@@ -33,12 +33,14 @@
     side = 'right',
     portalProps,
     overlayClass,
+    hideClose = false,
     children,
     ...restProps
   }: WithoutChildrenOrChild<SheetPrimitive.ContentProps> & {
     portalProps?: SheetPrimitive.PortalProps;
     side?: Side;
     overlayClass?: string;
+    hideClose?: boolean;
     children: Snippet;
   } = $props();
 </script>
@@ -52,15 +54,17 @@
     {...restProps}
   >
     {@render children?.()}
-    <HoverableItem>
-      {#snippet children(isHovered)}
-        <SheetPrimitive.Close
-          class="ui:ring-offset-background ui:focus-visible:ring-ring ui:rounded-xs ui:focus-visible:outline-hidden ui:absolute ui:right-4 ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus-visible:ring-2 ui:focus-visible:ring-offset-2 ui:disabled:pointer-events-none"
-        >
-          <CloseIcon {isHovered} />
-          <span class="sr-only">Close</span>
-        </SheetPrimitive.Close>
-      {/snippet}
-    </HoverableItem>
+    {#if !hideClose}
+      <HoverableItem>
+        {#snippet children(isHovered)}
+          <SheetPrimitive.Close
+            class="ui:ring-offset-background ui:focus-visible:ring-ring ui:rounded-xs ui:focus-visible:outline-hidden ui:absolute ui:right-4 ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus-visible:ring-2 ui:focus-visible:ring-offset-2 ui:disabled:pointer-events-none"
+          >
+            <CloseIcon {isHovered} />
+            <span class="sr-only">Close</span>
+          </SheetPrimitive.Close>
+        {/snippet}
+      </HoverableItem>
+    {/if}
   </SheetPrimitive.Content>
 </SheetPrimitive.Portal>

@@ -104,7 +104,8 @@ if (!hasWorkspace) {
     handle.update(M.propsOf(S, { settings: event.data.settings, includeDrafts: true }));
   });
   document.addEventListener('click', (event) => {
-    if (!event.target.closest('[data-landing-section]')) window.parent.postMessage({ type: 'landing-select', key: null }, '*');
+    if (!event.target.closest('[data-landing-section]'))
+      window.parent.postMessage({ type: 'landing-select', key: null }, '*');
   });
 } else {
   paintSite();

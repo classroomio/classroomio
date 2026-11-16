@@ -42,11 +42,23 @@
     enrolled_not_started: ['Enrolled, never started', { enrollment: 'enrolled', completion: 'not_started' }],
     archived: ['Archived', { status: 'ARCHIVED' }]
   };
-  const WINDOWS = [['7d', '7 days'], ['30d', '30 days'], ['90d', '90 days'], ['180d', '180 days'], ['never', 'Never']];
+  const WINDOWS = [
+    ['7d', '7 days'],
+    ['30d', '30 days'],
+    ['90d', '90 days'],
+    ['180d', '180 days'],
+    ['never', 'Never']
+  ];
   const DAY = 86400000;
   const PAGE_SIZE = 20;
 
-  const DEFAULT_QUERY = { page: 1, sortBy: 'createdAt', sortOrder: 'desc', status: 'ACTIVE', excludeRecentJoiners: true };
+  const DEFAULT_QUERY = {
+    page: 1,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    status: 'ACTIVE',
+    excludeRecentJoiners: true
+  };
   let query = { ...DEFAULT_QUERY };
   let selected = new Set();
   let allMatching = false;
@@ -62,7 +74,9 @@
   const isEnterprise = () => S.plan === 'ENTERPRISE';
 
   function enrolledCount(person) {
-    return courseList().filter((course) => (course.people ?? []).some((entry) => entry.personId === person.id && entry.role === 'student')).length;
+    return courseList().filter((course) =>
+      (course.people ?? []).some((entry) => entry.personId === person.id && entry.role === 'student')
+    ).length;
   }
 
   function matches(person) {
@@ -92,7 +106,13 @@
   }
 
   function visible() {
-    const key = { createdAt: 'invitedAt', name: 'name', email: 'email', lastLoginAt: 'lastLoginAt', lastActiveAt: 'lastActiveAt' }[query.sortBy];
+    const key = {
+      createdAt: 'invitedAt',
+      name: 'name',
+      email: 'email',
+      lastLoginAt: 'lastLoginAt',
+      lastActiveAt: 'lastActiveAt'
+    }[query.sortBy];
     const direction = query.sortOrder === 'asc' ? 1 : -1;
 
     return learners()
@@ -101,7 +121,11 @@
         const left = a[key] ?? '';
         const right = b[key] ?? '';
 
-        return (typeof left === 'number' || typeof right === 'number' ? (left || 0) - (right || 0) : String(left).localeCompare(String(right))) * direction;
+        return (
+          (typeof left === 'number' || typeof right === 'number'
+            ? (left || 0) - (right || 0)
+            : String(left).localeCompare(String(right))) * direction
+        );
       });
   }
 
@@ -109,17 +133,33 @@
     return Object.keys(VIEWS).find((id) => {
       const filters = { ...DEFAULT_QUERY, ...VIEWS[id][1] };
 
-      return ['status', 'inviteStatus', 'enrollment', 'completion', 'lastLoginBefore', 'lastActiveBefore'].every((key) => filters[key] === query[key]);
+      return ['status', 'inviteStatus', 'enrollment', 'completion', 'lastLoginBefore', 'lastActiveBefore'].every(
+        (key) => filters[key] === query[key]
+      );
     });
   }
 
   function activeFilterCount() {
-    return ['inviteStatus', 'enrollment', 'completion', 'lastLoginBefore', 'lastActiveBefore'].filter((key) => query[key]).length + (query.status !== 'ACTIVE' ? 1 : 0);
+    return (
+      ['inviteStatus', 'enrollment', 'completion', 'lastLoginBefore', 'lastActiveBefore'].filter((key) => query[key])
+        .length + (query.status !== 'ACTIVE' ? 1 : 0)
+    );
   }
 
   /* ---------- import parsing (packages/utils audience-import) ---------- */
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const ALIASES = { email: 'email', 'email address': 'email', 'e-mail': 'email', mail: 'email', name: 'name', 'full name': 'name', fullname: 'name', student: 'name', courses: 'courses', course: 'courses' };
+  const ALIASES = {
+    email: 'email',
+    'email address': 'email',
+    'e-mail': 'email',
+    mail: 'email',
+    name: 'name',
+    'full name': 'name',
+    fullname: 'name',
+    student: 'name',
+    courses: 'courses',
+    course: 'courses'
+  };
 
   function splitLine(line) {
     const cells = [];
@@ -146,11 +186,15 @@
   }
 
   function parseImport(text) {
-    const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    const lines = text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
     if (!lines.length) return { rows: [], unknown: [], truncated: 0 };
 
     const first = splitLine(lines[0]);
-    const header = first.some((cell) => ALIASES[cell.toLowerCase()]) && !first.some((cell) => EMAIL.test(cell.toLowerCase()));
+    const header =
+      first.some((cell) => ALIASES[cell.toLowerCase()]) && !first.some((cell) => EMAIL.test(cell.toLowerCase()));
     const unknown = [];
     let columns = ['email'];
 
@@ -184,7 +228,13 @@
         const nameAt = columns.indexOf('name');
         const name = nameAt >= 0 ? cells[nameAt]?.trim() || undefined : undefined;
         const coursesAt = columns.indexOf('courses');
-        const courses = coursesAt >= 0 ? (cells[coursesAt] ?? '').split(',').map((v) => v.trim()).filter(Boolean) : [];
+        const courses =
+          coursesAt >= 0
+            ? (cells[coursesAt] ?? '')
+                .split(',')
+                .map((v) => v.trim())
+                .filter(Boolean)
+            : [];
 
         if (!email) rows.push({ line, email: '', courses: [], status: 'missing_email' });
         else if (!EMAIL.test(email)) rows.push({ line, email, courses: [], status: 'invalid_email' });
@@ -202,7 +252,10 @@
   /* The server-side checks the preview cannot know: existing members, staff and the seat limit. */
   function classify(rows) {
     const known = new Set(learners().map((person) => person.email.toLowerCase()));
-    const staff = new Set([(S.email || '').toLowerCase(), ...(S.team ?? []).map((member) => member.email.toLowerCase())]);
+    const staff = new Set([
+      (S.email || '').toLowerCase(),
+      ...(S.team ?? []).map((member) => member.email.toLowerCase())
+    ]);
     let seats = maxLearners() - learners().length;
 
     return rows.map((row) => {
@@ -231,16 +284,23 @@
 
   /* ---------- html ---------- */
   function html() {
-    return new URLSearchParams(window.location.search).get('view') === 'import' ? '<div id="au-root"></div>' : '<div id="au-root"></div>';
+    return new URLSearchParams(window.location.search).get('view') === 'import'
+      ? '<div id="au-root"></div>'
+      : '<div id="au-root"></div>';
   }
 
   function statusBadge(person) {
     if ((person.memberStatus || 'ACTIVE') !== 'ACTIVE') {
-      return person.memberStatus === 'DEACTIVATED' ? U.badge('destructive', 'Deactivated') : U.badge('outline', 'Archived');
+      return person.memberStatus === 'DEACTIVATED'
+        ? U.badge('destructive', 'Deactivated')
+        : U.badge('outline', 'Archived');
     }
 
-    const label = { active: 'Active', pending: 'Pending', expired: 'Expired', revoked: 'Revoked' }[person.status] ?? 'Pending';
-    const variant = { active: 'secondary', pending: 'outline', expired: 'destructive', revoked: 'destructive' }[person.status] ?? 'outline';
+    const label =
+      { active: 'Active', pending: 'Pending', expired: 'Expired', revoked: 'Revoked' }[person.status] ?? 'Pending';
+    const variant =
+      { active: 'secondary', pending: 'outline', expired: 'destructive', revoked: 'destructive' }[person.status] ??
+      'outline';
 
     return U.badge(variant, label);
   }
@@ -249,7 +309,8 @@
     const enrolled = enrolledCount(person);
     const muted = (person.memberStatus || 'ACTIVE') !== 'ACTIVE';
     const joined = person.status === 'active';
-    const actions = person.status === 'pending' || person.status === 'expired' || person.status === 'revoked' || canDelete;
+    const actions =
+      person.status === 'pending' || person.status === 'expired' || person.status === 'revoked' || canDelete;
 
     return `<tr class="${muted ? 'ac-muted' : ''}" data-row="${esc(person.id)}">
       <td class="ac-w10">${U.checkbox({ checked: allMatching || selected.has(person.id), disabled: !joined, attrs: `data-sel="${esc(person.id)}"`, label: `Select ${person.name}` })}</td>
@@ -268,20 +329,42 @@
   function filterPopoverHTML() {
     const chips = (key, options) =>
       `<div class="ac-chips">${options.map(([value, label]) => `<button type="button" class="btn btn-sm ${query[key] === value ? 'btn-secondary' : 'btn-outline'}" data-f="${key}" data-v="${value}">${label}</button>`).join('')}</div>`;
-    const sorts = [['createdAt', 'Date Joined'], ['name', 'Name'], ['email', 'Email'], ['lastLoginAt', 'Last login'], ['lastActiveAt', 'Last activity']];
+    const sorts = [
+      ['createdAt', 'Date Joined'],
+      ['name', 'Name'],
+      ['email', 'Email'],
+      ['lastLoginAt', 'Last login'],
+      ['lastActiveAt', 'Last activity']
+    ];
     const active = activeFilterCount() > 0;
 
     return `<div class="ac-pop-stack">
       <div class="ac-pop-head"><p>Filters</p><button type="button" class="ac-btn-link" data-f-clear${active ? '' : ' disabled'}>Clear all</button></div>
       <div class="ac-stack8"><p class="ac-eyebrow">Sort</p><div class="ac-chips">${sorts.map(([value, label]) => `<button type="button" class="btn btn-sm ${query.sortBy === value ? 'btn-secondary' : 'btn-outline'}" data-sort="${value}">${label}</button>`).join('')}</div></div>
       <div class="ac-stack8"><p class="ac-eyebrow">Order</p><div class="ac-togglegroup"><button type="button" data-order="asc" aria-pressed="${query.sortOrder === 'asc'}">Asc</button><button type="button" data-order="desc" aria-pressed="${query.sortOrder === 'desc'}">Desc</button></div></div>
-      <div class="ac-stack8"><p class="ac-eyebrow">Member status</p>${chips('status', [['ACTIVE', 'Active'], ['DEACTIVATED', 'Deactivated'], ['ARCHIVED', 'Archived']])}</div>
+      <div class="ac-stack8"><p class="ac-eyebrow">Member status</p>${chips('status', [
+        ['ACTIVE', 'Active'],
+        ['DEACTIVATED', 'Deactivated'],
+        ['ARCHIVED', 'Archived']
+      ])}</div>
       <div class="ac-stack8"><p class="ac-eyebrow">No login in</p>${chips('lastLoginBefore', WINDOWS)}</div>
       <div class="ac-stack8"><p class="ac-eyebrow">No activity in</p>${chips('lastActiveBefore', WINDOWS)}</div>
       ${query.lastLoginBefore || query.lastActiveBefore ? `<label class="ac-exrecent">${U.checkbox({ checked: query.excludeRecentJoiners, attrs: 'data-f-recent' })}<span><span>Exclude recent joiners</span><span>Leaves out students who joined too recently to be judged inactive.</span></span></label>` : ''}
-      <div class="ac-stack8"><p class="ac-eyebrow">Invite status</p>${chips('inviteStatus', [['active', 'Active'], ['pending', 'Pending'], ['expired', 'Expired'], ['revoked', 'Revoked']])}</div>
-      <div class="ac-stack8"><p class="ac-eyebrow">Enrollment</p>${chips('enrollment', [['enrolled', 'Enrolled'], ['not_enrolled', 'Not enrolled']])}</div>
-      <div class="ac-stack8"><p class="ac-eyebrow">Completion</p>${chips('completion', [['not_started', 'Not started'], ['in_progress', 'In progress'], ['completed', 'Completed']])}</div>
+      <div class="ac-stack8"><p class="ac-eyebrow">Invite status</p>${chips('inviteStatus', [
+        ['active', 'Active'],
+        ['pending', 'Pending'],
+        ['expired', 'Expired'],
+        ['revoked', 'Revoked']
+      ])}</div>
+      <div class="ac-stack8"><p class="ac-eyebrow">Enrollment</p>${chips('enrollment', [
+        ['enrolled', 'Enrolled'],
+        ['not_enrolled', 'Not enrolled']
+      ])}</div>
+      <div class="ac-stack8"><p class="ac-eyebrow">Completion</p>${chips('completion', [
+        ['not_started', 'Not started'],
+        ['in_progress', 'In progress'],
+        ['completed', 'Completed']
+      ])}</div>
     </div>`;
   }
 
@@ -306,7 +389,7 @@
           <p class="ac-sub">See who belongs to your org, who is learning, who is invited, and how to reach them.</p></div>
         <div class="ac-act">
           <button type="button" class="btn btn-outline" id="au-export"${all.length === 0 ? ' disabled' : ''}>${U.icon('download', 16)}Export${U.icon('chevron-down', 16)}</button>
-          <button type="button" class="btn btn-secondary" id="au-import"${limitReached ? " disabled title=\"You've reached your plan's student limit. Upgrade to import more students.\"" : ''}>Import Users</button>
+          <button type="button" class="btn btn-secondary" id="au-import"${limitReached ? ' disabled title="You\'ve reached your plan\'s student limit. Upgrade to import more students."' : ''}>Import Users</button>
         </div></div></div>`;
 
     const toolbar = `
@@ -326,9 +409,18 @@
         <th class="ac-w12"><span style="position:absolute;left:-9999px">Open actions</span></th></tr></thead><tbody>${slice.map((person) => rowHTML(person, true)).join('')}</tbody></table></div>
         ${total > PAGE_SIZE ? `<div id="au-pg">${U.paginationHTML({ count: total, perPage: PAGE_SIZE, page: query.page })}</div>` : ''}</div>`;
     } else if (filtered) {
-      body = U.emptyHTML({ iconName: 'search-x', title: 'No students match these filters', description: 'Try widening the date range or clearing a filter.', actions: '<button type="button" class="btn btn-secondary" id="au-clear">Clear filters</button>' });
+      body = U.emptyHTML({
+        iconName: 'search-x',
+        title: 'No students match these filters',
+        description: 'Try widening the date range or clearing a filter.',
+        actions: '<button type="button" class="btn btn-secondary" id="au-clear">Clear filters</button>'
+      });
     } else {
-      body = U.emptyHTML({ iconName: 'users', title: 'No audience to manage', description: 'Manage all your students here and stay connected with them' });
+      body = U.emptyHTML({
+        iconName: 'users',
+        title: 'No audience to manage',
+        description: 'Manage all your students here and stay connected with them'
+      });
     }
 
     const bar = effective > 0 ? selectionBarHTML(effective, total) : '';
@@ -354,15 +446,42 @@
 
   /* ---------- export ---------- */
   function exportRows(onlySelected) {
-    const rows = onlySelected && (selected.size || allMatching) ? (allMatching ? visible() : learners().filter((p) => selected.has(p.id))) : visible();
+    const rows =
+      onlySelected && (selected.size || allMatching)
+        ? allMatching
+          ? visible()
+          : learners().filter((p) => selected.has(p.id))
+        : visible();
 
-    return rows.map((p) => [p.name, p.email, p.memberStatus || 'ACTIVE', p.status, p.invitedAt ? new Date(p.invitedAt).toISOString() : '', p.lastLoginAt ? new Date(p.lastLoginAt).toISOString() : '', p.lastActiveAt ? new Date(p.lastActiveAt).toISOString() : '', `0 / ${enrolledCount(p)}`, '0%']);
+    return rows.map((p) => [
+      p.name,
+      p.email,
+      p.memberStatus || 'ACTIVE',
+      p.status,
+      p.invitedAt ? new Date(p.invitedAt).toISOString() : '',
+      p.lastLoginAt ? new Date(p.lastLoginAt).toISOString() : '',
+      p.lastActiveAt ? new Date(p.lastActiveAt).toISOString() : '',
+      `0 / ${enrolledCount(p)}`,
+      '0%'
+    ]);
   }
 
-  const EXPORT_HEAD = ['Name', 'Email', 'Member status', 'Status', 'Date Joined', 'Last login', 'Last activity', 'Enrolled', 'Progress'];
+  const EXPORT_HEAD = [
+    'Name',
+    'Email',
+    'Member status',
+    'Status',
+    'Date Joined',
+    'Last login',
+    'Last activity',
+    'Enrolled',
+    'Progress'
+  ];
 
   function csv(rows) {
-    return [EXPORT_HEAD, ...rows].map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+    return [EXPORT_HEAD, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
   }
 
   function runExport(format, onlySelected, copy) {
@@ -375,7 +494,16 @@
     }
 
     if (copy) {
-      const text = format === 'json' ? JSON.stringify(rows.map((r) => Object.fromEntries(EXPORT_HEAD.map((h, i) => [h, r[i]]))), null, 2) : format === 'html' ? `<table>${[EXPORT_HEAD, ...rows].map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>` : csv(rows);
+      const text =
+        format === 'json'
+          ? JSON.stringify(
+              rows.map((r) => Object.fromEntries(EXPORT_HEAD.map((h, i) => [h, r[i]]))),
+              null,
+              2
+            )
+          : format === 'html'
+            ? `<table>${[EXPORT_HEAD, ...rows].map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`
+            : csv(rows);
       navigator.clipboard?.writeText(text).catch(() => {});
       P.toast('Copied to clipboard');
 
@@ -383,16 +511,34 @@
     }
 
     if (format === 'csv') U.download(csv(rows), 'audience.csv', 'text/csv;charset=utf-8;');
-    else if (format === 'html') U.download(`<table>${[EXPORT_HEAD, ...rows].map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`, 'audience.html', 'text/html');
+    else if (format === 'html')
+      U.download(
+        `<table>${[EXPORT_HEAD, ...rows].map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`,
+        'audience.html',
+        'text/html'
+      );
     else P.toast(`${format.toUpperCase()} export is simulated here. CSV and HTML download for real.`);
   }
 
   function exportMenu(anchor, onlySelected, copy) {
     const items = copy
-      ? [['csv', 'CSV', 'sheet'], ['json', 'JSON', 'braces'], ['html', 'HTML', 'code']]
-      : [['csv', 'CSV', 'sheet'], ['xlsx', 'Excel', 'sheet'], ['pdf', 'PDF', 'file-text'], ['html', 'HTML', 'code']];
+      ? [
+          ['csv', 'CSV', 'sheet'],
+          ['json', 'JSON', 'braces'],
+          ['html', 'HTML', 'code']
+        ]
+      : [
+          ['csv', 'CSV', 'sheet'],
+          ['xlsx', 'Excel', 'sheet'],
+          ['pdf', 'PDF', 'file-text'],
+          ['html', 'HTML', 'code']
+        ];
 
-    U.menu(anchor, items.map(([id, label, ic]) => ({ label, icon: ic, onSelect: () => runExport(id, onlySelected, copy) })), { align: 'end' });
+    U.menu(
+      anchor,
+      items.map(([id, label, ic]) => ({ label, icon: ic, onSelect: () => runExport(id, onlySelected, copy) })),
+      { align: 'end' }
+    );
   }
 
   /* ---------- wiring: list ---------- */
@@ -427,7 +573,22 @@
     });
 
     $('#au-views').addEventListener('click', (event) =>
-      U.menu(event.currentTarget, Object.keys(VIEWS).map((id) => ({ label: VIEWS[id][0], onSelect: () => go({ ...DEFAULT_QUERY, search: query.search, sortBy: query.sortBy, sortOrder: query.sortOrder, ...VIEWS[id][1], page: 1 }) })), { align: 'start', className: 'w-56' })
+      U.menu(
+        event.currentTarget,
+        Object.keys(VIEWS).map((id) => ({
+          label: VIEWS[id][0],
+          onSelect: () =>
+            go({
+              ...DEFAULT_QUERY,
+              search: query.search,
+              sortBy: query.sortBy,
+              sortOrder: query.sortOrder,
+              ...VIEWS[id][1],
+              page: 1
+            })
+        })),
+        { align: 'start', className: 'w-56' }
+      )
     );
 
     const searchBox = $('.ac-search');
@@ -437,8 +598,18 @@
     $('#au-filter').addEventListener('click', (event) => {
       const anchor = event.currentTarget;
       const bind = (el, handle) => {
-        el.querySelectorAll('[data-sort]').forEach((b) => b.addEventListener('click', () => { handle.close(); go({ sortBy: b.dataset.sort, page: 1 }); }));
-        el.querySelectorAll('[data-order]').forEach((b) => b.addEventListener('click', () => { handle.close(); go({ sortOrder: b.dataset.order, page: 1 }); }));
+        el.querySelectorAll('[data-sort]').forEach((b) =>
+          b.addEventListener('click', () => {
+            handle.close();
+            go({ sortBy: b.dataset.sort, page: 1 });
+          })
+        );
+        el.querySelectorAll('[data-order]').forEach((b) =>
+          b.addEventListener('click', () => {
+            handle.close();
+            go({ sortOrder: b.dataset.order, page: 1 });
+          })
+        );
         el.querySelectorAll('[data-f]').forEach((b) =>
           b.addEventListener('click', () => {
             const key = b.dataset.f;
@@ -447,14 +618,22 @@
             go({ [key]: key === 'status' ? value : query[key] === value ? undefined : value, page: 1 });
           })
         );
-        el.querySelector('[data-f-clear]')?.addEventListener('click', () => { handle.close(); go({ ...DEFAULT_QUERY, search: query.search, sortBy: query.sortBy, sortOrder: query.sortOrder }); });
-        el.querySelector('[data-f-recent]')?.addEventListener('click', () => { handle.close(); go({ excludeRecentJoiners: !query.excludeRecentJoiners, page: 1 }); });
+        el.querySelector('[data-f-clear]')?.addEventListener('click', () => {
+          handle.close();
+          go({ ...DEFAULT_QUERY, search: query.search, sortBy: query.sortBy, sortOrder: query.sortOrder });
+        });
+        el.querySelector('[data-f-recent]')?.addEventListener('click', () => {
+          handle.close();
+          go({ excludeRecentJoiners: !query.excludeRecentJoiners, page: 1 });
+        });
       };
 
       U.popover(anchor, filterPopoverHTML(), { width: 360, wire: bind });
     });
 
-    $('#au-clear')?.addEventListener('click', () => go({ ...DEFAULT_QUERY, sortBy: query.sortBy, sortOrder: query.sortOrder }));
+    $('#au-clear')?.addEventListener('click', () =>
+      go({ ...DEFAULT_QUERY, sortBy: query.sortBy, sortOrder: query.sortOrder })
+    );
     $('#au-undo')?.addEventListener('click', () => {
       undo.revert();
       undo = null;
@@ -501,29 +680,50 @@
         const person = learners().find((p) => p.id === button.dataset.actions);
         const items = [];
 
-        if (person.status === 'pending') items.push({ label: 'Simulate accepted invite', hint: 'Prototype only', onSelect: () => acceptInvite(person) });
+        if (person.status === 'pending')
+          items.push({
+            label: 'Simulate accepted invite',
+            hint: 'Prototype only',
+            onSelect: () => acceptInvite(person)
+          });
         if (person.status !== 'active') items.push({ label: 'Resend invite', onSelect: () => resend(person) });
-        if (person.status === 'pending') items.push({ label: 'Revoke pending invite', danger: true, onSelect: () => revoke(person) });
+        if (person.status === 'pending')
+          items.push({ label: 'Revoke pending invite', danger: true, onSelect: () => revoke(person) });
         items.push({ label: 'Delete', danger: true, onSelect: () => confirmDelete(person) });
         U.menu(button, items, { align: 'end' });
       })
     );
 
-    $('#au-all-matching')?.addEventListener('click', () => { allMatching = true; draw(); });
-    $('#au-clear-sel')?.addEventListener('click', () => { selected.clear(); allMatching = false; draw(); });
+    $('#au-all-matching')?.addEventListener('click', () => {
+      allMatching = true;
+      draw();
+    });
+    $('#au-clear-sel')?.addEventListener('click', () => {
+      selected.clear();
+      allMatching = false;
+      draw();
+    });
     $('#au-copy')?.addEventListener('click', (event) => exportMenu(event.currentTarget, true, true));
     $('#au-bexport')?.addEventListener('click', (event) => exportMenu(event.currentTarget, true, false));
     $('#au-bulk')?.addEventListener('click', (event) => {
       const count = allMatching ? visible().length : selected.size;
-      const label = (action) => `${{ archive: 'Archive', deactivate: 'Deactivate', reactivate: 'Reactivate', unarchive: 'Unarchive', delete: 'Delete' }[action]} ${count} students`;
+      const label = (action) =>
+        `${{ archive: 'Archive', deactivate: 'Deactivate', reactivate: 'Reactivate', unarchive: 'Unarchive', delete: 'Delete' }[action]} ${count} students`;
 
-      U.menu(event.currentTarget, [
-        { label: 'Assign to Courses', disabled: allMatching, onSelect: assignDialog },
-        { sep: true },
-        ...['archive', 'deactivate', 'reactivate', 'unarchive'].map((action) => ({ label: label(action), onSelect: () => bulkDialog(action, count) })),
-        { sep: true },
-        { label: label('delete'), danger: true, onSelect: () => bulkDialog('delete', count) }
-      ], { align: 'end' });
+      U.menu(
+        event.currentTarget,
+        [
+          { label: 'Assign to Courses', disabled: allMatching, onSelect: assignDialog },
+          { sep: true },
+          ...['archive', 'deactivate', 'reactivate', 'unarchive'].map((action) => ({
+            label: label(action),
+            onSelect: () => bulkDialog(action, count)
+          })),
+          { sep: true },
+          { label: label('delete'), danger: true, onSelect: () => bulkDialog('delete', count) }
+        ],
+        { align: 'end' }
+      );
     });
   }
 
@@ -583,17 +783,24 @@
       description: 'Give the selected users access to courses and optionally notify them by email.',
       body: `<div class="ac-msl-box"><div class="ac-msl-head"><p>Select courses (${courses.length})</p></div>${courses.length ? `<div class="ac-msl-list">${courses.map((c) => `<label class="ac-msl-item">${U.checkbox({ attrs: `data-c="${esc(c.id)}"` })}<span>${esc(c.title)}</span></label>`).join('')}</div>` : '<p class="ac-msl-empty">Choose courses...</p>'}</div>
         <label class="ac-checkrow">${U.checkbox({ checked: true, attrs: 'data-mail' })}<span>Send notification email</span></label>`,
-      footer: '<button type="button" class="btn btn-outline" data-no>Cancel</button><button type="button" class="btn btn-primary" data-yes disabled>Assign</button>',
+      footer:
+        '<button type="button" class="btn btn-outline" data-no>Cancel</button><button type="button" class="btn btn-primary" data-yes disabled>Assign</button>',
       wire(ctl) {
         let mail = true;
-        ctl.$$('[data-c]').forEach((box) => box.addEventListener('click', () => {
-          const id = box.dataset.c;
-          if (picked.has(id)) picked.delete(id); else picked.add(id);
-          box.setAttribute('aria-checked', String(picked.has(id)));
-          ctl.$('[data-yes]').disabled = picked.size === 0;
-        }));
+        ctl.$$('[data-c]').forEach((box) =>
+          box.addEventListener('click', () => {
+            const id = box.dataset.c;
+            if (picked.has(id)) picked.delete(id);
+            else picked.add(id);
+            box.setAttribute('aria-checked', String(picked.has(id)));
+            ctl.$('[data-yes]').disabled = picked.size === 0;
+          })
+        );
         const mailBox = ctl.$('[data-mail]');
-        mailBox.addEventListener('click', () => { mail = !mail; mailBox.setAttribute('aria-checked', String(mail)); });
+        mailBox.addEventListener('click', () => {
+          mail = !mail;
+          mailBox.setAttribute('aria-checked', String(mail));
+        });
         ctl.$('[data-no]').addEventListener('click', () => ctl.close());
         ctl.$('[data-yes]').addEventListener('click', () => {
           let assigned = 0;
@@ -603,7 +810,10 @@
             const person = learners().find((p) => p.id === id);
             picked.forEach((courseId) => {
               const course = M.findCourse(S, courseId);
-              if (U.enroll(course, id)) { assigned += 1; person.courseIds = [...new Set([...(person.courseIds ?? []), courseId])]; } else already += 1;
+              if (U.enroll(course, id)) {
+                assigned += 1;
+                person.courseIds = [...new Set([...(person.courseIds ?? []), courseId])];
+              } else already += 1;
             });
           });
           commit();
@@ -617,17 +827,35 @@
   }
 
   const BULK = {
-    archive: ['Archive', 'They lose access and free up a seat on your plan. You can unarchive them at any time.', 'Archive', 'ARCHIVED'],
-    deactivate: ['Deactivate', 'They lose access but keep their seat on your plan. You can reactivate them at any time.', 'Deactivate', 'DEACTIVATED'],
+    archive: [
+      'Archive',
+      'They lose access and free up a seat on your plan. You can unarchive them at any time.',
+      'Archive',
+      'ARCHIVED'
+    ],
+    deactivate: [
+      'Deactivate',
+      'They lose access but keep their seat on your plan. You can reactivate them at any time.',
+      'Deactivate',
+      'DEACTIVATED'
+    ],
     reactivate: ['Reactivate', 'They regain access to your organization and its courses.', 'Reactivate', 'ACTIVE'],
     unarchive: ['Unarchive', 'They regain access and take a seat on your plan again.', 'Unarchive', 'ACTIVE'],
-    delete: ['Permanently remove', 'This removes them from this organization and cannot be undone. Their account, submissions and results are kept.', 'Delete permanently', null]
+    delete: [
+      'Permanently remove',
+      'This removes them from this organization and cannot be undone. Their account, submissions and results are kept.',
+      'Delete permanently',
+      null
+    ]
   };
 
   function bulkDialog(action, count) {
     const [verb, body, confirmLabel, next] = BULK[action];
     const targets = allMatching ? visible().map((p) => p.id) : [...selected];
-    const archivedBlock = action === 'delete' ? targets.filter((id) => learners().find((p) => p.id === id)?.memberStatus !== 'ARCHIVED').length : 0;
+    const archivedBlock =
+      action === 'delete'
+        ? targets.filter((id) => learners().find((p) => p.id === id)?.memberStatus !== 'ARCHIVED').length
+        : 0;
 
     U.dialog({
       title: `${verb} ${count} students${action === 'delete' ? '' : ''}?`,
@@ -640,7 +868,9 @@
       wire(ctl) {
         const typed = ctl.$('#bk-type');
         const yes = ctl.$('[data-yes]');
-        const gate = () => { yes.disabled = archivedBlock > 0 || (typed && typed.value.trim() !== String(count)); };
+        const gate = () => {
+          yes.disabled = archivedBlock > 0 || (typed && typed.value.trim() !== String(count));
+        };
         typed?.addEventListener('input', gate);
         if (archivedBlock) yes.disabled = true;
         ctl.$('[data-no]').addEventListener('click', () => ctl.close());
@@ -649,9 +879,20 @@
           const beforeCourses = courseList().map((c) => structuredClone(c.people ?? []));
 
           if (action === 'delete') removePeople(targets);
-          else learners().forEach((p) => { if (targets.includes(p.id)) p.memberStatus = next; });
+          else
+            learners().forEach((p) => {
+              if (targets.includes(p.id)) p.memberStatus = next;
+            });
 
-          undo = action === 'delete' ? null : { revert: () => { S.audience = before; courseList().forEach((c, i) => (c.people = beforeCourses[i])); } };
+          undo =
+            action === 'delete'
+              ? null
+              : {
+                  revert: () => {
+                    S.audience = before;
+                    courseList().forEach((c, i) => (c.people = beforeCourses[i]));
+                  }
+                };
           selected.clear();
           allMatching = false;
           commit();
@@ -666,15 +907,30 @@
   /* ---------- import view ---------- */
   function importView() {
     const root = $('#au-root');
-    const state = { step: 'upload', text: '', source: null, rows: [], truncated: 0, unknown: [], courseMode: 'none', cohortMode: 'none', courses: new Set(), sendEmail: true, result: [], imported: 0 };
+    const state = {
+      step: 'upload',
+      text: '',
+      source: null,
+      rows: [],
+      truncated: 0,
+      unknown: [],
+      courseMode: 'none',
+      cohortMode: 'none',
+      courses: new Set(),
+      sendEmail: true,
+      result: [],
+      imported: 0
+    };
 
     const header = (actions) => `<div class="ac-ph"><div class="ac-ph-row"><div class="ac-ph-c">
       <a class="ac-back" href="${esc(M.R.audience)}">${U.icon('chevron-left', 16)}Back</a><h1 class="ac-title">Import Users</h1>
       <p class="ac-sub">Add many people at once by email, then assign courses or cohorts if you like.</p></div>${actions ? `<div class="ac-act">${actions}</div>` : ''}</div></div>`;
 
-    const table = (rows, withName) => `<div class="ac-msl"><table class="ac-table"><thead><tr><th>Email</th>${withName ? '<th>Name</th>' : ''}<th>Status</th></tr></thead><tbody>${rows.map((row) => `<tr class="${row.status === 'ready' ? '' : 'ac-muted'}"><td>${esc(row.email || '—')}</td>${withName ? `<td>${esc(row.name ?? '—')}</td>` : ''}<td>${U.badge(row.status === 'ready' ? 'secondary' : 'outline', ROW_STATUS[row.status])}</td></tr>`).join('')}</tbody></table></div>`;
+    const table = (rows, withName) =>
+      `<div class="ac-msl"><table class="ac-table"><thead><tr><th>Email</th>${withName ? '<th>Name</th>' : ''}<th>Status</th></tr></thead><tbody>${rows.map((row) => `<tr class="${row.status === 'ready' ? '' : 'ac-muted'}"><td>${esc(row.email || '—')}</td>${withName ? `<td>${esc(row.name ?? '—')}</td>` : ''}<td>${U.badge(row.status === 'ready' ? 'secondary' : 'outline', ROW_STATUS[row.status])}</td></tr>`).join('')}</tbody></table></div>`;
 
-    const radios = (key, name, labels) => `<div class="ac-stack12"><label class="ac-label">${name}</label><div class="ac-radios" role="radiogroup">${['none', 'all', 'select'].map((value, i) => `<label><button type="button" class="ac-radio" role="radio" aria-checked="${state[key] === value}" data-radio="${key}" data-v="${value}"></button>${labels[i]}</label>`).join('')}</div></div>`;
+    const radios = (key, name, labels) =>
+      `<div class="ac-stack12"><label class="ac-label">${name}</label><div class="ac-radios" role="radiogroup">${['none', 'all', 'select'].map((value, i) => `<label><button type="button" class="ac-radio" role="radio" aria-checked="${state[key] === value}" data-radio="${key}" data-v="${value}"></button>${labels[i]}</label>`).join('')}</div></div>`;
 
     function draw() {
       const summary = summarise(state.rows);
@@ -718,7 +974,14 @@
         return;
       }
 
-      Object.assign(state, { text, source: name, rows: classify(parsed.rows), truncated: parsed.truncated, unknown: parsed.unknown, step: 'preview' });
+      Object.assign(state, {
+        text,
+        source: name,
+        rows: classify(parsed.rows),
+        truncated: parsed.truncated,
+        unknown: parsed.unknown,
+        step: 'preview'
+      });
       draw();
     }
 
@@ -737,29 +1000,86 @@
         parseInto(await picked.text(), picked.name);
       };
       file?.addEventListener('change', () => take(file.files?.[0]));
-      drop?.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+      drop?.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        drop.classList.add('over');
+      });
       drop?.addEventListener('dragleave', () => drop.classList.remove('over'));
-      drop?.addEventListener('drop', (e) => { e.preventDefault(); take(e.dataTransfer?.files?.[0]); });
-      $('#im-template')?.addEventListener('click', () => U.download(TEMPLATE, 'audience-template.csv', 'text/csv;charset=utf-8;'));
+      drop?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        take(e.dataTransfer?.files?.[0]);
+      });
+      $('#im-template')?.addEventListener('click', () =>
+        U.download(TEMPLATE, 'audience-template.csv', 'text/csv;charset=utf-8;')
+      );
       const paste = $('#im-paste');
-      paste?.addEventListener('input', () => { state.text = paste.value; $('#im-review').disabled = !paste.value.trim(); });
+      paste?.addEventListener('input', () => {
+        state.text = paste.value;
+        $('#im-review').disabled = !paste.value.trim();
+      });
       $('#im-review')?.addEventListener('click', () => parseInto(state.text, null));
-      $('#im-over')?.addEventListener('click', () => Object.assign(state, { step: 'upload', text: '', rows: [], source: null }) && draw());
-      $$('[data-radio]').forEach((r) => r.addEventListener('click', () => { state[r.dataset.radio] = r.dataset.v; draw(); }));
-      $$('[data-ic]').forEach((box) => box.addEventListener('click', () => { const id = box.dataset.ic; if (state.courses.has(id)) state.courses.delete(id); else state.courses.add(id); draw(); }));
-      $('[data-send]')?.addEventListener('click', () => { state.sendEmail = !state.sendEmail; draw(); });
-      $('#im-errors')?.addEventListener('click', () => U.download(`email,name,reason\r\n${state.result.filter((r) => r.status !== 'ready').map((r) => [r.email, r.name ?? '', r.status].map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n')}\r\n`, 'audience-import-errors.csv', 'text/csv;charset=utf-8;'));
+      $('#im-over')?.addEventListener(
+        'click',
+        () => Object.assign(state, { step: 'upload', text: '', rows: [], source: null }) && draw()
+      );
+      $$('[data-radio]').forEach((r) =>
+        r.addEventListener('click', () => {
+          state[r.dataset.radio] = r.dataset.v;
+          draw();
+        })
+      );
+      $$('[data-ic]').forEach((box) =>
+        box.addEventListener('click', () => {
+          const id = box.dataset.ic;
+          if (state.courses.has(id)) state.courses.delete(id);
+          else state.courses.add(id);
+          draw();
+        })
+      );
+      $('[data-send]')?.addEventListener('click', () => {
+        state.sendEmail = !state.sendEmail;
+        draw();
+      });
+      $('#im-errors')?.addEventListener('click', () =>
+        U.download(
+          `email,name,reason\r\n${state.result
+            .filter((r) => r.status !== 'ready')
+            .map((r) => [r.email, r.name ?? '', r.status].map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
+            .join('\r\n')}\r\n`,
+          'audience-import-errors.csv',
+          'text/csv;charset=utf-8;'
+        )
+      );
 
       $('#im-submit')?.addEventListener('click', () => {
-        const courseIds = state.courseMode === 'all' ? courseList().map((c) => c.id) : state.courseMode === 'select' ? [...state.courses] : [];
+        const courseIds =
+          state.courseMode === 'all'
+            ? courseList().map((c) => c.id)
+            : state.courseMode === 'select'
+              ? [...state.courses]
+              : [];
         const recheck = classify(state.rows.map((r) => (r.status === 'ready' ? r : r)));
         let imported = 0;
 
         state.result = recheck.map((row) => {
           if (row.status !== 'ready') return row;
 
-          const person = { id: M.newId('learner'), name: row.name || row.email.split('@')[0], email: row.email, role: 'student', status: 'pending', memberStatus: 'ACTIVE', invitedAt: Date.now(), courseIds: [...courseIds], lastLoginAt: null, lastActiveAt: null };
-          row.courses.forEach((title) => { const match = courseList().find((c) => c.title.toLowerCase() === title.toLowerCase() || c.id === title); if (match && !person.courseIds.includes(match.id)) person.courseIds.push(match.id); });
+          const person = {
+            id: M.newId('learner'),
+            name: row.name || row.email.split('@')[0],
+            email: row.email,
+            role: 'student',
+            status: 'pending',
+            memberStatus: 'ACTIVE',
+            invitedAt: Date.now(),
+            courseIds: [...courseIds],
+            lastLoginAt: null,
+            lastActiveAt: null
+          };
+          row.courses.forEach((title) => {
+            const match = courseList().find((c) => c.title.toLowerCase() === title.toLowerCase() || c.id === title);
+            if (match && !person.courseIds.includes(match.id)) person.courseIds.push(match.id);
+          });
           learners().push(person);
           person.courseIds.forEach((id) => U.enroll(M.findCourse(S, id), person.id));
           imported += 1;
@@ -768,7 +1088,9 @@
         });
         state.imported = imported;
         commit();
-        P.toast(`${imported} new invites, 0 existing students given access, 0 pending invites renewed (${state.sendEmail ? imported : 0} emails sent, simulated)`);
+        P.toast(
+          `${imported} new invites, 0 existing students given access, 0 pending invites renewed (${state.sendEmail ? imported : 0} emails sent, simulated)`
+        );
         state.step = 'result';
         draw();
       });

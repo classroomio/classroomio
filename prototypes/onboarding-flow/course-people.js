@@ -17,7 +17,17 @@
   if (!window.AccountUI) document.write('<script src="account-ui.js"><\/script>');
 
   const DAY = 86400000;
-  const query = { page: 1, sortBy: 'name', sortOrder: 'asc', roleId: undefined, progress: undefined, certificateEarned: undefined, lastLoginBefore: undefined, enrolledWithin: undefined, search: '' };
+  const query = {
+    page: 1,
+    sortBy: 'name',
+    sortOrder: 'asc',
+    roleId: undefined,
+    progress: undefined,
+    certificateEarned: undefined,
+    lastLoginBefore: undefined,
+    enrolledWithin: undefined,
+    search: ''
+  };
   const PAGE_SIZE = 20;
   let openAdd = new URLSearchParams(window.location.search).get('add') === 'true';
 
@@ -31,12 +41,36 @@
         if (entry.role === 'tutor') {
           const member = team.find((m) => m.id === entry.personId);
 
-          return member ? { id: member.id, kind: 'tutor', roleId: 2, name: member.fullname || member.email, email: member.email, pending: !member.verified, enrolledAt: entry.enrolledAt, lastLoginAt: member.lastLoginAt ?? null, self: member.self } : null;
+          return member
+            ? {
+                id: member.id,
+                kind: 'tutor',
+                roleId: 2,
+                name: member.fullname || member.email,
+                email: member.email,
+                pending: !member.verified,
+                enrolledAt: entry.enrolledAt,
+                lastLoginAt: member.lastLoginAt ?? null,
+                self: member.self
+              }
+            : null;
         }
 
         const person = audience.find((p) => p.id === entry.personId);
 
-        return person ? { id: person.id, kind: 'student', roleId: 3, name: person.name, email: person.email, pending: person.status !== 'active', enrolledAt: entry.enrolledAt, lastLoginAt: person.lastLoginAt ?? null, progress: 0 } : null;
+        return person
+          ? {
+              id: person.id,
+              kind: 'student',
+              roleId: 3,
+              name: person.name,
+              email: person.email,
+              pending: person.status !== 'active',
+              enrolledAt: entry.enrolledAt,
+              lastLoginAt: person.lastLoginAt ?? null,
+              progress: 0
+            }
+          : null;
       })
       .filter(Boolean);
   }
@@ -54,14 +88,27 @@
         if (query.certificateEarned === true) return false;
         if (query.certificateEarned === false && row.kind !== 'student') return false;
         if (query.lastLoginBefore) {
-          if (query.lastLoginBefore === 'never' ? row.lastLoginAt : row.lastLoginAt && Date.now() - row.lastLoginAt <= withinMs[query.lastLoginBefore] * DAY) return false;
+          if (
+            query.lastLoginBefore === 'never'
+              ? row.lastLoginAt
+              : row.lastLoginAt && Date.now() - row.lastLoginAt <= withinMs[query.lastLoginBefore] * DAY
+          )
+            return false;
         }
-        if (query.enrolledWithin && Date.now() - (row.enrolledAt ?? 0) > withinMs[query.enrolledWithin] * DAY) return false;
+        if (query.enrolledWithin && Date.now() - (row.enrolledAt ?? 0) > withinMs[query.enrolledWithin] * DAY)
+          return false;
 
         return true;
       })
       .sort((a, b) => {
-        const key = { name: 'name', role: 'roleId', progress: 'progress', lastLogin: 'lastLoginAt', enrolledAt: 'enrolledAt', certificate: 'name' }[query.sortBy];
+        const key = {
+          name: 'name',
+          role: 'roleId',
+          progress: 'progress',
+          lastLogin: 'lastLoginAt',
+          enrolledAt: 'enrolledAt',
+          certificate: 'name'
+        }[query.sortBy];
         const left = a[key] ?? 0;
         const right = b[key] ?? 0;
 
@@ -73,7 +120,9 @@
     const [user, domain] = (email || '').split('@');
     if (!user || !domain) return email || '';
 
-    return user.length <= 2 ? `${user[0]}*@${domain}` : `${user[0]}${'*'.repeat(user.length - 2)}${user[user.length - 1]}@${domain}`;
+    return user.length <= 2
+      ? `${user[0]}*@${domain}`
+      : `${user[0]}${'*'.repeat(user.length - 2)}${user[user.length - 1]}@${domain}`;
   }
 
   function limitReached(ctx) {
@@ -85,19 +134,65 @@
     const chips = (label, options, selectedFn) =>
       `<div class="ac-stack8"><p class="ac-eyebrow">${label}</p><div class="ac-chips">${options.map(([text, patch]) => `<button type="button" class="btn btn-sm ${selectedFn(patch) ? 'btn-secondary' : 'btn-outline'}" data-patch='${JSON.stringify(patch)}'>${text}</button>`).join('')}</div></div>`;
     const is = (patch) => Object.entries(patch).every(([k, v]) => query[k] === v);
-    const windows = [['7 days', '7d'], ['30 days', '30d'], ['90 days', '90d'], ['180 days', '180d']];
-    const sorts = [['name', 'Name'], ['role', 'Role'], ['progress', 'Progress'], ['lastLogin', 'Last Login At'], ['enrolledAt', 'Enrolled At'], ['certificate', 'Certificate earned']];
-    const active = ['roleId', 'progress', 'certificateEarned', 'lastLoginBefore', 'enrolledWithin'].some((k) => query[k] !== undefined);
+    const windows = [
+      ['7 days', '7d'],
+      ['30 days', '30d'],
+      ['90 days', '90d'],
+      ['180 days', '180d']
+    ];
+    const sorts = [
+      ['name', 'Name'],
+      ['role', 'Role'],
+      ['progress', 'Progress'],
+      ['lastLogin', 'Last Login At'],
+      ['enrolledAt', 'Enrolled At'],
+      ['certificate', 'Certificate earned']
+    ];
+    const active = ['roleId', 'progress', 'certificateEarned', 'lastLoginBefore', 'enrolledWithin'].some(
+      (k) => query[k] !== undefined
+    );
 
     return `<div class="ac-pop-stack">
       <div class="ac-pop-head"><p>Filter people</p><button type="button" class="ac-btn-link" data-clear${active ? '' : ' disabled'}>Clear all</button></div>
       <div class="ac-stack8"><p class="ac-eyebrow">Sort</p><div class="ac-chips">${sorts.map(([v, l]) => `<button type="button" class="btn btn-sm ${query.sortBy === v ? 'btn-secondary' : 'btn-outline'}" data-sort="${v}">${l}</button>`).join('')}</div></div>
       <div class="ac-stack8"><p class="ac-eyebrow">Order</p><div class="ac-togglegroup"><button type="button" data-order="asc" aria-pressed="${query.sortOrder === 'asc'}">Asc</button><button type="button" data-order="desc" aria-pressed="${query.sortOrder === 'desc'}">Desc</button></div></div>
-      ${chips('Role', [['All roles', { roleId: undefined }], ['Admin', { roleId: 1 }], ['Tutor', { roleId: 2 }], ['Student', { roleId: 3 }]], is)}
-      ${chips('Progress', [['Not started', { progress: 'not_started' }], ['In progress', { progress: 'in_progress' }], ['Completed', { progress: 'completed' }]], is)}
-      ${chips('Certificate', [['Earned', { certificateEarned: true }], ['Not earned', { certificateEarned: false }]], is)}
-      ${chips('No login since', [...windows, ['Never', 'never']].map(([l, v]) => [l, { lastLoginBefore: v }]), is)}
-      ${chips('Joined within', windows.map(([l, v]) => [l, { enrolledWithin: v }]), is)}
+      ${chips(
+        'Role',
+        [
+          ['All roles', { roleId: undefined }],
+          ['Admin', { roleId: 1 }],
+          ['Tutor', { roleId: 2 }],
+          ['Student', { roleId: 3 }]
+        ],
+        is
+      )}
+      ${chips(
+        'Progress',
+        [
+          ['Not started', { progress: 'not_started' }],
+          ['In progress', { progress: 'in_progress' }],
+          ['Completed', { progress: 'completed' }]
+        ],
+        is
+      )}
+      ${chips(
+        'Certificate',
+        [
+          ['Earned', { certificateEarned: true }],
+          ['Not earned', { certificateEarned: false }]
+        ],
+        is
+      )}
+      ${chips(
+        'No login since',
+        [...windows, ['Never', 'never']].map(([l, v]) => [l, { lastLoginBefore: v }]),
+        is
+      )}
+      ${chips(
+        'Joined within',
+        windows.map(([l, v]) => [l, { enrolledWithin: v }]),
+        is
+      )}
     </div>`;
   }
 
@@ -107,25 +202,31 @@
     const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
     query.page = Math.min(query.page, pages);
     const slice = rows.slice((query.page - 1) * PAGE_SIZE, query.page * PAGE_SIZE);
-    const arrow = (key) => (query.sortBy === key ? U.icon(query.sortOrder === 'asc' ? 'arrow-up' : 'arrow-down', 14) : '');
-    const head = (label, key) => `<th aria-sort="${query.sortBy === key ? (query.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="ac-sortbtn" data-hsort="${key}">${label}${arrow(key)}</button></th>`;
-    const filtered = ['roleId', 'progress', 'certificateEarned', 'lastLoginBefore', 'enrolledWithin'].some((k) => query[k] !== undefined);
+    const arrow = (key) =>
+      query.sortBy === key ? U.icon(query.sortOrder === 'asc' ? 'arrow-up' : 'arrow-down', 14) : '';
+    const head = (label, key) =>
+      `<th aria-sort="${query.sortBy === key ? (query.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="ac-sortbtn" data-hsort="${key}">${label}${arrow(key)}</button></th>`;
+    const filtered = ['roleId', 'progress', 'certificateEarned', 'lastLoginBefore', 'enrolledWithin'].some(
+      (k) => query[k] !== undefined
+    );
 
     const body = slice.length
-      ? slice.map((row) => {
-          const student = row.kind === 'student';
-          const nameCell = row.pending
-            ? `<div class="ac-pname"><span class="av">${U.icon('user', 16)}</span><div class="meta"><a class="ac-link" href="mailto:${esc(row.email)}" style="text-decoration:none;color:var(--primary)">${esc(row.email)}</a>${U.badge('yellow', 'Pending')}</div></div>`
-            : `<div class="ac-pname"><span class="av">${U.icon('user', 16)}</span><div class="meta"><div><p class="nm">${esc(row.name)}</p><span class="em">${esc(obscure(row.email))}</span></div><button type="button" class="ac-iconbtn sec" data-copy="${esc(row.email)}" aria-label="Copy email">${U.icon('copy', 16)}</button>${row.self ? U.badge('default', 'You') : ''}</div></div>`;
+      ? slice
+          .map((row) => {
+            const student = row.kind === 'student';
+            const nameCell = row.pending
+              ? `<div class="ac-pname"><span class="av">${U.icon('user', 16)}</span><div class="meta"><a class="ac-link" href="mailto:${esc(row.email)}" style="text-decoration:none;color:var(--primary)">${esc(row.email)}</a>${U.badge('yellow', 'Pending')}</div></div>`
+              : `<div class="ac-pname"><span class="av">${U.icon('user', 16)}</span><div class="meta"><div><p class="nm">${esc(row.name)}</p><span class="em">${esc(obscure(row.email))}</span></div><button type="button" class="ac-iconbtn sec" data-copy="${esc(row.email)}" aria-label="Copy email">${U.icon('copy', 16)}</button>${row.self ? U.badge('default', 'You') : ''}</div></div>`;
 
-          return `<tr data-id="${esc(row.id)}" class="${row.pending ? '' : 'nav'}">
+            return `<tr data-id="${esc(row.id)}" class="${row.pending ? '' : 'nav'}">
             <td style="min-width:220px">${nameCell}</td>
             <td>${student && !row.pending ? `<div style="display:flex;align-items:center;gap:12px"><div class="ac-bar"><i style="width:${row.progress}%"></i></div><span class="ac-text-sm ac-medium">${row.progress}%</span></div>` : '<span class="ac-muted ac-text-sm">—</span>'}</td>
             <td>${student && !row.pending ? U.badge('outline', 'Not started', 'ac-muted') : '<span class="ac-muted ac-text-sm">—</span>'}</td>
             <td><span class="ac-muted ac-text-sm">${student && !row.pending ? esc(U.shortDate(row.lastLoginAt)) : '—'}</span></td>
             <td><span class="ac-muted ac-text-sm">${esc(U.shortDate(row.enrolledAt))}</span></td>
             <td class="ac-sticky">${row.self ? '' : `<button type="button" class="ac-iconbtn" data-menu="${esc(row.id)}" aria-label="Open actions">${U.icon('ellipsis-vertical', 16)}</button>`}</td></tr>`;
-        }).join('')
+          })
+          .join('')
       : `<tr class="ac-people-empty"><td colspan="6">No results found</td></tr>`;
 
     return `<div class="cp2-page"><div class="ac-page ac-w5xl" style="min-height:0">
@@ -146,81 +247,124 @@
     U.wireUpgrade(document, S, commit, rerender);
     $('#pp-add').addEventListener('click', () => inviteDialog(ctx));
 
-    U.wireSearch($('.ac-search'), U.debounce((value) => {
-      query.search = value;
-      query.page = 1;
-      const caret = value.length;
-      rerender();
-      const input = $('#pp-search');
-      input.focus();
-      input.setSelectionRange(caret, caret);
-    }, 250));
+    U.wireSearch(
+      $('.ac-search'),
+      U.debounce((value) => {
+        query.search = value;
+        query.page = 1;
+        const caret = value.length;
+        rerender();
+        const input = $('#pp-search');
+        input.focus();
+        input.setSelectionRange(caret, caret);
+      }, 250)
+    );
 
     $('#pp-filter').addEventListener('click', (event) =>
       U.popover(event.currentTarget, filterHTML(ctx), {
         width: 360,
         wire(el, handle) {
-          const done = () => { handle.close(); query.page = 1; rerender(); };
-          el.querySelectorAll('[data-sort]').forEach((b) => b.addEventListener('click', () => { query.sortBy = b.dataset.sort; done(); }));
-          el.querySelectorAll('[data-order]').forEach((b) => b.addEventListener('click', () => { query.sortOrder = b.dataset.order; done(); }));
-          el.querySelectorAll('[data-patch]').forEach((b) => b.addEventListener('click', () => {
-            const patch = JSON.parse(b.dataset.patch);
-            const on = Object.entries(patch).every(([k, v]) => query[k] === v);
-            Object.keys(patch).forEach((k) => (query[k] = on ? undefined : patch[k]));
-            done();
-          }));
+          const done = () => {
+            handle.close();
+            query.page = 1;
+            rerender();
+          };
+          el.querySelectorAll('[data-sort]').forEach((b) =>
+            b.addEventListener('click', () => {
+              query.sortBy = b.dataset.sort;
+              done();
+            })
+          );
+          el.querySelectorAll('[data-order]').forEach((b) =>
+            b.addEventListener('click', () => {
+              query.sortOrder = b.dataset.order;
+              done();
+            })
+          );
+          el.querySelectorAll('[data-patch]').forEach((b) =>
+            b.addEventListener('click', () => {
+              const patch = JSON.parse(b.dataset.patch);
+              const on = Object.entries(patch).every(([k, v]) => query[k] === v);
+              Object.keys(patch).forEach((k) => (query[k] = on ? undefined : patch[k]));
+              done();
+            })
+          );
           el.querySelector('[data-clear]')?.addEventListener('click', () => {
-            ['roleId', 'progress', 'certificateEarned', 'lastLoginBefore', 'enrolledWithin'].forEach((k) => (query[k] = undefined));
+            ['roleId', 'progress', 'certificateEarned', 'lastLoginBefore', 'enrolledWithin'].forEach(
+              (k) => (query[k] = undefined)
+            );
             done();
           });
         }
       })
     );
 
-    $$('[data-hsort]').forEach((b) => b.addEventListener('click', () => {
-      const key = b.dataset.hsort;
-      query.sortOrder = query.sortBy === key && query.sortOrder === 'asc' ? 'desc' : 'asc';
-      query.sortBy = key;
-      query.page = 1;
-      rerender();
-    }));
+    $$('[data-hsort]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const key = b.dataset.hsort;
+        query.sortOrder = query.sortBy === key && query.sortOrder === 'asc' ? 'desc' : 'asc';
+        query.sortBy = key;
+        query.page = 1;
+        rerender();
+      })
+    );
 
     const pager = $('#pp-pg');
-    if (pager) U.wirePagination(pager, (page) => { query.page = page; rerender(); });
-
-    $$('[data-copy]').forEach((b) => b.addEventListener('click', (event) => {
-      event.stopPropagation();
-      navigator.clipboard?.writeText(b.dataset.copy).catch(() => {});
-      say('Copied Email to clipboard');
-    }));
-
-    $$('tr.nav').forEach((row) => row.addEventListener('click', (event) => {
-      if (event.target.closest('button, a')) return;
-      say('The student profile page is outside this prototype.');
-    }));
-
-    $$('[data-menu]').forEach((button) => button.addEventListener('click', (event) => {
-      event.stopPropagation();
-      const row = rowsFor(ctx).find((r) => r.id === button.dataset.menu);
-      const items = [];
-
-      if (!row.pending) items.push({ label: 'View', icon: 'eye', onSelect: () => say('The student profile page is outside this prototype.') });
-      items.push({
-        label: 'Delete profile',
-        icon: 'trash',
-        danger: true,
-        onSelect: async () => {
-          const ok = await U.confirm({ title: 'Delete', body: `Are you sure you want to delete <strong>${esc(row.email)}</strong>?`, confirm: 'Yes', cancel: 'No' });
-          if (!ok) return;
-
-          U.unenroll(course, row.id);
-          commit();
-          rerender();
-          say('Deleted successfully');
-        }
+    if (pager)
+      U.wirePagination(pager, (page) => {
+        query.page = page;
+        rerender();
       });
-      U.menu(button, items, { align: 'end' });
-    }));
+
+    $$('[data-copy]').forEach((b) =>
+      b.addEventListener('click', (event) => {
+        event.stopPropagation();
+        navigator.clipboard?.writeText(b.dataset.copy).catch(() => {});
+        say('Copied Email to clipboard');
+      })
+    );
+
+    $$('tr.nav').forEach((row) =>
+      row.addEventListener('click', (event) => {
+        if (event.target.closest('button, a')) return;
+        say('The student profile page is outside this prototype.');
+      })
+    );
+
+    $$('[data-menu]').forEach((button) =>
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const row = rowsFor(ctx).find((r) => r.id === button.dataset.menu);
+        const items = [];
+
+        if (!row.pending)
+          items.push({
+            label: 'View',
+            icon: 'eye',
+            onSelect: () => say('The student profile page is outside this prototype.')
+          });
+        items.push({
+          label: 'Delete profile',
+          icon: 'trash',
+          danger: true,
+          onSelect: async () => {
+            const ok = await U.confirm({
+              title: 'Delete',
+              body: `Are you sure you want to delete <strong>${esc(row.email)}</strong>?`,
+              confirm: 'Yes',
+              cancel: 'No'
+            });
+            if (!ok) return;
+
+            U.unenroll(course, row.id);
+            commit();
+            rerender();
+            say('Deleted successfully');
+          }
+        });
+        U.menu(button, items, { align: 'end' });
+      })
+    );
 
     if (openAdd) {
       openAdd = false;
@@ -231,7 +375,9 @@
 
   function inviteDialog(ctx) {
     const { U, S, course, esc, commit, rerender, say, M } = ctx;
-    const team = (S.team ?? []).filter((m) => m.verified && !m.self && !(course.people ?? []).some((e) => e.personId === m.id && e.role === 'tutor'));
+    const team = (S.team ?? []).filter(
+      (m) => m.verified && !m.self && !(course.people ?? []).some((e) => e.personId === m.id && e.role === 'tutor')
+    );
     const pickedTutors = new Set();
     const pickedStudents = new Set();
     let tab = 'students';
@@ -245,8 +391,22 @@
       body: '<div id="iv-tabs"></div><div id="iv-pane"></div>',
       wire(c) {
         const paint = () => {
-          c.$('#iv-tabs').innerHTML = `<div class="ac-tabs" role="tablist">${[['tutors', 'Invite Tutors'], ['students', 'Add Students'], ['link', 'Invite link']].map(([v, l]) => `<button type="button" class="ac-tab" role="tab" aria-selected="${tab === v}" data-t="${v}">${l}</button>`).join('')}</div>`;
-          c.$$('[data-t]').forEach((b) => b.addEventListener('click', () => { tab = b.dataset.t; paint(); }));
+          c.$('#iv-tabs').innerHTML = `<div class="ac-tabs" role="tablist">${[
+            ['tutors', 'Invite Tutors'],
+            ['students', 'Add Students'],
+            ['link', 'Invite link']
+          ]
+            .map(
+              ([v, l]) =>
+                `<button type="button" class="ac-tab" role="tab" aria-selected="${tab === v}" data-t="${v}">${l}</button>`
+            )
+            .join('')}</div>`;
+          c.$$('[data-t]').forEach((b) =>
+            b.addEventListener('click', () => {
+              tab = b.dataset.t;
+              paint();
+            })
+          );
           const pane = c.$('#iv-pane');
 
           if (tab === 'tutors') paintTutors(pane);
@@ -261,7 +421,17 @@
             <span class="hl">To add tutor to your organization, <a class="ac-link" href="${esc(M.R.orgSettings)}?tab=teams">go to organization settings</a></span></div>
             <div class="ac-flexrev"><button type="button" class="btn btn-secondary" id="iv-finish">Finish</button></div></div>`;
           pane.querySelector('#iv-tsel').addEventListener('click', (event) => {
-            const items = () => team.map((m) => ({ label: m.fullname || m.email, check: pickedTutors.has(m.id), onSelect: (item, update) => { if (pickedTutors.has(m.id)) pickedTutors.delete(m.id); else pickedTutors.add(m.id); paintTutors(pane); update(items()); } }));
+            const items = () =>
+              team.map((m) => ({
+                label: m.fullname || m.email,
+                check: pickedTutors.has(m.id),
+                onSelect: (item, update) => {
+                  if (pickedTutors.has(m.id)) pickedTutors.delete(m.id);
+                  else pickedTutors.add(m.id);
+                  paintTutors(pane);
+                  update(items());
+                }
+              }));
             U.menu(event.currentTarget, items(), { align: 'start', matchWidth: true, keepOpen: true });
             if (!team.length) say('No verified team members are available. Invite tutors from organization settings.');
           });
@@ -275,8 +445,12 @@
 
         const paintStudents = (pane) => {
           const enrolled = new Set((course.people ?? []).filter((e) => e.role === 'student').map((e) => e.personId));
-          const available = (S.audience ?? []).filter((p) => p.status === 'active' && !enrolled.has(p.id)).sort((a, b) => a.name.localeCompare(b.name));
-          const shown = available.filter((p) => `${p.name} ${p.email}`.toLowerCase().includes(search.trim().toLowerCase()));
+          const available = (S.audience ?? [])
+            .filter((p) => p.status === 'active' && !enrolled.has(p.id))
+            .sort((a, b) => a.name.localeCompare(b.name));
+          const shown = available.filter((p) =>
+            `${p.name} ${p.email}`.toLowerCase().includes(search.trim().toLowerCase())
+          );
           const limit = limitReached(ctx);
 
           pane.innerHTML = `<div class="ac-stack" style="gap:24px;padding:12px 0 0">
@@ -290,19 +464,53 @@
               <label class="ac-checkrow">${U.checkbox({ checked: mailNew, disabled: limit, attrs: 'data-mail-new' })}<span>Send invitation email to imported users</span></label>
               <div><button type="button" class="btn btn-secondary" id="iv-invite"${limit ? ' disabled' : ''}>Invite Students</button></div></fieldset></div>`;
 
-          U.wireSearch(pane.querySelector('.ac-search'), U.debounce((value) => { search = value; paintStudents(pane); const i = pane.querySelector('#iv-search'); i.focus(); i.setSelectionRange(value.length, value.length); }, 250));
-          U.wireUpgrade(pane, S, commit, () => { c.close(); rerender(); });
-          pane.querySelectorAll('[data-s]').forEach((b) => b.addEventListener('click', () => { const id = b.dataset.s; if (pickedStudents.has(id)) pickedStudents.delete(id); else pickedStudents.add(id); b.setAttribute('aria-checked', String(pickedStudents.has(id))); }));
+          U.wireSearch(
+            pane.querySelector('.ac-search'),
+            U.debounce((value) => {
+              search = value;
+              paintStudents(pane);
+              const i = pane.querySelector('#iv-search');
+              i.focus();
+              i.setSelectionRange(value.length, value.length);
+            }, 250)
+          );
+          U.wireUpgrade(pane, S, commit, () => {
+            c.close();
+            rerender();
+          });
+          pane.querySelectorAll('[data-s]').forEach((b) =>
+            b.addEventListener('click', () => {
+              const id = b.dataset.s;
+              if (pickedStudents.has(id)) pickedStudents.delete(id);
+              else pickedStudents.add(id);
+              b.setAttribute('aria-checked', String(pickedStudents.has(id)));
+            })
+          );
           const mailEx = pane.querySelector('[data-mail-ex]');
-          mailEx.addEventListener('click', () => { mailExisting = !mailExisting; mailEx.setAttribute('aria-checked', String(mailExisting)); });
+          mailEx.addEventListener('click', () => {
+            mailExisting = !mailExisting;
+            mailEx.setAttribute('aria-checked', String(mailExisting));
+          });
           const mailN = pane.querySelector('[data-mail-new]');
-          mailN.addEventListener('click', () => { mailNew = !mailNew; mailN.setAttribute('aria-checked', String(mailNew)); });
+          mailN.addEventListener('click', () => {
+            mailNew = !mailNew;
+            mailN.setAttribute('aria-checked', String(mailNew));
+          });
 
           pane.querySelector('#iv-grant').addEventListener('click', () => {
-            if (!pickedStudents.size) { P().toast('Select at least one existing student', { error: true }); return; }
+            if (!pickedStudents.size) {
+              P().toast('Select at least one existing student', { error: true });
+              return;
+            }
 
             let assigned = 0;
-            pickedStudents.forEach((id) => { if (U.enroll(course, id)) { assigned += 1; const p = S.audience.find((x) => x.id === id); p.courseIds = [...new Set([...(p.courseIds ?? []), course.id])]; } });
+            pickedStudents.forEach((id) => {
+              if (U.enroll(course, id)) {
+                assigned += 1;
+                const p = S.audience.find((x) => x.id === id);
+                p.courseIds = [...new Set([...(p.courseIds ?? []), course.id])];
+              }
+            });
             commit();
             say(`Assigned ${assigned} users (0 already had access, ${mailExisting ? assigned : 0} emails sent)`);
             c.close();
@@ -311,9 +519,19 @@
 
           pane.querySelector('#iv-invite')?.addEventListener('click', () => {
             const text = pane.querySelector('#iv-emails').value;
-            if (!text.trim()) { P().toast('Please enter at least one email address', { error: true }); return; }
+            if (!text.trim()) {
+              P().toast('Please enter at least one email address', { error: true });
+              return;
+            }
 
-            const emails = [...new Set(text.split(/[,;\n\s]+/).map((e) => e.trim().toLowerCase()).filter(Boolean))].filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+            const emails = [
+              ...new Set(
+                text
+                  .split(/[,;\n\s]+/)
+                  .map((e) => e.trim().toLowerCase())
+                  .filter(Boolean)
+              )
+            ].filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
             S.audience = S.audience ?? [];
             let imported = 0;
             let assigned = 0;
@@ -327,15 +545,29 @@
               if (!person) {
                 if (S.audience.length >= U.maxLearners(S)) return;
 
-                person = { id: M.newId('learner'), name: email.split('@')[0], email, role: 'student', status: 'pending', memberStatus: 'ACTIVE', invitedAt: Date.now(), courseIds: [], lastLoginAt: null, lastActiveAt: null };
+                person = {
+                  id: M.newId('learner'),
+                  name: email.split('@')[0],
+                  email,
+                  role: 'student',
+                  status: 'pending',
+                  memberStatus: 'ACTIVE',
+                  invitedAt: Date.now(),
+                  courseIds: [],
+                  lastLoginAt: null,
+                  lastActiveAt: null
+                };
                 S.audience.push(person);
                 imported += 1;
               } else assigned += 1;
 
-              if (U.enroll(course, person.id)) person.courseIds = [...new Set([...(person.courseIds ?? []), course.id])];
+              if (U.enroll(course, person.id))
+                person.courseIds = [...new Set([...(person.courseIds ?? []), course.id])];
             });
             commit();
-            say(`${imported} new invites, ${assigned} existing students given access, 0 pending invites renewed (${mailNew ? imported : 0} emails sent, simulated)`);
+            say(
+              `${imported} new invites, ${assigned} existing students given access, 0 pending invites renewed (${mailNew ? imported : 0} emails sent, simulated)`
+            );
             c.close();
             rerender();
           });
@@ -346,14 +578,37 @@
           const url = link ? `${M.orgInfo(S).url}/invite/link/${encodeURIComponent(link.token)}` : '';
 
           pane.innerHTML = `<div class="ac-stack" style="padding:12px 0 0"><fieldset class="ac-fs ac-fs-tight"><legend class="ac-legend">Invite link</legend><p class="ac-desc">Anyone with this link can join this course as a student. Share it instead of entering emails one by one.</p>
-            ${link ? `<div class="ac-fg" style="max-width:none;padding:0"><div class="ac-copyfield"><input class="ac-input" readonly value="${esc(url)}" aria-label="Invite link" /><button type="button" class="btn btn-secondary ac-btn-icon" id="iv-copy" aria-label="Copy invite link">${U.icon('copy', 16)}</button></div>
+            ${
+              link
+                ? `<div class="ac-fg" style="max-width:none;padding:0"><div class="ac-copyfield"><input class="ac-input" readonly value="${esc(url)}" aria-label="Invite link" /><button type="button" class="btn btn-secondary ac-btn-icon" id="iv-copy" aria-label="Copy invite link">${U.icon('copy', 16)}</button></div>
               <div class="ac-field ac-row">${U.switchHTML({ checked: !link.revoked, attrs: 'id="iv-toggle"', label: 'Link is active' })}<label class="ac-label">Link is active</label></div>
-              ${link.revoked ? '<p class="ac-desc" style="color:var(--destructive)">This link is disabled. Nobody can join with it until you turn it back on.</p>' : `<p class="ac-desc">${link.joinCount} people have joined with this link</p>`}</div>` : '<div><button type="button" class="btn btn-secondary" id="iv-gen">Create invite link</button></div>'}
+              ${link.revoked ? '<p class="ac-desc" style="color:var(--destructive)">This link is disabled. Nobody can join with it until you turn it back on.</p>' : `<p class="ac-desc">${link.joinCount} people have joined with this link</p>`}</div>`
+                : '<div><button type="button" class="btn btn-secondary" id="iv-gen">Create invite link</button></div>'
+            }
             ${limitReached(ctx) ? U.upgradeBannerHTML("You've reached your plan's student limit. Upgrade to invite more students.") : ''}</fieldset></div>`;
-          U.wireUpgrade(pane, S, commit, () => { c.close(); rerender(); });
-          pane.querySelector('#iv-gen')?.addEventListener('click', () => { course.inviteLink = { token: `crs_${Math.random().toString(36).slice(2, 12)}`, revoked: false, joinCount: 0 }; commit(); paintLink(pane); });
-          pane.querySelector('#iv-copy')?.addEventListener('click', () => { navigator.clipboard?.writeText(url).catch(() => {}); say('Invite link copied'); });
-          pane.querySelector('#iv-toggle')?.addEventListener('click', () => { link.revoked = !link.revoked; commit(); say(link.revoked ? 'Invite link disabled' : 'Invite link enabled'); paintLink(pane); });
+          U.wireUpgrade(pane, S, commit, () => {
+            c.close();
+            rerender();
+          });
+          pane.querySelector('#iv-gen')?.addEventListener('click', () => {
+            course.inviteLink = {
+              token: `crs_${Math.random().toString(36).slice(2, 12)}`,
+              revoked: false,
+              joinCount: 0
+            };
+            commit();
+            paintLink(pane);
+          });
+          pane.querySelector('#iv-copy')?.addEventListener('click', () => {
+            navigator.clipboard?.writeText(url).catch(() => {});
+            say('Invite link copied');
+          });
+          pane.querySelector('#iv-toggle')?.addEventListener('click', () => {
+            link.revoked = !link.revoked;
+            commit();
+            say(link.revoked ? 'Invite link disabled' : 'Invite link enabled');
+            paintLink(pane);
+          });
         };
 
         paint();

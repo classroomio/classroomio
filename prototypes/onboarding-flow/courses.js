@@ -29,7 +29,12 @@
     ['COMPLIANCE', 'Compliance'],
     ['PUBLIC', 'Public']
   ];
-  const TYPE_LABELS = { SELF_PACED: 'Self paced', LIVE_CLASS: 'Live class', COMPLIANCE: 'Compliance', PUBLIC: 'Public' };
+  const TYPE_LABELS = {
+    SELF_PACED: 'Self paced',
+    LIVE_CLASS: 'Live class',
+    COMPLIANCE: 'Compliance',
+    PUBLIC: 'Public'
+  };
   const SORT_KEY = 'classroomio_filter_course_sort_key';
   const ORDER_KEY = 'classroomio_filter_course_order_key';
 
@@ -75,7 +80,14 @@
         : SORT_OPTIONS.some(([value]) => value === readStorage(SORT_KEY))
           ? readStorage(SORT_KEY)
           : 'date_created';
-    const order = orderParam === 'asc' || orderParam === 'desc' ? orderParam : hasSort ? 'desc' : readStorage(ORDER_KEY) === 'asc' ? 'asc' : 'desc';
+    const order =
+      orderParam === 'asc' || orderParam === 'desc'
+        ? orderParam
+        : hasSort
+          ? 'desc'
+          : readStorage(ORDER_KEY) === 'asc'
+            ? 'asc'
+            : 'desc';
     const type = (params.get('type') ?? '').trim();
     const status = params.get('status');
 
@@ -185,7 +197,8 @@
     const slug = (course.slug ?? '').trim();
     const showPublicLinks = course.published && course.type === 'PUBLIC' && slug.length > 0;
     const id = esc(course.id);
-    const item = (action, label, extra = '') => `<button type="button" role="menuitem" class="cx-mi${extra}" data-cx-act="${action}" data-id="${id}">${label}</button>`;
+    const item = (action, label, extra = '') =>
+      `<button type="button" role="menuitem" class="cx-mi${extra}" data-cx-act="${action}" data-id="${id}">${label}</button>`;
     const parts = [];
 
     if (course.published) {
@@ -248,8 +261,10 @@
     const circles =
       students === 0
         ? '<span class="cx-av cx-av-empty"></span>'
-        : Array.from({ length: shown }, (_, position) => `<span class="cx-av${position ? ' cx-av-over' : ''}">${esc(initial)}</span>`).join('') +
-          (students > 2 ? `<span class="cx-av cx-av-over cx-av-more">+${students - 2}</span>` : '');
+        : Array.from(
+            { length: shown },
+            (_, position) => `<span class="cx-av${position ? ' cx-av-over' : ''}">${esc(initial)}</span>`
+          ).join('') + (students > 2 ? `<span class="cx-av cx-av-over cx-av-more">+${students - 2}</span>` : '');
 
     return `<div class="cx-stack ${desktop ? 'cx-stack-d' : 'cx-stack-m'}"><div class="cx-stack-av">${circles}</div>${students <= 1 ? `<span class="cx-stack-n">${students}</span>` : ''}</div>`;
   }
@@ -352,7 +367,10 @@
       ui.mode === 'grid'
         ? `<div class="cx-grid">${shown.map(cardHTML).join('')}</div>`
         : `<div class="cx-listwrap"><div class="cx-list" role="list">${shown.map(rowHTML).join('')}</div></div>`;
-    const more = all.length > shown.length ? `<div class="cx-more"><button class="btn btn-secondary" type="button" data-load-more>Load more</button></div>` : '';
+    const more =
+      all.length > shown.length
+        ? `<div class="cx-more"><button class="btn btn-secondary" type="button" data-load-more>Load more</button></div>`
+        : '';
 
     return body + more;
   }
@@ -381,7 +399,8 @@
 
   function filterPopoverHTML() {
     const { sortKey, order, courseType, publishedStatus } = ui.filters;
-    const chip = (active, attrs, label) => `<button type="button" class="btn btn-sm ${active ? 'btn-secondary' : 'btn-outline'}" ${attrs}>${esc(label)}</button>`;
+    const chip = (active, attrs, label) =>
+      `<button type="button" class="btn btn-sm ${active ? 'btn-secondary' : 'btn-outline'}" ${attrs}>${esc(label)}</button>`;
 
     return `
       <div class="cx-fpop" role="dialog" aria-label="Filters" ${ui.popoverOpen ? '' : 'hidden'}>
@@ -504,7 +523,13 @@
       })
     );
     popover.querySelector('[data-clear]').addEventListener('click', () => {
-      ui.filters = { search: ui.filters.search, sortKey: 'date_created', order: 'desc', courseType: 'all', publishedStatus: 'all' };
+      ui.filters = {
+        search: ui.filters.search,
+        sortKey: 'date_created',
+        order: 'desc',
+        courseType: 'all',
+        publishedStatus: 'all'
+      };
       applyFilterChange();
     });
   }
@@ -594,7 +619,10 @@
 
         U.saveCourseAsTemplate(S, course, name);
         commit();
-        P.toast('Template saved', { action: 'View templates', onAction: () => (window.location.href = `${M.R.templates}?scope=org`) });
+        P.toast('Template saved', {
+          action: 'View templates',
+          onAction: () => (window.location.href = `${M.R.templates}?scope=org`)
+        });
         rerender();
       }
     });

@@ -27,7 +27,9 @@
     orgName: $currentOrg.name || 'Organization',
     orgLogoUrl: $currentOrg.avatarUrl || undefined,
     date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' }),
-    certificateId: (design.idFormat ?? 'N° {seq}').replace('{seq}', '0247')
+    certificateId: (design.idFormat ?? 'N° {seq}').replace('{seq}', '0247'),
+    verifyCode: '7KQM-4XH2',
+    verifyUrl: 'https://learn.acme.com/verify?code=7KQM-4XH2'
   });
 
   const templateLabel = $derived(

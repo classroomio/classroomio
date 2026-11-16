@@ -25,9 +25,40 @@
 
   const TENANT_ROOT_DOMAIN = 'myclassroomio.com';
   const BLOCKED_SUBDOMAINS = [
-    'academy', 'app', 'apps', 'blog', 'build', 'campaign', 'church', 'cloud', 'community', 'conference', 'course',
-    'courses', 'demo', 'dev', 'embed', 'embeds', 'forum', 'group', 'groups', 'help', 'launch', 'launchweek', 'mobile',
-    'play', 'prod', 'production', 'schools', 'stage', 'staging', 'support', 'teacher', 'teachers', 'tech', 'training'
+    'academy',
+    'app',
+    'apps',
+    'blog',
+    'build',
+    'campaign',
+    'church',
+    'cloud',
+    'community',
+    'conference',
+    'course',
+    'courses',
+    'demo',
+    'dev',
+    'embed',
+    'embeds',
+    'forum',
+    'group',
+    'groups',
+    'help',
+    'launch',
+    'launchweek',
+    'mobile',
+    'play',
+    'prod',
+    'production',
+    'schools',
+    'stage',
+    'staging',
+    'support',
+    'teacher',
+    'teachers',
+    'tech',
+    'training'
   ];
 
   const COPY = {
@@ -875,8 +906,18 @@
   };
 
   const LANGUAGES = [
-    ['da', 'Danish'], ['de', 'German'], ['en', 'English'], ['es', 'Spanish'], ['fr', 'French'], ['hi', 'Hindi'],
-    ['it', 'Italian'], ['pl', 'Polish'], ['pt', 'Portuguese'], ['ru', 'Russian'], ['tr', 'Turkish'], ['vi', 'Vietnamese']
+    ['da', 'Danish'],
+    ['de', 'German'],
+    ['en', 'English'],
+    ['es', 'Spanish'],
+    ['fr', 'French'],
+    ['hi', 'Hindi'],
+    ['it', 'Italian'],
+    ['pl', 'Polish'],
+    ['pt', 'Portuguese'],
+    ['ru', 'Russian'],
+    ['tr', 'Turkish'],
+    ['vi', 'Vietnamese']
   ].map(([value, label]) => ({ value, label }));
 
   function defaultCustomization() {

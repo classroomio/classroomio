@@ -60,7 +60,10 @@
   ].map(([value, label]) => ({ value, label }));
 
   function defaultUsername(S) {
-    const fromEmail = (S.email || '').split('@')[0].replace(/[^a-z0-9._-]/gi, '').toLowerCase();
+    const fromEmail = (S.email || '')
+      .split('@')[0]
+      .replace(/[^a-z0-9._-]/gi, '')
+      .toLowerCase();
 
     return S.username || fromEmail || P.slugify(S.fullname || '') || '';
   }

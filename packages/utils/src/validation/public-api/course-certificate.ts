@@ -12,13 +12,28 @@ export const ZPublicApiCertificateSignatory = z.object({
   signatureUrl: z.url().optional()
 });
 
+export const ZPublicApiVerifyAnchor = z.enum(['top-left', 'top-right', 'bottom-left', 'bottom-right']);
+export const ZPublicApiVerifyPlacement = z.object({ anchor: ZPublicApiVerifyAnchor });
+export const ZPublicApiVerifyPlacements = z
+  .object({
+    classique: ZPublicApiVerifyPlacement.optional(),
+    brutalist: ZPublicApiVerifyPlacement.optional(),
+    noir: ZPublicApiVerifyPlacement.optional(),
+    poster: ZPublicApiVerifyPlacement.optional(),
+    minimal: ZPublicApiVerifyPlacement.optional()
+  })
+  .partial()
+  .optional();
+
 export const ZPublicApiCertificateDesign = z.object({
   templateId: ZPublicApiCertificateTemplateId,
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { message: 'Accent must be a 6-digit hex color' }),
   subtitle: z.string().max(120).optional(),
   descriptionOverride: z.string().max(500).optional(),
   signatories: z.tuple([ZPublicApiCertificateSignatory, ZPublicApiCertificateSignatory]),
-  idFormat: z.string().max(40).optional()
+  idFormat: z.string().max(40).optional(),
+  verifyPosition: ZPublicApiVerifyAnchor.optional(),
+  verifyPlacements: ZPublicApiVerifyPlacements.optional()
 });
 export type TPublicApiCertificateDesign = z.infer<typeof ZPublicApiCertificateDesign>;
 

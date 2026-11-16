@@ -88,7 +88,16 @@ describe('public certificate contract', () => {
 
   it('exposes exactly the documented design fields', () => {
     expect(Object.keys(ZPublicApiCertificateDesign.shape).sort()).toEqual(
-      ['accentColor', 'descriptionOverride', 'idFormat', 'signatories', 'subtitle', 'templateId'].sort()
+      [
+        'accentColor',
+        'descriptionOverride',
+        'idFormat',
+        'signatories',
+        'subtitle',
+        'templateId',
+        'verifyPlacements',
+        'verifyPosition'
+      ].sort()
     );
   });
 

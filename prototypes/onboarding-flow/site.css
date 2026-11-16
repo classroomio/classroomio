@@ -92,7 +92,10 @@
   border-radius: 999px;
   background: #0f172a;
   color: #fff;
-  font: 600 14px/1 'Geist', system-ui, sans-serif;
+  font:
+    600 14px/1 'Geist',
+    system-ui,
+    sans-serif;
   text-decoration: none;
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.25);
 }

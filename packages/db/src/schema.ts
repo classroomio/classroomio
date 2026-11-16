@@ -1122,12 +1122,17 @@ export const courseCertificateIssue = pgTable(
       .notNull(),
     courseId: uuid('course_id').notNull(),
     profileId: uuid('profile_id').notNull(),
-    courseCompletionRecordId: uuid('course_completion_record_id').notNull(),
+    courseCompletionRecordId: uuid('course_completion_record_id'),
     cycleNumber: integer('cycle_number').notNull(),
     issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
     status: varchar().default('valid').notNull(),
-    fileUrl: text('file_url')
+    fileUrl: text('file_url'),
+    verifyCode: varchar('verify_code', { length: 8 }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    revokedBy: uuid('revoked_by'),
+    revokeReason: text('revoke_reason'),
+    metadata: jsonb('metadata').default({}).notNull()
   },
   (table) => [
     foreignKey({
@@ -1145,10 +1150,18 @@ export const courseCertificateIssue = pgTable(
       foreignColumns: [courseCompletionRecord.id],
       name: 'course_certificate_issue_record_id_fkey'
     }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.revokedBy],
+      foreignColumns: [profile.id],
+      name: 'course_certificate_issue_revoked_by_fkey'
+    }).onDelete('set null'),
     unique('course_certificate_issue_record_id_key').on(table.courseCompletionRecordId),
+    unique('course_certificate_issue_verify_code_key').on(table.verifyCode),
+    unique('course_certificate_issue_course_profile_cycle_key').on(table.courseId, table.profileId, table.cycleNumber),
     index('idx_course_certificate_issue_course_id').on(table.courseId),
     index('idx_course_certificate_issue_profile_id').on(table.profileId),
-    index('idx_course_certificate_issue_status').on(table.status)
+    index('idx_course_certificate_issue_status').on(table.status),
+    index('idx_course_certificate_issue_verify_code').on(table.verifyCode)
   ]
 );
 

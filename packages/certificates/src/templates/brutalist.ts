@@ -1,6 +1,13 @@
-import { CERTIFICATE_WIDTH } from '../constants';
+import { CERTIFICATE_WIDTH, TEMPLATE_VERIFY_OFFSETS } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
-import { escapeHtml, prepareCertificateRenderContext, renderSignatoryBlock, type TemplateRenderer } from './shared';
+import {
+  escapeHtml,
+  getVerifyPlacementStyle,
+  prepareCertificateRenderContext,
+  renderSignatoryBlock,
+  renderVerifyBlock,
+  type TemplateRenderer
+} from './shared';
 
 const FONTS = {
   display: CERTIFICATE_FONTS.archivoBlack,
@@ -21,6 +28,7 @@ const certIdPaddingVertical = 6;
 const recipientPaddingLeft = 16;
 const numMaxWidth = CERTIFICATE_WIDTH - certPaddingX;
 const footerColumnWidth = CERTIFICATE_WIDTH / 2 - certPaddingX;
+const verifyQrSize = 60;
 
 const metaRowItemData = {
   maxHeight: 73 - metaRowCellPaddingY,
@@ -108,21 +116,37 @@ const FIELDS = {
     letterSpacingEm: 0.22,
     allowWrap: true,
     textTransform: 'uppercase' as const
+  },
+  verifyCode: {
+    maxWidth: 90,
+    maxHeight: 14,
+    fontFamily: FONTS.mono,
+    basePx: 9,
+    allowWrap: false,
+    letterSpacingEm: 0.08,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
 export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
   const { accent, subtitle, description, signatoryOne, signatoryTwo, idDigits, fontSizes, roleMinHeight } =
-    prepareCertificateRenderContext(design, data, FIELDS);
+    prepareCertificateRenderContext(design, data, FIELDS, {
+      verifyCode: data.verifyCode ?? ''
+    });
 
   const metaRowFontSize = Math.min(fontSizes.date, fontSizes.course, fontSizes.subtitle);
+
+  const placement = design.verifyPlacements?.brutalist ?? { anchor: 'top-right' as const };
+  const verifyPlacementStyle = getVerifyPlacementStyle(placement.anchor, TEMPLATE_VERIFY_OFFSETS.brutalist);
+  const verifyBlock = renderVerifyBlock(data.verifyCode, data.verifyUrl, { qrSizePx: verifyQrSize });
 
   const body = `
     <div class="cert t-brutalist">
       <div class="grid-bg"></div>
+      ${verifyBlock ? `<div style="position:absolute; ${verifyPlacementStyle}; z-index:3;">${verifyBlock}</div>` : ''}
       <div class="header">
         <div class="org-name" style="font-size: ${fontSizes.org}px;">${escapeHtml(data.orgName)}</div>
-        <div class="blk" style="font-size: ${fontSizes.certId}px;">${escapeHtml(data.certificateId)}</div>
+        <div class="blk" style="font-size: ${fontSizes.certId}px;" data-edit="idFormat" title="Edit certificate ID format">${escapeHtml(data.certificateId)}</div>
       </div>
       <div class="title-block">
         <div class="num">&#8470;<span>${escapeHtml(idDigits)}</span></div>
@@ -138,18 +162,18 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
         </div>
         <div>
           <div class="k">Class</div>
-          <div class="v">${escapeHtml(subtitle)}</div>
+          <div class="v" data-edit="subtitle" title="Edit subtitle">${escapeHtml(subtitle)}</div>
         </div>
       </div>
       <div class="recipient-block">
         <div class="lbl">Awarded To</div>
         <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
-        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;" data-edit="description" title="Edit description">${escapeHtml(description)}</div>` : ''}
       </div>
       <div class="stamp">Verified</div>
       <div class="footer">
-        ${renderSignatoryBlock(signatoryOne, { nameClass: 'name', roleClass: 'lbl', roleFirst: true })}
-        ${renderSignatoryBlock(signatoryTwo, { nameClass: 'name', roleClass: 'lbl', roleFirst: true })}
+        ${renderSignatoryBlock(signatoryOne, { nameClass: 'name', roleClass: 'lbl', roleFirst: true, dataEdit: 'sig:0' })}
+        ${renderSignatoryBlock(signatoryTwo, { nameClass: 'name', roleClass: 'lbl', roleFirst: true, dataEdit: 'sig:1' })}
       </div>
     </div>
   `;

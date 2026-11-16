@@ -45,7 +45,8 @@
         const errors = {};
 
         if (!emailOk(email)) errors.email = T('validations.auth.email.invalid_email');
-        if (authMode === 'signup' && fields.password.length < 8) errors.password = T('validations.auth.password.min_char');
+        if (authMode === 'signup' && fields.password.length < 8)
+          errors.password = T('validations.auth.password.min_char');
         if (authMode === 'login' && !fields.password) errors.password = T('validations.auth.password.min_char');
 
         if (Object.keys(errors).length) {
@@ -58,9 +59,14 @@
           const learner = S.learnerAccount;
 
           if (email.toLowerCase() === owner) return finishAuth({ kind: 'owner' });
-          if (learner && learner.email.toLowerCase() === email.toLowerCase()) return finishAuth({ kind: 'learner', ...learner });
+          if (learner && learner.email.toLowerCase() === email.toLowerCase())
+            return finishAuth({ kind: 'learner', ...learner });
 
-          handle.update({ errors: {}, submitError: 'Invalid email or password (simulated: only the academy owner and learners who signed up here can log in)' });
+          handle.update({
+            errors: {},
+            submitError:
+              'Invalid email or password (simulated: only the academy owner and learners who signed up here can log in)'
+          });
           return;
         }
 
@@ -90,7 +96,11 @@
     ? T('course.navItem.landing_page.pricing_section.not_accepting')
     : '';
   const canJoin = !paid && !blockedMessage;
-  const verified = user ? user.kind === 'owner' || Boolean(S.learnerAccount?.verified) || Boolean(S.verified || S.completedAt) && user.kind === 'owner' : false;
+  const verified = user
+    ? user.kind === 'owner' ||
+      Boolean(S.learnerAccount?.verified) ||
+      (Boolean(S.verified || S.completedAt) && user.kind === 'owner')
+    : false;
   const learnPath = () => A.learnHref(S, course);
   const handle = window.CioAcademy.mount('authCard', root, {
     ...base,

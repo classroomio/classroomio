@@ -1316,7 +1316,9 @@
   border-radius: var(--radius-lg);
   background: var(--foreground);
   color: var(--background);
-  box-shadow: 0 10px 15px -3px rgba(23, 20, 15, 0.2), 0 4px 6px -4px rgba(23, 20, 15, 0.2);
+  box-shadow:
+    0 10px 15px -3px rgba(23, 20, 15, 0.2),
+    0 4px 6px -4px rgba(23, 20, 15, 0.2);
   pointer-events: auto;
   animation: cst-fly 0.2s ease;
 }
