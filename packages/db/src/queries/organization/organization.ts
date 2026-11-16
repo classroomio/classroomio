@@ -58,6 +58,27 @@ export async function getVerifiedCustomDomainHostnames(): Promise<string[]> {
   }
 }
 
+export async function isVerifiedCustomDomainHostname(hostname: string): Promise<boolean> {
+  try {
+    const normalizedHostname = hostname.trim().toLowerCase();
+    const rows = await db
+      .select({ id: schema.organization.id })
+      .from(schema.organization)
+      .where(
+        and(
+          eq(schema.organization.isCustomDomainVerified, true),
+          sql`lower(${schema.organization.customDomain}) = ${normalizedHostname}`
+        )
+      )
+      .limit(1);
+
+    return rows.length > 0;
+  } catch (error) {
+    console.error('isVerifiedCustomDomainHostname error:', error);
+    throw new Error(`Failed to check custom domain: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export const getOrganizationByProfileId = async (
   profileId: string,
   dbClient: DbOrTxClient = db
