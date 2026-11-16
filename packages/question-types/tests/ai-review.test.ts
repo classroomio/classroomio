@@ -29,6 +29,12 @@ describe('marking rubric', () => {
     expect(getRubricMaxPoints(rubric)).toBe(2.5);
   });
 
+  it('keeps a step whose text is still empty when the editor asks for it', () => {
+    const rubric = readMarkingRubric(settings, { keepBlankSteps: true });
+
+    expect(rubric.steps.map((step) => step.id)).toEqual(['s1', 's2', 'bad']);
+  });
+
   it('is off unless enabled and has steps', () => {
     expect(isAiGradingEnabled(settings)).toBe(true);
     expect(isAiGradingEnabled({ ...settings, aiGrading: false })).toBe(false);
@@ -93,7 +99,9 @@ describe('isBulkAcceptable', () => {
   it('accepts only confident, undecided suggestions', () => {
     expect(isBulkAcceptable(make(0.9))).toBe(true);
     expect(isBulkAcceptable(make(0.6))).toBe(false);
-    expect(isBulkAcceptable({ ...make(0.95), decision: { status: 'rejected', decidedAt: 'x', decidedBy: 'y' } })).toBe(false);
+    expect(isBulkAcceptable({ ...make(0.95), decision: { status: 'rejected', decidedAt: 'x', decidedBy: 'y' } })).toBe(
+      false
+    );
     expect(isBulkAcceptable(undefined)).toBe(false);
   });
 });

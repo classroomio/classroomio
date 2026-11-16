@@ -18,8 +18,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
-/** Reads `settings.rubric`; steps without text or with negative points are dropped. */
-export function readMarkingRubric(settings: Record<string, unknown> | null | undefined): MarkingRubric {
+/**
+ * Reads `settings.rubric`; steps without text or with negative points are dropped.
+ * The editor passes `keepBlankSteps` so a step stays in the list while its text is still being typed.
+ */
+export function readMarkingRubric(
+  settings: Record<string, unknown> | null | undefined,
+  options: { keepBlankSteps?: boolean } = {}
+): MarkingRubric {
   const raw = settings?.rubric;
   const rawSteps = isRecord(raw) && Array.isArray(raw.steps) ? raw.steps : [];
   const steps = rawSteps.flatMap((entry, index): RubricStep[] => {
@@ -27,7 +33,7 @@ export function readMarkingRubric(settings: Record<string, unknown> | null | und
 
     const description = String(entry.description ?? '').trim();
     const points = Number(entry.points);
-    if (!description || !Number.isFinite(points) || points < 0) return [];
+    if ((!description && !options.keepBlankSteps) || !Number.isFinite(points) || points < 0) return [];
 
     return [{ id: String(entry.id ?? 'step-' + (index + 1)), description, points: roundPoints(points) }];
   });

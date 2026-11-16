@@ -30,7 +30,7 @@
 
   const label = (key: MathQuestionLabelKey) => getMathQuestionLabel(labels, key);
 
-  const rubric = $derived(readMarkingRubric(settings));
+  const rubric = $derived(readMarkingRubric(settings, { keepBlankSteps: true }));
   const total = $derived(getRubricMaxPoints(rubric));
   const isAiEnabled = $derived(settings?.aiGrading === true);
   const hasMismatch = $derived(rubric.steps.length > 0 && total !== roundPoints(workingPoints));
