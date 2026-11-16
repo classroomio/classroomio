@@ -137,7 +137,7 @@
   </div>
 
   {#if !parameters && $mathPlanGate.locked}
-    <Button type="button" variant="outline" size="sm" onclick={$mathPlanGate.onUpgrade} data-testid="variables-upgrade">
+    <Button type="button" variant="outline" size="sm" onclick={$mathPlanGate.onUpgrade} testId="variables-upgrade">
       {label('math.upgrade.required')}
     </Button>
   {:else if !parameters}

@@ -23,7 +23,10 @@
   const isCourse = $derived(Boolean(courseId));
 
   $effect(() => {
-    const key = courseId ?? 'org';
+    const organizationId = $currentOrg.id;
+    if (!organizationId) return;
+
+    const key = `${organizationId}:${courseId ?? 'org'}`;
     if (key === loadedKey) return;
 
     loadedKey = key;
@@ -82,7 +85,7 @@
         size="sm"
         onclick={save}
         disabled={mathNotationApi.saving || mathNotationApi.loading}
-        data-testid="math-notation-save"
+        testId="math-notation-save"
       >
         {$t('common.save_changes')}
       </Button>

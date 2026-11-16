@@ -108,13 +108,7 @@
       <Label>{label('math.rubric.ai_label')}</Label>
       <p class="ui:text-muted-foreground ui:text-xs">{label('math.rubric.ai_helper')}</p>
       {#if isAiLocked}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onclick={$mathPlanGate.onUpgrade}
-          data-testid="ai-grading-upgrade"
-        >
+        <Button type="button" variant="outline" size="sm" onclick={$mathPlanGate.onUpgrade} testId="ai-grading-upgrade">
           {label('math.upgrade.required')}
         </Button>
       {/if}
