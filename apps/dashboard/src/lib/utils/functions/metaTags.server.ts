@@ -139,10 +139,8 @@ export async function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): Promi
   return Object.freeze({
     title,
     description,
-    canonical: new URL(url.pathname, url.origin).href,
     openGraph: {
       type: 'website',
-      url: new URL(url.pathname, url.origin).href,
       locale: 'en_US',
       title,
       description,
