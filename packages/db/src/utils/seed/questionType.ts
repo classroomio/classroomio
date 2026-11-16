@@ -124,6 +124,20 @@ export async function seedQuestionTypes() {
       typename: 'WORKED_SOLUTION',
       createdAt: '2026-11-15 00:00:00+00',
       updatedAt: '2026-11-15 00:00:00+00'
+    },
+    {
+      label: 'Graph plot',
+      id: 19,
+      typename: 'GRAPH_PLOT',
+      createdAt: '2026-11-16 00:00:00+00',
+      updatedAt: '2026-11-16 00:00:00+00'
+    },
+    {
+      label: 'Graph reading',
+      id: 20,
+      typename: 'GRAPH_READ',
+      createdAt: '2026-11-16 00:00:00+00',
+      updatedAt: '2026-11-16 00:00:00+00'
     }
   ].filter((q) => !questionTypeNames.includes(q.typename));
 

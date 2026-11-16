@@ -10,6 +10,7 @@ import {
 import { QUESTION_TYPE } from '../constants';
 import { ZSlug } from '../shared/slug';
 import { ZExerciseSection } from './exercise-section';
+import { ZGraphPlotSettings, ZGraphReadSettings } from './graph-question';
 import { ZMathExpressionSettings, ZWorkedSolutionSettings } from './math-question';
 
 const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
@@ -30,7 +31,9 @@ const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
   z.literal(QUESTION_TYPE.VIDEO_RECORDING),
   z.literal(QUESTION_TYPE.THUMBS),
   z.literal(QUESTION_TYPE.MATH_EXPRESSION),
-  z.literal(QUESTION_TYPE.WORKED_SOLUTION)
+  z.literal(QUESTION_TYPE.WORKED_SOLUTION),
+  z.literal(QUESTION_TYPE.GRAPH_PLOT),
+  z.literal(QUESTION_TYPE.GRAPH_READ)
 ] as const;
 
 export const ZExerciseQuestionTypeId = z.union(EXERCISE_QUESTION_TYPE_ID_LITERALS);
@@ -145,6 +148,8 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
   ],
   [QUESTION_TYPE.MATH_EXPRESSION]: [requireValidSettings(ZMathExpressionSettings)],
   [QUESTION_TYPE.WORKED_SOLUTION]: [requireValidSettings(ZWorkedSolutionSettings)],
+  [QUESTION_TYPE.GRAPH_PLOT]: [requireValidSettings(ZGraphPlotSettings)],
+  [QUESTION_TYPE.GRAPH_READ]: [requireValidSettings(ZGraphReadSettings)],
   [QUESTION_TYPE.VIDEO_RECORDING]: [
     (question) => {
       const settings = question.settings ?? {};

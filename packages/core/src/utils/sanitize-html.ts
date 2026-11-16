@@ -4,7 +4,7 @@ import DOMPurify from 'isomorphic-dompurify';
 
 const PLAIN_TEXT_CONFIG = { ALLOWED_TAGS: [], ALLOWED_ATTR: [] };
 const HTML_SETTING_KEYS = new Set(['description']);
-const LATEX_SETTING_KEYS = new Set(['acceptedAnswers', 'answer', 'correctValue', 'unit', 'variables']);
+const LATEX_SETTING_KEYS = new Set(['acceptedAnswers', 'answer', 'correctValue', 'expression', 'unit', 'variables']);
 const ESCAPED_TAG_START = /&lt;(?=[a-zA-Z/!?])/g;
 
 function stripMarkup(text: string): string {

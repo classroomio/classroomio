@@ -97,7 +97,7 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
           },
           "questionTypeId": {
             "default": 1,
-            "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type.",
+            "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.",
             "enum": [
               1,
               2,
@@ -116,6 +116,8 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
               14,
               17,
               18,
+              19,
+              20,
             ],
             "type": "number",
           },
@@ -149,7 +151,7 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
     },
     "questionTypeId": {
       "default": 1,
-      "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type.",
+      "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.",
       "enum": [
         1,
         2,
@@ -168,6 +170,8 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
         14,
         17,
         18,
+        19,
+        20,
       ],
       "type": "number",
     },
@@ -523,7 +527,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
                 },
                 "questionTypeId": {
                   "default": 1,
-                  "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type.",
+                  "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.",
                   "enum": [
                     1,
                     2,
@@ -542,6 +546,8 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
                     14,
                     17,
                     18,
+                    19,
+                    20,
                   ],
                   "type": "number",
                 },
@@ -575,7 +581,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
           },
           "questionTypeId": {
             "default": 1,
-            "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type.",
+            "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.",
             "enum": [
               1,
               2,
@@ -594,6 +600,8 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
               14,
               17,
               18,
+              19,
+              20,
             ],
             "type": "number",
           },
@@ -972,7 +980,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                 },
                 "questionTypeId": {
                   "default": 1,
-                  "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type.",
+                  "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.",
                   "enum": [
                     1,
                     2,
@@ -991,6 +999,8 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                     14,
                     17,
                     18,
+                    19,
+                    20,
                   ],
                   "type": "number",
                 },
@@ -1024,7 +1034,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
             "type": "string",
           },
           "questionTypeId": {
-            "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type. Defaults to 1 for a new question.",
+            "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type. Defaults to 1 for a new question.",
             "enum": [
               1,
               2,
@@ -1043,6 +1053,8 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
               14,
               17,
               18,
+              19,
+              20,
             ],
             "type": "number",
           },
@@ -1278,7 +1290,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
       "type": "string",
     },
     "questionTypeId": {
-      "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type.",
+      "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.",
       "enum": [
         1,
         2,
@@ -1297,6 +1309,8 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
         14,
         17,
         18,
+        19,
+        20,
       ],
       "type": "number",
     },
@@ -1631,7 +1645,7 @@ exports[`public API exercise question and section contract > ZPublicApiCourseExe
             "type": "string",
           },
           "questionTypeId": {
-            "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type.",
+            "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.",
             "enum": [
               1,
               2,
@@ -1650,6 +1664,8 @@ exports[`public API exercise question and section contract > ZPublicApiCourseExe
               14,
               17,
               18,
+              19,
+              20,
             ],
             "type": "number",
           },
@@ -1940,7 +1956,7 @@ exports[`public API exercise question and section contract > ZPublicApiExerciseQ
       "type": "string",
     },
     "questionTypeId": {
-      "description": "Question type id: 1 to 15, 17 or 18; the Question types guide lists each type.",
+      "description": "Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.",
       "enum": [
         1,
         2,
@@ -1959,6 +1975,8 @@ exports[`public API exercise question and section contract > ZPublicApiExerciseQ
         14,
         17,
         18,
+        19,
+        20,
       ],
       "type": "number",
     },

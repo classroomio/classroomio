@@ -709,6 +709,8 @@ Supported `questionTypeId` values for exercise payloads:
 - `15` `MATCHING` - Matching
 - `17` `MATH_EXPRESSION` - Math expression
 - `18` `WORKED_SOLUTION` - Worked solution
+- `19` `GRAPH_PLOT` - Graph plot (the student plots points, lines, segments or parabolas; graded geometrically against `settings.expected`)
+- `20` `GRAPH_READ` - Graph reading (the student reads a value or point off the graph in `settings.curves` and `settings.points`)
 
 `TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `HOTSPOT` is disabled and must not be used.
 

@@ -1,5 +1,6 @@
 import type { AnswerData, DbQuestionForScoring, ExerciseQuestionModel } from '@cio/question-types';
 import {
+  annotateGraphAnswer,
   dbQuestionToExerciseQuestionModel,
   getMultiPartStemIds,
   readClusterOverrides,
@@ -154,7 +155,7 @@ export function getAnswerableQuestions<Question extends { id?: number | null; pa
   return questions.filter((question) => question.id == null || !stemIds.has(question.id));
 }
 
-/** Attaches the canonical MathJSON and the grading reason to every math answer, leaving other answers as they are. */
+/** Attaches the canonical MathJSON and the grading reason to every math and graph answer, leaving other answers as they are. */
 export function annotateMathAnswers(
   questions: DbQuestionForScoring[],
   answerByQuestionId: ReadonlyMap<number, AnswerData>
@@ -166,7 +167,7 @@ export function annotateMathAnswers(
 
   for (const [questionId, answer] of answerByQuestionId) {
     const model = modelById.get(questionId);
-    annotated.set(questionId, model ? annotateMathAnswer(model, answer) : answer);
+    annotated.set(questionId, model ? annotateGraphAnswer(model, annotateMathAnswer(model, answer)) : answer);
   }
 
   return annotated;

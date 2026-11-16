@@ -74,6 +74,8 @@ Every question passed to \`create_exercise\` or \`add_questions\` MUST include a
 - **THUMBS** — open-ended sentiment/poll (thumbs icons, customizable labels, defaults Yes/No). **No correct answer, not auto-graded.** For polls/recommendations/agreement — NOT for factual true/false.
 - **MATH_EXPRESSION** — an answer that is a formula or expression (\`id 17\`). Auto-graded by algebraic equivalence, so \`2(x+1)\` matches \`2x+2\`. Write math in titles and options between \`$…$\`.
 - **WORKED_SOLUTION** — a math answer plus shown working (\`id 18\`); the final answer is auto-graded and the working points are graded by hand.
+- **GRAPH_PLOT** — the student plots points, lines, segments or parabolas on a coordinate plane (\`id 19\`); graded geometrically against \`settings.expected\`.
+- **GRAPH_READ** — the student reads a value or a point off a graph you define (\`id 20\`); auto-graded against \`settings.answer\`.
 - **MATCHING** — pairing items such as an equation with its graph description or value (\`id 15\`).
 - **SHORT_ANSWER** — recalling a specific term/command/value/phrase with a small set of right answers.
 - **NUMERIC** — anything quantitative ("how many / what value / calculate X").
@@ -235,6 +237,8 @@ Use update_questions to change a question (text, points, order, in-exercise sect
 - STAR: on \`settings.correctValue\` (1..max stars).
 - MATH_EXPRESSION / WORKED_SOLUTION: \`settings.acceptedAnswers\` (LaTeX strings, at least one) with optional \`compare\`, \`units\`, \`variables\` and \`wrongAnswerFeedback\`; \`options\` MUST be empty. Compute every accepted answer carefully; a wrong key marks correct answers wrong. To give each student different numbers, add \`settings.parameters\` (variables with ranges, constraints, answerFormula) and use {{a}} or {{answer}} placeholders in the title, options, acceptedAnswers and correctValue; to turn one question into many fixed ones, call \`make_question_variants\`.
 - MATCHING: \`settings.pairs\` as an array of { left, right }.
+- GRAPH_PLOT: \`settings.expected\`, an array of { kind: 'point', x, y }, { kind: 'line' | 'segment', from: { x, y }, to: { x, y } } or { kind: 'parabola', vertex: { x, y }, through: { x, y } }, plus optional \`board\` ({ xMin, xMax, yMin, yMax, grid, snap }), \`tools\` and \`tolerance\`; \`options\` MUST be empty.
+- GRAPH_READ: \`settings.curves\` ({ expression: LaTeX function of x, label? }[]) and/or \`settings.points\` ({ x, y, label? }[]), \`board\`, and \`settings.answer\` ({ kind: 'value', value, tolerance? } or { kind: 'point', x, y, tolerance? }); \`options\` MUST be empty.
 - WORD_BANK: on \`settings.correctAnswers\` (array, one per \`___\` blank) and \`settings.template\`.
 
 ### NUMERIC questions — required shape (create AND update)
