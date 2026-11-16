@@ -176,6 +176,10 @@
         return answer.type === 'MATCHING' && answer.pairs.length > 0;
       case QUESTION_TYPE_KEY.HOTSPOT:
         return answer.type === 'HOTSPOT' && answer.coordinates.length > 0;
+      case QUESTION_TYPE_KEY.GRAPH_PLOT:
+        return answer.type === 'GRAPH_PLOT' && answer.elements.length > 0;
+      case QUESTION_TYPE_KEY.GRAPH_READ:
+        return answer.type === 'GRAPH_READ' && (answer.value !== undefined || answer.point !== undefined);
       default:
         return false;
     }
@@ -266,6 +270,8 @@
       case QUESTION_TYPE_KEY.WORD_BANK:
       case QUESTION_TYPE_KEY.MATCHING:
       case QUESTION_TYPE_KEY.HOTSPOT:
+      case QUESTION_TYPE_KEY.GRAPH_PLOT:
+      case QUESTION_TYPE_KEY.GRAPH_READ:
         return scoreAnswerForQuestion({ ...question, points: 1 }, answer) === 1;
       default:
         return null;

@@ -76,6 +76,7 @@
     "d3-scale": "^4.0.2",
     "dompurify": "^3.3.0",
     "hls.js": "^1.6.16",
+    "jsxgraph": "1.14.3",
     "katex": "^0.16.25",
     "lowlight": "^3.3.0",
     "mathlive": "^0.111.4",

@@ -424,6 +424,57 @@ export const HOTSPOT_FIXTURE: QuestionStoryFixture = {
   answer: { points: [{ x: 46, y: 68 }] }
 };
 
+export const GRAPH_PLOT_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-graph-plot',
+    key: 'q-graph-plot',
+    title: 'Plot the point $(3, 1)$ and draw the line through $(-2, -4)$ and $(2, 4)$.',
+    questionType: 'GRAPH_PLOT',
+    points: 4,
+    settings: {
+      board: { xMin: -6, xMax: 6, yMin: -6, yMax: 6, grid: true, snap: 1, xLabel: 'x', yLabel: 'y' },
+      tools: ['point', 'line'],
+      tolerance: 0.25,
+      expected: [
+        { kind: 'point', x: 3, y: 1 },
+        { kind: 'line', from: { x: -2, y: -4 }, to: { x: 2, y: 4 } }
+      ]
+    }
+  },
+  answer: {
+    type: 'GRAPH_PLOT',
+    elements: [
+      { kind: 'point', x: 3, y: 1 },
+      { kind: 'line', from: { x: -1, y: -2 }, to: { x: 1, y: 2 } }
+    ]
+  },
+  wrongAnswer: {
+    type: 'GRAPH_PLOT',
+    elements: [
+      { kind: 'point', x: 3, y: 2 },
+      { kind: 'line', from: { x: -2, y: -4 }, to: { x: 2, y: 4 } }
+    ]
+  }
+};
+
+export const GRAPH_READ_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-graph-read',
+    key: 'q-graph-read',
+    title: 'Read the positive $x$-intercept of $f(x)=x^2-4$.',
+    questionType: 'GRAPH_READ',
+    points: 2,
+    settings: {
+      board: { xMin: -6, xMax: 6, yMin: -6, yMax: 6, grid: true, snap: 1, xLabel: 'x', yLabel: 'y' },
+      curves: [{ expression: 'x^2-4', label: 'f' }],
+      points: [{ x: 2, y: 0, label: 'A' }],
+      answer: { kind: 'point', x: 2, y: 0, tolerance: 0.2 }
+    }
+  },
+  answer: { type: 'GRAPH_READ', point: { x: 2, y: 0 } },
+  wrongAnswer: { type: 'GRAPH_READ', point: { x: -2, y: 0 } }
+};
+
 export const LINK_FIXTURE: QuestionStoryFixture = {
   question: {
     id: 'q-link',

@@ -99,6 +99,16 @@ import { default as WorkedSolutionPreview } from './renderers/worked-solution/pr
 import { default as WorkedSolutionSubmission } from './renderers/worked-solution/submission.svelte';
 import { default as WorkedSolutionReview } from './renderers/worked-solution/review.svelte';
 import { default as MatchingReview } from './renderers/matching/review.svelte';
+import { default as GraphPlotEdit } from './renderers/graph-plot/edit.svelte';
+import { default as GraphPlotTake } from './renderers/graph-plot/take.svelte';
+import { default as GraphPlotPreview } from './renderers/graph-plot/preview.svelte';
+import { default as GraphPlotSubmission } from './renderers/graph-plot/submission.svelte';
+import { default as GraphPlotReview } from './renderers/graph-plot/review.svelte';
+import { default as GraphReadEdit } from './renderers/graph-read/edit.svelte';
+import { default as GraphReadTake } from './renderers/graph-read/take.svelte';
+import { default as GraphReadPreview } from './renderers/graph-read/preview.svelte';
+import { default as GraphReadSubmission } from './renderers/graph-read/submission.svelte';
+import { default as GraphReadReview } from './renderers/graph-read/review.svelte';
 
 type SharedRendererComponent = Component<ExerciseQuestionRendererProps>;
 
@@ -225,6 +235,20 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     preview: WorkedSolutionPreview,
     submission: WorkedSolutionSubmission,
     review: WorkedSolutionReview
+  },
+  [QUESTION_TYPE_KEY.GRAPH_PLOT]: {
+    edit: GraphPlotEdit,
+    take: GraphPlotTake,
+    preview: GraphPlotPreview,
+    submission: GraphPlotSubmission,
+    review: GraphPlotReview
+  },
+  [QUESTION_TYPE_KEY.GRAPH_READ]: {
+    edit: GraphReadEdit,
+    take: GraphReadTake,
+    preview: GraphReadPreview,
+    submission: GraphReadSubmission,
+    review: GraphReadReview
   }
 };
 

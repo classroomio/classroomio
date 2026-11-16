@@ -76,9 +76,6 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/certificates':
         specifier: workspace:*
         version: link:../../packages/certificates
@@ -97,6 +94,9 @@ importers:
       '@cio/question-types':
         specifier: workspace:*
         version: link:../../packages/question-types
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -318,9 +318,6 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/api':
         specifier: workspace:*
         version: link:../api
@@ -333,6 +330,9 @@ importers:
       '@cio/question-types':
         specifier: workspace:*
         version: link:../../packages/question-types
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -799,9 +799,6 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.675.0
         version: 3.958.0
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -814,6 +811,9 @@ importers:
       '@cio/jobs':
         specifier: workspace:*
         version: link:../../packages/jobs
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -991,31 +991,6 @@ importers:
       prettier:
         specifier: ^3.2.5
         version: 3.7.4
-      tsc-alias:
-        specifier: ^1.8.16
-        version: 1.8.16
-      typescript:
-        specifier: ^5.5.2
-        version: 5.9.3
-
-  packages/tracking:
-    dependencies:
-      '@cio/db':
-        specifier: workspace:*
-        version: link:../db
-      '@cio/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-      '@cio/utils':
-        specifier: workspace:*
-        version: link:../utils
-    devDependencies:
-      '@types/node':
-        specifier: ^24.10.1
-        version: 24.10.4
-      prettier:
-        specifier: ^3.2.5
-        version: 3.8.2
       tsc-alias:
         specifier: ^1.8.16
         version: 1.8.16
@@ -1546,6 +1521,31 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(vite@7.3.0(@types/node@24.10.4)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
 
+  packages/tracking:
+    dependencies:
+      '@cio/db':
+        specifier: workspace:*
+        version: link:../db
+      '@cio/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      '@types/node':
+        specifier: ^24.10.1
+        version: 24.10.4
+      prettier:
+        specifier: ^3.2.5
+        version: 3.8.2
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
+      typescript:
+        specifier: ^5.5.2
+        version: 5.9.3
+
   packages/tsconfig: {}
 
   packages/ui:
@@ -1634,6 +1634,9 @@ importers:
       hls.js:
         specifier: ^1.6.16
         version: 1.6.16
+      jsxgraph:
+        specifier: 1.14.3
+        version: 1.14.3
       katex:
         specifier: ^0.16.25
         version: 0.16.27
@@ -12272,6 +12275,10 @@ packages:
         optional: true
       vue:
         optional: true
+
+  jsxgraph@1.14.3:
+    resolution: {integrity: sha512-0JMGdESQnIrOZ6rN+N2qzcjM/8DQdxVNXsvTLcMhG4GvqnM0PZTU6mrrA1TsdyAgRQXiIyrowQp/PIwB41Vkig==}
+    engines: {node: '>=20.19.0'}
 
   jszip@3.10.1:
     resolution: {integrity: sha512-xXDvecyTpGLrqFrvkrUSoxxfJI5AH7U8zxxtVclpsUtMCq4JQ290LY8AW5c7Ggnr/Y/oK+bQMbqK2qmtk3pN4g==}
@@ -28795,6 +28802,8 @@ snapshots:
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
+
+  jsxgraph@1.14.3: {}
 
   jszip@3.10.1:
     dependencies:

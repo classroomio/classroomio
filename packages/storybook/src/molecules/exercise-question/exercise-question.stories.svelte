@@ -6,6 +6,8 @@
     CHECKBOX_FIXTURE,
     FILE_UPLOAD_FIXTURE,
     FILL_BLANK_FIXTURE,
+    GRAPH_PLOT_FIXTURE,
+    GRAPH_READ_FIXTURE,
     HOTSPOT_FIXTURE,
     LINK_FIXTURE,
     MATCHING_FIXTURE,
@@ -56,6 +58,26 @@
       question={MATH_EXPRESSION_FIXTURE.question}
       answer={MATH_EXPRESSION_FIXTURE.answer}
       wrongAnswer={MATH_EXPRESSION_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Graph plot">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={GRAPH_PLOT_FIXTURE.question}
+      answer={GRAPH_PLOT_FIXTURE.answer}
+      wrongAnswer={GRAPH_PLOT_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Graph reading">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={GRAPH_READ_FIXTURE.question}
+      answer={GRAPH_READ_FIXTURE.answer}
+      wrongAnswer={GRAPH_READ_FIXTURE.wrongAnswer}
     />
   {/snippet}
 </Story>

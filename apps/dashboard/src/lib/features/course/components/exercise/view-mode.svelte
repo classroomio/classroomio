@@ -481,6 +481,10 @@
           return answerValue.urls.length > 0;
         case 'HOTSPOT':
           return answerValue.coordinates.length > 0;
+        case 'GRAPH_PLOT':
+          return answerValue.elements.length > 0;
+        case 'GRAPH_READ':
+          return answerValue.value !== undefined || answerValue.point !== undefined;
         case 'MATH_EXPRESSION':
           return answerValue.latex.trim().length > 0;
         case 'WORKED_SOLUTION':

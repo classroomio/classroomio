@@ -141,6 +141,13 @@
           working: { lines: ['Rearrange', 'Divide both sides'], files: [] }
         };
       }
+      case 'GRAPH_PLOT':
+        return {
+          type: 'GRAPH_PLOT',
+          elements: [{ kind: 'point', x: index % 5, y: (index % 3) + 1 }]
+        };
+      case 'GRAPH_READ':
+        return { type: 'GRAPH_READ', value: index % 4 };
       case 'MATCHING': {
         const pairs = Array.isArray(storyQuestion.settings?.pairs)
           ? (storyQuestion.settings?.pairs as Array<{ left: string; right: string }>)

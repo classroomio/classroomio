@@ -30,6 +30,8 @@
         return [answer.orderedValues.join(' -> ')];
       case 'HOTSPOT':
         return [`${answer.coordinates.length} point(s)`];
+      case 'GRAPH_PLOT':
+        return [`${answer.elements.length} element(s)`];
       default: {
         const display = extractAnswerDisplayValues(answer);
         if (typeof display.text === 'string' && display.text.trim().length > 0) {
