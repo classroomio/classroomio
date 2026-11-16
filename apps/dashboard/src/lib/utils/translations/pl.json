@@ -6435,8 +6435,8 @@
     },
     "empty": {
       "title": "Nie ma jeszcze żadnych kursów",
-      "description": "Wybierz szablon, aby zobaczyć, jak wygląda świetny kurs ClassroomIO, lub zacznij od pustego kursu.",
-      "browse": "Przeglądaj szablony"
+      "description": "Stwórz kurs raz, a potem zapisz do niego swoich klientów. Utwórz go samodzielnie lub poproś agenta o przygotowanie szkicu.",
+      "enrolled": "Zapisano"
     },
     "editor": {
       "badge": "Szablon"

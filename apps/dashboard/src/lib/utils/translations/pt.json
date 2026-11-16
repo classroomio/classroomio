@@ -6435,8 +6435,8 @@
     },
     "empty": {
       "title": "Ainda não há cursos",
-      "description": "Escolha um modelo para ver a aparência de um ótimo curso ClassroomIO ou comece com um curso em branco.",
-      "browse": "Procure modelos"
+      "description": "Crie um curso uma vez e depois matricule seus clientes nele. Crie você mesmo ou deixe seu agente preparar um rascunho.",
+      "enrolled": "Matriculado"
     },
     "editor": {
       "badge": "Modelo"

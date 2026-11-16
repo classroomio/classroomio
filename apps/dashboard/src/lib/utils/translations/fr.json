@@ -6435,8 +6435,8 @@
     },
     "empty": {
       "title": "Pas encore de cours",
-      "description": "Choisissez un modèle pour voir à quoi ressemble un excellent cours ClassroomIO, ou partez d'un cours vierge.",
-      "browse": "Parcourir les modèles"
+      "description": "Créez un cours une fois, puis inscrivez-y vos clients. Créez-le vous-même ou laissez votre agent en rédiger un brouillon.",
+      "enrolled": "Inscrit"
     },
     "editor": {
       "badge": "Modèle"

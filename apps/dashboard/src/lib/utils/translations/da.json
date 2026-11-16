@@ -6435,8 +6435,8 @@
     },
     "empty": {
       "title": "Ingen kurser endnu",
-      "description": "Vælg en skabelon for at se, hvordan et godt ClassroomIO-kursus ser ud, eller start fra et tomt kursus.",
-      "browse": "Gennemse skabeloner"
+      "description": "Opret et kursus én gang, og tilmeld derefter dine kunder til det. Opret det selv, eller lad din agent lave et udkast.",
+      "enrolled": "Tilmeldt"
     },
     "editor": {
       "badge": "Skabelon"

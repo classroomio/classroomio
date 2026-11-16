@@ -6435,8 +6435,8 @@
     },
     "empty": {
       "title": "Aún no hay cursos",
-      "description": "Elija una plantilla para ver cómo es un excelente curso de ClassroomIO o comience desde un curso en blanco.",
-      "browse": "Explorar plantillas"
+      "description": "Crea un curso una vez y luego inscribe a tus clientes en él. Créalo tú mismo o deja que tu agente haga un borrador.",
+      "enrolled": "Inscrito"
     },
     "editor": {
       "badge": "Plantilla"

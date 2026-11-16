@@ -14,6 +14,7 @@
     HeroVideoDialog,
     MachineBlankLesson,
     MachineCabinet,
+    MachineCourseEnroll,
     MachineBrandStand,
     MachineBrokenTrack,
     MachineCertificatePress,
@@ -369,6 +370,7 @@
   {#snippet template()}
     <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
       <MachineCabinet label="A filing cabinet whose drawers slide open one by one and are empty inside" class="h-64" />
+      <MachineCourseEnroll label="A course card fills with lessons and three learners enroll" class="h-64" />
     </div>
   {/snippet}
 </Story>
@@ -377,6 +379,25 @@
   {#snippet template()}
     <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
       <MachineCabinet lessons="LECCIONES" exercises="EJERCICIOS" certificates="CERTIFICADOS" class="h-64" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineCourseEnroll">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineCourseEnroll
+        label="A course card tilts up from the floor, fills with lessons one by one, and three learners walk up to enroll"
+        class="h-64"
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineCourseEnroll with custom label">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineCourseEnroll enrolled="INSCRITO" class="h-64" />
     </div>
   {/snippet}
 </Story>
@@ -411,6 +432,7 @@
       />
       <MachineBlankLesson label="An empty lesson page where a cursor starts writing the title" class="h-64" />
       <MachineCabinet label="A filing cabinet whose drawers slide open one by one and are empty inside" class="h-64" />
+      <MachineCourseEnroll label="A course card fills with lessons and three learners enroll" class="h-64" />
     </div>
   {/snippet}
 </Story>
