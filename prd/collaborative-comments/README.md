@@ -1,6 +1,5 @@
 # Collaborative Comments PRD
 
-**Release: v2.** This whole feature ships in v2, including live updates (section 7).
 
 ## Overview
 
