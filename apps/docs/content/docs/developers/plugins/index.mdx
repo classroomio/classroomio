@@ -40,7 +40,9 @@ manifest until they are implemented and marked active by the manifest validator.
 ## Runtime boundaries
 
 1. Plugin assets are immutable and addressed by plugin ID, version, and artifact digest.
-2. Custom UI runs in an iframe without `allow-same-origin`.
+2. Reviewed custom UI from the configured, dedicated plugin asset origin runs with
+   `allow-same-origin` so browser runtimes such as Web Workers and WebAssembly work. Inline,
+   unconfigured, and foreign frames remain opaque.
 3. The host validates bridge actions, payload sizes, installation grants, actor access, and
    resource ownership.
 4. Catalog releases come from reviewed source in `classroomio/plugins`; trusted release CI builds

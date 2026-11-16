@@ -9,6 +9,7 @@ describe('Plugin Manifest CSP Policy', () => {
     const csp = buildPluginCsp();
     expect(csp).toContain("connect-src 'none'");
     expect(csp).toContain("script-src 'self'");
+    expect(csp).toContain("worker-src 'self'");
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain(
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com"
@@ -27,6 +28,32 @@ describe('Plugin Manifest CSP Policy', () => {
 
     expect(csp).toContain("connect-src 'self' https://certificate-studio.services.classroomio.com");
     expect(csp).not.toContain('https://malicious.com');
+  });
+
+  it('allows dynamic code and declared runtime scripts when runtime.allowUnsafeEval is enabled', () => {
+    const csp = buildPluginCsp({
+      runtime: {
+        allowUnsafeEval: true
+      },
+      networkAccess: {
+        allowedDomains: ['https://cdn.jsdelivr.net']
+      }
+    });
+
+    expect(csp).toContain("script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net");
+    expect(csp).toContain("connect-src 'self' https://cdn.jsdelivr.net");
+  });
+
+  it('does not allow dynamic code for standard plugins without eval capability', () => {
+    const csp = buildPluginCsp({
+      networkAccess: {
+        allowedDomains: ['https://api.example.com']
+      }
+    });
+
+    expect(csp).toContain("script-src 'self'");
+    expect(csp).not.toContain("'unsafe-eval'");
+    expect(csp).not.toContain("script-src 'self' https://api.example.com");
   });
 
   it('rejects wildcards, insecure http, paths, and credentials', () => {
@@ -107,6 +134,43 @@ describe('Plugin Manifest CSP Policy', () => {
       expect(res.headers.get('content-security-policy')).toContain("default-src 'self'");
       const text = await res.text();
       expect(text).toContain('<!doctype html>');
+    } finally {
+      vi.unstubAllEnvs();
+      await rm(artifactRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('serves WebAssembly assets with the required MIME type', async () => {
+    const db = await import('@cio/db/queries/plugin');
+    const { pluginAssetsRouter } = await import('@api/routes/plugins/assets');
+    const digest = 'sha256-7ed8d5a209603713494675cda2665c535551cf0638337fe0e9ed4bc68b63119a';
+    const artifactRoot = await mkdtemp(path.join(tmpdir(), 'cio-plugin-assets-'));
+    const artifactDirectory = path.join(artifactRoot, 'com.classroomio.code-runner', '1.0.0', digest);
+    await mkdir(artifactDirectory, { recursive: true });
+    await writeFile(path.join(artifactDirectory, 'sql-wasm.wasm'), new Uint8Array([0, 97, 115, 109]));
+    vi.stubEnv('PLUGIN_ARTIFACTS_PATH', artifactRoot);
+
+    vi.spyOn(db, 'getPluginById').mockResolvedValue({
+      id: 'com.classroomio.code-runner',
+      status: 'approved'
+    } as any);
+
+    vi.spyOn(db, 'getPluginVersion').mockResolvedValue({
+      id: 'version-1',
+      pluginId: 'com.classroomio.code-runner',
+      version: '1.0.0',
+      manifest: { id: 'com.classroomio.code-runner' } as any,
+      artifactDigest: digest,
+      reviewStatus: 'approved',
+      publishedAt: '2026-10-10',
+      createdAt: '2026-10-10'
+    } as any);
+
+    try {
+      const response = await pluginAssetsRouter.request(`/com.classroomio.code-runner/1.0.0/${digest}/sql-wasm.wasm`);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toBe('application/wasm');
     } finally {
       vi.unstubAllEnvs();
       await rm(artifactRoot, { recursive: true, force: true });

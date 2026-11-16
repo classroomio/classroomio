@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { browser, dev } from '$app/environment';
+  import { env } from '$env/dynamic/public';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { get } from 'svelte/store';
@@ -11,6 +13,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { classroomio, getRequestBaseUrl } from '$lib/utils/services/api';
+  import { resolvePluginFrameSecurity } from '../utils/frame-security';
   import type { PluginActionEvent, PluginResourceContext, PluginStorageScope } from '../utils/types';
 
   interface Props {
@@ -48,6 +51,17 @@
   }: Props = $props();
 
   const effectiveAction = $derived(onAction ?? onaction);
+  const frameSecurity = $derived(
+    resolvePluginFrameSecurity({
+      srcUrl,
+      srcDoc,
+      configuredPluginAssetOrigin: env.PUBLIC_PLUGIN_ASSET_ORIGIN,
+      isSelfHosted: env.PUBLIC_IS_SELFHOSTED === 'true',
+      serverOrigin: env.PUBLIC_SERVER_URL,
+      isDev: dev,
+      currentOrigin: browser ? window.location.origin : undefined
+    })
+  );
 
   let iframeElement = $state<HTMLIFrameElement | null>(null);
   let bridgeHost: PluginBridgeHost | null = null;
@@ -62,6 +76,12 @@
       ? PLUGIN_SURFACE_CONTRACTS[target as keyof typeof PLUGIN_SURFACE_CONTRACTS]
       : PLUGIN_SURFACE_CONTRACTS['plugin.page']
   );
+
+  $effect(() => {
+    if (bridgeHost && frameSecurity.targetOrigin) {
+      bridgeHost.setTargetOrigin(frameSecurity.targetOrigin);
+    }
+  });
 
   function getPreferenceStorageKey(namespace: string, key: string): string {
     const profileId = get(profile)?.id ?? 'anonymous';
@@ -149,7 +169,7 @@
     window.addEventListener('beforeunload', handleBeforeUnload);
     bridgeHost = new PluginBridgeHost({
       iframe: iframeElement,
-      targetOrigin: '*',
+      targetOrigin: frameSecurity.targetOrigin,
       theme: currentTheme,
       context: {
         installationId,
@@ -460,7 +480,7 @@
       {title}
       class={className}
       style:height={frameHeight !== null && !className?.includes('h-full') ? `${frameHeight}px` : undefined}
-      sandbox="allow-scripts allow-forms"
+      sandbox={frameSecurity.sandbox}
       referrerpolicy="no-referrer"
       allow="clipboard-write 'none'; camera 'none'; microphone 'none'; geolocation 'none'"
     ></iframe>

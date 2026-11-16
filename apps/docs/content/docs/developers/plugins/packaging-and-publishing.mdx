@@ -155,7 +155,10 @@ The production key layout is immutable:
 {pluginId}/{version}/{artifactDigest}/package.tar.gz
 ```
 
-The application API never serves production artifact files directly; clients fetch assets from `PLUGIN_ASSET_ORIGIN`.
+The application API never serves production artifact files directly; clients fetch assets from
+`PLUGIN_ASSET_ORIGIN`. The dashboard must receive the same origin through
+`PUBLIC_PLUGIN_ASSET_ORIGIN`. The browser grants same-origin capabilities only when a plugin frame's
+URL exactly matches that configured origin.
 
 ## Environment variables
 
@@ -175,6 +178,12 @@ The application API never serves production artifact files directly; clients fet
 | `PLUGIN_ARTIFACTS_PATH` | local | Filesystem root for local development artifacts. |
 | `PLUGIN_ASSET_BUCKET` | production | Storage bucket containing released plugin assets. |
 | `PLUGIN_ASSET_ORIGIN` | production | CDN origin serving released plugin assets. |
+
+### Dashboard host
+
+| Variable | Environment | Meaning |
+| --- | --- | --- |
+| `PUBLIC_PLUGIN_ASSET_ORIGIN` | production | Dedicated plugin CDN origin. Must exactly match `PLUGIN_ASSET_ORIGIN` and must not be the dashboard or API origin. |
 
 ## Troubleshooting
 

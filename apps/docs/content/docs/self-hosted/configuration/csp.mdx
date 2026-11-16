@@ -45,6 +45,24 @@ the CSP. Add external hosts only: your CDN, video provider, font host, and objec
 Cloud (`PUBLIC_IS_SELFHOSTED=false`) already allows YouTube, Google Drive/Docs, and the slide-embed hosts (Canva, OneDrive/SharePoint, iCloud Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai) in `frame-src`. Self-hosted images start empty — add only the hosts you actually embed.
 :::
 
+## Plugin asset origin
+
+Browser-based plugins that use Web Workers, WebAssembly, IndexedDB, or similar origin-bound APIs
+need a dedicated plugin asset origin. It must be different from both the dashboard and API origins,
+and it must not receive application authentication cookies.
+
+Set the same origin for the API and dashboard containers:
+
+```zsh title=".env"
+PLUGIN_ASSET_ORIGIN=https://plugins.yourdomain.com
+PUBLIC_PLUGIN_ASSET_ORIGIN=https://plugins.yourdomain.com
+```
+
+`PUBLIC_PLUGIN_ASSET_ORIGIN` is added to the dashboard's `frame-src` policy automatically. The host
+grants `allow-same-origin` only when the complete frame origin exactly matches this value. Inline,
+unconfigured, and foreign plugin frames remain opaque. Recreate both services after changing these
+values so they cannot drift.
+
 ## Launch templates and theme previews
 
 Self-hosted images start with an empty allowlist. Seeded launch templates and landing-page theme

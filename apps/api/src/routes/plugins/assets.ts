@@ -17,10 +17,18 @@ const MIME_MAP: Record<string, string> = {
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
   '.woff': 'font/woff',
-  '.woff2': 'font/woff2'
+  '.woff2': 'font/woff2',
+  '.wasm': 'application/wasm'
 };
 
-export function buildPluginCsp(manifest?: { networkAccess?: { allowedDomains?: string[] } }): string {
+interface PluginCspManifest {
+  networkAccess?: { allowedDomains?: string[] };
+  runtime?: {
+    allowUnsafeEval?: boolean;
+  };
+}
+
+export function buildPluginCsp(manifest?: PluginCspManifest): string {
   const allowedConnectOrigins: string[] = [];
 
   const rawDomains = manifest?.networkAccess?.allowedDomains ?? [];
@@ -53,8 +61,12 @@ export function buildPluginCsp(manifest?: { networkAccess?: { allowedDomains?: s
 
   const isDev = process.env.NODE_ENV !== 'production';
   const imgSrc = isDev ? "'self' data: https: http: blob:" : "'self' data: https: blob:";
+  const allowsDynamicScriptExecution = manifest?.runtime?.allowUnsafeEval === true;
+  const scriptSrc = allowsDynamicScriptExecution
+    ? `'self' 'unsafe-eval' ${Array.from(new Set(allowedConnectOrigins)).join(' ')}`.trim()
+    : "'self'";
 
-  return `default-src 'self'; connect-src ${connectSrc}; img-src ${imgSrc}; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com; object-src 'none'; base-uri 'none';`;
+  return `default-src 'self'; connect-src ${connectSrc}; img-src ${imgSrc}; script-src ${scriptSrc}; worker-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com; object-src 'none'; base-uri 'none';`;
 }
 
 function resolveArtifactDirectory(pluginId: string, version: string, digest: string): string | null {
@@ -125,7 +137,7 @@ export const pluginAssetsRouter = new Hono()
       const fileBytes = await readFile(fullPath);
       const ext = path.extname(fullPath).toLowerCase();
       const contentType = MIME_MAP[ext] ?? 'application/octet-stream';
-      const csp = buildPluginCsp(versionRecord.manifest as { networkAccess?: { allowedDomains?: string[] } });
+      const csp = buildPluginCsp(versionRecord.manifest as PluginCspManifest);
 
       return new Response(fileBytes, {
         status: 200,

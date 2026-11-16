@@ -293,7 +293,8 @@ export type TPluginRuntimeUi = z.infer<typeof ZPluginRuntimeUi>;
 
 export const ZPluginRuntime = z
   .object({
-    ui: ZPluginRuntimeUi.optional()
+    ui: ZPluginRuntimeUi.optional(),
+    allowUnsafeEval: z.boolean().optional().default(false)
   })
   .strict();
 export type TPluginRuntime = z.infer<typeof ZPluginRuntime>;

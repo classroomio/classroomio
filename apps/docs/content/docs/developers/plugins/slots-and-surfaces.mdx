@@ -28,11 +28,13 @@ contribution ID.
 Every target is marked mobile-compatible by the version-1 contract. Plugin authors remain
 responsible for responsive content inside the iframe.
 
-Custom frames use `sandbox="allow-scripts allow-forms"`, a no-referrer policy, and no
-same-origin access. Camera, microphone, geolocation, and clipboard write are disabled. The frame
-has an accessible title. While it loads, the host displays a muted overlay; if the browser emits a
-frame error, the host displays the contribution title as an alert. The host does not currently
-render a retry control or detailed plugin error message.
+Custom frames use a no-referrer policy. Reviewed assets whose URL exactly matches the configured,
+dedicated plugin asset origin use `sandbox="allow-scripts allow-forms allow-same-origin"`; inline,
+unconfigured, and foreign frames use `sandbox="allow-scripts allow-forms"` and retain an opaque
+origin. Camera, microphone, geolocation, and clipboard write are disabled. The frame has an
+accessible title. While it loads, the host displays a muted overlay; if the browser emits a frame
+error, the host displays the contribution title as an alert. The host does not currently render a
+retry control or detailed plugin error message.
 
 Resize requests are clamped to the active target's range. All custom surfaces can use the generic
 theme, toast, resize, dirty-state, preference, storage, and host-relative navigation bridge methods.

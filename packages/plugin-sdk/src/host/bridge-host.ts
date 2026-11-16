@@ -79,6 +79,10 @@ export class PluginBridgeHost {
     return this.nonce;
   }
 
+  public setTargetOrigin(origin: string) {
+    this.options.targetOrigin = origin;
+  }
+
   public attachPort(port: MessagePort) {
     this.port = port;
     this.port.onmessage = this.handlePortMessage.bind(this);
