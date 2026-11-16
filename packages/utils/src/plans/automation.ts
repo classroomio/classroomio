@@ -38,7 +38,7 @@ export const MCP_TOOL_CREDIT_COST = {
   update_exercise_section: 1,
   delete_exercise_section: 1,
   create_course_practice: 1,
-  get_exercise_answer_clusters: 1,
+  get_exercise_answer_clusters: 0,
   set_answer_cluster_decision: 1,
   reset_answer_cluster_decision: 1,
   regrade_course_exercise: 1,

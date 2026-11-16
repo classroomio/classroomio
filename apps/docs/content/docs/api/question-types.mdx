@@ -107,7 +107,7 @@ Each graded graph answer stores its result in `answerData.grading`: `reason` is 
 
 ## Parameterised questions
 
-A numeric, math expression or worked solution question can draw different numbers for every attempt. Add `settings.parameters` and write `{{name}}` placeholders in the title, the options and the answer key:
+A numeric, math expression or worked solution question can draw different numbers for every attempt. Variants need a paid plan; saving `settings.parameters` on Basic returns `403` with `UPGRADE_REQUIRED`. Add `settings.parameters` and write `{{name}}` placeholders in the title, the options and the answer key:
 
 ```json
 {
@@ -141,7 +141,7 @@ Each attempt gets a seed. The dashboard stores it in `answerData.seed`, and the 
 
 ## AI-assisted grading of working
 
-A worked solution or paragraph question can ask for an AI suggestion on the student's working. Set `settings.aiGrading` to `true` and give `settings.rubric` at least one step:
+A worked solution or paragraph question can ask for an AI suggestion on the student's working. This needs a paid plan: on Basic, saving `settings.aiGrading` returns `403` with `UPGRADE_REQUIRED`. Set `settings.aiGrading` to `true` and give `settings.rubric` at least one step:
 
 ```json
 {
@@ -183,7 +183,6 @@ Add up the points of a stem's parts for a total per question; the submission tot
 An exercise has a `calculatorPolicy` of `none` (default), `four_function`, `scientific` or `graphing`. Send it when you create or update the exercise. It is stored on the exercise and returned with it; the take view uses it to decide which calculator to offer.
 
 Changing an answer key does not change past grades. `POST /courses/{courseId}/exercises/{exerciseId}/regrade`, or the `regrade_course_exercise` MCP tool, re-scores every submission against the current key. It keeps the points a teacher gave to manually graded questions and to the working of worked solutions.
-
 
 ## Practice exercises and answer groups
 

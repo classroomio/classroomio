@@ -15,6 +15,8 @@ Skills are the standards or topics that questions assess. A question can carry u
 | `PUT /courses/{courseId}/exercises/{exerciseId}/questions/{questionId}/skills` | Replace the question's skills with `skillIds` | `course:exercise:write` | a course tutor or admin, or an org admin |
 | `GET /courses/{courseId}/exercises/{exerciseId}/skill-mastery` | Each student's mastery per skill tagged on the exercise, with a count of students at each level | `course:exercise:read` | a course tutor or admin, or an org admin |
 
+Skill mastery needs a paid plan; on the Basic plan it returns `403` with `UPGRADE_REQUIRED`. Creating skills and tagging questions are free.
+
 The CSV needs the columns `code` and `name`; `parent_code`, `description` and `framework` are optional. A file holds up to 2,000 rows, a row whose code exists updates that skill, and an import with any error saves nothing. `GET /skills` is paginated; see [Pagination](/api/pagination).
 
 ## Mastery levels
@@ -30,6 +32,7 @@ The Academy query ([Analytics](/api/analytics)) reads skills and item analysis. 
 | Code | Status | Meaning |
 | --- | --- | --- |
 | `SKILL_NOT_FOUND` | 404 | The skill is not in the organization |
+| `UPGRADE_REQUIRED` | 403 | Skill mastery needs a paid plan |
 | `SKILL_ALREADY_EXISTS` | 409 | Another skill has this code |
 | `SKILL_INVALID_PARENT` | 400 | The parent would make the skill its own ancestor |
 | `SKILL_IMPORT_INVALID` | 400 | The CSV has errors; run it with `dryRun` to see them |
