@@ -137,7 +137,18 @@ export const pluginAssetsRouter = new Hono()
       const fileBytes = await readFile(fullPath);
       const ext = path.extname(fullPath).toLowerCase();
       const contentType = MIME_MAP[ext] ?? 'application/octet-stream';
-      const csp = buildPluginCsp(versionRecord.manifest as PluginCspManifest);
+      let manifest = versionRecord.manifest as PluginCspManifest;
+      if (process.env.NODE_ENV !== 'production') {
+        const diskManifestPath = path.join(normalizedPluginDir, 'plugin.json');
+        if (existsSync(diskManifestPath)) {
+          try {
+            manifest = JSON.parse(await readFile(diskManifestPath, 'utf8'));
+          } catch {
+            // Keep versionRecord.manifest on parse error
+          }
+        }
+      }
+      const csp = buildPluginCsp(manifest);
 
       return new Response(fileBytes, {
         status: 200,
