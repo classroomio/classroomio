@@ -73,6 +73,15 @@ vi.mock('@api/services/v1/tags', () => ({
   updatePublicApiTagGroupService: vi.fn()
 }));
 
+vi.mock('@api/services/v1/skills', () => ({
+  listPublicApiSkillsService: vi.fn().mockResolvedValue({ items: [], pagination: {} }),
+  createPublicApiSkillService: vi.fn().mockResolvedValue({ id: 'skill-id' }),
+  updatePublicApiSkillService: vi.fn().mockResolvedValue({ id: 'skill-id' }),
+  importPublicApiSkillsService: vi.fn().mockResolvedValue({ imported: true }),
+  setPublicApiQuestionSkillsService: vi.fn().mockResolvedValue({ questionId: 1, skillIds: [] }),
+  getPublicApiExerciseSkillMasteryService: vi.fn().mockResolvedValue({ skills: [], students: [], summary: [] })
+}));
+
 vi.mock('@api/services/v1/courses/course', () => ({
   createPublicApiCourseService: vi.fn().mockResolvedValue({ course: { isPublished: false } }),
   deletePublicApiCourseService: vi.fn(),
@@ -180,6 +189,12 @@ describe('default MCP key across the cohort, course member, certificate, exercis
     ['POST', '/tags', 'create_tag', 1, 201, { name: 'Safety', groupId: TAG_ID, color: '#EF4444' }],
     ['PUT', `/tags/${TAG_ID}`, 'update_tag', 1, 200, { color: '#F97316' }],
     ['POST', '/tags/groups', 'create_tag_group', 1, 201, { name: 'Topics' }],
+    ['GET', '/skills', 'list_skills', 0, 200, undefined],
+    ['POST', '/skills', 'create_skill', 1, 201, { code: 'A.1', name: 'Exponents' }],
+    ['PUT', `/skills/${TAG_ID}`, 'update_skill', 1, 200, { name: 'Powers' }],
+    ['POST', '/skills/import', 'import_skills', 1, 200, { csv: 'code,name\nA,Algebra', dryRun: true }],
+    ['PUT', `/courses/${COURSE_ID}/exercises/${TAG_ID}/questions/1/skills`, 'set_question_skills', 1, 200, { skillIds: [] }],
+    ['GET', `/courses/${COURSE_ID}/exercises/${TAG_ID}/skill-mastery`, 'get_exercise_skill_mastery', 0, 200, undefined],
     ['PUT', `/tags/groups/${TAG_ID}`, 'update_tag_group', 1, 200, { order: 1 }],
     ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { tagIds: [TAG_ID] }],
     ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { addTagIds: [TAG_ID] }],

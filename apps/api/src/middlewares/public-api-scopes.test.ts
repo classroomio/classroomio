@@ -50,6 +50,9 @@ function buildApp(scopes: string[]) {
     .get('/tags', (c) => c.json({ success: true }))
     .post('/tags', (c) => c.json({ success: true }, 201))
     .put('/tags/groups/:groupId', (c) => c.json({ success: true }))
+    .get('/skills', (c) => c.json({ success: true }))
+    .post('/skills/import', (c) => c.json({ success: true }))
+    .put('/courses/:courseId/exercises/:exerciseId/questions/:questionId/skills', (c) => c.json({ success: true }))
     .put('/courses/:courseId/members/:memberId', (c) => c.json({ success: true }));
 
   return new Hono().route('/public-api/v1', v1Router);
@@ -232,6 +235,17 @@ describe('publicApiScopesMiddleware', () => {
     expect((await app.request('/public-api/v1/tags')).status).toBe(200);
     expect((await app.request('/public-api/v1/tags', { method: 'POST' })).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1', { method: 'PUT' })).status).toBe(403);
+  });
+
+  it('maps skills like tags and question skills to the exercise scopes', async () => {
+    const questionSkills = '/public-api/v1/courses/c1/exercises/e1/questions/1/skills';
+    const readApp = buildApp(['course:read']);
+
+    expect((await readApp.request('/public-api/v1/skills')).status).toBe(200);
+    expect((await readApp.request('/public-api/v1/skills/import', { method: 'POST' })).status).toBe(403);
+    expect((await buildApp(['course:tag:write']).request('/public-api/v1/skills/import', { method: 'POST' })).status).toBe(200);
+    expect((await buildApp(['course:exercise:write']).request(questionSkills, { method: 'PUT' })).status).toBe(200);
+    expect((await readApp.request(questionSkills, { method: 'PUT' })).status).toBe(403);
   });
 
   it('lets course:tag:write write tags and reach course update, but not course read, delete or members', async () => {

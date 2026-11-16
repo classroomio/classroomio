@@ -170,6 +170,12 @@ export const MCP_TOOL_CREDIT_COST = {
   create_tag_group: 1,
   update_tag_group: 1,
   set_course_tags: 1,
+  list_skills: 0,
+  create_skill: 1,
+  update_skill: 1,
+  import_skills: 1,
+  set_question_skills: 1,
+  get_exercise_skill_mastery: 0,
   get_domain: 0,
   update_domain: 1,
   connect_custom_domain: 1,
@@ -310,6 +316,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_email_template' ||
     toolName === 'get_organization' ||
     toolName === 'list_tags' ||
+    toolName === 'list_skills' ||
+    toolName === 'get_exercise_skill_mastery' ||
     toolName === 'get_domain' ||
     toolName === 'get_organization_customization'
   ) {

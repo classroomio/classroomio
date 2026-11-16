@@ -3,6 +3,7 @@ import type { TAutomationCourseTagAssignment } from '@cio/utils/validation/tag';
 import type { TBlockLocaleCode } from '@cio/utils/validation/block';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import { pickTagColor } from '@cio/utils/validation/tag';
+import type { TPublicApiSkillsQuery, TSkillCreate, TSkillImport, TSkillUpdate } from '@cio/utils/validation/skill';
 import { ErrorCodes } from '@cio/utils/constants';
 import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 
@@ -460,6 +461,35 @@ export class ClassroomIoApiClient {
     return this.request<{ tags: TCourseTag[] }>(`/public-api/v1/courses/${encodeURIComponent(courseId)}`, {
       method: 'PUT',
       body: { addTagIds }
+    });
+  }
+
+  async listSkills(query: Partial<TPublicApiSkillsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/skills${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async createSkill(payload: TSkillCreate) {
+    return this.request('/public-api/v1/skills', { method: 'POST', body: payload });
+  }
+
+  async updateSkill(skillId: string, payload: TSkillUpdate) {
+    return this.request(`/public-api/v1/skills/${encodeURIComponent(skillId)}`, { method: 'PUT', body: payload });
+  }
+
+  async importSkills(payload: TSkillImport) {
+    return this.request('/public-api/v1/skills/import', { method: 'POST', body: payload });
+  }
+
+  async setQuestionSkills(courseId: string, exerciseId: string, questionId: number, skillIds: string[]) {
+    return this.request(
+      `/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}/skills`,
+      { method: 'PUT', body: { skillIds } }
+    );
+  }
+
+  async getExerciseSkillMastery(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/skill-mastery`, {
+      method: 'GET'
     });
   }
 

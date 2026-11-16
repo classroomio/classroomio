@@ -77,6 +77,12 @@ Current tools:
 - `create_tag_group`
 - `update_tag_group`
 - `set_course_tags`
+- `list_skills`
+- `create_skill`
+- `update_skill`
+- `import_skills`
+- `set_question_skills`
+- `get_exercise_skill_mastery`
 - `list_course_members`
 - `add_course_member`
 - `get_course_member`
@@ -667,6 +673,8 @@ Tagging tools use:
 Missing tags are created automatically. `tag_courses` uses the public API: it reads tags from `/public-api/v1/tags`, matches them by name ignoring case, creates any that are missing, then calls `PUT /public-api/v1/courses/{courseId}` for each course: with `addTagIds` in merge mode, so the server adds them and calls on the same course cannot drop each other's tags, or with `tagIds` in replace mode. It needs `course:read` and `course:tag:write`, which MCP keys have by default, and the key creator must be an org admin. Each course it tags costs one credit, plus one for each tag or group it has to create. Each course is a separate write, so if one fails (for example on the rate limit), the courses before it keep their tags and the error lists which courses were tagged and which were not.
 
 The other tag tools map one-to-one to the public tag endpoints: `list_tags` (free, needs `course:read` and an org-member key creator), and `create_tag`, `update_tag`, `create_tag_group`, `update_tag_group` and `set_course_tags` (one credit each, need `course:tag:write` and an org-admin key creator). `set_course_tags` replaces a course's tags with the ids you send, so `[]` removes them all.
+
+Skill tools map to the public skills endpoints. `list_skills` and `get_exercise_skill_mastery` are free; `create_skill`, `update_skill`, `import_skills` and `set_question_skills` cost one credit each. `list_skills` needs `course:read` and an org-member key creator; `create_skill`, `update_skill` and `import_skills` need `course:tag:write` and an org-admin key creator; `set_question_skills` needs `course:exercise:write` and `get_exercise_skill_mastery` needs `course:exercise:read`, and both need a key creator who is a course tutor or admin, or an org admin. `import_skills` takes CSV text and a `dryRun` flag, and an import with any error saves nothing. `set_question_skills` replaces a question's skills, so `[]` removes them all.
 
 Exercise tools write directly into the course:
 
