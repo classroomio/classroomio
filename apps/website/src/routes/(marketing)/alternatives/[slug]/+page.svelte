@@ -230,7 +230,7 @@
           <p class="price-text">{priceCard.text}</p>
           <p class="price-foot">
             From <a href={pricingUrl} target="_blank" rel="noopener">{competitor.name}'s pricing page</a>, checked
-            {checked}.
+            {priceCard.checked ?? checked}.
           </p>
         </AlternativeCard>
       </div>

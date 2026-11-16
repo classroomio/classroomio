@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Onboarding states — ClassroomIO Prototype</title>
+    <link rel="stylesheet" href="fonts/geist.css" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="onboarding.css" />
+    <link rel="stylesheet" href="motion.css" />
+    <link rel="stylesheet" href="brand.css" />
+    <style>
+      .page { max-width: 1000px; margin: 0 auto; padding: 48px 24px 110px; }
+      h1 { font-size: 30px; font-weight: 600; letter-spacing: -0.03em; margin: 8px 0 10px; }
+      .lead { color: var(--muted-foreground); font-size: 15px; max-width: 72ch; margin: 0 0 8px; line-height: 1.65; }
+      .eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); }
+      .sec { font-size: 12.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted-foreground); margin: 46px 0 18px; display: flex; align-items: center; gap: 10px; }
+      .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+      .two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+      @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+        <div>
+          <span class="eyebrow">ClassroomIO · Onboarding prototype</span>
+          <h1>The states you can't reach by clicking</h1>
+        </div>
+      </div>
+
+      <p class="lead">
+        Validation, failure, empty and gated states side by side. Built on the same stylesheet the flow uses.
+        Open <a class="text-primary" href="flow.html">flow.html</a> for the interactive version.
+      </p>
+
+      <div class="sec">Stage 3 · Business information</div>
+      <div class="gallery two" id="g-business"></div>
+
+      <div class="sec">Preparation</div>
+      <div class="gallery two" id="g-prep"></div>
+
+      <div class="sec">Stage 4 · Customise</div>
+      <div class="gallery two" id="g-custom"></div>
+
+      <div class="sec">Integrations — what each status really means</div>
+      <div class="gallery" id="g-int"></div>
+
+      <div class="sec">Dashboard and your academy</div>
+      <div class="gallery two" id="g-dash"></div>
+    </div>
+
+    <script src="proto.js"></script>
+    <script>
+      const P = window.proto;
+      const ic = P.icon;
+      const item = (title, body, frame, phone = false) =>
+        `<div class="gal-item"><h3>${title}</h3><p>${body}</p><div class="gal-frame${phone ? ' phone' : ''}">${frame}</div></div>`;
+
+      document.getElementById('g-business').innerHTML = [
+        item('Required answers missing', 'Company name and role are the only required answers. The company field is marked and scrolled into view on submit; a missing role shows a message under the details row.',
+          `<div class="field"><label class="label">Company name</label><input class="input bad" readonly /><p class="err-text">Enter your company name.</p></div>
+           <p class="err-text">Choose the role that fits you best.</p>`),
+        item('Outcome tiles pre-select one', 'The first outcome is selected on arrival, so a goal is never missing. Choosing another replaces it — each tile names what it adds to the starter content.',
+          `<div class="goal-grid" style="grid-template-columns:1fr">${P.GOALS.slice(0, 3).map((g, i) => `<span class="goal" aria-pressed="${i === 0}"><span class="goal-ic">${ic(g.icon, 15)}</span><span class="goal-tx"><span class="goal-t">${g.label}</span><span class="goal-y">${ic('chevron', 11)}${g.yields}</span></span><span class="goal-ck">${ic('check', 11)}</span></span>`).join('')}</div>`),
+        item('Website is optional', 'Nothing is fetched from it. The company name and website are only read for a starter category.',
+          `<div class="field"><label class="label">Website <span class="opt-tag">optional</span></label><input class="input" placeholder="northbeam.io" readonly /></div>`)
+      ].join('');
+
+      document.getElementById('g-prep').innerHTML = [
+        item('Preparation (checklist fallback)', 'The shipped scene drops the drafted courses in as blocks, which cannot be shown statically. This is the same four phases as a list; the scene says plainly that nothing is fetched, and shows the finished state under reduced motion.',
+          `<div class="prep-steps" style="margin:0 auto">${P.PREP_PHASES.map((p, i) => `<div class="prep-step ${i < 2 ? 'done' : i === 2 ? 'active' : ''}"><span class="prep-mark">${ic('check', 10)}</span><span>${p.label}</span></div>`).join('')}</div><p class="text-muted" style="font-size:11.5px;text-align:center;margin-top:16px">Simulated — no website was fetched and no model was called.</p>`),
+        item('Preparation failed',
+          '<b>Specified, not wired.</b> prd/onboarding-platform-showcase FR-4: seeding has a five-second timeout and a failure must never strand the user. One retry, or continue with an empty workspace.',
+          `<div class="prep" style="margin-top:0"><div class="prep-orb" style="background:var(--warning-soft);color:var(--warning)">${ic('warn', 26)}</div><h2>We couldn't prepare your courses</h2><p>Your workspace and branding are safe — only the starter courses failed.</p><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline">Continue without them</button><button class="btn btn-primary">Try again</button></div></div>`)
+      ].join('');
+
+      document.getElementById('g-custom').innerHTML = [
+        item('Unparseable colour', 'The preview keeps the last valid colour, so nothing flickers while someone is halfway through typing a value.',
+          `<div class="field"><label class="label">Custom colour</label><div class="color-row"><span class="color-swatch" style="background:#1d4ed8"></span><input class="input bad" value="#5B5F" readonly /></div><p class="err-text">Use a HEX value like #5B5FEF or RGB like rgb(91, 95, 239).</p></div>`),
+        item('Low contrast brand colour', 'A warning, not a block — it is their brand. The check is against white, where links on the portal sit.',
+          `<div class="field"><label class="label">Custom colour</label><div class="color-row"><span class="color-swatch" style="background:#f5f3ff"></span><input class="input" value="#F5F3FF" readonly /></div></div><div class="note" style="margin-top:10px">${ic('warn', 15)}<span><b>Low contrast.</b> This colour is close to white (1.1:1), so links on your portal will be hard to read.</span></div>`),
+        item('Premium theme cards', 'Free and Premium are labelled on the image; a locked card offers Upgrade, never a dead end. Previewing is always allowed — it is how the real picker works.',
+          `<div class="theme-gal">${['quartz', 'terminal'].map((id, i) => { const t = P.themeById(id); return `<div class="tcard${i === 0 ? ' selected' : ''}"><span class="tcard-img"><img src="${t.preview}" alt="" onerror="this.remove()" /><span class="tag ${t.free ? 'tag-free' : 'tag-premium'}">${t.free ? 'Free' : ic('lock', 10) + 'Premium'}</span>${i === 0 ? `<span class="tcard-check">${ic('check', 12)}</span>` : ''}</span><div class="tcard-body"><div class="tcard-t">${t.title}</div><div class="tcard-d">${t.description}</div><div class="tcard-actions"><button class="btn btn-ghost btn-sm">${ic('eye', 13)} Preview</button><button class="btn ${i === 0 ? 'btn-secondary' : 'btn-outline'} btn-sm">${i === 0 ? 'Selected' : 'Upgrade'}</button></div></div></div>`; }).join('')}</div>`),
+        item('Preview image unavailable', 'Theme previews are hotlinked from the same CDN the real picker uses. Offline, the frame degrades to the theme name and description rather than a broken image.',
+          `<div class="theme-shot broken"><div class="theme-shot-fallback">${ic('globe', 22)}<b>Terminal</b><span>Dark surface, ghosted wordmark, CLI-inspired catalog</span><span class="text-muted" style="font-size:11.5px">Preview image unavailable offline</span></div></div>`)
+      ].join('');
+
+      const intRows = P.INTEGRATIONS.map((i) => {
+        const s = P.INTEGRATION_STATUS[i.status];
+        const meaning = { live: 'Ships today and works. Connect is offered.', plan: 'Ships today but is plan-gated. Connect when the plan allows; otherwise the button names the plan and opens the five-plan pricing card.', soon: 'A page exists in the dashboard but says "coming soon". Offers Notify me only.', planned: 'Specified in a PRD, not built. Offers Notify me only.', none: 'Does not exist. Would need Zapier or webhooks first. Offers Notify me only.' }[i.status];
+        return `<div class="int"><span class="int-mark" style="background:${i.color}">${i.mark}</span><div class="body"><div class="n">${i.name} <span class="badge ${s.cls}">${s.label}</span></div><p class="d">${i.blurb}</p><div class="w">${meaning}</div></div></div>`;
+      }).join('');
+      document.getElementById('g-int').innerHTML = `<div class="int-grid" style="grid-template-columns:1fr 1fr">${intRows}</div><p class="text-muted" style="font-size:12.5px;margin:12px 0 0;max-width:80ch">Sources: MCP and Public API pages exist and work; SSO ships under Settings → Auth (Enterprise); Zapier is a coming-soon callout (prd/zapier is a draft); Webhooks is a draft PRD. HubSpot and Slack appear nowhere in the product.</p>`;
+
+      document.getElementById('g-dash').innerHTML = [
+        item('Workspace with no courses', 'What the Courses page shows when the user removed every starter course — one sentence and a Blank course button.',
+          `<div class="card card-pad" style="text-align:center;padding:36px 24px"><p style="font-size:14px;font-weight:550;margin:0 0 4px">No courses yet</p><p class="text-muted" style="font-size:13px;margin:0 0 16px">You removed the starter courses. Create your first one whenever you're ready.</p><button class="btn btn-primary btn-sm">Create a course</button></div>`),
+        item('Starter courses are still drafts', 'Production shows only published courses on the landing page, so a new academy opens on the empty catalog. The admin sees a dashed note with Publish all drafts; visitors would not.',
+          `<div class="note quiet" style="border-style:dashed">${ic('info', 15)}<span><b>Your 4 starter courses are drafts, so visitors cannot see them yet.</b> Publish them to fill this section. Only you see this note.</span></div><p class="text-muted" style="text-align:center;margin:18px 0 0;font-size:13px">No courses published yet</p>`),
+        item('Next steps hidden or finished', 'Hiding the panel never loses it: it folds to a small pill with a count and reopens on click. When all four steps are done the title changes to "You are set up".',
+          `<div style="display:flex;gap:8px;justify-content:center"><span class="badge badge-primary-soft">2/4</span><button class="btn btn-outline btn-sm">Next steps</button></div>`),
+        item('Learning path preview flag', 'Learning paths are specced and prototyped, not shipped. The prepared path is kept out of the dashboard and the Courses page entirely, because both replicate the real product.',
+          `<div class="sidebar" style="position:static;height:auto;border:1px solid var(--border);border-radius:10px;padding:8px">${P.renderOrgSidebar({ company: 'Northbeam', brandName: 'Northbeam', logoDataUrl: '' }, 'Courses').split('<div class="nav-label">Distribute')[0]}</div>`)
+      ].join('');
+
+      P.initTheme();
+    </script>
+  </body>
+</html>

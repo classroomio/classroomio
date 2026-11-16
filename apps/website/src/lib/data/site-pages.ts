@@ -31,6 +31,12 @@ export const STATIC_SITE_PAGES: SitePage[] = [
       'Why a customer academy outperforms help docs for onboarding, certification, and adoption, compared with Intercom Articles, Zendesk Guide, and Confluence.'
   },
   {
+    path: '/customer-academy-roi-calculator',
+    title: 'Customer academy ROI calculator',
+    description:
+      'Estimate what a customer academy could save in support tickets, using your own ticket volume, cost per ticket, and academy cost.'
+  },
+  {
     path: '/partner-training',
     title: 'Partner training',
     description:

@@ -1,10 +1,11 @@
+import { DEFAULT_IMAGE_BLOCK_IMAGE } from '@cio/ui/custom/block';
 import type { TImageBlockData } from '@cio/utils/validation/block';
 
-const EXAMPLE_IMAGE_PATH = '/images/brand-covers/oversized-mark.webp';
-
 export function createExampleImage(): TImageBlockData {
+  const url = new URL(DEFAULT_IMAGE_BLOCK_IMAGE, window.location.origin).href;
+
   return {
-    url: new URL(EXAMPLE_IMAGE_PATH, window.location.origin).href,
+    url,
     alt: 'ClassroomIO logo on a blue background',
     fit: 'cover'
   };
