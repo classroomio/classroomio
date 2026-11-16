@@ -2,6 +2,7 @@ import { ContentType, ROLE } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
 import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
+import { getHiddenExerciseIdsForStudent } from '@cio/db/queries/exercise/assignment';
 import { getCourseProgramAccess, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCachedCourseContentItemsForStudentAccessCheck } from '@api/utils/redis/course-content-cache';
@@ -74,6 +75,13 @@ export async function assertEnrolledStudentContentAccess(params: {
 
   if (progress.roleId === ROLE.STUDENT && !course.isPublished) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  if (params.type === ContentType.Exercise) {
+    const hiddenExerciseIds = await getHiddenExerciseIdsForStudent(params.courseId, params.profileId);
+    if (hiddenExerciseIds.has(params.contentId)) {
+      throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+    }
   }
 
   const isContentGroupingEnabled = course.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;

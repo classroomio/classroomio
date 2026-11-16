@@ -138,6 +138,8 @@ export type AnswerCluster = {
   label: string;
   count: number;
   studentNames: string[];
+  /** Profile ids of the members that have a profile. */
+  studentIds: string[];
   grade: AnswerClusterGrade;
   /** Points every member holds, or null when members differ. */
   points: number | null;
@@ -178,6 +180,7 @@ export function buildAnswerClusters(question: ExerciseQuestionModel, entries: Cl
         label: first.answer ? describeClusterAnswer(question, first.answer) : '',
         count: members.length,
         studentNames: members.map((member) => member.studentName ?? ''),
+        studentIds: members.flatMap((member) => (member.studentId ? [member.studentId] : [])),
         grade: grades.size === 1 ? [...grades][0] : 'mixed',
         points,
         reason: grading?.reason ?? null,

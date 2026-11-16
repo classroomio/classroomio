@@ -76,6 +76,8 @@ import { presignRouter } from '@api/routes/course/presign';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { sectionRouter } from '@api/routes/course/section';
 import { courseSkillRouter } from '@api/routes/course/skill';
+import { coursePracticeRouter } from '@api/routes/course/practice';
+import { courseStudentReportRouter } from '@api/routes/course/student-report';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
@@ -669,6 +671,8 @@ export const courseRouter = new Hono()
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)
   .route('/:courseId/skill', courseSkillRouter)
+  .route('/:courseId/practice', coursePracticeRouter)
+  .route('/:courseId/student-report', courseStudentReportRouter)
   .route('/:courseId/attendance', attendanceRouter)
   .route('/:courseId/mark', markRouter)
   .route('/:courseId/newsfeed', newsfeedRouter)

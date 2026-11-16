@@ -1,6 +1,7 @@
 import * as schema from '@db/schema';
 import { and, eq, inArray, or, sql } from 'drizzle-orm';
 import { db } from '@db/drizzle';
+import { getHiddenExerciseIdsForStudent } from './assignment';
 
 export interface LMSExerciseQueryResult {
   id: string;
@@ -70,7 +71,12 @@ export async function getLMSExercises(profileId: string, orgId: string): Promise
 
     const courseIds = [...new Set(coursesWithMembership.map((c) => c.courseId))];
 
-    const exercises = await db
+    const hiddenExerciseIdSets = await Promise.all(
+      courseIds.map((courseId) => getHiddenExerciseIdsForStudent(courseId, profileId))
+    );
+    const hiddenExerciseIds = new Set(hiddenExerciseIdSets.flatMap((ids) => [...ids]));
+
+    const allExercises = await db
       .select({
         id: schema.exercise.id,
         title: schema.exercise.title,
@@ -85,6 +91,8 @@ export async function getLMSExercises(profileId: string, orgId: string): Promise
       .from(schema.exercise)
       .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
       .where(or(inArray(schema.exercise.courseId, courseIds), inArray(schema.lesson.courseId, courseIds)));
+
+    const exercises = allExercises.filter((exercise) => !hiddenExerciseIds.has(exercise.id));
 
     if (exercises.length === 0) {
       return [];

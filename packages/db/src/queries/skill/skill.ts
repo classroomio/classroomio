@@ -397,3 +397,68 @@ export async function getSkillAttemptsForCourse(
     throw new Error('Failed to get skill attempts');
   }
 }
+
+/**
+ * Ids of single-part questions in the course's exercises: those tagged with the skill, or, when `questionIds` is
+ * given, those of the list that belong to the course. Questions that are a part of a multi-part question or that
+ * hold parts themselves are left out because they cannot stand alone in a practice set.
+ */
+export async function getCoursePracticeQuestionIds(
+  courseId: string,
+  source: { skillId: string } | { questionIds: number[] },
+  limit: number,
+  dbClient: DbOrTxClient = db
+) {
+  try {
+    const skillJoin =
+      'skillId' in source
+        ? sql`join question_skill qs on qs.question_id = q.id and qs.skill_id = ${source.skillId}`
+        : sql``;
+    const idFilter =
+      'questionIds' in source
+        ? sql`and q.id in (${sql.join(
+            source.questionIds.map((id) => sql`${id}`),
+            sql`, `
+          )})`
+        : sql``;
+    const rows = await dbClient.execute<{ id: string }>(sql`
+      select q.id
+      from question q
+      ${skillJoin}
+      join exercise e on e.id = q.exercise_id
+      where e.course_id = ${courseId}
+        and q.parent_question_id is null
+        and not exists (select 1 from question child where child.parent_question_id = q.id)
+        and coalesce(q.points, 0) > 0
+        ${idFilter}
+      order by e.created_at, q."order", q.id
+      limit ${limit}
+    `);
+
+    return Array.from(rows).map((row) => Number(row.id));
+  } catch (error) {
+    console.error('getCoursePracticeQuestionIds error:', error);
+    throw new Error('Failed to get practice questions');
+  }
+}
+
+/** Skill ids tagged on each of the given questions. */
+export async function getQuestionSkillIds(questionIds: number[], dbClient: DbOrTxClient = db) {
+  if (questionIds.length === 0) return new Map<number, string[]>();
+
+  try {
+    const rows = await dbClient
+      .select({ questionId: schema.questionSkill.questionId, skillId: schema.questionSkill.skillId })
+      .from(schema.questionSkill)
+      .where(inArray(schema.questionSkill.questionId, questionIds));
+    const skillIdsByQuestion = new Map<number, string[]>();
+    for (const row of rows) {
+      skillIdsByQuestion.set(row.questionId, [...(skillIdsByQuestion.get(row.questionId) ?? []), row.skillId]);
+    }
+
+    return skillIdsByQuestion;
+  } catch (error) {
+    console.error('getQuestionSkillIds error:', error);
+    throw new Error('Failed to get question skills');
+  }
+}

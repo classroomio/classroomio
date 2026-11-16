@@ -30,3 +30,5 @@ export * from './jobs';
 export * from './invite-link';
 export * from './webhook';
 export * from './analytics';
+export * from './student-report';
+export * from './practice';

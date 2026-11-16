@@ -23,6 +23,7 @@ import {
   getExerciseSectionsByExerciseId,
   getExerciseWithRelationsOptimized,
   getExercisesByCourseId,
+  getHiddenExerciseIdsForStudent,
   getLMSExercises,
   getQuestionsByExerciseIds,
   lockExerciseSectionForUpdate,
@@ -935,15 +936,17 @@ export async function listExercises(
   profileId?: string
 ): Promise<ExerciseWithCompletion[]> {
   try {
-    const exercises = await getExercisesByCourseId(courseId, filters);
+    const allExercises = await getExercisesByCourseId(courseId, filters);
 
     if (!profileId) {
-      return exercises.map((exercise) => ({
+      return allExercises.map((exercise) => ({
         ...exercise,
         isComplete: false
       }));
     }
 
+    const hiddenExerciseIds = await getHiddenExerciseIdsForStudent(courseId, profileId);
+    const exercises = allExercises.filter((exercise) => !hiddenExerciseIds.has(exercise.id));
     const completedIds = await getExerciseCompletionsByProfile(
       exercises.map((exercise) => exercise.id),
       profileId
