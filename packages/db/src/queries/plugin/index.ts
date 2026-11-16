@@ -4,3 +4,4 @@ export * from './installation';
 export * from './grants';
 export * from './audit';
 export * from './storage';
+export * from './question-plugin';

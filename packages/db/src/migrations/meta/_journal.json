@@ -281,6 +281,13 @@
       "when": 1792575299000,
       "tag": "0039_plugin_platform_complete",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1794263200000,
+      "tag": "0040_plugin_custom_question_type",
+      "breakpoints": true
     }
   ]
 }

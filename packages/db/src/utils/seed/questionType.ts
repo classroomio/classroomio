@@ -89,12 +89,20 @@ export async function seedQuestionTypes() {
       typename: 'THUMBS',
       createdAt: '2026-07-23 00:00:00+00',
       updatedAt: '2026-07-23 00:00:00+00'
+    },
+    {
+      id: 17,
+      label: 'Custom (Plugin)',
+      typename: 'PLUGIN_CUSTOM',
+      createdAt: '2026-11-09 00:00:00+00',
+      updatedAt: '2026-11-09 00:00:00+00'
     }
   ].filter((q) => !questionTypeNames.includes(q.typename));
 
   if (questionTypesToInsert.length > 0) {
     await syncQuestionTypeIdSequence();
     await db.insert(questionType).values(questionTypesToInsert);
+    await syncQuestionTypeIdSequence();
     console.log(`   ✓ Inserted ${questionTypesToInsert.length} question type(s)`);
   } else {
     console.log('   ✓ Question types already exist, skipping');
