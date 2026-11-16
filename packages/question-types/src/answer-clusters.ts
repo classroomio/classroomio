@@ -24,8 +24,16 @@ function numericKey(answer: Extract<AnswerData, { type: 'NUMERIC' }>): string | 
   return `num:${Number(value.toPrecision(10))}`;
 }
 
+function compareJson(left: unknown, right: unknown): number {
+  return JSON.stringify(left).localeCompare(JSON.stringify(right));
+}
+
 function withPlainNumbers(node: unknown): unknown {
-  if (Array.isArray(node)) return node.map(withPlainNumbers);
+  if (Array.isArray(node)) {
+    const operands = node.map(withPlainNumbers);
+
+    return node[0] === 'Equal' ? [operands[0], ...operands.slice(1).sort(compareJson)] : operands;
+  }
   if (typeof node !== 'object' || node === null) return node;
 
   const literal = (node as { num?: unknown }).num;

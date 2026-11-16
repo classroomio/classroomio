@@ -138,7 +138,7 @@
         size="sm"
         variant={filter === option ? 'default' : 'outline'}
         onclick={() => chooseFilter(option)}
-        data-testid={`results-filter-${option}`}
+        testId={`results-filter-${option}`}
       >
         {$t(`exercise_results.filter.${option}`)}
       </Button>

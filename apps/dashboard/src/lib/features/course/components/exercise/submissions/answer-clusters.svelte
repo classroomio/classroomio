@@ -133,7 +133,7 @@
               variant="secondary"
               disabled={isSaving}
               onclick={() => apply(cluster, { verdict: 'correct' })}
-              data-testid="cluster-mark-correct"
+              testId="cluster-mark-correct"
             >
               {$t('exercise_results.clusters.mark_correct')}
             </Button>
@@ -142,7 +142,7 @@
               variant="secondary"
               disabled={isSaving}
               onclick={() => openEditor(cluster, 'partial')}
-              data-testid="cluster-mark-partial"
+              testId="cluster-mark-partial"
             >
               {$t('exercise_results.clusters.mark_partial')}
             </Button>
@@ -151,7 +151,7 @@
               variant="secondary"
               disabled={isSaving}
               onclick={() => apply(cluster, { verdict: 'wrong' })}
-              data-testid="cluster-mark-wrong"
+              testId="cluster-mark-wrong"
             >
               {$t('exercise_results.clusters.mark_wrong')}
             </Button>
@@ -161,7 +161,7 @@
             variant="outline"
             disabled={isSaving}
             onclick={() => openEditor(cluster, 'feedback')}
-            data-testid="cluster-add-feedback"
+            testId="cluster-add-feedback"
           >
             {$t('exercise_results.clusters.add_feedback')}
           </Button>
@@ -171,7 +171,7 @@
               variant="outline"
               disabled={isSaving}
               onclick={() => undo(cluster)}
-              data-testid="cluster-undo"
+              testId="cluster-undo"
             >
               {$t('exercise_results.clusters.undo')}
             </Button>
@@ -192,7 +192,7 @@
               size="sm"
               disabled={isSaving || pointsDraft === null}
               onclick={() => apply(cluster, { verdict: 'partial', points: pointsDraft ?? 0 })}
-              data-testid="cluster-apply-partial"
+              testId="cluster-apply-partial"
             >
               {$t('exercise_results.clusters.apply')}
             </Button>
@@ -212,7 +212,7 @@
                 size="sm"
                 disabled={isSaving || (!feedbackDraft.trim() && !cluster.override?.verdict)}
                 onclick={() => apply(cluster, { feedback: feedbackDraft.trim() })}
-                data-testid="cluster-save-feedback"
+                testId="cluster-save-feedback"
               >
                 {$t('exercise_results.clusters.save_feedback')}
               </Button>

@@ -27,7 +27,7 @@ const math = (latex: string, extra: Partial<AnswerData> = {}): AnswerData =>
 describe('getAnswerClusterKey for math', () => {
   it.each([
     ['x=-3', 'x = -3'],
-    ['x=-3', '-3=x'.replace('-3=x', 'x=-3')],
+    ['x=-3', '-3=x'],
     ['x=-3', 'x=-3.0'],
     ['x=-3', 'x=-\\frac{6}{2}'],
     ['x=-3', 'x=-(3)'],
