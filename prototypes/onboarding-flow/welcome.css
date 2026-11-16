@@ -1,0 +1,171 @@
+/*
+ * welcome.css - stage 4, the "Hi, {{user.name}}" step, in the split shell.
+ */
+
+.wl-greet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.45em;
+  margin: 0 0 28px;
+  font-family: var(--font-mono);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--ink-900);
+}
+.wl-token {
+  display: inline-flex;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.wl-token b {
+  font-weight: 500;
+  color: var(--primary);
+}
+.wl-token > span {
+  padding: 0 0.25em;
+}
+.wl-token > span.ph {
+  color: var(--ink-400);
+}
+.wl-token.filled b {
+  display: none;
+}
+.wl-token.filled > span {
+  padding: 0;
+}
+.wl-caret {
+  align-self: center;
+  width: 2px;
+  height: 1.05em;
+  margin-left: -0.3em;
+  background: var(--ink-900);
+  animation: wl-blink 1.1s steps(1) infinite;
+}
+@keyframes wl-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.wl-form .field {
+  margin-bottom: 20px;
+}
+.wl-form .label {
+  font-weight: 600;
+}
+.wl-hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--ink-500);
+}
+
+.wl-req {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--dur-2) var(--ease-out),
+    opacity var(--dur-2) var(--ease-out),
+    margin var(--dur-2) var(--ease-out);
+}
+.wl-req > p {
+  min-height: 0;
+  margin: 8px 0 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--destructive);
+}
+.wl-req.gone {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+.wl-req.gone > p {
+  margin-top: 0;
+}
+
+.wl-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--sand-300);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  animation: m-fade var(--dur-2) var(--ease-out);
+}
+.wl-banner.ok {
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  background: var(--success-soft);
+  color: color-mix(in srgb, var(--success) 70%, var(--ink-900));
+}
+.wl-banner.bad {
+  border-color: color-mix(in srgb, var(--destructive) 40%, transparent);
+  background: color-mix(in srgb, var(--destructive) 8%, transparent);
+  color: var(--destructive);
+}
+.wl-banner.wait {
+  background: var(--sand-100);
+  color: var(--ink-500);
+}
+.wl-spin {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--sand-400);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: wl-turn 700ms linear infinite;
+}
+@keyframes wl-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.wl-back {
+  margin: 14px 0 0;
+  text-align: center;
+}
+
+.trusted {
+  padding: 0 40px;
+}
+.trusted-label {
+  margin: 0 0 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+}
+.trusted-wall {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.trusted-wall li {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: color-mix(in srgb, var(--ink-900) 62%, var(--paper));
+}
+.trusted-note {
+  margin: 14px 0 0;
+  font-size: 11.5px;
+  color: var(--ink-400);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wl-caret,
+  .wl-spin {
+    animation: none;
+  }
+}

@@ -533,14 +533,8 @@ function finishOnboarding() {
   commit();
 }
 
-function goToCourses() {
-  finishOnboarding();
-  try {
-    localStorage.setItem('cioTourState', JSON.stringify({ active: true, step: 0 }));
-  } catch {
-    // the tour is optional
-  }
-  window.location.href = window.model.R.courses();
+function goToBuild() {
+  window.location.href = 'build.html';
 }
 
 function goToAcademy() {
@@ -551,7 +545,7 @@ function goToAcademy() {
 function wire() {
   P.initTheme();
 
-  $('#done').addEventListener('click', goToCourses);
+  $('#done').addEventListener('click', goToBuild);
   $('#skip-all').addEventListener('click', goToAcademy);
   $('#starter').addEventListener('click', openStarterContent);
   $('#back').addEventListener('click', () => {

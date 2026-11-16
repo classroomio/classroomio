@@ -34,6 +34,17 @@ function commit() {
  * product's own (onboarding.testimonials.*).
  */
 function renderVisualPanel() {
+  const trusted = $('#trusted');
+  const carousel = $('#testimonials');
+
+  trusted.hidden = S.stage !== 4;
+  carousel.hidden = S.stage === 4;
+
+  if (S.stage === 4) {
+    renderTrustedPanel();
+    return;
+  }
+
   $('#visual-copy').innerHTML = `
     <span class="eyebrow m-rise" style="--i:0">From the teams using it</span>
     <h2 id="visual-title" class="m-rise" style="--i:1">Stop training every customer <span class="hl">by hand</span>.</h2>
@@ -47,6 +58,23 @@ function renderVisualPanel() {
         });
 
   window.visuals.mount($('#hero'), visual);
+}
+
+function renderTrustedPanel() {
+  $('#visual-copy').innerHTML = `
+    <span class="eyebrow m-rise" style="--i:0">Almost there</span>
+    <h2 id="visual-title" class="m-rise" style="--i:1">Your academy, <span class="hl">named</span> and live in minutes.</h2>
+    <p class="m-rise" style="--i:2">Pick the name and address your customers will see. You can change both later in settings.</p>`;
+
+  window.visuals.mount(
+    $('#hero'),
+    window.visuals.machine('trainingLine', { label: 'A training line that moves lessons, quizzes and assignments' })
+  );
+
+  $('#trusted').innerHTML = `
+    <p class="trusted-label">Trusted by teams at</p>
+    <ul class="trusted-wall">${P.TESTIMONIALS.map((item) => `<li>${esc(item.company)}</li>`).join('')}</ul>
+    <p class="trusted-note">Placeholder names for the prototype.</p>`;
 }
 
 /* ---------- testimonial carousel (components/marketing/TestimonialCard) ---------- */
@@ -364,11 +392,10 @@ function tickResend() {
 /* ============================================================
  * Stage 4 — Workspace
  *
- * The production org-setup step: the name of the organisation and the academy subdomain, with the
- * same rules (5 or more characters, no leading or trailing hyphen, the blocked list, a taken name).
- * The subdomain follows the name until it is edited. A restrained fragment of the academy beside
- * the form shows the address and the name as they are typed. The user's full name was collected at
- * sign-up, so it is not asked again.
+ * The production org-setup step in a split layout: a live greeting that fills in as the full name is
+ * typed, the organisation name and the academy subdomain with the production rules (5 or more
+ * characters, no leading or trailing hyphen, the blocked list, a taken name). The subdomain follows
+ * the name until it is edited, and a simulated availability check answers as it changes.
  * ============================================================ */
 const BLOCKED_SUBDOMAINS = [
   'academy',
@@ -415,67 +442,138 @@ function siteNameFrom(value) {
     .replace(/[^a-zA-Z0-9-]/g, '');
 }
 
-function paintWorkspacePreview() {
-  const name = S.company.trim();
-  const site = S.siteName || 'your-academy';
+const AVAILABILITY_DELAY_MS = 550;
+let availabilityTimer = 0;
 
-  $('#ws-url').innerHTML = `https://<b>${esc(site)}</b>.classroomio.com`;
-  $('#ws-brand').textContent = name || 'Your academy';
-  $('#ws-brand').classList.toggle('ph', !name);
-  $('#ws-hero').textContent = name || 'Your academy';
-  $('#ws-hero').classList.toggle('ph', !name);
-  $('#ws-mark').textContent = (name || 'Y').trim().charAt(0).toUpperCase();
+function hyphenEnds(value) {
+  return /^-|-$/.test(value);
+}
+
+function fullnameProblem(value) {
+  const trimmed = value.trim();
+
+  if (!trimmed) return 'Name required';
+  if (trimmed.length < 5) return 'Enter your full name (at least 5 characters).';
+
+  return '';
+}
+
+function orgNameProblem(value) {
+  const trimmed = value.trim();
+
+  if (trimmed.length < 5) return 'Organization must contain 5 or more characters';
+  if (hyphenEnds(trimmed)) return 'Organization name cannot start or end with a hyphen';
+
+  return '';
+}
+
+function siteProblem(site) {
+  if (BLOCKED_SUBDOMAINS.includes(site)) return 'Sitename already exists.';
+  if (site.length < 5) return 'Academy subdomain must contain 5 or more characters';
+  if (hyphenEnds(site)) return 'Academy subdomain cannot start or end with a hyphen';
+  if (TAKEN_SUBDOMAINS.includes(site)) return `Site name '${site}' already exists`;
+
+  return '';
+}
+
+let typedName = '';
+
+function paintGreeting() {
+  const name = typedName.trim();
+  const label = $('#wl-name');
+
+  label.textContent = name || 'user.name';
+  label.classList.toggle('ph', !name);
+  $('#wl-token').classList.toggle('filled', Boolean(name));
+}
+
+function paintAvailability({ immediate = false } = {}) {
+  clearTimeout(availabilityTimer);
+
+  const host = $('#wl-avail');
+  const site = S.siteName;
+
+  if (!site) {
+    host.innerHTML = '';
+    return;
+  }
+
+  const settle = () => {
+    const problem = siteProblem(site);
+
+    host.innerHTML = problem
+      ? `<p class="wl-banner bad">${icon('x', 14)}<span>${esc(problem)}</span></p>`
+      : `<p class="wl-banner ok">${icon('check', 14)}<span>Subdomain available</span></p>`;
+  };
+
+  if (immediate) {
+    settle();
+    return;
+  }
+
+  host.innerHTML = `<p class="wl-banner wait"><span class="wl-spin"></span><span>Checking availability</span></p>`;
+  availabilityTimer = setTimeout(settle, AVAILABILITY_DELAY_MS);
 }
 
 function renderWorkspace() {
+  typedName = '';
   if (!S.siteName && S.company) S.siteName = siteNameFrom(S.company);
 
-  $('#setup-stage').innerHTML = `
-    <div class="ws">
-      <div class="ws-main">
-        <p class="eyebrow-mono m-rise" style="--i:0">Your workspace</p>
-        <h1 class="ws-title m-rise" style="--i:1">Set up your <span class="swipe">academy</span></h1>
-        <p class="ws-sub m-rise" style="--i:2">This is the name and address your customers will see.</p>
+  $('#split-stage').innerHTML = `
+    <h1 class="wl-greet m-rise" style="--i:0">
+      <span>Hi,</span>
+      <span class="wl-token" id="wl-token"><b>{{</b><span id="wl-name"></span><b>}}</b></span><i class="wl-caret" aria-hidden="true"></i>
+    </h1>
 
-        <div class="ws-form m-rise" style="--i:3">
-          <div class="field">
-            <label class="label" for="ws-name">Name of Organization</label>
-            <input class="input" id="ws-name" autocomplete="organization" placeholder="e.g My School Name" value="${esc(S.company)}" />
-          </div>
-          <div class="field">
-            <label class="label" for="ws-site">Academy subdomain</label>
-            <div class="ws-addr"><i>https://</i><input id="ws-site" autocomplete="off" spellcheck="false" placeholder="myschool" value="${esc(S.siteName)}" /><span>.classroomio.com</span></div>
-          </div>
-        </div>
-        <p class="ws-who m-rise" style="--i:4">Signed in as <b>${esc(S.fullname || 'you')}</b>${S.email ? `, ${esc(S.email)}` : ''}.</p>
+    <div class="wl-form">
+      <div class="field wl-name-field m-rise" style="--i:1">
+        <label class="label" for="ws-fullname">What's your full name?</label>
+        <input class="input" id="ws-fullname" autocomplete="name" placeholder="Joke Silva" value="" />
+        <div class="wl-req${S.fullname.trim() ? ' gone' : ''}" id="wl-req"><p>Name required</p></div>
       </div>
 
-      <aside class="ws-side m-fade" aria-label="Your academy, as visitors will see it">
-        <div class="ws-brw">
-          <div class="ws-bar"><i></i><i></i><i></i><span class="ws-url" id="ws-url"></span></div>
-          <div class="ws-nav"><span class="ws-mark" id="ws-mark"></span><b id="ws-brand"></b><em>Courses</em></div>
-          <div class="ws-hero"><h2 id="ws-hero"></h2><span class="ws-sk" style="width:62%"></span><span class="ws-sk" style="width:44%"></span><span class="ws-btns"><u></u><u></u></span></div>
-          <div class="ws-row"><span class="ws-th"></span><span><span class="ws-sk" style="width:200px"></span><span class="ws-sk soft" style="width:140px"></span></span></div>
-        </div>
-        <p class="ws-cap">Your academy, as visitors will see it</p>
-      </aside>
+      <div class="field m-rise" style="--i:2">
+        <label class="label" for="ws-name">What's the name of your organization?</label>
+        <input class="input" id="ws-name" autocomplete="organization" placeholder="e.g My School Name" value="${esc(S.company)}" />
+      </div>
+
+      <div class="field m-rise" style="--i:3">
+        <label class="label" for="ws-site">Academy subdomain</label>
+        <div class="ws-addr"><input id="ws-site" autocomplete="off" spellcheck="false" placeholder="myschool" value="${esc(S.siteName)}" /><span>.classroomio.com</span></div>
+        <p class="wl-hint">Letters and numbers only</p>
+        <div id="wl-avail" aria-live="polite"></div>
+      </div>
+
+      <button class="btn btn-primary btn-lg m-rise" style="--i:4;width:100%" id="ws-continue">Continue</button>
+      <p class="wl-back m-rise" style="--i:5"><button class="btn btn-ghost btn-sm" id="ws-back">Back</button></p>
     </div>`;
 
+  const fullname = $('#ws-fullname');
   const name = $('#ws-name');
   const site = $('#ws-site');
+
+  fullname.addEventListener('input', () => {
+    typedName = fullname.value;
+    S.fullname = fullname.value || S.fullname;
+    $('#wl-req').classList.toggle('gone', Boolean(fullname.value.trim()));
+    fieldError(fullname, '');
+    commit();
+    paintGreeting();
+  });
 
   name.addEventListener('input', () => {
     S.company = name.value;
     S.brandName = name.value;
+    fieldError(name, '');
+
     if (!S.siteNameTouched) {
       S.siteName = siteNameFrom(name.value);
       site.value = S.siteName;
+      fieldError(site.closest('.ws-addr'), '');
+      paintAvailability();
     }
 
-    fieldError(name, '');
-    fieldError(site.closest('.ws-addr'), '');
     commit();
-    paintWorkspacePreview();
   });
 
   site.addEventListener('input', () => {
@@ -484,10 +582,10 @@ function renderWorkspace() {
     site.value = S.siteName;
     fieldError(site.closest('.ws-addr'), '');
     commit();
-    paintWorkspacePreview();
+    paintAvailability();
   });
 
-  [name, site].forEach((input) =>
+  [fullname, name, site].forEach((input) =>
     input.addEventListener('keydown', (event) => {
       if (event.key !== 'Enter') return;
 
@@ -496,43 +594,38 @@ function renderWorkspace() {
     })
   );
 
-  paintWorkspacePreview();
-  if (!S.company) name.focus();
+  $('#ws-continue').addEventListener('click', goNext);
+  $('#ws-back').addEventListener('click', () => {
+    clearTimeout(availabilityTimer);
+    S.stage = 3;
+    commit();
+    render();
+  });
+
+  paintGreeting();
+  paintAvailability({ immediate: true });
+  fullname.focus();
 }
 
 function validateWorkspace() {
+  const fullname = $('#ws-fullname');
   const name = $('#ws-name');
   const addr = $('#ws-site').closest('.ws-addr');
-  const orgName = S.company.trim();
-  const site = S.siteName;
-  const hyphenEnds = (value) => /^-|-$/.test(value);
-  let ok = true;
+  const checks = [
+    [fullname, fullnameProblem(S.fullname)],
+    [name, orgNameProblem(S.company)],
+    [addr, siteProblem(S.siteName)]
+  ];
 
-  if (orgName.length < 5) {
-    fieldError(name, 'Organization must contain 5 or more characters');
-    ok = false;
-  } else if (hyphenEnds(orgName)) {
-    fieldError(name, 'Organization name cannot start or end with a hyphen');
-    ok = false;
-  }
+  checks.forEach(([field, problem]) => fieldError(field, problem));
 
-  if (BLOCKED_SUBDOMAINS.includes(site)) {
-    fieldError(addr, 'Sitename already exists.');
-    ok = false;
-  } else if (site.length < 5) {
-    fieldError(addr, 'Academy subdomain must contain 5 or more characters');
-    ok = false;
-  } else if (hyphenEnds(site)) {
-    fieldError(addr, 'Academy subdomain cannot start or end with a hyphen');
-    ok = false;
-  } else if (TAKEN_SUBDOMAINS.includes(site)) {
-    fieldError(addr, `Site name '${site}' already exists`);
-    ok = false;
-  }
+  const firstBad = checks.find(([, problem]) => problem);
+  if (!firstBad) return true;
 
-  if (!ok) ($('.bad', $('#setup-stage')) ?? name).focus?.();
+  const target = firstBad[0].matches('input') ? firstBad[0] : $('input', firstBad[0]);
+  target.focus();
 
-  return ok;
+  return false;
 }
 
 /* ============================================================
@@ -568,7 +661,11 @@ function isValidSite(value) {
     .trim()
     .replace(/^https?:\/\//i, '')
     .replace(/^www\./i, '');
-  const tld = host.split(/[/?#:]/)[0].split('.').pop().toLowerCase();
+  const tld = host
+    .split(/[/?#:]/)[0]
+    .split('.')
+    .pop()
+    .toLowerCase();
 
   return SITE_PATTERN.test(host) && !RESERVED_TLDS.includes(tld);
 }
@@ -761,7 +858,8 @@ function openSectionById(id, { focus = true } = {}) {
   const node = $(`.acc[data-sec="${id}"]`);
 
   node.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  if (focus && id === 'website') (S.siteMode === 'describe' ? $('#f-desc') : $('#f-site')).focus({ preventScroll: true });
+  if (focus && id === 'website')
+    (S.siteMode === 'describe' ? $('#f-desc') : $('#f-site')).focus({ preventScroll: true });
 }
 
 function advanceFrom(id) {
@@ -946,7 +1044,9 @@ function wireBusiness() {
     chip.addEventListener('click', () => {
       S.pathChoice = S.pathChoice === chip.dataset.path ? '' : chip.dataset.path;
       commit();
-      $$('#paths .chip').forEach((other) => other.setAttribute('aria-pressed', String(other.dataset.path === S.pathChoice)));
+      $$('#paths .chip').forEach((other) =>
+        other.setAttribute('aria-pressed', String(other.dataset.path === S.pathChoice))
+      );
     })
   );
 
@@ -1328,7 +1428,7 @@ function render() {
     return;
   }
 
-  const isSplit = S.stage <= 2;
+  const isSplit = S.stage <= 2 || S.stage === 4;
 
   $('#split-shell').hidden = !isSplit;
   $('#setup-shell').hidden = isSplit;
@@ -1339,32 +1439,30 @@ function render() {
 
   if (isSplit) {
     clearInterval(verifyTimer);
+    clearInterval(tTimer);
     renderVisualPanel();
-    renderTestimonials();
-    restartCarousel();
+
+    if (S.stage !== 4) {
+      renderTestimonials();
+      restartCarousel();
+    }
+
     if (S.stage === 1) renderAccount();
-    else renderVerify();
+    else if (S.stage === 2) renderVerify();
+    else renderWorkspace();
 
     window.scrollTo({ top: 0 });
     return;
   }
 
-  clearInterval(tTimer);
   renderRail();
 
   $('#setup-foot').hidden = false;
   $('#setup-shell').classList.add('biz');
   $('#setup-body').classList.add('wide');
   $('#skip').hidden = true;
-  $('#back').style.visibility = S.stage === 4 ? 'visible' : 'hidden';
-
-  if (S.stage === 3) {
-    $('#next-label').textContent = 'Continue';
-    renderBusiness();
-  } else {
-    $('#next-label').textContent = 'Create workspace';
-    renderWorkspace();
-  }
+  $('#next-label').textContent = 'Continue';
+  renderBusiness();
 
   window.scrollTo({ top: 0 });
 }
@@ -1396,14 +1494,6 @@ function wire() {
   P.initTheme();
 
   $('#next').addEventListener('click', goNext);
-
-  $('#back').addEventListener('click', () => {
-    if (S.stage !== 4) return;
-
-    S.stage = 3;
-    commit();
-    render();
-  });
 
   $('#restart').addEventListener('click', () => {
     P.resetState();

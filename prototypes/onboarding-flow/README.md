@@ -11,8 +11,9 @@ demo courses). Read both before reviewing; §"Where the two specs disagree" need
 | File | What it is |
 | --- | --- |
 | `index.html` | Prototype map — start here |
-| `flow.html` | **Interactive.** Stage 1–2 (account, verify — unchanged), stage 3 (business), and the simulated preparation scene |
+| `flow.html` | **Interactive.** Stage 1–2 (account, verify — unchanged), stage 3 (business), stage 4 (the split-screen "Hi, {{user.name}}" step: full name, organisation, academy subdomain with a simulated availability check), and the simulated preparation scene |
 | `customize.html` | **Interactive.** Stage 4, theme-dock layout: full-width portal preview, a floating pill for brand name, logo and colour, a docked strip of the real themes; the upgrade popup; starter-content editor; the integrations modal |
+| `build.html` | **Interactive.** Stage 6, after Customise: a chat pane beside a live preview. A real ClassroomIO YouTube video autoplays over the preview on arrival and docks to the bottom-right corner when it ends, until closed. A starter prompt (or any text) runs a scripted build, the preview fills with a course, then suggestions for connecting content, adding features and publishing. The chat mirrors the dashboard AI assistant: header with new chat and history, quick-action chips, document attach, `@` lesson mentions and the model picker (Kimi K2.6, Gemini 3.1 Flash Lite, GPT-5.4 Mini, Claude Sonnet 4.6). `build.js`, `build.css` and `welcome.css` carry it. Simulated: no model is called and no course is saved |
 | `motion.css` | Motion tokens, the one staggered entrance, and the reduced-motion switch |
 | `brand.css` | The brand layer: logo lockup, mono eyebrows, swipe highlight, notch, wash and dotfield, Machine styles, blocks and the block loader, the preparation scene, step 3 blocks, customise chrome |
 | `visuals.js` + `machines.js` | The system's own Machine illustration and block loader. `machines.js` is generated from `packages/ui` by `tools/extract-machines.py` |

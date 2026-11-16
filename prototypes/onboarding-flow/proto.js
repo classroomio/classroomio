@@ -200,7 +200,8 @@ const STAGES = [
   { n: 2, id: 'verify', label: 'Verify' },
   { n: 3, id: 'business', label: 'Your business' },
   { n: 4, id: 'workspace', label: 'Workspace' },
-  { n: 5, id: 'customise', label: 'Customise' }
+  { n: 5, id: 'customise', label: 'Customise' },
+  { n: 6, id: 'build', label: 'Build' }
 ];
 
 /* ---------- testimonials ----------
@@ -647,7 +648,14 @@ function recommend(state) {
 
 /* A change to any of these invalidates a previous preparation. */
 function inputKey(state) {
-  return JSON.stringify([state.company, state.website, state.description, [...state.goals].sort(), state.skipContext, state.pathChoice]);
+  return JSON.stringify([
+    state.company,
+    state.website,
+    state.description,
+    [...state.goals].sort(),
+    state.skipContext,
+    state.pathChoice
+  ]);
 }
 
 const PREP_PHASES = [
@@ -887,7 +895,14 @@ const ZAPIER_APPS = [
   { id: 'hubspot', name: 'HubSpot', color: '#ff7a59', mark: 'H', use: 'Update the contact when they finish' },
   { id: 'salesforce', name: 'Salesforce', color: '#00a1e0', mark: 'Sf', use: 'Sync learners to leads and contacts' },
   { id: 'notion', name: 'Notion', color: '#17140f', mark: 'N', use: 'Add progress to a Notion database' },
-  { id: 'mailchimp', name: 'Mailchimp', color: '#ffe01b', ink: '#17140f', mark: 'Mc', use: 'Add new students to an audience' },
+  {
+    id: 'mailchimp',
+    name: 'Mailchimp',
+    color: '#ffe01b',
+    ink: '#17140f',
+    mark: 'Mc',
+    use: 'Add new students to an audience'
+  },
   { id: 'airtable', name: 'Airtable', color: '#18bfff', mark: 'At', use: 'Track learners in a base' },
   { id: 'trello', name: 'Trello', color: '#0079bf', mark: 'T', use: 'Create a card for each new learner' },
   { id: 'zoom', name: 'Zoom', color: '#2d8cff', mark: 'Z', use: 'Register learners for live sessions' }
@@ -1344,40 +1359,50 @@ window.proto = {
 };
 
 /* One-shot message left by a page before it navigates (sessionStorage.cioFlash), shown on the next page. */
-try { const flashMessage = sessionStorage.getItem("cioFlash"); if (flashMessage) { sessionStorage.removeItem("cioFlash"); document.addEventListener("DOMContentLoaded", () => toast(flashMessage)); } } catch { /* storage can be blocked */ }
+try {
+  const flashMessage = sessionStorage.getItem('cioFlash');
+  if (flashMessage) {
+    sessionStorage.removeItem('cioFlash');
+    document.addEventListener('DOMContentLoaded', () => toast(flashMessage));
+  }
+} catch {
+  /* storage can be blocked */
+}
 
 /* Show the production route in the address bar. The server maps each one back to its page. */
-window.addEventListener("load", function showProductionRoute() {
+window.addEventListener('load', function showProductionRoute() {
   try {
-    const page = location.pathname.split("/").pop();
+    const page = location.pathname.split('/').pop();
     const params = new URLSearchParams(location.search);
-    const state = JSON.parse(localStorage.getItem("cioOnboardingState") || "{}");
-    const slug = slugify(brandNameOf(state)) || "your-academy";
+    const state = JSON.parse(localStorage.getItem('cioOnboardingState') || '{}');
+    const slug = slugify(brandNameOf(state)) || 'your-academy';
     const org = `/org/${slug}`;
-    const tab = params.get("tab") || "lessons";
+    const tab = params.get('tab') || 'lessons';
     const paths = {
-      "site.html": "/",
-      "dashboard.html": `${org}/dash`,
-      "setup.html": `${org}/setup`,
-      "courses.html": `${org}/courses`,
-      "templates.html": `${org}/courses/templates`,
-      "landing-editor.html": `${org}/landingpage/edit`,
-      "settings.html": `${org}/settings`,
-      "org-settings.html": `${org}/settings/org`,
-      "audience.html": `${org}/audience`,
-      "public-courses.html": "/courses",
-      "public-course.html": `/course/${params.get("course")}`,
-      "enroll.html": `/course/${params.get("course")}/enroll`,
-      "learn.html": `/course/${params.get("course")}/lesson/${params.get("item")}`,
-      "course.html": params.get("lesson")
-        ? `/courses/${params.get("id")}/lessons/${params.get("lesson")}`
-        : `/courses/${params.get("id")}/${tab}`
+      'site.html': '/',
+      'dashboard.html': `${org}/dash`,
+      'setup.html': `${org}/setup`,
+      'courses.html': `${org}/courses`,
+      'templates.html': `${org}/courses/templates`,
+      'landing-editor.html': `${org}/landingpage/edit`,
+      'settings.html': `${org}/settings`,
+      'org-settings.html': `${org}/settings/org`,
+      'audience.html': `${org}/audience`,
+      'public-courses.html': '/courses',
+      'public-course.html': `/course/${params.get('course')}`,
+      'enroll.html': `/course/${params.get('course')}/enroll`,
+      'learn.html': `/course/${params.get('course')}/lesson/${params.get('item')}`,
+      'course.html': params.get('lesson')
+        ? `/courses/${params.get('id')}/lessons/${params.get('lesson')}`
+        : `/courses/${params.get('id')}/${tab}`
     };
     const target = paths[page];
-    if (!target || params.has("embed")) return;
+    if (!target || params.has('embed')) return;
     const rest = new URLSearchParams(params);
-    ["id", "tab", "lesson", "course", "item"].forEach((key) => rest.delete(key));
+    ['id', 'tab', 'lesson', 'course', 'item'].forEach((key) => rest.delete(key));
     const query = rest.toString();
-    history.replaceState(null, "", target + (query ? `?${query}` : ""));
-  } catch { /* the address bar is cosmetic */ }
+    history.replaceState(null, '', target + (query ? `?${query}` : ''));
+  } catch {
+    /* the address bar is cosmetic */
+  }
 });

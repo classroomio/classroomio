@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Build your first course | ClassroomIO onboarding prototype</title>
+    <link rel="stylesheet" href="fonts/geist.css" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="onboarding.css" />
+    <link rel="stylesheet" href="motion.css" />
+    <link rel="stylesheet" href="brand.css" />
+    <link rel="stylesheet" href="build.css" />
+  </head>
+  <body>
+    <div class="bd">
+      <header class="bd-top">
+        <a class="lockup" href="index.html"><img class="mk" src="logo-mark.svg" alt="" /><span class="nm">classroomio</span></a>
+        <div class="rail" id="rail" style="width: 225px; flex: none"></div>
+        <div class="bd-top-end">
+          <button class="btn btn-ghost btn-sm" id="back">Back</button>
+          <button class="btn btn-ghost btn-sm" id="skip">Skip to my courses</button>
+        </div>
+      </header>
+
+      <main class="bd-main">
+        <section class="bd-chat" aria-label="Chat">
+          <div class="bd-ai-head" id="head"></div>
+          <div class="bd-pane" id="pane"></div>
+          <div class="bd-composer" id="composer"></div>
+          <input type="file" id="attach-input" hidden accept=".pdf,.docx,.pptx,.odt" />
+        </section>
+
+        <section class="bd-preview" aria-label="Preview">
+          <div class="bd-bar">
+            <span class="bd-url" id="url"></span>
+            <button class="btn btn-ghost btn-sm" id="watch-intro">Watch intro</button>
+            <button class="btn btn-primary btn-sm" id="publish" disabled>Publish</button>
+            <div class="bd-coach" id="coach" hidden></div>
+          </div>
+          <div class="bd-view">
+            <div class="bd-canvas" id="canvas"></div>
+            <div class="bd-intro-scrim" id="intro-scrim" hidden></div>
+            <div class="bd-intro" id="intro" role="region" aria-label="Welcome to ClassroomIO" hidden>
+              <div class="bd-intro-head">
+                <img src="logo-mark.svg" alt="" />
+                <span>Welcome to ClassroomIO</span>
+                <button class="bd-intro-btn bd-intro-sound" id="intro-sound" hidden>Turn on sound</button>
+                <button class="bd-intro-btn" id="intro-dock" aria-label="Move video to the corner">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14h6v6" /><path d="M20 10h-6V4" /><path d="M14 10l7-7" /><path d="M3 21l7-7" /></svg>
+                </button>
+                <button class="bd-intro-btn" id="intro-close" aria-label="Close video">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                </button>
+              </div>
+              <div class="bd-intro-frame"><div id="intro-yt"></div></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="modal-host"></div>
+
+    <script src="proto.js"></script>
+    <script src="machines.js"></script>
+    <script src="visuals.js"></script>
+    <script src="pricing.js"></script>
+    <script src="model.js"></script>
+    <script src="build.js"></script>
+  </body>
+</html>
