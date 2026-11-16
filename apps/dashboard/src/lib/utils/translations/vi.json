@@ -7027,7 +7027,18 @@
           "overdue": "Quá hạn",
           "certified": "Giấy chứng nhận đã được cấp",
           "not_certified": "Không có chứng chỉ"
-        }
+        },
+        "completion": {
+          "label": "Hoàn thành",
+          "any": "Mọi mức hoàn thành",
+          "incomplete": "Chưa hoàn thành"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Mọi video",
+          "low": "Video dưới 60%"
+        },
+        "cohort_chip": "{count, plural, other {# đoàn hệ}}"
       },
       "showing_paged": {
         "cohort": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
@@ -7187,9 +7198,56 @@
     },
     "export": {
       "students_capped": "Danh sách học viên được giới hạn ở {limit} dòng đầu tiên.",
-      "exercises_capped": "Điểm bài tập được giới hạn ở {limit} kết quả đầu tiên."
+      "exercises_capped": "Điểm bài tập được giới hạn ở {limit} kết quả đầu tiên.",
+      "yes": "Có",
+      "no": "Không",
+      "columns": {
+        "segment": "Nhóm",
+        "metric": "Chỉ số",
+        "value": "Giá trị",
+        "details": "Chi tiết"
+      },
+      "dimensions": {
+        "student": "Người học",
+        "course": "Khóa học",
+        "cohort": "Đoàn hệ",
+        "exercise": "Bài tập",
+        "section": "Phần",
+        "lesson": "Bài học",
+        "question": "Câu hỏi",
+        "item": "Mục",
+        "day": "Ngày",
+        "period": "Giai đoạn",
+        "status": "Trạng thái",
+        "overdue_kind": "Loại quá hạn",
+        "progress_bucket_25": "Tiến độ",
+        "score_bucket_10": "Điểm trung bình"
+      }
     },
-    "org_page_title": "Học viện"
+    "org_page_title": "Học viện",
+    "widget_menu": {
+      "label": "Thao tác cho {title}",
+      "view_students": "Xem người học",
+      "open_in_students": "Mở trong tab Người học",
+      "click_to_view": "Chọn một cột hoặc một phần để xem người học của nó"
+    },
+    "drilldown": {
+      "count": "{count, plural, other {# người học}}",
+      "description": "Những người học đằng sau con số này.",
+      "cohort_health": {
+        "any": "Trong các đoàn hệ có người học",
+        "at_risk": "Trong các đoàn hệ có nguy cơ",
+        "lagging": "Trong các đoàn hệ tụt hậu",
+        "on_track": "Trong các đoàn hệ đang đi đúng hướng",
+        "completed": "Trong các đoàn hệ đã hoàn thành"
+      },
+      "cohort_health_note": "Biểu đồ đếm người học trong các đoàn hệ có xếp loại này, không phải người học có trạng thái này.",
+      "count_differs": "Biểu đồ đếm {expected} vì mỗi người học được đếm một lần cho mỗi đoàn hệ mà họ tham gia. Danh sách này hiển thị {total}.",
+      "lesson_incomplete": "Chưa hoàn thành: {lesson}",
+      "lesson_fallback": "bài học này",
+      "score_bucket": "Điểm trung bình {range}",
+      "scored": "Có điểm trung bình"
+    }
   },
   "oauth": {
     "consent": {

@@ -7109,7 +7109,18 @@
           "overdue": "vadesi geçmiş",
           "certified": "Sertifika verildi",
           "not_certified": "Sertifika yok"
-        }
+        },
+        "completion": {
+          "label": "Tamamlama",
+          "any": "Herhangi bir tamamlama",
+          "incomplete": "Tamamlanmadı"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Herhangi bir video",
+          "low": "%60'ın altında video"
+        },
+        "cohort_chip": "{count, plural, one {# kohort} other {# kohort}}"
       },
       "showing_paged": {
         "cohort": "Grupta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
@@ -7269,8 +7280,55 @@
     },
     "export": {
       "students_capped": "Öğrenci listesi ilk {limit} satırla sınırlıdır.",
-      "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır."
+      "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır.",
+      "yes": "Evet",
+      "no": "Hayır",
+      "columns": {
+        "segment": "Grup",
+        "metric": "Ölçüt",
+        "value": "Değer",
+        "details": "Ayrıntılar"
+      },
+      "dimensions": {
+        "student": "Öğrenci",
+        "course": "Kurs",
+        "cohort": "Kohort",
+        "exercise": "Alıştırma",
+        "section": "Bölüm",
+        "lesson": "Ders",
+        "question": "Soru",
+        "item": "Öğe",
+        "day": "Gün",
+        "period": "Dönem",
+        "status": "Durum",
+        "overdue_kind": "Gecikme türü",
+        "progress_bucket_25": "İlerleme",
+        "score_bucket_10": "Ortalama puan"
+      }
     },
-    "org_page_title": "Akademi"
+    "org_page_title": "Akademi",
+    "widget_menu": {
+      "label": "{title} için işlemler",
+      "view_students": "Öğrencileri görüntüle",
+      "open_in_students": "Öğrenciler sekmesinde aç",
+      "click_to_view": "Öğrencilerini görmek için bir çubuk veya dilim seçin"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# öğrenci} other {# öğrenci}}",
+      "description": "Bu sayının arkasındaki öğrenciler.",
+      "cohort_health": {
+        "any": "Öğrencisi olan kohortlarda",
+        "at_risk": "Risk altındaki kohortlarda",
+        "lagging": "Geride kalan kohortlarda",
+        "on_track": "Yolda olan kohortlarda",
+        "completed": "Tamamlanan kohortlarda"
+      },
+      "cohort_health_note": "Grafik, bu değerlendirmeye sahip kohortlardaki öğrencileri sayar; bu durumdaki öğrencileri değil.",
+      "count_differs": "Grafik {expected} sayar çünkü bir öğrenciyi bulunduğu her kohort için bir kez sayar. Bu liste {total} gösterir.",
+      "lesson_incomplete": "Tamamlanmadı: {lesson}",
+      "lesson_fallback": "bu ders",
+      "score_bucket": "Ortalama puan {range}",
+      "scored": "Ortalama puanı olan"
+    }
   }
 }
