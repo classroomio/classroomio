@@ -5,7 +5,10 @@ import { t } from '$lib/utils/functions/translations';
 function getMathLabels(): Partial<Record<MathQuestionLabelKey, string>> {
   const labels: Partial<Record<MathQuestionLabelKey, string>> = {};
   for (const key of Object.keys(MATH_QUESTION_LABEL_DEFAULTS) as MathQuestionLabelKey[]) {
-    labels[key] = t.get(`math_question.${key.slice('math.'.length)}`);
+    labels[key] = t.get(`math_question.${key.slice('math.'.length)}`, {
+      matched: '{matched}',
+      total: '{total}'
+    });
   }
 
   return labels;
