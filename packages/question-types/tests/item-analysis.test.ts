@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { assignDiscriminationGroups, computeDiscrimination, computeFacility } from '../src/item-analysis';
+import { assignDiscriminationGroups, computeDiscrimination, computeFacility, flagItem } from '../src/item-analysis';
 
 describe('computeFacility', () => {
   it('is null without responses', () => {
@@ -51,5 +51,24 @@ describe('computeDiscrimination', () => {
 
   it('is null for a group of one student, where no group forms', () => {
     expect(computeDiscrimination([{ totalRatio: 0.5, ratio: 1 }])).toBeNull();
+  });
+});
+
+describe('flagItem', () => {
+  it('raises no flag without data', () => {
+    expect(flagItem(null, null)).toEqual([]);
+  });
+
+  it('flags a question few students answer correctly as too hard', () => {
+    expect(flagItem(20, 0.5)).toEqual(['too_hard']);
+  });
+
+  it('flags a question nearly everyone answers correctly as too easy, and one that separates nobody', () => {
+    expect(flagItem(95, 0.05)).toEqual(['too_easy', 'poor_discrimination']);
+  });
+
+  it('keeps a healthy question unflagged at the boundaries', () => {
+    expect(flagItem(30, 0.2)).toEqual([]);
+    expect(flagItem(90, 0.4)).toEqual([]);
   });
 });

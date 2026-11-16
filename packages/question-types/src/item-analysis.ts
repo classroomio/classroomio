@@ -54,3 +54,27 @@ export function computeDiscrimination(responses: readonly ItemResponse[]): numbe
 
   return Math.round((average(upper) - average(lower)) * 100) / 100;
 }
+
+export const ITEM_ANALYSIS_THRESHOLDS = {
+  /** Facility percentage below which a question is flagged as too hard. */
+  tooHardBelow: 30,
+  /** Facility percentage above which a question is flagged as too easy. */
+  tooEasyAbove: 90,
+  /** Discrimination (upper minus lower group, 0 to 1) below which a question separates students poorly. */
+  poorDiscriminationBelow: 0.2
+} as const;
+
+export type ItemFlag = 'too_hard' | 'too_easy' | 'poor_discrimination';
+
+/** The review flags for one question from its facility percentage and discrimination; null values raise no flag. */
+export function flagItem(facility: number | null, discrimination: number | null): ItemFlag[] {
+  const flags: ItemFlag[] = [];
+
+  if (facility !== null && facility < ITEM_ANALYSIS_THRESHOLDS.tooHardBelow) flags.push('too_hard');
+  if (facility !== null && facility > ITEM_ANALYSIS_THRESHOLDS.tooEasyAbove) flags.push('too_easy');
+  if (discrimination !== null && discrimination < ITEM_ANALYSIS_THRESHOLDS.poorDiscriminationBelow) {
+    flags.push('poor_discrimination');
+  }
+
+  return flags;
+}

@@ -7783,5 +7783,96 @@
       "no_matches": "Aucune compétence ne correspond à votre recherche",
       "questions": "Questions"
     }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Attribuer un exercice aux {count} en apprentissage",
+      "assign_to_cluster": "Attribuer un exercice à ces {count}"
+    },
+    "default_title": "Entraînement : {name}",
+    "default_title_question": "Entraînement",
+    "dialog": {
+      "title": "Attribuer un entraînement",
+      "description": "Crée un court exercice d'entraînement à partir de nouvelles variantes des questions de la compétence et ne l'affiche qu'aux élèves sélectionnés.",
+      "name": "Nom de l'exercice",
+      "count": "Nombre de questions",
+      "students": "Élèves ({count} sélectionnés)",
+      "cancel": "Annuler",
+      "submit": "Attribuer l'entraînement"
+    },
+    "snackbar": {
+      "assigned": "Entraînement attribué à {count} élèves"
+    }
+  },
+  "student_report": {
+    "actions": {
+      "bulk": "Générer des rapports pour ces élèves",
+      "create": "Créer un rapport"
+    },
+    "dialog": {
+      "title_single": "Rapport de progrès de {name}",
+      "title_bulk": "Rapports de progrès de {count} élèves",
+      "description": "Partagez un rapport d'une page avec les compétences acquises, celles à travailler et les scores récents.",
+      "links_ready": "Liens prêts. Copiez-les maintenant : ils ne s'affichent qu'une fois.",
+      "copy": "Copier",
+      "copied": "Copié",
+      "open": "Ouvrir",
+      "done": "Terminé",
+      "period": "Période",
+      "period_start": "Du",
+      "period_end": "Au",
+      "comment": "Commentaire de l'enseignant",
+      "comment_placeholder": "Ajoutez une courte note pour l'élève ou le parent",
+      "expiry": "Le lien expire après",
+      "expiry_days": "{days} jours",
+      "parent_email": "E-mail du parent (facultatif)",
+      "send_to_parent": "Envoyer le rapport au parent par e-mail",
+      "cancel": "Annuler",
+      "submit": "Créer le rapport"
+    },
+    "history": {
+      "heading": "Rapports précédents",
+      "views": "{count} vues",
+      "revoke": "Révoquer",
+      "status": {
+        "active": "Actif",
+        "expired": "Expiré",
+        "revoked": "Révoqué"
+      }
+    },
+    "snackbar": {
+      "revoked": "Lien du rapport révoqué"
+    },
+    "view": {
+      "print": "Imprimer ou enregistrer en PDF",
+      "comment": "Commentaire de l'enseignant",
+      "mastered": "Compétences acquises",
+      "to_work_on": "Compétences à travailler",
+      "none_yet": "Rien pour l'instant.",
+      "scores": "Scores récents",
+      "no_scores": "Aucun score sur cette période.",
+      "exercise": "Exercice",
+      "score": "Score",
+      "footer": "Ce lien expire le {date}."
+    }
+  },
+  "question_analysis": {
+    "tab": "Analyse des questions",
+    "description": "La facilité est la part d'élèves ayant répondu parfaitement. Les questions sous {hard} % sont signalées comme trop difficiles et au-dessus de {easy} % comme trop faciles. Une discrimination inférieure à {discrimination} signifie que la question ne distingue pas les élèves forts des faibles.",
+    "empty": "Aucune réponse à analyser pour l'instant.",
+    "seconds": "{seconds} s",
+    "columns": {
+      "question": "Question",
+      "facility": "Facilité",
+      "discrimination": "Discrimination",
+      "time": "Temps médian",
+      "wrong_answers": "Réponses fausses fréquentes",
+      "flags": "Signalements"
+    },
+    "flags": {
+      "too_hard": "Trop difficile",
+      "too_easy": "Trop facile",
+      "poor_discrimination": "Faible discrimination"
+    }
   }
 }

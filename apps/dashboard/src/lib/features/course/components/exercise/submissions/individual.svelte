@@ -11,7 +11,9 @@
   import { onMount, untrack } from 'svelte';
 
   import { courseApi } from '$features/course/api';
+  import { Button } from '@cio/ui/base/button';
   import { StudentSkillMastery } from '$features/skills/components';
+  import { CreateReportDialog } from '$features/student-report/components';
   import { getQuestionsForSection, questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
@@ -36,6 +38,7 @@
   let studentSelected = $state(0);
   let selectedAttemptByStudentKey = $state<Record<string, number>>({});
   let hasNoSubmission = $state(false);
+  let isReportOpen = $state(false);
 
   function resolveStudentIndex(studentKeyParam: string | null): number | null {
     if (!studentKeyParam) return 0;
@@ -340,6 +343,16 @@
       {@const selectedSubmission = selectedAttempt.submission}
       {#if courseApi.course?.id}
         <StudentSkillMastery courseId={courseApi.course.id} profileId={selectedGroup.studentKey} />
+        <div class="mb-4">
+          <Button size="sm" variant="outline" onclick={() => (isReportOpen = true)} testId="individual-create-report">
+            {$t('student_report.actions.create')}
+          </Button>
+        </div>
+        <CreateReportDialog
+          bind:open={isReportOpen}
+          courseId={courseApi.course.id}
+          students={[{ profileId: selectedGroup.studentKey, name: selectedGroup.studentName }]}
+        />
       {/if}
       <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>

@@ -7833,5 +7833,96 @@
       "no_matches": "Aramanızla eşleşen beceri yok",
       "questions": "Sorular"
     }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Öğrenmekte olan {count} öğrenciye alıştırma ata",
+      "assign_to_cluster": "Bu {count} öğrenciye alıştırma ata"
+    },
+    "default_title": "Alıştırma: {name}",
+    "default_title_question": "Alıştırma",
+    "dialog": {
+      "title": "Alıştırma ata",
+      "description": "Becerinin sorularının yeni varyantlarından kısa bir alıştırma oluşturur ve yalnızca seçtiğiniz öğrencilere gösterir.",
+      "name": "Alıştırma adı",
+      "count": "Soru sayısı",
+      "students": "Öğrenciler ({count} seçili)",
+      "cancel": "İptal",
+      "submit": "Alıştırma ata"
+    },
+    "snackbar": {
+      "assigned": "Alıştırma {count} öğrenciye atandı"
+    }
+  },
+  "student_report": {
+    "actions": {
+      "bulk": "Bu öğrenciler için rapor oluştur",
+      "create": "Rapor oluştur"
+    },
+    "dialog": {
+      "title_single": "{name} için gelişim raporu",
+      "title_bulk": "{count} öğrenci için gelişim raporları",
+      "description": "Öğrenilen becerileri, üzerinde çalışılacak becerileri ve son puanları içeren tek sayfalık bir rapor paylaşın.",
+      "links_ready": "Rapor bağlantıları hazır. Şimdi kopyalayın: yalnızca bir kez gösterilir.",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı",
+      "open": "Aç",
+      "done": "Tamam",
+      "period": "Dönem",
+      "period_start": "Başlangıç",
+      "period_end": "Bitiş",
+      "comment": "Öğretmen yorumu",
+      "comment_placeholder": "Öğrenci veya veli için kısa bir not ekleyin",
+      "expiry": "Bağlantı şu süre sonra sona erer",
+      "expiry_days": "{days} gün",
+      "parent_email": "Veli e-postası (isteğe bağlı)",
+      "send_to_parent": "Raporu veliye e-postayla gönder",
+      "cancel": "İptal",
+      "submit": "Rapor oluştur"
+    },
+    "history": {
+      "heading": "Önceki raporlar",
+      "views": "{count} görüntüleme",
+      "revoke": "İptal et",
+      "status": {
+        "active": "Etkin",
+        "expired": "Süresi doldu",
+        "revoked": "İptal edildi"
+      }
+    },
+    "snackbar": {
+      "revoked": "Rapor bağlantısı iptal edildi"
+    },
+    "view": {
+      "print": "Yazdır veya PDF olarak kaydet",
+      "comment": "Öğretmen yorumu",
+      "mastered": "Öğrenilen beceriler",
+      "to_work_on": "Üzerinde çalışılacak beceriler",
+      "none_yet": "Henüz bir şey yok.",
+      "scores": "Son puanlar",
+      "no_scores": "Bu dönemde puan yok.",
+      "exercise": "Alıştırma",
+      "score": "Puan",
+      "footer": "Bu bağlantı {date} tarihinde sona erer."
+    }
+  },
+  "question_analysis": {
+    "tab": "Soru analizi",
+    "description": "Kolaylık, soruyu tamamen doğru yanıtlayan öğrencilerin oranıdır. %{hard} altındaki sorular çok zor, %{easy} üstündekiler çok kolay olarak işaretlenir. {discrimination} altındaki ayırt edicilik, sorunun güçlü ve zayıf öğrencileri ayırmadığı anlamına gelir.",
+    "empty": "Henüz analiz edilecek yanıt yok.",
+    "seconds": "{seconds} sn",
+    "columns": {
+      "question": "Soru",
+      "facility": "Kolaylık",
+      "discrimination": "Ayırt edicilik",
+      "time": "Ortanca süre",
+      "wrong_answers": "Sık yanlış yanıtlar",
+      "flags": "İşaretler"
+    },
+    "flags": {
+      "too_hard": "Çok zor",
+      "too_easy": "Çok kolay",
+      "poor_discrimination": "Düşük ayırt edicilik"
+    }
   }
 }

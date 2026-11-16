@@ -7783,5 +7783,96 @@
       "no_matches": "Żadna umiejętność nie pasuje do wyszukiwania",
       "questions": "Pytania"
     }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Przypisz ćwiczenie {count} uczącym się",
+      "assign_to_cluster": "Przypisz ćwiczenie tym {count}"
+    },
+    "default_title": "Ćwiczenie: {name}",
+    "default_title_question": "Ćwiczenie",
+    "dialog": {
+      "title": "Przypisz ćwiczenie",
+      "description": "Tworzy krótkie ćwiczenie z nowych wariantów pytań do umiejętności i pokazuje je tylko wybranym uczniom.",
+      "name": "Nazwa ćwiczenia",
+      "count": "Liczba pytań",
+      "students": "Uczniowie (wybrano: {count})",
+      "cancel": "Anuluj",
+      "submit": "Przypisz ćwiczenie"
+    },
+    "snackbar": {
+      "assigned": "Ćwiczenie przypisano {count} uczniom"
+    }
+  },
+  "student_report": {
+    "actions": {
+      "bulk": "Utwórz raporty dla tych uczniów",
+      "create": "Utwórz raport"
+    },
+    "dialog": {
+      "title_single": "Raport postępów: {name}",
+      "title_bulk": "Raporty postępów dla {count} uczniów",
+      "description": "Udostępnij jednostronicowy raport z opanowanymi umiejętnościami, umiejętnościami do poprawy i ostatnimi wynikami.",
+      "links_ready": "Linki gotowe. Skopiuj je teraz: są pokazywane tylko raz.",
+      "copy": "Kopiuj",
+      "copied": "Skopiowano",
+      "open": "Otwórz",
+      "done": "Gotowe",
+      "period": "Okres",
+      "period_start": "Od",
+      "period_end": "Do",
+      "comment": "Komentarz nauczyciela",
+      "comment_placeholder": "Dodaj krótką notatkę dla ucznia lub rodzica",
+      "expiry": "Link wygasa po",
+      "expiry_days": "{days} dniach",
+      "parent_email": "E-mail rodzica (opcjonalnie)",
+      "send_to_parent": "Wyślij raport e-mailem do rodzica",
+      "cancel": "Anuluj",
+      "submit": "Utwórz raport"
+    },
+    "history": {
+      "heading": "Wcześniejsze raporty",
+      "views": "Wyświetlenia: {count}",
+      "revoke": "Unieważnij",
+      "status": {
+        "active": "Aktywny",
+        "expired": "Wygasł",
+        "revoked": "Unieważniony"
+      }
+    },
+    "snackbar": {
+      "revoked": "Link do raportu unieważniony"
+    },
+    "view": {
+      "print": "Drukuj lub zapisz jako PDF",
+      "comment": "Komentarz nauczyciela",
+      "mastered": "Opanowane umiejętności",
+      "to_work_on": "Umiejętności do poprawy",
+      "none_yet": "Jeszcze nic.",
+      "scores": "Ostatnie wyniki",
+      "no_scores": "Brak wyników w tym okresie.",
+      "exercise": "Ćwiczenie",
+      "score": "Wynik",
+      "footer": "Ten link wygasa {date}."
+    }
+  },
+  "question_analysis": {
+    "tab": "Analiza pytań",
+    "description": "Łatwość to odsetek uczniów, którzy odpowiedzieli w pełni poprawnie. Pytania poniżej {hard}% są oznaczane jako zbyt trudne, a powyżej {easy}% jako zbyt łatwe. Moc różnicująca poniżej {discrimination} oznacza, że pytanie nie rozróżnia uczniów mocnych i słabych.",
+    "empty": "Brak odpowiedzi do analizy.",
+    "seconds": "{seconds} s",
+    "columns": {
+      "question": "Pytanie",
+      "facility": "Łatwość",
+      "discrimination": "Moc różnicująca",
+      "time": "Mediana czasu",
+      "wrong_answers": "Częste błędne odpowiedzi",
+      "flags": "Oznaczenia"
+    },
+    "flags": {
+      "too_hard": "Zbyt trudne",
+      "too_easy": "Zbyt łatwe",
+      "poor_discrimination": "Niska moc różnicująca"
+    }
   }
 }

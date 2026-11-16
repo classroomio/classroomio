@@ -17,6 +17,7 @@
   } from '@cio/question-types';
   import { cn } from '@cio/ui/tools';
 
+  import { CreateReportDialog } from '$features/student-report/components';
   import { exerciseResultsApi } from '$features/course/api';
   import type { ExerciseResultsCell, ExerciseResultsStudent } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -52,6 +53,8 @@
   let clusterQuestionId = $state<number | null>(null);
   let reviewTarget = $state<{ student: ExerciseResultsStudent; cell: ExerciseResultsCell } | null>(null);
   let loadedOrgKey = '';
+  let reportStudents = $state<{ profileId: string; name: string }[]>([]);
+  let isReportOpen = $state(false);
 
   const results = $derived(exerciseResultsApi.results);
   const labels = $derived(getExerciseQuestionLabels());
@@ -89,6 +92,13 @@
       cohortId: cohortId === ALL_COHORTS ? undefined : cohortId
     });
   });
+
+  function openReport(students: ExerciseResultsStudent[]) {
+    reportStudents = students.flatMap((student) =>
+      student.profileId ? [{ profileId: student.profileId, name: student.fullname ?? '' }] : []
+    );
+    isReportOpen = reportStudents.length > 0;
+  }
 
   function chooseFilter(next: ResultsFilter) {
     filter = next;
@@ -158,6 +168,12 @@
       </Select.Root>
     {/if}
 
+    {#if results && results.students.length > 0}
+      <Button size="sm" variant="outline" onclick={() => openReport(results.students)} testId="results-bulk-report">
+        {$t('student_report.actions.bulk')}
+      </Button>
+    {/if}
+
     <div class="ml-auto flex flex-wrap items-center gap-3 text-xs">
       {#each LEGEND as state (state)}
         <span class="flex items-center gap-1">
@@ -211,6 +227,15 @@
                 <div class="flex items-center gap-2">
                   <UserAvatar avatarUrl={student.avatarUrl ?? ''} name={student.fullname ?? ''} className="size-6" />
                   <span class="truncate">{student.fullname ?? $t('exercise_results.unknown_student')}</span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    class="ml-auto"
+                    onclick={() => openReport([student])}
+                    testId="results-student-report"
+                  >
+                    {$t('student_report.actions.create')}
+                  </Button>
                 </div>
               </th>
               {#each gridQuestions as entry (entry.id)}
@@ -310,3 +335,5 @@
     {/if}
   </Dialog.Content>
 </Dialog.Root>
+
+<CreateReportDialog bind:open={isReportOpen} {courseId} students={reportStudents} />

@@ -221,3 +221,15 @@ export async function setProfileFullnameIfUnset(
     throw new Error('Failed to set profile full name');
   }
 }
+
+/** Display names for the given profiles, keyed by profile id. */
+export async function getProfileNamesByIds(ids: string[], dbClient: DbOrTxClient = db) {
+  if (ids.length === 0) return new Map<string, string>();
+
+  const rows = await dbClient
+    .select({ id: schema.profile.id, fullname: schema.profile.fullname })
+    .from(schema.profile)
+    .where(inArray(schema.profile.id, ids));
+
+  return new Map(rows.map((row) => [row.id, row.fullname]));
+}

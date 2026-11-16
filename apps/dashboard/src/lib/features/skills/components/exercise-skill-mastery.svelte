@@ -1,6 +1,8 @@
 <script lang="ts">
   import { SKILL_MASTERY_LEVELS } from '@cio/question-types/skill-mastery';
 
+  import { Button } from '@cio/ui/base/button';
+  import { AssignPracticeDialog } from '$features/practice/components';
   import { skillsApi } from '$features/skills/api';
   import { MASTERY_LEVEL_CLASS, type ExerciseMastery } from '$features/skills/utils';
   import { cn } from '@cio/ui/tools';
@@ -14,6 +16,19 @@
   let { courseId, exerciseId }: Props = $props();
 
   let mastery = $state<ExerciseMastery | null>(null);
+  let practiceSkill = $state<{ id: string; code: string; students: { profileId: string; name: string }[] } | null>(null);
+  let isPracticeOpen = $state(false);
+
+  function weakStudents(skillId: string) {
+    return (mastery?.students ?? [])
+      .filter((student) => student.mastery[skillId]?.level === 'learning')
+      .map((student) => ({ profileId: student.profileId, name: student.name }));
+  }
+
+  function openPractice(skill: { id: string; code: string }) {
+    practiceSkill = { id: skill.id, code: skill.code, students: weakStudents(skill.id) };
+    isPracticeOpen = true;
+  }
 
   $effect(() => {
     const currentCourseId = courseId;
@@ -35,7 +50,19 @@
         {@const levels = mastery.summary.find((row) => row.skillId === skill.id)?.levels}
         {@const total = levels ? SKILL_MASTERY_LEVELS.reduce((sum, level) => sum + levels[level], 0) : 0}
         <div data-testid="exercise-skill-mastery-row">
-          <p class="text-sm"><span class="font-mono text-xs">{skill.code}</span> · {skill.name}</p>
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-sm"><span class="font-mono text-xs">{skill.code}</span> · {skill.name}</p>
+            {#if weakStudents(skill.id).length > 0}
+              <Button
+                size="sm"
+                variant="outline"
+                onclick={() => openPractice(skill)}
+                testId="mastery-assign-practice"
+              >
+                {$t('practice.actions.assign_to_weak', { count: weakStudents(skill.id).length })}
+              </Button>
+            {/if}
+          </div>
           {#if levels && total > 0}
             <div class="mt-1 flex h-5 overflow-hidden rounded-md text-[11px]">
               {#each SKILL_MASTERY_LEVELS as level (level)}
@@ -66,4 +93,14 @@
       {/each}
     </div>
   </div>
+{/if}
+
+{#if practiceSkill}
+  <AssignPracticeDialog
+    bind:open={isPracticeOpen}
+    {courseId}
+    students={practiceSkill.students}
+    source={{ skillId: practiceSkill.id }}
+    defaultTitle={$t('practice.default_title', { name: practiceSkill.code })}
+  />
 {/if}

@@ -5,6 +5,7 @@ import {
   getSkillAttemptsForCourse,
   type SkillAttemptRow
 } from '@cio/db/queries/skill';
+import { getProfileNamesByIds } from '@cio/db/queries/auth';
 import { assertExerciseBelongsToCourse } from '@api/services/v1/courses/exercises';
 
 type SkillRef = { id: string; code: string; name: string };
@@ -57,8 +58,10 @@ export async function getExerciseSkillMastery(courseId: string, exerciseId: stri
     attemptsByStudent.set(attempt.profileId, [...(attemptsByStudent.get(attempt.profileId) ?? []), attempt]);
   }
 
+  const names = await getProfileNamesByIds([...attemptsByStudent.keys()]);
   const students = [...attemptsByStudent].map(([profileId, rows]) => ({
     profileId,
+    name: names.get(profileId) ?? '',
     mastery: Object.fromEntries(masteryBySkill(rows))
   }));
 

@@ -7,6 +7,7 @@
   import { NumberField } from '@cio/ui/custom/number-field';
   import { formatPoints } from '@cio/question-types';
 
+  import { AssignPracticeDialog } from '$features/practice/components';
   import { exerciseResultsApi } from '$features/course/api';
   import type { AnswerClusterItem } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -27,6 +28,8 @@
   let feedbackDraft = $state('');
   let isSaving = $state(false);
   let loadedQuestionId = -1;
+  let practiceStudents = $state<{ profileId: string; name: string }[]>([]);
+  let isPracticeOpen = $state(false);
 
   const data = $derived(exerciseResultsApi.clusters);
 
@@ -66,6 +69,13 @@
     editMode = mode;
     pointsDraft = cluster.override?.points ?? null;
     feedbackDraft = cluster.override?.feedback ?? '';
+  }
+
+  function openPractice(cluster: AnswerClusterItem) {
+    practiceStudents = cluster.studentIds.flatMap((profileId, index) =>
+      profileId ? [{ profileId, name: cluster.studentNames[index] ?? '' }] : []
+    );
+    isPracticeOpen = true;
   }
 
   function gradeVariant(grade: AnswerClusterItem['grade']) {
@@ -165,6 +175,11 @@
           >
             {$t('exercise_results.clusters.add_feedback')}
           </Button>
+          {#if cluster.grade !== 'full' && cluster.studentIds.some(Boolean)}
+            <Button size="sm" variant="outline" onclick={() => openPractice(cluster)} testId="cluster-assign-practice">
+              {$t('practice.actions.assign_to_cluster', { count: cluster.studentIds.filter(Boolean).length })}
+            </Button>
+          {/if}
           {#if cluster.override}
             <Button size="sm" variant="outline" disabled={isSaving} onclick={() => undo(cluster)} testId="cluster-undo">
               {$t('exercise_results.clusters.undo')}
@@ -221,3 +236,11 @@
     {/if}
   {/if}
 </div>
+
+<AssignPracticeDialog
+  bind:open={isPracticeOpen}
+  {courseId}
+  students={practiceStudents}
+  source={{ sourceQuestionIds: [questionId] }}
+  defaultTitle={$t('practice.default_title_question')}
+/>

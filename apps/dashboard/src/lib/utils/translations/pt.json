@@ -7783,5 +7783,96 @@
       "no_matches": "Nenhuma habilidade corresponde à sua busca",
       "questions": "Perguntas"
     }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Atribuir prática aos {count} em aprendizagem",
+      "assign_to_cluster": "Atribuir prática a estes {count}"
+    },
+    "default_title": "Prática: {name}",
+    "default_title_question": "Prática",
+    "dialog": {
+      "title": "Atribuir prática",
+      "description": "Cria um exercício de prática curto com novas variantes das perguntas da competência e mostra-o apenas aos alunos selecionados.",
+      "name": "Nome do exercício",
+      "count": "Número de perguntas",
+      "students": "Alunos ({count} selecionados)",
+      "cancel": "Cancelar",
+      "submit": "Atribuir prática"
+    },
+    "snackbar": {
+      "assigned": "Prática atribuída a {count} alunos"
+    }
+  },
+  "student_report": {
+    "actions": {
+      "bulk": "Gerar relatórios para estes alunos",
+      "create": "Criar relatório"
+    },
+    "dialog": {
+      "title_single": "Relatório de progresso de {name}",
+      "title_bulk": "Relatórios de progresso de {count} alunos",
+      "description": "Partilhe um relatório de uma página com competências dominadas, a trabalhar e pontuações recentes.",
+      "links_ready": "Links prontos. Copie-os agora: são mostrados só uma vez.",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "open": "Abrir",
+      "done": "Concluído",
+      "period": "Período",
+      "period_start": "De",
+      "period_end": "Até",
+      "comment": "Comentário do professor",
+      "comment_placeholder": "Adicione uma nota curta para o aluno ou os pais",
+      "expiry": "O link expira após",
+      "expiry_days": "{days} dias",
+      "parent_email": "E-mail dos pais (opcional)",
+      "send_to_parent": "Enviar o relatório por e-mail aos pais",
+      "cancel": "Cancelar",
+      "submit": "Criar relatório"
+    },
+    "history": {
+      "heading": "Relatórios anteriores",
+      "views": "{count} visualizações",
+      "revoke": "Revogar",
+      "status": {
+        "active": "Ativo",
+        "expired": "Expirado",
+        "revoked": "Revogado"
+      }
+    },
+    "snackbar": {
+      "revoked": "Link do relatório revogado"
+    },
+    "view": {
+      "print": "Imprimir ou guardar como PDF",
+      "comment": "Comentário do professor",
+      "mastered": "Competências dominadas",
+      "to_work_on": "Competências a trabalhar",
+      "none_yet": "Ainda nada.",
+      "scores": "Pontuações recentes",
+      "no_scores": "Sem pontuações neste período.",
+      "exercise": "Exercício",
+      "score": "Pontuação",
+      "footer": "Este link expira em {date}."
+    }
+  },
+  "question_analysis": {
+    "tab": "Análise de perguntas",
+    "description": "A facilidade é a percentagem de alunos que acertaram totalmente. Perguntas abaixo de {hard}% são sinalizadas como demasiado difíceis e acima de {easy}% como demasiado fáceis. Uma discriminação abaixo de {discrimination} significa que a pergunta não separa alunos fortes de fracos.",
+    "empty": "Ainda não há respostas para analisar.",
+    "seconds": "{seconds} s",
+    "columns": {
+      "question": "Pergunta",
+      "facility": "Facilidade",
+      "discrimination": "Discriminação",
+      "time": "Tempo mediano",
+      "wrong_answers": "Erros frequentes",
+      "flags": "Sinalizações"
+    },
+    "flags": {
+      "too_hard": "Demasiado difícil",
+      "too_easy": "Demasiado fácil",
+      "poor_discrimination": "Baixa discriminação"
+    }
   }
 }
