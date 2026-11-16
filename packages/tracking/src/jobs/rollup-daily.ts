@@ -29,10 +29,8 @@ function getDayBoundsUtc(daysAgo: number): { startIso: string; endIso: string } 
 
 /**
  * Aggregates raw page events into the daily rollup tables (org / course /
- * country) for a single UTC day window. Idempotent — UPSERT keyed on the
- * unique constraints. Safe to re-run.
- *
- * Default window: yesterday (00:00–24:00 UTC).
+ * country) for one UTC day. `daysAgo: 0` is today so far, `1` is yesterday.
+ * Idempotent: rows are upserted on their unique keys, so re-running is safe.
  */
 export async function runTrackingRollupDaily(opts: { daysAgo?: number } = {}): Promise<RollupResult> {
   const daysAgo = opts.daysAgo ?? 1;
@@ -91,4 +89,15 @@ export async function runTrackingRollupDaily(opts: { daysAgo?: number } = {}): P
     courseRows: courseWritten,
     countryRows: countryWritten
   };
+}
+
+/**
+ * Rolls up yesterday, then today so far. Yesterday is re-run so events that
+ * landed after the previous day's last run still count.
+ */
+export async function runTrackingRollupRecent(): Promise<RollupResult[]> {
+  const yesterday = await runTrackingRollupDaily({ daysAgo: 1 });
+  const today = await runTrackingRollupDaily({ daysAgo: 0 });
+
+  return [yesterday, today];
 }
