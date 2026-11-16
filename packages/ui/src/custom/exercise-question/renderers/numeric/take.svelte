@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { getMathQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
+  import { getMathQuestionLabel, normaliseNumberInput, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import { untrack } from 'svelte';
   import { MathInput } from '../../../math-input';
+  import { mathNotation } from '../../../math-text';
   import { latexToNumber } from './numeric-utils';
 
   let { answer = null, disabled = false, labels, onAnswerChange = () => {} }: ExerciseQuestionRendererProps = $props();
@@ -10,7 +11,7 @@
 
   function handleInput(nextLatex: string) {
     draftLatex = nextLatex;
-    const value = latexToNumber(nextLatex);
+    const value = latexToNumber(normaliseNumberInput(nextLatex, $mathNotation) ?? nextLatex);
     if (value === null) {
       onAnswerChange(null);
       return;

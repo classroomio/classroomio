@@ -32,7 +32,8 @@
   import { getCourseProgress } from '$features/course/utils/content';
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
-  import { setMathImageConverter } from '@cio/ui/custom/math-text';
+  import { mathNotation, setMathImageConverter } from '@cio/ui/custom/math-text';
+  import { resolveMathNotation } from '@cio/question-types';
   import { mathVisionApi } from '$features/math/api/math-vision.svelte';
   import { getMathImageLabels } from '$features/math/utils/math-image-labels';
   import { ContentType } from '@cio/utils/constants/content';
@@ -77,6 +78,10 @@
   let sidebarOpen = $state(true);
   let hasLoadedSidebarOpen = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
+
+  $effect(() => {
+    mathNotation.set(resolveMathNotation($currentOrg.settings?.math, courseApi.course?.metadata?.math));
+  });
 
   $effect(() => {
     const profileId = $profile.id;

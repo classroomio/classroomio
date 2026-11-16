@@ -1,5 +1,11 @@
-import type { AnswerData, DbQuestionForScoring, ExerciseQuestionModel } from '@cio/question-types';
+import type {
+  AnswerData,
+  DbQuestionForScoring,
+  ExerciseQuestionModel,
+  MathNotationSettings
+} from '@cio/question-types';
 import {
+  DEFAULT_MATH_NOTATION,
   annotateGraphAnswer,
   dbQuestionToExerciseQuestionModel,
   getMultiPartStemIds,
@@ -11,7 +17,7 @@ import {
   scoreSubmissionAnswers
 } from '@cio/question-types';
 import { getAnswerClusterKey } from '@cio/question-types/answer-clusters';
-import { annotateMathAnswer, mathGrader } from '@cio/question-types/math-grading';
+import { annotateMathAnswer, createMathGrader } from '@cio/question-types/math-grading';
 import { instantiateQuestion } from '@cio/question-types/variants';
 import { isSeedValid, readQuestionParameters } from '@cio/question-types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -158,7 +164,8 @@ export function getAnswerableQuestions<Question extends { id?: number | null; pa
 /** Attaches the canonical MathJSON and the grading reason to every math and graph answer, leaving other answers as they are. */
 export function annotateMathAnswers(
   questions: DbQuestionForScoring[],
-  answerByQuestionId: ReadonlyMap<number, AnswerData>
+  answerByQuestionId: ReadonlyMap<number, AnswerData>,
+  notation: MathNotationSettings = DEFAULT_MATH_NOTATION
 ): Map<number, AnswerData> {
   const modelById = new Map<number, ExerciseQuestionModel>(
     questions.map((question) => [question.id, dbQuestionToExerciseQuestionModel(question)])
@@ -167,7 +174,7 @@ export function annotateMathAnswers(
 
   for (const [questionId, answer] of answerByQuestionId) {
     const model = modelById.get(questionId);
-    annotated.set(questionId, model ? annotateGraphAnswer(model, annotateMathAnswer(model, answer)) : answer);
+    annotated.set(questionId, model ? annotateGraphAnswer(model, annotateMathAnswer(model, answer, notation)) : answer);
   }
 
   return annotated;
@@ -180,11 +187,14 @@ export function annotateMathAnswers(
 export function regradeStoredAnswer(
   storedQuestion: DbQuestionForScoring,
   answer: AnswerData,
-  storedPoints: number
+  storedPoints: number,
+  notation: MathNotationSettings = DEFAULT_MATH_NOTATION
 ): { answer: AnswerData; points: number } | null {
+  const mathGrader = createMathGrader(notation);
   const isParameterised = readQuestionParameters(storedQuestion.settings) !== null;
   const question = isParameterised ? instantiateQuestion(storedQuestion, answer.seed ?? FALLBACK_SEED) : storedQuestion;
-  const annotated = annotateMathAnswers([question], new Map([[question.id, answer]])).get(question.id) ?? answer;
+  const annotated =
+    annotateMathAnswers([question], new Map([[question.id, answer]]), notation).get(question.id) ?? answer;
   const regraded = stampClusterOverride(question, annotated);
   const answerByQuestionId = new Map([[question.id, regraded]]);
 

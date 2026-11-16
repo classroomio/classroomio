@@ -36,12 +36,16 @@ export function readAllowImageInput(settings: Record<string, unknown> | undefine
   return settings?.allowImageInput === true;
 }
 
-export function readMathKeyboardPreset(settings: Record<string, unknown> | undefined): MathKeyboardPreset {
+/** The question's chosen keyboard, or `fallback` (the grade band's default) when it chose none. */
+export function readMathKeyboardPreset(
+  settings: Record<string, unknown> | undefined,
+  fallback: MathKeyboardPreset = 'algebra'
+): MathKeyboardPreset {
   const keyboard = settings?.keyboard;
 
   return MATH_KEYBOARD_PRESET_KEYS.includes(keyboard as MathKeyboardPreset)
     ? (keyboard as MathKeyboardPreset)
-    : 'algebra';
+    : fallback;
 }
 
 /** Switches a compare setting to `mode`, keeping a form or tolerance that still applies. */

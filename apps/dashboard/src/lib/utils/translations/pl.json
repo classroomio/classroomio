@@ -7965,5 +7965,48 @@
       "too_easy": "Zbyt łatwe",
       "poor_discrimination": "Niska moc różnicująca"
     }
+  },
+  "mathNotation": {
+    "title": "Zapis matematyczny",
+    "org_description": "Jak liczby i operatory są zapisywane i odczytywane w pytaniach z matematyki. Odpowiedzi uczniów są oceniane według tych ustawień.",
+    "course_description": "Zastąp zapis matematyczny organizacji dla tego kursu.",
+    "inherit": "Użyj ustawienia organizacji",
+    "decimal": {
+      "label": "Separator dziesiętny",
+      "point": "Kropka (0.5)",
+      "comma": "Przecinek (0,5)",
+      "hint": "Z przecinkiem uczniowie mogą wpisać 0,5, a odpowiedź jest oceniana jak 0.5."
+    },
+    "thousands": {
+      "label": "Separator tysięcy",
+      "none": "Brak (1000)",
+      "space": "Spacja (1 000)",
+      "comma": "Przecinek (1,000)",
+      "dot": "Kropka (1.000)",
+      "hint": "Akceptowany w odpowiedziach liczbowych i pokazywany w liczbach z pięcioma lub więcej cyframi."
+    },
+    "multiplication": {
+      "label": "Znak mnożenia",
+      "cross": "Krzyżyk (3 × 4)",
+      "dot": "Kropka (3 · 4)",
+      "hint": "Przy kropce × jest pokazywany jako · w pytaniach i opcjach."
+    },
+    "unit": {
+      "label": "System jednostek",
+      "metric": "Metryczny",
+      "imperial": "Imperialny",
+      "hint": "Podpowiedź dla autorów i asystenta AI. Nie zmienia oceniania."
+    },
+    "grade_band": {
+      "label": "Domyślny poziom klawiatury",
+      "primary": "Podstawowy (liczby)",
+      "secondary": "Średni (algebra)",
+      "advanced": "Zaawansowany (analiza)",
+      "hint": "Klawiatura widoczna dla uczniów, gdy pytanie jej nie wybiera."
+    },
+    "snackbar": {
+      "saved": "Zapis matematyczny zapisany",
+      "error": "Nie udało się zapisać zapisu matematycznego"
+    }
   }
 }

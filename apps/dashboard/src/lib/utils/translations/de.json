@@ -7965,5 +7965,48 @@
       "too_easy": "Zu leicht",
       "poor_discrimination": "Geringe Trennschärfe"
     }
+  },
+  "mathNotation": {
+    "title": "Mathematische Notation",
+    "org_description": "Wie Zahlen und Operatoren in Mathe-Fragen geschrieben und gelesen werden. Antworten der Lernenden werden mit diesen Einstellungen bewertet.",
+    "course_description": "Die mathematische Notation der Organisation für diesen Kurs überschreiben.",
+    "inherit": "Standard der Organisation verwenden",
+    "decimal": {
+      "label": "Dezimaltrennzeichen",
+      "point": "Punkt (0.5)",
+      "comma": "Komma (0,5)",
+      "hint": "Mit Komma können Lernende 0,5 eingeben; es wird wie 0.5 bewertet."
+    },
+    "thousands": {
+      "label": "Tausendertrennzeichen",
+      "none": "Keines (1000)",
+      "space": "Leerzeichen (1 000)",
+      "comma": "Komma (1,000)",
+      "dot": "Punkt (1.000)",
+      "hint": "Wird in numerischen Antworten akzeptiert und bei Zahlen ab fünf Ziffern angezeigt."
+    },
+    "multiplication": {
+      "label": "Multiplikationszeichen",
+      "cross": "Kreuz (3 × 4)",
+      "dot": "Punkt (3 · 4)",
+      "hint": "Mit Punkt wird × in Fragen und Optionen als · angezeigt."
+    },
+    "unit": {
+      "label": "Einheitensystem",
+      "metric": "Metrisch",
+      "imperial": "Imperial",
+      "hint": "Ein Hinweis für Autoren und den KI-Assistenten. Die Bewertung ändert sich nicht."
+    },
+    "grade_band": {
+      "label": "Standard-Tastaturstufe",
+      "primary": "Grundschule (Zahlen)",
+      "secondary": "Sekundarstufe (Algebra)",
+      "advanced": "Fortgeschritten (Analysis)",
+      "hint": "Die Tastatur, die Lernende sehen, wenn eine Frage keine wählt."
+    },
+    "snackbar": {
+      "saved": "Mathematische Notation gespeichert",
+      "error": "Mathematische Notation konnte nicht gespeichert werden"
+    }
   }
 }

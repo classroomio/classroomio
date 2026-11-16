@@ -17,6 +17,11 @@ export function toMathJson(latex: string): MathJsonExpression {
   return computeEngine.parse(latex).json;
 }
 
+/** The `,` key and the numeric keypad's decimal key follow the notation's decimal separator. */
+export function setDecimalSeparator(separator: ',' | '.') {
+  MathfieldElement.decimalSeparator = separator;
+}
+
 /** The virtual keyboard is one shared panel, so each field sets its layouts when it gains focus. */
 export function useKeyboardLayouts(layouts: MathKeyboardLayout[]) {
   window.mathVirtualKeyboard.layouts = layouts;

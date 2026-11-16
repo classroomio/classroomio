@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    getDefaultMathKeyboard,
     getMathQuestionLabel,
     readWorkedSolutionSettings,
     type ExerciseQuestionRendererProps,
@@ -7,7 +8,7 @@
   } from '@cio/question-types';
   import { Label } from '../../../../base/label';
   import { MathInput } from '../../../math-input';
-  import { MathImagePopover } from '../../../math-text';
+  import { MathImagePopover, mathNotation } from '../../../math-text';
   import { readAllowImageInput, readMathKeyboardPreset } from '../math/math-question-utils';
   import WorkingInput from './working-input.svelte';
 
@@ -21,7 +22,7 @@
   }: ExerciseQuestionRendererProps = $props();
 
   const settings = $derived(readWorkedSolutionSettings(question.settings, Number(question.points ?? 0)));
-  const keyboard = $derived(readMathKeyboardPreset(question.settings));
+  const keyboard = $derived(readMathKeyboardPreset(question.settings, getDefaultMathKeyboard($mathNotation)));
   const current = $derived(answer?.type === 'WORKED_SOLUTION' ? answer : null);
   const latex = $derived(current?.latex ?? '');
   const lines = $derived(current?.working.lines ?? []);

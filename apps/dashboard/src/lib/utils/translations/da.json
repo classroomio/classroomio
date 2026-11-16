@@ -7965,5 +7965,48 @@
       "too_easy": "For let",
       "poor_discrimination": "Lav diskrimination"
     }
+  },
+  "mathNotation": {
+    "title": "Matematisk notation",
+    "org_description": "Hvordan tal og operatorer skrives og læses i matematikspørgsmål. Elevernes svar bedømmes med disse indstillinger.",
+    "course_description": "Tilsidesæt organisationens matematiske notation for dette kursus.",
+    "inherit": "Brug organisationens standard",
+    "decimal": {
+      "label": "Decimalseparator",
+      "point": "Punktum (0.5)",
+      "comma": "Komma (0,5)",
+      "hint": "Med komma kan eleverne skrive 0,5, og det bedømmes som 0.5."
+    },
+    "thousands": {
+      "label": "Tusindtalsseparator",
+      "none": "Ingen (1000)",
+      "space": "Mellemrum (1 000)",
+      "comma": "Komma (1,000)",
+      "dot": "Punktum (1.000)",
+      "hint": "Accepteres i numeriske svar og vises i tal med fem eller flere cifre."
+    },
+    "multiplication": {
+      "label": "Multiplikationstegn",
+      "cross": "Kryds (3 × 4)",
+      "dot": "Prik (3 · 4)",
+      "hint": "Med en prik vises × som · i spørgsmål og valgmuligheder."
+    },
+    "unit": {
+      "label": "Enhedssystem",
+      "metric": "Metrisk",
+      "imperial": "Imperial",
+      "hint": "Et tip til forfattere og AI-assistenten. Det ændrer ikke bedømmelsen."
+    },
+    "grade_band": {
+      "label": "Standardtastaturniveau",
+      "primary": "Indskoling (tal)",
+      "secondary": "Udskoling (algebra)",
+      "advanced": "Avanceret (analyse)",
+      "hint": "Tastaturet eleverne ser, når et spørgsmål ikke vælger et."
+    },
+    "snackbar": {
+      "saved": "Matematisk notation gemt",
+      "error": "Matematisk notation kunne ikke gemmes"
+    }
   }
 }

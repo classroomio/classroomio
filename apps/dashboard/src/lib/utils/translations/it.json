@@ -7935,5 +7935,48 @@
       "too_easy": "Troppo facile",
       "poor_discrimination": "Bassa discriminazione"
     }
+  },
+  "mathNotation": {
+    "title": "Notazione matematica",
+    "org_description": "Come numeri e operatori vengono scritti e letti nelle domande di matematica. Le risposte degli studenti vengono valutate con queste impostazioni.",
+    "course_description": "Sostituisce la notazione matematica dell'organizzazione per questo corso.",
+    "inherit": "Usa l'impostazione dell'organizzazione",
+    "decimal": {
+      "label": "Separatore decimale",
+      "point": "Punto (0.5)",
+      "comma": "Virgola (0,5)",
+      "hint": "Con la virgola, gli studenti possono scrivere 0,5 e viene valutato come 0.5."
+    },
+    "thousands": {
+      "label": "Separatore delle migliaia",
+      "none": "Nessuno (1000)",
+      "space": "Spazio (1 000)",
+      "comma": "Virgola (1,000)",
+      "dot": "Punto (1.000)",
+      "hint": "Accettato nelle risposte numeriche e mostrato nei numeri di cinque o più cifre."
+    },
+    "multiplication": {
+      "label": "Segno di moltiplicazione",
+      "cross": "Croce (3 × 4)",
+      "dot": "Punto (3 · 4)",
+      "hint": "Con il punto, × viene mostrato come · in domande e opzioni."
+    },
+    "unit": {
+      "label": "Sistema di unità",
+      "metric": "Metrico",
+      "imperial": "Imperiale",
+      "hint": "Un suggerimento per gli autori e l'assistente IA. Non cambia la valutazione."
+    },
+    "grade_band": {
+      "label": "Livello di tastiera predefinito",
+      "primary": "Primaria (numeri)",
+      "secondary": "Secondaria (algebra)",
+      "advanced": "Avanzato (analisi)",
+      "hint": "La tastiera che gli studenti vedono quando una domanda non ne sceglie una."
+    },
+    "snackbar": {
+      "saved": "Notazione matematica salvata",
+      "error": "Impossibile salvare la notazione matematica"
+    }
   }
 }

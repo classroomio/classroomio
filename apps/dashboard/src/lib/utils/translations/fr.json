@@ -7965,5 +7965,48 @@
       "too_easy": "Trop facile",
       "poor_discrimination": "Faible discrimination"
     }
+  },
+  "mathNotation": {
+    "title": "Notation mathématique",
+    "org_description": "Comment les nombres et les opérateurs sont écrits et lus dans les questions de maths. Les réponses des élèves sont notées avec ces réglages.",
+    "course_description": "Remplacer la notation mathématique de l'organisation pour ce cours.",
+    "inherit": "Utiliser le réglage de l'organisation",
+    "decimal": {
+      "label": "Séparateur décimal",
+      "point": "Point (0.5)",
+      "comma": "Virgule (0,5)",
+      "hint": "Avec une virgule, les élèves peuvent saisir 0,5 et la réponse est notée comme 0.5."
+    },
+    "thousands": {
+      "label": "Séparateur des milliers",
+      "none": "Aucun (1000)",
+      "space": "Espace (1 000)",
+      "comma": "Virgule (1,000)",
+      "dot": "Point (1.000)",
+      "hint": "Accepté dans les réponses numériques et affiché dans les nombres de cinq chiffres ou plus."
+    },
+    "multiplication": {
+      "label": "Signe de multiplication",
+      "cross": "Croix (3 × 4)",
+      "dot": "Point (3 · 4)",
+      "hint": "Avec un point, × s'affiche · dans les questions et les options."
+    },
+    "unit": {
+      "label": "Système d'unités",
+      "metric": "Métrique",
+      "imperial": "Impérial",
+      "hint": "Une indication pour les auteurs et l'assistant IA. Elle ne change pas la notation."
+    },
+    "grade_band": {
+      "label": "Niveau de clavier par défaut",
+      "primary": "Primaire (nombres)",
+      "secondary": "Secondaire (algèbre)",
+      "advanced": "Avancé (analyse)",
+      "hint": "Le clavier que voient les élèves quand une question n'en choisit pas."
+    },
+    "snackbar": {
+      "saved": "Notation mathématique enregistrée",
+      "error": "Impossible d'enregistrer la notation mathématique"
+    }
   }
 }

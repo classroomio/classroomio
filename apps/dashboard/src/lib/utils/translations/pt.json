@@ -7965,5 +7965,48 @@
       "too_easy": "Demasiado fácil",
       "poor_discrimination": "Baixa discriminação"
     }
+  },
+  "mathNotation": {
+    "title": "Notação matemática",
+    "org_description": "Como números e operadores são escritos e lidos nas questões de matemática. As respostas dos alunos são corrigidas com estas configurações.",
+    "course_description": "Substitui a notação matemática da organização neste curso.",
+    "inherit": "Usar o padrão da organização",
+    "decimal": {
+      "label": "Separador decimal",
+      "point": "Ponto (0.5)",
+      "comma": "Vírgula (0,5)",
+      "hint": "Com vírgula, os alunos podem digitar 0,5 e a resposta é corrigida como 0.5."
+    },
+    "thousands": {
+      "label": "Separador de milhares",
+      "none": "Nenhum (1000)",
+      "space": "Espaço (1 000)",
+      "comma": "Vírgula (1,000)",
+      "dot": "Ponto (1.000)",
+      "hint": "Aceito em respostas numéricas e exibido em números com cinco ou mais dígitos."
+    },
+    "multiplication": {
+      "label": "Sinal de multiplicação",
+      "cross": "Cruz (3 × 4)",
+      "dot": "Ponto (3 · 4)",
+      "hint": "Com ponto, × aparece como · nas questões e opções."
+    },
+    "unit": {
+      "label": "Sistema de unidades",
+      "metric": "Métrico",
+      "imperial": "Imperial",
+      "hint": "Uma dica para autores e o assistente de IA. Não altera a correção."
+    },
+    "grade_band": {
+      "label": "Nível de teclado padrão",
+      "primary": "Fundamental (números)",
+      "secondary": "Médio (álgebra)",
+      "advanced": "Avançado (cálculo)",
+      "hint": "O teclado que os alunos veem quando uma questão não escolhe um."
+    },
+    "snackbar": {
+      "saved": "Notação matemática salva",
+      "error": "Não foi possível salvar a notação matemática"
+    }
   }
 }

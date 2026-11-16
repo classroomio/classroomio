@@ -97,6 +97,20 @@ Open the exercise's **Settings** tab and use **Calculator** to choose **No calcu
 
 The graphing calculator uses Desmos. To turn it on, an administrator enters a **Desmos API key** under **Settings**, **Customize LMS**, in the Course section. Without a key, exercises set to Graphing give students the scientific calculator.
 
+## Match your region's notation
+
+Academies that write `0,5` instead of `0.5` can change how math is written, shown and graded. Open **Settings**, **Customize LMS**, and find **Math notation** at the bottom. Only an administrator can change it. Then select **Save changes** in that card.
+
+- **Decimal separator**: with **Comma**, students can type `0,5` and it is graded as 0.5 in math expression and numeric questions, and decimals written inside math, such as `$0.5$`, show with a comma in questions, options and answers. Numbers typed as plain text are not changed.
+- **Thousands separator**: **None**, **Space**, **Comma** or **Dot**. Numbers written with that separator, such as `1 000,5` or `1.000,5`, are accepted in answers, and numbers with five or more digits inside math show it. The thousands separator cannot match the decimal separator.
+- **Multiplication sign**: with **Dot**, a `\times` in your math shows as `·`.
+- **Unit system**: a hint for authors and the AI assistant. It does not change grading.
+- **Default keyboard level**: **Primary** opens the numbers keyboard, **Secondary** the algebra keyboard and **Advanced** the calculus keyboard, for questions that do not choose a keyboard themselves.
+
+An answer that mixes separators, such as `1,000.5` under a decimal comma, is not accepted: it is marked wrong, or invalid for math expressions. Write your accepted answers the way you normally do: both `0.5` and `0,5` are read as 0.5. With a decimal comma, a comma between two digits is a decimal separator, so write lists with a semicolon or spaces.
+
+To change the notation for one course, open the course's **Settings** and use **Math notation**. Turn off **Use organization default** and choose the settings for that course. Grading always uses the notation in force when the answer is submitted or regraded.
+
 ## See and fix what students answered
 
 Open the exercise, then **Submissions**, then **Results grid**. Each row is a student's latest attempt and each column is a question, coloured by score: full marks, partial credit, wrong, awaiting grading, or no answer. A **Total** column and the student names stay in view while you scroll across many questions. Point at a cell to see the student's answer as math; for a question with variables it shows that student's own numbers. Select a cell to open the answer as the student sees it in review. Use the filters to show only students with a wrong answer, only attempts awaiting grading, or one cohort of the course. Results load 25 students at a time.

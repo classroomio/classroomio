@@ -7935,5 +7935,48 @@
       "too_easy": "Too easy",
       "poor_discrimination": "Poor discrimination"
     }
+  },
+  "mathNotation": {
+    "title": "Math notation",
+    "org_description": "How numbers and operators are written and read in math questions. Student answers are graded with these settings.",
+    "course_description": "Override the organization's math notation for this course.",
+    "inherit": "Use organization default",
+    "decimal": {
+      "label": "Decimal separator",
+      "point": "Point (0.5)",
+      "comma": "Comma (0,5)",
+      "hint": "With a comma, students can type 0,5 and it is graded as 0.5."
+    },
+    "thousands": {
+      "label": "Thousands separator",
+      "none": "None (1000)",
+      "space": "Space (1 000)",
+      "comma": "Comma (1,000)",
+      "dot": "Dot (1.000)",
+      "hint": "Accepted in numeric answers and shown in numbers with five or more digits."
+    },
+    "multiplication": {
+      "label": "Multiplication sign",
+      "cross": "Cross (3 × 4)",
+      "dot": "Dot (3 · 4)",
+      "hint": "With a dot, × is shown as · in questions and options."
+    },
+    "unit": {
+      "label": "Unit system",
+      "metric": "Metric",
+      "imperial": "Imperial",
+      "hint": "A hint for authors and the AI assistant. It does not change grading."
+    },
+    "grade_band": {
+      "label": "Default keyboard level",
+      "primary": "Primary (numbers)",
+      "secondary": "Secondary (algebra)",
+      "advanced": "Advanced (calculus)",
+      "hint": "The keyboard students see when a question does not choose one."
+    },
+    "snackbar": {
+      "saved": "Math notation saved",
+      "error": "Could not save math notation"
+    }
   }
 }

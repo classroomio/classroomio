@@ -12,6 +12,7 @@
   import katex from 'katex';
   import type { MathfieldElement } from 'mathlive';
   import { cn } from '../../tools';
+  import { mathNotation } from '../math-text/notation';
   import { resolveMathKeyboard, textToLatex } from './utils';
   import type { MathInputValue, MathKeyboard } from './types';
   import 'katex/dist/katex.min.css';
@@ -79,6 +80,7 @@
   }
 
   function handleFocusIn() {
+    runtime?.setDecimalSeparator($mathNotation.decimalSeparator === 'comma' ? ',' : '.');
     runtime?.useKeyboardLayouts(resolveMathKeyboard(keyboard));
   }
 

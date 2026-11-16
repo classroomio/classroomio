@@ -15,7 +15,8 @@ import {
   validateTextareaAnswer
 } from '@cio/question-types';
 import { clampAnswerTiming } from '@cio/question-types/answer-timing';
-import { mathGrader } from '@cio/question-types/math-grading';
+import { createMathGrader } from '@cio/question-types/math-grading';
+import { getEffectiveMathNotation } from '@api/services/math/notation';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isFileTypeAllowed, normalizeAcceptedFileTypes } from '@cio/utils/file-upload';
 import type { TNewQuestionAnswer, TNewSubmission, TSubmission } from '@cio/db/types';
@@ -826,6 +827,8 @@ export async function createSubmissionService(
       getCourseById(courseId)
     ]);
     const course = courseRows[0];
+    const notation = await getEffectiveMathNotation(courseId);
+    const mathGrader = createMathGrader(notation);
 
     const answerableQuestions = getAnswerableQuestions(exerciseWithRelations.questions);
     const questionById = toQuestionModelsById(answerableQuestions);
@@ -834,7 +837,7 @@ export async function createSubmissionService(
     const dbQuestions = instantiateScoringQuestions(toScoringQuestions(answerableQuestions), seedByQuestionId);
     const answerByQuestionId = stampClusterOverrides(
       dbQuestions,
-      attachSeeds(annotateMathAnswers(dbQuestions, decodedAnswers), seedByQuestionId)
+      attachSeeds(annotateMathAnswers(dbQuestions, decodedAnswers, notation), seedByQuestionId)
     );
     const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
     const wasCompleteBefore = await wasExerciseCompleteForMember(exerciseId, submittedBy);

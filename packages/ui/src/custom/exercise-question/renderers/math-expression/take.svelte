@@ -1,7 +1,11 @@
 <script lang="ts">
-  import { getMathQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
+  import {
+    getDefaultMathKeyboard,
+    getMathQuestionLabel,
+    type ExerciseQuestionRendererProps
+  } from '@cio/question-types';
   import { MathInput } from '../../../math-input';
-  import { MathImagePopover } from '../../../math-text';
+  import { MathImagePopover, mathNotation } from '../../../math-text';
   import { readAllowImageInput, readMathKeyboardPreset } from '../math/math-question-utils';
 
   let {
@@ -13,7 +17,7 @@
   }: ExerciseQuestionRendererProps = $props();
 
   const latex = $derived(answer?.type === 'MATH_EXPRESSION' ? answer.latex : '');
-  const keyboard = $derived(readMathKeyboardPreset(question.settings));
+  const keyboard = $derived(readMathKeyboardPreset(question.settings, getDefaultMathKeyboard($mathNotation)));
 </script>
 
 <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">

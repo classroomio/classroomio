@@ -1,4 +1,5 @@
 export { default as MathText } from './math-text.svelte';
+export { mathNotation } from './notation';
 export { default as MathTextInput } from './math-text-input.svelte';
 export { default as MathEditPopover } from './math-edit-popover.svelte';
 export { default as MathLatexField } from './math-latex-field.svelte';

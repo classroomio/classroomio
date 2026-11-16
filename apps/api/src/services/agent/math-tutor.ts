@@ -6,9 +6,11 @@ import {
   readNumericSettings,
   type AnswerData,
   type DbQuestionForScoring,
-  type MathMisconception
+  type MathMisconception,
+  type MathNotationSettings,
+  DEFAULT_MATH_NOTATION
 } from '@cio/question-types';
-import { mathGrader } from '@cio/question-types/math-grading';
+import { createMathGrader } from '@cio/question-types/math-grading';
 import type { TutorAssessmentMode } from '@cio/ai-assistant/tutor-config';
 import type { TAgentCurrentAttempt } from '@cio/utils/validation/agent';
 
@@ -54,7 +56,12 @@ export type AttemptVerdict =
     };
 
 /** Grades the learner's current input with the Compute Engine; the answer key never leaves this function. */
-export function gradeCurrentInput(question: DbQuestionForScoring, input: CurrentAttemptInput): AttemptVerdict {
+export function gradeCurrentInput(
+  question: DbQuestionForScoring,
+  input: CurrentAttemptInput,
+  notation: MathNotationSettings = DEFAULT_MATH_NOTATION
+): AttemptVerdict {
+  const mathGrader = createMathGrader(notation);
   const model = dbQuestionToExerciseQuestionModel(question);
   if (!MATH_QUESTION_KEYS.has(model.questionType)) return { status: 'unavailable', reason: 'not_math' };
 

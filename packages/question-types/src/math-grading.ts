@@ -3,6 +3,7 @@ import { isNumber, type Expression } from '@cortex-js/compute-engine';
 import type { AnswerData, NumericAnswerData } from './answer-data';
 import type { ExerciseQuestionModel } from './exercise-types';
 import { gradeMathQuestion } from './question-scoring';
+import { DEFAULT_MATH_NOTATION, normaliseNumberInput, type MathNotationSettings } from './math-notation';
 import {
   compareMath,
   computeEngine,
@@ -227,16 +228,63 @@ export const mathGrader: MathGrader = {
   gradeNumeric: scoreNumericAnswer
 };
 
+function localiseExpressionSettings(
+  settings: MathExpressionSettings,
+  notation: MathNotationSettings
+): MathExpressionSettings {
+  const localise = (latex: string) => normaliseNumberInput(latex, notation) ?? latex;
+
+  return {
+    ...settings,
+    acceptedAnswers: settings.acceptedAnswers.map(localise),
+    wrongAnswerFeedback: settings.wrongAnswerFeedback.map((entry) => ({ ...entry, answer: localise(entry.answer) }))
+  };
+}
+
+/**
+ * A grader that reads numbers the way `notation` writes them: `0,5` is 0.5 under decimal comma and `1 000,5` is 1000.5
+ * with a space as the thousands separator. An answer that mixes separators is `invalid`. Under the default notation
+ * it is `mathGrader`.
+ */
+export function createMathGrader(notation: MathNotationSettings): MathGrader {
+  if (notation.decimalSeparator === 'point' && notation.thousandsSeparator === 'none') return mathGrader;
+
+  return {
+    gradeExpression(settings, latex, context) {
+      const localised = normaliseNumberInput(latex, notation);
+      if (localised === null) return { reason: 'invalid' };
+
+      return scoreMathExpression(localiseExpressionSettings(settings, notation), localised, context);
+    },
+    gradeNumeric(settings, answer) {
+      const localisedLatex = answer.latex?.trim() ? normaliseNumberInput(answer.latex, notation) : undefined;
+      if (localisedLatex === null) return false;
+
+      const correctValue =
+        typeof settings.correctValue === 'string'
+          ? (normaliseNumberInput(settings.correctValue, notation) ?? settings.correctValue)
+          : settings.correctValue;
+
+      return scoreNumericAnswer({ ...settings, correctValue }, { ...answer, latex: localisedLatex });
+    }
+  };
+}
+
 /**
  * Returns a `MATH_EXPRESSION` or `WORKED_SOLUTION` answer with its canonical MathJSON and grading outcome attached, so
  * review views show the reason and results can group equal answers. Any other answer is returned unchanged.
  */
-export function annotateMathAnswer(question: ExerciseQuestionModel, answer: AnswerData): AnswerData {
-  const grade = gradeMathQuestion(question, answer, mathGrader);
+export function annotateMathAnswer(
+  question: ExerciseQuestionModel,
+  answer: AnswerData,
+  notation: MathNotationSettings = DEFAULT_MATH_NOTATION
+): AnswerData {
+  const grade = gradeMathQuestion(question, answer, createMathGrader(notation));
   if (!grade || (answer.type !== 'MATH_EXPRESSION' && answer.type !== 'WORKED_SOLUTION')) return answer;
 
   const { reason, matchedAnswer, requiredForm, feedback, misconception } = grade.result;
-  const mathjson = normaliseMathAnswer(answer.latex, readMathExpressionSettings(question.settings).variables);
+  const localisedLatex = normaliseNumberInput(answer.latex, notation) ?? answer.latex;
+  const mathjson = normaliseMathAnswer(localisedLatex, readMathExpressionSettings(question.settings).variables);
   const grading = { reason, matchedAnswer, requiredForm, feedback, misconception };
 
   return { ...answer, mathjson: mathjson ?? undefined, grading };

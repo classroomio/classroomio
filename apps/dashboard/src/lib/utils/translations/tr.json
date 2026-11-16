@@ -8015,5 +8015,48 @@
       "too_easy": "Çok kolay",
       "poor_discrimination": "Düşük ayırt edicilik"
     }
+  },
+  "mathNotation": {
+    "title": "Matematik gösterimi",
+    "org_description": "Matematik sorularında sayıların ve işleçlerin nasıl yazılıp okunduğu. Öğrenci yanıtları bu ayarlarla değerlendirilir.",
+    "course_description": "Bu kurs için kurumun matematik gösterimini geçersiz kıl.",
+    "inherit": "Kurum varsayılanını kullan",
+    "decimal": {
+      "label": "Ondalık ayırıcı",
+      "point": "Nokta (0.5)",
+      "comma": "Virgül (0,5)",
+      "hint": "Virgülle öğrenciler 0,5 yazabilir ve 0.5 olarak değerlendirilir."
+    },
+    "thousands": {
+      "label": "Binlik ayırıcı",
+      "none": "Yok (1000)",
+      "space": "Boşluk (1 000)",
+      "comma": "Virgül (1,000)",
+      "dot": "Nokta (1.000)",
+      "hint": "Sayısal yanıtlarda kabul edilir ve beş veya daha fazla basamaklı sayılarda gösterilir."
+    },
+    "multiplication": {
+      "label": "Çarpma işareti",
+      "cross": "Çarpı (3 × 4)",
+      "dot": "Nokta (3 · 4)",
+      "hint": "Nokta seçilirse × işareti sorularda ve seçeneklerde · olarak gösterilir."
+    },
+    "unit": {
+      "label": "Birim sistemi",
+      "metric": "Metrik",
+      "imperial": "İngiliz",
+      "hint": "Yazarlar ve yapay zekâ asistanı için bir ipucu. Değerlendirmeyi değiştirmez."
+    },
+    "grade_band": {
+      "label": "Varsayılan klavye düzeyi",
+      "primary": "İlkokul (sayılar)",
+      "secondary": "Ortaokul/lise (cebir)",
+      "advanced": "İleri (analiz)",
+      "hint": "Bir soru klavye seçmediğinde öğrencilerin gördüğü klavye."
+    },
+    "snackbar": {
+      "saved": "Matematik gösterimi kaydedildi",
+      "error": "Matematik gösterimi kaydedilemedi"
+    }
   }
 }

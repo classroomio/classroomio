@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('@api/services/math/notation', async () => {
+  const { DEFAULT_MATH_NOTATION } = await import('@cio/question-types');
+
+  return { getEffectiveMathNotation: vi.fn().mockResolvedValue(DEFAULT_MATH_NOTATION) };
+});
+
 const TX = { tx: true };
 
 vi.mock('@cio/db/drizzle', () => ({
@@ -241,7 +247,13 @@ describe('createSubmissionService parameterised questions', () => {
       COURSE_ID,
       EXERCISE_ID,
       MEMBER_ID,
-      [{ questionId: 1, answer: JSON.stringify({ type: 'MATH_EXPRESSION', latex: answerFor('seed-a') }), seed: 'seed-a' }],
+      [
+        {
+          questionId: 1,
+          answer: JSON.stringify({ type: 'MATH_EXPRESSION', latex: answerFor('seed-a') }),
+          seed: 'seed-a'
+        }
+      ],
       { strict: true, allowUploads: false }
     );
 
@@ -259,7 +271,13 @@ describe('createSubmissionService parameterised questions', () => {
       COURSE_ID,
       EXERCISE_ID,
       MEMBER_ID,
-      [{ questionId: 1, answer: JSON.stringify({ type: 'MATH_EXPRESSION', latex: answerFor(otherSeed) }), seed: 'seed-a' }],
+      [
+        {
+          questionId: 1,
+          answer: JSON.stringify({ type: 'MATH_EXPRESSION', latex: answerFor(otherSeed) }),
+          seed: 'seed-a'
+        }
+      ],
       { strict: true, allowUploads: false }
     );
 

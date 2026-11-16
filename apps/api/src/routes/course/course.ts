@@ -32,6 +32,7 @@ import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
 import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
+import { courseMathNotationRouter } from '@api/routes/course/math-notation';
 import { liveSessionReminderRouter } from '@api/routes/course/live-session-reminder';
 import { authMiddleware } from '@api/middlewares/auth';
 import { getEventSource } from '@api/utils/event-source';
@@ -679,5 +680,6 @@ export const courseRouter = new Hono()
   .route('/:courseId/members', membersRouter)
   .route('/:courseId/invites', invitesRouter)
   .route('/:courseId/ai-tutor', courseAiTutorRouter)
+  .route('/:courseId/math-notation', courseMathNotationRouter)
   .route('/:courseId/live-session-reminders', liveSessionReminderRouter)
   .route('/presign', presignRouter);

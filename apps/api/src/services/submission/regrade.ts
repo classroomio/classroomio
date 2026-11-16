@@ -7,6 +7,7 @@ import {
   updateSubmission
 } from '@cio/db/queries/submission';
 
+import { getEffectiveMathNotation } from '@api/services/math/notation';
 import { getAnswerableQuestions, regradeStoredAnswer, stampClusterOverride, toScoringQuestions } from './auto-grading';
 
 export type RegradeResult = { submissionsChecked: number; submissionsChanged: number; answersChanged: number };
@@ -23,6 +24,7 @@ export async function regradeExerciseSubmissions(
   options: { questionId?: number } = {}
 ): Promise<RegradeResult> {
   const { questions } = await getExerciseWithRelationsOptimized(exerciseId);
+  const notation = await getEffectiveMathNotation(courseId);
   const scoringQuestions = toScoringQuestions(getAnswerableQuestions(questions)).filter(
     (question) => options.questionId === undefined || question.id === options.questionId
   );
@@ -47,7 +49,8 @@ export async function regradeExerciseSubmissions(
       const question = regradableById.get(stored.questionId);
       const storedPoints = Number(stored.point ?? 0);
       const answerData = stored.answerData as AnswerData | null;
-      const regraded = question && answerData ? regradeStoredAnswer(question, answerData, storedPoints) : null;
+      const regraded =
+        question && answerData ? regradeStoredAnswer(question, answerData, storedPoints, notation) : null;
       if (!regraded) {
         total += storedPoints;
 

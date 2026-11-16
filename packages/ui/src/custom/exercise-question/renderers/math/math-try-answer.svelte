@@ -10,6 +10,7 @@
   import { Label } from '../../../../base/label';
   import { MathInput, type MathKeyboardPreset } from '../../../math-input';
   import MathGradeResultView from './math-grade-result.svelte';
+  import { mathNotation } from '../../../math-text';
   import { loadMathGrading } from './math-question-utils';
 
   interface Props {
@@ -40,8 +41,8 @@
 
     isChecking = true;
     try {
-      const { scoreMathExpression } = await loadMathGrading();
-      result = scoreMathExpression(settings, sampleLatex);
+      const { createMathGrader } = await loadMathGrading();
+      result = createMathGrader($mathNotation).gradeExpression(settings, sampleLatex);
     } finally {
       isChecking = false;
     }

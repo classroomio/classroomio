@@ -922,6 +922,8 @@ export const course = pgTable(
       progressionMode?: CourseProgressionMode;
       /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
       commentsEnabled?: boolean;
+      /** Per-course math notation override; applies only when `inheritFromOrg` is false. */
+      math?: Record<string, unknown>;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
       aiTutor?: {
         inheritFromOrg?: boolean;
@@ -2695,6 +2697,7 @@ export const organization = pgTable(
       analytics?: {
         studentTarget?: number | null;
       };
+      math?: Record<string, unknown>;
     }>(),
     landingpage: jsonb().default({}).$type<{
       header?: {

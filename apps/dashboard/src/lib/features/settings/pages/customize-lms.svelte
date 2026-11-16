@@ -13,6 +13,7 @@
 
   import { AttentionHighlight, UploadWidget, UnsavedChanges } from '$features/ui';
   import { StudentHomeField } from '$features/settings/components';
+  import { MathNotationCard } from '$features/math-notation';
   import * as Field from '@cio/ui/base/field';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
   import { toLmsAvailabilityContext } from '$features/ui/navigation/lms-navigation';
@@ -333,4 +334,8 @@
       </Field.Field>
     </Field.Group>
   </Field.Set>
+
+  <Field.Separator />
+
+  <MathNotationCard />
 </Field.Group>

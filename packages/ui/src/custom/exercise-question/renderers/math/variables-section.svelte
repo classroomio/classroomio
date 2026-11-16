@@ -79,10 +79,7 @@
 
   function addVariable() {
     patchParameters({
-      variables: [
-        ...(parameters?.variables ?? []),
-        { name: nextVariableName(), type: 'int', min: 1, max: 10, step: 1 }
-      ]
+      variables: [...(parameters?.variables ?? []), { name: nextVariableName(), type: 'int', min: 1, max: 10, step: 1 }]
     });
   }
 
@@ -166,7 +163,9 @@
               {disabled}
               onValueChange={(type) => type && setVariable(variableIndex, { type: type as VariableType })}
             >
-              <Select.Trigger class="ui:w-full">{label(('math.variables.type.' + variable.type) as MathQuestionLabelKey)}</Select.Trigger>
+              <Select.Trigger class="ui:w-full"
+                >{label(('math.variables.type.' + variable.type) as MathQuestionLabelKey)}</Select.Trigger
+              >
               <Select.Content>
                 {#each VARIABLE_TYPES as type (type)}
                   <Select.Item value={type} label={label(('math.variables.type.' + type) as MathQuestionLabelKey)}>
@@ -220,7 +219,8 @@
               variant="secondary"
               {disabled}
               tooltip={label('math.variables.remove')}
-              onclick={() => patchParameters({ variables: parameters.variables.filter((_, index) => index !== variableIndex) })}
+              onclick={() =>
+                patchParameters({ variables: parameters.variables.filter((_, index) => index !== variableIndex) })}
             >
               <XIcon class="ui:size-4" />
             </IconButton>
@@ -304,9 +304,15 @@
             >
               <div class="ui:flex ui:items-center ui:gap-2">
                 {#if preview.issues.length === 0}
-                  <CircleCheckIcon class="ui:text-success ui:size-4 ui:shrink-0" aria-label={label('math.variables.preview_ok')} />
+                  <CircleCheckIcon
+                    class="ui:text-success ui:size-4 ui:shrink-0"
+                    aria-label={label('math.variables.preview_ok')}
+                  />
                 {:else}
-                  <TriangleAlertIcon class="ui:text-destructive ui:size-4 ui:shrink-0" aria-label={label('math.variables.preview_problem')} />
+                  <TriangleAlertIcon
+                    class="ui:text-destructive ui:size-4 ui:shrink-0"
+                    aria-label={label('math.variables.preview_problem')}
+                  />
                 {/if}
                 <span class="ui:text-muted-foreground ui:text-xs">{describeValues(preview.values)}</span>
               </div>

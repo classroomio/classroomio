@@ -14,6 +14,7 @@ import { getLessonNoteHtml } from '@cio/core/services/block/block-text';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { getCourseOutlineSummary } from '@cio/core/services/course/outline';
+import { getEffectiveMathNotation } from '@api/services/math/notation';
 import { getStudentSkillMastery } from '@api/services/skill/mastery';
 import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
 import { AppError } from '@api/utils/errors';
@@ -335,7 +336,7 @@ export function buildStudentAgentTools(
           const attempt = await loadCurrentAttempt();
           if (!attempt) return noAttempt;
 
-          const verdict = gradeCurrentInput(attempt.question, attempt.input);
+          const verdict = gradeCurrentInput(attempt.question, attempt.input, await getEffectiveMathNotation(courseId));
           const guidance = answerGuidance(mode, verdict);
           if (verdict.status === 'unavailable') return { available: true as const, checked: false as const, guidance };
 

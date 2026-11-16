@@ -7965,5 +7965,48 @@
       "too_easy": "Quá dễ",
       "poor_discrimination": "Độ phân biệt thấp"
     }
+  },
+  "mathNotation": {
+    "title": "Ký hiệu toán học",
+    "org_description": "Cách viết và đọc số và toán tử trong câu hỏi toán. Câu trả lời của học viên được chấm theo các cài đặt này.",
+    "course_description": "Ghi đè ký hiệu toán học của tổ chức cho khóa học này.",
+    "inherit": "Dùng mặc định của tổ chức",
+    "decimal": {
+      "label": "Dấu phân cách thập phân",
+      "point": "Dấu chấm (0.5)",
+      "comma": "Dấu phẩy (0,5)",
+      "hint": "Với dấu phẩy, học viên có thể nhập 0,5 và được chấm như 0.5."
+    },
+    "thousands": {
+      "label": "Dấu phân cách hàng nghìn",
+      "none": "Không (1000)",
+      "space": "Dấu cách (1 000)",
+      "comma": "Dấu phẩy (1,000)",
+      "dot": "Dấu chấm (1.000)",
+      "hint": "Được chấp nhận trong câu trả lời số và hiển thị với số có từ năm chữ số trở lên."
+    },
+    "multiplication": {
+      "label": "Dấu nhân",
+      "cross": "Dấu chéo (3 × 4)",
+      "dot": "Dấu chấm (3 · 4)",
+      "hint": "Với dấu chấm, × hiển thị thành · trong câu hỏi và lựa chọn."
+    },
+    "unit": {
+      "label": "Hệ đơn vị",
+      "metric": "Hệ mét",
+      "imperial": "Hệ Anh",
+      "hint": "Gợi ý cho tác giả và trợ lý AI. Không thay đổi cách chấm điểm."
+    },
+    "grade_band": {
+      "label": "Mức bàn phím mặc định",
+      "primary": "Tiểu học (số)",
+      "secondary": "Trung học (đại số)",
+      "advanced": "Nâng cao (giải tích)",
+      "hint": "Bàn phím học viên thấy khi câu hỏi không chọn bàn phím."
+    },
+    "snackbar": {
+      "saved": "Đã lưu ký hiệu toán học",
+      "error": "Không thể lưu ký hiệu toán học"
+    }
   }
 }

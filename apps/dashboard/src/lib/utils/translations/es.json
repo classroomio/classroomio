@@ -7965,5 +7965,48 @@
       "too_easy": "Demasiado fácil",
       "poor_discrimination": "Baja discriminación"
     }
+  },
+  "mathNotation": {
+    "title": "Notación matemática",
+    "org_description": "Cómo se escriben y leen los números y operadores en las preguntas de matemáticas. Las respuestas de los estudiantes se califican con estos ajustes.",
+    "course_description": "Reemplaza la notación matemática de la organización en este curso.",
+    "inherit": "Usar el valor de la organización",
+    "decimal": {
+      "label": "Separador decimal",
+      "point": "Punto (0.5)",
+      "comma": "Coma (0,5)",
+      "hint": "Con coma, los estudiantes pueden escribir 0,5 y se califica como 0.5."
+    },
+    "thousands": {
+      "label": "Separador de millares",
+      "none": "Ninguno (1000)",
+      "space": "Espacio (1 000)",
+      "comma": "Coma (1,000)",
+      "dot": "Punto (1.000)",
+      "hint": "Se acepta en respuestas numéricas y se muestra en números de cinco o más dígitos."
+    },
+    "multiplication": {
+      "label": "Signo de multiplicación",
+      "cross": "Cruz (3 × 4)",
+      "dot": "Punto (3 · 4)",
+      "hint": "Con punto, × se muestra como · en preguntas y opciones."
+    },
+    "unit": {
+      "label": "Sistema de unidades",
+      "metric": "Métrico",
+      "imperial": "Imperial",
+      "hint": "Una pista para autores y el asistente de IA. No cambia la calificación."
+    },
+    "grade_band": {
+      "label": "Nivel de teclado predeterminado",
+      "primary": "Primaria (números)",
+      "secondary": "Secundaria (álgebra)",
+      "advanced": "Avanzado (cálculo)",
+      "hint": "El teclado que ven los estudiantes cuando una pregunta no elige uno."
+    },
+    "snackbar": {
+      "saved": "Notación matemática guardada",
+      "error": "No se pudo guardar la notación matemática"
+    }
   }
 }
