@@ -365,6 +365,13 @@
       "when": 1794581127466,
       "tag": "0051_analytics_performance_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1794815344942,
+      "tag": "0052_cohort_newsfeed_author_set_null",
+      "breakpoints": true
     }
   ]
 }
