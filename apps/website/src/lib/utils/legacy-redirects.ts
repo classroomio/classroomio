@@ -33,6 +33,9 @@ const EXACT_REDIRECTS: Record<string, string> = {
   '/privacy-policy': '/privacy',
   '/tools': '/',
   '/tools/stopwatch': '/',
+  '/pricing;': '/pricing',
+  '/bootcamps': '/',
+  '/contact': '/',
   '/mcp': '/docs/developers/mcp',
   '/developers': '/docs/developers',
   '/get-started/create-first-course': '/help/get-started/create-first-course',
@@ -45,8 +48,7 @@ const EXACT_REDIRECTS: Record<string, string> = {
 const PREFIX_REDIRECTS: Array<[prefix: string, target: string]> = [
   ['/developers/', '/docs/developers/'],
   ['/self-hosted/', '/docs/self-hosted/'],
-  ['/contributor-guides/', '/docs/contributing/'],
-  ['/public-api/', 'https://api.classroomio.com/public-api/']
+  ['/contributor-guides/', '/docs/contributing/']
 ];
 
 /**

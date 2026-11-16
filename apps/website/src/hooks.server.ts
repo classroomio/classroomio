@@ -39,6 +39,15 @@ export const handle: Handle = async ({ event, resolve }) => {
     });
   }
 
+  if (pathname.startsWith('/public-api/')) {
+    const isApiClient = event.request.method !== 'GET' || event.request.headers.has('authorization');
+    const apiTarget = isApiClient
+      ? new URL(pathname + event.url.search, 'https://api.classroomio.com')
+      : new URL('/docs/api', event.url);
+
+    return Response.redirect(apiTarget.toString(), isApiClient ? 308 : 301);
+  }
+
   const legacyTarget = resolveLegacyRedirect(pathname);
   if (legacyTarget) {
     const location = legacyTarget.startsWith('http') ? new URL(legacyTarget) : new URL(legacyTarget, event.url);
