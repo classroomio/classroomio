@@ -1,10 +1,12 @@
-import { CERTIFICATE_WIDTH } from '../constants';
+import { CERTIFICATE_WIDTH, TEMPLATE_VERIFY_OFFSETS } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
+  getVerifyPlacementStyle,
   prepareCertificateRenderContext,
   renderSealBlock,
   renderSignatoryBlock,
+  renderVerifyBlock,
   shadeColor,
   type TemplateRenderer
 } from './shared';
@@ -23,6 +25,7 @@ const recipientPaddingBottom = 14;
 const medalWidth = 108;
 const footerGap = 30;
 const signatoryColumnWidth = (CERTIFICATE_WIDTH - certPadding * 2 - footerGap * 2 - medalWidth) / 2;
+const verifyQrSize = 60;
 
 const FIELDS = {
   org: {
@@ -105,22 +108,38 @@ const FIELDS = {
     letterSpacingEm: 0.25,
     allowWrap: true,
     textTransform: 'uppercase' as const
+  },
+  verifyCode: {
+    maxWidth: 90,
+    maxHeight: 14,
+    fontFamily: FONTS.heading,
+    basePx: 9,
+    allowWrap: false,
+    letterSpacingEm: 0.08,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
 export const renderNoir: TemplateRenderer = ({ design, data }) => {
   const { accent, subtitle, description, signatoryOne, signatoryTwo, year, fontSizes, roleMinHeight } =
-    prepareCertificateRenderContext(design, data, FIELDS);
+    prepareCertificateRenderContext(design, data, FIELDS, {
+      verifyCode: data.verifyCode ?? ''
+    });
 
   const accentDeep = shadeColor(accent, -30);
 
+  const placement = design.verifyPlacements?.noir ?? { anchor: 'top-right' as const };
+  const verifyPlacementStyle = getVerifyPlacementStyle(placement.anchor, TEMPLATE_VERIFY_OFFSETS.noir);
+  const verifyBlock = renderVerifyBlock(data.verifyCode, data.verifyUrl, { qrSizePx: verifyQrSize });
+
   const body = `
     <div class="cert t-noir">
+      ${verifyBlock ? `<div style="position:absolute; ${verifyPlacementStyle}; z-index:3;">${verifyBlock}</div>` : ''}
       <div class="cert-content">
         <div class="header-group">
           <div class="top">
             <div class="top-side left">
-              <span class="cert-id" style="font-size: ${fontSizes.certId}px;">${escapeHtml(data.certificateId)}</span>
+              <span class="cert-id" style="font-size: ${fontSizes.certId}px;" data-edit="idFormat" title="Edit certificate ID format">${escapeHtml(data.certificateId)}</span>
               <div class="line"></div>
             </div>
             <span class="org-name" style="font-size: ${fontSizes.org}px;">${escapeHtml(data.orgName)}</span>
@@ -135,7 +154,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
             subtitle
               ? `<div class="title-line">
                   <div class="l"></div>
-                  <span style="font-size: ${fontSizes.subtitle}px;">${escapeHtml(subtitle)}</span>
+                  <span style="font-size: ${fontSizes.subtitle}px;" data-edit="subtitle" title="Edit subtitle">${escapeHtml(subtitle)}</span>
                   <div class="l"></div>
                 </div>`
               : ''
@@ -145,13 +164,13 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
         <div class="body-group">
           <div class="presented">presented to</div>
           <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
-          ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+          ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;" data-edit="description" title="Edit description">${escapeHtml(description)}</div>` : ''}
         </div>
 
         <div class="footer">
-          ${renderSignatoryBlock(signatoryOne, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label' })}
-          ${renderSealBlock({ wrapperClass: 'medal', year, label: '★ AWARD ★' })}
-          ${renderSignatoryBlock(signatoryTwo, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label' })}
+          ${renderSignatoryBlock(signatoryOne, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label', dataEdit: 'sig:0' })}
+          ${renderSealBlock({ wrapperClass: 'medal', year, label: '★ AWARD ★', dataEdit: 'idFormat' })}
+          ${renderSignatoryBlock(signatoryTwo, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label', dataEdit: 'sig:1' })}
         </div>
       </div>
     </div>

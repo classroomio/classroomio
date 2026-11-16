@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as Field from '@cio/ui/base/field';
   import { Switch } from '@cio/ui/base/switch';
+  import { Button } from '@cio/ui/base/button';
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { UploadImage } from '$features/ui';
@@ -93,15 +94,19 @@
           bind:value={certificateEditorStore.draft.subtitle}
           placeholder={$t('course.navItem.certificates.editor.subtitle_placeholder')}
           isDisabled={disabled}
+          name="field-subtitle"
+          testId="certificate-subtitle"
         />
       </Field.Field>
       <Field.Field>
         <TextareaField
+          id="field-description"
           label={$t('course.navItem.certificates.editor.description_override')}
           rows={4}
           bind:value={certificateEditorStore.draft.descriptionOverride}
           placeholder={$t('course.navItem.certificates.editor.description_override_placeholder')}
           {disabled}
+          name="field-description"
         />
         <Field.Description>
           {$t('course.navItem.certificates.editor.description_override_hint')}
@@ -128,6 +133,8 @@
                 label={$t('course.navItem.certificates.editor.signatory_one_name')}
                 bind:value={certificateEditorStore.draft.signatories[0].name}
                 isDisabled={disabled}
+                name="field-sig-0-name"
+                testId="certificate-sig-0-name"
               />
             </Field.Field>
             <Field.Field>
@@ -135,6 +142,7 @@
                 label={$t('course.navItem.certificates.editor.signatory_one_role')}
                 bind:value={certificateEditorStore.draft.signatories[0].role}
                 isDisabled={disabled}
+                name="field-sig-0-role"
               />
             </Field.Field>
             <Field.Field>
@@ -171,6 +179,8 @@
                 label={$t('course.navItem.certificates.editor.signatory_two_name')}
                 bind:value={certificateEditorStore.draft.signatories[1].name}
                 isDisabled={disabled}
+                name="field-sig-1-name"
+                testId="certificate-sig-1-name"
               />
             </Field.Field>
             <Field.Field>
@@ -178,6 +188,7 @@
                 label={$t('course.navItem.certificates.editor.signatory_two_role')}
                 bind:value={certificateEditorStore.draft.signatories[1].role}
                 isDisabled={disabled}
+                name="field-sig-1-role"
               />
             </Field.Field>
             <Field.Field>
@@ -202,6 +213,7 @@
   </Field.Set>
 
   <Field.Separator />
+  <Field.Separator />
 
   <Field.Set>
     <Field.Legend>{$t('course.navItem.certificates.editor.section_reference')}</Field.Legend>
@@ -211,10 +223,34 @@
         bind:value={certificateEditorStore.draft.idFormat}
         placeholder={'N° {seq}'}
         isDisabled={disabled}
+        name="field-idFormat"
+        testId="certificate-id-format"
       />
       <Field.Description>
         {$t('course.navItem.certificates.editor.id_format_hint')}
       </Field.Description>
     </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.certificates.editor.qr_position')}</Field.Legend>
+    <!-- <Field.Description>Current template: {certificateEditorStore.draft.templateId} — defaults to {certificateEditorStore.draft.verifyPlacements?.[certificateEditorStore.draft.templateId]?.anchor ?? 'top-right'} until changed.</Field.Description> -->
+    <div class="grid grid-cols-2 gap-2">
+      {#each ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as pos}
+        <Button
+          variant={certificateEditorStore.draft.verifyPlacements?.[certificateEditorStore.draft.templateId]?.anchor ===
+          pos
+            ? 'default'
+            : 'outline'}
+          size="sm"
+          {disabled}
+          onclick={() => certificateEditorStore.setVerifyPlacement(certificateEditorStore.draft.templateId, pos)}
+        >
+          {pos}
+        </Button>
+      {/each}
+    </div>
   </Field.Set>
 </Field.Group>

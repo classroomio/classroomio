@@ -16,7 +16,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@cio/tsconfig": "workspace:*"
+    "@cio/tsconfig": "workspace:*",
+    "qrcode-generator": "^2.0.4"
   },
   "devDependencies": {
     "tsc-alias": "^1.8.16",

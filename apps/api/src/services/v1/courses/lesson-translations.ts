@@ -62,20 +62,20 @@ export async function listPublicApiCourseLessonHistoryService(
   const page = await getLessonTextHistoryService(params.lessonId, query.locale, query.limit, query.cursor);
 
   return {
-    items: page.items.map((version) => ({
-      id: version.id,
-      locale: version.locale,
-      kind: version.kind,
-      label: version.label,
-      oldContent: version.oldContent,
-      newContent: version.newContent,
-      timestamp: version.timestamp,
-      sessionStartedAt: version.sessionStartedAt,
-      editCount: version.editCount,
-      isSealed: version.isSealed,
-      authorId: version.authorId,
-      authorName: version.authorName,
-      blockId: version.blockId
+    items: page.items.map((version: Record<string, unknown>) => ({
+      id: version.id as number,
+      locale: version.locale as string,
+      kind: version.kind as string,
+      label: version.label as string | null,
+      oldContent: version.oldContent as string | null,
+      newContent: version.newContent as string | null,
+      timestamp: version.timestamp as string,
+      sessionStartedAt: version.sessionStartedAt as string,
+      editCount: version.editCount as number,
+      isSealed: version.isSealed as boolean,
+      authorId: version.authorId as string | null,
+      authorName: version.authorName as string | null,
+      blockId: version.blockId as string
     })),
     nextCursor: page.nextCursor ? `${page.nextCursor.timestamp}|${page.nextCursor.id}` : null
   };

@@ -56,7 +56,10 @@ export async function listPublicApiCourseLessonCommentsService(
   const page = await getLessonCommentsPaginated(params.lessonId, query);
 
   return {
-    items: page.items.map((comment) => ({ ...toPublicComment(comment), author: comment.profile })),
+    items: page.items.map((comment: TLessonComment & { profile: unknown }) => ({
+      ...toPublicComment(comment),
+      author: (comment as { profile: unknown }).profile
+    })),
     total: page.totalCount,
     nextCursor: page.nextCursor
   };

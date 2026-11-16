@@ -2511,7 +2511,17 @@
       "blocker_deadline": "The certification deadline has passed.",
       "blocker_no_content": "This course has no lessons or exercises to complete.",
       "email_message_label": "Email Message",
-      "email_message_placeholder": "e.g. We are proud of your progress — keep learning!"
+      "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
+      "validity_heading": "Validity",
+      "validity_compliance_note": "This is a compliance course. Certificates stay valid for the retake interval set in Compliance settings, and a renewal issues a new certificate with a new code.",
+      "validity_toggle": "Certificates expire",
+      "validity_expires": "Expires",
+      "validity_months_suffix": "months after issue",
+      "validity_hint_expires": "Certificates issued from now on expire on the issue date + {months} months. Existing certificates are not changed.",
+      "validity_never": "Certificates never expire. No expiry date is stored or shown on the public page.",
+      "public_verification_heading": "Public verification",
+      "public_verification_description": "Certificates link to a public page that shows whether they are valid, expired or revoked.",
+      "verification_address": "Verification page address"
     },
     "completion": {
       "modal": {
@@ -3935,6 +3945,7 @@
         "stage": "Stage",
         "last_login_at": "Last Login At",
         "enrolled_at": "Enrolled At",
+        "certificate": "Certificate",
         "certificate_earned": "Certificate earned",
         "not_started": "Not started",
         "role": "Role",
@@ -4122,6 +4133,56 @@
           "never_logged_in": "Never logged in",
           "awaiting_certificate": "Awaiting certificate",
           "custom": "Custom filters"
+        },
+        "certificate_drawer": {
+          "loading": "Loading certificate…",
+          "empty": "No certificate found for this learner.",
+          "as_learner_sees": "As the learner sees it",
+          "heading": "Certificate",
+          "status": "Status",
+          "status_valid": "Valid",
+          "status_expired": "Expired",
+          "status_revoked": "Revoked",
+          "code": "Code",
+          "copy_code": "Copy code",
+          "copied": "Copied",
+          "open_certificate_for": "Open certificate for {name}",
+          "issued": "Issued",
+          "expires": "Expires",
+          "does_not_expire": "Does not expire",
+          "revocation": "Revocation",
+          "revoked_by": "Revoked by",
+          "revoked_by_system": "System",
+          "on": "On",
+          "reason": "Reason",
+          "activity": "Activity",
+          "activity_revoked": "Certificate revoked",
+          "activity_issued": "Certificate issued",
+          "activity_issued_desc": "Automatic, on course completion · {date}",
+          "activity_completed": "Course completed",
+          "revoke": "Revoke…",
+          "reinstate": "Reinstate certificate",
+          "close": "Close",
+          "dialog_title": "Revoke certificate",
+          "dialog_description": "The reason is visible to your team only. The public page will show Revoked without the reason.",
+          "reason_label": "Reason *",
+          "reason_placeholder": "e.g. Issued by mistake",
+          "note_label": "Note",
+          "note_placeholder": "State your reason for revoking this certificate.",
+          "bullet_revoked_public": "The public page and QR code show Revoked with today’s date. The reason is never shown.",
+          "bullet_no_download": "The learner can no longer download the PDF.",
+          "bullet_reinstate": "You can reinstate it any time. The same code comes back.",
+          "cancel": "Cancel",
+          "confirm_revoke": "Revoke Certificate",
+          "dropdown_certificate": "Certificate"
+        },
+        "snackbar": {
+          "failed_load_certificate": "Failed to load certificate",
+          "reason_required": "Reason is required",
+          "certificate_revoked": "Certificate revoked",
+          "failed_revoke": "Failed to revoke",
+          "certificate_reinstated": "Certificate reinstated",
+          "failed_reinstate": "Failed to reinstate"
         }
       },
       "certificates": {
@@ -4162,6 +4223,7 @@
           "unsaved": "Unsaved",
           "free_plan": "Free plan",
           "preview": "Live preview",
+          "preview_as": "Preview as",
           "sections": "Editor sections",
           "panel_templates": "Templates",
           "panel_templates_subtitle": "Pick a template to anchor the visual style.",
@@ -4208,8 +4270,18 @@
           "field_template": "Template",
           "field_accent": "Accent",
           "field_signatories": "Signatories",
-          "customize_design": "Customize design"
-        }
+          "customize_design": "Customize design",
+          "qr_position": "QR Code position",
+          "click_to_edit": "Click anything on the certificate to edit it",
+          "toast_org": "The organization name comes from your organization settings",
+          "toast_title": "The title comes from the course",
+          "toast_recipient": "The name is filled in for each learner",
+          "toast_verify": "Added automatically. Manage the public page in Certificate settings",
+          "toast_generic": "This part is filled in automatically"
+        },
+        "revoked_title": "Certificate revoked",
+        "revoked_message": "{org} revoked this certificate. It can no longer be downloaded, and its public page shows it as revoked.",
+        "expired_message": "This certificate has expired. You can still download it. Complete the renewal to get a new certificate with a new code."
       },
       "landing_page": {
         "editor": {

@@ -54,7 +54,8 @@
         theme: parseCertificateThemeId(course.certificate?.theme),
         design: course.certificate?.design ?? null,
         deadline: course.certificate?.deadline ?? null,
-        emailMessage: course.certificate?.emailMessage ?? null
+        emailMessage: course.certificate?.emailMessage ?? null,
+        expiresAfterMonths: course.certificate?.expiresAfterMonths ?? null
       }
     };
   }
@@ -99,7 +100,8 @@
         theme: certificateTheme || 'classique',
         design: courseApi.course.certificate?.design,
         deadline: courseApi.course.certificate?.deadline ?? null,
-        emailMessage: courseApi.course.certificate?.emailMessage ?? null
+        emailMessage: courseApi.course.certificate?.emailMessage ?? null,
+        expiresAfterMonths: courseApi.course.certificate?.expiresAfterMonths ?? null
       }
     };
 

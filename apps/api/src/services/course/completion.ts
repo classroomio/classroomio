@@ -21,6 +21,10 @@ import { assertCertificatesEnabled, orgHasCertificatesEnabled } from '@api/servi
 import { formatCertificateId } from '@api/services/course/certificate';
 import { resolveCertificateDesign } from '@api/utils/certificate';
 import type { TWebhookEventInput } from '@cio/utils/validation/webhook';
+import {
+  computeStandardCertificateExpiresAt,
+  ensureCertificateIssue
+} from '@api/services/certificate/ensure-certificate';
 
 export type CertificationBlocker = {
   code: 'CERT_PROGRESS' | 'CERT_DEADLINE_PASSED' | 'CERT_NO_CONTENT';
@@ -32,6 +36,7 @@ export type CourseCompletionEvaluation = {
   hasCompletedAllContent: boolean;
   eligibleForCertificate: boolean;
   certificateEarnedAt: string | null;
+  certificateStatus: 'valid' | 'expired' | 'revoked' | null;
   blockers: CertificationBlocker[];
 };
 
@@ -43,6 +48,15 @@ async function buildCertificationEvaluation(
 ): Promise<CourseCompletionEvaluation> {
   const progress = progressArg ?? (await getCourseProgressQuery(courseId, profileId));
   const certificate = courseRow.certificate ?? {};
+  let certificateStatus: 'valid' | 'expired' | 'revoked' | null = null;
+  try {
+    const { getLatestCertificateByCourseProfile } = await import('@cio/db/queries/certificate/certificate');
+    const { resolveCertificateStatus } = await import('@cio/utils/certificate/certificate-status');
+    const issue = await getLatestCertificateByCourseProfile(courseId, profileId);
+    if (issue) {
+      certificateStatus = resolveCertificateStatus({ revokedAt: issue.revokedAt, expiresAt: issue.expiresAt });
+    }
+  } catch {}
 
   const progressPercent = calcCourseProgressPercent({
     lessonsCompleted: progress.lessonsCompleted,
@@ -80,6 +94,7 @@ async function buildCertificationEvaluation(
     hasCompletedAllContent,
     eligibleForCertificate,
     certificateEarnedAt: progress.certificateEarnedAt,
+    certificateStatus,
     blockers
   };
 }
@@ -100,7 +115,7 @@ export function buildCertificateWebhookInput(params: {
   courseRow: TCourseCertificationRow;
   profileId: string;
   issuedAt: string;
-  stored?: { id: string | null; cycleNumber: number; expiresAt: string; status: string } | null;
+  stored?: { id: string | null; cycleNumber: number; expiresAt: string | null; status: string } | null;
 }): TWebhookEventInput<'course.certificate.issued'>['certificate'] {
   const { courseRow, profileId, issuedAt, stored } = params;
   const design = resolveCertificateDesign(courseRow.certificate);
@@ -197,8 +212,40 @@ export async function evaluateCourseCertification(
   if (didClaimCertificate) {
     isNewCompletion = true;
 
+    let certificateIssue: { id: string; cycleNumber: number; expiresAt: string | null; status: string } | null = null;
+
     if (courseRow.type !== 'COMPLIANCE') {
-      const certificate = buildCertificateWebhookInput({ courseRow, profileId, issuedAt: earnedAt });
+      try {
+        const expiresAt = computeStandardCertificateExpiresAt(
+          earnedAt,
+          courseRow.certificate as { expiresAfterMonths?: number | null } | null
+        );
+        const issue = await ensureCertificateIssue({
+          courseId,
+          profileId,
+          issuedAt: earnedAt,
+          expiresAt,
+          courseCompletionRecordId: null
+        });
+
+        if (issue) {
+          certificateIssue = {
+            id: issue.id,
+            cycleNumber: issue.cycleNumber,
+            expiresAt: issue.expiresAt,
+            status: issue.status
+          };
+        }
+      } catch {
+        certificateIssue = null;
+      }
+
+      const certificate = buildCertificateWebhookInput({
+        courseRow,
+        profileId,
+        issuedAt: earnedAt,
+        stored: certificateIssue
+      });
 
       await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
         courseId,
@@ -254,5 +301,25 @@ export async function assertCertificateDownloadAllowed(courseId: string, profile
 
   if (!canDownload) {
     throw new AppError('Course completion requirements not met', ErrorCodes.VALIDATION_ERROR, 403);
+  }
+
+  if (evaluation.certificateStatus === 'revoked') {
+    throw new AppError('This certificate was revoked', ErrorCodes.VALIDATION_ERROR, 403);
+  }
+
+  if (courseRow.type !== 'COMPLIANCE' && evaluation.certificateEarnedAt) {
+    try {
+      const expiresAt = computeStandardCertificateExpiresAt(
+        evaluation.certificateEarnedAt,
+        courseRow.certificate as { expiresAfterMonths?: number | null } | null
+      );
+      await ensureCertificateIssue({
+        courseId,
+        profileId,
+        issuedAt: evaluation.certificateEarnedAt,
+        expiresAt,
+        courseCompletionRecordId: null
+      });
+    } catch {}
   }
 }

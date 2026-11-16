@@ -72,7 +72,63 @@ export const DEFAULT_CERTIFICATE_DESIGN: CertificateDesign = {
     { name: 'Course Facilitator', role: 'Facilitator', enabled: true },
     { name: 'Organization Lead', role: 'Director', enabled: true }
   ],
-  idFormat: 'N° {seq}'
+  idFormat: 'N° {seq}',
+  verifyPlacements: {
+    classique: { anchor: 'top-right' },
+    brutalist: { anchor: 'bottom-right' },
+    noir: { anchor: 'bottom-right' },
+    poster: { anchor: 'bottom-right' },
+    minimal: { anchor: 'bottom-right' }
+  }
+};
+
+export const VERIFY_ANCHORS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const;
+export type VerifyAnchor = (typeof VERIFY_ANCHORS)[number];
+
+export const DEFAULT_VERIFY_POSITION: VerifyAnchor = 'top-right';
+
+export const DEFAULT_VERIFY_PLACEMENTS: Record<CertificateTemplateId, { anchor: VerifyAnchor }> = {
+  classique: { anchor: 'top-right' },
+  brutalist: { anchor: 'bottom-right' },
+  noir: { anchor: 'bottom-right' },
+  poster: { anchor: 'bottom-right' },
+  minimal: { anchor: 'bottom-right' }
+};
+
+export const TEMPLATE_VERIFY_OFFSETS: Record<
+  CertificateTemplateId,
+  Record<VerifyAnchor, { top?: number; right?: number; bottom?: number; left?: number }>
+> = {
+  classique: {
+    'top-right': { top: 50, right: 110 },
+    'top-left': { top: 50, left: 50 },
+    'bottom-right': { bottom: 136, right: 110 },
+    'bottom-left': { bottom: 136, left: 50 }
+  },
+  minimal: {
+    'top-right': { top: 18, right: 160 },
+    'top-left': { top: 18, left: 100 },
+    'bottom-right': { bottom: 140, right: 160 },
+    'bottom-left': { bottom: 140, left: 100 }
+  },
+  brutalist: {
+    'top-right': { top: 87, right: 100 },
+    'top-left': { top: 87, left: 45 },
+    'bottom-right': { bottom: 210, right: 100 },
+    'bottom-left': { bottom: 210, left: 45 }
+  },
+  noir: {
+    'top-right': { top: 45, right: 115 },
+    'top-left': { top: 45, left: 55 },
+    'bottom-right': { bottom: 130, right: 115 },
+    'bottom-left': { bottom: 130, left: 55 }
+  },
+  poster: {
+    'top-right': { top: 120, right: 115 },
+    'top-left': { top: 120, left: 55 },
+    'bottom-right': { bottom: 250, right: 115 },
+    'bottom-left': { bottom: 250, left: 55 }
+  }
 };
 
 export const FONTS_READY_CLASS = 'fonts-ready';

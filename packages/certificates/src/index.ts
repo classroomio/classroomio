@@ -35,3 +35,10 @@ export {
   type FitFontSizeOptions
 } from './font-metrics';
 export { FONTS_LINK_HREF } from './templates/shared';
+export {
+  DEFAULT_VERIFY_PLACEMENTS,
+  DEFAULT_VERIFY_POSITION,
+  TEMPLATE_VERIFY_OFFSETS,
+  VERIFY_ANCHORS,
+  type VerifyAnchor
+} from './constants';

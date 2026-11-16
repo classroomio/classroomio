@@ -1,6 +1,7 @@
 import type { CertificateDesign, CertificateRenderData, CertificateSignatory } from '../types';
 import { CERTIFICATE_HEIGHT, CERTIFICATE_WIDTH } from '../constants';
 import { computeFieldFontSizes, computeFitFontSize, type FitFontSizeOptions } from '../font-metrics';
+import qrcode from 'qrcode-generator';
 
 export function escapeHtml(input: unknown): string {
   return String(input ?? '').replace(/[&<>"']/g, (char) => {
@@ -252,6 +253,7 @@ export interface SignatoryBlockOptions {
   nameClass: string;
   roleClass: string;
   roleFirst?: boolean;
+  dataEdit?: string;
 }
 
 export function renderSignatoryBlock(sig: CertificateSignatory | undefined, options: SignatoryBlockOptions): string {
@@ -266,9 +268,12 @@ export function renderSignatoryBlock(sig: CertificateSignatory | undefined, opti
   const roleEl = `<div class="${options.roleClass}">${escapeHtml(sig.role)}</div>`;
   const content = options.roleFirst ? `${roleEl}${nameEl}` : `${nameEl}${roleEl}`;
   const wrapperClass = options.wrapperClass ? ` class="${options.wrapperClass}"` : '';
+  const dataEdit = options.dataEdit
+    ? ` data-edit="${options.dataEdit}" title="Edit signatory ${options.dataEdit.split(':')[1] ? parseInt(options.dataEdit.split(':')[1], 10) + 1 : ''}"`
+    : '';
 
   return `
-    <div${wrapperClass}>
+    <div${wrapperClass}${dataEdit}>
       <div class="sig-content">
         <div class="sig-img-slot">${sigImg}</div>
         <div class="sig-text">${content}</div>
@@ -304,14 +309,16 @@ export interface SealBlockOptions {
   year: string;
   label: string;
   topSymbol?: string;
+  dataEdit?: string;
 }
 
 export function renderSealBlock(options: SealBlockOptions): string {
   const wrapperClass = options.wrapperClass ? ` class="${options.wrapperClass}"` : ' class="seal"';
+  const dataEdit = options.dataEdit ? ` data-edit="${options.dataEdit}" title="Edit certificate ID format"` : '';
   const topSymbolHtml = options.topSymbol ? `<div class="star">${escapeHtml(options.topSymbol)}</div>` : '';
 
   return `
-    <div${wrapperClass}>
+    <div${wrapperClass}${dataEdit}>
       ${topSymbolHtml}
       <div class="yr">${escapeHtml(options.year)}</div>
       <div class="lbl">${escapeHtml(options.label)}</div>
@@ -357,6 +364,100 @@ export const SIGNATURE_IMAGE_STYLES = `
 export const FONTS_LINK_HREF =
   'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Cinzel:wght@400;500;600;700;800;900&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Archivo+Black&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap';
 
+export function formatVerifyCodeDisplay(code: string | null | undefined): string {
+  if (!code) return '';
+  const normalized = String(code)
+    .toUpperCase()
+    .replace(/[\s-]+/g, '');
+  if (normalized.length !== 8) return String(code).toUpperCase();
+  return `${normalized.slice(0, 4)}-${normalized.slice(4)}`;
+}
+
+export function generateVerifyQrSvg(url: string | null | undefined): string {
+  if (!url) return '';
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    return qr.createSvgTag(4, 0);
+  } catch {
+    return '';
+  }
+}
+
+export function renderVerifyBlock(
+  verifyCode: string | null | undefined,
+  verifyUrl: string | null | undefined,
+  options?: { qrSizePx?: number; codeColor?: string }
+): string {
+  if (!verifyCode || !verifyUrl) return '';
+  const displayCode = formatVerifyCodeDisplay(verifyCode);
+  const qrSvg = generateVerifyQrSvg(verifyUrl);
+  const qrSize = options?.qrSizePx ?? 72;
+  const colorStyle = options?.codeColor ? ` style="color: ${escapeHtml(options.codeColor)};"` : '';
+  return `<div class="verify-block"><div class="verify-qr" data-edit="qr-code" style="width:${qrSize}px;height:${qrSize}px;">${qrSvg}</div><div class="verify-code"${colorStyle}>${escapeHtml(displayCode)}</div><div class="verify-label">Verify</div></div>`;
+}
+
+export function getVerifyPlacementStyle(
+  anchor: string | undefined,
+  offsets:
+    | { top?: number; right?: number; bottom?: number; left?: number }
+    | Record<string, { top?: number; right?: number; bottom?: number; left?: number }>
+): string {
+  const isRecord = (
+    v: unknown
+  ): v is Record<string, { top?: number; right?: number; bottom?: number; left?: number }> =>
+    typeof v === 'object' && v !== null && 'top-right' in (v as Record<string, unknown>);
+  const placement = isRecord(offsets)
+    ? (offsets[anchor ?? 'top-right'] ?? offsets['top-right'])
+    : (offsets as { top?: number; right?: number; bottom?: number; left?: number });
+  const parts: string[] = [];
+  if (placement.top !== undefined) parts.push(`top:${placement.top}px`);
+  if (placement.right !== undefined) parts.push(`right:${placement.right}px`);
+  if (placement.bottom !== undefined) parts.push(`bottom:${placement.bottom}px`);
+  if (placement.left !== undefined) parts.push(`left:${placement.left}px`);
+  return parts.join('; ');
+}
+
+export const VERIFY_BLOCK_STYLES = `
+  .verify-block {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+  }
+  .verify-block .verify-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #e6dccb;
+    line-height: 0;
+  }
+  .verify-block .verify-qr svg { width: 100%; height: 100%; display: block; }
+  .verify-block .verify-code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .verify-block .verify-label {
+    font-size: 7px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a766b;
+  }
+`;
+
+export const EDITABLE_STYLES = `
+  [data-edit] { cursor: pointer; border-radius: 4px; outline: 2px solid transparent; outline-offset: 3px; transition: outline-color 0.12s, background-color 0.12s; }
+  [data-edit]:hover { outline-color: #2563eb; background-color: rgb(37 99 235 / 0.07); }
+  [data-edit].is-active { outline-color: #2563eb; }
+  [data-edit="fixed"] { cursor: default; }
+  [data-edit="fixed"]:hover { outline-color: rgb(120 120 120 / 0.55); outline-style: dashed; background: transparent; }
+`;
+
 export const BASE_STYLES = `
   @page {
     size: ${CERTIFICATE_WIDTH}px ${CERTIFICATE_HEIGHT}px;
@@ -383,4 +484,6 @@ export const BASE_STYLES = `
     word-break: normal;
   }
   ${SIGNATURE_IMAGE_STYLES}
+  ${VERIFY_BLOCK_STYLES}
+  ${EDITABLE_STYLES}
 `;

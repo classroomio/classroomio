@@ -1,8 +1,10 @@
 import {
   DEFAULT_CERTIFICATE_DESIGN,
+  DEFAULT_VERIFY_PLACEMENTS,
   resolveCertificateDesign,
   type CertificateDesign,
-  type CertificateTemplateId
+  type CertificateTemplateId,
+  type VerifyPlacements
 } from '@cio/certificates';
 
 import { courseApi } from '$features/course/api';
@@ -26,6 +28,7 @@ export interface CertificateEditorDraft {
     { name: string; role: string; enabled: boolean; signatureUrl: string },
     { name: string; role: string; enabled: boolean; signatureUrl: string }
   ];
+  verifyPlacements: VerifyPlacements;
 }
 
 function toDraftSignatory(
@@ -68,7 +71,11 @@ function toDraft(design: CertificateDesign): CertificateEditorDraft {
     signatories: [
       toDraftSignatory(design.signatories[0], DEFAULT_CERTIFICATE_DESIGN.signatories[0]),
       toDraftSignatory(design.signatories[1], DEFAULT_CERTIFICATE_DESIGN.signatories[1])
-    ]
+    ],
+    verifyPlacements: {
+      ...DEFAULT_VERIFY_PLACEMENTS,
+      ...((design.verifyPlacements as VerifyPlacements | undefined) ?? {})
+    }
   };
 }
 
@@ -79,7 +86,8 @@ function fromDraft(draft: CertificateEditorDraft): CertificateDesign {
     subtitle: draft.subtitle.trim() || undefined,
     descriptionOverride: draft.descriptionOverride.trim() || undefined,
     idFormat: draft.idFormat.trim() || undefined,
-    signatories: [fromDraftSignatory(draft.signatories[0]), fromDraftSignatory(draft.signatories[1])]
+    signatories: [fromDraftSignatory(draft.signatories[0]), fromDraftSignatory(draft.signatories[1])],
+    verifyPlacements: draft.verifyPlacements
   };
 }
 
@@ -116,6 +124,16 @@ class CertificateEditorStore {
 
   setAccent(color: string) {
     this.draft.accentColor = color;
+  }
+
+  setVerifyPlacement(templateId: CertificateTemplateId, anchor: string) {
+    this.draft = {
+      ...this.draft,
+      verifyPlacements: {
+        ...this.draft.verifyPlacements,
+        [templateId]: { anchor: anchor as VerifyPlacements[CertificateTemplateId]['anchor'] }
+      }
+    };
   }
 
   setSignatorySignatureUrl(index: 0 | 1, signatureUrl: string) {

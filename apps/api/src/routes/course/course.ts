@@ -34,6 +34,7 @@ import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
 import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
 import { liveSessionReminderRouter } from '@api/routes/course/live-session-reminder';
+import { certificateManageRouter } from '@api/routes/course/certificate-manage';
 import { authMiddleware } from '@api/middlewares/auth';
 import { getEventSource } from '@api/utils/event-source';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
@@ -99,7 +100,7 @@ async function loadCertificateInput(
 
   await assertCertificateDownloadAllowed(courseId, userId);
 
-  return assembleCertificateRender(courseId, body);
+  return assembleCertificateRender(courseId, body, userId);
 }
 
 const enrollRateLimit = createRateLimiter({
@@ -702,4 +703,5 @@ export const courseRouter = new Hono()
   .route('/:courseId/invites', invitesRouter)
   .route('/:courseId/ai-tutor', courseAiTutorRouter)
   .route('/:courseId/live-session-reminders', liveSessionReminderRouter)
-  .route('/presign', presignRouter);
+  .route('/presign', presignRouter)
+  .route('/', certificateManageRouter);

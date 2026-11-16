@@ -1,10 +1,12 @@
-import { CERTIFICATE_WIDTH } from '../constants';
+import { CERTIFICATE_WIDTH, TEMPLATE_VERIFY_OFFSETS } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
+  getVerifyPlacementStyle,
   prepareCertificateRenderContext,
   renderSealBlock,
   renderSignatoryBlock,
+  renderVerifyBlock,
   type TemplateRenderer
 } from './shared';
 
@@ -20,6 +22,8 @@ const sealSide = 108;
 const footerGap = 30;
 const signatoryColumnWidth = (CERTIFICATE_WIDTH - certPadding * 2 - footerGap * 2 - sealSide) / 2;
 const sealLabelMaxWidth = 85;
+const verifyQrSize = 60;
+const verifyCodeMaxWidth = 90;
 
 const FIELDS = {
   org: {
@@ -93,12 +97,27 @@ const FIELDS = {
     allowWrap: false,
     letterSpacingEm: 0.15,
     textTransform: 'uppercase' as const
+  },
+  verifyCode: {
+    maxWidth: verifyCodeMaxWidth,
+    maxHeight: 14,
+    fontFamily: FONTS.heading,
+    basePx: 9,
+    allowWrap: false,
+    letterSpacingEm: 0.08,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
 export const renderClassique: TemplateRenderer = ({ design, data }) => {
   const { accent, subtitle, description, signatoryOne, signatoryTwo, year, fontSizes, roleMinHeight } =
-    prepareCertificateRenderContext(design, data, FIELDS);
+    prepareCertificateRenderContext(design, data, FIELDS, {
+      verifyCode: data.verifyCode ?? ''
+    });
+
+  const placement = design.verifyPlacements?.classique ?? { anchor: 'top-right' as const };
+  const verifyPlacementStyle = getVerifyPlacementStyle(placement.anchor, TEMPLATE_VERIFY_OFFSETS.classique);
+  const verifyBlock = renderVerifyBlock(data.verifyCode, data.verifyUrl, { qrSizePx: verifyQrSize });
 
   const body = `
     <div class="cert t-classique">
@@ -106,24 +125,25 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
       <div class="corner tr"></div>
       <div class="corner bl"></div>
       <div class="corner br"></div>
+      ${verifyBlock ? `<div style="position:absolute; ${verifyPlacementStyle}">${verifyBlock}</div>` : ''}
       
       <div class="header-area">
         <div class="top-tag" style="font-size: ${fontSizes.org}px;">${escapeHtml(data.orgName)}</div>
         <div class="ornament">&#10086;</div>
         <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtml(data.courseName)}</div>
-        ${subtitle ? `<div class="subtitle" style="font-size: ${fontSizes.subtitle}px;">${escapeHtml(subtitle)}</div>` : ''}
+        ${subtitle ? `<div class="subtitle" style="font-size: ${fontSizes.subtitle}px;" data-edit="subtitle" title="Edit subtitle">${escapeHtml(subtitle)}</div>` : ''}
       </div>
 
       <div class="body-area">
         <div class="presented">&mdash; this is to certify that &mdash;</div>
         <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
-        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;" data-edit="description" title="Edit description">${escapeHtml(description)}</div>` : ''}
       </div>
 
       <div class="footer">
-        ${renderSignatoryBlock(signatoryOne, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label' })}
-        ${renderSealBlock({ year, label: data.certificateId, topSymbol: '★' })}
-        ${renderSignatoryBlock(signatoryTwo, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label' })}
+        ${renderSignatoryBlock(signatoryOne, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label', dataEdit: 'sig:0' })}
+        ${renderSealBlock({ year, label: data.certificateId, topSymbol: '★', dataEdit: 'idFormat' })}
+        ${renderSignatoryBlock(signatoryTwo, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label', dataEdit: 'sig:1' })}
       </div>
     </div>
   `;

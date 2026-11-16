@@ -8,6 +8,10 @@ export interface CertificateSignatory {
   signatureUrl?: string;
 }
 
+export const VERIFY_ANCHORS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const;
+export type VerifyAnchor = (typeof VERIFY_ANCHORS)[number];
+export type VerifyPlacements = Partial<Record<CertificateTemplateId, { anchor: VerifyAnchor }>>;
+
 export interface CertificateDesign {
   templateId: CertificateTemplateId;
   accentColor: string;
@@ -15,6 +19,7 @@ export interface CertificateDesign {
   descriptionOverride?: string;
   signatories: [CertificateSignatory, CertificateSignatory];
   idFormat?: string;
+  verifyPlacements?: VerifyPlacements;
 }
 
 export interface StoredCertificateSignatory {
@@ -34,6 +39,8 @@ export interface StoredCertificateDesign {
     | StoredCertificateSignatory[]
     | readonly StoredCertificateSignatory[];
   idFormat?: string;
+  verifyPosition?: string | null;
+  verifyPlacements?: Partial<Record<string, { anchor?: string }>> | null;
 }
 
 /**
@@ -54,6 +61,9 @@ export interface CertificateRenderData {
   orgLogoUrl?: string;
   date: string;
   certificateId: string;
+  verifyCode?: string | null;
+  verifyUrl?: string | null;
+  status?: 'valid' | 'expired' | 'revoked';
 }
 
 export interface CertificateRenderResult {

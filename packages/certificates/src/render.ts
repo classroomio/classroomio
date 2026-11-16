@@ -1,4 +1,10 @@
-import { CERTIFICATE_WIDTH, DEFAULT_CERTIFICATE_DESIGN, FONTS_READY_CLASS, LEGACY_THEME_MAP } from './constants';
+import {
+  CERTIFICATE_WIDTH,
+  DEFAULT_CERTIFICATE_DESIGN,
+  DEFAULT_VERIFY_PLACEMENTS,
+  FONTS_READY_CLASS,
+  LEGACY_THEME_MAP
+} from './constants';
 import type {
   CertificateDesign,
   CertificateRenderData,
@@ -65,13 +71,21 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
     }
   ];
 
+  const storedPlacements = (design?.verifyPlacements as CertificateDesign['verifyPlacements']) ?? {};
+  const defaults = DEFAULT_CERTIFICATE_DESIGN.verifyPlacements ?? DEFAULT_VERIFY_PLACEMENTS;
+  const verifyPlacements: CertificateDesign['verifyPlacements'] = {
+    ...defaults,
+    ...storedPlacements
+  } as CertificateDesign['verifyPlacements'];
+
   return {
     templateId,
     accentColor,
     subtitle: design?.subtitle ?? DEFAULT_CERTIFICATE_DESIGN.subtitle,
     descriptionOverride: design?.descriptionOverride,
     signatories,
-    idFormat: design?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat
+    idFormat: design?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat,
+    verifyPlacements
   };
 }
 
@@ -79,6 +93,18 @@ export function renderCertificate(design: CertificateDesign, data: CertificateRe
   const templateId = resolveTemplateId(design.templateId);
   const renderer = RENDERERS[templateId];
   const { body, styles } = renderer({ design: { ...design, templateId }, data });
+
+  const status = data.status ?? 'valid';
+  const statusWrapperStyle =
+    status === 'revoked' ? 'opacity:0.55;filter:grayscale(1);' : status === 'expired' ? 'opacity:0.8;' : '';
+  const stampHtml =
+    status === 'revoked'
+      ? `<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);border:5px solid #dc2626;color:#dc2626;font-weight:800;letter-spacing:0.14em;font-size:32px;padding:6px 28px;border-radius:12px;background:rgba(255,255,255,0.7);text-transform:uppercase;pointer-events:none;">Revoked</div>`
+      : status === 'expired'
+        ? `<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);border:5px solid #d97706;color:#d97706;font-weight:800;letter-spacing:0.14em;font-size:32px;padding:6px 28px;border-radius:12px;background:rgba(255,255,255,0.7);text-transform:uppercase;pointer-events:none;">Expired</div>`
+        : '';
+  const wrappedBody =
+    status !== 'valid' ? `<div style="position:relative;${statusWrapperStyle}">${body}${stampHtml}</div>` : body;
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -91,7 +117,7 @@ export function renderCertificate(design: CertificateDesign, data: CertificateRe
   <link rel="stylesheet" href="${FONTS_LINK_HREF}">
 </head>
 <body>
-${body}
+${wrappedBody}
 <script>
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function() {
@@ -102,6 +128,14 @@ ${body}
   } else {
     document.documentElement.classList.add('${FONTS_READY_CLASS}');
   }
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('[data-edit]');
+    if (el) {
+      var key = el.getAttribute('data-edit');
+      window.parent.postMessage({ type: 'cio:certificate-edit', key: key }, '*');
+      e.preventDefault();
+    }
+  });
 </script>
 </body>
 </html>`;

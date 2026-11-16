@@ -1,10 +1,12 @@
-import { CERTIFICATE_WIDTH } from '../constants';
+import { CERTIFICATE_WIDTH, TEMPLATE_VERIFY_OFFSETS } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
+  getVerifyPlacementStyle,
   prepareCertificateRenderContext,
   renderFooterMetaBlock,
   renderSignatoryBlock,
+  renderVerifyBlock,
   type TemplateRenderer
 } from './shared';
 
@@ -24,6 +26,7 @@ const recipientRowGap = 30;
 const certPaddingHorizontal = 100;
 const footerGap = 30;
 const footerColumnWidth = (CERTIFICATE_WIDTH - certPaddingHorizontal * 2 - borderLeftWidth - footerGap * 3) / 4;
+const verifyQrSize = 60;
 
 const FIELDS = {
   org: {
@@ -107,35 +110,51 @@ const FIELDS = {
     letterSpacingEm: 0.25,
     allowWrap: true,
     textTransform: 'uppercase' as const
+  },
+  verifyCode: {
+    maxWidth: 90,
+    maxHeight: 14,
+    fontFamily: FONTS.mono,
+    basePx: 9,
+    allowWrap: false,
+    letterSpacingEm: 0.08,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
 export const renderMinimal: TemplateRenderer = ({ design, data }) => {
   const { accent, subtitle, description, signatoryOne, signatoryTwo, fontSizes, roleMinHeight } =
-    prepareCertificateRenderContext(design, data, FIELDS);
+    prepareCertificateRenderContext(design, data, FIELDS, {
+      verifyCode: data.verifyCode ?? ''
+    });
+
+  const placement = design.verifyPlacements?.minimal ?? { anchor: 'top-right' as const };
+  const verifyPlacementStyle = getVerifyPlacementStyle(placement.anchor, TEMPLATE_VERIFY_OFFSETS.minimal);
+  const verifyBlock = renderVerifyBlock(data.verifyCode, data.verifyUrl, { qrSizePx: verifyQrSize });
 
   const body = `
     <div class="cert t-minimal">
+      ${verifyBlock ? `<div style="position:absolute; ${verifyPlacementStyle}">${verifyBlock}</div>` : ''}
       <div class="header-area">
         <div class="top">
           <span class="org-name" style="font-size: ${fontSizes.org}px;">${escapeHtml(data.orgName)}</span>
-          <span class="cert-meta" style="font-size: ${fontSizes.certMeta}px;">${escapeHtml(data.certificateId)} &middot; ${escapeHtml(data.date)}</span>
+          <span class="cert-meta" style="font-size: ${fontSizes.certMeta}px;" data-edit="idFormat" title="Edit certificate ID format">${escapeHtml(data.certificateId)} &middot; ${escapeHtml(data.date)}</span>
         </div>
-        ${subtitle ? `<div class="small" style="font-size: ${fontSizes.subtitle}px;">&mdash; ${escapeHtml(subtitle)} &mdash;</div>` : ''}
+        ${subtitle ? `<div class="small" style="font-size: ${fontSizes.subtitle}px;" data-edit="subtitle" title="Edit subtitle">&mdash; ${escapeHtml(subtitle)} &mdash;</div>` : ''}
         <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtml(data.courseName)}</div>
       </div>
 
       <div class="body-area">
         <div class="recipient-row">
-          <div class="num">${escapeHtml(data.certificateId)}</div>
+          <div class="num" data-edit="idFormat" title="Edit certificate ID format">${escapeHtml(data.certificateId)}</div>
           <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
         </div>
-        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;" data-edit="description" title="Edit description">${escapeHtml(description)}</div>` : ''}
       </div>
 
       <div class="footer">
-        ${renderSignatoryBlock(signatoryOne, { nameClass: 'v', roleClass: 'k', roleFirst: true })}
-        ${renderSignatoryBlock(signatoryTwo, { nameClass: 'v', roleClass: 'k', roleFirst: true })}
+        ${renderSignatoryBlock(signatoryOne, { nameClass: 'v', roleClass: 'k', roleFirst: true, dataEdit: 'sig:0' })}
+        ${renderSignatoryBlock(signatoryTwo, { nameClass: 'v', roleClass: 'k', roleFirst: true, dataEdit: 'sig:1' })}
         ${renderFooterMetaBlock('Issued', data.date, { labelClass: 'k', valueClass: 'v' })}
         ${renderFooterMetaBlock('Reference', data.certificateId, { wrapperClass: 'ref', labelClass: 'k', valueClass: 'v' })}
       </div>

@@ -17,6 +17,8 @@
     /** The cert canvas is always 1100x780; tweak only if you need a different aspect. */
     width?: number;
     height?: number;
+    onEdit?: (key: string, fixed?: string) => void;
+    onBackgroundClick?: () => void;
   }
 
   let {
@@ -26,7 +28,9 @@
     showControls = false,
     class: className,
     width = 1100,
-    height = 780
+    height = 780,
+    onEdit,
+    onBackgroundClick
   }: Props = $props();
 
   const MIN_SCALE = 0.18;
@@ -46,6 +50,27 @@
     doc.open();
     doc.write(html);
     doc.close();
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const el = target?.closest('[data-edit]') as HTMLElement | null;
+      if (el) {
+        const key = el.getAttribute('data-edit');
+        if (key) {
+          e.preventDefault();
+          e.stopPropagation();
+          onEdit?.(key);
+        }
+      } else {
+        onBackgroundClick?.();
+      }
+    };
+
+    doc.addEventListener('click', handleClick);
+
+    return () => {
+      doc.removeEventListener('click', handleClick);
+    };
   });
 
   const isFit = $derived(zoom === 'fit' && manualScale == null);
@@ -73,7 +98,22 @@
     observer.observe(stageElement);
     recomputeFitScale();
 
-    return () => observer.disconnect();
+    const handleMessage = (event: MessageEvent) => {
+      if (!onEdit && !onBackgroundClick) return;
+      const data = event.data as { type?: string; key?: string; fixed?: string } | null;
+      if (!data || typeof data.type !== 'string') return;
+      if (data.type === 'cio:certificate-edit' && data.key) {
+        onEdit?.(data.key, data.fixed);
+      } else if (data.type === 'cio:certificate-background') {
+        onBackgroundClick?.();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('message', handleMessage);
+    };
   });
 
   function handleZoomIn() {
@@ -96,7 +136,7 @@
     <iframe
       bind:this={iframeElement}
       title="Certificate preview"
-      sandbox="allow-same-origin"
+      sandbox="allow-same-origin allow-scripts"
       class="ui:h-full ui:w-full ui:rounded-sm ui:border-0 ui:shadow-[0_18px_40px_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.12)]"
       style:width="{width}px"
       style:height="{height}px"

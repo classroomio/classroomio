@@ -132,11 +132,15 @@ export async function downloadPublicApiCourseCertificateService(
   }
 
   const issuedAt = new Date(member.certificateEarnedAt).toISOString();
-  const renderInput = await assembleCertificateRender(params.courseId, {
-    studentName: member.profile?.fullname || 'Recipient',
-    studentId: member.profileId ?? undefined,
-    issuedAt
-  });
+  const renderInput = await assembleCertificateRender(
+    params.courseId,
+    {
+      studentName: member.profile?.fullname || 'Recipient',
+      studentId: member.profileId ?? undefined,
+      issuedAt
+    },
+    member.profileId
+  );
 
   const file =
     query.format === 'png' ? await generateCertificatePng(renderInput) : await generateCertificatePdf(renderInput);

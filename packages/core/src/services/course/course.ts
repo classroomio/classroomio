@@ -420,12 +420,37 @@ export async function updateCourse(
     const { logo: legacyLogo, ...dataWithoutLegacyLogo } = data;
     const nextBannerImage = data.bannerImage ?? legacyLogo;
 
+    const existingCertificate = existingCourse?.certificate as Record<string, unknown> | undefined;
+    const incomingCertificate = data.certificate as Record<string, unknown> | undefined;
+    let mergedCertificate: Record<string, unknown> | undefined;
+    if (incomingCertificate) {
+      const existingDesign = (existingCertificate?.design as Record<string, unknown> | undefined) ?? {};
+      const incomingDesign = (incomingCertificate.design as Record<string, unknown> | undefined) ?? {};
+      const mergedDesign = {
+        ...existingDesign,
+        ...incomingDesign,
+        verifyPosition:
+          (incomingDesign as { verifyPosition?: string }).verifyPosition ??
+          (existingDesign as { verifyPosition?: string }).verifyPosition,
+        verifyPlacements:
+          (incomingDesign as { verifyPlacements?: unknown }).verifyPlacements ??
+          (existingDesign as { verifyPlacements?: unknown }).verifyPlacements
+      };
+      mergedCertificate = {
+        ...existingCertificate,
+        ...incomingCertificate,
+        design: mergedDesign
+      };
+    }
+
     const sanitizedData: Partial<TCourse> = {
       ...dataWithoutLegacyLogo,
       description: sanitizeOptionalHtml(data.description),
       overview: sanitizeOptionalHtml(data.overview),
       metadata: sanitizeCourseMetadata(mergedMetadata),
-      certificate: sanitizeCourseCertificate(data.certificate),
+      certificate: sanitizeCourseCertificate(
+        (mergedCertificate as Parameters<typeof sanitizeCourseCertificate>[0]) ?? data.certificate
+      ),
       slug: data.slug,
       ...(nextBannerImage !== undefined ? { bannerImage: nextBannerImage, logo: nextBannerImage } : {})
     };

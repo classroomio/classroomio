@@ -1,0 +1,8 @@
+import { normalizeLandingPageSettings, importThemeBundle } from '$features/org/utils/landing-page';
+
+export const load = async ({ data }) => {
+  const settings = normalizeLandingPageSettings(data.org?.landingpage);
+  const bundle = await importThemeBundle(settings.theme);
+
+  return { ...data, NavComponent: bundle.nav };
+};

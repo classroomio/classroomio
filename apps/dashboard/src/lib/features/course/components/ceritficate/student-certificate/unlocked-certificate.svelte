@@ -4,7 +4,7 @@
   import ImageIcon from '@lucide/svelte/icons/image';
 
   import { profile } from '$lib/utils/store/user';
-  import { isFreePlan } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { REQUIRED_COURSE_COMPLETION_PERCENT } from '@cio/utils/functions/course-progression';
@@ -22,7 +22,8 @@
   let evaluation = $state<CertificationEvaluationData | null>(null);
 
   let courseId = $derived(courseApi.course?.id ?? '');
-  let canDownload = $derived(isCourseComplete && !$isFreePlan);
+  let certificateStatus = $derived(evaluation?.certificateStatus ?? null);
+  let canDownload = $derived(isCourseComplete && !$isFreePlan && certificateStatus !== 'revoked');
 
   function buildBody() {
     return {
@@ -110,6 +111,7 @@
   let title = $derived.by(() => {
     if (!isCourseComplete) return 'course.navItem.certificates.complete_to_download_title';
     if ($isFreePlan) return 'course.completion.modal.title';
+    if (certificateStatus === 'revoked') return 'course.navItem.certificates.revoked_title';
 
     return 'course.navItem.certificates.unlocked_certificate';
   });
@@ -139,7 +141,13 @@
 <div class="flex-1">
   <Empty title={$t(title)} icon={DownloadIcon} variant="page">
     <div class="ui:text-muted-foreground mx-auto mb-4 max-w-md space-y-2 text-center text-sm">
-      {#if isCourseComplete && $isFreePlan}
+      {#if certificateStatus === 'revoked'}
+        <p class="text-destructive font-medium">
+          {$t('course.navItem.certificates.revoked_message', { org: $currentOrg.name })}
+        </p>
+      {:else if certificateStatus === 'expired'}
+        <p class="text-amber-600">{$t('course.navItem.certificates.expired_message')}</p>
+      {:else if isCourseComplete && $isFreePlan}
         <p>{$t('course.completion.modal.subtitle_no_certificate')}</p>
       {:else if isCourseComplete}
         <p>{$t('course.navItem.certificates.unlocked_certificate_subtitle')}</p>
