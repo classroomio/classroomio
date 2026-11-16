@@ -20,11 +20,27 @@
     answer?.type === 'NUMERIC' && answer.latex ? `$${answer.latex}$` : studentVal !== null ? String(studentVal) : ''
   );
 
-  const correct = $derived.by(() => {
-    const correctValue = question.settings?.correctValue as number | string | undefined;
+  const correctValue = $derived(question.settings?.correctValue as number | string | undefined);
+  let evaluatedCorrect = $state<number | null>(null);
 
-    return typeof correctValue === 'string' ? latexToNumber(correctValue) : correctValue;
+  $effect(() => {
+    const expression = correctValue;
+    if (typeof expression !== 'string') {
+      evaluatedCorrect = null;
+      return;
+    }
+
+    let cancelled = false;
+    void latexToNumber(expression).then((value) => {
+      if (!cancelled) evaluatedCorrect = value;
+    });
+
+    return () => {
+      cancelled = true;
+    };
   });
+
+  const correct = $derived(typeof correctValue === 'string' ? evaluatedCorrect : correctValue);
 
   const inRange = $derived.by(() => {
     if (studentVal === null || correct === undefined || correct === null) return null;

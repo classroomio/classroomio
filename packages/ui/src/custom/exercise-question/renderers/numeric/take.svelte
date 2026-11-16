@@ -8,9 +8,11 @@
 
   let draftLatex = $state(untrack(() => (answer?.type === 'NUMERIC' ? (answer.latex ?? String(answer.value)) : '')));
 
-  function handleInput(nextLatex: string) {
+  async function handleInput(nextLatex: string) {
     draftLatex = nextLatex;
-    const value = latexToNumber(nextLatex);
+    const value = await latexToNumber(nextLatex);
+    if (draftLatex !== nextLatex) return;
+
     if (value === null) {
       onAnswerChange(null);
       return;
