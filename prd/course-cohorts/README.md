@@ -1,814 +1,449 @@
 # Course Cohorts PRD
 
+## Status
+
+- Draft v2 (rewrite). Supersedes the v1 draft that proposed a separate `course_cohort` table.
+
 ## Purpose
 
-Enable instructors to run a single course with multiple independent groups of learners (cohorts). Each cohort has its own enrollment, assignment submissions, grading, newsfeed, attendance, and progress tracking, while sharing the same course content. Cohorts can be deactivated to revoke access or scheduled to start at a future date.
+Run one course for many batches of learners. Each batch is a **cohort**, the org-level entity that already exists (`cohort`, `cohort_course`, `cohort_member`). A course linked to several cohorts keeps **one copy of its content**, while each cohort gets its own enrollment, submissions, grades, progress, attendance, comments, newsfeed and live-session schedule.
+
+Customers who already duplicated a course per batch get a **Merge courses** flow that folds the copies into one course with one cohort per copy, keeps every learner record, and can be **undone for 30 days**.
 
 ## Problem Statement
 
-Currently, ClassroomIO has a 1:1 relationship between a course and its membership group. If an instructor wants to run the same training for a new batch of students, they must clone the entire course. This leads to:
-- Content duplication and drift between copies
-- No unified view of all batches running under one course
-- No way to deactivate a past batch while keeping content accessible for new ones
-- Manual bookkeeping to track which copy belongs to which batch
+### Why customers duplicate today
+
+Adding students to a cohort enrolls them into the linked course's single group (`course.group_id`, see `enrollCohortStudentsInGroups` in `apps/api/src/services/cohort/cohort.ts`). If one course is linked to two cohorts, both batches land in the same group: they share lesson comments and the newsfeed, and instructors see both batches mixed together in People, Submissions, Marks and Attendance. To keep batches apart, customers duplicate the whole course and link each copy to its own cohort.
+
+### What duplication costs (production audit, 2026-11-16)
+
+Read-only audit of `cio-prod` for the two academies that run batches.
+
+| | Academy A | Academy B |
+| --- | --- | --- |
+| Courses / cohorts | 9 copies of "Data Analysis" (2 deleted), 7 cohorts, 123 students | 3 copies of "Career Track", 3 cohorts, 7 students |
+| Lessons stored vs one canonical copy | 266 vs 32 (8.3×) | 251 vs 121 (2.1×) |
+| Blocks stored vs canonical | 332 vs 35 (9.5×) | 484 vs 232 (2.1×) |
+| Questions / options stored vs canonical | 211 / 583 vs 39 / 113 | 379 / 1506 vs 169 / 666 |
+| Asset files | 27 assets behind 227 media blocks (files shared, blocks copied) | 109 assets, 61 shared |
+
+Content comparison, matched by section and lesson title and fingerprinted by note text and asset IDs:
+
+- **Same content:** all 28 non-live Academy A lessons are identical in every full copy. Academy B's 06 Nov and 14 Nov copies are identical. Questions and options match wherever the exercise was cloned rather than rebuilt.
+- **Real per-cohort data:** live-session lessons differ by date (`lesson_at`), call link (`call_url`) and the meeting-details note. Lock state differs: Academy B's copies lock 29 lessons and 2 quizzes for drip release.
+- **Drift caused by duplication:**
+  - Two Academy A cohorts (36 students) never received Week 4: 9 lessons and the Week 4 project are missing from their copies.
+  - Academy A's middle copies have hand-rebuilt exercises with different titles, question counts, points and attempt settings.
+  - Academy B's later edits exist only in the copies, and the original has Weeks 5 to 8 that the copies lack.
+- **Clone bugs:**
+  - Plain duplication records no `source_id`, so nothing links a copy to its origin.
+  - Every exercise in every copy has `due_by` set to the clone timestamp (`clone.ts` uses `now()` unless `preserveSchedule`), so each copied exercise has been overdue since it was created.
+- **Roster drift:** cohort membership does not match course enrollment. A1 has 0 cohort students but 33 course students; B3 has a student and no linked course.
 
 ## Confirmed Decisions
 
-1. **Terminology**: "Cohorts" internally and in the instructor-facing UI.
-2. **Opt-in**: Cohorts are opt-in per course. Courses without cohorts work exactly as they do today (default single group).
-3. **Cross-cohort analytics**: Instructors can view aggregated analytics across all cohorts.
-4. **Student retakes**: A student can be enrolled in multiple cohorts of the same course (e.g., retake scenarios).
-5. **Deadlines**: Cohort-level deadlines are controlled by `cohort.startsAt` / `cohort.endsAt` and `cohort.status`. Exercise-level `dueBy` on the shared content is unrelated to cohort scheduling.
-6. **Student visibility**: Students never see or choose cohorts. Cohorts are an instructor-only organizational concept. Students are enrolled into a specific cohort via invite links created by the instructor. The student experience is identical to today — they just see "the course."
-7. **URLs**: The course landing page URL does not change. Cohort context is carried by the invite token, not by the URL.
+1. **Reuse the existing cohort.** No new cohort entity. `cohort` stays the batch, `cohort_course` stays the link between a cohort and a course.
+2. **Isolation lives on the link.** Each `cohort_course` row owns its own `group`. Cohort students enroll into that group, not into `course.group_id`.
+3. **One content tree per course.** Sections, lessons, blocks, exercises and questions are shared by every cohort on the course.
+4. **Per-cohort schedule is in scope.** Live-session date, call link, recording, lock state and exercise due date can differ per cohort through overrides. Content cannot.
+5. **Merge existing copies is in scope for v1**, including a reversible merge with a 30-day undo window.
+6. **Students keep today's experience.** They already see the cohorts they belong to (`/lms/cohorts`). Inside a course they see their own cohort's schedule and activity, with no cohort picker. A student in two cohorts of one course (retake) sees a "Previous enrollment" switch.
+7. **URLs are stable.** A course keeps its slug. A merged copy's slug redirects to the course it was merged into.
 
 ## Current-State Audit
 
-| Capability | Current State | Notes |
+| Area | Today | Change needed |
 | --- | --- | --- |
-| Course ↔ Group relationship | 1:1 via `course.groupId` | Single group per course |
-| Student enrollment | `groupmember` rows in course's group | Tied to one group |
-| Submissions | `submission.submittedBy` → `groupmember.id` | Already group-scoped |
-| Question answers | `question_answer.groupMemberId` → `groupmember.id` | Already group-scoped |
-| Attendance | `group_attendance.studentId` → `groupmember.id` | Already group-scoped |
-| Lesson completion | `lesson_completion(lessonId, profileId)` unique | NOT group-scoped, uses `profileId` |
-| Lesson comments | `lesson_comment.groupmemberId` → `groupmember.id` | Already group-scoped |
-| Course newsfeed | `course_newsfeed.courseId` (no group filter) | Shared across all members, NOT group-scoped |
-| Newsfeed comments | FK to `course_newsfeed` | Follows parent newsfeed |
-| Course content | Lessons, exercises, sections belong to `courseId` | Shared (this is what we want) |
-| Course creation | Creates group → course → groupmember → default newsfeed in transaction | `apps/api/src/services/course/course.ts` |
-| Enrollment | `enrollInCourse()` adds to `course.groupId` group | `apps/api/src/services/course/invite.ts` |
-| Course type enum | `COURSE_TYPE`: `SELF_PACED`, `LIVE_CLASS` | `packages/db/src/schema.ts:23` |
+| Cohort ↔ course | `cohort_course(cohort_id, course_id)`, unique pair | Add `group_id`, `starts_at`, `ends_at` |
+| Cohort enrollment | Students inserted into `course.group_id` | Insert into `cohort_course.group_id` |
+| Course access | `canProfileOpenCourse` checks the course group | Check every enrollment group of the course |
+| `course.group_id` usage | About 108 references in 28 query and service files (101 typed `course.groupId` in 25 files, plus raw-SQL joins in `analytics/scope.ts`, `organization/audience.ts`, `organization/member-lifecycle.ts`) | Route through an enrollment-group resolver (see Read paths) |
+| Submissions | Write scoped by `submitted_by → groupmember`; reads filter by `course_id` | Reads filter by group |
+| Question answers | `group_member_id` | Follows submission |
+| Lesson comments | Write scoped by `groupmember_id`; reads filter by `lesson_id` | Reads filter by group |
+| Attendance | Reads filter by `course_id` | Reads filter by group |
+| Lesson completion | Unique `(lesson_id, profile_id)` | Add `group_member_id`, unique `(lesson_id, group_member_id)` |
+| Video progress | Unique `(lesson_id, profile_id, asset_id)` | Add `group_member_id`, unique per group member and asset |
+| Completion records / certificates | Unique `(course_id, profile_id, cycle_number)` | Unique `(group_member_id, cycle_number)` |
+| Course newsfeed | `course_id` only | Add `group_id` (null = all cohorts) |
+| Course invites | `course_invite.course_id` | Add `cohort_course_id` |
+| Live lesson schedule | Columns on `lesson` | Per-cohort override table |
+| Exercise due date / lock | Columns on `exercise` | Per-cohort override table |
+| Duplicate course | No lineage, `due_by = now()` | Record lineage, preserve schedule, suggest a cohort instead |
 
-**Key insight**: Submissions, question answers, attendance, and lesson comments are already scoped by `groupmember.id`. If each cohort gets its own `group`, these records are naturally isolated with zero schema changes to those tables.
+Production shape (2026-11-16): 59 cohorts in 44 orgs, 43 cohort-course links, 9 cohorts with several courses, 1 course already linked to 2 cohorts (sharing one group today).
 
 ## Product Goals
 
-1. Allow a course to have multiple cohorts, each with its own independent group of learners.
-2. Each cohort has isolated: enrollment, submissions, grading, newsfeed, attendance, progress tracking.
-3. All cohorts share the same course content (lessons, exercises, sections, questions).
-4. Instructors can deactivate a cohort (students lose access) or schedule access windows.
-5. Courses without cohorts enabled continue to work exactly as they do today.
-6. Instructors can view per-cohort and cross-cohort aggregated analytics.
-7. Students can be enrolled in multiple cohorts of the same course.
+1. Link one course to many cohorts without content copies.
+2. Isolate each cohort's enrollment, submissions, grades, progress, comments, attendance and newsfeed.
+3. Let each cohort have its own live-session dates, call links, recordings, drip locks and due dates.
+4. Give instructors a cohort filter on every course page that lists learner data, plus an "All cohorts" view. Course analytics already breaks results down by cohort ("Direct students", "Cohorts taking this course", from `cohort_member`); the filter extends that to the new per-link groups.
+5. Merge existing per-batch copies into one course, safely and reversibly.
+6. Stop new duplication: steer "Duplicate course" toward "Run a new cohort".
+7. Zero regression for courses with no cohort links, and for Programs-style cohorts that bundle several courses.
 
 ## Non-Goals (v1)
 
-- Per-cohort exercise deadline overrides (exercise `dueBy` differences between cohorts).
-- Cohort-specific content variations (all cohorts see the same content).
-- Automatic cohort assignment rules (e.g., auto-assign by domain).
-- Cohort templates or cohort cloning.
-- Cohort-level pricing (all cohorts share the course price).
-- Notifications/emails when a cohort is about to start or end.
-
-## Data Sources Checked
-
-- `packages/db/src/schema.ts` — all table definitions
-- `apps/api/src/services/course/course.ts` — course creation flow
-- `apps/api/src/services/course/invite.ts` — enrollment flow
-- `apps/api/src/routes/course/course.ts` — course routes
-- `apps/api/src/routes/course/` — all course sub-routers
-- `packages/db/src/queries/course/` — course query layer
-- `packages/db/src/queries/course/people.ts` — member management
-- `packages/db/src/queries/newsfeed/newsfeed.ts` — newsfeed queries
-- `packages/db/src/queries/submission/submission.ts` — submission queries
-- `packages/db/src/queries/mark/mark.ts` — grading queries
-- `apps/dashboard/src/routes/courses/[id]/` — course detail pages
-- `apps/dashboard/src/lib/features/course/` — course frontend feature
+- Content variations per cohort (a lesson that exists for one cohort only).
+- Automatic cohort assignment rules.
+- Per-cohort pricing.
+- Merging courses across organizations.
+- Merging courses that are templates (`is_template = true`).
+- Undo after the 30-day window.
 
 ## Functional Requirements
 
-### 1. Enable Cohorts on a Course
+### 1. Cohort-scoped enrollment
 
-- Instructors can enable cohorts on an existing course via course settings.
-- When cohorts are enabled:
-  - A `course_cohort` record is created for each cohort.
-  - Each cohort gets its own `group` for membership isolation.
-  - The existing `course.groupId` group becomes the "Default" cohort (backward compatible).
-- When cohorts are disabled (reverted):
-  - Only allowed if there is exactly one active cohort.
-  - That cohort's group becomes the direct `course.groupId` again.
+- Linking a course to a cohort (`POST /cohort/:cohortId/courses`) creates a `group` for that link and stores it in `cohort_course.group_id`. Cohort staff keep their cohort role (ADMIN or TUTOR), cohort students are added as STUDENT, matching `enrollCohortStaffInCourseGroups` today.
+- Adding a member to a cohort enrolls them into the group of each of the cohort's course links.
+- Removing a member removes them from those groups. Their records stay (same as removing a course member today). This is new: today removing a cohort member deletes only the `cohort_member` row and leaves their course enrollment, as the help center says (`manage-learners/assign-learners-to-a-cohort.mdx`, `troubleshooting-and-reference/cohort.mdx`). Update those articles when this ships.
+- A course can still have direct enrollments in `course.group_id` (invites, free enroll, payments). Those learners form the **Direct** bucket in the cohort filter.
+- A student can belong to two cohorts on the same course. Each enrollment is its own `groupmember` with its own progress.
 
-### 2. Cohort CRUD
+### 2. Course access
 
-- Instructors can create, update, and archive cohorts.
-- Each cohort has: name, description, status, optional start/end dates, optional max student cap.
-- Cohort names must be unique within a course.
-- Creating a cohort creates a new `group` and adds the creator as TUTOR in that group.
-- A default welcome newsfeed post is created for each new cohort.
+- A student can open a course when they have a `groupmember` row in `course.group_id` or in any `cohort_course.group_id` for that course.
+- A cohort link outside its `starts_at`–`ends_at` window blocks student access through that link. Staff keep access.
+- Today cohort `status` only hides non-ACTIVE cohorts from search and stops invite links from accepting new members; it does not affect course access. New: `INACTIVE` and `ARCHIVED` cohorts block student access through their links.
 
-### 3. Cohort Status and Access Control
+### 3. Viewer context resolution
 
-- Cohort statuses: `ACTIVE`, `INACTIVE`, `SCHEDULED`.
-- Access rules enforced server-side (not just UI):
-  - `ACTIVE`: full access for enrolled students.
-  - `INACTIVE`: students cannot access course content. Instructors/admins can still view for grading/review.
-  - `SCHEDULED` with `startsAt` in the future: students see "This cohort starts on [date]" message.
-  - `endsAt` in the past: treated as `INACTIVE` regardless of status field.
-- Deactivating a cohort does NOT remove group members or delete data. It only blocks access.
+`resolveCourseEnrollment(courseId, profileId, { cohortId? })` returns the group and groupmember the request acts in.
 
-### 4. Cohort-Scoped Enrollment
+- **Students:** the one enrollment they have. With several, the most recently active link inside its window, unless `?enrollment=<groupmemberId>` selects another one of their own.
+- **Staff:** `?cohortId=` selects one cohort. No `cohortId` means **All cohorts** for list and analytics pages. Write actions that need a group (posting to the newsfeed, marking attendance) require a cohort or Direct.
 
-- Students are enrolled into a specific cohort, not the course directly.
-- Enrollment creates a `groupmember` in the cohort's `group`.
-- A student can exist in multiple cohorts of the same course (retakes).
-- Invite links are scoped to a cohort (not the course). The instructor creates an invite for a specific cohort, and the generated link carries that context via the invite token.
-- The existing `course_invite` table gets a nullable `cohort_id` column.
-- **Students never see or select cohorts.** The cohort is resolved server-side from the invite token. From the student's perspective, they click an invite link and join "the course" — the cohort assignment is invisible to them.
-- **Free course direct enrollment** (no invite token): when cohorts are enabled, the instructor designates one cohort as the "open enrollment" cohort. The course-level `POST /course/:courseId/enroll` (no token) routes to that cohort's group. This is stored as `course.defaultCohortId`. If no default cohort is set, direct free enrollment returns an error asking the student to use an invite link.
+### 4. Per-cohort schedule overrides
 
-### 4a. URL and Landing Page Behavior
+Shared content keeps its base values. A cohort link can override:
 
-- **Landing page** (`/course/[slug]`): Unchanged. Shows the shared course info. There is one course, one slug, one landing page regardless of how many cohorts exist.
-- **Enroll page** (`/course/[slug]/enroll?invite_token=...`): Unchanged URL structure. The invite token carries the `cohortId` — the backend resolves it and enrolls the student into the correct cohort's group.
-- **Free enrollment** (`/course/[slug]/enroll` with no token): Routes to the course's default cohort when cohorts are enabled.
-- **Inside the LMS** (`/courses/[id]/...`): Students see the course as they do today. The backend resolves which cohort the student belongs to and returns cohort-scoped data (newsfeed, submissions, progress). If a student is in multiple cohorts (retake), the backend uses the most recently active cohort by default, with the option for the URL to carry `?cohort=[cohortId]` — but this is not surfaced in the UI as a "cohort picker." Instead, the course shows a simple "You have a previous enrollment" note with the option to switch, without exposing cohort terminology.
+| Item | Overridable fields |
+| --- | --- |
+| Lesson | `lesson_at`, `call_url`, `recording_url`, `session_duration_minutes`, `is_unlocked`, `unlock_at` (new, override-only) |
+| Exercise | `due_by`, `is_unlocked`, `unlock_at` (new, override-only) |
 
-### 5. Cohort-Scoped Newsfeed
+- Resolution is `override ?? base`, applied in the read path for students and in the cohort-filtered staff view.
+- **Shift schedule:** when linking a course to a new cohort, staff can copy another cohort's overrides and shift every date by N days (default: the difference between the two links' `starts_at`).
+- Live-session reminders (`live_session_reminder_delivery`) are sent per cohort link, using the resolved `lesson_at`. Its unique key `(lesson, profile, offset)` gains the group member, so a student in two cohorts of one course gets both reminders.
 
-- Each cohort has its own newsfeed.
-- Add `cohort_id` (nullable) to `course_newsfeed`.
-- When querying newsfeed, filter by `cohortId`.
-- For non-cohort courses, `cohort_id` is null and behavior is unchanged.
+### 5. Read paths that must filter by group
 
-### 6. Cohort-Scoped Lesson Completion
+Every query that lists learner data through `course.group_id` or `course_id` filters by the resolved group set: one cohort, Direct, or all. The work covers the 28 files that reference `course.group_id` today, including:
 
-- Add `cohort_id` (nullable) to `lesson_completion`.
-- Change unique constraint from `(lesson_id, profile_id)` to `(lesson_id, profile_id, cohort_id)`.
-- A student's lesson completion in one cohort does not affect another.
-- For non-cohort courses, `cohort_id` is null and behavior is unchanged.
+- People, marks, submissions (list, for-grading, counts), attendance, lesson comments.
+- Student progress, member progress, compliance, course analytics, dash stats.
+- Newsfeed, sessions, invites, payment requests.
+- Webhook payload details, product events, the agent route.
+- Public API v1 course member endpoints and MCP tools (`list_course_members`, `list_course_submissions`, `get_course_marks`, `list_course_analytics_students`). Each gains an optional `cohortId`.
 
-### 7. Per-Cohort Views (Dashboard)
+### 6. Course newsfeed and comments
 
-- **Instructor view**: When viewing a cohort-enabled course, the instructor sees a cohort selector dropdown. Per-cohort pages: newsfeed, people, submissions, marks, attendance, analytics. All data is filtered by the selected cohort.
-- **Student view**: Students never see a cohort selector or cohort names. The backend automatically resolves the student's cohort from their `groupmember` record and returns cohort-scoped data. If enrolled in multiple cohorts (retake), the most recently active cohort is used by default.
+- `course_newsfeed.group_id`: posts go to one cohort, Direct, or everyone (null).
+- Students see posts for their group plus everyone posts.
+- Lesson comments are shown to members of the commenter's group, and to all staff.
 
-### 8. Cross-Cohort Analytics
+### 7. Invites
 
-- Instructors can view aggregated analytics across all cohorts of a course.
-- Metrics: total students, lesson completion rates, exercise completion rates, average grades — broken down by cohort and as totals.
+- `course_invite.cohort_course_id` (nullable). An invite created from a cohort's view enrolls into that link's group and adds the student to the cohort roster.
+- Existing invites keep enrolling into `course.group_id`.
 
-### 9. Migration for Existing Courses
+### 8. Cohort filter in the course UI
 
-- When a course has cohorts enabled, a "Default" cohort is auto-created pointing to the existing `course.groupId` group.
-- All existing newsfeed posts for that course get the default cohort's `cohort_id` backfilled.
-- All existing `lesson_completion` rows for members of that group get the default cohort's `cohort_id` backfilled.
-- This ensures zero data loss and full backward compatibility.
+- A cohort filter sits in the course header on People, Submissions, Marks, Attendance, Analytics and Newsfeed: **All cohorts · Direct · each linked cohort**, each with a student count and a status dot.
+- Choosing a cohort is kept in `?cohortId=` and survives page changes within the course.
+- Lesson and exercise editors get a **Schedule by cohort** panel listing each linked cohort's date, link, lock and due date, with "Same as course" as the empty state.
+
+### 9. Duplicate course
+
+- `cloneCourse` always records lineage (`source_id` on sections, lessons, exercises, plus `course.source_course_id`), and keeps `due_by` instead of stamping `now()`.
+- "Duplicate" on a course that is linked to a cohort opens a choice: **Run a new cohort** (link this course to a new or existing cohort) or **Duplicate anyway**.
+
+### 10. Merge courses
+
+#### 10.1 Who and where
+
+- Org admins only. All courses must be in the same org, not templates, not deleted.
+- Entry points:
+  - A suggestion banner on the Courses page when copies are detected: "7 courses look like copies of Data Analysis".
+  - A **Merge courses** button in the Courses page toolbar.
+  - "Merge with other copies…" in a course's ⋯ menu.
+
+#### 10.2 Detecting copies
+
+A **copy group** is a set of courses where:
+
+- titles match after removing date and batch suffixes (`- 23rd August`, `- 08th November 2026`, `dummy`), and
+- at least 60% of lesson titles match after normalizing case, whitespace and punctuation.
+
+Lineage (`source_id`), when present, groups courses directly. Groups are computed on demand by `GET /course/merge/suggestions`.
+
+#### 10.3 Choosing the primary course
+
+- The primary course keeps its ID, slug, title, settings and content. The other courses are **copies**.
+- Recommended primary: the copy with the most lessons and exercises, ties broken by most recent content edit. The UI shows the reason ("Most complete: 32 lessons, 7 exercises").
+
+#### 10.4 Matching content
+
+Each copy item is matched to a primary item:
+
+1. by `source_id` lineage, then
+2. by normalized section title + lesson title (exercise title for exercises), then
+3. by fuzzy title (edit distance ≤ 2, e.g. "Intoduction" → "Introduction", "Week 2 - Project" → "Week 2 Project") within the same section.
+
+Each copy item lands in one class:
+
+| Class | Meaning | Default action |
+| --- | --- | --- |
+| Same | Blocks (note text, asset IDs) or questions/options identical, empty notes ignored | Map to primary item |
+| Schedule differs | Only overridable fields differ | Map, and save the copy's values as that cohort's overrides |
+| Content differs | Text, blocks, questions, points or settings differ | Map to primary item (primary content wins); copy content stays in the archived copy |
+| Missing in copy | Primary item the copy never had (Academy A Week 4) | The cohort gains it. Option: lock it for this cohort |
+| Only in copy | Copy item with no match | Leave in archived copy (default when it has no learner activity), or add to the primary course |
+
+A `due_by` within two minutes of the copy's `created_at` was stamped by duplication, not set by a person. It is treated as unset and not saved as an override.
+
+#### 10.5 Moving learner data
+
+For each copy merged into primary course P as cohort K:
+
+1. **Enrollment moves as a whole group.** The copy's group becomes the group of link (K, P). No `groupmember` row changes, so `submission.submitted_by`, `question_answer.group_member_id`, attendance and comments keep their IDs.
+2. **Remap content references** from copy IDs to primary IDs:
+   - `submission.exercise_id`, `submission.course_id`, `question_answer.question_id`
+   - `lesson_completion.lesson_id`, `lesson_video_progress.lesson_id`, `lesson_comment.lesson_id`
+   - `group_attendance.course_id` / `lesson_id`, `course_newsfeed.course_id` (+ `group_id` = the moved group)
+   - `course_completion_record.course_id`, `course_certificate_issue.course_id`
+   - `course_invite.course_id` (+ `cohort_course_id`), tag assignments
+3. **Answers to questions that do not match** stay attached to the archived copy's question rows. Submission totals, grades and feedback are kept as they were. Grading shows "3 answers belong to questions removed in the merge" with a link to view them.
+4. **Schedule differences** become rows in `cohort_course_item_override`.
+5. **Cohort link:** if the copy was linked to cohort K, the link moves to P (keeping its ID). If not, the admin picks or creates a cohort in the wizard.
+6. **Roster sync (optional, on by default):** add course students missing from the cohort roster (A1: 33). Never removes roster members.
+7. **The copy is archived:** `course.status = 'MERGED'`, `merged_into_course_id = P`, unpublished, hidden from course lists and catalogs. Its slug redirects to P.
+8. Cache invalidation, webhooks (`course.merged`), analytics events and emails run after the transaction commits.
+
+Each copy merges in its own transaction inside a background job (BullMQ). The job reports progress per step. While it runs, all involved courses are read-only and show "Merge in progress".
+
+#### 10.6 Undo merge
+
+- Every changed row is recorded in `course_merge_change(merge_id, table_name, row_id, column_name, old_value, new_value)`.
+- **Undo merge** is available in the primary course's Settings → Merge history, and on the merge result screen, for 30 days.
+- Undo replays the change log in reverse: restores the copies (`status`, slug, publish state), moves cohort links and groups back, restores remapped references, deletes the created overrides and synced roster rows.
+- Activity created after the merge:
+  - on items the copy had: moved back to the copy's item through the match map;
+  - on items the copy never had (gained in the merge): kept on the primary course and listed in the undo preview ("12 lesson completions on Week 4 will stay with Data Analysis").
+- Content edits made to the primary course after the merge stay on the primary course. Copies come back exactly as they were at merge time.
+- After 30 days the merge is finalized: the change log and archived copies' content can be purged by a scheduled job. Finalizing early is an admin action.
+
+#### 10.7 Merge wizard (UI)
+
+Full-page flow at `/org/[slug]/courses/merge`, built only from existing app components:
+
+- Page shell: `@cio/ui/base/page` (`Page.Root`, `Page.Header`, `Page.Body`), the shell the Courses page builds on (`Page.Root` and `Page.Body`).
+- Step indicator: the onboarding `Stepper` (`$features/onboarding/components/stepper.svelte`: "Step 1 of 4" label, step name, segmented bars). Move it to `@cio/ui/custom/stepper` so both flows share it, with a Storybook story.
+- Footer actions follow the dialog button hierarchy: Back `variant="secondary"`, Cancel `variant="outline"`, primary CTA on the right, all `size="sm"`.
+- Lists use `Item` and `Table`, states use `Badge`, notices use `Alert`, side-by-side diffs open in a `Sheet`, empty states use `Empty`.
+- No custom shadows, gradients or one-off cards. Courses render with the existing `CourseCard`.
+- All copy in `en.json` under `course.merge.*`; Playwright hooks via `testId` (`course-merge-start`, `course-merge-submit`, `course-merge-undo`).
+
+Four steps and a result screen:
+
+1. **Choose courses.** Detected copy group preselected. Each row shows title, students, lessons, exercises, created date, linked cohort, and a radio for **Primary** with a "Recommended" badge and its reason. Admins can add or remove courses.
+2. **Review content.** One tree of the primary course (sections → lessons and exercises) with a column per copy. Each cell is a chip: Same, Schedule, Differs, Missing, Only here. A summary bar counts each class. Clicking a cell opens a side-by-side diff (blocks, or questions and options) and the action choices from 10.4.
+3. **Cohorts.** One row per copy: linked cohort (or a picker to choose or create one), students moving, cohort start date, roster sync toggle with the number of students it adds.
+4. **Confirm.** Course name after the merge (default: the primary's title without its batch suffix, e.g. "Data Analysis"). Plain-language summary: courses becoming one, enrollments, submissions and completions moving, items added per cohort, copies archived, undo date. A checkbox to confirm, then **Merge courses**.
+
+**Merging animation.** The selected `CourseCard`s slide into the primary card and stack, using Svelte's `animate:flip` and `fly` transitions, as the dashboard already does elsewhere. A checklist shows the job's real steps (matching content, moving enrollments, moving submissions and answers, saving cohort schedules, archiving copies) with live counts. Respects `prefers-reduced-motion` (no movement, checklist only).
+
+**Result.** One course card ("Data Analysis · 7 cohorts · 126 students"), **Open course**, and a callout: "You can undo this merge until 16 Dec 2026 from Settings → Merge history."
+
+#### 10.8 Undo UI
+
+Settings → Merge history lists merges with date, admin, courses and days left. **Undo merge** opens a preview: courses that come back, enrollments that move back, post-merge activity and where it goes. Confirm runs a reverse animation (the card splits back into the copies) and ends on the restored course list.
+
+#### 10.9 Student experience during and after a merge
+
+- The course title and URL become the primary course's. The old URL redirects.
+- Progress, grades, comments and certificates are kept.
+- Items the cohort gained appear in the curriculum, locked if the admin chose to.
+- No email is sent by default. The wizard offers an optional newsfeed post to each cohort.
 
 ## Technical Design
 
-### Data Model
-
-#### New Table: `course_cohort`
+### Data model
 
 ```typescript
 // packages/db/src/schema.ts
 
-export const cohortStatus = pgEnum('COHORT_STATUS', ['ACTIVE', 'INACTIVE', 'SCHEDULED']);
+// cohort_course: add
+groupId: uuid('group_id'), // FK group.id; new links always get their own group
+startsAt: timestamp('starts_at', { withTimezone: true, mode: 'string' }),
+endsAt: timestamp('ends_at', { withTimezone: true, mode: 'string' }),
 
-export const courseCohort = pgTable(
-  'course_cohort',
+export const cohortCourseItemOverride = pgTable(
+  'cohort_course_item_override',
   {
     id: uuid().default(sql`gen_random_uuid()`).primaryKey().notNull(),
-    courseId: uuid('course_id').notNull(),
-    groupId: uuid('group_id').notNull(),
-    name: varchar().notNull(),
-    description: text(),
-    status: cohortStatus().default('ACTIVE').notNull(),
-    startsAt: timestamp('starts_at', { withTimezone: true, mode: 'string' }),
-    endsAt: timestamp('ends_at', { withTimezone: true, mode: 'string' }),
-    maxStudents: integer('max_students'),
-    createdByProfileId: uuid('created_by_profile_id'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    cohortCourseId: uuid('cohort_course_id').notNull(), // FK cohort_course.id, cascade
+    lessonId: uuid('lesson_id'), // FK lesson.id, cascade
+    exerciseId: uuid('exercise_id'), // FK exercise.id, cascade
+    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }),
+    callUrl: text('call_url'),
+    recordingUrl: text('recording_url'),
+    sessionDurationMinutes: integer('session_duration_minutes'),
+    dueBy: timestamp('due_by', { withTimezone: true, mode: 'string' }),
+    isUnlocked: boolean('is_unlocked'),
+    unlockAt: timestamp('unlock_at', { withTimezone: true, mode: 'string' }), // no base column on lesson/exercise
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
   (table) => [
-    foreignKey({
-      columns: [table.courseId],
-      foreignColumns: [course.id],
-      name: 'course_cohort_course_id_fkey'
-    }).onDelete('cascade'),
-    foreignKey({
-      columns: [table.groupId],
-      foreignColumns: [group.id],
-      name: 'course_cohort_group_id_fkey'
-    }),
-    foreignKey({
-      columns: [table.createdByProfileId],
-      foreignColumns: [profile.id],
-      name: 'course_cohort_created_by_profile_id_fkey'
-    }),
-    unique('course_cohort_course_name_unique').on(table.courseId, table.name),
-    index('idx_course_cohort_course_id').on(table.courseId),
-    index('idx_course_cohort_group_id').on(table.groupId)
+    check('override_one_target', sql`(lesson_id is null) <> (exercise_id is null)`),
+    uniqueIndex('override_link_lesson').on(table.cohortCourseId, table.lessonId).where(sql`lesson_id is not null`),
+    uniqueIndex('override_link_exercise').on(table.cohortCourseId, table.exerciseId).where(sql`exercise_id is not null`)
   ]
 );
-```
 
-#### Modified Table: `course`
+// lesson_completion, lesson_video_progress: add
+groupMemberId: uuid('group_member_id'), // FK groupmember.id, cascade
 
-Add cohort mode flag and default cohort reference:
+// course_newsfeed: add
+groupId: uuid('group_id'), // null = every learner on the course
 
-```typescript
-// Add to course table definition
-cohortsEnabled: boolean('cohorts_enabled').default(false).notNull(),
-defaultCohortId: uuid('default_cohort_id')
+// course_invite: add
+cohortCourseId: uuid('cohort_course_id'),
 
-// Add to constraints
-foreignKey({
-  columns: [table.defaultCohortId],
-  foreignColumns: [courseCohort.id],
-  name: 'course_default_cohort_id_fkey'
-})
-```
+// course: add
+sourceCourseId: uuid('source_course_id'),
+mergedIntoCourseId: uuid('merged_into_course_id'),
+// course.status gains 'MERGED'
 
-- `cohortsEnabled` — whether cohort mode is active for this course.
-- `defaultCohortId` — the cohort used for free direct enrollment (no invite token). When cohorts are first enabled, this points to the auto-created "Default" cohort. Instructors can change it to any active cohort.
-
-#### Modified Table: `course_newsfeed`
-
-Add nullable cohort reference:
-
-```typescript
-// Add to course_newsfeed table definition
-cohortId: uuid('cohort_id')
-
-// Add to constraints
-foreignKey({
-  columns: [table.cohortId],
-  foreignColumns: [courseCohort.id],
-  name: 'course_newsfeed_cohort_id_fkey'
-})
-```
-
-#### Modified Table: `lesson_completion`
-
-Add nullable cohort reference and update unique constraint:
-
-```typescript
-// Add to lesson_completion table definition
-cohortId: uuid('cohort_id')
-
-// Add to constraints
-foreignKey({
-  columns: [table.cohortId],
-  foreignColumns: [courseCohort.id],
-  name: 'lesson_completion_cohort_id_fkey'
-})
-
-// Replace existing unique constraint:
-// OLD: unique('unique_lesson_profile').on(table.lessonId, table.profileId)
-// NEW: unique('unique_lesson_profile_cohort').on(table.lessonId, table.profileId, table.cohortId)
-```
-
-#### Modified Table: `course_invite`
-
-Add nullable cohort reference:
-
-```typescript
-// Add to course_invite table definition
-cohortId: uuid('cohort_id')
-
-// Add to constraints
-foreignKey({
-  columns: [table.cohortId],
-  foreignColumns: [courseCohort.id],
-  name: 'course_invite_cohort_id_fkey'
-})
-```
-
-#### Relationship Diagram
-
-```
-course (content: lessons, exercises, sections, questions)
-  ├── cohortsEnabled: boolean
-  ├── defaultCohortId → course_cohort (for free enrollment without invite token)
-  │
-  ├── [cohortsEnabled = false] → course.groupId → group → groupmember (legacy 1:1 behavior)
-  │
-  └── [cohortsEnabled = true] → course_cohort (one per batch)
-       ├── name, status, startsAt, endsAt
-       └── groupId → group → groupmember (enrollment per cohort)
-                                ├── submission (already scoped by groupmember.id)
-                                ├── question_answer (already scoped by groupmember.id)
-                                ├── group_attendance (already scoped by groupmember.id)
-                                └── lesson_comment (already scoped by groupmember.id)
-
-  course_newsfeed.cohortId → scoped per cohort
-  lesson_completion.cohortId → scoped per cohort
-
-  URL structure (unchanged for students):
-    /course/[slug]                              → landing page (shared, cohort-unaware)
-    /course/[slug]/enroll?invite_token=abc123   → enroll (cohort resolved from token)
-    /course/[slug]/enroll                       → enroll (free, routes to defaultCohortId)
-    /courses/[id]/...                           → LMS (cohort resolved from groupmember)
-```
-
-### Migration
-
-Create migration file: `packages/db/src/migrations/XXXX_add_course_cohorts.sql`
-
-```sql
--- 1. Create cohort status enum
-CREATE TYPE "COHORT_STATUS" AS ENUM ('ACTIVE', 'INACTIVE', 'SCHEDULED');
-
--- 2. Create course_cohort table
-CREATE TABLE course_cohort (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  course_id UUID NOT NULL REFERENCES course(id) ON DELETE CASCADE,
-  group_id UUID NOT NULL REFERENCES "group"(id),
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  status "COHORT_STATUS" NOT NULL DEFAULT 'ACTIVE',
-  starts_at TIMESTAMPTZ,
-  ends_at TIMESTAMPTZ,
-  max_students INTEGER,
-  created_by_profile_id UUID REFERENCES profile(id),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(course_id, name)
-);
-
-CREATE INDEX idx_course_cohort_course_id ON course_cohort(course_id);
-CREATE INDEX idx_course_cohort_group_id ON course_cohort(group_id);
-
--- 3. Add cohorts_enabled and default_cohort_id to course
-ALTER TABLE course ADD COLUMN cohorts_enabled BOOLEAN NOT NULL DEFAULT false;
-ALTER TABLE course ADD COLUMN default_cohort_id UUID REFERENCES course_cohort(id);
-
--- 4. Add cohort_id to course_newsfeed
-ALTER TABLE course_newsfeed ADD COLUMN cohort_id UUID REFERENCES course_cohort(id);
-
--- 5. Add cohort_id to lesson_completion
-ALTER TABLE lesson_completion ADD COLUMN cohort_id UUID REFERENCES course_cohort(id);
-
--- 6. Drop old unique constraint and create new one on lesson_completion
-ALTER TABLE lesson_completion DROP CONSTRAINT IF EXISTS unique_lesson_profile;
-ALTER TABLE lesson_completion ADD CONSTRAINT unique_lesson_profile_cohort
-  UNIQUE (lesson_id, profile_id, cohort_id);
-
--- 7. Add cohort_id to course_invite
-ALTER TABLE course_invite ADD COLUMN cohort_id UUID REFERENCES course_cohort(id);
-```
-
-### Access Control Logic
-
-```typescript
-// apps/api/src/services/course/cohort.ts
-
-function canAccessCohort(cohort: { status: string; startsAt: string | null; endsAt: string | null }): boolean {
-  if (cohort.status === 'INACTIVE') return false;
-
-  const now = new Date();
-  if (cohort.status === 'SCHEDULED' && cohort.startsAt && now < new Date(cohort.startsAt)) return false;
-  if (cohort.endsAt && now > new Date(cohort.endsAt)) return false;
-
-  return true;
-}
-```
-
-This check must be enforced:
-- In route middleware for any cohort-scoped endpoint.
-- Before serving course content to students in a specific cohort.
-- Exception: instructors/admins always have access for grading and review.
-
-## API and Route Plan
-
-### Validation Layer
-
-File: `packages/utils/src/validation/course/cohort.ts`
-
-```typescript
-import { z } from 'zod';
-
-export const ZCreateCohort = z.object({
-  name: z.string().min(1).max(255),
-  description: z.string().max(2000).optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE', 'SCHEDULED']).default('ACTIVE'),
-  startsAt: z.string().datetime().optional(),
-  endsAt: z.string().datetime().optional(),
-  maxStudents: z.number().int().positive().optional()
+export const courseMerge = pgTable('course_merge', {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey().notNull(),
+  organizationId: uuid('organization_id').notNull(),
+  primaryCourseId: uuid('primary_course_id').notNull(),
+  copyCourseIds: uuid('copy_course_ids').array().notNull(),
+  plan: jsonb().notNull(), // match map and actions confirmed in the wizard
+  status: varchar().notNull(), // PENDING | RUNNING | COMPLETED | FAILED | REVERTING | REVERTED | FINALIZED
+  createdByProfileId: uuid('created_by_profile_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+  completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+  undoUntil: timestamp('undo_until', { withTimezone: true, mode: 'string' }),
+  revertedAt: timestamp('reverted_at', { withTimezone: true, mode: 'string' })
 });
 
-export type TCreateCohort = z.infer<typeof ZCreateCohort>;
-
-export const ZUpdateCohort = z.object({
-  name: z.string().min(1).max(255).optional(),
-  description: z.string().max(2000).optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE', 'SCHEDULED']).optional(),
-  startsAt: z.string().datetime().nullable().optional(),
-  endsAt: z.string().datetime().nullable().optional(),
-  maxStudents: z.number().int().positive().nullable().optional()
+export const courseMergeChange = pgTable('course_merge_change', {
+  id: bigserial({ mode: 'number' }).primaryKey(),
+  mergeId: uuid('merge_id').notNull(), // FK course_merge.id, cascade
+  tableName: varchar('table_name').notNull(),
+  rowId: text('row_id').notNull(),
+  columnName: varchar('column_name').notNull(),
+  oldValue: jsonb('old_value'),
+  newValue: jsonb('new_value')
 });
-
-export type TUpdateCohort = z.infer<typeof ZUpdateCohort>;
-
-export const ZEnableCohorts = z.object({
-  enabled: z.boolean()
-});
-
-export type TEnableCohorts = z.infer<typeof ZEnableCohorts>;
 ```
 
-Export from: `packages/utils/src/validation/course/index.ts`
+### Migration (one file)
 
-### Query Layer
+1. Add the columns and tables above. Use `'MERGED'` as a new `course.status` value (a free `text` column today with ACTIVE and DELETED, so no DDL).
+2. Backfill `cohort_course.group_id = course.group_id` for every existing link. No member moves, behavior unchanged. The one course already linked to two cohorts keeps both links on its shared group; the cohort filter labels them "Shared enrollment" until an admin splits them.
+3. Backfill `lesson_completion.group_member_id` and `lesson_video_progress.group_member_id` from the profile's groupmember in `course.group_id`. Rows with no groupmember (6 completions in production, from removed students) stay null.
+4. Replace unique `(lesson_id, profile_id)` on `lesson_completion` with unique `(lesson_id, group_member_id)` where `group_member_id is not null`, keeping `(lesson_id, profile_id)` unique where it is null. Same for video progress with `asset_id`.
+5. Replace `course_completion_record_course_profile_cycle_key` with unique `(group_member_id, cycle_number)`.
 
-File: `packages/db/src/queries/course/cohort.ts`
+Check the journal `when` against `main` before merging (see CLAUDE.md, Database migrations).
 
-Functions:
-- `createCohort(data)` — insert into `course_cohort` with given `groupId`.
-- `getCohortById(cohortId)` — single cohort with group member count.
-- `getCohortsByCourseId(courseId)` — all cohorts for a course, ordered by `createdAt`, with member counts.
-- `updateCohort(cohortId, data)` — update name, description, status, dates, maxStudents.
-- `getCohortByGroupId(groupId)` — look up cohort from a group ID (useful for resolving context).
-- `getActiveCohortForMember(courseId, profileId)` — find which cohort(s) a student belongs to in a course.
+### Query layer (`packages/db/src/queries/`)
 
-Export from: `packages/db/src/queries/course/index.ts`
+- `cohort/cohort-course.ts`: `getCourseEnrollmentGroups(courseId, tx?)`, `getCohortCourseByGroupId`, `createCohortCourseGroup`, overrides CRUD, `getResolvedLessonSchedule(lessonId, cohortCourseId)`.
+- `course/merge.ts`: `findCopyGroupCandidates(orgId)`, `loadCourseGraph(courseId)` (export and reuse the private `loadGraph` in `template-sync.ts`), `insertMergeChanges`, `remapRows(table, column, idMap, tx)` returning the changes, `listMergeChanges(mergeId)`.
+- Existing queries in the 28 files take a `groupIds: string[]` filter instead of reading `course.group_id`.
 
-### Service Layer
+### Services (`apps/api/src/services/`)
 
-File: `apps/api/src/services/course/cohort.ts`
+- `course/enrollment-context.ts`: `resolveCourseEnrollment`.
+- `cohort/cohort.ts`: link creation makes a group; enroll and remove target link groups.
+- `cohort/schedule.ts`: overrides, shift schedule.
+- `course/merge/plan.ts`: suggestions, matching, classification, plan preview (no writes).
+- `course/merge/run.ts`: job handler, per-copy transaction, progress events.
+- `course/merge/revert.ts`: undo preview and undo job.
+- `course/clone.ts`: always set lineage, keep `due_by`.
 
-Functions:
-
-#### `enableCohorts(courseId, profileId)`
-- Verify course exists and user is admin/tutor.
-- Create "Default" cohort pointing to existing `course.groupId`.
-- Set `course.cohortsEnabled = true` and `course.defaultCohortId` to the new default cohort.
-- Backfill `cohort_id` on existing `course_newsfeed` rows for this course.
-- Backfill `cohort_id` on existing `lesson_completion` rows for members of this course's group.
-- All in a transaction.
-
-#### `disableCohorts(courseId)`
-- Verify there is exactly one active cohort.
-- Set `course.cohortsEnabled = false`.
-- Nullify `cohort_id` on newsfeed and lesson_completion rows.
-- All in a transaction.
-
-#### `createCohort(courseId, profileId, data: TCreateCohort)`
-- Verify course has cohorts enabled.
-- Create new `group` (name = cohort name, organizationId from course's org).
-- Insert `course_cohort` row.
-- Add creator as TUTOR `groupmember` in the new group.
-- Create default welcome newsfeed post for the cohort.
-- All in a transaction.
-- Return the new cohort.
-
-#### `updateCohort(cohortId, data: TUpdateCohort)`
-- Validate dates (if `endsAt` provided, must be after `startsAt`).
-- Update the `course_cohort` row.
-- Return the updated cohort.
-
-#### `deactivateCohort(cohortId)`
-- Set `status = 'INACTIVE'`.
-- Return the updated cohort.
-
-#### `enrollInCohort(cohortId, user, context)`
-- Verify cohort exists and `canAccessCohort()`.
-- Check `maxStudents` cap if set.
-- Add student to cohort's group via `groupmember`.
-- Handle org membership creation if needed (same pattern as `enrollInCourse`).
-- Idempotent: if student is already in this cohort's group, return success.
-
-#### `getCohortAnalytics(cohortId)`
-- Same logic as `getCourseAnalytics` but filtered to the cohort's group members.
-
-#### `getCrossCohortsAnalytics(courseId)`
-- Aggregate analytics across all cohorts of a course.
-- Return per-cohort breakdown plus totals.
-
-### Route Layer
-
-File: `apps/api/src/routes/course/cohort.ts`
-
-All routes are nested under `/course/:courseId/cohort` and require `authMiddleware`.
+### Routes
 
 | Method | Path | Description | Auth |
 | --- | --- | --- | --- |
-| `POST` | `/course/:courseId/cohort/enable` | Enable/disable cohorts on course | Admin/Tutor |
-| `GET` | `/course/:courseId/cohort` | List all cohorts for a course | Admin/Tutor |
-| `POST` | `/course/:courseId/cohort` | Create a new cohort | Admin/Tutor |
-| `GET` | `/course/:courseId/cohort/:cohortId` | Get cohort details | Admin/Tutor |
-| `PUT` | `/course/:courseId/cohort/:cohortId` | Update cohort | Admin/Tutor |
-| `POST` | `/course/:courseId/cohort/:cohortId/deactivate` | Deactivate cohort | Admin/Tutor |
-| `POST` | `/course/:courseId/cohort/:cohortId/enroll` | Enroll student in cohort | Authenticated |
-| `GET` | `/course/:courseId/cohort/:cohortId/analytics` | Cohort analytics | Admin/Tutor |
-| `GET` | `/course/:courseId/cohort/analytics` | Cross-cohort analytics | Admin/Tutor |
+| `GET` | `/course/merge/suggestions` | Copy groups for the org | Org admin |
+| `POST` | `/course/merge/plan` | Build a plan for chosen courses and primary | Org admin |
+| `POST` | `/course/merge` | Start a merge from a confirmed plan | Org admin |
+| `GET` | `/course/merge/:mergeId` | Status and progress | Org admin |
+| `GET` | `/course/merge/:mergeId/revert-preview` | What undo will do | Org admin |
+| `POST` | `/course/merge/:mergeId/revert` | Start undo | Org admin |
+| `GET` | `/course/:courseId/merges` | Merge history for a course | Org admin |
+| `GET` | `/cohort/:cohortId/courses/:courseId/schedule` | Overrides for a link | Cohort team |
+| `PUT` | `/cohort/:cohortId/courses/:courseId/schedule` | Upsert overrides | Cohort team |
+| `POST` | `/cohort/:cohortId/courses/:courseId/schedule/shift` | Copy and shift from another link | Cohort team |
 
-#### Route Registration
+Existing course list endpoints (people, marks, submissions, attendance, analytics, newsfeed) accept `cohortId` (or `cohortId=direct`). Each route returns one response shape.
 
-```typescript
-// apps/api/src/routes/course/cohort.ts
-export const cohortRouter = new Hono()
-  .post('/enable', authMiddleware, zValidator('json', ZEnableCohorts), async (c) => { ... })
-  .get('/', authMiddleware, async (c) => { ... })
-  .post('/', authMiddleware, zValidator('json', ZCreateCohort), async (c) => { ... })
-  // ... etc
+### Dashboard
 
-// apps/api/src/routes/course/index.ts
-export * from './cohort';
-
-// In the course router setup (apps/api/src/routes/course/course.ts or where sub-routers are mounted):
-.route('/:courseId/cohort', cohortRouter)
-```
-
-### Modified Existing Endpoints
-
-Several existing endpoints need cohort-awareness:
-
-#### Newsfeed Routes (`apps/api/src/routes/course/newsfeed.ts`)
-- `GET /course/:courseId/newsfeed` — accept optional `cohortId` query param. If course has cohorts enabled, `cohortId` is required and newsfeed is filtered by it.
-- `POST /course/:courseId/newsfeed` — accept optional `cohortId` in body. If course has cohorts enabled, `cohortId` is required.
-
-#### Submission Routes (`apps/api/src/routes/course/submission.ts`)
-- Already scoped by `groupmember.id`, but list endpoints that join through `course.groupId` need to accept a `cohortId` param to filter to the correct group.
-- `GET /course/:courseId/submission/for-grading` — add `cohortId` query param.
-
-#### People Routes (`apps/api/src/routes/course/people.ts`)
-- `GET /course/:courseId/people` — add `cohortId` query param to list members of a specific cohort's group.
-
-#### Marks Routes (`apps/api/src/routes/course/mark.ts`)
-- `GET /course/:courseId/marks` — add `cohortId` query param to filter marks by cohort group.
-
-#### Attendance Routes (`apps/api/src/routes/course/attendance.ts`)
-- Already scoped by `groupmember.id`. List endpoints need `cohortId` param.
-
-#### Course Progress (`apps/api/src/services/course/course.ts`)
-- `getCourseProgress` — pass `cohortId` to filter `lesson_completion` by cohort.
-
-#### Enrollment (`apps/api/src/services/course/invite.ts`)
-- `enrollInCourse` (no invite token, free courses) — if course has cohorts enabled:
-  - Use `course.defaultCohortId` as the target cohort.
-  - If `defaultCohortId` is null, return error: "This course requires an invite link to enroll."
-  - Verify cohort is active via `canAccessCohort()`.
-  - Enroll student into the default cohort's group, not `course.groupId`.
-- `course_invite` creation — attach `cohortId` when course has cohorts enabled. Instructor selects the target cohort when creating an invite.
-- `acceptStudentInvite` — read `cohort_id` from invite to determine target group. Enroll into the cohort's group instead of `course.groupId`.
-
-### Build Verification
-
-After implementing backend changes:
-
-```bash
-pnpm --filter @cio/utils build
-pnpm --filter @cio/db build
-pnpm --filter @cio/api build
-```
-
-## Frontend Plan (Dashboard)
-
-### Request Types
-
-File: `apps/dashboard/src/lib/features/course/utils/types.ts`
-
-Add:
-
-```typescript
-export type ListCohortsRequest = typeof classroomio.course[':courseId']['cohort']['$get'];
-export type CreateCohortRequest = typeof classroomio.course[':courseId']['cohort']['$post'];
-export type UpdateCohortRequest = typeof classroomio.course[':courseId']['cohort'][':cohortId']['$put'];
-export type EnableCohortsRequest = typeof classroomio.course[':courseId']['cohort']['enable']['$post'];
-export type DeactivateCohortRequest = typeof classroomio.course[':courseId']['cohort'][':cohortId']['deactivate']['$post'];
-export type CohortAnalyticsRequest = typeof classroomio.course[':courseId']['cohort'][':cohortId']['analytics']['$get'];
-
-export type ListCohortsSuccess = Extract<InferResponseType<ListCohortsRequest>, { success: true }>;
-export type Cohort = ListCohortsSuccess['data'][number];
-```
-
-### API Class
-
-File: `apps/dashboard/src/lib/features/course/api/cohort.svelte.ts`
-
-```typescript
-class CohortApi extends BaseApiWithErrors {
-  cohorts = $state<Cohort[]>([]);
-  selectedCohortId = $state<string | null>(null);
-  loading = $state(false);
-
-  get selectedCohort() {
-    return this.cohorts.find(c => c.id === this.selectedCohortId) ?? null;
-  }
-
-  async list(courseId: string) { ... }
-  async create(courseId: string, data: TCreateCohort) { ... }
-  async update(courseId: string, cohortId: string, data: TUpdateCohort) { ... }
-  async enable(courseId: string, enabled: boolean) { ... }
-  async deactivate(courseId: string, cohortId: string) { ... }
-}
-```
-
-### Cohort Selector Component
-
-File: `apps/dashboard/src/lib/features/course/components/cohort-selector.svelte`
-
-- Dropdown in the course header/sidebar.
-- Shows cohort name and status badge (active/inactive/scheduled).
-- Instructors can switch between cohorts.
-- Includes "Manage Cohorts" link to cohort management page.
-
-### Cohort Management Page
-
-Route: `apps/dashboard/src/routes/courses/[id]/cohorts/+page.svelte`
-Feature page: `apps/dashboard/src/lib/features/course/pages/cohorts.svelte`
-
-Features:
-- List all cohorts with name, status, student count, dates.
-- Create new cohort (name, description, status, dates, max students).
-- Edit cohort settings.
-- Deactivate/reactivate cohort.
-- Status badges: Active (green), Inactive (gray), Scheduled (blue).
-
-### Enable Cohorts Toggle
-
-In course settings page (`apps/dashboard/src/routes/courses/[id]/settings/`):
-- Add "Enable Cohorts" toggle.
-- When toggled on: creates default cohort, shows success message.
-- When toggled off: only works if single cohort, shows confirmation dialog.
-
-### Student Multi-Enrollment Handling
-
-Students are never exposed to cohort terminology. For the rare case where a student is enrolled in multiple cohorts of the same course (retake):
-- The backend defaults to the most recently active cohort.
-- The course page shows a subtle note: "You have a previous enrollment. [Switch]" — without using the word "cohort."
-- Switching passes `?cohort=[cohortId]` as a query param internally, but the UI labels it generically (e.g., "January 2026 Training" vs "June 2026 Training" — using the cohort name set by the instructor).
-- If enrolled in only one cohort (the common case), no extra UI is shown.
-
-### Modified Existing Pages
-
-These existing pages need to pass `cohortId` when the course has cohorts enabled:
-
-| Page | File | Change |
-| --- | --- | --- |
-| Newsfeed | `apps/dashboard/src/lib/features/course/pages/newsfeed.svelte` | Pass `cohortId` to newsfeed API calls |
-| People | Course people page | Pass `cohortId` to filter group members |
-| Submissions | `apps/dashboard/src/lib/features/course/pages/submissions.svelte` | Pass `cohortId` to list submissions |
-| Marks | `apps/dashboard/src/lib/features/course/pages/marks.svelte` | Pass `cohortId` to filter marks |
-| Attendance | `apps/dashboard/src/lib/features/course/pages/attendance.svelte` | Pass `cohortId` to filter attendance |
-| Analytics | `apps/dashboard/src/lib/features/course/pages/analytics.svelte` | Pass `cohortId` or show cross-cohort toggle |
-| Course Progress | Student progress tracking | Pass `cohortId` to filter `lesson_completion` |
-
-### Navigation Update
-
-File: `apps/dashboard/src/lib/features/course/` (course sidebar/nav)
-
-- Add "Cohorts" nav item (visible only when cohorts enabled, for instructors).
-- Cohort selector visible in sidebar header when cohorts enabled.
-
-### Translations
-
-File: `apps/dashboard/src/lib/utils/translations/en.json`
-
-Add keys under `course.cohorts`:
-
-```json
-{
-  "course": {
-    "cohorts": {
-      "title": "Cohorts",
-      "create": "Create Cohort",
-      "enable": "Enable Cohorts",
-      "disable": "Disable Cohorts",
-      "name": "Cohort Name",
-      "description": "Description",
-      "status": "Status",
-      "active": "Active",
-      "inactive": "Inactive",
-      "scheduled": "Scheduled",
-      "starts_at": "Starts At",
-      "ends_at": "Ends At",
-      "max_students": "Max Students",
-      "student_count": "Students",
-      "deactivate": "Deactivate Cohort",
-      "reactivate": "Reactivate Cohort",
-      "selector_label": "Select Cohort",
-      "manage": "Manage Cohorts",
-      "default_name": "Default",
-      "default_welcome": "Welcome to this cohort!",
-      "enable_confirm": "This will organize your current students into a default cohort. You can then create additional cohorts.",
-      "disable_confirm": "You can only disable cohorts if there is exactly one active cohort.",
-      "deactivate_confirm": "Students in this cohort will lose access to the course. Their data will be preserved.",
-      "access_blocked": "This cohort is not currently active.",
-      "scheduled_message": "This cohort starts on {date}.",
-      "ended_message": "This cohort has ended.",
-      "no_cohorts": "No cohorts yet. Create one to get started.",
-      "cross_cohort_analytics": "All Cohorts",
-      "previous_enrollment": "You have a previous enrollment.",
-      "switch_enrollment": "Switch",
-      "requires_invite": "This course requires an invite link to enroll."
-    }
-  }
-}
-```
-
-### Frontend Build Verification
-
-```bash
-pnpm --filter @cio/dashboard build
-```
+- `features/course/components/cohort-filter.svelte`: header filter, state in `?cohortId=`.
+- `features/course/components/schedule-by-cohort.svelte`: lesson and exercise editor panel.
+- `features/course/pages/merge/`: wizard steps, animation, result.
+- `features/course/components/merge-history.svelte`: settings section and undo dialog.
+- Courses page: suggestion banner and toolbar button.
+- All copy in `en.json` under `course.cohorts.*` and `course.merge.*`; run `pnpm translate`.
 
 ## Implementation Order
 
-### Phase 1: Database + Schema (do first)
-
-1. Add `cohortStatus` enum to schema.
-2. Add `courseCohort` table to schema.
-3. Add `cohortsEnabled` and `defaultCohortId` columns to `course` table.
-4. Add `cohortId` column to `course_newsfeed`.
-5. Add `cohortId` column to `lesson_completion` and update unique constraint.
-6. Add `cohortId` column to `course_invite`.
-7. Generate and apply migration.
-8. Run `pnpm --filter @cio/db build`.
-
-### Phase 2: Validation + Queries (do second)
-
-1. Create `packages/utils/src/validation/course/cohort.ts` with all Zod schemas.
-2. Export from `packages/utils/src/validation/course/index.ts`.
-3. Create `packages/db/src/queries/course/cohort.ts` with all query functions.
-4. Export from `packages/db/src/queries/course/index.ts`.
-5. Run `pnpm --filter @cio/utils build` and `pnpm --filter @cio/db build`.
-
-### Phase 3: Service + Routes (do third)
-
-1. Create `apps/api/src/services/course/cohort.ts` with all service functions.
-2. Create `apps/api/src/routes/course/cohort.ts` with all route handlers.
-3. Register cohort router in course route index.
-4. Add new error codes to `apps/api/src/utils/errors.ts` if needed (e.g., `COHORT_NOT_FOUND`, `COHORTS_NOT_ENABLED`, `COHORT_ACCESS_DENIED`, `COHORT_FULL`).
-5. Update existing newsfeed, submission, people, marks, attendance routes to accept `cohortId` param.
-6. Update `enrollInCourse` to handle cohort-aware enrollment.
-7. Run `pnpm --filter @cio/api build`.
-
-### Phase 4: Frontend — Cohort Management (do fourth)
-
-1. Add request types to `apps/dashboard/src/lib/features/course/utils/types.ts`.
-2. Create `apps/dashboard/src/lib/features/course/api/cohort.svelte.ts` API class.
-3. Add translation keys to `en.json`.
-4. Create cohort management page: `apps/dashboard/src/routes/courses/[id]/cohorts/+page.svelte` and feature page.
-5. Add "Enable Cohorts" toggle to course settings.
-6. Add cohort selector component.
-7. Add "Cohorts" to course navigation.
-8. Run `pnpm --filter @cio/dashboard build`.
-
-### Phase 5: Frontend — Cohort-Scoped Views (do fifth)
-
-1. Update newsfeed page to pass `cohortId`.
-2. Update people page to pass `cohortId`.
-3. Update submissions page to pass `cohortId`.
-4. Update marks page to pass `cohortId`.
-5. Update attendance page to pass `cohortId`.
-6. Update analytics page with per-cohort / cross-cohort toggle.
-7. Update course progress to pass `cohortId`.
-8. Add backend cohort resolution for student views (auto-resolve from `groupmember`, default to most recent active cohort).
-9. Add subtle "previous enrollment" switcher for multi-cohort students (no cohort terminology exposed).
-10. Run `pnpm --filter @cio/dashboard build`.
+1. **Schema and backfill.** Migration, backfills, unique-key changes. No behavior change.
+2. **Enrollment groups.** Link groups, cohort enroll and remove, access check, `resolveCourseEnrollment`.
+3. **Read paths.** Group filters across the 28 files, API v1 and MCP `cohortId` params.
+4. **Cohort filter UI** on course pages.
+5. **Schedule overrides** (API, editor panel, reminders).
+6. **Clone fixes** and the "Run a new cohort" choice.
+7. **Merge plan** (suggestions, matching, review UI) behind a feature flag.
+8. **Merge run and undo** (job, change log, animation, history).
+9. **Pilot** with Academy A and Academy B before general release.
 
 ## Acceptance Criteria
 
-1. Instructor can enable cohorts on an existing course and a "Default" cohort is auto-created with all existing members.
-2. Instructor can create a new cohort with name, description, status, dates.
-3. Students enrolled in Cohort A cannot see submissions, newsfeed, or attendance of Cohort B.
-4. Deactivating a cohort blocks student access but preserves all data.
-5. A student can be enrolled in multiple cohorts of the same course.
-6. Courses without cohorts enabled work exactly as they do today (zero regression).
-7. Lesson completion is tracked independently per cohort.
-8. Newsfeed posts are scoped to the cohort they were created in.
-9. Instructor can view aggregated analytics across all cohorts.
-10. Invite links are scoped to a specific cohort when cohorts are enabled.
-11. Cohort status `SCHEDULED` with future `startsAt` blocks student access until the start date.
-12. Students never see the word "cohort" or any cohort selection UI. Cohort assignment is fully transparent to students.
-13. Course landing page URL (`/course/[slug]`) is unchanged regardless of cohort state.
-14. Free course enrollment routes to the course's default cohort when cohorts are enabled.
-15. All new UI strings use translation keys (no hardcoded English).
-16. `pnpm --filter @cio/api build` and `pnpm --filter @cio/dashboard build` pass after implementation.
+1. Linking a course to a second cohort creates a separate group. Students of cohort A cannot see cohort B's submissions, comments, attendance or newsfeed posts.
+2. A course with no cohort links behaves exactly as before.
+3. A Programs-style cohort with several courses behaves exactly as before for its students.
+4. A student in two cohorts of one course has independent progress, submissions and completion records in each.
+5. A live lesson shows each cohort its own date, call link and recording. A lesson locked for one cohort is open for another.
+6. Instructors can filter every learner list by cohort, Direct, or All cohorts.
+7. Duplicating a course records lineage and keeps exercise due dates.
+8. The merge wizard detects the Academy A and Academy B copy groups and recommends a primary with a stated reason.
+9. Merging Academy A's 7 active copies yields one course with 7 cohorts. 126 enrollments, 217 submissions, 1347 answers and 899 lesson completions remain visible under the right cohort.
+10. The two Academy A cohorts missing Week 4 gain it after the merge, locked if the admin chose that.
+11. Answers to questions that did not match remain viewable, and submission totals are unchanged.
+12. Undo within 30 days restores every copy, its enrollments and its activity, and reports any post-merge activity it could not move back.
+13. Old copy URLs redirect to the merged course.
+14. All new UI strings use translation keys. API and dashboard builds pass.
 
 ## Risks and Mitigations
 
-- **Risk**: Existing queries that join through `course.groupId` break when cohorts are enabled (course has multiple groups now).
-  - **Mitigation**: When cohorts are enabled, all member-facing queries must go through `course_cohort.groupId`, not `course.groupId`. The `course.groupId` field remains but only points to the default/first cohort's group. Queries should check `cohortsEnabled` and branch accordingly.
+- **Missed read paths leak data across cohorts.** Route every learner query through `getCourseEnrollmentGroups` and add an integration test per endpoint that seeds two cohorts and asserts isolation.
+- **Merge corrupts data.** Per-copy transactions, a change log written in the same transaction, a dry-run plan the admin reviews, read-only lock during the job, and a rollback-sensitive integration test (fail on the last copy, assert earlier copies are intact or fully applied).
+- **Fuzzy matching pairs the wrong items.** Fuzzy matches are never applied silently; they appear as "Matched by similar title" in the review step for the admin to confirm.
+- **Undo after heavy post-merge activity.** The undo preview lists everything that cannot move back before the admin confirms.
+- **Shared-group legacy link.** Labelled in the UI with a "Split enrollment" action.
 
-- **Risk**: Lesson completion unique constraint migration fails on existing duplicate data.
-  - **Mitigation**: The new constraint includes `cohort_id` which is null for all existing rows. Since `(lesson_id, profile_id, NULL)` is still unique under the old data, the migration is safe. PostgreSQL treats each NULL as distinct in unique constraints, so we need a partial unique index instead: `UNIQUE (lesson_id, profile_id) WHERE cohort_id IS NULL` plus `UNIQUE (lesson_id, profile_id, cohort_id) WHERE cohort_id IS NOT NULL`.
+## Customer follow-ups (from the audit)
 
-- **Risk**: Performance degradation with many cohorts per course.
-  - **Mitigation**: Index `course_cohort.course_id`. Member counts are computed via joins, not stored. For cross-cohort analytics, batch queries per cohort and aggregate in service layer.
+Independent of this build, raise these with the customers or fix in data:
 
-- **Risk**: Student enrolled in multiple cohorts (retake) doesn't know which enrollment they're viewing.
-  - **Mitigation**: Backend defaults to most recently active cohort. For the rare multi-enrollment case, a subtle "You have a previous enrollment" note is shown without cohort terminology. Students never see a cohort picker or cohort names directly.
+1. **Academy B, cohort B3** has 1 student and no linked course; the 14 Nov 2026 copy has 0 students. That student has no course access today.
+2. **Roster drift:** A1 (0 of 33), A3 (0 of 9), A4 (1 of 8), B1 (4 of 5), B2 (1 of 2) cohort rosters do not match course enrollment.
+3. **Missing content:** Academy A's 23 Aug and 05 Sep cohorts (36 students) never received Week 4.
+4. **Overdue exercises:** every exercise in every duplicated course is due at the moment it was cloned.
+5. **Retakes:** 3 Academy A students are enrolled in more than one copy. After a merge they hold two enrollments on one course, which FR1 supports.
 
-## Updated Unique Constraint Strategy for `lesson_completion`
+## Open Questions
 
-Due to PostgreSQL treating NULL as distinct in unique constraints, use two constraints:
-
-```sql
--- For non-cohort courses (cohort_id IS NULL)
-CREATE UNIQUE INDEX unique_lesson_profile_no_cohort
-  ON lesson_completion (lesson_id, profile_id)
-  WHERE cohort_id IS NULL;
-
--- For cohort courses (cohort_id IS NOT NULL)
-CREATE UNIQUE INDEX unique_lesson_profile_cohort
-  ON lesson_completion (lesson_id, profile_id, cohort_id)
-  WHERE cohort_id IS NOT NULL;
-```
-
-This replaces the simple `UNIQUE(lesson_id, profile_id, cohort_id)` approach and ensures correct behavior for both cohort and non-cohort courses.
+1. Should Direct enrollments be allowed on a course that has cohort links, or should new direct enrollments be routed to a default cohort?
+2. Should the undo window be configurable per org, or fixed at 30 days?
+3. Should merging also combine course-level analytics history (`analytics_course_daily`), or keep the copies' history under the archived courses?
