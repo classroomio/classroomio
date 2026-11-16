@@ -499,7 +499,7 @@ function resolvePluginIconAssetUrl(artifactBaseUrl: string | null, resource: str
   return `${artifactBaseUrl}/${encodedResource}`;
 }
 
-function normalizePluginEntrypointPath(resource: string): string {
+export function normalizePluginEntrypointPath(resource: string): string {
   return resource.startsWith('dist/') ? resource.slice('dist/'.length) : resource;
 }
 
@@ -561,6 +561,13 @@ export async function resolveOrgContributions(
           visibility?: string;
           order?: number;
           pageModes?: Array<'view' | 'edit'>;
+        }>;
+        questionTypes?: Array<{
+          id: string;
+          title?: string;
+          description?: string;
+          entrypoints?: Record<string, string>;
+          icon?: { resource?: string };
         }>;
       };
       runtime?: {
@@ -688,6 +695,26 @@ export async function resolveOrgContributions(
           order: page.order ?? 0,
           visibility: page.visibility ?? 'all',
           pageModes: page.pageModes ?? ['view']
+        });
+      }
+    }
+
+    if (manifest.contributes.questionTypes && (!target || target === 'exercise.question')) {
+      for (const questionType of manifest.contributes.questionTypes) {
+        resolved.push({
+          installationId: inst.id,
+          pluginId: inst.pluginId,
+          pluginSlug: inst.plugin?.slug ?? undefined,
+          version: manifest.version ?? '1.0.0',
+          contributionId: questionType.id,
+          target: 'exercise.question',
+          renderMode: 'custom',
+          grantedScopes,
+          title: questionType.title ?? questionType.id,
+          iconUrl: resolvePluginIconAssetUrl(artifactBaseUrl, questionType.icon?.resource),
+          order: 0,
+          visibility: 'all',
+          pageModes: ['view', 'edit']
         });
       }
     }

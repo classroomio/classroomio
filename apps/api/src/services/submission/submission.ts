@@ -574,7 +574,10 @@ const UPLOAD_QUESTION_TYPES = new Set(['FILE_UPLOAD', 'VIDEO_RECORDING']);
 function toQuestionModelsById(questions: ExerciseQuestionRow[]): Map<number, ExerciseQuestionModel> {
   return new Map(
     questions.map((q) => {
-      const questionTypeKey = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId] ?? 'TEXTAREA';
+      const questionTypeKey = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId];
+      if (!questionTypeKey) {
+        throw new AppError(`Unknown question type ID ${q.questionTypeId}`, ErrorCodes.VALIDATION_ERROR, 400);
+      }
       const settings =
         q.settings && typeof q.settings === 'object' && !Array.isArray(q.settings)
           ? (q.settings as Record<string, unknown>)
@@ -697,6 +700,25 @@ function decodeSubmissionAnswers(
       const mimeType = answerData.mimeType ?? '';
       if (!isFileTypeAllowed({ name: answerData.fileName, type: mimeType }, acceptedTypes)) {
         throw new AppError('File type is not allowed for this question', ErrorCodes.FILE_TYPE_NOT_ALLOWED, 400);
+      }
+    }
+
+    if (answerData.type === 'PLUGIN_CUSTOM') {
+      const pluginQuestion = question.settings?.pluginQuestion as Record<string, unknown> | undefined;
+      if (
+        pluginQuestion &&
+        (answerData.pluginId !== pluginQuestion.pluginId || answerData.contributionId !== pluginQuestion.contributionId)
+      ) {
+        throw invalidAnswer(input.questionId, 'answer does not match question plugin configuration');
+      }
+
+      const serialized = JSON.stringify(answerData.value);
+      if (serialized && serialized.length > 65536) {
+        throw new AppError(
+          'Plugin answer payload exceeds maximum allowed size (64KB)',
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
       }
     }
 

@@ -192,4 +192,53 @@ describe('createSubmissionService answer checks', () => {
     ).resolves.toMatchObject({ id: 'submission-1' });
     expect(insertQuestionAnswersBatch).toHaveBeenCalledWith(expect.arrayContaining([expect.anything()]), TX);
   });
+
+  it('validates PLUGIN_CUSTOM answer against question configuration in strict mode', async () => {
+    mockExercise(false, {
+      id: 7,
+      questionTypeId: 17,
+      settings: {
+        pluginQuestion: {
+          pluginId: 'com.classroomio.code-runner',
+          contributionId: 'python-runner',
+          pluginVersion: '1.0.0',
+          artifactDigest: 'digest',
+          configVersion: 1,
+          publicConfig: {}
+        }
+      }
+    });
+
+    // Mismatched plugin ID should be rejected
+    await expect(
+      submitAnswers([
+        {
+          questionId: 7,
+          answer: JSON.stringify({
+            type: 'PLUGIN_CUSTOM',
+            pluginId: 'com.other.plugin',
+            contributionId: 'python-runner',
+            configVersion: 1,
+            value: { code: 'print(1)' }
+          })
+        }
+      ])
+    ).rejects.toMatchObject({ statusCode: 400 });
+
+    // Valid matching answer is accepted
+    await expect(
+      submitAnswers([
+        {
+          questionId: 7,
+          answer: JSON.stringify({
+            type: 'PLUGIN_CUSTOM',
+            pluginId: 'com.classroomio.code-runner',
+            contributionId: 'python-runner',
+            configVersion: 1,
+            value: { code: 'print(1)' }
+          })
+        }
+      ])
+    ).resolves.toMatchObject({ id: 'submission-1' });
+  });
 });

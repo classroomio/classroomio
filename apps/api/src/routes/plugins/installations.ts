@@ -14,7 +14,8 @@ import {
   ZUninstallPlugin,
   ZUpdateInstallationSettings,
   ZUpdateInstallationStatus,
-  ZUpdateOrgApprovalStatus
+  ZUpdateOrgApprovalStatus,
+  ZResolveQuestionPlugin
 } from '@cio/utils/validation/plugin';
 import {
   changeInstallationSettings,
@@ -25,6 +26,7 @@ import {
   installPlugin,
   listOrgPlugins,
   resolveOrgContributions,
+  resolveQuestionPluginContext,
   deleteStorageValue,
   deleteStorageData,
   getStorageValue,
@@ -63,6 +65,36 @@ export const pluginInstallationsRouter = new Hono()
       return handleError(c, error, 'Failed to resolve organization plugin contributions');
     }
   })
+  .post(
+    '/resolve-question',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('json', ZResolveQuestionPlugin),
+    async (c) => {
+      const orgId = c.get('orgId') as string;
+      const input = c.req.valid('json');
+
+      try {
+        const result = await resolveQuestionPluginContext({
+          organizationId: orgId,
+          mode: input.mode,
+          envelope: {
+            pluginId: input.pluginId,
+            installationId: input.installationId,
+            pluginVersion: input.pluginVersion,
+            artifactDigest: input.artifactDigest,
+            contributionId: input.contributionId,
+            configVersion: 1,
+            publicConfig: {}
+          }
+        });
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to resolve question plugin context');
+      }
+    }
+  )
   .post('/:id/install', authMiddleware, orgAdminMiddleware, zValidator('json', ZInstallPlugin), async (c) => {
     const user = c.get('user')!;
     const orgId = c.req.header('cio-org-id')!;

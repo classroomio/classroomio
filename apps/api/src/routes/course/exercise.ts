@@ -22,6 +22,7 @@ import {
 } from '@cio/core/services/exercise/exercise';
 import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } from '@api/services/exercise/template';
 import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { sanitizePluginQuestionForLearner } from '@cio/question-types';
 import {
   completeVideoRecordingUpload,
   getVideoRecordingPlaybackUrl,
@@ -153,7 +154,21 @@ export const exerciseRouter = new Hono()
           });
         }
 
-        return c.json({ success: true, data: exercise }, 200);
+        const courseId = c.req.param('courseId')!;
+        const isStaff = user?.id ? await isCourseTeamMemberOrOrgAdmin(courseId, user.id) : false;
+
+        let responseExercise = exercise;
+        if (!isStaff && responseExercise.questions) {
+          responseExercise = {
+            ...responseExercise,
+            questions: responseExercise.questions.map((q) => ({
+              ...q,
+              settings: sanitizePluginQuestionForLearner(q.settings)
+            }))
+          };
+        }
+
+        return c.json({ success: true, data: responseExercise }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to fetch exercise');
       }

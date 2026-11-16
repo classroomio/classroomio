@@ -19,6 +19,7 @@ import {
 import { formatLessonMarkdownDocument } from '@api/utils/html-to-markdown';
 import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getExerciseSectionsByExerciseId } from '@cio/db/queries/exercise/exercise-section';
+import { QUESTION_TYPE_IDS, sanitizePluginQuestionForLearner } from '@cio/question-types';
 
 /**
  * Anonymous-safe: fetch the full tree for a published public course by slug.
@@ -214,6 +215,11 @@ export async function getPublicCourseItemService(
       // `transformQuestions` only keeps `{ id, label }` on `question.questionType`, so the DB
       // `typename` (e.g. RADIO) must come from the map built before stripping relations.
       const questionTypeRow = questionTypeMap.get(question.questionTypeId);
+      const questionSettings =
+        question.questionTypeId === QUESTION_TYPE_IDS.PLUGIN_CUSTOM
+          ? sanitizePluginQuestionForLearner(question.settings)
+          : question.settings;
+
       const payloadQuestion: PublicExerciseQuestion = {
         id: question.id,
         title: question.title ?? '',
@@ -221,7 +227,7 @@ export async function getPublicCourseItemService(
         questionTypeKey: questionTypeRow?.typename ?? '',
         points: question.points ?? 0,
         order: typeof question.order === 'number' ? question.order : null,
-        settings: (question.settings ?? {}) as Record<string, unknown>,
+        settings: (questionSettings ?? {}) as Record<string, unknown>,
         options: (question.options ?? []).map((option) => ({
           id: option.id,
           label: option.label ?? '',

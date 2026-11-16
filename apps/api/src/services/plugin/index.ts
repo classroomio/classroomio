@@ -6,3 +6,4 @@ export * from './release';
 export * from './release-validation';
 export * from './development';
 export * from './hosted-data';
+export * from './question-plugin';
