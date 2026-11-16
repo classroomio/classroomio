@@ -10,6 +10,8 @@
   import { Label } from '../../../../base/label';
   import { NumberField } from '../../../number-field';
   import MathSettingsFields from '../math/math-settings-fields.svelte';
+  import RubricSection from '../math/rubric-section.svelte';
+  import VariablesSection from '../math/variables-section.svelte';
 
   let { question, disabled = false, labels, onQuestionChange = () => {} }: ExerciseQuestionRendererProps = $props();
 
@@ -36,6 +38,7 @@
 
 <div class="ui:space-y-4">
   <MathSettingsFields settings={question.settings} {labels} {disabled} onPatchSettings={patchSettings} />
+  <VariablesSection {question} {labels} {disabled} onPatchSettings={patchSettings} />
 
   <div class="ui:grid ui:gap-3 ui:md:grid-cols-2">
     <div class="ui:space-y-1">
@@ -70,4 +73,6 @@
       {/each}
     </div>
   </div>
+
+  <RubricSection settings={question.settings} {workingPoints} {labels} {disabled} onPatchSettings={patchSettings} />
 </div>

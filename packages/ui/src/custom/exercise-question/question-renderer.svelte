@@ -13,7 +13,7 @@
     ExerciseQuestionRenderContract,
     ExerciseQuestionRendererProps
   } from '@cio/question-types';
-  import { getExerciseQuestionLabel } from '@cio/question-types';
+  import { createVariantSeed, getExerciseQuestionLabel, readQuestionParameters } from '@cio/question-types';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import XIcon from '@lucide/svelte/icons/x';
   import { Button } from '../../base/button';
@@ -70,6 +70,33 @@
   }: Props = $props();
 
   const Renderer = $derived(getExerciseQuestionRenderer(contract.question.questionType, contract.mode));
+  const hasParameters = $derived(
+    contract.mode !== 'edit' && readQuestionParameters(contract.question.settings) !== null
+  );
+  const freshSeed = createVariantSeed();
+  const variantSeed = $derived(hasParameters ? (contract.answer?.seed ?? freshSeed) : null);
+  let variantQuestion = $state<ExerciseQuestionModel | null>(null);
+
+  $effect(() => {
+    if (!hasParameters || !variantSeed) return;
+
+    const source = contract.question;
+    const seed = variantSeed;
+    let isCurrent = true;
+    void import('@cio/question-types/variants').then(({ instantiateQuestion }) => {
+      if (isCurrent) variantQuestion = instantiateQuestion(source, seed);
+    });
+
+    return () => {
+      isCurrent = false;
+    };
+  });
+
+  const displayQuestion = $derived(hasParameters ? variantQuestion : contract.question);
+
+  function handleAnswerChange(answer: AnswerData | null) {
+    onAnswerChange(answer && variantSeed ? { ...answer, seed: variantSeed } : answer);
+  }
   const mathEditLabels = $derived(getQuestionMathEditLabels(contract.labels));
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(contract.labels, key, fallback);
@@ -84,7 +111,7 @@
   let lightboxIndex = $state(0);
   let lightboxImages = $state<LightboxImage[]>([]);
 
-  const questionDescription = $derived(String((contract.question.settings?.description as string | undefined) ?? ''));
+  const questionDescription = $derived(String((displayQuestion?.settings?.description as string | undefined) ?? ''));
   const hasDescription = $derived(isDescriptionEditorVisible || questionDescription.trim().length > 0);
   const questionDescriptionHtml = $derived(toQuestionDescriptionHtml(questionDescription));
   const questionImageUrls = $derived.by(() => {
@@ -500,12 +527,12 @@
       {#if questionNumber !== undefined}
         <div class="ui:flex ui:items-center ui:gap-2">
           <NumberBadge number={questionNumber} active={questionNumberActive} />
-          {#if contract.question.title.trim().length > 0}
-            <QuestionTitle title={contract.question.title} class="ui:min-w-0 ui:flex-1" />
+          {#if displayQuestion && displayQuestion.title.trim().length > 0}
+            <QuestionTitle title={displayQuestion.title} class="ui:min-w-0 ui:flex-1" />
           {/if}
         </div>
-      {:else if contract.question.title.trim().length > 0}
-        <QuestionTitle title={contract.question.title} />
+      {:else if displayQuestion && displayQuestion.title.trim().length > 0}
+        <QuestionTitle title={displayQuestion.title} />
       {/if}
 
       {#if hasQuestionDescriptionContent(questionDescriptionHtml)}
@@ -563,9 +590,9 @@
     </div>
   {/if}
 
-  {#if !hideAnswer}
+  {#if !hideAnswer && displayQuestion}
     <Renderer
-      question={contract.question}
+      question={displayQuestion}
       answer={contract.answer}
       submissions={contract.submissions}
       maxSubmissionItems={contract.maxSubmissionItems}
@@ -575,7 +602,7 @@
       onImageUpload={contract.onImageUpload}
       onFileUpload={contract.onFileUpload}
       onVideoRecordingUpload={contract.onVideoRecordingUpload}
-      {onAnswerChange}
+      onAnswerChange={handleAnswerChange}
       {onQuestionChange}
     />
   {/if}

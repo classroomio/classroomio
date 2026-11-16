@@ -477,3 +477,79 @@ export async function updateSubmissionGrades(
     );
   }
 }
+
+export type AnswerForAiReview = {
+  answerId: number;
+  submissionId: string;
+  questionId: number;
+  answerData: TQuestionAnswer['answerData'];
+  point: number | null;
+  courseId: string | null;
+  exerciseId: string | null;
+  gradingState: string | null;
+  questionTypeId: number;
+  questionTitle: string;
+  questionSettings: unknown;
+  questionPoints: number | null;
+};
+
+const answerForAiReviewColumns = {
+  answerId: schema.questionAnswer.id,
+  submissionId: schema.questionAnswer.submissionId,
+  questionId: schema.questionAnswer.questionId,
+  answerData: schema.questionAnswer.answerData,
+  point: schema.questionAnswer.point,
+  courseId: schema.submission.courseId,
+  exerciseId: schema.submission.exerciseId,
+  gradingState: schema.submission.gradingState,
+  questionTypeId: schema.question.questionTypeId,
+  questionTitle: schema.question.title,
+  questionSettings: schema.question.settings,
+  questionPoints: schema.question.points
+};
+
+/** One stored answer with its question and submission, for the AI working review. */
+export async function getAnswerForAiReview(submissionId: string, questionId: number): Promise<AnswerForAiReview | null> {
+  const [row] = await db
+    .select(answerForAiReviewColumns)
+    .from(schema.questionAnswer)
+    .innerJoin(schema.submission, eq(schema.submission.id, schema.questionAnswer.submissionId))
+    .innerJoin(schema.question, eq(schema.question.id, schema.questionAnswer.questionId))
+    .where(and(eq(schema.questionAnswer.submissionId, submissionId), eq(schema.questionAnswer.questionId, questionId)));
+
+  return (row as AnswerForAiReview | undefined) ?? null;
+}
+
+/** Every answer of an exercise's submissions that already carries an AI suggestion. */
+export async function getAnswersWithAiReviewByExercise(exerciseId: string): Promise<AnswerForAiReview[]> {
+  const rows = await db
+    .select(answerForAiReviewColumns)
+    .from(schema.questionAnswer)
+    .innerJoin(schema.submission, eq(schema.submission.id, schema.questionAnswer.submissionId))
+    .innerJoin(schema.question, eq(schema.question.id, schema.questionAnswer.questionId))
+    .where(and(eq(schema.submission.exerciseId, exerciseId), sql`${schema.questionAnswer.answerData} ? 'aiReview'`));
+
+  return rows as AnswerForAiReview[];
+}
+
+/** Every answer in one submission with its question, so the caller can tell which still need a teacher. */
+export async function getAnswersWithQuestionBySubmissionId(submissionId: string): Promise<AnswerForAiReview[]> {
+  const rows = await db
+    .select(answerForAiReviewColumns)
+    .from(schema.questionAnswer)
+    .innerJoin(schema.submission, eq(schema.submission.id, schema.questionAnswer.submissionId))
+    .innerJoin(schema.question, eq(schema.question.id, schema.questionAnswer.questionId))
+    .where(eq(schema.questionAnswer.submissionId, submissionId));
+
+  return rows as AnswerForAiReview[];
+}
+
+/** Stores the AI suggestion beside the answer's own data, leaving every other field as it is. */
+export async function setAnswerAiReview(answerId: number, aiReview: unknown): Promise<void> {
+  await db
+    .update(schema.questionAnswer)
+    .set({
+      answerData: sql`jsonb_set(coalesce(${schema.questionAnswer.answerData}, '{}'::jsonb), '{aiReview}', ${JSON.stringify(aiReview)}::jsonb)`
+    })
+    .where(eq(schema.questionAnswer.id, answerId));
+}

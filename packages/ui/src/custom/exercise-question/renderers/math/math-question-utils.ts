@@ -12,6 +12,15 @@ export function loadMathGrading() {
   return pendingGrading;
 }
 
+let pendingVariantPreview: Promise<typeof import('@cio/question-types/variant-preview')> | null = null;
+
+/** Loads the variant preview and its answer-key verifier on first use. */
+export function loadVariantPreview() {
+  pendingVariantPreview ??= import('@cio/question-types/variant-preview');
+
+  return pendingVariantPreview;
+}
+
 export const MATH_COMPARE_MODES: readonly MathCompareMode[] = ['equivalent', 'exact_form', 'numeric', 'set'];
 
 export const MATH_KEYBOARD_PRESET_KEYS: readonly MathKeyboardPreset[] = [

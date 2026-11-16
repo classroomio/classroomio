@@ -63,6 +63,7 @@ import {
   getAnswerableQuestions,
   instantiateScoringQuestions,
   resolveAnswerSeeds,
+  withoutAiReview,
   toScoringQuestions
 } from './auto-grading';
 import { evaluateCourseCertification } from '@api/services/course/completion';
@@ -395,7 +396,11 @@ export async function listExerciseSubmissionsOverview(
       canAccessCourseSubmissions(courseId, profileId)
     ]);
 
-    const mySubmission = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
+    const ownSubmissions = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
+    const mySubmission = ownSubmissions.map((submission) => ({
+      ...submission,
+      answers: submission.answers?.map(withoutAiReview)
+    }));
 
     if (!canGrade) {
       return { mySubmission, allSubmissions: [], canGrade: false };

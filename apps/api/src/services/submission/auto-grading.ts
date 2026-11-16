@@ -102,6 +102,16 @@ export function attachSeeds(
   );
 }
 
+/** An answer as a student may see it: the AI suggestion is for graders until a teacher accepts it. */
+export function withoutAiReview<Answer extends { answerData?: unknown }>(answer: Answer): Answer {
+  const data = answer.answerData;
+  if (!data || typeof data !== 'object' || !('aiReview' in data)) return answer;
+
+  const { aiReview: _aiReview, ...rest } = data as Record<string, unknown>;
+
+  return { ...answer, answerData: rest };
+}
+
 /** The questions a student answers: every question except the stems of multi-part questions. */
 export function getAnswerableQuestions<Question extends { id?: number | null; parentQuestionId?: number | null }>(
   questions: Question[]

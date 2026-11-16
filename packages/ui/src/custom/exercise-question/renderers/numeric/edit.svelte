@@ -9,6 +9,7 @@
   import { NumberField } from '../../../number-field';
   import { IconButton } from '../../../icon-button';
   import { MathInput } from '../../../math-input';
+  import VariablesSection from '../math/variables-section.svelte';
   import { correctValueToLatex, latexToCorrectValue } from './numeric-utils';
 
   let { question, disabled = false, labels, onQuestionChange = () => {} }: ExerciseQuestionRendererProps = $props();
@@ -88,4 +89,6 @@
       />
     </div>
   </div>
+
+  <VariablesSection {question} {labels} {disabled} onPatchSettings={patchSettings} />
 </div>

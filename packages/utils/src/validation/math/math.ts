@@ -65,3 +65,37 @@ export const ZMathWorksheetModelOutput = z.object({
 });
 
 export type TMathWorksheetModelOutput = z.infer<typeof ZMathWorksheetModelOutput>;
+
+export const ZAiReviewRequestBody = z.object({
+  questionId: z.number().int()
+});
+export type TAiReviewRequestBody = z.infer<typeof ZAiReviewRequestBody>;
+
+export const ZAiReviewDecisionBody = z.object({
+  questionId: z.number().int(),
+  status: z.enum(['accepted', 'edited', 'rejected']),
+  awardedPoints: z.number().min(0).max(99_999_999.99).optional()
+});
+export type TAiReviewDecisionBody = z.infer<typeof ZAiReviewDecisionBody>;
+
+export const ZAiReviewBulkAcceptBody = z.object({
+  minConfidence: z.number().min(0.5).max(1).optional()
+});
+export type TAiReviewBulkAcceptBody = z.infer<typeof ZAiReviewBulkAcceptBody>;
+
+export const ZAiReviewModelOutput = z.object({
+  stepMarks: z.array(
+    z.object({
+      stepId: z.string().describe('The id of the rubric step, copied exactly'),
+      awarded: z.number().describe('Points awarded for this step, between 0 and the step points'),
+      comment: z.string().nullable().describe('One short sentence on why, or null')
+    })
+  ),
+  firstWrongStep: z
+    .string()
+    .nullable()
+    .describe('The id of the first rubric step the student gets wrong or leaves out; null when every step is right'),
+  comment: z.string().describe('Two sentences at most for the teacher: what is good and what went wrong'),
+  confidence: z.number().min(0).max(1).describe('How sure you are of these marks; use below 0.6 when the writing is hard to read')
+});
+export type TAiReviewModelOutput = z.infer<typeof ZAiReviewModelOutput>;

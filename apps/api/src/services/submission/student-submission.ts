@@ -40,6 +40,7 @@ function formatStudentAnswer(answerData: unknown, options: StudentAnswerOption[]
   delete safeAnswer.fileKey;
   delete safeAnswer.storageKey;
   delete safeAnswer.playbackUrl;
+  delete safeAnswer.aiReview;
 
   return safeAnswer;
 }
