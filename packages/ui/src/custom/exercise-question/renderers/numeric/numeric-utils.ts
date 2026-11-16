@@ -1,4 +1,4 @@
-import { ComputeEngine } from '@cortex-js/compute-engine';
+import type { ComputeEngine } from '@cortex-js/compute-engine';
 import type { NumericSettings } from '@cio/question-types';
 
 const PLAIN_NUMBER = /^-?\d+(\.\d+)?$/;
@@ -20,13 +20,20 @@ export function isPlainNumber(latex: string): boolean {
   return PLAIN_NUMBER.test(latex.trim());
 }
 
-const computeEngine = new ComputeEngine();
+let pendingComputeEngine: Promise<ComputeEngine> | null = null;
+
+function loadComputeEngine() {
+  pendingComputeEngine ??= import('@cortex-js/compute-engine').then(({ ComputeEngine }) => new ComputeEngine());
+
+  return pendingComputeEngine;
+}
 
 /** The number a typed expression such as `\\frac{3}{4}` or `2\\sqrt{2}` evaluates to, or null when it is not a number. */
-export function latexToNumber(latex: string): number | null {
+export async function latexToNumber(latex: string): Promise<number | null> {
   const trimmed = latex.trim();
   if (!trimmed) return null;
 
+  const computeEngine = await loadComputeEngine();
   const value = computeEngine.parse(trimmed).N().re;
 
   return Number.isFinite(value) ? value : null;
