@@ -102,6 +102,22 @@ export function flagFilter(column: string): AnalyticsFilterDefinition {
   return predicateFilter(column, 'boolean', ['is_true', 'is_false']);
 }
 
+export function lessonIncompleteFilter(): AnalyticsFilterDefinition {
+  return {
+    kind: 'subquery',
+    valueType: 'id',
+    ops: ['eq'],
+    condition: (lessonId) => sql`EXISTS (
+      SELECT 1
+      FROM lesson_row lr
+      WHERE lr.profile_id = base.profile_id
+        AND lr.cohort_id IS NOT DISTINCT FROM base.cohort_id
+        AND lr.lesson_id = ${lessonId}::uuid
+        AND lr.is_complete IS NOT TRUE
+    )`
+  };
+}
+
 export const scopePushdownFilters = {
   course: { kind: 'pushdown', target: 'courseIds' },
   cohort: { kind: 'pushdown', target: 'cohortIds' },

@@ -153,7 +153,11 @@ export const ANALYTICS_FILTER_DESCRIPTIONS: Record<TAnalyticsFilterField, string
   is_completed_all: 'Only learners who completed every scope course.',
   has_certificate: 'Only learners who earned a certificate.',
   is_attempted: 'Only rows for attempted exercises.',
-  is_graded: 'Only rows for graded attempts.'
+  is_graded: 'Only rows for graded attempts.',
+  is_low_score: 'Only learners whose average score is under 50 percent.',
+  is_low_video: 'Only learners whose video completion is under 60 percent.',
+  is_at_risk: 'Only learners with the at_risk status.',
+  lesson_incomplete: 'Only learners who have not completed this lesson.'
 };
 
 /** What each preset widget shows, keyed by widget id. API documentation strings, not dashboard UI copy. */
