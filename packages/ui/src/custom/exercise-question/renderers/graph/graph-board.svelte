@@ -274,6 +274,8 @@
 
     return () => {
       activeDraggable = new Set();
+      if (jsxBoard !== target) return;
+
       for (const object of drawn.reverse()) target.removeObject(object);
     };
   });
