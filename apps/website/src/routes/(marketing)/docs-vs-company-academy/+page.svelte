@@ -185,7 +185,7 @@
 
       <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
         <CtaButton data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</CtaButton>
-        <CtaButton href="/customer-education" variant="secondary">Explore academies</CtaButton>
+        <CtaButton href="/customer-education" variant="secondary">See customer academy software</CtaButton>
       </div>
     </div>
 
@@ -359,6 +359,13 @@
         </BlurFade>
       {/each}
     </div>
+
+    <p class="mt-8 text-center text-[15px] text-gray-500">
+      Weighing the cost of an academy?
+      <a class="text-blue-700 hover:underline" href="/customer-academy-roi-calculator"
+        >Try the customer academy ROI calculator.</a
+      >
+    </p>
   </Section>
 
   <PageSignupCTA
