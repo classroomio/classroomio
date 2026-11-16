@@ -12,6 +12,7 @@
     formatPoints,
     getExerciseQuestionContractKey,
     getMultiPartStemIds,
+    isClusterableQuestionType,
     type AnswerData,
     type ExerciseQuestionModel
   } from '@cio/question-types';
@@ -200,7 +201,8 @@
               <th class="ui:bg-background sticky top-0 z-20 min-w-24 border-b p-1 text-center font-medium">
                 <button
                   type="button"
-                  class="hover:bg-muted w-full rounded px-2 py-1"
+                  class="hover:bg-muted w-full rounded px-2 py-1 disabled:pointer-events-none"
+                  disabled={!isClusterableQuestionType(entry.model.questionType)}
                   title={entry.model.title}
                   onclick={() => (clusterQuestionId = entry.id)}
                   data-testid={`results-question-header-${entry.id}`}
