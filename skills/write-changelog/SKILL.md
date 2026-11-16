@@ -15,7 +15,7 @@ The article should explain what changed and why it matters. It should not read l
 
 ## 1. Set the scope
 
-The normal publishing day is Monday. Cover the previous Monday through Sunday, inclusive, plus anything merged on the publishing day itself. Run `git fetch origin main` and list merged PRs up to the moment you write, so nothing merged that morning is missed. Leave out anything the previous changelog in `company/changelogs/` already covered, and say so in the notes.
+The normal publishing day is Monday. Cover the previous Monday through Sunday, inclusive, plus anything merged on the publishing day itself. Run `git fetch origin main` and list merged PRs up to the moment you write, so nothing merged that morning is missed. Leave out anything the previous changelog in `company/changelogs/<number>-<range>/changelog.md` already covered, and say so in the notes.
 
 Ask for the dates if the range is unclear. Represent dates as `YYYY-MM-DD` while researching. Do not pass unvalidated dates into shell or GitHub commands. A valid date matches exactly `^\d{4}-\d{2}-\d{2}$`.
 
@@ -143,7 +143,7 @@ The article follows the useful pattern of a short introduction, a walkthrough ne
 
 Use this template:
 
-Number each article. The title always ends with ` - ClassroomIO Changelog #NNNN`, where `NNNN` is a four-digit issue number. Look at the latest file in `company/changelogs/` for the highest existing number and increment it by one. Never reuse a number.
+Number each article. The title always ends with ` - ClassroomIO Changelog #NNNN`, where `NNNN` is a four-digit issue number. Look at the index in `company/changelogs/README.md` for the highest existing number and increment it by one. Never reuse a number.
 
 After the highlights are picked, give the person four title proposals and let them pick one or write their own. Do not draft the email or article under a title they have not chosen. Title the article after the headline features, plainly: "Introducing Webhooks and a flexible course outline". Use the customer-facing names from the feature sections. Do not use an action list that ends in "and more" ("Send events to your apps with webhooks, reorder course content by dragging and more"), marketing slogans, or long benefit sentences. The email subject uses the same wording as the title, without the changelog number.
 
@@ -194,7 +194,7 @@ Article rules:
 Write every image placeholder as `[IMAGE: file-name.png | what the screenshot shows]`, so the person publishing knows both the file and the shot.
 
 - **Format:** PNG or JPG only, never webp. Convert a webp source with `sips -s format png in.webp --out out.png`.
-- **Location:** save the files in `company/changelogs/assets/<range>/`, for example `assets/28-sept-05-oct/`. Folder and file names are lowercase words separated by hyphens.
+- **Location:** save the files in `company/changelogs/<number>-<range>/assets/`, for example `0005-28-sept-05-oct/assets/`. Folder and file names are lowercase words separated by hyphens.
 - **Framing:** capture at 1350×830, device scale 1, and use the ClassroomIO browser board with the framing settings in [`../add-docs-image/SKILL.md`](../add-docs-image/SKILL.md). For changelog assets, pass a `.png` output path to the framing script.
 - **Reuse:** if the Help Center already has a screenshot of the feature (under `apps/help/content/help/**/images/`), copy it and convert it to PNG instead of capturing a new one.
 - **Demo data:** when a feature needs content to look real, add an idempotent seed script under `packages/db/src/scripts/` with a fictional product and fictional names. Re-run it before capturing so earlier test edits are reset.
@@ -214,7 +214,7 @@ Prepare the data first, then write the steps against it:
 - **Seed what a demo needs.** If a feature needs data the local database does not have (submissions, a second teammate, a live class with past sessions), extend or add the idempotent seed script from section 6. Give it a `db:seed:*` script in `packages/db/package.json`. It also resets anything a demo changes, such as a role switched during the recording or a student's live upload, so every take starts from the same state.
 - **Give every role a login.** Each demo that switches people (student vs admin, a tutor without access) needs a seeded account with a known password. Copy the password hash from an existing seed account instead of hashing one yourself.
 - **Make files real.** If a demo shows a file (View, Download, a preview), the object must exist in storage. Local storage may be the shared Cloudflare R2 account, so ask before uploading, keep demo objects under the organization's folder with a recognisable prefix, and store each file's real size on its row.
-- **Ship the upload files.** When the demo has a student upload something, put sample files with fictional content in `company/changelogs/assets/<range>/demo-files/`.
+- **Ship the upload files.** When the demo has a student upload something, put sample files with fictional content in `company/changelogs/<number>-<range>/assets/demo-files/`.
 - **Check dates.** Anything time-based (a live session, a due date, an expiring certificate) must still be in the right state on recording day. Move it if needed and say in the steps what state it is in.
 
 Structure:
@@ -255,7 +255,13 @@ Rules:
 
 ## 8. Publish
 
-Save the drafts as `company/changelogs/<range>.md` with `## Customer email`, `## Changelog article`, `## Publishing notes` and `## Demo walkthrough` sections.
+Each changelog has its own folder, `company/changelogs/<number>-<range>/` (for example `0009-26-oct-09-nov/`), where `<number>` is the four-digit changelog number, so folders sort oldest first:
+
+- `changelog.md`: the drafts, with `## Customer email`, `## Changelog article`, `## Publishing notes` and `## Demo walkthrough` sections.
+- `assets/`: framed screenshots, the YouTube thumbnail and its source, and `demo-files/`.
+- `video/`: the edited walkthrough clips (`youtube/`, `social/`, `intro/`, `project/` and a `README.md` listing each clip).
+
+Add a row for the new changelog to the index in `company/changelogs/README.md`.
 
 - **Article:** the person publishing posts it in UserJot themselves. Its public URL looks like `https://feedback.classroomio.com/updates/p/<slug>`. Ask for it before finishing the email.
 - **Walkthrough video:** publish the video to the public "Changelogs" YouTube playlist on the same day as the UserJot entry. The website reads that playlist's RSS feed and pairs each video with the entry published within 24 hours, so the dashboard "What's new" modal shows it with no code change. Only when a pairing is wrong, or the video lives outside the playlist, map the UserJot entry id (`id` from `GET https://api.userjot.com/v1/changelogs`) to the YouTube id in `CHANGELOG_VIDEO_OVERRIDES` in `apps/website/src/lib/data/changelog-videos.ts`.
@@ -278,7 +284,7 @@ Before returning the two deliverables, check:
 - [ ] The email is scannable and includes the changelog link.
 - [ ] The biggest feature leads, related features are grouped under one customer goal, and small improvements sit in Fixes and improvements.
 - [ ] The article has a video placeholder or YouTube link near the top.
-- [ ] Every article feature has a framed PNG or JPG with a lowercase, hyphenated name in `company/changelogs/assets/<range>/`.
+- [ ] Every article feature has a framed PNG or JPG with a lowercase, hyphenated name in `company/changelogs/<number>-<range>/assets/`.
 - [ ] Empty sections and filler have been removed.
 - [ ] The terms organization, academy, and student are used consistently.
 - [ ] The copy sounds natural when read aloud and contains no em or en dashes.
