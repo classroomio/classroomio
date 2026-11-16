@@ -3,6 +3,7 @@ import { sanitizeOptionalHtml } from '../utils/sanitize-html';
 import type { TLessonLanguage, TLocale, TNewLessonLanguage } from '@cio/db/types';
 import {
   deleteLessonLanguage,
+  findPrimaryNoteBlockId,
   getLessonLanguageByLessonIdAndLocale,
   getLessonLanguagesByLessonId,
   updateLessonLanguage,
@@ -11,10 +12,11 @@ import {
 
 import { getLessonById } from '@cio/db/queries/lesson/lesson';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { recordBlockLocaleVersion } from './block/block-version';
 import type { TBlockChangeSource, TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
 import { ensureLessonRevisionBaseline, recordLessonRevision } from './block/lesson-revision';
+import { reconcileBlockTextAnchors } from './course-comment/anchors';
 
 export interface LessonVersionOptions {
   authorId?: string | null;
@@ -23,6 +25,16 @@ export interface LessonVersionOptions {
   source?: TBlockChangeSource;
   /** Name of the AI client or integration behind an `mcp` or `api` change. */
   clientName?: string | null;
+}
+
+async function reconcilePrimaryNoteAnchors(
+  lessonId: string,
+  locale: TLocale,
+  html: string | null,
+  dbClient: DbOrTxClient
+): Promise<void> {
+  const blockId = await findPrimaryNoteBlockId(lessonId, dbClient);
+  if (blockId) await reconcileBlockTextAnchors({ blockId, locale, html }, dbClient);
 }
 
 /**
@@ -86,6 +98,7 @@ export async function upsertLessonLanguageService(
     const language = await db.transaction(async (tx) => {
       await ensureLessonRevisionBaseline(lessonId, tx);
       const saved = await upsertLessonLanguage({ ...data, content, lessonId }, tx);
+      await reconcilePrimaryNoteAnchors(lessonId, saved.locale ?? 'en', saved.content, tx);
 
       await recordBlockLocaleVersion({
         blockLocaleId: saved.id,
@@ -157,6 +170,7 @@ export async function updateLessonLanguageService(
 
     const language = await db.transaction(async (tx) => {
       const saved = await updateLessonLanguage(lessonId, locale, { ...data, content }, tx);
+      if (isContentWrite) await reconcilePrimaryNoteAnchors(lessonId, locale, saved.content, tx);
 
       // A metadata-only update is not a content change, so it earns no snapshot.
       if (isContentWrite) {
@@ -208,6 +222,8 @@ export async function deleteLessonLanguageService(lessonId: string, locale: TLoc
     if (!deleted) {
       throw new AppError('Lesson language not found', ErrorCodes.LESSON_LANGUAGE_NOT_FOUND, 404);
     }
+
+    await reconcilePrimaryNoteAnchors(lessonId, locale, null, db);
 
     if (lesson.courseId) {
       await touchCourseUpdatedAt(lesson.courseId);

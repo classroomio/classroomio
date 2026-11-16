@@ -32,6 +32,13 @@ import {
   LIVE_SESSION_REMINDER_STATUS_VALUES,
   type TLiveSessionReminderSkipReason
 } from '@cio/utils/constants/live-session-reminder';
+import {
+  COURSE_COMMENT_ANCHOR_TYPES,
+  COURSE_COMMENT_THREAD_EVENT_TYPES,
+  COURSE_COMMENT_THREAD_STATUSES
+} from '@cio/utils/constants/course-comment';
+import type { TCourseCommentMention } from '@cio/utils/functions/course-comment-mentions';
+import type { TCourseCommentAnchorData } from '@cio/utils/validation/course-comment';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
@@ -2487,6 +2494,7 @@ export const organizationmemberEmailNotifications = pgTable(
     cohortReminder: boolean('cohort_reminder').default(true).notNull(),
     session: boolean('session').default(true).notNull(),
     courseCompletion: boolean('course_completion').default(true).notNull(),
+    courseComments: boolean('course_comments').default(true).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -2807,6 +2815,8 @@ export const organization = pgTable(
         };
         apps: {
           comments: boolean;
+          /** Private review comments for admins and tutors. Missing means enabled. */
+          teamComments?: boolean;
         };
         auth?: {
           backgroundImage: string;
@@ -4883,5 +4893,292 @@ export const webhookDelivery = pgTable(
     index('idx_webhook_delivery_webhook_created_at').on(table.webhookId, table.createdAt),
     index('idx_webhook_delivery_status_next_attempt').on(table.status, table.nextAttemptAt),
     index('idx_webhook_delivery_event_id').on(table.eventId)
+  ]
+);
+
+export const courseCommentAnchorType = pgEnum('COURSE_COMMENT_ANCHOR_TYPE', [...COURSE_COMMENT_ANCHOR_TYPES]);
+export const courseCommentThreadStatus = pgEnum('COURSE_COMMENT_THREAD_STATUS', [...COURSE_COMMENT_THREAD_STATUSES]);
+export const courseCommentThreadEventType = pgEnum('COURSE_COMMENT_THREAD_EVENT_TYPE', [
+  ...COURSE_COMMENT_THREAD_EVENT_TYPES
+]);
+
+/**
+ * A private review thread for a course's admins and tutors, pinned to the course, a page, a block
+ * spot or a question. Relationships are real foreign keys; `anchor` holds only positions.
+ */
+export const courseCommentThread = pgTable(
+  'course_comment_thread',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    lessonId: uuid('lesson_id'),
+    exerciseId: uuid('exercise_id'),
+    blockId: uuid('block_id'),
+    questionId: bigint('question_id', { mode: 'number' }),
+    anchorType: courseCommentAnchorType('anchor_type').notNull(),
+    anchor: jsonb().default({}).notNull().$type<TCourseCommentAnchorData>(),
+    /** Server-maintained for `text` anchors: the quote can no longer be found in the block. */
+    textDetached: boolean('text_detached').default(false).notNull(),
+    status: courseCommentThreadStatus().default('open').notNull(),
+    createdBy: uuid('created_by'),
+    /** Written only when the creator's account is deleted; kept for audit, never displayed. */
+    createdByDeletedName: text('created_by_deleted_name'),
+    resolvedBy: uuid('resolved_by'),
+    resolvedByDeletedName: text('resolved_by_deleted_name'),
+    resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'string' }),
+    lastActivityAt: timestamp('last_activity_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'course_comment_thread_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_comment_thread_course_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'course_comment_thread_lesson_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.exerciseId],
+      foreignColumns: [exercise.id],
+      name: 'course_comment_thread_exercise_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.blockId],
+      foreignColumns: [block.id],
+      name: 'course_comment_thread_block_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    foreignKey({
+      columns: [table.questionId],
+      foreignColumns: [question.id],
+      name: 'course_comment_thread_question_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    foreignKey({
+      columns: [table.createdBy],
+      foreignColumns: [profile.id],
+      name: 'course_comment_thread_created_by_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    foreignKey({
+      columns: [table.resolvedBy],
+      foreignColumns: [profile.id],
+      name: 'course_comment_thread_resolved_by_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    check(
+      'course_comment_thread_page_owner_check',
+      sql`(${table.anchorType} = 'course' and ${table.lessonId} is null and ${table.exerciseId} is null) or (${table.anchorType} <> 'course' and num_nonnulls(${table.lessonId}, ${table.exerciseId}) = 1)`
+    ),
+    check(
+      'course_comment_thread_block_anchor_check',
+      sql`${table.anchorType} not in ('block', 'text', 'time', 'slide', 'point') or ${table.lessonId} is not null`
+    ),
+    check(
+      'course_comment_thread_question_anchor_check',
+      sql`${table.anchorType} <> 'question' or ${table.exerciseId} is not null`
+    ),
+    index('course_comment_thread_course_status_idx').on(table.courseId, table.status),
+    index('course_comment_thread_lesson_idx')
+      .on(table.lessonId)
+      .where(sql`${table.lessonId} is not null`),
+    index('course_comment_thread_exercise_idx')
+      .on(table.exerciseId)
+      .where(sql`${table.exerciseId} is not null`),
+    index('course_comment_thread_block_idx')
+      .on(table.blockId)
+      .where(sql`${table.blockId} is not null`),
+    index('course_comment_thread_question_idx')
+      .on(table.questionId)
+      .where(sql`${table.questionId} is not null`)
+  ]
+);
+
+/** One comment in a thread. Replies are a flat list ordered by `created_at`; the earliest one starts the thread. */
+export const courseComment = pgTable(
+  'course_comment',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    threadId: uuid('thread_id').notNull(),
+    authorId: uuid('author_id'),
+    /** Written only when the author's account is deleted; kept for audit, never displayed. */
+    authorDeletedName: text('author_deleted_name'),
+    body: text().notNull(),
+    mentions: jsonb().default([]).notNull().$type<TCourseCommentMention[]>(),
+    editedAt: timestamp('edited_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.threadId],
+      foreignColumns: [courseCommentThread.id],
+      name: 'course_comment_thread_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'course_comment_author_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('course_comment_thread_created_idx').on(table.threadId, table.createdAt),
+    index('course_comment_mentions_gin_idx').using('gin', table.mentions)
+  ]
+);
+
+/** When each team member last read each thread; drives per-person unread state. */
+export const courseCommentThreadRead = pgTable(
+  'course_comment_thread_read',
+  {
+    threadId: uuid('thread_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    lastReadAt: timestamp('last_read_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    primaryKey({ columns: [table.threadId, table.profileId], name: 'course_comment_thread_read_pkey' }),
+    foreignKey({
+      columns: [table.threadId],
+      foreignColumns: [courseCommentThread.id],
+      name: 'course_comment_thread_read_thread_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'course_comment_thread_read_profile_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    index('course_comment_thread_read_profile_idx').on(table.profileId)
+  ]
+);
+
+/** Audit trail of resolves and reopens, with the actor's name as it was at the time. */
+export const courseCommentThreadEvent = pgTable(
+  'course_comment_thread_event',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    threadId: uuid('thread_id').notNull(),
+    type: courseCommentThreadEventType().notNull(),
+    actorId: uuid('actor_id'),
+    actorName: text('actor_name').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.threadId],
+      foreignColumns: [courseCommentThread.id],
+      name: 'course_comment_thread_event_thread_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.actorId],
+      foreignColumns: [profile.id],
+      name: 'course_comment_thread_event_actor_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('course_comment_thread_event_thread_idx').on(table.threadId, table.createdAt)
+  ]
+);
+
+/**
+ * In-app notifications (the header bell). Rows hold ids only; titles and snippets are rendered
+ * from live data when read. `emailed_at` marks rows already sent in an email digest.
+ */
+export const notification = pgTable(
+  'notification',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    recipientId: uuid('recipient_id').notNull(),
+    actorId: uuid('actor_id'),
+    kind: varchar({ length: 64 }).notNull(),
+    courseId: uuid('course_id'),
+    courseCommentThreadId: uuid('course_comment_thread_id'),
+    courseCommentId: uuid('course_comment_id'),
+    readAt: timestamp('read_at', { withTimezone: true, mode: 'string' }),
+    emailedAt: timestamp('emailed_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'notification_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.recipientId],
+      foreignColumns: [profile.id],
+      name: 'notification_recipient_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.actorId],
+      foreignColumns: [profile.id],
+      name: 'notification_actor_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'notification_course_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseCommentThreadId],
+      foreignColumns: [courseCommentThread.id],
+      name: 'notification_course_comment_thread_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseCommentId],
+      foreignColumns: [courseComment.id],
+      name: 'notification_course_comment_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('notification_recipient_org_created_idx').on(table.recipientId, table.organizationId, table.createdAt.desc()),
+    index('notification_recipient_unread_idx')
+      .on(table.recipientId, table.organizationId)
+      .where(sql`${table.readAt} is null`),
+    index('notification_thread_recipient_pending_idx')
+      .on(table.courseCommentThreadId, table.recipientId)
+      .where(sql`${table.emailedAt} is null and ${table.readAt} is null`),
+    index('notification_course_comment_id_idx')
+      .on(table.courseCommentId)
+      .where(sql`${table.courseCommentId} is not null`)
   ]
 );

@@ -21,6 +21,7 @@
   import { SvelteSet } from 'svelte/reactivity';
   import { getSessionIndicatorPhase, liveSessionClock } from '$features/course/utils/live-session-phase';
   import LiveSessionIndicator from '$features/course/components/lesson/live-session-indicator.svelte';
+  import { PageCommentsBadge } from '$features/course-comments';
 
   interface Props {
     path: string;
@@ -91,6 +92,7 @@
 )}
   {@const sessionPhase =
     contentItem.type === ContentType.Lesson ? getSessionIndicatorPhase(contentItem, $liveSessionClock) : null}
+  <PageCommentsBadge pageId={contentItem.id} />
   {#if contentItem.isComplete}
     <span class="shrink-0">
       <CircleCheckIcon size={16} filled />

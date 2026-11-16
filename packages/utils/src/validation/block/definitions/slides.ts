@@ -30,5 +30,6 @@ export const slidesBlock = defineBlock({
   localizedContent: false,
   media: null,
   toPublicData: (data) => ({ src: data.src, platform: data.platform }),
-  agentEditableFields: []
+  agentEditableFields: [],
+  commentAnchor: { kind: 'slide', fingerprint: (data) => data.src }
 });

@@ -9,6 +9,7 @@ import { errorMessage } from '../utils/cancel';
 import { env } from '../config/env';
 import { log } from '../utils/logger';
 import {
+  processCourseCommentDigest,
   processNotifyCourseExercise,
   processNotifyCourseSessionUpdate,
   processSessionReminderScan
@@ -33,6 +34,8 @@ const worker = new Worker(
         return processSessionReminderScan();
       case JOB_NAMES.notifications.notifyCourseSessionUpdate:
         return processNotifyCourseSessionUpdate(job.data);
+      case JOB_NAMES.notifications.courseCommentDigest:
+        return processCourseCommentDigest(job.data);
       default:
         throw new Error(`Unknown notifications job: ${job.name}`);
     }

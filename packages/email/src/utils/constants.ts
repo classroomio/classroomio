@@ -21,6 +21,7 @@ export const EMAIL_IDS = [
   'contentReportAlert',
   'webhookFailing',
   'webhookDisabled',
+  'courseCommentDigest',
   'studentCourseInvite',
   'studentCourseCompletion',
   'studentCourseWelcome',

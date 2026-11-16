@@ -1,5 +1,6 @@
 import type * as z from 'zod';
 
+import type { TBlockCommentAnchorKind } from './definition';
 import { documentBlock } from './definitions/document';
 import { imageBlock } from './definitions/image';
 import { noteBlock } from './definitions/note';
@@ -51,6 +52,35 @@ export function getBlockAssetId(type: string, data: Record<string, unknown>): st
   if (!isBlockType(type) || !BLOCK_DEFINITIONS[type].media) return null;
 
   return typeof data.assetId === 'string' ? data.assetId : null;
+}
+
+/**
+ * What a team comment on a block of this type pins to, or null for an unknown type.
+ */
+export function getBlockCommentAnchorKind(type: string): TBlockCommentAnchorKind | null {
+  if (!isBlockType(type)) return null;
+
+  return BLOCK_DEFINITIONS[type].commentAnchor.kind;
+}
+
+/**
+ * Identifies the media a block shows, so comments pinned to an earlier media can be flagged.
+ * Rows backfilled from legacy columns were never validated, so a throwing projection reads as null.
+ * @returns null when the type has no media identity or the data cannot be read.
+ */
+export function getBlockCommentFingerprint(type: string, data: Record<string, unknown>): string | null {
+  if (!isBlockType(type)) return null;
+
+  const fingerprint = BLOCK_DEFINITIONS[type].commentAnchor.fingerprint as ((value: unknown) => string | null) | null;
+  if (!fingerprint) return null;
+
+  try {
+    const value = fingerprint(data);
+
+    return typeof value === 'string' && value ? value : null;
+  } catch {
+    return null;
+  }
 }
 
 /**

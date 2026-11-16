@@ -800,6 +800,10 @@
         "courseCompletion": {
           "label": "Course completion and certificates",
           "description": "Email students when they complete a course and earn a certificate."
+        },
+        "courseComments": {
+          "label": "Team comments",
+          "description": "Email admins and tutors when they are mentioned in or replied to on course comments, or their thread is resolved."
         }
       }
     },
@@ -6699,6 +6703,107 @@
       "permissions_count": "{count} areas",
       "revoke": "Remove access",
       "revoke_confirm": "Remove this app's access? It will stop working immediately."
+    }
+  },
+  "course_comments": {
+    "anchor": {
+      "course": "Whole course",
+      "lesson": "Lesson",
+      "exercise": "Exercise",
+      "question": "Question",
+      "block": "Block",
+      "slide": "Slide {number}"
+    },
+    "anchor_state": {
+      "text_removed": "Original text was removed",
+      "media_changed": "Video has changed",
+      "image_changed": "Image has changed",
+      "question_removed": "Question was removed",
+      "block_removed": "Block was removed"
+    },
+    "composer": {
+      "hint": "@ to mention a teammate",
+      "new_placeholder": "Write a comment, @ to mention a teammate",
+      "block_placeholder": "Comment on {block}, @ to mention a teammate",
+      "reply_placeholder": "Reply, or @ to mention",
+      "edit_placeholder": "Edit comment",
+      "comment": "Comment",
+      "reply": "Reply",
+      "save": "Save",
+      "slide_number": "Slide number (optional)",
+      "no_teammates": "No teammates match"
+    },
+    "filter": {
+      "status": "Status",
+      "open": "Open",
+      "unread": "Unread",
+      "read": "Read",
+      "resolved": "Resolved",
+      "person": "Person",
+      "anyone": "Anyone",
+      "you": "{name} (you)",
+      "show_on_content": "Show on content",
+      "text_highlights": "Text highlights",
+      "video_markers": "Video markers",
+      "image_pins": "Image pins"
+    },
+    "header": {
+      "tooltip": "Comments",
+      "label": "Comments, {count, plural, =0 {nothing unread} one {# unread thread} other {# unread threads}}"
+    },
+    "page": {
+      "tooltip": "Comment on this page",
+      "label": "Comment on this page, {count, plural, =0 {no open threads} one {# open thread} other {# open threads}}"
+    },
+    "panel": {
+      "title": "Comments",
+      "new_comment": "New comment",
+      "filter": "Filter comments",
+      "close": "Close (Esc)",
+      "subtitle": "{count} open · only admins and tutors see these",
+      "mark_all_read": "Mark all read",
+      "block_filter": "{block} · {count, plural, one {# comment} other {# comments}}",
+      "show_all": "Show all",
+      "general": "General",
+      "empty": "No threads match these filters."
+    },
+    "person": {
+      "deleted": "Deleted user",
+      "former_member": "Former member",
+      "role": {
+        "org_admin": "Org admin",
+        "admin": "Admin",
+        "tutor": "Tutor"
+      }
+    },
+    "snackbar": {
+      "load_failed": "Could not load comments",
+      "post_failed": "Could not post your comment",
+      "edit_failed": "Could not save your edit",
+      "delete_failed": "Could not delete the comment",
+      "resolve_failed": "Could not resolve the thread",
+      "reopen_failed": "Could not reopen the thread",
+      "mark_read_failed": "Could not mark comments as read",
+      "link_copied": "Link copied",
+      "link_copy_failed": "Could not copy the link"
+    },
+    "thread": {
+      "label": "Thread by {name} on {anchor}",
+      "copy_link": "Copy link",
+      "pinned": "Pinned",
+      "resolved": "Resolved",
+      "new_count": "{count} new",
+      "resolved_by": "Resolved by {name} · {time}",
+      "edited": "edited",
+      "edit": "Edit",
+      "delete": "Delete",
+      "replies": "{count, plural, one {# reply} other {# replies}}",
+      "resolve": "Resolve",
+      "reopen": "Reopen"
+    },
+    "tree": {
+      "open_count": "{count, plural, one {# open comment thread} other {# open comment threads}}",
+      "unread": "Unread comments"
     }
   }
 }

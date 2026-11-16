@@ -12,6 +12,7 @@ import {
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { sendTeamRoleChangedEmail } from './team-role-email';
+import { announceOrganizationCourseCommentAccessChange } from '@cio/core/services/course-comment/events';
 
 type UpdatedTeamMemberRole = {
   id: number;
@@ -105,6 +106,7 @@ export async function reconcileAfterTeamRoleChange(
 ) {
   if (applied.roleChanged && applied.profileId) {
     await scheduleCourseRoleReconcile(orgId, applied.profileId);
+    await announceOrganizationCourseCommentAccessChange(orgId, applied.profileId);
   }
 
   if (applied.roleChanged) {

@@ -11,5 +11,6 @@ export const noteBlock = defineBlock({
   localizedContent: true,
   media: null,
   toPublicData: (data) => data,
-  agentEditableFields: []
+  agentEditableFields: [],
+  commentAnchor: { kind: 'text', fingerprint: null }
 });

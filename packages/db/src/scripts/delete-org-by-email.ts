@@ -177,6 +177,13 @@ async function deleteUserAccount(sql: postgres.Sql, userId: string): Promise<boo
         await tx`DELETE FROM widget WHERE id IN ${tx(widgetIds)}`;
       }
 
+      // Keep the author's name on team comments, whose author columns are set to null below
+      const [deletedProfile] = await tx`SELECT fullname FROM profile WHERE id = ${userId}`;
+      const deletedName = deletedProfile?.fullname || 'Deleted user';
+      await tx`UPDATE course_comment SET author_deleted_name = ${deletedName} WHERE author_id = ${userId}`;
+      await tx`UPDATE course_comment_thread SET created_by_deleted_name = ${deletedName} WHERE created_by = ${userId}`;
+      await tx`UPDATE course_comment_thread SET resolved_by_deleted_name = ${deletedName} WHERE resolved_by = ${userId}`;
+
       // Delete profile (RESTRICT FK — profile.id = user.id)
       await tx`DELETE FROM profile WHERE id = ${userId}`;
 

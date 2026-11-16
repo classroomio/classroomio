@@ -281,3 +281,13 @@ export type TWebhookEvent = typeof schema.webhookEvent.$inferSelect;
 export type TNewWebhookEvent = typeof schema.webhookEvent.$inferInsert;
 export type TWebhookDelivery = typeof schema.webhookDelivery.$inferSelect;
 export type TNewWebhookDelivery = typeof schema.webhookDelivery.$inferInsert;
+
+export type TCourseCommentThread = typeof schema.courseCommentThread.$inferSelect;
+export type TNewCourseCommentThread = typeof schema.courseCommentThread.$inferInsert;
+export type TCourseComment = typeof schema.courseComment.$inferSelect;
+export type TNewCourseComment = typeof schema.courseComment.$inferInsert;
+export type TCourseCommentThreadRead = typeof schema.courseCommentThreadRead.$inferSelect;
+export type TCourseCommentThreadEvent = typeof schema.courseCommentThreadEvent.$inferSelect;
+export type TNewCourseCommentThreadEvent = typeof schema.courseCommentThreadEvent.$inferInsert;
+export type TNotification = typeof schema.notification.$inferSelect;
+export type TNewNotification = typeof schema.notification.$inferInsert;

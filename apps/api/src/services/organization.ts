@@ -68,6 +68,7 @@ import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
 import { assertStudentHomeDestination } from './organization/student-home';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
+import { announceOrganizationCourseCommentAccessChange } from '@cio/core/services/course-comment/events';
 
 export { updateTeamMemberRole } from './organization/team-role';
 
@@ -899,6 +900,8 @@ export async function updateOrg(
       untrustCustomDomainHostname(previousCustomDomainHostname);
     }
 
+    if (orgData.customization) await announceOrganizationCourseCommentAccessChange(orgId, null);
+
     const newCustomDomainHostname = organization.customDomain?.trim().toLowerCase();
 
     if (newCustomDomainHostname && organization.isCustomDomainVerified) {
@@ -1055,6 +1058,7 @@ export async function removeTeamMember(orgId: string, memberId: number, removedB
     });
 
     await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
+    if (deleted.profileId) await announceOrganizationCourseCommentAccessChange(orgId, deleted.profileId);
 
     if (targetEmail && removedByProfileId && revoked.length > 0) {
       await recordOrganizationInviteAudits(

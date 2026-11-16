@@ -1761,6 +1761,9 @@ importers:
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      htmlparser2:
+        specifier: ^10.1.0
+        version: 10.1.0
     devDependencies:
       tsc-alias:
         specifier: ^1.8.16

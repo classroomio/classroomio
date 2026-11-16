@@ -58,6 +58,7 @@ import {
 } from '@cio/db/queries/assets';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { sanitizeOptionalHtml } from '../../utils/sanitize-html';
+import { CourseCommentAnchorChanges } from '../course-comment/anchors';
 import { readOrganizationIdFromFileKey, resolveFileKeyOwnerOrganizationIds } from '../../utils/upload';
 import { recordBlockLocaleVersion } from './block-version';
 import { ensureLessonRevisionBaseline, recordLessonRevision } from './lesson-revision';
@@ -467,6 +468,7 @@ export async function updateLessonBlockLocale(
   },
   options: BlockActor = {}
 ): Promise<LessonBlock> {
+  const anchorChanges = new CourseCommentAnchorChanges();
   const updated = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
     const row = await requireLessonBlockRow(lessonId, blockId, tx);
@@ -479,10 +481,11 @@ export async function updateLessonBlockLocale(
       throw new AppError('This block was changed by someone else', ErrorCodes.BLOCK_VERSION_CONFLICT, 409);
     }
 
+    const content = sanitizeOptionalHtml(input.content) ?? '';
     await saveLocalizedContent(
       blockId,
       locale,
-      sanitizeOptionalHtml(input.content) ?? '',
+      content,
       {
         authorId: options.actorProfileId ?? null,
         intent: input.versionIntent,
@@ -493,12 +496,14 @@ export async function updateLessonBlockLocale(
       },
       tx
     );
+    await anchorChanges.reconcileText({ blockId, locale, html: content }, tx);
     await touchLessonsUpdatedAt(await listLessonIdsForBlock(blockId, tx), tx);
 
     return { placement: row.placement, block, courseId: scope.courseId };
   });
 
   await touchCourseUpdatedAt(updated.courseId);
+  await anchorChanges.announce();
 
   return hydrateSingleBlock(updated.placement, updated.block);
 }
@@ -635,6 +640,7 @@ export async function duplicateLessonBlock(
   options: BlockActor = {}
 ): Promise<LessonBlock> {
   const actorProfileId = options.actorProfileId ?? null;
+  const anchorChanges = new CourseCommentAnchorChanges();
 
   const duplicated = await db.transaction(async (tx) => {
     const scope = await requireLessonScope(lessonId, tx);
@@ -663,6 +669,7 @@ export async function duplicateLessonBlock(
         throw new AppError('Block placement not found', ErrorCodes.BLOCK_PLACEMENT_NOT_FOUND, 404);
       }
       placement = repointed;
+      await anchorChanges.moveToBlockCopy({ lessonId, fromBlockId: blockId, toBlockId: copy.id }, tx);
     } else {
       await lockLessonBlockPositions(lessonId, tx);
       const ordered = await getPlacementPositions(lessonId, tx);
@@ -694,6 +701,7 @@ export async function duplicateLessonBlock(
   });
 
   await touchCourseUpdatedAt(duplicated.courseId);
+  await anchorChanges.announce();
 
   return hydrateSingleBlock(duplicated.placement, duplicated.block);
 }

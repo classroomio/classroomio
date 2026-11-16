@@ -1,0 +1,10 @@
+export { courseCommentsApi } from './api/course-comments.svelte';
+export { commentsPanel } from './store/comments-panel.svelte';
+export { courseCommentsPanelDefinition } from './panel';
+export { COURSE_COMMENTS_PANEL_ID, COURSE_COMMENTS_THREAD_QUERY_PARAM } from './utils/constants';
+export { isCourseCommentViewer } from './utils/anchor-utils';
+export { goToThread, openLinkedThread } from './utils/navigation';
+export { default as CommentsHeaderButton } from './components/comments-header-button.svelte';
+export { default as PageCommentsButton } from './components/page-comments-button.svelte';
+export { default as CourseCommentsHost } from './components/course-comments-host.svelte';
+export { default as PageCommentsBadge } from './components/page-comments-badge.svelte';

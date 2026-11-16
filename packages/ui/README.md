@@ -352,6 +352,23 @@ Presentational parts for an arbitrarily deep comment thread. All copy is passed 
 - `ReplyingTo` — the "↳ Replying to @X" line. Only for rows written before replies carried a real parent, where the visual parent is the thread root rather than the comment being answered.
 - `Replies` — superseded by `Node`; kept for compatibility and no longer used.
 
+### Review comments (`src/custom/review-comments/`)
+
+Presentational parts for team review comments on course content: flat threads anchored to text, a video time, a slide, an image spot, a question, a page or the whole course. Every label is a prop, nothing calls an API, and bodies render from segments, never HTML. See `Molecules/ReviewComments` in Storybook.
+
+- `ReviewThreadCard.Root` — one thread. `active` expands it, `unread` draws the blue edge, `resolved` dims it, `hovered` mirrors hovering its highlight on the page. `onSelect` fires on click or Enter, except from controls inside the card. `onHoverChange(hovered)` lets the page mirror the hover.
+- `ReviewThreadCard.Header` — the anchor line: children (chip and tags) plus an optional **Copy link** button (`copyLinkLabel`, `onCopyLink`).
+- `ReviewThreadCard.Quote` — the quoted text of a text anchor; `removed` strikes it through.
+- `ReviewThreadCard.Comment` — reuses `CommentTree.Header` for avatar, name, `badge` (role or "Former member"), `dateLabel` and the edit/delete menu, then renders `segments`. Pass an `editor` snippet to show a composer in place of the body.
+- `ReviewThreadCard.Body` — renders `ReviewCommentSegment[]`: text, mentions (`inactive` for people no longer on the team) and links opened in a new tab.
+- `ReviewThreadCard.Footer` — `statusLabel` ("Resolved by …") on the left, the Resolve/Reopen button as children.
+- `ReviewAnchorChip` — icon and label for an anchor `kind`.
+- `ReviewStatusTag` — `removed`, `resolved`, `new`, `former_member`, `pinned` or `neutral`.
+- `ReviewPin` — a numbered pin at `x`/`y` percent inside a `relative` box; `active`, `hovered` and `draft` states.
+- `LiveCursor` — a teammate's cursor at viewport `x`/`y` with initials, first name and an optional `typingText` bubble. Moves with a short linear transition, none under reduced motion.
+- `TypingPreview` — a teammate's unposted reply in a thread.
+- `getReviewPresenceColor(colorIndex)` / `REVIEW_PRESENCE_COLORS` — the eight teammate colours; `getReviewInitials(name)`.
+
 ### Live session card (`src/custom/live-session-card/`)
 
 Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. When ended, a "Watch recording" button opens `recordingUrl` if one is set. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.

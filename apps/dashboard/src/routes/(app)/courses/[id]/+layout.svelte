@@ -21,6 +21,7 @@
   import { sidePanel, SidePanelRail } from '$features/side-panel';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { transcriptPanelDefinition } from '$features/course/components/lesson/video/transcript-panel-definition';
+  import { courseCommentsPanelDefinition, CourseCommentsHost } from '$features/course-comments';
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
@@ -46,6 +47,7 @@
   }
 
   sidePanel.register(transcriptPanelDefinition);
+  sidePanel.register(courseCommentsPanelDefinition);
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -255,6 +257,7 @@
 
   <Sidebar.Inset class="min-w-0 flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
     <CourseHeader />
+    <CourseCommentsHost />
     <ContentCreateModal />
     <CourseCompletionModal />
 

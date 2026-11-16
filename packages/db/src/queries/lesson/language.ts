@@ -16,7 +16,10 @@ function toLessonLanguage(lessonId: string, locale: TBlockLocale): TLessonLangua
   };
 }
 
-async function findPrimaryNoteBlockId(lessonId: string, client: DbOrTxClient): Promise<string | null> {
+/**
+ * The lesson's first note block, which legacy per-lesson translations read and write.
+ */
+export async function findPrimaryNoteBlockId(lessonId: string, client: DbOrTxClient): Promise<string | null> {
   const [row] = await client
     .select({ blockId: schema.block.id })
     .from(schema.blockPlacement)

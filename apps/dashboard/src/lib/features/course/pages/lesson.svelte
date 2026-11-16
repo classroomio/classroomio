@@ -43,6 +43,7 @@
   import * as Page from '@cio/ui/base/page';
   import { Spinner } from '@cio/ui/base/spinner';
   import { RoleBasedSecurity } from '$features/ui';
+  import { PageCommentsButton } from '$features/course-comments';
 
   import {
     ContentNavigationActions,
@@ -413,6 +414,8 @@
           >
             <HistoryIcon size={20} />
           </IconButton>
+
+          <PageCommentsButton {lessonId} />
 
           {#if mode === MODES.view}
             <div class="hidden lg:inline-flex">

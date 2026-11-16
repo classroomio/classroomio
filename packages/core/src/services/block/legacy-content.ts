@@ -26,6 +26,7 @@ import { syncLessonAssetUsages } from './block';
 import { recordBlockLocaleVersion } from './block-version';
 import { enrichBlocksMedia, loadBlocksForLessons, loadLessonBlocks, type LessonBlock } from './block-view';
 import { isSameJson } from './json';
+import { reconcileBlockTextAnchors } from '../course-comment/anchors';
 import { positionsAfter, positionsForNewItems } from './positions';
 import { ensureLessonRevisionBaseline, recordLessonRevision } from './lesson-revision';
 
@@ -278,6 +279,7 @@ async function replaceLegacyNote(
   }
 
   const saved = await upsertBlockLocale({ blockId, locale: DEFAULT_LOCALE, content }, tx);
+  await reconcileBlockTextAnchors({ blockId, locale: DEFAULT_LOCALE, html: content }, tx);
   await recordBlockLocaleVersion({
     blockLocaleId: saved.id,
     content: saved.content,

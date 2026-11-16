@@ -7,6 +7,7 @@ export * from './attendance';
 export * from './block';
 export * from './assets';
 export * from './course';
+export * from './course-comment';
 export * from './course-import';
 export * from './exercise';
 export * from './lesson';

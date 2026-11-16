@@ -28,7 +28,8 @@ function rowFromRecord(
     quizAssigned: record.quizAssigned,
     cohortReminder: record.cohortReminder,
     session: record.session,
-    courseCompletion: record.courseCompletion
+    courseCompletion: record.courseCompletion,
+    courseComments: record.courseComments
   };
 }
 

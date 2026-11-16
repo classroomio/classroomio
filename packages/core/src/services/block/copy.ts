@@ -14,6 +14,7 @@ import {
 } from '@cio/db/queries/block';
 import { recordBlockLocaleVersion } from './block-version';
 import { isSameJson } from './json';
+import { reconcileBlockTextAnchors } from '../course-comment/anchors';
 
 type Transform = <T>(value: T) => Promise<T> | T;
 
@@ -165,6 +166,10 @@ export async function pullLessonBlocksFromSource({
 
       const saved = await upsertBlockLocale(
         { blockId: courseBlockId, locale: templateLocale.locale, content },
+        dbClient
+      );
+      await reconcileBlockTextAnchors(
+        { blockId: courseBlockId, locale: templateLocale.locale, html: content },
         dbClient
       );
       await recordBlockLocaleVersion({

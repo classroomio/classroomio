@@ -28,6 +28,7 @@
   import { openCoursePreview } from '$features/course/utils/course-preview';
   import { t } from '$lib/utils/functions/translations';
   import { sidePanel } from '$features/side-panel';
+  import { CommentsHeaderButton } from '$features/course-comments';
   import { onMount } from 'svelte';
   import XIcon from '@lucide/svelte/icons/x';
   import PictureInPictureIcon from '@lucide/svelte/icons/picture-in-picture';
@@ -223,6 +224,7 @@
     {/if}
 
     {#if !$isStudentExperience}
+      <CommentsHeaderButton />
       <ButtonGroup.Root>
         {#if !courseApi.course?.isTemplate}
           <Button

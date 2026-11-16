@@ -8,6 +8,8 @@ export type OrgDataCounts = {
   lessons: number;
   exercises: number;
   submissions: number;
+  courseCommentThreads: number;
+  notifications: number;
 };
 
 export async function countOrgData(sql: postgres.Sql, orgId: string): Promise<OrgDataCounts> {
@@ -24,6 +26,10 @@ export async function countOrgData(sql: postgres.Sql, orgId: string): Promise<Or
     await sql`SELECT count(*)::int AS count FROM exercise WHERE course_id IN (SELECT id FROM course WHERE group_id IN (SELECT id FROM "group" WHERE organization_id = ${orgId}))`;
   const [submissionCount] =
     await sql`SELECT count(*)::int AS count FROM submission WHERE course_id IN (SELECT id FROM course WHERE group_id IN (SELECT id FROM "group" WHERE organization_id = ${orgId}))`;
+  const [commentThreadCount] =
+    await sql`SELECT count(*)::int AS count FROM course_comment_thread WHERE organization_id = ${orgId}`;
+  const [notificationCount] =
+    await sql`SELECT count(*)::int AS count FROM notification WHERE organization_id = ${orgId}`;
 
   return {
     courses: courseCount.count,
@@ -32,7 +38,9 @@ export async function countOrgData(sql: postgres.Sql, orgId: string): Promise<Or
     groupMembers: groupMemberCount.count,
     lessons: lessonCount.count,
     exercises: exerciseCount.count,
-    submissions: submissionCount.count
+    submissions: submissionCount.count,
+    courseCommentThreads: commentThreadCount.count,
+    notifications: notificationCount.count
   };
 }
 
@@ -42,6 +50,8 @@ export function printCounts(counts: OrgDataCounts) {
   console.log(`  Lessons:                ${counts.lessons}`);
   console.log(`  Exercises:              ${counts.exercises}`);
   console.log(`  Submissions:            ${counts.submissions}`);
+  console.log(`  Comment threads:        ${counts.courseCommentThreads}`);
+  console.log(`  Notifications:          ${counts.notifications}`);
   console.log(`  Org members:            ${counts.orgMembers}`);
   console.log(`  Group members (enrolled students/tutors): ${counts.groupMembers}`);
 }
@@ -271,6 +281,10 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
       await tx`DELETE FROM community_answer WHERE question_id IN ${tx(communityQuestionIds)}`;
       await tx`DELETE FROM community_question WHERE id IN ${tx(communityQuestionIds)}`;
     }
+
+    // Phase 7: Team comments and in-app notifications (cascade from org, but explicit for safety)
+    await tx`DELETE FROM notification WHERE organization_id = ${orgId}`;
+    await tx`DELETE FROM course_comment_thread WHERE organization_id = ${orgId}`;
 
     // Phase 8: Newsfeed
     if (newsfeedIds.length > 0) {

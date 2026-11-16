@@ -55,6 +55,7 @@
     RoleBasedSecurity,
     UnsavedChanges
   } from '$features/ui';
+  import { PageCommentsButton } from '$features/course-comments';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { saveExerciseDraft } from '$features/course/utils/exercise-draft';
@@ -718,6 +719,10 @@
     <div class="flex items-center gap-2">
       {#if $isCourseLearnerView && courseApi.course?.id && exerciseId && !showMobileBottomNav}
         <ContentNavigationActions courseId={courseApi.course.id} {exerciseId} />
+      {/if}
+
+      {#if exerciseId}
+        <PageCommentsButton {exerciseId} />
       {/if}
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>

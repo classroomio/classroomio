@@ -56,6 +56,7 @@ import { prettyJSON } from 'hono/pretty-json';
 import { cohortRouter } from '@api/routes/cohort';
 import { publicCourseRouter, orgSiteOgRouter } from '@api/routes/org-site';
 import { publicWidgetsRouter } from '@api/routes/widgets';
+import { notificationsRouter } from '@api/routes/notifications';
 import { reportRouter } from '@api/routes/report';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
@@ -281,6 +282,7 @@ export const app = new Hono()
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)
   .route('/report', reportRouter)
+  .route('/notifications', notificationsRouter)
   .route('/internal', internalRouter)
   .route('/agent', agentRouter)
   .route('/oauth', oauthRouter)

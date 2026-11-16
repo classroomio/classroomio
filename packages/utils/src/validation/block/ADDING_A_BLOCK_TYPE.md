@@ -26,7 +26,8 @@ export const quoteBlock = defineBlock({
   localizedContent: true,
   media: null,
   toPublicData: (data) => data,
-  agentEditableFields: ['attribution']
+  agentEditableFields: ['attribution'],
+  commentAnchor: { kind: 'text', fingerprint: null }
 });
 ```
 
@@ -35,6 +36,7 @@ export const quoteBlock = defineBlock({
 - `media: 'video' | 'document'` makes the API check the asset belongs to the org, track it in asset usage, and sign its URL. The asset id must be `data.assetId`.
 - `toPublicData` is what an anonymous public-course viewer receives. Return `null` to keep the type off public pages.
 - `agentEditableFields` lists the `data` fields the AI assistant may change on an existing block (`update_lesson_block_settings`). Leave out fields that point at an uploaded or organization-owned asset, such as `assetId`, `key` or `link`; an external https `url`, like the image block's, may be listed. Use `[]` when the assistant should not edit the block's data.
+- `commentAnchor` says how team review comments attach to the block: `text` (a quote in its localized HTML), `time` (a video moment), `slide`, `point` (a spot on an image) or `block` (the whole block). `fingerprint` returns what identifies the media shown, such as an asset id or URL, so comments pinned to an earlier media are flagged as changed; use `null` when the block has no media.
 
 Then add the type to `BLOCK_DEFINITIONS` in `registry.ts` and export the file from `index.ts`. Add a create sample to `packages/utils/tests/block-registry.test.ts`; the test fails until you do.
 

@@ -40,5 +40,6 @@ export const videoBlock = defineBlock({
   localizedContent: false,
   media: 'video',
   toPublicData: toPublicVideoData,
-  agentEditableFields: []
+  agentEditableFields: [],
+  commentAnchor: { kind: 'time', fingerprint: (data) => data.assetId ?? (data.link || null) }
 });

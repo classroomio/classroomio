@@ -18,5 +18,6 @@ export const documentBlock = defineBlock({
   localizedContent: false,
   media: 'document',
   toPublicData: null,
-  agentEditableFields: ['name']
+  agentEditableFields: ['name'],
+  commentAnchor: { kind: 'block', fingerprint: (data) => data.assetId ?? (data.link || data.key) }
 });

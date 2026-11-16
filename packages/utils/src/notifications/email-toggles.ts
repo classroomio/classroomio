@@ -7,7 +7,8 @@ export const EMAIL_NOTIFICATION_TOGGLE_KEYS = [
   'cohortReminder',
   'session',
   'enrollmentWelcome',
-  'courseCompletion'
+  'courseCompletion',
+  'courseComments'
 ] as const;
 
 export type EmailNotificationToggleKey = (typeof EMAIL_NOTIFICATION_TOGGLE_KEYS)[number];
@@ -19,7 +20,11 @@ export const PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS = EMAIL_NOTIFICATION_TOGGLE
 );
 
 /** Personal toggles that only apply to tutors/admins — hidden from pure students in the UI. */
-export const TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS = ['newStudent', 'newSubmission'] as const;
+export const TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS = [
+  'newStudent',
+  'newSubmission',
+  'courseComments'
+] as const;
 
 export type TutorOnlyPersonalEmailNotificationToggleKey =
   (typeof TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS)[number];
@@ -34,7 +39,16 @@ export type EmailNotificationSection<TKey extends string = EmailNotificationTogg
 export const PERSONAL_EMAIL_NOTIFICATION_SECTIONS: EmailNotificationSection<PersonalEmailNotificationToggleKey>[] = [
   {
     id: 'course',
-    keys: ['newStudent', 'newSubmission', 'gradingResult', 'newsfeed', 'quizAssigned', 'session', 'courseCompletion']
+    keys: [
+      'newStudent',
+      'newSubmission',
+      'gradingResult',
+      'newsfeed',
+      'quizAssigned',
+      'session',
+      'courseCompletion',
+      'courseComments'
+    ]
   },
   {
     id: 'cohort',
@@ -45,7 +59,16 @@ export const PERSONAL_EMAIL_NOTIFICATION_SECTIONS: EmailNotificationSection<Pers
 export const ORG_EMAIL_NOTIFICATION_SECTIONS: EmailNotificationSection[] = [
   {
     id: 'course',
-    keys: ['newStudent', 'newSubmission', 'gradingResult', 'newsfeed', 'quizAssigned', 'session', 'courseCompletion']
+    keys: [
+      'newStudent',
+      'newSubmission',
+      'gradingResult',
+      'newsfeed',
+      'quizAssigned',
+      'session',
+      'courseCompletion',
+      'courseComments'
+    ]
   },
   {
     id: 'cohort',
@@ -74,7 +97,8 @@ export const EMAIL_TOGGLE_MAP = {
   studentCourseWelcome: 'enrollmentWelcome',
   studentCohortWelcome: 'enrollmentWelcome',
   teacherCourseWelcome: 'enrollmentWelcome',
-  studentCourseCompletion: 'courseCompletion'
+  studentCourseCompletion: 'courseCompletion',
+  courseCommentDigest: 'courseComments'
 } as const satisfies Record<string, EmailNotificationToggleKey>;
 
 export type ToggleableEmailId = keyof typeof EMAIL_TOGGLE_MAP;

@@ -10,6 +10,7 @@ export type MemberEmailNotificationRow = {
   cohortReminder: boolean;
   session: boolean;
   courseCompletion: boolean;
+  courseComments: boolean;
 };
 
 export const DEFAULT_MEMBER_EMAIL_NOTIFICATION_ROW: MemberEmailNotificationRow = {
@@ -20,7 +21,8 @@ export const DEFAULT_MEMBER_EMAIL_NOTIFICATION_ROW: MemberEmailNotificationRow =
   quizAssigned: true,
   cohortReminder: true,
   session: true,
-  courseCompletion: true
+  courseCompletion: true,
+  courseComments: true
 };
 
 export function memberEmailNotificationRowToPersonalSettings(
@@ -52,7 +54,8 @@ export function personalSettingsToMemberEmailNotificationRow(
     quizAssigned: preferences.quizAssigned ?? true,
     cohortReminder: preferences.cohortReminder ?? true,
     session: preferences.session ?? true,
-    courseCompletion: preferences.courseCompletion ?? true
+    courseCompletion: preferences.courseCompletion ?? true,
+    courseComments: preferences.courseComments ?? true
   };
 }
 

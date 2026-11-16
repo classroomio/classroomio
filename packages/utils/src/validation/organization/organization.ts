@@ -213,7 +213,8 @@ export const ZUpdateOrganization = z.object({
           cohortReminder: z.boolean().optional(),
           session: z.boolean().optional(),
           enrollmentWelcome: z.boolean().optional(),
-          courseCompletion: z.boolean().optional()
+          courseCompletion: z.boolean().optional(),
+          courseComments: z.boolean().optional()
         })
         .optional()
     })

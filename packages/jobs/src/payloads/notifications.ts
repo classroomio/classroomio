@@ -49,3 +49,15 @@ export const ZNotifyCourseSessionUpdatePayload = z.object({
   lessonId: z.string().min(1)
 });
 export type TNotifyCourseSessionUpdatePayload = z.infer<typeof ZNotifyCourseSessionUpdatePayload>;
+
+/**
+ * Payload for a `notifications:course-comment-digest` job: email one recipient everything on one
+ * comment thread they have neither read in the app nor been emailed about yet.
+ */
+export const ZCourseCommentDigestPayload = z.object({
+  organizationId: z.string().min(1),
+  courseId: z.string().min(1),
+  threadId: z.string().min(1),
+  recipientId: z.string().min(1)
+});
+export type TCourseCommentDigestPayload = z.infer<typeof ZCourseCommentDigestPayload>;

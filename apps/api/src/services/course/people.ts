@@ -34,6 +34,7 @@ import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureLearnersEnrolled } from '@api/services/product-events';
+import { announceCourseCommentAccessChange } from '@cio/core/services/course-comment/events';
 
 /**
  * Attaches only `stage` to a page of members.
@@ -348,6 +349,10 @@ export async function updateMember(courseId: string, memberId: string, data: Par
       await invalidateOrgStats(statsOrgId);
     }
 
+    if (data.roleId !== undefined && data.roleId !== previousRoleId) {
+      await announceCourseCommentAccessChange(courseId, existingMember.profileId ?? null);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -386,6 +391,8 @@ export async function deleteMember(
       const statsOrgId = await getOrgIdByCourseId(courseId);
       await invalidateOrgStats(statsOrgId);
     }
+
+    if (deleted.profileId) await announceCourseCommentAccessChange(courseId, deleted.profileId);
 
     await emitCourseMemberRemovedWebhookEvent(courseId, deleted, {
       actorProfileId: context.actorProfileId,

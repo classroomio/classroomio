@@ -36,6 +36,7 @@ export * from './payment-failed';
 export * from './content-report-alert';
 export * from './webhook-failing';
 export * from './webhook-disabled';
+export * from './course-comment-digest';
 
 import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 
@@ -64,6 +65,7 @@ import type { paymentFailedEmail } from './payment-failed';
 import type { contentReportAlertEmail } from './content-report-alert';
 import type { webhookFailingEmail } from './webhook-failing';
 import type { webhookDisabledEmail } from './webhook-disabled';
+import type { courseCommentDigestEmail } from './course-comment-digest';
 import type { teacherCourseWelcomeEmail } from './teacher-course-welcome';
 import type { teacherStudentBuyRequestEmail } from './teacher-student-buy-request';
 import type { teacherStudentJoinedEmail } from './teacher-student-joined';
@@ -109,4 +111,5 @@ export type EmailSchemas = {
   contentReportAlert: typeof contentReportAlertEmail.template.schema;
   webhookFailing: typeof webhookFailingEmail.template.schema;
   webhookDisabled: typeof webhookDisabledEmail.template.schema;
+  courseCommentDigest: typeof courseCommentDigestEmail.template.schema;
 };

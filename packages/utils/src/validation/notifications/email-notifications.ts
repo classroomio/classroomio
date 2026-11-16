@@ -8,7 +8,8 @@ export const ZPersonalEmailNotificationToggleFields = {
   quizAssigned: z.boolean(),
   cohortReminder: z.boolean(),
   session: z.boolean(),
-  courseCompletion: z.boolean()
+  courseCompletion: z.boolean(),
+  courseComments: z.boolean()
 };
 
 export const ZMemberEmailNotificationPreferences = z.object(ZPersonalEmailNotificationToggleFields);

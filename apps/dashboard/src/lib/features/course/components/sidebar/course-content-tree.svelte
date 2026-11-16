@@ -52,6 +52,7 @@
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { SvelteSet } from 'svelte/reactivity';
+  import { PageCommentsBadge } from '$features/course-comments';
   import { getSessionIndicatorPhase, liveSessionClock } from '$features/course/utils/live-session-phase';
   import LiveSessionIndicator from '$features/course/components/lesson/live-session-indicator.svelte';
 
@@ -361,6 +362,7 @@
               )}
             </div>
           {/if}
+          <PageCommentsBadge pageId={contentItem.id} />
           {#if contentItem.isComplete}
             <span class="shrink-0">
               <CircleCheckIcon size={16} filled />

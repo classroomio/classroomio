@@ -39,6 +39,7 @@ import { syncLessonAssetUsages } from './block';
 import { recordBlockLocaleVersion } from './block-version';
 import { isSameJson } from './json';
 import { ensureLessonRevisionBaseline, readLessonPlacements, recordLessonRevision } from './lesson-revision';
+import { CourseCommentAnchorChanges } from '../course-comment/anchors';
 
 export interface LessonStructureActionSummary {
   placementsAdded: number;
@@ -77,6 +78,7 @@ interface RestoreContext {
   summary: LessonStructureActionSummary;
   /** Block placed in this lesson for each block id the plan names, after copies. */
   placedBlockIds: Map<string, string>;
+  anchorChanges: CourseCommentAnchorChanges;
 }
 
 const TEMPORARY_POSITION_PREFIX = '~restore-';
@@ -178,6 +180,7 @@ async function applyPlacements(context: RestoreContext, placements: TLessonRevis
       if (await isBlockPlacedOutsideLesson(entry.blockId, lessonId, tx)) {
         const copyId = await copyBlockForLesson(context, row.block, entry.data);
         await repointPlacement(row.placement.id, copyId, tx);
+        await context.anchorChanges.moveToBlockCopy({ lessonId, fromBlockId: entry.blockId, toBlockId: copyId }, tx);
         context.placedBlockIds.set(entry.blockId, copyId);
       } else {
         await updateBlockData(entry.blockId, entry.data, tx);
@@ -249,11 +252,19 @@ async function writeTexts(context: RestoreContext, texts: TextWrite[]): Promise<
     if (await isBlockPlacedOutsideLesson(placedBlockId, lessonId, tx)) {
       writeBlockId = await copyBlockForLesson(context, row.block, row.block.data);
       await repointPlacement(row.placement.id, writeBlockId, tx);
+      await context.anchorChanges.moveToBlockCopy(
+        { lessonId, fromBlockId: placedBlockId, toBlockId: writeBlockId },
+        tx
+      );
       rowsByBlockId.set(writeBlockId, { ...row, placement: { ...row.placement, blockId: writeBlockId } });
       context.placedBlockIds.set(text.blockId, writeBlockId);
     }
 
     const saved = await upsertBlockLocale({ blockId: writeBlockId, locale: text.locale as TLocale, content }, tx);
+    await context.anchorChanges.reconcileText(
+      { blockId: writeBlockId, locale: text.locale as TLocale, html: content },
+      tx
+    );
     await recordBlockLocaleVersion({
       blockLocaleId: saved.id,
       content: saved.content,
@@ -274,6 +285,7 @@ async function applyRestorePlan(
   actor: RestoreActor
 ): Promise<LessonStructureActionSummary> {
   const summary = emptySummary();
+  const anchorChanges = new CourseCommentAnchorChanges();
 
   const courseId = await db.transaction(async (tx) => {
     const scope = await getLessonBlockScope(lessonId, tx);
@@ -283,7 +295,15 @@ async function applyRestorePlan(
 
     await ensureLessonRevisionBaseline(lessonId, tx);
 
-    const context: RestoreContext = { tx, lessonId, scope, actor, summary, placedBlockIds: new Map() };
+    const context: RestoreContext = {
+      tx,
+      lessonId,
+      scope,
+      actor,
+      summary,
+      placedBlockIds: new Map(),
+      anchorChanges
+    };
     if (plan.placements) {
       await applyPlacements(context, plan.placements);
     }
@@ -303,6 +323,7 @@ async function applyRestorePlan(
   });
 
   await touchCourseUpdatedAt(courseId);
+  await anchorChanges.announce();
 
   return summary;
 }

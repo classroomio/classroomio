@@ -3,7 +3,13 @@ import type { JobsOptions } from 'bullmq';
 import { JOB_NAMES, QUEUE_NAMES } from '../queues/names';
 import { QUEUE_DEFAULTS } from '../queues/defaults';
 import { getQueue } from '../queues/factories';
-import type { TNotifyCourseExercisePayload, TNotifyCourseSessionUpdatePayload } from '../payloads/notifications';
+import { COURSE_COMMENT_DIGEST_DELAY_MS } from '@cio/utils/constants/course-comment';
+
+import type {
+  TCourseCommentDigestPayload,
+  TNotifyCourseExercisePayload,
+  TNotifyCourseSessionUpdatePayload
+} from '../payloads/notifications';
 
 /**
  * Enqueue a `notifications:notify-course-exercise` job. Returns the BullMQ
@@ -46,6 +52,23 @@ export async function enqueueNotifyCourseSessionUpdate(
       ...options
     }
   );
+
+  return job.id;
+}
+
+/**
+ * Schedules one digest email per recipient per thread. Events while a digest is waiting share it;
+ * events while one is sending queue exactly one follow-up, so nothing is dropped or sent twice.
+ */
+export async function enqueueCourseCommentDigest(payload: TCourseCommentDigestPayload): Promise<string | undefined> {
+  const job = await getQueue(QUEUE_NAMES.notifications).add(JOB_NAMES.notifications.courseCommentDigest, payload, {
+    ...QUEUE_DEFAULTS[QUEUE_NAMES.notifications],
+    delay: COURSE_COMMENT_DIGEST_DELAY_MS,
+    deduplication: {
+      id: `course-comment-digest-${payload.threadId}-${payload.recipientId}`,
+      keepLastIfActive: true
+    }
+  });
 
   return job.id;
 }

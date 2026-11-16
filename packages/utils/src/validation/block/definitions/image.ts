@@ -17,5 +17,6 @@ export const imageBlock = defineBlock({
   localizedContent: false,
   media: null,
   toPublicData: (data) => data,
-  agentEditableFields: ['url', 'alt', 'fit']
+  agentEditableFields: ['url', 'alt', 'fit'],
+  commentAnchor: { kind: 'point', fingerprint: (data) => `${data.url}#${data.fit ?? 'cover'}` }
 });
