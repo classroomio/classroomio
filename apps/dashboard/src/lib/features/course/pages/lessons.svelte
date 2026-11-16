@@ -3,7 +3,11 @@
   import { page } from '$app/state';
   import { Empty } from '@cio/ui/custom/empty';
   import { Spinner } from '@cio/ui/base/spinner';
-  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import { Button } from '@cio/ui/base/button';
+  import { MachineCabinet } from '@cio/ui/custom/animation';
+  import { RoleBasedSecurity } from '$features/ui';
+  import { openAddContentModal } from '$features/course/components/content/open-content-create';
   import TemplateUpdateAlert from '$features/course/components/template-update-alert.svelte';
   import ContentList from '$features/course/components/lesson/content-list.svelte';
   import ContentSectionList from '$features/course/components/lesson/content-section-list.svelte';
@@ -223,11 +227,27 @@
   {/if}
 {:else}
   <Empty
-    title={$t('course.navItem.lessons.body_header')}
+    title={$t('course.navItem.lessons.empty_title')}
     description={$isOrgStudent
       ? $t('course.navItem.lessons.student_body_content')
-      : $t('course.navItem.lessons.body_content')}
-    icon={BookOpenIcon}
+      : $t('course.navItem.lessons.empty_description')}
     variant="page"
-  />
+    class="ui:text-center"
+  >
+    {#snippet media()}
+      <div class="mx-auto h-52 w-full max-w-[340px]">
+        <MachineCabinet
+          lessons={$t('course.navItem.lessons.heading').toLocaleUpperCase()}
+          exercises={$t('course.navItem.lessons.stats.exercises').toLocaleUpperCase()}
+          certificates={$t('course.navItem.lessons.empty_drawer_certificates').toLocaleUpperCase()}
+        />
+      </div>
+    {/snippet}
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <Button onclick={() => openAddContentModal(courseId)}>
+        <PlusIcon size={16} />
+        {$t('course.navItem.lessons.add_content')}
+      </Button>
+    </RoleBasedSecurity>
+  </Empty>
 {/if}

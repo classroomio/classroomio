@@ -8,7 +8,7 @@ export const internalTrackingRouter = new Hono().post('/rollup-daily', apiKeyMid
     const daysAgoHeader = c.req.query('daysAgo');
     const daysAgo = daysAgoHeader ? Number(daysAgoHeader) : 1;
     const result = await runTrackingRollupDaily({
-      daysAgo: Number.isFinite(daysAgo) && daysAgo > 0 ? daysAgo : 1
+      daysAgo: Number.isInteger(daysAgo) && daysAgo >= 0 ? daysAgo : 1
     });
 
     return c.json({ success: true, data: result }, 200);
