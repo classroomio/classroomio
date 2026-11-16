@@ -76,7 +76,7 @@ export default ({ mode }) => {
       }
     },
     build: {
-      sourcemap: true,
+      sourcemap: false,
       target: 'es2020'
     },
     ssr: {
