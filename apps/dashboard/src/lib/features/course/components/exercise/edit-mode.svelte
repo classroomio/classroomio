@@ -6,6 +6,10 @@
   import { dndzone } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
   import { tick } from 'svelte';
+  import { courseApi } from '$features/course/api';
+  import { skillsApi } from '$features/skills/api';
+  import { QuestionSkillTags } from '$features/skills/components';
+  import type { QuestionSkillTag } from '$features/skills/utils';
 
   import {
     questionnaire,
@@ -369,6 +373,18 @@
     return questions.filter((question) => toExerciseQuestionModel(question).required !== false).length;
   }
 
+  let questionSkillTags = $state<QuestionSkillTag[]>([]);
+
+  async function loadQuestionSkillTags() {
+    if (!courseApi.course?.id || !_exerciseId) return;
+
+    questionSkillTags = await skillsApi.getExerciseQuestionSkills(courseApi.course.id, _exerciseId);
+  }
+
+  $effect(() => {
+    void loadQuestionSkillTags();
+  });
+
   $effect(() => {
     if (reorderQuestions && !previousReorderQuestions) {
       syncReorderQuestionItems();
@@ -496,6 +512,19 @@
 
         {#if getQuestionErrorMsg(errors, question, 'option')}
           <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
+        {/if}
+
+        {#if courseApi.course?.id}
+          <QuestionSkillTags
+            courseId={courseApi.course.id}
+            exerciseId={_exerciseId}
+            questionId={question.id}
+            title={question.title ?? ''}
+            description={question.description ?? undefined}
+            options={question.options?.map((option) => option.label).filter(Boolean)}
+            tags={questionSkillTags.filter((tag) => String(tag.questionId) === String(question.id))}
+            onSaved={loadQuestionSkillTags}
+          />
         {/if}
       </div>
     </QuestionContainer>

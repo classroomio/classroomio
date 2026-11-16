@@ -36,6 +36,7 @@
     type ExerciseQuestionVideoRecordingUploader,
     validateTextareaAnswer
   } from '@cio/question-types';
+  import { createAnswerTimingTracker } from '@cio/question-types/answer-timing';
   import { exerciseApi, presignApi } from '$features/course/api';
   import type { SubmissionListItem } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -154,10 +155,18 @@
     return previousValue;
   }
 
-  function mapAnswerToApiPayload(question, answerData: AnswerData | null | undefined) {
+  const answerTiming = createAnswerTimingTracker();
+
+  $effect(() => {
+    const { answers } = $questionnaireMetaData;
+    if (Object.keys(answers).length === 0) answerTiming.reset();
+    else answerTiming.observe(answers);
+  });
+
+  function mapAnswerToApiPayload(question, answerData: AnswerData | null | undefined, questionKey: string) {
     const questionId = Number(question.id);
     if (Number.isNaN(questionId) || !answerData) return null;
-    return toApiPayload(answerData, questionId);
+    return toApiPayload({ ...answerData, ...answerTiming.timingFor(questionKey) }, questionId);
   }
 
   async function submitExercise() {
@@ -175,7 +184,7 @@
           (item) => getExerciseQuestionContractKey(toExerciseQuestionModel(item)) === questionKey
         );
         if (!question) return null;
-        return mapAnswerToApiPayload(question, val);
+        return mapAnswerToApiPayload(question, val, questionKey);
       })
       .filter((answer) => answer !== null) as Array<{ questionId: number; optionId?: number; answer?: string }>;
 
@@ -293,7 +302,7 @@
     }
 
     const question = questions.find((q) => getExerciseQuestionContractKey(toExerciseQuestionModel(q)) === id);
-    if (question && !mapAnswerToApiPayload(question, formattedAnswer as AnswerData)) {
+    if (question && !mapAnswerToApiPayload(question, formattedAnswer as AnswerData, id)) {
       snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
       return;
     }
