@@ -2817,6 +2817,9 @@
           "delete_tooltip": "Delete this lesson",
           "cancel": "Cancel"
         },
+        "empty_title": "This course is empty",
+        "empty_description": "Add a lesson, an exercise or a certificate to start building it.",
+        "empty_drawer_certificates": "Certificates",
         "add_content": "Add content",
         "expand_content": "Expand content",
         "collapse_content": "Collapse content",

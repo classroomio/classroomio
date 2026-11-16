@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Customise your academy | ClassroomIO onboarding prototype</title>
+    <link rel="stylesheet" href="fonts/geist.css" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="onboarding.css" />
+    <link rel="stylesheet" href="motion.css" />
+    <link rel="stylesheet" href="brand.css" />
+  </head>
+  <body>
+    <div class="dock-app">
+      <div class="topbar dock-top">
+        <a class="lockup" href="index.html"><img class="mk" src="logo-mark.svg" alt="" /><span class="nm">classroomio</span></a>
+        <div class="rail" id="rail" style="width: 225px; flex: none"></div>
+        <div class="dock-title" id="title"></div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+          <button class="btn btn-outline btn-sm" id="starter">Starter content</button>
+          <button class="btn btn-ghost btn-sm" id="back">Back</button>
+          <button class="btn btn-ghost btn-sm" id="skip-all">Skip to academy</button>
+          <button class="btn btn-primary" id="done">
+            Go to my courses
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <main class="dock-stage"><div class="dock-preview" id="preview"></div></main>
+
+      <div class="dock-bottom">
+        <div class="pill" id="pill"></div>
+        <div class="dock" id="dock" role="listbox" aria-label="Themes"></div>
+      </div>
+    </div>
+
+    <div id="modal-host"></div>
+
+    <script src="proto.js"></script>
+    <script src="pricing.js"></script>
+    <script src="model.js"></script>
+    <script src="customize.js"></script>
+  </body>
+</html>
