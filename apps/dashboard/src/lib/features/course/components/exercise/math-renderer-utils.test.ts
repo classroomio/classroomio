@@ -11,15 +11,15 @@ import {
 } from '../../../../../../../../packages/ui/src/custom/exercise-question/renderers/matching/matching-utils';
 
 describe('numeric utils', () => {
-  it('evaluates fractions, roots and pi', () => {
-    expect(latexToNumber('\\frac{3}{4}')).toBe(0.75);
-    expect(latexToNumber('2\\sqrt{2}')).toBeCloseTo(2.828427, 5);
-    expect(latexToNumber('\\pi')).toBeCloseTo(Math.PI, 8);
+  it('evaluates fractions, roots and pi', async () => {
+    expect(await latexToNumber('\\frac{3}{4}')).toBe(0.75);
+    expect(await latexToNumber('2\\sqrt{2}')).toBeCloseTo(2.828427, 5);
+    expect(await latexToNumber('\\pi')).toBeCloseTo(Math.PI, 8);
   });
 
-  it('returns null for text that is not a number', () => {
-    expect(latexToNumber('x+1')).toBeNull();
-    expect(latexToNumber('  ')).toBeNull();
+  it('returns null for text that is not a number', async () => {
+    expect(await latexToNumber('x+1')).toBeNull();
+    expect(await latexToNumber('  ')).toBeNull();
   });
 
   it('stores a plain number as a number and anything else as LaTeX', () => {
