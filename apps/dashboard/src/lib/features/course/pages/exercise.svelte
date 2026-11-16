@@ -888,7 +888,7 @@
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="submissions">
             {#if canGradeSubmissions}
-              <Submissions bind:exerciseId {submissions} {enrolledStudentKeys} />
+              <Submissions courseId={courseApi.course?.id ?? ''} bind:exerciseId {submissions} {enrolledStudentKeys} />
             {:else}
               <Empty
                 title={$t('course.navItem.submissions.access.denied_title')}

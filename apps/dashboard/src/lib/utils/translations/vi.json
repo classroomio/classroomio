@@ -7633,5 +7633,63 @@
     "bulk_accept": "Chấp nhận {count} gợi ý tin cậy",
     "bulk_accepting": "Đang chấp nhận…",
     "bulk_done": "Đã chấp nhận {count} gợi ý"
+  },
+  "exercise_results": {
+    "tab": "Bảng kết quả",
+    "student": "Học viên",
+    "unknown_student": "Học viên không rõ",
+    "total": "Tổng",
+    "question_short": "C{number}",
+    "points_short": "đ",
+    "no_answer": "Chưa trả lời",
+    "empty": "Chưa có học viên nào khớp với các bộ lọc này.",
+    "page": "Trang {page}/{pages}",
+    "previous": "Trước",
+    "next": "Sau",
+    "filter": {
+      "all": "Tất cả học viên",
+      "wrong": "Chỉ câu trả lời sai",
+      "awaiting": "Chờ chấm điểm",
+      "all_cohorts": "Tất cả nhóm"
+    },
+    "state": {
+      "full": "Điểm tối đa",
+      "partial": "Điểm một phần",
+      "wrong": "Sai",
+      "awaiting": "Chờ chấm điểm",
+      "blank": "Chưa trả lời"
+    },
+    "clusters": {
+      "title": "Nhóm câu trả lời",
+      "empty": "Chưa có câu trả lời để nhóm.",
+      "count": "{count} người trả lời như vậy",
+      "blank": "{count} người bỏ trống",
+      "parameterised_hint": "Câu hỏi này có biến, nên các câu trả lời được nhóm riêng theo số của từng học viên.",
+      "not_scorable": "Loại câu hỏi này được chấm thủ công. Bạn vẫn có thể thêm nhận xét cho một nhóm.",
+      "grade": {
+        "full": "Điểm tối đa",
+        "partial": "Điểm một phần",
+        "wrong": "Sai",
+        "mixed": "Hỗn hợp"
+      },
+      "mark_correct": "Đánh dấu đúng",
+      "mark_partial": "Điểm một phần…",
+      "mark_wrong": "Đánh dấu sai",
+      "add_feedback": "Thêm nhận xét",
+      "undo": "Hoàn tác quyết định",
+      "points_label": "Điểm cho nhóm này (tối đa {max})",
+      "apply": "Áp dụng và chấm lại",
+      "feedback_placeholder": "Nhận xét mà mọi học viên trong nhóm sẽ thấy",
+      "save_feedback": "Lưu nhận xét",
+      "has_feedback": "kèm nhận xét",
+      "decision_correct": "Đã đánh dấu đúng cho tất cả",
+      "decision_wrong": "Đã đánh dấu sai cho tất cả",
+      "decision_partial": "Đã cho {points} điểm cho tất cả",
+      "decision_feedback": "Đã đính kèm nhận xét"
+    },
+    "snackbar": {
+      "applied": "Đã chấm lại {count} câu trả lời",
+      "undone": "Đã hoàn tác, chấm lại {count} câu trả lời"
+    }
   }
 }

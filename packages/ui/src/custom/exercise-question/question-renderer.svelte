@@ -13,7 +13,12 @@
     ExerciseQuestionRenderContract,
     ExerciseQuestionRendererProps
   } from '@cio/question-types';
-  import { createVariantSeed, getExerciseQuestionLabel, readQuestionParameters } from '@cio/question-types';
+  import {
+    createVariantSeed,
+    getExerciseQuestionLabel,
+    getMathQuestionLabel,
+    readQuestionParameters
+  } from '@cio/question-types';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import XIcon from '@lucide/svelte/icons/x';
   import { Button } from '../../base/button';
@@ -29,7 +34,7 @@
   import { ImageLightbox, ZoomableHtmlContent, ZoomableImage, type LightboxImage } from '../image-lightbox';
   import { getQuestionLightboxLabels } from './lightbox-labels';
   import { getQuestionMathEditLabels } from './math-edit-labels';
-  import { MathTextInput } from '../math-text';
+  import { MathText, MathTextInput } from '../math-text';
   import { hasQuestionDescriptionContent, toQuestionDescriptionHtml } from './question-description';
   import QuestionSurface from './question-surface.svelte';
   import { getExerciseQuestionRenderer } from './renderer-contract';
@@ -612,6 +617,17 @@
       onAnswerChange={handleAnswerChange}
       {onQuestionChange}
     />
+    {#if contract.mode === 'review' && contract.answer?.clusterOverride?.feedback}
+      <div
+        class="ui:bg-muted ui:mt-3 ui:rounded-md ui:border ui:px-3 ui:py-2 ui:text-sm"
+        data-testid="cluster-feedback"
+      >
+        <p class="ui:text-muted-foreground ui:text-xs ui:font-semibold">
+          {getMathQuestionLabel(contract.labels, 'math.review.feedback')}
+        </p>
+        <MathText text={contract.answer.clusterOverride.feedback} />
+      </div>
+    {/if}
   {/if}
 {/snippet}
 

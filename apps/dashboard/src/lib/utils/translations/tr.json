@@ -7683,5 +7683,63 @@
     "bulk_accept": "{count} güvenli öneriyi kabul et",
     "bulk_accepting": "Kabul ediliyor…",
     "bulk_done": "{count} öneri kabul edildi"
+  },
+  "exercise_results": {
+    "tab": "Sonuç tablosu",
+    "student": "Öğrenci",
+    "unknown_student": "Bilinmeyen öğrenci",
+    "total": "Toplam",
+    "question_short": "S{number}",
+    "points_short": "puan",
+    "no_answer": "Cevap yok",
+    "empty": "Bu filtrelere uyan öğrenci henüz yok.",
+    "page": "Sayfa {page} / {pages}",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "filter": {
+      "all": "Tüm öğrenciler",
+      "wrong": "Yalnızca yanlış cevaplar",
+      "awaiting": "Notlandırma bekliyor",
+      "all_cohorts": "Tüm gruplar"
+    },
+    "state": {
+      "full": "Tam puan",
+      "partial": "Kısmi puan",
+      "wrong": "Yanlış",
+      "awaiting": "Notlandırma bekliyor",
+      "blank": "Cevap yok"
+    },
+    "clusters": {
+      "title": "Cevap grupları",
+      "empty": "Gruplanacak cevap henüz yok.",
+      "count": "{count} kişi böyle cevapladı",
+      "blank": "{count} kişi boş bıraktı",
+      "parameterised_hint": "Bu soruda değişkenler var, bu yüzden cevaplar her öğrencinin sayılarına göre ayrı gruplanır.",
+      "not_scorable": "Bu soru türü elle notlandırılır. Yine de gruba geri bildirim ekleyebilirsiniz.",
+      "grade": {
+        "full": "Tam puan",
+        "partial": "Kısmi puan",
+        "wrong": "Yanlış",
+        "mixed": "Karışık"
+      },
+      "mark_correct": "Doğru olarak işaretle",
+      "mark_partial": "Kısmi puan…",
+      "mark_wrong": "Yanlış olarak işaretle",
+      "add_feedback": "Geri bildirim ekle",
+      "undo": "Kararı geri al",
+      "points_label": "Bu grup için puan (en çok {max})",
+      "apply": "Uygula ve yeniden notlandır",
+      "feedback_placeholder": "Bu gruptaki her öğrencinin göreceği geri bildirim",
+      "save_feedback": "Geri bildirimi kaydet",
+      "has_feedback": "geri bildirimli",
+      "decision_correct": "Herkes için doğru işaretlendi",
+      "decision_wrong": "Herkes için yanlış işaretlendi",
+      "decision_partial": "Herkese {points} puan verildi",
+      "decision_feedback": "Geri bildirim eklendi"
+    },
+    "snackbar": {
+      "applied": "{count} cevap yeniden notlandırıldı",
+      "undone": "Karar geri alındı, {count} cevap yeniden notlandırıldı"
+    }
   }
 }

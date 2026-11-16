@@ -7633,5 +7633,63 @@
     "bulk_accept": "Aceitar {count} sugestões de alta confiança",
     "bulk_accepting": "Aceitando…",
     "bulk_done": "{count} sugestões aceitas"
+  },
+  "exercise_results": {
+    "tab": "Grade de resultados",
+    "student": "Aluno",
+    "unknown_student": "Aluno desconhecido",
+    "total": "Total",
+    "question_short": "Q{number}",
+    "points_short": "pts",
+    "no_answer": "Sem resposta",
+    "empty": "Nenhum aluno corresponde a estes filtros ainda.",
+    "page": "Página {page} de {pages}",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "filter": {
+      "all": "Todos os alunos",
+      "wrong": "Só respostas erradas",
+      "awaiting": "Aguardando correção",
+      "all_cohorts": "Todas as turmas"
+    },
+    "state": {
+      "full": "Nota máxima",
+      "partial": "Nota parcial",
+      "wrong": "Errada",
+      "awaiting": "Aguardando correção",
+      "blank": "Sem resposta"
+    },
+    "clusters": {
+      "title": "Grupos de respostas",
+      "empty": "Ainda não há respostas para agrupar.",
+      "count": "{count} responderam isto",
+      "blank": "{count} deixaram em branco",
+      "parameterised_hint": "Esta pergunta tem variáveis, por isso as respostas são agrupadas separadamente para os números de cada aluno.",
+      "not_scorable": "Este tipo de pergunta é corrigido à mão. Você ainda pode adicionar um comentário a um grupo.",
+      "grade": {
+        "full": "Nota máxima",
+        "partial": "Nota parcial",
+        "wrong": "Errada",
+        "mixed": "Mista"
+      },
+      "mark_correct": "Marcar como certa",
+      "mark_partial": "Nota parcial…",
+      "mark_wrong": "Marcar como errada",
+      "add_feedback": "Adicionar comentário",
+      "undo": "Desfazer decisão",
+      "points_label": "Pontos para este grupo (máx. {max})",
+      "apply": "Aplicar e corrigir de novo",
+      "feedback_placeholder": "Comentário que cada aluno deste grupo verá",
+      "save_feedback": "Salvar comentário",
+      "has_feedback": "com comentário",
+      "decision_correct": "Marcada como certa para todos",
+      "decision_wrong": "Marcada como errada para todos",
+      "decision_partial": "{points} pontos dados a todos",
+      "decision_feedback": "Comentário anexado"
+    },
+    "snackbar": {
+      "applied": "{count} respostas corrigidas de novo",
+      "undone": "Decisão desfeita, {count} respostas corrigidas de novo"
+    }
   }
 }

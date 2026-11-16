@@ -6,6 +6,7 @@ export * from './course.svelte';
 export * from './courses.svelte';
 export * from './content.svelte';
 export * from './exercise.svelte';
+export * from './exercise-results.svelte';
 export * from './lesson.svelte';
 export * from './lesson-block.svelte';
 export * from './mark.svelte';

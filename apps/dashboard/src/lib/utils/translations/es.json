@@ -7633,5 +7633,63 @@
     "bulk_accept": "Aceptar {count} sugerencias de alta confianza",
     "bulk_accepting": "Aceptando…",
     "bulk_done": "{count} sugerencias aceptadas"
+  },
+  "exercise_results": {
+    "tab": "Cuadrícula de resultados",
+    "student": "Estudiante",
+    "unknown_student": "Estudiante desconocido",
+    "total": "Total",
+    "question_short": "P{number}",
+    "points_short": "pts",
+    "no_answer": "Sin respuesta",
+    "empty": "Ningún estudiante coincide con estos filtros todavía.",
+    "page": "Página {page} de {pages}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "filter": {
+      "all": "Todos los estudiantes",
+      "wrong": "Solo respuestas incorrectas",
+      "awaiting": "Pendientes de calificar",
+      "all_cohorts": "Todas las cohortes"
+    },
+    "state": {
+      "full": "Puntaje completo",
+      "partial": "Puntaje parcial",
+      "wrong": "Incorrecta",
+      "awaiting": "Pendiente de calificar",
+      "blank": "Sin respuesta"
+    },
+    "clusters": {
+      "title": "Grupos de respuestas",
+      "empty": "Aún no hay respuestas para agrupar.",
+      "count": "{count} respondieron esto",
+      "blank": "{count} la dejaron en blanco",
+      "parameterised_hint": "Esta pregunta tiene variables, así que las respuestas se agrupan por separado según los números de cada estudiante.",
+      "not_scorable": "Este tipo de pregunta se califica a mano. Aun así puedes añadir comentarios a un grupo.",
+      "grade": {
+        "full": "Puntaje completo",
+        "partial": "Puntaje parcial",
+        "wrong": "Incorrecta",
+        "mixed": "Mixto"
+      },
+      "mark_correct": "Marcar como correcta",
+      "mark_partial": "Puntaje parcial…",
+      "mark_wrong": "Marcar como incorrecta",
+      "add_feedback": "Añadir comentario",
+      "undo": "Deshacer decisión",
+      "points_label": "Puntos para este grupo (máx. {max})",
+      "apply": "Aplicar y recalificar",
+      "feedback_placeholder": "Comentario que verá cada estudiante de este grupo",
+      "save_feedback": "Guardar comentario",
+      "has_feedback": "con comentario",
+      "decision_correct": "Marcada como correcta para todos",
+      "decision_wrong": "Marcada como incorrecta para todos",
+      "decision_partial": "Se dieron {points} puntos a todos",
+      "decision_feedback": "Comentario adjunto"
+    },
+    "snackbar": {
+      "applied": "Se recalificaron {count} respuestas",
+      "undone": "Decisión deshecha, se recalificaron {count} respuestas"
+    }
   }
 }

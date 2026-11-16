@@ -7633,5 +7633,63 @@
     "bulk_accept": "Accepter {count} sikre forslag",
     "bulk_accepting": "Accepterer…",
     "bulk_done": "{count} forslag accepteret"
+  },
+  "exercise_results": {
+    "tab": "Resultatgitter",
+    "student": "Elev",
+    "unknown_student": "Ukendt elev",
+    "total": "I alt",
+    "question_short": "S{number}",
+    "points_short": "p",
+    "no_answer": "Intet svar",
+    "empty": "Ingen elever matcher disse filtre endnu.",
+    "page": "Side {page} af {pages}",
+    "previous": "Forrige",
+    "next": "Næste",
+    "filter": {
+      "all": "Alle elever",
+      "wrong": "Kun forkerte svar",
+      "awaiting": "Afventer bedømmelse",
+      "all_cohorts": "Alle hold"
+    },
+    "state": {
+      "full": "Fuld point",
+      "partial": "Delvis point",
+      "wrong": "Forkert",
+      "awaiting": "Afventer bedømmelse",
+      "blank": "Intet svar"
+    },
+    "clusters": {
+      "title": "Svargrupper",
+      "empty": "Ingen svar at gruppere endnu.",
+      "count": "{count} svarede dette",
+      "blank": "{count} lod feltet stå tomt",
+      "parameterised_hint": "Dette spørgsmål har variabler, så svar grupperes separat for hver elevs tal.",
+      "not_scorable": "Denne spørgsmålstype bedømmes manuelt. Du kan stadig tilføje feedback til en gruppe.",
+      "grade": {
+        "full": "Fuld point",
+        "partial": "Delvis point",
+        "wrong": "Forkert",
+        "mixed": "Blandet"
+      },
+      "mark_correct": "Marker som rigtig",
+      "mark_partial": "Delvis point…",
+      "mark_wrong": "Marker som forkert",
+      "add_feedback": "Tilføj feedback",
+      "undo": "Fortryd beslutning",
+      "points_label": "Point for denne gruppe (maks. {max})",
+      "apply": "Anvend og bedøm igen",
+      "feedback_placeholder": "Feedback som alle elever i gruppen får at se",
+      "save_feedback": "Gem feedback",
+      "has_feedback": "med feedback",
+      "decision_correct": "Markeret som rigtig for alle",
+      "decision_wrong": "Markeret som forkert for alle",
+      "decision_partial": "Givet {points} point til alle",
+      "decision_feedback": "Feedback tilføjet"
+    },
+    "snackbar": {
+      "applied": "{count} svar bedømt igen",
+      "undone": "Beslutning fortrudt, {count} svar bedømt igen"
+    }
   }
 }

@@ -7633,5 +7633,63 @@
     "bulk_accept": "{count} sichere Vorschläge übernehmen",
     "bulk_accepting": "Wird übernommen…",
     "bulk_done": "{count} Vorschläge übernommen"
+  },
+  "exercise_results": {
+    "tab": "Ergebnisraster",
+    "student": "Lernende",
+    "unknown_student": "Unbekannte Person",
+    "total": "Gesamt",
+    "question_short": "F{number}",
+    "points_short": "P.",
+    "no_answer": "Keine Antwort",
+    "empty": "Noch keine Lernenden entsprechen diesen Filtern.",
+    "page": "Seite {page} von {pages}",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "filter": {
+      "all": "Alle Lernenden",
+      "wrong": "Nur falsche Antworten",
+      "awaiting": "Wartet auf Bewertung",
+      "all_cohorts": "Alle Kohorten"
+    },
+    "state": {
+      "full": "Volle Punktzahl",
+      "partial": "Teilpunkte",
+      "wrong": "Falsch",
+      "awaiting": "Wartet auf Bewertung",
+      "blank": "Keine Antwort"
+    },
+    "clusters": {
+      "title": "Antwortgruppen",
+      "empty": "Noch keine Antworten zum Gruppieren.",
+      "count": "{count} haben so geantwortet",
+      "blank": "{count} haben nichts eingegeben",
+      "parameterised_hint": "Diese Frage hat Variablen, daher werden Antworten für die Zahlen jeder Person getrennt gruppiert.",
+      "not_scorable": "Dieser Fragetyp wird von Hand bewertet. Sie können einer Gruppe trotzdem Feedback hinzufügen.",
+      "grade": {
+        "full": "Volle Punktzahl",
+        "partial": "Teilpunkte",
+        "wrong": "Falsch",
+        "mixed": "Gemischt"
+      },
+      "mark_correct": "Als richtig markieren",
+      "mark_partial": "Teilpunkte…",
+      "mark_wrong": "Als falsch markieren",
+      "add_feedback": "Feedback hinzufügen",
+      "undo": "Entscheidung rückgängig machen",
+      "points_label": "Punkte für diese Gruppe (max. {max})",
+      "apply": "Anwenden und neu bewerten",
+      "feedback_placeholder": "Feedback, das alle Lernenden dieser Gruppe sehen",
+      "save_feedback": "Feedback speichern",
+      "has_feedback": "mit Feedback",
+      "decision_correct": "Für alle als richtig markiert",
+      "decision_wrong": "Für alle als falsch markiert",
+      "decision_partial": "Für alle mit {points} Punkten bewertet",
+      "decision_feedback": "Feedback angehängt"
+    },
+    "snackbar": {
+      "applied": "{count} Antworten neu bewertet",
+      "undone": "Entscheidung rückgängig gemacht, {count} Antworten neu bewertet"
+    }
   }
 }

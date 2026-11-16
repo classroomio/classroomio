@@ -7603,5 +7603,63 @@
     "bulk_accept": "Accetta {count} suggerimenti affidabili",
     "bulk_accepting": "Accettazione…",
     "bulk_done": "{count} suggerimenti accettati"
+  },
+  "exercise_results": {
+    "tab": "Griglia dei risultati",
+    "student": "Studente",
+    "unknown_student": "Studente sconosciuto",
+    "total": "Totale",
+    "question_short": "D{number}",
+    "points_short": "pt",
+    "no_answer": "Nessuna risposta",
+    "empty": "Nessuno studente corrisponde ancora a questi filtri.",
+    "page": "Pagina {page} di {pages}",
+    "previous": "Precedente",
+    "next": "Successivo",
+    "filter": {
+      "all": "Tutti gli studenti",
+      "wrong": "Solo risposte sbagliate",
+      "awaiting": "In attesa di valutazione",
+      "all_cohorts": "Tutte le coorti"
+    },
+    "state": {
+      "full": "Punteggio pieno",
+      "partial": "Punteggio parziale",
+      "wrong": "Sbagliata",
+      "awaiting": "In attesa di valutazione",
+      "blank": "Nessuna risposta"
+    },
+    "clusters": {
+      "title": "Gruppi di risposte",
+      "empty": "Ancora nessuna risposta da raggruppare.",
+      "count": "{count} hanno risposto così",
+      "blank": "{count} hanno lasciato vuoto",
+      "parameterised_hint": "Questa domanda ha delle variabili, quindi le risposte sono raggruppate separatamente per i numeri di ogni studente.",
+      "not_scorable": "Questo tipo di domanda si valuta a mano. Puoi comunque aggiungere un commento a un gruppo.",
+      "grade": {
+        "full": "Punteggio pieno",
+        "partial": "Punteggio parziale",
+        "wrong": "Sbagliata",
+        "mixed": "Misto"
+      },
+      "mark_correct": "Segna come corretta",
+      "mark_partial": "Punteggio parziale…",
+      "mark_wrong": "Segna come sbagliata",
+      "add_feedback": "Aggiungi commento",
+      "undo": "Annulla decisione",
+      "points_label": "Punti per questo gruppo (max {max})",
+      "apply": "Applica e rivaluta",
+      "feedback_placeholder": "Commento che vedrà ogni studente del gruppo",
+      "save_feedback": "Salva commento",
+      "has_feedback": "con commento",
+      "decision_correct": "Segnata corretta per tutti",
+      "decision_wrong": "Segnata sbagliata per tutti",
+      "decision_partial": "Assegnati {points} punti a tutti",
+      "decision_feedback": "Commento allegato"
+    },
+    "snackbar": {
+      "applied": "{count} risposte rivalutate",
+      "undone": "Decisione annullata, {count} risposte rivalutate"
+    }
   }
 }

@@ -7603,5 +7603,63 @@
     "bulk_accept": "Accept {count} high-confidence suggestions",
     "bulk_accepting": "Accepting…",
     "bulk_done": "{count} suggestions accepted"
+  },
+  "exercise_results": {
+    "tab": "Results grid",
+    "student": "Student",
+    "unknown_student": "Unknown student",
+    "total": "Total",
+    "question_short": "Q{number}",
+    "points_short": "pts",
+    "no_answer": "No answer",
+    "empty": "No students match these filters yet.",
+    "page": "Page {page} of {pages}",
+    "previous": "Previous",
+    "next": "Next",
+    "filter": {
+      "all": "All students",
+      "wrong": "Wrong answers only",
+      "awaiting": "Awaiting grading",
+      "all_cohorts": "All cohorts"
+    },
+    "state": {
+      "full": "Full marks",
+      "partial": "Partial credit",
+      "wrong": "Wrong",
+      "awaiting": "Awaiting grading",
+      "blank": "No answer"
+    },
+    "clusters": {
+      "title": "Answer groups",
+      "empty": "No answers to group yet.",
+      "count": "{count} answered this",
+      "blank": "{count} left this blank",
+      "parameterised_hint": "This question has variables, so answers are grouped separately for each student's numbers.",
+      "not_scorable": "This question type is graded by hand. You can still add feedback to a group.",
+      "grade": {
+        "full": "Full marks",
+        "partial": "Partial credit",
+        "wrong": "Wrong",
+        "mixed": "Mixed"
+      },
+      "mark_correct": "Mark correct",
+      "mark_partial": "Partial credit…",
+      "mark_wrong": "Mark wrong",
+      "add_feedback": "Add feedback",
+      "undo": "Undo decision",
+      "points_label": "Points for this group (max {max})",
+      "apply": "Apply and regrade",
+      "feedback_placeholder": "Feedback every student in this group will see",
+      "save_feedback": "Save feedback",
+      "has_feedback": "with feedback",
+      "decision_correct": "Marked correct for everyone",
+      "decision_wrong": "Marked wrong for everyone",
+      "decision_partial": "Marked {points} points for everyone",
+      "decision_feedback": "Feedback attached"
+    },
+    "snackbar": {
+      "applied": "Regraded {count} answers",
+      "undone": "Decision undone, regraded {count} answers"
+    }
   }
 }

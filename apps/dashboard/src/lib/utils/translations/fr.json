@@ -7633,5 +7633,63 @@
     "bulk_accept": "Accepter {count} suggestions très fiables",
     "bulk_accepting": "Acceptation…",
     "bulk_done": "{count} suggestions acceptées"
+  },
+  "exercise_results": {
+    "tab": "Grille de résultats",
+    "student": "Élève",
+    "unknown_student": "Élève inconnu",
+    "total": "Total",
+    "question_short": "Q{number}",
+    "points_short": "pts",
+    "no_answer": "Aucune réponse",
+    "empty": "Aucun élève ne correspond encore à ces filtres.",
+    "page": "Page {page} sur {pages}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "filter": {
+      "all": "Tous les élèves",
+      "wrong": "Mauvaises réponses uniquement",
+      "awaiting": "En attente de correction",
+      "all_cohorts": "Toutes les cohortes"
+    },
+    "state": {
+      "full": "Note maximale",
+      "partial": "Note partielle",
+      "wrong": "Faux",
+      "awaiting": "En attente de correction",
+      "blank": "Aucune réponse"
+    },
+    "clusters": {
+      "title": "Groupes de réponses",
+      "empty": "Aucune réponse à regrouper pour l'instant.",
+      "count": "{count} ont répondu ainsi",
+      "blank": "{count} ont laissé vide",
+      "parameterised_hint": "Cette question comporte des variables : les réponses sont donc regroupées séparément selon les nombres de chaque élève.",
+      "not_scorable": "Ce type de question se corrige à la main. Vous pouvez tout de même ajouter un commentaire à un groupe.",
+      "grade": {
+        "full": "Note maximale",
+        "partial": "Note partielle",
+        "wrong": "Faux",
+        "mixed": "Mixte"
+      },
+      "mark_correct": "Marquer juste",
+      "mark_partial": "Note partielle…",
+      "mark_wrong": "Marquer faux",
+      "add_feedback": "Ajouter un commentaire",
+      "undo": "Annuler la décision",
+      "points_label": "Points pour ce groupe (max. {max})",
+      "apply": "Appliquer et recorriger",
+      "feedback_placeholder": "Commentaire que verront tous les élèves de ce groupe",
+      "save_feedback": "Enregistrer le commentaire",
+      "has_feedback": "avec commentaire",
+      "decision_correct": "Marqué juste pour tous",
+      "decision_wrong": "Marqué faux pour tous",
+      "decision_partial": "{points} points attribués à tous",
+      "decision_feedback": "Commentaire ajouté"
+    },
+    "snackbar": {
+      "applied": "{count} réponses recorrigées",
+      "undone": "Décision annulée, {count} réponses recorrigées"
+    }
   }
 }

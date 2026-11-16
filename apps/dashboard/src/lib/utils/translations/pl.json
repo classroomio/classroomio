@@ -7633,5 +7633,63 @@
     "bulk_accept": "Zaakceptuj {count} pewnych propozycji",
     "bulk_accepting": "Akceptowanie…",
     "bulk_done": "Zaakceptowano propozycje: {count}"
+  },
+  "exercise_results": {
+    "tab": "Siatka wyników",
+    "student": "Uczeń",
+    "unknown_student": "Nieznany uczeń",
+    "total": "Razem",
+    "question_short": "P{number}",
+    "points_short": "pkt",
+    "no_answer": "Brak odpowiedzi",
+    "empty": "Żaden uczeń nie pasuje jeszcze do tych filtrów.",
+    "page": "Strona {page} z {pages}",
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "filter": {
+      "all": "Wszyscy uczniowie",
+      "wrong": "Tylko błędne odpowiedzi",
+      "awaiting": "Oczekuje na ocenę",
+      "all_cohorts": "Wszystkie kohorty"
+    },
+    "state": {
+      "full": "Pełna punktacja",
+      "partial": "Częściowa punktacja",
+      "wrong": "Błędna",
+      "awaiting": "Oczekuje na ocenę",
+      "blank": "Brak odpowiedzi"
+    },
+    "clusters": {
+      "title": "Grupy odpowiedzi",
+      "empty": "Nie ma jeszcze odpowiedzi do pogrupowania.",
+      "count": "{count} odpowiedziało tak",
+      "blank": "{count} zostawiło puste",
+      "parameterised_hint": "To pytanie ma zmienne, więc odpowiedzi są grupowane osobno dla liczb każdego ucznia.",
+      "not_scorable": "Ten typ pytania jest oceniany ręcznie. Nadal możesz dodać komentarz do grupy.",
+      "grade": {
+        "full": "Pełna punktacja",
+        "partial": "Częściowa punktacja",
+        "wrong": "Błędna",
+        "mixed": "Mieszana"
+      },
+      "mark_correct": "Oznacz jako poprawną",
+      "mark_partial": "Częściowa punktacja…",
+      "mark_wrong": "Oznacz jako błędną",
+      "add_feedback": "Dodaj komentarz",
+      "undo": "Cofnij decyzję",
+      "points_label": "Punkty dla tej grupy (maks. {max})",
+      "apply": "Zastosuj i oceń ponownie",
+      "feedback_placeholder": "Komentarz, który zobaczy każdy uczeń z tej grupy",
+      "save_feedback": "Zapisz komentarz",
+      "has_feedback": "z komentarzem",
+      "decision_correct": "Oznaczono jako poprawną dla wszystkich",
+      "decision_wrong": "Oznaczono jako błędną dla wszystkich",
+      "decision_partial": "Przyznano wszystkim {points} pkt",
+      "decision_feedback": "Dodano komentarz"
+    },
+    "snackbar": {
+      "applied": "Oceniono ponownie {count} odpowiedzi",
+      "undone": "Cofnięto decyzję, oceniono ponownie {count} odpowiedzi"
+    }
   }
 }
