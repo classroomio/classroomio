@@ -1925,7 +1925,9 @@
                 "star": "Xếp hạng sao",
                 "video_recording": "Quay video",
                 "math_expression": "Biểu thức toán",
-                "worked_solution": "Lời giải chi tiết"
+                "worked_solution": "Lời giải chi tiết",
+                "graph_plot": "Vẽ đồ thị",
+                "graph_read": "Đọc đồ thị"
               },
               "select_type": "Chọn loại",
               "question_type_auto_gradable": "Tự động",
@@ -7551,6 +7553,95 @@
       "total_mismatch": "Tổng các bước khác với điểm của phần bài làm.",
       "ai_label": "Gợi ý điểm bằng AI",
       "ai_helper": "Một mô hình đọc bài làm theo thang chấm và gợi ý điểm. Học sinh không thấy gì cho đến khi bạn chấp nhận. Mặc định tắt."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Bảng đồ thị",
+        "x_min": "Mép trái (x nhỏ nhất)",
+        "x_max": "Mép phải (x lớn nhất)",
+        "y_min": "Mép dưới (y nhỏ nhất)",
+        "y_max": "Mép trên (y lớn nhất)",
+        "show_grid": "Hiện lưới",
+        "snap_label": "Bước bắt dính lưới",
+        "snap_helper": "Các điểm bắt dính vào bội số của số này. Dùng 0 để đặt tự do.",
+        "x_label": "Nhãn trục ngang",
+        "y_label": "Nhãn trục dọc",
+        "tolerance_label": "Dung sai",
+        "tolerance_helper": "Một điểm hoặc đường thẳng phải gần đến mức nào, tính theo đơn vị đồ thị, để được tính là đúng.",
+        "range_invalid": "Mỗi giá trị nhỏ nhất phải nhỏ hơn giá trị lớn nhất của nó."
+      },
+      "tool": {
+        "point": "Điểm",
+        "line": "Đường thẳng",
+        "segment": "Đoạn thẳng",
+        "parabola": "Parabol"
+      },
+      "plot": {
+        "tools_label": "Công cụ học viên được dùng",
+        "reference_heading": "Đáp án đúng",
+        "reference_helper": "Vẽ đáp án đúng lên bảng. Học viên được chấm theo đáp án này.",
+        "reference_empty": "Vẽ ít nhất một phần tử làm đáp án đúng.",
+        "preview_heading": "Giao diện học viên",
+        "preview_helper": "Đây là bảng học viên nhìn thấy. Họ chỉ có các công cụ bạn đã chọn."
+      },
+      "read": {
+        "curves_label": "Hàm số trên đồ thị",
+        "curves_helper": "Nhập từng hàm số của x, ví dụ x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Nhãn (không bắt buộc)",
+        "add_curve": "Thêm hàm số",
+        "points_label": "Điểm đã đánh dấu",
+        "points_helper": "Các điểm vẽ trên đồ thị để học viên đọc.",
+        "add_point": "Thêm điểm",
+        "point_label_placeholder": "Tên (không bắt buộc)",
+        "remove": "Xóa",
+        "answer_label": "Học viên đọc gì từ đồ thị?",
+        "kind": {
+          "value": "Một giá trị",
+          "point": "Một điểm (x, y)"
+        },
+        "value_label": "Giá trị đúng",
+        "x_label": "x đúng",
+        "y_label": "y đúng",
+        "tolerance_helper": "Các câu trả lời trong khoảng cách này so với đáp án đúng đều được chấp nhận.",
+        "answer_empty": "Nhập đáp án đúng."
+      },
+      "take": {
+        "loading": "Đang tải đồ thị…",
+        "failed": "Không thể tải đồ thị.",
+        "undo": "Hoàn tác",
+        "clear": "Xóa hết",
+        "hint": {
+          "point": "Chạm vào đồ thị để đặt một điểm. Kéo một điểm để di chuyển.",
+          "line": "Chạm vào hai vị trí để vẽ đường thẳng. Kéo một điểm để di chuyển.",
+          "segment": "Chạm vào hai đầu của đoạn thẳng. Kéo một điểm để di chuyển.",
+          "parabola": "Chạm vào đỉnh, rồi chạm thêm một điểm trên parabol. Kéo một điểm để di chuyển."
+        },
+        "board_label": "Mặt phẳng tọa độ",
+        "read": {
+          "value_label": "Câu trả lời của bạn",
+          "value_placeholder": "Nhập một số",
+          "x_label": "Tọa độ x",
+          "y_label": "Tọa độ y"
+        }
+      },
+      "review": {
+        "student_legend": "Đồ thị của bạn (xanh lá là đúng, đỏ là sai)",
+        "expected_legend": "Đồ thị đúng (nét đứt)",
+        "expected_read": "Đáp án đúng",
+        "matched": "Đúng {matched} trên {total}"
+      },
+      "verdict": {
+        "correct": "Đúng",
+        "partial": "Một số phần tử đúng.",
+        "wrong": "Sai",
+        "missing": "Chưa trả lời gì.",
+        "extra": "Đã có đủ những gì cần thiết, nhưng có thêm các phần tử thừa.",
+        "not_set": "Câu hỏi này chưa có đáp án."
+      },
+      "preview": {
+        "empty": "Chưa đặt đáp án đúng."
+      }
     }
   },
   "math_vision": {

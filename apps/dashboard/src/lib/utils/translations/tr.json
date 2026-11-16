@@ -3367,7 +3367,9 @@
                 "star": "Yıldız derecelendirmesi",
                 "video_recording": "Video kaydı",
                 "math_expression": "Matematik ifadesi",
-                "worked_solution": "Adım adım çözüm"
+                "worked_solution": "Adım adım çözüm",
+                "graph_plot": "Grafik çizme",
+                "graph_read": "Grafik okuma"
               }
             },
             "view_mode": {
@@ -7601,6 +7603,95 @@
       "total_mismatch": "Adımların toplamı çözüm puanından farklı.",
       "ai_label": "Yapay zekayla puan öner",
       "ai_helper": "Bir model çözümü ölçeğe göre okur ve puan önerir. Siz kabul edene kadar öğrenciler hiçbir şey görmez. Varsayılan olarak kapalı."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Grafik tahtası",
+        "x_min": "Sol kenar (x en az)",
+        "x_max": "Sağ kenar (x en çok)",
+        "y_min": "Alt kenar (y en az)",
+        "y_max": "Üst kenar (y en çok)",
+        "show_grid": "Izgarayı göster",
+        "snap_label": "Izgara adımına yapış",
+        "snap_helper": "Noktalar bu sayının katlarına yapışır. Serbest yerleştirme için 0 kullanın.",
+        "x_label": "Yatay eksen etiketi",
+        "y_label": "Dikey eksen etiketi",
+        "tolerance_label": "Tolerans",
+        "tolerance_helper": "Bir noktanın veya doğrunun doğru sayılması için grafik birimi cinsinden ne kadar yakın olması gerektiği.",
+        "range_invalid": "Her en küçük değer, en büyük değerinden küçük olmalıdır."
+      },
+      "tool": {
+        "point": "Nokta",
+        "line": "Doğru",
+        "segment": "Doğru parçası",
+        "parabola": "Parabol"
+      },
+      "plot": {
+        "tools_label": "Öğrencilerin kullanabileceği araçlar",
+        "reference_heading": "Doğru cevap",
+        "reference_helper": "Doğru cevabı tahtaya çizin. Öğrenciler buna göre değerlendirilir.",
+        "reference_empty": "Doğru cevap olarak en az bir öğe çizin.",
+        "preview_heading": "Öğrenci görünümü",
+        "preview_helper": "Öğrencilerin gördüğü tahta budur. Yalnızca seçtiğiniz araçları kullanabilirler."
+      },
+      "read": {
+        "curves_label": "Grafikteki fonksiyonlar",
+        "curves_helper": "Her fonksiyonu x cinsinden yazın, örneğin x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Etiket (isteğe bağlı)",
+        "add_curve": "Fonksiyon ekle",
+        "points_label": "İşaretli noktalar",
+        "points_helper": "Öğrencilerin okuması için grafiğe çizilen noktalar.",
+        "add_point": "Nokta ekle",
+        "point_label_placeholder": "Ad (isteğe bağlı)",
+        "remove": "Kaldır",
+        "answer_label": "Öğrenciler grafikten ne okusun?",
+        "kind": {
+          "value": "Tek bir değer",
+          "point": "Bir nokta (x, y)"
+        },
+        "value_label": "Doğru değer",
+        "x_label": "Doğru x",
+        "y_label": "Doğru y",
+        "tolerance_helper": "Doğru cevaba bu uzaklık içindeki cevaplar kabul edilir.",
+        "answer_empty": "Doğru cevabı girin."
+      },
+      "take": {
+        "loading": "Grafik yükleniyor…",
+        "failed": "Grafik yüklenemedi.",
+        "undo": "Geri al",
+        "clear": "Temizle",
+        "hint": {
+          "point": "Nokta koymak için grafiğe dokunun. Taşımak için bir noktayı sürükleyin.",
+          "line": "Doğru çizmek için iki yere dokunun. Taşımak için bir noktayı sürükleyin.",
+          "segment": "Doğru parçasının iki ucuna dokunun. Taşımak için bir noktayı sürükleyin.",
+          "parabola": "Önce tepe noktasına, sonra parabolün bir noktasına daha dokunun. Taşımak için bir noktayı sürükleyin."
+        },
+        "board_label": "Koordinat düzlemi",
+        "read": {
+          "value_label": "Cevabınız",
+          "value_placeholder": "Bir sayı girin",
+          "x_label": "x koordinatı",
+          "y_label": "y koordinatı"
+        }
+      },
+      "review": {
+        "student_legend": "Grafiğiniz (yeşil doğru, kırmızı yanlış)",
+        "expected_legend": "Doğru grafik (kesikli)",
+        "expected_read": "Doğru cevap",
+        "matched": "{total} öğeden {matched} tanesi doğru"
+      },
+      "verdict": {
+        "correct": "Doğru",
+        "partial": "Bazı öğeler doğru.",
+        "wrong": "Yanlış",
+        "missing": "Hiçbir şey cevaplanmadı.",
+        "extra": "Gerekenlerin hepsi var, ancak fazladan öğeler eklenmiş.",
+        "not_set": "Bu sorunun henüz cevap anahtarı yok."
+      },
+      "preview": {
+        "empty": "Henüz doğru bir cevap belirlenmedi."
+      }
     }
   },
   "math_vision": {

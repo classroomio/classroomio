@@ -1925,7 +1925,9 @@
                 "star": "Calificación de estrellas",
                 "video_recording": "Grabación de vídeo",
                 "math_expression": "Expresión matemática",
-                "worked_solution": "Solución desarrollada"
+                "worked_solution": "Solución desarrollada",
+                "graph_plot": "Trazado de gráfica",
+                "graph_read": "Lectura de gráfica"
               },
               "select_type": "Seleccionar tipo",
               "question_type_auto_gradable": "Automática",
@@ -7551,6 +7553,95 @@
       "total_mismatch": "Los pasos suman un total distinto a los puntos del procedimiento.",
       "ai_label": "Sugerir notas con IA",
       "ai_helper": "Un modelo lee el procedimiento según la rúbrica y sugiere notas. Los estudiantes no ven nada hasta que las aceptes. Desactivado por defecto."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Tablero de gráfica",
+        "x_min": "Borde izquierdo (x mín)",
+        "x_max": "Borde derecho (x máx)",
+        "y_min": "Borde inferior (y mín)",
+        "y_max": "Borde superior (y máx)",
+        "show_grid": "Mostrar cuadrícula",
+        "snap_label": "Ajustar al paso de la cuadrícula",
+        "snap_helper": "Los puntos se ajustan a múltiplos de este número. Usa 0 para colocarlos libremente.",
+        "x_label": "Etiqueta del eje horizontal",
+        "y_label": "Etiqueta del eje vertical",
+        "tolerance_label": "Tolerancia",
+        "tolerance_helper": "Qué tan cerca, en unidades de la gráfica, debe estar un punto o una recta para contar como correcto.",
+        "range_invalid": "Cada mínimo debe ser menor que su máximo."
+      },
+      "tool": {
+        "point": "Punto",
+        "line": "Recta",
+        "segment": "Segmento",
+        "parabola": "Parábola"
+      },
+      "plot": {
+        "tools_label": "Herramientas que pueden usar los estudiantes",
+        "reference_heading": "Respuesta correcta",
+        "reference_helper": "Dibuja la respuesta correcta en el tablero. Los estudiantes se califican con ella.",
+        "reference_empty": "Dibuja al menos un elemento como respuesta correcta.",
+        "preview_heading": "Vista del estudiante",
+        "preview_helper": "Este es el tablero que ven los estudiantes. Solo tienen las herramientas que elegiste."
+      },
+      "read": {
+        "curves_label": "Funciones en la gráfica",
+        "curves_helper": "Escribe cada función de x, por ejemplo x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Etiqueta (opcional)",
+        "add_curve": "Añadir función",
+        "points_label": "Puntos marcados",
+        "points_helper": "Puntos dibujados en la gráfica para que los estudiantes lean.",
+        "add_point": "Añadir punto",
+        "point_label_placeholder": "Nombre (opcional)",
+        "remove": "Quitar",
+        "answer_label": "¿Qué leen los estudiantes en la gráfica?",
+        "kind": {
+          "value": "Un solo valor",
+          "point": "Un punto (x, y)"
+        },
+        "value_label": "Valor correcto",
+        "x_label": "x correcta",
+        "y_label": "y correcta",
+        "tolerance_helper": "Se aceptan las respuestas dentro de esta distancia de la correcta.",
+        "answer_empty": "Introduce la respuesta correcta."
+      },
+      "take": {
+        "loading": "Cargando gráfica…",
+        "failed": "No se pudo cargar la gráfica.",
+        "undo": "Deshacer",
+        "clear": "Borrar",
+        "hint": {
+          "point": "Toca la gráfica para colocar un punto. Arrastra un punto para moverlo.",
+          "line": "Toca dos lugares para dibujar una recta. Arrastra un punto para moverlo.",
+          "segment": "Toca los dos extremos del segmento. Arrastra un punto para moverlo.",
+          "parabola": "Toca el vértice y luego otro punto de la parábola. Arrastra un punto para moverlo."
+        },
+        "board_label": "Plano cartesiano",
+        "read": {
+          "value_label": "Tu respuesta",
+          "value_placeholder": "Introduce un número",
+          "x_label": "Coordenada x",
+          "y_label": "Coordenada y"
+        }
+      },
+      "review": {
+        "student_legend": "Tu gráfica (verde es correcto, rojo no)",
+        "expected_legend": "Gráfica correcta (discontinua)",
+        "expected_read": "Respuesta correcta",
+        "matched": "{matched} de {total} correctos"
+      },
+      "verdict": {
+        "correct": "Correcta",
+        "partial": "Algunos elementos son correctos.",
+        "wrong": "Incorrecta",
+        "missing": "No se respondió nada.",
+        "extra": "Está todo lo necesario, pero se añadieron elementos de más.",
+        "not_set": "Esta pregunta aún no tiene clave de respuestas."
+      },
+      "preview": {
+        "empty": "Todavía no hay una respuesta correcta definida."
+      }
     }
   },
   "math_vision": {

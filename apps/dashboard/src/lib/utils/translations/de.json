@@ -1925,7 +1925,9 @@
                 "star": "Sternebewertung",
                 "video_recording": "Videoaufzeichnung",
                 "math_expression": "Mathematischer Ausdruck",
-                "worked_solution": "Ausgearbeitete Lösung"
+                "worked_solution": "Ausgearbeitete Lösung",
+                "graph_plot": "Diagramm zeichnen",
+                "graph_read": "Diagramm ablesen"
               },
               "select_type": "Typ auswählen",
               "question_type_auto_gradable": "Auto",
@@ -7551,6 +7553,95 @@
       "total_mismatch": "Die Schritte ergeben eine andere Summe als die Punkte für den Lösungsweg.",
       "ai_label": "Punkte mit KI vorschlagen",
       "ai_helper": "Ein Modell liest den Lösungsweg anhand des Rasters und schlägt Punkte vor. Lernende sehen erst etwas, wenn Sie es übernehmen. Standardmäßig aus."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Diagrammfläche",
+        "x_min": "Linker Rand (x min)",
+        "x_max": "Rechter Rand (x max)",
+        "y_min": "Unterer Rand (y min)",
+        "y_max": "Oberer Rand (y max)",
+        "show_grid": "Gitter anzeigen",
+        "snap_label": "Am Gitterschritt einrasten",
+        "snap_helper": "Punkte rasten an Vielfachen dieser Zahl ein. 0 bedeutet freie Platzierung.",
+        "x_label": "Beschriftung der waagerechten Achse",
+        "y_label": "Beschriftung der senkrechten Achse",
+        "tolerance_label": "Toleranz",
+        "tolerance_helper": "Wie nah, in Diagrammeinheiten, ein Punkt oder eine Linie sein muss, um als richtig zu gelten.",
+        "range_invalid": "Jedes Minimum muss kleiner als sein Maximum sein."
+      },
+      "tool": {
+        "point": "Punkt",
+        "line": "Gerade",
+        "segment": "Strecke",
+        "parabola": "Parabel"
+      },
+      "plot": {
+        "tools_label": "Werkzeuge für die Lernenden",
+        "reference_heading": "Richtige Antwort",
+        "reference_helper": "Zeichne die richtige Antwort auf die Fläche. Die Lernenden werden daran bewertet.",
+        "reference_empty": "Zeichne mindestens ein Element als richtige Antwort.",
+        "preview_heading": "Ansicht der Lernenden",
+        "preview_helper": "So sehen die Lernenden die Fläche. Sie erhalten nur die von dir gewählten Werkzeuge."
+      },
+      "read": {
+        "curves_label": "Funktionen im Diagramm",
+        "curves_helper": "Gib jede Funktion von x ein, zum Beispiel x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Beschriftung (optional)",
+        "add_curve": "Funktion hinzufügen",
+        "points_label": "Markierte Punkte",
+        "points_helper": "Im Diagramm eingezeichnete Punkte, von denen die Lernenden ablesen.",
+        "add_point": "Punkt hinzufügen",
+        "point_label_placeholder": "Name (optional)",
+        "remove": "Entfernen",
+        "answer_label": "Was lesen die Lernenden im Diagramm ab?",
+        "kind": {
+          "value": "Ein einzelner Wert",
+          "point": "Ein Punkt (x, y)"
+        },
+        "value_label": "Richtiger Wert",
+        "x_label": "Richtiges x",
+        "y_label": "Richtiges y",
+        "tolerance_helper": "Antworten innerhalb dieses Abstands zur richtigen Antwort werden akzeptiert.",
+        "answer_empty": "Gib die richtige Antwort ein."
+      },
+      "take": {
+        "loading": "Diagramm wird geladen…",
+        "failed": "Das Diagramm konnte nicht geladen werden.",
+        "undo": "Rückgängig",
+        "clear": "Leeren",
+        "hint": {
+          "point": "Tippe auf das Diagramm, um einen Punkt zu setzen. Ziehe einen Punkt, um ihn zu verschieben.",
+          "line": "Tippe auf zwei Stellen, um eine Gerade zu zeichnen. Ziehe einen Punkt, um ihn zu verschieben.",
+          "segment": "Tippe auf die beiden Enden der Strecke. Ziehe einen Punkt, um ihn zu verschieben.",
+          "parabola": "Tippe auf den Scheitelpunkt und dann auf einen weiteren Punkt der Parabel. Ziehe einen Punkt, um ihn zu verschieben."
+        },
+        "board_label": "Koordinatensystem",
+        "read": {
+          "value_label": "Deine Antwort",
+          "value_placeholder": "Zahl eingeben",
+          "x_label": "x-Koordinate",
+          "y_label": "y-Koordinate"
+        }
+      },
+      "review": {
+        "student_legend": "Dein Diagramm (grün ist richtig, rot nicht)",
+        "expected_legend": "Richtiges Diagramm (gestrichelt)",
+        "expected_read": "Richtige Antwort",
+        "matched": "{matched} von {total} richtig"
+      },
+      "verdict": {
+        "correct": "Richtig",
+        "partial": "Einige Elemente sind richtig.",
+        "wrong": "Falsch",
+        "missing": "Es wurde nichts beantwortet.",
+        "extra": "Alles Nötige ist vorhanden, aber es wurden zusätzliche Elemente hinzugefügt.",
+        "not_set": "Diese Frage hat noch keinen Antwortschlüssel."
+      },
+      "preview": {
+        "empty": "Es ist noch keine richtige Antwort festgelegt."
+      }
     }
   },
   "math_vision": {

@@ -3366,7 +3366,9 @@
                 "star": "Star rating",
                 "video_recording": "Video recording",
                 "math_expression": "Math expression",
-                "worked_solution": "Worked solution"
+                "worked_solution": "Worked solution",
+                "graph_plot": "Graph plot",
+                "graph_read": "Graph reading"
               }
             },
             "view_mode": {
@@ -7521,6 +7523,95 @@
       "total_mismatch": "The steps add up to a different total than the points for the working.",
       "ai_label": "Suggest marks with AI",
       "ai_helper": "A model reads the working against the rubric and suggests marks. Students see nothing until you accept them. Off by default."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Graph board",
+        "x_min": "Left edge (x min)",
+        "x_max": "Right edge (x max)",
+        "y_min": "Bottom edge (y min)",
+        "y_max": "Top edge (y max)",
+        "show_grid": "Show grid",
+        "snap_label": "Snap to grid step",
+        "snap_helper": "Points snap to multiples of this number. Use 0 for free placement.",
+        "x_label": "Horizontal axis label",
+        "y_label": "Vertical axis label",
+        "tolerance_label": "Tolerance",
+        "tolerance_helper": "How close, in graph units, a point or line must be to count as correct.",
+        "range_invalid": "Each minimum must be smaller than its maximum."
+      },
+      "tool": {
+        "point": "Point",
+        "line": "Line",
+        "segment": "Segment",
+        "parabola": "Parabola"
+      },
+      "plot": {
+        "tools_label": "Tools students can use",
+        "reference_heading": "Correct answer",
+        "reference_helper": "Draw the correct answer on the board. Students are graded against it.",
+        "reference_empty": "Draw at least one element as the correct answer.",
+        "preview_heading": "Student view",
+        "preview_helper": "This is the board students see. They only get the tools you chose."
+      },
+      "read": {
+        "curves_label": "Functions on the graph",
+        "curves_helper": "Type each function of x, for example x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Label (optional)",
+        "add_curve": "Add function",
+        "points_label": "Marked points",
+        "points_helper": "Points drawn on the graph for students to read from.",
+        "add_point": "Add point",
+        "point_label_placeholder": "Name (optional)",
+        "remove": "Remove",
+        "answer_label": "What do students read off the graph?",
+        "kind": {
+          "value": "A single value",
+          "point": "A point (x, y)"
+        },
+        "value_label": "Correct value",
+        "x_label": "Correct x",
+        "y_label": "Correct y",
+        "tolerance_helper": "Answers within this distance of the correct one are accepted.",
+        "answer_empty": "Enter the correct answer."
+      },
+      "take": {
+        "loading": "Loading graph…",
+        "failed": "The graph could not be loaded.",
+        "undo": "Undo",
+        "clear": "Clear",
+        "hint": {
+          "point": "Tap the graph to place a point. Drag a point to move it.",
+          "line": "Tap two places to draw a line. Drag a point to move it.",
+          "segment": "Tap the two ends of the segment. Drag a point to move it.",
+          "parabola": "Tap the vertex, then one more point on the parabola. Drag a point to move it."
+        },
+        "board_label": "Coordinate plane",
+        "read": {
+          "value_label": "Your answer",
+          "value_placeholder": "Enter a number",
+          "x_label": "x coordinate",
+          "y_label": "y coordinate"
+        }
+      },
+      "review": {
+        "student_legend": "Your graph (green is right, red is not)",
+        "expected_legend": "Correct graph (dashed)",
+        "expected_read": "Correct answer",
+        "matched": "{matched} of {total} correct"
+      },
+      "verdict": {
+        "correct": "Correct",
+        "partial": "Some elements are right.",
+        "wrong": "Incorrect",
+        "missing": "Nothing was answered.",
+        "extra": "Everything needed is there, but extra elements were added.",
+        "not_set": "This question has no answer key yet."
+      },
+      "preview": {
+        "empty": "No correct answer is set yet."
+      }
     }
   },
   "math_vision": {

@@ -47,7 +47,8 @@ function distanceToLine(point: GraphPoint, from: GraphPoint, to: GraphPoint): nu
   return Math.abs((to.x - from.x) * (from.y - point.y) - (from.x - point.x) * (to.y - from.y)) / length;
 }
 
-function parabolaFunction(vertex: GraphPoint, through: GraphPoint): ((x: number) => number) | null {
+/** The parabola with the given vertex and one other point on it as a function of x; null when both share an x. */
+export function parabolaFunction(vertex: GraphPoint, through: GraphPoint): ((x: number) => number) | null {
   const run = through.x - vertex.x;
   if (Math.abs(run) < EPSILON) return null;
 

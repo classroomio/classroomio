@@ -1925,7 +1925,9 @@
                 "star": "Ocena gwiazdkowa",
                 "video_recording": "Nagrywanie wideo",
                 "math_expression": "Wyrażenie matematyczne",
-                "worked_solution": "Rozwiązanie z tokiem"
+                "worked_solution": "Rozwiązanie z tokiem",
+                "graph_plot": "Rysowanie wykresu",
+                "graph_read": "Odczytywanie wykresu"
               },
               "select_type": "Wybierz typ",
               "question_type_auto_gradable": "Auto",
@@ -7551,6 +7553,95 @@
       "total_mismatch": "Kroki sumują się do innej liczby niż punkty za tok rozwiązania.",
       "ai_label": "Proponuj punkty z pomocą AI",
       "ai_helper": "Model czyta tok rozwiązania według kryteriów i proponuje punkty. Uczniowie nic nie widzą, dopóki ich nie zaakceptujesz. Domyślnie wyłączone."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Płaszczyzna wykresu",
+        "x_min": "Lewa krawędź (x min)",
+        "x_max": "Prawa krawędź (x maks)",
+        "y_min": "Dolna krawędź (y min)",
+        "y_max": "Górna krawędź (y maks)",
+        "show_grid": "Pokaż siatkę",
+        "snap_label": "Przyciągaj do kroku siatki",
+        "snap_helper": "Punkty przyciągają się do wielokrotności tej liczby. Wpisz 0, aby umieszczać je swobodnie.",
+        "x_label": "Podpis osi poziomej",
+        "y_label": "Podpis osi pionowej",
+        "tolerance_label": "Tolerancja",
+        "tolerance_helper": "Jak blisko, w jednostkach wykresu, musi znajdować się punkt lub prosta, aby uznać je za poprawne.",
+        "range_invalid": "Każda wartość minimalna musi być mniejsza od maksymalnej."
+      },
+      "tool": {
+        "point": "Punkt",
+        "line": "Prosta",
+        "segment": "Odcinek",
+        "parabola": "Parabola"
+      },
+      "plot": {
+        "tools_label": "Narzędzia dostępne dla uczniów",
+        "reference_heading": "Poprawna odpowiedź",
+        "reference_helper": "Narysuj poprawną odpowiedź na płaszczyźnie. Uczniowie są oceniani względem niej.",
+        "reference_empty": "Narysuj co najmniej jeden element jako poprawną odpowiedź.",
+        "preview_heading": "Widok ucznia",
+        "preview_helper": "To płaszczyzna, którą widzą uczniowie. Mają tylko narzędzia, które wybrano."
+      },
+      "read": {
+        "curves_label": "Funkcje na wykresie",
+        "curves_helper": "Wpisz każdą funkcję zmiennej x, na przykład x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Podpis (opcjonalnie)",
+        "add_curve": "Dodaj funkcję",
+        "points_label": "Zaznaczone punkty",
+        "points_helper": "Punkty narysowane na wykresie, z których uczniowie odczytują wartości.",
+        "add_point": "Dodaj punkt",
+        "point_label_placeholder": "Nazwa (opcjonalnie)",
+        "remove": "Usuń",
+        "answer_label": "Co uczniowie odczytują z wykresu?",
+        "kind": {
+          "value": "Pojedynczą wartość",
+          "point": "Punkt (x, y)"
+        },
+        "value_label": "Poprawna wartość",
+        "x_label": "Poprawne x",
+        "y_label": "Poprawne y",
+        "tolerance_helper": "Odpowiedzi w tej odległości od poprawnej są akceptowane.",
+        "answer_empty": "Wpisz poprawną odpowiedź."
+      },
+      "take": {
+        "loading": "Wczytywanie wykresu…",
+        "failed": "Nie udało się wczytać wykresu.",
+        "undo": "Cofnij",
+        "clear": "Wyczyść",
+        "hint": {
+          "point": "Dotknij wykresu, aby umieścić punkt. Przeciągnij punkt, aby go przesunąć.",
+          "line": "Dotknij dwóch miejsc, aby narysować prostą. Przeciągnij punkt, aby go przesunąć.",
+          "segment": "Dotknij obu końców odcinka. Przeciągnij punkt, aby go przesunąć.",
+          "parabola": "Dotknij wierzchołka, a potem jeszcze jednego punktu paraboli. Przeciągnij punkt, aby go przesunąć."
+        },
+        "board_label": "Układ współrzędnych",
+        "read": {
+          "value_label": "Twoja odpowiedź",
+          "value_placeholder": "Wpisz liczbę",
+          "x_label": "Współrzędna x",
+          "y_label": "Współrzędna y"
+        }
+      },
+      "review": {
+        "student_legend": "Twój wykres (zielony jest dobrze, czerwony źle)",
+        "expected_legend": "Poprawny wykres (przerywany)",
+        "expected_read": "Poprawna odpowiedź",
+        "matched": "{matched} z {total} poprawnych"
+      },
+      "verdict": {
+        "correct": "Poprawnie",
+        "partial": "Niektóre elementy są poprawne.",
+        "wrong": "Niepoprawnie",
+        "missing": "Nie udzielono odpowiedzi.",
+        "extra": "Jest wszystko, co potrzebne, ale dodano zbędne elementy.",
+        "not_set": "To pytanie nie ma jeszcze klucza odpowiedzi."
+      },
+      "preview": {
+        "empty": "Nie ustawiono jeszcze poprawnej odpowiedzi."
+      }
     }
   },
   "math_vision": {

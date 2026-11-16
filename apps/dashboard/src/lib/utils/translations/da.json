@@ -1925,7 +1925,9 @@
                 "star": "Stjernebedømmelse",
                 "video_recording": "Videooptagelse",
                 "math_expression": "Matematisk udtryk",
-                "worked_solution": "Udregnet løsning"
+                "worked_solution": "Udregnet løsning",
+                "graph_plot": "Grafplot",
+                "graph_read": "Grafaflæsning"
               },
               "select_type": "Vælg type",
               "question_type_auto_gradable": "Auto",
@@ -7551,6 +7553,95 @@
       "total_mismatch": "Trinene giver en anden sum end pointene for udregningen.",
       "ai_label": "Foreslå point med AI",
       "ai_helper": "En model læser udregningen efter skemaet og foreslår point. Eleverne ser intet, før du accepterer dem. Slået fra som standard."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Grafområde",
+        "x_min": "Venstre kant (x min)",
+        "x_max": "Højre kant (x maks)",
+        "y_min": "Nederste kant (y min)",
+        "y_max": "Øverste kant (y maks)",
+        "show_grid": "Vis gitter",
+        "snap_label": "Fastgør til gitterskridt",
+        "snap_helper": "Punkter fastgøres til multipla af dette tal. Brug 0 til fri placering.",
+        "x_label": "Navn på vandret akse",
+        "y_label": "Navn på lodret akse",
+        "tolerance_label": "Tolerance",
+        "tolerance_helper": "Hvor tæt, i grafenheder, et punkt eller en linje skal være for at tælle som rigtig.",
+        "range_invalid": "Hvert minimum skal være mindre end sit maksimum."
+      },
+      "tool": {
+        "point": "Punkt",
+        "line": "Linje",
+        "segment": "Linjestykke",
+        "parabola": "Parabel"
+      },
+      "plot": {
+        "tools_label": "Værktøjer eleverne kan bruge",
+        "reference_heading": "Rigtigt svar",
+        "reference_helper": "Tegn det rigtige svar på tavlen. Eleverne bedømmes efter det.",
+        "reference_empty": "Tegn mindst ét element som det rigtige svar.",
+        "preview_heading": "Elevvisning",
+        "preview_helper": "Det er den tavle, eleverne ser. De får kun de værktøjer, du har valgt."
+      },
+      "read": {
+        "curves_label": "Funktioner i grafen",
+        "curves_helper": "Skriv hver funktion af x, for eksempel x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Etiket (valgfrit)",
+        "add_curve": "Tilføj funktion",
+        "points_label": "Markerede punkter",
+        "points_helper": "Punkter tegnet på grafen, som eleverne kan aflæse.",
+        "add_point": "Tilføj punkt",
+        "point_label_placeholder": "Navn (valgfrit)",
+        "remove": "Fjern",
+        "answer_label": "Hvad skal eleverne aflæse på grafen?",
+        "kind": {
+          "value": "En enkelt værdi",
+          "point": "Et punkt (x, y)"
+        },
+        "value_label": "Rigtig værdi",
+        "x_label": "Rigtigt x",
+        "y_label": "Rigtigt y",
+        "tolerance_helper": "Svar inden for denne afstand fra det rigtige svar accepteres.",
+        "answer_empty": "Indtast det rigtige svar."
+      },
+      "take": {
+        "loading": "Indlæser graf…",
+        "failed": "Grafen kunne ikke indlæses.",
+        "undo": "Fortryd",
+        "clear": "Ryd",
+        "hint": {
+          "point": "Tryk på grafen for at placere et punkt. Træk i et punkt for at flytte det.",
+          "line": "Tryk to steder for at tegne en linje. Træk i et punkt for at flytte det.",
+          "segment": "Tryk på linjestykkets to endepunkter. Træk i et punkt for at flytte det.",
+          "parabola": "Tryk på toppunktet og derefter på endnu et punkt på parablen. Træk i et punkt for at flytte det."
+        },
+        "board_label": "Koordinatsystem",
+        "read": {
+          "value_label": "Dit svar",
+          "value_placeholder": "Indtast et tal",
+          "x_label": "x-koordinat",
+          "y_label": "y-koordinat"
+        }
+      },
+      "review": {
+        "student_legend": "Din graf (grøn er rigtig, rød er forkert)",
+        "expected_legend": "Rigtig graf (stiplet)",
+        "expected_read": "Rigtigt svar",
+        "matched": "{matched} af {total} rigtige"
+      },
+      "verdict": {
+        "correct": "Rigtigt",
+        "partial": "Nogle elementer er rigtige.",
+        "wrong": "Forkert",
+        "missing": "Der er ikke givet noget svar.",
+        "extra": "Alt det nødvendige er der, men der er tilføjet ekstra elementer.",
+        "not_set": "Dette spørgsmål har endnu ingen svarnøgle."
+      },
+      "preview": {
+        "empty": "Der er endnu ikke angivet et rigtigt svar."
+      }
     }
   },
   "math_vision": {

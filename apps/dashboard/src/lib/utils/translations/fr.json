@@ -1925,7 +1925,9 @@
                 "star": "Nombre d'étoiles",
                 "video_recording": "Enregistrement vidéo",
                 "math_expression": "Expression mathématique",
-                "worked_solution": "Solution détaillée"
+                "worked_solution": "Solution détaillée",
+                "graph_plot": "Tracé de graphique",
+                "graph_read": "Lecture de graphique"
               },
               "select_type": "Sélectionnez le type",
               "question_type_auto_gradable": "Auto",
@@ -7551,6 +7553,95 @@
       "total_mismatch": "Les étapes totalisent un autre nombre que les points de la démarche.",
       "ai_label": "Suggérer des notes avec l'IA",
       "ai_helper": "Un modèle lit la démarche selon le barème et suggère des notes. Les élèves ne voient rien tant que vous ne les acceptez pas. Désactivé par défaut."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Repère du graphique",
+        "x_min": "Bord gauche (x min)",
+        "x_max": "Bord droit (x max)",
+        "y_min": "Bord inférieur (y min)",
+        "y_max": "Bord supérieur (y max)",
+        "show_grid": "Afficher la grille",
+        "snap_label": "Aimanter au pas de la grille",
+        "snap_helper": "Les points s’alignent sur des multiples de ce nombre. Utilisez 0 pour un placement libre.",
+        "x_label": "Légende de l’axe horizontal",
+        "y_label": "Légende de l’axe vertical",
+        "tolerance_label": "Tolérance",
+        "tolerance_helper": "À quelle distance, en unités du graphique, un point ou une droite doit se trouver pour être jugé correct.",
+        "range_invalid": "Chaque minimum doit être inférieur à son maximum."
+      },
+      "tool": {
+        "point": "Point",
+        "line": "Droite",
+        "segment": "Segment",
+        "parabola": "Parabole"
+      },
+      "plot": {
+        "tools_label": "Outils proposés aux élèves",
+        "reference_heading": "Réponse correcte",
+        "reference_helper": "Tracez la réponse correcte sur le repère. Les élèves sont notés par rapport à elle.",
+        "reference_empty": "Tracez au moins un élément comme réponse correcte.",
+        "preview_heading": "Vue de l’élève",
+        "preview_helper": "Voici le repère que voient les élèves. Ils n’ont que les outils que vous avez choisis."
+      },
+      "read": {
+        "curves_label": "Fonctions du graphique",
+        "curves_helper": "Saisissez chaque fonction de x, par exemple x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Légende (facultatif)",
+        "add_curve": "Ajouter une fonction",
+        "points_label": "Points repérés",
+        "points_helper": "Points tracés sur le graphique pour que les élèves les lisent.",
+        "add_point": "Ajouter un point",
+        "point_label_placeholder": "Nom (facultatif)",
+        "remove": "Supprimer",
+        "answer_label": "Que doivent lire les élèves sur le graphique ?",
+        "kind": {
+          "value": "Une seule valeur",
+          "point": "Un point (x, y)"
+        },
+        "value_label": "Valeur correcte",
+        "x_label": "x correct",
+        "y_label": "y correct",
+        "tolerance_helper": "Les réponses à cette distance ou moins de la bonne réponse sont acceptées.",
+        "answer_empty": "Saisissez la réponse correcte."
+      },
+      "take": {
+        "loading": "Chargement du graphique…",
+        "failed": "Le graphique n’a pas pu être chargé.",
+        "undo": "Annuler",
+        "clear": "Effacer",
+        "hint": {
+          "point": "Touchez le graphique pour placer un point. Faites glisser un point pour le déplacer.",
+          "line": "Touchez deux endroits pour tracer une droite. Faites glisser un point pour le déplacer.",
+          "segment": "Touchez les deux extrémités du segment. Faites glisser un point pour le déplacer.",
+          "parabola": "Touchez le sommet, puis un autre point de la parabole. Faites glisser un point pour le déplacer."
+        },
+        "board_label": "Plan cartésien",
+        "read": {
+          "value_label": "Votre réponse",
+          "value_placeholder": "Saisissez un nombre",
+          "x_label": "Abscisse x",
+          "y_label": "Ordonnée y"
+        }
+      },
+      "review": {
+        "student_legend": "Votre graphique (vert : juste, rouge : faux)",
+        "expected_legend": "Graphique correct (en pointillés)",
+        "expected_read": "Réponse correcte",
+        "matched": "{matched} sur {total} corrects"
+      },
+      "verdict": {
+        "correct": "Correct",
+        "partial": "Certains éléments sont justes.",
+        "wrong": "Incorrect",
+        "missing": "Aucune réponse n’a été donnée.",
+        "extra": "Tout le nécessaire est là, mais des éléments en trop ont été ajoutés.",
+        "not_set": "Cette question n’a pas encore de corrigé."
+      },
+      "preview": {
+        "empty": "Aucune réponse correcte n’est encore définie."
+      }
     }
   },
   "math_vision": {

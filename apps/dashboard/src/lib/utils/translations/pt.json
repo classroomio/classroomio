@@ -1925,7 +1925,9 @@
                 "star": "Classificação por estrelas",
                 "video_recording": "Gravação de vídeo",
                 "math_expression": "Expressão matemática",
-                "worked_solution": "Solução desenvolvida"
+                "worked_solution": "Solução desenvolvida",
+                "graph_plot": "Traçado de gráfico",
+                "graph_read": "Leitura de gráfico"
               },
               "select_type": "Selecione o tipo",
               "question_type_auto_gradable": "Automático",
@@ -7551,6 +7553,95 @@
       "total_mismatch": "Os passos somam um total diferente dos pontos do desenvolvimento.",
       "ai_label": "Sugerir notas com IA",
       "ai_helper": "Um modelo lê o desenvolvimento segundo a rubrica e sugere notas. Os alunos não veem nada até você aceitar. Desativado por padrão."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Quadro do gráfico",
+        "x_min": "Borda esquerda (x mín.)",
+        "x_max": "Borda direita (x máx.)",
+        "y_min": "Borda inferior (y mín.)",
+        "y_max": "Borda superior (y máx.)",
+        "show_grid": "Mostrar grade",
+        "snap_label": "Ajustar ao passo da grade",
+        "snap_helper": "Os pontos se ajustam a múltiplos deste número. Use 0 para posicionamento livre.",
+        "x_label": "Rótulo do eixo horizontal",
+        "y_label": "Rótulo do eixo vertical",
+        "tolerance_label": "Tolerância",
+        "tolerance_helper": "Quão perto, em unidades do gráfico, um ponto ou uma reta precisa estar para contar como correto.",
+        "range_invalid": "Cada mínimo deve ser menor que o seu máximo."
+      },
+      "tool": {
+        "point": "Ponto",
+        "line": "Reta",
+        "segment": "Segmento",
+        "parabola": "Parábola"
+      },
+      "plot": {
+        "tools_label": "Ferramentas que os alunos podem usar",
+        "reference_heading": "Resposta correta",
+        "reference_helper": "Desenhe a resposta correta no quadro. Os alunos são avaliados com base nela.",
+        "reference_empty": "Desenhe pelo menos um elemento como resposta correta.",
+        "preview_heading": "Visão do aluno",
+        "preview_helper": "Este é o quadro que os alunos veem. Eles só recebem as ferramentas que você escolheu."
+      },
+      "read": {
+        "curves_label": "Funções no gráfico",
+        "curves_helper": "Digite cada função de x, por exemplo x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Rótulo (opcional)",
+        "add_curve": "Adicionar função",
+        "points_label": "Pontos marcados",
+        "points_helper": "Pontos desenhados no gráfico para os alunos lerem.",
+        "add_point": "Adicionar ponto",
+        "point_label_placeholder": "Nome (opcional)",
+        "remove": "Remover",
+        "answer_label": "O que os alunos leem no gráfico?",
+        "kind": {
+          "value": "Um único valor",
+          "point": "Um ponto (x, y)"
+        },
+        "value_label": "Valor correto",
+        "x_label": "x correto",
+        "y_label": "y correto",
+        "tolerance_helper": "As respostas dentro desta distância da correta são aceitas.",
+        "answer_empty": "Informe a resposta correta."
+      },
+      "take": {
+        "loading": "Carregando gráfico…",
+        "failed": "Não foi possível carregar o gráfico.",
+        "undo": "Desfazer",
+        "clear": "Limpar",
+        "hint": {
+          "point": "Toque no gráfico para colocar um ponto. Arraste um ponto para movê-lo.",
+          "line": "Toque em dois lugares para desenhar uma reta. Arraste um ponto para movê-lo.",
+          "segment": "Toque nas duas extremidades do segmento. Arraste um ponto para movê-lo.",
+          "parabola": "Toque no vértice e depois em mais um ponto da parábola. Arraste um ponto para movê-lo."
+        },
+        "board_label": "Plano cartesiano",
+        "read": {
+          "value_label": "Sua resposta",
+          "value_placeholder": "Digite um número",
+          "x_label": "Coordenada x",
+          "y_label": "Coordenada y"
+        }
+      },
+      "review": {
+        "student_legend": "Seu gráfico (verde está certo, vermelho não)",
+        "expected_legend": "Gráfico correto (tracejado)",
+        "expected_read": "Resposta correta",
+        "matched": "{matched} de {total} corretos"
+      },
+      "verdict": {
+        "correct": "Correta",
+        "partial": "Alguns elementos estão certos.",
+        "wrong": "Incorreta",
+        "missing": "Nada foi respondido.",
+        "extra": "Está tudo o que é necessário, mas foram adicionados elementos extras.",
+        "not_set": "Esta pergunta ainda não tem gabarito."
+      },
+      "preview": {
+        "empty": "Ainda não há uma resposta correta definida."
+      }
     }
   },
   "math_vision": {
