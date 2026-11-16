@@ -11,6 +11,8 @@ export * from './points';
 export * from './math-settings';
 export * from './multi-part';
 export * from './math-labels';
+export * from './graph-settings';
+export * from './graph-grading';
 
 export * from './exercise-types';
 export * from './exercise-section-types';

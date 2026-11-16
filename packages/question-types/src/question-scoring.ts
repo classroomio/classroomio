@@ -6,6 +6,7 @@ import { QUESTION_TYPE_ID_TO_KEY } from './question-type-registry';
 import { supportsPartialCredit } from './question-type-capabilities';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
+import { gradeGraphAnswer } from './graph-grading';
 import { getFillBlankAnswerKey } from './answer-codecs';
 import { roundPoints } from './points';
 import { getMultiPartStemIds } from './multi-part';
@@ -411,6 +412,12 @@ export function scoreAnswerForQuestion(
     case 'HOTSPOT':
       if (key !== QUESTION_TYPE_KEY.HOTSPOT) return 0;
       return clampPoints(scoreHotspot(question, answer, maxPoints, partial), maxPoints);
+    case 'GRAPH_PLOT':
+      if (key !== QUESTION_TYPE_KEY.GRAPH_PLOT) return 0;
+      return clampPoints((gradeGraphAnswer(question, answer)?.fraction ?? 0) * maxPoints, maxPoints);
+    case 'GRAPH_READ':
+      if (key !== QUESTION_TYPE_KEY.GRAPH_READ) return 0;
+      return clampPoints((gradeGraphAnswer(question, answer)?.fraction ?? 0) * maxPoints, maxPoints);
     case 'MATH_EXPRESSION':
     case 'WORKED_SOLUTION':
       if (!grader) return 0;

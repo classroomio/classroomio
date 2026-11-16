@@ -162,11 +162,27 @@ const EXPECTED_REGISTRY = [
     autoGradable: false,
     supportsPartialCredit: true,
     manualGradingRequired: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.GRAPH_PLOT,
+    typename: 'GRAPH_PLOT',
+    id: 19,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false
+  },
+  {
+    key: QUESTION_TYPE_KEY.GRAPH_READ,
+    typename: 'GRAPH_READ',
+    id: 20,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false
   }
 ] as const;
 
 // Canonical `question_type` rows in the database (the source of truth ids are
-// resolved against). Ids 1-15, 17 and 18 are the live rows; HOTSPOT (16) is
+// resolved against). Ids 1-15 and 17-20 are the live rows; HOTSPOT (16) is
 // intentionally absent (built-but-disabled). This list guards against
 // the registry id ever drifting from the DB again.
 const CANONICAL_DB_QUESTION_TYPES: ReadonlyArray<{ id: number; typename: string }> = [
@@ -186,7 +202,9 @@ const CANONICAL_DB_QUESTION_TYPES: ReadonlyArray<{ id: number; typename: string 
   { id: 14, typename: 'THUMBS' },
   { id: 15, typename: 'MATCHING' },
   { id: 17, typename: 'MATH_EXPRESSION' },
-  { id: 18, typename: 'WORKED_SOLUTION' }
+  { id: 18, typename: 'WORKED_SOLUTION' },
+  { id: 19, typename: 'GRAPH_PLOT' },
+  { id: 20, typename: 'GRAPH_READ' }
 ];
 
 describe('question type registry', () => {

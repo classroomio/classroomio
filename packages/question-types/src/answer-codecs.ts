@@ -21,8 +21,12 @@ import type {
   VideoRecordingAnswerData,
   MathExpressionAnswerData,
   WorkedSolutionAnswerData,
-  WorkedSolutionFile
+  WorkedSolutionFile,
+  GraphPlotAnswerData,
+  GraphReadAnswerData
 } from './answer-data';
+import type { GraphAnswerGrading } from './graph-grading';
+import { readGraphPoint, readPlotElements } from './graph-settings';
 
 import { QUESTION_TYPE_KEY } from './question-type-keys';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
@@ -217,6 +221,52 @@ const WORKED_SOLUTION_CODEC: AnswerCodec<WorkedSolutionAnswerData> = {
     if (!latex && lines.length === 0 && files.length === 0) return null;
 
     return { type: 'WORKED_SOLUTION', latex, working: { lines, files }, ...readGrading(parsed) };
+  }
+};
+
+function readGraphGrading(parsed: Record<string, unknown>): { grading: GraphAnswerGrading } | Record<string, never> {
+  const grading = parsed.grading;
+  const isGrading =
+    Boolean(grading) && typeof grading === 'object' && typeof (grading as GraphAnswerGrading).reason === 'string';
+
+  return isGrading ? { grading: grading as GraphAnswerGrading } : {};
+}
+
+const GRAPH_PLOT_CODEC: AnswerCodec<GraphPlotAnswerData> = {
+  type: 'GRAPH_PLOT',
+  toApiPayload(data, questionId) {
+    return { questionId, answer: JSON.stringify(data) };
+  },
+  fromApiPayload(payload) {
+    const parsed = parseJsonObject(payload.answer);
+    if (parsed?.type !== 'GRAPH_PLOT') return null;
+
+    const elements = readPlotElements(parsed.elements);
+    if (elements.length === 0) return null;
+
+    return { type: 'GRAPH_PLOT', elements, ...readGraphGrading(parsed) };
+  }
+};
+
+const GRAPH_READ_CODEC: AnswerCodec<GraphReadAnswerData> = {
+  type: 'GRAPH_READ',
+  toApiPayload(data, questionId) {
+    return { questionId, answer: JSON.stringify(data) };
+  },
+  fromApiPayload(payload) {
+    const parsed = parseJsonObject(payload.answer);
+    if (parsed?.type !== 'GRAPH_READ') return null;
+
+    const value = typeof parsed.value === 'number' && Number.isFinite(parsed.value) ? parsed.value : undefined;
+    const point = readGraphPoint(parsed.point) ?? undefined;
+    if (value === undefined && !point) return null;
+
+    return {
+      type: 'GRAPH_READ',
+      ...(value !== undefined ? { value } : {}),
+      ...(point ? { point } : {}),
+      ...readGraphGrading(parsed)
+    };
   }
 };
 
@@ -447,7 +497,9 @@ export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
   [QUESTION_TYPE_KEY.STAR]: STAR_CODEC,
   [QUESTION_TYPE_KEY.VIDEO_RECORDING]: VIDEO_RECORDING_CODEC,
   [QUESTION_TYPE_KEY.MATH_EXPRESSION]: MATH_EXPRESSION_CODEC,
-  [QUESTION_TYPE_KEY.WORKED_SOLUTION]: WORKED_SOLUTION_CODEC
+  [QUESTION_TYPE_KEY.WORKED_SOLUTION]: WORKED_SOLUTION_CODEC,
+  [QUESTION_TYPE_KEY.GRAPH_PLOT]: GRAPH_PLOT_CODEC,
+  [QUESTION_TYPE_KEY.GRAPH_READ]: GRAPH_READ_CODEC
 };
 
 /** Convert any answer to API submission payload */
@@ -510,6 +562,13 @@ export function extractAnswerDisplayValues(data: AnswerData): {
       return { selectedIds: [], selectedValues: [], text: data.filledBlanks.filter(Boolean).join(', ') };
     case 'LINK':
       return { selectedIds: [], selectedValues: data.urls, text: data.urls.join(', ') };
+    case 'GRAPH_READ':
+      return {
+        selectedIds: [],
+        selectedValues: [],
+        text: data.point ? `(${data.point.x}, ${data.point.y})` : String(data.value ?? '')
+      };
+    case 'GRAPH_PLOT':
     case 'MATCHING':
     case 'ORDERING':
     case 'HOTSPOT':

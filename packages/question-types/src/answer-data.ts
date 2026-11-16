@@ -1,3 +1,5 @@
+import type { GraphAnswerGrading } from './graph-grading';
+import type { GraphPoint, PlotElement } from './graph-settings';
 import type { MathGradeReason, MathMisconception, MathRequiredForm } from './math-settings';
 
 export type RadioAnswerData = { type: 'RADIO'; optionId: number };
@@ -61,6 +63,16 @@ export type WorkedSolutionAnswerData = {
   mathjson?: string;
   grading?: MathAnswerGrading;
   working: { lines: string[]; files: WorkedSolutionFile[] };
+};
+
+/** The elements a student plotted; `grading` is set by the server. */
+export type GraphPlotAnswerData = { type: 'GRAPH_PLOT'; elements: PlotElement[]; grading?: GraphAnswerGrading };
+/** A value or a point read off a graph; `grading` is set by the server. */
+export type GraphReadAnswerData = {
+  type: 'GRAPH_READ';
+  value?: number;
+  point?: GraphPoint;
+  grading?: GraphAnswerGrading;
 };
 
 /** One step of a teacher rubric, as the AI reviewer and the grading popup read it. */
@@ -128,5 +140,7 @@ export type AnswerData = (
   | VideoRecordingAnswerData
   | MathExpressionAnswerData
   | WorkedSolutionAnswerData
+  | GraphPlotAnswerData
+  | GraphReadAnswerData
 ) &
   AnswerExtras;

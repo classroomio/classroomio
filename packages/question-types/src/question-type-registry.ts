@@ -167,6 +167,24 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     autoGradable: false,
     supportsPartialCredit: true,
     manualGradingRequired: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.GRAPH_PLOT,
+    typename: 'GRAPH_PLOT',
+    label: 'Graph plot',
+    id: 19,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false
+  },
+  {
+    key: QUESTION_TYPE_KEY.GRAPH_READ,
+    typename: 'GRAPH_READ',
+    label: 'Graph reading',
+    id: 20,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false
   }
 ] as const;
 
