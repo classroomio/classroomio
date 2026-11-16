@@ -97,6 +97,10 @@
       "types": "./dist/math/index.d.ts",
       "default": "./dist/math/index.js"
     },
+    "./skills": {
+      "types": "./dist/skills/index.d.ts",
+      "default": "./dist/skills/index.js"
+    },
     "./analytics": {
       "types": "./dist/analytics/index.d.ts",
       "default": "./dist/analytics/index.js"

@@ -75,6 +75,7 @@ import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { sectionRouter } from '@api/routes/course/section';
+import { courseSkillRouter } from '@api/routes/course/skill';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
@@ -667,6 +668,7 @@ export const courseRouter = new Hono()
   .route('/:courseId/block-library', blockLibraryRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)
+  .route('/:courseId/skill', courseSkillRouter)
   .route('/:courseId/attendance', attendanceRouter)
   .route('/:courseId/mark', markRouter)
   .route('/:courseId/newsfeed', newsfeedRouter)

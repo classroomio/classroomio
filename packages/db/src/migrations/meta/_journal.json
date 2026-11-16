@@ -379,6 +379,13 @@
       "when": 1794700000000,
       "tag": "0053_math_question_types",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1794750000000,
+      "tag": "0054_skills",
+      "breakpoints": true
     }
   ]
 }

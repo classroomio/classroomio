@@ -23,6 +23,7 @@ export * from './dash';
 export * from './marketing';
 export * from './compliance';
 export * from './tag';
+export * from './skill';
 export * from './cohort';
 export * from './widget';
 export * from './jobs';

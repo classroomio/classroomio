@@ -3017,6 +3017,68 @@ export const tagAssignment = pgTable(
   ]
 );
 
+export const skill = pgTable(
+  'skill',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    parentId: uuid('parent_id').references((): AnyPgColumn => skill.id, { onDelete: 'set null' }),
+    code: varchar().notNull(),
+    name: varchar().notNull(),
+    description: text(),
+    framework: varchar(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'skill_organization_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_skill_organization_id').on(table.organizationId),
+    index('idx_skill_parent_id').on(table.parentId),
+    unique('skill_org_code_key').on(table.organizationId, table.code)
+  ]
+);
+
+export const questionSkill = pgTable(
+  'question_skill',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    questionId: bigint('question_id', { mode: 'number' }).notNull(),
+    skillId: uuid('skill_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.questionId],
+      foreignColumns: [question.id],
+      name: 'question_skill_question_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.skillId],
+      foreignColumns: [skill.id],
+      name: 'question_skill_skill_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_question_skill_question_id').on(table.questionId),
+    index('idx_question_skill_skill_id').on(table.skillId),
+    unique('question_skill_question_skill_key').on(table.questionId, table.skillId)
+  ]
+);
+
 export const widget = pgTable(
   'widget',
   {
