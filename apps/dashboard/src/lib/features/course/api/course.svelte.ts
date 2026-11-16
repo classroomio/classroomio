@@ -6,7 +6,6 @@ import type {
   CreatePaymentRequestRequest,
   DeleteCourseRequest,
   EnrollCourseRequest,
-  GetCourseBySlugRequest,
   GetCertificationEvaluationRequest,
   GetCourseProgressRequest,
   GetCourseRequest,
@@ -379,32 +378,6 @@ export class CourseApi extends BaseApiWithErrors {
         }
       }
     });
-  }
-
-  /**
-   * Gets a course by slug (public route)
-   * @param slug Course slug
-   * @returns The course data or null on error
-   */
-  async getBySlug(slug: string) {
-    await this.execute<GetCourseBySlugRequest>({
-      requestFn: () =>
-        classroomio.course.slug?.[':slug'].$get({
-          param: { slug }
-        }),
-      logContext: 'fetching course by slug',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.course = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: () => {
-        snackbar.error('Failed to fetch course by slug');
-      }
-    });
-    return this.course;
   }
 
   /**
