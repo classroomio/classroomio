@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClassroomIO onboarding prototype</title>
+    <link rel="stylesheet" href="fonts/geist.css" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="onboarding.css" />
+    <link rel="stylesheet" href="motion.css" />
+    <link rel="stylesheet" href="brand.css" />
+  </head>
+  <body>
+    <!-- ============ Stages 1-2: split screen ============ -->
+    <div class="split" id="split-shell" hidden>
+      <div class="split-form">
+        <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+          <a class="lockup" href="index.html">
+            <img class="mk" src="logo-mark.svg" alt="" /><span class="nm">classroomio</span>
+          </a>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <a class="tag-mono" href="index.html">Prototype</a>
+          </div>
+        </header>
+
+        <div class="split-body">
+          <div class="split-inner" id="split-stage"></div>
+        </div>
+
+      </div>
+
+      <aside class="split-visual" aria-labelledby="visual-title">
+        <div class="visual-panel notch-cutout">
+          <div class="visual-copy" id="visual-copy"></div>
+
+          <div class="machine-host" id="hero"></div>
+
+          <div class="tcarousel notch-cutout" id="testimonials" aria-label="What customers say"></div>
+
+          <p class="visual-foot">Open source &middot; Self-host or cloud</p>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ============ Stages 3-6: setup shell ============ -->
+    <div class="setup" id="setup-shell" hidden>
+      <div class="setup-top">
+        <div class="setup-top-inner">
+          <a class="lockup" href="index.html">
+            <img class="mk" src="logo-mark.svg" alt="" /><span class="nm">classroomio</span>
+          </a>
+          <div class="rail" id="rail"></div>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+            <button class="btn btn-ghost btn-sm" id="restart">Restart</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-body" id="setup-body">
+        <div id="setup-stage"></div>
+      </div>
+
+      <div class="setup-foot" id="setup-foot">
+        <div class="setup-foot-inner">
+          <button class="btn btn-ghost ghost-back" id="back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6" /></svg>
+            Back
+          </button>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <button class="btn btn-ghost" id="skip" hidden>Skip for now</button>
+            <button class="btn btn-primary" id="next">
+              <span id="next-label">Continue</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-host"></div>
+
+    <script src="proto.js"></script>
+    <script src="machines.js"></script>
+    <script src="visuals.js"></script>
+    <script src="flow.js"></script>
+  </body>
+</html>

@@ -3,14 +3,14 @@
   import * as Block from '@cio/ui/custom/block';
   import { FIELDS } from './fields';
 
-  const SAMPLE_IMAGE = '/images/classroomio-course-img-template.jpg';
+  const BRAND_COVERS = Object.entries(Block.BRAND_COVER_IMAGES);
 
   const { Story } = defineMeta({
     title: 'Blocks/ImageBlock',
     component: Block.Image,
     args: {
-      url: SAMPLE_IMAGE,
-      alt: 'Two people reviewing a course together on a laptop',
+      url: Block.DEFAULT_IMAGE_BLOCK_IMAGE,
+      alt: 'ClassroomIO logo on a blue background',
       fit: 'cover',
       editable: false
     },
@@ -64,6 +64,16 @@
   {#snippet template(args)}
     <div class="mx-auto w-full max-w-2xl">
       <Block.Image {...args} url="/images/does-not-exist.png" editable={true} />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="BrandCovers">
+  {#snippet template()}
+    <div class="mx-auto grid w-full max-w-2xl gap-4">
+      {#each BRAND_COVERS as [name, url] (name)}
+        <Block.Image {url} alt={`ClassroomIO brand cover: ${name}`} editable={false} />
+      {/each}
     </div>
   {/snippet}
 </Story>
