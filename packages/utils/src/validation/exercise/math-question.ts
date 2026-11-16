@@ -34,6 +34,20 @@ export const ZQuestionParameters = z.object({
 });
 export type TQuestionParameters = z.infer<typeof ZQuestionParameters>;
 
+export const ZMarkingRubric = z.object({
+  steps: z
+    .array(
+      z.object({
+        id: z.string().trim().min(1),
+        description: z.string().trim().min(1),
+        points: ZNonNegative
+      })
+    )
+    .min(1)
+    .max(20)
+});
+export type TMarkingRubric = z.infer<typeof ZMarkingRubric>;
+
 export const ZMathExpressionSettings = z.object({
   parameters: ZQuestionParameters.optional(),
   acceptedAnswers: z.array(z.string().trim().min(1)).min(1, 'Add at least one accepted answer'),
@@ -47,6 +61,8 @@ export const ZMathExpressionSettings = z.object({
 export type TMathExpressionSettings = z.infer<typeof ZMathExpressionSettings>;
 
 export const ZWorkedSolutionSettings = ZMathExpressionSettings.extend({
+  rubric: ZMarkingRubric.optional(),
+  aiGrading: z.boolean().optional(),
   answerPoints: ZNonNegative.optional(),
   workingInputs: z
     .array(z.enum(['typed', 'drawing', 'photo']))

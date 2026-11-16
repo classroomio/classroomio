@@ -107,6 +107,24 @@ A placeholder can also hold a formula, such as `{{a * b}}`. The Compute Engine e
 
 Each attempt gets a seed. The dashboard stores it in `answerData.seed`, and the server re-derives the numbers and the answer key from it, so a client never sends a key. When you submit answers through the API for a parameterised question, send the `seed` of the variant the student saw next to `answer`. A submission without a seed for such a question is rejected, and a new attempt should use a new seed.
 
+## AI-assisted grading of working
+
+A worked solution or paragraph question can ask for an AI suggestion on the student's working. Set `settings.aiGrading` to `true` and give `settings.rubric` at least one step:
+
+```json
+{
+  "aiGrading": true,
+  "rubric": {
+    "steps": [
+      { "id": "s1", "description": "Moves 5 to the right-hand side", "points": 1 },
+      { "id": "s2", "description": "Divides both sides by 2", "points": 1 }
+    ]
+  }
+}
+```
+
+The suggestion is only a proposal. A teacher requests it in the grading popup, and it holds points per rubric step, the first wrong step, a comment and a confidence. Nothing reaches the student, and no points count, until the teacher accepts or edits it. Students never see `answerData.aiReview`. A teacher can also accept every confident suggestion of an exercise at once, and each use counts against the workspace's AI allowance.
+
 ## Multi-part questions
 
 A multi-part question is a stem with parts (a), (b) and so on. Each part is a normal question with its own type, answer and points, and has `parentQuestionId` set to the stem's id. The stem is not answered or graded, so give it 0 points; deleting it deletes its parts. Send `parts` on a new question to create the stem and its parts together:
