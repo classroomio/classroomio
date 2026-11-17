@@ -1,12 +1,5 @@
 import * as schema from '@db/schema';
-import type {
-  TNewPlugin,
-  TNewPluginVersion,
-  TPlugin,
-  TPluginReviewStatus,
-  TPluginStatus,
-  TPluginVersion
-} from '@db/types';
+import type { TNewPlugin, TNewPluginVersion, TPlugin, TPluginStatus, TPluginVersion } from '@db/types';
 import { and, desc, eq, or } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
@@ -36,12 +29,6 @@ export class PluginVersionDigestConflictError extends Error {
 
 export async function getPluginById(pluginId: string): Promise<TPlugin | null> {
   const [row] = await db.select().from(schema.plugin).where(eq(schema.plugin.id, pluginId)).limit(1);
-
-  return row ?? null;
-}
-
-export async function getPluginBySlug(slug: string): Promise<TPlugin | null> {
-  const [row] = await db.select().from(schema.plugin).where(eq(schema.plugin.slug, slug)).limit(1);
 
   return row ?? null;
 }
@@ -201,20 +188,6 @@ export async function registerPluginReleaseBatch(
 
     return results;
   });
-}
-
-export async function updatePluginVersionReviewStatus(
-  pluginId: string,
-  version: string,
-  reviewStatus: TPluginReviewStatus
-): Promise<TPluginVersion | null> {
-  const [row] = await db
-    .update(schema.pluginVersion)
-    .set({ reviewStatus })
-    .where(and(eq(schema.pluginVersion.pluginId, pluginId), eq(schema.pluginVersion.version, version)))
-    .returning();
-
-  return row ?? null;
 }
 
 export async function updatePluginVersionArtifact(

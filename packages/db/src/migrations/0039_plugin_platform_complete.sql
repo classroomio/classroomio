@@ -136,4 +136,8 @@ CREATE UNIQUE INDEX "idx_plugin_version_plugin_ver_unique" ON "plugin_version" U
 CREATE INDEX "idx_plugin_version_plugin_id" ON "plugin_version" USING btree ("plugin_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_plugin_storage_inst_scope_ns_key_unique" ON "plugin_storage" USING btree ("installation_id","scope_type","scope_id","resource_type","namespace","key");--> statement-breakpoint
 CREATE INDEX "idx_plugin_storage_lookup" ON "plugin_storage" USING btree ("installation_id","namespace");--> statement-breakpoint
-CREATE INDEX "idx_plugin_storage_expiry" ON "plugin_storage" USING btree ("expires_at");
+CREATE INDEX "idx_plugin_storage_expiry" ON "plugin_storage" USING btree ("expires_at");--> statement-breakpoint
+INSERT INTO "public"."question_type" ("id", "typename", "label")
+VALUES (17, 'PLUGIN_CUSTOM', 'Custom (Plugin)')
+ON CONFLICT ("id") DO UPDATE SET "typename" = EXCLUDED."typename", "label" = EXCLUDED."label";--> statement-breakpoint
+SELECT setval('question_type_id_seq', (SELECT GREATEST(MAX(id), 17) FROM "public"."question_type"));

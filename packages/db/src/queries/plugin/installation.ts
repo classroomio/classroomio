@@ -9,7 +9,7 @@ import type {
 } from '@db/types';
 import type { TPluginManifest } from '@cio/utils/validation/plugin';
 
-import { and, count, desc, eq, isNull, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, sql } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
 export async function getInstallationById(installationId: string): Promise<TPluginInstallation | null> {
@@ -340,9 +340,4 @@ export async function updateOrgApprovalStatus(
     .returning();
 
   return row ?? null;
-}
-
-export async function listAllOrganizationIds(): Promise<string[]> {
-  const rows = await db.select({ id: schema.organization.id }).from(schema.organization);
-  return rows.map((r) => r.id);
 }

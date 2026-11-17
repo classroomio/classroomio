@@ -1,20 +1,10 @@
 import * as schema from '@db/schema';
 import type { TPluginGrant } from '@db/types';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
 export async function getInstallationGrants(installationId: string): Promise<TPluginGrant[]> {
   return db.select().from(schema.pluginGrant).where(eq(schema.pluginGrant.installationId, installationId));
-}
-
-export async function hasInstallationScope(installationId: string, scope: string): Promise<boolean> {
-  const [row] = await db
-    .select({ id: schema.pluginGrant.id })
-    .from(schema.pluginGrant)
-    .where(and(eq(schema.pluginGrant.installationId, installationId), eq(schema.pluginGrant.scope, scope)))
-    .limit(1);
-
-  return Boolean(row);
 }
 
 export async function replaceInstallationGrants(

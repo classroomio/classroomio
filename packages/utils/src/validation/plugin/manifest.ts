@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { ZPluginPermissionScope, type PluginPermissionScope } from './scopes';
+import { ZPluginPermissionScope } from './scopes';
 
 const SEMVER_REGEX =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;

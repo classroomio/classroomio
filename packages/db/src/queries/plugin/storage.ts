@@ -243,16 +243,6 @@ export async function purgeInstallationStorage(installationId: string): Promise<
   return deleted.length;
 }
 
-export async function expireInstallationStorage(installationId: string, expiresAt: string): Promise<number> {
-  const updated = await db
-    .update(schema.pluginStorage)
-    .set({ expiresAt })
-    .where(eq(schema.pluginStorage.installationId, installationId))
-    .returning({ id: schema.pluginStorage.id });
-
-  return updated.length;
-}
-
 export async function purgeExpiredPluginStorage(now = new Date().toISOString()): Promise<number> {
   const deleted = await db
     .delete(schema.pluginStorage)
