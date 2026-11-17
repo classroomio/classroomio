@@ -230,6 +230,35 @@ describe('PR-First Plugin Releases', () => {
       ).rejects.toThrow('landing template thumbnail');
     });
 
+    it('rejects third-party releases attempting to declare runtime.allowUnsafeEval with 400', async () => {
+      const thirdPartyManifestWithEval = {
+        ...validManifest,
+        runtime: {
+          allowUnsafeEval: true
+        }
+      };
+      const archive = createTestArchive([{ path: 'plugin.json', content: JSON.stringify(thirdPartyManifestWithEval) }]);
+      storageMocks.getFromS3.mockResolvedValue({
+        success: true,
+        data: { Body: { transformToByteArray: async () => new Uint8Array(archive.buffer) } }
+      });
+
+      await expect(
+        registerInternalReleases({
+          sourceCommit: 'a'.repeat(40),
+          workflowRunUrl: pluginReleaseWorkflowUrl(),
+          releases: [
+            {
+              pluginId: 'com.example.reading-timer',
+              version: '1.2.0',
+              artifactDigest: archive.digest,
+              kind: 'community'
+            }
+          ]
+        })
+      ).rejects.toThrow('Only first-party plugins may enable unsafe-eval runtime execution');
+    });
+
     it('rejects duplicate plugin IDs in the same request with 400', async () => {
       await expect(
         registerInternalReleases({

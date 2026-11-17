@@ -11,7 +11,6 @@ import {
   getPluginVersionById,
   getUserInstallation,
   listOrganizationInstallations,
-  listPluginVersions,
   recordPluginAuditEvent,
   reinstallInstallation,
   replaceInstallationGrants,
@@ -21,7 +20,6 @@ import {
   getInstallationGrants,
   uninstallPluginInstallation
 } from '@cio/db/queries/plugin';
-import { requireOrganizationInstallation } from './authorization';
 import type {
   TNewPluginInstallation,
   TPlugin,
@@ -437,7 +435,7 @@ export async function changeOrgApproval(
   approval: TPluginOrgApprovalStatus,
   actorProfileId?: string
 ): Promise<TPluginInstallation> {
-  const installation = await requireManageableOrganizationInstallation(installationId, organizationId);
+  await requireManageableOrganizationInstallation(installationId, organizationId);
 
   const updatedInstallation = await updateOrgApprovalStatusQuery(installationId, approval);
   if (!updatedInstallation) {

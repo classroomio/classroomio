@@ -111,18 +111,20 @@ describe('Plugin Manifest CSP Policy', () => {
     vi.spyOn(db, 'getPluginById').mockResolvedValue({
       id: 'com.classroomio.announcement-banner',
       status: 'approved'
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof db.getPluginById>>);
 
     vi.spyOn(db, 'getPluginVersion').mockResolvedValue({
       id: 'version-1',
       pluginId: 'com.classroomio.announcement-banner',
       version: '1.0.0',
-      manifest: { id: 'com.classroomio.announcement-banner' } as any,
+      manifest: { id: 'com.classroomio.announcement-banner' } as unknown as NonNullable<
+        Awaited<ReturnType<typeof db.getPluginVersion>>
+      >['manifest'],
       artifactDigest: digest,
       reviewStatus: 'approved',
       publishedAt: '2026-10-10',
       createdAt: '2026-10-10'
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof db.getPluginVersion>>);
 
     try {
       const res = await pluginAssetsRouter.request(
@@ -153,18 +155,20 @@ describe('Plugin Manifest CSP Policy', () => {
     vi.spyOn(db, 'getPluginById').mockResolvedValue({
       id: 'com.classroomio.code-runner',
       status: 'approved'
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof db.getPluginById>>);
 
     vi.spyOn(db, 'getPluginVersion').mockResolvedValue({
       id: 'version-1',
       pluginId: 'com.classroomio.code-runner',
       version: '1.0.0',
-      manifest: { id: 'com.classroomio.code-runner' } as any,
+      manifest: { id: 'com.classroomio.code-runner' } as unknown as NonNullable<
+        Awaited<ReturnType<typeof db.getPluginVersion>>
+      >['manifest'],
       artifactDigest: digest,
       reviewStatus: 'approved',
       publishedAt: '2026-10-10',
       createdAt: '2026-10-10'
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof db.getPluginVersion>>);
 
     try {
       const response = await pluginAssetsRouter.request(`/com.classroomio.code-runner/1.0.0/${digest}/sql-wasm.wasm`);

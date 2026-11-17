@@ -1,4 +1,6 @@
+import type { Context } from 'hono';
 import { Hono } from '@api/utils/hono';
+import type { AuthSession } from '@api/types/auth';
 import { authMiddleware } from '@api/middlewares/auth';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { handleError } from '@api/utils/errors';
@@ -40,8 +42,8 @@ const ZLessonListQuery = ZPluginApiListQuery.extend({ courseId: z.string().uuid(
 const ZExerciseListQuery = ZLessonListQuery.extend({ lessonId: z.string().uuid().optional() });
 const ZCertificateListQuery = ZPluginApiListQuery.extend({ courseId: z.string().uuid().optional() });
 
-function context(c: any) {
-  const installationId = c.req.param('installationId') as string;
+function context(c: Context<AuthSession>) {
+  const installationId = c.req.param('installationId') ?? '';
   const organizationId = c.get('orgId') as string;
   const actorId = c.get('user')!.id as string;
 

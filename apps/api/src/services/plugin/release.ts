@@ -136,6 +136,14 @@ export async function registerInternalReleases(
       );
     }
 
+    if (manifest.runtime?.allowUnsafeEval === true && candidate.kind !== 'first-party') {
+      throw new AppError(
+        'Only first-party plugins may enable unsafe-eval runtime execution',
+        'SECURITY_VIOLATION',
+        400
+      );
+    }
+
     const slug = manifest.slug ?? manifest.id.split('.').pop()!;
     const archiveKey = getArchiveKey(candidate);
     registrations.push({

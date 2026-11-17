@@ -1,7 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { requireOrganizationInstallation } from '@api/services/plugin/authorization';
 import { getOrgIdBySiteName, getOrganizationById, updateOrganization } from '@cio/db/queries/organization';
-import { getInstallationById, getPluginVersionById, recordPluginAuditEvent } from '@cio/db/queries/plugin';
+import { getPluginVersionById, recordPluginAuditEvent } from '@cio/db/queries/plugin';
 import { getPluginArtifactBaseUrl } from '@api/services/plugin/installation';
 import {
   DEFAULT_NATIVE_LANDING_PAGE_THEME,

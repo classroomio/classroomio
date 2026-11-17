@@ -18,22 +18,24 @@ describe('resolveQuestionPluginContext', () => {
     publicConfig: { starter: 'print("hello")' }
   };
 
-  const validPlugin: any = {
+  type ResolutionData = Awaited<ReturnType<typeof pluginQueries.getQuestionPluginResolutionData>>;
+
+  const validPlugin = {
     id: 'com.classroomio.code-runner',
     name: 'Code Runner',
     status: 'published'
-  };
+  } as unknown as NonNullable<ResolutionData['plugin']>;
 
-  const validInstallation: any = {
+  const validInstallation = {
     id: 'inst-1',
     pluginId: 'com.classroomio.code-runner',
     organizationId: 'org-1',
     status: 'active',
     orgApprovalStatus: 'approved',
     pluginVersionId: 'ver-1'
-  };
+  } as unknown as NonNullable<ResolutionData['installation']>;
 
-  const validVersion: any = {
+  const validVersion = {
     id: 'ver-1',
     pluginId: 'com.classroomio.code-runner',
     version: '1.0.0',
@@ -62,7 +64,7 @@ describe('resolveQuestionPluginContext', () => {
         ]
       }
     }
-  };
+  } as unknown as NonNullable<ResolutionData['pinnedVersion']>;
 
   it('resolves active state for valid, pinned installation', async () => {
     vi.mocked(pluginQueries.getQuestionPluginResolutionData).mockResolvedValueOnce({
@@ -91,11 +93,11 @@ describe('resolveQuestionPluginContext', () => {
   });
 
   it('flags upgradeAvailable when installation has a newer version', async () => {
-    const newerVersion: any = {
+    const newerVersion = {
       ...validVersion,
       id: 'ver-2',
       version: '1.1.0'
-    };
+    } as NonNullable<ResolutionData['installedVersion']>;
 
     vi.mocked(pluginQueries.getQuestionPluginResolutionData).mockResolvedValueOnce({
       plugin: validPlugin,
@@ -197,7 +199,9 @@ describe('resolveQuestionPluginContext', () => {
       installedVersion: validVersion,
       pinnedVersion: {
         ...validVersion,
-        manifest: { contributes: { questionTypes: [] } }
+        manifest: { contributes: { questionTypes: [] } } as unknown as NonNullable<
+          ResolutionData['pinnedVersion']
+        >['manifest']
       }
     });
 

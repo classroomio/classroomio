@@ -2,7 +2,6 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCourseById, getOrganizationById, getProfileById, getCourseOrganizationId } from '@cio/db/queries';
 import {
   getCertificateDocumentIdFormat,
-  getStudioCertificateIdFormat,
   resolveCertificateDesign,
   resolveStoredCertificatePresentation,
   type CertificateRenderInput

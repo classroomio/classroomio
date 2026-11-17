@@ -4,7 +4,7 @@ import {
   generateVideoDownloadPresignedUrls,
   TRANSCRIPT_VTT_PRESIGN_SECONDS
 } from '@cio/core/utils/s3';
-import { fetchQuestionsAndOptions, transformQuestions } from '@api/services/exercise/utils';
+import { transformQuestions } from '@api/services/exercise/utils';
 import { getMediaTranscriptByAsset } from '@cio/db/queries';
 import { getAssetsByIds } from '@cio/db/queries/assets';
 import { mintHlsToken } from '@cio/core/services/assets/assets';

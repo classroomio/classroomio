@@ -118,7 +118,7 @@ describe('Plugin Development Service', () => {
       type: 'api',
       scopes: ['plugin:development'],
       createdByProfileId: 'profile-admin'
-    } as any;
+    } as unknown as Parameters<typeof assertPluginDevelopmentAccess>[0];
 
     it('allows access when key has scope and creator is admin', async () => {
       dbMocks.getOrganizationMemberRoleId.mockResolvedValueOnce(ROLE.ADMIN);

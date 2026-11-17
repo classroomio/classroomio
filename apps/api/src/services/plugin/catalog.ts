@@ -4,11 +4,9 @@ import {
   getPluginVersion,
   listPluginVersions,
   listPlugins,
-  listPublishers,
-  upsertPlugin,
-  createPluginVersion
+  listPublishers
 } from '@cio/db/queries/plugin';
-import type { TNewPlugin, TNewPluginVersion, TPlugin, TPluginStatus, TPluginVersion } from '@cio/db/types';
+import type { TPlugin, TPluginStatus, TPluginVersion } from '@cio/db/types';
 import { getPluginArtifactBaseUrl } from './installation';
 
 export type CatalogPluginListItem = TPlugin & {
@@ -127,20 +125,4 @@ export async function getCatalogPluginVersion(
   }
 
   return pluginVersionRow;
-}
-
-export async function registerPluginWithVersion(
-  pluginData: TNewPlugin,
-  versionData: Omit<TNewPluginVersion, 'pluginId'>
-): Promise<{ plugin: TPlugin; version: TPluginVersion }> {
-  const registeredPlugin = await upsertPlugin(pluginData);
-  const registeredVersion = await createPluginVersion({
-    ...versionData,
-    pluginId: registeredPlugin.id
-  });
-
-  return {
-    plugin: registeredPlugin,
-    version: registeredVersion
-  };
 }

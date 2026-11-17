@@ -16,12 +16,11 @@
     "dev:tsc": "tsc -p tsconfig.json --watch --preserveWatchOutput",
     "deploy": "wrangler deploy",
     "start": "node dist/index.js",
-    "test": "vitest NODE_ENV=test",
+    "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint src",
     "format": "prettier --write .",
-    "upload:openapi": "tsx scripts/upload-openapi-spec.ts",
-    "generate:plugin-openapi": "tsx scripts/generate-plugin-openapi-spec.ts"
+    "upload:openapi": "tsx scripts/upload-openapi-spec.ts"
   },
   "repository": {
     "type": "git",
