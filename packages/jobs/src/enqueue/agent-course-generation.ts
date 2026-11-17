@@ -5,7 +5,7 @@ import { QUEUE_DEFAULTS } from '../queues/defaults';
 import { getQueue } from '../queues/factories';
 import type { TAgentCourseGenerationPayload } from '../payloads/agent-course-generation';
 
-function toJobId(runId: string, attempt: number, executionKey: string): string {
+export function toJobId(runId: string, attempt: number, executionKey: string): string {
   return `agent-course-generation-${runId}-${attempt}-${executionKey}`;
 }
 

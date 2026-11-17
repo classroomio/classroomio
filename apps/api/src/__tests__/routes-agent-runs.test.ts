@@ -37,7 +37,11 @@ vi.mock('@cio/jobs', () => ({
   QUEUE_NAMES: { agentCourseGeneration: 'agent-course-generation' },
   enqueueAgentCourseGenerationRun: vi.fn().mockResolvedValue('bullmq-job-123'),
   getQueue: mocks.getQueue,
-  isRedisConfigured: mocks.isRedisConfigured
+  isRedisConfigured: mocks.isRedisConfigured,
+  toJobId: vi.fn(
+    (runId: string, attempt: number, executionKey: string) =>
+      `agent-course-generation-${runId}-${attempt}-${executionKey}`
+  )
 }));
 
 vi.mock('@api/middlewares/auth', () => ({
@@ -142,6 +146,8 @@ describe('agent runs pause and resume state', () => {
           expectedStatuses: ['queued', 'running', 'waiting_for_input']
         })
       );
+      // Must not overwrite the running worker's ownership
+      expect(mocks.updateOwnedAgentRun.mock.calls[0][0]).not.toHaveProperty('workerId');
       expect(mocks.createAgentRunEvent).toHaveBeenCalledWith(
         expect.objectContaining({
           runId: RUN_ID,
@@ -367,6 +373,20 @@ describe('agent runs pause and resume state', () => {
           expectedWorkerId: null
         })
       );
+    });
+
+    it('does not retry when a concurrent retry already updated the run', async () => {
+      const failedRun = createMockRun('failed');
+      const currentRun = { ...failedRun, status: 'failed', attempt: 1 };
+
+      mocks.getOwnedAgentRun.mockResolvedValueOnce(failedRun);
+      mocks.getOwnedAgentRun.mockResolvedValueOnce(currentRun);
+      mocks.updateOwnedAgentRun.mockResolvedValueOnce(null);
+
+      const result = await retryAgentRunState(RUN_ID, USER_ID, ORG_ID);
+
+      expect(result.run.attempt).toBe(1);
+      expect(mocks.createAgentRunEvent).not.toHaveBeenCalledWith(expect.objectContaining({ eventType: 'run.retried' }));
     });
   });
 

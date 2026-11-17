@@ -15,7 +15,7 @@ import {
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import type { TAiAgentRun, TAiAgentRunEvent, TAiAgentRunStatus, TAiAgentRunStep } from '@cio/db/types';
-import { QUEUE_NAMES, enqueueAgentCourseGenerationRun, getQueue, isRedisConfigured } from '@cio/jobs';
+import { QUEUE_NAMES, enqueueAgentCourseGenerationRun, getQueue, isRedisConfigured, toJobId } from '@cio/jobs';
 import { AppError } from '@api/utils/errors';
 
 const ACTIVE_RUN_STATUSES = new Set<TAiAgentRunStatus>(['queued', 'running', 'waiting_for_input', 'paused']);
@@ -266,9 +266,38 @@ async function enqueueAgentRun(
   }
 
   const jobExecutionKey = executionKey ?? randomUUID();
+  // Compute the deterministic job ID up front so the cursor can be written
+  // before the BullMQ job is added. A worker that starts immediately can then
+  // match it in canClaimRun instead of racing a missing cursor entry.
+  const jobId = toJobId(run.id, run.attempt, jobExecutionKey);
+  const enqueuedAt = new Date().toISOString();
+
+  // Write the cursor with the deterministic job ID before adding the job.
+  // Guard against a newer execution having already taken over this run.
+  const cursorRun = await updateAgentRun({
+    runId: run.id,
+    userId: run.userId,
+    status: 'queued',
+    executionCursor: {
+      ...run.executionCursor,
+      bullmq: {
+        queue: 'agent-course-generation',
+        jobId,
+        executionKey: jobExecutionKey,
+        enqueuedAt,
+        reason
+      }
+    },
+    expectedStatuses: ['queued']
+  });
+
+  if (!cursorRun) {
+    const currentRun = await getAgentRun(run.id, run.userId);
+    return currentRun ?? run;
+  }
 
   try {
-    const jobId = await enqueueAgentCourseGenerationRun(
+    await enqueueAgentCourseGenerationRun(
       {
         runId: run.id,
         requestedByUserId: run.userId,
@@ -276,38 +305,15 @@ async function enqueueAgentRun(
       },
       { attempt: run.attempt, executionKey: jobExecutionKey }
     );
-    const enqueuedAt = new Date().toISOString();
-    const updatedRun = await updateAgentRun({
-      runId: run.id,
-      userId: run.userId,
-      status: 'queued',
-      executionCursor: {
-        ...run.executionCursor,
-        bullmq: {
-          queue: 'agent-course-generation',
-          jobId: jobId ?? null,
-          executionKey: jobExecutionKey,
-          enqueuedAt,
-          reason
-        }
-      },
-      expectedStatuses: ['queued']
-    });
-
-    if (!updatedRun) {
-      const currentRun = await getAgentRun(run.id, run.userId);
-
-      return currentRun ?? run;
-    }
 
     await createAgentRunEvent({
       runId: run.id,
       eventType: 'run.enqueued',
       message: 'Run enqueued for background course generation',
-      payload: { jobId: jobId ?? null, reason }
+      payload: { jobId, reason }
     });
 
-    return updatedRun;
+    return cursorRun;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to start course generation';
     const failedAt = new Date().toISOString();
