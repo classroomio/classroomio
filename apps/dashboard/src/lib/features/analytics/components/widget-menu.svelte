@@ -1,5 +1,5 @@
 <script lang="ts">
-  import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import { hasSegmentDrilldown, hasWholeDrilldown } from '@cio/utils/analytics';
   import { ANALYTICS_RANGE_DAYS } from '@cio/utils/constants/analytics';
   import { Button } from '@cio/ui/base/button';
@@ -57,7 +57,7 @@
         aria-label={$t('analytics.widget_menu.label', { title })}
         testId="analytics-widget-menu-{widget.id}"
       >
-        <EllipsisIcon />
+        <EllipsisVerticalIcon />
       </Button>
     {/snippet}
   </DropdownMenu.DropdownMenuTrigger>
