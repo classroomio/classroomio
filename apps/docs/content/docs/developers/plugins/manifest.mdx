@@ -185,6 +185,24 @@ actions. Its value is either a relative asset path or an object with `resource` 
 `renderMode: "custom"`. Paths must resolve to a valid packaged file; never use absolute paths or
 `..` traversal segments.
 
+### `runtime.allowUnsafeEval` (First-Party Only)
+
+Optional boolean flag (`false` by default). When set to `true`, the asset server appends
+`'unsafe-eval'` to `script-src` in the plugin iframe's `Content-Security-Policy` header so runtimes
+that compile or evaluate dynamic expressions in-browser (such as sandboxed JavaScript test runners
+or Pyodide) can operate inside the dedicated plugin origin.
+
+- **Security policy:** Only **first-party plugins** (`com.classroomio.*` released through trusted
+  first-party CI) are permitted to declare `"allowUnsafeEval": true`.
+- **Enforcement:** Release registration rejects any non-first-party manifest declaring
+  `runtime.allowUnsafeEval: true` with `SECURITY_VIOLATION` (`400`).
+
+> [!NOTE]
+> **Public Landing Exception:** Unlike dashboard plugin iframes served from the dedicated plugin
+> asset origin (`allow-same-origin allow-scripts`), the public landing page renderer runs inside an
+> **opaque-origin iframe** (`sandbox="allow-scripts"`, no `allow-same-origin`) and communicates
+> solely over a nonce-bound `MessageChannel`.
+
 ---
 
 ## `contributes`

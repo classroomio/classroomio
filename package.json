@@ -41,6 +41,8 @@
     "storybook:dev": "pnpm --filter=@cio/storybook --filter=@cio/ui --filter=@cio/question-types run dev",
     "storybook:dev:https": "cross-env HTTPS=true pnpm run storybook:dev",
     "mcp:build": "pnpm --filter @cio/question-types build && pnpm --filter @cio/utils build && pnpm --filter @classroomio/mcp build",
+    "plugin-sdk:build": "pnpm --filter @classroomio/plugin-sdk build",
+    "plugin-sdk:publish": "pnpm --filter @classroomio/plugin-sdk publish --access public --no-git-checks",
     "db:push": "pnpm --filter @cio/db db push",
     "demo:playwright": "playwright test --config e2e/playwright.config.ts"
   },

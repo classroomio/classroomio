@@ -42,6 +42,7 @@ function getChangedFiles() {
 
   return [...filePaths].filter((filePath) => {
     try {
+      if (filePath.startsWith('prototypes/')) return false;
       return !lstatSync(filePath).isSymbolicLink();
     } catch {
       return false;

@@ -1,6 +1,6 @@
 import type { CertificateDesign, CertificateRenderData, CertificateShapeObject, CertificateSignatory } from '../types';
 import { CERTIFICATE_HEIGHT, CERTIFICATE_WIDTH } from '../constants';
-import { computeFieldFontSizes, computeFitFontSize, type FitFontSizeOptions } from '../font-metrics';
+import { computeFitFontSize, type FitFontSizeOptions } from '../font-metrics';
 
 export function escapeHtml(input: unknown): string {
   return String(input ?? '').replace(/[&<>"']/g, (char) => {

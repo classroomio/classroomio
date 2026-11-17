@@ -1,9 +1,25 @@
 # Plugin Platform Reduction and Security Audit
 
-**Audited branch:** `feat/plugin-platform-v2`  
-**Comparison base:** `origin/main` (`2eb6f2df`)  
-**Audit date:** 2026-10-26  
-**Decision:** reduce this branch in place on `feat/plugin-platform-v2` across 6 reviewable commits; keep the PR in draft until the reduced diff passes all merge gates.
+> **Historical Audit Record (2026-10-26) — Disposition Applied (2026-11-17)**
+>
+> This document records the point-in-time audit conducted on 2026-10-26 against the earlier draft
+> of `feat/plugin-platform-v2`. File counts, line numbers, and references to removed modules (such
+> as `packages/utils/src/validation/plugin/events.ts`, `plugin-api/`, `certificate-kit`, and
+> `plugin-design`) reflect the pre-cleanup branch state prior to execution of the reduction plan.
+>
+> **Current Disposition Summary:**
+> - **Subsystems removed / deferred:** Outbound plugin event validation (`events.ts`), unused DB/service exports (`listPluginAuditEvents`, `registerPluginWithVersion`, `expireInstallationStorage`, `hasInstallationScope`, `listAllOrganizationIds`, `getPluginBySlug`, `updatePluginVersionReviewStatus`, `getPublisherById`, `upsertPublisher`), and missing OpenAPI generation script.
+> - **Migrations:** Consolidated into one migration (`0039_plugin_platform_complete.sql`) with journal timestamp `1792575299000` strictly after `origin/main`.
+> - **Authorization & Security Hardening:**
+>   - `runtime.allowUnsafeEval` restricted exclusively to first-party releases at registration (`SECURITY_VIOLATION` 400 test enforced in `apps/api/src/__tests__/plugin-release.test.ts`).
+>   - Dedicated sandbox origin + CSP enforced for dashboard plugin iframes; public landing renderer isolated via opaque-origin `sandbox="allow-scripts"` + `MessageChannel`.
+>   - `PLUGIN_ASSET_ORIGIN` CSP wiring verified; `pnpm` SDK CLI capability/target validation locked to a parity test against `@cio/utils`.
+> - **Dashboard & i18n:** Duplicated permissions metadata consolidated on top of `@cio/utils/validation/plugin`, native action buttons replaced with `@cio/ui` buttons, and all plugin UI/permission strings localized across all 12 locales.
+
+**Historical snapshot metadata (2026-10-26):**
+- **Audited branch:** `feat/plugin-platform-v2`
+- **Comparison base:** `origin/main` (`2eb6f2df`)
+- **Initial decision:** reduce this branch in place on `feat/plugin-platform-v2`; keep the PR in draft until all merge gates pass.
 
 ## 1. Purpose and decision
 

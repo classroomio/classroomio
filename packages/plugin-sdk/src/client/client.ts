@@ -1,10 +1,8 @@
 import {
   type BridgeHandshakeAck,
-  type BridgeHandshakeInit,
   type BridgeResizePayload,
   type BridgeNavigationOpenPayload,
   type BridgeRpcRequest,
-  type BridgeRpcResponse,
   type BridgeToastPayload,
   type PluginContext,
   type PluginThemeV1,

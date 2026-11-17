@@ -3,7 +3,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
+import { PLUGIN_PERMISSION_SCOPES, STABLE_CONTRIBUTION_TARGETS } from '@cio/utils/validation/plugin';
 import {
+  ALLOWED_CAPABILITIES,
+  ALLOWED_TARGETS,
   buildAllPlugins,
   createDeterministicTarGz,
   packageSinglePlugin,
@@ -332,5 +335,10 @@ describe('Plugin CLI (cio-plugin)', () => {
       exitSpy.mockRestore();
       consoleSpy.mockRestore();
     }
+  });
+
+  it('maintains parity with canonical capabilities and targets from @cio/utils', () => {
+    expect(Array.from(ALLOWED_CAPABILITIES).sort()).toEqual([...PLUGIN_PERMISSION_SCOPES].sort());
+    expect(Array.from(ALLOWED_TARGETS).sort()).toEqual([...STABLE_CONTRIBUTION_TARGETS].sort());
   });
 });

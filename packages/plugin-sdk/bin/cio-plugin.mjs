@@ -12,7 +12,7 @@ const SEMVER_REGEX =
 const REVERSE_DOMAIN_ID_REGEX = /^[a-z0-9_-]+(\.[a-z0-9_-]+)+$/i;
 const KEBAB_CASE_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const ALLOWED_CAPABILITIES = new Set([
+export const ALLOWED_CAPABILITIES = new Set([
   'identity.profile:read',
   'organization.profile:read',
   'course.metadata:read',
@@ -29,7 +29,7 @@ const ALLOWED_CAPABILITIES = new Set([
   'plugin.storage:write'
 ]);
 
-const ALLOWED_TARGETS = new Set([
+export const ALLOWED_TARGETS = new Set([
   'lms.banner',
   'course.sidebar',
   'course.newsfeed.aside',
@@ -38,6 +38,8 @@ const ALLOWED_TARGETS = new Set([
   'certificate.actions',
   'certificate.templates',
   'landing.templates',
+  'organization.navigation',
+  'plugin.page',
   'exercise.question'
 ]);
 
