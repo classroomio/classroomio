@@ -311,14 +311,27 @@ async function enqueueAgentRun(
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to start course generation';
     const failedAt = new Date().toISOString();
-    await updateOwnedAgentRun(run.id, run.userId, {
+    // Only mark this run failed / clear ownership when it is still in the state
+    // this enqueue attempt wrote. A pause or resume may already have started a
+    // newer execution; in that case preserve its state and worker ownership.
+    const updatedRun = await updateAgentRun({
+      runId: run.id,
+      userId: run.userId,
       status: 'failed',
       phase: 'failed',
       lastError: { code: 'AGENT_RUN_ENQUEUE_FAILED', message },
       finishedAt: failedAt,
       workerId: null,
-      lockedAt: null
+      lockedAt: null,
+      expectedStatuses: [run.status],
+      expectedWorkerId: run.workerId ?? null
     });
+
+    if (!updatedRun) {
+      // A newer execution already took over this run; do not clobber its state.
+      const currentRun = await getAgentRun(run.id, run.userId);
+      return currentRun ?? run;
+    }
 
     await createAgentRunEvent({
       runId: run.id,

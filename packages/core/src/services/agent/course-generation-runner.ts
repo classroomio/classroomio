@@ -91,9 +91,13 @@ function canClaimRun(
 ): boolean {
   if (!CLAIMABLE_RUN_STATUSES.includes(run.status)) return false;
 
-  if (bullmqJobId && getBullmqJobId(run) === bullmqJobId) return true;
+  // A run with a fresh lease belongs to a live execution. Only a redelivery of
+  // the job that owns the lease may reclaim it; every other claim must wait for
+  // the lease to expire. This prevents a paused/resumed run from being stolen
+  // by a fresh job while the paused worker is still active.
+  if (!isRunLeaseActive(run)) return true;
 
-  return !isRunLeaseActive(run);
+  return Boolean(bullmqJobId && run.workerId?.includes(`:${bullmqJobId}:`));
 }
 
 function getErrorPayload(error: unknown): { code: string; message: string; details?: unknown } {
@@ -197,7 +201,11 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
   const startedAt = initialRun.startedAt ?? new Date().toISOString();
 
   if (!canClaimRun(initialRun, input.bullmqJobId)) {
-    return { runId: initialRun.id, status: 'superseded', rounds: 0 };
+    // The run is owned by a fresh lease from another execution. Do not complete
+    // this job as superseded: BullMQ treats a completed job as not stalled, so
+    // the stall alert stays hidden while the run remains queued with no owner.
+    // Throw a retryable error so BullMQ retries once the lease expires.
+    throw new AppError('Another worker holds the course-generation run lease', 'AGENT_RUN_LEASE_HELD', 409);
   }
 
   const claimedAt = new Date().toISOString();
