@@ -7027,7 +7027,18 @@
           "overdue": "Zaległy",
           "certified": "Certyfikat wydany",
           "not_certified": "Brak certyfikatu"
-        }
+        },
+        "completion": {
+          "label": "Ukończenie",
+          "any": "Dowolne ukończenie",
+          "incomplete": "Nieukończone"
+        },
+        "video": {
+          "label": "Wideo",
+          "any": "Dowolne wideo",
+          "low": "Wideo poniżej 60%"
+        },
+        "cohort_chip": "{count, plural, one {# kohorta} few {# kohorty} many {# kohort} other {# kohorty}}"
       },
       "showing_paged": {
         "cohort": "Wyświetlanie {from}–{to} z {count, plural, one {#student} other {# studenci}} w kohorcie",
@@ -7187,9 +7198,56 @@
     },
     "export": {
       "students_capped": "Lista studentów jest ograniczona do pierwszych {limit} wierszy.",
-      "exercises_capped": "Wyniki ćwiczeń są ograniczone do pierwszych {limit} wyników."
+      "exercises_capped": "Wyniki ćwiczeń są ograniczone do pierwszych {limit} wyników.",
+      "yes": "Tak",
+      "no": "Nie",
+      "columns": {
+        "segment": "Grupa",
+        "metric": "Wskaźnik",
+        "value": "Wartość",
+        "details": "Szczegóły"
+      },
+      "dimensions": {
+        "student": "Student",
+        "course": "Kurs",
+        "cohort": "Kohorta",
+        "exercise": "Ćwiczenie",
+        "section": "Sekcja",
+        "lesson": "Lekcja",
+        "question": "Pytanie",
+        "item": "Element",
+        "day": "Dzień",
+        "period": "Okres",
+        "status": "Status",
+        "overdue_kind": "Rodzaj zaległości",
+        "progress_bucket_25": "Postęp",
+        "score_bucket_10": "Średni wynik"
+      }
     },
-    "org_page_title": "Akademia"
+    "org_page_title": "Akademia",
+    "widget_menu": {
+      "label": "Akcje dla: {title}",
+      "view_students": "Pokaż studentów",
+      "open_in_students": "Otwórz w karcie Studenci",
+      "click_to_view": "Wybierz słupek lub wycinek, aby zobaczyć jego studentów"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# student} few {# studenci} many {# studentów} other {# studenta}}",
+      "description": "Studenci stojący za tą liczbą.",
+      "cohort_health": {
+        "any": "W kohortach ze studentami",
+        "at_risk": "W zagrożonych kohortach",
+        "lagging": "W opóźnionych kohortach",
+        "on_track": "W kohortach na dobrej drodze",
+        "completed": "W zakończonych kohortach"
+      },
+      "cohort_health_note": "Wykres liczy studentów w kohortach o tej ocenie, a nie studentów z tym statusem.",
+      "count_differs": "Wykres liczy {expected}, ponieważ liczy studenta raz dla każdej kohorty, do której należy. Ta lista pokazuje {total}.",
+      "lesson_incomplete": "Nieukończone: {lesson}",
+      "lesson_fallback": "ta lekcja",
+      "score_bucket": "Średni wynik {range}",
+      "scored": "Z średnim wynikiem"
+    }
   },
   "oauth": {
     "consent": {

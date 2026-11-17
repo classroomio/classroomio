@@ -7089,7 +7089,18 @@
           "overdue": "Overdue",
           "certified": "Certificate issued",
           "not_certified": "No certificate"
-        }
+        },
+        "completion": {
+          "label": "Completion",
+          "any": "Any completion",
+          "incomplete": "Not completed"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Any video",
+          "low": "Video under 60%"
+        },
+        "cohort_chip": "{count, plural, one {# cohort} other {# cohorts}}"
       }
     },
     "empty_states": {
@@ -7173,9 +7184,56 @@
     },
     "export": {
       "students_capped": "Student list limited to the first {limit} rows.",
-      "exercises_capped": "Exercise scores limited to the first {limit} results."
+      "exercises_capped": "Exercise scores limited to the first {limit} results.",
+      "yes": "Yes",
+      "no": "No",
+      "columns": {
+        "segment": "Group",
+        "metric": "Metric",
+        "value": "Value",
+        "details": "Details"
+      },
+      "dimensions": {
+        "student": "Student",
+        "course": "Course",
+        "cohort": "Cohort",
+        "exercise": "Exercise",
+        "section": "Section",
+        "lesson": "Lesson",
+        "question": "Question",
+        "item": "Item",
+        "day": "Day",
+        "period": "Period",
+        "status": "Status",
+        "overdue_kind": "Overdue type",
+        "progress_bucket_25": "Progress",
+        "score_bucket_10": "Average score"
+      }
     },
-    "org_page_title": "Academy"
+    "org_page_title": "Academy",
+    "widget_menu": {
+      "label": "Actions for {title}",
+      "view_students": "View students",
+      "open_in_students": "Open in Students tab",
+      "click_to_view": "Select a bar or slice to view its students"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# student} other {# students}}",
+      "description": "The students behind this number.",
+      "cohort_health": {
+        "any": "In cohorts with students",
+        "at_risk": "In at-risk cohorts",
+        "lagging": "In lagging cohorts",
+        "on_track": "In on-track cohorts",
+        "completed": "In completed cohorts"
+      },
+      "cohort_health_note": "The chart counts students in cohorts rated this way, not students with this status.",
+      "count_differs": "The chart counts {expected} because it counts a student once for every cohort they are in. This list shows {total}.",
+      "lesson_incomplete": "Not completed: {lesson}",
+      "lesson_fallback": "this lesson",
+      "score_bucket": "Average score {range}",
+      "scored": "With an average score"
+    }
   },
   "oauth": {
     "consent": {

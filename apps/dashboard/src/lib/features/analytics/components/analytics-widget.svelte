@@ -2,14 +2,14 @@
   import ChartNoAxesColumnIcon from '@lucide/svelte/icons/chart-no-axes-column';
   import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
   import MousePointerClickIcon from '@lucide/svelte/icons/mouse-pointer-click';
-  import { missingSelection, widgetUsesPlaceholder } from '@cio/utils/analytics';
+  import { hasSegmentDrilldown, missingSelection, widgetUsesPlaceholder } from '@cio/utils/analytics';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { cn } from '@cio/ui/tools';
   import { StatsPanelCard } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
 
-  import { analyticsApi } from '../api';
+  import { analyticsApi, analyticsDrilldownApi } from '../api';
   import {
     isEmptyResult,
     isNowCard,
@@ -25,6 +25,7 @@
   import StudentsTable from './students/students-table.svelte';
   import NowTag from './now-tag.svelte';
   import WidgetEmpty from './widget-empty.svelte';
+  import WidgetMenu from './widget-menu.svelte';
   import WidgetPagination from './widget-pagination.svelte';
   import WidgetSkeleton from './widget-skeleton.svelte';
   import { rendererFor } from './widgets';
@@ -58,14 +59,30 @@
 
     return (items ?? []).filter((item) => item.type === 'EXERCISE');
   });
+  const selectSegment = $derived(
+    hasSegmentDrilldown(widget.id)
+      ? (segmentKey: string) => void analyticsDrilldownApi.openForWidget(widget, segmentKey)
+      : undefined
+  );
   const showExercisePicker = $derived(widgetUsesPlaceholder(widget, 'exercise') && exercises.length > 0);
 </script>
 
-{#snippet nowTag()}
-  <NowTag />
+{#snippet headerAction()}
+  <div class="flex items-center gap-2">
+    {#if showNowTag}
+      <NowTag />
+    {/if}
+    {#if !isSelfLoading}
+      <WidgetMenu {widget} {title} hasStudents={context.studentCount > 0} />
+    {/if}
+  </div>
 {/snippet}
 
-<StatsPanelCard {title} class={cn('col-span-1 min-w-0', spanClass)} action={showNowTag ? nowTag : undefined}>
+<StatsPanelCard
+  {title}
+  class={cn('col-span-1 min-w-0', spanClass)}
+  action={showNowTag || !isSelfLoading ? headerAction : undefined}
+>
   {#if showExercisePicker}
     <div class="mb-3 flex justify-end">
       <ExercisePicker
@@ -99,7 +116,7 @@
     <WidgetEmpty emptyState={widgetEmptyState(widget, context)} />
   {:else}
     <div class={cn('transition-opacity duration-200', state.loading && 'opacity-60')} aria-busy={state.loading}>
-      <Renderer {widget} result={state.result} />
+      <Renderer {widget} result={state.result} onSegmentSelect={selectSegment} />
     </div>
   {/if}
   {#if ownsPager && widget.pageGroup && state.result}

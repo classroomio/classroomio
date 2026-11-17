@@ -6997,7 +6997,18 @@
           "overdue": "In ritardo",
           "certified": "Certificato rilasciato",
           "not_certified": "Nessun certificato"
-        }
+        },
+        "completion": {
+          "label": "Completamento",
+          "any": "Qualsiasi completamento",
+          "incomplete": "Non completato"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Qualsiasi video",
+          "low": "Video sotto il 60%"
+        },
+        "cohort_chip": "{count, plural, one {# coorte} other {# coorti}}"
       },
       "showing_paged": {
         "cohort": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nella coorte",
@@ -7157,9 +7168,56 @@
     },
     "export": {
       "students_capped": "L'elenco degli studenti è limitato alle prime {limit} righe.",
-      "exercises_capped": "I punteggi degli esercizi sono limitati ai primi {limit} risultati."
+      "exercises_capped": "I punteggi degli esercizi sono limitati ai primi {limit} risultati.",
+      "yes": "Sì",
+      "no": "No",
+      "columns": {
+        "segment": "Gruppo",
+        "metric": "Metrica",
+        "value": "Valore",
+        "details": "Dettagli"
+      },
+      "dimensions": {
+        "student": "Studente",
+        "course": "Corso",
+        "cohort": "Coorte",
+        "exercise": "Esercizio",
+        "section": "Sezione",
+        "lesson": "Lezione",
+        "question": "Domanda",
+        "item": "Elemento",
+        "day": "Giorno",
+        "period": "Periodo",
+        "status": "Stato",
+        "overdue_kind": "Tipo di ritardo",
+        "progress_bucket_25": "Progressi",
+        "score_bucket_10": "Punteggio medio"
+      }
     },
-    "org_page_title": "Accademia"
+    "org_page_title": "Accademia",
+    "widget_menu": {
+      "label": "Azioni per {title}",
+      "view_students": "Visualizza studenti",
+      "open_in_students": "Apri nella scheda Studenti",
+      "click_to_view": "Seleziona una barra o una fetta per vedere i suoi studenti"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# studente} other {# studenti}}",
+      "description": "Gli studenti dietro questo numero.",
+      "cohort_health": {
+        "any": "In coorti con studenti",
+        "at_risk": "In coorti a rischio",
+        "lagging": "In coorti in ritardo",
+        "on_track": "In coorti in pista",
+        "completed": "In coorti completate"
+      },
+      "cohort_health_note": "Il grafico conta gli studenti nelle coorti con questa valutazione, non gli studenti con questo stato.",
+      "count_differs": "Il grafico conta {expected} perché conta uno studente una volta per ogni coorte di cui fa parte. Questo elenco ne mostra {total}.",
+      "lesson_incomplete": "Non completato: {lesson}",
+      "lesson_fallback": "questa lezione",
+      "score_bucket": "Punteggio medio {range}",
+      "scored": "Con un punteggio medio"
+    }
   },
   "oauth": {
     "consent": {

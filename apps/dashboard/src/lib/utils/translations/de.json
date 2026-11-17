@@ -7027,7 +7027,18 @@
           "overdue": "Überfällig",
           "certified": "Zertifikat ausgestellt",
           "not_certified": "Kein Zertifikat"
-        }
+        },
+        "completion": {
+          "label": "Abschluss",
+          "any": "Beliebiger Abschluss",
+          "incomplete": "Nicht abgeschlossen"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Beliebiges Video",
+          "low": "Video unter 60 %"
+        },
+        "cohort_chip": "{count, plural, one {# Kohorte} other {# Kohorten}}"
       },
       "showing_paged": {
         "cohort": "Angezeigt werden {from}–{to} von {count, plural, one {# Studierender} other {# Studierende}} in der Kohorte",
@@ -7187,9 +7198,56 @@
     },
     "export": {
       "students_capped": "Die Studierendenliste ist auf die ersten {limit} Zeilen begrenzt.",
-      "exercises_capped": "Übungsergebnisse sind auf die ersten {limit} Ergebnisse begrenzt."
+      "exercises_capped": "Übungsergebnisse sind auf die ersten {limit} Ergebnisse begrenzt.",
+      "yes": "Ja",
+      "no": "Nein",
+      "columns": {
+        "segment": "Gruppe",
+        "metric": "Kennzahl",
+        "value": "Wert",
+        "details": "Details"
+      },
+      "dimensions": {
+        "student": "Studierender",
+        "course": "Kurs",
+        "cohort": "Kohorte",
+        "exercise": "Übung",
+        "section": "Abschnitt",
+        "lesson": "Lektion",
+        "question": "Frage",
+        "item": "Element",
+        "day": "Tag",
+        "period": "Zeitraum",
+        "status": "Status",
+        "overdue_kind": "Art der Überfälligkeit",
+        "progress_bucket_25": "Fortschritt",
+        "score_bucket_10": "Durchschnittliche Punktzahl"
+      }
     },
-    "org_page_title": "Akademie"
+    "org_page_title": "Akademie",
+    "widget_menu": {
+      "label": "Aktionen für {title}",
+      "view_students": "Studierende anzeigen",
+      "open_in_students": "Im Tab „Studierende“ öffnen",
+      "click_to_view": "Wähle einen Balken oder ein Segment, um die zugehörigen Studierenden anzuzeigen"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# Studierender} other {# Studierende}}",
+      "description": "Die Studierenden hinter dieser Zahl.",
+      "cohort_health": {
+        "any": "In Kohorten mit Studierenden",
+        "at_risk": "In gefährdeten Kohorten",
+        "lagging": "In Kohorten mit Verzögerung",
+        "on_track": "In Kohorten auf Kurs",
+        "completed": "In abgeschlossenen Kohorten"
+      },
+      "cohort_health_note": "Das Diagramm zählt Studierende in Kohorten mit dieser Einstufung, nicht Studierende mit diesem Status.",
+      "count_differs": "Das Diagramm zählt {expected}, weil jeder Studierende für jede Kohorte, in der er ist, einmal gezählt wird. Diese Liste zeigt {total}.",
+      "lesson_incomplete": "Nicht abgeschlossen: {lesson}",
+      "lesson_fallback": "diese Lektion",
+      "score_bucket": "Durchschnittliche Punktzahl {range}",
+      "scored": "Mit einer durchschnittlichen Punktzahl"
+    }
   },
   "oauth": {
     "consent": {

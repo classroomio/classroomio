@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy, untrack } from 'svelte';
+  import { page } from '$app/state';
   import LockIcon from '@lucide/svelte/icons/lock';
   import * as Page from '@cio/ui/base/page';
   import { Empty } from '@cio/ui/custom/empty';
@@ -11,7 +12,7 @@
   import { currentOrg, isOrgAdmin, orgs } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
 
-  import { analyticsApi, analyticsStudentsApi, analyticsStudentSheetApi } from '../api';
+  import { analyticsApi, analyticsDrilldownApi, analyticsStudentsApi, analyticsStudentSheetApi } from '../api';
   import CoursePicker from '../components/course-picker.svelte';
   import AnalyticsDashboard from '../components/analytics-dashboard.svelte';
   import AnalyticsRangePicker from '../components/analytics-range-picker.svelte';
@@ -44,7 +45,9 @@
     untrack(() => {
       analyticsStudentsApi.reset();
       analyticsStudentSheetApi.reset();
-      void analyticsApi.loadDashboard(scope).then(() => analyticsStudentsApi.load());
+      analyticsDrilldownApi.reset();
+      const url = new URL(page.url);
+      void analyticsApi.loadDashboard(scope).then(() => analyticsStudentsApi.initFromUrl(url));
     });
   });
 
@@ -62,6 +65,7 @@
     analyticsApi.reset();
     analyticsStudentsApi.reset();
     analyticsStudentSheetApi.reset();
+    analyticsDrilldownApi.reset();
   });
 
   async function refreshPage(options: { refresh?: boolean } = {}) {
