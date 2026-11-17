@@ -1696,7 +1696,12 @@ export const organizationInvite = pgTable(
     index('idx_organization_invite_expires_at').on(table.expiresAt),
     index('idx_organization_invite_created_by').on(table.createdByProfileId),
     index('idx_organization_invite_accepted_by').on(table.acceptedByProfileId),
-    index('idx_organization_invite_revoked_by').on(table.revokedByProfileId)
+    index('idx_organization_invite_revoked_by').on(table.revokedByProfileId),
+    index('idx_organization_invite_org_lower_email_created').on(
+      table.organizationId,
+      sql`lower(${table.email})`,
+      table.createdAt.desc()
+    )
   ]
 );
 
