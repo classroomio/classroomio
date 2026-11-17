@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { browser, dev } from '$app/environment';
   import { env } from '$env/dynamic/public';
   import { goto } from '$app/navigation';
@@ -30,7 +31,6 @@
     target: string;
     resource?: PluginResourceContext;
     onAction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
-    onaction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
   }
 
   let {
@@ -46,11 +46,9 @@
     title = 'Plugin Frame',
     target,
     resource,
-    onAction,
-    onaction
+    onAction
   }: Props = $props();
 
-  const effectiveAction = $derived(onAction ?? onaction);
   const frameSecurity = $derived(
     resolvePluginFrameSecurity({
       srcUrl,
@@ -144,7 +142,7 @@
   }
 
   async function dispatchSurfaceAction(action: string, data: unknown) {
-    if (!effectiveAction) {
+    if (!onAction) {
       throw { code: 'NOT_SUPPORTED', message: `The ${target} surface does not support this operation` };
     }
 
@@ -158,7 +156,7 @@
       action,
       data
     };
-    const result = await effectiveAction(actionDetail);
+    const result = await onAction(actionDetail);
     return result !== undefined ? result : { handled: true };
   }
 
@@ -282,7 +280,7 @@
         onStorageGetRecord: async ({ key, namespace, scope }) => {
           const orgId = requireOrganizationId();
           const targetScope: PluginStorageScope = scope ?? 'organization';
-          const query = new URLSearchParams({ scope: targetScope });
+          const query = new SvelteURLSearchParams({ scope: targetScope });
           if (targetScope === 'resource' && resource?.id) {
             query.set('resourceId', resource.id);
             query.set('resourceType', resource.type);
@@ -398,7 +396,7 @@
             }
           };
           if (action === 'courses:list' || action === 'lessons:list' || action === 'exercises:list') {
-            const query = new URLSearchParams();
+            const query = new SvelteURLSearchParams();
             if (typeof payload.cursor === 'string') query.set('cursor', payload.cursor);
             if (typeof payload.limit === 'number') query.set('limit', String(payload.limit));
             if (typeof payload.courseId === 'string') query.set('courseId', payload.courseId);
@@ -410,7 +408,7 @@
             routeByAction[action] = { path: `${resourceName}?${query.toString()}` };
           }
           if (action === 'certificates:list') {
-            const query = new URLSearchParams();
+            const query = new SvelteURLSearchParams();
             if (typeof payload.cursor === 'string') query.set('cursor', payload.cursor);
             if (typeof payload.limit === 'number') query.set('limit', String(payload.limit));
             if (typeof payload.courseId === 'string') query.set('courseId', payload.courseId);

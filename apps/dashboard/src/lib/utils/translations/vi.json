@@ -2021,7 +2021,8 @@
                 "browse_plugins": "Browse plugins",
                 "checking_plugins": "Checking installed plugins...",
                 "plugin_label": "Question Plugin",
-                "change_plugin": "Change plugin"
+                "change_plugin": "Change plugin",
+                "virtualizing": "Đang ảo hóa khung câu hỏi..."
               }
             },
             "delete_confirmation": {
@@ -6519,7 +6520,149 @@
     "no_permissions_desc": "This plugin does not require access to courses, student progress, or storage.",
     "security_notice": "Data is stored securely inside your ClassroomIO academy. This plugin cannot access billing details or member passwords. You can disable or uninstall this plugin at any time.",
     "cancel": "Cancel",
-    "authorize_install": "Authorize & Install"
+    "authorize_install": "Authorize & Install",
+    "sensitive": "Nhạy cảm",
+    "capability": "quyền",
+    "capabilities": "quyền",
+    "installing_to": "Đang cài đặt vào",
+    "permission_categories": {
+      "courses": "Khóa học",
+      "lessons": "Bài học",
+      "progress": "Tiến độ",
+      "certificates": "Chứng chỉ",
+      "storage": "Lưu trữ",
+      "identity": "Danh tính",
+      "organization": "Học viện",
+      "other": "Quyền khác"
+    },
+    "permission_fallback": {
+      "resource": "Tài nguyên",
+      "view_title": "Xem {resource}",
+      "manage_title": "Quản lý {resource}",
+      "description": "Cho phép plugin truy cập dữ liệu {scope}"
+    },
+    "permission_items": {
+      "identity_profile_read": {
+        "title": "Xem hồ sơ người dùng",
+        "description": "Đọc hồ sơ người dùng hiện tại"
+      },
+      "organization_profile_read": {
+        "title": "Xem hồ sơ học viện",
+        "description": "Đọc hồ sơ tổ chức"
+      },
+      "organization_members_read": {
+        "title": "Xem thành viên học viện",
+        "description": "Đọc danh sách thành viên tổ chức"
+      },
+      "course_metadata_read": {
+        "title": "Xem đề cương khóa học",
+        "description": "Đọc siêu dữ liệu khóa học"
+      },
+      "course_content_read": {
+        "title": "Đọc nội dung khóa học",
+        "description": "Đọc cấu trúc nội dung khóa học"
+      },
+      "course_metadata_write": {
+        "title": "Quản lý khóa học",
+        "description": "Tạo và cập nhật khóa học"
+      },
+      "course_enrollment_read": {
+        "title": "Xem lượt ghi danh",
+        "description": "Đọc lượt ghi danh khóa học"
+      },
+      "course_enrollment_write": {
+        "title": "Quản lý lượt ghi danh",
+        "description": "Quản lý lượt ghi danh khóa học"
+      },
+      "lesson_metadata_read": {
+        "title": "Xem chi tiết bài học",
+        "description": "Đọc siêu dữ liệu bài học"
+      },
+      "lesson_content_read": {
+        "title": "Đọc nội dung bài học",
+        "description": "Đọc nội dung bài học đã lọc và tệp đính kèm"
+      },
+      "lesson_write": {
+        "title": "Quản lý bài học",
+        "description": "Tạo và cập nhật bài học"
+      },
+      "learner_profile_read": {
+        "title": "Xem hồ sơ học viên",
+        "description": "Đọc hồ sơ học viên"
+      },
+      "learner_progress_read": {
+        "title": "Đọc tiến độ học viên",
+        "description": "Đọc tiến độ học viên trong bài học hoặc khóa học hiện tại"
+      },
+      "learner_progress_write": {
+        "title": "Cập nhật tiến độ học viên",
+        "description": "Cập nhật tiến độ học viên trong bài học hiện tại"
+      },
+      "exercise_metadata_read": {
+        "title": "Xem đề cương bài tập",
+        "description": "Đọc siêu dữ liệu bài tập"
+      },
+      "submission_read": {
+        "title": "Xem bài nộp",
+        "description": "Đọc bài nộp của học viên"
+      },
+      "submission_write": {
+        "title": "Quản lý bài nộp",
+        "description": "Tạo và cập nhật bài nộp"
+      },
+      "grade_read": {
+        "title": "Xem điểm",
+        "description": "Đọc điểm"
+      },
+      "grade_write": {
+        "title": "Quản lý điểm",
+        "description": "Tạo và công bố điểm"
+      },
+      "certificate_issued_read": {
+        "title": "Xem chứng chỉ đã cấp",
+        "description": "Đọc chứng chỉ đã cấp"
+      },
+      "certificate_issuance_write": {
+        "title": "Cấp chứng chỉ",
+        "description": "Cấp chứng chỉ"
+      },
+      "certificate_revocation_write": {
+        "title": "Thu hồi chứng chỉ",
+        "description": "Thu hồi chứng chỉ"
+      },
+      "certificate_template_read": {
+        "title": "Xem mẫu chứng chỉ",
+        "description": "Đọc mẫu chứng chỉ"
+      },
+      "certificate_template_write": {
+        "title": "Áp dụng mẫu chứng chỉ",
+        "description": "Áp dụng mẫu chứng chỉ vào khóa học hiện tại"
+      },
+      "cohort_metadata_read": {
+        "title": "Xem nhóm học",
+        "description": "Đọc siêu dữ liệu nhóm học"
+      },
+      "cohort_membership_read": {
+        "title": "Xem thành viên nhóm học",
+        "description": "Đọc danh sách thành viên nhóm học"
+      },
+      "analytics_summary_read": {
+        "title": "Xem thống kê tổng hợp",
+        "description": "Đọc thống kê tổng hợp"
+      },
+      "notification_write": {
+        "title": "Gửi thông báo",
+        "description": "Gửi thông báo ClassroomIO"
+      },
+      "plugin_storage_read": {
+        "title": "Đọc lưu trữ plugin",
+        "description": "Đọc bộ nhớ riêng biệt của plugin này"
+      },
+      "plugin_storage_write": {
+        "title": "Ghi lưu trữ plugin",
+        "description": "Ghi vào bộ nhớ riêng biệt của plugin này"
+      }
+    }
   },
   "early_adopter_claim": {
     "page": {

@@ -1,6 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
+  import { Button } from '@cio/ui/base/button';
   import { currentOrg, currentOrgPath, isOrgTeamMember } from '$lib/utils/store/org';
   import { PluginIcon, pluginsApi } from '$features/plugins';
   import { PluginHostFrame, PluginSettingsForm } from '$features/plugins/components';
@@ -22,7 +24,7 @@
     if (!organizationId) return;
 
     if ($isOrgTeamMember === false) {
-      void goto($currentOrgPath);
+      void goto(resolve($currentOrgPath));
       return;
     }
 
@@ -54,7 +56,7 @@
 
   $effect(() => {
     if (installation?.plugin?.slug && page.params.pluginId !== installation.plugin.slug) {
-      void goto(`${$currentOrgPath}/plugins/${installation.plugin.slug}`, { replaceState: true });
+      void goto(resolve(`${$currentOrgPath}/plugins/${installation.plugin.slug}`), { replaceState: true });
     }
   });
 
@@ -97,7 +99,7 @@
         {$t('plugins.not_found_desc')}
       </p>
       <a
-        href="{$currentOrgPath}/plugins"
+        href={resolve(`${$currentOrgPath}/plugins`)}
         class="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700"
       >
         <ArrowLeftIcon class="size-3.5" />
@@ -121,23 +123,18 @@
       </p>
       <div class="mt-6 flex items-center justify-center gap-3">
         <a
-          href="{$currentOrgPath}/plugins"
+          href={resolve(`${$currentOrgPath}/plugins`)}
           class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
         >
           <ArrowLeftIcon class="size-3.5" />
           <span>{$t('plugins.back_to_plugins')}</span>
         </a>
-        <button
-          type="button"
-          onclick={handleEnable}
-          disabled={isEnabling}
-          class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
-        >
+        <Button onclick={handleEnable} disabled={isEnabling} class="bg-emerald-600 text-white hover:bg-emerald-700">
           {#if isEnabling}
             <Loader2Icon class="size-3.5 animate-spin" />
           {/if}
           <span>{$t('plugins.enable')}</span>
-        </button>
+        </Button>
       </div>
     </div>
   {:else if contribution?.artifactUrl}
@@ -155,7 +152,11 @@
       />
     </div>
   {:else}
-    {@const manifest = installation.manifest as any}
+    {@const manifest = installation.manifest as {
+      version?: string;
+      permissions?: { required?: string[] };
+      settings?: { schema?: unknown };
+    } | null}
 
     <div class="mx-auto max-w-3xl px-4 py-10">
       <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
@@ -185,7 +186,7 @@
           </div>
 
           <a
-            href="{$currentOrgPath}/plugins"
+            href={resolve(`${$currentOrgPath}/plugins`)}
             class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             <ArrowLeftIcon class="size-3.5" />
@@ -203,7 +204,7 @@
           </h4>
           <div class="mt-2 flex flex-wrap gap-2">
             {#if (manifest?.permissions?.required?.length ?? 0) > 0}
-              {#each manifest.permissions.required as perm}
+              {#each manifest.permissions.required as perm (perm)}
                 <span
                   class="rounded bg-slate-100 px-2 py-1 font-mono text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300"
                 >

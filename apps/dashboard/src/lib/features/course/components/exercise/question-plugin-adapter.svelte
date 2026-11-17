@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { resolve } from '$app/paths';
+  import { Button } from '@cio/ui/base/button';
   import {
     isPluginQuestionSettings,
     type ExerciseQuestionModel,
@@ -47,7 +49,6 @@
   let isInViewport = $state(true);
   let isResolving = $state(true);
   let resolutionData = $state<QuestionPluginResolutionData | null>(null);
-  let resolutionError = $state<string | null>(null);
   let isFrameFocused = $state(false);
   let isFrameDirty = $state(false);
 
@@ -86,34 +87,50 @@
   let availableQuestionPlugins = $state<AvailableQuestionPlugin[]>([]);
   let isLoadingAvailable = $state(false);
 
+  interface RawInstallationEntry {
+    id: string;
+    pluginId: string;
+    status: string;
+    orgApprovalStatus: string;
+    manifest?: {
+      name?: string;
+      version?: string;
+      description?: string;
+      contributes?: {
+        questionTypes?: Array<{ id: string; title?: string; description?: string }>;
+      };
+    } | null;
+    versionRecord?: { version?: string; artifactDigest?: string | null } | null;
+    plugin?: { name?: string; description?: string; publisher?: string } | null;
+  }
+
   function extractQuestionPlugins(rawList: unknown): AvailableQuestionPlugin[] {
-    const list: any[] = Array.isArray(rawList)
-      ? rawList
-      : Array.isArray((rawList as any)?.data)
-        ? (rawList as any).data
-        : Array.isArray(pluginsApi.installations)
-          ? pluginsApi.installations
-          : [];
+    let list: RawInstallationEntry[] = [];
+    if (Array.isArray(rawList)) {
+      list = rawList as RawInstallationEntry[];
+    } else if (
+      rawList &&
+      typeof rawList === 'object' &&
+      'data' in rawList &&
+      Array.isArray((rawList as { data: unknown }).data)
+    ) {
+      list = (rawList as { data: RawInstallationEntry[] }).data;
+    } else if (Array.isArray(pluginsApi.installations)) {
+      list = pluginsApi.installations as unknown as RawInstallationEntry[];
+    }
 
     const items: AvailableQuestionPlugin[] = [];
     for (const inst of list) {
       if (!inst || inst.status !== 'active' || inst.orgApprovalStatus !== 'approved') continue;
-      const manifest = inst.manifest as {
-        name?: string;
-        version?: string;
-        description?: string;
-        contributes?: {
-          questionTypes?: Array<{ id: string; title?: string; description?: string }>;
-        };
-      } | null;
-      const versionRecord = inst.versionRecord as { version?: string; artifactDigest?: string | null } | null;
+      const manifest = inst.manifest;
+      const versionRecord = inst.versionRecord;
       const digest = versionRecord?.artifactDigest;
       const version = versionRecord?.version ?? manifest?.version;
       const questionTypes = manifest?.contributes?.questionTypes;
       if (!digest || !version || !Array.isArray(questionTypes) || questionTypes.length === 0) continue;
 
       const firstContribution = questionTypes[0];
-      const pluginTitle = manifest?.name ?? (inst as any).plugin?.name ?? firstContribution.title ?? 'Code Runner';
+      const pluginTitle = manifest?.name ?? inst.plugin?.name ?? firstContribution.title ?? 'Code Runner';
 
       items.push({
         pluginId: inst.pluginId,
@@ -195,7 +212,6 @@
 
     resolvedResolutionKey = resolutionKey;
     isResolving = true;
-    resolutionError = null;
 
     void pluginsApi
       .resolveQuestionPlugin(orgId, {
@@ -227,9 +243,8 @@
           }
         }
       })
-      .catch((err) => {
+      .catch(() => {
         if (resolvedResolutionKey === resolutionKey) {
-          resolutionError = err?.message || 'Resolution failed';
           isResolving = false;
         }
       });
@@ -319,7 +334,7 @@
           ...currentSettings,
           pluginQuestion: {
             ...currentPluginQuestion,
-            gradingConfig: payload.value as any
+            gradingConfig: payload.value as Record<string, unknown>
           }
         }
       });
@@ -344,15 +359,15 @@
           {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.plugin_question.select_title')}
         </h4>
         <div class="flex flex-col gap-2">
-          {#each availableQuestionPlugins as qPlugin}
-            <button
-              type="button"
-              class="border-border bg-background hover:bg-muted/60 hover:border-primary/40 text-foreground flex w-full cursor-pointer items-center justify-between rounded-md border px-3.5 py-2.5 text-left text-sm font-medium transition"
+          {#each availableQuestionPlugins as qPlugin (qPlugin.installationId)}
+            <Button
+              variant="outline"
+              class="flex h-auto w-full items-center justify-between px-3.5 py-2.5 text-left text-sm font-medium"
               onclick={() => selectQuestionPlugin(qPlugin)}
             >
               <span>{qPlugin.title}</span>
               <ChevronRightIcon class="text-muted-foreground h-4 w-4 shrink-0" />
-            </button>
+            </Button>
           {/each}
         </div>
       </div>
@@ -376,7 +391,7 @@
         </p>
         {#if $currentOrg.siteName}
           <a
-            href="/org/{$currentOrg.siteName}/plugins"
+            href={resolve(`/org/${$currentOrg.siteName}/plugins`)}
             class="border-border bg-background hover:bg-muted text-foreground mt-3 inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium shadow-xs"
           >
             {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.plugin_question.browse_plugins')}
@@ -449,7 +464,9 @@
       class="border-border/50 bg-muted/20 flex items-center justify-center rounded-lg border"
       style="min-height: {cachedHeight}px"
     >
-      <span class="text-muted-foreground text-xs">Virtualizing question frame...</span>
+      <span class="text-muted-foreground text-xs">
+        {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.plugin_question.virtualizing')}
+      </span>
     </div>
   {:else}
     {#if effectiveMode === 'edit'}
@@ -469,13 +486,14 @@
             v{envelope.pluginVersion}
           </span>
         </div>
-        <button
-          type="button"
-          class="text-primary cursor-pointer text-xs font-medium transition hover:underline"
+        <Button
+          variant="ghost"
+          size="sm"
+          class="text-primary h-auto p-0 text-xs font-medium hover:bg-transparent hover:underline"
           onclick={resetQuestionPlugin}
         >
           {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.plugin_question.change_plugin')}
-        </button>
+        </Button>
       </div>
     {/if}
     <PluginHostFrame

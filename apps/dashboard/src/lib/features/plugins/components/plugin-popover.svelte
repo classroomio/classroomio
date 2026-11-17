@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { SvelteSet } from 'svelte/reactivity';
+  import { resolve } from '$app/paths';
   import * as Popover from '@cio/ui/base/popover';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Input } from '@cio/ui/base/input';
@@ -57,13 +59,17 @@
 
     const items: PopoverPluginItem[] = [];
 
-    const seenIds = new Set<string>();
+    const seenIds = new SvelteSet<string>();
 
     for (const inst of installed) {
       if (inst.status === 'uninstalled') continue;
       seenIds.add(inst.pluginId);
 
-      const manifest = inst.manifest as any;
+      const manifest = inst.manifest as {
+        version?: string;
+        contributes?: { pages?: unknown[] };
+        permissions?: { required?: string[]; optional?: string[] };
+      } | null;
       const contributesPages = manifest?.contributes?.pages;
       const hasPage = Boolean(contributesPages && contributesPages.length > 0);
       const permissions = [...(manifest?.permissions?.required ?? []), ...(manifest?.permissions?.optional ?? [])];
@@ -95,7 +101,7 @@
         iconUrl: cat.iconUrl ?? null,
         isActive: false,
         isInstalled: false,
-        permissions: (cat as any).permissions ?? []
+        permissions: cat.permissions ?? []
       });
     }
 
@@ -229,7 +235,7 @@
         </div>
 
         <a
-          href="{$currentOrgPath}/plugins"
+          href={resolve(`${$currentOrgPath}/plugins`)}
           onclick={() => (open = false)}
           class="flex size-7 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
           aria-label={$t('plugins.browse_all')}
@@ -290,7 +296,7 @@
                   </p>
                   {#if plugin.isActive && plugin.managePath}
                     <a
-                      href="{$currentOrgPath}{plugin.managePath}"
+                      href={resolve(`${$currentOrgPath}${plugin.managePath}`)}
                       onclick={() => (open = false)}
                       class="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
                     >
@@ -318,7 +324,7 @@
 
     <div class="shrink-0 border-t border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-800/30">
       <a
-        href="{$currentOrgPath}/plugins"
+        href={resolve(`${$currentOrgPath}/plugins`)}
         onclick={() => (open = false)}
         class="flex w-full items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white py-1.5 text-xs font-medium text-slate-700 shadow-2xs transition-colors hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
       >

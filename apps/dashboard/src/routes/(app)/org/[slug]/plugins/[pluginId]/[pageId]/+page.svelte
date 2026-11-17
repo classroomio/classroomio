@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { currentOrg, currentOrgPath, isOrgTeamMember } from '$lib/utils/store/org';
   import { pluginsApi } from '$features/plugins';
@@ -18,7 +19,7 @@
     if (!organizationId) return;
 
     if ($isOrgTeamMember === false) {
-      void goto($currentOrgPath);
+      void goto(resolve($currentOrgPath));
       return;
     }
 
@@ -72,7 +73,7 @@
         {$t('plugins.not_found_desc')}
       </p>
       <a
-        href="{$currentOrgPath}/plugins"
+        href={resolve(`${$currentOrgPath}/plugins`)}
         class="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700"
       >
         <ArrowLeftIcon class="size-3.5" />

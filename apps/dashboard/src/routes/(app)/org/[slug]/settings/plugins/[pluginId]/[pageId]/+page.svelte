@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { pluginsApi } from '$features/plugins/api/plugins.svelte';
@@ -14,7 +15,7 @@
     if (!organizationId) return;
 
     if (!$isOrgAdmin) {
-      void goto($currentOrgPath);
+      void goto(resolve($currentOrgPath));
       return;
     }
 

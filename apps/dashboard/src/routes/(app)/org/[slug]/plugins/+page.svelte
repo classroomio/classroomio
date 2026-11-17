@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { SvelteSet } from 'svelte/reactivity';
+  import { resolve } from '$app/paths';
+  import { Button } from '@cio/ui/base/button';
   import { PluginIcon, pluginsApi } from '$features/plugins';
   import { PluginInstallModal, PluginUninstallModal } from '$features/plugins/components';
   import { summarizePluginPermissions } from '$features/plugins/utils/permissions';
@@ -10,8 +13,6 @@
   import { Input } from '@cio/ui/base/input';
   import * as Tabs from '@cio/ui/base/tabs';
   import BlocksIcon from '@lucide/svelte/icons/blocks';
-  import CheckIcon from '@lucide/svelte/icons/check';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
   import Loader2Icon from '@lucide/svelte/icons/loader-2';
   import SearchIcon from '@lucide/svelte/icons/search';
   import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
@@ -56,13 +57,17 @@
     const installed = pluginsApi.installations;
     const catalog = pluginsApi.catalog;
     const items: DisplayPluginCard[] = [];
-    const seenIds = new Set<string>();
+    const seenIds = new SvelteSet<string>();
 
     for (const inst of installed) {
       if (inst.status === 'uninstalled') continue;
       seenIds.add(inst.pluginId);
 
-      const manifest = inst.manifest as any;
+      const manifest = inst.manifest as {
+        version?: string;
+        contributes?: { pages?: unknown[] };
+        permissions?: { required?: string[]; optional?: string[] };
+      } | null;
       const contributesPages = manifest?.contributes?.pages;
       const hasPage = Boolean(contributesPages && contributesPages.length > 0);
       const permissions = [...(manifest?.permissions?.required ?? []), ...(manifest?.permissions?.optional ?? [])];
@@ -73,7 +78,7 @@
         name: inst.plugin?.name ?? inst.pluginId,
         description: inst.plugin?.description ?? '',
         publisher: inst.plugin?.publisher ?? 'ClassroomIO',
-        publisherClass: (inst.plugin as any)?.publisherClass ?? 'first-party',
+        publisherClass: inst.plugin?.publisherClass ?? 'first-party',
         version: manifest?.version ?? '1.0.0',
         iconUrl: inst.iconUrl ?? null,
         isInstalled: true,
@@ -99,7 +104,7 @@
         isInstalled: false,
         isActive: false,
         hasPage: false,
-        permissions: (cat as any).permissions ?? []
+        permissions: cat.permissions ?? []
       });
     }
 
@@ -351,7 +356,7 @@
                   </p>
 
                   {#if plugin.permissions.length > 0}
-                    {@const summaries = summarizePluginPermissions(plugin.permissions)}
+                    {@const summaries = summarizePluginPermissions(plugin.permissions, $t)}
                     <div class="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
                       <div class="flex items-center justify-between">
                         <span class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
@@ -359,11 +364,11 @@
                         </span>
                         <span class="text-[10px] text-slate-400">
                           {plugin.permissions.length}
-                          {plugin.permissions.length === 1 ? 'capability' : 'capabilities'}
+                          {plugin.permissions.length === 1 ? $t('plugins.capability') : $t('plugins.capabilities')}
                         </span>
                       </div>
                       <div class="mt-1.5 flex flex-wrap gap-1.5">
-                        {#each summaries as summary}
+                        {#each summaries as summary (summary.categoryLabel)}
                           <span
                             class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium {summary.isSensitive
                               ? 'border border-amber-200/60 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300'
@@ -417,34 +422,35 @@
                     {#if plugin.isInstalled}
                       {#if plugin.isActive && plugin.hasPage}
                         <a
-                          href="{$currentOrgPath}/plugins/{plugin.slug}"
+                          href={resolve(`${$currentOrgPath}/plugins/${plugin.slug}`)}
                           class="inline-flex items-center gap-1 rounded-md bg-blue-600 px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-700"
                         >
                           <span>{$t('plugins.open_plugin')}</span>
                           <ArrowRightIcon class="size-3" />
                         </a>
                       {/if}
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondary"
+                        size="icon"
                         onclick={() => promptUninstall(plugin)}
                         disabled={isProcessing}
                         title={$t('plugins.uninstall')}
-                        class="flex size-7 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                        class="size-7 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400"
                       >
                         <Trash2Icon class="size-3.5" />
-                      </button>
+                      </Button>
                     {:else}
-                      <button
-                        type="button"
+                      <Button
+                        size="sm"
                         onclick={() => promptInstall(plugin)}
                         disabled={isProcessing}
-                        class="inline-flex items-center gap-1 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                        class="h-7 gap-1 px-3 text-xs font-medium"
                       >
                         {#if isProcessing}
                           <Loader2Icon class="size-3 animate-spin" />
                         {/if}
                         <span>{$t('plugins.install')}</span>
-                      </button>
+                      </Button>
                     {/if}
                   </div>
                 </div>

@@ -11,12 +11,10 @@
     className?: string;
     count?: number;
     onAction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
-    onaction?: (event: PluginActionEvent) => Promise<unknown> | unknown;
   }
 
-  let { target, resource, className = '', count = $bindable(0), onAction, onaction }: Props = $props();
+  let { target, resource, className = '', count = $bindable(0), onAction }: Props = $props();
 
-  const effectiveAction = $derived(onAction ?? onaction);
   let listedContributionKey = '';
   let contributions = $state<ResolvedContributionItem[]>([]);
   const resourceKey = $derived(resource ? `${resource.type}:${resource.id}:${resource.selectedTemplateId ?? ''}` : '');
@@ -70,7 +68,7 @@
         className="block w-full border-0"
         {target}
         {resource}
-        onAction={effectiveAction}
+        {onAction}
       />
     {/each}
   </div>

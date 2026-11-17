@@ -2021,7 +2021,8 @@
                 "browse_plugins": "Browse plugins",
                 "checking_plugins": "Checking installed plugins...",
                 "plugin_label": "Question Plugin",
-                "change_plugin": "Change plugin"
+                "change_plugin": "Change plugin",
+                "virtualizing": "Virtualisation du cadre de question..."
               }
             },
             "delete_confirmation": {
@@ -6519,7 +6520,149 @@
     "no_permissions_desc": "This plugin does not require access to courses, student progress, or storage.",
     "security_notice": "Data is stored securely inside your ClassroomIO academy. This plugin cannot access billing details or member passwords. You can disable or uninstall this plugin at any time.",
     "cancel": "Cancel",
-    "authorize_install": "Authorize & Install"
+    "authorize_install": "Authorize & Install",
+    "sensitive": "Sensible",
+    "capability": "capacité",
+    "capabilities": "capacités",
+    "installing_to": "Installation dans",
+    "permission_categories": {
+      "courses": "Cours",
+      "lessons": "Leçons",
+      "progress": "Progression",
+      "certificates": "Certificats",
+      "storage": "Stockage",
+      "identity": "Identité",
+      "organization": "Académie",
+      "other": "Autres autorisations"
+    },
+    "permission_fallback": {
+      "resource": "Ressource",
+      "view_title": "Afficher {resource}",
+      "manage_title": "Gérer {resource}",
+      "description": "Autorise le plugin à accéder aux données de {scope}"
+    },
+    "permission_items": {
+      "identity_profile_read": {
+        "title": "Afficher le profil utilisateur",
+        "description": "Lire le profil de l'utilisateur actuel"
+      },
+      "organization_profile_read": {
+        "title": "Afficher le profil de l'académie",
+        "description": "Lire le profil de l'organisation"
+      },
+      "organization_members_read": {
+        "title": "Afficher les membres de l'académie",
+        "description": "Lire les membres de l'organisation"
+      },
+      "course_metadata_read": {
+        "title": "Afficher les plans de cours",
+        "description": "Lire les métadonnées des cours"
+      },
+      "course_content_read": {
+        "title": "Lire le contenu des cours",
+        "description": "Lire la structure du contenu du cours"
+      },
+      "course_metadata_write": {
+        "title": "Gérer les cours",
+        "description": "Créer et mettre à jour des cours"
+      },
+      "course_enrollment_read": {
+        "title": "Afficher les inscriptions",
+        "description": "Lire les inscriptions aux cours"
+      },
+      "course_enrollment_write": {
+        "title": "Gérer les inscriptions",
+        "description": "Gérer les inscriptions aux cours"
+      },
+      "lesson_metadata_read": {
+        "title": "Afficher les détails des leçons",
+        "description": "Lire les métadonnées des leçons"
+      },
+      "lesson_content_read": {
+        "title": "Lire le contenu des leçons",
+        "description": "Lire le contenu assaini et les pièces jointes des leçons"
+      },
+      "lesson_write": {
+        "title": "Gérer les leçons",
+        "description": "Créer et mettre à jour des leçons"
+      },
+      "learner_profile_read": {
+        "title": "Afficher les profils des apprenants",
+        "description": "Lire les profils des apprenants"
+      },
+      "learner_progress_read": {
+        "title": "Lire la progression de l'apprenant",
+        "description": "Lire la progression de l'apprenant dans la leçon ou le cours actuel"
+      },
+      "learner_progress_write": {
+        "title": "Mettre à jour la progression",
+        "description": "Mettre à jour la progression de l'apprenant dans la leçon actuelle"
+      },
+      "exercise_metadata_read": {
+        "title": "Afficher les plans d'exercices",
+        "description": "Lire les métadonnées des exercices"
+      },
+      "submission_read": {
+        "title": "Afficher les soumissions",
+        "description": "Lire les soumissions des apprenants"
+      },
+      "submission_write": {
+        "title": "Gérer les soumissions",
+        "description": "Créer et mettre à jour les soumissions"
+      },
+      "grade_read": {
+        "title": "Afficher les notes",
+        "description": "Lire les notes"
+      },
+      "grade_write": {
+        "title": "Gérer les notes",
+        "description": "Créer et publier les notes"
+      },
+      "certificate_issued_read": {
+        "title": "Afficher les certificats émis",
+        "description": "Lire les certificats émis"
+      },
+      "certificate_issuance_write": {
+        "title": "Émettre des certificats",
+        "description": "Émettre des certificats"
+      },
+      "certificate_revocation_write": {
+        "title": "Révoquer des certificats",
+        "description": "Révoquer des certificats"
+      },
+      "certificate_template_read": {
+        "title": "Afficher les modèles de certificats",
+        "description": "Lire les modèles de certificats"
+      },
+      "certificate_template_write": {
+        "title": "Appliquer des modèles de certificats",
+        "description": "Appliquer des modèles de certificats au cours actuel"
+      },
+      "cohort_metadata_read": {
+        "title": "Afficher les cohortes",
+        "description": "Lire les métadonnées des cohortes"
+      },
+      "cohort_membership_read": {
+        "title": "Afficher les membres des cohortes",
+        "description": "Lire l'appartenance aux cohortes"
+      },
+      "analytics_summary_read": {
+        "title": "Afficher les analyses agrégées",
+        "description": "Lire les analyses agrégées"
+      },
+      "notification_write": {
+        "title": "Envoyer des notifications",
+        "description": "Envoyer des notifications ClassroomIO"
+      },
+      "plugin_storage_read": {
+        "title": "Lire le stockage du plugin",
+        "description": "Lire le stockage isolé de ce plugin"
+      },
+      "plugin_storage_write": {
+        "title": "Écrire dans le stockage du plugin",
+        "description": "Écrire dans le stockage isolé de ce plugin"
+      }
+    }
   },
   "early_adopter_claim": {
     "page": {

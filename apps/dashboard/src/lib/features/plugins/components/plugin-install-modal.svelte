@@ -38,7 +38,7 @@
 
   const permissionGroups = $derived.by(() => {
     if (!plugin || !plugin.permissions) return [];
-    return groupPluginPermissions(plugin.permissions);
+    return groupPluginPermissions(plugin.permissions, $t);
   });
 
   function getCategoryIcon(category: FormattedPermission['category']) {
@@ -125,7 +125,7 @@
             {$currentOrg.name?.charAt(0) || 'A'}
           </div>
           <span class="truncate">
-            Installing to <strong>{$currentOrg.name}</strong>
+            {$t('plugins.installing_to')} <strong>{$currentOrg.name}</strong>
           </span>
         </div>
       </div>
@@ -187,7 +187,7 @@
                               class="py-0.2 inline-flex items-center gap-0.5 rounded bg-amber-50 px-1.5 text-[9px] font-medium text-amber-700 dark:bg-amber-950/50 dark:text-amber-400"
                             >
                               <AlertTriangleIcon class="size-2.5" />
-                              <span>Sensitive</span>
+                              <span>{$t('plugins.sensitive')}</span>
                             </span>
                           {/if}
                         </div>

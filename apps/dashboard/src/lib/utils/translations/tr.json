@@ -3207,7 +3207,8 @@
                 "browse_plugins": "Browse plugins",
                 "checking_plugins": "Checking installed plugins...",
                 "plugin_label": "Question Plugin",
-                "change_plugin": "Change plugin"
+                "change_plugin": "Change plugin",
+                "virtualizing": "Soru çerçevesi sanallaştırılıyor..."
               }
             },
             "view_mode": {
@@ -6499,7 +6500,149 @@
     "no_permissions_desc": "This plugin does not require access to courses, student progress, or storage.",
     "security_notice": "Data is stored securely inside your ClassroomIO academy. This plugin cannot access billing details or member passwords. You can disable or uninstall this plugin at any time.",
     "cancel": "Cancel",
-    "authorize_install": "Authorize & Install"
+    "authorize_install": "Authorize & Install",
+    "sensitive": "Hassas",
+    "capability": "yetki",
+    "capabilities": "yetki",
+    "installing_to": "Şuraya yükleniyor:",
+    "permission_categories": {
+      "courses": "Kurslar",
+      "lessons": "Dersler",
+      "progress": "İlerleme",
+      "certificates": "Sertifikalar",
+      "storage": "Depolama",
+      "identity": "Kimlik",
+      "organization": "Akademi",
+      "other": "Diğer İzinler"
+    },
+    "permission_fallback": {
+      "resource": "Kaynak",
+      "view_title": "{resource} Görüntüle",
+      "manage_title": "{resource} Yönet",
+      "description": "Eklentinin {scope} verilerine erişmesine izin verir"
+    },
+    "permission_items": {
+      "identity_profile_read": {
+        "title": "Kullanıcı Profilini Görüntüle",
+        "description": "Geçerli kullanıcı profilini oku"
+      },
+      "organization_profile_read": {
+        "title": "Akademi Profilini Görüntüle",
+        "description": "Kuruluş profilini oku"
+      },
+      "organization_members_read": {
+        "title": "Akademi Üyelerini Görüntüle",
+        "description": "Kuruluş üyelerini oku"
+      },
+      "course_metadata_read": {
+        "title": "Kurs Taslaklarını Görüntüle",
+        "description": "Kurs meta verilerini oku"
+      },
+      "course_content_read": {
+        "title": "Kurs İçeriğini Oku",
+        "description": "Kurs içerik yapısını oku"
+      },
+      "course_metadata_write": {
+        "title": "Kursları Yönet",
+        "description": "Kurs oluştur ve güncelle"
+      },
+      "course_enrollment_read": {
+        "title": "Kayıtları Görüntüle",
+        "description": "Kurs kayıtlarını oku"
+      },
+      "course_enrollment_write": {
+        "title": "Kayıtları Yönet",
+        "description": "Kurs kayıtlarını yönet"
+      },
+      "lesson_metadata_read": {
+        "title": "Ders Detaylarını Görüntüle",
+        "description": "Ders meta verilerini oku"
+      },
+      "lesson_content_read": {
+        "title": "Ders İçeriğini Oku",
+        "description": "Temizlenmiş ders içeriğini ve eklerini oku"
+      },
+      "lesson_write": {
+        "title": "Dersleri Yönet",
+        "description": "Ders oluştur ve güncelle"
+      },
+      "learner_profile_read": {
+        "title": "Öğrenci Profillerini Görüntüle",
+        "description": "Öğrenci profillerini oku"
+      },
+      "learner_progress_read": {
+        "title": "Öğrenci İlerlemesini Oku",
+        "description": "Geçerli ders veya kurstaki öğrenci ilerlemesini oku"
+      },
+      "learner_progress_write": {
+        "title": "Öğrenci İlerlemesini Güncelle",
+        "description": "Geçerli dersteki öğrenci ilerlemesini güncelle"
+      },
+      "exercise_metadata_read": {
+        "title": "Alıştırma Taslaklarını Görüntüle",
+        "description": "Alıştırma meta verilerini oku"
+      },
+      "submission_read": {
+        "title": "Gönderimleri Görüntüle",
+        "description": "Öğrenci gönderimlerini oku"
+      },
+      "submission_write": {
+        "title": "Gönderimleri Yönet",
+        "description": "Gönderim oluştur ve güncelle"
+      },
+      "grade_read": {
+        "title": "Notları Görüntüle",
+        "description": "Notları oku"
+      },
+      "grade_write": {
+        "title": "Notları Yönet",
+        "description": "Not oluştur ve yayınla"
+      },
+      "certificate_issued_read": {
+        "title": "Verilen Sertifikaları Görüntüle",
+        "description": "Verilen sertifikaları oku"
+      },
+      "certificate_issuance_write": {
+        "title": "Sertifika Ver",
+        "description": "Sertifika ver"
+      },
+      "certificate_revocation_write": {
+        "title": "Sertifikaları İptal Et",
+        "description": "Sertifikaları iptal et"
+      },
+      "certificate_template_read": {
+        "title": "Sertifika Tasarımlarını Görüntüle",
+        "description": "Sertifika şablonlarını oku"
+      },
+      "certificate_template_write": {
+        "title": "Sertifika Tasarımlarını Uygula",
+        "description": "Sertifika şablonlarını geçerli kursa uygula"
+      },
+      "cohort_metadata_read": {
+        "title": "Grupları Görüntüle",
+        "description": "Grup meta verilerini oku"
+      },
+      "cohort_membership_read": {
+        "title": "Grup Üyelerini Görüntüle",
+        "description": "Grup üyeliklerini oku"
+      },
+      "analytics_summary_read": {
+        "title": "Toplu Analizleri Görüntüle",
+        "description": "Toplu analizleri oku"
+      },
+      "notification_write": {
+        "title": "Bildirim Gönder",
+        "description": "ClassroomIO bildirimleri gönder"
+      },
+      "plugin_storage_read": {
+        "title": "Eklenti Depolamasını Oku",
+        "description": "Bu eklentinin yalıtılmış depolamasını oku"
+      },
+      "plugin_storage_write": {
+        "title": "Eklenti Depolamasına Yaz",
+        "description": "Bu eklentinin yalıtılmış depolamasına yaz"
+      }
+    }
   },
   "early_adopter_claim": {
     "page": {

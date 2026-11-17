@@ -2021,7 +2021,8 @@
                 "browse_plugins": "Browse plugins",
                 "checking_plugins": "Checking installed plugins...",
                 "plugin_label": "Question Plugin",
-                "change_plugin": "Change plugin"
+                "change_plugin": "Change plugin",
+                "virtualizing": "प्रश्न फ़्रेम वर्चुअलाइज़ किया जा रहा है..."
               }
             },
             "delete_confirmation": {
@@ -6519,7 +6520,149 @@
     "no_permissions_desc": "This plugin does not require access to courses, student progress, or storage.",
     "security_notice": "Data is stored securely inside your ClassroomIO academy. This plugin cannot access billing details or member passwords. You can disable or uninstall this plugin at any time.",
     "cancel": "Cancel",
-    "authorize_install": "Authorize & Install"
+    "authorize_install": "Authorize & Install",
+    "sensitive": "संवेदनशील",
+    "capability": "क्षमता",
+    "capabilities": "क्षमताएं",
+    "installing_to": "इसमें इंस्टॉल हो रहा है:",
+    "permission_categories": {
+      "courses": "कोर्स",
+      "lessons": "पाठ",
+      "progress": "प्रगति",
+      "certificates": "प्रमाणपत्र",
+      "storage": "स्टोरेज",
+      "identity": "पहचान",
+      "organization": "अकादमी",
+      "other": "अन्य अनुमतियां"
+    },
+    "permission_fallback": {
+      "resource": "संसाधन",
+      "view_title": "{resource} देखें",
+      "manage_title": "{resource} प्रबंधित करें",
+      "description": "प्लगइन को {scope} डेटा एक्सेस करने की अनुमति देता है"
+    },
+    "permission_items": {
+      "identity_profile_read": {
+        "title": "उपयोगकर्ता प्रोफ़ाइल देखें",
+        "description": "वर्तमान उपयोगकर्ता प्रोफ़ाइल पढ़ें"
+      },
+      "organization_profile_read": {
+        "title": "अकादमी प्रोफ़ाइल देखें",
+        "description": "संगठन प्रोफ़ाइल पढ़ें"
+      },
+      "organization_members_read": {
+        "title": "अकादमी सदस्य देखें",
+        "description": "संगठन के सदस्य पढ़ें"
+      },
+      "course_metadata_read": {
+        "title": "कोर्स रूपरेखा देखें",
+        "description": "कोर्स मेटाडेटा पढ़ें"
+      },
+      "course_content_read": {
+        "title": "कोर्स सामग्री पढ़ें",
+        "description": "कोर्स सामग्री संरचना पढ़ें"
+      },
+      "course_metadata_write": {
+        "title": "कोर्स प्रबंधित करें",
+        "description": "कोर्स बनाएं और अपडेट करें"
+      },
+      "course_enrollment_read": {
+        "title": "नामांकन देखें",
+        "description": "कोर्स नामांकन पढ़ें"
+      },
+      "course_enrollment_write": {
+        "title": "नामांकन प्रबंधित करें",
+        "description": "कोर्स नामांकन प्रबंधित करें"
+      },
+      "lesson_metadata_read": {
+        "title": "पाठ विवरण देखें",
+        "description": "पाठ मेटाडेटा पढ़ें"
+      },
+      "lesson_content_read": {
+        "title": "पाठ सामग्री पढ़ें",
+        "description": "सैनिटाइज़ की गई पाठ सामग्री और अनुलग्नक पढ़ें"
+      },
+      "lesson_write": {
+        "title": "पाठ प्रबंधित करें",
+        "description": "पाठ बनाएं और अपडेट करें"
+      },
+      "learner_profile_read": {
+        "title": "शिक्षार्थी प्रोफ़ाइल देखें",
+        "description": "शिक्षार्थी प्रोफ़ाइल पढ़ें"
+      },
+      "learner_progress_read": {
+        "title": "शिक्षार्थी प्रगति पढ़ें",
+        "description": "वर्तमान पाठ या कोर्स में शिक्षार्थी प्रगति पढ़ें"
+      },
+      "learner_progress_write": {
+        "title": "शिक्षार्थी प्रगति अपडेट करें",
+        "description": "वर्तमान पाठ में शिक्षार्थी प्रगति अपडेट करें"
+      },
+      "exercise_metadata_read": {
+        "title": "अभ्यास रूपरेखा देखें",
+        "description": "अभ्यास मेटाडेटा पढ़ें"
+      },
+      "submission_read": {
+        "title": "सबमिशन देखें",
+        "description": "शिक्षार्थी सबमिशन पढ़ें"
+      },
+      "submission_write": {
+        "title": "सबमिशन प्रबंधित करें",
+        "description": "सबमिशन बनाएं और अपडेट करें"
+      },
+      "grade_read": {
+        "title": "ग्रेड देखें",
+        "description": "ग्रेड पढ़ें"
+      },
+      "grade_write": {
+        "title": "ग्रेड प्रबंधित करें",
+        "description": "ग्रेड बनाएं और जारी करें"
+      },
+      "certificate_issued_read": {
+        "title": "जारी किए गए प्रमाणपत्र देखें",
+        "description": "जारी किए गए प्रमाणपत्र पढ़ें"
+      },
+      "certificate_issuance_write": {
+        "title": "प्रमाणपत्र जारी करें",
+        "description": "प्रमाणपत्र जारी करें"
+      },
+      "certificate_revocation_write": {
+        "title": "प्रमाणपत्र रद्द करें",
+        "description": "प्रमाणपत्र रद्द करें"
+      },
+      "certificate_template_read": {
+        "title": "प्रमाणपत्र डिज़ाइन देखें",
+        "description": "प्रमाणपत्र टेम्पलेट पढ़ें"
+      },
+      "certificate_template_write": {
+        "title": "प्रमाणपत्र डिज़ाइन लागू करें",
+        "description": "वर्तमान कोर्स में प्रमाणपत्र टेम्पलेट लागू करें"
+      },
+      "cohort_metadata_read": {
+        "title": "समूह देखें",
+        "description": "समूह मेटाडेटा पढ़ें"
+      },
+      "cohort_membership_read": {
+        "title": "समूह सदस्य देखें",
+        "description": "समूह सदस्यता पढ़ें"
+      },
+      "analytics_summary_read": {
+        "title": "समग्र एनालिटिक्स देखें",
+        "description": "समग्र एनालिटिक्स पढ़ें"
+      },
+      "notification_write": {
+        "title": "सूचनाएं भेजें",
+        "description": "ClassroomIO सूचनाएं भेजें"
+      },
+      "plugin_storage_read": {
+        "title": "प्लगइन स्टोरेज पढ़ें",
+        "description": "इस प्लगइन का अलग स्टोरेज पढ़ें"
+      },
+      "plugin_storage_write": {
+        "title": "प्लगइन स्टोरेज लिखें",
+        "description": "इस प्लगइन के अलग स्टोरेज में लिखें"
+      }
+    }
   },
   "early_adopter_claim": {
     "page": {

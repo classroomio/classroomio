@@ -2021,7 +2021,8 @@
                 "browse_plugins": "Browse plugins",
                 "checking_plugins": "Checking installed plugins...",
                 "plugin_label": "Question Plugin",
-                "change_plugin": "Change plugin"
+                "change_plugin": "Change plugin",
+                "virtualizing": "Виртуализация фрейма вопроса..."
               }
             },
             "delete_confirmation": {
@@ -6519,7 +6520,149 @@
     "no_permissions_desc": "This plugin does not require access to courses, student progress, or storage.",
     "security_notice": "Data is stored securely inside your ClassroomIO academy. This plugin cannot access billing details or member passwords. You can disable or uninstall this plugin at any time.",
     "cancel": "Cancel",
-    "authorize_install": "Authorize & Install"
+    "authorize_install": "Authorize & Install",
+    "sensitive": "Конфиденциально",
+    "capability": "разрешение",
+    "capabilities": "разрешений",
+    "installing_to": "Установка в",
+    "permission_categories": {
+      "courses": "Курсы",
+      "lessons": "Уроки",
+      "progress": "Прогресс",
+      "certificates": "Сертификаты",
+      "storage": "Хранилище",
+      "identity": "Личность",
+      "organization": "Академия",
+      "other": "Другие разрешения"
+    },
+    "permission_fallback": {
+      "resource": "Ресурс",
+      "view_title": "Просмотр {resource}",
+      "manage_title": "Управление {resource}",
+      "description": "Позволяет плагину получать доступ к данным {scope}"
+    },
+    "permission_items": {
+      "identity_profile_read": {
+        "title": "Просмотр профиля пользователя",
+        "description": "Чтение текущего профиля пользователя"
+      },
+      "organization_profile_read": {
+        "title": "Просмотр профиля академии",
+        "description": "Чтение профиля организации"
+      },
+      "organization_members_read": {
+        "title": "Просмотр участников академии",
+        "description": "Чтение списка участников организации"
+      },
+      "course_metadata_read": {
+        "title": "Просмотр программ курсов",
+        "description": "Чтение метаданных курсов"
+      },
+      "course_content_read": {
+        "title": "Чтение содержания курсов",
+        "description": "Чтение структуры содержания курса"
+      },
+      "course_metadata_write": {
+        "title": "Управление курсами",
+        "description": "Создание и обновление курсов"
+      },
+      "course_enrollment_read": {
+        "title": "Просмотр зачислений",
+        "description": "Чтение зачислений на курсы"
+      },
+      "course_enrollment_write": {
+        "title": "Управление зачислениями",
+        "description": "Управление зачислениями на курсы"
+      },
+      "lesson_metadata_read": {
+        "title": "Просмотр сведений об уроке",
+        "description": "Чтение метаданных уроков"
+      },
+      "lesson_content_read": {
+        "title": "Чтение содержания уроков",
+        "description": "Чтение безопасного содержания и вложений уроков"
+      },
+      "lesson_write": {
+        "title": "Управление уроками",
+        "description": "Создание и обновление уроков"
+      },
+      "learner_profile_read": {
+        "title": "Просмотр профилей учащихся",
+        "description": "Чтение профилей учащихся"
+      },
+      "learner_progress_read": {
+        "title": "Чтение прогресса учащегося",
+        "description": "Чтение прогресса учащегося в текущем уроке или курсе"
+      },
+      "learner_progress_write": {
+        "title": "Обновление прогресса учащегося",
+        "description": "Обновление прогресса учащегося в текущем уроке"
+      },
+      "exercise_metadata_read": {
+        "title": "Просмотр сведений о заданиях",
+        "description": "Чтение метаданных заданий"
+      },
+      "submission_read": {
+        "title": "Просмотр ответов",
+        "description": "Чтение ответов учащихся"
+      },
+      "submission_write": {
+        "title": "Управление ответами",
+        "description": "Создание и обновление ответов"
+      },
+      "grade_read": {
+        "title": "Просмотр оценок",
+        "description": "Чтение оценок"
+      },
+      "grade_write": {
+        "title": "Управление оценками",
+        "description": "Выставление и публикация оценок"
+      },
+      "certificate_issued_read": {
+        "title": "Просмотр выданных сертификатов",
+        "description": "Чтение выданных сертификатов"
+      },
+      "certificate_issuance_write": {
+        "title": "Выдача сертификатов",
+        "description": "Выдача сертификатов"
+      },
+      "certificate_revocation_write": {
+        "title": "Отзыв сертификатов",
+        "description": "Отзыв сертификатов"
+      },
+      "certificate_template_read": {
+        "title": "Просмотр дизайнов сертификатов",
+        "description": "Чтение шаблонов сертификатов"
+      },
+      "certificate_template_write": {
+        "title": "Применение дизайнов сертификатов",
+        "description": "Применение шаблонов сертификатов к текущему курсу"
+      },
+      "cohort_metadata_read": {
+        "title": "Просмотр потоков",
+        "description": "Чтение метаданных потоков"
+      },
+      "cohort_membership_read": {
+        "title": "Просмотр участников потоков",
+        "description": "Чтение состава потоков"
+      },
+      "analytics_summary_read": {
+        "title": "Просмотр сводной аналитики",
+        "description": "Чтение сводной аналитики"
+      },
+      "notification_write": {
+        "title": "Отправка уведомлений",
+        "description": "Отправка уведомлений ClassroomIO"
+      },
+      "plugin_storage_read": {
+        "title": "Чтение хранилища плагина",
+        "description": "Чтение изолированного хранилища этого плагина"
+      },
+      "plugin_storage_write": {
+        "title": "Запись в хранилище плагина",
+        "description": "Запись в изолированное хранилище этого плагина"
+      }
+    }
   },
   "early_adopter_claim": {
     "page": {

@@ -2021,7 +2021,8 @@
                 "browse_plugins": "Browse plugins",
                 "checking_plugins": "Checking installed plugins...",
                 "plugin_label": "Question Plugin",
-                "change_plugin": "Change plugin"
+                "change_plugin": "Change plugin",
+                "virtualizing": "Virtualizando quadro da questão..."
               }
             },
             "delete_confirmation": {
@@ -6519,7 +6520,149 @@
     "no_permissions_desc": "This plugin does not require access to courses, student progress, or storage.",
     "security_notice": "Data is stored securely inside your ClassroomIO academy. This plugin cannot access billing details or member passwords. You can disable or uninstall this plugin at any time.",
     "cancel": "Cancel",
-    "authorize_install": "Authorize & Install"
+    "authorize_install": "Authorize & Install",
+    "sensitive": "Sensível",
+    "capability": "capacidade",
+    "capabilities": "capacidades",
+    "installing_to": "Instalando em",
+    "permission_categories": {
+      "courses": "Cursos",
+      "lessons": "Aulas",
+      "progress": "Progresso",
+      "certificates": "Certificados",
+      "storage": "Armazenamento",
+      "identity": "Identidade",
+      "organization": "Academia",
+      "other": "Outras permissões"
+    },
+    "permission_fallback": {
+      "resource": "Recurso",
+      "view_title": "Ver {resource}",
+      "manage_title": "Gerenciar {resource}",
+      "description": "Permite que o plugin acesse dados de {scope}"
+    },
+    "permission_items": {
+      "identity_profile_read": {
+        "title": "Ver perfil do usuário",
+        "description": "Ler o perfil do usuário atual"
+      },
+      "organization_profile_read": {
+        "title": "Ver perfil da academia",
+        "description": "Ler o perfil da organização"
+      },
+      "organization_members_read": {
+        "title": "Ver membros da academia",
+        "description": "Ler os membros da organização"
+      },
+      "course_metadata_read": {
+        "title": "Ver estrutura dos cursos",
+        "description": "Ler metadados do curso"
+      },
+      "course_content_read": {
+        "title": "Ler conteúdo do curso",
+        "description": "Ler a estrutura do conteúdo do curso"
+      },
+      "course_metadata_write": {
+        "title": "Gerenciar cursos",
+        "description": "Criar e atualizar cursos"
+      },
+      "course_enrollment_read": {
+        "title": "Ver matrículas",
+        "description": "Ler matrículas dos cursos"
+      },
+      "course_enrollment_write": {
+        "title": "Gerenciar matrículas",
+        "description": "Gerenciar matrículas dos cursos"
+      },
+      "lesson_metadata_read": {
+        "title": "Ver detalhes da aula",
+        "description": "Ler metadados da aula"
+      },
+      "lesson_content_read": {
+        "title": "Ler conteúdo da aula",
+        "description": "Ler conteúdo higienizado e anexos da aula"
+      },
+      "lesson_write": {
+        "title": "Gerenciar aulas",
+        "description": "Criar e atualizar aulas"
+      },
+      "learner_profile_read": {
+        "title": "Ver perfis dos alunos",
+        "description": "Ler perfis dos alunos"
+      },
+      "learner_progress_read": {
+        "title": "Ler progresso do aluno",
+        "description": "Ler progresso do aluno na aula ou curso atual"
+      },
+      "learner_progress_write": {
+        "title": "Atualizar progresso do aluno",
+        "description": "Atualizar progresso do aluno na aula atual"
+      },
+      "exercise_metadata_read": {
+        "title": "Ver estrutura de exercícios",
+        "description": "Ler metadados de exercícios"
+      },
+      "submission_read": {
+        "title": "Ver envios",
+        "description": "Ler envios dos alunos"
+      },
+      "submission_write": {
+        "title": "Gerenciar envios",
+        "description": "Criar e atualizar envios"
+      },
+      "grade_read": {
+        "title": "Ver notas",
+        "description": "Ler notas"
+      },
+      "grade_write": {
+        "title": "Gerenciar notas",
+        "description": "Criar e publicar notas"
+      },
+      "certificate_issued_read": {
+        "title": "Ver certificados emitidos",
+        "description": "Ler certificados emitidos"
+      },
+      "certificate_issuance_write": {
+        "title": "Emitir certificados",
+        "description": "Emitir certificados"
+      },
+      "certificate_revocation_write": {
+        "title": "Revogar certificados",
+        "description": "Revogar certificados"
+      },
+      "certificate_template_read": {
+        "title": "Ver designs de certificados",
+        "description": "Ler modelos de certificado"
+      },
+      "certificate_template_write": {
+        "title": "Aplicar designs de certificados",
+        "description": "Aplicar modelos de certificado ao curso atual"
+      },
+      "cohort_metadata_read": {
+        "title": "Ver turmas",
+        "description": "Ler metadados das turmas"
+      },
+      "cohort_membership_read": {
+        "title": "Ver membros das turmas",
+        "description": "Ler membros das turmas"
+      },
+      "analytics_summary_read": {
+        "title": "Ver análises agregadas",
+        "description": "Ler análises agregadas"
+      },
+      "notification_write": {
+        "title": "Enviar notificações",
+        "description": "Enviar notificações do ClassroomIO"
+      },
+      "plugin_storage_read": {
+        "title": "Ler armazenamento do plugin",
+        "description": "Ler o armazenamento isolado deste plugin"
+      },
+      "plugin_storage_write": {
+        "title": "Gravar no armazenamento do plugin",
+        "description": "Gravar no armazenamento isolado deste plugin"
+      }
+    }
   },
   "early_adopter_claim": {
     "page": {

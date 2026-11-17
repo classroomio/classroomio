@@ -16,7 +16,7 @@ export interface PluginFrameSecurity {
   targetOrigin: string;
 }
 
-export function parseHttpOrigin(value: string): string | null {
+function parseHttpOrigin(value: string): string | null {
   try {
     const url = new URL(value);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
@@ -47,7 +47,6 @@ export function resolvePluginFrameSecurity({
   const frameOrigin = parseHttpOrigin(srcUrl);
   if (!frameOrigin) return opaqueFrameSecurity;
 
-  // Sandbox Escape Guard: never grant same-origin access if the frame shares the host origin
   const parsedHostOrigin = currentOrigin ? parseHttpOrigin(currentOrigin) : null;
   if (parsedHostOrigin && frameOrigin === parsedHostOrigin) {
     return opaqueFrameSecurity;

@@ -2021,7 +2021,8 @@
                 "browse_plugins": "Browse plugins",
                 "checking_plugins": "Checking installed plugins...",
                 "plugin_label": "Question Plugin",
-                "change_plugin": "Change plugin"
+                "change_plugin": "Change plugin",
+                "virtualizing": "Virtualiserer spørgsmålsramme..."
               }
             },
             "delete_confirmation": {
@@ -6519,7 +6520,149 @@
     "no_permissions_desc": "This plugin does not require access to courses, student progress, or storage.",
     "security_notice": "Data is stored securely inside your ClassroomIO academy. This plugin cannot access billing details or member passwords. You can disable or uninstall this plugin at any time.",
     "cancel": "Cancel",
-    "authorize_install": "Authorize & Install"
+    "authorize_install": "Authorize & Install",
+    "sensitive": "Følsom",
+    "capability": "rettighed",
+    "capabilities": "rettigheder",
+    "installing_to": "Installerer til",
+    "permission_categories": {
+      "courses": "Kurser",
+      "lessons": "Lektioner",
+      "progress": "Fremskridt",
+      "certificates": "Certifikater",
+      "storage": "Lager",
+      "identity": "Identitet",
+      "organization": "Akademi",
+      "other": "Andre tilladelser"
+    },
+    "permission_fallback": {
+      "resource": "Ressource",
+      "view_title": "Vis {resource}",
+      "manage_title": "Administrer {resource}",
+      "description": "Giver pluginnet adgang til data for {scope}"
+    },
+    "permission_items": {
+      "identity_profile_read": {
+        "title": "Vis brugerprofil",
+        "description": "Læs den aktuelle brugerprofil"
+      },
+      "organization_profile_read": {
+        "title": "Vis akademiprofil",
+        "description": "Læs organisationens profil"
+      },
+      "organization_members_read": {
+        "title": "Vis akademimedlemmer",
+        "description": "Læs organisationens medlemmer"
+      },
+      "course_metadata_read": {
+        "title": "Vis kursusoversigter",
+        "description": "Læs kursusmetadata"
+      },
+      "course_content_read": {
+        "title": "Læs kursusindhold",
+        "description": "Læs kursets indholdsstruktur"
+      },
+      "course_metadata_write": {
+        "title": "Administrer kurser",
+        "description": "Opret og opdater kurser"
+      },
+      "course_enrollment_read": {
+        "title": "Vis tilmeldinger",
+        "description": "Læs kursustilmeldinger"
+      },
+      "course_enrollment_write": {
+        "title": "Administrer tilmeldinger",
+        "description": "Administrer kursustilmeldinger"
+      },
+      "lesson_metadata_read": {
+        "title": "Vis lektionsdetaljer",
+        "description": "Læs lektionsmetadata"
+      },
+      "lesson_content_read": {
+        "title": "Læs lektionsindhold",
+        "description": "Læs renset lektionsindhold og vedhæftninger"
+      },
+      "lesson_write": {
+        "title": "Administrer lektioner",
+        "description": "Opret og opdater lektioner"
+      },
+      "learner_profile_read": {
+        "title": "Vis elevprofiler",
+        "description": "Læs elevprofiler"
+      },
+      "learner_progress_read": {
+        "title": "Læs elevfremskridt",
+        "description": "Læs elevens fremskridt i den aktuelle lektion eller kursus"
+      },
+      "learner_progress_write": {
+        "title": "Opdater elevfremskridt",
+        "description": "Opdater elevens fremskridt i den aktuelle lektion"
+      },
+      "exercise_metadata_read": {
+        "title": "Vis øvelsesoversigter",
+        "description": "Læs øvelsesmetadata"
+      },
+      "submission_read": {
+        "title": "Vis afleveringer",
+        "description": "Læs elevafleveringer"
+      },
+      "submission_write": {
+        "title": "Administrer afleveringer",
+        "description": "Opret og opdater afleveringer"
+      },
+      "grade_read": {
+        "title": "Vis karakterer",
+        "description": "Læs karakterer"
+      },
+      "grade_write": {
+        "title": "Administrer karakterer",
+        "description": "Opret og frigiv karakterer"
+      },
+      "certificate_issued_read": {
+        "title": "Vis udstedte certifikater",
+        "description": "Læs udstedte certifikater"
+      },
+      "certificate_issuance_write": {
+        "title": "Udsted certifikater",
+        "description": "Udsted certifikater"
+      },
+      "certificate_revocation_write": {
+        "title": "Tilbagekald certifikater",
+        "description": "Tilbagekald certifikater"
+      },
+      "certificate_template_read": {
+        "title": "Vis certifikatdesigns",
+        "description": "Læs certifikatskabeloner"
+      },
+      "certificate_template_write": {
+        "title": "Anvend certifikatdesigns",
+        "description": "Anvend certifikatskabeloner på det aktuelle kursus"
+      },
+      "cohort_metadata_read": {
+        "title": "Vis hold",
+        "description": "Læs holdmetadata"
+      },
+      "cohort_membership_read": {
+        "title": "Vis holdmedlemmer",
+        "description": "Læs holdmedlemskab"
+      },
+      "analytics_summary_read": {
+        "title": "Vis samlet analyse",
+        "description": "Læs samlede analyser"
+      },
+      "notification_write": {
+        "title": "Send notifikationer",
+        "description": "Send ClassroomIO-notifikationer"
+      },
+      "plugin_storage_read": {
+        "title": "Læs pluginlager",
+        "description": "Læs dette plugins isolerede lager"
+      },
+      "plugin_storage_write": {
+        "title": "Skriv til pluginlager",
+        "description": "Skriv til dette plugins isolerede lager"
+      }
+    }
   },
   "early_adopter_claim": {
     "page": {
