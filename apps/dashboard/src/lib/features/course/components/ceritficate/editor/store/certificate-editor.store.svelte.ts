@@ -4,6 +4,7 @@ import {
   resolveCertificateDesign,
   type CertificateDesign,
   type CertificateTemplateId,
+  type VerifyAnchor,
   type VerifyPlacements
 } from '@cio/certificates';
 
@@ -126,12 +127,12 @@ class CertificateEditorStore {
     this.draft.accentColor = color;
   }
 
-  setVerifyPlacement(templateId: CertificateTemplateId, anchor: string) {
+  setVerifyPlacement(templateId: CertificateTemplateId, anchor: VerifyAnchor) {
     this.draft = {
       ...this.draft,
       verifyPlacements: {
         ...this.draft.verifyPlacements,
-        [templateId]: { anchor: anchor as VerifyPlacements[CertificateTemplateId]['anchor'] }
+        [templateId]: { anchor }
       }
     };
   }

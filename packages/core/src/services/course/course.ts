@@ -434,7 +434,6 @@ export async function updateCourse(
       const existingDesign = (existingCertificate?.design as Record<string, unknown> | undefined) ?? {};
       const incomingDesign = (incomingCertificate.design as Record<string, unknown> | undefined) ?? {};
       const mergedDesign = {
-        ...existingDesign,
         ...incomingDesign,
         verifyPosition:
           (incomingDesign as { verifyPosition?: string }).verifyPosition ??

@@ -29,16 +29,14 @@ export const load = async (event) => {
     let visitorIp: string | undefined;
     try {
       visitorIp = event.getClientAddress?.();
-    } catch {}
-
-    if (!visitorIp) {
-      visitorIp = event.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || undefined;
+    } catch (error) {
+      console.warn('getClientAddress failed', error);
     }
 
     const result = await safeServerApi<VerifySuccess>(() =>
       classroomio['org-site'].verify[':code'].$get(
         { param: { code: normalized } },
-        visitorIp ? { headers: { 'x-forwarded-for': visitorIp } } : undefined
+        visitorIp ? { headers: { 'x-visitor-ip': visitorIp } } : undefined
       )
     );
     if (result.ok) {

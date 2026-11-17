@@ -34,18 +34,12 @@ export async function assembleCertificateRender(
 
   const issuedAtIso = body.issuedAt ?? new Date().toISOString();
   const issuedAtDate = new Date(issuedAtIso);
-  const date = Number.isNaN(issuedAtDate.getTime())
-    ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' })
-    : issuedAtDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
-
-  const certificateId = body.studentId
-    ? formatCertificateId(design.idFormat, body.studentId, issuedAtDate)
-    : formatCertificateId(design.idFormat, fallbackSequence(issuedAtDate), issuedAtDate);
 
   let verifyCode: string | null = null;
   let verifyUrl: string | null = null;
   let status: 'valid' | 'expired' | 'revoked' = 'valid';
   let latestIssue: Awaited<ReturnType<typeof getLatestCertificateByCourseProfile>> | null = null;
+  let canonicalRecipientName: string | null = null;
 
   const baseUrl = getDashboardBaseUrl({
     siteName: organization?.siteName ?? null,
@@ -67,6 +61,8 @@ export async function assembleCertificateRender(
       if (issue) {
         status = resolveCertificateStatus({ revokedAt: issue.revokedAt, expiresAt: issue.expiresAt });
       }
+      const profile = await getProfileById(recipientProfileId);
+      canonicalRecipientName = profile?.fullname ?? null;
     } catch (error) {
       console.error('assembleCertificateRender getLatestCertificateByCourseProfile failed', {
         courseId,
@@ -77,10 +73,22 @@ export async function assembleCertificateRender(
     }
   }
 
+  const recipientName = body.previewMode ? body.studentName : (canonicalRecipientName ?? body.studentName);
+  const effectiveIssuedAt = latestIssue?.issuedAt ?? issuedAtIso;
+  const effectiveIssuedAtDate = new Date(effectiveIssuedAt);
+  const date = Number.isNaN(effectiveIssuedAtDate.getTime())
+    ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' })
+    : effectiveIssuedAtDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
+
+  const effectiveStudentId = body.previewMode ? body.studentId : (recipientProfileId ?? body.studentId);
+  const certificateId = effectiveStudentId
+    ? formatCertificateId(design.idFormat, effectiveStudentId, effectiveIssuedAtDate)
+    : formatCertificateId(design.idFormat, fallbackSequence(effectiveIssuedAtDate), effectiveIssuedAtDate);
+
   return {
     design,
     data: {
-      recipientName: body.studentName,
+      recipientName,
       courseName: courseRow.title,
       courseDescription: courseRow.description ?? '',
       orgName: organization?.name ?? '',

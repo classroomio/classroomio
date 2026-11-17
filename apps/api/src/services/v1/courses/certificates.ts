@@ -17,6 +17,11 @@ import { assertCertificatesEnabled } from '@api/services/course/certificate-plan
 import { generateCertificatePdf, generateCertificatePng } from '@api/utils/certificate';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
+  ensureCertificateIssue,
+  computeStandardCertificateExpiresAt
+} from '@api/services/certificate/ensure-certificate';
+import { getLatestCertificateByCourseProfile } from '@cio/db/queries/certificate/certificate';
+import {
   assertCourseBelongsToOrganization,
   assertCourseMemberOrOrgAdmin,
   assertCourseTeamMemberOrOrgAdmin
@@ -132,6 +137,24 @@ export async function downloadPublicApiCourseCertificateService(
   }
 
   const issuedAt = new Date(member.certificateEarnedAt).toISOString();
+  const [courseRow] = await getCourseById(params.courseId);
+  if (courseRow?.certificate) {
+    const existing = await getLatestCertificateByCourseProfile(params.courseId, member.profileId!);
+    if (!existing || !existing.verifyCode) {
+      const expiresAt = computeStandardCertificateExpiresAt(
+        issuedAt,
+        courseRow.certificate as { expiresAfterMonths?: number | null } | null
+      );
+      await ensureCertificateIssue({
+        courseId: params.courseId,
+        profileId: member.profileId!,
+        issuedAt,
+        expiresAt,
+        courseCompletionRecordId: null
+      });
+    }
+  }
+
   const renderInput = await assembleCertificateRender(
     params.courseId,
     {

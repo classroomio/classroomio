@@ -46,10 +46,15 @@ export async function ensureCertificateIssue(params: EnsureCertificateIssueParam
       if (await verifyCodeExists(verifyCode, dbClient)) continue;
       try {
         const updated = await updateCertificateVerifyCode(existing.id, verifyCode, dbClient);
-        if (updated) return updated;
+        if (updated?.verifyCode) return updated;
+
+        const refetched = await getCertificateByCourseProfile(courseId, profileId, cycleNumber, dbClient);
+        if (refetched?.verifyCode) return refetched;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        if (message.includes('duplicate key') || message.includes('unique')) continue;
+        const causeMessage = error instanceof Error && error.cause ? String((error.cause as Error).message) : '';
+        const combined = `${message} ${causeMessage}`;
+        if (combined.includes('duplicate key') || combined.includes('unique')) continue;
         throw error;
       }
     }
@@ -87,7 +92,9 @@ export async function ensureCertificateIssue(params: EnsureCertificateIssueParam
       if (raced) return raced;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      const isUniqueViolation = message.includes('duplicate key') || message.includes('unique');
+      const causeMessage = error instanceof Error && error.cause ? String((error.cause as Error).message) : '';
+      const combined = `${message} ${causeMessage}`;
+      const isUniqueViolation = combined.includes('duplicate key') || combined.includes('unique');
 
       if (isUniqueViolation) {
         const raced = await getCertificateByCourseProfile(courseId, profileId, cycleNumber, dbClient);

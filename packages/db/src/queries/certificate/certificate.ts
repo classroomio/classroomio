@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 import type { TCourseCertificateIssue, TNewCourseCertificateIssue } from '@db/types';
-import { and, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 
@@ -110,7 +110,11 @@ export async function createCertificateIssue(
     return created ?? null;
   } catch (error) {
     console.error('createCertificateIssue error:', error);
-    throw new Error(`Failed to create certificate issue: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const err = new Error(
+      `Failed to create certificate issue: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+    (err as unknown as { cause: unknown }).cause = error;
+    throw err;
   }
 }
 
@@ -220,15 +224,25 @@ export async function updateCertificateVerifyCode(
     const [updated] = await dbClient
       .update(schema.courseCertificateIssue)
       .set({ verifyCode })
-      .where(eq(schema.courseCertificateIssue.id, certificateId))
+      .where(and(eq(schema.courseCertificateIssue.id, certificateId), isNull(schema.courseCertificateIssue.verifyCode)))
       .returning();
 
-    return updated ?? null;
+    if (updated) return updated;
+
+    const [existing] = await dbClient
+      .select()
+      .from(schema.courseCertificateIssue)
+      .where(eq(schema.courseCertificateIssue.id, certificateId))
+      .limit(1);
+
+    return existing ?? null;
   } catch (error) {
     console.error('updateCertificateVerifyCode error:', error);
-    throw new Error(
+    const err = new Error(
       `Failed to update certificate verify code: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+    (err as unknown as { cause: unknown }).cause = error;
+    throw err;
   }
 }
 
