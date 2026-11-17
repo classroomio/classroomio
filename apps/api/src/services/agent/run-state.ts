@@ -315,7 +315,9 @@ async function enqueueAgentRun(
       status: 'failed',
       phase: 'failed',
       lastError: { code: 'AGENT_RUN_ENQUEUE_FAILED', message },
-      finishedAt: failedAt
+      finishedAt: failedAt,
+      workerId: null,
+      lockedAt: null
     });
 
     await createAgentRunEvent({
