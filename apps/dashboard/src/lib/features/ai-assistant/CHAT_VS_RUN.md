@@ -54,16 +54,16 @@ The same tool set is bound in both modes. Whether `update_lesson_content` for te
 
 ### 2. Run can stick at `queued`
 
-Run creation enqueues to BullMQ. If the worker can't pick the job up (worker crashed, module-resolution boot failure, schema mismatch on payload), the run sits at `queued`. After 30 seconds the pane stops guessing and asks the API, which reads the job's own BullMQ state and the queue's active count: the "Worker not responding" banner appears only when the job is `missing`, `failed`, `unavailable`, or still `waiting` while the queue processes nothing. A job that is `active`, `delayed` (BullMQ retrying it), `completed`, or `waiting` behind an active job is left alone. Its Retry button replaces the queued job with a fresh one. Missing Redis is a separate, explicit case: the API marks the run `failed` with `AGENT_RUN_QUEUE_UNAVAILABLE` instead of leaving it queued.
+Run creation enqueues to BullMQ. If the worker can't pick the job up (worker crashed, module-resolution boot failure, schema mismatch on payload), the run sits at `queued`. After 30 seconds the pane stops guessing and asks the API, which reads the job's own BullMQ state and the queue's active count: the "Worker not responding" banner appears only when the job is `missing`, `failed`, `unavailable`, or still `waiting` while the queue processes nothing. The health read has a two-second deadline, so an offline Redis reports `unavailable` instead of blocking the poll. A job that is `active`, `delayed` (BullMQ retrying it), `completed`, or `waiting` behind an active job is left alone. Its Retry button replaces the queued job with a fresh one, and the worker claim rejects duplicates so repeated presses cannot run the same course twice. Missing Redis is a separate, explicit case: the API marks the run `failed` with `AGENT_RUN_QUEUE_UNAVAILABLE` instead of leaving it queued.
 
 **Observed:** `ERR_MODULE_NOT_FOUND` from a cross-app import made the worker boot fail silently from the user's perspective. Cause was only visible in worker logs.
 
 ### 3. Pause/cancel/chat boundary
 
-- **Pause** is the only reversible stop. Pausing sets `status='paused'` and clears `workerId`; Resume re-queues the run and continues from its checkpoint.
-- **Cancel** is terminal. It sets `status='canceled'`, clears `workerId`, and the pane injects a run summary and flips back to `planning` on its own — there is no Dismiss step and no Resume button, because a canceled run can never be resumed.
+- **Pause** is the only reversible stop. Pausing sets `status='paused'` without releasing the current `workerId`, so an in-flight tool finishes and checkpoints before the worker exits and releases ownership. Resume re-queues the run; a live worker keeps ownership and continues, while a replacement job can claim only after the lease expires or an explicit BullMQ redelivery of the same job.
+- **Cancel** is terminal. It sets `status='canceled'`, releases `workerId`, and the pane injects a run summary and flips back to `planning` on its own — there is no Dismiss step and no Resume button, because a canceled run can never be resumed.
 
-The worker enforces this ownership boundary: each job execution writes with `expectedWorkerId`, so a worker that was paused, canceled, or superseded while an LLM round was in flight cannot overwrite the newer run state. It exits as `superseded` instead.
+The worker enforces this ownership boundary: each job execution claims the run with `expectedWorkerId`, a live lease rejects a second claim, and checkpoint result writes are fenced atomically by the same owner. A worker that was paused, canceled, or superseded while an LLM round or tool was in flight cannot overwrite the newer run state; it exits as `superseded` instead.
 
 We still mitigate the chat-after-stop boundary at the prompt level:
 

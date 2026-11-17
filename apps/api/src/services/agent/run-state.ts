@@ -19,6 +19,9 @@ import { QUEUE_NAMES, enqueueAgentCourseGenerationRun, getQueue, isRedisConfigur
 import { AppError } from '@api/utils/errors';
 
 const ACTIVE_RUN_STATUSES = new Set<TAiAgentRunStatus>(['queued', 'running', 'waiting_for_input', 'paused']);
+const PAUSABLE_RUN_STATUSES: TAiAgentRunStatus[] = ['queued', 'running', 'waiting_for_input'];
+const RESUME_TRANSITION_STATUSES: TAiAgentRunStatus[] = ['paused', 'waiting_for_input'];
+const QUEUE_HEALTH_TIMEOUT_MS = 2_000;
 
 export interface CreateAgentRunStateInput {
   orgId: string;
@@ -140,6 +143,52 @@ function toQueueHealthState(jobState: string): AgentRunQueueHealthState {
   }
 }
 
+async function withDeadline<T>(operation: Promise<T>, timeoutMs: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  const deadline = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => reject(new Error('Queue health check timed out')), timeoutMs);
+  });
+
+  try {
+    return await Promise.race([operation, deadline]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+function getExecutionKey(run: TAiAgentRun): string {
+  const bullmq = run.executionCursor.bullmq;
+
+  if (!bullmq || typeof bullmq !== 'object') {
+    return run.updatedAt;
+  }
+
+  const executionKey = (bullmq as Record<string, unknown>).executionKey;
+
+  return typeof executionKey === 'string' && executionKey.length > 0 ? executionKey : run.updatedAt;
+}
+
+async function readRunQueueHealth(run: TAiAgentRun, jobId: string | null): Promise<AgentRunQueueHealth> {
+  const queue = getQueue(QUEUE_NAMES.agentCourseGeneration);
+  const counts = await queue.getJobCounts('active');
+  const activeJobs = counts.active ?? 0;
+
+  if (!jobId) {
+    return { state: 'missing', activeJobs };
+  }
+
+  const job = await queue.getJob(jobId);
+
+  if (!job) {
+    return { state: 'missing', activeJobs };
+  }
+
+  const jobState = await job.getState();
+
+  return { state: toQueueHealthState(jobState), activeJobs };
+}
+
 /**
  * Where the run's current BullMQ job actually is. Answers "is the worker
  * healthy?" with queue data instead of inferring it from a timestamp. Returns
@@ -155,23 +204,7 @@ async function getRunQueueHealth(run: TAiAgentRun): Promise<AgentRunQueueHealth 
   const jobId = getBullmqJobId(run);
 
   try {
-    const queue = getQueue(QUEUE_NAMES.agentCourseGeneration);
-    const counts = await queue.getJobCounts('active');
-    const activeJobs = counts.active ?? 0;
-
-    if (!jobId) {
-      return { state: 'missing', activeJobs };
-    }
-
-    const job = await queue.getJob(jobId);
-
-    if (!job) {
-      return { state: 'missing', activeJobs };
-    }
-
-    const jobState = await job.getState();
-
-    return { state: toQueueHealthState(jobState), activeJobs };
+    return await withDeadline(readRunQueueHealth(run, jobId), QUEUE_HEALTH_TIMEOUT_MS);
   } catch (error) {
     console.error('getRunQueueHealth error:', error);
 
@@ -205,14 +238,19 @@ async function removeQueuedBullmqJob(run: TAiAgentRun): Promise<void> {
   }
 }
 
-async function enqueueAgentRun(run: TAiAgentRun, reason: 'created' | 'resumed' | 'retried'): Promise<TAiAgentRun> {
+async function enqueueAgentRun(
+  run: TAiAgentRun,
+  reason: 'created' | 'resumed' | 'retried',
+  executionKey?: string
+): Promise<TAiAgentRun> {
   if (!isRedisConfigured()) {
     const message = 'Course generation is unavailable because the background queue is not configured.';
+    const failedAt = new Date().toISOString();
     const failedRun = await updateOwnedAgentRun(run.id, run.userId, {
       status: 'failed',
       phase: 'failed',
       lastError: { code: 'AGENT_RUN_QUEUE_UNAVAILABLE', message },
-      finishedAt: new Date().toISOString(),
+      finishedAt: failedAt,
       workerId: null,
       lockedAt: null
     });
@@ -227,6 +265,8 @@ async function enqueueAgentRun(run: TAiAgentRun, reason: 'created' | 'resumed' |
     return failedRun;
   }
 
+  const jobExecutionKey = executionKey ?? randomUUID();
+
   try {
     const jobId = await enqueueAgentCourseGenerationRun(
       {
@@ -234,20 +274,31 @@ async function enqueueAgentRun(run: TAiAgentRun, reason: 'created' | 'resumed' |
         requestedByUserId: run.userId,
         organizationId: run.orgId
       },
-      { attempt: run.attempt }
+      { attempt: run.attempt, executionKey: jobExecutionKey }
     );
-    const updatedRun = await updateOwnedAgentRun(run.id, run.userId, {
+    const enqueuedAt = new Date().toISOString();
+    const updatedRun = await updateAgentRun({
+      runId: run.id,
+      userId: run.userId,
       status: 'queued',
       executionCursor: {
         ...run.executionCursor,
         bullmq: {
           queue: 'agent-course-generation',
           jobId: jobId ?? null,
-          enqueuedAt: new Date().toISOString(),
+          executionKey: jobExecutionKey,
+          enqueuedAt,
           reason
         }
-      }
+      },
+      expectedStatuses: ['queued']
     });
+
+    if (!updatedRun) {
+      const currentRun = await getAgentRun(run.id, run.userId);
+
+      return currentRun ?? run;
+    }
 
     await createAgentRunEvent({
       runId: run.id,
@@ -259,11 +310,12 @@ async function enqueueAgentRun(run: TAiAgentRun, reason: 'created' | 'resumed' |
     return updatedRun;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to start course generation';
+    const failedAt = new Date().toISOString();
     await updateOwnedAgentRun(run.id, run.userId, {
       status: 'failed',
       phase: 'failed',
       lastError: { code: 'AGENT_RUN_ENQUEUE_FAILED', message },
-      finishedAt: new Date().toISOString()
+      finishedAt: failedAt
     });
 
     await createAgentRunEvent({
@@ -390,13 +442,24 @@ export async function pauseAgentRunState(runId: string, userId: string, orgId: s
 
   await removeQueuedBullmqJob(run);
 
-  const updatedRun = await updateOwnedAgentRun(runId, userId, {
+  const pausedRun = await updateAgentRun({
+    runId,
+    userId,
     status: 'paused',
     phase: 'paused',
     currentStepKey: null,
-    workerId: null,
-    lockedAt: null
+    expectedStatuses: PAUSABLE_RUN_STATUSES
   });
+
+  if (!pausedRun) {
+    const currentRun = await getAgentRun(runId, userId);
+
+    if (!currentRun) {
+      throw new AppError('Course generation not found', 'AGENT_RUN_NOT_FOUND', 404);
+    }
+
+    return buildAgentRunDetail(currentRun);
+  }
 
   await createAgentRunEvent({
     runId,
@@ -405,7 +468,7 @@ export async function pauseAgentRunState(runId: string, userId: string, orgId: s
     payload: { previousStatus: run.status, previousPhase: run.phase }
   });
 
-  return buildAgentRunDetail(updatedRun);
+  return buildAgentRunDetail(pausedRun);
 }
 
 export async function resumeAgentRunState(runId: string, userId: string, orgId: string): Promise<AgentRunDetail> {
@@ -418,7 +481,7 @@ export async function resumeAgentRunState(runId: string, userId: string, orgId: 
   if (run.status === 'queued') {
     await removeQueuedBullmqJob(run);
 
-    const enqueuedRun = await enqueueAgentRun(run, 'resumed');
+    const enqueuedRun = await enqueueAgentRun(run, 'resumed', getExecutionKey(run));
 
     return buildAgentRunDetail(enqueuedRun);
   }
@@ -435,15 +498,28 @@ export async function resumeAgentRunState(runId: string, userId: string, orgId: 
     throw new AppError('Failed course generation must be retried', 'AGENT_RUN_RETRY_REQUIRED', 409);
   }
 
-  const updatedRun = await updateOwnedAgentRun(runId, userId, {
+  const executionKey = randomUUID();
+  const updatedRun = await updateAgentRun({
+    runId,
+    userId,
     status: 'queued',
     phase: 'implementing',
     cancelRequestedAt: null,
     finishedAt: null,
-    workerId: null,
-    lockedAt: null,
-    lastError: null
+    lastError: null,
+    expectedStatuses: RESUME_TRANSITION_STATUSES,
+    expectedWorkerId: run.workerId ?? null
   });
+
+  if (!updatedRun) {
+    const currentRun = await getAgentRun(runId, userId);
+
+    if (!currentRun) {
+      throw new AppError('Course generation not found', 'AGENT_RUN_NOT_FOUND', 404);
+    }
+
+    return buildAgentRunDetail(currentRun);
+  }
 
   await createAgentRunEvent({
     runId,
@@ -452,7 +528,7 @@ export async function resumeAgentRunState(runId: string, userId: string, orgId: 
     payload: { previousStatus: run.status, phase: run.phase }
   });
 
-  const enqueuedRun = await enqueueAgentRun(updatedRun, 'resumed');
+  const enqueuedRun = await enqueueAgentRun(updatedRun, 'resumed', executionKey);
 
   return buildAgentRunDetail(enqueuedRun);
 }
@@ -472,15 +548,30 @@ export async function retryAgentRunState(runId: string, userId: string, orgId: s
     throw new AppError('Course generation has reached its retry limit', 'AGENT_RUN_RETRY_LIMIT_REACHED', 409);
   }
 
-  const updatedRun = await updateOwnedAgentRun(runId, userId, {
+  const executionKey = randomUUID();
+  const updatedRun = await updateAgentRun({
+    runId,
+    userId,
     status: 'queued',
     attempt: run.attempt + 1,
     lastError: null,
     cancelRequestedAt: null,
     finishedAt: null,
     workerId: null,
-    lockedAt: null
+    lockedAt: null,
+    expectedStatuses: ['failed'],
+    expectedWorkerId: null
   });
+
+  if (!updatedRun) {
+    const currentRun = await getAgentRun(runId, userId);
+
+    if (!currentRun) {
+      throw new AppError('Course generation not found', 'AGENT_RUN_NOT_FOUND', 404);
+    }
+
+    return buildAgentRunDetail(currentRun);
+  }
 
   await createAgentRunEvent({
     runId,
@@ -489,7 +580,7 @@ export async function retryAgentRunState(runId: string, userId: string, orgId: s
     payload: { previousAttempt: run.attempt, nextAttempt: updatedRun.attempt }
   });
 
-  const enqueuedRun = await enqueueAgentRun(updatedRun, 'retried');
+  const enqueuedRun = await enqueueAgentRun(updatedRun, 'retried', executionKey);
 
   return buildAgentRunDetail(enqueuedRun);
 }

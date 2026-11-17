@@ -51,7 +51,12 @@ vi.mock('@api/middlewares/org-member', () => ({
   orgMemberMiddleware: async (_c: Context, next: Next) => next()
 }));
 
-import { getAgentRunState, pauseAgentRunState, resumeAgentRunState } from '@api/services/agent/run-state';
+import {
+  getAgentRunState,
+  pauseAgentRunState,
+  retryAgentRunState,
+  resumeAgentRunState
+} from '@api/services/agent/run-state';
 import { agentRunsRouter } from '@api/routes/agent/runs';
 
 const ORG_ID = '11111111-1111-4111-8111-111111111111';
@@ -60,6 +65,10 @@ const RUN_ID = '22222222-2222-4222-8222-222222222222';
 const COURSE_ID = '33333333-3333-4333-8333-333333333333';
 
 function createMockRun(status: string) {
+  const timestamp = new Date().toISOString();
+  const isRunning = status === 'running';
+  const isCanceled = status === 'canceled';
+
   return {
     id: RUN_ID,
     orgId: ORG_ID,
@@ -78,30 +87,45 @@ function createMockRun(status: string) {
     lastError: null,
     attempt: 0,
     maxAttempts: 3,
-    workerId: status === 'running' ? 'worker-1' : null,
-    lockedAt: status === 'running' ? new Date().toISOString() : null,
-    cancelRequestedAt: status === 'canceled' ? new Date().toISOString() : null,
-    startedAt: new Date().toISOString(),
-    finishedAt: status === 'canceled' ? new Date().toISOString() : null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    workerId: isRunning ? 'worker-1' : null,
+    lockedAt: isRunning ? timestamp : null,
+    cancelRequestedAt: isCanceled ? timestamp : null,
+    startedAt: timestamp,
+    finishedAt: isCanceled ? timestamp : null,
+    createdAt: timestamp,
+    updatedAt: timestamp
   };
+}
+
+function createQueueMock({
+  activeJobs = 1,
+  jobState = 'waiting',
+  hasJob = true,
+  removed = 1
+}: {
+  activeJobs?: number;
+  jobState?: string;
+  hasJob?: boolean;
+  removed?: number;
+} = {}) {
+  const getState = vi.fn().mockResolvedValue(jobState);
+  const getJob = vi.fn().mockResolvedValue(hasJob ? { getState } : undefined);
+  const getJobCounts = vi.fn().mockResolvedValue({ active: activeJobs });
+  const remove = vi.fn().mockResolvedValue(removed);
+
+  return { remove, getJob, getJobCounts };
 }
 
 describe('agent runs pause and resume state', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.getQueue.mockReturnValue({
-      remove: vi.fn().mockResolvedValue(1),
-      getJob: vi.fn().mockResolvedValue({ getState: vi.fn().mockResolvedValue('waiting') }),
-      getJobCounts: vi.fn().mockResolvedValue({ active: 1 })
-    });
+    mocks.getQueue.mockReturnValue(createQueueMock());
   });
 
   describe('pauseAgentRunState', () => {
-    it('pauses a running run', async () => {
+    it('pauses a running run without overwriting its owner', async () => {
       const runningRun = createMockRun('running');
-      const pausedRun = { ...runningRun, status: 'paused', phase: 'paused', workerId: null, lockedAt: null };
+      const pausedRun = { ...runningRun, status: 'paused', phase: 'paused' };
 
       mocks.getOwnedAgentRun.mockResolvedValueOnce(runningRun);
       mocks.updateOwnedAgentRun.mockResolvedValueOnce(pausedRun);
@@ -115,8 +139,7 @@ describe('agent runs pause and resume state', () => {
           userId: USER_ID,
           status: 'paused',
           phase: 'paused',
-          workerId: null,
-          lockedAt: null
+          expectedStatuses: ['queued', 'running', 'waiting_for_input']
         })
       );
       expect(mocks.createAgentRunEvent).toHaveBeenCalledWith(
@@ -151,6 +174,19 @@ describe('agent runs pause and resume state', () => {
       expect(mocks.createAgentRunEvent).toHaveBeenCalledWith(
         expect.objectContaining({ runId: RUN_ID, eventType: 'run.queue_cancel_checked' })
       );
+    });
+
+    it('keeps a run that finished while pausing finished', async () => {
+      const runningRun = createMockRun('running');
+      const completedRun = { ...runningRun, status: 'completed', phase: 'completed' };
+
+      mocks.getOwnedAgentRun.mockResolvedValueOnce(runningRun).mockResolvedValueOnce(completedRun);
+      mocks.updateOwnedAgentRun.mockResolvedValueOnce(null);
+
+      const result = await pauseAgentRunState(RUN_ID, USER_ID, ORG_ID);
+
+      expect(result.run.status).toBe('completed');
+      expect(mocks.createAgentRunEvent).not.toHaveBeenCalledWith(expect.objectContaining({ eventType: 'run.paused' }));
     });
 
     it('rejects pausing a completed run', async () => {
@@ -197,9 +233,9 @@ describe('agent runs pause and resume state', () => {
           phase: 'implementing',
           cancelRequestedAt: null,
           finishedAt: null,
-          workerId: null,
-          lockedAt: null,
-          lastError: null
+          lastError: null,
+          expectedStatuses: ['paused', 'waiting_for_input'],
+          expectedWorkerId: null
         })
       );
       expect(mocks.createAgentRunEvent).toHaveBeenCalledWith(
@@ -208,6 +244,19 @@ describe('agent runs pause and resume state', () => {
           eventType: 'run.resumed'
         })
       );
+    });
+
+    it('does not requeue when a concurrent request already resumed the run', async () => {
+      const pausedRun = createMockRun('paused');
+      const runningRun = { ...pausedRun, status: 'running', workerId: 'worker-2' };
+
+      mocks.getOwnedAgentRun.mockResolvedValueOnce(pausedRun).mockResolvedValueOnce(runningRun);
+      mocks.updateOwnedAgentRun.mockResolvedValueOnce(null);
+
+      const result = await resumeAgentRunState(RUN_ID, USER_ID, ORG_ID);
+
+      expect(result.run.status).toBe('running');
+      expect(mocks.createAgentRunEvent).not.toHaveBeenCalledWith(expect.objectContaining({ eventType: 'run.resumed' }));
     });
 
     it('replaces the queued job when resuming a run that is already queued', async () => {
@@ -298,13 +347,33 @@ describe('agent runs pause and resume state', () => {
     });
   });
 
+  describe('retryAgentRunState', () => {
+    it('increments the attempt once for concurrent retries', async () => {
+      const failedRun = createMockRun('failed');
+      const queuedRun = { ...failedRun, status: 'queued', attempt: 1 };
+
+      mocks.getOwnedAgentRun.mockResolvedValueOnce(failedRun);
+      mocks.updateOwnedAgentRun.mockResolvedValueOnce(queuedRun).mockResolvedValueOnce(queuedRun);
+
+      const result = await retryAgentRunState(RUN_ID, USER_ID, ORG_ID);
+
+      expect(result.run.attempt).toBe(1);
+      expect(mocks.updateOwnedAgentRun).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          status: 'queued',
+          attempt: 1,
+          expectedStatuses: ['failed'],
+          expectedWorkerId: null
+        })
+      );
+    });
+  });
+
   describe('queue health', () => {
     it('reports the queued job state with the queue active count', async () => {
       mocks.getOwnedAgentRun.mockResolvedValueOnce(createMockRun('queued'));
-      mocks.getQueue.mockReturnValueOnce({
-        getJob: vi.fn().mockResolvedValue({ getState: vi.fn().mockResolvedValue('waiting') }),
-        getJobCounts: vi.fn().mockResolvedValue({ active: 1 })
-      });
+      mocks.getQueue.mockReturnValueOnce(createQueueMock({ jobState: 'waiting', activeJobs: 1 }));
 
       const result = await getAgentRunState(RUN_ID, USER_ID, ORG_ID);
 
@@ -313,10 +382,7 @@ describe('agent runs pause and resume state', () => {
 
     it('reports a missing job when the queue no longer holds it', async () => {
       mocks.getOwnedAgentRun.mockResolvedValueOnce(createMockRun('queued'));
-      mocks.getQueue.mockReturnValueOnce({
-        getJob: vi.fn().mockResolvedValue(undefined),
-        getJobCounts: vi.fn().mockResolvedValue({ active: 0 })
-      });
+      mocks.getQueue.mockReturnValueOnce(createQueueMock({ hasJob: false, activeJobs: 0 }));
 
       const result = await getAgentRunState(RUN_ID, USER_ID, ORG_ID);
 
@@ -325,14 +391,34 @@ describe('agent runs pause and resume state', () => {
 
     it('reports a delayed job without calling it a stall', async () => {
       mocks.getOwnedAgentRun.mockResolvedValueOnce(createMockRun('queued'));
-      mocks.getQueue.mockReturnValueOnce({
-        getJob: vi.fn().mockResolvedValue({ getState: vi.fn().mockResolvedValue('delayed') }),
-        getJobCounts: vi.fn().mockResolvedValue({ active: 0 })
-      });
+      mocks.getQueue.mockReturnValueOnce(createQueueMock({ jobState: 'delayed', activeJobs: 0 }));
 
       const result = await getAgentRunState(RUN_ID, USER_ID, ORG_ID);
 
       expect(result.queueHealth).toEqual({ state: 'delayed', activeJobs: 0 });
+    });
+
+    it('reports unavailable when the queue does not answer before the deadline', async () => {
+      vi.useFakeTimers();
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      try {
+        const queueMock = createQueueMock();
+        queueMock.getJobCounts.mockReturnValue(new Promise(() => undefined));
+
+        mocks.getOwnedAgentRun.mockResolvedValueOnce(createMockRun('queued'));
+        mocks.getQueue.mockReturnValueOnce(queueMock);
+
+        const pending = getAgentRunState(RUN_ID, USER_ID, ORG_ID);
+        await vi.advanceTimersByTimeAsync(2_000);
+
+        const result = await pending;
+
+        expect(result.queueHealth).toEqual({ state: 'unavailable', activeJobs: 0 });
+      } finally {
+        consoleError.mockRestore();
+        vi.useRealTimers();
+      }
     });
 
     it('skips the queue entirely for a run that is not queued', async () => {

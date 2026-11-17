@@ -20,6 +20,7 @@ class AiAssistantApi extends BaseApiWithErrors {
   currentConversation: AgentConversation | null = $state(null);
   runs: AgentRunSummary[] = $state([]);
   currentRun: AgentRunDetail | null = $state(null);
+  private runRequestEpoch = 0;
 
   async fetchStatus(courseId: string) {
     await this.execute<typeof classroomio.agent.status.$get>({
@@ -316,6 +317,8 @@ class AiAssistantApi extends BaseApiWithErrors {
   }): Promise<AgentRunDetail | null> {
     let runDetail: AgentRunDetail | null = null;
 
+    this.runRequestEpoch += 1;
+
     await this.execute<typeof classroomio.agent.runs.$post>({
       requestFn: () =>
         classroomio.agent.runs.$post({
@@ -340,6 +343,7 @@ class AiAssistantApi extends BaseApiWithErrors {
 
   async loadRun(runId: string): Promise<AgentRunDetail | null> {
     let runDetail: AgentRunDetail | null = null;
+    const requestEpoch = ++this.runRequestEpoch;
 
     await this.execute<(typeof classroomio.agent.runs)[':runId']['$get']>({
       requestFn: () =>
@@ -348,6 +352,8 @@ class AiAssistantApi extends BaseApiWithErrors {
         }),
       logContext: 'loading agent run',
       onSuccess: (result) => {
+        if (requestEpoch !== this.runRequestEpoch) return;
+
         runDetail = result.data as AgentRunDetail;
         this.currentRun = runDetail;
         this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
@@ -359,6 +365,8 @@ class AiAssistantApi extends BaseApiWithErrors {
 
   async cancelRun(runId: string): Promise<AgentRunDetail | null> {
     let runDetail: AgentRunDetail | null = null;
+
+    this.runRequestEpoch += 1;
 
     await this.execute<(typeof classroomio.agent.runs)[':runId']['cancel']['$post']>({
       requestFn: () =>
@@ -382,6 +390,8 @@ class AiAssistantApi extends BaseApiWithErrors {
   async pauseRun(runId: string): Promise<AgentRunDetail | null> {
     let runDetail: AgentRunDetail | null = null;
 
+    this.runRequestEpoch += 1;
+
     await this.execute<(typeof classroomio.agent.runs)[':runId']['pause']['$post']>({
       requestFn: () =>
         classroomio.agent.runs[':runId'].pause.$post({
@@ -404,6 +414,8 @@ class AiAssistantApi extends BaseApiWithErrors {
   async retryRun(runId: string): Promise<AgentRunDetail | null> {
     let runDetail: AgentRunDetail | null = null;
 
+    this.runRequestEpoch += 1;
+
     await this.execute<(typeof classroomio.agent.runs)[':runId']['retry']['$post']>({
       requestFn: () =>
         classroomio.agent.runs[':runId'].retry.$post({
@@ -425,6 +437,8 @@ class AiAssistantApi extends BaseApiWithErrors {
 
   async resumeRun(runId: string): Promise<AgentRunDetail | null> {
     let runDetail: AgentRunDetail | null = null;
+
+    this.runRequestEpoch += 1;
 
     await this.execute<(typeof classroomio.agent.runs)[':runId']['resume']['$post']>({
       requestFn: () =>

@@ -6007,7 +6007,7 @@
     "context_full_compacting": "Sıkıştırılıyor...",
     "context_full_new_chat": "Başlat özet içeren yeni sohbet",
     "context_full_summarizing": "Özet oluşturuluyor...",
-    "context_compacted_badge": "Sözleşme sıkıştırıldı ({count} önceki mesajlar)",
+    "context_compacted_badge": "Konuşma sıkıştırıldı ({count} önceki mesaj)",
     "run_paused": "Kurs oluşturma duraklatıldı",
     "resume_failed": "Kurs oluşturmaya devam edilemedi. Lütfen yeniden deneyin.",
     "pause_failed": "Kurs oluşturma duraklatılamadı. Lütfen yeniden deneyin.",

@@ -12,8 +12,9 @@ import {
   getAgentRunById,
   getAgentRunStep,
   updateAgentRun,
-  upsertAgentRunStep
+  upsertAgentRunStepForWorker
 } from '@cio/db/queries/agent';
+import type { TAiAgentRunStatus } from '@cio/db/types';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
 import { getExerciseSectionsByExerciseId } from '@cio/db/queries/exercise';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
@@ -315,6 +316,7 @@ function toErrorPayload(error: unknown): { code: string; message: string; detail
 }
 
 const CONTROL_FLOW_ERROR_CODES = new Set(['AGENT_RUN_CANCELED', 'AGENT_RUN_PAUSED', 'AGENT_RUN_SUPERSEDED']);
+const DURABLE_TOOL_RUN_STATUSES: TAiAgentRunStatus[] = ['queued', 'running', 'waiting_for_input', 'failed'];
 
 async function assertRunNotCanceled(runId: string, workerId?: string): Promise<void> {
   const run = await getAgentRunById(runId);
@@ -343,11 +345,17 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
   execute: () => Promise<TResult>,
   workerId?: string
 ): Promise<TResult> {
+  if (!workerId) {
+    throw new AppError('Course generation run is missing its worker execution', 'AGENT_RUN_WORKER_MISSING', 500);
+  }
+
   await assertRunNotCanceled(runId, workerId);
 
   const inputHash = hashToolInput(toolName, params.args ?? {});
   const stepKey = `${toolName}:${inputHash.slice(0, 48)}`;
   const existingStep = await getAgentRunStep(runId, stepKey);
+  const attempt = existingStep ? existingStep.attempt + 1 : 0;
+  const stepInput = { toolName, args: (params.args ?? {}) as Record<string, unknown> };
 
   if (existingStep?.status === 'completed') {
     const checkpointResult = extractCheckpointResult(existingStep.output);
@@ -373,24 +381,31 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
     phase: 'implementing',
     currentStepKey: stepKey,
     lockedAt: now,
-    expectedWorkerId: workerId
+    expectedWorkerId: workerId,
+    expectedStatuses: DURABLE_TOOL_RUN_STATUSES
   });
 
   if (!claimedRun) {
     throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
   }
 
-  await upsertAgentRunStep({
+  const startedStep = await upsertAgentRunStepForWorker({
     runId,
+    userId: params.userId,
+    expectedWorkerId: workerId,
     stepKey,
     stepType: `tool:${toolName}`,
     status: 'running',
     inputHash,
-    input: { toolName, args: (params.args ?? {}) as Record<string, unknown> },
-    attempt: existingStep ? existingStep.attempt + 1 : 0,
+    input: stepInput,
+    attempt,
     startedAt: now,
     finishedAt: null
   });
+
+  if (!startedStep) {
+    throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+  }
 
   await createAgentRunEvent({
     runId,
@@ -404,19 +419,25 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
     const finishedAt = new Date().toISOString();
     const outputIds = extractOutputIds(result);
 
-    await upsertAgentRunStep({
+    const completedStep = await upsertAgentRunStepForWorker({
       runId,
+      userId: params.userId,
+      expectedWorkerId: workerId,
       stepKey,
       stepType: `tool:${toolName}`,
       status: 'completed',
       inputHash,
-      input: { toolName, args: (params.args ?? {}) as Record<string, unknown> },
+      input: stepInput,
       output: toCheckpointOutput(result),
       outputIds,
-      attempt: existingStep ? existingStep.attempt + 1 : 0,
+      attempt,
       startedAt: existingStep?.startedAt ?? now,
       finishedAt
     });
+
+    if (!completedStep) {
+      throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+    }
 
     await createAgentRunEvent({
       runId,
@@ -429,24 +450,30 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
   } catch (error) {
     const errorPayload = toErrorPayload(error);
 
-    // A pause, cancel or takeover stops the run without the tool failing; the
-    // step stays retryable instead of being recorded as a phantom failure.
     if (CONTROL_FLOW_ERROR_CODES.has(errorPayload.code)) {
       throw error;
     }
 
-    await upsertAgentRunStep({
+    const failedAt = new Date().toISOString();
+
+    const failedStep = await upsertAgentRunStepForWorker({
       runId,
+      userId: params.userId,
+      expectedWorkerId: workerId,
       stepKey,
       stepType: `tool:${toolName}`,
       status: 'failed',
       inputHash,
-      input: { toolName, args: (params.args ?? {}) as Record<string, unknown> },
+      input: stepInput,
       error: errorPayload,
-      attempt: existingStep ? existingStep.attempt + 1 : 0,
+      attempt,
       startedAt: existingStep?.startedAt ?? now,
-      finishedAt: new Date().toISOString()
+      finishedAt: failedAt
     });
+
+    if (!failedStep) {
+      throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+    }
 
     await createAgentRunEvent({
       runId,
