@@ -3331,6 +3331,35 @@ export const organizationTokenAuth = pgTable(
   (table) => [index('idx_organization_token_auth_org_id').on(table.organizationId)]
 );
 
+/**
+ * Binds an external app's stable user id (`sub`) to a ClassroomIO user, per org.
+ * Token exchange keys off this, not the email, so one org's secret can never sign
+ * in a user it has not provisioned.
+ */
+export const organizationTokenAuthIdentity = pgTable(
+  'organization_token_auth_identity',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    externalSubject: text('external_subject').notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('organization_token_auth_identity_org_subject_unique').on(table.organizationId, table.externalSubject),
+    index('idx_organization_token_auth_identity_user_id').on(table.userId)
+  ]
+);
+
 export const organizationApiKey = pgTable(
   'organization_api_key',
   {
