@@ -38,7 +38,8 @@ Two things follow from being mounted at `/docs`:
   not rebase images, so an unprefixed path would 404.
 
 `scripts/package-assets.mjs` moves `dist/` under `build/docs/` to match the served path and writes the
-`_redirects` file (`/docs` → `/docs/home`, and the legacy `/docs/how-to-guides/*` → `/docs/*`).
+`_redirects` file (`/docs` → `/docs/developers`, plus legacy docs and guide URLs → their new pages). Exact-path rules
+are written before wildcard rules, as Cloudflare requires, and the build fails on a duplicate source.
 
 ## API reference
 

@@ -34,7 +34,9 @@ Member and invitation changes affect seats differently:
 | Invitation expires                     | The invitation link stops working         | The seat is freed        |
 | **Resend invite** (expired or revoked) | A new invitation link is sent             | A seat is required again |
 
-ClassroomIO checks capacity before direct additions, invitations that create a student, self-enrollment, course joins, cohort assignments, imports, moving archived students out of **Archived** (unarchive or undoing an archive), and resending, re-importing, or correcting the email of an invitation that was revoked or has expired. An action can fill the final available seat, but an action that would exceed the limit is blocked.
+ClassroomIO checks capacity before direct additions, invitations that create a student, self-enrollment, course joins, cohort assignments, imports, moving archived students out of **Archived** (unarchive or undoing an archive), and resending, re-importing, or correcting the email of an invitation that was revoked or has expired. An action can fill the final available seat, but an action that would exceed the limit is blocked. An import adds students up to the limit and marks the rows that don't fit **No seats left**. Invalid emails and existing members keep their own statuses.
+
+If a failed payment isn't fixed within 2 days, imports add no new students and mark new addresses and lapsed invitations **No seats left**, even below the limit. Fix the payment in [Manage your subscription and billing](/get-started/manage-your-subscription-and-billing).
 
 Administrators receive a one-time notification when an addition crosses half of a finite student allowance and another when it reaches the allowance.
 
