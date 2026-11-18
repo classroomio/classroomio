@@ -1,3 +1,7 @@
-export function getStudentCourseContinuePath(courseId: string): string {
-  return `/courses/${courseId}/lessons?next=true`;
+import { getCourseRouteBase } from './functions';
+
+export function getStudentCourseContinuePath(courseId: string, publicId?: string | null): string {
+  const base = publicId ? `/paths/${publicId}/courses` : getCourseRouteBase();
+
+  return `${base}/${courseId}/lessons?next=true`;
 }

@@ -28,6 +28,7 @@ import {
 
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { snackbar } from '$features/ui/snackbar/store';
+import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
 import { toast } from '@cio/ui/base/sonner';
 import { t } from '$lib/utils/functions/translations';
 
@@ -260,6 +261,8 @@ export class ExerciseApi extends BaseApiWithErrors {
           snackbar.success('Exercise submitted successfully');
           this.success = true;
           this.errors = {};
+          // Submissions feed path unlocks: drop cached journeys so they refetch.
+          learnerPathStore.invalidateJourneyCache();
         }
       },
       onError: (result) => {

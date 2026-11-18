@@ -14,6 +14,7 @@ import type {
   TUpdateLearningPath
 } from '@cio/utils/validation/learning-path';
 import {
+  countActivePathMembers,
   countIssuedCertificates,
   createLearningPath,
   deleteLearningPath,
@@ -41,6 +42,7 @@ import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
 export interface TLearningPathDetail extends TLearningPath {
   courses: TLearningPathCourseDetail[];
   certificatesIssued: number;
+  totalStudents: number;
 }
 
 /**
@@ -237,11 +239,13 @@ export async function getLearningPathDetail(
       const courses = await listLearningPathCourses(path.id, tx);
       const isTeam = roleId === ROLE.ADMIN || (roleId === ROLE.TUTOR && (await isTutorAssigned(path, userId, tx)));
       const certificatesIssued = isTeam ? await countIssuedCertificates(path.id, tx) : 0;
+      const totalStudents = await countActivePathMembers(path.id, tx);
 
       return {
         ...path,
         courses,
-        certificatesIssued
+        certificatesIssued,
+        totalStudents
       };
     });
   } catch (error) {
@@ -404,13 +408,15 @@ export async function getPublicLearningPathBySlug(
 
       const courses = await listLearningPathCourses(path.id, tx);
       const certificatesIssued = await countIssuedCertificates(path.id, tx);
+      const totalStudents = await countActivePathMembers(path.id, tx);
 
       const { welcomeEmailMessage: _welcomeEmailMessage, ...publicPath } = path;
 
       return {
         ...publicPath,
         courses,
-        certificatesIssued
+        certificatesIssued,
+        totalStudents
       };
     });
   } catch (error) {

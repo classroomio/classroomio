@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { mergeProps } from 'bits-ui';
   import { Spinner } from '../../base/spinner';
+  import * as Tooltip from '../../base/tooltip';
   import { CheckboxField } from '../checkbox-field';
   import { Search } from '../search';
   import { cn } from '../../tools';
@@ -44,63 +46,85 @@
   const hasHeading = $derived(heading || headingSnippet);
 </script>
 
-<div data-slot="multi-select-list" class={cn('ui:border-border ui:space-y-3 ui:rounded-md ui:border', className)}>
-  {#if hasHeading || searchPlaceholder}
-    <div
-      class={cn(
-        'ui:border-border ui:flex ui:gap-3 ui:border-b ui:px-2 ui:py-2 ui:items-center ui:justify-between',
-        !hasHeading && 'ui:justify-end'
-      )}
-    >
-      {#if heading}
-        <p class="ui:text-sm ui:font-medium">
-          {heading} ({items.length})
+{#snippet itemRow(item: MultiSelectListItem)}
+  <CheckboxField
+    name={`${namePrefix}-${item.id}`}
+    label={null}
+    checked={isSelected(item.id)}
+    disabled={item.disabled}
+    onclick={() => onToggle(item.id)}
+    className={cn('ui:items-start', item.disabled ? 'ui:opacity-60' : undefined)}
+  >
+    <div class="ui:ml-2 ui:min-w-0 ui:flex-1">
+      <p class="ui:text-foreground ui:text-sm ui:font-medium ui:line-clamp-2 ui:wrap-break-word">
+        {item.label || item.id}
+      </p>
+      {#if item.description}
+        <p class="ui:ml-2 ui:text-muted-foreground ui:text-sm ui:line-clamp-2 ui:wrap-break-word ui:mt-0.5">
+          {item.description}
         </p>
-      {:else if headingSnippet}
-        {@render headingSnippet()}
       {/if}
+    </div>
+  </CheckboxField>
+{/snippet}
 
-      {#if searchPlaceholder}
-        <Search
-          placeholder={searchPlaceholder}
-          bind:value={searchValue}
-          onValueChange={onSearchValueChange}
-          class="ui:w-full ui:max-w-sm"
-        />
-      {/if}
-    </div>
-  {/if}
-  {#if isLoading}
-    <div class="ui:flex ui:min-h-40 ui:items-center ui:justify-center ui:px-2 ui:pb-2">
-      <Spinner class="ui:size-5 ui:text-muted-foreground" />
-    </div>
-  {:else if items.length === 0}
-    <p class="ui:text-muted-foreground ui:px-2 ui:pb-2 ui:text-sm">{emptyMessage}</p>
-  {:else}
-    <div
-      data-slot="multi-select-list-items"
-      class={cn('ui:max-h-60 ui:space-y-2 ui:overflow-y-auto ui:px-2 ui:pb-2', listClass)}
-    >
-      {#each items as item (item.id)}
-        <CheckboxField
-          name={`${namePrefix}-${item.id}`}
-          label={null}
-          checked={isSelected(item.id)}
-          onclick={() => onToggle(item.id)}
-          className="ui:items-start"
-        >
-          <div class="ui:ml-2 ui:min-w-0 ui:flex-1">
-            <p class="ui:text-foreground ui:text-sm ui:font-medium ui:line-clamp-2 ui:wrap-break-word">
-              {item.label || item.id}
-            </p>
-            {#if item.description}
-              <p class="ui:ml-2 ui:text-muted-foreground ui:text-sm ui:line-clamp-2 ui:wrap-break-word ui:mt-0.5">
-                {item.description}
-              </p>
-            {/if}
-          </div>
-        </CheckboxField>
-      {/each}
-    </div>
-  {/if}
-</div>
+<Tooltip.Provider delayDuration={300}>
+  <div data-slot="multi-select-list" class={cn('ui:border-border ui:space-y-3 ui:rounded-md ui:border', className)}>
+    {#if hasHeading || searchPlaceholder}
+      <div
+        class={cn(
+          'ui:border-border ui:flex ui:gap-3 ui:border-b ui:px-2 ui:py-2 ui:items-center ui:justify-between',
+          !hasHeading && 'ui:justify-end'
+        )}
+      >
+        {#if heading}
+          <p class="ui:text-sm ui:font-medium">
+            {heading} ({items.length})
+          </p>
+        {:else if headingSnippet}
+          {@render headingSnippet()}
+        {/if}
+
+        {#if searchPlaceholder}
+          <Search
+            placeholder={searchPlaceholder}
+            bind:value={searchValue}
+            onValueChange={onSearchValueChange}
+            class="ui:w-full ui:max-w-sm"
+          />
+        {/if}
+      </div>
+    {/if}
+    {#if isLoading}
+      <div class="ui:flex ui:min-h-40 ui:items-center ui:justify-center ui:px-2 ui:pb-2">
+        <Spinner class="ui:size-5 ui:text-muted-foreground" />
+      </div>
+    {:else if items.length === 0}
+      <p class="ui:text-muted-foreground ui:px-2 ui:pb-2 ui:text-sm">{emptyMessage}</p>
+    {:else}
+      <div
+        data-slot="multi-select-list-items"
+        class={cn('ui:max-h-60 ui:space-y-2 ui:overflow-y-auto ui:px-2 ui:pb-2', listClass)}
+      >
+        {#each items as item (item.id)}
+          {#if item.disabledTooltip}
+            <Tooltip.Root>
+              <Tooltip.Trigger>
+                {#snippet child({ props })}
+                  <div {...mergeProps({ class: 'ui:block' }, props)}>
+                    {@render itemRow(item)}
+                  </div>
+                {/snippet}
+              </Tooltip.Trigger>
+              <Tooltip.Content side="top" sideOffset={6} class="ui:max-w-xs">
+                {item.disabledTooltip}
+              </Tooltip.Content>
+            </Tooltip.Root>
+          {:else}
+            {@render itemRow(item)}
+          {/if}
+        {/each}
+      </div>
+    {/if}
+  </div>
+</Tooltip.Provider>

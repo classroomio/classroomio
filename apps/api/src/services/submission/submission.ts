@@ -62,24 +62,28 @@ async function triggerCertificationIfExerciseComplete(
   const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
 
   if (!isComplete) {
-    void syncCourseProgressInLearningPaths(courseId, profile.id).catch((syncError) => {
+    try {
+      await syncCourseProgressInLearningPaths(courseId, profile.id);
+    } catch (syncError) {
       console.error('Failed to sync learning path progress after exercise submission:', syncError);
-    });
+    }
 
     return;
   }
 
   // Record completion before syncing paths: a course counts as done on a path
   // by its recorded completion, so the sync must see the write above.
-  void evaluateAndRecordCourseCompletion(courseId, profile.id)
-    .catch((certError) => {
-      console.error('Failed to evaluate course certification after exercise submission:', certError);
-    })
-    .finally(() => {
-      void syncCourseProgressInLearningPaths(courseId, profile.id).catch((syncError) => {
-        console.error('Failed to sync learning path progress after exercise submission:', syncError);
-      });
-    });
+  try {
+    await evaluateAndRecordCourseCompletion(courseId, profile.id);
+  } catch (certError) {
+    console.error('Failed to evaluate course certification after exercise submission:', certError);
+  }
+
+  try {
+    await syncCourseProgressInLearningPaths(courseId, profile.id);
+  } catch (syncError) {
+    console.error('Failed to sync learning path progress after exercise submission:', syncError);
+  }
 }
 
 /**

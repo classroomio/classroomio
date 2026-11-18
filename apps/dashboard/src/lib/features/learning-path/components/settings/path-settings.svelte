@@ -103,7 +103,7 @@
     hasUnsavedChanges = isDirty;
   });
 
-  const pathLink = $derived(currentSlug ? `${$currentOrgDomain}/path/${currentSlug}` : '#');
+  const pathLink = $derived(currentSlug ? `${$currentOrgDomain}/learning-paths/${currentSlug}` : '#');
 
   const PEOPLE_LINK_MARKER = '@@people@@';
 

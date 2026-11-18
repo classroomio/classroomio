@@ -66,6 +66,7 @@
           noMatchesMessage={$t('learningPath.modals.add_courses.no_matches')}
           errorMessage={$t('learningPath.modals.add_courses.load_failed')}
           retryLabel={$t('learningPath.modals.add_courses.retry')}
+          disabledCourseTooltip={$t('learningPath.modals.add_courses.public_course_disabled')}
           paginationStatus={(page, totalPages) =>
             $t('learningPath.modals.add_courses.pagination_status', { page, totalPages })}
         />

@@ -3,6 +3,7 @@ export { default as hero } from './hero.svelte';
 export { default as courseCard } from './course-card.svelte';
 export { default as org } from './org.svelte';
 export { default as course } from './course.svelte';
+export { default as learningPath } from './learning-path.svelte';
 
 /** Bordered-cell catalog: the grid owns the top/left rule, each card owns its right/bottom rule. */
 export const coursesGridClass =

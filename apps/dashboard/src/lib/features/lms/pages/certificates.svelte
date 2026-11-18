@@ -54,7 +54,7 @@
   });
 </script>
 
-<div class="space-y-4">
+<div class="space-y-4 px-2">
   <Search
     value={search.draft}
     onValueChange={(nextValue) => search.input(nextValue)}

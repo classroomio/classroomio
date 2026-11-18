@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Badge, type BadgeVariant } from '../../base/badge';
+  import type { Snippet } from 'svelte';
   import { Button } from '../../base/button';
   import LearningPathBadge from './learning-path-badge.svelte';
   import LearningPathProgress from './learning-path-progress.svelte';
@@ -38,8 +38,8 @@
     coverImage?: string;
     courseCount: number;
     totalHours?: number;
-    progressPercent: number;
-    coursesCompleted: number;
+    progressPercent?: number;
+    coursesCompleted?: number;
     certificateEarned?: boolean;
     certificateEarnedAt?: string | null;
     status?: LearningPathCardStatus;
@@ -50,6 +50,10 @@
     isAdmin?: boolean;
     isCertificateView?: boolean;
     onExploreClick?: () => void;
+    /** Admin action menu (e.g. edit/delete dropdown), rendered over the cover */
+    overlay?: Snippet;
+    /** Extra row below the action row (e.g. publish badge + learner counts) */
+    footer?: Snippet;
     labels: LearningPathCardLabels;
   }
 
@@ -61,8 +65,8 @@
     coverImage,
     courseCount,
     totalHours,
-    progressPercent,
-    coursesCompleted,
+    progressPercent = 0,
+    coursesCompleted = 0,
     certificateEarned = false,
     certificateEarnedAt,
     status = 'ACTIVE',
@@ -73,6 +77,8 @@
     isAdmin = false,
     isCertificateView = false,
     onExploreClick,
+    overlay,
+    footer,
     labels
   }: Props = $props();
 
@@ -92,10 +98,9 @@
 
   const done = $derived(certificateEarned || (coursesCompleted === courseCount && courseCount > 0));
 
-  const offersCertificate = $derived(surface === 'certificate' || (surface === 'lms' && done));
+  const offersCertificate = $derived(surface === 'certificate' || (surface === 'lms' && done && certificateEarned));
   const showCertificateBadge = $derived(offersCertificate && certificateEarned);
   const showProgress = $derived(surface === 'lms');
-  const showStatusBadge = $derived(surface === 'admin');
   const showEarnedAt = $derived(surface === 'certificate' && !!certificateEarnedAt);
 
   const isExploreClickable = $derived(surface === 'explore' && !!onExploreClick);
@@ -114,21 +119,15 @@
           ? labels.viewCertificate
           : surface === 'explore' || surface === 'landing'
             ? labels.viewPath
-            : coursesCompleted === 0
-              ? labels.startLearning
-              : labels.continueLearning)
+            : done
+              ? labels.viewPath
+              : coursesCompleted === 0
+                ? labels.startLearning
+                : labels.continueLearning)
   );
 
   const showCtaArrow = $derived(surface !== 'lms');
   const showCta = $derived(!offersCertificate || certificateEarned);
-
-  const statusBadgeLabel = $derived(
-    status === 'DRAFT' ? labels.statusDraft : status === 'ACTIVE' ? labels.statusActive : labels.statusArchived
-  );
-
-  const statusBadgeVariant = $derived<BadgeVariant>(
-    status === 'ACTIVE' ? 'success' : status === 'DRAFT' ? 'warning' : 'secondary'
-  );
 
   function handleCardClick(event: MouseEvent) {
     if (!isExploreClickable) return;
@@ -149,13 +148,13 @@
 <div class="ui:group/stack ui:relative ui:mx-auto ui:w-full">
   <!-- Stacked card underlay -->
   <div
-    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:transition-all ui:duration-300 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2 ui:group-hover/stack:bg-primary/65"
+    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:transition-all ui:duration-300 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2 ui:group-hover/stack:border-primary/65"
     aria-hidden="true"
   ></div>
 
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
-    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:group-hover/stack:translate-x-0.5 ui:group-hover/stack:-translate-y-0.5"
+    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:transition-colors ui:group-hover/stack:translate-x-0.5 ui:group-hover/stack:-translate-y-0.5 ui:group-hover/stack:border-primary/65"
     onclick={isExploreClickable ? handleCardClick : undefined}
     onkeydown={isExploreClickable
       ? (e) => {
@@ -195,6 +194,11 @@
         onCover
         class="ui:rounded-sm ui:border-none ui:absolute ui:top-3 ui:left-3"
       />
+      {#if overlay}
+        <div class="ui:absolute ui:top-3 ui:right-3 ui:z-20" onclick={(event) => event.stopPropagation()}>
+          {@render overlay()}
+        </div>
+      {/if}
     </div>
 
     <!-- Body -->
@@ -209,19 +213,21 @@
         {description}
       </p>
 
-      <div class="ui:flex ui:items-center ui:gap-3 ui:text-xs ui:text-muted-foreground">
-        <span class="ui:inline-flex ui:items-center ui:gap-1">
-          <BookIcon class="ui:size-3.5" />
-          {courseCount}
-          {courseCount === 1 ? labels.course : labels.courses}
-        </span>
-        {#if showCertificateBadge}
+      {#if surface !== 'certificate'}
+        <div class="ui:flex ui:items-center ui:gap-3 ui:text-xs ui:text-muted-foreground">
           <span class="ui:inline-flex ui:items-center ui:gap-1">
-            <CertificateIcon class="ui:size-3.5" />
-            {labels.certificateEarned}
+            <BookIcon class="ui:size-3.5" />
+            {courseCount}
+            {courseCount === 1 ? labels.course : labels.courses}
           </span>
-        {/if}
-      </div>
+          {#if showCertificateBadge}
+            <span class="ui:inline-flex ui:items-center ui:gap-1">
+              <CertificateIcon class="ui:size-3.5" />
+              {labels.certificateEarned}
+            </span>
+          {/if}
+        </div>
+      {/if}
 
       {#if showEarnedAt}
         <p class="ui:text-xs ui:text-muted-foreground">
@@ -247,27 +253,12 @@
         </div>
       {/if}
 
+      {#if footer}
+        <div class="ui:relative ui:z-10 ui:mt-2">{@render footer()}</div>
+      {/if}
+
       <div class="ui:relative ui:z-10 ui:mt-1 ui:flex ui:flex-1 ui:items-end">
-        {#if showStatusBadge}
-          <div class="ui:flex ui:w-full ui:items-center ui:justify-between ui:gap-2">
-            <Badge variant={statusBadgeVariant} class="ui:shrink-0">{statusBadgeLabel}</Badge>
-            <Button
-              href={isExploreClickable ? undefined : ctaHref}
-              variant={ctaVariant}
-              size="sm"
-              onclick={isExploreClickable
-                ? (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onExploreClick?.();
-                  }
-                : undefined}
-            >
-              {ctaLabelText}
-              {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
-            </Button>
-          </div>
-        {:else if showCta}
+        {#if showCta}
           <Button
             href={isExploreClickable ? undefined : ctaHref}
             variant={ctaVariant}

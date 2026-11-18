@@ -136,7 +136,13 @@
   const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const isLiveSessionLesson = $derived(Boolean(lessonApi.lesson?.callUrl && lessonApi.lesson?.lessonAt));
-  const pathContext = $derived(learnerPathStore.getCoursePathContext(courseApi.course?.id, courseApi.course?.title));
+
+  $effect(() => {
+    if (!$profile.id || !$currentOrg.id) return;
+
+    const courseId = courseApi.course?.id;
+    if (courseId) learnerPathStore.loadPathContext(courseId, $page.params.publicId as string | undefined);
+  });
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
     const params = new SvelteURLSearchParams($page.url.searchParams);
@@ -661,11 +667,11 @@
         </Empty>
       {/if}
 
-      {#if $isCourseLearnerView && pathContext && mode === MODES.view}
+      {#if $isCourseLearnerView && learnerPathStore.pathContext && mode === MODES.view}
         <CourseInPathNext
-          pathHref={pathContext.pathHref}
-          next={pathContext.next}
-          isPathComplete={pathContext.isPathComplete}
+          pathHref={learnerPathStore.pathContext.pathHref}
+          next={learnerPathStore.pathContext.next}
+          isPathComplete={learnerPathStore.pathContext.isPathComplete}
         />
       {/if}
     </div>

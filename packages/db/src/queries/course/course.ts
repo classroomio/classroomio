@@ -1676,18 +1676,19 @@ export async function updateCourseSlug(courseId: string, slug: string): Promise<
 }
 
 /**
- * Returns basic course organization ownership info (id, groupId, organizationId).
+ * Returns basic course organization ownership info (id, groupId, organizationId, type).
  */
 export async function getCourseOrgInfo(
   courseId: string,
   dbClient: DbOrTxClient = db
-): Promise<{ id: string; groupId: string | null; organizationId: string | null } | null> {
+): Promise<{ id: string; groupId: string | null; organizationId: string | null; type: TCourse['type'] } | null> {
   try {
     const [row] = await dbClient
       .select({
         id: schema.course.id,
         groupId: schema.course.groupId,
-        organizationId: schema.group.organizationId
+        organizationId: schema.group.organizationId,
+        type: schema.course.type
       })
       .from(schema.course)
       .leftJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -1717,7 +1718,7 @@ export interface GetAddableOrgCoursesOptions {
   limit: number;
 }
 
-export type TAddableOrgCourse = { id: string; title: string; description: string };
+export type TAddableOrgCourse = { id: string; title: string; description: string; type: TCourse['type'] };
 
 /**
  * Pages the ACTIVE org courses a cohort or learning path can still add.
@@ -1788,7 +1789,12 @@ export async function getAddableOrgCourses(
 
     const [items, [countRow]] = await Promise.all([
       dbClient
-        .select({ id: schema.course.id, title: schema.course.title, description: schema.course.description })
+        .select({
+          id: schema.course.id,
+          title: schema.course.title,
+          description: schema.course.description,
+          type: schema.course.type
+        })
         .from(schema.course)
         .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
         .where(whereClause)

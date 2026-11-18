@@ -122,6 +122,17 @@ describe('addCoursesToPathService always grants', () => {
     expect(mocks.addCourseToPath).not.toHaveBeenCalled();
   });
 
+  it('rejects a PUBLIC course before linking it', async () => {
+    mocks.listActivePathMemberIds.mockResolvedValue([]);
+    mocks.getCourseOrgInfo.mockResolvedValue({ organizationId: 'org-1', groupId: 'g-1', type: 'PUBLIC' });
+
+    await expect(
+      addCoursesToPathService('path-1', { courseIds: ['c-public'] }, 'admin-1', { 'org-1': ROLE.ADMIN })
+    ).rejects.toMatchObject({ statusCode: 400 });
+    expect(mocks.addCourseToPath).not.toHaveBeenCalled();
+    expect(mocks.grantCourseAccess).not.toHaveBeenCalled();
+  });
+
   it('computes the student list once for multiple courses', async () => {
     mocks.listActivePathMemberIds.mockResolvedValue([{ id: 'm-1', profileId: 'p-1', roleId: ROLE.STUDENT }]);
     mocks.getCourseOrgInfo.mockResolvedValue({ organizationId: 'org-1', groupId: 'g-1' });

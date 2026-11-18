@@ -29,6 +29,7 @@ export type GetEarnedCertificatesRequest = (typeof classroomio.organization)['ce
 export type GetEarnedCertificatesSuccess = Extract<InferResponseType<GetEarnedCertificatesRequest>, { success: true }>;
 export type EarnedCertificates = GetEarnedCertificatesSuccess['data'];
 export type EarnedCertificate = EarnedCertificates[number];
+export type EarnedPathCertificate = Extract<EarnedCertificate, { kind: 'learning_path' }>['data'];
 export type EarnedCertificatesPagination = GetEarnedCertificatesSuccess['pagination'];
 export type EarnedCertificatesQuery = {
   page?: number;

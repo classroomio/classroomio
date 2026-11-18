@@ -1,4 +1,5 @@
 import type { Course, CourseContentItem, CourseContentSection } from './types';
+import { getCourseRouteBase } from './functions';
 import { ExerciseIcon, LessonIcon } from '@cio/ui/custom/moving-icons';
 
 import { ContentType as CourseContentType } from '@cio/utils/constants/content';
@@ -35,17 +36,19 @@ const EMPTY_CONTENT = {
   items: [] as ContentItem[]
 };
 
-export function getContentRoute(courseId: string, item: { id: string; type: string }) {
+export function getContentRoute(courseId: string, item: { id: string; type: string }, base?: string) {
+  const root = `${base ?? getCourseRouteBase()}/${courseId}`;
+
   if (item.type === CourseContentType.Lesson) {
-    return `/courses/${courseId}/lessons/${item.id}`;
+    return `${root}/lessons/${item.id}`;
   }
 
   if (item.type === CourseContentType.Exercise) {
-    return `/courses/${courseId}/exercises/${item.id}`;
+    return `${root}/exercises/${item.id}`;
   }
 
   if (item.type === CourseContentType.Section) {
-    return `/courses/${courseId}/lessons#section-${item.id}`;
+    return `${root}/lessons#section-${item.id}`;
   }
 
   return '';

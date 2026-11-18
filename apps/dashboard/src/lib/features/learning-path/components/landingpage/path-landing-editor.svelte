@@ -52,9 +52,11 @@
     path: LearningPathDetail;
     onClose: () => void;
     selectedSectionKey?: LandingSectionKey | null;
+    /** Live preview input, pushed on every draft change. The parent renders it; never written back. */
+    preview?: { landingPage: TLandingPage; cost: number; currency: string } | null;
   }
 
-  let { path, onClose, selectedSectionKey = $bindable(null) }: Props = $props();
+  let { path, onClose, selectedSectionKey = $bindable(null), preview = $bindable(null) }: Props = $props();
 
   const sidebar = useSidebar();
   let isSaving = $state(false);
@@ -140,6 +142,10 @@
   function patchLandingPage(patch: Partial<TLandingPage>) {
     landingPage = { ...landingPage, ...patch };
   }
+
+  $effect(() => {
+    preview = { landingPage: { ...landingPage }, cost: pathCost, currency: pathCurrency };
+  });
 
   interface Section {
     key: LandingSectionKey;

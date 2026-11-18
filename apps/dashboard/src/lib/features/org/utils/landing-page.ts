@@ -800,7 +800,7 @@ export function mapPublicLearningPathsToLandingPagePaths(
       courseCount,
       metadata: mapLandingPageDiscount(metadataRecord),
       image: coverImage,
-      link: pathSlug ? `/path/${pathSlug}` : undefined,
+      link: pathSlug ? `/learning-paths/${pathSlug}` : undefined,
       price: pathIsPaid ? price : undefined
     };
   });
@@ -891,6 +891,11 @@ export async function importThemeComponent(theme: LandingPageThemeKey) {
 export async function importCourseLandingPageTheme(theme: LandingPageThemeKey) {
   const mod = await importThemeBundle(theme);
   return { default: mod.course };
+}
+
+export async function importLearningPathLandingPageTheme(theme: LandingPageThemeKey) {
+  const mod = await importThemeBundle(theme);
+  return { default: mod.learningPath };
 }
 
 const NAV_SNIPPET_THEMES: ReadonlySet<LandingPageThemeKey> = new Set([

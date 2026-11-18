@@ -222,6 +222,38 @@ describe('welcome-email services', () => {
 
       expect(mocks.enrollMember).not.toHaveBeenCalled();
     });
+
+    it('allows self-enrollment when payment is explicitly disabled despite cost', async () => {
+      mocks.getLearningPathById.mockResolvedValue({
+        ...mockPath,
+        cost: 5000,
+        landingPage: { paymentEnabled: false }
+      });
+      mocks.getOrganizationById.mockResolvedValue(mockOrg);
+      mocks.getMemberByPathAndProfile.mockResolvedValue(null);
+      mocks.enrollMember.mockResolvedValue({ id: 'm-2', roleId: ROLE.STUDENT });
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.getProfileById.mockResolvedValue({ id: 'p-1', email: 'learner@example.com' });
+
+      await enrollInLearningPath(PATH_UUID, 'p-1');
+
+      expect(mocks.enrollMember).toHaveBeenCalled();
+    });
+
+    it('rejects self-enrollment when payment is explicitly enabled even when free', async () => {
+      mocks.getLearningPathById.mockResolvedValue({
+        ...mockPath,
+        cost: 0,
+        landingPage: { paymentEnabled: true }
+      });
+
+      await expect(enrollInLearningPath(PATH_UUID, 'p-1')).rejects.toMatchObject({
+        code: ErrorCodes.VALIDATION_ERROR,
+        statusCode: 400
+      });
+
+      expect(mocks.enrollMember).not.toHaveBeenCalled();
+    });
   });
 
   describe('addPathMembersService manual addition email', () => {

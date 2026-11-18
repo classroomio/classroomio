@@ -1,5 +1,6 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { courseApi } from './course.svelte';
+import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
 import { toggleConfetti } from '$features/ui/confetti/store';
 import { updateLessonCompletionInCourseContent } from '../utils/content-completion';
 import type {
@@ -669,6 +670,8 @@ export class LessonApi extends BaseApiWithErrors {
         if (data.didJustComplete) {
           toggleConfetti();
           setTimeout(() => toggleConfetti(), 3000);
+          // Watch progress just completed the lesson: path unlocks must refetch.
+          learnerPathStore.invalidateJourneyCache();
         }
 
         if (courseApi.course?.content && data.didJustComplete) {

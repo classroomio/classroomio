@@ -1,13 +1,18 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { Badge } from '@cio/ui/base/badge';
-  import { LearningPathBadge } from '@cio/ui';
+  import { ComboButton } from '@cio/ui/custom/combo-button';
+  import DownloadIcon from '@lucide/svelte/icons/download';
+  import ImageIcon from '@lucide/svelte/icons/image';
+  import { LearningPathBadge, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import { Progress } from '@cio/ui/base/progress';
   import { t } from '$lib/utils/functions/translations';
+  import { learnerPathStore } from '../api/learning-path.svelte';
   import BookIcon from '@lucide/svelte/icons/book-open';
   import { Check } from '@lucide/svelte';
 
   interface Props {
+    pathId: string;
     href: string;
     name: string;
     description: string;
@@ -20,6 +25,7 @@
   }
 
   let {
+    pathId,
     href,
     name,
     description,
@@ -34,7 +40,7 @@
   const done = $derived(certificateEarned || (coursesCompleted === courseCount && courseCount > 0));
   const ctaLabel = $derived(
     done
-      ? $t('learningPath.card.view_certificate')
+      ? $t('learningPath.hero.view_path')
       : coursesCompleted === 0
         ? $t('learningPath.hero.start_learning')
         : $t('learningPath.hero.continue_learning')
@@ -52,6 +58,13 @@
   >
     {#if coverImage}
       <img src={coverImage} alt={name} loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
+    {:else}
+      <img
+        src={DEFAULT_COURSE_BANNER_IMAGE}
+        alt={name}
+        loading="lazy"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
     {/if}
   </a>
 
@@ -102,13 +115,34 @@
       <Progress value={progressPercent} class="h-1.5 flex-1 rounded-full" />
       <span class="tnum w-9 shrink-0 text-right text-xs font-semibold">{progressPercent}%</span>
     </div>
-    <Button
-      href={done ? '/lms/certificates' : href}
-      variant={done ? 'outline' : 'default'}
-      size="sm"
-      class="relative z-10 shrink-0"
-    >
-      {ctaLabel}
-    </Button>
+    {#if certificateEarned}
+      <span class="relative z-10 shrink-0">
+        <ComboButton
+          label={$t('course.navItem.certificates.download_certificate')}
+          menuLabel={$t('course.navItem.certificates.download_certificate')}
+          testId="path-row-certificate-download"
+          loading={learnerPathStore.isDownloadingCertificate}
+          onSelect={() => learnerPathStore.downloadCertificate(pathId, name, 'pdf')}
+          items={[
+            {
+              id: 'pdf',
+              label: $t('course.navItem.certificates.editor.download_pdf'),
+              icon: DownloadIcon,
+              onSelect: () => learnerPathStore.downloadCertificate(pathId, name, 'pdf')
+            },
+            {
+              id: 'png',
+              label: $t('course.navItem.certificates.editor.download_png'),
+              icon: ImageIcon,
+              onSelect: () => learnerPathStore.downloadCertificate(pathId, name, 'png')
+            }
+          ]}
+        />
+      </span>
+    {:else}
+      <Button {href} variant={done ? 'outline' : 'default'} size="sm" class="relative z-10 shrink-0">
+        {ctaLabel}
+      </Button>
+    {/if}
   </div>
 </div>

@@ -102,9 +102,9 @@
   const RUN_RESUMABLE_STATUSES = new Set(['paused', 'waiting_for_input', 'canceled']);
   const RUN_TERMINAL_STATUSES = new Set(['completed', 'failed', 'canceled', 'paused']);
 
-  // Read course id from the route. The chat panel is only mounted inside the
-  // course content layout, so `page.params.id` is always the active course.
-  const courseId = $derived(page.params?.id as string);
+  // Read course id from the route. Plain course pages carry it as `id`;
+  // path-mirror pages nest it under `courseId` next to the path `publicId`.
+  const courseId = $derived((page.params?.courseId ?? page.params?.id) as string);
 
   // Extract current lessonId/exerciseId from route params
   const currentLessonId = $derived(page.params?.lessonId as string | undefined);

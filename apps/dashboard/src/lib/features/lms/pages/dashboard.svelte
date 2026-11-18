@@ -7,11 +7,8 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { CourseCard, LearningPathCard, type CourseCardLabels, type LearningPathCardLabels } from '@cio/ui';
   import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
-  import {
-    getMockPathById,
-    MOCK_STANDALONE_COURSES,
-    MOCK_UPCOMING_EXERCISES
-  } from '$features/learning-path/utils/mock-data';
+  import { enrolledApi } from '$features/lms/api/enrolled.svelte';
+  import { lmsExercisesApi } from '$features/lms/api/exercises.svelte';
   import { locale, t } from '$lib/utils/functions/translations';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -59,46 +56,8 @@
     return isStudentCourseComplete(currentCourse) && currentCourse.certificateEarnedAt != null;
   });
 
-  const currentPathContext = $derived.by(() => {
-    if (!currentCourse) return null;
-
-    for (const path of learnerPathStore.enrolledPaths) {
-      const courses = learnerPathStore.getPathCourses(path);
-      let courseIndex = courses.findIndex((course) => course.courseId === currentCourse.id);
-
-      if (courseIndex < 0) {
-        courseIndex = courses.findIndex((course) => course.title.toLowerCase() === currentCourse.title.toLowerCase());
-      }
-
-      if (courseIndex >= 0) {
-        return {
-          pathName: path.name,
-          pathHref: `/lms/paths/${path.id}`,
-          courseOrder: courseIndex + 1,
-          totalCourses: courses.length
-        };
-      }
-    }
-
-    const fallbackPath = learnerPathStore.activePath;
-    const fallbackCourse = fallbackPath?.enrollment?.currentCourse;
-
-    if (fallbackPath && fallbackCourse) {
-      return {
-        pathName: fallbackPath.name,
-        pathHref: `/lms/paths/${fallbackPath.id}`,
-        courseOrder: fallbackCourse.courseIndex + 1,
-        totalCourses: fallbackPath.courses.length
-      };
-    }
-
-    return null;
-  });
-
   const gridPaths = $derived.by(() => [
-    ...[...learnerPathStore.inProgressPaths].sort(
-      (a, b) => (b.enrollment?.progressPercent ?? 0) - (a.enrollment?.progressPercent ?? 0)
-    ),
+    ...[...learnerPathStore.inProgressPaths].sort((a, b) => b.progress - a.progress),
     ...learnerPathStore.notStartedPaths
   ]);
 
@@ -116,34 +75,50 @@
   );
 
   const upcomingExercises = $derived.by((): UpcomingExerciseCard[] => {
-    const statusKeyByStatus: Record<string, string> = {
-      'in-progress': 'dashboard.exercise_status_in_progress',
+    const statusKeyByState: Record<string, string> = {
+      submitted: 'dashboard.exercise_status_in_progress',
       overdue: 'dashboard.exercise_status_overdue',
-      'not-submitted': 'dashboard.exercise_status_not_submitted'
+      open: 'dashboard.exercise_status_not_submitted'
     };
+    const now = Date.now();
 
-    return MOCK_UPCOMING_EXERCISES.map((exercise) => ({
-      id: exercise.id,
-      title: exercise.title,
-      course: exercise.course,
-      statusKey: statusKeyByStatus[exercise.status] ?? 'dashboard.exercise_status_not_submitted',
-      dueLabel: dueDateFormatter.format(new Date(`${exercise.dueDate}T00:00:00`)),
-      isOverdue: exercise.status === 'overdue'
-    }));
+    return lmsExercisesApi.exercises
+      .map((exercise) => {
+        const submitted = (exercise.submission?.length ?? 0) > 0;
+        const dueTime = exercise.due_by ? new Date(exercise.due_by).getTime() : NaN;
+        const isOverdue = !submitted && Number.isFinite(dueTime) && dueTime < now;
+        const state = submitted ? 'submitted' : isOverdue ? 'overdue' : 'open';
+        const dueLabel = exercise.due_by ? dueDateFormatter.format(new Date(exercise.due_by)) : '';
+
+        return {
+          id: exercise.id,
+          title: exercise.title,
+          course: exercise.lesson?.course?.title ?? '',
+          statusKey: statusKeyByState[state] ?? 'dashboard.exercise_status_not_submitted',
+          dueLabel,
+          isOverdue
+        };
+      })
+      .sort((a, b) => Number(b.isOverdue) - Number(a.isOverdue))
+      .slice(0, 5);
   });
 
   const standaloneCourses = $derived(
-    MOCK_STANDALONE_COURSES.map((course) => ({
-      href: getStudentCourseContinuePath(course.id),
-      title: course.title,
-      description: course.description,
-      coverImage: course.coverImage,
-      coverGradient: course.coverGradient,
-      progressPercent:
-        course.lessonCount === 0 ? 0 : Math.round(Math.min(100, (course.lessonsCompleted / course.lessonCount) * 100)),
-      lessonCount: course.lessonCount,
-      exerciseCount: course.exerciseCount
-    }))
+    enrolledApi.items.flatMap((item) =>
+      item.kind === 'course'
+        ? [
+            {
+              href: getStudentCourseContinuePath(item.data.id),
+              title: item.data.title,
+              description: item.data.description ?? '',
+              coverImage: item.data.logo || undefined,
+              lessonCount: item.data.lessonCount ?? 0,
+              exerciseCount: item.data.exerciseCount ?? 0,
+              progressPercent: item.data.progress ?? 0
+            }
+          ]
+        : []
+    )
   );
 
   const currentLearningCards = $derived.by(() => {
@@ -193,16 +168,16 @@
     students: $t('courses.course_card.students')
   });
 
-  const hours = (value: number) => globalThis.Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(value);
-
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
     coursesApi.getEnrolledCourses();
     coursesApi.getRecommendedCourses({ limit: 3 });
-    if (!learnerPathStore.hasLoaded) {
-      learnerPathStore.listEnrolled();
-    }
+    lmsExercisesApi.fetchLMSExercises($currentOrg.id);
+    enrolledApi.fetchEnrolled({ status: 'all', limit: 100 });
+    learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id).finally(() => {
+      learnerPathStore.loadExplorePaths();
+    });
   });
 
   function getCourseCompletedItems(course: EnrolledCourse) {
@@ -282,15 +257,8 @@
     previewOpen = true;
   }
 
-  function explorePathMeta(pathId: string) {
-    const mockPath = getMockPathById(pathId);
-    const count = mockPath?.courses.length ?? 0;
-    const hoursTotal = (mockPath?.courses ?? []).reduce((acc, course) => acc + course.durationHours, 0);
-
-    return `${$t('learningPath.badge.learning_path')} · ${$t('dashboard.explore_courses_hours', {
-      count,
-      hours: hours(hoursTotal)
-    })}`;
+  function explorePathMeta(path: { courseCount: number }) {
+    return `${$t('learningPath.badge.learning_path')} · ${path.courseCount} ${$t('learningPath.card.courses')}`;
   }
 </script>
 
@@ -313,18 +281,6 @@
               {$t('dashboard.learning_awaits_you')}
             {/if}
           </h2>
-          {#if currentPathContext}
-            <a
-              href={currentPathContext.pathHref}
-              class="ui:text-muted-foreground inline-flex items-center gap-1 text-xs hover:underline"
-            >
-              {currentPathContext.pathName} · {$t('dashboard.course_position', {
-                course: currentPathContext.courseOrder,
-                total: currentPathContext.totalCourses
-              })}
-              <ArrowRightIcon class="size-3" />
-            </a>
-          {/if}
         </div>
 
         <div class="flex shrink-0 flex-wrap items-center gap-2">
@@ -437,15 +393,14 @@
       <div class="grid grid-cols-1 gap-4 ps-2 sm:grid-cols-2 lg:grid-cols-3">
         {#each currentLearningCards.paths as path}
           <LearningPathCard
-            href={`/lms/paths/${path.id}`}
+            href={`/lms/paths/${path.publicId ?? path.id}`}
             name={path.name}
-            description={path.description}
-            coverGradient={path.coverGradient}
+            description={path.description ?? ''}
             coverImage={path.coverImage}
-            courseCount={path.courses.length}
-            progressPercent={path.enrollment?.progressPercent ?? 0}
-            coursesCompleted={path.enrollment?.coursesCompleted ?? 0}
-            certificateEarned={Boolean(path.enrollment?.certificateId)}
+            courseCount={path.totalItems}
+            progressPercent={path.progress}
+            coursesCompleted={path.completedItems}
+            certificateEarned={learnerPathStore.hasPathCertificate(path.id)}
             isLMS={true}
             labels={pathLabels}
           />
@@ -457,7 +412,6 @@
             title={course.title}
             description={course.description}
             coverImage={course.coverImage}
-            coverGradient={course.coverGradient}
             lessonCount={course.lessonCount}
             exerciseCount={course.exerciseCount}
             progressPercent={course.progressPercent}
@@ -545,7 +499,7 @@
             </div>
             <div class="min-w-0 flex-1">
               <p class="truncate text-sm font-medium">{path.name}</p>
-              <p class="ui:text-muted-foreground truncate text-xs">{explorePathMeta(path.id)}</p>
+              <p class="ui:text-muted-foreground truncate text-xs">{explorePathMeta(path)}</p>
             </div>
             <span class="ui:font-medium ui:text-primary inline-flex shrink-0 items-center gap-1 text-xs">
               {$t('learningPath.hero.view_path')}

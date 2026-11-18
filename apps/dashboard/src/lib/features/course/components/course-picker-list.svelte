@@ -19,6 +19,7 @@
     paginationStatus: (page: number, totalPages: number) => string;
     errorMessage: string;
     retryLabel: string;
+    disabledCourseTooltip?: string;
   }
 
   const PAGE_SIZE = 20;
@@ -34,7 +35,8 @@
     noMatchesMessage,
     paginationStatus,
     errorMessage,
-    retryLabel
+    retryLabel,
+    disabledCourseTooltip = ''
   }: Props = $props();
 
   const pickerApi = new CoursePickerApi();
@@ -54,12 +56,19 @@
   const selectedCount = $derived(selectedCourseIds.size);
   const canGoToPreviousPage = $derived(currentPage > 1);
   const canGoToNextPage = $derived(currentPage < totalPages);
+  const isLearningPathPicker = $derived(source.kind === 'learning-path');
   const multiSelectItems = $derived(
-    courses.map((course) => ({
-      id: course.id,
-      label: course.title || course.id,
-      description: course.description || undefined
-    }))
+    courses.map((course) => {
+      const isPublicCourse = isLearningPathPicker && course.type === 'PUBLIC';
+
+      return {
+        id: course.id,
+        label: course.title || course.id,
+        description: course.description || undefined,
+        disabled: isPublicCourse,
+        disabledTooltip: isPublicCourse ? disabledCourseTooltip || undefined : undefined
+      };
+    })
   );
 
   async function loadPage(page: number) {

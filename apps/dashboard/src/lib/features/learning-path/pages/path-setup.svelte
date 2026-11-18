@@ -156,28 +156,6 @@
           </div>
         {/each}
       </div>
-
-      {#if stepsLeft > 0}
-        <div
-          class="ui:border-border ui:bg-card mt-6 flex flex-col items-start justify-between gap-4 rounded-lg border p-4 sm:flex-row sm:items-center"
-        >
-          <div class="flex items-center gap-3.5">
-            <PercentRingProgress value={progress.percent} size="small" />
-            <div>
-              <p class="ui:text-foreground text-sm font-semibold">
-                {$t('learningPath.setup.launch_title', { count: stepsLeft })}
-              </p>
-              <p class="ui:text-muted-foreground mt-0.5 text-xs">
-                {$t('learningPath.setup.launch_desc')}
-              </p>
-            </div>
-          </div>
-
-          <Button variant="default" class="w-full shrink-0 sm:w-auto" onclick={() => goto(`${basePath}/courses`)}>
-            {$t('learningPath.setup.activate_now')}
-          </Button>
-        </div>
-      {/if}
     {/snippet}
   </Page.Body>
 </Page.Root>

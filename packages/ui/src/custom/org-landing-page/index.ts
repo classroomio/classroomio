@@ -1,6 +1,7 @@
 export {
   org as MinimalLandingPage,
   course as MinimalCourseLanding,
+  learningPath as MinimalLearningPathLanding,
   nav as MinimalLandingNav,
   hero as MinimalLandingHero,
   courseCard as MinimalLandingCourseCard
@@ -8,6 +9,7 @@ export {
 export {
   org as BoldLandingPage,
   course as BoldCourseLanding,
+  learningPath as BoldLearningPathLanding,
   nav as BoldLandingNav,
   hero as BoldLandingHero,
   courseCard as BoldLandingCourseCard
@@ -15,6 +17,7 @@ export {
 export {
   org as ClassicLandingPage,
   course as ClassicCourseLanding,
+  learningPath as ClassicLearningPathLanding,
   nav as ClassicLandingNav,
   hero as ClassicLandingHero,
   courseCard as ClassicLandingCourseCard
@@ -22,6 +25,7 @@ export {
 export {
   org as SaasLandingPage,
   course as SaasCourseLanding,
+  learningPath as SaasLearningPathLanding,
   nav as SaasLandingNav,
   hero as SaasLandingHero,
   courseCard as SaasLandingCourseCard
@@ -29,6 +33,7 @@ export {
 export {
   org as TechLandingPage,
   course as TechCourseLanding,
+  learningPath as TechLearningPathLanding,
   nav as TechLandingNav,
   hero as TechLandingHero,
   courseCard as TechLandingCourseCard
@@ -36,6 +41,7 @@ export {
 export {
   org as StudioLandingPage,
   course as StudioCourseLanding,
+  learningPath as StudioLearningPathLanding,
   nav as StudioLandingNav,
   hero as StudioLandingHero,
   courseCard as StudioLandingCourseCard
@@ -43,6 +49,7 @@ export {
 export {
   org as CorporateLandingPage,
   course as CorporateCourseLanding,
+  learningPath as CorporateLearningPathLanding,
   nav as CorporateLandingNav,
   hero as CorporateLandingHero,
   courseCard as CorporateLandingCourseCard
@@ -50,6 +57,7 @@ export {
 export {
   org as TerminalLandingPage,
   course as TerminalCourseLanding,
+  learningPath as TerminalLearningPathLanding,
   nav as TerminalLandingNav,
   hero as TerminalLandingHero,
   courseCard as TerminalLandingCourseCard
@@ -57,6 +65,7 @@ export {
 export {
   org as EditorialLandingPage,
   course as EditorialCourseLanding,
+  learningPath as EditorialLearningPathLanding,
   nav as EditorialLandingNav,
   hero as EditorialLandingHero,
   courseCard as EditorialLandingCourseCard
@@ -64,6 +73,7 @@ export {
 export {
   org as QuartzLandingPage,
   course as QuartzCourseLanding,
+  learningPath as QuartzLearningPathLanding,
   nav as QuartzLandingNav,
   hero as QuartzLandingHero,
   courseCard as QuartzLandingCourseCard
@@ -71,6 +81,7 @@ export {
 export {
   org as VibrantLandingPage,
   course as VibrantCourseLanding,
+  learningPath as VibrantLearningPathLanding,
   nav as VibrantLandingNav,
   hero as VibrantLandingHero,
   courseCard as VibrantLandingCourseCard
@@ -94,6 +105,14 @@ export { default as CourseLandingChips } from './course-chips.svelte';
 export { default as CourseLandingInstructor } from './course-instructor.svelte';
 export { default as CourseLandingReviews } from './course-reviews.svelte';
 export { default as CourseLandingPricing } from './course-pricing.svelte';
+export { default as LearningPathHero } from './learning-path-hero.svelte';
+export { default as LearningPathAbout } from './learning-path-about.svelte';
+export { default as LearningPathSeries } from './learning-path-series.svelte';
+export { default as LearningPathCertificate } from './learning-path-certificate.svelte';
+export { default as LearningPathInstructors } from './learning-path-instructors.svelte';
+export { default as LearningPathReviews } from './learning-path-reviews.svelte';
+export { default as LearningPathFaq } from './learning-path-faq.svelte';
+export { default as LearningPathPricing } from './learning-path-pricing.svelte';
 export {
   setLandingPageEditContext,
   getLandingPageEditContext,
@@ -104,5 +123,13 @@ export { courseLandingTokens, type CourseLandingTokens } from './course-landing-
 export * from './landing-page-link-icons';
 export * from './theme-style';
 export * from './types';
-export { mockOrgLandingPageProps, mockCourseLandingPageProps, mockLearningPaths } from './fixtures';
+export {
+  mockOrgLandingPageProps,
+  mockCourseLandingPageProps,
+  mockLearningPaths,
+  mockLearningPathLandingPageProps
+} from './fixtures';
 export { safeHref } from './safe-href';
+export * from './learning-path-detail.types';
+export { mockLearningPathDetails } from './learning-path-detail.fixtures';
+export { toLearningPathDetail, buildLearningPathSectionNavItems } from './learning-path-detail.helpers';

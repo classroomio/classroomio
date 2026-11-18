@@ -1,4 +1,11 @@
 import type { Component } from 'svelte';
+import type {
+  LearningPathCertificateInfo,
+  LearningPathFaqItem,
+  LearningPathInstructorItem,
+  LearningPathReviewItem,
+  LearningPathSeriesCourse
+} from './learning-path-detail.types';
 
 export type NavItem = { label: string; href: string };
 
@@ -11,6 +18,7 @@ export type LandingPageThemeBundle = {
   courseCard: AnyComponent;
   org: AnyComponent;
   course: AnyComponent;
+  learningPath: AnyComponent;
   coursesGridClass: string;
 };
 
@@ -220,8 +228,6 @@ export interface OrgLandingPageLabels {
   learningPathsEmptyTitle?: string;
   /** Empty catalog description when no learning paths are published. Default: "Check back soon for new programs." */
   learningPathsEmptyDescription?: string;
-  /** Duration label for a learning path card. Default: `${hours}h`. */
-  learningPathHoursLabel?: (hours: number) => string;
   /** Certificate label for a learning path card. Default: "Certificate". */
   learningPathCertificateLabel?: string;
 }
@@ -390,6 +396,152 @@ export interface CourseLandingPageProps {
   pricing: CoursePricing;
   footer: OrgLandingPageFooterConfig;
   labels?: CourseLandingPageLabels;
+}
+
+export type LearningPathHero = {
+  chip?: string;
+  heading: string;
+  subheading: string;
+  primaryAction: LandingPrimaryAction;
+  cost?: number;
+  currency?: string;
+  originalCost?: number;
+  courseCount?: number;
+  totalLessons?: number;
+  totalExercises?: number;
+  totalStudents?: number;
+  rating?: number;
+  reviewsCount?: number;
+  hasCertificate?: boolean;
+  features?: string[];
+  instructors?: LearningPathInstructorItem[];
+};
+
+export interface LearningPathLandingPageLabels {
+  aboutEyebrow?: string;
+  aboutHeading?: string;
+  aboutLead?: string;
+  skillsHeading?: string;
+  seriesEyebrow?: string;
+  seriesHeading?: string;
+  seriesLead?: string;
+  certificateEyebrow?: string;
+  certificateHeading?: string;
+  certificateIssuerHeading?: string;
+  certificateValidityHeading?: string;
+  instructorsEyebrow?: string;
+  instructorsHeading?: string;
+  instructorsLead?: string;
+  reviewsEyebrow?: string;
+  reviewsHeading?: string;
+  reviewsLead?: string;
+  faqEyebrow?: string;
+  faqHeading?: string;
+  noFaqLabel?: string;
+  pricingEyebrow?: string;
+  pricingHeading?: string;
+  enrollPathLabel?: string;
+  lockedLabel?: string;
+  unlockedLabel?: string;
+  ratingLabel?: (rating: number) => string;
+  courseCountLabel?: (count: number) => string;
+  enrolledLabel?: (count: number) => string;
+  enrollFreeLabel?: string;
+  enrollLabel?: (cost: number, currency: string) => string;
+  viewAllLabel?: string;
+  /** Section-nav tab label for the about section. Default: "About". */
+  navAboutLabel?: string;
+  /** Section-nav tab label for the course series section. Default: "Courses". */
+  navSeriesLabel?: string;
+  /** Section-nav tab label for the certificate section. Default: "Certificate". */
+  navCertificateLabel?: string;
+  /** Section-nav tab label for the instructors section. Default: "Instructors". */
+  navInstructorsLabel?: string;
+  /** Section-nav tab label for the reviews section. Default: "Reviews". */
+  navReviewsLabel?: string;
+  /** Section-nav tab label for the FAQ section. Default: "FAQ". */
+  navFaqLabel?: string;
+  /** Section-nav tab label for the pricing section. Default: "Pricing". */
+  navPricingLabel?: string;
+  /** "Taught by {first} and {second}". Default: "Taught by {first} and {second}". */
+  taughtByTwoLabel?: (first: string, second: string) => string;
+  /** "Taught by {names} + {count} more". Default matches the English pattern. */
+  taughtByManyLabel?: (names: string, count: number) => string;
+  /** Default feature line. Default: "All {courseCount} courses, unlocked in order". */
+  featuresCoursesLine?: (courseCount: number) => string;
+  /** Default feature line. Default: "{lessons} lessons · {exercises} exercises · 1 capstone". */
+  featuresContentLine?: (lessons: number, exercises: number) => string;
+  /** Default feature line. Default: "Path certificate on completion". */
+  featuresCertificateLine?: string;
+  /** Default feature line. Default: "Verified path milestone completion". */
+  featuresMilestoneLine?: string;
+  /** Default feature line. Default: "Lifetime access, learn at your pace". */
+  featuresAccessLine?: string;
+  /** Savings badge. Default: "Save {amount} vs individual courses". */
+  saveVsIndividualLabel?: (amount: string) => string;
+  /** Hero stat caption. Default: "courses in series". */
+  statCoursesLabel?: string;
+  /** Hero stat caption. Default: "enrolled". */
+  statEnrolledLabel?: string;
+  /** Hero stat value. Default: "Certificate". */
+  statCertificateLabel?: string;
+  /** Hero stat value. Default: "Beginner". */
+  statBeginnerLabel?: string;
+  /** Hero stat caption. Default: "on completion". */
+  statOnCompletionLabel?: string;
+  /** Hero stat caption. Default: "no prior exp.". */
+  statNoExperienceLabel?: string;
+  /** Hero stat caption. Default: "{count} reviews". */
+  statReviewsLabel?: (count: number) => string;
+  /** Enroll box eyebrow. Default: "Full path". */
+  fullPathLabel?: string;
+  /** Discount badge. Default: "Save {percent}%". */
+  savePercentLabel?: (percent: number) => string;
+  /** Social proof line. Default: "{students} already enrolled · {rating} ★ from {reviews} reviews". */
+  socialProofLabel?: (students: number, rating: number, reviews: number) => string;
+  /** Primary CTA fallback. Default: "Enroll · {cost}". */
+  enrollWithCostLabel?: (cost: string) => string;
+  /** Series heading with count. Default: "{count} courses in this path". */
+  seriesHeadingCount?: (count: number) => string;
+  /** Per-course kicker. Default: "Course {index}". */
+  seriesCourseLabel?: (index: number) => string;
+  /** Per-course lesson count. Default: "{count} lessons". */
+  seriesLessonsCount?: (count: number) => string;
+  /** Per-course outcomes heading. Default: "What you'll learn". */
+  seriesOutcomesHeading?: string;
+  /** Outline toggle. Default: "Show lesson outline". */
+  showOutlineLabel?: string;
+  /** Outline toggle. Default: "Hide lesson outline". */
+  hideOutlineLabel?: string;
+  /** Lesson preview badge. Default: "Preview". */
+  previewLabel?: string;
+}
+
+export interface LearningPathLandingPageProps {
+  theme: OrgLandingPageTheme;
+  orgName: string;
+  logoUrl?: string;
+  navItems: NavItem[];
+  authAction?: {
+    label: string;
+    href: string;
+    loading?: boolean;
+    disabled?: boolean;
+  };
+  hero: LearningPathHero;
+  about?: {
+    outcomes?: string[];
+    skills?: string[];
+  };
+  series: LearningPathSeriesCourse[];
+  certificate?: LearningPathCertificateInfo | null;
+  hasCertificate: boolean;
+  instructors: LearningPathInstructorItem[];
+  reviews: LearningPathReviewItem[];
+  faq: LearningPathFaqItem[];
+  pricing?: LearningPathPricingInfo;
+  footer: OrgLandingPageFooterConfig;
+  labels?: LearningPathLandingPageLabels;
 }
 
 export interface OrgLandingPageProps {
