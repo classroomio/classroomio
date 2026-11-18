@@ -16,7 +16,7 @@
   let {
     eyebrow = 'MCP server',
     title = 'Course authoring from your coding agent.',
-    description = 'Connect Cursor, Claude Code, Codex, VS Code, Gemini CLI, or any MCP client to ClassroomIO and let your agent draft courses, reorganise sections, generate exercises, and publish them without leaving your terminal.',
+    description = 'Connect Cursor, Claude Code, Codex, VS Code, Gemini CLI, or any MCP client to ClassroomIO and let your agent build courses, reorganise sections, generate exercises, and publish them without leaving your terminal.',
     showTools = true
   } = $props();
 
@@ -32,11 +32,8 @@
 
   const mcpTools = [
     'list_org_courses',
-    'create_course_draft',
-    'create_course_draft_from_course',
-    'update_course_draft',
-    'publish_course_draft',
-    'publish_course_draft_to_existing_course',
+    'create_course',
+    'publish_course',
     'update_course_landing_page',
     'create_course_exercise',
     'grade_course_submission',
@@ -49,9 +46,7 @@
     'create_tag_group',
     'update_tag_group',
     'set_course_tags',
-    'tag_course_draft',
     'get_course_structure',
-    'get_course_draft',
     'get_course_exercise',
     'list_course_exercises'
   ];

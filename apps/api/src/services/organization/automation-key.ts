@@ -26,10 +26,6 @@ import { assertOrganizationAutomationKeyCreationAllowed } from './automation-usa
  */
 export const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]> = {
   mcp: [
-    'course_import:draft:create',
-    'course_import:draft:read',
-    'course_import:draft:update',
-    'course_import:draft:publish',
     'course:read',
     'course:write',
     'course:tag:write',

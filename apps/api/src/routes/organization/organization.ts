@@ -81,7 +81,6 @@ import { apiKeyMiddleware } from '@api/middlewares/api-key';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { automationRouter } from '@api/routes/organization/automation';
 import { webhooksRouter } from '@api/routes/organization/webhooks';
-import { courseImportRouter } from '@api/routes/organization/course-import';
 import {
   claimEarlyAdopterPlan,
   recordEarlyAdopterSubscriptionEvent
@@ -1054,7 +1053,6 @@ export const organizationRouter = new Hono()
   .route('/automation', automationRouter)
   .route('/webhooks', webhooksRouter)
   .route('/email-templates', studentEmailTemplatesRouter)
-  .route('/course-import', courseImportRouter)
   .route('/search', searchRouter)
   .route('/tags', tagsRouter)
   .route('/widgets', widgetsRouter)

@@ -18,7 +18,7 @@ import {
 
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getPostgresError } from '@cio/utils/errors';
-import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
+import type { OrganizationPlan, OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import { sendProfileUpdatedEmail } from './profile-updated-email';
 import { ROLE } from '@cio/utils/constants';
 import type { TProfile } from '@cio/db/types';
@@ -26,6 +26,23 @@ import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { countOrgTemplates } from '@cio/db/queries/course';
 import { env } from '@cio/core/config/env';
 import { getLicenseStatus } from '@cio/core/services/license';
+
+function isOrgStaff(roleId?: number) {
+  return roleId === ROLE.ADMIN || roleId === ROLE.TUTOR;
+}
+
+function withoutBillingIds(plan: OrganizationPlan): OrganizationPlan {
+  return { ...plan, provider: null, subscriptionId: null, customerId: null };
+}
+
+/** Nulls the org's billing provider and ids unless the member is an admin or tutor of that org. */
+function hideBillingIdsFromNonStaff(org: OrganizationWithMemberAndPlans): OrganizationWithMemberAndPlans {
+  if (isOrgStaff(org.roleId)) return org;
+
+  const plans = org.plans.map(withoutBillingIds);
+
+  return { ...org, plans };
+}
 
 export type GetAccountDataResult = {
   profile: TProfile;
@@ -88,7 +105,7 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
   if (!isSelfHosted) {
     await Promise.all(
       organizations.map(async (org) => {
-        if (org.roleId !== ROLE.ADMIN && org.roleId !== ROLE.TUTOR) return;
+        if (!isOrgStaff(org.roleId)) return;
 
         const activePlan = org.plans.find((plan) => plan.isActive);
         const studentsUsed = await countActiveStudents(org.id);
@@ -108,7 +125,7 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
 
   return {
     profile,
-    organizations,
+    organizations: organizations.map(hideBillingIdsFromNonStaff),
     licenseFeatures: isSelfHosted ? licenseStatus.features : []
   };
 }

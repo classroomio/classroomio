@@ -119,6 +119,7 @@ function toHistoryEntry(row: LessonTimelineRow, lessonId: string, textBlocks: Le
     label: row.label,
     isSealed: row.isSealed,
     source: row.source,
+    clientName: row.clientName,
     changeSetId: row.changeSetId,
     undoable: Boolean(row.changeSetId),
     authorId: row.authorId,

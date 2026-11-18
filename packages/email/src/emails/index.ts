@@ -12,6 +12,7 @@ export * from './verify-email';
 export * from './on-password-reset';
 export * from './profile-updated';
 export * from './invite-teacher';
+export * from './team-role-changed';
 export * from './newsfeed';
 export * from './student-course-welcome';
 export * from './student-course-completion';
@@ -41,6 +42,7 @@ import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 // Import types for schema mapping (must be after exports to avoid circular dependency)
 import type { forgotPasswordEmail } from './forgot-password';
 import type { inviteTeacherEmail } from './invite-teacher';
+import type { teamRoleChangedEmail } from './team-role-changed';
 import type { onPasswordResetEmail } from './on-password-reset';
 import type { profileUpdatedEmail } from './profile-updated';
 import type { studentCourseInviteEmail } from './student-course-invite';
@@ -81,6 +83,7 @@ export type EmailSchemas = {
   onPasswordReset: typeof onPasswordResetEmail.template.schema;
   profileUpdated: typeof profileUpdatedEmail.template.schema;
   inviteTeacher: typeof inviteTeacherEmail.template.schema;
+  teamRoleChanged: typeof teamRoleChangedEmail.template.schema;
   newsfeedPost: typeof newsfeedPostEmail.template.schema;
   newsfeedComment: typeof newsfeedCommentEmail.template.schema;
   studentCourseWelcome: typeof studentCourseWelcomeEmail.template.schema;

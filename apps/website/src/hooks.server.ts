@@ -22,6 +22,8 @@ function proxy(origin: string, pathname: string, event: RequestEvent) {
   });
 }
 
+const DISCOVERY_LINK = '</llms.txt>; rel="describedby"; type="text/plain"';
+
 export const handle: Handle = async ({ event, resolve }) => {
   const { pathname } = event.url;
 
@@ -35,7 +37,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   if (pathname === '/pricing' && prefersMarkdown(event.request.headers.get('accept'))) {
     return new Response(buildPricingMarkdown(), {
-      headers: { 'content-type': 'text/markdown; charset=utf-8', vary: 'Accept' }
+      headers: { 'content-type': 'text/markdown; charset=utf-8', vary: 'Accept', link: DISCOVERY_LINK }
     });
   }
 
@@ -49,5 +51,9 @@ export const handle: Handle = async ({ event, resolve }) => {
     return Response.redirect(location.toString(), status);
   }
 
-  return resolve(event);
+  const resolved = await resolve(event);
+  const response = new Response(resolved.body, resolved);
+  response.headers.append('link', DISCOVERY_LINK);
+
+  return response;
 };

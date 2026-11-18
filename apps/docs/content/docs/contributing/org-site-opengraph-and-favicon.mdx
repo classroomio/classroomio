@@ -49,7 +49,7 @@ flowchart LR
 | OG generation service | `apps/api/src/services/org/og.ts` |
 | R2 read/write cache | `apps/api/src/services/org/og-cache.ts` |
 | API route | `apps/api/src/routes/org-site/og.ts` → mounted at `/org-site/og` in `apps/api/src/app.ts` |
-| Meta tags (SSR) | `apps/dashboard/src/lib/utils/functions/metaTags.server.ts` |
+| Meta tags (SSR) | `apps/dashboard/src/lib/utils/functions/metaTags.server.ts`; canonical and `og:url` in `apps/dashboard/src/routes/+layout.svelte` |
 | OG public URL resolution | `apps/dashboard/src/lib/utils/functions/org-site-og-url.ts` |
 | Shared URL helpers | `packages/utils/src/org-site/og-public-url.ts` |
 | Favicon component | `apps/dashboard/src/lib/features/app/org-site-favicon.svelte` |
@@ -137,6 +137,8 @@ Discord, Slack, iMessage, etc. cache **embed metadata** and **images** independe
 ## Meta tag resolution
 
 `getBaseMetaTags()` in `metaTags.server.ts` sets title, description, and `og:image` for org sites.
+
+The root `+layout.svelte` adds the canonical URL and `og:url` from the current page URL, so the root server load does not re-run on every navigation. A page's own `pageMetaTags` override both.
 
 **OG image URL priority** (`resolveOrgSiteOgImageUrl`):
 

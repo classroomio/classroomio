@@ -1,0 +1,502 @@
+/*
+ * shell.css — the course shell (sidebar, header, page header, side panel) copied from
+ * lesson-reader/reader.css so this prototype sits in the same frame as the shipped
+ * lesson page. Mirrors apps/dashboard/src/routes/(app)/courses/[id]/+layout.svelte,
+ * features/course/components/{sidebar,course-header.svelte} and features/side-panel.
+ */
+
+:root {
+  --cs-sidebar-w: 256px;
+  --sp-w: 400px;
+  --lesson: oklch(0.588 0.158 241.966);
+  --exercise: oklch(0.627 0.194 149.214);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+svg {
+  flex-shrink: 0;
+}
+
+.text-xs {
+  font-size: 12px;
+}
+
+.mono {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+}
+
+/* ------------------------------------------------------------------ shell */
+
+.cs-app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.cs-side {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--cs-sidebar-w);
+  height: 100vh;
+  flex-shrink: 0;
+  padding: 8px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--sidebar-border);
+  color: var(--sidebar-foreground);
+  font-size: 14px;
+  transition:
+    margin 0.2s var(--ease-out),
+    opacity 0.2s var(--ease-out);
+}
+
+.cs-side-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0 -8px;
+  padding: 0 8px;
+}
+
+.cs-course {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: inherit;
+}
+
+.cs-course:hover {
+  background: var(--sidebar-accent);
+}
+
+.cs-course .t {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cs-course .s {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.cs-ring {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.cs-ring svg {
+  width: 32px;
+  height: 32px;
+  transform: rotate(-90deg);
+}
+
+.cs-ring .lbl {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.cs-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cs-nav:hover {
+  background: var(--sidebar-accent);
+}
+
+.cs-nav.active {
+  background: var(--sidebar-accent);
+  font-weight: 500;
+}
+
+.cs-nav svg {
+  width: 16px;
+  height: 16px;
+}
+
+.cs-nav .tail {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cs-nav .new {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+
+.cs-pills {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.cs-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 5px;
+  height: 18px;
+  border-radius: 6px;
+  background: var(--secondary);
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.cs-pill svg {
+  width: 11px;
+  height: 11px;
+}
+
+.cs-tree {
+  list-style: none;
+  margin: 2px 0 6px 10px;
+  padding: 0 0 0 8px;
+  border-left: 1px solid var(--sidebar-border);
+}
+
+.cs-tree .sec {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.cs-tree .sec .count {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.cs-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cs-row:hover {
+  background: var(--sidebar-accent);
+}
+
+.cs-row.active {
+  background: var(--sidebar-accent);
+  font-weight: 500;
+}
+
+.cs-row .title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cs-row svg {
+  width: 14px;
+  height: 14px;
+}
+
+.cs-row .lesson-icon {
+  color: var(--lesson);
+}
+
+.cs-row .exercise-icon {
+  color: var(--exercise);
+}
+
+.cs-row .done {
+  color: var(--exercise);
+}
+
+.cs-side-foot {
+  border-top: 1px solid var(--sidebar-border);
+  margin: 0 -8px -8px;
+}
+
+.cs-foot-nav {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 6px;
+}
+
+.cs-foot-nav .btn {
+  flex: 1;
+}
+
+.cs-foot-meta {
+  padding: 0 12px 6px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.cs-powered {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 12px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.cs-powered b {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.cs-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+  color: var(--foreground);
+  transition:
+    margin-right 0.22s var(--ease-out),
+    background 0.2s,
+    color 0.2s;
+}
+
+body.sp-open .cs-main {
+  margin-right: var(--sp-w);
+}
+
+.cs-head {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+  transition:
+    transform 0.2s var(--ease-out),
+    opacity 0.2s;
+}
+
+.cs-head .vsep {
+  width: 1px;
+  height: 16px;
+  margin: 0 4px;
+  background: var(--border);
+}
+
+.cs-head .here {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cs-head .grow {
+  flex: 1;
+}
+
+.btn-ghost-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.btn-ghost-icon:hover {
+  background: var(--accent);
+}
+
+.btn-ghost-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-assistant {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.btn-assistant::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(115deg, transparent 0 9px, rgb(255 255 255 / 0.12) 9px 10px);
+  pointer-events: none;
+}
+
+.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.btn-sm svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-icon-sm {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: color-mix(in oklab, var(--foreground) 22%, transparent);
+}
+
+.count-badge[hidden] {
+  display: none;
+}
+
+.count-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--pen);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* page */
+
+.pg {
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 24px 140px;
+}
+
+.pg-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 16px 0;
+  padding: 8px 0;
+}
+
+.pg-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.pg-sub {
+  margin: 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.pg-sub .sep {
+  opacity: 0.5;
+}
+
+.pg-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pg-actions .vsep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+.aa-btn {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.lang-btn .flag {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.lesson-col {
+  width: 100%;
+  max-width: 768px;
+  margin: 0 auto;
+}

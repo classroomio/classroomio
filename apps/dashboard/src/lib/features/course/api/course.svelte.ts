@@ -2,13 +2,10 @@ import { BaseApiWithErrors, classroomio, hasErrorCode, matchesError } from '$lib
 
 import type {
   Course,
-  CourseAnalytics,
   CreateCourseRequest,
   CreatePaymentRequestRequest,
   DeleteCourseRequest,
   EnrollCourseRequest,
-  GetCourseAnalyticsRequest,
-  GetCourseBySlugRequest,
   GetCertificationEvaluationRequest,
   GetCourseProgressRequest,
   GetCourseRequest,
@@ -55,7 +52,6 @@ interface UpdateCourseOptions {
 export class CourseApi extends BaseApiWithErrors {
   course = $state<Course | null>(null);
   inviteRestricted = $state(false);
-  courseAnalytics = $state<CourseAnalytics | null>(null);
   get publicConversionOffenders(): NonAutoGradableQuestionOffender[] {
     return publicConversionFlow.offenders;
   }
@@ -385,32 +381,6 @@ export class CourseApi extends BaseApiWithErrors {
   }
 
   /**
-   * Gets a course by slug (public route)
-   * @param slug Course slug
-   * @returns The course data or null on error
-   */
-  async getBySlug(slug: string) {
-    await this.execute<GetCourseBySlugRequest>({
-      requestFn: () =>
-        classroomio.course.slug?.[':slug'].$get({
-          param: { slug }
-        }),
-      logContext: 'fetching course by slug',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.course = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: () => {
-        snackbar.error('Failed to fetch course by slug');
-      }
-    });
-    return this.course;
-  }
-
-  /**
    * Creates a new course with group, group member, and default newsfeed
    * @param fields Course creation fields (title, description, type)
    * @returns The created course data or null on error
@@ -634,31 +604,6 @@ export class CourseApi extends BaseApiWithErrors {
       },
       onError: () => {
         snackbar.error('Failed to load certification status');
-      }
-    });
-  }
-
-  /**
-   * Gets course analytics including student progress, completion rates, and grades
-   * @param courseId Course ID
-   * @returns Course analytics data or null on error
-   */
-  async getAnalytics(courseId: string) {
-    await this.execute<GetCourseAnalyticsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId']['analytics'].$get({
-          param: { courseId }
-        }),
-      logContext: 'fetching course analytics',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.courseAnalytics = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: () => {
-        snackbar.error('Failed to fetch course analytics');
       }
     });
   }

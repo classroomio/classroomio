@@ -11,6 +11,7 @@ import {
   updateOrganizationMemberRole
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
+import { sendTeamRoleChangedEmail } from './team-role-email';
 
 type UpdatedTeamMemberRole = {
   id: number;
@@ -96,7 +97,7 @@ export async function applyTeamMemberRoleChange(
   };
 }
 
-/** Schedules the course role reconcile for a member whose org role just changed. */
+/** Runs the post-commit work for a role change: course role reconcile, member email, and webhook. */
 export async function reconcileAfterTeamRoleChange(
   orgId: string,
   applied: AppliedTeamMemberRole,
@@ -107,6 +108,15 @@ export async function reconcileAfterTeamRoleChange(
   }
 
   if (applied.roleChanged) {
+    await sendTeamRoleChangedEmail({
+      orgId,
+      memberEmail: applied.email,
+      memberProfileId: applied.profileId,
+      previousRoleId: applied.previousRoleId,
+      roleId: applied.roleId,
+      actorProfileId
+    });
+
     await emitOrganizationMemberUpdatedWebhookEvent(
       orgId,
       { id: applied.id, profileId: applied.profileId, email: applied.email, roleId: applied.roleId },

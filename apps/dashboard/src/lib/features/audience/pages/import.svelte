@@ -8,19 +8,25 @@
   import * as Table from '@cio/ui/base/table';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { Input } from '@cio/ui/base/input';
   import { Label } from '@cio/ui/base/label';
+  import { Search } from '@cio/ui/custom/search';
   import UploadIcon from '@lucide/svelte/icons/upload';
   import {
     AUDIENCE_IMPORT_ACCEPT,
     AUDIENCE_IMPORT_MAX_FILE_BYTES,
     AUDIENCE_IMPORT_MAX_ROWS,
+    AUDIENCE_IMPORT_PREVIEW_PAGE_SIZE,
     AUDIENCE_IMPORT_TEMPLATE,
     type ParsedImportRow,
-    parseAudienceImportCsv
+    filterImportRowIndexes,
+    parseAudienceImportCsv,
+    reclassifyImportRows
   } from '@cio/utils/validation/organization';
   import { t } from '$lib/utils/functions/translations';
   import type { ImportControls } from '$features/audience/utils/types';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { TablePagination } from '$features/ui';
   import { snackbar } from '$features/ui/snackbar/store';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
@@ -68,6 +74,9 @@
   let unknownColumns = $state<string[]>([]);
   let resultRows = $state<AudienceImportResultRows>([]);
   let importedCount = $state(0);
+  let searchQuery = $state('');
+  let matchedIndexes = $state<number[] | null>(null);
+  let currentPage = $state(1);
 
   let courseAccessMode = $state('none');
   let cohortAccessMode = $state('none');
@@ -77,6 +86,18 @@
   let isSubmitting = $state(false);
 
   const summary = $derived(summariseImportRows(parsedRows));
+  const totalRows = $derived(matchedIndexes ? matchedIndexes.length : parsedRows.length);
+  const pageIndexes = $derived.by(() => {
+    const start = (currentPage - 1) * AUDIENCE_IMPORT_PREVIEW_PAGE_SIZE;
+    const end = Math.min(start + AUDIENCE_IMPORT_PREVIEW_PAGE_SIZE, totalRows);
+    const indexes: number[] = [];
+
+    for (let position = start; position < end; position += 1) {
+      indexes.push(matchedIndexes ? matchedIndexes[position] : position);
+    }
+
+    return indexes;
+  });
   const audiencePath = $derived(page.url.pathname.replace(/\/import$/, ''));
 
   function toggleCourse(courseId: string) {
@@ -102,7 +123,30 @@
     parsedRows = parsed.rows;
     truncated = parsed.truncated;
     unknownColumns = parsed.unknownColumns;
+    resetPreviewView();
     step = 'preview';
+  }
+
+  function toImportRecipient(row: ParsedImportRow) {
+    const email = row.email.trim().toLowerCase();
+    const name = row.name?.trim() || undefined;
+
+    return { email, name, courses: row.courses };
+  }
+
+  function resetPreviewView() {
+    searchQuery = '';
+    matchedIndexes = null;
+    currentPage = 1;
+  }
+
+  function handleSearch(query: string) {
+    matchedIndexes = query.trim() ? filterImportRowIndexes(parsedRows, query) : null;
+    currentPage = 1;
+  }
+
+  function handleRowEdit() {
+    parsedRows = reclassifyImportRows(parsedRows);
   }
 
   async function handleFileUpload(files: File[]) {
@@ -131,9 +175,7 @@
     try {
       // Only the rows the preview marked importable are sent; the server
       // re-checks and can still reject individually.
-      const recipients = parsedRows
-        .filter((row) => row.status === 'ready')
-        .map((row) => ({ email: row.email, name: row.name, courses: row.courses }));
+      const recipients = parsedRows.filter((row) => row.status === 'ready').map((row) => toImportRecipient(row));
 
       const result = await orgApi.importAudienceMembers({
         recipients,
@@ -161,6 +203,7 @@
     parsedRows = [];
     truncated = 0;
     unknownColumns = [];
+    resetPreviewView();
     resultRows = [];
     importedCount = 0;
   }
@@ -224,21 +267,30 @@
   </div>
 {:else if step === 'preview'}
   <div class="space-y-6 pb-10">
-    <div class="flex flex-wrap items-center gap-2">
-      {#if sourceName}
-        <span class="text-sm font-medium">{sourceName}</span>
-      {/if}
-      <Badge variant="secondary">{$t('audience.import.count_ready', { count: summary.ready })}</Badge>
-      {#if summary.alreadyListed > 0}
-        <Badge variant="outline">{$t('audience.import.count_duplicate', { count: summary.alreadyListed })}</Badge>
-      {/if}
-      {#if summary.invalid > 0}
-        <!-- Outlined amber, not destructive: these rows are skipped, not
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="flex flex-wrap items-center gap-2">
+        {#if sourceName}
+          <span class="text-sm font-medium">{sourceName}</span>
+        {/if}
+        <Badge variant="secondary">{$t('audience.import.count_ready', { count: summary.ready })}</Badge>
+        {#if summary.alreadyListed > 0}
+          <Badge variant="outline">{$t('audience.import.count_duplicate', { count: summary.alreadyListed })}</Badge>
+        {/if}
+        {#if summary.invalid > 0}
+          <!-- Outlined amber, not destructive: these rows are skipped, not
              errors, and the file still imports without them. -->
-        <Badge variant="outline" class="ui:border-amber-600 ui:text-amber-600">
-          {$t('audience.import.count_invalid', { count: summary.invalid })}
-        </Badge>
-      {/if}
+          <Badge variant="outline" class="ui:border-amber-600 ui:text-amber-600">
+            {$t('audience.import.count_invalid', { count: summary.invalid })}
+          </Badge>
+        {/if}
+      </div>
+
+      <Search
+        class="ml-auto"
+        placeholder={$t('audience.import.search_placeholder')}
+        bind:value={searchQuery}
+        onValueChange={handleSearch}
+      />
     </div>
 
     {#if truncated > 0}
@@ -253,29 +305,66 @@
       </p>
     {/if}
 
-    <div class="max-h-80 overflow-auto rounded-md border">
-      <Table.Root>
-        <Table.Header>
-          <Table.Row>
-            <Table.Head>{$t('audience.email')}</Table.Head>
-            <Table.Head>{$t('audience.name')}</Table.Head>
-            <Table.Head>{$t('audience.status')}</Table.Head>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {#each parsedRows as row (`${row.line}-${row.email}`)}
-            <Table.Row class={row.status === 'ready' ? undefined : 'ui:text-muted-foreground'}>
-              <Table.Cell>{row.email || '—'}</Table.Cell>
-              <Table.Cell>{row.name ?? '—'}</Table.Cell>
-              <Table.Cell>
-                <Badge variant={row.status === 'ready' ? 'secondary' : 'outline'}>
-                  {$t(IMPORT_ROW_STATUS_LABEL[row.status])}
-                </Badge>
-              </Table.Cell>
+    <div class="space-y-3">
+      <div class="overflow-x-auto rounded-md border">
+        <Table.Root>
+          <Table.Header>
+            <Table.Row>
+              <Table.Head>{$t('audience.email')}</Table.Head>
+              <Table.Head>{$t('audience.name')}</Table.Head>
+              <Table.Head>{$t('audience.status')}</Table.Head>
             </Table.Row>
-          {/each}
-        </Table.Body>
-      </Table.Root>
+          </Table.Header>
+          <Table.Body>
+            {#each pageIndexes as rowIndex (rowIndex)}
+              {@const row = parsedRows[rowIndex]}
+              <Table.Row>
+                <Table.Cell>
+                  <Input
+                    type="email"
+                    bind:value={parsedRows[rowIndex].email}
+                    oninput={handleRowEdit}
+                    aria-label={$t('audience.import.edit_email')}
+                    aria-invalid={row.status === 'invalid_email' || row.status === 'missing_email'}
+                    placeholder={$t('audience.email')}
+                    data-testid="audience-import-email-{rowIndex}"
+                  />
+                </Table.Cell>
+                <Table.Cell>
+                  <Input
+                    bind:value={parsedRows[rowIndex].name}
+                    maxlength={200}
+                    oninput={handleRowEdit}
+                    aria-label={$t('audience.import.edit_name')}
+                    placeholder={$t('audience.name')}
+                    data-testid="audience-import-name-{rowIndex}"
+                  />
+                </Table.Cell>
+                <Table.Cell>
+                  <Badge variant={row.status === 'ready' ? 'secondary' : 'outline'}>
+                    {$t(IMPORT_ROW_STATUS_LABEL[row.status])}
+                  </Badge>
+                </Table.Cell>
+              </Table.Row>
+            {:else}
+              <Table.Row>
+                <Table.Cell colspan={3} class="ui:text-muted-foreground text-center text-sm">
+                  {$t('audience.import.search_no_results')}
+                </Table.Cell>
+              </Table.Row>
+            {/each}
+          </Table.Body>
+        </Table.Root>
+      </div>
+
+      {#if totalRows > AUDIENCE_IMPORT_PREVIEW_PAGE_SIZE}
+        <TablePagination
+          count={totalRows}
+          perPage={AUDIENCE_IMPORT_PREVIEW_PAGE_SIZE}
+          page={currentPage}
+          onPageChange={(nextPage) => (currentPage = nextPage)}
+        />
+      {/if}
     </div>
 
     <div class="space-y-3">

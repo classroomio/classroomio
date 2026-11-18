@@ -16,6 +16,7 @@ vi.mock('@cio/db/queries/organization', () => ({
     ),
   createOrganizationMembers: vi.fn().mockImplementation(async (rows: { email: string }[]) => rows),
   getOrganizationAudienceMember: vi.fn(),
+  getLatestOrganizationInviteMetadataByEmails: vi.fn().mockResolvedValue([]),
   getLatestOrganizationInviteRowByOrgAndEmail: vi.fn(),
   getOrgMembersByProfileIds: vi.fn().mockResolvedValue([]),
   getOrganizationById: vi.fn(),
@@ -77,6 +78,7 @@ import {
   getOrganizationAudienceMember,
   getLatestOrganizationInviteRowByOrgAndEmail,
   getOrganizationById,
+  getLatestOrganizationInviteMetadataByEmails,
   getOrganizationMembersByNormalizedEmails,
   getStudentOrganizationMemberByOrgAndEmail,
   hasLapsedStudentInvite,
@@ -465,6 +467,53 @@ describe('importAudienceMembers — structured recipients', () => {
     );
 
     expect(result.rows.map((row) => row.status)).toEqual(['ready', 'duplicate_in_file']);
+  });
+});
+
+describe('importAudienceMembers — names stored with the invite', () => {
+  function storedFullnames() {
+    const rows = vi.mocked(createOrganizationInvites).mock.calls.flatMap(([invites]) => invites) as unknown as {
+      email: string;
+      metadata: { fullname?: string };
+    }[];
+
+    return Object.fromEntries(rows.map((row) => [row.email, row.metadata.fullname]));
+  }
+
+  it('stores each imported name in its invite metadata', async () => {
+    await importAudienceMembers(ORG, csv('email,name', 'ada@test.dev,Ada Lovelace', 'grace@test.dev,'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace', 'grace@test.dev': undefined });
+  });
+
+  it('keeps the first row name when a later duplicate row carries another name', async () => {
+    await importAudienceMembers(
+      ORG,
+      csv('email,name', 'ada@test.dev,Ada Lovelace', 'ada@test.dev,Someone Else'),
+      ACTOR
+    );
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace' });
+  });
+
+  it('keeps the saved name, even from a revoked invite, when a pending student is imported again without one', async () => {
+    vi.mocked(getLatestOrganizationInviteMetadataByEmails).mockResolvedValueOnce([
+      { email: 'ada@test.dev', metadata: { source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' } }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email', 'ada@test.dev'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace' });
+  });
+
+  it('prefers the name in the new import over the previous invite name', async () => {
+    vi.mocked(getLatestOrganizationInviteMetadataByEmails).mockResolvedValueOnce([
+      { email: 'ada@test.dev', metadata: { source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' } }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email,name', 'ada@test.dev,Ada King'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada King' });
   });
 });
 

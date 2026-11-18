@@ -91,6 +91,10 @@ export default defineConfig({
             root: '/organization-and-team/admin-dashboard'
           },
           {
+            label: "See what's new in ClassroomIO",
+            root: '/get-started/see-whats-new-in-classroomio'
+          },
+          {
             label: 'Set up your first academy',
             display: 'group',
             collapsed: true,
@@ -98,6 +102,10 @@ export default defineConfig({
               {
                 label: 'Complete your onboarding checklist',
                 root: '/get-started/onboarding'
+              },
+              {
+                label: 'Use the Setup page',
+                root: '/get-started/use-the-setup-page'
               },
               {
                 label: 'Create your first course',
@@ -158,6 +166,10 @@ export default defineConfig({
               {
                 label: 'Create a course with AI',
                 root: '/build-courses/create-a-course-with-ai'
+              },
+              {
+                label: 'Use the AI assistant in the course editor',
+                root: '/build-courses/use-the-ai-assistant-in-the-course-editor'
               },
               {
                 label: 'Create a course from a template',
@@ -793,13 +805,17 @@ export default defineConfig({
             root: '/analytics-and-reporting/understand-the-organization-dashboard'
           },
           {
-            label: 'Use organization analytics',
+            label: 'Monitor students across your organization',
+            root: '/analytics-and-reporting/monitor-students-across-your-organization'
+          },
+          {
+            label: 'Use Marketing',
             display: 'group',
             collapsed: true,
             items: [
               {
-                label: 'Read your organization analytics overview',
-                root: '/analytics-and-reporting/read-your-organization-analytics-overview'
+                label: 'Read your marketing overview',
+                root: '/analytics-and-reporting/read-your-marketing-overview'
               },
               {
                 label: 'Analyze landing views, enrollments, and completions',
@@ -822,7 +838,7 @@ export default defineConfig({
             items: [
               {
                 label: 'Review course performance and student progress',
-                root: '/analytics-and-reporting/review-course-performance-and-learner-progress'
+                root: '/analytics-and-reporting/review-course-performance-and-student-progress'
               },
               {
                 label: 'View submissions and completion data',
@@ -831,8 +847,12 @@ export default defineConfig({
             ]
           },
           {
+            label: 'Track a cohort with analytics',
+            root: '/analytics-and-reporting/track-a-cohort-with-analytics'
+          },
+          {
             label: "View a student's analytics",
-            root: '/analytics-and-reporting/view-a-learners-analytics'
+            root: '/analytics-and-reporting/view-a-students-analytics'
           },
           {
             label: 'Export audiences, marks, and reports',
@@ -855,6 +875,10 @@ export default defineConfig({
           {
             label: 'Manage your notification preferences',
             root: '/account-team-security/manage-your-notification-preferences'
+          },
+          {
+            label: 'Search the dashboard and settings',
+            root: '/organization-and-team/search-the-dashboard-and-settings'
           },
           {
             label: 'Update organization settings',

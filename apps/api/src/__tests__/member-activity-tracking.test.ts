@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { collapseLatestActivityByMember } from '@cio/db/queries/analytics/analytics';
+import { collapseLatestActivityByMember } from '@cio/db/queries/tracking';
 
 type PageEvent = Parameters<typeof collapseLatestActivityByMember>[0][number];
 

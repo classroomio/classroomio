@@ -139,14 +139,18 @@ export async function createOrGetAssetByStorageKey(values: TNewAsset, dbClient: 
   }
 }
 
-export async function getAssetById(assetId: string, orgId?: string): Promise<TAsset | null> {
+export async function getAssetById(
+  assetId: string,
+  orgId?: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
   try {
     const conditions = [eq(schema.asset.id, assetId)];
     if (orgId) {
       conditions.push(eq(schema.asset.organizationId, orgId));
     }
 
-    const [item] = await db
+    const [item] = await dbClient
       .select()
       .from(schema.asset)
       .where(and(...conditions))
@@ -481,6 +485,32 @@ export async function mergeAssetMetadata(
   } catch (error) {
     console.error('mergeAssetMetadata error:', error);
     throw new Error(`Failed to merge asset metadata: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Maps each asset id that exists to the organization that owns it. Ids with no asset row are absent.
+ */
+export async function getAssetOrganizationIdsByAssetIds(
+  assetIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Map<string, string>> {
+  try {
+    if (assetIds.length === 0) {
+      return new Map();
+    }
+
+    const rows = await dbClient
+      .select({ id: schema.asset.id, organizationId: schema.asset.organizationId })
+      .from(schema.asset)
+      .where(inArray(schema.asset.id, assetIds));
+
+    return new Map(rows.map((row) => [row.id, row.organizationId]));
+  } catch (error) {
+    console.error('getAssetOrganizationIdsByAssetIds error:', error);
+    throw new Error(
+      `Failed to get asset organizations by asset ids: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

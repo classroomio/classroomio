@@ -15,6 +15,7 @@ interface RecordLessonRevisionInput {
   lessonId: string;
   authorId: string | null;
   source: TBlockChangeSource;
+  clientName?: string | null;
   changeSetId: string | null;
   dbClient: DbOrTxClient;
 }
@@ -45,13 +46,25 @@ export async function readLessonPlacements(
  * so the lesson can be rebuilt exactly as it was at any moment.
  */
 export function canExtendRevision(
-  latest: { isSealed: boolean; authorId: string | null; source: string; changeSetId: string | null } | null,
-  { authorId, source, changeSetId }: Pick<RecordLessonRevisionInput, 'authorId' | 'source' | 'changeSetId'>
+  latest: {
+    isSealed: boolean;
+    authorId: string | null;
+    source: string;
+    clientName: string | null;
+    changeSetId: string | null;
+  } | null,
+  {
+    authorId,
+    source,
+    clientName = null,
+    changeSetId
+  }: Pick<RecordLessonRevisionInput, 'authorId' | 'source' | 'clientName' | 'changeSetId'>
 ): boolean {
   if (!latest || !changeSetId) return false;
   if (latest.isSealed) return false;
   if ((latest.authorId ?? null) !== authorId) return false;
   if (latest.source !== source) return false;
+  if ((latest.clientName ?? null) !== clientName) return false;
 
   return latest.changeSetId === changeSetId;
 }
@@ -83,6 +96,7 @@ export async function recordLessonRevision({
   lessonId,
   authorId,
   source,
+  clientName = null,
   changeSetId,
   dbClient
 }: RecordLessonRevisionInput): Promise<void> {
@@ -93,13 +107,13 @@ export async function recordLessonRevision({
 
   if (latest && isSameJson(latest.placements, placements)) return;
 
-  if (canExtendRevision(latest, { authorId, source, changeSetId })) {
+  if (canExtendRevision(latest, { authorId, source, clientName, changeSetId })) {
     const extended = await extendLessonRevision(latest!.id, placements, dbClient);
     if (extended) return;
   }
 
   await insertLessonRevision(
-    { lessonId, placements, authorId, source, changeSetId, editCount: 1, isSealed: false },
+    { lessonId, placements, authorId, source, clientName, changeSetId, editCount: 1, isSealed: false },
     dbClient
   );
 }

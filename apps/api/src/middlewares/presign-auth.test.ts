@@ -8,15 +8,18 @@ import type { Context, Next } from 'hono';
 import { findUnauthorizedDownloadKeys, resolveUploadOrganizationId } from './presign-auth';
 
 const mocks = vi.hoisted(() => ({
-  legacyOwners: vi.fn()
+  legacyOwners: vi.fn(),
+  assetOwners: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/assets', () => ({
-  getAssetOrganizationIdsByStorageKeys: (keys: string[]) => mocks.legacyOwners(keys)
+  getAssetOrganizationIdsByStorageKeys: (keys: string[]) => mocks.legacyOwners(keys),
+  getAssetOrganizationIdsByAssetIds: (ids: string[]) => mocks.assetOwners(ids)
 }));
 
 const ORG_ID = '3f2504e0-4f89-11d3-9a0c-0305e82c3301';
 const OTHER_ORG_ID = '9c858901-8a57-4791-81fe-4c455b099bc9';
+const ASSET_ID = '5b9a1f0e-2c3d-4e5f-8a7b-6c1d2e3f4a5b';
 const USER_ID = 'b2f0a5d4-8c1e-4a6b-9d3f-2e7c8a1b4d5e';
 
 function buildApp(orgRoles: Record<string, number>) {
@@ -53,6 +56,8 @@ describe('presign authorization helpers', () => {
   beforeEach(() => {
     mocks.legacyOwners.mockReset();
     mocks.legacyOwners.mockResolvedValue(new Map());
+    mocks.assetOwners.mockReset();
+    mocks.assetOwners.mockResolvedValue(new Map());
   });
 
   describe('every org role can presign, because students need these routes', () => {
@@ -142,11 +147,55 @@ describe('presign authorization helpers', () => {
       expect(response.status).toBe(403);
     });
 
-    it('does not hit the asset table when every key carries a prefix', async () => {
-      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
-      await post(app, '/video/download', { keys: [`${ORG_ID}/a.mp4`] });
+    it('lets the owning organization download an API-created asset whose key starts with the asset id', async () => {
+      mocks.assetOwners.mockResolvedValue(new Map([[ASSET_ID, ORG_ID]]));
+      const app = buildApp({ [ORG_ID]: ROLE.STUDENT });
+      const response = await post(app, '/video/download', { keys: [`${ASSET_ID}/source.mp4`] });
 
-      expect(mocks.legacyOwners).not.toHaveBeenCalled();
+      expect(response.status).toBe(200);
+      expect(mocks.assetOwners).toHaveBeenCalledWith([ASSET_ID]);
+    });
+
+    it('rejects an API-created asset key owned by another organization', async () => {
+      mocks.assetOwners.mockResolvedValue(new Map([[ASSET_ID, OTHER_ORG_ID]]));
+      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
+      const response = await post(app, '/video/download', { keys: [`${ASSET_ID}/source.mp4`] });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('rejects an unclaimed prefixed key that names another organization', async () => {
+      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
+      const response = await post(app, '/video/download', { keys: [`${OTHER_ORG_ID}/unclaimed.mp4`] });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('ignores asset claims on a prefixed key, so a caller cannot register a foreign key to download it', async () => {
+      mocks.legacyOwners.mockResolvedValue(new Map([[`${OTHER_ORG_ID}/theirs.mp4`, [ORG_ID]]]));
+      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
+      const response = await post(app, '/video/download', { keys: [`${OTHER_ORG_ID}/theirs.mp4`] });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('keeps the real owner able to download after another organization claims their prefixed key', async () => {
+      const ownedKey = `${ORG_ID}/mine.mp4`;
+      mocks.legacyOwners.mockResolvedValue(new Map([[ownedKey, [OTHER_ORG_ID]]]));
+      const app = buildApp({ [ORG_ID]: ROLE.STUDENT });
+      const response = await post(app, '/video/download', { keys: [ownedKey] });
+
+      expect(response.status).toBe(200);
+    });
+
+    it('ignores asset claims on an API asset key owned by another organization', async () => {
+      const apiKey = `${ASSET_ID}/source.mp4`;
+      mocks.assetOwners.mockResolvedValue(new Map([[ASSET_ID, OTHER_ORG_ID]]));
+      mocks.legacyOwners.mockResolvedValue(new Map([[apiKey, [ORG_ID]]]));
+      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
+      const response = await post(app, '/video/download', { keys: [apiKey] });
+
+      expect(response.status).toBe(403);
     });
   });
 });

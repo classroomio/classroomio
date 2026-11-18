@@ -1,21 +1,10 @@
 import { Readable } from 'node:stream';
-import type {
-  TAutomationCourseTagAssignment,
-  TAutomationDraftTagAssignment,
-  TAutomationDraftTagParam
-} from '@cio/utils/validation/tag';
+import type { TAutomationCourseTagAssignment } from '@cio/utils/validation/tag';
 import type { TBlockLocaleCode } from '@cio/utils/validation/block';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import { pickTagColor } from '@cio/utils/validation/tag';
 import { ErrorCodes } from '@cio/utils/constants';
-import type {
-  TCourseImportCourseParam,
-  TCourseImportDraftCreate,
-  TCourseImportDraftCreateFromCourse,
-  TCourseImportDraftPublish,
-  TCourseImportDraftPublishToCourse,
-  TCourseImportDraftUpdate
-} from '@cio/utils/validation/course-import';
+import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 
 import type { McpServerConfig } from './config';
 import type {
@@ -32,6 +21,7 @@ import type {
   TPublicApiUpdateExerciseSectionFields,
   TPublicApiCourseExercisesQuery,
   TPublicApiCoursesQuery,
+  TPublicApiCreateCourse,
   TPublicApiCourseMarksQuery,
   TPublicApiCourseSubmissionsQuery,
   TPublicApiCreateCourseExercise,
@@ -55,9 +45,15 @@ import type {
   TPublicApiCourseLessonCommentsQuery,
   TPublicApiCourseLessonHistoryQuery,
   TPublicApiCourseLessonsQuery,
-  TPublicApiCourseMemberAnalyticsQuery,
-  TPublicApiCourseAnalyticsQuery,
+  TPublicApiAnalyticsQueryRequest,
+  TPublicApiAnalyticsSnapshotQuery,
+  TPublicApiAnalyticsStudentsQuery,
+  TPublicApiCourseAnalyticsSnapshotQuery,
   TPublicApiCourseAnalyticsStudentsQuery,
+  TPublicApiCourseMarketingQuery,
+  TPublicApiCourseMemberAnalyticsQuery,
+  TPublicApiMarketingQuery,
+  TPublicApiOrganizationOverviewQuery,
   TPublicApiCourseMembersQuery,
   TPublicApiCreateCourseLessonComment,
   TPublicApiCreateCourseSection,
@@ -66,6 +62,7 @@ import type {
   TPublicApiReorderCourseContent,
   TPublicApiCloneCourse,
   TPublicApiRelatedCoursesQuery,
+  TPublicApiRemindOverdueCohortGoals,
   TPublicApiSetFeaturedCourses,
   TPublicApiUpdateDomain,
   TPublicApiConnectCustomDomain,
@@ -88,7 +85,6 @@ import type {
   TPublicApiCreateCourseInvite,
   TPublicApiCreateLesson,
   TPublicApiInviteStudentsToCohort,
-  TPublicApiOrgAnalyticsQuery,
   TPublicApiListCourseCertificatesQuery,
   TPublicApiPaginationQuery,
   TPublicApiSetCohortInviteLinkRevoked,
@@ -170,11 +166,11 @@ const toQuerySuffix = (query: Record<string, string | number | boolean | undefin
   return searchParams.toString() ? `?${searchParams.toString()}` : '';
 };
 
-const toAnalyticsQuerySuffix = (query: Partial<TPublicApiOrgAnalyticsQuery | TPublicApiCourseAnalyticsQuery>) => {
+const toAnalyticsQuerySuffix = (query: { include?: string[]; days?: number; limit?: number }) => {
   const searchParams = new URLSearchParams();
   if (query.include?.length) searchParams.set('include', query.include.join(','));
   if (query.days) searchParams.set('days', String(query.days));
-  if ('limit' in query && query.limit) searchParams.set('limit', String(query.limit));
+  if (query.limit) searchParams.set('limit', String(query.limit));
 
   return searchParams.toString() ? `?${searchParams.toString()}` : '';
 };
@@ -191,6 +187,8 @@ export class ClassroomIoApiError extends Error {
   }
 }
 
+const MAX_CLIENT_NAME_LENGTH = 80;
+
 export type ClassroomIoApiClientOptions = {
   /** Transport for API calls; defaults to the global fetch. */
   fetch?: typeof fetch;
@@ -201,6 +199,7 @@ export type ClassroomIoApiClientOptions = {
 export class ClassroomIoApiClient {
   private readonly fetchImpl: typeof fetch;
   private readonly extraHeaders: Record<string, string>;
+  private clientName: string | null = null;
 
   constructor(
     private readonly config: McpServerConfig,
@@ -210,36 +209,46 @@ export class ClassroomIoApiClient {
     this.extraHeaders = options.headers ?? {};
   }
 
-  async createCourseDraft(payload: TCourseImportDraftCreate) {
-    return this.request('/organization/course-import/drafts', {
-      method: 'POST',
-      body: payload
-    });
+  /**
+   * Names the MCP client (its `clientInfo.name`) on every later API call so the server can attribute edits to it.
+   * The name is cut to a bounded length and percent-encoded so any Unicode name is a safe header value;
+   * a name that cannot be encoded is not sent.
+   */
+  setClientName(name: string) {
+    const bounded = Array.from(name).slice(0, MAX_CLIENT_NAME_LENGTH).join('');
+
+    try {
+      this.clientName = encodeURIComponent(bounded);
+    } catch {
+      this.clientName = null;
+    }
   }
 
-  async createCourseDraftFromCourse(payload: TCourseImportDraftCreateFromCourse) {
-    return this.request('/organization/course-import/drafts/from-course', {
-      method: 'POST',
-      body: payload
-    });
+  async createCourse(payload: TPublicApiCreateCourse) {
+    return this.request('/public-api/v1/courses', { method: 'POST', body: payload });
   }
 
-  async getCourseStructure(courseId: TCourseImportCourseParam['courseId']) {
-    return this.request(`/organization/course-import/courses/${courseId}/structure`, {
-      method: 'GET'
-    });
+  async publishCourse(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/publish`, { method: 'POST' });
   }
 
-  async updateCourseLandingPage(courseId: TCourseImportCourseParam['courseId'], payload: TCourseLandingPageUpdate) {
+  async unpublishCourse(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/unpublish`, { method: 'POST' });
+  }
+
+  async getCourseStructure(courseId: string) {
+    const { draft, ...rest } = await this.request<{ courseId: string; draft: unknown }>(
+      `/public-api/v1/courses/${courseId}/structure`,
+      { method: 'GET' }
+    );
+
+    return { ...rest, structure: draft };
+  }
+
+  async updateCourseLandingPage(courseId: string, payload: TCourseLandingPageUpdate) {
     return this.request(`/course/${courseId}/landing-page`, {
       method: 'PUT',
       body: payload
-    });
-  }
-
-  async getCourseDraft(draftId: string) {
-    return this.request(`/organization/course-import/drafts/${draftId}`, {
-      method: 'GET'
     });
   }
 
@@ -397,34 +406,6 @@ export class ClassroomIoApiClient {
   async getCourseMarks(courseId: string, query: Partial<TPublicApiCourseMarksQuery> = {}) {
     return this.requestPaginated(`/public-api/v1/courses/${courseId}/marks${toQuerySuffix(query)}`, {
       method: 'GET'
-    });
-  }
-
-  async updateCourseDraft(draftId: string, payload: TCourseImportDraftUpdate) {
-    return this.request(`/organization/course-import/drafts/${draftId}`, {
-      method: 'PUT',
-      body: payload
-    });
-  }
-
-  async tagCourseDraft(draftId: TAutomationDraftTagParam['draftId'], payload: TAutomationDraftTagAssignment) {
-    return this.request(`/organization/course-import/drafts/${draftId}/tags`, {
-      method: 'PUT',
-      body: payload
-    });
-  }
-
-  async publishCourseDraft(draftId: string, payload: TCourseImportDraftPublish) {
-    return this.request(`/organization/course-import/drafts/${draftId}/publish`, {
-      method: 'POST',
-      body: payload
-    });
-  }
-
-  async publishCourseDraftToExistingCourse(draftId: string, payload: TCourseImportDraftPublishToCourse) {
-    return this.request(`/organization/course-import/drafts/${draftId}/publish-existing-course`, {
-      method: 'POST',
-      body: payload
     });
   }
 
@@ -1253,27 +1234,86 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}/invite-link`, { method: 'PATCH', body: payload });
   }
 
-  async getOrgAnalytics(query: Partial<TPublicApiOrgAnalyticsQuery> = {}) {
-    return this.requestWithMeta(`/public-api/v1/analytics${toAnalyticsQuerySuffix(query)}`);
-  }
-
-  async listComplianceLearners(query: Partial<TPublicApiPaginationQuery> = {}) {
-    return this.requestPaginated(`/public-api/v1/analytics/compliance/learners${toPageQuerySuffix(query)}`, {
+  async getOrgAnalytics(query: Partial<TPublicApiAnalyticsSnapshotQuery> = {}) {
+    return this.request(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}${toQuerySuffix(query)}`, {
       method: 'GET'
     });
   }
 
-  async getLearnerAnalytics(profileId: string) {
-    return this.request(`/public-api/v1/analytics/learners/${profileId}`, { method: 'GET' });
+  async listOrgAnalyticsStudents(query: Partial<TPublicApiAnalyticsStudentsQuery> = {}) {
+    return this.requestPaginated(
+      `/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/students${toQuerySuffix(query)}`,
+      {
+        method: 'GET'
+      }
+    );
   }
 
-  async getCourseAnalytics(courseId: string, query: Partial<TPublicApiCourseAnalyticsQuery> = {}) {
-    return this.requestWithMeta(`/public-api/v1/courses/${courseId}/analytics${toAnalyticsQuerySuffix(query)}`);
+  async getAnalyticsCatalog() {
+    return this.request(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`, { method: 'GET' });
+  }
+
+  async queryAnalytics(payload: TPublicApiAnalyticsQueryRequest) {
+    const json = await this.requestRaw(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`, {
+      method: 'POST',
+      body: payload
+    });
+
+    return { data: json.data, meta: json.meta, pagination: json.pagination };
+  }
+
+  async getCourseAnalytics(courseId: string, query: Partial<TPublicApiCourseAnalyticsSnapshotQuery> = {}) {
+    return this.request(`/public-api/v1/courses/${courseId}/analytics${toQuerySuffix(query)}`, { method: 'GET' });
   }
 
   async listCourseAnalyticsStudents(courseId: string, query: Partial<TPublicApiCourseAnalyticsStudentsQuery> = {}) {
-    return this.requestPaginated(`/public-api/v1/courses/${courseId}/analytics/students${toPageQuerySuffix(query)}`, {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/analytics/students${toQuerySuffix(query)}`, {
       method: 'GET'
+    });
+  }
+
+  async getCohortAnalytics(cohortId: string, query: Partial<TPublicApiAnalyticsSnapshotQuery> = {}) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/analytics${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async listCohortAnalyticsStudents(cohortId: string, query: Partial<TPublicApiAnalyticsStudentsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/analytics/students${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getMarketingAnalytics(query: Partial<TPublicApiMarketingQuery> = {}) {
+    return this.requestWithMeta(`/public-api/v1/analytics/marketing${toAnalyticsQuerySuffix(query)}`);
+  }
+
+  async getCourseMarketingAnalytics(courseId: string, query: Partial<TPublicApiCourseMarketingQuery> = {}) {
+    return this.requestWithMeta(
+      `/public-api/v1/analytics/marketing/courses/${courseId}${toAnalyticsQuerySuffix(query)}`
+    );
+  }
+
+  async getComplianceAnalytics() {
+    return this.requestWithMeta(`/public-api/v1/analytics/compliance`);
+  }
+
+  async listComplianceStudents(query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/analytics/compliance/students${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getOrgOverview(query: Partial<TPublicApiOrganizationOverviewQuery> = {}) {
+    return this.requestWithMeta(`/public-api/v1/organization/overview${toAnalyticsQuerySuffix(query)}`);
+  }
+
+  async getStudentAnalytics(profileId: string) {
+    return this.request(`/public-api/v1/audience/${profileId}/analytics`, { method: 'GET' });
+  }
+
+  async remindOverdueCohortGoals(cohortId: string, payload: TPublicApiRemindOverdueCohortGoals) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/remind-overdue`, {
+      method: 'POST',
+      body: payload
     });
   }
 
@@ -1284,6 +1324,7 @@ export class ClassroomIoApiClient {
         Authorization: `Bearer ${this.config.CLASSROOMIO_API_KEY}`,
         'content-type': 'application/json',
         'user-agent': this.config.CLASSROOMIO_USER_AGENT,
+        ...(this.clientName ? { 'x-mcp-client-name': this.clientName } : {}),
         ...this.extraHeaders
       },
       body: options.body ? JSON.stringify(options.body) : undefined

@@ -2,7 +2,7 @@ import './../bootstrap';
 
 import { Queue, Worker } from 'bullmq';
 
-import { runAnalyticsRollupDaily } from '@cio/analytics';
+import { runTrackingRollupDaily, runTrackingRollupRecent } from '@cio/tracking';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { sendInstanceTelemetry } from '@cio/core/services/instance-telemetry';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
@@ -150,9 +150,16 @@ const worker = new Worker(
 
     if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {
       const data = ZAnalyticsDailyRollupPayload.parse(job.data ?? {});
-      const result = await runAnalyticsRollupDaily({ daysAgo: data.daysAgo });
-      log.info('analytics-rollup-done', result);
-      return result;
+      const results =
+        data.daysAgo === undefined
+          ? await runTrackingRollupRecent()
+          : [await runTrackingRollupDaily({ daysAgo: data.daysAgo })];
+
+      for (const result of results) {
+        log.info('analytics-rollup-done', result);
+      }
+
+      return results;
     }
 
     if (job.name === JOB_NAMES.maintenance.earlyAdopterClaimReminder) {
@@ -213,6 +220,7 @@ const worker = new Worker(
  */
 const MEDIA_JOB_REAP_INTERVAL_MS = 5 * 60 * 1_000;
 const INSTANCE_TELEMETRY_INTERVAL_MS = 7 * 86_400_000;
+const ANALYTICS_ROLLUP_CRON_PATTERN = '0 */2 * * *';
 // BullMQ requires a dedicated connection per Worker; give the Queue its own
 // so the scheduler upsert doesn't piggyback on the worker's blocking client.
 const schedulerConnection = createRedisConnection();
@@ -232,12 +240,12 @@ async function registerSchedulers(): Promise<void> {
 
     await maintenanceQueue.upsertJobScheduler(
       'analytics-daily-rollup-scheduler',
-      { every: 86_400_000 },
+      { pattern: ANALYTICS_ROLLUP_CRON_PATTERN },
       { name: JOB_NAMES.maintenance.analyticsDailyRollup, data: {} }
     );
     log.info('analytics-rollup-scheduler-registered', {
       name: JOB_NAMES.maintenance.analyticsDailyRollup,
-      everyMs: 86_400_000
+      pattern: ANALYTICS_ROLLUP_CRON_PATTERN
     });
 
     await maintenanceQueue.upsertJobScheduler(

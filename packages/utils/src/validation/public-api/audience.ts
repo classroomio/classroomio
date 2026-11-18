@@ -152,3 +152,11 @@ export const ZPublicApiAudienceBulkStatus = z
     path: ['memberIds']
   });
 export type TPublicApiAudienceBulkStatus = z.infer<typeof ZPublicApiAudienceBulkStatus>;
+
+export const ZPublicApiStudentAnalyticsParam = z.object({
+  profileId: z
+    .string()
+    .uuid()
+    .describe('The uuid profileId returned by the compliance and analytics student lists, not the numeric memberId.')
+});
+export type TPublicApiStudentAnalyticsParam = z.infer<typeof ZPublicApiStudentAnalyticsParam>;

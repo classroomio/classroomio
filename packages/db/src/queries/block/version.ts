@@ -328,6 +328,7 @@ export async function getBlockVersionHistory(
           locale: currentLocale.locale,
           blockId: currentLocale.blockId,
           source: 'editor',
+          clientName: null,
           changeSetId: null
         }
       ];

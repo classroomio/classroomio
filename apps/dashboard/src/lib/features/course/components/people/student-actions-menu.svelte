@@ -35,7 +35,7 @@
     const rows = userCourseAnalytics.userExercisesStats.map((exercise) => {
       let status = $t('audience.user_analytics.not_submitted');
       if (exercise.status === STATUS.GRADED) {
-        status = $t('analytics.graded');
+        status = $t('student_progress.graded');
       } else if (exercise.isCompleted) {
         status = $t('audience.user_analytics.awaiting_grade');
       }
