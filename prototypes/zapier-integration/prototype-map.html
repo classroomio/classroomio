@@ -46,38 +46,38 @@
       </div>
 
       <p class="lead">
-        A V1 prototype for connecting ClassroomIO to Zapier: an org admin opens Zapier straight into a searchable
-        app directory, authorizes access once, and manages the apps connected to ClassroomIO. Zaps themselves are created and managed on
-        Zapier, not here. Grounded in the real
-        IA already in the codebase: the <code>Automation</code> sidebar group (<code>org-navigation.ts</code>) and
-        the OAuth-based connection model in <code>prd/zapier/README.md</code>, with the entry page inspired by
-        Jotform's own integrations directory (see <b>Design notes</b> below).
+        A V1 prototype for connecting ClassroomIO to Zapier: an org admin opens Zapier to an empty or non-empty
+        Zaps view depending on whether anything's connected yet, discovers apps through a curated 20-app
+        directory, authorizes access once, and manages the apps connected to ClassroomIO. Zaps themselves are
+        created and managed on Zapier, not here. Grounded in the real IA already in the codebase: the
+        <code>Automation</code> sidebar group (<code>org-navigation.ts</code>) and the OAuth-based connection
+        model in <code>prd/zapier/README.md</code>, with the App Directory inspired by Jotform's own
+        integrations directory (see <b>Design notes</b> below).
       </p>
 
       <div class="flow">
-        <span class="node">1. Directory</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        <span class="node">2. App detail</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        <span class="node">3. Authorize</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        <span class="node">4. Landing page</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        <span class="node">5. Continue to Zapier</span>
+        <span class="node">1. Zaps (empty/non-empty)</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">2. Directory</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">3. Zapier landing page</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">4. Continue to Zapier</span>
       </div>
 
       <div class="sec">Discover</div>
       <div class="grid">
         <a class="card shot" href="index.html">
           <div class="n">Main entry</div>
-          <div class="t">Zapier (App Directory)</div>
-          <p class="d">Opens directly into a Jotform-style directory: a heading, a functional search bar, and the three most popular integrations. No landing page in between.</p>
+          <div class="t">Zapier (Zaps: Empty / Non-Empty)</div>
+          <p class="d">Empty State by default: no Zaps yet, "Create a Zap" + "Connect Apps," both external to Zapier with no ClassroomIO step in between. A prototype-only dev-toggle switches to Non-Empty State: a preview of already-connected apps with "View Connection" (straight to Zapier), plus "Create More Zaps."</p>
         </a>
         <a class="card shot" href="app-directory.html">
           <div class="n">Full browse</div>
           <div class="t">App Directory (all apps)</div>
-          <p class="d">Reached from "Browse all apps." Sidebar search, category filters with counts, Popular/A–Z sort, and a "View more apps" button that actually expands the grid. 78 real, named apps, not 6,000 hand-built ones.</p>
+          <p class="d">Reached from "Connect Apps." Sidebar search, category filters with counts, Popular/A–Z sort, and a "View more apps" button that actually expands the grid. 20 real, named apps, curated from the integration research — not a sample of 6,000. Clicking a card goes straight to that app's Zapier landing page.</p>
         </a>
-        <a class="card shot" href="app-detail.html?app=slack">
+        <a class="card shot" href="zapier-handoff.html?startApp=hubspot">
           <div class="n">Per-app page</div>
-          <div class="t">App detail: Slack</div>
-          <p class="d">“ClassroomIO + Slack”: what the connection enables, every ClassroomIO trigger, an example Slack action, and a Connect CTA.</p>
+          <div class="t">ClassroomIO + HubSpot, on Zapier</div>
+          <p class="d">Where selecting an app in the directory lands: a Zapier-styled page (Zapier's own nav, not ClassroomIO's) with HubSpot preselected as the trigger/action pair, and "Continue to Zapier" to pick the real trigger and action there. Works for any app via ?startApp=.</p>
         </a>
         <a class="card shot" href="automation-overview.html">
           <div class="n">Context screen</div>
@@ -86,27 +86,17 @@
         </a>
       </div>
 
-      <div class="sec">Connect</div>
+      <div class="sec">Try it</div>
       <div class="grid">
-        <a class="card shot" href="oauth-consent.html">
-          <div class="n">Screen 3</div>
-          <div class="t">Authorize</div>
-          <p class="d">The consent screen: org picker, read/write scopes (write is optional), redirect notice, Authorize / Deny. Unchanged.</p>
-        </a>
-        <a class="card shot" href="zapier-handoff.html?startApp=hubspot&scope=readwrite">
-          <div class="n">Screen 4</div>
-          <div class="t">After authorization</div>
-          <p class="d">Where Authorize lands: a Zapier-style integration page for “ClassroomIO + HubSpot,” with Continue to Zapier. Works for any app via ?startApp=.</p>
-        </a>
-        <a class="card shot" href="zapier-connected.html?returning=1">
-          <div class="n">Screen 5</div>
-          <div class="t">Zapier tab (authorized)</div>
-          <p class="d">The PRD's dashboard tab: Connect on Zapier (private invite), Create a Zap in Zapier, connected Zapier accounts with per-grant Revoke, rate limits, setup guide.</p>
-        </a>
         <a class="card shot" href="index.html?fresh=1">
-          <div class="n">First-time journey</div>
-          <div class="t">Start with nothing authorized</div>
-          <p class="d">Resets the demo, then: Directory → app → Connect → Authorize → the landing page for that app. Every Connect goes through the consent screen.</p>
+          <div class="n">New customer</div>
+          <div class="t">Start at the Empty State</div>
+          <p class="d">Empty State → Connect Apps → Directory → an app → its Zapier landing page → Continue to Zapier. Or Empty State → Create a Zap → straight to Zapier, no app preselected.</p>
+        </a>
+        <a class="card shot" href="index.html?returning=1">
+          <div class="n">Existing customer</div>
+          <div class="t">Start at the Non-Empty State</div>
+          <p class="d">Non-Empty State → View Connection on any connected app → straight to Zapier's own connections page. Or Non-Empty State → Create More Zaps → straight to Zapier.</p>
         </a>
       </div>
 
@@ -114,41 +104,42 @@
       <p class="lead" style="font-size:14px">
         Built on <code>app-theme.css</code>, copied verbatim from <code>prototypes/learning-paths</code>, which mirrors the real
         <code>packages/ui/src/index.css</code> tokens. <code>zapier.css</code> adds only the patterns this flow needed
-        (the directory landing hero, connection cards, grant tables, the app directory).
+        (empty/non-empty state cards, connection rows, the app directory, the Zapier-styled landing page).
         Everything else reuses existing card, badge, table, tab, and form styles rather than inventing new ones.
-        <code>apps-catalog.js</code> is the one place the 78 apps and their categories are defined, so the directory
-        landing, the full App Directory, app-detail pages, and the connections page can never list different things
-        for the same app. Every app mark renders through one <code>ZI.badgeHTML()</code> helper. Where
-        <code>brand-logos.js</code> has a hand-built brand mark it draws that, otherwise a colored monogram.
+        <code>apps-catalog.js</code> is the one place the 20 apps and their categories are defined, so
+        <code>index.html</code>'s Non-Empty State, the full App Directory, and the Zapier landing page
+        can never list different things for the same app. Every app mark renders through one <code>ZI.badgeHTML()</code>
+        helper. Where <code>brand-logos.js</code> has a hand-built brand mark it draws that, otherwise a colored monogram.
       </p>
 
       <div class="foot">
-        <b>Why the directory is the entry page, and why 78 apps</b><br />
-        Zapier opens straight into a directory landing modeled on Jotform's own integrations directory: a heading,
-        a functional search bar, and the three most recognizable integrations, so the page never feels like a
-        half-empty marketing screen. A "Browse all apps" link leads to the full App Directory (sidebar search,
-        category filters with counts, Popular/A–Z sort, "view more" pagination) for anyone who wants to look past
-        the top three. Representing all 6,000+ Zapier apps isn't useful or buildable as a prototype. 78 real, named
-        apps across the 15 categories Zapier actually organizes by, at least 5 per category, is enough to prove the
-        directory holds up at a real-ish size. See <code>README.md</code> the README's app-count section for the full
-        reasoning.<br /><br />
-        <b>Why ClassroomIO has no Zap builder</b><br />
-        ClassroomIO is the connection layer: it authorizes the organization, keeps the list of connected apps, and
-        sends the admin to Zapier. Triggers, actions, field mapping, testing, publishing, and managing Zaps all
-        happen on zapier.com, so the prototype never simulates them. That also matches the confirmed scope in
-        <code>prd/zapier/README.md</code>: OAuth plus a dashboard page for grants.<br /><br />
+        <b>Why <code>index.html</code> is an empty/non-empty state, and why 20 apps</b><br />
+        Zapier opens into the org's own Zaps page, not a directory preview: an Empty State (no Zaps yet) or a
+        Non-Empty State (already-connected apps), toggled by a prototype-only control. A "Connect Apps" CTA leads
+        to the full App Directory (sidebar search, category filters with counts, Popular/A–Z sort, "view more"
+        pagination) for discovering new integrations. Representing all 6,000+ Zapier apps isn't useful or
+        buildable as a prototype, and neither is a generic large sample — the directory now carries exactly the
+        20 apps the integration research identified as genuinely relevant to a customer education platform. See
+        <code>README.md</code>'s "Why 20 apps" section for the full reasoning.<br /><br />
+        <b>Why ClassroomIO doesn't connect or manage anything</b><br />
+        ClassroomIO is already connected to Zapier — there's no separate "authorize your organization" step for a
+        customer to complete inside ClassroomIO, and no connections/grants/revoke screen here either. Every CTA
+        (Create a Zap, Connect Apps → an app, View Connection, Create More Zaps) either opens Zapier directly or
+        passes through the Zapier-styled landing page on its way there. Triggers, actions, field mapping, testing,
+        publishing, and managing existing connections all happen on zapier.com; the prototype never simulates or
+        duplicates them.<br /><br />
         <b>Why every screen shows the full dashboard sidebar</b><br />
-        Every screen except Authorize renders inside the same <code>&lt;aside class="sidebar"&gt;</code> a
+        Every screen renders inside the same <code>&lt;aside class="sidebar"&gt;</code> a
         signed-in admin actually sees: <code>Dashboard</code> / <code>Stats</code> / <code>Setup</code> ungrouped at
         the top, then <code>Content</code> (Courses, Cohorts, Media, Tags, Widgets), <code>People</code> (Community,
         Audience), and <code>Automation</code> (MCP, API, Zapier), Settings, and the signed-in user pinned to the
-        bottom. Zapier is the only working link (this prototype is scoped to this flow, not a full dashboard clone),
-        and stays active throughout, pointing to <code>index.html</code> before a connection exists and
-        <code>zapier-connected.html</code> after. The "Automation hub" screen (MCP/API/Zapier cards) still exists,
-        one click away from the "Automation" breadcrumb on any Zapier screen, but it's no longer a required stop
+        bottom — except the Zapier landing page, which is deliberately styled as Zapier's own site (its nav, not
+        ClassroomIO's) to signal the user has actually left ClassroomIO. Zapier is the only working sidebar link
+        (this prototype is scoped to this flow, not a full dashboard clone), and stays active on every screen that
+        keeps the sidebar, always pointing back to <code>index.html</code>. The "Automation hub" screen (MCP/API/
+        Zapier cards) still exists, one click away from the "Automation" breadcrumb, but it's not a required stop
         before reaching the directory. The goal isn't a standalone Zapier product, it's showing exactly where this
-        feature sits in the real navigation and how an admin actually reaches it. See <code>README.md</code>
-        “Sidebar” for the full reasoning, including why Authorize keeps its own minimal header instead.<br /><br />
+        feature sits in the real navigation and how an admin actually reaches it.<br /><br />
         <b>Where the thinking lives</b><br />
         Product spec: <code>prd/zapier/README.md</code><br />
         Real IA reference: <code>apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts</code>,

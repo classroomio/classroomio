@@ -122,7 +122,9 @@ const envSchema = z.object({
   /** Supadata API key for YouTube caption fetching. Leave unset to disable YouTube transcripts. */
   SUPADATA_API_KEY: z.string().optional(),
   /** YouTube caption provider identifier (default 'supadata'). */
-  YOUTUBE_CAPTION_PROVIDER: z.string().optional()
+  YOUTUBE_CAPTION_PROVIDER: z.string().optional(),
+  /** OAuth client ID assigned to the official Zapier integration. Identifies Zapier grants for the dashboard tab, /me, and webhook subscriptions. */
+  ZAPIER_OAUTH_CLIENT_ID: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

@@ -62,7 +62,7 @@ export async function checkStudentCapacity(
       blocked: true
     });
 
-    throw new StudentCapacityError(`This organization has reached its ${limit}-student limit on the Free plan`);
+    throw new StudentCapacityError(`This organization has reached its ${limit}-student limit`);
   }
 
   return { planName: activePlan?.planName, limit, currentCount, newCount };

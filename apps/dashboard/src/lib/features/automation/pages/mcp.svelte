@@ -56,7 +56,8 @@
   }
 
   const mcpKeys = $derived(automationApi.keys.filter((key) => key.type === 'mcp'));
-  const hasConnectedApps = $derived(automationApi.connectedApps.length > 0);
+  const connectedApps = $derived(automationApi.connectedApps);
+  const hasConnectedApps = $derived(connectedApps.length > 0);
 </script>
 
 {#snippet connections()}
@@ -79,7 +80,7 @@
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each automationApi.connectedApps as app (app.consentId)}
+          {#each connectedApps as app (app.consentId)}
             <Table.Row>
               <Table.Cell class="font-medium">{app.clientName ?? $t('oauth.consent.unknown_client')}</Table.Cell>
               <Table.Cell class="ui:text-muted-foreground text-sm">{app.userFullname ?? '-'}</Table.Cell>

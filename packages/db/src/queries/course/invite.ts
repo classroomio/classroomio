@@ -1,12 +1,12 @@
 import type { TCourseInvite, TCourseInviteAudit, TNewCourseInvite, TNewCourseInviteAudit } from '@db/types';
 import * as schema from '@db/schema';
 
-import { and, desc, eq, gte, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, gte, inArray, lt, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
-export async function createCourseInvite(values: TNewCourseInvite): Promise<TCourseInvite> {
+export async function createCourseInvite(values: TNewCourseInvite, client: DbOrTxClient = db): Promise<TCourseInvite> {
   try {
-    const [created] = await db.insert(schema.courseInvite).values(values).returning();
+    const [created] = await client.insert(schema.courseInvite).values(values).returning();
 
     if (!created) {
       throw new Error('Failed to create course invite');
@@ -349,6 +349,26 @@ export async function revokeCourseInvite(
   }
 }
 
+/**
+ * Permanently removes a course invite. Audit rows cascade, so no orphaned
+ * history is left behind. Used only to clean up a just-created invite whose
+ * email could not be queued, so a retry creates a fresh invite instead of
+ * reusing a dead one.
+ */
+export async function deleteCourseInvite(courseId: string, inviteId: string): Promise<boolean> {
+  try {
+    const deleted = await db
+      .delete(schema.courseInvite)
+      .where(and(eq(schema.courseInvite.id, inviteId), eq(schema.courseInvite.courseId, courseId)))
+      .returning({ id: schema.courseInvite.id });
+
+    return deleted.length > 0;
+  } catch (error) {
+    console.error('deleteCourseInvite error:', error);
+    throw new Error(`Failed to delete course invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export type TCourseInviteTokenData = {
   invite: TCourseInvite;
   course: {
@@ -528,5 +548,75 @@ export async function optimisticIncrementCourseInviteUsedCount(
     throw new Error(
       `Failed to update course invite usage: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * The newest usable invite to `courseId` that names `email` among its allowed emails, or null.
+ */
+export async function findActiveCourseInviteIdForEmail(
+  courseId: string,
+  email: string,
+  client: DbOrTxClient = db
+): Promise<string | null> {
+  try {
+    const normalizedEmail = email.trim().toLowerCase();
+    const [row] = await client
+      .select({ id: schema.courseInvite.id })
+      .from(schema.courseInvite)
+      .where(
+        and(
+          eq(schema.courseInvite.courseId, courseId),
+          eq(schema.courseInvite.isRevoked, false),
+          gt(schema.courseInvite.expiresAt, new Date().toISOString()),
+          lt(schema.courseInvite.usedCount, schema.courseInvite.maxUses),
+          sql`exists (select 1 from unnest(${schema.courseInvite.allowedEmails}) as allowed(email) where lower(allowed.email) = ${normalizedEmail})`
+        )
+      )
+      .orderBy(desc(schema.courseInvite.createdAt))
+      .limit(1);
+
+    return row?.id ?? null;
+  } catch (error) {
+    console.error('findActiveCourseInviteIdForEmail error:', error);
+    throw new Error('Failed to look up course invite');
+  }
+}
+
+export type TEnrollmentInviteResult = {
+  created: boolean;
+  invite: TCourseInvite | null;
+  existingInviteId: string | null;
+};
+
+/**
+ * Creates the single-use enrollment invite for `email` unless a usable invite for that address already
+ * exists. The transaction-scoped advisory lock serializes concurrent enrollments for the same
+ * course+email, so two requests can't both pass the check and send two invites.
+ */
+export async function createEnrollmentInviteIfAbsent(
+  courseId: string,
+  email: string,
+  values: TNewCourseInvite
+): Promise<TEnrollmentInviteResult> {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  try {
+    return await db.transaction(async (tx) => {
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${`${courseId}:${normalizedEmail}`}, 0))`);
+
+      const existingInviteId = await findActiveCourseInviteIdForEmail(courseId, normalizedEmail, tx);
+
+      if (existingInviteId) {
+        return { created: false, invite: null, existingInviteId };
+      }
+
+      const invite = await createCourseInvite(values, tx);
+
+      return { created: true, invite, existingInviteId: null };
+    });
+  } catch (error) {
+    console.error('createEnrollmentInviteIfAbsent error:', error);
+    throw new Error('Failed to create enrollment invite');
   }
 }
