@@ -1,7 +1,7 @@
 ---
 title: 'Import students from a CSV file'
 description: 'Validate a student list, assign course or cohort access, and review import results.'
-last_reviewed: '2026-11-08'
+last_reviewed: '2026-11-12'
 ---
 
 Open **Audience → Import Users**, upload a CSV, and review each row before importing. You can assign courses or cohorts before importing.
@@ -42,7 +42,7 @@ The CSV import page sends invitation emails during the import and currently has 
 
 ### 3. Import and check the result
 
-Select **Import … students**, using the count shown on the button. Review the result for new invitations, existing-student assignments, renewed pending invitations, and email failures.
+Select **Import … students**, using the count shown on the button. Each row in the result shows **Ready** (imported), **Already in audience**, **Invite resent**, **Staff, not a student**, or **No seats left**. Re-importing someone whose invitation expired or was revoked needs a free seat; a still-pending invitation is renewed without one. Check the result for email failures too.
 
 If rows fail, select **Download the rows that failed**, correct them, and retry that smaller list. Do not assume every uploaded row was imported.
 

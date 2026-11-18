@@ -28,7 +28,10 @@
 
   setUploadLimitsContext(data.uploadLimits);
 
-  const metaTags = $derived(merge({}, data.baseMetaTags, page.data.pageMetaTags));
+  const canonicalUrl = $derived(new URL(page.url.pathname, page.url.origin).href);
+  const metaTags = $derived(
+    merge({}, data.baseMetaTags, { canonical: canonicalUrl, openGraph: { url: canonicalUrl } }, page.data.pageMetaTags)
+  );
 
   onMount(() => {
     const sessionUser = data?.locals?.user;

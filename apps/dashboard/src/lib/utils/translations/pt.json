@@ -6474,8 +6474,8 @@
     },
     "empty": {
       "title": "Ainda não há cursos",
-      "description": "Escolha um modelo para ver a aparência de um ótimo curso ClassroomIO ou comece com um curso em branco.",
-      "browse": "Procure modelos"
+      "description": "Crie um curso uma vez e depois matricule seus clientes nele. Crie você mesmo ou deixe seu agente preparar um rascunho.",
+      "enrolled": "Matriculado"
     },
     "editor": {
       "badge": "Modelo"
@@ -7066,7 +7066,18 @@
           "overdue": "Atrasado",
           "certified": "Certificado emitido",
           "not_certified": "Sem certificado"
-        }
+        },
+        "completion": {
+          "label": "Conclusão",
+          "any": "Qualquer conclusão",
+          "incomplete": "Não concluído"
+        },
+        "video": {
+          "label": "Vídeo",
+          "any": "Qualquer vídeo",
+          "low": "Vídeo abaixo de 60%"
+        },
+        "cohort_chip": "{count, plural, one {# turma} other {# turmas}}"
       },
       "showing_paged": {
         "cohort": "Mostrando {from}–{to} de {count, plural, one {# aluno} other {# alunos}} na coorte",
@@ -7226,9 +7237,56 @@
     },
     "export": {
       "students_capped": "A lista de alunos está limitada às primeiras {limit} linhas.",
-      "exercises_capped": "As pontuações dos exercícios estão limitadas aos primeiros {limit} resultados."
+      "exercises_capped": "As pontuações dos exercícios estão limitadas aos primeiros {limit} resultados.",
+      "yes": "Sim",
+      "no": "Não",
+      "columns": {
+        "segment": "Grupo",
+        "metric": "Métrica",
+        "value": "Valor",
+        "details": "Detalhes"
+      },
+      "dimensions": {
+        "student": "Aluno",
+        "course": "Curso",
+        "cohort": "Turma",
+        "exercise": "Exercício",
+        "section": "Seção",
+        "lesson": "Aula",
+        "question": "Pergunta",
+        "item": "Item",
+        "day": "Dia",
+        "period": "Período",
+        "status": "Status",
+        "overdue_kind": "Tipo de atraso",
+        "progress_bucket_25": "Progresso",
+        "score_bucket_10": "Pontuação média"
+      }
     },
-    "org_page_title": "Academia"
+    "org_page_title": "Academia",
+    "widget_menu": {
+      "label": "Ações para {title}",
+      "view_students": "Ver alunos",
+      "open_in_students": "Abrir na aba Alunos",
+      "click_to_view": "Selecione uma barra ou fatia para ver seus alunos"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# aluno} other {# alunos}}",
+      "description": "Os alunos por trás deste número.",
+      "cohort_health": {
+        "any": "Em turmas com alunos",
+        "at_risk": "Em turmas em risco",
+        "lagging": "Em turmas atrasadas",
+        "on_track": "Em turmas no caminho certo",
+        "completed": "Em turmas concluídas"
+      },
+      "cohort_health_note": "O gráfico conta alunos em turmas com esta classificação, não alunos com este status.",
+      "count_differs": "O gráfico conta {expected} porque conta um aluno uma vez para cada turma em que ele está. Esta lista mostra {total}.",
+      "lesson_incomplete": "Não concluído: {lesson}",
+      "lesson_fallback": "esta aula",
+      "score_bucket": "Pontuação média {range}",
+      "scored": "Com uma pontuação média"
+    }
   },
   "oauth": {
     "consent": {

@@ -21,7 +21,7 @@
   import MultiLineChart from '../charts/multi-line-chart.svelte';
   import TimeColumnChart from '../charts/time-column-chart.svelte';
 
-  let { widget, result }: WidgetRendererProps = $props();
+  let { widget, result, onSegmentSelect }: WidgetRendererProps = $props();
 
   const dimensions = $derived(widget.spec.dimensions ?? []);
   const firstDimension = $derived(dimensions[0] ?? null);
@@ -40,17 +40,22 @@
 
 {#if widget.viz === 'donut' && firstDimension}
   {@const segments = toDonutSegments(result, firstDimension, $t)}
-  <DonutChart {segments} centerLabel={$t('analytics.donut.students', { count: donutTotal(segments) })} />
+  <DonutChart
+    {segments}
+    centerLabel={$t('analytics.donut.students', { count: donutTotal(segments) })}
+    {onSegmentSelect}
+  />
 {:else if widget.viz === 'histogram' && firstDimension && firstMeasure}
   <ColumnChart
     points={histogramPoints(result, firstDimension, $t)}
     valueKey={firstMeasure.key}
     label={$t(`analytics.measures.${firstMeasure.key}`)}
     color={ANALYTICS_COLORS.primary}
+    {onSegmentSelect}
   />
 {:else if widget.viz === 'hbar'}
   {@const items = toHbarItems(result, firstDimension, $t)}
-  <HbarList {items} max={hbarMax(items, isPercent)} />
+  <HbarList {items} max={hbarMax(items, isPercent)} onSelect={onSegmentSelect} />
 {:else if widget.viz === 'grouped_bar'}
   <GroupedBarChart {points} {series} percent />
 {:else if widget.viz === 'multi_line' && dimensions.length === 2 && firstMeasure}

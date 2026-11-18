@@ -6474,8 +6474,8 @@
     },
     "empty": {
       "title": "Ingen kurser endnu",
-      "description": "Vælg en skabelon for at se, hvordan et godt ClassroomIO-kursus ser ud, eller start fra et tomt kursus.",
-      "browse": "Gennemse skabeloner"
+      "description": "Opret et kursus én gang, og tilmeld derefter dine kunder til det. Opret det selv, eller lad din agent lave et udkast.",
+      "enrolled": "Tilmeldt"
     },
     "editor": {
       "badge": "Skabelon"
@@ -7066,7 +7066,18 @@
           "overdue": "Forsinket",
           "certified": "Certifikat udstedt",
           "not_certified": "Intet certifikat"
-        }
+        },
+        "completion": {
+          "label": "Gennemførelse",
+          "any": "Enhver gennemførelse",
+          "incomplete": "Ikke gennemført"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Enhver video",
+          "low": "Video under 60 %"
+        },
+        "cohort_chip": "{count, plural, one {# kohorte} other {# kohorter}}"
       },
       "showing_paged": {
         "cohort": "Viser {from}–{to} af {count, plural, one {# studerende} other {# elever}} i kohorte",
@@ -7226,9 +7237,56 @@
     },
     "export": {
       "students_capped": "Elevlisten er begrænset til de første {limit} rækker.",
-      "exercises_capped": "Øvelsesresultater er begrænset til de første {limit} resultater."
+      "exercises_capped": "Øvelsesresultater er begrænset til de første {limit} resultater.",
+      "yes": "Ja",
+      "no": "Nej",
+      "columns": {
+        "segment": "Gruppe",
+        "metric": "Måling",
+        "value": "Værdi",
+        "details": "Detaljer"
+      },
+      "dimensions": {
+        "student": "Studerende",
+        "course": "Kursus",
+        "cohort": "Kohorte",
+        "exercise": "Øvelse",
+        "section": "Sektion",
+        "lesson": "Lektion",
+        "question": "Spørgsmål",
+        "item": "Element",
+        "day": "Dag",
+        "period": "Periode",
+        "status": "Status",
+        "overdue_kind": "Type af forsinkelse",
+        "progress_bucket_25": "Fremskridt",
+        "score_bucket_10": "Gennemsnitlig score"
+      }
     },
-    "org_page_title": "Akademi"
+    "org_page_title": "Akademi",
+    "widget_menu": {
+      "label": "Handlinger for {title}",
+      "view_students": "Se studerende",
+      "open_in_students": "Åbn i fanen Studerende",
+      "click_to_view": "Vælg en søjle eller et udsnit for at se de tilhørende studerende"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# studerende} other {# studerende}}",
+      "description": "De studerende bag dette tal.",
+      "cohort_health": {
+        "any": "I kohorter med studerende",
+        "at_risk": "I kohorter i fare",
+        "lagging": "I kohorter der er bagud",
+        "on_track": "I kohorter på rette spor",
+        "completed": "I færdiggjorte kohorter"
+      },
+      "cohort_health_note": "Diagrammet tæller studerende i kohorter med denne vurdering, ikke studerende med denne status.",
+      "count_differs": "Diagrammet tæller {expected}, fordi en studerende tælles én gang for hver kohorte vedkommende er i. Denne liste viser {total}.",
+      "lesson_incomplete": "Ikke gennemført: {lesson}",
+      "lesson_fallback": "denne lektion",
+      "score_bucket": "Gennemsnitlig score {range}",
+      "scored": "Med en gennemsnitlig score"
+    }
   },
   "oauth": {
     "consent": {

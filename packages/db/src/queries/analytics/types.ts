@@ -65,6 +65,12 @@ export type AnalyticsFilterDefinition =
       valueType: AnalyticsValueType;
       ops: readonly TAnalyticsFilterOp[];
       allowedValues?: readonly string[];
+    }
+  | {
+      kind: 'subquery';
+      valueType: 'id';
+      ops: readonly TAnalyticsFilterOp[];
+      condition: (value: string) => SQL;
     };
 
 export type AnalyticsSourceDefinition = {

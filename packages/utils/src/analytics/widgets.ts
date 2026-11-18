@@ -52,6 +52,7 @@ export type AnalyticsStudentsTableQuery = {
   page: number;
   limit: number;
   filters?: readonly TAnalyticsFilter[];
+  range?: TAnalyticsRange;
 };
 
 const PLACEHOLDER_BY_KEY: Record<AnalyticsPlaceholderKey, string> = {
@@ -260,6 +261,6 @@ export function studentsTableSpec(query: AnalyticsStudentsTableQuery): TAnalytic
     search: query.search || undefined,
     limit: query.limit,
     page: query.page,
-    range: 'all'
+    range: query.range ?? 'all'
   };
 }

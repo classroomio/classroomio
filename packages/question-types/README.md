@@ -114,7 +114,7 @@ Registry source: `src/question-type-registry.ts`
 | `GRAPH_PLOT`       |  19 | Graph plot        |          yes |                   yes |                    no |       no |
 | `GRAPH_READ`       |  20 | Graph reading     |          yes |                    no |                    no |       no |
 
-Disabled types are built but have no `question_type` row, so they stay out of the type picker, the AI tool enum and validation. Only `HOTSPOT` is disabled; migration `0053_math_question_types` added the rows for `MATCHING`, `MATH_EXPRESSION` and `WORKED_SOLUTION`, and `0056_graph_question_types` added `GRAPH_PLOT` and `GRAPH_READ`.
+Disabled types are built but have no `question_type` row, so they stay out of the type picker, the AI tool enum and validation. Only `HOTSPOT` is disabled; migration `0054_math_question_types` added the rows for `MATCHING`, `MATH_EXPRESSION` and `WORKED_SOLUTION`, and `0057_graph_question_types` added `GRAPH_PLOT` and `GRAPH_READ`.
 
 ## Graph grading
 

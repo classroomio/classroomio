@@ -7,7 +7,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
 
-  import { analyticsApi } from '../api';
+  import { analyticsApi, analyticsDrilldownApi, analyticsStudentSheetApi } from '../api';
   import AnalyticsDashboard from '../components/analytics-dashboard.svelte';
   import AnalyticsRangePicker from '../components/analytics-range-picker.svelte';
   import AnalyticsLiveIndicator from '../components/analytics-live-indicator.svelte';
@@ -35,7 +35,11 @@
     return () => poller.stop();
   });
 
-  onDestroy(() => analyticsApi.reset());
+  onDestroy(() => {
+    analyticsApi.reset();
+    analyticsDrilldownApi.reset();
+    analyticsStudentSheetApi.reset();
+  });
 </script>
 
 <svelte:head>

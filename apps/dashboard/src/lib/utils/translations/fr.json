@@ -6474,8 +6474,8 @@
     },
     "empty": {
       "title": "Pas encore de cours",
-      "description": "Choisissez un modèle pour voir à quoi ressemble un excellent cours ClassroomIO, ou partez d'un cours vierge.",
-      "browse": "Parcourir les modèles"
+      "description": "Créez un cours une fois, puis inscrivez-y vos clients. Créez-le vous-même ou laissez votre agent en rédiger un brouillon.",
+      "enrolled": "Inscrit"
     },
     "editor": {
       "badge": "Modèle"
@@ -7066,7 +7066,18 @@
           "overdue": "En retard",
           "certified": "Certificat délivré",
           "not_certified": "Aucun certificat"
-        }
+        },
+        "completion": {
+          "label": "Achèvement",
+          "any": "Tout achèvement",
+          "incomplete": "Non terminé"
+        },
+        "video": {
+          "label": "Vidéo",
+          "any": "Toute vidéo",
+          "low": "Vidéo sous 60 %"
+        },
+        "cohort_chip": "{count, plural, one {# cohorte} other {# cohortes}}"
       },
       "showing_paged": {
         "cohort": "Affichage de {from}–{to} sur {count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
@@ -7226,9 +7237,56 @@
     },
     "export": {
       "students_capped": "La liste des étudiants est limitée aux {limit} premières lignes.",
-      "exercises_capped": "Les résultats des exercices sont limités aux {limit} premiers résultats."
+      "exercises_capped": "Les résultats des exercices sont limités aux {limit} premiers résultats.",
+      "yes": "Oui",
+      "no": "Non",
+      "columns": {
+        "segment": "Groupe",
+        "metric": "Indicateur",
+        "value": "Valeur",
+        "details": "Détails"
+      },
+      "dimensions": {
+        "student": "Étudiant",
+        "course": "Cours",
+        "cohort": "Cohorte",
+        "exercise": "Exercice",
+        "section": "Section",
+        "lesson": "Leçon",
+        "question": "Question",
+        "item": "Élément",
+        "day": "Jour",
+        "period": "Période",
+        "status": "Statut",
+        "overdue_kind": "Type de retard",
+        "progress_bucket_25": "Progression",
+        "score_bucket_10": "Score moyen"
+      }
     },
-    "org_page_title": "Académie"
+    "org_page_title": "Académie",
+    "widget_menu": {
+      "label": "Actions pour {title}",
+      "view_students": "Voir les étudiants",
+      "open_in_students": "Ouvrir dans l'onglet Étudiants",
+      "click_to_view": "Sélectionnez une barre ou une portion pour voir ses étudiants"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# étudiant} other {# étudiants}}",
+      "description": "Les étudiants derrière ce nombre.",
+      "cohort_health": {
+        "any": "Dans des cohortes avec des étudiants",
+        "at_risk": "Dans des cohortes à risque",
+        "lagging": "Dans des cohortes en retard",
+        "on_track": "Dans des cohortes en bonne voie",
+        "completed": "Dans des cohortes terminées"
+      },
+      "cohort_health_note": "Le graphique compte les étudiants des cohortes classées ainsi, et non les étudiants ayant ce statut.",
+      "count_differs": "Le graphique compte {expected} car il compte un étudiant une fois pour chaque cohorte dont il fait partie. Cette liste en affiche {total}.",
+      "lesson_incomplete": "Non terminé : {lesson}",
+      "lesson_fallback": "cette leçon",
+      "score_bucket": "Score moyen {range}",
+      "scored": "Avec un score moyen"
+    }
   },
   "oauth": {
     "consent": {

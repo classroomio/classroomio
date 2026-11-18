@@ -369,36 +369,43 @@
     {
       "idx": 52,
       "version": "7",
-      "when": 1794650000000,
-      "tag": "0052_points_numeric",
+      "when": 1795003401943,
+      "tag": "0052_token_auth_identity",
       "breakpoints": true
     },
     {
       "idx": 53,
       "version": "7",
-      "when": 1794700000000,
-      "tag": "0053_math_question_types",
+      "when": 1795003501943,
+      "tag": "0053_points_numeric",
       "breakpoints": true
     },
     {
       "idx": 54,
       "version": "7",
-      "when": 1794750000000,
-      "tag": "0054_skills",
+      "when": 1795003601943,
+      "tag": "0054_math_question_types",
       "breakpoints": true
     },
     {
       "idx": 55,
       "version": "7",
-      "when": 1794800000000,
-      "tag": "0055_exercise_assignment",
+      "when": 1795003701943,
+      "tag": "0055_skills",
       "breakpoints": true
     },
     {
       "idx": 56,
       "version": "7",
-      "when": 1794900000000,
-      "tag": "0056_graph_question_types",
+      "when": 1795003801943,
+      "tag": "0056_exercise_assignment",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1795003901943,
+      "tag": "0057_graph_question_types",
       "breakpoints": true
     }
   ]

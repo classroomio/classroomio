@@ -96,7 +96,9 @@ export function describeAnalyticsRegistry(): AnalyticsRegistryDescription {
         kind: 'predicate',
         valueType: definition.valueType,
         ops: definition.ops,
-        ...(definition.allowedValues ? { allowedValues: definition.allowedValues } : {})
+        ...('allowedValues' in definition && definition.allowedValues
+          ? { allowedValues: definition.allowedValues }
+          : {})
       };
     }
 

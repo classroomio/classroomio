@@ -8,6 +8,7 @@ import {
   flagFilter,
   flagMetric,
   idDimension,
+  lessonIncompleteFilter,
   numberMetric,
   percentMetric,
   predicateFilter,
@@ -68,6 +69,10 @@ export const studentSource: AnalyticsSourceDefinition = {
     avg_score_pct: predicateFilter('avg_score_pct', 'percent', ['gte', 'lt']),
     logged_in_today: flagFilter('logged_in_today'),
     is_inactive: flagFilter('is_inactive'),
+    is_low_score: flagFilter('is_low_score'),
+    is_low_video: flagFilter('is_low_video'),
+    is_at_risk: flagFilter('is_at_risk'),
+    lesson_incomplete: lessonIncompleteFilter(),
     is_overdue: flagFilter('is_overdue'),
     is_completed_all: flagFilter('is_completed_all'),
     has_certificate: flagFilter('has_certificate')

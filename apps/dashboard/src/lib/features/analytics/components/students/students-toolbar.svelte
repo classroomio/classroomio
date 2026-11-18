@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
+  import XIcon from '@lucide/svelte/icons/x';
   import * as Select from '@cio/ui/base/select';
   import { Button } from '@cio/ui/base/button';
   import { Search } from '@cio/ui/custom/search';
   import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  import { analyticsStudentsApi } from '../../api';
+  import { analyticsApi, analyticsStudentsApi } from '../../api';
   import { countActiveStudentFilters, STUDENT_FILTER_OPTIONS } from '../../utils/analytics-utils';
   import type { StudentFilters } from '../../utils/types';
 
@@ -18,7 +19,17 @@
   onDestroy(() => search.destroy());
 
   const filterKeys = Object.keys(STUDENT_FILTER_OPTIONS) as Array<keyof StudentFilters>;
-  const activeFilterCount = $derived(countActiveStudentFilters(analyticsStudentsApi.filters));
+  const activeFilterCount = $derived(
+    countActiveStudentFilters(analyticsStudentsApi.filters, analyticsStudentsApi.refs)
+  );
+  const cohortCount = $derived(analyticsStudentsApi.refs.cohortIds.length);
+  const lessonId = $derived(analyticsStudentsApi.refs.lessonId);
+  const lessonTitle = $derived.by(() => {
+    const courseId = analyticsApi.selection.courseId;
+    const items = courseId ? analyticsApi.dashboard?.structures[courseId]?.items : undefined;
+
+    return items?.find((item) => item.id === lessonId)?.title ?? $t('analytics.drilldown.lesson_fallback');
+  });
 
   function filterLabel(key: keyof StudentFilters, value: string): string {
     return $t(`analytics.students.filters.${key}.${value || 'any'}`);
@@ -51,6 +62,28 @@
       </Select.Content>
     </Select.Root>
   {/each}
+  {#if cohortCount > 0}
+    <Button
+      variant="secondary"
+      size="sm"
+      testId="analytics-students-cohort-chip"
+      onclick={() => analyticsStudentsApi.clearRefFilter('cohortIds')}
+    >
+      {$t('analytics.students.filters.cohort_chip', { count: cohortCount })}
+      <XIcon />
+    </Button>
+  {/if}
+  {#if lessonId}
+    <Button
+      variant="secondary"
+      size="sm"
+      testId="analytics-students-lesson-chip"
+      onclick={() => analyticsStudentsApi.clearRefFilter('lessonId')}
+    >
+      {$t('analytics.drilldown.lesson_incomplete', { lesson: lessonTitle })}
+      <XIcon />
+    </Button>
+  {/if}
   {#if activeFilterCount > 0}
     <Button variant="ghost" size="sm" onclick={() => analyticsStudentsApi.clearFilters()}>
       {$t('analytics.students.clear_filters', { count: activeFilterCount })}

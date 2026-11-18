@@ -19,6 +19,8 @@
     isAnalyticsStatus,
     nowAtLabel,
     numberCell,
+    STUDENTS_TABLE_ANCHOR,
+    studentExportHeaders,
     studentFooterLabel,
     studentPageRange,
     textCell,
@@ -35,7 +37,6 @@
   import SortableHead from '../sortable-head.svelte';
   import StatusBadge from '../status-badge.svelte';
   import StudentsToolbar from './students-toolbar.svelte';
-  import StudentSheet from './student-sheet.svelte';
 
   const courseId = $derived(analyticsApi.selection.courseId);
   const structure = $derived(courseId ? analyticsApi.dashboard?.structures[courseId] : undefined);
@@ -94,32 +95,13 @@
     return analyticsStudentsApi.buildExportDocument({
       filename: `${scopeTitle} students`,
       title: scopeTitle,
-      headers: {
-        name: $t('analytics.columns.student'),
-        email: $t('analytics.columns.email'),
-        progress: $t('analytics.columns.progress'),
-        nowAt: $t('analytics.columns.now_at'),
-        finished: $t('analytics.finished'),
-        averageScore: $t('analytics.columns.average_score'),
-        coursesCompleted: $t('analytics.columns.courses_completed'),
-        video: $t('analytics.columns.video'),
-        classroom: $t('analytics.columns.classroom'),
-        certificates: $t('analytics.columns.certificates'),
-        lastLogin: $t('analytics.columns.last_login'),
-        status: $t('analytics.columns.status'),
-        statusLabels: {
-          at_risk: $t('analytics.status.at_risk'),
-          lagging: $t('analytics.status.lagging'),
-          on_track: $t('analytics.status.on_track'),
-          completed: $t('analytics.status.completed')
-        }
-      },
+      headers: studentExportHeaders($t),
       attemptedByExercise: attempted
     });
   }
 </script>
 
-<div class="space-y-4">
+<div id={STUDENTS_TABLE_ANCHOR} class="scroll-mt-4 space-y-4">
   <StudentsToolbar />
 
   {#if !analyticsStudentsApi.hasLoaded}
@@ -345,9 +327,5 @@
       page={analyticsStudentsApi.page}
       onPageChange={(page) => analyticsStudentsApi.goToPage(page)}
     />
-  {/if}
-
-  {#if !isCourseScope}
-    <StudentSheet />
   {/if}
 </div>

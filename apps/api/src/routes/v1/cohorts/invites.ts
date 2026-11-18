@@ -32,12 +32,14 @@ export const v1CohortInvitesRouter = new Hono()
       tags: ['Cohort Invites'],
       responses: {
         201: jsonResponse(
-          'Invites processed; see data.rows for the per-email outcome',
+          'Invites processed; see data.rows. Rows that cannot get a seat come back as over_seat_limit',
           itemResponse(ZPublicApiInviteStudentsToCohortResponse)
         ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: cohortForbiddenResponses.team,
+        403: {
+          description: `${cohortForbiddenResponses.team.description}, or the seats fill up mid-request (UPGRADE_REQUIRED)`
+        },
         404: { description: 'Cohort not found' }
       }
     }),

@@ -163,7 +163,11 @@ export const ANALYTICS_FILTER_FIELDS = [
   'is_completed_all',
   'has_certificate',
   'is_attempted',
-  'is_graded'
+  'is_graded',
+  'is_low_score',
+  'is_low_video',
+  'is_at_risk',
+  'lesson_incomplete'
 ] as const;
 
 export const ANALYTICS_FILTER_OPS = ['eq', 'in', 'gte', 'lt', 'is_true', 'is_false'] as const;

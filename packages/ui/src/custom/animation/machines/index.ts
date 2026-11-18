@@ -8,5 +8,6 @@ export { default as MachineGlassBox } from './glass-box.svelte';
 export { default as MachineBrokenTrack } from './broken-track.svelte';
 export { default as MachineBlankLesson } from './blank-lesson.svelte';
 export { default as MachineCabinet } from './cabinet.svelte';
+export { default as MachineEmptyCourses } from './empty-courses.svelte';
 export { default as MachineRunnerBorder } from './runner-border-lazy.svelte';
 export type { BrokenTrackProps, MachineProps, RunnerLabels, RunnerProps, RunnerSnapshot, RunnerStatus } from './types';

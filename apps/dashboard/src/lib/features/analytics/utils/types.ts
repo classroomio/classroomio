@@ -106,7 +106,11 @@ export type AnalyticsTitleVars = { course: string; exercise: string };
 
 export type AnalyticsRangeOption = { value: TAnalyticsRange; label: string; locked: boolean };
 
-export type WidgetRendererProps = { widget: AnalyticsWidget; result: AnalyticsResult };
+export type WidgetRendererProps = {
+  widget: AnalyticsWidget;
+  result: AnalyticsResult;
+  onSegmentSelect?: (segmentKey: string) => void;
+};
 
 export type DonutSegment = { key: string; label: string; value: number; color: string };
 
@@ -123,6 +127,8 @@ export type StudentStatusFilter = '' | TAnalyticsStatus;
 export type StudentActivityFilter = '' | 'today' | 'idle';
 export type StudentScoreFilter = '' | 'lt50' | 'mid' | 'gte70';
 export type StudentFlagFilter = '' | 'overdue' | 'certified' | 'not_certified';
+export type StudentCompletionFilter = '' | 'incomplete';
+export type StudentVideoFilter = '' | 'low';
 export type StudentSort = 'status' | 'progress' | 'name' | 'low_score';
 
 export type StudentFilters = {
@@ -130,7 +136,13 @@ export type StudentFilters = {
   activity: StudentActivityFilter;
   score: StudentScoreFilter;
   flag: StudentFlagFilter;
+  completion: StudentCompletionFilter;
+  video: StudentVideoFilter;
 };
+
+export type StudentRefFilters = { cohortIds: string[]; lessonId: string | null };
+
+export type StudentUrlFilters = { filters: StudentFilters; refs: StudentRefFilters; courseId: string | null };
 
 export type StudentExerciseCell = {
   scorePct: number | null;

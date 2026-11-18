@@ -257,7 +257,9 @@ function compilePredicates(source: AnalyticsSourceDefinition, spec: TAnalyticsQu
     if (!definition.ops.includes(filter.op)) throw invalidSpec(`Filter ${filter.field} does not support ${filter.op}`);
 
     assertFilterValue(definition, filter);
-    predicates.push(predicateSql(definition, filter));
+    predicates.push(
+      definition.kind === 'subquery' ? definition.condition(String(filter.value)) : predicateSql(definition, filter)
+    );
   }
 
   const search = spec.search?.trim();

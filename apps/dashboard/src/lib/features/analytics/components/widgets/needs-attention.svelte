@@ -6,7 +6,7 @@
   import type { HbarItem, WidgetRendererProps } from '../../utils/types';
   import HbarList from '../charts/hbar-list.svelte';
 
-  let { result }: WidgetRendererProps = $props();
+  let { result, onSegmentSelect }: WidgetRendererProps = $props();
 
   const REASONS: ReadonlyArray<{ key: string; tone: HbarItem['tone'] }> = [
     { key: 'is_inactive__count_if', tone: 'danger' },
@@ -27,4 +27,4 @@
   const max = $derived(Math.max(1, analyticsApi.dashboard?.scope.studentCount ?? 0));
 </script>
 
-<HbarList {items} {max} />
+<HbarList {items} {max} onSelect={onSegmentSelect} />

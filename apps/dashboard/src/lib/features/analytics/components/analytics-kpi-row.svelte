@@ -1,12 +1,14 @@
 <script lang="ts">
+  import { hasWholeDrilldown } from '@cio/utils/analytics';
   import { ANALYTICS_RANGE_DAYS } from '@cio/utils/constants/analytics';
   import { KpiCard } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
 
-  import { analyticsApi } from '../api';
+  import { analyticsApi, analyticsDrilldownApi } from '../api';
   import { formatKpi, isNowCard } from '../utils/analytics-utils';
   import type { AnalyticsWidget } from '../utils/types';
   import NowTag from './now-tag.svelte';
+  import WidgetMenu from './widget-menu.svelte';
 
   interface Props {
     widgets: AnalyticsWidget[];
@@ -29,12 +31,20 @@
   {#each widgets as widget (widget.id)}
     {@const state = analyticsApi.widgetState(widget.id)}
     {@const display = formatKpi(widget, state.result, $t, { courseSelected, rangeDays, hasStudents })}
+    {@const title = display.title ?? $t(widget.titleKey)}
+    {#snippet menu()}
+      <WidgetMenu {widget} {title} {hasStudents} />
+    {/snippet}
     <KpiCard
-      title={display.title ?? $t(widget.titleKey)}
+      {title}
       value={display.value}
       description={display.description}
       trend={display.trend}
       badge={isNowCard(widget, range) ? nowTag : undefined}
+      action={menu}
+      onValueClick={hasWholeDrilldown(widget.id) && state.result
+        ? () => void analyticsDrilldownApi.openForWidget(widget, null)
+        : undefined}
       loading={!state.result && !state.failed}
     />
   {/each}

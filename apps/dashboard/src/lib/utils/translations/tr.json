@@ -6455,8 +6455,8 @@
     },
     "empty": {
       "title": "Henüz kurs yok",
-      "description": "Harika bir ClassroomIO kursunun neye benzediğini görmek için bir şablon seçin veya boş bir kurstan başlayın.",
-      "browse": "Göz at şablonlar"
+      "description": "Bir kursu bir kez oluşturun, ardından müşterilerinizi kursa kaydedin. Kursu kendiniz oluşturun veya taslağı ajanınıza hazırlatın.",
+      "enrolled": "Kayıtlı"
     },
     "editor": {
       "badge": "Template"
@@ -7106,7 +7106,81 @@
     "hints": {
       "exercise_score_distribution": "Puanlarını görmek için bir egzersiz seçin"
     },
-    "students": "Öğrenciler",
+    "students": {
+      "search": "Ada veya e-postaya göre arayın",
+      "empty": "Bu filtrelerle eşleşen öğrenci yok",
+      "showing": {
+        "cohort": "Grupta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "course": "Kurstaki {from}–{to} / {total} eşleşmesi gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "org": "Kuruluşta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}"
+      },
+      "clear_filters": "{count, plural, one {# filtreyi temizle} other {# filtreyi temizle}}",
+      "sort": {
+        "status": "Sırala: ilk önce gecikme",
+        "progress": "Sırala: en az ilerleme",
+        "name": "Sırala: A'dan Z'ye ad",
+        "low_score": "Sırala: en düşük ortalama puan"
+      },
+      "filters": {
+        "status": {
+          "label": "Durum",
+          "any": "Tüm durumlar",
+          "at_risk": "Risk altında",
+          "lagging": "Gecikme",
+          "on_track": "Yolda",
+          "completed": "Tamamlanmış"
+        },
+        "activity": {
+          "label": "Son giriş",
+          "any": "Herhangi bir giriş",
+          "today": "Bugün giriş yapanlar",
+          "idle": "2+ gün boyunca giriş yapılmadı"
+        },
+        "score": {
+          "label": "Ortalama puan",
+          "any": "Herhangi bir ortalama puan",
+          "lt50": "%50'nin altında",
+          "mid": "%50 ila %69",
+          "gte70": "%70 ve üzeri"
+        },
+        "flag": {
+          "label": "Bayraklar",
+          "any": "Herhangi bir bayrak",
+          "overdue": "vadesi geçmiş",
+          "certified": "Sertifika verildi",
+          "not_certified": "Sertifika yok"
+        },
+        "completion": {
+          "label": "Tamamlama",
+          "any": "Herhangi bir tamamlama",
+          "incomplete": "Tamamlanmadı"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Herhangi bir video",
+          "low": "%60'ın altında video"
+        },
+        "cohort_chip": "{count, plural, one {# kohort} other {# kohort}}"
+      },
+      "showing_paged": {
+        "cohort": "Grupta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
+        "course": "Kurstaki {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
+        "org": "Kuruluşta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "course": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "org": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
+      },
+      "showing_all": {
+        "cohort": "Grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "course": "Kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "org": "Kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
+      },
+      "failed": "Öğrenciler yüklenemedi",
+      "cells_failed": "Alıştırma puanları yüklenemedi",
+      "attempts_unavailable": "Hangi alıştırmalarda deneme olduğu kontrol edilemedi, bu yüzden bazı kilitli alıştırmalar gizli olabilir."
+    },
     "empty": {
       "failed": "Bu grafik yüklenemedi",
       "dashboard_failed": "Analytics yüklenemedi",
@@ -7246,772 +7320,55 @@
     },
     "export": {
       "students_capped": "Öğrenci listesi ilk {limit} satırla sınırlıdır.",
-      "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır."
+      "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır.",
+      "yes": "Evet",
+      "no": "Hayır",
+      "columns": {
+        "segment": "Grup",
+        "metric": "Ölçüt",
+        "value": "Değer",
+        "details": "Ayrıntılar"
+      },
+      "dimensions": {
+        "student": "Öğrenci",
+        "course": "Kurs",
+        "cohort": "Kohort",
+        "exercise": "Alıştırma",
+        "section": "Bölüm",
+        "lesson": "Ders",
+        "question": "Soru",
+        "item": "Öğe",
+        "day": "Gün",
+        "period": "Dönem",
+        "status": "Durum",
+        "overdue_kind": "Gecikme türü",
+        "progress_bucket_25": "İlerleme",
+        "score_bucket_10": "Ortalama puan"
+      }
     },
     "org_page_title": "Akademi",
-    "courses": "Courses",
-    "progress": "Progress",
-    "progress_description": "{value, number} / {total, number}complete",
-    "incomplete": "Incomplete",
-    "completed": "Completed",
-    "complete": "complete",
-    "last_seen": "Len son görüldü",
-    "a_while_ago": "bir süre önce",
-    "just_now": "az önce",
-    "minutes_ago": "{sayım, çoğul, bir {# minute ago} diğer {# minutes ago}}",
-    "hours_ago": "{sayı, çoğul, bir {# hour ago} diğer {# hours ago}}",
-    "days_ago": "{sayı, çoğul, bir {# day ago} diğer {# days ago}}",
-    "months_ago": "{sayım, çoğul, bir {# month ago} diğer {# months ago}}",
-    "years_ago": "{sayı, çoğul, bir {# year ago} diğer {# years ago}}",
-    "exercises": "Alıştırmalar",
-    "graded": "Graded",
-    "not_graded": "Notlandırılmamış",
-    "enrolled_courses": "Kayıtlı Dersler",
-    "enrolled_courses_description": "Kayıtlı tüm dersler",
-    "overall_course_progress": "Genel Kurs İlerlemesi",
-    "overall_course_progress_description": "Tamamlanan derslerin yüzdesi",
-    "total_average_grade": "Toplam Ortalama Not",
-    "total_average_grade_description": "Tüm kurstaki egzersiz notlarına dayalı",
-    "overall_course_progress_user_description": "Dersin tamamlanmasına dayalı",
-    "assignment_completion": "Ödevin Tamamlanması",
-    "assignment_completion_description": "Tamamlanan ödevlerin yüzdesi",
-    "average_grade_description": "Tamamlanan tüm ödevlerin ortalama notu",
-    "lessons": "LDersler",
-    "tutors": "öğretmenler",
-    "avg_grade": "Ort not",
-    "completion_rate": "Tamamlanma oranı",
-    "student_progress_overview": "Öğrenci İlerlemesine Genel Bakış",
-    "student_name": "Öğrenci Adı",
-    "lessons_completed": "LTamamlanan Dersler",
-    "exercises_submitted": "Gönderilen Alıştırmalar",
-    "average_grade": "Ortalama Not",
-    "view_details": "Görüntüle Ayrıntılar",
-    "no_students_found": "Öğrenci Bulunamadı",
-    "no_students_description": "Bu kursa henüz kayıtlı öğrenci yok. Öğrenciler kursa katıldıklarında burada görünecekler.",
-    "showing_students": "{total} öğrencilerinden {start} ile {end} arası gösteriliyor",
-    "no_analytics_data": "Analitik Veri Yok",
-    "no_analytics_description": "Bu kurs için analiz verileri yüklenemiyor. Lütfen daha sonra tekrar deneyin veya sorun devam ederse destek ekibiyle iletişime geçin.",
-    "student": "Student",
-    "student_progress_distribution": "Öğrenci İlerleme Dağılımı",
-    "grade_distribution": "Not Dağılımı",
-    "progress_80_plus": "%80+ İlerleme",
-    "progress_60_79": "60-79% İlerleme",
-    "progress_below_60": "%60'ın Altında İlerleme",
-    "grade_90_plus": "%90+ Not",
-    "grade_80_89": "80-%89 Not",
-    "grade_70_79": "70-%79 Not",
-    "grade_below_70": "%70'in Altında Not",
-    "number_of_students": "Öğrenci Sayısı",
-    "progress_range": "İlerleme Aralığı",
-    "grade_range": "Not Aralık",
-    "no_progress_data": "İlerleme verisi yok",
-    "no_grade_data": "Not verisi yok",
-    "loading_chart": "LYükleme tablosu...",
-    "no_data_default": "Mevcut veri yok",
-    "no_data_default_description": "Şu anda görüntülenecek veri yok.",
-    "subtitle": "Ziyaretçilerin kurslarınızı nasıl keşfettiğini ve öğrencilere nasıl dönüştüğünü anlayın.",
-    "course_metrics": {
-      "page_subtitle": "Bu kursa kayıt, ders tamamlama, notlar ve öğrenci başına ilerleme.",
-      "progress_distribution_card_description": "Her bir tamamlama aralığına kaç öğrenci düşüyor.",
-      "grade_distribution_card_description": "Her bir not aralığına kaç öğrenci düşüyor.",
-      "students_table_description": "Öğrenci profillerine bağlantılar içeren sıralanabilir genel bakış.",
-      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} derslere eşlendi",
-      "kpi_progress_grade": "{grade} kayıtlı öğrenciler arasında ortalama egzersiz notunun yüzdesi"
+    "widget_menu": {
+      "label": "{title} için işlemler",
+      "view_students": "Öğrencileri görüntüle",
+      "open_in_students": "Öğrenciler sekmesinde aç",
+      "click_to_view": "Öğrencilerini görmek için bir çubuk veya dilim seçin"
     },
-    "tabs": {
-      "overview": "Overview",
-      "funnel": "Funnel",
-      "geography": "Coğrafya",
-      "course_types": "Kurs türleri"
-    },
-    "range": {
-      "7d": "Lson 7 gün",
-      "30d": "Lson 30 gün",
-      "90d": "Lson 90 gün"
-    },
-    "refresh": "Yenileme",
-    "trend": {
-      "heading": "Zaman içindeki trafik",
-      "description": "Güne göre sayfa görüntülemeleri ve kayıtları",
-      "empty": "Seçilen aralıkta trafik yok",
-      "views": "Görüntülemeler",
-      "enrollments": "Kayıtlar"
-    },
-    "funnel": {
-      "heading": "Dönüşüm hunisi",
-      "description": "İlk ziyaretten kursun tamamlanmasına kadar",
-      "empty": "Henüz dönüşüm hunisi verisi yok",
-      "step": {
-        "landing_view": "Laçılış görünümleri",
-        "course_page_view": "Kurs sayfası görüntülemeleri",
-        "enrollment_completed": "Kayıtlar",
-        "course_completed": "Tamamlananlar"
-      }
-    },
-    "countries": {
-      "heading": "En iyi ülkeler",
-      "subtitle": "{total} toplam ziyaretçi",
-      "empty": "Henüz konum verisi yok",
-      "country": "Ülke",
-      "visitors": "Ziyaretçiler",
-      "enrollments_short": "kaydedilen"
-    },
-    "popularTypes": {
-      "heading": "Popüler kurs türleri",
-      "description": "Kurs türüne göre gruplandırılmış kayıtlar",
-      "subtitle": "{total} tüm türlerdeki kayıtlar",
-      "empty": "Henüz kayıt verisi yok",
-      "course_count": "{sayı, çoğul, bir {# course} diğer {# courses}}",
-      "views_short": "görüntülemeler",
-      "types": {
-        "SELF_PACED": "Self-paced",
-        "LIVE_CLASS": "Live class",
-        "COMPLIANCE": "Compliance",
-        "PUBLIC": "Public"
-      }
-    },
-    "topCourses": {
-      "heading": "Görüntülemelere göre en iyi kurslar",
-      "description": "Sayfa görüntülemelerine göre sıralanan kurslar",
-      "subtitle": "Bu aralıktaki sayfa görüntülemelerine göre sıralanmış",
-      "empty": "Henüz kurs sayfası görüntüleme yok",
-      "course": "Kurs",
-      "views": "Görünümler"
-    },
-    "course_progress": "Kurs ilerlemesi",
-    "exercises_completed": "Tamamlanan Alıştırmalar"
-  },
-  "math_question": {
-    "edit": {
-      "accepted_answers_label": "Kabul edilen cevaplar",
-      "accepted_answers_helper": "Her doğru cevabı bir öğrencinin yazacağı gibi yazın. Herhangi biri kabul edilir.",
-      "add_answer": "Başka bir kabul edilen cevap ekle",
-      "answer_placeholder": "Cevabı yazın",
-      "compare_label": "Cevaplar nasıl karşılaştırılsın?",
-      "compare": {
-        "equivalent": "Denk",
-        "exact_form": "Tam biçim",
-        "numeric": "Sayısal",
-        "set": "Küme veya liste",
-        "equivalent_hint": "Cebirsel olarak eşit her biçim kabul edilir, yani 2(x+1) ifadesi 2x+2 ile eşleşir.",
-        "exact_form_hint": "Cevap eşit olmalı ve seçtiğiniz biçimde yazılmalıdır.",
-        "numeric_hint": "Cevap belirlediğiniz tolerans içinde olmalıdır.",
-        "set_hint": "Sıra önemli değildir, yani (1, 2) ile (2, 1) eşleşir."
+    "drilldown": {
+      "count": "{count, plural, one {# öğrenci} other {# öğrenci}}",
+      "description": "Bu sayının arkasındaki öğrenciler.",
+      "cohort_health": {
+        "any": "Öğrencisi olan kohortlarda",
+        "at_risk": "Risk altındaki kohortlarda",
+        "lagging": "Geride kalan kohortlarda",
+        "on_track": "Yolda olan kohortlarda",
+        "completed": "Tamamlanan kohortlarda"
       },
-      "form_label": "Gerekli biçim",
-      "form": {
-        "simplified": "Sadeleştirilmiş",
-        "factored": "Çarpanlarına ayrılmış",
-        "expanded": "Açılmış",
-        "lowest_terms": "En sade kesir",
-        "rationalised_denominator": "Paydası rasyonel yapılmış"
-      },
-      "absolute_tolerance_label": "Mutlak tolerans",
-      "relative_tolerance_label": "Bağıl tolerans",
-      "significant_figures_label": "Anlamlı basamak",
-      "units_label": "Beklenen birim",
-      "units_placeholder": "Örneğin m, km/sa veya kg",
-      "units_allow_conversion": "Aynı türden diğer birimleri kabul et, örneğin 2 m yerine 200 cm",
-      "variables_label": "Değişkenler",
-      "variables_placeholder": "x, y, t",
-      "variables_helper": "Değişken sayılacak harfler. Otomatik algılamak için boş bırakın.",
-      "keyboard_label": "Klavye",
-      "keyboard": {
-        "numeric": "Yalnızca sayılar",
-        "algebra": "Cebir",
-        "calculus": "Analiz",
-        "greek": "Yunan harfleri",
-        "sets": "Kümeler",
-        "full": "Hepsi"
-      },
-      "feedback_label": "Bilinen yanlış cevaplar için geri bildirim",
-      "feedback_helper": "Bir öğrenci belirli bir yanlış cevap verdiğinde ipucu gösterir.",
-      "feedback_answer_placeholder": "Yanlış cevap",
-      "feedback_text_placeholder": "Öğrenci için ipucu",
-      "add_feedback": "Geri bildirim ekle",
-      "remove": "Kaldır",
-      "try_label": "Bir cevap dene",
-      "try_helper": "Yayınlamadan önce bir öğrenci cevabının nasıl puanlanacağını kontrol edin.",
-      "try_placeholder": "Örnek bir öğrenci cevabı yazın",
-      "try_button": "Kontrol et",
-      "try_checking": "Kontrol ediliyor…",
-      "try_needs_answer": "Önce kabul edilen bir cevap ekleyin.",
-      "allow_image_label": "Öğrencilerin fotoğraf veya çizimle yanıtlamasına izin ver",
-      "allow_image_helper": "Yanıt kutusuna Fotoğraf veya çizim düğmesi ekler. Yazılan yanıtlar daha güvenilir notlandığı için varsayılan olarak kapalıdır."
-    },
-    "verdict": {
-      "equivalent": "Doğru",
-      "not_simplified": "Değer doğru ama cevap sadeleştirilmemiş.",
-      "wrong_form": "Değer doğru ama gerekli biçimde değil.",
-      "wrong_units": "Değer doğru ama birimler yanlış.",
-      "wrong": "Yanlış",
-      "needs_review": "Otomatik olarak kontrol edilemedi. Bir öğretmen inceleyecek.",
-      "invalid": "Bu cevap matematik olarak okunamadı.",
-      "matched_label": "Eşleşti"
-    },
-    "misconception": {
-      "sign_error": "İşaretleri kontrol edin: cevabınızın değeri doğru ama işareti ters.",
-      "forgot_distribute": "Bir çarpanın veya eksi işaretinin parantez içindeki her terime uygulanmadığı görünüyor.",
-      "inverted_fraction": "Cevabınız doğru cevabın çarpmaya göre tersine benziyor. Hangi sayının üstte olması gerektiğini kontrol edin.",
-      "forgot_flip_inequality": "Eşitsizliğin iki tarafını negatif bir sayıyla çarparken veya bölerken eşitsizlik işaretini ters çevirmeyi unutmayın.",
-      "dropped_factor": "Yol boyunca bir çarpan düşmüş gibi görünüyor. Her terimi orijinaliyle karşılaştırın."
-    },
-    "take": {
-      "placeholder": "Cevabınızı yazın",
-      "sr_label": "Cevabınız"
-    },
-    "preview": {
-      "accepted_label": "Kabul edilen cevaplar",
-      "compare_label": "Karşılaştırma",
-      "empty": "Henüz kabul edilen cevap yok."
-    },
-    "review": {
-      "your_answer": "Cevabınız",
-      "expected": "Kabul edilen cevaplar",
-      "result": "Sonuç",
-      "not_graded": "Henüz puanlanmadı",
-      "feedback": "Geri bildirim"
-    },
-    "numeric": {
-      "correct_value_hint": "Kesirler, bileşik kesirler, π ve kökler kabul edilir."
-    },
-    "worked": {
-      "edit": {
-        "answer_points_label": "Son cevap için puan",
-        "working_points_label": "Çözüm adımları için puan",
-        "working_points_helper": "Elle puanlanır. Cevap kısmı otomatik puanlanır.",
-        "working_inputs_label": "Öğrenciler çözüm adımlarını nasıl gösterebilir?"
-      },
-      "input": {
-        "typed": "Yazılan satırlar",
-        "drawing": "Çizim",
-        "photo": "Fotoğraf"
-      },
-      "take": {
-        "answer_label": "Son cevap",
-        "working_label": "Çözüm adımlarınız",
-        "line_placeholder": "Bir adım yazın",
-        "add_line": "Adım ekle",
-        "remove_line": "Adımı kaldır",
-        "draw_label": "Çözüm adımlarınızı çizin",
-        "upload_photo": "Çözüm adımlarınızın fotoğrafını yükleyin",
-        "remove_file": "Kaldır",
-        "uploading": "Yükleniyor…",
-        "upload_failed": "Yükleme başarısız oldu. Tekrar deneyin.",
-        "draw_canvas": "Çizim alanı",
-        "draw_undo": "Geri al",
-        "draw_clear": "Temizle",
-        "draw_save": "Çizim ekle",
-        "draw_saving": "Kaydediliyor…",
-        "drawing_alt": "Çizdiğiniz çözüm adımları",
-        "photo_alt": "Çözüm adımlarınızın fotoğrafı"
-      },
-      "review": {
-        "working_label": "Çözüm adımları",
-        "no_working": "Çözüm adımı gösterilmedi",
-        "answer_points": "Son cevap",
-        "working_points": "Çözüm adımları, öğretmeniniz tarafından puanlanır"
-      }
-    },
-    "parts": {
-      "score": "Bölüm puanı",
-      "add": "Bölüm ekle",
-      "helper": "(a), (b), (c) bölümleri ayrı yanıtlanır ve puanlanır. Yukarıdaki soru ortak soru kökü olarak gösterilir."
-    },
-    "matching": {
-      "edit": {
-        "helper": "Öğrencilerin eşleştireceği çiftleri ekleyin. Matematik için $…$ kullanın.",
-        "left_placeholder": "Öğe",
-        "right_placeholder": "Eşleşmesi",
-        "add_pair": "Çift ekle",
-        "remove_pair": "Çifti kaldır"
-      },
-      "take": {
-        "choose": "Her öğe için eşleşmeyi seçin."
-      },
-      "review": {
-        "expected": "Doğru eşleşme",
-        "not_matched": "Eşleşmedi"
-      }
-    },
-    "calculator_policy": {
-      "label": "Hesap makinesi",
-      "helper": "Öğrencilerin bu alıştırmada hangi hesap makinesini açabileceğini seçin.",
-      "none": "Hesap makinesi yok",
-      "four_function": "Dört işlem",
-      "scientific": "Bilimsel",
-      "graphing": "Grafik"
-    },
-    "calculator": {
-      "open": "Hesap makinesi",
-      "close": "Hesap makinesini kapat",
-      "title": "Hesap makinesi",
-      "display": "Hesap makinesi ekranı",
-      "clear": "Temizle",
-      "backspace": "Sil",
-      "equals": "Eşittir",
-      "degrees": "Derece",
-      "radians": "Radyan",
-      "answer": "Cevap",
-      "error": "Hata",
-      "graphing_loading": "Grafik hesap makinesi yükleniyor…",
-      "graphing_failed": "Grafik hesap makinesi yüklenemedi."
-    },
-    "desmos": {
-      "label": "Desmos API anahtarı",
-      "helper": "İsteğe bağlı. Grafik olarak ayarlanan alıştırmalarda Desmos grafik hesap makinesini etkinleştirir. Anahtar yoksa öğrenciler bilimsel hesap makinesini kullanır."
-    },
-    "variables": {
-      "heading": "Değişkenler",
-      "helper": "Her öğrenciye farklı sayılar verin. Soruda ve cevap anahtarında değişken adlarını çift süslü parantez içinde kullanın.",
-      "enable": "Bu soruyu parametreli yap",
-      "disable": "Değişkenleri kaldır",
-      "add": "Değişken ekle",
-      "remove": "Değişkeni kaldır",
-      "name_label": "Ad",
-      "type_label": "Tür",
-      "type": {
-        "int": "Tam sayı",
-        "decimal": "Ondalık",
-        "choice": "Seçim"
-      },
-      "min_label": "Min",
-      "max_label": "Maks",
-      "step_label": "Adım",
-      "choices_label": "Değerler",
-      "choices_placeholder": "2, 5, 10",
-      "constraints_label": "Kısıtlamalar",
-      "constraints_helper": "Satır başına bir koşul, örneğin a != 0 veya b > a.",
-      "constraints_placeholder": "a != 0",
-      "answer_formula_label": "Cevap formülü",
-      "answer_formula_placeholder": "b / a",
-      "answer_formula_helper": "Cevabın değişkenlerle ifadesi. Değerini göstermek için answer kelimesini çift süslü parantez içinde yazın.",
-      "integer_answer": "Cevap tam sayı olmalı",
-      "nonzero_answer": "Cevap sıfır olmamalı",
-      "use_answer": "Hesaplanan cevabı anahtar olarak kullan",
-      "preview": "Varyantları önizle",
-      "previewing": "Kontrol ediliyor…",
-      "preview_answer": "Cevap",
-      "preview_ok": "Anahtar doğrulandı",
-      "preview_problem": "Bu varyantı kontrol edin"
-    },
-    "rubric": {
-      "heading": "Puanlama ölçeği",
-      "helper": "Eksiksiz bir çözümün adımlarını ve her birinin puanını yazın. Yapay zeka çözümü bu adımlara göre değerlendirir.",
-      "step_placeholder": "Örneğin: denklemi doğru kurar",
-      "points_label": "Puan",
-      "add_step": "Adım ekle",
-      "remove_step": "Adımı kaldır",
-      "total": "Toplam",
-      "total_mismatch": "Adımların toplamı çözüm puanından farklı.",
-      "ai_label": "Yapay zekayla puan öner",
-      "ai_helper": "Bir model çözümü ölçeğe göre okur ve puan önerir. Siz kabul edene kadar öğrenciler hiçbir şey görmez. Varsayılan olarak kapalı."
-    },
-    "graph": {
-      "edit": {
-        "board_heading": "Grafik tahtası",
-        "x_min": "Sol kenar (x en az)",
-        "x_max": "Sağ kenar (x en çok)",
-        "y_min": "Alt kenar (y en az)",
-        "y_max": "Üst kenar (y en çok)",
-        "show_grid": "Izgarayı göster",
-        "snap_label": "Izgara adımına yapış",
-        "snap_helper": "Noktalar bu sayının katlarına yapışır. Serbest yerleştirme için 0 kullanın.",
-        "x_label": "Yatay eksen etiketi",
-        "y_label": "Dikey eksen etiketi",
-        "tolerance_label": "Tolerans",
-        "tolerance_helper": "Bir noktanın veya doğrunun doğru sayılması için grafik birimi cinsinden ne kadar yakın olması gerektiği.",
-        "range_invalid": "Her en küçük değer, en büyük değerinden küçük olmalıdır."
-      },
-      "tool": {
-        "point": "Nokta",
-        "line": "Doğru",
-        "segment": "Doğru parçası",
-        "parabola": "Parabol"
-      },
-      "plot": {
-        "tools_label": "Öğrencilerin kullanabileceği araçlar",
-        "reference_heading": "Doğru cevap",
-        "reference_helper": "Doğru cevabı tahtaya çizin. Öğrenciler buna göre değerlendirilir.",
-        "reference_empty": "Doğru cevap olarak en az bir öğe çizin.",
-        "preview_heading": "Öğrenci görünümü",
-        "preview_helper": "Öğrencilerin gördüğü tahta budur. Yalnızca seçtiğiniz araçları kullanabilirler."
-      },
-      "read": {
-        "curves_label": "Grafikteki fonksiyonlar",
-        "curves_helper": "Her fonksiyonu x cinsinden yazın, örneğin x^2 - 4.",
-        "curve_placeholder": "x^2 - 4",
-        "curve_label_placeholder": "Etiket (isteğe bağlı)",
-        "add_curve": "Fonksiyon ekle",
-        "points_label": "İşaretli noktalar",
-        "points_helper": "Öğrencilerin okuması için grafiğe çizilen noktalar.",
-        "add_point": "Nokta ekle",
-        "point_label_placeholder": "Ad (isteğe bağlı)",
-        "remove": "Kaldır",
-        "answer_label": "Öğrenciler grafikten ne okusun?",
-        "kind": {
-          "value": "Tek bir değer",
-          "point": "Bir nokta (x, y)"
-        },
-        "value_label": "Doğru değer",
-        "x_label": "Doğru x",
-        "y_label": "Doğru y",
-        "tolerance_helper": "Doğru cevaba bu uzaklık içindeki cevaplar kabul edilir.",
-        "answer_empty": "Doğru cevabı girin."
-      },
-      "take": {
-        "loading": "Grafik yükleniyor…",
-        "failed": "Grafik yüklenemedi.",
-        "undo": "Geri al",
-        "clear": "Temizle",
-        "hint": {
-          "point": "Nokta koymak için grafiğe dokunun. Taşımak için bir noktayı sürükleyin.",
-          "line": "Doğru çizmek için iki yere dokunun. Taşımak için bir noktayı sürükleyin.",
-          "segment": "Doğru parçasının iki ucuna dokunun. Taşımak için bir noktayı sürükleyin.",
-          "parabola": "Önce tepe noktasına, sonra parabolün bir noktasına daha dokunun. Taşımak için bir noktayı sürükleyin."
-        },
-        "board_label": "Koordinat düzlemi",
-        "read": {
-          "value_label": "Cevabınız",
-          "value_placeholder": "Bir sayı girin",
-          "x_label": "x koordinatı",
-          "y_label": "y koordinatı"
-        }
-      },
-      "review": {
-        "student_legend": "Grafiğiniz (yeşil doğru, kırmızı yanlış)",
-        "expected_legend": "Doğru grafik (kesikli)",
-        "expected_read": "Doğru cevap",
-        "matched": "{total} öğeden {matched} tanesi doğru"
-      },
-      "verdict": {
-        "correct": "Doğru",
-        "partial": "Bazı öğeler doğru.",
-        "wrong": "Yanlış",
-        "missing": "Hiçbir şey cevaplanmadı.",
-        "extra": "Gerekenlerin hepsi var, ancak fazladan öğeler eklenmiş.",
-        "not_set": "Bu sorunun henüz cevap anahtarı yok."
-      },
-      "preview": {
-        "empty": "Henüz doğru bir cevap belirlenmedi."
-      }
-    },
-    "upgrade": {
-      "required": "Ücretli planlara dahildir. Kullanmak için planınızı yükseltin."
-    }
-  },
-  "math_vision": {
-    "image": {
-      "from_image": "Fotoğraf veya çizim",
-      "photo_tab": "Fotoğraf",
-      "draw_tab": "Çiz",
-      "upload": "Görsel yükle",
-      "take_photo": "Fotoğraf çek",
-      "photo_hint": "Ekran görüntüsü yapıştırın, bir görsel bırakın veya yükleyin.",
-      "crop_hint": "İstediğiniz matematiğin etrafına bir kutu çizin.",
-      "reset_crop": "Tüm görseli kullan",
-      "convert": "Dönüştür",
-      "converting": "Matematik okunuyor…",
-      "draw_hint": "Matematiği buraya parmağınız, kalem veya fareyle yazın.",
-      "clear": "Temizle",
-      "original": "Orijinal",
-      "converted": "Dönüştürülen matematik",
-      "insert": "Ekle",
-      "no_math_found": "Bu görselde matematik bulunamadı.",
-      "parse_failed": "Bu geçerli matematik olarak okunamadı. Aşağıda düzeltin veya yeniden deneyin.",
-      "invalid_math": "Bu henüz geçerli matematik değil.",
-      "unsupported_file": "PNG, JPEG veya WebP görseli kullanın.",
-      "image_too_large": "Bu görsel çok büyük.",
-      "conversion_failed": "Dönüştürme başarısız oldu. Yeniden deneyin."
-    },
-    "errors": {
-      "limit_reached": "Ücretsiz planın aylık fotoğraf ve çalışma sayfası dönüştürme hakkı doldu. Devam etmek için planınızı yükseltin.",
-      "token_limit": "Bu çalışma alanı bu ayki yapay zekâ kotasını doldurdu.",
-      "not_configured": "Bu platformda yapay zekâ kurulu değil."
-    },
-    "worksheet": {
-      "import_button": "Çalışma sayfasından içe aktar",
-      "title": "Çalışma sayfası içe aktar",
-      "description": "Bir çalışma sayfasının fotoğrafını veya PDF’sini yükleyin. Her soru matematik olarak okunur, bir tür ve önerilen bir yanıt alır; yanıt içe aktarmadan önce kontrol edilir.",
-      "drop_hint": "10 MB’a kadar PNG, JPEG, WebP veya PDF dosyası seçin.",
-      "choose_file": "Dosya seç",
-      "choose_another": "Başka dosya seç",
-      "original": "Orijinal",
-      "questions": "Bulunan sorular",
-      "reading": "Çalışma sayfası okunuyor…",
-      "verified": "Yanıt doğrulandı",
-      "unverified": "Kontrol gerekli",
-      "unverified_hint": "Motor bu yanıtı doğrulayamadı. Kontrol edin, ardından içe aktarmak için soruyu işaretleyin.",
-      "question_label": "Soru metni",
-      "option_label": "Seçenek",
-      "answer_label": "Yanıt",
-      "correct_option": "Doğru seçenek",
-      "import_selected": "{count} soruyu içe aktar",
-      "cancel": "İptal",
-      "imported": "Sorular içe aktarıldı. Gözden geçirin, ardından alıştırmayı kaydedin.",
-      "no_questions": "Bu dosyada soru bulunamadı.",
-      "unsupported_file": "PNG, JPEG, WebP veya PDF dosyası kullanın.",
-      "file_too_large": "Bu dosya 10 MB’tan büyük.",
-      "type": {
-        "MATH_EXPRESSION": "Matematiksel ifade",
-        "NUMERIC": "Sayısal",
-        "RADIO": "Tek yanıt"
-      }
-    }
-  },
-  "ai_review": {
-    "title": "Yapay zeka önerisi",
-    "request": "Yapay zekayla puan öner",
-    "requesting": "İnceleniyor…",
-    "confidence": "Güven %{confidence}",
-    "first_wrong_step": "İlk hatalı adım: {step}",
-    "rubric_changed": "Ölçek bu öneriden sonra değişti.",
-    "suggested_points": "Çözüm için önerilen puan: {points} / {max}",
-    "model": "Model: {model}",
-    "student_hidden": "Siz kabul edene veya puanlayana kadar öğrenciler hiçbir şey görmez.",
-    "accept": "Kabul et",
-    "applied": "Nota eklendi",
-    "reject": "Reddet",
-    "decision": {
-      "accepted": "Kabul edildi",
-      "edited": "Düzenlenerek kabul edildi",
-      "rejected": "Reddedildi"
-    },
-    "bulk_hint": "Sizi bekleyen {count} yüksek güvenli yapay zeka önerisi var.",
-    "bulk_accept": "{count} güvenli öneriyi kabul et",
-    "bulk_accepting": "Kabul ediliyor…",
-    "bulk_done": "{count} öneri kabul edildi"
-  },
-  "exercise_results": {
-    "tab": "Sonuç tablosu",
-    "student": "Öğrenci",
-    "unknown_student": "Bilinmeyen öğrenci",
-    "total": "Toplam",
-    "question_short": "S{number}",
-    "points_short": "puan",
-    "no_answer": "Cevap yok",
-    "empty": "Bu filtrelere uyan öğrenci henüz yok.",
-    "page": "Sayfa {page} / {pages}",
-    "previous": "Önceki",
-    "next": "Sonraki",
-    "filter": {
-      "all": "Tüm öğrenciler",
-      "wrong": "Yalnızca yanlış cevaplar",
-      "awaiting": "Notlandırma bekliyor",
-      "all_cohorts": "Tüm gruplar"
-    },
-    "state": {
-      "full": "Tam puan",
-      "partial": "Kısmi puan",
-      "wrong": "Yanlış",
-      "awaiting": "Notlandırma bekliyor",
-      "blank": "Cevap yok"
-    },
-    "clusters": {
-      "title": "Cevap grupları",
-      "empty": "Gruplanacak cevap henüz yok.",
-      "count": "{count} kişi böyle cevapladı",
-      "blank": "{count} kişi boş bıraktı",
-      "parameterised_hint": "Bu soruda değişkenler var, bu yüzden cevaplar her öğrencinin sayılarına göre ayrı gruplanır.",
-      "not_scorable": "Bu soru türü elle notlandırılır. Yine de gruba geri bildirim ekleyebilirsiniz.",
-      "grade": {
-        "full": "Tam puan",
-        "partial": "Kısmi puan",
-        "wrong": "Yanlış",
-        "mixed": "Karışık"
-      },
-      "mark_correct": "Doğru olarak işaretle",
-      "mark_partial": "Kısmi puan…",
-      "mark_wrong": "Yanlış olarak işaretle",
-      "add_feedback": "Geri bildirim ekle",
-      "undo": "Kararı geri al",
-      "points_label": "Bu grup için puan (en çok {max})",
-      "apply": "Uygula ve yeniden notlandır",
-      "feedback_placeholder": "Bu gruptaki her öğrencinin göreceği geri bildirim",
-      "save_feedback": "Geri bildirimi kaydet",
-      "has_feedback": "geri bildirimli",
-      "decision_correct": "Herkes için doğru işaretlendi",
-      "decision_wrong": "Herkes için yanlış işaretlendi",
-      "decision_partial": "Herkese {points} puan verildi",
-      "decision_feedback": "Geri bildirim eklendi"
-    },
-    "snackbar": {
-      "applied": "{count} cevap yeniden notlandırıldı",
-      "undone": "Karar geri alındı, {count} cevap yeniden notlandırıldı"
-    }
-  },
-  "skills": {
-    "actions": {
-      "cancel": "İptal",
-      "confirm_delete": "\"{name}\" becerisi silinsin mi? Etiketlendiği tüm sorulardan kaldırılır.",
-      "create": "Beceri oluştur",
-      "delete": "Sil",
-      "edit": "Düzenle",
-      "import": "CSV içe aktar",
-      "more": "Beceri işlemleri",
-      "save": "Kaydet"
-    },
-    "empty": {
-      "description": "Becerileri tek tek oluşturun veya bir CSV dosyasından standart çerçevesi içe aktarın.",
-      "title": "Henüz beceri yok"
-    },
-    "form": {
-      "code": "Kod",
-      "create_title": "Beceri oluştur",
-      "description": "Açıklama",
-      "edit_title": "Beceriyi düzenle",
-      "framework": "Çerçeve",
-      "name": "Ad",
-      "no_parent": "Üst beceri yok (en üst düzey)",
-      "parent": "Üst beceri"
-    },
-    "heading": "Beceriler",
-    "import": {
-      "action": "İşlem",
-      "choose_file": "CSV dosyası seçin",
-      "confirm": "{count} beceriyi içe aktar",
-      "create": "Oluştur",
-      "description": "Önce bir CSV dosyasını kontrol edin. Önizlemeyi onaylayana kadar hiçbir şey kaydedilmez. Zorunlu sütunlar code ve name; isteğe bağlı sütunlar parent_code, description ve framework.",
-      "error_line": "Satır {line}: {message}",
-      "errors_heading": "{count} sorun bulundu. Düzeltip dosyayı yeniden seçin.",
-      "more_rows": "ve {count} satır daha",
-      "parent": "Üst",
-      "starters": {
-        "common_core": "Common Core Math (ABD)",
-        "heading": "Başlangıç dosyaları",
-        "note": "Başlangıç dosyaları tam çerçeve değil, küçük örneklerdir. Okulunuzun öğrettiği standartları ekleyin, sonra dosyayı içe aktarın.",
-        "uk": "UK National Curriculum Maths",
-        "waec_neco": "WAEC / NECO Mathematics"
-      },
-      "summary": "{create} oluşturulacak, {update} güncellenecek",
-      "title": "CSV'den becerileri içe aktar",
-      "update": "Güncelle"
-    },
-    "mastery": {
-      "description": "Yakınlığa göre ağırlıklandırılır; her beceriyle etiketli sorularda kazanılan puan payına dayanır.",
-      "heading": "Beceri ustalığı",
-      "level": {
-        "not_started": "Başlamadı",
-        "learning": "Öğreniyor",
-        "proficient": "Yeterli",
-        "mastered": "Ustalaştı"
-      },
-      "no_data": "Henüz hiçbir öğrenci bu beceriyle etiketli soruları yanıtlamadı.",
-      "student_heading": "Bu kurstaki beceri ustalığı"
-    },
-    "page_subtitle": "Sorularınızın dayandığı becerileri ve standartları tanımlayın, öğrencilerin bunlarda ne kadar ustalaştığını görün.",
-    "page_title": "Beceriler - ClassroomIO",
-    "picker": {
-      "accept": "Ekle",
-      "accepted": "Eklendi",
-      "add": "Beceri ekle",
-      "description": "Bu sorunun ölçtüğü becerileri seçin.",
-      "edit": "Becerileri düzenle",
-      "empty": "Beceri bulunamadı. Önce beceri ayarlarında beceri oluşturun.",
-      "save_first": "Bu soruyu becerilerle etiketlemek için alıştırmayı kaydedin.",
-      "suggest": "Yapay zekâyla öner",
-      "suggest_failed": "Öneriler alınamadı",
-      "suggestions": "Önerilen beceriler",
-      "title": "Sorunun becerileri"
-    },
-    "search_placeholder": "Becerilerde ara",
-    "snackbar": {
-      "created": "Beceri oluşturuldu",
-      "deleted": "Beceri silindi",
-      "fetch_failed": "Beceriler yüklenemedi",
-      "imported": "{count} beceri içe aktarıldı",
-      "updated": "Beceri güncellendi"
-    },
-    "table": {
-      "action": "İşlem",
-      "code": "Kod",
-      "framework": "Çerçeve",
-      "name": "Ad",
-      "no_matches": "Aramanızla eşleşen beceri yok",
-      "questions": "Sorular"
-    }
-  },
-  "practice": {
-    "actions": {
-      "assign_to_weak": "Öğrenmekte olan {count} öğrenciye alıştırma ata",
-      "assign_to_cluster": "Bu {count} öğrenciye alıştırma ata"
-    },
-    "default_title": "Alıştırma: {name}",
-    "default_title_question": "Alıştırma",
-    "dialog": {
-      "title": "Alıştırma ata",
-      "description": "Becerinin sorularının yeni varyantlarından kısa bir alıştırma oluşturur ve yalnızca seçtiğiniz öğrencilere gösterir.",
-      "name": "Alıştırma adı",
-      "count": "Soru sayısı",
-      "students": "Öğrenciler ({count} seçili)",
-      "cancel": "İptal",
-      "submit": "Alıştırma ata"
-    },
-    "snackbar": {
-      "assigned": "Alıştırma {count} öğrenciye atandı"
-    }
-  },
-  "question_analysis": {
-    "tab": "Soru analizi",
-    "description": "Kolaylık, soruyu tamamen doğru yanıtlayan öğrencilerin oranıdır. %{hard} altındaki sorular çok zor, %{easy} üstündekiler çok kolay olarak işaretlenir. {discrimination} altındaki ayırt edicilik, sorunun güçlü ve zayıf öğrencileri ayırmadığı anlamına gelir.",
-    "empty": "Henüz analiz edilecek yanıt yok.",
-    "seconds": "{seconds} sn",
-    "columns": {
-      "question": "Soru",
-      "facility": "Kolaylık",
-      "discrimination": "Ayırt edicilik",
-      "time": "Ortanca süre",
-      "wrong_answers": "Sık yanlış yanıtlar",
-      "flags": "İşaretler"
-    },
-    "flags": {
-      "too_hard": "Çok zor",
-      "too_easy": "Çok kolay",
-      "poor_discrimination": "Düşük ayırt edicilik"
-    }
-  },
-  "mathNotation": {
-    "title": "Matematik gösterimi",
-    "org_description": "Matematik sorularında sayıların ve işleçlerin nasıl yazılıp okunduğu. Öğrenci yanıtları bu ayarlarla değerlendirilir.",
-    "course_description": "Bu kurs için kurumun matematik gösterimini geçersiz kıl.",
-    "inherit": "Kurum varsayılanını kullan",
-    "decimal": {
-      "label": "Ondalık ayırıcı",
-      "point": "Nokta (0.5)",
-      "comma": "Virgül (0,5)",
-      "hint": "Virgülle öğrenciler 0,5 yazabilir ve 0.5 olarak değerlendirilir."
-    },
-    "thousands": {
-      "label": "Binlik ayırıcı",
-      "none": "Yok (1000)",
-      "space": "Boşluk (1 000)",
-      "comma": "Virgül (1,000)",
-      "dot": "Nokta (1.000)",
-      "hint": "Sayısal yanıtlarda kabul edilir ve beş veya daha fazla basamaklı sayılarda gösterilir."
-    },
-    "multiplication": {
-      "label": "Çarpma işareti",
-      "cross": "Çarpı (3 × 4)",
-      "dot": "Nokta (3 · 4)",
-      "hint": "Nokta seçilirse × işareti sorularda ve seçeneklerde · olarak gösterilir."
-    },
-    "unit": {
-      "label": "Birim sistemi",
-      "metric": "Metrik",
-      "imperial": "İngiliz",
-      "hint": "Yazarlar ve yapay zekâ asistanı için bir ipucu. Değerlendirmeyi değiştirmez."
-    },
-    "grade_band": {
-      "label": "Varsayılan klavye düzeyi",
-      "primary": "İlkokul (sayılar)",
-      "secondary": "Ortaokul/lise (cebir)",
-      "advanced": "İleri (analiz)",
-      "hint": "Bir soru klavye seçmediğinde öğrencilerin gördüğü klavye."
-    },
-    "snackbar": {
-      "saved": "Matematik gösterimi kaydedildi",
-      "error": "Matematik gösterimi kaydedilemedi"
+      "cohort_health_note": "Grafik, bu değerlendirmeye sahip kohortlardaki öğrencileri sayar; bu durumdaki öğrencileri değil.",
+      "count_differs": "Grafik {expected} sayar çünkü bir öğrenciyi bulunduğu her kohort için bir kez sayar. Bu liste {total} gösterir.",
+      "lesson_incomplete": "Tamamlanmadı: {lesson}",
+      "lesson_fallback": "bu ders",
+      "score_bucket": "Ortalama puan {range}",
+      "scored": "Ortalama puanı olan"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { studentsTableSpec } from '@cio/utils/analytics';
+import { studentsTableSpec, type AnalyticsDrilldown } from '@cio/utils/analytics';
 import { ANALYTICS_LIMITS } from '@cio/utils/constants/analytics';
 import type { ExportDocument } from '@cio/utils/export';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -7,7 +7,11 @@ import { BaseApi, classroomio } from '$lib/utils/services/api';
 
 import { buildStudentsExportDocument } from '../utils/analytics-export';
 import {
+  emptyStudentFilters,
+  emptyStudentRefFilters,
   isStudentFilterValue,
+  parseStudentUrlFilters,
+  STUDENTS_TABLE_ANCHOR,
   studentQueryParts,
   nextSort,
   pageAfterEmptyResult,
@@ -25,6 +29,8 @@ import type {
   StudentExerciseCell,
   StudentExportHeaders,
   StudentFilters,
+  StudentRefFilters,
+  StudentUrlFilters,
   TableSort
 } from '../utils/types';
 import { analyticsApi } from './analytics.svelte';
@@ -50,7 +56,8 @@ class AnalyticsStudentsApi extends BaseApi {
   total = $state(0);
   cells = $state<Record<string, Record<string, StudentExerciseCell>>>({});
   attemptedResult = $state<AnalyticsResult | null>(null);
-  filters = $state<StudentFilters>({ status: '', activity: '', score: '', flag: '' });
+  filters = $state<StudentFilters>(emptyStudentFilters());
+  refs = $state<StudentRefFilters>(emptyStudentRefFilters());
   sort = $state<TableSort | null>(null);
   search = $state('');
   page = $state(1);
@@ -68,7 +75,7 @@ class AnalyticsStudentsApi extends BaseApi {
   }
 
   #studentSpec(page: number, limit: number, selectedCourseId = analyticsApi.selection.courseId): AnalyticsSpec {
-    const parts = studentQueryParts(this.filters);
+    const parts = studentQueryParts(this.filters, this.refs);
     const spec = studentsTableSpec({
       filters: parts.filters,
       courseId: selectedCourseId,
@@ -281,12 +288,54 @@ class AnalyticsStudentsApi extends BaseApi {
   }
 
   clearFilters() {
-    this.filters.status = '';
-    this.filters.activity = '';
-    this.filters.score = '';
-    this.filters.flag = '';
+    this.#resetFilters();
 
     return this.load();
+  }
+
+  /**
+   * Starts the table from the filters in a link. A cohort link may also pick the course the link was made for.
+   */
+  async initFromUrl(url: URL) {
+    const target = parseStudentUrlFilters(url.searchParams);
+    Object.assign(this.filters, target.filters);
+    this.refs.cohortIds = target.refs.cohortIds;
+    this.refs.lessonId = target.refs.lessonId;
+
+    const isLinkedCourse = analyticsApi.dashboard?.scope.courses.some((course) => course.id === target.courseId);
+    if (target.courseId && isLinkedCourse && analyticsApi.scope?.type === 'cohort') {
+      await analyticsApi.selectCourse(target.courseId);
+    }
+
+    await this.load();
+
+    if (url.hash === `#${STUDENTS_TABLE_ANCHOR}`) {
+      document.getElementById(STUDENTS_TABLE_ANCHOR)?.scrollIntoView({ block: 'start' });
+    }
+  }
+
+  clearRefFilter(key: keyof StudentRefFilters) {
+    if (key === 'cohortIds') this.refs.cohortIds = [];
+    if (key === 'lessonId') this.refs.lessonId = null;
+
+    return this.load();
+  }
+
+  /**
+   * Replaces every filter with a validated set, for a link into the table, then reloads from the first page.
+   */
+  applyFilters(target: Pick<StudentUrlFilters, 'filters' | 'refs'>) {
+    Object.assign(this.filters, target.filters);
+    this.refs.cohortIds = [...target.refs.cohortIds];
+    this.refs.lessonId = target.refs.lessonId;
+
+    return this.load();
+  }
+
+  #resetFilters() {
+    Object.assign(this.filters, emptyStudentFilters());
+    this.refs.cohortIds = [];
+    this.refs.lessonId = null;
   }
 
   reset() {
@@ -303,10 +352,7 @@ class AnalyticsStudentsApi extends BaseApi {
     this.cellsFailed = false;
     this.attemptedFailed = false;
     this.#attemptedCourseId = null;
-    this.filters.status = '';
-    this.filters.activity = '';
-    this.filters.score = '';
-    this.filters.flag = '';
+    this.#resetFilters();
   }
 
   async #exportStudents(request: {
@@ -330,9 +376,12 @@ class AnalyticsStudentsApi extends BaseApi {
     subtitle?: string;
     headers: StudentExportHeaders;
     attemptedByExercise: ReadonlyMap<string, number>;
+    drilldown?: Pick<AnalyticsDrilldown, 'filters' | 'range'>;
   }): Promise<ExportDocument<{ row: AnalyticsRow; cells: Record<string, StudentExerciseCell> }>> {
     const courseId = analyticsApi.selection.courseId;
-    const studentSpec = this.#studentSpec(1, ANALYTICS_LIMITS.maxExportRows, courseId);
+    const studentSpec = params.drilldown
+      ? studentsTableSpec({ ...params.drilldown, page: 1, limit: ANALYTICS_LIMITS.maxExportRows })
+      : this.#studentSpec(1, ANALYTICS_LIMITS.maxExportRows, courseId);
     const exerciseSpec = courseId ? this.#exportExerciseSpec(courseId) : undefined;
     const exportResult = await this.#exportStudents({ studentSpec, exerciseSpec });
     if (!exportResult) {

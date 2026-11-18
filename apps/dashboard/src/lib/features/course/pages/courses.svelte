@@ -43,6 +43,7 @@
     filterControls?: Snippet;
     onCardClick?: (course: (OrgCourses | UserEnrolledCourses)[number]) => void;
     emptyAction?: Snippet;
+    emptyMedia?: Snippet;
     hasMore?: boolean;
     isLoadingMore?: boolean;
     onLoadMore?: () => void | Promise<void>;
@@ -62,6 +63,7 @@
     filterControls,
     onCardClick,
     emptyAction,
+    emptyMedia,
     hasMore = false,
     isLoadingMore = false,
     onLoadMore,
@@ -154,7 +156,14 @@
       <CourseCardLoader />
     </section>
   {:else if !courses.length}
-    <Empty title={resolvedEmptyTitle} description={resolvedEmptyDescription} icon={LibraryBigIcon} variant="page">
+    <Empty
+      title={resolvedEmptyTitle}
+      description={resolvedEmptyDescription}
+      icon={emptyMedia ? undefined : LibraryBigIcon}
+      media={emptyMedia}
+      variant="page"
+      class={emptyMedia ? 'ui:text-center' : undefined}
+    >
       {#if emptyAction}
         {@render emptyAction()}
       {:else if !isLMS && !$isStudentExperience}

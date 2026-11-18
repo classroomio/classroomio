@@ -6474,8 +6474,8 @@
     },
     "empty": {
       "title": "अभी तक कोई पाठ्यक्रम नहीं",
-      "description": "यह देखने के लिए कि एक बढ़िया ClassroomIO पाठ्यक्रम कैसा दिखता है, एक टेम्पलेट चुनें, या एक रिक्त पाठ्यक्रम से शुरुआत करें।",
-      "browse": "टेम्प्लेट ब्राउज़ करें"
+      "description": "एक बार पाठ्यक्रम बनाएं, फिर अपने ग्राहकों को उसमें नामांकित करें। इसे खुद बनाएं या अपने एजेंट से इसका ड्राफ्ट तैयार करवाएं।",
+      "enrolled": "नामांकित"
     },
     "editor": {
       "badge": "टेम्पलेट"
@@ -7066,7 +7066,18 @@
           "overdue": "अतिदेय",
           "certified": "प्रमाणपत्र जारी किया गया",
           "not_certified": "कोई प्रमाणपत्र नहीं"
-        }
+        },
+        "completion": {
+          "label": "पूर्णता",
+          "any": "कोई भी पूर्णता",
+          "incomplete": "पूर्ण नहीं"
+        },
+        "video": {
+          "label": "वीडियो",
+          "any": "कोई भी वीडियो",
+          "low": "60% से कम वीडियो"
+        },
+        "cohort_chip": "{count, plural, one {# समूह} other {# समूह}}"
       },
       "showing_paged": {
         "cohort": "{from}–{to} दिखा रहा है · समूह में {count, plural, one {# छात्र} other {# छात्र}}",
@@ -7226,9 +7237,56 @@
     },
     "export": {
       "students_capped": "छात्र सूची पहली {limit} पंक्तियों तक सीमित है।",
-      "exercises_capped": "अभ्यास स्कोर पहले {limit} परिणामों तक सीमित हैं।"
+      "exercises_capped": "अभ्यास स्कोर पहले {limit} परिणामों तक सीमित हैं।",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "columns": {
+        "segment": "श्रेणी",
+        "metric": "मापदंड",
+        "value": "मान",
+        "details": "विवरण"
+      },
+      "dimensions": {
+        "student": "छात्र",
+        "course": "कोर्स",
+        "cohort": "समूह",
+        "exercise": "अभ्यास",
+        "section": "अनुभाग",
+        "lesson": "पाठ",
+        "question": "प्रश्न",
+        "item": "आइटम",
+        "day": "दिन",
+        "period": "अवधि",
+        "status": "स्थिति",
+        "overdue_kind": "अतिदेय का प्रकार",
+        "progress_bucket_25": "प्रगति",
+        "score_bucket_10": "औसत स्कोर"
+      }
     },
-    "org_page_title": "अकादमी"
+    "org_page_title": "अकादमी",
+    "widget_menu": {
+      "label": "{title} के लिए कार्रवाइयाँ",
+      "view_students": "छात्र देखें",
+      "open_in_students": "छात्र टैब में खोलें",
+      "click_to_view": "इसके छात्र देखने के लिए कोई बार या हिस्सा चुनें"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# छात्र} other {# छात्र}}",
+      "description": "इस संख्या के पीछे के छात्र।",
+      "cohort_health": {
+        "any": "छात्रों वाले समूह में",
+        "at_risk": "जोखिम वाले समूह में",
+        "lagging": "पिछड़ रहे समूह में",
+        "on_track": "ट्रैक पर चल रहे समूह में",
+        "completed": "पूर्ण हो चुके समूह में"
+      },
+      "cohort_health_note": "चार्ट इस रेटिंग वाले समूह के छात्रों को गिनता है, इस स्थिति वाले छात्रों को नहीं।",
+      "count_differs": "चार्ट {expected} गिनता है क्योंकि वह हर छात्र को उसके प्रत्येक समूह के लिए एक बार गिनता है। यह सूची {total} दिखाती है।",
+      "lesson_incomplete": "पूर्ण नहीं: {lesson}",
+      "lesson_fallback": "यह पाठ",
+      "score_bucket": "औसत स्कोर {range}",
+      "scored": "औसत स्कोर के साथ"
+    }
   },
   "oauth": {
     "consent": {
