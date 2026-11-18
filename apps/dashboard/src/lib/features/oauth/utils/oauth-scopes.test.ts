@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildOAuthAuthorizeUrl,
+  getOAuthConsentPageQuery,
   getOAuthQuery,
+  getOAuthResource,
   hasOfflineAccess,
   isOAuthAuthorizationQuery,
   parseOAuthScopeParam,
@@ -17,9 +19,10 @@ describe('summarizeOAuthScopes', () => {
   });
 
   it('reports read-only areas as read', () => {
-    expect(summarizeOAuthScopes(['team:read', 'analytics:read'])).toEqual([
+    expect(summarizeOAuthScopes(['team:read', 'analytics:read', 'webhook:read'])).toEqual([
       { group: 'team', access: 'read' },
-      { group: 'analytics', access: 'read' }
+      { group: 'analytics', access: 'read' },
+      { group: 'webhooks', access: 'read' }
     ]);
   });
 
@@ -67,5 +70,28 @@ describe('oauth query helpers', () => {
   it('rebuilds the authorize URL from the current query', () => {
     expect(getOAuthQuery('?client_id=abc&sig=xyz')).toBe('client_id=abc&sig=xyz');
     expect(buildOAuthAuthorizeUrl('?client_id=abc&sig=xyz')).toBe('/api/auth/oauth2/authorize?client_id=abc&sig=xyz');
+  });
+
+  it('extracts the resource parameter from oauth query', () => {
+    expect(getOAuthResource(new URLSearchParams('resource=http%3A%2F%2Flocalhost%3A3002%2Fpublic-api%2Fv1'))).toBe(
+      'http://localhost:3002/public-api/v1'
+    );
+    expect(getOAuthResource(new URLSearchParams('client_id=abc'))).toBeUndefined();
+  });
+
+  it('reads the signed query from a consent page url', () => {
+    const origin = 'https://app.classroomio.com';
+
+    expect(getOAuthConsentPageQuery('/oauth/consent?client_id=abc&sig=xyz', origin)).toBe('client_id=abc&sig=xyz');
+    expect(getOAuthConsentPageQuery(`${origin}/oauth/consent?client_id=abc&sig=xyz`, origin)).toBe(
+      'client_id=abc&sig=xyz'
+    );
+  });
+
+  it('treats a callback url as a final redirect, not a consent page', () => {
+    const origin = 'https://app.classroomio.com';
+
+    expect(getOAuthConsentPageQuery('https://zapier.com/oauth/return/?code=abc&state=xyz', origin)).toBeNull();
+    expect(getOAuthConsentPageQuery('/oauth/consent?error=access_denied', origin)).toBeNull();
   });
 });

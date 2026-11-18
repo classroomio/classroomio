@@ -70,6 +70,10 @@ export const mcpRateLimitResponse = {
   description: 'MCP keys only: the per-key or per-organization MCP rate limit was hit'
 };
 
+export const inviteRateLimitUnavailableResponse = {
+  description: 'The invite rate limit could not be checked (code RATE_LIMIT_UNAVAILABLE); retry later'
+};
+
 export const forbiddenResponse = {
   description: `Missing the course:member:read/write scope, or ${TEAM_FORBIDDEN}`
 };

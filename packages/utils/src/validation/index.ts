@@ -28,3 +28,4 @@ export * from './jobs';
 export * from './invite-link';
 export * from './webhook';
 export * from './analytics';
+export * from './automation';

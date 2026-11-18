@@ -27,6 +27,10 @@ vi.mock('@api/services/v1/courses/members', () => ({
   getCourseMemberAnalyticsService: vi.fn().mockResolvedValue({})
 }));
 
+vi.mock('@api/services/v1/courses/enrollments', () => ({
+  enrollCourseStudentService: vi.fn().mockResolvedValue({})
+}));
+
 vi.mock('@api/services/v1/courses/invites', () => ({
   listCourseInvitesService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 }),
   createCourseInviteService: vi.fn().mockResolvedValue({}),
@@ -94,9 +98,11 @@ describe('public API scopes for MCP keys', () => {
 
   it('blocks an MCP key from the rest of the public API', async () => {
     const app = buildApp({ type: 'mcp', scopes: MCP_SCOPES });
+    const memberOnlyApp = buildApp({ type: 'mcp', scopes: ['course:member:read', 'course:member:write'] });
 
     expect((await app.request('/public-api/v1/audience')).status).toBe(403);
-    expect((await app.request(base)).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses', { method: 'POST' })).status).toBe(403);
+    expect((await memberOnlyApp.request('/public-api/v1/courses')).status).toBe(403);
     expect((await app.request(`${base}/students`)).status).toBe(403);
   });
 
@@ -133,6 +139,7 @@ describe('MCP usage on course member routes', () => {
     await app.request(`${base}/members/${MEMBER_ID}`, { method: 'DELETE' });
     await app.request(`${base}/members/${MEMBER_ID}/reset-progress`, { method: 'POST' });
     await app.request(`${base}/members/${MEMBER_ID}/analytics`);
+    await app.request(`${base}/enrollments`, json('POST', { email: 'a@example.com', sendEmail: false }));
     await app.request(`${base}/invites`);
     await app.request(
       `${base}/invites`,
@@ -149,6 +156,7 @@ describe('MCP usage on course member routes', () => {
       ['delete_course_member', 'write', 1],
       ['reset_course_member_progress', 'write', 1],
       ['get_course_member_analytics', 'read', 0],
+      ['enroll_course_student', 'write', 1],
       ['list_course_invites', 'read', 0],
       ['create_course_invite', 'write', 1],
       ['revoke_course_invite', 'write', 1]

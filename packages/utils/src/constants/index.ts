@@ -11,3 +11,5 @@ export * from './live-session-reminder';
 export * from './webhook';
 export * from './analytics';
 export * from './analytics-catalog';
+export * from './zapier';
+export * from './oauth-scopes';

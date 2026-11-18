@@ -8,6 +8,8 @@ import { ZPublicApiPaginationQuery } from './pagination';
 
 export const ZPublicApiCoursesQuery = ZPublicApiPaginationQuery.extend({
   search: z.string().trim().max(200).optional().describe('Matches the course title.'),
+  slug: z.string().trim().min(1).max(200).optional().describe('Exact course slug'),
+  title: z.string().trim().min(1).max(200).optional().describe('Exact course title, case-insensitive'),
   tags: z.string().max(2000).optional().describe('Comma-separated tag slugs; returns courses with any of them.'),
   type: ZCourseType.optional(),
   status: z.enum(['published', 'unpublished']).optional(),
