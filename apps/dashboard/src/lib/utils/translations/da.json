@@ -7202,10 +7202,7 @@
       "yes": "Ja",
       "no": "Nej",
       "columns": {
-        "segment": "Gruppe",
-        "metric": "Måling",
-        "value": "Værdi",
-        "details": "Detaljer"
+        "segment": "Gruppe"
       },
       "dimensions": {
         "student": "Studerende",
@@ -7225,11 +7222,10 @@
       }
     },
     "org_page_title": "Akademi",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "Handlinger for {title}",
-      "view_students": "Se studerende",
-      "open_in_students": "Åbn i fanen Studerende",
-      "click_to_view": "Vælg en søjle eller et udsnit for at se de tilhørende studerende"
+      "expand": "Udvid",
+      "download": "Download CSV"
     },
     "drilldown": {
       "count": "{count, plural, one {# studerende} other {# studerende}}",
@@ -7246,7 +7242,10 @@
       "lesson_incomplete": "Ikke gennemført: {lesson}",
       "lesson_fallback": "denne lektion",
       "score_bucket": "Gennemsnitlig score {range}",
-      "scored": "Med en gennemsnitlig score"
+      "scored": "Med en gennemsnitlig score",
+      "open_in_students": "Åbn i fanen Studerende",
+      "kpi_label": "Se studerende: {title}",
+      "segment_label": "Segment"
     }
   },
   "oauth": {

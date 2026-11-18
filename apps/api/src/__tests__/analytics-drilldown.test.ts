@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { compileAnalyticsQuery } from '@cio/db/queries/analytics';
 import {
   cohortHealth,
+  expandNeedsSegmentSwitcher,
+  hasExpandDrilldown,
   hasSegmentDrilldown,
   hasWholeDrilldown,
   studentsTableSpec,
@@ -311,5 +313,47 @@ describe('widgetDrilldown', () => {
     expect(drill('hardest_questions', null)).toBeNull();
     expect(hasWholeDrilldown('exercise_score_distribution')).toBe(false);
     expect(hasSegmentDrilldown('exercise_score_distribution')).toBe(false);
+  });
+
+  describe('Expand', () => {
+    it.each([
+      'cohort_health',
+      'overdue',
+      'score_distribution',
+      'score_distribution_course',
+      'students_by_status',
+      'students_by_status_course',
+      'needs_attention',
+      'lesson_dropoff'
+    ])('is offered on %s and resolves to a drill-down it can list', (widgetId) => {
+      expect(hasExpandDrilldown(widgetId)).toBe(true);
+      expect(hasWholeDrilldown(widgetId) || hasSegmentDrilldown(widgetId)).toBe(true);
+    });
+
+    it.each(['kpi_needs_attention', 'kpi_overdue', 'kpi_completed'])(
+      'is not offered on the %s card even though it has a whole drill-down',
+      (widgetId) => {
+        expect(hasWholeDrilldown(widgetId)).toBe(true);
+        expect(hasExpandDrilldown(widgetId)).toBe(false);
+      }
+    );
+
+    it.each(['hiring_ramp', 'hardest_questions', 'exercise_score_distribution', 'logins_per_day', 'unknown'])(
+      'is not offered on %s',
+      (widgetId) => {
+        expect(hasExpandDrilldown(widgetId)).toBe(false);
+      }
+    );
+
+    it('needs a segment switcher only where Expand opens one segment', () => {
+      expect(expandNeedsSegmentSwitcher('students_by_status')).toBe(true);
+      expect(expandNeedsSegmentSwitcher('students_by_status_course')).toBe(true);
+      expect(expandNeedsSegmentSwitcher('needs_attention')).toBe(true);
+      expect(expandNeedsSegmentSwitcher('lesson_dropoff')).toBe(true);
+      expect(expandNeedsSegmentSwitcher('cohort_health')).toBe(false);
+      expect(expandNeedsSegmentSwitcher('overdue')).toBe(false);
+      expect(expandNeedsSegmentSwitcher('score_distribution')).toBe(false);
+      expect(expandNeedsSegmentSwitcher('kpi_overdue')).toBe(false);
+    });
   });
 });

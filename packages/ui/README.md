@@ -420,6 +420,21 @@ Unified video player component supporting HTML5 video (direct MP4 and HLS via `h
 | `options.resumeAtSeconds` | Where a returning viewer left off, in seconds. Upload playback only: before the first play the player seeks there and, for HLS, loads one fragment so the frame and progress bar show the position. Ignored once playback has started                                                                                                                                           |
 | `options.onBeforeHlsLoad` | HLS only. Mints the playback cookie and returns `{ expiresInSeconds?, authExpired? }`. Called before the manifest loads, shortly before `expiresInSeconds` elapses, after a playlist or segment request is rejected as unauthorized, and on reload. If it throws, playback continues and the call is retried a few times. Return `authExpired: true` to show the sign-in prompt |
 
+### Button group toolbar variant (`src/base/button-group/`)
+
+`ButtonGroup.Root` takes a `variant`: `default` (the default) joins its buttons into one segmented control, and `toolbar` draws a floating strip of icon buttons. A toolbar group has a `bg-background` fill, a border and a small inner padding. Its buttons keep their own rounded corners, sit transparent over the fill at rest, and fill with `bg-secondary` only on hover or keyboard focus. A disabled button stays unfilled.
+
+Keep `variant="secondary"` and `size="icon-sm"` on the buttons inside a toolbar group; the group overrides their background, so the buttons still read as secondary buttons everywhere else. Wrap each button in a `Tooltip` and give it an `aria-label`, since icon buttons have no visible text.
+
+```svelte
+<ButtonGroup.Root variant="toolbar" aria-label="Widget actions">
+  <Button variant="secondary" size="icon-sm" aria-label="Expand"><Maximize2 /></Button>
+  <Button variant="secondary" size="icon-sm" aria-label="Download CSV"><Download /></Button>
+</ButtonGroup.Root>
+```
+
+See `Molecules/ButtonGroup` → `Toolbar` in Storybook.
+
 ### Combo button (`src/custom/combo-button/`)
 
 A split button: a labelled primary action joined to a chevron that opens a menu of alternatives. Import as `import { ComboButton, type ComboButtonItem } from '@cio/ui/custom/combo-button'`.

@@ -13,9 +13,9 @@
     accent?: 'primary' | 'success' | 'warning' | 'danger';
     sparkline?: number[];
     badge?: Snippet;
-    action?: Snippet;
     loading?: boolean;
-    onValueClick?: () => void;
+    onClick?: () => void;
+    clickLabel?: string;
     class?: string;
   }
 
@@ -28,9 +28,9 @@
     accent = 'primary',
     sparkline,
     badge,
-    action,
     loading = false,
-    onValueClick,
+    onClick,
+    clickLabel,
     class: className
   }: Props = $props();
 
@@ -46,6 +46,13 @@
     warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
     danger: 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
   };
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    event.preventDefault();
+    onClick?.();
+  }
 
   const sparklinePath = $derived.by(() => {
     if (!sparkline || sparkline.length < 2) return '';
@@ -64,7 +71,20 @@
   });
 </script>
 
-<Card.Root class={cn('ui:bg-card relative overflow-hidden', className)}>
+<Card.Root
+  class={cn(
+    'ui:bg-card relative overflow-hidden',
+    onClick &&
+      'ui:hover:bg-muted/50 ui:focus-visible:ring-ring cursor-pointer transition-colors focus-visible:ring-2 focus-visible:outline-none',
+    className
+  )}
+  role={onClick ? 'button' : undefined}
+  tabindex={onClick ? 0 : undefined}
+  aria-label={onClick ? clickLabel : undefined}
+  data-testid={onClick ? 'kpi-card-button' : undefined}
+  onclick={onClick}
+  onkeydown={onClick ? handleKeydown : undefined}
+>
   <Card.Header class="pb-2">
     <div class="flex items-start justify-between gap-2">
       <div class="flex items-center gap-2">
@@ -78,21 +98,11 @@
           <Icon class="h-4 w-4" />
         </div>
       {/if}
-      {@render action?.()}
     </div>
   </Card.Header>
   <Card.Content class="pt-0">
     {#if loading}
       <Skeleton class="h-9 w-24" />
-    {:else if onValueClick}
-      <button
-        type="button"
-        class="ui:text-foreground ui:hover:text-primary ui:focus-visible:ring-ring cursor-pointer rounded text-3xl font-semibold tabular-nums underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
-        data-testid="kpi-value-button"
-        onclick={onValueClick}
-      >
-        {value}
-      </button>
     {:else}
       <p class="ui:text-foreground text-3xl font-semibold tabular-nums">{value}</p>
     {/if}

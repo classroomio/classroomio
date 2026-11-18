@@ -27,6 +27,7 @@
   } from '../utils/analytics-utils';
   import type { AnalyticsRow } from '../utils/types';
   import AnalyticsPill from './analytics-pill.svelte';
+  import DrilldownSegmentSwitcher from './drilldown-segment-switcher.svelte';
   import ProgressCell from './progress-cell.svelte';
   import StatusBadge from './status-badge.svelte';
 
@@ -100,6 +101,8 @@
       {/if}
       <Sheet.Description>{note ?? $t('analytics.drilldown.description')}</Sheet.Description>
     </Sheet.Header>
+
+    <DrilldownSegmentSwitcher />
 
     <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-auto px-4 pb-4">
       {#if !drilldownApi.hasLoaded}
@@ -196,7 +199,7 @@
                 testId="analytics-drilldown-open-students"
                 onclick={() => drilldown && drilldownApi.openInStudentsTab(drilldown)}
               >
-                {$t('analytics.widget_menu.open_in_students')}
+                {$t('analytics.drilldown.open_in_students')}
               </Button>
             {/if}
           </div>

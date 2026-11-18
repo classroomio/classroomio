@@ -7188,10 +7188,7 @@
       "yes": "Yes",
       "no": "No",
       "columns": {
-        "segment": "Group",
-        "metric": "Metric",
-        "value": "Value",
-        "details": "Details"
+        "segment": "Group"
       },
       "dimensions": {
         "student": "Student",
@@ -7211,11 +7208,10 @@
       }
     },
     "org_page_title": "Academy",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "Actions for {title}",
-      "view_students": "View students",
-      "open_in_students": "Open in Students tab",
-      "click_to_view": "Select a bar or slice to view its students"
+      "expand": "Expand",
+      "download": "Download CSV"
     },
     "drilldown": {
       "count": "{count, plural, one {# student} other {# students}}",
@@ -7232,7 +7228,10 @@
       "lesson_incomplete": "Not completed: {lesson}",
       "lesson_fallback": "this lesson",
       "score_bucket": "Average score {range}",
-      "scored": "With an average score"
+      "scored": "With an average score",
+      "open_in_students": "Open in Students tab",
+      "kpi_label": "View students: {title}",
+      "segment_label": "Segment"
     }
   },
   "oauth": {
