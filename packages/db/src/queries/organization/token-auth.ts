@@ -80,7 +80,6 @@ export const deleteTokenAuth = async (orgId: string): Promise<void> => {
   }
 };
 
-/** The ClassroomIO user previously bound to this org's `sub`, or null on first sight. */
 export const getTokenAuthIdentityUserId = async (orgId: string, externalSubject: string): Promise<string | null> => {
   const [row] = await db
     .select({ userId: schema.organizationTokenAuthIdentity.userId })
