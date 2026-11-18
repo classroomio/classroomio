@@ -7902,58 +7902,6 @@
       "assigned": "Übung {count} Lernenden zugewiesen"
     }
   },
-  "student_report": {
-    "actions": {
-      "bulk": "Berichte für diese Lernenden erstellen",
-      "create": "Bericht erstellen"
-    },
-    "dialog": {
-      "title_single": "Fortschrittsbericht für {name}",
-      "title_bulk": "Fortschrittsberichte für {count} Lernende",
-      "description": "Teilen Sie einen einseitigen Bericht mit beherrschten Kompetenzen, Förderbedarf und aktuellen Ergebnissen.",
-      "links_ready": "Berichtslinks bereit. Jetzt kopieren: Sie werden nur einmal angezeigt.",
-      "copy": "Kopieren",
-      "copied": "Kopiert",
-      "open": "Öffnen",
-      "done": "Fertig",
-      "period": "Zeitraum",
-      "period_start": "Von",
-      "period_end": "Bis",
-      "comment": "Kommentar der Lehrkraft",
-      "comment_placeholder": "Kurze Notiz für Lernende oder Eltern hinzufügen",
-      "expiry": "Link läuft ab nach",
-      "expiry_days": "{days} Tagen",
-      "parent_email": "E-Mail der Eltern (optional)",
-      "send_to_parent": "Bericht per E-Mail an die Eltern senden",
-      "cancel": "Abbrechen",
-      "submit": "Bericht erstellen"
-    },
-    "history": {
-      "heading": "Frühere Berichte",
-      "views": "{count} Aufrufe",
-      "revoke": "Widerrufen",
-      "status": {
-        "active": "Aktiv",
-        "expired": "Abgelaufen",
-        "revoked": "Widerrufen"
-      }
-    },
-    "snackbar": {
-      "revoked": "Berichtslink widerrufen"
-    },
-    "view": {
-      "print": "Drucken oder als PDF speichern",
-      "comment": "Kommentar der Lehrkraft",
-      "mastered": "Beherrschte Kompetenzen",
-      "to_work_on": "Zu übende Kompetenzen",
-      "none_yet": "Noch nichts vorhanden.",
-      "scores": "Aktuelle Ergebnisse",
-      "no_scores": "Keine Ergebnisse in diesem Zeitraum.",
-      "exercise": "Übung",
-      "score": "Ergebnis",
-      "footer": "Dieser Link läuft am {date} ab."
-    }
-  },
   "question_analysis": {
     "tab": "Fragenanalyse",
     "description": "Die Lösungsquote ist der Anteil der Lernenden, die die Frage vollständig richtig beantwortet haben. Fragen unter {hard} % gelten als zu schwer, über {easy} % als zu leicht. Eine Trennschärfe unter {discrimination} bedeutet, dass die Frage starke und schwache Lernende nicht unterscheidet.",

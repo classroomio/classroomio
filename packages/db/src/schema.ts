@@ -3111,56 +3111,6 @@ export const exerciseAssignment = pgTable(
   ]
 );
 
-export const studentReport = pgTable(
-  'student_report',
-  {
-    id: uuid()
-      .default(sql`gen_random_uuid()`)
-      .primaryKey()
-      .notNull(),
-    tokenHash: varchar('token_hash').notNull(),
-    organizationId: uuid('organization_id').notNull(),
-    courseId: uuid('course_id').notNull(),
-    profileId: uuid('profile_id').notNull(),
-    createdBy: uuid('created_by'),
-    periodStart: timestamp('period_start', { withTimezone: true, mode: 'string' }).notNull(),
-    periodEnd: timestamp('period_end', { withTimezone: true, mode: 'string' }).notNull(),
-    teacherComment: text('teacher_comment'),
-    parentEmail: varchar('parent_email'),
-    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
-    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
-    lastViewedAt: timestamp('last_viewed_at', { withTimezone: true, mode: 'string' }),
-    viewCount: integer('view_count').default(0).notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
-      .default(sql`timezone('utc'::text, now())`)
-      .notNull()
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.organizationId],
-      foreignColumns: [organization.id],
-      name: 'student_report_organization_id_fkey'
-    }).onDelete('cascade'),
-    foreignKey({
-      columns: [table.courseId],
-      foreignColumns: [course.id],
-      name: 'student_report_course_id_fkey'
-    }).onDelete('cascade'),
-    foreignKey({
-      columns: [table.profileId],
-      foreignColumns: [profile.id],
-      name: 'student_report_profile_id_fkey'
-    }).onDelete('cascade'),
-    foreignKey({
-      columns: [table.createdBy],
-      foreignColumns: [profile.id],
-      name: 'student_report_created_by_fkey'
-    }).onDelete('set null'),
-    unique('student_report_token_hash_key').on(table.tokenHash),
-    index('idx_student_report_course_profile').on(table.courseId, table.profileId)
-  ]
-);
-
 export const widget = pgTable(
   'widget',
   {

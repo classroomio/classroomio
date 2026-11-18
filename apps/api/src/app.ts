@@ -27,7 +27,6 @@ import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
 import { mathRouter } from '@api/routes/math';
 import { skillRouter } from '@api/routes/skill';
-import { studentReportPublicRouter } from '@api/routes/student-report';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
 import { courseRouter } from '@api/routes/course';
@@ -294,7 +293,6 @@ export const app = new Hono()
   .route('/agent', agentRouter)
   .route('/math', mathRouter)
   .route('/skill', skillRouter)
-  .route('/student-report', studentReportPublicRouter)
   .route('/oauth', oauthRouter)
 
   // Error handling

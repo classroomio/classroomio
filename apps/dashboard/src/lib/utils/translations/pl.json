@@ -7902,58 +7902,6 @@
       "assigned": "Ćwiczenie przypisano {count} uczniom"
     }
   },
-  "student_report": {
-    "actions": {
-      "bulk": "Utwórz raporty dla tych uczniów",
-      "create": "Utwórz raport"
-    },
-    "dialog": {
-      "title_single": "Raport postępów: {name}",
-      "title_bulk": "Raporty postępów dla {count} uczniów",
-      "description": "Udostępnij jednostronicowy raport z opanowanymi umiejętnościami, umiejętnościami do poprawy i ostatnimi wynikami.",
-      "links_ready": "Linki gotowe. Skopiuj je teraz: są pokazywane tylko raz.",
-      "copy": "Kopiuj",
-      "copied": "Skopiowano",
-      "open": "Otwórz",
-      "done": "Gotowe",
-      "period": "Okres",
-      "period_start": "Od",
-      "period_end": "Do",
-      "comment": "Komentarz nauczyciela",
-      "comment_placeholder": "Dodaj krótką notatkę dla ucznia lub rodzica",
-      "expiry": "Link wygasa po",
-      "expiry_days": "{days} dniach",
-      "parent_email": "E-mail rodzica (opcjonalnie)",
-      "send_to_parent": "Wyślij raport e-mailem do rodzica",
-      "cancel": "Anuluj",
-      "submit": "Utwórz raport"
-    },
-    "history": {
-      "heading": "Wcześniejsze raporty",
-      "views": "Wyświetlenia: {count}",
-      "revoke": "Unieważnij",
-      "status": {
-        "active": "Aktywny",
-        "expired": "Wygasł",
-        "revoked": "Unieważniony"
-      }
-    },
-    "snackbar": {
-      "revoked": "Link do raportu unieważniony"
-    },
-    "view": {
-      "print": "Drukuj lub zapisz jako PDF",
-      "comment": "Komentarz nauczyciela",
-      "mastered": "Opanowane umiejętności",
-      "to_work_on": "Umiejętności do poprawy",
-      "none_yet": "Jeszcze nic.",
-      "scores": "Ostatnie wyniki",
-      "no_scores": "Brak wyników w tym okresie.",
-      "exercise": "Ćwiczenie",
-      "score": "Wynik",
-      "footer": "Ten link wygasa {date}."
-    }
-  },
   "question_analysis": {
     "tab": "Analiza pytań",
     "description": "Łatwość to odsetek uczniów, którzy odpowiedzieli w pełni poprawnie. Pytania poniżej {hard}% są oznaczane jako zbyt trudne, a powyżej {easy}% jako zbyt łatwe. Moc różnicująca poniżej {discrimination} oznacza, że pytanie nie rozróżnia uczniów mocnych i słabych.",

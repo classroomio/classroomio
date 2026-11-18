@@ -7872,58 +7872,6 @@
       "assigned": "Esercizio assegnato a {count} studenti"
     }
   },
-  "student_report": {
-    "actions": {
-      "bulk": "Genera report per questi studenti",
-      "create": "Crea report"
-    },
-    "dialog": {
-      "title_single": "Report dei progressi di {name}",
-      "title_bulk": "Report dei progressi di {count} studenti",
-      "description": "Condividi un report di una pagina con competenze acquisite, da rafforzare e punteggi recenti.",
-      "links_ready": "Link pronti. Copiali ora: vengono mostrati una sola volta.",
-      "copy": "Copia",
-      "copied": "Copiato",
-      "open": "Apri",
-      "done": "Fatto",
-      "period": "Periodo",
-      "period_start": "Dal",
-      "period_end": "Al",
-      "comment": "Commento dell'insegnante",
-      "comment_placeholder": "Aggiungi una breve nota per lo studente o il genitore",
-      "expiry": "Il link scade dopo",
-      "expiry_days": "{days} giorni",
-      "parent_email": "Email del genitore (facoltativa)",
-      "send_to_parent": "Invia il report al genitore via email",
-      "cancel": "Annulla",
-      "submit": "Crea report"
-    },
-    "history": {
-      "heading": "Report precedenti",
-      "views": "{count} visualizzazioni",
-      "revoke": "Revoca",
-      "status": {
-        "active": "Attivo",
-        "expired": "Scaduto",
-        "revoked": "Revocato"
-      }
-    },
-    "snackbar": {
-      "revoked": "Link del report revocato"
-    },
-    "view": {
-      "print": "Stampa o salva come PDF",
-      "comment": "Commento dell'insegnante",
-      "mastered": "Competenze acquisite",
-      "to_work_on": "Competenze da rafforzare",
-      "none_yet": "Ancora niente.",
-      "scores": "Punteggi recenti",
-      "no_scores": "Nessun punteggio in questo periodo.",
-      "exercise": "Esercizio",
-      "score": "Punteggio",
-      "footer": "Questo link scade il {date}."
-    }
-  },
   "question_analysis": {
     "tab": "Analisi delle domande",
     "description": "La facilità è la quota di studenti che ha risposto in modo del tutto corretto. Le domande sotto il {hard}% sono segnalate come troppo difficili e sopra il {easy}% come troppo facili. Una discriminazione inferiore a {discrimination} indica che la domanda non distingue gli studenti forti da quelli deboli.",

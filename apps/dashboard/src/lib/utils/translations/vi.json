@@ -7902,58 +7902,6 @@
       "assigned": "Đã giao bài luyện tập cho {count} học sinh"
     }
   },
-  "student_report": {
-    "actions": {
-      "bulk": "Tạo báo cáo cho các học sinh này",
-      "create": "Tạo báo cáo"
-    },
-    "dialog": {
-      "title_single": "Báo cáo tiến độ của {name}",
-      "title_bulk": "Báo cáo tiến độ của {count} học sinh",
-      "description": "Chia sẻ báo cáo một trang gồm kỹ năng đã thành thạo, kỹ năng cần cải thiện và điểm gần đây.",
-      "links_ready": "Liên kết báo cáo đã sẵn sàng. Hãy sao chép ngay: chỉ hiển thị một lần.",
-      "copy": "Sao chép",
-      "copied": "Đã sao chép",
-      "open": "Mở",
-      "done": "Xong",
-      "period": "Giai đoạn",
-      "period_start": "Từ",
-      "period_end": "Đến",
-      "comment": "Nhận xét của giáo viên",
-      "comment_placeholder": "Thêm ghi chú ngắn cho học sinh hoặc phụ huynh",
-      "expiry": "Liên kết hết hạn sau",
-      "expiry_days": "{days} ngày",
-      "parent_email": "Email phụ huynh (tùy chọn)",
-      "send_to_parent": "Gửi báo cáo cho phụ huynh qua email",
-      "cancel": "Hủy",
-      "submit": "Tạo báo cáo"
-    },
-    "history": {
-      "heading": "Báo cáo trước đây",
-      "views": "{count} lượt xem",
-      "revoke": "Thu hồi",
-      "status": {
-        "active": "Đang hoạt động",
-        "expired": "Đã hết hạn",
-        "revoked": "Đã thu hồi"
-      }
-    },
-    "snackbar": {
-      "revoked": "Đã thu hồi liên kết báo cáo"
-    },
-    "view": {
-      "print": "In hoặc lưu thành PDF",
-      "comment": "Nhận xét của giáo viên",
-      "mastered": "Kỹ năng đã thành thạo",
-      "to_work_on": "Kỹ năng cần cải thiện",
-      "none_yet": "Chưa có gì.",
-      "scores": "Điểm gần đây",
-      "no_scores": "Không có điểm trong giai đoạn này.",
-      "exercise": "Bài tập",
-      "score": "Điểm",
-      "footer": "Liên kết này hết hạn vào {date}."
-    }
-  },
   "question_analysis": {
     "tab": "Phân tích câu hỏi",
     "description": "Độ dễ là tỷ lệ học sinh trả lời đúng hoàn toàn. Câu hỏi dưới {hard}% bị đánh dấu là quá khó và trên {easy}% là quá dễ. Độ phân biệt dưới {discrimination} nghĩa là câu hỏi không phân biệt được học sinh giỏi và yếu.",

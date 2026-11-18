@@ -43,7 +43,6 @@ const PAID_MATH_FEATURE_LABELS: Record<PaidMathFeature, string> = {
   ai_grading: 'AI suggestions for marking working',
   skill_mastery: 'Skill mastery',
   practice_assignment: 'Assigning practice',
-  student_reports: 'Student reports',
   desmos: 'The Desmos graphing calculator key'
 };
 

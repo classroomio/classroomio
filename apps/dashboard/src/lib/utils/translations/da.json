@@ -7902,58 +7902,6 @@
       "assigned": "Øvelse tildelt {count} elever"
     }
   },
-  "student_report": {
-    "actions": {
-      "bulk": "Opret rapporter for disse elever",
-      "create": "Opret rapport"
-    },
-    "dialog": {
-      "title_single": "Fremskridtsrapport for {name}",
-      "title_bulk": "Fremskridtsrapporter for {count} elever",
-      "description": "Del en rapport på én side med færdigheder, der er mestret, færdigheder at arbejde på og seneste resultater.",
-      "links_ready": "Rapportlinks er klar. Kopiér dem nu: de vises kun én gang.",
-      "copy": "Kopiér",
-      "copied": "Kopieret",
-      "open": "Åbn",
-      "done": "Færdig",
-      "period": "Periode",
-      "period_start": "Fra",
-      "period_end": "Til",
-      "comment": "Lærerens kommentar",
-      "comment_placeholder": "Tilføj en kort note til eleven eller forældrene",
-      "expiry": "Linket udløber efter",
-      "expiry_days": "{days} dage",
-      "parent_email": "Forældres e-mail (valgfri)",
-      "send_to_parent": "Send rapporten til forældrene på e-mail",
-      "cancel": "Annuller",
-      "submit": "Opret rapport"
-    },
-    "history": {
-      "heading": "Tidligere rapporter",
-      "views": "{count} visninger",
-      "revoke": "Træk tilbage",
-      "status": {
-        "active": "Aktiv",
-        "expired": "Udløbet",
-        "revoked": "Trukket tilbage"
-      }
-    },
-    "snackbar": {
-      "revoked": "Rapportlink trukket tilbage"
-    },
-    "view": {
-      "print": "Udskriv eller gem som PDF",
-      "comment": "Lærerens kommentar",
-      "mastered": "Mestrede færdigheder",
-      "to_work_on": "Færdigheder at arbejde på",
-      "none_yet": "Intet endnu.",
-      "scores": "Seneste resultater",
-      "no_scores": "Ingen resultater i denne periode.",
-      "exercise": "Øvelse",
-      "score": "Resultat",
-      "footer": "Dette link udløber den {date}."
-    }
-  },
   "question_analysis": {
     "tab": "Spørgsmålsanalyse",
     "description": "Sværhedsgrad er andelen af elever, der svarede helt rigtigt. Spørgsmål under {hard} % markeres som for svære og over {easy} % som for lette. Diskrimination under {discrimination} betyder, at spørgsmålet ikke adskiller stærke og svage elever.",

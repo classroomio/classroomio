@@ -4,14 +4,7 @@ import { readQuestionParameters } from './variant-settings';
  * Math features that need a paid plan, beyond the question types in `PREMIUM_QUESTION_TYPE_KEYS`. Math display,
  * math expressions, numeric upgrades, graph questions, the results grid and answer groups stay free.
  */
-export const PAID_MATH_FEATURES = [
-  'variants',
-  'ai_grading',
-  'skill_mastery',
-  'practice_assignment',
-  'student_reports',
-  'desmos'
-] as const;
+export const PAID_MATH_FEATURES = ['variants', 'ai_grading', 'skill_mastery', 'practice_assignment', 'desmos'] as const;
 export type PaidMathFeature = (typeof PAID_MATH_FEATURES)[number];
 
 type QuestionWithSettings = { settings?: unknown; parts?: ReadonlyArray<QuestionWithSettings> | null };

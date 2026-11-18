@@ -7872,58 +7872,6 @@
       "assigned": "Practice assigned to {count} students"
     }
   },
-  "student_report": {
-    "actions": {
-      "bulk": "Generate reports for these students",
-      "create": "Create report"
-    },
-    "dialog": {
-      "title_single": "Progress report for {name}",
-      "title_bulk": "Progress reports for {count} students",
-      "description": "Share a one-page progress report with skills mastered, skills to work on and recent scores.",
-      "links_ready": "Report links ready. Copy them now: they are shown only once.",
-      "copy": "Copy",
-      "copied": "Copied",
-      "open": "Open",
-      "done": "Done",
-      "period": "Period",
-      "period_start": "From",
-      "period_end": "To",
-      "comment": "Teacher comment",
-      "comment_placeholder": "Add a short note for the student or parent",
-      "expiry": "Link expires after",
-      "expiry_days": "{days} days",
-      "parent_email": "Parent email (optional)",
-      "send_to_parent": "Email the report to the parent",
-      "cancel": "Cancel",
-      "submit": "Create report"
-    },
-    "history": {
-      "heading": "Previous reports",
-      "views": "{count} views",
-      "revoke": "Revoke",
-      "status": {
-        "active": "Active",
-        "expired": "Expired",
-        "revoked": "Revoked"
-      }
-    },
-    "snackbar": {
-      "revoked": "Report link revoked"
-    },
-    "view": {
-      "print": "Print or save as PDF",
-      "comment": "Teacher comment",
-      "mastered": "Skills mastered",
-      "to_work_on": "Skills to work on",
-      "none_yet": "Nothing here yet.",
-      "scores": "Recent scores",
-      "no_scores": "No scores in this period.",
-      "exercise": "Exercise",
-      "score": "Score",
-      "footer": "This link expires on {date}."
-    }
-  },
   "question_analysis": {
     "tab": "Question analysis",
     "description": "Facility is the share of students who got the question fully right. Questions under {hard}% are flagged as too hard and over {easy}% as too easy. Discrimination below {discrimination} means the question does not separate strong and weak students.",

@@ -7902,58 +7902,6 @@
       "assigned": "Práctica asignada a {count} estudiantes"
     }
   },
-  "student_report": {
-    "actions": {
-      "bulk": "Generar informes para estos estudiantes",
-      "create": "Crear informe"
-    },
-    "dialog": {
-      "title_single": "Informe de progreso de {name}",
-      "title_bulk": "Informes de progreso de {count} estudiantes",
-      "description": "Comparte un informe de una página con las habilidades dominadas, las que debe trabajar y las puntuaciones recientes.",
-      "links_ready": "Enlaces listos. Cópialos ahora: solo se muestran una vez.",
-      "copy": "Copiar",
-      "copied": "Copiado",
-      "open": "Abrir",
-      "done": "Hecho",
-      "period": "Periodo",
-      "period_start": "Desde",
-      "period_end": "Hasta",
-      "comment": "Comentario del docente",
-      "comment_placeholder": "Añade una nota breve para el estudiante o la familia",
-      "expiry": "El enlace caduca después de",
-      "expiry_days": "{days} días",
-      "parent_email": "Correo del padre o madre (opcional)",
-      "send_to_parent": "Enviar el informe por correo al padre o madre",
-      "cancel": "Cancelar",
-      "submit": "Crear informe"
-    },
-    "history": {
-      "heading": "Informes anteriores",
-      "views": "{count} visitas",
-      "revoke": "Revocar",
-      "status": {
-        "active": "Activo",
-        "expired": "Caducado",
-        "revoked": "Revocado"
-      }
-    },
-    "snackbar": {
-      "revoked": "Enlace del informe revocado"
-    },
-    "view": {
-      "print": "Imprimir o guardar como PDF",
-      "comment": "Comentario del docente",
-      "mastered": "Habilidades dominadas",
-      "to_work_on": "Habilidades por trabajar",
-      "none_yet": "Aún no hay nada.",
-      "scores": "Puntuaciones recientes",
-      "no_scores": "No hay puntuaciones en este periodo.",
-      "exercise": "Ejercicio",
-      "score": "Puntuación",
-      "footer": "Este enlace caduca el {date}."
-    }
-  },
   "question_analysis": {
     "tab": "Análisis de preguntas",
     "description": "La facilidad es la proporción de estudiantes que acertaron por completo. Las preguntas por debajo del {hard} % se marcan como demasiado difíciles y por encima del {easy} % como demasiado fáciles. Una discriminación inferior a {discrimination} indica que la pregunta no distingue entre estudiantes fuertes y débiles.",
