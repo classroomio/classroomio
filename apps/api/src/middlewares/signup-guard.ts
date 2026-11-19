@@ -7,6 +7,7 @@ import {
 } from '@cio/db/queries/organization';
 
 import { env } from '@cio/core/config/env';
+import { canSignUpWithCourseInvite } from '@api/services/course/invite';
 
 type OrgSettings = {
   signup?: {
@@ -105,8 +106,12 @@ async function handleInviteOnlySignup(c: Context, next: Next, orgId: string) {
     return c.json(EMAIL_REQUIRED, 400);
   }
 
-  const hasInvite = await hasActiveOrganizationInviteForEmail(orgId, email);
-  if (!hasInvite) {
+  const hasOrgInvite = await hasActiveOrganizationInviteForEmail(orgId, email);
+  const courseInviteToken = c.req.header('cio-invite-token');
+  const hasCourseInvite =
+    !hasOrgInvite && !!courseInviteToken && (await canSignUpWithCourseInvite(orgId, courseInviteToken, email));
+
+  if (!hasOrgInvite && !hasCourseInvite) {
     return c.json(INVITE_REQUIRED, 403);
   }
 

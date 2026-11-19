@@ -3,7 +3,7 @@ import { resolveTrustedBrowserOriginForCors } from '@api/utils/origins';
 
 const sharedCorsOptions = {
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization', 'Cio-org-id'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Cio-org-id', 'Cio-invite-token'],
   exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
   maxAge: 600
 };
