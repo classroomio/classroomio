@@ -128,7 +128,9 @@ export const addLessonNoteBlockParam = z
 
 export const removeLessonBlockParam = z.object({
   lessonId: z.string(),
-  blockId: zLessonBlockId.describe('The text (note) block to remove, from get_lesson_content.')
+  blockId: zLessonBlockId.describe(
+    'The block to remove, from get_lesson_content: a text (note), chart, flashcards, tabs, multiple choice or process block.'
+  )
 });
 
 export const moveLessonBlockParam = z
@@ -169,6 +171,28 @@ export const addLessonImageBlockParam = z
     ...blockAnchorFields
   })
   .refine(singleAnchor, singleAnchorMessage);
+
+/**
+ * The input of a `write_lesson_<type>_block` tool: the block's content in the type's agent shape, plus either
+ * the block to replace or where to place a new one.
+ */
+export function writeLessonAuthoredBlockParam(dataSchema: z.ZodType<Record<string, unknown>>) {
+  return z
+    .object({
+      lessonId: z.string(),
+      blockId: zLessonBlockId
+        .optional()
+        .describe(
+          'Replace the content of this existing block (from get_lesson_content). Leave out to add a new block.'
+        ),
+      data: dataSchema.describe('The whole content of the block.'),
+      ...blockAnchorFields
+    })
+    .refine(singleAnchor, singleAnchorMessage)
+    .refine((data) => !(data.blockId && (data.afterBlockId || data.beforeBlockId)), {
+      message: 'Pass afterBlockId or beforeBlockId only when adding a new block; use move_lesson_block to move one'
+    });
+}
 
 export const updateLessonBlockSettingsParam = z.object({
   lessonId: z.string(),

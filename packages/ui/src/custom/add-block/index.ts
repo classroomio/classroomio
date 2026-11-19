@@ -1,12 +1,21 @@
+import AiButton from './add-block-ai-button.svelte';
+import AiLauncher from './add-block-ai-launcher.svelte';
+import Grid from './add-block-grid.svelte';
 import Item from './add-block-item.svelte';
 import Menu from './add-block-menu.svelte';
 import Row from './add-block-row.svelte';
 
 export {
+  AiButton,
+  AiLauncher,
+  Grid,
   Item,
   Menu,
   Row,
   //
+  AiButton as AddBlockAiButton,
+  AiLauncher as AddBlockAiLauncher,
+  Grid as AddBlockGrid,
   Item as AddBlockItem,
   Menu as AddBlockMenu,
   Row as AddBlockRow

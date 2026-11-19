@@ -1,10 +1,10 @@
 ---
 title: Create and edit a lesson
-description: Add a lesson, build it from note, video, slides, document, and image blocks, and check its availability for students.
-last_reviewed: '2026-11-10'
+description: Add a lesson, build it from note, video, slides, document, image, chart, flashcards, tabs, multiple choice, and process blocks, and check its availability for students.
+last_reviewed: '2026-11-19'
 ---
 
-Create a lesson from **Content → Add content → Lesson**, then open it and select **Edit** to build it from blocks. A lesson is an ordered list of note, video, slides, document, and image blocks that students see from top to bottom.
+Create a lesson from **Content → Add content → Lesson**, then open it and select **Edit** to build it from blocks. A lesson is an ordered list of note, video, slides, document, image, chart, flashcards, tabs, multiple choice, and process blocks that students see from top to bottom.
 
 ![Add content dialog with the Lesson Title field](./images/create-and-edit-a-lesson/overview.webp)
 
@@ -30,19 +30,24 @@ On the lesson page, select **Edit** in the **Preview** / **Edit** toggle. Select
 
 ### 2. Add content blocks
 
-Choose a block type from the **Add content** row:
+Choose a block type:
 
 - **Note** for written content and rich formatting.
 - **Video** for links, uploads, or videos from your library.
 - **Slides** for supported presentation embeds.
 - **Document** for files students can view or download.
 - **Image** for a single picture with alt text.
+- **Chart** for a bar, line, pie, or donut chart with a title and up to 12 data points. On a pie or donut chart, students can hover a slice or a legend row to pick it out.
+- **Flashcards** for a deck of question-and-answer cards. Students see one card at a time, click it (or press Space) to flip between the question and the answer, and use the arrows or the arrow keys to move through the deck. Nothing they do is saved.
+- **Tabs** for a row of named tabs, each with a short note and an optional image or video. Students select a tab to see its note and media; the first tab opens when the lesson loads.
+- **Multiple Choice** for one practice question with a single correct answer. Students choose an answer, select **Check answer**, and can **Try again**. Their answers are not saved or graded.
+- **Process** for a walkthrough in steps. Students see one step at a time, use **Back** and **Next** (or the numbered circles) to move through it, and select **Start over** on the last step to return to the first.
 
-A new lesson shows the **Add content** row in the middle of the page, with a short video that introduces lesson blocks below it. Once the lesson has blocks, the row stays at the bottom of the screen and adds the block to the end of the lesson. To insert a block between two others, select the plus button below a block and choose the type.
+A new lesson asks **What goes in this lesson?** and shows a grid with one tile per block type, an **Ask AI** button that sends your prompt to the AI assistant, which can write notes and add chart, flashcards, tabs, multiple choice and process blocks (or press Cmd+I on a Mac, Ctrl+I elsewhere, when you're not typing in a block), and a short video that introduces lesson blocks. Once the lesson has blocks, a bar at the bottom of the screen lists the same types and adds the block to the end of the lesson. To insert a block between two others, select the plus button between them and choose a tile. **Ask AI instead** in the same menu opens the Ask AI prompt; say in your prompt where the new content should go.
 
-![Empty lesson in Edit mode with the Add content row](./images/create-and-edit-a-lesson/add-content-row.webp)
+![Empty lesson in Edit mode with a grid of block types](./images/create-and-edit-a-lesson/empty-lesson.webp)
 
-**Note**, **Video**, **Slides**, **Document**, and **Image** blocks start with example content so you can see the layout. Replace it before students use the lesson: type over the note, or select **Change Video**, **Change Slides**, **Change Document**, or **Change image** on the block. **Change image** opens the **Insert image** dialog, where you can upload a file, search Unsplash, or paste a link. You can add as many blocks of each type as you need.
+**Note**, **Video**, **Slides**, **Document**, and **Image** blocks start with example content so you can see the layout. Replace it before students use the lesson: type over the note, or select **Change Video**, **Change Slides**, **Change Document**, or **Change image** on the block. **Change image** opens the **Insert image** dialog, where you can upload a file, search Unsplash, or paste a link. A **Chart** block starts with an example bar chart: type over the title, and use the four buttons beside it to switch between bar, line, pie, and donut. Select **Edit data** to change each data point's label and value; the chart updates as you type. **Add data point** adds a row (up to 12), and the trash icon removes one (at least 1 must remain). Values can't be negative. A **Flashcards** block starts with three example cards: click the question text to type over it, and select the flip button in the card's corner to edit the answer. The numbers under the card list every card and jump to one, and **+** adds an empty card (up to 100). To remove the card you're viewing, select the trash icon next to the flip button. A deck always keeps at least one card. A **Tabs** block starts with three example tabs: select the open tab's name to rename it, type a note under the tabs, use **Add tab** to add one (up to 10), and select the X on the open tab to remove it together with its content (at least 1 must remain). **Tabs position** places the row on the left, center, or right. Under a tab's note, select **Add image** or **Add video** to show one picture or video in that tab; they open the same pickers as the Image and Video blocks. To replace it, select **Change image** or **Change video** on it; **Remove image** or **Remove video** clears it and brings back the two buttons. A tab doesn't hold other blocks. A **Multiple Choice** block starts with an example question: type over the question and answers, and select an answer's letter to mark it correct. Use **Add option** to add answers (up to 10), or the X on an answer to remove it (at least 2 must remain). To show one picture above the question, select the image button in the block's top-right corner and choose **Image**; the X on the picture removes it. A **Process** block starts with three example steps: type over the heading and text of the step you're viewing, and select a numbered circle to switch steps. Select the image button in the block's top-right corner and choose **Image** to add one picture to the current step, use the trash icon next to it to delete the current step (at least 1 must remain), and **Add step** to add one (up to 20). You can add as many blocks of each type as you need.
 
 ### 3. Arrange and remove blocks [#arrange-blocks]
 
@@ -50,7 +55,7 @@ Drag a block by its handle to move it, or open the block's **⋯** (Block action
 
 ### 4. Save and review
 
-Block changes save as you make them, and note text saves shortly after you stop typing. The **Saved** label in the lesson header covers the lesson title and settings, not note text. Before you leave, select **Preview** (or the save icon) to read the lesson the way students see it and check that your text is there. If a block change cannot be saved, an error message gives the reason and the block returns to how it was before the change, so redo the change once you have fixed the cause. If saving fails for another reason, stay on the page and check your connection rather than assuming the changes reached the server.
+Adding, moving and removing blocks saves right away. Note text and other edits inside a block save shortly after you stop typing or clicking. The **Saved** label in the lesson header covers the lesson title and settings, not note text. Before you leave, select **Preview** (or the save icon) to read the lesson the way students see it and check that your text is there. If a block change cannot be saved, an error message gives the reason and the block returns to how it was before the change, so redo the change once you have fixed the cause. If saving fails for another reason, stay on the page and check your connection rather than assuming the changes reached the server.
 
 For language, access, scheduling, completion, comment, and reading density options, select the settings icon in the lesson header to open **Lesson settings**. These options save automatically, except a live session, which has its own **Save session** button.
 

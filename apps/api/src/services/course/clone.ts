@@ -32,6 +32,7 @@ import {
 import { ROLE } from '@cio/utils/constants';
 import { copyLessonBlocks } from '@cio/core/services/block/copy';
 import { withDerivedLessonContent } from '@db/queries/block/legacy';
+import { listBlockRowsForLessons } from '@db/queries/block/placement';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { captureServerEvent } from '@cio/core/services/posthog';
 import { transferUploadedAsset, withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
@@ -270,6 +271,7 @@ async function cloneCourseWithClient(
   const oldQuestions = oldExerciseIds.length > 0 ? await getQuestionsByExerciseIds(oldExerciseIds, tx) : [];
   const oldQuestionIds = oldQuestions.map((question) => question.id).filter((id) => id !== undefined);
   const oldOptions = oldQuestionIds.length > 0 ? await getOptionsByQuestionIds(oldQuestionIds, tx) : [];
+  const oldBlockData = crossOrg ? (await listBlockRowsForLessons(oldLessonIds, tx)).map((row) => row.block.data) : [];
 
   const assetIds =
     crossOrg && sourceOrgId
@@ -281,7 +283,8 @@ async function cloneCourseWithClient(
             oldExercises,
             oldExerciseSections,
             oldQuestions,
-            oldOptions
+            oldOptions,
+            oldBlockData
           }),
           targetOrgId!,
           options.userId,

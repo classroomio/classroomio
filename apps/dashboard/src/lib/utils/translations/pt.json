@@ -1752,7 +1752,12 @@
             "video": "vídeo",
             "slides": "diapositivos",
             "document": "documento",
-            "image": "imagem"
+            "image": "imagem",
+            "chart": "gráfico",
+            "flashcards": "flashcards",
+            "tabs": "abas",
+            "multiple_choice": "pergunta de múltipla escolha",
+            "process": "processo"
           },
           "change_kind": {
             "added": "Adicionado",
@@ -2610,6 +2615,7 @@
           },
           "blocks": {
             "add_content": "Adicionar conteúdo",
+            "ask_ai_instead": "Perguntar à IA",
             "example": "Exemplo",
             "change_type": "Alterar {type}",
             "edit_type": "Editar {type}",
@@ -2620,8 +2626,8 @@
             "drag": "Arraste para reordenar",
             "drag_hint": "Arraste a alça de um bloco para reordená-lo. Você também pode usar as opções \"Mover para cima\" e \"Mover para baixo\" no menu correspondente.",
             "dismiss_hint": "Ignorar dica de reordenação",
-            "empty_title": "Comece a construir esta lição.",
-            "empty_description": "Adicione uma nota, vídeo, slides, documento ou imagem. Você pode adicionar quantos blocos precisar, em qualquer ordem.",
+            "empty_title": "O que vai nesta aula?",
+            "empty_description": "Escolha um bloco para começar. Você pode adicionar mais a qualquer momento.",
             "empty_note": "Esta nota está vazia.",
             "scroll_rail": "Blocos de aula",
             "save_failed": "Não foi possível salvar esta alteração, então o bloco foi restaurado. {reason}",
@@ -2649,7 +2655,7 @@
               "spacious": "Espaçoso"
             },
             "ai": {
-              "title": "Elabore uma nota com IA",
+              "title": "Peça à IA para adicionar conteúdo a esta lição",
               "prompt_label": "Incitar",
               "prompt_placeholder": "Exemplo: Uma breve introdução ao ciclo da água para iniciantes"
             },
@@ -2658,10 +2664,15 @@
               "video": "Vídeo",
               "slides": "Slides",
               "document": "Documento",
-              "image": "Imagem"
+              "image": "Imagem",
+              "chart": "Gráfico",
+              "flashcards": "Flashcards",
+              "tabs": "Abas",
+              "multiple_choice": "Múltipla escolha",
+              "process": "Processo"
             },
             "empty_preview_title": "Nada para visualizar ainda",
-            "empty_preview_description": "Esta lição não tem conteúdo para os alunos verem. Mude para {editLabel} para adicionar uma nota, vídeo, slides, documento ou imagem.",
+            "empty_preview_description": "Esta aula não tem conteúdo para os alunos. Mude para {editLabel} para adicionar.",
             "empty_learner_title": "Esta lição ainda não está pronta",
             "empty_learner_description": "Seu instrutor não adicionou nenhum conteúdo a esta lição. Volte em breve.",
             "document": {
@@ -2673,6 +2684,134 @@
             },
             "slides": {
               "add_slide": "Adicionar slide"
+            },
+            "chart": {
+              "title": "Título do gráfico",
+              "title_placeholder": "Título do gráfico",
+              "chart_type": "Tipo de gráfico",
+              "types": {
+                "bar": "Gráfico de barras",
+                "line": "Gráfico de linhas",
+                "pie": "Gráfico de pizza",
+                "donut": "Gráfico de rosca"
+              },
+              "point_count": "{count, plural, one {# ponto de dados} other {# pontos de dados}}",
+              "highest": "Maior",
+              "total": "Total",
+              "edit_data": "Editar dados",
+              "live_hint": "As alterações atualizam o gráfico em tempo real.",
+              "label": "Rótulo",
+              "value": "Valor",
+              "label_placeholder": "Rótulo",
+              "add_point": "Adicionar ponto de dados",
+              "remove_point": "Remover ponto de dados",
+              "new_point": "Novo",
+              "example": {
+                "title": "Receita trimestral",
+                "label_1": "T1",
+                "label_2": "T2",
+                "label_3": "T3",
+                "label_4": "T4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Clique em qualquer texto do cartão para editá-lo · use o botão de virar para editar a resposta",
+              "flip_hint": "Clique no cartão para virá-lo",
+              "question": "Pergunta",
+              "answer": "Resposta",
+              "question_placeholder": "Digite a pergunta",
+              "answer_placeholder": "Digite a resposta",
+              "flip": "Virar cartão",
+              "show_question": "Cartão mostrando a resposta. Pressione Espaço para ver a pergunta.",
+              "show_answer": "Cartão mostrando a pergunta. Pressione Espaço para ver a resposta.",
+              "previous": "Cartão anterior",
+              "next": "Próximo cartão",
+              "progress": "Progresso do baralho",
+              "cards": "Cartões",
+              "add_card": "Adicionar cartão",
+              "remove_card": "Remover cartão",
+              "example": {
+                "question_1": "O que é retenção de clientes?",
+                "answer_1": "A capacidade de uma empresa de manter seus clientes ao longo do tempo.",
+                "question_2": "Por que a retenção importa mais do que a aquisição?",
+                "answer_2": "Manter um cliente existente costuma ser de 5 a 7 vezes mais barato do que conquistar um novo.",
+                "question_3": "Qual é uma forma simples de medi-la?",
+                "answer_3": "Compare quantos clientes você tinha no início de um período com quantos restam no final."
+              }
+            },
+            "tabs": {
+              "tab_list": "Abas",
+              "position": "Posição das abas",
+              "align_left": "Alinhar abas à esquerda",
+              "align_center": "Centralizar abas",
+              "align_right": "Alinhar abas à direita",
+              "tab_name": "Nome da aba",
+              "untitled_tab": "Aba sem título",
+              "note_placeholder": "Escreva uma nota para esta aba…",
+              "add_tab": "Adicionar aba",
+              "remove_tab": "Remover aba",
+              "new_tab": "Nova aba",
+              "add_image": "Adicionar imagem",
+              "add_video": "Adicionar vídeo",
+              "remove_image": "Remover imagem",
+              "remove_video": "Remover vídeo",
+              "example": {
+                "name_1": "Visão geral",
+                "note_1": "Uma visão geral rápida do que esta seção aborda.",
+                "name_2": "Preparação",
+                "note_2": "O que os alunos precisam ter pronto antes de começar.",
+                "name_3": "Avançado",
+                "note_3": "Aprofunde-se quando o básico estiver confortável."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Clique em uma letra para marcar a resposta correta.",
+              "learner_hint": "Escolha uma resposta.",
+              "question_placeholder": "Digite sua pergunta",
+              "option_placeholder": "Digite uma resposta",
+              "mark_correct": "Marcar como resposta correta",
+              "correct_badge": "Resposta correta",
+              "add_option": "Adicionar opção",
+              "new_option": "Nova opção",
+              "remove_option": "Remover opção",
+              "add_media": "Adicionar mídia",
+              "remove_image": "Remover imagem",
+              "check": "Verificar resposta",
+              "try_again": "Tentar novamente",
+              "correct_feedback": "Correto, muito bem!",
+              "wrong_feedback": "Não exatamente. A resposta correta está destacada.",
+              "example": {
+                "question": "Qual é a capital da Itália?",
+                "correct_option": "Roma",
+                "other_option_1": "Atenas",
+                "other_option_2": "Lisboa"
+              }
+            },
+            "process": {
+              "stepper": "Etapas",
+              "go_to_step": "Ir para a etapa {step}",
+              "untitled_step": "Etapa sem título",
+              "heading_placeholder": "Título da etapa",
+              "body_placeholder": "Descreva esta etapa",
+              "add_media": "Adicionar mídia",
+              "image_option": "Imagem",
+              "remove_image": "Remover imagem",
+              "delete_step": "Excluir esta etapa",
+              "add_step": "Adicionar etapa",
+              "back": "Voltar",
+              "next": "Próximo",
+              "start_over": "Recomeçar",
+              "progress": "Progresso do processo",
+              "new_step_heading": "Nova etapa",
+              "new_step_body": "Descreva esta etapa.",
+              "example": {
+                "heading_1": "Introdução",
+                "body_1": "A inteligência artificial, ou IA, tornou-se uma das áreas mais transformadoras e de evolução mais rápida da tecnologia. Ela envolve a criação de máquinas inteligentes capazes de realizar tarefas normalmente associadas à inteligência humana, como aprender, resolver problemas e tomar decisões.",
+                "heading_2": "Como funciona",
+                "body_2": "Descreva o que acontece nesta etapa do processo.",
+                "heading_3": "Colocando em prática",
+                "body_3": "Mostre como os alunos aplicam o que acabaram de ver."
+              }
             }
           }
         },
@@ -5342,6 +5481,11 @@
         "move_lesson_block": "Movendo um bloco",
         "add_lesson_slides_block": "Adicionando slides",
         "add_lesson_image_block": "Adicionando uma imagem",
+        "write_lesson_chart_block": "Salvando um gráfico",
+        "write_lesson_flashcards_block": "Salvando flashcards",
+        "write_lesson_tabs_block": "Salvando abas",
+        "write_lesson_multiple_choice_block": "Salvando uma pergunta de múltipla escolha",
+        "write_lesson_process_block": "Salvando um processo",
         "update_lesson_block_settings": "Atualizando configurações de bloqueio",
         "update_lesson_block_requirements": "Atualizando regras de conclusão",
         "detach_lesson_block": "Desanexando um bloco compartilhado",
@@ -5396,6 +5540,11 @@
         "move_lesson_block": "Movido um bloco em {title}",
         "add_lesson_slides_block": "Slides adicionados a {title}",
         "add_lesson_image_block": "Adicionada uma imagem a {title}",
+        "write_lesson_chart_block": "Gráfico salvo em {title}",
+        "write_lesson_flashcards_block": "Flashcards salvos em {title}",
+        "write_lesson_tabs_block": "Abas salvas em {title}",
+        "write_lesson_multiple_choice_block": "Pergunta de múltipla escolha salva em {title}",
+        "write_lesson_process_block": "Processo salvo em {title}",
         "update_lesson_block_settings": "Atualizado um bloco em {title}",
         "update_lesson_block_requirements": "Regras de conclusão atualizadas em {title}",
         "detach_lesson_block": "Deu a {title} sua própria cópia de um bloco compartilhado",
@@ -7345,7 +7494,7 @@
     "lesson_blocks": {
       "title": "Apresentando blocos de aula",
       "description": "As aulas agora são construídas a partir de blocos. Veja como funciona em 5 minutos.",
-      "coach_description": "Crie cada lição a partir de blocos de notas, vídeos, slides, documentos e imagens, em qualquer ordem. Selecione Editar para experimentar.",
+      "coach_description": "Crie cada lição com blocos como notas, vídeos, gráficos, flashcards e perguntas de múltipla escolha, em qualquer ordem. Selecione Editar para experimentar.",
       "coach_title": "🎉 Novidade! As aulas agora são flexíveis."
     },
     "close": "Fechar",

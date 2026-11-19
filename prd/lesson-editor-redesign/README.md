@@ -469,7 +469,7 @@ No changes to saving behavior.
 
 Keep:
 
-* 2-second debounced autosave
+* Debounced autosave (500 ms) for block text and data
 * Save queue
 * Manual save behavior
 * `localStorage` note draft recovery

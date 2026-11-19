@@ -1,5 +1,7 @@
 import { getAssetsByIds } from '@cio/db/queries/assets';
 import { getLessonById } from '@cio/db/queries/lesson';
+import { listLessonBlockRows } from '@cio/db/queries/block';
+import { listBlockMedia } from '@cio/utils/validation/block';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 export type LessonVideoHlsStatus = 'none' | 'pending' | 'converting' | 'ready' | 'failed' | 'skipped';
@@ -21,7 +23,11 @@ export async function getLessonVideoHlsStatusesService(
     throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
   }
 
-  const videos = lesson.videos ?? [];
+  const rows = await listLessonBlockRows(lessonId);
+  const videos = rows
+    .flatMap((row) => listBlockMedia(row.block.type, row.block.data))
+    .filter((item) => item.media === 'video')
+    .map((item) => item.data as { type?: string; assetId?: string });
   const assetIds = videos
     .filter((video) => video.type === 'upload')
     .map((video) => video.assetId)

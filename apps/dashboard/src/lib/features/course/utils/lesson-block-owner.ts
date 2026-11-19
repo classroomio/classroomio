@@ -1,5 +1,7 @@
 import type { TLocale } from '@cio/db/types';
+import { ErrorCodes } from '@cio/utils/constants';
 import type { BlockOwner, BlockRecord } from '$features/block/utils/types';
+import { hasErrorCode } from '$lib/utils/services/api';
 import { lessonBlockApi } from '../api/lesson-block.svelte';
 
 /**
@@ -12,8 +14,17 @@ export function createLessonBlockOwner(courseId: string, lessonId: string): Bloc
   return {
     list: async () => (await lessonBlockApi.list(params))?.data ?? null,
     create: async (input) => recordOf(await lessonBlockApi.create(params, input)),
-    updateData: async (blockId, data, expectedVersion) =>
-      recordOf(await lessonBlockApi.updateData({ ...params, blockId }, { data, expectedVersion })),
+    updateData: async (blockId, data, expectedVersion) => {
+      const result = await lessonBlockApi.updateData({ ...params, blockId }, { data, expectedVersion });
+      if (result) return { status: 'saved', record: result.data };
+
+      const error = lessonBlockApi.lastError;
+      if (error && hasErrorCode(error, ErrorCodes.BLOCK_VERSION_CONFLICT)) {
+        return { status: 'conflict', reason: error.message };
+      }
+
+      return { status: 'failed' };
+    },
     updateContent: async (blockId, locale: TLocale, content, expectedVersion) =>
       recordOf(await lessonBlockApi.updateLocale({ ...params, blockId, locale }, { content, expectedVersion })),
     updatePlacement: async (placementId, settings) =>

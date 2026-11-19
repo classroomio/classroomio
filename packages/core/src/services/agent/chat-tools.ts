@@ -5,6 +5,7 @@ import { CoursePlanSchema, getCourseTemplate } from '@cio/ai-assistant';
 import { getBlockRecipeMarkup } from '@cio/ai-assistant/tools';
 import { ADD_QUESTIONS_TOOL_DESCRIPTION, UPDATE_QUESTIONS_BINARY_TYPES_HINT } from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
+import { AGENT_AUTHORED_BLOCK_TYPES, getBlockAgentAuthoring } from '@cio/utils/validation/block';
 import { assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
@@ -41,7 +42,8 @@ import {
   updateAgentBlockRequirements,
   updateAgentBlockSettings,
   moveAgentLessonBlock,
-  removeAgentLessonTextBlock,
+  removeAgentLessonBlock,
+  writeAgentAuthoredBlock,
   writeAgentLessonText
 } from './lesson-blocks';
 import { getLessonVideoTranscript } from './lesson-transcript';
@@ -94,14 +96,21 @@ import {
   updateLessonBlockSettingsParam,
   updateLessonParam,
   updateQuestionsParam,
-  updateSectionParam
+  updateSectionParam,
+  writeLessonAuthoredBlockParam
 } from './agent-tool-schemas';
 import { restoreLessonToEntry, undoLessonChangeSet } from '../block/lesson-structure';
 import { listYoutubePlaylistVideos } from '../youtube-playlist';
 import { fetchDocumentationUrl } from './fetch-url';
 import { attachYoutubeVideoToLesson } from './lesson-youtube-video';
 
+/** The tool that creates or rewrites a block of `type` the assistant authors whole, e.g. `write_lesson_chart_block`. */
+export function authoredBlockToolName(type: string): string {
+  return `write_lesson_${type}_block`;
+}
+
 const DURABLE_AGENT_TOOL_NAMES = new Set([
+  ...AGENT_AUTHORED_BLOCK_TYPES.map(authoredBlockToolName),
   'create_section',
   'update_section',
   'create_lesson',
@@ -512,7 +521,49 @@ export function buildAgentTools(
     execute: () => Promise<TResult>
   ) => executeAgentToolBase(toolName, params, execute, options);
 
+  const authoredBlockTools = Object.fromEntries(
+    AGENT_AUTHORED_BLOCK_TYPES.flatMap((type) => {
+      const authoring = getBlockAgentAuthoring(type);
+      if (!authoring) return [];
+
+      const toolName = authoredBlockToolName(type);
+      const blockLabel = type.replaceAll('_', ' ');
+      const authoredTool = tool({
+        description: `${authoring.purpose} Without blockId this adds a new ${blockLabel} block; pass afterBlockId or beforeBlockId to place it, or neither to put it at the end. With blockId it replaces that ${blockLabel} block's whole content: start from the data get_lesson_content returned, keep the ids of the items you keep, and change only what the teacher asked. Write plain text, not HTML.`,
+        inputSchema: writeLessonAuthoredBlockParam(authoring.inputSchema),
+        execute: async (args) => {
+          return executeAgentTool(toolName, { orgId, userId, courseId, args }, async () => {
+            await verifyLessonBelongsToCourse(args.lessonId, courseId);
+            const lesson = await getLesson(args.lessonId);
+            const written = await writeAgentAuthoredBlock({
+              lessonId: args.lessonId,
+              type,
+              data: args.data,
+              blockId: args.blockId,
+              afterBlockId: args.afterBlockId,
+              beforeBlockId: args.beforeBlockId,
+              actorProfileId: userId,
+              changeSetId: blockActor.changeSetId
+            });
+
+            return {
+              lessonId: args.lessonId,
+              lessonTitle: lesson.title,
+              blockType: type,
+              blockId: written.blockId,
+              added: written.created,
+              updated: !written.created
+            };
+          });
+        }
+      });
+
+      return [[toolName, authoredTool] as const];
+    })
+  );
+
   return {
+    ...authoredBlockTools,
     get_course_structure: tool({
       description:
         'Get the full course structure including sections, lessons, and exercises as a tree. The courseId is automatically set — do not pass it.',
@@ -527,7 +578,7 @@ export function buildAgentTools(
 
     get_lesson_content: tool({
       description:
-        "Get a lesson's blocks in display order. A lesson is a list of blocks: text (note) blocks carry HTML in `content` for the locale, while video, slides, document and image blocks only carry a `label`. Use a text block's `blockId` with update_lesson_content, add_lesson_note_block and remove_lesson_block, and any block's `blockId` with move_lesson_block.",
+        "Get a lesson's blocks in display order. A lesson is a list of blocks: text (note) blocks carry HTML in `content` for the locale; chart, flashcards, tabs, multiple_choice and process blocks carry their content in `data`; video, slides, document and image blocks only carry a `label`. Use a text block's `blockId` with update_lesson_content, add_lesson_note_block and remove_lesson_block, a chart, flashcards, tabs, multiple_choice or process block's `blockId` with its write_lesson_<type>_block tool and remove_lesson_block, and any block's `blockId` with move_lesson_block.",
       inputSchema: lessonReadParam,
       execute: async (args) => {
         return executeAgentTool('get_lesson_content', { orgId, userId, courseId, args }, async () => {
@@ -792,13 +843,13 @@ export function buildAgentTools(
 
     remove_lesson_block: tool({
       description:
-        "Remove one text (note) block from a lesson, in every locale. Use it to delete text the teacher asked to remove when it sits in its own block, or after merging that block's text into another one with update_lesson_content. Only text blocks can be removed; never remove a block the teacher did not ask you to change.",
+        'Remove one block from a lesson: a text (note) block, in every locale, or a chart, flashcards, tabs, multiple choice or process block. Use it to delete content the teacher asked to remove, or after merging a text block into another one with update_lesson_content. Video, slides, document and image blocks cannot be removed; never remove a block the teacher did not ask you to change.',
       inputSchema: removeLessonBlockParam,
       execute: async (args) => {
         return executeAgentTool('remove_lesson_block', { orgId, userId, courseId, args }, async () => {
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
           const lesson = await getLesson(args.lessonId);
-          await removeAgentLessonTextBlock({
+          await removeAgentLessonBlock({
             lessonId: args.lessonId,
             blockId: args.blockId,
             actorProfileId: userId,
@@ -812,7 +863,7 @@ export function buildAgentTools(
 
     move_lesson_block: tool({
       description:
-        "Move one block of a lesson (text, video, slides, document or image) to sit right after or right before another block of the same lesson. Pass exactly one of afterBlockId or beforeBlockId (ids from get_lesson_content). Nothing is deleted; only the order changes. To move a block to the very top, pass beforeBlockId with the first block's id.",
+        "Move one block of a lesson, of any type, to sit right after or right before another block of the same lesson. Pass exactly one of afterBlockId or beforeBlockId (ids from get_lesson_content). Nothing is deleted; only the order changes. To move a block to the very top, pass beforeBlockId with the first block's id.",
       inputSchema: moveLessonBlockParam,
       execute: async (args) => {
         return executeAgentTool('move_lesson_block', { orgId, userId, courseId, args }, async () => {
