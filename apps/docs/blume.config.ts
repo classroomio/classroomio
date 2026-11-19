@@ -67,9 +67,14 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
     ]
   },
   {
+    label: 'Learning Paths',
+    tags: [{ tag: 'Learning Paths', label: 'Overview' }]
+  },
+  {
     label: 'Analytics',
     tags: [{ tag: 'Academy' }, { tag: 'Marketing' }, { tag: 'Compliance' }]
   },
+  { label: 'Enrolled', tags: [{ tag: 'Enrolled', flat: true }] },
   { label: 'Media', tags: [{ tag: 'Public API Assets', flat: true }] }
 ];
 

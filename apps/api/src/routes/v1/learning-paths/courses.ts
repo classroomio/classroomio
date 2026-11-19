@@ -20,7 +20,7 @@ export const v1LearningPathCoursesRouter = new Hono()
     '/:pathId/courses/order',
     describeRoute({
       description: 'Reorder courses in a learning path',
-      tags: ['Public API Learning Paths'],
+      tags: ['Learning Paths'],
       responses: {
         200: {
           description: 'Path courses reordered successfully',
@@ -62,7 +62,7 @@ export const v1LearningPathCoursesRouter = new Hono()
     '/:pathId/courses/:courseId',
     describeRoute({
       description: 'Remove a course from a learning path',
-      tags: ['Public API Learning Paths'],
+      tags: ['Learning Paths'],
       responses: {
         200: {
           description: 'Course removed successfully',
@@ -101,7 +101,7 @@ export const v1LearningPathCoursesRouter = new Hono()
     '/:pathId/courses',
     describeRoute({
       description: 'Add courses to a learning path by id',
-      tags: ['Public API Learning Paths'],
+      tags: ['Learning Paths'],
       responses: {
         200: {
           description: 'Courses added successfully',

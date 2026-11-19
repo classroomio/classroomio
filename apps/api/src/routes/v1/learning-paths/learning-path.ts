@@ -23,7 +23,7 @@ export const v1LearningPathRouter = new Hono()
     '/',
     describeRoute({
       description: 'List learning paths for the authenticated organization',
-      tags: ['Public API Learning Paths'],
+      tags: ['Learning Paths'],
       responses: {
         200: {
           description: 'Learning paths returned successfully',
@@ -62,7 +62,7 @@ export const v1LearningPathRouter = new Hono()
     '/',
     describeRoute({
       description: 'Create a learning path for the authenticated organization',
-      tags: ['Public API Learning Paths'],
+      tags: ['Learning Paths'],
       responses: {
         201: {
           description: 'Learning path created successfully',
@@ -101,7 +101,7 @@ export const v1LearningPathRouter = new Hono()
     '/:pathId',
     describeRoute({
       description: 'Get a single learning path by id, with ordered course ids',
-      tags: ['Public API Learning Paths'],
+      tags: ['Learning Paths'],
       responses: {
         200: {
           description: 'Learning path returned successfully',
@@ -140,7 +140,7 @@ export const v1LearningPathRouter = new Hono()
     '/:pathId',
     describeRoute({
       description: 'Update a learning path by id',
-      tags: ['Public API Learning Paths'],
+      tags: ['Learning Paths'],
       responses: {
         200: {
           description: 'Learning path updated successfully',
@@ -182,7 +182,7 @@ export const v1LearningPathRouter = new Hono()
     '/:pathId',
     describeRoute({
       description: 'Delete a learning path by id',
-      tags: ['Public API Learning Paths'],
+      tags: ['Learning Paths'],
       responses: {
         200: {
           description: 'Learning path deleted successfully',

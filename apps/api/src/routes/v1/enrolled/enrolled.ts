@@ -11,7 +11,7 @@ export const v1EnrolledRouter = new Hono().get(
   '/',
   describeRoute({
     description: "List the API key creator's own enrolled courses and learning paths.",
-    tags: ['Public API Enrolled'],
+    tags: ['Enrolled'],
     responses: {
       200: {
         description: 'Enrolled items returned successfully',

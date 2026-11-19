@@ -11,7 +11,7 @@ export const v1LearningPathMembersRouter = new Hono().get(
   '/:pathId/members',
   describeRoute({
     description: 'List members of a learning path, paged with optional search and role filter',
-    tags: ['Public API Learning Paths'],
+    tags: ['Learning Paths'],
     responses: {
       200: {
         description: 'Path members returned successfully',

@@ -352,11 +352,11 @@ const OPERATION_TAGS = [
   },
   { name: 'Compliance', description: "The numbers on the organization's Compliance page." },
   {
-    name: 'Public API Learning Paths',
+    name: 'Learning Paths',
     description: "Package courses into ordered learning paths, manage their courses, and list a path's members."
   },
   {
-    name: 'Public API Enrolled',
+    name: 'Enrolled',
     description: "Read the API key creator's own enrolled courses and learning paths."
   }
 ];
