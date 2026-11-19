@@ -21,8 +21,11 @@
   import { buildSsoRedirectUrl, createSsoEmailChecker, type SsoAuthState } from '$features/auth/utils/auth-sso';
   import { authSsoStore, ensureSsoInfoLoaded } from '$features/auth/utils/auth-sso-store';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { getPostJoinRedirect } from '$features/org/utils/org-join-redirect';
   import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+  import { isOrgChooserAvailable, ORG_CHOOSER_PATH } from '$features/app/utils/post-auth-destination';
+  import { buildLoginInsteadHref, isExistingAccountError } from '$features/auth/utils/auth-errors';
 
   let { data } = $props();
   const emailFromUrl = page.url.searchParams.get('email') ?? '';
@@ -35,6 +38,8 @@
     confirmPassword?: string;
   } = $state({});
   let submitError: string = $state('');
+  let hasExistingAccount = $state(false);
+  const loginInsteadHref = $derived(buildLoginInsteadHref(page.url.search, fields.email));
 
   /** Per-email discovery result; display uses this over org-level when set */
   let discoveryState = $state<SsoAuthState | null>(null);
@@ -74,6 +79,14 @@
   onMount(() => {
     if ($globalStore.isOrgSite && org.disableSignup) {
       goto(resolve('/login?error=signup_disabled', {}));
+      return;
+    }
+
+    const isSignedInOnAdminHost =
+      !!data.locals?.user &&
+      isOrgChooserAvailable({ isCloud: PUBLIC_IS_SELFHOSTED !== 'true', isOrgSite: !!data.isOrgSite });
+    if (isSignedInOnAdminHost && !hasInviteContext && !redirectUrl) {
+      goto(resolve(ORG_CHOOSER_PATH, {}));
     }
   });
 
@@ -94,6 +107,7 @@
     },
     onClear: () => {
       errors.email = '';
+      hasExistingAccount = false;
       discoveryState = null;
     }
   });
@@ -129,6 +143,7 @@
 
     try {
       loading = true;
+      hasExistingAccount = false;
       const name = fields.email.split('@')[0];
 
       // if in selfhosted instance always pass org id
@@ -180,7 +195,7 @@
       }
 
       if (isNormalOrgSiteSignup) {
-        const joinResult = await orgApi.joinAcademy(org.id, redirectUrl || '/lms');
+        const joinResult = await orgApi.joinAcademy(org.id, getPostJoinRedirect(redirectUrl));
         const joinRetryPathname = newUserCallbackPathname;
 
         if (!joinResult && joinRetryPathname) {
@@ -193,10 +208,12 @@
       const redirect = redirectUrl || '/';
       window.location.href = redirect.startsWith('/') ? redirect : `/?redirect=${encodeURIComponent(redirect)}`;
     } catch (error) {
-      submitError =
-        (error as { error_description?: string; message?: string })?.error_description ||
-        (error as { message?: string })?.message ||
-        '';
+      hasExistingAccount = isExistingAccountError(error);
+      submitError = hasExistingAccount
+        ? ''
+        : (error as { error_description?: string; message?: string })?.error_description ||
+          (error as { message?: string })?.message ||
+          '';
       loading = false;
     }
   }
@@ -338,7 +355,14 @@
           </Field.Content>
         </Field.Field>
 
-        {#if submitError}
+        {#if hasExistingAccount}
+          <p class="ui:text-destructive text-sm" data-testid="signup-existing-account">
+            {$t('login.existing_account.message')}
+            <a class="ui:text-primary font-medium hover:underline" href={resolve(loginInsteadHref, {})}>
+              {$t('login.existing_account.cta')}
+            </a>
+          </p>
+        {:else if submitError}
           <p class="ui:text-destructive text-sm">{submitError}</p>
         {/if}
 

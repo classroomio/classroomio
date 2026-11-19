@@ -4,15 +4,24 @@ import {
   PUBLIC_API_FAILED_AUTH_MAX_REQUESTS
 } from '@api/constants/rate-limiter';
 import { Hono } from '@api/utils/hono';
-import { automationKeyMiddleware } from '@api/middlewares/automation-key';
-import { automationKeyScopesMiddleware } from '@api/middlewares/automation-key-scopes';
+import { automationKeyOrOAuthMiddleware } from '@api/middlewares/automation-key-or-oauth';
 import { createAuthenticationFailureRateLimiter, createRateLimiter } from '@api/middlewares/rate-limiter';
 import { publicApiCors } from '@api/middlewares/cors';
+import { publicApiScopesMiddleware } from '@api/middlewares/public-api-scopes';
+import { v1McpUsageMiddleware } from '@api/middlewares/v1-mcp-usage';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
+import { v1AnalyticsRouter } from './analytics';
 import { v1AudienceRouter } from './audience';
+import { v1CohortsRouter } from './cohorts';
+import { v1CourseTemplatesRouter } from './course-templates';
 import { v1CoursesRouter } from './courses';
 import { v1EnrolledRouter } from './enrolled';
 import { v1LearningPathsRouter } from './learning-paths';
+import { v1MediaRouter } from './media';
+import { v1ExerciseTemplatesRouter } from './exercise-templates';
+import { v1OrganizationRouter } from './organization';
+import { v1TeamRouter } from './team';
+import { v1TagsRouter } from './tags';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -24,8 +33,8 @@ export const v1Router = new Hono()
       keyGenerator: publicApiFailedAuthKeyGenerator
     })
   )
-  .use('*', automationKeyMiddleware)
-  .use('*', automationKeyScopesMiddleware(['public_api:*']))
+  .use('*', automationKeyOrOAuthMiddleware)
+  .use('*', publicApiScopesMiddleware)
   .use(
     '*',
     createRateLimiter({
@@ -34,7 +43,16 @@ export const v1Router = new Hono()
       keyGenerator: publicApiKeyGenerator
     })
   )
+  .use('*', v1McpUsageMiddleware)
+  .route('/analytics', v1AnalyticsRouter)
   .route('/audience', v1AudienceRouter)
+  .route('/team', v1TeamRouter)
+  .route('/organization', v1OrganizationRouter)
   .route('/courses', v1CoursesRouter)
+  .route('/course-templates', v1CourseTemplatesRouter)
+  .route('/cohorts', v1CohortsRouter)
+  .route('/assets', v1MediaRouter)
+  .route('/exercise-templates', v1ExerciseTemplatesRouter)
+  .route('/tags', v1TagsRouter)
   .route('/enrolled', v1EnrolledRouter)
   .route('/learning-paths', v1LearningPathsRouter);

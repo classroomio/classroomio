@@ -8,6 +8,7 @@
     NewsFeedIcon,
     CourseIcon,
     PeopleIcon,
+    AnalyticsIcon,
     PremiumIcon,
     SettingsIcon
   } from '@cio/ui/custom/moving-icons';
@@ -66,6 +67,14 @@
         show: () => canManageMembers
       },
       {
+        id: 'analytics',
+        title: $t('cohorts.sidebar.analytics'),
+        url: `/cohorts/${id}/analytics`,
+        isActive: currentPath.endsWith('/analytics'),
+        icon: AnalyticsIcon,
+        show: () => canManageMembers
+      },
+      {
         id: 'settings',
         title: $t('cohorts.sidebar.settings') || 'Settings',
         url: `/cohorts/${id}/settings`,
@@ -78,11 +87,7 @@
 </script>
 
 <Sidebar.Group class="pt-0!">
-  <BackButton
-    href={resolve(cohortsListPath, {})}
-    label={$t(isLmsCohortContext ? 'lms_navigation.cohorts' : 'org_navigation.cohorts') || 'Cohorts'}
-    class="px-2! py-2!"
-  />
+  <BackButton href={resolve(cohortsListPath, {})} label={$t('org_navigation.exit_cohort')} class="px-2! py-2!" />
 
   <Sidebar.Menu>
     {#each navItems as item (item.id)}

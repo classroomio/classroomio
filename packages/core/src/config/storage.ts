@@ -1,5 +1,5 @@
 /**
- * Object storage configuration for S3-compatible backends (Cloudflare R2, MinIO, AWS S3).
+ * Object storage configuration for S3-compatible backends (Cloudflare R2, SeaweedFS, AWS S3).
  * Supports both generic OBJECT_STORAGE_* vars and backward-compatible CLOUDFLARE_* fallback.
  */
 
@@ -12,7 +12,7 @@ const BUCKET_DEFAULTS = {
   MEDIA: 'media'
 } as const;
 
-/** Whether we're using the generic S3-compatible config (MinIO, etc.) vs Cloudflare R2 fallback */
+/** Whether we're using the generic S3-compatible config vs Cloudflare R2 fallback */
 export function useS3CompatibleConfig(): boolean {
   return Boolean(
     env.OBJECT_STORAGE_ENDPOINT && env.OBJECT_STORAGE_ACCESS_KEY_ID && env.OBJECT_STORAGE_SECRET_ACCESS_KEY
@@ -73,7 +73,7 @@ function resolveStorageConfig(): StorageConfig {
   }
 
   throw new Error(
-    'Object storage not configured. Set either OBJECT_STORAGE_ENDPOINT, OBJECT_STORAGE_ACCESS_KEY_ID, OBJECT_STORAGE_SECRET_ACCESS_KEY (for MinIO/S3) or CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ACCESS_KEY, CLOUDFLARE_SECRET_ACCESS_KEY (for Cloudflare R2).'
+    'Object storage not configured. Set either OBJECT_STORAGE_ENDPOINT, OBJECT_STORAGE_ACCESS_KEY_ID, OBJECT_STORAGE_SECRET_ACCESS_KEY (for any S3-compatible store) or CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ACCESS_KEY, CLOUDFLARE_SECRET_ACCESS_KEY (for Cloudflare R2).'
   );
 }
 
@@ -112,7 +112,7 @@ export function getS3Client(): S3Client {
 
 /**
  * S3 client for generating presigned URLs. Uses public endpoint when configured
- * (e.g. when internal endpoint like minio:9000 is not reachable by browser).
+ * (e.g. when internal endpoint like storage:9000 is not reachable by browser).
  */
 let presignClientInstance: S3Client | null = null;
 
@@ -127,7 +127,9 @@ export function getPresignS3Client(): S3Client {
         accessKeyId: config.accessKeyId,
         secretAccessKey: config.secretAccessKey
       },
-      forcePathStyle: config.forcePathStyle
+      forcePathStyle: config.forcePathStyle,
+      // Keeps an empty-body CRC32 out of presigned PUT URLs; SeaweedFS rejects uploads that carry it.
+      requestChecksumCalculation: 'WHEN_REQUIRED'
     });
   }
   return presignClientInstance;

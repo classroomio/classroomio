@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
@@ -11,8 +13,15 @@
   import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
   import { coursesApi } from '$features/course/api';
   import CourseFilterPopover, { type FilterGroup } from '$features/course/components/course-filter-popover.svelte';
+  import {
+    CourseSortBy,
+    CourseSortOrder,
+    DEFAULT_COURSE_SORT,
+    parseCourseSortValue
+  } from '$features/course/utils/constants';
   import CoursePreviewModal, { type CoursePreviewCourse } from '$features/lms/components/course-preview-modal.svelte';
   import PathPreviewModal, { type PathPreviewItem } from '$features/lms/components/path-preview-modal.svelte';
+  import * as Pagination from '@cio/ui/base/pagination';
 
   type ContentTypeFilter = 'ALL' | 'paths' | 'courses';
 
@@ -28,19 +37,60 @@
     cost: number;
   }
 
+  const EXPLORE_LIMIT = 12;
+
+  const EXPLORE_SORT_ORDER: Record<CourseSortBy, CourseSortOrder> = {
+    [CourseSortBy.DateCreated]: CourseSortOrder.Desc,
+    [CourseSortBy.LastUpdatedAt]: CourseSortOrder.Desc,
+    [CourseSortBy.Published]: CourseSortOrder.Desc,
+    [CourseSortBy.Lessons]: CourseSortOrder.Desc,
+    [CourseSortBy.Name]: CourseSortOrder.Asc,
+    [CourseSortBy.Price]: CourseSortOrder.Asc
+  };
+
   let searchValue = $state('');
   let contentType = $state<ContentTypeFilter>('ALL');
+  let sortKey = $state<CourseSortBy>(DEFAULT_COURSE_SORT);
+  let currentPage = $state(1);
   let selectedCourse = $state<CoursePreviewCourse | null>(null);
   let previewOpen = $state(false);
   let selectedPath = $state<PathPreviewItem | null>(null);
   let pathPreviewOpen = $state(false);
+
+  const pagination = $derived(coursesApi.recommendedCoursesPagination);
+
+  $effect(() => {
+    if (!browser) return;
+
+    localStorage.setItem('classroomio_filter_course_key', sortKey);
+  });
+
+  $effect(() => {
+    if (searchValue) {
+      currentPage = 1;
+    }
+  });
+
+  $effect(() => {
+    void sortKey;
+    currentPage = 1;
+  });
+
+  onMount(() => {
+    sortKey = parseCourseSortValue(localStorage.getItem('classroomio_filter_course_key'));
+  });
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
     learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id);
     learnerPathStore.loadCatalogPaths();
-    coursesApi.getRecommendedCourses({ limit: 24 });
+    coursesApi.getRecommendedCourses({
+      limit: EXPLORE_LIMIT,
+      page: currentPage,
+      sort: sortKey,
+      order: EXPLORE_SORT_ORDER[sortKey]
+    });
   });
 
   const enrolledIds = $derived(new Set(learnerPathStore.enrolledPaths.flatMap((path) => [path.id, path.publicId])));
@@ -71,7 +121,7 @@
         id: course.id,
         title: course.title,
         description: course.description ?? '',
-        coverImage: course.logo || undefined,
+        coverImage: course.bannerImage || undefined,
         lessonCount: course.lessonCount ?? 0,
         exerciseCount: course.exerciseCount ?? 0,
         href: '/lms/explore',
@@ -161,7 +211,7 @@
       id: course.id,
       title: course.title,
       description: course.description,
-      logo: course.coverImage ?? null,
+      bannerImage: course.coverImage ?? null,
       slug: course.slug,
       lessonCount: course.lessonCount,
       exerciseCount: course.exerciseCount,
@@ -204,7 +254,7 @@
       bind:value={searchValue}
     />
     <CourseFilterPopover
-      sortOptions={[]}
+      bind:sortKey
       {groups}
       selectedGroups={selected}
       onGroupChange={handleFilterChange}
@@ -248,6 +298,39 @@
             />
           {/each}
         </div>
+        {#if pagination && pagination.totalPages > 1}
+          <Pagination.Root
+            count={pagination.total}
+            perPage={pagination.limit}
+            page={currentPage}
+            onPageChange={(nextPage) => (currentPage = nextPage)}
+            class="mt-6"
+          >
+            {#snippet children({ pages, currentPage: activePage })}
+              <Pagination.Content>
+                <Pagination.Item>
+                  <Pagination.PrevButton />
+                </Pagination.Item>
+                {#each pages as pageItem (pageItem.key)}
+                  {#if pageItem.type === 'ellipsis'}
+                    <Pagination.Item>
+                      <Pagination.Ellipsis />
+                    </Pagination.Item>
+                  {:else}
+                    <Pagination.Item>
+                      <Pagination.Link page={pageItem} isActive={activePage === pageItem.value}>
+                        {pageItem.value}
+                      </Pagination.Link>
+                    </Pagination.Item>
+                  {/if}
+                {/each}
+                <Pagination.Item>
+                  <Pagination.NextButton />
+                </Pagination.Item>
+              </Pagination.Content>
+            {/snippet}
+          </Pagination.Root>
+        {/if}
       {/if}
     </section>
   {/if}

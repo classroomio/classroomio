@@ -6,12 +6,22 @@ import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
 import UserIcon from '@lucide/svelte/icons/user';
 
 import { DEFAULT_COURSE_BANNER_IMAGE } from '../course-card/constants';
-import type { CourseItem } from './types';
+import type { CourseItem, OrgLandingPageFeaturedCourse, OrgLandingPageTheme } from './types';
+
+export const themesWithFeaturedCourse = ['editorial', 'vibrant'] as const satisfies readonly OrgLandingPageTheme[];
+
+export function themeHasFeaturedCourse(theme: OrgLandingPageTheme): boolean {
+  return (themesWithFeaturedCourse as readonly OrgLandingPageTheme[]).includes(theme);
+}
+
+export function isFeaturedCourseShown(featuredCourse?: OrgLandingPageFeaturedCourse): boolean {
+  return featuredCourse?.enabled !== false;
+}
 
 export function getCourseCoverImage(course: CourseItem): string {
-  const logo = course.logo?.trim();
-  if (logo) {
-    return logo;
+  const bannerImage = course.bannerImage?.trim();
+  if (bannerImage) {
+    return bannerImage;
   }
 
   const image = course.image?.trim();
@@ -57,7 +67,7 @@ export function getCourseTypeLandingMeta(
   };
 
   if (known[raw]) {
-    return known[raw];
+    return { ...known[raw], label: course.typeLabel ?? known[raw].label };
   }
 
   const label = raw

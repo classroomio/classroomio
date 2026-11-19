@@ -22,8 +22,10 @@
   import { COURSE_SORT_OPTIONS, DEFAULT_COURSE_SORT, type CourseSortBy } from '../utils/constants';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
+  import { invalidateAll } from '$app/navigation';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
   import type { Snippet } from 'svelte';
+  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     courses?: OrgCourses | UserEnrolledCourses;
@@ -38,6 +40,11 @@
     filterControls?: Snippet;
     onCardClick?: (course: (OrgCourses | UserEnrolledCourses)[number]) => void;
     emptyAction?: Snippet;
+    emptyMedia?: Snippet;
+    hasMore?: boolean;
+    isLoadingMore?: boolean;
+    onLoadMore?: () => void | Promise<void>;
+    sectionTitle?: string;
   }
 
   let {
@@ -52,7 +59,12 @@
     showSortSelect = true,
     filterControls,
     onCardClick,
-    emptyAction
+    emptyAction,
+    emptyMedia,
+    hasMore = false,
+    isLoadingMore = false,
+    onLoadMore,
+    sectionTitle
   }: Props = $props();
 
   const resolvedEmptyTitle = $derived(
@@ -84,15 +96,17 @@
   async function handleDeleteCourse() {
     if (!$deleteCourseModal.id) return;
 
-    $deleteCourseModal.isDeleting = true;
+    const deletedCourseId = $deleteCourseModal.id;
+    deleteCourseModal.update((modal) => ({ ...modal, isDeleting: true }));
 
-    await courseApi.delete($deleteCourseModal.id);
+    await courseApi.delete(deletedCourseId);
 
     if (courseApi.success) {
-      deleteCourseModal.set(deleteCourseModalInitialState);
+      deleteCourseModal.set({ ...deleteCourseModalInitialState });
+      await invalidateAll();
+    } else {
+      deleteCourseModal.update((modal) => ({ ...modal, isDeleting: false }));
     }
-
-    $deleteCourseModal.isDeleting = false;
   }
 </script>
 
@@ -106,17 +120,22 @@
   isLoading={$deleteCourseModal.isDeleting}
 />
 
-<Page.BodyHeader align="right" class="p-0!">
-  <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
-  {#if showSortSelect}
-    <SortSelect options={filterOptions} bind:value={sortKey} />
+<div class={sectionTitle ? 'flex flex-wrap items-center justify-between gap-3' : ''}>
+  {#if sectionTitle}
+    <h2 class="text-sm font-medium">{sectionTitle}</h2>
   {/if}
-  {@render filterControls?.()}
+  <Page.BodyHeader align="right" class="p-0!">
+    <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
+    {#if showSortSelect}
+      <SortSelect options={filterOptions} bind:value={sortKey} />
+    {/if}
+    {@render filterControls?.()}
 
-  {#if !isLMS}
-    <ViewToggle view={$courseMetaDeta.view} onChange={setViewPreference} />
-  {/if}
-</Page.BodyHeader>
+    {#if !isLMS}
+      <ViewToggle view={$courseMetaDeta.view} onChange={setViewPreference} />
+    {/if}
+  </Page.BodyHeader>
+</div>
 
 <div class="mx-auto mt-4 w-full flex-1">
   {#if isLoading}
@@ -126,11 +145,18 @@
       <CourseCardLoader />
     </section>
   {:else if !courses.length}
-    <Empty title={resolvedEmptyTitle} description={resolvedEmptyDescription} icon={LibraryBigIcon} variant="page">
-      {#if !isLMS && !$isStudentExperience}
-        <CreateCourseButton isResponsive />
-      {:else if emptyAction}
+    <Empty
+      title={resolvedEmptyTitle}
+      description={resolvedEmptyDescription}
+      icon={emptyMedia ? undefined : LibraryBigIcon}
+      media={emptyMedia}
+      variant="page"
+      class={emptyMedia ? 'ui:text-center' : undefined}
+    >
+      {#if emptyAction}
         {@render emptyAction()}
+      {:else if !isLMS && !$isStudentExperience}
+        <CreateCourseButton isResponsive />
       {/if}
     </Empty>
   {:else if isLMS || $courseMetaDeta.view === 'grid'}
@@ -142,7 +168,7 @@
           id={courseData.id}
           slug={courseData.slug ?? ''}
           title={courseData.title}
-          logo={courseData.logo ?? null}
+          bannerImage={courseData.bannerImage ?? null}
           type={courseData.type}
           description={courseData.description}
           isPublished={courseData.isPublished ?? false}
@@ -161,5 +187,13 @@
         />
       {/each}
     </ResourceListRow.Group>
+  {/if}
+
+  {#if hasMore && !isLoading}
+    <div class="mt-6 flex justify-center">
+      <Button variant="secondary" loading={isLoadingMore} onclick={() => onLoadMore?.()}>
+        {$t('courses.load_more')}
+      </Button>
+    </div>
   {/if}
 </div>

@@ -14,6 +14,7 @@ import { env } from '@cio/core/config/env';
 import { ROLE } from '@cio/utils/constants';
 import { PLAN } from '@cio/utils/plans';
 import { db } from '@cio/db/drizzle';
+import { captureOrganizationCreated } from '@api/services/product-events';
 
 export async function createOrganizationWithOwner(
   profileId: string,
@@ -21,7 +22,8 @@ export async function createOrganizationWithOwner(
     fullname?: string;
     orgName: string;
     siteName: string;
-  }
+  },
+  source: 'onboarding' | 'add_org' = 'onboarding'
 ) {
   // Self-hosted: block org creation when an org already exists
   if (env.PUBLIC_IS_SELFHOSTED === 'true') {
@@ -75,10 +77,16 @@ export async function createOrganizationWithOwner(
         );
       }
 
+      if (input.fullname) {
+        await updateProfile(profileId, { fullname: input.fullname }, tx);
+      }
+
       const organizations = await getOrganizationByProfileId(profileId, tx);
 
       return { organization, member, organizations };
     });
+
+    captureOrganizationCreated(profileId, result.organization, source);
 
     return {
       organization: result.organization,

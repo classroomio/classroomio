@@ -12,7 +12,7 @@ These are the placement rules for the ClassroomIO docs. Read them before adding 
 6. **"Developer" is three jobs, one home.** Consuming the API, running the product, and contributing to the code are three sections inside Developers, not three separate tabs — see rule 1's history below for why.
 7. **Every section opens with an overview page.**
 8. **Order the sidebar the way people actually use the product.**
-9. **Cross-cutting reference is documented once.** Auth, errors, rate limits, and pagination go in the API introduction, not repeated per endpoint.
+9. **Cross-cutting reference is documented once.** Auth, errors, rate limits, and pagination go in the API tab's Getting started pages (`content/docs/api`), not repeated per endpoint.
 10. **Labels are self-explanatory and consistent** in spelling and title style.
 11. **Navigation comes from one source of truth.** A rename applied once should apply everywhere.
 
@@ -43,7 +43,7 @@ So in practice, "prefer a description" means the page's own opening line does th
 
 - **Help Center** (`apps/help`, not this app): task-oriented how-tos for academy owners and admins, grouped by job, plus the Reference/Glossary section for terminology. User-facing content only.
 - **Developers** (this app): Build with the API (Token Auth, MCP), Self-hosting (running ClassroomIO on your own infrastructure), and Contributing (local setup, contributing code, design, translations, infrastructure).
-- **API** (this app): the OpenAPI reference, generated. Don't hand-write pages here.
+- **API** (this app): a short Getting started set (introduction, authentication, rate limits, errors, pagination) in `content/docs/api`, then the OpenAPI reference at `/api/reference`, generated. Don't hand-write endpoint pages.
 
 ## Documentation types
 
@@ -55,13 +55,13 @@ Every page is one of three types:
 
 If a change doesn't cleanly fit a user guide or a feature reference, it gets a changelog line, not a page. Most PRs that touch the product surface warrant a line, not a new file.
 
-The API reference is generated from the OpenAPI spec (`upload-openapi-spec.yml` regenerates it on every push to `main`), so it sits outside this taxonomy. Never hand-write pages there.
+The API reference is generated from the OpenAPI spec (`upload-openapi-spec.yml` regenerates it on every push to `main`), so it sits outside this taxonomy. Never hand-write pages under `/api/reference`.
 
 ## Voice and style
 
 Second person, present tense. Headings name what the reader does, not the feature's internal name: "See your food," not "Food viewing feature."
 
-Vale (`docs-validate.yml`) checks prose for passive voice and wordiness on every PR touching `apps/docs/**`, advisory only. It doesn't check the heading rule above yet: that's still a review call, not a lint rule.
+Run `vale sync && vale content/docs` (see `apps/docs/WORKFLOW.md`) to check prose for passive voice and wordiness. It doesn't check the heading rule above yet: that's still a review call, not a lint rule.
 
 **Don't use the `<Steps>`/`<Step>` components for step-by-step instructions.** Use numbered headings instead (`### 1. Do the first thing`, `### 2. Do the next thing`), following the pattern in `cal.com`'s developer docs. `Steps`/`Step` are Blume-framework JSX components with no plain-Markdown equivalent, so the browser-based CMS editor (Sveltia, `apps/help/public/admin`) can't render them while a writer is editing — the raw tags show instead of a formatted step. Numbered headings are ordinary Markdown, so they render correctly everywhere, including in that editor. This was a deliberate content-format decision (not a limitation to work around), made after checking how Cal.com, Linear, and Dub render step-by-step guides in their own docs.
 

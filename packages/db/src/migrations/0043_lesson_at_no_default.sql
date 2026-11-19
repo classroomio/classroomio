@@ -1,0 +1,1 @@
+ALTER TABLE "lesson" ALTER COLUMN "lesson_at" DROP DEFAULT;

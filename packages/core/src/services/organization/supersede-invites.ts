@@ -107,6 +107,7 @@ export async function supersedeStudentOrgInvites(
     actorProfileId: string;
     source: string;
     add: TSupersedeInviteAdd;
+    fullnamesByEmail?: Map<string, string>;
   }
 ): Promise<{ invites: TSupersededInvite[]; skipped: TSupersedeInviteSkipped[] }> {
   const normalized = normalizeEmails(input.emails);
@@ -159,6 +160,7 @@ export async function supersedeStudentOrgInvites(
     );
 
     const token = crypto.randomBytes(32).toString('base64url');
+    const fullname = input.fullnamesByEmail?.get(email);
     const [created] = await createOrganizationInvites(
       [
         {
@@ -173,7 +175,8 @@ export async function supersedeStudentOrgInvites(
             source: input.source,
             ...(courseIds.length > 0 ? { courseIds } : {}),
             ...(cohortIds.length > 0 ? { cohortIds } : {}),
-            ...(pathIds.length > 0 ? { pathIds } : {})
+            ...(pathIds.length > 0 ? { pathIds } : {}),
+            ...(fullname ? { fullname } : {})
           }
         }
       ],
@@ -261,7 +264,7 @@ async function buildAccessNamesLabel(
   }
 
   if (ids.cohortIds.length > 0) {
-    const cohorts = await getCohortsByOrg(orgId, ids.cohortIds, dbClient);
+    const cohorts = await getCohortsByOrg(orgId, ids.cohortIds, undefined, {}, dbClient);
     names.push(...cohorts.map((cohort) => cohort.name).filter(Boolean));
   }
 

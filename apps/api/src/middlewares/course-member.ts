@@ -1,9 +1,7 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes, handleError } from '@api/utils/errors';
-import { getCourseMemberAccess } from '@cio/db/queries/group';
-import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
-import { assertCourseNotLockedForStudent } from '@api/services/learning-path';
+import { canProfileOpenCourse } from '@api/services/course/access';
 
 /**
  * Middleware to check if the authenticated user is a member of a course's group
@@ -38,21 +36,8 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const { hasLiveGrant, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, user.id);
-
-    if (hasLiveGrant || isTeamMemberOrAdmin) {
-      if (!isTeamMemberOrAdmin) {
-        await assertCourseNotLockedForStudent(courseId, user.id);
-      }
-
-      return next();
-    }
-
-    const backfilledFromProgram = await ensureProgramCourseAccess(courseId, user.id);
-
-    if (backfilledFromProgram) {
-      await assertCourseNotLockedForStudent(courseId, user.id);
-
+    const isAllowed = await canProfileOpenCourse(courseId, user.id);
+    if (isAllowed) {
       return next();
     }
 

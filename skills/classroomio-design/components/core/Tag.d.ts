@@ -1,0 +1,2 @@
+export interface TagProps { children: React.ReactNode; variant?: 'outline'|'new'|'onPhoto'|'onPhotoLight'|'agent'; style?: React.CSSProperties; }
+export declare function Tag(props: TagProps): JSX.Element;

@@ -192,7 +192,7 @@
           <Input
             value={settings.footer.brand.tagline ?? ''}
             placeholder={$t('settings.landing_page.editor.footer.brand.tagline_placeholder')}
-            oninput={(event) => setter(event.currentTarget.value || undefined, 'footer.brand.tagline')}
+            oninput={(event) => setter(event.currentTarget.value, 'footer.brand.tagline')}
           />
         </Field.Field>
 
@@ -201,7 +201,7 @@
           <Input
             value={settings.footer.brand.copyright ?? ''}
             placeholder={$t('settings.landing_page.editor.footer.brand.copyright_placeholder')}
-            oninput={(event) => setter(event.currentTarget.value || undefined, 'footer.brand.copyright')}
+            oninput={(event) => setter(event.currentTarget.value, 'footer.brand.copyright')}
           />
         </Field.Field>
 

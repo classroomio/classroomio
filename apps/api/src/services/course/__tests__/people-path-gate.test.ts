@@ -85,7 +85,7 @@ vi.mock('../session-invite', () => ({
   getWelcomeSessionIcs: mocks.getWelcomeSessionIcs
 }));
 
-import { addMember, addMembers } from '../people';
+import { addMembers } from '../people';
 import { recordDirectCourseGrant } from '../enrollment-grants';
 
 describe('enrollOnlyInLearningPath enforcement in course people', () => {
@@ -107,28 +107,28 @@ describe('enrollOnlyInLearningPath enforcement in course people', () => {
     mocks.addCourseMember.mockResolvedValue({ id: 'gm-1', profileId: 'p-1' });
   });
 
-  it('rejects adding a student to a path-only course via addMember', async () => {
+  it('rejects adding a student to a path-only course via addMembers', async () => {
     mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: true }]);
 
     await expect(
-      addMember('c-1', { profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' })
+      addMembers('c-1', [{ profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' }])
     ).rejects.toMatchObject({ code: ErrorCodes.VALIDATION_ERROR, statusCode: 400 });
 
     expect(mocks.addCourseMember).not.toHaveBeenCalled();
   });
 
-  it('allows adding a tutor to a path-only course via addMember', async () => {
+  it('allows adding a tutor to a path-only course via addMembers', async () => {
     mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: true }]);
 
-    await addMember('c-1', { profileId: 'p-1', roleId: ROLE.TUTOR, email: 't@test.dev' });
+    await addMembers('c-1', [{ profileId: 'p-1', roleId: ROLE.TUTOR, email: 't@test.dev' }]);
 
     expect(mocks.addCourseMember).toHaveBeenCalled();
   });
 
-  it('allows adding a student to a regular course via addMember', async () => {
+  it('allows adding a student to a regular course via addMembers', async () => {
     mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: false }]);
 
-    await addMember('c-1', { profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' });
+    await addMembers('c-1', [{ profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' }]);
 
     expect(mocks.addCourseMember).toHaveBeenCalled();
     expect(vi.mocked(recordDirectCourseGrant)).toHaveBeenCalledWith(
@@ -150,9 +150,9 @@ describe('enrollOnlyInLearningPath enforcement in course people', () => {
       email: 't@test.dev'
     });
 
-    const result = await addMember('c-1', { profileId: 'p-1', roleId: ROLE.TUTOR, email: 't@test.dev' });
+    const result = await addMembers('c-1', [{ profileId: 'p-1', roleId: ROLE.TUTOR, email: 't@test.dev' }]);
 
-    expect(result).toMatchObject({ id: 'gm-existing', profileId: 'p-1' });
+    expect(result).toEqual([]);
     expect(mocks.addCourseMember).not.toHaveBeenCalled();
     expect(vi.mocked(recordDirectCourseGrant)).not.toHaveBeenCalled();
   });
@@ -169,9 +169,9 @@ describe('enrollOnlyInLearningPath enforcement in course people', () => {
       email: 's@test.dev'
     });
 
-    const result = await addMember('c-1', { profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' });
+    const result = await addMembers('c-1', [{ profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' }]);
 
-    expect(result).toMatchObject({ id: 'gm-existing', profileId: 'p-1' });
+    expect(result).toEqual([]);
     expect(mocks.addCourseMember).not.toHaveBeenCalled();
     expect(vi.mocked(recordDirectCourseGrant)).toHaveBeenCalledWith(
       { groupmemberId: 'gm-existing', courseId: 'c-1', profileId: 'p-1' },

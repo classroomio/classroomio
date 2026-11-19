@@ -23,7 +23,7 @@
         control: false,
         description: 'Callback function called when image is cropped',
         table: {
-          type: { summary: '(url: string) => void' },
+          type: { summary: '(url: string) => void | Promise<void>' },
           defaultValue: { summary: 'undefined' }
         }
       },

@@ -7,6 +7,7 @@ import {
   createLessonSchema,
   updateLessonSchema,
   updateLessonContentSchema,
+  getBlockRecipeSchema,
   createExerciseSchema,
   createExerciseSectionSchema,
   updateExerciseSchema,
@@ -24,6 +25,7 @@ import {
   listCourseOutlineSchema,
   readLessonSchema,
   readExerciseSchema,
+  readMySubmissionsSchema,
   searchCourseSchema,
   getStudentLearningPathsSchema
 } from './student';
@@ -33,6 +35,9 @@ export {
   LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
   LANDING_PAGE_SECTION_HTML_AGENT_HINT
 } from './landing-page-html-hint';
+
+export { BLOCK_RECIPE_TYPES, buildBlockRecipeManifest, getBlockRecipeMarkup } from './block-recipes';
+export type { BlockRecipeType } from './block-recipes';
 
 export type ToolSchema = {
   description: string;
@@ -53,6 +58,7 @@ const teacherTools: ToolRegistry = {
   [ToolName.CREATE_LESSON]: createLessonSchema,
   [ToolName.UPDATE_LESSON]: updateLessonSchema,
   [ToolName.UPDATE_LESSON_CONTENT]: updateLessonContentSchema,
+  [ToolName.GET_BLOCK_RECIPE]: getBlockRecipeSchema,
   [ToolName.CREATE_EXERCISE]: createExerciseSchema,
   [ToolName.CREATE_EXERCISE_SECTION]: createExerciseSectionSchema,
   [ToolName.UPDATE_EXERCISE]: updateExerciseSchema,
@@ -71,6 +77,7 @@ const studentTools: ToolRegistry = {
   [ToolName.LIST_COURSE_OUTLINE]: listCourseOutlineSchema,
   [ToolName.READ_LESSON]: readLessonSchema,
   [ToolName.READ_EXERCISE]: readExerciseSchema,
+  [ToolName.READ_MY_SUBMISSIONS]: readMySubmissionsSchema,
   [ToolName.SEARCH_COURSE]: searchCourseSchema,
   [ToolName.GET_STUDENT_LEARNING_PATHS]: getStudentLearningPathsSchema
 };
@@ -101,6 +108,7 @@ export {
   createLessonSchema,
   updateLessonSchema,
   updateLessonContentSchema,
+  getBlockRecipeSchema,
   createExerciseSchema,
   createExerciseSectionSchema,
   updateExerciseSchema,
@@ -117,5 +125,6 @@ export {
   getStudentLearningPathsSchema,
   readLessonSchema,
   readExerciseSchema,
+  readMySubmissionsSchema,
   searchCourseSchema
 };

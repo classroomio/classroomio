@@ -1,0 +1,3 @@
+export interface PersonFanPerson { x?: number; y?: number; z?: number; img: string; name: string; role: string; stats?: { label: string; value: string }[]; certified?: boolean; tilt?: number; style?: React.CSSProperties; }
+export interface PersonFanProps { people: PersonFanPerson[]; width?: number; height?: number; style?: React.CSSProperties; }
+export declare function PersonFan(props: PersonFanProps): JSX.Element;

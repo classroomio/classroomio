@@ -1,0 +1,106 @@
+---
+title: Rate limits
+description: How many requests an API key can make, the rate limit headers, and how to handle a 429.
+last_reviewed: '2026-10-23'
+---
+
+The API limits how many requests each API key can make, so one integration can't slow down the others.
+
+## The limit
+
+Each API key can make **100 requests per minute**. Every key has its own budget, so traffic on one key doesn't use up another's.
+
+Analytics snapshot, Academy query, and reminder endpoints have stricter per-minute budgets on top of that baseline: **60 Academy analytics queries per minute**, **20 analytics snapshots per minute**, and **20 overdue-goal reminders per minute**. Going over an analytics or reminder budget returns a `429` until capacity frees up again, at most a minute later. Sending a test email is capped separately at **5 per organization per 15 minutes**.
+
+## Rate limit headers
+
+Every response tells you where you stand:
+
+| Header | Meaning |
+| --- | --- |
+| `X-RateLimit-Limit` | Requests allowed per minute |
+| `X-RateLimit-Remaining` | Requests left in the current minute |
+| `X-RateLimit-Reset` | Sixty seconds after this request, as an ISO 8601 timestamp |
+
+On the Academy query, analytics snapshot and overdue-goal reminder endpoints, the headers report that endpoint's stricter per-key budget, not the 100-request baseline.
+
+```http
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 87
+X-RateLimit-Reset: 2026-10-23T14:05:00.000Z
+```
+
+## Exceeding the limit
+
+Once you go over the limit, requests fail with `429 Too Many Requests` until capacity frees up again, at most a minute later. The `Retry-After` header and the `retryAfter` field both give the number of seconds to wait, as an upper bound.
+
+```json
+{
+  "error": "Too Many Requests",
+  "message": "Rate limit exceeded. Please try again later.",
+  "retryAfter": 42
+}
+```
+
+This body is shaped differently from [other errors](/api/errors): it has no `success` or `code` field.
+
+### MCP keys
+
+MCP usage also has per-minute limits for each connected app or MCP key (`cio_mcp_...`) and for the whole organization. Going over them returns a `429` in the [standard error format](/api/errors#error-format), with no `Retry-After` header and no `retryAfter` field:
+
+```json
+{
+  "success": false,
+  "error": "Automation rate limit exceeded",
+  "code": "AUTOMATION_RATE_LIMIT_EXCEEDED"
+}
+```
+
+Wait up to a minute, because the limit counts the last 60 seconds, then retry.
+
+## Handle a 429
+
+Wait for `Retry-After` seconds, then retry. When the header is missing, as it is for MCP usage limits, this waits 60 seconds:
+
+```js
+async function request(url, options) {
+  const res = await fetch(url, options);
+
+  if (res.status === 429) {
+    const seconds = Number(res.headers.get('Retry-After') ?? 60);
+    await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+    return request(url, options);
+  }
+
+  return res;
+}
+```
+
+To stay under the limit:
+
+- Watch `X-RateLimit-Remaining` and slow down before it reaches zero.
+- Use the largest page size you need (`limit` up to `100`) instead of many small pages. See [Pagination](/api/pagination).
+- Cache responses that don't change often.
+
+:::note[Self-hosted instances]
+Rate limits apply only when the API runs with `NODE_ENV=production` and can reach Redis. If Redis is unavailable, requests go through without a limit, except for the fail-closed limiters below (analytics queries and snapshots, reminders, and email-template test emails), which refuse the request with a `503` instead.
+:::
+
+### Fail-closed limits
+
+The Academy analytics query, analytics snapshot, overdue-goal reminder, and email-template test-email limiters use `failClosed: true`. When Redis cannot be reached to check the budget, the request fails with `503` and code `RATE_LIMIT_UNAVAILABLE` instead of going through:
+
+```json
+{
+  "success": false,
+  "error": "Rate limit could not be checked. Please try again later.",
+  "code": "RATE_LIMIT_UNAVAILABLE"
+}
+```
+
+Retry the request once Redis is reachable again.
+
+## Next steps
+
+- [Errors](/api/errors): the other errors you can get, and how to fix them.
+- [Pagination](/api/pagination): page through list endpoints.

@@ -27,7 +27,13 @@ export const ZLessonVersionRetentionPayload = z
     /** Between `hourlyDays` and here, keep the last snapshot of each day. */
     dailyDays: z.number().int().positive().default(30),
     /** Hard cap on autosave snapshots per lesson language, regardless of age. */
-    maxAutoPerLanguage: z.number().int().positive().default(50)
+    maxAutoPerLanguage: z.number().int().positive().default(50),
+    /** Keep a block removed from every lesson restorable for this many days before purging it. */
+    deletedBlockDays: z.number().int().positive().default(30),
+    /** Keep every lesson revision newer than this many days. */
+    revisionKeepAllDays: z.number().int().positive().default(2),
+    /** Between `revisionKeepAllDays` and here, keep the last revision of each day. */
+    revisionDailyDays: z.number().int().positive().default(30)
   })
   // The tiers must widen as they age. The pruning predicate tests the hourly
   // window before the daily one, so overlapping windows silently apply hourly
@@ -39,6 +45,10 @@ export const ZLessonVersionRetentionPayload = z
   .refine((windows) => windows.hourlyDays <= windows.dailyDays, {
     message: 'hourlyDays must not exceed dailyDays',
     path: ['hourlyDays']
+  })
+  .refine((windows) => windows.revisionKeepAllDays <= windows.revisionDailyDays, {
+    message: 'revisionKeepAllDays must not exceed revisionDailyDays',
+    path: ['revisionKeepAllDays']
   });
 export type TLessonVersionRetentionPayload = z.infer<typeof ZLessonVersionRetentionPayload>;
 
@@ -54,11 +64,12 @@ export type TDeadLetterCleanupPayload = z.infer<typeof ZDeadLetterCleanupPayload
  * BullMQ job.
  */
 /**
- * Daily aggregation of raw analytics page events into the daily rollup tables.
- * Defaults to rolling up yesterday's data.
+ * Aggregation of raw analytics page events into the daily rollup tables.
+ * Without `daysAgo` it rolls up yesterday and today so far; with it, only that
+ * one UTC day (`0` is today).
  */
 export const ZAnalyticsDailyRollupPayload = z.object({
-  daysAgo: z.number().int().positive().default(1)
+  daysAgo: z.number().int().nonnegative().optional()
 });
 export type TAnalyticsDailyRollupPayload = z.infer<typeof ZAnalyticsDailyRollupPayload>;
 
@@ -106,3 +117,17 @@ export const ZCourseRoleReconcilePayload = z.object({
   profileId: z.string().min(1)
 });
 export type TCourseRoleReconcilePayload = z.infer<typeof ZCourseRoleReconcilePayload>;
+
+/**
+ * Daily reminder for Early Adopter purchases that are paid but still not connected to an organization.
+ */
+export const ZEarlyAdopterClaimReminderPayload = z.object({
+  remindAfterDays: z.number().int().positive().default(3),
+  batchSize: z.number().int().positive().max(500).default(100)
+});
+export type TEarlyAdopterClaimReminderPayload = z.infer<typeof ZEarlyAdopterClaimReminderPayload>;
+
+export const ZWebhookRetentionPayload = z.object({
+  olderThanDays: z.number().int().positive().default(30)
+});
+export type TWebhookRetentionPayload = z.infer<typeof ZWebhookRetentionPayload>;

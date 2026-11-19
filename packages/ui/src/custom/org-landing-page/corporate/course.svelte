@@ -19,6 +19,7 @@
     logoUrl,
     navItems,
     authAction,
+    learnerAccount,
     hero,
     socialProof,
     info,
@@ -41,7 +42,7 @@
   <main>
     <CorporateHero {orgName} hero={heroProps}>
       {#snippet navigation()}
-        <CorporateNav {orgName} {logoUrl} {navItems} {authAction} />
+        <CorporateNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </CorporateHero>
 
@@ -52,7 +53,7 @@
     {#if chips}
       <CourseChips variant="corporate" {chips} {labels} />
     {/if}
-    <CourseInstructor variant="corporate" {instructor} {labels} />
+    <CourseInstructor variant="corporate" {instructor} {logoUrl} {labels} />
     <CourseReviews variant="corporate" {reviews} {labels} />
     <CoursePricing variant="corporate" {pricing} {labels} />
   </main>

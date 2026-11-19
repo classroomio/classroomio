@@ -1,0 +1,151 @@
+import { Context, Next } from 'hono';
+import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
+
+import { ErrorCodes } from '@api/utils/errors';
+import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
+import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
+
+const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
+const COURSE_STUDENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/members\/[^/]+\/(?:lessons|exercises)(?:\/|$)/;
+const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
+const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
+const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
+const COURSE_CLONE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/clone\/?$/;
+const COURSE_STRUCTURE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/structure\/?$/;
+const COURSE_PUBLISH_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:publish|unpublish)\/?$/;
+const COURSE_RELATED_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/related\/?$/;
+const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
+const COURSE_SUBMISSION_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:submissions|marks)(?:\/|$)/;
+const COURSE_TEMPLATE_PATH = /^(?:\/public-api\/v1)?(?:\/course-templates|\/courses\/[^/]+\/template)(?:\/|$)/;
+const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
+const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
+const ORGANIZATION_DOMAIN_PATH = /^(?:\/public-api\/v1)?\/organization\/domain(?:\/|$)/;
+const ORGANIZATION_PATH = /^(?:\/public-api\/v1)?\/organization(?:\/|$)/;
+const ANALYTICS_QUERY_PATH = new RegExp(`^(?:/public-api/v1)?/analytics/${ORG_ANALYTICS_PAGE.slug}/query/?$`);
+const ANALYTICS_PATH =
+  /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics|\/cohorts\/[^/]+\/analytics|\/organization\/overview|\/audience\/[^/]+\/analytics)(?:\/|$)/;
+const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
+const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
+const COURSE_ITEM_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/?$/;
+const COURSE_LIST_PATH = /^(?:\/public-api\/v1)?\/courses\/?$/;
+
+export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
+  const isRead = method === 'GET' || method === 'HEAD';
+
+  // The analytics query is a POST body, but it stays a read; it must be mapped before the analytics rule,
+  // which only covers GET analytics, so any other analytics POST still falls through to null.
+  if (ANALYTICS_QUERY_PATH.test(path) && method === 'POST') {
+    return 'analytics:read';
+  }
+
+  // The analytics pages of cohorts, the organization and the audience sit under paths the family rules below
+  // would claim, so they are mapped first.
+  if (ANALYTICS_PATH.test(path) && isRead) {
+    return 'analytics:read';
+  }
+
+  if (COHORT_PATH.test(path)) {
+    return isRead ? 'cohort:read' : 'cohort:write';
+  }
+
+  if (AUDIENCE_PATH.test(path)) {
+    return isRead ? 'audience:read' : 'audience:write';
+  }
+
+  if (TEAM_PATH.test(path)) {
+    return isRead ? 'team:read' : 'team:write';
+  }
+
+  if (ORGANIZATION_DOMAIN_PATH.test(path)) {
+    return isRead ? 'organization:read' : 'organization:domain:write';
+  }
+
+  if (ORGANIZATION_PATH.test(path)) {
+    return isRead ? 'organization:read' : 'organization:write';
+  }
+
+  if (COURSE_STUDENT_PATH.test(path)) {
+    return 'course:student:write';
+  }
+
+  if (COURSE_MEMBER_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? 'course:member:read' : 'course:member:write';
+  }
+
+  if (COURSE_CERTIFICATE_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? 'course:certificate:read' : 'course:certificate:write';
+  }
+
+  if (COURSE_CONTENT_PATH.test(path) || COURSE_TEMPLATE_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? 'course:read' : 'course:write';
+  }
+
+  if (COURSE_CLONE_PATH.test(path)) {
+    return isRead ? null : 'course:write';
+  }
+
+  if (COURSE_PUBLISH_PATH.test(path)) {
+    return method === 'POST' ? 'course:write' : null;
+  }
+
+  if (COURSE_STRUCTURE_PATH.test(path)) {
+    return isRead ? 'course:read' : null;
+  }
+
+  if (COURSE_LIST_PATH.test(path)) {
+    return isRead ? 'course:read' : method === 'POST' ? 'course:write' : null;
+  }
+
+  if (COURSE_RELATED_PATH.test(path)) {
+    return isRead ? 'course:read' : null;
+  }
+
+  // Only writes are mapped: there is no read route on this family yet, so a GET
+  // falls through to null and is refused rather than opened by a write scope.
+  if (MEDIA_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? null : 'media:write';
+  }
+
+  if (COURSE_EXERCISE_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? 'course:exercise:read' : 'course:exercise:write';
+  }
+
+  if (COURSE_SUBMISSION_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? 'course:submission:read' : 'course:submission:write';
+  }
+
+  if (TAG_PATH.test(path)) {
+    return isRead ? 'course:read' : 'course:tag:write';
+  }
+
+  // The handler limits these keys to a tagIds- or addTagIds-only body; every other course field still needs public_api:*.
+  if (COURSE_ITEM_PATH.test(path) && method === 'PUT') {
+    return 'course:tag:write';
+  }
+
+  return null;
+}
+
+// public_api:* opens every route; a route-level scope opens only the routes mapped above.
+export const publicApiScopesMiddleware = async (c: Context, next: Next) => {
+  const automationKey = c.get('automationKey');
+
+  if (!automationKey) {
+    return c.json({ success: false, error: 'Unauthorized', code: ErrorCodes.UNAUTHORIZED }, 401);
+  }
+
+  const keyScopes = automationKey.scopes ?? [];
+  const routeScope = getPublicApiRouteScope(c.req.method, c.req.path);
+  const allowed =
+    organizationApiKeyHasScopes(keyScopes, ['public_api:*']) ||
+    (routeScope !== null && organizationApiKeyHasScopes(keyScopes, [routeScope]));
+
+  if (!allowed) {
+    return c.json(
+      { success: false, error: 'Automation key is missing required scopes', code: ErrorCodes.FORBIDDEN },
+      403
+    );
+  }
+
+  return next();
+};

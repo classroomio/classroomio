@@ -16,7 +16,6 @@
 
   import { profile } from '$lib/utils/store/user';
   import { Vote } from '$features/ui';
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
   import { CommunityDeleteModal, CommunityCommentItem } from '$features/community/components';
@@ -24,6 +23,9 @@
   import type { CommunityQuestionSuccess } from '../utils/types';
   import { currentCommunityQuestion } from '../utils/store';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
+  import { ReportMenuItem } from '$features/report';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 
   interface Props {
     slug: string;
@@ -204,18 +206,32 @@
                 {communityApi.question?.createdAt ? calDateDiff(communityApi.question.createdAt) : ''}
               </p>
             </div>
-            {#if communityApi.question?.authorId === $profile.id || $isOrgAdmin}
-              <IconButton
-                onclick={() => {
-                  if (!communityApi.question) return;
-
-                  deleteQuestionState.shouldDelete = true;
-                  deleteQuestionState.questionId = String(communityApi.question.id);
-                }}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger
+                class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
               >
-                <TrashIcon size={16} />
-              </IconButton>
-            {/if}
+                <EllipsisVerticalIcon class="size-4" />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                {#if communityApi.question?.authorId === $profile.id || $isOrgAdmin}
+                  <DropdownMenu.Item
+                    class="text-destructive focus:text-destructive"
+                    onclick={() => {
+                      if (!communityApi.question) return;
+
+                      deleteQuestionState.shouldDelete = true;
+                      deleteQuestionState.questionId = String(communityApi.question.id);
+                    }}
+                  >
+                    <TrashIcon class="mr-2 size-3.5" />
+                    <span>{$t('community.delete.question')}</span>
+                  </DropdownMenu.Item>
+                {/if}
+                {#if communityApi.question.authorId !== $profile.id}
+                  <ReportMenuItem targetType="community_question" targetId={communityApi.question.id} />
+                {/if}
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
           </div>
           {#if communityApi.isEditMode}
             <div class="my-2">
@@ -244,6 +260,7 @@
                 isVoted={!!voted.comment[commentItem.id]}
                 {isValidAnswer}
                 isAuthorOrAdmin={commentItem.author?.id === $profile.id || $isOrgAdmin === true}
+                canReport={commentItem.author?.id !== $profile.id}
                 upVote={() => {
                   if (voted.comment[commentItem.id]) return;
 

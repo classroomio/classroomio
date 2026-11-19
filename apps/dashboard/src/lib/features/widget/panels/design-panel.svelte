@@ -3,6 +3,7 @@
   import * as Select from '@cio/ui/base/select';
   import { Switch } from '@cio/ui/base/switch';
   import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { t } from '$lib/utils/functions/translations';
   import type { WidgetDetail } from '../utils/types';
@@ -13,9 +14,10 @@
     planGatedFields: WidgetDetail['planGatedFields'];
     /** Zod-keyed validation errors from the last save attempt (e.g. `config.colors.primaryColor`). */
     errors?: Record<string, string>;
+    onFieldChange?: (path: string) => void;
   }
 
-  let { draftConfig = $bindable(), planGatedFields, errors = {} }: Props = $props();
+  let { draftConfig = $bindable(), planGatedFields, errors = {}, onFieldChange = () => {} }: Props = $props();
 
   const isPaidPlan = $derived(planGatedFields.isPaidPlan);
   const availableThemes = $derived(planGatedFields.availableThemes);
@@ -31,6 +33,7 @@
         type="color"
         aria-label={label}
         bind:value={draftConfig.colors[key]}
+        oninput={() => onFieldChange(`config.colors.${key}`)}
         class="h-9 w-9 cursor-pointer rounded border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
       />
       <span class="ui:text-muted-foreground font-mono text-sm">{draftConfig.colors[key]}</span>
@@ -61,29 +64,32 @@
       {@render colorField($t('widgets.form.background_color'), 'backgroundColor')}
       {@render colorField($t('widgets.form.text_color'), 'textColor')}
       {@render colorField($t('widgets.form.border_color'), 'borderColor')}
-      <InputField
-        type="number"
-        label={$t('widgets.form.border_radius')}
-        bind:value={draftConfig.content.borderRadius}
+      <NumberField
+        integer
         min={0}
         max={32}
-        step={1}
+        label={$t('widgets.form.border_radius')}
+        bind:value={draftConfig.content.borderRadius}
+        onInput={() => onFieldChange('config.content.borderRadius')}
+        onValueChange={() => onFieldChange('config.content.borderRadius')}
         helperMessage={errFor('config.content.borderRadius') ? '' : $t('widgets.form.border_radius_hint')}
         errorMessage={errFor('config.content.borderRadius')}
       />
       <InputField
         label={$t('widgets.form.font_family')}
         bind:value={draftConfig.typography.fontFamily}
+        onInput={() => onFieldChange('config.typography.fontFamily')}
         maxLength={120}
         errorMessage={errFor('config.typography.fontFamily')}
       />
-      <InputField
-        type="number"
-        label={$t('widgets.form.font_scale')}
-        bind:value={draftConfig.typography.fontSizeScale}
+      <NumberField
         min={0.8}
         max={1.4}
         step={0.1}
+        label={$t('widgets.form.font_scale')}
+        bind:value={draftConfig.typography.fontSizeScale}
+        onInput={() => onFieldChange('config.typography.fontSizeScale')}
+        onValueChange={() => onFieldChange('config.typography.fontSizeScale')}
         helperMessage={errFor('config.typography.fontSizeScale') ? '' : $t('widgets.form.font_scale_hint')}
         errorMessage={errFor('config.typography.fontSizeScale')}
       />
@@ -94,6 +100,7 @@
       <TextareaField
         label={$t('widgets.form.custom_css')}
         bind:value={draftConfig.advanced.customCss}
+        oninput={() => onFieldChange('config.advanced.customCss')}
         rows={6}
         maxlength={5000}
         helperMessage={!isPaidPlan

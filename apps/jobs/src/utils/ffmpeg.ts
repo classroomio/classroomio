@@ -83,13 +83,43 @@ export async function ffmpegRun(args: string[]): Promise<void> {
 }
 
 /**
+ * Mean luminance of a frame, 0 (black) to 255 (white).
+ *
+ * `signalstats` alone no longer prints its stats to stderr on newer ffmpeg, so
+ * the value is requested as frame metadata. Both shapes are accepted because
+ * older builds still log the stderr form.
+ */
+export function parseMeanLuma(ffmpegOutput: string): number | null {
+  const metadata = ffmpegOutput.match(/lavfi\.signalstats\.YAVG=([0-9]+(?:\.[0-9]+)?)/);
+  const logged = ffmpegOutput.match(/YAVG:([0-9]+(?:\.[0-9]+)?)/);
+  const value = metadata?.[1] ?? logged?.[1];
+
+  return value === undefined ? null : Number.parseFloat(value);
+}
+
+/** Last few lines of ffmpeg output, for an error a caller can act on. */
+function stderrTail(stderr: string, lines = 4): string {
+  return stderr.trimEnd().split('\n').slice(-lines).join(' | ');
+}
+
+/**
  * Compute the mean luminance (`YAVG`) of an image or single video frame using
  * ffmpeg's `signalstats` filter. Returned on the original 0-255 scale; a fully
  * black frame is ~0, fully white ~255. Throws if ffmpeg fails or the value is
- * not present in stderr.
+ * not present in its output.
  */
 export async function ffmpegProbeLuma(filePath: string): Promise<number> {
-  const args = ['-hide_banner', '-nostats', '-i', filePath, '-vf', 'signalstats', '-f', 'null', '-'];
+  const args = [
+    '-hide_banner',
+    '-nostats',
+    '-i',
+    filePath,
+    '-vf',
+    'signalstats,metadata=print:key=lavfi.signalstats.YAVG',
+    '-f',
+    'null',
+    '-'
+  ];
   let stderr = '';
   try {
     const result = await execFileAsync(FFMPEG_BIN, args, { maxBuffer: MAX_OUTPUT_BYTES });
@@ -111,12 +141,12 @@ export async function ffmpegProbeLuma(filePath: string): Promise<number> {
     }
   }
 
-  const match = stderr.match(/YAVG:([0-9]+(?:\.[0-9]+)?)/);
-  if (!match) {
-    throw new Error('ffmpegProbeLuma: signalstats YAVG not found in ffmpeg output');
+  const luma = parseMeanLuma(stderr);
+  if (luma === null) {
+    throw new Error(`ffmpegProbeLuma: no YAVG in ffmpeg output — ${stderrTail(stderr)}`);
   }
 
-  return Number.parseFloat(match[1]);
+  return luma;
 }
 
 /**

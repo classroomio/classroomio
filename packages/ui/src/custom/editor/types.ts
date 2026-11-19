@@ -4,6 +4,8 @@ import type { EditorState, Transaction } from '@tiptap/pm/state';
 import type { EditorView } from '@tiptap/pm/view';
 import type { Snippet } from 'svelte';
 
+export type EditorToolbarPreset = 'default' | 'email';
+
 export interface EdraEditorProps {
   placeholder?: string | ((node: any) => string);
   content?: Content;
@@ -12,6 +14,9 @@ export interface EdraEditorProps {
   autofocus?: boolean;
   onUpdate?: (args: { editor: Editor; transaction: Transaction }) => void;
   class?: string;
+  onImageUpload?: (file: File) => Promise<string>;
+  onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
+  emailSafe?: boolean;
 }
 
 export interface EditorProps {
@@ -19,6 +24,8 @@ export interface EditorProps {
   content?: Content;
   // Whether the toolbar should be visible
   showToolBar?: boolean;
+  toolbarPreset?: EditorToolbarPreset;
+  toolbarTrailing?: Snippet<[]>;
   // Whether the editor is editable
   editable?: boolean;
   // Whether to enable localStorage persistence
@@ -35,10 +42,18 @@ export interface EditorProps {
   onContentChange?: (content: Content) => void;
   onEditorReady?: (editor: Editor) => void;
   onEditorDestroy?: () => void;
+  onImageUpload?: (file: File) => Promise<string>;
+  showDragHandle?: boolean;
+  expandable?: boolean;
+  expanded?: boolean;
+  expandedTitle?: string;
+  expandedDescription?: string;
 }
 
 export interface EdraToolbarProps {
   editor: Editor;
+  preset?: EditorToolbarPreset;
+  trailingContent?: Snippet<[]>;
   class?: string;
   excludedCommands?: string[];
   children?: Snippet<[]>;
@@ -52,4 +67,11 @@ export interface ShouldShowProps {
   oldState?: EditorState;
   from: number;
   to: number;
+}
+
+export interface UnsplashPhoto {
+  id: string | number;
+  user: { name: string; username: string };
+  urls: { regular: string };
+  alt_description: string;
 }

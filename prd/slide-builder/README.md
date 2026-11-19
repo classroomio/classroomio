@@ -248,7 +248,7 @@ export const slide = pgTable(
 );
 ```
 
-**One row per slide, not one jsonb document per deck.** This is deliberate: `CHAT_VS_RUN.md:75` records that `update_lesson_content` "writes full lesson HTML — a single call can be 5–20k tokens of output." A per-slide row makes `update_slide` a surgical edit of a few hundred tokens and `reorder_slides` an order update.
+**One row per slide, not one jsonb document per deck.** This is deliberate: `CHAT_VS_RUN.md:75` records that `update_lesson_content` writes the full HTML of a text block, and "a single call can be 5–20k tokens of output." A per-slide row makes `update_slide` a surgical edit of a few hundred tokens and `reorder_slides` an order update.
 
 An image block references an asset by `assetId`, never by copying a URL — per the repo rule that persisted columns store relationships, not derived values. The public URL is resolved at render time.
 

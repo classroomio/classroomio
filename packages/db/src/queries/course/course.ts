@@ -29,11 +29,24 @@ import {
 } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import type { TCourseType } from '@cio/utils/constants/course-type';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { toContainsPattern } from '@db/utils/like-pattern';
+import { contentWriteBumpsTimestamp } from './content-timestamp';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
 import { isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
+
+/**
+ * `bannerImage` is the canonical course image and `logo` the deprecated column
+ * it replaced. Every query that returns a raw course row resolves through here,
+ * so a row written before the rename still carries an image for consumers that
+ * only read `bannerImage`.
+ */
+function withResolvedCourseBannerImage<T extends { bannerImage: string | null; logo: string | null }>(course: T): T {
+  return { ...course, bannerImage: resolveCourseBannerImage(course) };
+}
 
 /**
  * Base course type - extends TCourse with lessonCount
@@ -56,10 +69,13 @@ export interface TAdminCourse extends TBaseCourse {
  * Student course type - extends TBaseCourse with progress fields
  * Used for student dashboard and enrolled courses views
  * progressRate = lessons completed, exercisesCompleted = exercises submitted
+ * lessonCount / exerciseCount = all content (display), progress* = content counted toward progress
  */
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
   exercisesCompleted: number;
+  progressLessonCount: number;
+  progressExerciseCount: number;
   certificateEarnedAt: string | null;
   /** Recorded course completion from `groupmember.completed_at`. Null until evaluation records it. */
   completedAt: string | null;
@@ -93,7 +109,8 @@ export const getPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
-      eq(schema.course.enrollOnlyInLearningPath, false)
+      eq(schema.course.enrollOnlyInLearningPath, false),
+      eq(schema.course.isTemplate, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -153,7 +170,7 @@ export const getPublishedCoursesBySiteName = async (
           .orderBy(asc(schema.course.displayOrder), desc(schema.course.createdAt));
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
       exerciseCount: Number(row.exerciseCount)
     }));
@@ -181,7 +198,8 @@ export const countPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
-      eq(schema.course.enrollOnlyInLearningPath, false)
+      eq(schema.course.enrollOnlyInLearningPath, false),
+      eq(schema.course.isTemplate, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -232,6 +250,8 @@ export const reorderOrgCourses = async (orgId: string, orders: { id: string; ord
     const courseIds = orders.map(({ id }) => id);
 
     await db.transaction(async (tx) => {
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`org_course_order:${orgId}`}))`);
+
       const allOrgCourses = await tx
         .select({ id: schema.course.id })
         .from(schema.course)
@@ -291,7 +311,12 @@ export const getCoursesById = async (orgId: string): Promise<TCourse[]> => {
       .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
       .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
       .where(
-        and(eq(schema.organization.id, orgId), eq(schema.course.status, 'ACTIVE'), eq(schema.course.isPublished, true))
+        and(
+          eq(schema.organization.id, orgId),
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          eq(schema.course.isTemplate, false)
+        )
       )
       .groupBy(
         schema.course.id,
@@ -302,7 +327,7 @@ export const getCoursesById = async (orgId: string): Promise<TCourse[]> => {
       );
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessons: [{ count: Number(row.lessonCount) }],
       group: {
         organization: row.organization
@@ -376,12 +401,14 @@ export const getCoursesBySiteNameForSetup = async (siteName: string) => {
     .where(eq(schema.organization.siteName, siteName));
 
   return result.map((row) => ({
-    ...row.course
+    ...withResolvedCourseBannerImage(row.course)
   }));
 };
 export async function getCourseById(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+    const rows = await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+
+    return rows.map(withResolvedCourseBannerImage);
   } catch (error) {
     console.error('getCourseById error:', error);
     throw new Error(
@@ -411,6 +438,20 @@ export async function getEnrollOnlyInLearningPathCourses(
   } catch (error) {
     console.error('getEnrollOnlyInLearningPathCourses error:', error);
     throw new Error(`Failed to get path-only courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Reads a course row and locks it until the surrounding transaction ends. Must be called with a transaction client.
+ */
+export async function getCourseByIdForUpdate(courseId: string, dbClient: DbOrTxClient) {
+  try {
+    return await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1).for('update');
+  } catch (error) {
+    console.error('getCourseByIdForUpdate error:', error);
+    throw new Error(
+      `Failed to lock course by ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -559,7 +600,7 @@ export async function getCourseWithRelations(
         : null;
 
     return {
-      ...course,
+      ...withResolvedCourseBannerImage(course),
       group,
       attendance,
       contentItems,
@@ -576,7 +617,10 @@ export async function createCourse(newCourse: TNewCourse, dbClient: DbOrTxClient
     return await dbClient.insert(schema.course).values(newCourse).returning();
   } catch (error) {
     console.error('createCourse error:', error);
-    throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw Object.assign(
+      new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`),
+      { cause: error }
+    );
   }
 }
 
@@ -657,9 +701,10 @@ export async function getCourseProgress(
   exercisesCompleted: number;
   groupMemberId: string | null;
   roleId: number | null;
+  enrolledAt: string | null;
+  completedAt: string | null;
   certificateEarnedAt: string | null;
   certificationEmailSentAt: string | null;
-  completedAt: string | null;
 }> {
   try {
     // Get the groupmember ID for this profile in the course
@@ -667,9 +712,10 @@ export async function getCourseProgress(
       .select({
         id: schema.groupmember.id,
         roleId: schema.groupmember.roleId,
+        enrolledAt: schema.groupmember.createdAt,
+        completedAt: schema.groupmember.completedAt,
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
-        certificationEmailSentAt: schema.groupmember.certificationEmailSentAt,
-        completedAt: schema.groupmember.completedAt
+        certificationEmailSentAt: schema.groupmember.certificationEmailSentAt
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -685,20 +731,25 @@ export async function getCourseProgress(
         exercisesCompleted: 0,
         groupMemberId: null,
         roleId: null,
+        enrolledAt: null,
+        completedAt: null,
         certificateEarnedAt: null,
-        certificationEmailSentAt: null,
-        completedAt: null
+        certificationEmailSentAt: null
       };
     }
 
     const groupMemberId = groupMemberResult[0].id;
     const roleId = groupMemberResult[0].roleId;
+    const enrolledAt = groupMemberResult[0].enrolledAt ?? null;
+    const completedAt = groupMemberResult[0].completedAt ?? null;
     const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
-    const completedAt = groupMemberResult[0].completedAt ?? null;
 
     const [lessons, completedLessons, exercises, [completedRow]] = await Promise.all([
-      db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
+      db
+        .select({ id: schema.lesson.id })
+        .from(schema.lesson)
+        .where(and(eq(schema.lesson.courseId, courseId), sql`${schema.lesson.completionPolicy} != 'none'`)),
 
       db
         .select({ id: schema.lessonCompletion.id })
@@ -707,6 +758,7 @@ export async function getCourseProgress(
         .where(
           and(
             eq(schema.lesson.courseId, courseId),
+            sql`${schema.lesson.completionPolicy} != 'none'`,
             eq(schema.lessonCompletion.profileId, profileId),
             eq(schema.lessonCompletion.isComplete, true)
           )
@@ -716,7 +768,12 @@ export async function getCourseProgress(
         .select({ id: schema.exercise.id })
         .from(schema.exercise)
         .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-        .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))),
+        .where(
+          and(
+            or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+            sql`${schema.exercise.completionPolicy} != 'none'`
+          )
+        ),
 
       db
         .select({
@@ -727,6 +784,7 @@ export async function getCourseProgress(
         .where(
           and(
             or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+            sql`${schema.exercise.completionPolicy} != 'none'`,
             isExerciseCompletedSql('exercise', { groupMemberId })
           )
         )
@@ -739,9 +797,10 @@ export async function getCourseProgress(
       exercisesCompleted: completedRow?.exercisesCompleted ?? 0,
       groupMemberId,
       roleId,
+      enrolledAt,
+      completedAt,
       certificateEarnedAt,
-      certificationEmailSentAt,
-      completedAt
+      certificationEmailSentAt
     };
   } catch (error) {
     console.error('getCourseProgress error:', error);
@@ -749,28 +808,16 @@ export async function getCourseProgress(
   }
 }
 
-/** Course + org fields needed for certification email and threshold rules */
+/** Course + org fields needed for certification email and completion rules */
 export type TCourseCertificationRow = {
-  type: string | null;
-  compliance: {
-    retakeIntervalMonths: number;
-    gracePeriodDays?: number;
-    reminderDaysBefore?: number[];
-    isMandatory?: boolean;
-    framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
-    maxRetakeAttempts?: number | null;
-    passingScore?: number;
-  } | null;
   certificate: {
     isDownloadable?: boolean;
     theme?: string;
     deadline?: string | null;
-    threshold?: number;
-    requiredExerciseId?: string | null;
-    exerciseMinScorePercent?: number | null;
     emailMessage?: string | null;
   } | null;
   title: string;
+  type: TCourseType | null;
   orgId: string;
   orgSiteName: string | null;
   orgCustomDomain: string | null;
@@ -784,10 +831,9 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   try {
     const [row] = await db
       .select({
-        type: schema.course.type,
-        compliance: schema.course.compliance,
         certificate: schema.course.certificate,
         title: schema.course.title,
+        type: schema.course.type,
         orgId: schema.organization.id,
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,
@@ -811,6 +857,10 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   }
 }
 
+type OrgCoursePublishedStatus = 'published' | 'unpublished';
+type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons' | 'name' | 'price';
+type OrgCourseSortOrder = 'asc' | 'desc';
+
 interface GetOrgCoursesOptions {
   /** Organization ID (required) */
   orgId: string;
@@ -820,6 +870,10 @@ interface GetOrgCoursesOptions {
   courseIds?: string[];
   /** Optional search query against the course title */
   search?: string;
+  type?: TCourseType;
+  publishedStatus?: OrgCoursePublishedStatus;
+  sortKey?: OrgCourseSortKey;
+  order?: OrgCourseSortOrder;
   /** Page number (1-indexed) */
   page?: number;
   /** Page size */
@@ -834,8 +888,69 @@ export interface GetOrgCoursesResult {
   totalPages: number;
 }
 
+function orgCourseListConditions({
+  orgId,
+  courseIds,
+  search,
+  type,
+  publishedStatus
+}: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'>) {
+  const conditions = [
+    eq(schema.group.organizationId, orgId),
+    eq(schema.course.status, 'ACTIVE'),
+    eq(schema.course.isTemplate, false)
+  ];
+
+  if (courseIds && courseIds.length > 0) {
+    conditions.push(inArray(schema.course.id, courseIds));
+  }
+
+  if (search?.trim()) {
+    conditions.push(ilike(schema.course.title, toContainsPattern(search.trim())));
+  }
+
+  if (type) {
+    conditions.push(eq(schema.course.type, type));
+  }
+
+  if (publishedStatus === 'published') {
+    conditions.push(eq(schema.course.isPublished, true));
+  }
+
+  if (publishedStatus === 'unpublished') {
+    conditions.push(eq(schema.course.isPublished, false));
+  }
+
+  return conditions;
+}
+
+function orgCourseListOrderBy(sortKey?: OrgCourseSortKey, order?: OrgCourseSortOrder) {
+  const direction = order === 'asc' ? asc : desc;
+  const column =
+    sortKey === 'last_updated_at'
+      ? sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`
+      : sortKey === 'published'
+        ? schema.course.isPublished
+        : sortKey === 'lessons'
+          ? sql`COUNT(DISTINCT ${schema.lesson.id})`
+          : sortKey === 'name'
+            ? sql`lower(${schema.course.title})`
+            : sortKey === 'price'
+              ? sql`COALESCE(${schema.course.cost}, 0)`
+              : schema.course.createdAt;
+
+  return [direction(column), direction(schema.course.id)];
+}
+
 export async function countOrgCourses(
-  { orgId, profileId, courseIds, search }: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search'>,
+  {
+    orgId,
+    profileId,
+    courseIds,
+    search,
+    type,
+    publishedStatus
+  }: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'>,
   dbClient: DbOrTxClient = db
 ): Promise<number> {
   try {
@@ -843,15 +958,7 @@ export async function countOrgCourses(
       return 0;
     }
 
-    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
-
-    if (courseIds && courseIds.length > 0) {
-      conditions.push(inArray(schema.course.id, courseIds));
-    }
-
-    if (search?.trim()) {
-      conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
-    }
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
 
     const totalQuery = profileId
       ? dbClient
@@ -885,7 +992,18 @@ export async function countOrgCourses(
  * @returns Array of courses with admin-level data
  */
 export const getOrgCourses = async (
-  { orgId, profileId, courseIds, search, page = 1, limit = 20 }: GetOrgCoursesOptions,
+  {
+    orgId,
+    profileId,
+    courseIds,
+    search,
+    type,
+    publishedStatus,
+    sortKey,
+    order,
+    page = 1,
+    limit = 20
+  }: GetOrgCoursesOptions,
   dbClient: DbOrTxClient = db
 ): Promise<GetOrgCoursesResult> => {
   try {
@@ -899,17 +1017,8 @@ export const getOrgCourses = async (
       };
     }
 
-    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
-
-    if (courseIds && courseIds.length > 0) {
-      conditions.push(inArray(schema.course.id, courseIds));
-    }
-
-    if (search?.trim()) {
-      conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
-    }
-
-    const total = await countOrgCourses({ orgId, profileId, courseIds, search }, dbClient);
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
+    const total = await countOrgCourses({ orgId, profileId, courseIds, search, type, publishedStatus }, dbClient);
 
     const baseQuery = dbClient
       .select({
@@ -942,13 +1051,13 @@ export const getOrgCourses = async (
 
     const result = await itemsQuery
       .groupBy(schema.course.id)
-      .orderBy(desc(schema.course.createdAt))
+      .orderBy(...orgCourseListOrderBy(sortKey, order))
       .limit(limit)
       .offset((page - 1) * limit);
 
     return {
       items: result.map((row) => ({
-        ...row.course,
+        ...withResolvedCourseBannerImage(row.course),
         lessonCount: Number(row.lessonCount),
         totalStudents: Number(row.studentCount),
         exerciseCount: Number(row.exerciseCount)
@@ -990,6 +1099,7 @@ export async function searchOrgCourses(orgId: string, search: string, limit: num
         and(
           eq(schema.group.organizationId, orgId),
           eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isTemplate, false),
           or(ilike(schema.course.title, searchValue), ilike(schema.course.description, searchValue))
         )
       )
@@ -1108,11 +1218,16 @@ export const getEnrolledCourses = async ({
       .select({
         course: schema.course,
         lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('lesson_count'),
+        progressLessonCount:
+          sql<number>`COUNT(DISTINCT CASE WHEN ${schema.lesson.completionPolicy} != 'none' THEN ${schema.lesson.id} END)`.as(
+            'progress_lesson_count'
+          ),
         progressRate: sql<number>`(
           SELECT COUNT(*)::bigint
           FROM ${schema.lessonCompletion} as lc
           JOIN ${schema.lesson} as l ON l.id = lc.lesson_id
           WHERE ${eq(sql`l.course_id`, schema.course.id)}
+          AND l.completion_policy != 'none'
           AND lc.is_complete = true
           AND lc.profile_id = ${sql.raw(`'${profileId}'::uuid`)}
         )`.as('progress_rate'),
@@ -1122,12 +1237,20 @@ export const getEnrolledCourses = async ({
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
         )`.as('exercise_count'),
+        progressExerciseCount: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.exercise} as ex
+          LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+          WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
+            AND ex.completion_policy != 'none'
+        )`.as('progress_exercise_count'),
         exercisesCompleted: sql<number>`(
           SELECT COUNT(*)::bigint
           FROM ${schema.exercise} as ex
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${and(
             or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id)),
+            sql`ex.completion_policy != 'none'`,
             isExerciseCompletedSql('ex', { profileId })
           )}
         )`.as('exercises_completed'),
@@ -1174,6 +1297,7 @@ export const getEnrolledCourses = async ({
         and(
           eq(schema.group.organizationId, orgId),
           eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isTemplate, false),
           or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id)),
           ...(nonPathOnly
             ? [
@@ -1193,13 +1317,15 @@ export const getEnrolledCourses = async ({
       .orderBy(desc(schema.course.createdAt));
 
     const liveCourseIds = result.filter((row) => row.course.type === 'LIVE_CLASS').map((row) => row.course.id);
-    const upcomingByCourse = await getUpcomingSessionsForCourseIds(liveCourseIds);
+    const upcomingByCourse = await getUpcomingSessionsForCourseIds(liveCourseIds, { includeRunning: true });
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
+      progressLessonCount: Number(row.progressLessonCount ?? 0),
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
+      progressExerciseCount: Number(row.progressExerciseCount ?? 0),
       exercisesCompleted: Number(row.exercisesCompleted),
       certificateEarnedAt: row.certificateEarnedAt ?? null,
       completedAt: row.completedAt ?? null,
@@ -1220,6 +1346,8 @@ interface GetExploreCoursesOptions {
   profileId: string;
   limit?: number;
   page?: number;
+  sortKey?: OrgCourseSortKey;
+  order?: OrgCourseSortOrder;
 }
 
 export interface GetExploreCoursesResult {
@@ -1240,7 +1368,9 @@ export const getExploreCourses = async ({
   orgId,
   profileId,
   limit,
-  page = 1
+  page = 1,
+  sortKey,
+  order
 }: GetExploreCoursesOptions): Promise<GetExploreCoursesResult> => {
   try {
     const whereCondition = and(
@@ -1248,6 +1378,7 @@ export const getExploreCourses = async ({
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
       eq(schema.course.enrollOnlyInLearningPath, false),
+      eq(schema.course.isTemplate, false),
       isNull(schema.groupmember.id),
       // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
       // legacy allowNewStudent, then open. `->>` yields NULL for a JSON null,
@@ -1277,7 +1408,7 @@ export const getExploreCourses = async ({
       )
       .where(whereCondition)
       .groupBy(schema.course.id, schema.group.id)
-      .orderBy(desc(schema.course.createdAt));
+      .orderBy(...orgCourseListOrderBy(sortKey, order));
 
     const countSelect = db
       .select({ total: count(schema.course.id) })
@@ -1296,7 +1427,7 @@ export const getExploreCourses = async ({
 
     return {
       data: rows.map((row) => ({
-        ...row.course,
+        ...withResolvedCourseBannerImage(row.course),
         lessonCount: Number(row.lessonCount),
         exerciseCount: Number(row.exerciseCount)
       })),
@@ -1490,9 +1621,9 @@ export async function updateUngroupedLessonsSectionId(
   }
 }
 
-export async function getCourseSectionsByCourseId(courseId: string) {
+export async function getCourseSectionsByCourseId(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return db.select().from(schema.courseSection).where(eq(schema.courseSection.courseId, courseId));
+    return dbClient.select().from(schema.courseSection).where(eq(schema.courseSection.courseId, courseId));
   } catch (error) {
     console.error('getCourseSectionsByCourseId error:', error);
     throw new Error(
@@ -1526,11 +1657,19 @@ export async function createCourseSections(values: TNewCourseSection[], dbClient
   }
 }
 
-export async function updateCourseSection(sectionId: string, data: Partial<TCourseSection>) {
+export async function updateCourseSection(
+  sectionId: string,
+  data: Partial<TCourseSection>,
+  dbClient: DbOrTxClient = db
+) {
   try {
-    const [updated] = await db
+    const fields = { ...data };
+    delete fields.updatedAt;
+    const fieldNames = Object.keys(fields);
+    const patch = contentWriteBumpsTimestamp(fieldNames) ? { ...fields, updatedAt: new Date().toISOString() } : fields;
+    const [updated] = await dbClient
       .update(schema.courseSection)
-      .set({ ...data, updatedAt: new Date().toISOString() })
+      .set(patch)
       .where(eq(schema.courseSection.id, sectionId))
       .returning();
     return updated || null;
@@ -1574,6 +1713,21 @@ export async function getCourseGroupIds(courseIds: string[], dbClient: DbOrTxCli
     console.error('getCourseGroupIds error:', error);
     throw new Error(`Failed to get course group IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
+
+export async function getCoursesByGroupIds(groupIds: string[], dbClient: DbOrTxClient = db) {
+  if (groupIds.length === 0) return [];
+
+  return dbClient
+    .select({
+      courseId: schema.course.id,
+      groupId: schema.course.groupId,
+      cost: schema.course.cost,
+      organizationId: schema.group.organizationId
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.group.id, schema.course.groupId))
+    .where(inArray(schema.course.groupId, groupIds));
 }
 
 /** Locks the course row so a concurrent status change can't slip past an accept in progress. */
@@ -1627,10 +1781,26 @@ export async function getOrgCourseGroups(orgId: string, courseIds: string[], dbC
   }
 }
 
-/** True when any course row exists with this slug. */
-export async function isCourseSlugTaken(slug: string): Promise<boolean> {
+/** Locks the course row until the transaction ends. Returns its id and metadata, or null when it does not exist. */
+export async function lockCourseForUpdate(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    const rows = await db
+    const [course] = await dbClient
+      .select({ id: schema.course.id, metadata: schema.course.metadata })
+      .from(schema.course)
+      .where(eq(schema.course.id, courseId))
+      .for('update');
+
+    return course ?? null;
+  } catch (error) {
+    console.error('lockCourseForUpdate error:', error);
+    throw new Error(`Failed to lock course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** True when any course row exists with this slug. */
+export async function isCourseSlugTaken(slug: string, dbClient: DbOrTxClient = db): Promise<boolean> {
+  try {
+    const rows = await dbClient
       .select({ id: schema.course.id })
       .from(schema.course)
       .where(eq(schema.course.slug, slug))
@@ -1640,6 +1810,41 @@ export async function isCourseSlugTaken(slug: string): Promise<boolean> {
   } catch (error) {
     console.error('isCourseSlugTaken error:', error);
     throw new Error(`Failed to check course slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Course stamped with this launch-template fixture key, if one exists. */
+export async function getCourseBySeedKey(seedKey: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.course.id, slug: schema.course.slug, title: schema.course.title })
+      .from(schema.course)
+      .where(eq(schema.course.seedKey, seedKey))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getCourseBySeedKey error:', error);
+    throw new Error(
+      `Failed to look up course by seed key: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/** Course in this org with this slug, if one exists. */
+export async function getCourseByOrgSlug(orgId: string, slug: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.course.id })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(and(eq(schema.group.organizationId, orgId), eq(schema.course.slug, slug)))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getCourseByOrgSlug error:', error);
+    throw new Error(`Failed to get course by org slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

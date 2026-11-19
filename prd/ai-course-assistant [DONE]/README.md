@@ -614,11 +614,11 @@ When not configured (self-hosted, or dev environments), events are silently skip
 
 ### Trigger
 
-"AI Assistant" button in the course sidebar navigation. In v1, only visible to teachers/admins. Hidden when self-hosted and no AI key configured.
+Split button in the course header. The primary action toggles the assistant panel, and a secondary pop-out control opens the assistant as a floating window (desktop only). In v1, only visible to teachers/admins and hidden when self-hosted and no AI key is configured. When floating, the header shows a close control and a dismissible tip, and the pop-out control becomes a close control.
 
 ### Panel
 
-Right sidebar using `@cio/ui` Sheet (`side="right"`, ~420px). Does NOT replace the left sidebar — both can be open simultaneously.
+Course-scoped side panel with two modes: **docked** (right sidebar Sheet, ~360–520px, resizable via the left edge and occupying layout width via `--side-panel-width`) and **floating** (desktop only, default ~416×560, min 320×380, draggable by its header or grip, resizable by its bottom-right handle and clamped to a 12px viewport margin; dragging near the right edge shows a dock hint and docks on drop; position and size persist in `localStorage` under `classroomio-ai-course-chat-floating`). On mobile, the panel is always docked. The panel does not replace the left sidebar — both can be open simultaneously.
 
 ### Chat Interface
 

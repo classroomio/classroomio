@@ -24,7 +24,7 @@
       "@cio/utils/*": ["./node_modules/@cio/utils/dist/*"],
       "@cio/jobs": ["./node_modules/@cio/jobs/dist/index.d.ts"],
       "@cio/jobs/*": ["./node_modules/@cio/jobs/dist/*"],
-      "@cio/analytics": ["./node_modules/@cio/analytics/dist/index.d.ts"]
+      "@cio/tracking": ["./node_modules/@cio/tracking/dist/index.d.ts"]
     }
   },
   "include": ["src/**/*.ts"],
@@ -35,7 +35,7 @@
     { "path": "../ai-assistant" },
     { "path": "../jobs" },
     { "path": "../email" },
-    { "path": "../analytics" }
+    { "path": "../tracking" }
   ],
   "tsc-alias": {
     "resolveFullPaths": true,

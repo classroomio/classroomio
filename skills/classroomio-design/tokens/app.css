@@ -1,0 +1,55 @@
+/* App UI tokens — structure from classroomio/classroomio packages/ui/src/index.css (shadcn-svelte, stone),
+   colours remapped to the new marketing theme. Prefixed --ui-* to avoid clashing with marketing tokens. */
+:root {
+  --ui-background: #FDFBF7;          /* paper */
+  --ui-foreground: #17140F;          /* ink 900 */
+  --ui-card: #FDFBF7;
+  --ui-card-foreground: #17140F;
+  --ui-popover: #FDFBF7;
+  --ui-popover-foreground: #17140F;
+  --ui-primary: #0233BD;             /* brand blue */
+  --ui-primary-hover: rgba(2,51,189,0.9);
+  --ui-primary-soft: rgba(2,51,189,0.2);
+  --ui-primary-foreground: #FFFFFF;
+  --ui-secondary: #F1EEE7;           /* sand 200 */
+  --ui-secondary-foreground: #17140F;
+  --ui-muted: #F6F2E9;               /* sand 100 */
+  --ui-muted-foreground: #6B6152;    /* ink 500 */
+  --ui-accent: #F6F2E9;
+  --ui-accent-foreground: #17140F;
+  --ui-destructive: oklch(0.577 0.245 27.325);
+  --ui-success: oklch(0.623 0.214 142.495);
+  --ui-warning: #D97706;
+  --ui-border: #E3DACA;              /* sand 300 */
+  --ui-input: #E3DACA;
+  --ui-ring: #ADC3FF;                /* blue 300 */
+  --ui-ring-50: rgba(173,195,255,0.5);
+  --ui-overlay: rgba(23,20,15,0.5);
+
+  /* Radius — --radius 0.625rem in code */
+  --ui-radius: 10px;
+  --ui-radius-xs: 2px;
+  --ui-radius-sm: 6px;   /* calc(radius - 4px) */
+  --ui-radius-md: 8px;   /* calc(radius - 2px) — buttons, inputs */
+  --ui-radius-lg: 10px;  /* cards, dialogs, alerts */
+  --ui-radius-xl: 14px;
+
+  /* Tailwind shadows as used */
+  --ui-shadow-2xs: 0 1px rgba(23,20,15,0.05);
+  --ui-shadow-xs: 0 1px 2px 0 rgba(23,20,15,0.05);
+  --ui-shadow-sm: 0 1px 3px 0 rgba(23,20,15,0.1), 0 1px 2px -1px rgba(23,20,15,0.1);
+  --ui-shadow-md: 0 4px 6px -1px rgba(23,20,15,0.1), 0 2px 4px -2px rgba(23,20,15,0.1);
+  --ui-shadow-lg: 0 10px 15px -3px rgba(23,20,15,0.1), 0 4px 6px -4px rgba(23,20,15,0.1);
+  --ui-focus-ring: 0 0 0 3px var(--ui-ring-50);
+
+  /* Text scale (Tailwind) */
+  --ui-text-xs: 12px;  --ui-text-sm: 14px;  --ui-text-base: 16px;  --ui-text-lg: 18px;
+
+  /* z-index layers from index.css */
+  --ui-z-app-bar: 100; --ui-z-app-bar-elevated: 150; --ui-z-modal: 200; --ui-z-menu-elevated: 250;
+}
+@keyframes ui-spin { to { transform: rotate(360deg); } }
+@keyframes ui-pulse { 50% { opacity: .5; } }
+@keyframes ui-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-zoom-in { from { opacity: 0; transform: translate(-50%,-50%) scale(.95); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+@keyframes ui-pop-in { from { opacity: 0; transform: scale(.95) translateY(-4px); } to { opacity: 1; transform: none; } }

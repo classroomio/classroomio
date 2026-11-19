@@ -2,6 +2,14 @@
 
 This document collects implementation rules and workflow conventions for code changes.
 
+## Writing Code
+
+**Read [`skills/writing-code/SKILL.md`](skills/writing-code/SKILL.md) before writing or editing any code.** The comment policy there is mandatory: default to no comments, use JSDoc only for function contracts, and never add an inline comment to explain a design choice — refactor the code instead. The only allowed inline comments record an external constraint the code cannot express.
+
+## Security reviews
+
+**Load [`skills/security-audit/SKILL.md`](skills/security-audit/SKILL.md) when reviewing or writing a change that touches a trust boundary:** auth, sessions, API keys, roles and permissions, org/tenant isolation, file uploads and downloads, webhooks, payments, user-controlled HTML or URLs, or LLM/MCP tool input. Use its guidance mode for these reviews. Run its full six-phase audit only when someone explicitly asks for a security audit, pen test, or comprehensive security review. For public API routes and MCP tools, apply it alongside [`skills/public-api-review/SKILL.md`](skills/public-api-review/SKILL.md).
+
 ## Research Requirements
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
@@ -9,6 +17,10 @@ When a task requires factual information (API specifications, context window siz
 ## Out of scope paths
 
 The `prototypes/` directory holds standalone HTML/CSS design mocks for exploration. Do not treat prototype files as production code: avoid implementing features there unless explicitly asked, and do not apply production review standards (CodeRabbit/Greptile exclude this path via `.coderabbit.yaml` and `.greptile/config.json`).
+
+## Help Center screenshots
+
+**Read [`skills/add-docs-image/SKILL.md`](skills/add-docs-image/SKILL.md) before capturing, producing, or placing any screenshot under `apps/help/**`.** Every help screenshot is captured at 1350×830 with device scale 1 and framed in the ClassroomIO browser board with `pnpm --filter @cio/help frame-screenshot`. Never ship an unframed image, and do not try to fix a soft-looking screenshot by raising the capture scale.
 
 ## Translation, Formatting, and Git Workflow
 
@@ -26,10 +38,10 @@ The `prototypes/` directory holds standalone HTML/CSS design mocks for explorati
 
 ## Verification before commit/PR
 
-Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 20 (the repo's `.nvmrc` version):
+Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 24 (the repo's `.nvmrc` version):
 
 ```bash
-export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+export PATH="$HOME/.nvm/versions/node/v24.22.1/bin:$PATH"
 ```
 
 - **Dashboard changes** (`apps/dashboard/**`, or shared packages consumed by the dashboard):
@@ -52,6 +64,8 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
   ```
 
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
+
+**Fact-check every commit against the docs.** Before each commit, spin up a sub agent to verify the commit's changes (`git diff --cached`) against our docs, help center, website and READMEs, and fix every inaccurate statement and stale screenshot it finds in the same commit. Procedure: [`skills/stage-and-commit/SKILL.md`](skills/stage-and-commit/SKILL.md), step 4.
 
 ## Database migrations
 
@@ -135,6 +149,8 @@ export type TUpdateProfile = z.infer<typeof ZUpdateProfile>;
 ### Step 2: Database query
 Put all direct database access in pure query functions under `packages/db/src/queries/{domain}/`. Routes and services never call Drizzle/`db` (or equivalent) directly—they import and compose these helpers.
 
+**Exercises are standalone course items.** Exercises belong directly to courses and sections (`course_id` and `section_id`), not lessons. Never join `lesson` or read `exercise.lesson_id` to resolve an exercise's course, section, or progress.
+
 ```typescript
 // packages/db/src/queries/auth/profile.ts
 export async function updateProfile(userId: string, data: Partial<TProfile>) {
@@ -194,12 +210,12 @@ export const app = new Hono().route('/account', accountRouter);
 ```typescript
 // apps/api/src/routes/internal/index.ts
 import { Hono } from '@api/utils/hono';
-import { internalAnalyticsRouter } from './analytics';
+import { internalAccountRouter } from './account';
 import { internalComplianceRouter } from './compliance';
 
 export const internalRouter = new Hono()
   .route('/compliance', internalComplianceRouter)
-  .route('/analytics', internalAnalyticsRouter);
+  .route('/account', internalAccountRouter);
 
 // apps/api/src/app.ts
 import { internalRouter } from '@api/routes/internal';
@@ -211,12 +227,12 @@ export const app = new Hono().route('/internal', internalRouter);
 ```typescript
 // apps/api/src/routes/internal/index.ts
 import { Hono } from '@api/utils/hono';
-import { internalAnalyticsRouter } from './analytics';
+import { internalAccountRouter } from './account';
 import { internalComplianceRouter } from './compliance';
 
 export const internalRouter = new Hono()
   .route('/compliance', internalComplianceRouter)
-  .route('/analytics', internalAnalyticsRouter);
+  .route('/account', internalAccountRouter);
 
 // apps/api/src/app.ts
 import { internalRouter } from '@api/routes/internal';
@@ -299,6 +315,18 @@ For response shapes that need a small normalization (e.g. API returns `JSONValue
 
 ### API Class Pattern
 API classes handle all logic; components should be thin.
+
+### Dashboard API error handling
+- `BaseApi.execute()` normalizes every failure (except aborted requests,
+  which return silently) to `NormalizedApiError`
+  (`apps/dashboard/src/lib/utils/services/api/errors.ts`) before calling
+  `onError`. Handlers receive one typed shape — never a bare `string`.
+- Use `hasErrorCode(error, ...)` / `matchesError(error, { code, field })`
+  instead of hand-rolled `typeof` / `in` narrowing. Read `error.message`,
+  `error.code`, `error.field` directly, and use `ErrorCodes` constants.
+- Structured errors cross into components only as `NormalizedApiError`
+  (via `api.lastError`). `api.error` is a plain display string — never
+  parse it as JSON.
 
 ### Translations (UI copy)
 
@@ -388,6 +416,14 @@ Pattern:
 
 Use `@cio/ui/custom/*-field` wrappers for standard app forms. When building larger settings/editor screens that need legends, descriptions, separators, grouped rows, or mixed controls such as `Switch`, `Checkbox`, `RadioGroup`, image pickers, and action buttons, compose the form with `@cio/ui/base/field` primitives and the matching base inputs instead.
 
+### Form inputs: live updates
+
+- Anything the user should see react to typing (dirty state, save bars, enabled buttons, answers, counters, previews, search, error clearing) updates on `input`, never only on `change`/`blur`.
+- Number inputs use `NumberField` (`@cio/ui/custom/number-field`). Never `Number(value)` an input directly.
+- A field whose text is a formatted version of a parsed value (comma lists, JSON, trimmed lists) uses `FieldDraft` (`@cio/ui/hooks/field-draft.svelte`).
+- Server-backed search boxes use `DebouncedSearch` (`$lib/utils/functions/debounced-search.svelte`).
+- Edit page-local drafts, never global stores; never write the edited model from an `$effect` on mount.
+
 ### Reactive built-in collections
 
 In Svelte 5, the built-in `Set` and `Map` classes are **not** reactive. Use `SvelteSet` and `SvelteMap` from `svelte/reactivity` instead. They are already reactive on their own — do **not** wrap them in `$state()`.
@@ -466,7 +502,45 @@ fields.email = '';
 - **Effect mirrors props into local state** — use `$bindable`, `bind:`, or derive a value; only copy props when you need a draft the user can cancel.
 - **Effect fetches or navigates on every dependency tick** — gate with a guard, run on submit/route enter, or track “already loaded” so work runs once per intent.
 
-When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup.
+When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup that does not depend on the current org. Org-scoped page data is covered below.
+
+### Loading org-scoped page data
+
+The app shell renders the page before `currentOrg` is set. A fetch in `onMount` that returns when the org id is missing does nothing on a full reload, then succeeds on the next client navigation, because the org is already in the store.
+
+Load that data in an `$effect` that reads `$currentOrg.id` and returns until the id is set. Remember which org you already loaded only after the id is present, so the effect runs again when the id arrives. If the fetch bails on a missing org id, do not mark that load as done first — the next run has to be allowed to try again.
+
+`onMount` stays right for one-time setup that does not need the org, such as reading `localStorage` or attaching a listener.
+
+```svelte
+let listedOrgId = '';
+
+$effect(() => {
+  const organizationId = $currentOrg.id;
+  if (!organizationId || organizationId === listedOrgId) return;
+
+  listedOrgId = organizationId;
+  void courseTemplateApi.list();
+});
+```
+
+### Skeleton cards
+
+A card row or gallery shows skeleton cards until the first payload arrives. The gap before the request starts is still loading: `cards === null` while the loading flag is still false is an empty row, not a finished one.
+
+Show skeletons while there are no cards yet. Keep the cards you already have during a later refetch. Use the card's `loading` prop, or `Skeleton` blocks with the same footprint, so the row does not jump when the data arrives. A small fixed count is enough — the template row uses three, the gallery four.
+
+```svelte
+{#if !courseTemplateApi.cards}
+  {#each [0, 1, 2] as index (index)}
+    <TemplateCard loading />
+  {/each}
+{:else}
+  {#each templates as template (template.id)}
+    <TemplateCard title={template.title} />
+  {/each}
+{/if}
+```
 
 ### Server-Side API Calls
 
@@ -519,7 +593,23 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
 - In app-level form UIs, do not introduce native form controls (`<input>`, `<textarea>`, `<label>`) when equivalent `packages/ui` components exist.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
-- **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
+- **`ui:` prefix rules in consumer code (`apps/dashboard/**` & `packages/storybook/**`):**
+  - **Theme tokens and semantic colors:** Prefix with `ui:` for classes binding to `@cio/ui` theme variables (e.g. `ui:bg-background`, `ui:text-muted-foreground`, `ui:border-input`, `ui:ring-ring`, `ui:text-primary`, `ui:bg-muted`, `ui:border-border`).
+  - **Named z-index scale:** Prefix with `ui:` for custom stacking layers defined in `@cio/ui` (`ui:z-app-bar`, `ui:z-app-bar-elevated`, `ui:z-modal`, `ui:z-menu-elevated`).
+  - **Custom animations and font tokens:** Prefix with `ui:` for custom animations and font utilities in `@cio/ui` (e.g. `ui:font-cio`, `ui:animate-meteor`, `ui:animate-shine`).
+  - **Standard Tailwind utilities:** Do not prefix layout, sizing, typography, spacing, borders, standard animations, or fonts (e.g. `flex`, `grid`, `w-full`, `min-h-*`, `p-*`, `m-*`, `gap-*`, `rounded-*`, `border`, `text-sm`, `font-semibold`, `animate-spin`, `focus-visible:outline-none`, `focus-visible:ring-2`).
+  - **Inside `packages/ui/src/**` only:** ALL Tailwind utility classes must use the `ui:` prefix (enforced by `pnpm --filter @cio/ui prefix:check`).
+- **Tailwind `ui:` variant prefix ordering:** When applying variants (`hover:`, `focus:`, `dark:`, `placeholder:`, `md:`) to `ui:` prefixed classes, `ui:` must come before the variant modifier (e.g. `ui:hover:text-primary`, `ui:focus-visible:ring-ring`, `ui:placeholder:text-muted-foreground`, `ui:dark:text-white`).
+
+### Dialog button hierarchy
+
+When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
+
+- **Left / external action** (e.g. "Create another …") — `variant="secondary"`
+- **Cancel / dismiss** (e.g. "Later", "Cancel") — `variant="outline"`
+- **Main CTA** (e.g. "Open now", "Save", "Create") — default primary (`variant="default"`)
+
+Place the main CTA on the right; group cancel and primary together when both appear on the right.
 
 ### Page layout and settings save bar
 
@@ -586,6 +676,16 @@ All user-controlled URLs in org landing pages (nav links, hero CTAs, footer link
 - **API boundary:** Zod refinement on `ZUpdateOrganization.landingpage` imports `containsDisallowedHrefs` to reject bad schemes at write time.
 
 **When adding new landing-page components or themes:** always route hrefs through `safeHref()`. Never pass a user-controlled string directly to `href`.
+
+Theme previews in the dashboard are visual-only. Render preview content inside an `inert` container so links, buttons, and other controls cannot navigate or trigger actions while previewing a theme.
+
+## Content blocks
+
+Lesson content is a list of blocks (note, video, slides, document, image). **Read [`packages/utils/src/validation/block/ADDING_A_BLOCK_TYPE.md`](packages/utils/src/validation/block/ADDING_A_BLOCK_TYPE.md) before adding or changing a block type.**
+
+- Each type is one contract file in `packages/utils/src/validation/block/definitions/` and one folder in `apps/dashboard/src/lib/features/block/components/`, registered in `BLOCK_DEFINITIONS`, `BLOCK_VIEWS` and `BLOCK_EDITORS`.
+- Never branch on a block type outside those files. Server code reads capabilities (`localizedContent`, `media`, `toPublicData`) from the registry, and dashboard containers look the component up by type.
+- View files must not import editor code: the public lesson page renders them.
 
 ## Emails: system vs org-branded
 
@@ -714,6 +814,8 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
+- Load org-scoped page data in an `$effect` that waits for `$currentOrg.id` (see **Loading org-scoped page data**)
+- Show skeleton cards until the first card payload arrives (see **Skeleton cards**)
 - Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 - Add `testId` on `@cio/ui` wrappers or shell surfaces when Playwright needs a stable hook (see **E2E test hooks**)
 - In certificate templates, compute font sizes for dynamic text using `FIELDS` and `prepareCertificateRenderContext` (`packages/certificates`)
@@ -722,6 +824,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 ### ❌ DON'T
 - Put business logic in routes or queries
 - Include validation in queries (belongs in routes)
+- **Link exercises to lessons in database queries** — exercises are standalone course items that belong directly to courses and sections (`course_id` and `section_id`); `exercise.lesson_id` is deprecated and must never be joined or used to resolve an exercise's course, section, or progress
 - Handle HTTP concerns in services
 - Skip client-side validation
 - Let components handle validation, navigation, or snackbar
@@ -733,6 +836,8 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 - Use `new Set()`/`new Map()` for mutable reactive state — use `SvelteSet`/`SvelteMap` instead
 - Wrap `SvelteSet`/`SvelteMap` in `$state()` — they are already reactive
 - **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
+- **Fetch org-scoped page data in `onMount`** — the org id is often still empty, so a full reload no-ops and the next client navigation is what finally loads (see **Loading org-scoped page data**)
+- **Leave a card row blank on first load** — show skeleton cards until cards exist, including the gap before the request starts (see **Skeleton cards**)
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 - Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
@@ -757,6 +862,8 @@ Playwright specs and PR demos should use stable, locale-independent selectors. F
 Do not annotate every control — add hooks only for high-impact flows (auth, nav, save bars, primary actions).
 
 ## Checklist for New Routes
+
+For public API design, security, contracts, MCP/API-key behavior, and dashboard parity, read [`skills/public-api-review/SKILL.md`](skills/public-api-review/SKILL.md) before implementation and review.
 
 - [ ] **Validation**: Schema in `packages/utils/src/validation/{entity}/`
 - [ ] **Query**: Pure functions in `packages/db/src/queries/{domain}/`
@@ -826,13 +933,13 @@ When moving from `apps/dashboard/src/lib/components/` to `apps/dashboard/src/lib
 The full setup/run flow lives in `README.md` and `DEV_SETUP_NOTES.md`. The notes below cover only the non-obvious, cloud-VM-specific caveats. The update script already runs `pnpm install` on startup.
 
 ### Node version (important)
-The sandbox injects `/exec-daemon/node` (Node 22) at the front of `PATH`, so a bare `node`/`pnpm` runs under Node 22 even though the repo requires Node `^20.19.3` (`.nvmrc`). Node 20.19.3 is installed via nvm and set as the nvm default. Before running any `pnpm`/dev command, prepend the repo Node to `PATH`:
+The sandbox injects `/exec-daemon/node` (Node 22) at the front of `PATH`, so a bare `node`/`pnpm` runs under Node 22 even though the repo requires Node `^24.22.1` (`.nvmrc`). Node 24.22.1 is installed via nvm and set as the nvm default. Before running any `pnpm`/dev command, prepend the repo Node to `PATH`:
 
 ```bash
-export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+export PATH="$HOME/.nvm/versions/node/v24.22.1/bin:$PATH"
 ```
 
-`pnpm install` itself succeeds under either version (there is no `engine-strict`), but run the dev servers and DB scripts on Node 20.
+`pnpm install` itself succeeds under either version (there is no `engine-strict`), but run the dev servers and DB scripts on Node 24.
 
 ### Services & how to run them
 Docker is installed and provides Postgres 16 + Redis 7 (the app does not run them natively). After a fresh VM boot the Docker daemon is usually not running — start it (it needs the snapshot's `/etc/docker/daemon.json`, which already sets `fuse-overlayfs` + disables the containerd snapshotter, plus `iptables-legacy`):
@@ -855,7 +962,7 @@ Do not use `pnpm dev` (it trips turbo's concurrency cap). Build shared package `
 
 ### Known caveats
 - **Vite SSR circular dependency (layerchart):** authenticated/chart pages occasionally render "Something unexpected occurred" on a cold load. Reload the page (or restart `dashboard:dev`) and it renders — it is intermittent, not a setup failure.
-- **MinIO is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start it with `docker compose -f docker-compose.yaml --profile minio up -d minio minio-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
+- **Object storage is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start the bundled SeaweedFS with `docker compose -f docker-compose.yaml --profile storage up -d storage storage-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
 - **Pre-existing lint/test issues (not environment problems):** `pnpm --filter @cio/api lint` fails (missing ESLint v9 `eslint.config.*`); `pnpm --filter @cio/dashboard lint` runs but reports pre-existing errors; api `vitest run` passes 61 tests but 5 files fail to load `@cio/core/services/*/*` subpaths (Vite nested-wildcard exports quirk; Node resolves them fine); `pnpm --filter @cio/dashboard test` (jest) fails to parse `jest.config.ts`. The pre-commit gate `pnpm format:check` passes.
 - The optional `@cio/storybook` build fails on an unresolved `@lucide/svelte/icons/bot` import; it does not affect api/dashboard.
 

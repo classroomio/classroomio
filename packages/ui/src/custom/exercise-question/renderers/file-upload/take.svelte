@@ -4,7 +4,13 @@
   import { DocumentCard } from '../../../document-card';
   import { Button } from '../../../../base/button';
   import { Spinner } from '../../../../base/spinner';
-  import { isFileSizeAllowed, isFileTypeAllowed, normalizeAcceptedFileTypes } from '../file-upload-types';
+  import {
+    formatUploadedFileSubtitle,
+    getFileUploadAcceptAttribute,
+    isFileSizeAllowed,
+    isFileTypeAllowed,
+    normalizeAcceptedFileTypes
+  } from '../file-upload-types';
 
   let {
     question,
@@ -24,7 +30,7 @@
   let uploadError = $state<string | null>(null);
 
   const acceptedTypes = $derived(normalizeAcceptedFileTypes(question.settings?.acceptedTypes));
-  const acceptAttribute = $derived(acceptedTypes.join(','));
+  const acceptAttribute = $derived(getFileUploadAcceptAttribute(acceptedTypes));
   const maxSizeMb = $derived(question.settings?.maxSizeMb as number | undefined);
 
   const uploadedFile = $derived.by(
@@ -35,43 +41,21 @@
       size?: number;
     } | null => {
       if (answer?.type !== 'FILE_UPLOAD') return null;
+
       const name = answer.fileName?.trim() ?? '';
       if (!name) return null;
-      const url =
-        typeof (answer as { fileUrl?: string }).fileUrl === 'string' ? (answer as { fileUrl?: string }).fileUrl : null;
+
       return {
         fileName: name,
-        fileUrl: url ?? null,
+        fileUrl: answer.fileUrl ?? null,
         mimeType: answer.mimeType,
         size: answer.size
       };
     }
   );
 
-  function formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  const fileTypeLabel = $derived.by(() => {
-    const mime = uploadedFile?.mimeType ?? '';
-    if (mime.includes('pdf')) return 'PDF';
-    if (mime.includes('wordprocessingml') || mime.includes('docx')) return 'DOCX';
-    if (mime.includes('msword') || mime.includes('doc')) return 'DOC';
-    if (mime.includes('image')) return 'IMAGE';
-    if (mime.includes('video')) return 'VIDEO';
-    return mime.split('/')[1]?.toUpperCase() ?? 'FILE';
-  });
-
   const subtitle = $derived(
-    uploadedFile
-      ? [fileTypeLabel, uploadedFile.size != null ? formatFileSize(uploadedFile.size) : null]
-          .filter(Boolean)
-          .join(' · ') || '–'
-      : ''
+    uploadedFile ? formatUploadedFileSubtitle(uploadedFile.mimeType, uploadedFile.size, uploadedFile.fileName) : ''
   );
 
   function openFilePicker() {
@@ -94,7 +78,7 @@
     isUploading = true;
     uploadError = null;
     try {
-      const result = await onFileUpload(selectedFile);
+      const result = await onFileUpload(selectedFile, { acceptedTypes });
       onAnswerChange({
         type: 'FILE_UPLOAD',
         fileKey: result.fileKey,

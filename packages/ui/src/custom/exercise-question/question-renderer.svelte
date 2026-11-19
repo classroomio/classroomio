@@ -1,3 +1,11 @@
+<script module lang="ts">
+  let pendingEditor: Promise<typeof import('../editor')> | null = null;
+  function loadEditor() {
+    pendingEditor ??= import('../editor');
+    return pendingEditor;
+  }
+</script>
+
 <script lang="ts">
   import type {
     AnswerData,
@@ -8,16 +16,20 @@
   import { getExerciseQuestionLabel } from '@cio/question-types';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import XIcon from '@lucide/svelte/icons/x';
+  import { Button } from '../../base/button';
+  import { HoverableItem, MaximizeIcon } from '../moving-icons';
   import * as Dialog from '../../base/dialog';
   import * as DropdownMenu from '../../base/dropdown-menu';
   import { Input } from '../../base/input';
-  import { Textarea } from '../../base/textarea';
   import { IconButton } from '../icon-button';
   import { MediaPlayer, getVideoMediaType, isYoutubeUrl, isVimeoUrl } from '../media-player';
   import { dedupe } from '@cio/utils';
   import NumberBadge from '$src/base/number-badge/number-badge.svelte';
   import QuestionTitle from './question-title.svelte';
   import { YoutubeLinkForm } from '../youtube-link-form';
+  import { ImageLightbox, ZoomableHtmlContent, ZoomableImage, type LightboxImage } from '../image-lightbox';
+  import { getQuestionLightboxLabels } from './lightbox-labels';
+  import { hasQuestionDescriptionContent, toQuestionDescriptionHtml } from './question-description';
   import QuestionSurface from './question-surface.svelte';
   import { getExerciseQuestionRenderer } from './renderer-contract';
   import type { Snippet } from 'svelte';
@@ -34,6 +46,8 @@
     questionNumberActive?: boolean;
     /** Shown beneath the title input in edit mode when validation fails. */
     titleError?: string | null;
+    /** Heading of the expanded description sheet in edit mode. */
+    exerciseTitle?: string;
   }
 
   let {
@@ -44,7 +58,8 @@
     questionTypeSelect,
     questionNumber,
     questionNumberActive = true,
-    titleError = null
+    titleError = null,
+    exerciseTitle = ''
   }: Props = $props();
 
   const Renderer = $derived(getExerciseQuestionRenderer(contract.question.questionType, contract.mode));
@@ -56,9 +71,14 @@
   let imageUploadError = $state('');
   let isDescriptionEditorVisible = $state(false);
   let isYoutubeDialogOpen = $state(false);
+  let isLightboxOpen = $state(false);
+  let isDescriptionExpanded = $state(false);
+  let lightboxIndex = $state(0);
+  let lightboxImages = $state<LightboxImage[]>([]);
 
   const questionDescription = $derived(String((contract.question.settings?.description as string | undefined) ?? ''));
   const hasDescription = $derived(isDescriptionEditorVisible || questionDescription.trim().length > 0);
+  const questionDescriptionHtml = $derived(toQuestionDescriptionHtml(questionDescription));
   const questionImageUrls = $derived.by(() => {
     const settings = contract.question.settings ?? {};
 
@@ -73,6 +93,9 @@
 
     return [] as string[];
   });
+  const questionImages = $derived(
+    questionImageUrls.map((imageUrl) => ({ src: imageUrl, alt: label('question.edit.image_alt') }))
+  );
   const questionVideoUrls = $derived.by(() => {
     const settings = contract.question.settings ?? {};
 
@@ -271,6 +294,12 @@
   function removeVideo(videoIndex: number) {
     setQuestionVideoUrls(questionVideoUrls.filter((_, index) => index !== videoIndex));
   }
+
+  function openLightbox(images: LightboxImage[], imageIndex: number) {
+    lightboxImages = images;
+    lightboxIndex = imageIndex;
+    isLightboxOpen = true;
+  }
 </script>
 
 {#snippet content()}
@@ -285,7 +314,7 @@
             placeholder={label('question.edit.title_placeholder')}
             disabled={contract.disabled}
             aria-invalid={titleError ? true : undefined}
-            onchange={(event) => patchQuestion({ title: event.currentTarget.value })}
+            oninput={(event) => patchQuestion({ title: event.currentTarget.value })}
           />
           {#if titleError}
             <p class="ui:text-destructive ui:text-xs">{titleError}</p>
@@ -320,14 +349,41 @@
 
       {#if hasDescription}
         <div class="ui:space-y-1">
-          <p class="ui:text-sm ui:font-medium">{label('question.edit.description_label')}</p>
-          <Textarea
-            rows={2}
-            value={questionDescription}
-            placeholder={label('question.edit.description_placeholder')}
-            disabled={contract.disabled}
-            onchange={(event) => patchSettings({ description: event.currentTarget.value })}
-          />
+          <div class="ui:flex ui:items-center ui:justify-between ui:gap-2">
+            <p class="ui:text-sm ui:font-medium">{label('question.edit.description_label')}</p>
+            <HoverableItem>
+              {#snippet children(isHovered)}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={contract.disabled}
+                  onclick={() => (isDescriptionExpanded = true)}
+                >
+                  <MaximizeIcon {isHovered} size={16} ariaHidden />
+                  {label('question.edit.expand_description')}
+                </Button>
+              {/snippet}
+            </HoverableItem>
+          </div>
+          {#await loadEditor()}
+            <div class="ui:h-32 ui:w-full ui:animate-pulse ui:rounded-md ui:bg-muted"></div>
+          {:then { Editor: DescriptionEditor }}
+            <DescriptionEditor
+              content={questionDescriptionHtml}
+              editable={!contract.disabled}
+              showToolBar={!contract.disabled}
+              placeholder={label('question.edit.description_placeholder')}
+              editorClass="ui:h-32"
+              showDragHandle={false}
+              onContentChange={(html) => patchSettings({ description: html })}
+              onImageUpload={uploadQuestionImage}
+              expandable
+              bind:expanded={isDescriptionExpanded}
+              expandedTitle={exerciseTitle || label('question.edit.description_label')}
+              expandedDescription={contract.question.title || label('question.edit.description_label')}
+            />
+          {/await}
         </div>
       {/if}
 
@@ -439,19 +495,37 @@
         <QuestionTitle title={contract.question.title} />
       {/if}
 
-      {#if questionDescription.trim().length > 0}
-        <p class="ui:text-sm ui:text-muted-foreground">{questionDescription}</p>
+      {#if hasQuestionDescriptionContent(questionDescriptionHtml)}
+        <ZoomableHtmlContent
+          content={questionDescriptionHtml}
+          labels={getQuestionLightboxLabels(contract.labels)}
+          enlargeLabel={label('question.media.enlarge_image', 'Click to enlarge')}
+          fallbackAlt={label('question.edit.image_alt')}
+          class="ui:text-sm ui:leading-relaxed ui:text-muted-foreground ui:[&_p]:m-0 ui:[&_p+p]:mt-2 ui:[&_ul]:list-disc ui:[&_ul]:pl-5 ui:[&_ol]:list-decimal ui:[&_ol]:pl-5 ui:[&_li]:mt-1 ui:[&_a]:text-primary ui:[&_a]:underline ui:[&_strong]:font-semibold ui:[&_strong]:text-foreground ui:[&_img]:my-2 ui:[&_img]:max-w-full ui:[&_img]:rounded-md ui:[&_img]:border ui:[&_th]:border ui:[&_th]:px-2 ui:[&_th]:py-1 ui:[&_td]:border ui:[&_td]:px-2 ui:[&_td]:py-1"
+        />
       {/if}
 
       {#if questionImageUrls.length > 0}
-        <div class="ui:flex ui:flex-wrap ui:gap-3">
+        <div class={questionImageUrls.length > 1 ? 'ui:grid ui:gap-3 ui:sm:grid-cols-2' : ''}>
           {#each questionImageUrls as imageUrl, imageIndex (`${imageUrl}-${imageIndex}`)}
-            <div class="ui:h-40 ui:w-40 ui:overflow-hidden ui:rounded-md ui:border">
-              <img src={imageUrl} alt={label('question.edit.image_alt')} class="ui:h-full ui:w-full ui:object-cover" />
-            </div>
+            <ZoomableImage
+              src={imageUrl}
+              alt={label('question.edit.image_alt')}
+              enlargeLabel={label('question.media.enlarge_image', 'Click to enlarge')}
+              class={questionImageUrls.length > 1 ? 'ui:aspect-video' : ''}
+              imageClass={questionImageUrls.length > 1 ? '' : 'ui:h-auto ui:max-h-[28rem]'}
+              onclick={() => openLightbox(questionImages, imageIndex)}
+            />
           {/each}
         </div>
       {/if}
+
+      <ImageLightbox
+        images={lightboxImages}
+        labels={getQuestionLightboxLabels(contract.labels)}
+        bind:open={isLightboxOpen}
+        bind:index={lightboxIndex}
+      />
 
       {#if questionVideos.length > 0}
         <div class="ui:space-y-3">

@@ -4,6 +4,8 @@ export const PLAN = {
   ENTERPRISE: 'ENTERPRISE'
 };
 
+export const EARLY_ADOPTER_CLAIM_CHECKOUT_KIND = 'early_adopter_claim';
+
 export const PLAN_NAMES = {
   [PLAN.BASIC]: 'Free',
   [PLAN.EARLY_ADOPTER]: 'Early Adopter',
@@ -75,4 +77,15 @@ export const STUDENT_LIMITS: Record<string, number> = {
 export function getStudentLimit(planName: string | null | undefined): number {
   if (!planName) return STUDENT_LIMITS[PLAN.BASIC];
   return STUDENT_LIMITS[planName] ?? STUDENT_LIMITS[PLAN.BASIC];
+}
+
+export const TEMPLATE_LIMITS: Record<string, number> = {
+  [PLAN.BASIC]: 1,
+  [PLAN.EARLY_ADOPTER]: 25,
+  [PLAN.ENTERPRISE]: Infinity
+};
+
+export function getTemplateLimit(planName: string | null | undefined): number {
+  if (!planName) return TEMPLATE_LIMITS[PLAN.BASIC];
+  return TEMPLATE_LIMITS[planName] ?? TEMPLATE_LIMITS[PLAN.BASIC];
 }

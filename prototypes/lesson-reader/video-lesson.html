@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Grouping and aggregating · Video notebook · ClassroomIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="reader.css" />
+    <link rel="stylesheet" href="video.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <script>
+      window.READER_CONFIG = { surface: 'course', view: 'learner', noInit: true };
+    </script>
+    <script src="lesson-data.js"></script>
+    <script src="video-data.js"></script>
+    <script src="reader.js"></script>
+    <script src="video.js"></script>
+  </body>
+</html>

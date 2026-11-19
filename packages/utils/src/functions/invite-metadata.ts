@@ -1,18 +1,21 @@
-function parseInviteIds(metadata: unknown, keys: string[]): string[] {
-  let obj: Record<string, unknown> | null = null;
+function toMetadataObject(metadata: unknown): Record<string, unknown> | null {
   if (metadata == null) {
-    return [];
+    return null;
   }
   if (typeof metadata === 'string') {
     try {
       const parsed = JSON.parse(metadata) as unknown;
-      obj = typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, unknown>) : null;
+      return typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, unknown>) : null;
     } catch {
-      return [];
+      return null;
     }
-  } else if (typeof metadata === 'object') {
-    obj = metadata as Record<string, unknown>;
   }
+
+  return typeof metadata === 'object' ? (metadata as Record<string, unknown>) : null;
+}
+
+function parseInviteIds(metadata: unknown, keys: string[]): string[] {
+  const obj = toMetadataObject(metadata);
   if (!obj) {
     return [];
   }
@@ -38,4 +41,11 @@ export function parseCohortIdsFromInviteMetadata(metadata: unknown): string[] {
 /** Normalize JSONB organization-invite metadata for learning path ids. */
 export function parsePathIdsFromInviteMetadata(metadata: unknown): string[] {
   return parseInviteIds(metadata, ['pathIds', 'path_ids', 'learningPathIds', 'learning_path_ids']);
+}
+
+/** The full name an admin entered for this person at import time, trimmed, or undefined when none was stored. */
+export function parseFullnameFromInviteMetadata(metadata: unknown): string | undefined {
+  const fullname = toMetadataObject(metadata)?.fullname;
+
+  return typeof fullname === 'string' && fullname.trim() ? fullname.trim() : undefined;
 }

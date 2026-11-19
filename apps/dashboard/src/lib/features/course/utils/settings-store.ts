@@ -1,56 +1,50 @@
 import type { TCourseType } from '@cio/db/types';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
 
+import type { LiveSessionReminderRow } from './types';
+
 type CourseSettings = {
-  logo: string;
+  bannerImage: string;
   courseTitle: string;
   courseDescription: string;
   grading: boolean;
   type: TCourseType;
   allowSelfEnrollment: boolean;
   enrollOnlyInLearningPath: boolean;
-  tabs: { id: number; name: string }[];
   lessonDownload: boolean;
+  allowMarkdownExport: boolean;
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
-  progressionMode: 'free' | 'sequential';
+  progressionMode: CourseProgressionMode;
   commentsEnabled: boolean;
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
+  liveSessionReminders: LiveSessionReminderRow[];
   certificate: {
     deadline: string | null;
-    threshold: number;
-    requiredExerciseId: string | null;
-    exerciseMinScorePercent: number | null;
   };
 };
 
 export const settings = writable<CourseSettings>({
-  logo: '',
+  bannerImage: '',
   courseTitle: '',
   courseDescription: '',
   grading: false,
   type: 'SELF_PACED' as TCourseType,
   allowSelfEnrollment: true,
   enrollOnlyInLearningPath: false,
-  tabs: [
-    { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
-    { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
-    { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-    { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
-  ],
   lessonDownload: false,
+  allowMarkdownExport: false,
   isPublished: false,
   isContentGroupingEnabled: true,
   progressionMode: 'free',
   commentsEnabled: true,
   callout: null,
   welcomeEmailMessage: '',
+  liveSessionReminders: [],
   certificate: {
-    deadline: null,
-    threshold: 100,
-    requiredExerciseId: null,
-    exerciseMinScorePercent: null
+    deadline: null
   }
 });

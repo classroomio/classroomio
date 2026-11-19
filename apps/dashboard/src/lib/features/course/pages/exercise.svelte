@@ -4,7 +4,9 @@
   import { Button } from '@cio/ui/base/button';
   import * as ButtonGroup from '@cio/ui/base/button-group';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
+  import { Empty } from '@cio/ui/custom/empty';
   import EyeIcon from '@lucide/svelte/icons/eye';
+  import LockKeyhole from '@lucide/svelte/icons/lock-keyhole';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import { onDestroy, onMount, tick, untrack } from 'svelte';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
@@ -16,17 +18,19 @@
 
   import {
     type ExerciseEditorErrors,
+    clearQuestionnaireValidation,
     handleAddQuestion,
     handleAddSection,
     getQuestionsForSection,
     hasSections,
     questionnaire,
+    questionnaireMetaData,
     questionnaireOrder,
     reset,
     mapZodErrorsToQuestionErrors,
     questionnaireValidation
   } from '$features/course/components/exercise/store';
-  import { ZExerciseUpdate } from '@cio/utils/validation/exercise';
+  import { ZExerciseUpdate, type TExerciseUpdate } from '@cio/utils/validation/exercise';
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
   import { transformQuestionsToApiFormat } from '$features/course/components/exercise/functions';
   import { isOrgStudent, isCourseLearnerView, isStudentExperience } from '$lib/utils/store/app';
@@ -43,6 +47,9 @@
   import Submissions from '$features/course/components/exercise/submissions/submissions.svelte';
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
+  import { PublicConversionBanner } from '$features/course/components';
+  import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
+  import { getManualQuestionsFromList } from '$features/course/utils/public-conversion-utils';
   import {
     // RefreshPageData,
     RoleBasedSecurity,
@@ -81,6 +88,7 @@
     isFetching?: boolean;
     submissions: SubmissionListItem[];
     mySubmissions?: SubmissionListItem[];
+    canGradeSubmissions?: boolean;
   }
 
   let {
@@ -88,7 +96,8 @@
     goBack = () => {},
     isFetching = false,
     submissions,
-    mySubmissions = []
+    mySubmissions = [],
+    canGradeSubmissions = false
   }: Props = $props();
 
   const showMobileBottomNav = $derived(
@@ -141,6 +150,7 @@
   let acknowledgedPassedPolicyReviewSignature = $state<string | null>(null);
   let passedPolicyAttemptChoice = $state<PassedPolicyAttemptChoice>('retry');
   const passedPolicyReviewStoragePrefix = 'classroomio:passed-policy-review';
+  let lastHandledHighlight = $state<string | null>(null);
 
   function isTemporaryId(id: string | number | undefined) {
     return typeof id === 'string' && id.includes('-form');
@@ -352,8 +362,9 @@
     return true;
   }
 
-  async function handleSave() {
-    if ($isOrgStudent || !courseApi.course?.id) return;
+  async function handleSave(options?: { silent?: boolean }): Promise<boolean> {
+    const silent = options?.silent ?? false;
+    if ($isOrgStudent || !courseApi.course?.id) return false;
 
     // Transform questionnaire to API format for validation
     // Include all non-deleted options (even empty ones) so Zod can catch validation errors
@@ -361,14 +372,24 @@
       shouldFilterEmptyLabels: false
     });
     const activeSections = $questionnaire.sections.filter((section) => !section.deletedAt);
-    const sectionsPayload = activeSections.map((section) => ({
+    const sectionsPayload: TExerciseUpdate['sections'] = activeSections.map((section) => ({
       id: section.id,
       title: section.title,
       description: section.description,
       order: section.order,
       colorTheme: section.colorTheme,
-      afterBehavior: section.afterBehavior,
-      questionIds: getQuestionsForSection($questionnaire.questions, section.id).map((question) => question.id)
+      afterBehavior:
+        section.afterBehavior.action === 'go_to_section' && section.afterBehavior.exerciseSectionId
+          ? {
+              action: 'go_to_section',
+              exerciseSectionId: section.afterBehavior.exerciseSectionId
+            }
+          : section.afterBehavior.action === 'submit'
+            ? { action: 'submit' }
+            : { action: 'continue' },
+      questionIds: getQuestionsForSection($questionnaire.questions, section.id)
+        .map((question) => question.id)
+        .filter((id): id is string | number => id != null)
     }));
     const shouldSyncSections = $questionnaire.sections.length > 0 || hasSections($questionnaire.sections);
     const sectionValidationErrors = getSectionValidationErrors(activeSections);
@@ -388,7 +409,7 @@
         ...sectionValidationErrors
       });
       snackbar.error('snackbar.exercise.validation_errors');
-      return;
+      return false;
     }
 
     if (requiresPositivePointsForAutoGrade) {
@@ -412,16 +433,15 @@
 
         snackbar.error('snackbar.exercise.points_required_auto_grade');
 
-        return;
+        return false;
       }
     }
 
     const passedPolicyCanSave = await runPassedPolicySaveGuard();
-    if (!passedPolicyCanSave) return;
+    if (!passedPolicyCanSave) return false;
 
     isSaving = true;
-
-    reset();
+    clearQuestionnaireValidation();
     try {
       // Transform questionnaire to API format (filter empty options for API, include deleted items)
       const questions = transformQuestionsToApiFormat($questionnaire.questions, {
@@ -433,7 +453,7 @@
       const completionPolicy = $questionnaire.completionPolicy ?? 'submitted';
       const passThreshold = $questionnaire.passThreshold ?? 100;
 
-      await exerciseApi.update(courseApi.course?.id, exerciseId, {
+      await exerciseApi.update(courseApi.course.id, exerciseId, {
         title: $questionnaire.title ?? '',
         description: $questionnaire.description ?? '',
         dueBy: $questionnaire.dueBy ?? '',
@@ -450,7 +470,7 @@
         console.log('Validation errors from API:', exerciseApi.errors);
         snackbar.error('snackbar.exercise.validation_errors');
         isSaving = false;
-        return;
+        return false;
       }
 
       if (exerciseApi.success) {
@@ -459,12 +479,26 @@
         }
         hasUnsavedChanges = false;
         patchExerciseListItemLocally();
-        snackbar.success('snackbar.exercise.success');
+        if (!silent) {
+          snackbar.success('snackbar.exercise.success');
+        }
+
+        if (publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id) {
+          const activeQuestions = getActiveExerciseQuestions($questionnaire.questions ?? []);
+          const manualQuestions = getManualQuestionsFromList(activeQuestions);
+          const exerciseTitle = exerciseApi.exercise?.title || $questionnaire.title || 'Untitled Exercise';
+
+          publicConversionFlow.syncExerciseQuestions(exerciseId, manualQuestions, exerciseTitle);
+        }
+        isSaving = false;
+        return true;
       }
     } catch {
       snackbar.error();
+    } finally {
+      isSaving = false;
     }
-    isSaving = false;
+    return false;
   }
 
   onDestroy(() => {
@@ -490,6 +524,12 @@
   );
 
   $effect(() => {
+    if (courseApi.course?.id) {
+      publicConversionFlow.restoreForCourse(courseApi.course.id);
+    }
+  });
+
+  $effect(() => {
     const nextTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
     if (nextTab === untrack(() => selectedTab)) return;
     selectedTab = nextTab;
@@ -507,12 +547,14 @@
   });
 
   $effect(() => {
-    const currentTab = page.url.searchParams.get('tab') ?? '';
+    const currentTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
+    // Prevent self-navigation loops: only update URL when it actually changes.
     if (currentTab === selectedTab) return;
 
     untrack(() => {
       const url = new URL(page.url);
       url.searchParams.set('tab', selectedTab);
+      url.searchParams.delete('highlight');
 
       if (selectedTab !== 'submissions') {
         url.searchParams.delete('submission');
@@ -528,7 +570,28 @@
   });
 
   $effect(() => {
+    const highlight = page.url.searchParams.get('highlight');
+    if (!highlight || !highlight.startsWith('exercise-question-')) {
+      // param is gone — clear memory so a future highlight (even the same id) is treated as new
+      if (untrack(() => lastHandledHighlight) !== null) {
+        lastHandledHighlight = null;
+      }
+      return;
+    }
+
+    // already acted on this exact highlight — a re-run caused by unrelated page.url
+    // churn (e.g. tab switching) should not re-force the tab back to 'questions'
+    if (highlight === untrack(() => lastHandledHighlight)) return;
+
+    lastHandledHighlight = highlight;
+    selectedTab = 'questions';
+    preview = false;
+    reorderQuestions = false;
+  });
+
+  $effect(() => {
     if ($isOrgStudent) return;
+    if ($questionnaireMetaData.exerciseId !== exerciseId) return;
 
     const addNewQ = $questionnaire?.questions?.length < 1;
 
@@ -565,7 +628,6 @@
       t.get('course.navItem.lessons.exercises.all_exercises.heading')
   );
 
-  const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const activeQuestionTypeIds = $derived(
     ($questionnaire.questions ?? []).filter((q) => !q.deletedAt).map((q) => getQuestionTypeId(q))
@@ -624,9 +686,18 @@
     preview = !preview;
     reorderQuestions = false;
   }
+
+  const isConversionActive = $derived(
+    publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id
+  );
 </script>
 
-<Page.Header isSticky={true} class="ui:z-app-bar top-12! min-h-[36px]">
+<Page.Header
+  isSticky={!isConversionActive}
+  class="ui:my-0 ui:border-border ui:bg-background min-h-9 w-full border-b px-4 pt-4 pb-3 md:px-6 md:pt-5 md:pb-4 {isConversionActive
+    ? ''
+    : 'ui:top-12 ui:z-app-bar'}"
+>
   <Page.HeaderContent>
     <Page.Title class="flex flex-col gap-2">
       <span>{exerciseDisplayTitle}</span>
@@ -753,9 +824,21 @@
   </Page.Action>
 </Page.Header>
 
-<Page.Body>
+<Page.Body class="w-full gap-0">
   {#snippet child()}
-    <div class="overflow-x-hidden pb-20">
+    <div class="mx-auto w-full overflow-x-hidden px-3 pt-4 pb-20 sm:w-[90%] sm:px-4 lg:max-w-5xl">
+      {#if !$isStudentExperience}
+        <PublicConversionBanner
+          {exerciseId}
+          onJumpToQuestion={() => {
+            selectedTab = 'questions';
+            preview = false;
+            reorderQuestions = false;
+          }}
+          onSave={handleSave}
+        />
+      {/if}
+
       {#if $isStudentExperience}
         {#if isExerciseAccessible}
           <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
@@ -767,7 +850,7 @@
         {/if}
       {:else}
         <UnderlineTabs.Root bind:value={selectedTab} class="mb-4">
-          <UnderlineTabs.List class="grid w-full max-w-lg grid-cols-3">
+          <UnderlineTabs.List>
             <UnderlineTabs.Trigger value="questions">
               {$t('course.navItem.lessons.exercises.all_exercises.questions')}
             </UnderlineTabs.Trigger>
@@ -787,7 +870,6 @@
                 {exerciseId}
                 {goBack}
                 {requiresPositivePointsForAutoGrade}
-                selfPacedCourse={isSelfPacedCourse}
                 {isPublicCourse}
                 {reorderQuestions}
               />
@@ -803,7 +885,16 @@
             />
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="submissions">
-            <Submissions bind:exerciseId {submissions} {enrolledStudentKeys} />
+            {#if canGradeSubmissions}
+              <Submissions bind:exerciseId {submissions} {enrolledStudentKeys} />
+            {:else}
+              <Empty
+                title={$t('course.navItem.submissions.access.denied_title')}
+                description={$t('course.navItem.submissions.access.denied_description')}
+                icon={LockKeyhole}
+                variant="page"
+              />
+            {/if}
           </UnderlineTabs.Content>
         </UnderlineTabs.Root>
 

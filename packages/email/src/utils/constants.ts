@@ -3,6 +3,7 @@ import { env } from '../config/env';
 export const EMAIL_IDS = [
   'forgotPassword',
   'inviteTeacher',
+  'teamRoleChanged',
   'newsfeedComment',
   'newsfeedPost',
   'onPasswordReset',
@@ -12,8 +13,14 @@ export const EMAIL_IDS = [
   'sessionUpdated',
   'submissionGraded',
   'submissionReceived',
+  'earlyAdopterReady',
+  'earlyAdopterReminder',
   'studentLimitReached',
   'studentLimitApproaching',
+  'paymentFailed',
+  'contentReportAlert',
+  'webhookFailing',
+  'webhookDisabled',
   'studentCourseInvite',
   'studentCourseCompletion',
   'studentCourseWelcome',
@@ -27,6 +34,7 @@ export const EMAIL_IDS = [
   'teacherStudentBuyRequest',
   'teacherStudentJoined',
   'verifyEmail',
+  'profileUpdated',
   'welcome'
 ] as const;
 

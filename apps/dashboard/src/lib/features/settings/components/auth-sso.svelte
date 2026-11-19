@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Select from '@cio/ui/base/select';
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { CompactLoader } from '@cio/ui/custom/compact-loader';
 
   import { currentOrg, isEnterprisePlan } from '$lib/utils/store/org';
   import { ssoStore } from '$features/org/store/sso.svelte';
@@ -127,7 +127,7 @@
 
 {#if ssoStore.isLoading && !ssoStore.isInitialized}
   <div class="flex justify-center py-10">
-    <Spinner class="size-10! text-blue-700!" />
+    <CompactLoader label={$t('common.loading')} />
   </div>
 {:else if ssoStore.config?.config}
   <!-- Existing SSO Connection -->

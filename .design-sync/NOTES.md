@@ -1,0 +1,1 @@
+- Project "ClassroomIO Design System" was uploaded as-is from `skills/classroomio-design/` (no converter build; the folder has no package.json or dist).

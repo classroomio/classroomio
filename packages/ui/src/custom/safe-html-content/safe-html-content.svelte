@@ -1,5 +1,6 @@
 <script lang="ts">
   import { splitHtmlAndSvg, type ContentSegment } from '../../tools/sanitize';
+  import '../editor/extensions/callout/callout.css';
 
   interface Props {
     content: string;

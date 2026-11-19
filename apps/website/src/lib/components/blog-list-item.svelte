@@ -1,5 +1,4 @@
 <script>
-  import { Badge } from '@cio/ui/base/badge';
   import { formatDate } from '$lib/utils/format-date';
 
   /**
@@ -14,14 +13,14 @@
 
 {#if !isRecommended}
   <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-center">
-    <!-- Date -->
-    <p class="text-sm text-slate-500">{formatDate(post.date)}</p>
+    <p class="text-label font-mono text-slate-500 uppercase">{formatDate(post.date)}</p>
 
-    <!-- Tags  -->
     <div class="flex flex-col">
       <div class="flex flex-wrap gap-2">
         {#each post.tags as tag}
-          <Badge variant="outline">{tag}</Badge>
+          <span class="text-tag ui:border-border ui:text-foreground rounded-full border px-2 py-0.5 font-mono uppercase"
+            >{tag}</span
+          >
         {/each}
       </div>
     </div>
@@ -29,12 +28,17 @@
 {/if}
 
 <a href="/blog/{post.slug}" class="group space-y-2">
-  <img loading="lazy" src={post.imageUrl} alt={post.title} class="h-48 w-70 rounded-md object-cover" />
-  <p class="text-md font-medium {isRecommended && 'h-[40px]'} line-clamp-2 group-hover:underline">
+  <img
+    loading="lazy"
+    src={post.imageUrl}
+    alt={post.title}
+    class="h-48 w-70 rounded-xl border border-gray-200 object-cover"
+  />
+  <p class="text-base font-semibold {isRecommended && 'h-[40px]'} line-clamp-2 group-hover:underline">
     {@html post.title}
   </p>
 
-  <p class="ui:text-muted-foreground line-clamp-3">{post.description}</p>
+  <p class="ui:text-muted-foreground line-clamp-3 text-[15px] leading-relaxed">{post.description}</p>
 </a>
 
 <div class="my-2 flex items-center justify-start gap-4">

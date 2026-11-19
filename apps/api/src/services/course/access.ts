@@ -1,10 +1,74 @@
-import { ContentType } from '@cio/utils/constants';
+import { ContentType, ROLE } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
+import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
-import { getCourseContentItems } from '@cio/db/queries/course/content';
+import { getCourseMemberAccess, getCourseProgramAccess } from '@cio/db/queries/group';
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import { getCachedCourseContentItemsForStudentAccessCheck } from '@api/utils/redis/course-content-cache';
 import { assertCourseNotLockedForStudent } from '@api/services/learning-path';
 
 const DEFAULT_CONTENT_GROUPING = true;
+
+/**
+ * Whether a profile can open a course: course team member, org admin, a
+ * learner with a live enrollment grant, or a member of a program that
+ * includes it. Backfills program members into the course group, and throws
+ * when that backfill is blocked or when a learning path still locks the
+ * course for the learner.
+ */
+export async function canProfileOpenCourse(courseId: string, profileId: string): Promise<boolean> {
+  const { hasLiveGrant, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, profileId);
+
+  if (isTeamMemberOrAdmin) {
+    return true;
+  }
+
+  if (!hasLiveGrant && !(await ensureProgramCourseAccess(courseId, profileId))) {
+    return false;
+  }
+
+  await assertCourseNotLockedForStudent(courseId, profileId);
+
+  return true;
+}
+
+/**
+ * Read-only counterpart of `canProfileOpenCourse`: never backfills and never
+ * throws on the student limit.
+ */
+export async function canProfileReachCourse(courseId: string, profileId: string): Promise<boolean> {
+  const { hasLiveGrant, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, profileId);
+
+  if (hasLiveGrant || isTeamMemberOrAdmin) {
+    return true;
+  }
+
+  const programAccess = await getCourseProgramAccess(courseId, profileId);
+
+  return Boolean(programAccess?.organizationId);
+}
+
+/**
+ * Blocks a STUDENT-role member from reading an unpublished course at all
+ * (individual content, listings, everything). Non-student roles (tutor/admin
+ * authoring the course) and courses that don't resolve are left untouched.
+ */
+export async function assertEnrolledStudentCourseAccess(params: {
+  courseId: string;
+  profileId: string;
+}): Promise<void> {
+  const [courseRow, progress] = await Promise.all([
+    getCourseById(params.courseId),
+    getCourseProgress(params.courseId, params.profileId)
+  ]);
+
+  const course = courseRow[0];
+  if (!course) return;
+
+  if (progress.roleId === ROLE.STUDENT && !course.isPublished) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+}
 
 export async function assertEnrolledStudentContentAccess(params: {
   courseId: string;
@@ -17,11 +81,15 @@ export async function assertEnrolledStudentContentAccess(params: {
   const [courseRow, progress, contentItems] = await Promise.all([
     getCourseById(params.courseId),
     getCourseProgress(params.courseId, params.profileId),
-    getCourseContentItems(params.courseId, params.profileId)
+    getCachedCourseContentItemsForStudentAccessCheck(params.courseId, params.profileId)
   ]);
 
   const course = courseRow[0];
   if (!course) return;
+
+  if (progress.roleId === ROLE.STUDENT && !course.isPublished) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
 
   const isContentGroupingEnabled = course.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
   const progressionMode = course.metadata?.progressionMode ?? 'free';

@@ -29,6 +29,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationMemberIdByOrgAndProfile: vi.fn().mockResolvedValue('org-member-1'),
   getOrgLinkInvite: vi.fn(),
   getOrgLinkInviteWithOrg: vi.fn(),
+  lockOrganizationForUpdate: vi.fn().mockResolvedValue(undefined),
   revokeActiveOrganizationInvitesByEmails: vi.fn(),
   selectOrganizationInviteWithOrgByInviteId: vi.fn(),
   selectOrganizationInviteWithOrgByTokenHash: vi.fn(),
@@ -43,7 +44,7 @@ vi.mock('@cio/db/queries/course', () => ({
   getOrgCourseGroups: vi.fn().mockResolvedValue([]),
   getEnrollOnlyInLearningPathCourses: vi.fn().mockResolvedValue([])
 }));
-vi.mock('@cio/analytics', () => ({
+vi.mock('@cio/tracking', () => ({
   trackServerEvent: vi.fn(),
   SERVER_EVENTS: {
     ENROLLMENT_COMPLETED: 'enrollment_completed',
@@ -52,11 +53,11 @@ vi.mock('@cio/analytics', () => ({
   }
 }));
 vi.mock('@cio/db/queries/group', () => ({
-  enrollUsersInCourseGroups: vi.fn().mockResolvedValue(0),
+  enrollUsersInCourseGroups: vi.fn().mockResolvedValue([]),
   getGroupMemberByGroupAndProfile: vi.fn()
 }));
 vi.mock('@cio/db/queries/cohort', () => ({
-  addCohortMember: vi.fn(),
+  addCohortMember: vi.fn(async (data: Record<string, unknown>) => ({ id: 'cm-new', ...data })),
   getCohortMemberByProfileId: vi.fn().mockResolvedValue({ id: 'cm-1', roleId: 3 }),
   getCourseIdsByCohortIds: vi.fn().mockResolvedValue([]),
   getCohortCoursePairsByCohortIds: vi.fn().mockResolvedValue([]),
@@ -93,7 +94,8 @@ vi.mock('@api/services/organization/student-limit', () => ({
 vi.mock('@api/utils/org', () => ({
   parseCourseIdsFromInviteMetadata: vi.fn(() => []),
   parseCohortIdsFromInviteMetadata: vi.fn(() => []),
-  parsePathIdsFromInviteMetadata: vi.fn(() => [])
+  parsePathIdsFromInviteMetadata: vi.fn(() => []),
+  parseFullnameFromInviteMetadata: vi.fn(() => undefined)
 }));
 vi.mock('@cio/db/queries/auth/profile', () => ({
   getProfileById: vi.fn(),
@@ -106,7 +108,8 @@ vi.mock('@cio/email', () => ({
   sanitizeEmailSubject: vi.fn()
 }));
 vi.mock('@api/services/course/compliance', () => ({
-  ensureComplianceEnrollmentRecordsForProfiles: vi.fn().mockResolvedValue(undefined)
+  ensureComplianceEnrollmentRecordsForProfiles: vi.fn().mockResolvedValue({ createdCount: 0, createdRecords: [] }),
+  emitComplianceEnrollmentEvents: vi.fn().mockResolvedValue(undefined)
 }));
 vi.mock('@api/services/course/enrollment-grants', () => ({
   recordDirectCourseGrant: vi.fn().mockResolvedValue(undefined),
@@ -140,7 +143,7 @@ import {
 } from '@cio/db/queries/learning-path';
 import { enrollProfileCore } from '@cio/core/services/learning-path/enroll-profile-core';
 import { scheduleLearningPathProgressSync } from '@api/services/learning-path/progress-sync-jobs';
-import { trackServerEvent } from '@cio/analytics';
+import { trackServerEvent } from '@cio/tracking';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { ROLE } from '@cio/utils/constants';
 
@@ -205,7 +208,7 @@ describe('acceptOrganizationInvite — learning paths', () => {
       pathId: PATH_ID,
       profileIds: [USER.id]
     });
-    expect(result.redirectTo).toBe('/lms');
+    expect(result.redirectTo).toBe('/student-home');
   });
 
   it('enrolls nothing when the invite carries no paths', async () => {
@@ -256,7 +259,7 @@ describe('acceptOrganizationInvite — path-only courses', () => {
     vi.mocked(parseCourseIdsFromInviteMetadata).mockReturnValue(['c-direct', 'c-path-only']);
     vi.mocked(getEnrollOnlyInLearningPathCourses).mockResolvedValue([{ id: 'c-path-only', title: 'Path-only Course' }]);
     vi.mocked(getOrgCourseGroups).mockResolvedValue([{ courseId: 'c-direct', groupId: 'g-direct' }] as never);
-    vi.mocked(enrollUsersInCourseGroups).mockResolvedValue(1);
+    vi.mocked(enrollUsersInCourseGroups).mockResolvedValue([{ id: 'gm-direct' }] as never);
 
     const result = await acceptOrganizationInvite('token-1', USER as never);
 
@@ -291,7 +294,7 @@ describe('acceptOrganizationInvite — path-only courses', () => {
       [USER.id],
       expect.anything()
     );
-    expect(result.redirectTo).toBe('/lms');
+    expect(result.redirectTo).toBe('/student-home');
   });
 
   it('accepts cleanly when no course is path-only', async () => {
@@ -334,7 +337,7 @@ describe('acceptOrganizationInvite — cohort provenance', () => {
     vi.mocked(getCohortCoursePairsByCohortIds).mockResolvedValue([{ cohortId: 'cohort-1', courseId: 'c-1' }]);
     vi.mocked(getOrgCourseGroups).mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }] as never);
     vi.mocked(getGroupMemberByGroupAndProfile).mockResolvedValue({ id: 'gm-1', roleId: 3 });
-    vi.mocked(enrollUsersInCourseGroups).mockResolvedValue(1);
+    vi.mocked(enrollUsersInCourseGroups).mockResolvedValue([{ id: 'gm-1' }] as never);
 
     await acceptOrganizationInvite('token-1', USER as never);
 
@@ -387,7 +390,7 @@ describe('acceptOrganizationInvite — per-cohort grants', () => {
       id: `gm-${groupId}`,
       roleId: 3
     }));
-    vi.mocked(enrollUsersInCourseGroups).mockResolvedValue(2);
+    vi.mocked(enrollUsersInCourseGroups).mockResolvedValue([{ id: 'gm-1' }, { id: 'gm-2' }] as never);
 
     await acceptOrganizationInvite('token-1', USER as never);
 

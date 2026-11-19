@@ -35,3 +35,15 @@ export const deleteCourseModalInitialState = {
 };
 
 export const deleteCourseModal = writable({ ...deleteCourseModalInitialState });
+
+export const saveTemplateModalInitialState = {
+  open: false,
+  id: '',
+  title: '',
+  name: '',
+  mode: 'copy' as 'copy' | 'convert',
+  isPublished: false,
+  studentCount: 0
+};
+
+export const saveTemplateModal = writable({ ...saveTemplateModalInitialState });

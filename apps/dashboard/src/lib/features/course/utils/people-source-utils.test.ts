@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ALL_SOURCES_FILTER,
   PEOPLE_SOURCE_PARAM,
   getPeopleSourceFilterGroup,
   readPeopleSourceParam,
-  toPeopleRequestQueryWithSource,
   toPeopleSourceFilter,
   writePeopleSourceParam
 } from './people-source-utils';
+import { getPeopleQueryFromSearchParams, getPeopleSearchParams } from './people-query-utils';
+import { toPeopleRequestQuery } from './people-utils';
 
 describe('toPeopleSourceFilter', () => {
   it('passes through every API source', () => {
@@ -17,7 +17,7 @@ describe('toPeopleSourceFilter', () => {
   });
 
   it('sends no filter for "all", empty or unknown values', () => {
-    expect(toPeopleSourceFilter(ALL_SOURCES_FILTER)).toBeUndefined();
+    expect(toPeopleSourceFilter('all')).toBeUndefined();
     expect(toPeopleSourceFilter('')).toBeUndefined();
     expect(toPeopleSourceFilter(null)).toBeUndefined();
     expect(toPeopleSourceFilter('LEARNING_PATH')).toBeUndefined();
@@ -60,18 +60,45 @@ describe('writePeopleSourceParam', () => {
   });
 });
 
-describe('toPeopleRequestQueryWithSource', () => {
-  it('stringifies the base query and forwards the source', () => {
-    const requestQuery = toPeopleRequestQueryWithSource({ page: 2, limit: 20, roleId: 3, source: 'cohort' });
+describe('toPeopleRequestQuery source', () => {
+  it('stringifies the query and forwards the source', () => {
+    const requestQuery = toPeopleRequestQuery({
+      page: 2,
+      limit: 20,
+      roleId: 3,
+      sortBy: 'role',
+      sortOrder: 'asc',
+      source: 'cohort'
+    });
 
-    expect(requestQuery).toEqual({ page: '2', limit: '20', search: undefined, roleId: '3', source: 'cohort' });
+    expect(requestQuery).toEqual({
+      page: '2',
+      limit: '20',
+      roleId: '3',
+      sortBy: 'role',
+      sortOrder: 'asc',
+      source: 'cohort'
+    });
   });
 
   it('omits the source value when no source filter is set', () => {
-    const requestQuery = toPeopleRequestQueryWithSource({ page: 1, limit: 20 });
+    const requestQuery = toPeopleRequestQuery({ page: 1, limit: 20, sortBy: 'role', sortOrder: 'asc' });
 
     expect(requestQuery.source).toBeUndefined();
     expect(requestQuery.page).toBe('1');
+  });
+});
+
+describe('people URL query source', () => {
+  it('round-trips the source through the roster URL', () => {
+    const query = getPeopleQueryFromSearchParams(new URLSearchParams('source=learning_path&add=true'));
+
+    expect(query.source).toBe('learning_path');
+
+    const searchParams = getPeopleSearchParams({ ...query, source: undefined }, new URLSearchParams('source=cohort&add=true'));
+
+    expect(searchParams.has(PEOPLE_SOURCE_PARAM)).toBe(false);
+    expect(searchParams.get('add')).toBe('true');
   });
 });
 

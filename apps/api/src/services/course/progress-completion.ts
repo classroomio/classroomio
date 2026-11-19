@@ -2,7 +2,7 @@ import { getCourseById } from '@cio/db/queries/course';
 import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group/group';
 
 import { syncComplianceProgressFromSubmission } from './compliance';
-import { evaluateAndRecordCourseCompletion } from './completion';
+import { evaluateCourseCertification } from './completion';
 
 /**
  * Records course completion after the learner's progress changes (a lesson
@@ -21,5 +21,5 @@ export async function recordCourseCompletionFromProgress(courseId: string, profi
     if (cycle && cycle.status !== 'not_started') return;
   }
 
-  await evaluateAndRecordCourseCompletion(courseId, profileId);
+  await evaluateCourseCertification(courseId, profileId);
 }

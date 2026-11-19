@@ -172,6 +172,12 @@ function scoreFillBlank(
   return (correct / expected.length) * maxPoints;
 }
 
+function countWordBankTemplateBlanks(template: unknown): number {
+  if (typeof template !== 'string' || !template) return 0;
+  const matches = template.match(/_{3,}/g);
+  return matches ? matches.length : 0;
+}
+
 function scoreWordBank(
   question: ExerciseQuestionModel,
   answer: Extract<AnswerData, { type: 'WORD_BANK' }>,
@@ -179,9 +185,12 @@ function scoreWordBank(
   partial: boolean
 ): number {
   const rawCorrect = question.settings?.correctAnswers;
-  const expected = Array.isArray(rawCorrect)
-    ? (rawCorrect as unknown[]).map((s) => String(s).trim().toLowerCase()).filter(Boolean)
-    : [];
+  const blankCount = countWordBankTemplateBlanks(question.settings?.template);
+  const expected = (
+    Array.isArray(rawCorrect)
+      ? (rawCorrect as unknown[]).map((s) => String(s).trim().toLowerCase()).filter(Boolean)
+      : []
+  ).slice(0, blankCount);
   if (expected.length === 0) return 0;
 
   const studentVals = (answer.filledBlanks ?? []).map((v) => String(v).trim().toLowerCase());

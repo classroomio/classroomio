@@ -29,7 +29,8 @@
     callout,
     links,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: OrgLandingPageProps = $props();
 </script>
 
@@ -38,7 +39,7 @@
     <div class="frame">
       <SaasHero {hero}>
         {#snippet navigation()}
-          <SaasNav {orgName} {logoUrl} {navItems} {authAction} />
+          <SaasNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
         {/snippet}
       </SaasHero>
 
@@ -118,11 +119,6 @@
           </div>
         </section>
       </EditableLandingSection>
-
-      {#if links && links.cards.length > 0}
-        <div class="plus-row"></div>
-        <OrgLandingPageLinks {links} {labels} variant="saas" />
-      {/if}
 
       {#if links && links.enabled !== false && links.cards.length > 0}
         <div class="plus-row"></div>

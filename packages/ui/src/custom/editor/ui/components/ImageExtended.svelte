@@ -14,6 +14,6 @@
     src={node.attrs.src}
     alt={node.attrs.alt}
     title={node.attrs.title}
-    class="ui:m-0 ui:object-cover"
+    class="ui:m-0 ui:h-auto ui:w-full ui:max-w-full ui:rounded-md ui:object-contain"
   />
 </MediaExtended>

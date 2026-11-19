@@ -3,13 +3,6 @@ import type { Course } from '$features/course/types';
 import type { CourseMembers, CourseSectionWithLessons, ListLessons } from '$features/course/utils/types';
 import { writable, type Writable } from 'svelte/store';
 
-const defaultLessonTabsOrder: NonNullable<NonNullable<Course['metadata']>['lessonTabsOrder']> = [
-  { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
-  { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
-  { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-  { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
-];
-
 export const defaultCourse: Course = {
   id: '',
   title: '',
@@ -27,8 +20,7 @@ export const defaultCourse: Course = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   groupId: null,
-  isTemplate: true,
-  logo: '',
+  isTemplate: false,
   slug: null,
   bannerImage: null,
   attendance: [],
@@ -60,7 +52,6 @@ export const defaultCourse: Course = {
       description: '',
       imgUrl: ''
     },
-    lessonTabsOrder: defaultLessonTabsOrder,
     grading: false,
     lessonDownload: true,
     allowSelfEnrollment: true,

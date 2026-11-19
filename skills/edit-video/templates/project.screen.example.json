@@ -1,0 +1,74 @@
+{
+  "series": "PRODUCT TOUR",
+  "kind": "screen",
+  "source": "recording.mp4",
+  "transcript": "recording.srt",
+  "output": "edited",
+  "work": "work",
+  "corrections": {
+    "classroom": "ClassroomIO"
+  },
+  "sign_off": {
+    "headline": [
+      "Your academy,",
+      "your brand."
+    ],
+    "swipe": "brand.",
+    "url": "CLASSROOMIO.COM"
+  },
+  "clips": [
+    {
+      "id": "01-custom-domain",
+      "start_phrase": "let me show you custom domains",
+      "end_phrase": "and that is it",
+      "title": "Put your academy on your own domain",
+      "thumbnail": "Your academy, your domain",
+      "hook": "one DNS record and you are live",
+      "explainers": [
+        {
+          "trigger": "add a cname record",
+          "duration": 5.0,
+          "kind": "numbered",
+          "mode": {
+            "16x9": "split",
+            "9x16": "full"
+          },
+          "props": {
+            "eyebrow": "THREE STEPS",
+            "items": [
+              {
+                "text": "Add the domain in settings",
+                "at": "open settings"
+              },
+              {
+                "text": "Add one CNAME record",
+                "at": "cname record"
+              },
+              {
+                "text": "Wait for the green check",
+                "at": "green check"
+              }
+            ]
+          }
+        },
+        {
+          "trigger": "looks like your brand",
+          "duration": 4.5,
+          "kind": "statement",
+          "mode": "split",
+          "props": {
+            "eyebrow": "THE RESULT",
+            "lines": [
+              "Your domain.",
+              "Your brand."
+            ],
+            "swipe": [
+              1,
+              "brand."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

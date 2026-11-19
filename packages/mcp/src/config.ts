@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
+import { MCP_VERSION } from './version';
+
 const ZConfig = z.object({
   CLASSROOMIO_API_URL: z.url().default('https://api.classroomio.com'),
   CLASSROOMIO_API_KEY: z.string().min(1),
-  CLASSROOMIO_USER_AGENT: z.string().min(1).default('classroomio-mcp/0.0.10')
+  CLASSROOMIO_USER_AGENT: z.string().min(1).default(`classroomio-mcp/${MCP_VERSION}`)
 });
 
 export type McpServerConfig = z.infer<typeof ZConfig>;

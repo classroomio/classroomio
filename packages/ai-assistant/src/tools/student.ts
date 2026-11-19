@@ -34,6 +34,16 @@ export const readExerciseSchema = {
   })
 };
 
+export const readMySubmissionsSchema = {
+  description:
+    "Read the current learner's own submission result for an exercise, including grading status, score, missed questions, submitted answers, and instructor feedback. Never returns answer keys or another learner's data.",
+  parameters: z.object({
+    courseId: z.string().describe('The current course ID'),
+    exerciseId: z.string().describe('The exercise ID. Must belong to this course.'),
+    attempt: z.number().int().min(1).optional().describe('One-based attempt number. Defaults to the latest attempt.')
+  })
+};
+
 export const searchCourseSchema = {
   description:
     'Search this course for lessons and exercises whose title or body matches a free-text query. Returns ranked snippets with lesson or exercise ids so you can follow up with read_lesson / read_exercise. Use this when the learner asks "where did we cover X?" or refers to material by topic instead of by title.',

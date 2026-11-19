@@ -1,0 +1,2 @@
+export interface AlertProps { variant?: 'default'|'destructive'|'warning'|'information'; /** pass null to hide; defaults to info/alert glyph */ icon?: React.ReactNode | null; title?: React.ReactNode; children?: React.ReactNode; style?: React.CSSProperties; }
+export declare function Alert(props: AlertProps): JSX.Element;

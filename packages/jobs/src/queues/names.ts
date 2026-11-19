@@ -5,6 +5,7 @@
 export const QUEUE_NAMES = {
   media: 'media',
   mediaTranscribe: 'media-transcribe',
+  mediaHls: 'media-hls',
   youtubeCaptions: 'youtube-captions',
   emails: 'emails',
   notifications: 'notifications',
@@ -31,6 +32,9 @@ export const JOB_NAMES = {
   },
   mediaTranscribe: {
     transcribeAudio: 'transcribe-audio'
+  },
+  mediaHls: {
+    hlsEncode: 'hls-encode'
   },
   youtubeCaptions: {
     fetchCaptions: 'fetch-captions'
@@ -63,6 +67,10 @@ export const JOB_NAMES = {
     courseRoleReconcile: 'course-role-reconcile',
     memberActivityReconcile: 'member-activity-reconcile',
     learningPathProgressSync: 'learning-path-progress-sync',
-    learningPathProgressReconcile: 'learning-path-progress-reconcile'
+    learningPathProgressReconcile: 'learning-path-progress-reconcile',
+    earlyAdopterClaimReminder: 'early-adopter-claim-reminder',
+    instanceTelemetry: 'instance-telemetry',
+    webhookRetention: 'webhook-retention',
+    webhookSweep: 'webhook-sweep'
   }
 } as const;

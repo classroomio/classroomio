@@ -68,7 +68,7 @@ vi.mock('@cio/db/queries/auth', () => ({
   getProfileById: mocks.getProfileById
 }));
 
-vi.mock('@cio/analytics', () => ({
+vi.mock('@cio/tracking', () => ({
   trackServerEvent: mocks.trackServerEvent,
   SERVER_EVENTS: {
     ENROLLMENT_COMPLETED: 'enrollment_completed',

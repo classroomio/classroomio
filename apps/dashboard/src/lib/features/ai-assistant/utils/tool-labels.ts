@@ -29,6 +29,18 @@ const TOOLS_WITH_PENDING_COPY = new Set([
   'create_lesson',
   'update_lesson',
   'update_lesson_content',
+  'add_lesson_note_block',
+  'remove_lesson_block',
+  'move_lesson_block',
+  'add_lesson_slides_block',
+  'add_lesson_image_block',
+  'update_lesson_block_settings',
+  'update_lesson_block_requirements',
+  'detach_lesson_block',
+  'list_block_library',
+  'attach_library_block',
+  'move_lesson_block_to_lesson',
+  'attach_document_to_lesson',
   'create_exercise',
   'create_exercise_section',
   'update_exercise',
@@ -44,7 +56,10 @@ const TOOLS_WITH_PENDING_COPY = new Set([
   'fetch_documentation_url',
   'list_youtube_playlist_videos',
   'add_youtube_video_to_lesson',
-  'get_lesson_transcript'
+  'get_lesson_transcript',
+  'get_lesson_history',
+  'restore_lesson_version',
+  'undo_lesson_change'
 ]);
 
 /** i18n key for the running / pending description of `toolName` */
@@ -115,7 +130,8 @@ export function getCompletedToolLine(toolName: string, result: unknown): ToolLin
         key: 'ai_assistant.tool.done.update_lesson',
         vars: { title: readString(r, 'title') ?? '' }
       };
-    case 'update_lesson_content': {
+    case 'update_lesson_content':
+    case 'add_lesson_note_block': {
       const lessonId = readString(r, 'lessonId') ?? '';
       const rawTitle = readString(r, 'lessonTitle');
       const displayTitle = rawTitle && rawTitle.trim().length > 0 ? rawTitle : '';
@@ -131,6 +147,74 @@ export function getCompletedToolLine(toolName: string, result: unknown): ToolLin
         vars: { count: contentLength }
       };
     }
+    case 'remove_lesson_block':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.remove_lesson_block',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'move_lesson_block':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.move_lesson_block',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'add_lesson_slides_block':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.add_lesson_slides_block',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'add_lesson_image_block':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.add_lesson_image_block',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'update_lesson_block_settings':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.update_lesson_block_settings',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'update_lesson_block_requirements':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.update_lesson_block_requirements',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'detach_lesson_block':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.detach_lesson_block',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'list_block_library':
+      return { shape: 'i18n', key: 'ai_assistant.tool.done.list_block_library' };
+    case 'attach_library_block':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.attach_library_block',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'move_lesson_block_to_lesson':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.move_lesson_block_to_lesson',
+        vars: { title: readString(r, 'lessonTitle') ?? '' }
+      };
+    case 'attach_document_to_lesson':
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.attach_document_to_lesson',
+        vars: { title: readString(r, 'fileName') ?? '' }
+      };
+    case 'get_lesson_history':
+      return { shape: 'i18n', key: 'ai_assistant.tool.done.get_lesson_history' };
+    case 'restore_lesson_version':
+      return { shape: 'i18n', key: 'ai_assistant.tool.done.restore_lesson_version' };
+    case 'undo_lesson_change':
+      return { shape: 'i18n', key: 'ai_assistant.tool.done.undo_lesson_change' };
     case 'create_exercise': {
       const count = readPositiveInt(r, 'questionCount');
       const title = readString(r, 'title') ?? '';
@@ -316,6 +400,17 @@ export const MUTATION_TOOLS = [
   'create_lesson',
   'update_lesson',
   'update_lesson_content',
+  'add_lesson_note_block',
+  'remove_lesson_block',
+  'move_lesson_block',
+  'add_lesson_slides_block',
+  'add_lesson_image_block',
+  'update_lesson_block_settings',
+  'update_lesson_block_requirements',
+  'detach_lesson_block',
+  'attach_library_block',
+  'move_lesson_block_to_lesson',
+  'attach_document_to_lesson',
   'create_exercise',
   'create_exercise_section',
   'update_exercise',
@@ -325,5 +420,7 @@ export const MUTATION_TOOLS = [
   'reorder_content',
   'update_course_landing_page',
   'go_live_course',
-  'add_youtube_video_to_lesson'
+  'add_youtube_video_to_lesson',
+  'restore_lesson_version',
+  'undo_lesson_change'
 ];

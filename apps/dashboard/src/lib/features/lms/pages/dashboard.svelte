@@ -29,6 +29,7 @@
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
   import { GitBranch, SquareCheckBig } from '@lucide/svelte';
   import { PathIcon } from '@cio/ui/custom/moving-icons';
+  import { getCourseProgressCounts } from '$features/course/utils/functions';
 
   type EnrolledCourse = (typeof coursesApi.enrolledCourses)[number];
 
@@ -188,9 +189,8 @@
   }
 
   function getCourseTotalItems(course: EnrolledCourse) {
-    const exercises = 'exerciseCount' in course && typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
-
-    return (course.lessonCount || 0) + exercises;
+    const progressCounts = getCourseProgressCounts(course);
+    return progressCounts.lessons + progressCounts.exercises;
   }
 
   function getHighlightedCourses(courses: EnrolledCourse[]) {

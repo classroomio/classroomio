@@ -1,9 +1,10 @@
-import { ZPublicCourseBySlugParam, ZPublicCourseItemParam } from '@cio/utils/validation/course';
+import { ZPublicCourseBySlugParam, ZPublicCourseItemParam, ZPublicHlsCookieQuery } from '@cio/utils/validation/course';
 import {
   getPublicCourseItemService,
   getPublicCourseTreeService,
   issuePublicHlsCookieService
 } from '@api/services/course/public-course';
+import { lessonMarkdownRouter } from './lesson-markdown';
 
 import { Hono } from '@api/utils/hono';
 import { handleError } from '@api/utils/errors';
@@ -16,6 +17,7 @@ import { zValidator } from '@hono/zod-validator';
  * repo's single-response-shape rule; the item endpoint uses a `kind` discriminator.
  */
 export const publicCourseRouter = new Hono()
+  .route('/', lessonMarkdownRouter)
   .get('/:courseSlug', zValidator('param', ZPublicCourseBySlugParam), async (c) => {
     try {
       const { courseSlug } = c.req.valid('param');
@@ -63,28 +65,37 @@ export const publicCourseRouter = new Hono()
    * Anonymous-safe. Verifies that the public lesson exposes an HLS asset
    * and mints the short-lived `cio_hls` cookie the tenant-router Worker
    * (prod) and API streaming route (local) both validate before serving
-   * segments. Caller is expected to call this once per lesson page load
-   * before attaching hls.js.
+   * segments. The player calls it before attaching hls.js and again
+   * before `expiresInSeconds` elapses to keep long videos playing.
    */
-  .post('/:courseSlug/item/:itemSlug/hls-cookie', zValidator('param', ZPublicCourseItemParam), async (c) => {
-    try {
-      const { courseSlug, itemSlug } = c.req.valid('param');
-      const result = await issuePublicHlsCookieService(courseSlug, itemSlug);
+  .post(
+    '/:courseSlug/item/:itemSlug/hls-cookie',
+    zValidator('param', ZPublicCourseItemParam),
+    zValidator('query', ZPublicHlsCookieQuery),
+    async (c) => {
+      try {
+        const { courseSlug, itemSlug } = c.req.valid('param');
+        const { assetId } = c.req.valid('query');
+        const result = await issuePublicHlsCookieService(courseSlug, itemSlug, assetId);
 
-      setCookie(c, result.cookieName, result.token, {
-        path: '/',
-        httpOnly: true,
-        secure: true,
-        // `None` (not `Lax`) so the cookie is sent on cross-site segment
-        // fetches issued by hls.js — Lax is withheld on cross-site
-        // subresource requests, which would 403 every segment when the
-        // public site and api/stream live on different hosts.
-        sameSite: 'None',
-        maxAge: result.maxAgeSeconds
-      });
+        setCookie(c, result.cookieName, result.token, {
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          // `None` (not `Lax`) so the cookie is sent on cross-site segment
+          // fetches issued by hls.js — Lax is withheld on cross-site
+          // subresource requests, which would 403 every segment when the
+          // public site and api/stream live on different hosts.
+          sameSite: 'None',
+          maxAge: result.maxAgeSeconds
+        });
 
-      return c.json({ success: true as const, data: { expiresAt: result.expiresAt } });
-    } catch (error) {
-      return handleError(c, error, 'Failed to issue HLS cookie');
+        return c.json({
+          success: true as const,
+          data: { expiresAt: result.expiresAt, expiresInSeconds: result.maxAgeSeconds }
+        });
+      } catch (error) {
+        return handleError(c, error, 'Failed to issue HLS cookie');
+      }
     }
-  });
+  );

@@ -303,7 +303,7 @@ export const assetsRouter = new Hono()
         maxAge: maxAgeSeconds
       });
 
-      return c.json({ success: true, data: { expiresAt } }, 200);
+      return c.json({ success: true, data: { expiresAt, expiresInSeconds: maxAgeSeconds } }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to issue HLS cookie');
     }

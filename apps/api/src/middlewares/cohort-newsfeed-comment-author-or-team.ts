@@ -23,6 +23,8 @@ export const cohortNewsfeedCommentAuthorOrTeamMiddleware = async (c: Context, ne
       );
     }
 
+    const cohortId = c.req.param('cohortId');
+    const feedId = c.req.param('feedId');
     const commentId = c.req.param('commentId');
     if (!commentId) {
       return c.json(
@@ -47,13 +49,24 @@ export const cohortNewsfeedCommentAuthorOrTeamMiddleware = async (c: Context, ne
       );
     }
 
-    const feed = await getCohortNewsfeedById(comment.cohortNewsfeedId);
+    const feed = await getCohortNewsfeedById(cohortId, comment.cohortNewsfeedId);
     if (!feed?.cohortId) {
       return c.json(
         {
           success: false,
           error: 'Cohort newsfeed item not found',
           code: ErrorCodes.COHORT_NEWSFEED_NOT_FOUND
+        },
+        404
+      );
+    }
+
+    if (feed.id !== feedId) {
+      return c.json(
+        {
+          success: false,
+          error: 'Comment not found',
+          code: ErrorCodes.COHORT_NEWSFEED_COMMENT_NOT_FOUND
         },
         404
       );

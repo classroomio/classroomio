@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Loopwise · Publisher on ClassroomIO Discover</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="discover.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .stats { display: flex; gap: 36px; margin-top: 22px; flex-wrap: wrap; }
+      .stats b { display: block; font-size: 24px; font-weight: 500; letter-spacing: -0.02em; }
+      .stats span { font-size: 13px; color: var(--muted-foreground); }
+    </style>
+  </head>
+  <body data-active="discover">
+    <div data-site-nav></div>
+
+    <section class="hero" style="padding-bottom: 40px">
+      <div class="container">
+        <div class="frow" style="gap: 18px; align-items: flex-start; flex-wrap: wrap">
+          <span class="pub-av xl" style="background: #1d4ed8">L</span>
+          <div class="grow">
+            <div class="eyebrow">Publisher</div>
+            <h1 class="h1" style="font-size: 40px; margin: 6px 0 8px">Loopwise</h1>
+            <p class="lede" style="font-size: 16px">We make workflow software for operations teams and publish the onboarding courses and AI skills we use with our own customers.</p>
+            <div class="frow" style="gap: 14px; margin-top: 12px; font-size: 13.5px"><a class="link" href="#">loopwise.com ↗</a><span class="text-muted">Publishing on ClassroomIO since March 2026</span></div>
+          </div>
+        </div>
+        <div class="stats">
+          <div><b>7</b><span>Listings</span></div>
+          <div><b>1,420</b><span>Imports</span></div>
+          <div><b>4.7</b><span>Average rating</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="utabs" style="margin-bottom: 22px">
+          <button class="utab active">All <span class="count">7</span></button>
+          <button class="utab">Course templates <span class="count">4</span></button>
+          <button class="utab">AI skills <span class="count">2</span></button>
+          <button class="utab">Docs <span class="count">1</span></button>
+        </div>
+        <div class="lgrid" data-cards="mine"></div>
+      </div>
+    </section>
+
+    <div data-site-foot></div>
+    <div class="state-bar"><span class="lbl">Prototype</span><a href="index.html">← Map</a><a href="listing-course.html">Open a listing</a></div>
+
+    <script>
+      const mine = LISTINGS.filter((listing) => listing.pub === 'loopwise');
+      const extra = [
+        { ...LISTINGS[0], id: 'a', title: 'Admin Certification Track', colors: ['#1e40af', '#93c5fd', '#172554'], used: 212, reviews: 14, rating: 4.7 },
+        { ...LISTINGS[0], id: 'b', title: 'Release Notes Explained', colors: ['#2563eb', '#a5b4fc', '#1e1b4b'], used: 64, reviews: 2, rating: 5 },
+        { ...LISTINGS[0], id: 'c', title: 'Workspace Setup 101', colors: ['#1d4ed8', '#bae6fd', '#0c4a6e'], used: 301, reviews: 22, rating: 4.6 },
+        { ...LISTINGS[5], id: 'd', pub: 'loopwise', title: 'Support Escalation Guide', used: 3, reviews: 0 },
+        { ...LISTINGS[4], id: 'e', title: 'Turn release notes into a micro-course', used: 38, reviews: 4, rating: 4.5 }
+      ];
+      document.querySelector('[data-cards="mine"]').innerHTML = [...mine, ...extra].map(listingCard).join('');
+    </script>
+  </body>
+</html>

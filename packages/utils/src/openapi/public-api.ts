@@ -1,119 +1,14 @@
+import { ORG_ANALYTICS_PAGE } from '../constants/analytics-pages';
+
 export const PUBLIC_API_BASE_URL = 'https://api.classroomio.com/public-api/v1';
 export const PUBLIC_API_OPENAPI_URL = 'https://api.cdn.clsrio.com/openapi/public-api/openapi-latest.json';
 export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and learning paths with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Every endpoint in the ClassroomIO public API, grouped by resource.
 
-Learning paths package courses into ordered, sequentially unlocking journeys: create, update and delete paths, add, reorder and remove their courses, and list a path's members. The key creator's own enrolled courses and paths are readable too. Enrolling or removing path members is done from the dashboard.
-
-# Authentication
-
-All public API endpoints require an **organization-scoped API key** sent as a Bearer token.
-
-## Get an API key
-
-1. Sign in to [ClassroomIO](https://app.classroomio.com) as an **organization admin**.
-2. In the org sidebar, open the **Automation** section, then **API** ([/org/*/api](https://app.classroomio.com/org/*/api) — \`*\` picks your current organization automatically).
-3. Click **Generate API key** and copy the secret immediately (it is shown only once).
-4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
-
-## Send requests
-
-Add the key to every request:
-
-\`\`\`
-Authorization: Bearer cio_api_your_key_here
-\`\`\`
-
-Base URL: \`${PUBLIC_API_BASE_URL}\`
-
-## Try requests in this reference
-
-Use the **Authorize** button (lock icon) on this page, choose **bearerAuth**, paste your full API key, then run **Try it** on any endpoint.
-
-## Rate limits
-
-Requests to this API are rate limited per API key: **100 requests per minute** per key. A separate API key has its own budget, so traffic from one key does not affect another. Requests over the limit receive a \`429 Too Many Requests\` response with a \`Retry-After\` header.
-
-Two caveats to be aware of:
-
-- Rate limiting is only enforced when the API runs with NODE_ENV=production; it is disabled in development and test environments. This applies regardless of hosting a self-hosted production deployment with Redis available does enforce the per-key budget.
-- If the shared Redis store is unavailable, requests are served without rate limiting (fail open).
-
-## Plan access
-
-> **Paid Access** — On ClassroomIO Cloud, API key creation is available on **Early Adopter** and **Enterprise** plans. Self-hosted deployments require **Enterprise**.
-
-# HTTP methods
-
-The public API uses standard HTTP verbs:
-
-| Method | Use | Example |
-| --- | --- | --- |
-| \`GET\` | Fetch a resource or list | \`GET /public-api/v1/courses\` |
-| \`POST\` | Create a resource | \`POST /public-api/v1/audience\` |
-| \`PUT\` | Replace or update a resource | \`PUT /public-api/v1/courses/{courseId}\` |
-| \`DELETE\` | Remove a resource | \`DELETE /public-api/v1/audience/{memberId}\` |
-
-# Pagination
-
-List endpoints (\`GET /courses\`, \`GET /audience\`, \`GET /learning-paths\`, \`GET /learning-paths/{pathId}/members\`, \`GET /enrolled\`) accept:
-
-| Param | Type | Default | Notes |
-| --- | --- | --- | --- |
-| \`page\` | integer | \`1\` | 1-indexed |
-| \`limit\` | integer | \`20\` | Maximum \`100\` |
-
-Responses wrap results in a shared shape:
-
-\`\`\`json
-{
-  "success": true,
-  "data": [],
-  "pagination": { "page": 1, "limit": 20, "total": 42, "totalPages": 3 },
-  "query": { "page": 1, "limit": 20 }
-}
-\`\`\`
-
-\`pagination\` reports the actual result set. \`GET /courses\` and \`GET /audience\` also return \`query\`, echoing the resolved request parameters (including any filters, e.g. \`search\` or \`tags\`); the learning-path, member and enrolled lists return \`data\` and \`pagination\` only, and \`GET /enrolled\` adds \`counts\`.
-
-# Rate limiting
-
-Requests are limited **per API key**: 100 requests per minute. Every response includes:
-
-| Header | Meaning |
-| --- | --- |
-| \`X-RateLimit-Limit\` | Requests allowed in the current window |
-| \`X-RateLimit-Remaining\` | Requests left in the current window |
-| \`X-RateLimit-Reset\` | When the current window resets |
-
-Exceeding the limit returns \`429\` with a \`Retry-After\` header (seconds until you can retry).
-
-# Errors
-
-Failed requests return:
-
-\`\`\`json
-{
-  "success": false,
-  "error": "Human-readable message",
-  "code": "MACHINE_READABLE_CODE",
-  "field": "optional.field.path"
-}
-\`\`\`
-
-\`field\` is only present for validation errors that can be traced to a specific input.
-
-| Status | Meaning |
-| --- | --- |
-| \`400\` | Invalid request body or query: \`code\` is \`VALIDATION_ERROR\`, \`field\` identifies the offending input when known |
-| \`401\` | Missing or invalid API key |
-| \`403\` | The key is missing a required scope, or the organization's plan doesn't allow public API access |
-| \`404\` | The requested resource doesn't exist (or doesn't belong to your organization) |
-| \`429\` | Rate limit exceeded. See [Rate limiting](#rate-limiting): this response uses a different body, \`{ "error": "Too Many Requests", "message": "...", "retryAfter": 42 }\`, not the shape above |
-| \`500\` | Unexpected server error |
+New to the API? Start with the [introduction](https://classroomio.com/docs/api), then read [Authentication](https://classroomio.com/docs/api/authentication), [Rate limits](https://classroomio.com/docs/api/rate-limits), [Errors](https://classroomio.com/docs/api/errors), and [Pagination](https://classroomio.com/docs/api/pagination).
 `;
 
 type OpenApiDocument = Record<string, unknown>;
@@ -136,27 +31,243 @@ function applySecurityToOperations(paths: Record<string, unknown>) {
   }
 }
 
+type JsonSchemaNode = Record<string, unknown>;
+
+const isNullSchema = (schema: unknown): boolean =>
+  !!schema &&
+  typeof schema === 'object' &&
+  (schema as JsonSchemaNode).type === 'null' &&
+  Object.keys(schema).length === 1;
+
+const isConstSchema = (schema: unknown): schema is JsonSchemaNode =>
+  !!schema &&
+  typeof schema === 'object' &&
+  'const' in schema &&
+  Object.keys(schema).every((key) => key === 'const' || key === 'type');
+
+// Zod writes a nullable field as `anyOf: [X, { type: 'null' }]` and a union of literals as `anyOf` of
+// `const` branches; the API reference renders both as "Any of" blocks. OpenAPI 3.1 allows
+// `type: [X, 'null']` and `enum` instead, which render as "X | null" and a list of allowed values.
+function collapseNullableUnions(value: unknown): void {
+  if (!value || typeof value !== 'object') return;
+
+  if (Array.isArray(value)) {
+    value.forEach(collapseNullableUnions);
+    return;
+  }
+
+  const node = value as JsonSchemaNode;
+  Object.values(node).forEach(collapseNullableUnions);
+
+  const branches = node.anyOf;
+  if (!Array.isArray(branches)) return;
+
+  const literalTypes = new Set(branches.map((branch) => (isConstSchema(branch) ? branch.type : undefined)));
+  const [literalType] = literalTypes;
+  if (branches.every(isConstSchema) && literalTypes.size === 1 && typeof literalType === 'string') {
+    delete node.anyOf;
+    Object.assign(node, { type: literalType, enum: branches.map((branch) => (branch as JsonSchemaNode).const) });
+    return;
+  }
+
+  if (branches.length !== 2 || !branches.some(isNullSchema)) return;
+
+  const valueBranch = branches.find((branch) => !isNullSchema(branch)) as JsonSchemaNode | undefined;
+  if (!valueBranch || typeof valueBranch.type !== 'string') return;
+
+  delete node.anyOf;
+  const merged: JsonSchemaNode = { ...valueBranch, ...node, type: [valueBranch.type, 'null'] };
+  if (Array.isArray(valueBranch.enum)) merged.enum = [...valueBranch.enum, null];
+
+  Object.assign(node, merged);
+}
+
 // hono-openapi sets `description` per operation but never `summary`. Scalar's
 // endpoint list prefers `summary` and falls back to the raw path when it's
 // missing — since every path here starts with `/public-api/v1/...`, every
 // entry in the reference's sidebar rendered as a near-duplicate route string.
 // Keyed by "METHOD /path" (the exact template, including `{param}` braces).
-const OPERATION_SUMMARIES: Record<string, string> = {
+export const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/audience': 'List audience members',
-  'POST /public-api/v1/audience': 'Invite an audience member',
+  'POST /public-api/v1/audience': 'Invite audience members',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
+  'POST /public-api/v1/audience/bulk-status': 'Change student status in bulk',
   'GET /public-api/v1/audience/{memberId}': 'Get an audience member',
-  'PUT /public-api/v1/audience/{memberId}': "Update a member's email",
+  'PUT /public-api/v1/audience/{memberId}': 'Update an audience member',
   'DELETE /public-api/v1/audience/{memberId}': 'Remove an audience member',
+  'GET /public-api/v1/team': 'List team members',
+  'GET /public-api/v1/team/{memberId}': 'Get a team member',
+  'PUT /public-api/v1/team/{memberId}': 'Update a team member',
+  'DELETE /public-api/v1/team/{memberId}': 'Remove a team member',
+  'POST /public-api/v1/team/invites': 'Invite team members',
+  'GET /public-api/v1/team/invite-link': 'Get the team invite link',
+  'POST /public-api/v1/team/invite-link': 'Create the team invite link',
+  'PATCH /public-api/v1/team/invite-link': 'Turn the team invite link off or on',
+  'GET /public-api/v1/organization': 'Get the organization',
+  'PATCH /public-api/v1/organization': 'Update the organization',
+  'GET /public-api/v1/organization/customization': 'Get the LMS customization',
+  'PATCH /public-api/v1/organization/customization': 'Update the LMS customization',
+  'GET /public-api/v1/organization/email-templates': 'List student email templates',
+  'GET /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Get a student email template',
+  'PUT /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Save a student email template',
+  'DELETE /public-api/v1/organization/email-templates/{emailId}/{locale}': 'Reset a student email template',
+  'POST /public-api/v1/organization/email-templates/{emailId}/{locale}/test': 'Send a test student email',
+  'PUT /public-api/v1/organization/landing-page/featured-courses': 'Set featured courses',
+  'GET /public-api/v1/organization/domain': 'Get domain settings',
+  'PATCH /public-api/v1/organization/domain': 'Update subdomain or favicon',
+  'PUT /public-api/v1/organization/domain/custom': 'Connect a custom domain',
+  'POST /public-api/v1/organization/domain/custom/refresh': 'Refresh custom domain status',
+  'DELETE /public-api/v1/organization/domain/custom': 'Remove the custom domain',
   'GET /public-api/v1/courses': 'List courses',
   'POST /public-api/v1/courses': 'Create a course',
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
   'PUT /public-api/v1/courses/{courseId}': 'Update a course',
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
+  'POST /public-api/v1/courses/{courseId}/publish': 'Publish a course',
+  'POST /public-api/v1/courses/{courseId}/unpublish': 'Unpublish a course',
+  'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
+  'GET /public-api/v1/courses/{courseId}/related': 'List related courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
   'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/courses/{courseId}/certificate': 'Get course certificate settings',
+  'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
+  'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
+  'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate',
+  'GET /public-api/v1/courses/{courseId}/sections': 'List course sections',
+  'POST /public-api/v1/courses/{courseId}/sections': 'Create a course section',
+  'PUT /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Update a course section',
+  'DELETE /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Delete a course section',
+  'GET /public-api/v1/courses/{courseId}/lessons': 'List course lessons',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Get a course lesson',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Delete a course lesson',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/notify-session-update':
+    'Notify students of a session update',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks': 'List lesson blocks',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks': 'Add a lesson block',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/attach': 'Reuse a lesson block',
+  'PATCH /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}':
+    'Update a lesson block placement',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}/move':
+    'Move a lesson block',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/placements/{placementId}':
+    'Remove a lesson block from a lesson',
+  'PATCH /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}': 'Update a lesson block',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}/locale/{locale}':
+    'Save a lesson block translation',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/blocks/{blockId}/duplicate': 'Duplicate a lesson block',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations': 'List lesson translations',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations/{locale}': 'Save a lesson translation',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/history': 'List lesson version history',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments': 'List lesson comments',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments': 'Post a lesson comment',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Edit a lesson comment',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Delete a lesson comment',
+  'PUT /public-api/v1/courses/{courseId}/content/reorder': 'Reorder course content',
+  'PATCH /public-api/v1/courses/{courseId}/content': 'Lock or unlock course content',
+  'DELETE /public-api/v1/courses/{courseId}/content': 'Delete course content',
+  'GET /public-api/v1/courses/{courseId}/exercises': 'List course exercises',
+  'POST /public-api/v1/courses/{courseId}/exercises': 'Create a course exercise',
+  'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Get a course exercise',
+  'PUT /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Update a course exercise',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Delete a course exercise',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions': 'Add an exercise question',
+  'PATCH /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}':
+    'Update an exercise question',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}':
+    'Delete an exercise question',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections': 'Add an exercise section',
+  'PATCH /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Update an exercise section',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Delete an exercise section',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify': 'Notify course members about an exercise',
+  'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify/{jobId}': 'Get an exercise notification status',
+  'GET /public-api/v1/exercise-templates': 'List exercise templates',
+  'GET /public-api/v1/exercise-templates/{templateId}': 'Get an exercise template',
+  'GET /public-api/v1/course-templates': 'List course templates',
+  'GET /public-api/v1/course-templates/{templateId}': 'Get a course template',
+  'POST /public-api/v1/course-templates/{templateId}/courses': 'Create a course from a template',
+  'POST /public-api/v1/courses/{courseId}/template': 'Save a course as a template',
+  'GET /public-api/v1/courses/{courseId}/submissions': 'List course submissions',
+  'GET /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Get a submission',
+  'PUT /public-api/v1/courses/{courseId}/submissions/{submissionId}/grades': 'Grade a submission',
+  'PATCH /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Update a submission',
+  'DELETE /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Delete a submission',
+  'PUT /public-api/v1/courses/{courseId}/members/{memberId}/lessons/{lessonId}/completion':
+    'Set lesson completion for a student',
+  'POST /public-api/v1/courses/{courseId}/members/{memberId}/exercises/{exerciseId}/submissions':
+    'Submit an exercise for a student',
+  'GET /public-api/v1/courses/{courseId}/marks': 'Get course marks',
+  'GET /public-api/v1/courses/{courseId}/members': 'List course members',
+  'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
+  'GET /public-api/v1/courses/{courseId}/members/{memberId}': 'Get a course member',
+  'PUT /public-api/v1/courses/{courseId}/members/{memberId}': 'Update a course member',
+  'DELETE /public-api/v1/courses/{courseId}/members/{memberId}': 'Remove a course member',
+  'POST /public-api/v1/courses/{courseId}/members/{memberId}/reset-progress': 'Reset member progress',
+  'GET /public-api/v1/courses/{courseId}/members/{memberId}/analytics': 'Get member analytics',
+  'GET /public-api/v1/courses/{courseId}/invites': 'List invites',
+  'POST /public-api/v1/courses/{courseId}/invites': 'Create an invite',
+  'POST /public-api/v1/courses/{courseId}/invites/{inviteId}/revoke': 'Revoke an invite',
+  'POST /public-api/v1/courses/{courseId}/lessons': 'Create a course lesson',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Update a course lesson',
+  'POST /public-api/v1/assets': 'Reserve an asset upload',
+  'GET /public-api/v1/cohorts': 'List cohorts',
+  'POST /public-api/v1/cohorts': 'Create a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}': 'Get a cohort',
+  'PUT /public-api/v1/cohorts/{cohortId}': 'Update a cohort',
+  'DELETE /public-api/v1/cohorts/{cohortId}': 'Delete a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/members': 'List cohort members',
+  'POST /public-api/v1/cohorts/{cohortId}/members': 'Add cohort members',
+  'PUT /public-api/v1/cohorts/{cohortId}/members/{memberId}': 'Update a cohort member',
+  'DELETE /public-api/v1/cohorts/{cohortId}/members/{memberId}': 'Remove a cohort member',
+  'GET /public-api/v1/cohorts/{cohortId}/courses': 'List cohort courses',
+  'POST /public-api/v1/cohorts/{cohortId}/courses': 'Add a course to a cohort',
+  'DELETE /public-api/v1/cohorts/{cohortId}/courses/{courseId}': 'Remove a course from a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/newsfeed': 'List cohort newsfeed',
+  'POST /public-api/v1/cohorts/{cohortId}/newsfeed': 'Create a cohort newsfeed post',
+  'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}': 'Update a cohort newsfeed post',
+  'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/react': 'Set your reaction on a cohort newsfeed post',
+  'DELETE /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}': 'Delete a cohort newsfeed post',
+  'GET /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comments': 'List comments on a cohort newsfeed post',
+  'POST /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comment': 'Add a comment to a cohort newsfeed post',
+  'DELETE /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comment/{commentId}':
+    'Delete a comment from a cohort newsfeed post',
+  'GET /public-api/v1/cohorts/{cohortId}/goals': 'List cohort goals',
+  'POST /public-api/v1/cohorts/{cohortId}/goals': 'Create a cohort goal',
+  'GET /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Get a cohort goal',
+  'PUT /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Update a cohort goal',
+  'DELETE /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Delete a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/archive': 'Archive a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/evaluate': 'Re-evaluate a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/evaluate-all': 'Re-evaluate all cohort goals',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/remind-overdue': 'Send overdue goal reminders now',
+  'GET /public-api/v1/cohorts/goals/overview': 'Get the organization goals overview',
+  'GET /public-api/v1/cohorts/my/goals': 'List your cohort goal assignments',
+  'GET /public-api/v1/cohorts/enrolled': 'List cohorts you are enrolled in',
+  'POST /public-api/v1/cohorts/{cohortId}/invite': 'Invite students to a cohort by email',
+  'POST /public-api/v1/cohorts/{cohortId}/invite/assign': 'Assign existing students to a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/invite-link': 'Get the cohort join link',
+  'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
+  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link',
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}`]: `Get the ${ORG_ANALYTICS_PAGE.label} dashboard for the organization`,
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/students`]: `List students on the ${ORG_ANALYTICS_PAGE.label} page`,
+  [`GET /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`]: `List ${ORG_ANALYTICS_PAGE.label} sources, metrics and filters`,
+  [`POST /public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`]: `Query ${ORG_ANALYTICS_PAGE.label} analytics`,
+  'GET /public-api/v1/courses/{courseId}/analytics': "Get a course's analytics",
+  'GET /public-api/v1/courses/{courseId}/analytics/students': "List a course's students with analytics",
+  'GET /public-api/v1/cohorts/{cohortId}/analytics': "Get a cohort's analytics",
+  'GET /public-api/v1/cohorts/{cohortId}/analytics/students': "List a cohort's students with analytics",
+  'GET /public-api/v1/analytics/marketing': 'Get marketing analytics',
+  'GET /public-api/v1/analytics/marketing/courses/{courseId}': "Get a course's marketing funnel",
+  'GET /public-api/v1/analytics/compliance': 'Get compliance analytics',
+  'GET /public-api/v1/analytics/compliance/students': 'List compliance status per student',
+  'GET /public-api/v1/organization/overview': 'Get the organization overview',
+  'GET /public-api/v1/audience/{profileId}/analytics': "Get a student's analytics",
+  'GET /public-api/v1/tags': 'List tag groups and tags',
+  'POST /public-api/v1/tags': 'Create a tag',
+  'PUT /public-api/v1/tags/{tagId}': 'Update a tag',
+  'POST /public-api/v1/tags/groups': 'Create a tag group',
+  'PUT /public-api/v1/tags/groups/{groupId}': 'Update a tag group',
   'GET /public-api/v1/learning-paths': 'List learning paths',
   'POST /public-api/v1/learning-paths': 'Create a learning path',
   'GET /public-api/v1/learning-paths/{pathId}': 'Get a learning path',
@@ -169,18 +280,77 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/enrolled': "List the key creator's enrolled items"
 };
 
-// Scalar groups its sidebar by tag when the spec declares top-level `tags`
-// with descriptions; without this, operations list flat with no section
-// headers at all.
 const OPERATION_TAGS = [
+  { name: 'Organization', description: "Read and update your organization's name, logo and theme." },
+  { name: 'Audience', description: 'Manage people in your organization.' },
+  { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
   {
-    name: 'Public API Audience',
-    description: "Manage your organization's audience — invite, assign to courses, update, and remove members."
+    name: 'Organization Email Templates',
+    description: 'Read, customize, translate and reset the emails your organization sends to students.'
+  },
+  { name: 'Organization Landing Page', description: "Manage your organization's public landing page." },
+  {
+    name: 'Tags',
+    description: 'Create tag groups and tags. Set them on a course with tagIds or addTagIds on the course update.'
   },
   {
-    name: 'Public API Courses',
-    description: 'Create and manage courses, read their structure, and list enrolled students.'
+    name: 'Organization Domain',
+    description: 'Manage where your site is served: its subdomain, favicon and custom domain.'
   },
+  {
+    name: 'Organization Customization',
+    description: 'Turn LMS features on or off for students, and set the dashboard banner and login background.'
+  },
+  { name: 'Courses', description: 'Create, update, delete, and clone courses.' },
+  { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
+  { name: 'Course Members', description: 'Manage the people in a course and their progress.' },
+  { name: 'Course Invites', description: 'Invite people to a course.' },
+  { name: 'Course Sections', description: 'Add, rename, move and delete course sections.' },
+  {
+    name: 'Course Lessons',
+    description:
+      'List, create, read, update and delete lessons. The note, videos, slides and documents fields are deprecated: use Lesson Blocks.'
+  },
+  {
+    name: 'Lesson Blocks',
+    description:
+      'Read and edit the content blocks of a lesson: add, reorder, reuse, copy and remove notes, videos and slides.'
+  },
+  {
+    name: 'Lesson Translations',
+    description: "Read and save a lesson's content per language, and its version history."
+  },
+  { name: 'Lesson Comments', description: 'Read, post, edit and delete comments on a lesson.' },
+  { name: 'Course Content', description: 'Reorder, lock and delete lessons and exercises in bulk.' },
+  { name: 'Course Exercises', description: 'Create and manage course exercises.' },
+  { name: 'Exercise Questions', description: 'Manage the questions of a course exercise.' },
+  { name: 'Exercise Sections', description: 'Manage the sections of a course exercise.' },
+  { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
+  { name: 'Course Submissions', description: 'Review and grade exercise submissions and read the course gradebook.' },
+  { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
+  {
+    name: 'Course Templates',
+    description:
+      'Browse course templates, create courses from them, and save courses as templates. Converting a course into a template in place and pulling template updates are dashboard-only for now.'
+  },
+  { name: 'Public API Assets', description: 'Reserve asset uploads for media attached to lessons and exercises.' },
+  { name: 'Cohorts', description: 'Create and manage cohorts.' },
+  { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
+  { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },
+  { name: 'Cohort Invites', description: 'Invite people to a cohort.' },
+  { name: 'Cohort Newsfeed', description: 'Post, react, and moderate a cohort newsfeed.' },
+  { name: 'Cohort Newsfeed Comments', description: 'Manage comments on cohort newsfeed posts.' },
+  { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
+  {
+    name: ORG_ANALYTICS_PAGE.label,
+    description: `The numbers on the organization's ${ORG_ANALYTICS_PAGE.label} page and on each course's and cohort's Analytics page.`
+  },
+  {
+    name: 'Marketing',
+    description:
+      "The numbers on the organization's Marketing page: traffic, countries, funnel, course types and top courses."
+  },
+  { name: 'Compliance', description: "The numbers on the organization's Compliance page." },
   {
     name: 'Public API Learning Paths',
     description: "Package courses into ordered learning paths, manage their courses, and list a path's members."
@@ -222,6 +392,8 @@ export function enrichPublicApiOpenApiSpec<T extends OpenApiDocument>(spec: T): 
 
   applySecurityToOperations(paths);
   applySummariesToOperations(paths);
+  collapseNullableUnions(paths);
+  collapseNullableUnions(components.schemas);
 
   return {
     ...spec,
@@ -231,6 +403,7 @@ export function enrichPublicApiOpenApiSpec<T extends OpenApiDocument>(spec: T): 
       version: typeof info.version === 'string' ? info.version : '1.0.0',
       description: PUBLIC_API_OPENAPI_DESCRIPTION
     },
+    servers: [{ url: 'https://api.classroomio.com', description: 'Production environment' }],
     paths,
     tags: [...tags, ...OPERATION_TAGS.filter((tag) => !existingTagNames.has(tag.name))],
     components: {

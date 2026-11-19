@@ -20,7 +20,7 @@ export const isAnswerCorrect = (options, answer) => {
   Textarea = no validation
   Single = only one should be correct
   Multiple = all should be correct
-*/
+ */
 export function wasCorrectAnswerSelected(currentQuestion: Question, answers, isFinished?: boolean) {
   const questionTypeKey = getQuestionTypeKey(currentQuestion);
   if (!questionTypeSupportsOptions(questionTypeKey)) {
@@ -138,13 +138,19 @@ export function transformQuestionsToApiFormat(
   };
 
   const normalizeId = (id: unknown) => (id && !isNaN(Number(id)) ? Number(id) : undefined);
-  const formatOptions = (opts: Question['options']) => {
-    const filtered = shouldIncludeDeleted ? opts || [] : (opts || []).filter((opt) => !opt.deletedAt);
 
-    return filtered
+  /** Checks if an item is active or an existing persisted record that requires soft-deletion sync. */
+  const isPersistedOrActive = (item: { deletedAt?: string | null; id?: unknown }) => {
+    // If deleted without a real database ID, it was never persisted -> ignore it
+    if (item.deletedAt && !normalizeId(item.id)) return false;
+    if (!shouldIncludeDeleted && item.deletedAt) return false;
+    return true;
+  };
+
+  const formatOptions = (opts: Question['options']) => {
+    return (opts || [])
       .filter((opt) => {
-        // For validation, keep empty labels. For API, filter them unless deleted
-        if (!shouldIncludeDeleted && opt.deletedAt) return false;
+        if (!isPersistedOrActive(opt)) return false;
         return shouldFilterEmptyLabels && !opt.deletedAt ? opt.label?.trim() : true;
       })
       .map((opt) => ({
@@ -156,7 +162,7 @@ export function transformQuestionsToApiFormat(
       }));
   };
 
-  const filteredQuestions = shouldIncludeDeleted ? questions : questions.filter((q) => !q.deletedAt);
+  const filteredQuestions = (questions || []).filter(isPersistedOrActive);
 
   return filteredQuestions.map((q, index) => {
     const questionTypeKey = getQuestionTypeKey(q);

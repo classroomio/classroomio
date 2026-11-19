@@ -18,6 +18,7 @@
     logoUrl,
     navItems,
     authAction,
+    learnerAccount,
     hero,
     courses,
     hasMoreCourses = false,
@@ -37,7 +38,7 @@
   <main>
     <CorporateHero {orgName} {hero}>
       {#snippet navigation()}
-        <CorporateNav {orgName} {logoUrl} {navItems} {authAction} />
+        <CorporateNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </CorporateHero>
 

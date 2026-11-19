@@ -9,9 +9,13 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { orgApi } from '$features/org/api/org.svelte';
   import { landingPageSettings, landingPageEditorSelection } from '$features/settings/utils/store';
-  import { buildOrgLandingPageProps, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
+  import {
+    buildOrgLandingPageProps,
+    isLandingPageTheme,
+    normalizeLandingPageSettings,
+    resolvePreviewTheme
+  } from '$features/org/utils/landing-page';
   import { landingPageThemeComponents } from '$features/org/utils/landing-page-components';
-  import { landingPageThemes } from '$features/org/utils/landing-page';
   import LandingpageEditor from '$features/settings/pages/landingpage-editor.svelte';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { setLandingPageEditContext, type LandingSectionKey } from '@cio/ui/custom/org-landing-page';
@@ -24,9 +28,10 @@
     HeaderIcon,
     SettingsIcon
   } from '@cio/ui/custom/moving-icons';
-  import { basePath } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { user } from '$lib/utils/store/user';
+  import { user, profile } from '$lib/utils/store/user';
+  import { getPreviewOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { getPreviewOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
 
   const sectionIcons: Record<LandingSectionKey, Component> = {
     navigation: ContentIcon,
@@ -62,40 +67,22 @@
   let sidebarOpen = $state(true);
   let hasInitialized = $state(false);
 
-  function isLandingPageTheme(value: string | null): value is (typeof landingPageThemes)[number] {
-    if (value === null) return false;
-    return (landingPageThemes as readonly string[]).includes(value);
-  }
-
   const savedLandingPageSettings = $derived(normalizeLandingPageSettings($currentOrg.landingpage));
-  const previewTheme = $derived.by(() => {
-    const queryTheme = page.url.searchParams.get('theme');
-    if (isLandingPageTheme(queryTheme)) {
-      return queryTheme;
-    }
-
-    return savedLandingPageSettings.theme;
-  });
+  const previewTheme = $derived(
+    resolvePreviewTheme(page.url.searchParams.get('theme'), savedLandingPageSettings.theme)
+  );
   const previewLandingPageSettings = $derived({
     ...$landingPageSettings,
     theme: previewTheme
   });
 
-  const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-        }
-      : {
-          label: t.get('navigation.login'),
-          href: '/login'
-        }
-  );
+  const authAction = $derived(getPreviewOrgLandingAuthAction($user.isLoggedIn));
 
   const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
 
   const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
+
+  const learnerAccount = $derived(getPreviewOrgLandingLearnerAccount($profile, $currentOrg));
 
   const previewProps = $derived.by(() =>
     buildOrgLandingPageProps($currentOrg, previewLandingPageSettings, {
@@ -104,7 +91,8 @@
       hasMoreCourses: orgApi.hasMorePublicCourses,
       hasMoreLearningPaths: orgApi.hasMorePublicLearningPaths,
       coursesLoaded,
-      authAction
+      authAction,
+      learnerAccount
     })
   );
 

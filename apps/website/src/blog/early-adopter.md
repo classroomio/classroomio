@@ -31,7 +31,7 @@ The Early Adopter plan is our way of saying thank you. It locks you into our cur
 
 ### This Won't Last Forever
 
-Once we announce the new pricing, the Early Adopter door closes. So if you've been on the fence, now is the time.
+The Early Adopter plan is open until 30 November 2026. Once we announce the new pricing, the Early Adopter door closes. So if you've been on the fence, now is the time.
 
 [Sign up for the Early Adopter plan](https://app.classroomio.com) and lock in your rate today.
 

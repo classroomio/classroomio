@@ -1,20 +1,38 @@
 import { defineConfig } from 'vitest/config';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  root: __dirname,
+  plugins: [svelte()],
   resolve: {
-    alias: {
-      $lib: path.resolve(__dirname, 'src/lib')
-    }
+    alias: [
+      // The `sveltekit()` vite plugin is not active under vitest, so kit aliases are declared here.
+      { find: '$lib', replacement: path.resolve(currentDir, 'src/lib') },
+      { find: '$features', replacement: path.resolve(currentDir, 'src/lib/features') },
+      { find: '$mail', replacement: path.resolve(currentDir, 'src/mail') },
+      { find: /^@cio\/ui$/, replacement: path.resolve(currentDir, '../../packages/ui/src') },
+      {
+        find: /^@cio\/ui\/(.*)$/,
+        replacement: `${path.resolve(currentDir, '../../packages/ui/src')}/$1`
+      },
+      {
+        find: /^@cio\/question-types$/,
+        replacement: path.resolve(currentDir, '../../packages/question-types/src/index.ts')
+      },
+      {
+        find: /^@cio\/question-types\/(.*)$/,
+        replacement: `${path.resolve(currentDir, '../../packages/question-types/src')}/$1`
+      },
+      { find: /^@cio\/utils$/, replacement: path.resolve(currentDir, '../../packages/utils/src/index.ts') },
+      { find: /^@cio\/utils\/(.*)$/, replacement: `${path.resolve(currentDir, '../../packages/utils/src')}/$1` }
+    ]
   },
   test: {
-    environment: 'node',
     globals: true,
-    include: ['src/**/*.test.{ts,tsx}']
+    environment: 'node',
+    include: ['src/**/*.test.ts']
   }
 });

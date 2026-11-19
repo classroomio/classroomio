@@ -11,17 +11,20 @@ import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils
 
 import type { AccountResponse, AccountSuccess } from './types';
 import { type AppOrgParams } from './resolve-app-org-params';
+import { ORG_CHOOSER_PATH, shouldShowOrgChooser } from './utils/post-auth-destination';
 import type { PendingOrgInvite } from '$features/lms/utils/types';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
 import { authClient } from '$lib/utils/services/auth/client';
+import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
-import { handleLocaleChange } from '$lib/utils/functions/translations';
+import { activateLocale, handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
 import { identifyUserJotUser } from '$lib/utils/services/userjot';
 import { isOrgStudent, globalStore } from '$lib/utils/store/app';
 import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
+import { isOnboardingIncomplete } from '$features/onboarding/utils/completeness';
 import { licenseApi } from '$features/license/api/license.svelte';
 import { logout } from '$lib/utils/functions/logout';
 import { page } from '$app/state';
@@ -31,6 +34,7 @@ import { setTheme } from '$lib/utils/functions/theme';
 import { setupAnalyticsBasedOnLicense } from '$lib/utils/functions/appSetup';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
 import { ROLE } from '@cio/utils/constants';
+import { STUDENT_HOME_ENTRY_PATH } from '@cio/utils/lms';
 
 type AppSetupParams = AppOrgParams;
 
@@ -118,7 +122,7 @@ class AppInitApi extends BaseApi {
    * that RBAC middlewares also use, so a present key means the user is a member.
    */
   private isMemberOfOrg(locals: App.Locals, orgId: string): boolean {
-    const orgRoles = (locals as { orgRoles?: Record<string, number> }).orgRoles;
+    const orgRoles = locals.orgRoles;
 
     return !!orgRoles && orgId in orgRoles;
   }
@@ -226,7 +230,19 @@ class AppInitApi extends BaseApi {
     }));
 
     profile.set(this.data.profile);
-    handleLocaleChange(this.data.profile.locale ?? 'en');
+    const orgSite = params?.isOrgSite
+      ? this.data.organizations.find((org) => org.id === params.orgId || org.siteName === params.orgSiteName)
+      : undefined;
+    const enforcedLocale = orgSite?.settings?.language?.enforced
+      ? orgSite.settings.language.locale
+      : params?.orgLocaleEnforced
+        ? params.orgLocale
+        : undefined;
+    if (enforcedLocale) {
+      activateLocale(enforcedLocale);
+    } else {
+      handleLocaleChange(this.data.profile.locale ?? params?.orgLocale ?? 'en');
+    }
 
     this.setOrgStore(params);
   }
@@ -306,7 +322,7 @@ class AppInitApi extends BaseApi {
     );
   }
 
-  routeUserToNextPage(params: AppSetupParams) {
+  async routeUserToNextPage(params: AppSetupParams): Promise<void> {
     console.log('routeUserToNextPage', window.location.pathname);
     if (!this.data?.success) {
       return;
@@ -356,12 +372,27 @@ class AppInitApi extends BaseApi {
 
     const isStudent = get(isOrgStudent);
     const userHasOrganizations = this.data.organizations.length > 0;
+    const userIsManager = this.data.organizations.some((org) => isOrgManagerRole(org.roleId));
+    const needsOnboarding =
+      userIsManager && !this.data.profile.isEmailVerified && isOnboardingIncomplete(this.data.profile);
 
     // CLOUD: when user has no orgs and isOrgSite is false, route to /onboarding
     // isOrgSite - means the user is on a multi tenant organization site, we don't want to redirect to /onboarding in this case
     if (isCloud) {
       const shouldRedirectToOnboarding = !userHasOrganizations && !isOrgSite;
       if (shouldRedirectToOnboarding) {
+        if (path.includes('/onboarding')) {
+          return;
+        }
+
+        await pendingInvitesApi.fetchPendingInvites();
+
+        const hasPendingInvites = pendingInvitesApi.invites.length > 0;
+        const invitesFailedToLoad = pendingInvitesApi.lastError !== null;
+        if (hasPendingInvites || invitesFailedToLoad) {
+          return goto(resolve(ORG_CHOOSER_PATH, {}));
+        }
+
         console.log('cloud: redirecting to onboarding');
         return goto(resolve(`/onboarding`, {}));
       }
@@ -373,11 +404,19 @@ class AppInitApi extends BaseApi {
       }
     }
 
+    if (needsOnboarding && !isOrgSite && !path.includes('/onboarding')) {
+      console.log('redirecting to onboarding to finish setup');
+      return goto(resolve(`/onboarding`, {}));
+    }
+
     if (!shouldRedirectOnAuth(page.url.pathname)) return;
 
-    // Students with existing org memberships who open /onboarding may intend to create their own academy.
-    if (path.includes('/onboarding') && isStudent && userHasOrganizations) {
+    if (path.includes('/onboarding') && ((isStudent && userHasOrganizations) || needsOnboarding)) {
       return;
+    }
+
+    if (shouldShowOrgChooser({ isCloud, isOrgSite, organizations: this.data.organizations })) {
+      return goto(resolve(ORG_CHOOSER_PATH, {}));
     }
 
     const shouldGoToLMS = isCloud ? isOrgSite || !!isStudent : !!isStudent;
@@ -394,7 +433,7 @@ class AppInitApi extends BaseApi {
     const userIsAdminInAtleastOneOrg = this.data.organizations.some((org) => org.roleId === ROLE.ADMIN);
 
     if (userHasOneOrg && isCloud && !isOrgSite && isStudent && selectedOrg.siteName && userIsStudentInAllOrgs) {
-      window.location.href = getOrgPublicUrl(selectedOrg, '/lms');
+      window.location.href = getOrgPublicUrl(selectedOrg, STUDENT_HOME_ENTRY_PATH);
       return;
     }
 
@@ -438,6 +477,18 @@ class AppInitApi extends BaseApi {
       fullname: profileStore.fullname,
       avatarUrl: profileStore.avatarUrl ?? undefined
     });
+  }
+
+  /**
+   * Re-fetches the account and re-seeds the stores, e.g. after a plan is connected to the organization.
+   */
+  async refreshAccountData(): Promise<void> {
+    const accountData = await this.fetchAccountData();
+
+    if (!accountData) return;
+
+    this.data = accountData;
+    this.setupStores();
   }
 
   async handlePendingInviteAccepted(redirectTo?: string): Promise<void> {

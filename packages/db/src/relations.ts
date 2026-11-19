@@ -1,9 +1,6 @@
 import {
   account,
   analyticsLoginEvents,
-  appsPoll,
-  appsPollOption,
-  appsPollSubmission,
   asset,
   assetUsage,
   communityAnswer,
@@ -21,6 +18,10 @@ import {
   lessonCompletion,
   lessonLanguage,
   lessonLanguageHistory,
+  block,
+  blockPlacement,
+  blockLocale,
+  blockLocaleHistory,
   option,
   organization,
   organizationContacts,
@@ -101,7 +102,6 @@ export const courseRelations = relations(course, ({ one, many }) => ({
     fields: [course.groupId],
     references: [group.id]
   }),
-  appsPolls: many(appsPoll),
   lessons: many(lesson),
   communityQuestions: many(communityQuestion),
   courseNewsfeeds: many(courseNewsfeed),
@@ -183,8 +183,6 @@ export const groupmemberRelations = relations(groupmember, ({ one, many }) => ({
   groupAttendances: many(groupAttendance),
   lessonComments: many(lessonComment),
   submissions: many(submission),
-  appsPolls: many(appsPoll),
-  appsPollSubmissions: many(appsPollSubmission),
   group: one(group, {
     fields: [groupmember.groupId],
     references: [group.id]
@@ -200,27 +198,6 @@ export const groupmemberRelations = relations(groupmember, ({ one, many }) => ({
   courseNewsfeeds: many(courseNewsfeed),
   courseNewsfeedComments: many(courseNewsfeedComment),
   questionAnswers: many(questionAnswer)
-}));
-
-export const appsPollOptionRelations = relations(appsPollOption, ({ one, many }) => ({
-  appsPoll: one(appsPoll, {
-    fields: [appsPollOption.pollId],
-    references: [appsPoll.id]
-  }),
-  appsPollSubmissions: many(appsPollSubmission)
-}));
-
-export const appsPollRelations = relations(appsPoll, ({ one, many }) => ({
-  appsPollOptions: many(appsPollOption),
-  groupmember: one(groupmember, {
-    fields: [appsPoll.authorId],
-    references: [groupmember.id]
-  }),
-  course: one(course, {
-    fields: [appsPoll.courseId],
-    references: [course.id]
-  }),
-  appsPollSubmissions: many(appsPollSubmission)
 }));
 
 export const profileRelations = relations(profile, ({ one, many }) => ({
@@ -307,7 +284,8 @@ export const lessonRelations = relations(lesson, ({ one, many }) => ({
   }),
   exercises: many(exercise),
   lessonCompletions: many(lessonCompletion),
-  lessonLanguages: many(lessonLanguage)
+  lessonLanguages: many(lessonLanguage),
+  blockPlacements: many(blockPlacement)
 }));
 
 export const assetRelations = relations(asset, ({ one, many }) => ({
@@ -382,21 +360,6 @@ export const organizationEmaillistRelations = relations(organizationEmaillist, (
   organization: one(organization, {
     fields: [organizationEmaillist.organizationId],
     references: [organization.id]
-  })
-}));
-
-export const appsPollSubmissionRelations = relations(appsPollSubmission, ({ one }) => ({
-  appsPoll: one(appsPoll, {
-    fields: [appsPollSubmission.pollId],
-    references: [appsPoll.id]
-  }),
-  appsPollOption: one(appsPollOption, {
-    fields: [appsPollSubmission.pollOptionId],
-    references: [appsPollOption.id]
-  }),
-  groupmember: one(groupmember, {
-    fields: [appsPollSubmission.selectedById],
-    references: [groupmember.id]
   })
 }));
 
@@ -515,6 +478,41 @@ export const lessonLanguageHistoryRelations = relations(lessonLanguageHistory, (
   lessonLanguage: one(lessonLanguage, {
     fields: [lessonLanguageHistory.lessonLanguageId],
     references: [lessonLanguage.id]
+  })
+}));
+
+export const blockRelations = relations(block, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [block.organizationId],
+    references: [organization.id]
+  }),
+  placements: many(blockPlacement),
+  locales: many(blockLocale)
+}));
+
+export const blockPlacementRelations = relations(blockPlacement, ({ one }) => ({
+  lesson: one(lesson, {
+    fields: [blockPlacement.lessonId],
+    references: [lesson.id]
+  }),
+  block: one(block, {
+    fields: [blockPlacement.blockId],
+    references: [block.id]
+  })
+}));
+
+export const blockLocaleRelations = relations(blockLocale, ({ one, many }) => ({
+  block: one(block, {
+    fields: [blockLocale.blockId],
+    references: [block.id]
+  }),
+  histories: many(blockLocaleHistory)
+}));
+
+export const blockLocaleHistoryRelations = relations(blockLocaleHistory, ({ one }) => ({
+  blockLocale: one(blockLocale, {
+    fields: [blockLocaleHistory.blockLocaleId],
+    references: [blockLocale.id]
   })
 }));
 

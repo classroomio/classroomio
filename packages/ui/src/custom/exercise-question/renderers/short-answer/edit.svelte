@@ -22,7 +22,7 @@
     placeholder={label('short_answer.edit.instructions_placeholder')}
     value={String((question.settings?.instructions as string | undefined) ?? '')}
     {disabled}
-    onchange={(event) =>
+    oninput={(event) =>
       patchQuestion({ settings: { ...(question.settings ?? {}), instructions: event.currentTarget.value } })}
   />
 </div>

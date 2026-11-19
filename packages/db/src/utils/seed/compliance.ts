@@ -16,6 +16,7 @@ import {
   user
 } from '@db/drizzle';
 
+import { seedLessonBlocks } from './lesson-blocks';
 import type {
   TNewCourse,
   TNewCourseCompletionRecord,
@@ -480,7 +481,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       overview: '<p>Annual HIPAA refresher covering PHI handling, breach reporting, and minimum-necessary access.</p>',
       groupId: HIPAA_GROUP_ID,
       isTemplate: false,
-      logo: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=600&q=70',
+      bannerImage: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=600&q=70',
       slug: 'hipaa-awareness-2026',
       metadata: {
         goals: '',
@@ -502,8 +503,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
         gracePeriodDays: 14,
         reminderDaysBefore: [30, 14, 7, 1],
         isMandatory: true,
-        framework: 'HIPAA',
-        passingScore: 80
+        framework: 'HIPAA'
       },
       status: 'ACTIVE',
       type: 'COMPLIANCE'
@@ -516,7 +516,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       overview: '<p>Twice-yearly SOC 2 security fundamentals. Required for engineering, IT, and operations.</p>',
       groupId: SOC2_GROUP_ID,
       isTemplate: false,
-      logo: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=600&q=70',
+      bannerImage: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=600&q=70',
       slug: 'soc2-security-basics',
       metadata: {
         goals: '',
@@ -538,8 +538,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
         gracePeriodDays: 7,
         reminderDaysBefore: [14, 7, 1],
         isMandatory: true,
-        framework: 'ISO',
-        passingScore: 85
+        framework: 'ISO'
       },
       status: 'ACTIVE',
       type: 'COMPLIANCE'
@@ -555,8 +554,8 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
 
   // 4. Sections + lessons + exercises
   const sectionsToInsert: TNewCourseSection[] = [
-    { id: HIPAA_SECTION_ID, courseId: HIPAA_COURSE_ID, title: 'Compliance Module', order: 0 },
-    { id: SOC2_SECTION_ID, courseId: SOC2_COURSE_ID, title: 'Security Fundamentals', order: 0 }
+    { id: HIPAA_SECTION_ID, courseId: HIPAA_COURSE_ID, title: 'Compliance Module', order: 1 },
+    { id: SOC2_SECTION_ID, courseId: SOC2_COURSE_ID, title: 'Security Fundamentals', order: 1 }
   ];
   const existingSections = await db
     .select({ id: courseSection.id })
@@ -577,32 +576,40 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       courseId: HIPAA_COURSE_ID,
       sectionId: HIPAA_SECTION_ID,
       title: 'What HIPAA actually requires of you',
+      slug: 'what-hipaa-actually-requires-of-you',
       note: '<p>Plain-English summary of the privacy rule, security rule, and breach notification obligations.</p>',
-      isUnlocked: true
+      isUnlocked: true,
+      order: 1
     },
     {
       id: HIPAA_LESSON_IDS[1],
       courseId: HIPAA_COURSE_ID,
       sectionId: HIPAA_SECTION_ID,
       title: 'Handling PHI: the everyday rules',
+      slug: 'handling-phi-the-everyday-rules',
       note: '<p>Minimum necessary access, secure messaging, faxing rules, and what to do if you spot a breach.</p>',
-      isUnlocked: false
+      isUnlocked: false,
+      order: 2
     },
     {
       id: SOC2_LESSON_IDS[0],
       courseId: SOC2_COURSE_ID,
       sectionId: SOC2_SECTION_ID,
       title: 'Passwords, MFA, and not getting phished',
+      slug: 'passwords-mfa-and-not-getting-phished',
       note: '<p>Strong-credential hygiene + recognizing the four most common phishing patterns we see at Coursera Test.</p>',
-      isUnlocked: true
+      isUnlocked: true,
+      order: 1
     },
     {
       id: SOC2_LESSON_IDS[1],
       courseId: SOC2_COURSE_ID,
       sectionId: SOC2_SECTION_ID,
       title: 'Data classification & incident response',
+      slug: 'data-classification-incident-response',
       note: '<p>What counts as confidential, who to call when something goes wrong, and how we record an incident.</p>',
-      isUnlocked: false
+      isUnlocked: false,
+      order: 2
     }
   ];
   const existingLessons = await db
@@ -617,7 +624,13 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
   const existingLessonIds = new Set(existingLessons.map((l) => l.id));
   const newLessons = lessonsPlan.filter((l) => !existingLessonIds.has(l.id!));
   if (newLessons.length > 0) {
-    await db.insert(lesson).values(newLessons);
+    await db.insert(lesson).values(newLessons.map(({ note: _note, ...row }) => row));
+    await seedLessonBlocks(
+      newLessons.map((row) => ({
+        lessonId: row.id!,
+        blocks: [{ type: 'note' as const, contents: { en: row.note ?? '' } }]
+      }))
+    );
     console.log(`   ✓ Inserted ${newLessons.length} compliance lesson(s)`);
   } else {
     console.log('   ✓ Compliance lessons already exist, skipping');
@@ -627,16 +640,20 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
     {
       id: HIPAA_EXERCISE_ID,
       title: 'HIPAA: end-of-course quiz',
+      slug: 'hipaa-end-of-course-quiz',
       description: '<p>Pass this short quiz to mark the course complete.</p>',
       lessonId: HIPAA_LESSON_IDS[1],
-      sectionId: HIPAA_SECTION_ID
+      sectionId: HIPAA_SECTION_ID,
+      order: 1
     },
     {
       id: SOC2_EXERCISE_ID,
       title: 'SOC 2: end-of-course quiz',
+      slug: 'soc-2-end-of-course-quiz',
       description: '<p>Pass this short quiz to mark the course complete.</p>',
       lessonId: SOC2_LESSON_IDS[1],
-      sectionId: SOC2_SECTION_ID
+      sectionId: SOC2_SECTION_ID,
+      order: 1
     }
   ];
   const existingExercises = await db

@@ -30,24 +30,6 @@ export function formatBlockerMessage(blocker: BlockerData): string {
       return t.get('course.certification.blocker_deadline');
     case 'CERT_NO_CONTENT':
       return t.get('course.certification.blocker_no_content');
-    case 'CERT_FINAL_EXERCISE_NOT_SUBMITTED':
-      return t.get('course.certification.blocker_final_not_submitted', {
-        exerciseTitle: String(p.exerciseTitle ?? '')
-      });
-    case 'CERT_FINAL_EXERCISE_PENDING_GRADE':
-      return t.get('course.certification.blocker_final_pending', {
-        exerciseTitle: String(p.exerciseTitle ?? '')
-      });
-    case 'CERT_FINAL_EXERCISE_SCORE':
-      return t.get('course.certification.blocker_final_score', {
-        exerciseTitle: String(p.exerciseTitle ?? ''),
-        bestPercent: Number(p.bestPercent ?? 0),
-        requiredPercent: Number(p.requiredPercent ?? 0)
-      });
-    case 'CERT_FINAL_EXERCISE_MISCONFIGURED':
-      return t.get('course.certification.blocker_final_misconfigured', {
-        exerciseTitle: String(p.exerciseTitle ?? '')
-      });
     default:
       return blocker.code;
   }

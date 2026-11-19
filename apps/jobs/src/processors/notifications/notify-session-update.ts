@@ -7,14 +7,16 @@ import { buildEmailBranding, buildEmailFromName, buildSessionIcs } from '@cio/em
 import { ZNotifyCourseSessionUpdatePayload, enqueueEmailSend } from '@cio/jobs';
 
 import { log } from '../../utils/logger';
+import { getStudentEmailDeliveryLocale } from '@cio/core/services/email/localization';
+import type { EmailLocale } from '@cio/utils/email';
 
 interface UpdateResult {
   notified: number;
 }
 
-function formatSessionTime(lessonAt: string, timezone: string | null): string {
+function formatSessionTime(lessonAt: string, timezone: string | null, locale: EmailLocale): string {
   try {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(locale, {
       timeZone: timezone ?? 'UTC',
       dateStyle: 'medium',
       timeStyle: 'short',
@@ -52,7 +54,8 @@ export async function processNotifyCourseSessionUpdate(rawPayload: unknown): Pro
     avatarUrl: orgData.orgAvatarUrl,
     theme: orgData.orgTheme
   });
-  const sessionTimeLabel = formatSessionTime(lesson.lessonAt, sessionTimezone);
+  const locale = await getStudentEmailDeliveryLocale(orgData.orgId, 'sessionUpdated');
+  const sessionTimeLabel = formatSessionTime(lesson.lessonAt, sessionTimezone, locale);
   const sequence = Math.floor(Date.parse(lesson.updatedAt ?? new Date().toISOString()) / 1000);
 
   const ics = buildSessionIcs({
@@ -105,7 +108,9 @@ export async function processNotifyCourseSessionUpdate(rawPayload: unknown): Pro
             branding
           },
           from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-          ics
+          ics,
+          organizationId: orgData.orgId,
+          locale
         },
         { idempotencyKey: `session-updated:${lesson.id}:${recipient.email}:${sequence}` }
       );

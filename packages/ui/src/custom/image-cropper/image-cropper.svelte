@@ -10,8 +10,11 @@
     src = $bindable(''),
     onCropped = () => {},
     onUnsupportedFile = () => {},
+    onFileSelected,
     maxFileSize,
     disabled = false,
+    skipCrop = false,
+    outputFormat,
     children,
     ...rest
   }: ImageCropperRootProps = $props();
@@ -24,8 +27,11 @@
     ),
     onCropped: box.with(() => onCropped),
     onUnsupportedFile: box.with(() => onUnsupportedFile),
+    onFileSelected: box.with(() => onFileSelected),
     maxFileSize: box.with(() => maxFileSize),
-    disabled: box.with(() => disabled ?? undefined)
+    disabled: box.with(() => disabled ?? undefined),
+    skipCrop: box.with(() => skipCrop),
+    outputFormat: box.with(() => outputFormat)
   });
 
   onDestroy(() => rootState.dispose());

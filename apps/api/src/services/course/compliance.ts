@@ -16,6 +16,7 @@ import {
 } from '@cio/db/queries/course/compliance';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
+import { getExerciseMaxPoints, getStudentExerciseSubmissions } from '@cio/db/queries/course/exercise-results';
 
 import { ROLE } from '@cio/utils/constants';
 import type {
@@ -24,14 +25,14 @@ import type {
   TCourseComplianceWaive
 } from '@cio/utils/validation/course/compliance';
 import type { TCourseCompletionRecord } from '@cio/db/types';
-import {
-  getExerciseTitleAndMaxPoints,
-  getStudentSubmissionsForExercise
-} from '@cio/db/queries/course/certification-exercise';
 import { getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 import { getUserCourseRole } from '@cio/db/queries/group/group';
+import { getCourseCertificationRow } from '@cio/db/queries/course/course';
+import { emitCourseWebhookEvent, emitWebhookEvent } from '@cio/core/services/webhook/emit';
+import type { TWebhookComplianceTrigger } from '@cio/utils/constants/webhook';
 import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
-import { evaluateAndRecordCourseCompletion } from './completion';
+import { orgHasCertificatesEnabled } from './certificate-plan';
+import { buildCertificateWebhookInput, evaluateCourseCertification } from './completion';
 
 type ComplianceStatus =
   | 'not_started'
@@ -111,6 +112,84 @@ function getStatusCounts(records: Array<{ record: TCourseCompletionRecord | null
   }
 
   return counts;
+}
+
+type TComplianceEventRecord = Pick<
+  TCourseCompletionRecord,
+  'id' | 'courseId' | 'groupMemberId' | 'profileId' | 'cycleNumber' | 'dueDate' | 'validUntil'
+>;
+
+async function emitComplianceStatusChanged(
+  record: TComplianceEventRecord,
+  change: {
+    status: string;
+    previousStatus: string | null;
+    trigger: TWebhookComplianceTrigger;
+    actorProfileId?: string | null;
+  }
+) {
+  await emitCourseWebhookEvent(record.courseId, 'compliance.record.status_changed', {
+    recordId: record.id,
+    memberId: record.groupMemberId,
+    profileId: record.profileId,
+    cycleNumber: record.cycleNumber,
+    status: change.status,
+    previousStatus: change.previousStatus,
+    trigger: change.trigger,
+    dueDate: record.dueDate,
+    validUntil: record.validUntil,
+    actorProfileId: change.actorProfileId ?? null
+  });
+}
+
+async function emitComplianceCompletionWebhookEvents(params: {
+  courseId: string;
+  groupMemberId: string;
+  profileId: string;
+  record: TComplianceEventRecord;
+  previousStatus: string;
+  completedAt: string;
+  validUntil: string;
+  certificateIssue: { id: string; issuedAt: string; expiresAt: string; cycleNumber: number; status: string } | null;
+}) {
+  const { courseId, groupMemberId, profileId, record, certificateIssue, completedAt, validUntil } = params;
+
+  await emitComplianceStatusChanged(
+    { ...record, validUntil },
+    { status: 'compliant', previousStatus: params.previousStatus, trigger: 'submission' }
+  );
+
+  const courseRow = await getCourseCertificationRow(courseId);
+
+  if (!courseRow) return;
+
+  await emitWebhookEvent(courseRow.orgId, 'course.completed', {
+    courseId,
+    memberId: groupMemberId,
+    profileId,
+    completedAt
+  });
+
+  const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
+
+  if (!certificatesEnabled) return;
+
+  const issuedAt = certificateIssue?.issuedAt ?? completedAt;
+  const stored = certificateIssue ?? {
+    id: null,
+    cycleNumber: record.cycleNumber,
+    expiresAt: validUntil,
+    status: 'valid'
+  };
+  const certificate = buildCertificateWebhookInput({ courseRow, profileId, issuedAt, stored });
+
+  await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', {
+    courseId,
+    memberId: groupMemberId,
+    profileId,
+    completedAt: issuedAt,
+    certificate
+  });
 }
 
 async function getComplianceCourseOrThrow(courseId: string, dbClient: DbOrTxClient = db) {
@@ -196,21 +275,11 @@ function getCurrentIncompleteRecord(record: TCourseCompletionRecord | undefined 
   return record;
 }
 
-async function getComplianceCompletionSnapshot(params: {
-  groupMemberId: string;
-  requiredExerciseId: string | null | undefined;
-}) {
-  const { groupMemberId, requiredExerciseId } = params;
-
-  if (!requiredExerciseId) {
-    return {
-      score: null,
-      attempts: null
-    };
-  }
-
-  const { maxPoints } = await getExerciseTitleAndMaxPoints(requiredExerciseId);
-  const submissions = await getStudentSubmissionsForExercise(groupMemberId, requiredExerciseId);
+async function getComplianceExerciseSnapshot(exerciseId: string, groupMemberId: string) {
+  const [maxPoints, submissions] = await Promise.all([
+    getExerciseMaxPoints(exerciseId),
+    getStudentExerciseSubmissions(groupMemberId, exerciseId)
+  ]);
   const completedSubmissions = submissions.filter((submission) => submission.gradingState === 'completed');
 
   if (completedSubmissions.length === 0 || maxPoints <= 0) {
@@ -237,8 +306,10 @@ async function ensureComplianceEnrollmentRecordForLearner(
   courseId: string,
   groupMemberId: string,
   profileId: string,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  options: { emitEnrollmentEvent?: boolean } = {}
 ) {
+  const emitEnrollmentEvent = options.emitEnrollmentEvent ?? dbClient === db;
   const course = await getComplianceCourseOrThrow(courseId, dbClient);
   const dueDate = getComplianceInitialDueDate(course);
 
@@ -252,7 +323,7 @@ async function ensureComplianceEnrollmentRecordForLearner(
     return existingRecord;
   }
 
-  return createCourseCompletionRecord(
+  const created = await createCourseCompletionRecord(
     {
       courseId,
       groupMemberId,
@@ -265,21 +336,46 @@ async function ensureComplianceEnrollmentRecordForLearner(
     },
     dbClient
   );
+
+  if (created && emitEnrollmentEvent) {
+    await emitComplianceEnrollmentEvents([created]);
+  }
+
+  return created;
 }
 
+/**
+ * Announces new compliance records. Call it after the transaction that created them commits.
+ */
+export async function emitComplianceEnrollmentEvents(records: TCourseCompletionRecord[]) {
+  for (const record of records) {
+    await emitComplianceStatusChanged(record, {
+      status: 'not_started',
+      previousStatus: null,
+      trigger: 'enrollment'
+    });
+  }
+}
+
+/**
+ * Creates the missing compliance records. With a transaction client it announces nothing; the caller emits
+ * `createdRecords` through `emitComplianceEnrollmentEvents` once the transaction commits.
+ */
 export async function ensureComplianceEnrollmentRecordsForProfiles(
   courseIds: string[],
   profileIds: string[],
   dbClient: DbOrTxClient = db
 ) {
+  const createdRecords: TCourseCompletionRecord[] = [];
+
   if (courseIds.length === 0 || profileIds.length === 0) {
     return {
-      createdCount: 0
+      createdCount: 0,
+      createdRecords
     };
   }
 
   let createdCount = 0;
-
   for (const courseId of courseIds) {
     const [course] = await getCourseById(courseId, dbClient);
 
@@ -304,17 +400,30 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(
         continue;
       }
 
-      await ensureComplianceEnrollmentRecordForLearner(courseId, learner.member.id, profileId, dbClient);
+      const created = await ensureComplianceEnrollmentRecordForLearner(
+        courseId,
+        learner.member.id,
+        profileId,
+        dbClient
+      );
+      if (created) {
+        createdRecords.push(created);
+      }
       createdCount += 1;
     }
   }
 
   return {
-    createdCount
+    createdCount,
+    createdRecords
   };
 }
 
-export async function syncComplianceProgressFromSubmission(courseId: string, groupMemberId: string) {
+export async function syncComplianceProgressFromSubmission(
+  courseId: string,
+  groupMemberId: string,
+  exerciseId: string | null = null
+) {
   const [course] = await getCourseById(courseId);
 
   if (!course || course.type !== 'COMPLIANCE') {
@@ -340,9 +449,14 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
       status: 'in_progress',
       startedAt: activeRecord.startedAt ?? new Date().toISOString()
     });
+    await emitComplianceStatusChanged(activeRecord, {
+      status: 'in_progress',
+      previousStatus: 'not_started',
+      trigger: 'submission'
+    });
   }
 
-  const evaluation = await evaluateAndRecordCourseCompletion(courseId, profile.id);
+  const evaluation = await evaluateCourseCertification(courseId, profile.id);
   if (!evaluation.eligibleForCertificate) {
     return {
       status: 'in_progress',
@@ -368,12 +482,11 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
 
   const completedAt = new Date().toISOString();
   const validUntil = addMonths(completedAt, course.compliance?.retakeIntervalMonths ?? 0);
-  const completionSnapshot = await getComplianceCompletionSnapshot({
-    groupMemberId,
-    requiredExerciseId: course.certificate?.requiredExerciseId ?? null
-  });
+  const completionSnapshot = exerciseId
+    ? await getComplianceExerciseSnapshot(exerciseId, groupMemberId)
+    : { score: latestRecord.score, attempts: latestRecord.attempts };
 
-  await db.transaction(async (tx) => {
+  const certificateIssue = await db.transaction(async (tx) => {
     await updateCourseCompletionRecord(
       latestRecord.id,
       {
@@ -381,25 +494,36 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
         startedAt: latestRecord.startedAt ?? completedAt,
         completedAt,
         validUntil,
-        score: completionSnapshot.score ?? latestRecord.score,
-        attempts: completionSnapshot.attempts ?? latestRecord.attempts
+        score: completionSnapshot.score,
+        attempts: completionSnapshot.attempts
       },
       tx
     );
 
-    if (course.certificate?.isDownloadable) {
-      await createCourseCertificateIssue(
-        {
-          courseId,
-          profileId: profile.id,
-          courseCompletionRecordId: latestRecord.id,
-          cycleNumber: latestRecord.cycleNumber,
-          expiresAt: validUntil,
-          status: 'valid'
-        },
-        tx
-      );
-    }
+    if (!course.certificate?.isDownloadable) return null;
+
+    return createCourseCertificateIssue(
+      {
+        courseId,
+        profileId: profile.id,
+        courseCompletionRecordId: latestRecord.id,
+        cycleNumber: latestRecord.cycleNumber,
+        expiresAt: validUntil,
+        status: 'valid'
+      },
+      tx
+    );
+  });
+
+  await emitComplianceCompletionWebhookEvents({
+    courseId,
+    groupMemberId,
+    profileId: profile.id,
+    record: latestRecord,
+    previousStatus: latestRecord.status,
+    completedAt,
+    validUntil,
+    certificateIssue
   });
 
   return {
@@ -470,7 +594,11 @@ export async function getLearnerComplianceHistory(courseId: string, currentProfi
   };
 }
 
-export async function resetCourseCompliance(courseId: string, payload: TCourseComplianceReset) {
+export async function resetCourseCompliance(
+  courseId: string,
+  payload: TCourseComplianceReset,
+  actorProfileId: string | null = null
+) {
   await getComplianceCourseOrThrow(courseId);
   ensureFutureOrPresentIsoDate(payload.dueDate, 'dueDate');
 
@@ -481,6 +609,7 @@ export async function resetCourseCompliance(courseId: string, payload: TCourseCo
 
   let createdCount = 0;
   let updatedCount = 0;
+  const statusChanges: Array<Parameters<typeof emitComplianceStatusChanged>> = [];
 
   await db.transaction(async (tx) => {
     for (const student of students) {
@@ -491,7 +620,7 @@ export async function resetCourseCompliance(courseId: string, payload: TCourseCo
 
       const existingRecord = recordByProfileId.get(profileId);
       if (!existingRecord) {
-        await createCourseCompletionRecord(
+        const created = await createCourseCompletionRecord(
           {
             courseId,
             groupMemberId: student.member.id,
@@ -504,8 +633,21 @@ export async function resetCourseCompliance(courseId: string, payload: TCourseCo
           },
           tx
         );
+        if (created) {
+          statusChanges.push([
+            created,
+            { status: 'not_started', previousStatus: null, trigger: 'reset', actorProfileId }
+          ]);
+        }
         createdCount += 1;
         continue;
+      }
+
+      if (existingRecord.status !== 'not_started') {
+        statusChanges.push([
+          { ...existingRecord, dueDate: payload.dueDate, validUntil: null },
+          { status: 'not_started', previousStatus: existingRecord.status, trigger: 'reset', actorProfileId }
+        ]);
       }
 
       await updateCourseCompletionRecord(
@@ -530,6 +672,9 @@ export async function resetCourseCompliance(courseId: string, payload: TCourseCo
     }
   });
 
+  for (const change of statusChanges) {
+    await emitComplianceStatusChanged(...change);
+  }
   void syncLearningPathsForComplianceProfiles(courseId, profileIds).catch((syncError) => {
     console.error('Failed to sync learning path progress after a compliance reset:', syncError);
   });
@@ -542,7 +687,11 @@ export async function resetCourseCompliance(courseId: string, payload: TCourseCo
   };
 }
 
-export async function extendCourseCompliance(courseId: string, payload: TCourseComplianceExtend) {
+export async function extendCourseCompliance(
+  courseId: string,
+  payload: TCourseComplianceExtend,
+  actorProfileId: string | null = null
+) {
   await getComplianceCourseOrThrow(courseId);
   ensureFutureOrPresentIsoDate(payload.dueDate, 'dueDate');
 
@@ -554,6 +703,7 @@ export async function extendCourseCompliance(courseId: string, payload: TCourseC
   let createdCount = 0;
   let updatedCount = 0;
   let skippedCount = 0;
+  const statusChanges: Array<Parameters<typeof emitComplianceStatusChanged>> = [];
 
   await db.transaction(async (tx) => {
     for (const student of students) {
@@ -570,7 +720,7 @@ export async function extendCourseCompliance(courseId: string, payload: TCourseC
           continue;
         }
 
-        await createCourseCompletionRecord(
+        const created = await createCourseCompletionRecord(
           {
             courseId,
             groupMemberId: student.member.id,
@@ -583,6 +733,12 @@ export async function extendCourseCompliance(courseId: string, payload: TCourseC
           },
           tx
         );
+        if (created) {
+          statusChanges.push([
+            created,
+            { status: 'not_started', previousStatus: latestRecord?.status ?? null, trigger: 'extend', actorProfileId }
+          ]);
+        }
         createdCount += 1;
         continue;
       }
@@ -598,6 +754,9 @@ export async function extendCourseCompliance(courseId: string, payload: TCourseC
     }
   });
 
+  for (const change of statusChanges) {
+    await emitComplianceStatusChanged(...change);
+  }
   void syncLearningPathsForComplianceProfiles(courseId, profileIds).catch((syncError) => {
     console.error('Failed to sync learning path progress after a compliance extension:', syncError);
   });
@@ -626,6 +785,7 @@ export async function waiveCourseCompliance(courseId: string, actorProfileId: st
   let updatedCount = 0;
   let skippedCount = 0;
   const waivedProfileIds: string[] = [];
+  const waivedRecords: TCourseCompletionRecord[] = [];
 
   await db.transaction(async (tx) => {
     for (const student of students) {
@@ -639,6 +799,8 @@ export async function waiveCourseCompliance(courseId: string, actorProfileId: st
         skippedCount += 1;
         continue;
       }
+
+      waivedRecords.push(existingRecord);
 
       await updateCourseCompletionRecord(
         existingRecord.id,
@@ -655,6 +817,23 @@ export async function waiveCourseCompliance(courseId: string, actorProfileId: st
     }
   });
 
+  for (const record of waivedRecords) {
+    await emitComplianceStatusChanged(record, {
+      status: 'waived',
+      previousStatus: record.status,
+      trigger: 'waive',
+      actorProfileId
+    });
+    await emitCourseWebhookEvent(courseId, 'compliance.record.waived', {
+      recordId: record.id,
+      memberId: record.groupMemberId,
+      profileId: record.profileId,
+      cycleNumber: record.cycleNumber,
+      reason: payload.waiverReason ?? null,
+      waiverExpiresAt: payload.waiverExpiresAt ?? null,
+      actorProfileId
+    });
+  }
   void syncLearningPathsForComplianceProfiles(courseId, waivedProfileIds).catch((syncError) => {
     console.error('Failed to sync learning path progress after a compliance waiver:', syncError);
   });
@@ -675,6 +854,7 @@ export async function runComplianceExpiryCheck() {
   let createdCycleCount = 0;
   let skippedCount = 0;
   const expiredByCourseId = new Map<string, string[]>();
+  const newCycles: Array<Parameters<typeof emitComplianceStatusChanged>> = [];
 
   for (const record of records) {
     if (!record.validUntil) {
@@ -718,6 +898,7 @@ export async function runComplianceExpiryCheck() {
       processedCount += 1;
       if (created) {
         createdCycleCount += 1;
+        newCycles.push([created, { status: 'not_started', previousStatus: record.status, trigger: 'expiry_scan' }]);
       } else {
         skippedCount += 1;
       }
@@ -732,6 +913,10 @@ export async function runComplianceExpiryCheck() {
 
   for (const [courseId, profileIds] of expiredByCourseId) {
     await syncLearningPathsForComplianceProfiles(courseId, profileIds);
+  }
+
+  for (const change of newCycles) {
+    await emitComplianceStatusChanged(...change);
   }
 
   return {
@@ -790,6 +975,11 @@ export async function runComplianceReminderScan() {
     if (nextStatus && row.record.status !== nextStatus) {
       await updateCourseCompletionRecord(row.record.id, { status: nextStatus });
       statusUpdatedCount += 1;
+      await emitComplianceStatusChanged(row.record, {
+        status: nextStatus,
+        previousStatus: row.record.status,
+        trigger: 'reminder_scan'
+      });
     }
   }
 

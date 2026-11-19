@@ -124,7 +124,7 @@
               {#each tagApi.tagGroups as group (group.id)}
                 <Table.Row class="group ui:bg-muted/20">
                   <Table.Cell colspan={5}>
-                    <div class="flex items-start justify-between gap-4 py-1">
+                    <div class="flex items-center justify-between gap-4 py-1">
                       <div class="space-y-1">
                         <p class="text-sm font-semibold">{group.name}</p>
                         {#if group.description}
@@ -135,6 +135,7 @@
                         <DropdownMenu.Trigger class="flex shrink-0 items-center justify-center">
                           <IconButton
                             variant="outline"
+                            size="icon-sm"
                             class="pointer-events-none opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100"
                             aria-label={$t('tags_admin.actions.actions_menu')}
                           >
@@ -186,6 +187,7 @@
                           <DropdownMenu.Trigger class="inline-flex items-center justify-center">
                             <IconButton
                               variant="outline"
+                              size="icon-sm"
                               class="pointer-events-none opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100"
                               aria-label={$t('tags_admin.actions.actions_menu')}
                             >

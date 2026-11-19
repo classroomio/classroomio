@@ -30,6 +30,7 @@
         isRequired={true}
         autoComplete={false}
         errorMessage={courseCloneApi.errors.title}
+        onInput={() => courseCloneApi.clearError('title')}
       />
 
       <TextareaField
@@ -39,6 +40,7 @@
         className="mb-4"
         rows={4}
         errorMessage={courseCloneApi.errors.description}
+        oninput={() => courseCloneApi.clearError('description')}
       />
 
       {#if courseCloneApi.errors.general}

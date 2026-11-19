@@ -6,7 +6,12 @@ import { getActiveNegativeYoutubeCaption } from '@cio/db/queries/youtube-caption
 import { startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import { getLesson } from '../lesson/lesson';
 import { VIDEO_LEVEL_LANGUAGE_KEY, resolveRequestLanguage } from '../youtube-captions/language';
-import { CAPTION_FETCH_COST_UNITS, canOrgFetchYoutubeCaptions, isSelfHostedInstance } from '../youtube-captions/policy';
+import {
+  CAPTION_FETCH_COST_UNITS,
+  canOrgFetchYoutubeCaptions,
+  isCaptionProviderConfigured,
+  isSelfHostedInstance
+} from '../youtube-captions/policy';
 import { getTokenBalance } from './usage';
 
 /** `fetching` is the only value worth retrying; the rest are terminal for this run. */
@@ -132,7 +137,7 @@ export async function getLessonVideoTranscript(
       status: 'no_videos',
       transcript: null,
       message:
-        'This lesson has no videos with transcripts. Upload a video or embed a YouTube video with captions to enable transcript-based Q&A.'
+        "I couldn't find a video on this lesson that I can pull a transcript from. If a video is visibly embedded, it may not be attached through the lesson's video tool — do not tell the teacher no video is embedded; say a transcript isn't available and, if asked, suggest re-adding it via the video tool or upload."
     };
   }
 
@@ -232,6 +237,10 @@ async function warmMissingCaptions(
   // Filter first: no plan or balance can fetch captions for a video that has none.
   const fetchable = await filterOutKnownUnavailable(missingVideos);
   if (fetchable.length === 0) {
+    return 'unavailable';
+  }
+
+  if (!isCaptionProviderConfigured()) {
     return 'unavailable';
   }
 

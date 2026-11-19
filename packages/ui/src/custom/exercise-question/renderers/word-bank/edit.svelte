@@ -37,13 +37,16 @@
   });
 
   const blankCount = $derived(countWordBankBlanks(template));
+  let templateFocused = $state(false);
 
   function onTemplateInput(value: string) {
     const nextBlankCount = countWordBankBlanks(value);
-    const prev = correctAnswers;
-    const nextCorrect: string[] = [];
-    for (let i = 0; i < nextBlankCount; i++) {
-      nextCorrect.push(prev[i] ?? '');
+    const nextCorrect = [...correctAnswers];
+    while (nextCorrect.length < nextBlankCount) {
+      nextCorrect.push('');
+    }
+    while (nextCorrect.length > nextBlankCount && nextCorrect[nextCorrect.length - 1] === '') {
+      nextCorrect.pop();
     }
     patchSettings({ template: value, correctAnswers: nextCorrect });
   }
@@ -78,12 +81,14 @@
       value={template}
       placeholder={label('word_bank.edit.template_placeholder')}
       {disabled}
-      onchange={(event) => onTemplateInput(event.currentTarget.value)}
+      oninput={(event) => onTemplateInput(event.currentTarget.value)}
+      onfocus={() => (templateFocused = true)}
+      onblur={() => (templateFocused = false)}
     />
     <p class="ui:text-muted-foreground ui:text-xs">
       {label('word_bank.edit.template_helper')}
     </p>
-    {#if blankCount === 0 && template.trim().length > 0}
+    {#if !templateFocused && blankCount === 0 && template.trim().length > 0}
       <p class="ui:text-destructive ui:text-xs">{label('word_bank.edit.no_blanks_warning')}</p>
     {/if}
   </div>
@@ -102,7 +107,7 @@
               value={correctAnswers[blankIndex] ?? ''}
               placeholder={label('word_bank.edit.correct_placeholder')}
               {disabled}
-              onchange={(event) => setCorrectAnswerAt(blankIndex, event.currentTarget.value)}
+              oninput={(event) => setCorrectAnswerAt(blankIndex, event.currentTarget.value)}
             />
           </div>
         {/each}
@@ -120,7 +125,7 @@
             value={distractors[distractorIndex] ?? ''}
             placeholder={label('word_bank.edit.distractor_placeholder')}
             {disabled}
-            onchange={(event) => setDistractorAt(distractorIndex, event.currentTarget.value)}
+            oninput={(event) => setDistractorAt(distractorIndex, event.currentTarget.value)}
           />
           <IconButton
             type="button"

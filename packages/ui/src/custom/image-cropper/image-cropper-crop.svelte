@@ -13,6 +13,7 @@
   bind:ref
   {size}
   {variant}
+  loading={cropState.rootState.processing}
   onclick={(
     e: MouseEvent & {
       currentTarget: EventTarget & HTMLButtonElement;
@@ -20,7 +21,7 @@
   ) => {
     onclick?.(e);
 
-    cropState.onclick();
+    void cropState.onclick();
   }}
 >
   <CropIcon />

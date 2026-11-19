@@ -3,7 +3,8 @@ import { CoursePlanSchema } from '@cio/ai-assistant';
 import {
   LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT,
   LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
-  LANDING_PAGE_SECTION_HTML_AGENT_HINT
+  LANDING_PAGE_SECTION_HTML_AGENT_HINT,
+  BLOCK_RECIPE_TYPES
 } from '@cio/ai-assistant/tools';
 import {
   ADD_QUESTIONS_TOOL_DESCRIPTION,
@@ -11,6 +12,7 @@ import {
   QUESTION_SETTINGS_SCHEMA_HINT,
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
+import { IMAGE_BLOCK_FITS, ZBlockLocale, ZBlockType } from '@cio/utils/validation/block';
 import { ZExerciseSectionAfterBehavior } from '@cio/utils/validation/exercise';
 import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdateFields } from '@cio/utils/validation/course';
 
@@ -29,15 +31,26 @@ const zEnabledQuestionTypeId = z
 // This prevents prompt injection from tricking the LLM into targeting another course.
 
 export const emptyParam = z.object({});
-export const lessonReadParam = z.object({ lessonId: z.string(), locale: z.string().default('en') });
+export const lessonReadParam = z.object({ lessonId: z.string(), locale: ZBlockLocale.default('en') });
 export const lessonTranscriptParam = z.object({ lessonId: z.string() });
 export const exerciseReadParam = z.object({ exerciseId: z.string() });
-export const createSectionParam = z.object({ title: z.string().min(1), order: z.number().int().min(0) });
+const TOP_LEVEL_ORDER_NOTE =
+  'Top-level positions (1-based) are shared by sections and by lessons or exercises outside any section; the entry at that position and every later one move down one.';
+
+export const createSectionParam = z.object({
+  title: z.string().min(1),
+  order: z.number().int().min(1).describe(`Position among the course's top-level entries. ${TOP_LEVEL_ORDER_NOTE}`)
+});
 export const updateSectionParam = z
   .object({
     sectionId: z.string(),
     title: z.string().min(1).optional(),
-    order: z.number().int().min(0).optional()
+    order: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe(`New position among the course's top-level entries. ${TOP_LEVEL_ORDER_NOTE}`)
   })
   .refine((data) => data.title !== undefined || data.order !== undefined, {
     message: 'Provide at least one field to update'
@@ -45,18 +58,31 @@ export const updateSectionParam = z
 export const createLessonParam = z.object({
   sectionId: z.string(),
   title: z.string().min(1),
-  order: z.number().int().min(0)
+  order: z.number().int().min(1)
 });
-export const attachDocumentToLessonParam = z.object({
-  lessonId: z.string().describe('ID of the lesson to attach the document to'),
-  documentId: z.string().describe('documentId of the uploaded document (from the conversation context)')
-});
+export const attachDocumentToLessonParam = z
+  .object({
+    lessonId: z.string().describe('ID of the lesson to attach the document to'),
+    documentId: z.string().describe('documentId of the uploaded document (from the conversation context)'),
+    afterBlockId: z.uuid().optional().describe('Place the document block right after this block.'),
+    beforeBlockId: z.uuid().optional().describe('Place the document block right before this block.')
+  })
+  .refine((data) => !(data.afterBlockId && data.beforeBlockId), {
+    message: 'Provide either afterBlockId or beforeBlockId, not both'
+  });
 export const updateLessonParam = z
   .object({
     lessonId: z.string(),
     title: z.string().min(1).optional(),
     sectionId: z.string().optional(),
-    order: z.number().int().min(0).optional(),
+    order: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe(
+        `New order within the section (1-based). For a lesson outside any section, its top-level position. ${TOP_LEVEL_ORDER_NOTE}`
+      ),
     lessonAt: z.string().optional(),
     callUrl: z.string().optional(),
     isUnlocked: z.boolean().optional(),
@@ -75,10 +101,133 @@ export const updateLessonParam = z
       message: 'Provide at least one field to update'
     }
   );
+const zLessonBlockId = z.uuid();
+
 export const updateContentParam = z.object({
   lessonId: z.string(),
-  locale: z.string().default('en'),
-  content: z.string().min(1)
+  locale: ZBlockLocale.default('en'),
+  content: z.string().min(1),
+  blockId: zLessonBlockId
+    .optional()
+    .describe(
+      'The text (note) block to write, from get_lesson_content. Required when the lesson has more than one text block. Omit only when the lesson has at most one text block.'
+    )
+});
+
+export const addLessonNoteBlockParam = z
+  .object({
+    lessonId: z.string(),
+    locale: ZBlockLocale.default('en'),
+    content: z.string().min(1),
+    afterBlockId: zLessonBlockId.optional().describe('Insert the new text block right after this block.'),
+    beforeBlockId: zLessonBlockId.optional().describe('Insert the new text block right before this block.')
+  })
+  .refine((data) => !(data.afterBlockId && data.beforeBlockId), {
+    message: 'Provide either afterBlockId or beforeBlockId, not both'
+  });
+
+export const removeLessonBlockParam = z.object({
+  lessonId: z.string(),
+  blockId: zLessonBlockId.describe('The text (note) block to remove, from get_lesson_content.')
+});
+
+export const moveLessonBlockParam = z
+  .object({
+    lessonId: z.string(),
+    blockId: zLessonBlockId.describe('The block to move (any type), from get_lesson_content.'),
+    afterBlockId: zLessonBlockId.optional().describe('Place the block right after this block.'),
+    beforeBlockId: zLessonBlockId.optional().describe('Place the block right before this block.')
+  })
+  .refine((data) => Boolean(data.afterBlockId) !== Boolean(data.beforeBlockId), {
+    message: 'Provide exactly one of afterBlockId or beforeBlockId'
+  });
+
+const blockAnchorFields = {
+  afterBlockId: zLessonBlockId.optional().describe('Place the new block right after this block.'),
+  beforeBlockId: zLessonBlockId.optional().describe('Place the new block right before this block.')
+};
+const singleAnchor = (data: { afterBlockId?: string; beforeBlockId?: string }) =>
+  !(data.afterBlockId && data.beforeBlockId);
+const singleAnchorMessage = { message: 'Provide either afterBlockId or beforeBlockId, not both' };
+
+export const addLessonSlidesBlockParam = z
+  .object({
+    lessonId: z.string(),
+    url: z.string().min(1).describe('Share link, embed link or iframe code the teacher gave for the slide deck.'),
+    ...blockAnchorFields
+  })
+  .refine(singleAnchor, singleAnchorMessage);
+
+export const addLessonImageBlockParam = z
+  .object({
+    lessonId: z.string(),
+    url: z
+      .url({ protocol: /^https$/ })
+      .describe('https URL of the image, exactly as the teacher or a tool result gave it. Never invent one.'),
+    alt: z.string().max(300).optional().describe('Short description of the image for screen readers.'),
+    fit: z.enum(IMAGE_BLOCK_FITS).optional().describe('cover crops to fill the frame; contain shows the whole image.'),
+    ...blockAnchorFields
+  })
+  .refine(singleAnchor, singleAnchorMessage);
+
+export const updateLessonBlockSettingsParam = z.object({
+  lessonId: z.string(),
+  blockId: zLessonBlockId,
+  changes: z
+    .record(z.string(), z.unknown())
+    .refine((changes) => Object.keys(changes).length > 0, { message: 'Provide at least one field to change' })
+    .describe('Fields to change. image: url, alt, fit. document: name. Other block types have no editable settings.')
+});
+
+export const updateLessonBlockRequirementsParam = z
+  .object({
+    lessonId: z.string(),
+    blockId: zLessonBlockId,
+    required: z.boolean().optional().describe('Whether students must complete this block to complete the lesson.'),
+    watchThreshold: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .nullable()
+      .optional()
+      .describe('Video blocks only: percent of the video a student must watch. null removes the threshold.')
+  })
+  .refine((data) => data.required !== undefined || data.watchThreshold !== undefined, {
+    message: 'Provide required or watchThreshold'
+  });
+
+export const lessonBlockRefParam = z.object({
+  lessonId: z.string(),
+  blockId: zLessonBlockId
+});
+
+export const listBlockLibraryParam = z.object({
+  type: ZBlockType.optional().describe('Only list blocks of this type.'),
+  search: z.string().min(1).optional().describe('Text to search for.'),
+  locale: ZBlockLocale.default('en')
+});
+
+export const attachLibraryBlockParam = z
+  .object({
+    lessonId: z.string(),
+    blockId: zLessonBlockId.describe('The library block to place, from list_block_library.'),
+    ...blockAnchorFields
+  })
+  .refine(singleAnchor, singleAnchorMessage);
+
+export const moveBlockToLessonParam = z
+  .object({
+    fromLessonId: z.string(),
+    toLessonId: z.string(),
+    blockId: zLessonBlockId.describe('The block to move, from get_lesson_content of the source lesson.'),
+    afterBlockId: zLessonBlockId.optional().describe('Place it right after this block of the target lesson.'),
+    beforeBlockId: zLessonBlockId.optional().describe('Place it right before this block of the target lesson.')
+  })
+  .refine(singleAnchor, singleAnchorMessage);
+
+export const getBlockRecipeParam = z.object({
+  blockType: z.enum(BLOCK_RECIPE_TYPES).describe('The block type to fetch exact lesson-body markup for.')
 });
 
 export const questionSchema = z.object({
@@ -100,10 +249,9 @@ export const createExerciseParam = z.object({
   order: z
     .number()
     .int()
-    .min(0)
-    .optional()
+    .min(1)
     .describe(
-      'Display order within the section (0-based). Required when sectionId is provided. Lessons and exercises share the same order space within a section.'
+      'Display order within the section (1-based). Required. Lessons and exercises share the same order space within a section.'
     ),
   questions: z.array(questionSchema)
 });
@@ -118,7 +266,14 @@ export const updateExerciseParam = z
       .describe('New short description shown to students. Pass an empty string to clear it.'),
     lessonId: z.string().optional().describe('Link the exercise to a lesson in this course.'),
     sectionId: z.string().optional().describe('Move the exercise to a section in this course.'),
-    order: z.number().int().min(0).optional().describe('New order within the section (0-based).'),
+    order: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe(
+        `New order within the section (1-based). For an exercise outside any section and lesson, its top-level position. ${TOP_LEVEL_ORDER_NOTE}`
+      ),
     dueBy: z
       .string()
       .optional()
@@ -126,10 +281,10 @@ export const updateExerciseParam = z
     isUnlocked: z.boolean().optional().describe('Whether the exercise is unlocked for students.'),
     allowMultipleAttempts: z.boolean().optional().describe('Whether students can re-take the exercise.'),
     completionPolicy: z
-      .enum(['submitted', 'passed'])
+      .enum(['submitted', 'passed', 'none'])
       .optional()
       .describe(
-        '"submitted" means any submitted attempt completes the exercise. "passed" means the student must meet or exceed passThreshold before the exercise is considered complete.'
+        '"submitted" means any submitted attempt completes the exercise. "passed" means the student must meet or exceed passThreshold before the exercise is considered complete. "none" means the exercise does not block course progression and is not required for course completion or certificates.'
       ),
     passThreshold: z
       .number()
@@ -354,7 +509,11 @@ export const reorderContentParam = z.object({
     .array(
       z.object({
         id: z.string().min(1),
-        order: z.number().int().min(0)
+        order: z
+          .number()
+          .int()
+          .min(1)
+          .describe('Top-level position, shared with lessons and exercises outside any section')
       })
     )
     .optional()
@@ -364,10 +523,28 @@ export const reorderContentParam = z.object({
       z.object({
         id: z.string().min(1),
         type: z.enum(['LESSON', 'EXERCISE']),
-        order: z.number().int().min(0).optional().describe('New order within the section'),
+        order: z
+          .number()
+          .int()
+          .min(1)
+          .optional()
+          .describe(
+            'New order within the section, or the top-level position when the item is outside any section. Top-level positions must be unique across sections, lessons and exercises.'
+          ),
         sectionId: z.string().nullable().optional().describe('Move item to a different section')
       })
     )
     .optional()
     .describe('Reorder or move lessons/exercises')
+});
+
+export const lessonHistoryParam = z.object({ lessonId: z.string(), locale: ZBlockLocale.default('en') });
+export const restoreLessonVersionParam = z.object({
+  lessonId: z.string(),
+  entryType: z.enum(['text', 'structure']).describe('The entryType of the get_lesson_history entry.'),
+  entryId: z.number().int().min(1).describe('The id of the get_lesson_history entry.')
+});
+export const undoLessonChangeSetParam = z.object({
+  lessonId: z.string(),
+  changeSetId: z.uuid().describe('The change set to undo, from get_lesson_history.')
 });

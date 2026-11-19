@@ -1,7 +1,6 @@
 <script lang="ts">
   import EmptyState from '../EmptyState.svelte';
   import PrimaryButton from '../PrimaryButton.svelte';
-  import { courses } from '@/utils/stores/course';
   import CourseCard from '../CourseCard.svelte';
   import type { Course, CourseFilterItem } from '@/utils/types/course';
   import type { Page } from '$lib/utils/types/page';
@@ -37,7 +36,15 @@
     }
   ]);
 
-  let filteredCourses = $state([...data.courses]);
+  const filteredCourses = $derived.by(() => {
+    const active = new Set(
+      filter.filter((filterItem) => filterItem.checked).map((filterItem) => filterItem.type.toLowerCase())
+    );
+
+    return active.size === 0
+      ? data.courses
+      : data.courses.filter((course) => active.has(course.type.toLowerCase()));
+  });
 
   /**
    * Constants
@@ -47,21 +54,6 @@
     courses: getPageSection(data.page, SECTION.COURSE)
   });
 
-  /**
-   * Functions
-   */
-  function applyFilter() {
-    const activeFilters = new Set(
-      filter
-        .filter((filterItem) => filterItem.checked)
-        .map((filterItem) => filterItem.type.toLowerCase())
-    );
-
-    filteredCourses =
-      activeFilters.size === 0
-        ? data.courses
-        : data.courses.filter((course) => activeFilters.has(course.type.toLowerCase()));
-  }
 </script>
 
 <main class="overflow-x-hidden">
@@ -98,7 +90,12 @@
                   for={item.title}
                   class="flex flex-row items-center whitespace-nowrap rounded-md bg-white p-2 text-xs font-medium text-gray-800"
                 >
-                  <input type="checkbox" name={item.title} class="text-examprep mr-2" />
+                  <input
+                    type="checkbox"
+                    name={item.title}
+                    bind:checked={item.checked}
+                    class="text-examprep mr-2"
+                  />
 
                   {item.title}
                 </label>
@@ -109,9 +106,9 @@
       </div>
 
       <div>
-        {#if $courses.length > 0}
+        {#if filteredCourses.length > 0}
           <section class="flex flex-wrap items-center justify-center gap-5 p-4 md:justify-start">
-            {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
+            {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
               <CourseCard
                 slug={courseData.slug}
                 title={courseData.title}
@@ -120,7 +117,7 @@
               />
             {/each}
           </section>
-          {#if $courses.length > 3}
+          {#if filteredCourses.length > 3}
             <div class="my-5 flex w-full items-center justify-center">
               <PrimaryButton
                 label="VIEW MORE PREPCOURSES"

@@ -18,7 +18,7 @@ vi.mock('@cio/db/queries/learning-path', () => ({
 }));
 
 vi.mock('@cio/jobs', () => ({ enqueueEmailSend: vi.fn(), isRedisConfigured: vi.fn().mockReturnValue(false) }));
-vi.mock('@cio/analytics', () => ({ trackServerEvent: vi.fn(), SERVER_EVENTS: {} }));
+vi.mock('@cio/tracking', () => ({ trackServerEvent: vi.fn(), SERVER_EVENTS: {} }));
 
 import {
   reconcileLearningPathProgress,

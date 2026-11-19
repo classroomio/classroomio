@@ -4,9 +4,12 @@ import {
   countActiveOrganizationApiKeys,
   countOrganizationAutomationUsageSince,
   countOrganizationAutomationUsageSinceByKey,
+  completeOrganizationAutomationUsage,
   createOrganizationAutomationUsage,
   getActiveOrganizationPlan,
-  listRecentOrganizationAutomationUsage
+  listRecentOrganizationAutomationUsage,
+  releaseOrganizationAutomationUsage,
+  reserveOrganizationAutomationUsage
 } from '@cio/db/queries/organization';
 import type { TOrganizationApiKey, TOrganizationApiKeyType, TPlan } from '@db/types';
 import {
@@ -14,6 +17,8 @@ import {
   getMcpAutomationCategory,
   canUsePublicApi,
   getMcpAutomationLimits,
+  MCP_TOOL_CREDIT_COST,
+  type TAutomationUsageCategory,
   type TMcpToolName
 } from '@cio/utils/plans';
 import {
@@ -45,39 +50,38 @@ async function getOrganizationPlanName(orgId: string): Promise<TPlan> {
   return (activePlan?.planName as TPlan | null) ?? 'BASIC';
 }
 
+/**
+ * Throws 403 unless the organization's plan includes the public API.
+ */
+export async function assertPublicApiAllowed(organizationId: string): Promise<void> {
+  const planName = await getOrganizationPlanName(organizationId);
+  const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
+
+  if (!canUsePublicApi(planName, isSelfHosted)) {
+    throw new AppError(
+      isSelfHosted
+        ? 'Public API keys require an Enterprise plan'
+        : 'Public API keys require an Early Adopter or Enterprise plan',
+      ErrorCodes.UPGRADE_REQUIRED,
+      403
+    );
+  }
+}
+
 export async function assertOrganizationAutomationKeyCreationAllowed(
   organizationId: string,
   type: TOrganizationApiKeyType
 ): Promise<void> {
-  const planName = await getOrganizationPlanName(organizationId);
+  if (type === AUTOMATION_TYPE.MCP) {
+    throw new AppError(
+      'MCP keys can no longer be created. Connect your client by signing in instead.',
+      ErrorCodes.MCP_KEY_CREATION_DISABLED,
+      400
+    );
+  }
 
   if (type === AUTOMATION_TYPE.API) {
-    const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
-
-    if (!canUsePublicApi(planName, isSelfHosted)) {
-      throw new AppError(
-        isSelfHosted
-          ? 'Public API keys require an Enterprise plan'
-          : 'Public API keys require an Early Adopter or Enterprise plan',
-        ErrorCodes.UPGRADE_REQUIRED,
-        403
-      );
-    }
-  }
-
-  if (type !== AUTOMATION_TYPE.MCP) {
-    return;
-  }
-
-  const limits = getMcpAutomationLimits(planName);
-  const activeKeys = await countActiveOrganizationApiKeys(organizationId, type);
-
-  if (activeKeys >= limits.maxActiveKeys) {
-    throw new AppError(
-      `Your plan allows up to ${limits.maxActiveKeys} active MCP key${limits.maxActiveKeys === 1 ? '' : 's'}`,
-      ErrorCodes.AUTOMATION_KEY_LIMIT_EXCEEDED,
-      403
-    );
+    await assertPublicApiAllowed(organizationId);
   }
 }
 
@@ -127,38 +131,111 @@ export async function getOrganizationAutomationUsageSummaryService(
   };
 }
 
-export async function assertMcpAutomationUsageAllowed(
+/**
+ * Category-level rate limiting, shared by the tool-name entry point below and
+ * by /v1 (which has no per-tool identity to key off of — one automation key
+ * can be hit by a plain API call or by any MCP tool, so /v1 derives a
+ * category straight from the HTTP method instead).
+ */
+async function getMcpCategoryLimits(organizationId: string, category: TAutomationUsageCategory) {
+  const { rateLimits } = getMcpAutomationLimits(await getOrganizationPlanName(organizationId));
+  const perMinute = `${category}PerMinute` as const;
+
+  return { keyLimit: rateLimits.perKey[perMinute], orgLimit: rateLimits.perOrg[perMinute] };
+}
+
+export async function assertMcpAutomationUsageAllowedForCategory(
   automationKey: TOrganizationApiKey,
-  toolName: TMcpToolName
+  category: TAutomationUsageCategory
 ): Promise<void> {
-  const planName = await getOrganizationPlanName(automationKey.organizationId);
-  const limits = getMcpAutomationLimits(planName);
-  const category = getMcpAutomationCategory(toolName);
-  const now = new Date();
-  const minuteWindowStart = getMinuteWindowStart(now).toISOString();
+  const { keyLimit, orgLimit } = await getMcpCategoryLimits(automationKey.organizationId, category);
+  const minuteWindowStart = getMinuteWindowStart().toISOString();
 
   const [keyRequestsInWindow, orgRequestsInWindow] = await Promise.all([
     countOrganizationAutomationUsageSinceByKey(automationKey.id, category, minuteWindowStart),
     countOrganizationAutomationUsageSince(automationKey.organizationId, automationKey.type, category, minuteWindowStart)
   ]);
 
-  const keyLimit =
-    category === 'read'
-      ? limits.rateLimits.perKey.readPerMinute
-      : category === 'write'
-        ? limits.rateLimits.perKey.writePerMinute
-        : limits.rateLimits.perKey.publishPerMinute;
-
-  const orgLimit =
-    category === 'read'
-      ? limits.rateLimits.perOrg.readPerMinute
-      : category === 'write'
-        ? limits.rateLimits.perOrg.writePerMinute
-        : limits.rateLimits.perOrg.publishPerMinute;
-
   if (keyRequestsInWindow >= keyLimit || orgRequestsInWindow >= orgLimit) {
     throw new AppError('Automation rate limit exceeded', ErrorCodes.AUTOMATION_RATE_LIMIT_EXCEEDED, 429);
   }
+}
+
+/**
+ * Atomically checks the per-key and per-organization limits and reserves one slot, so concurrent
+ * requests can't all pass the check before any of them is recorded. Returns the reservation id to
+ * complete or release. Throws 429 over the limit, and 503 when the limiter can't record the request
+ * (fail closed).
+ */
+export async function reserveMcpAutomationUsage(
+  automationKey: TOrganizationApiKey,
+  category: TAutomationUsageCategory,
+  action: string
+): Promise<string> {
+  const { keyLimit, orgLimit } = await getMcpCategoryLimits(automationKey.organizationId, category);
+
+  let reservationId: string | null;
+  try {
+    reservationId = await reserveOrganizationAutomationUsage({
+      organizationId: automationKey.organizationId,
+      organizationApiKeyId: automationKey.id,
+      type: automationKey.type,
+      category,
+      action,
+      since: getMinuteWindowStart().toISOString(),
+      keyLimit,
+      orgLimit
+    });
+  } catch {
+    throw new AppError(
+      'Automation usage could not be recorded, try again shortly',
+      ErrorCodes.AUTOMATION_USAGE_UNAVAILABLE,
+      503
+    );
+  }
+
+  if (!reservationId) {
+    throw new AppError('Automation rate limit exceeded', ErrorCodes.AUTOMATION_RATE_LIMIT_EXCEEDED, 429);
+  }
+
+  return reservationId;
+}
+
+export async function completeMcpAutomationUsage(
+  reservationId: string,
+  action: string,
+  creditsConsumed: number
+): Promise<void> {
+  await completeOrganizationAutomationUsage(reservationId, { action, creditsConsumed });
+}
+
+export async function releaseMcpAutomationUsage(reservationId: string): Promise<void> {
+  await releaseOrganizationAutomationUsage(reservationId);
+}
+
+export async function assertMcpAutomationUsageAllowed(
+  automationKey: TOrganizationApiKey,
+  toolName: TMcpToolName
+): Promise<void> {
+  return assertMcpAutomationUsageAllowedForCategory(automationKey, getMcpAutomationCategory(toolName));
+}
+
+export async function recordMcpAutomationUsageForAction(
+  automationKey: TOrganizationApiKey,
+  action: string,
+  category: TAutomationUsageCategory,
+  creditsConsumed: number,
+  metadata: Record<string, unknown> = {}
+): Promise<void> {
+  await createOrganizationAutomationUsage({
+    organizationId: automationKey.organizationId,
+    organizationApiKeyId: automationKey.id,
+    type: automationKey.type,
+    action,
+    category,
+    creditsConsumed,
+    metadata
+  });
 }
 
 export async function recordMcpAutomationUsage(
@@ -166,13 +243,11 @@ export async function recordMcpAutomationUsage(
   toolName: TMcpToolName,
   metadata: Record<string, unknown> = {}
 ): Promise<void> {
-  await createOrganizationAutomationUsage({
-    organizationId: automationKey.organizationId,
-    organizationApiKeyId: automationKey.id,
-    type: automationKey.type,
-    action: toolName,
-    category: getMcpAutomationCategory(toolName),
-    creditsConsumed: 0,
+  return recordMcpAutomationUsageForAction(
+    automationKey,
+    toolName,
+    getMcpAutomationCategory(toolName),
+    MCP_TOOL_CREDIT_COST[toolName],
     metadata
-  });
+  );
 }

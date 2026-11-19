@@ -1,7 +1,8 @@
 import type { Handle, RequestEvent } from '@sveltejs/kit';
-
-const DOCS_ORIGIN = 'https://cio-docs.digdippa.workers.dev';
-const HELP_ORIGIN = 'https://cio-help.digdippa.workers.dev';
+import { buildPricingMarkdown } from '$lib/server/agent-resources';
+import { DOCS_ORIGIN, HELP_ORIGIN } from '$lib/server/upstreams';
+import { prefersMarkdown } from '$lib/utils/accept-header';
+import { resolveLegacyRedirect } from '$lib/utils/legacy-redirects';
 
 function proxy(origin: string, pathname: string, event: RequestEvent) {
   const upstream = new URL(pathname + event.url.search, origin);
@@ -21,6 +22,8 @@ function proxy(origin: string, pathname: string, event: RequestEvent) {
   });
 }
 
+const DISCOVERY_LINK = '</llms.txt>; rel="describedby"; type="text/plain"';
+
 export const handle: Handle = async ({ event, resolve }) => {
   const { pathname } = event.url;
 
@@ -32,5 +35,25 @@ export const handle: Handle = async ({ event, resolve }) => {
     return proxy(HELP_ORIGIN, pathname, event);
   }
 
-  return resolve(event);
+  if (pathname === '/pricing' && prefersMarkdown(event.request.headers.get('accept'))) {
+    return new Response(buildPricingMarkdown(), {
+      headers: { 'content-type': 'text/markdown; charset=utf-8', vary: 'Accept', link: DISCOVERY_LINK }
+    });
+  }
+
+  const legacyTarget = resolveLegacyRedirect(pathname);
+  if (legacyTarget) {
+    const location = legacyTarget.startsWith('http') ? new URL(legacyTarget) : new URL(legacyTarget, event.url);
+    location.search = event.url.search;
+
+    const status = legacyTarget.startsWith('http') ? 308 : 301;
+
+    return Response.redirect(location.toString(), status);
+  }
+
+  const resolved = await resolve(event);
+  const response = new Response(resolved.body, resolved);
+  response.headers.append('link', DISCOVERY_LINK);
+
+  return response;
 };

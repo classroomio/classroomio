@@ -97,7 +97,7 @@
     if (!isOpen) onClose(page.url.pathname);
   }}
 >
-  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
+  <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>{$t('courses.new_course_modal.heading')}</Dialog.Title>
     </Dialog.Header>
@@ -121,6 +121,7 @@
             className="w-full"
             isRequired={true}
             errorMessage={courseApi.errors.title}
+            onInput={() => courseApi.clearError('title')}
             autoComplete={false}
           />
         </div>
@@ -133,6 +134,7 @@
           className="mb-4"
           isRequired={true}
           errorMessage={courseApi.errors.description}
+          oninput={() => courseApi.clearError('description')}
           isAIEnabled={true}
           initAIPrompt="Write a 30 word description for a course titled: {$createCourseModal.title}"
         />

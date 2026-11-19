@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { getRelativeDayLabelKey, groupVersionsByDay, hasVersionSessionSpan } from './lesson-version-utils';
 
 import type { LessonVersionEntry } from './types';

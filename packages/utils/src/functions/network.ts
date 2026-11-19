@@ -65,3 +65,12 @@ export function isLocalOrPrivateHost(input: string): boolean {
 
   return false;
 }
+
+/** Matches a hostname against a comma-separated allowlist of hosts. */
+export function isFirstPartyOrgSiteHost(hostname: string, configuredHosts: string | undefined): boolean {
+  const host = hostname.trim().toLowerCase().replace(/\.$/, '');
+
+  if (!host) return false;
+
+  return (configuredHosts ?? '').split(',').some((entry) => entry.trim().toLowerCase() === host);
+}

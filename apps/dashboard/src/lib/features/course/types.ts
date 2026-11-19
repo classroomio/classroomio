@@ -15,6 +15,10 @@ export type OrgCoursesQuery = {
   limit: number;
   search?: string;
   tags?: string;
+  type?: string;
+  status?: 'published' | 'unpublished';
+  sort?: string;
+  order?: 'asc' | 'desc';
 };
 
 // User Enrolled Courses types
@@ -29,6 +33,13 @@ export type RecommendedCoursesResponse = InferResponseType<GetRecommendedCourses
 export type RecommendedCoursesSuccess = Extract<InferResponseType<GetRecommendedCoursesRequest>, { success: true }>;
 export type RecommendedCourses = RecommendedCoursesSuccess['data'];
 export type RecommendedCoursesPagination = RecommendedCoursesSuccess['pagination'];
+export type GetRecommendedCoursesRequestQuery = NonNullable<InferRequestType<GetRecommendedCoursesRequest>['query']>;
+export type RecommendedCoursesQuery = {
+  limit?: number;
+  page?: number;
+  sort?: GetRecommendedCoursesRequestQuery['sort'];
+  order?: GetRecommendedCoursesRequestQuery['order'];
+};
 
 // Get course types
 export type GetCourseRequest = (typeof classroomio.course)[':courseId']['$get'];

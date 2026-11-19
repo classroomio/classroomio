@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import { Input } from '../../../../base/input';
+  import { FieldDraft } from '../../../../hooks/field-draft.svelte';
 
   let {
     question,
@@ -13,28 +14,24 @@
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
-  const value = $derived.by(() => {
-    const values = answer?.type === 'FILL_BLANK' ? answer.values : [];
-    return values
-      .map((token) => String(token).trim())
-      .filter(Boolean)
-      .join(', ');
+  const blanks = new FieldDraft<string[]>({
+    value: () => (answer?.type === 'FILL_BLANK' ? answer.values : []),
+    format: (values) => values.join(', '),
+    parse: (draft) =>
+      draft
+        .split(',')
+        .map((token) => token.trim())
+        .filter(Boolean),
+    onChange: (values) => onAnswerChange({ type: 'FILL_BLANK', values })
   });
 </script>
 
 <div class="ui:space-y-2">
   <Input
     class="ui:w-full ui:max-w-[300px]"
-    {value}
+    value={blanks.draft}
     {disabled}
     placeholder={label('fill_blank.take.placeholder')}
-    onchange={(event) =>
-      onAnswerChange({
-        type: 'FILL_BLANK',
-        values: event.currentTarget.value
-          .split(',')
-          .map((token) => token.trim())
-          .filter(Boolean)
-      })}
+    oninput={(event) => blanks.input(event.currentTarget.value)}
   />
 </div>

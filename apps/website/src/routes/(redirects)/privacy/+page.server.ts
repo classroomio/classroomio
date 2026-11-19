@@ -1,12 +1,9 @@
-import { client } from '$lib/utils/posthog';
+import { trackEvent } from '$lib/utils/posthog/track-redirect';
 
 export const prerender = false;
 
-export const load = async ({ request }) => {
-  client.capture({
-    distinctId: request.headers.get('x-forwarded-for') || new Date().getTime().toString(),
-    event: 'privacy policy page visited'
-  });
+export const load = async ({ request, platform }) => {
+  await trackEvent({ request, platform }, 'privacy policy page visited');
 
   return {
     pageMetaTags: {

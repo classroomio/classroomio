@@ -102,7 +102,7 @@
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
   <Dialog.Content
     showCloseButton={false}
-    class="h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[calc(100vw-2rem)]"
+    class="h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)]! max-w-[calc(100vw-2rem)]! gap-0 overflow-hidden p-0 sm:max-w-[calc(100vw-2rem)]! md:max-w-[calc(100vw-2rem)]!"
   >
     <Dialog.Title class="sr-only">Theme preview</Dialog.Title>
     <Dialog.Description class="sr-only">Preview the selected landing page theme with sample content.</Dialog.Description
@@ -115,13 +115,15 @@
     </div>
 
     <div class="h-full w-full overflow-y-auto">
-      {#if previewView === 'home' && ThemeComponent}
-        <ThemeComponent {...orgPreviewProps} disableCourseLinks={true} />
-      {:else if previewView === 'course' && CourseComponent}
-        <CourseComponent {...coursePreviewProps} />
-      {:else if previewView === 'learning-path' && LearningPathComponent}
-        <LearningPathComponent {...learningPathPreviewProps} />
-      {/if}
+      <div inert>
+        {#if previewView === 'home' && ThemeComponent}
+          <ThemeComponent {...orgPreviewProps} disableCourseLinks={true} />
+        {:else if previewView === 'course' && CourseComponent}
+          <CourseComponent {...coursePreviewProps} />
+        {:else if previewView === 'learning-path' && LearningPathComponent}
+          <LearningPathComponent {...learningPathPreviewProps} />
+        {/if}
+      </div>
     </div>
 
     <Tabs.Root

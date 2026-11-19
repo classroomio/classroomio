@@ -62,15 +62,10 @@ class TagApi extends BaseApiWithErrors {
         snackbar.success('snackbar.tags.group_created');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-
-        if ('field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         } else {
-          snackbar.error('snackbar.tags.save_failed');
+          snackbar.error(result.message);
         }
       }
     });
@@ -103,15 +98,10 @@ class TagApi extends BaseApiWithErrors {
         snackbar.success('snackbar.tags.group_updated');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-
-        if ('field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         } else {
-          snackbar.error('snackbar.tags.save_failed');
+          snackbar.error(result.message);
         }
       }
     });
@@ -144,15 +134,10 @@ class TagApi extends BaseApiWithErrors {
         snackbar.success('snackbar.tags.tag_created');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-
-        if ('field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         } else {
-          snackbar.error('snackbar.tags.save_failed');
+          snackbar.error(result.message);
         }
       }
     });
@@ -185,15 +170,10 @@ class TagApi extends BaseApiWithErrors {
         snackbar.success('snackbar.tags.tag_updated');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-
-        if ('field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         } else {
-          snackbar.error('snackbar.tags.save_failed');
+          snackbar.error(result.message);
         }
       }
     });
@@ -253,15 +233,10 @@ class TagApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-
-        if ('field' in result && result.field) {
-          this.errors[result.field] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         } else {
-          snackbar.error('snackbar.tags.save_failed');
+          snackbar.error(result.message);
         }
       }
     });

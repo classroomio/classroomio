@@ -1,0 +1,27 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Data & lists" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--ui-background);font-family:var(--font-sans);color:var(--ui-foreground)}.lbl{font-family:var(--font-mono);font-size:10px;color:var(--ink-500);letter-spacing:.08em;width:78px;flex-shrink:0}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].NotchCard && window[k].Select; } catch (e) { return false; } })] || {};
+const Row = ({ l, children, top }) => <div style={{ display: 'flex', alignItems: top ? 'flex-start' : 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}><span className="lbl">{l}</span>{children}</div>;
+const { Card, Table, Progress, Badge, Avatar, Item, Empty, Accordion, Pagination, Button } = NS;
+const rows = [{ name: 'Amara Okafor', course: 'Admin 101', progress: 100, status: 'Passed' }, { name: 'Daniel Reyes', course: 'Partner cert', progress: 62, status: 'In progress' }, { name: 'Priya Nair', course: 'SSO setup', progress: 18, status: 'In progress' }];
+function App() { const [p, setP] = React.useState(3);
+return <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 16 }}>
+<div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+<Card title="Learners" description="Enrolled this month" action={<Button size="sm" variant="outline">Export</Button>} style={{ gap: 14, padding: '18px 0' }}>
+<Table selected={[1]} columns={[{key:'name',header:'Learner',render:r=><span style={{display:'flex',alignItems:'center',gap:8}}><Avatar size={24} fallback={r.name.split(' ').map(s=>s[0]).join('')}/>{r.name}</span>},{key:'course',header:'Course'},{key:'progress',header:'Progress',render:r=><div style={{width:80}}><Progress value={r.progress}/></div>},{key:'status',header:'Status',render:r=><Badge variant={r.status==='Passed'?'success':'secondary'}>{r.status}</Badge>}]} rows={rows}/>
+</Card>
+<Pagination page={p} count={8} onChange={setP}/>
+</div>
+<div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+<Item variant="outline" size="sm" media={<Avatar fallback="AO"/>} title="Amara Okafor" description="Completed Admin 101" actions={<Button size="xs" variant="outline">View</Button>}/>
+<Accordion defaultOpen={[0]} items={[{title:'Module 1 · Setup',content:'3 lessons · 24 min'},{title:'Module 2 · Admin',content:'5 lessons'}]}/>
+<Empty title="No webinars yet" description="Schedule one or import a recording." style={{ padding: 20, gap: 12 }}><Button size="sm">New webinar</Button></Empty>
+</div></div>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

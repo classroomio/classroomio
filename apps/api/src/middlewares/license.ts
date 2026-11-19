@@ -2,7 +2,7 @@ import type { Context, Next } from 'hono';
 
 import type { LicenseFeatureId } from '@cio/utils/license';
 import { env } from '@cio/core/config/env';
-import { isFeatureLicensed } from '@api/services/license';
+import { isFeatureLicensed } from '@cio/core/services/license';
 
 /**
  * Middleware that returns 403 if the given feature is not licensed.

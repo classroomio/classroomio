@@ -1,13 +1,6 @@
-import { redirect } from '@sveltejs/kit';
-import { client } from '$lib/utils/posthog';
+import { trackAndRedirect } from '$lib/utils/posthog/track-redirect';
 
 export const prerender = false;
 
-export const load = ({ request }) => {
-  client.capture({
-    distinctId: request.headers.get('x-forwarded-for') || new Date().getTime().toString(),
-    event: 'cal.com page visited'
-  });
-
-  redirect(307, 'https://cal.com/classroomio/demo');
-};
+export const load = ({ request, platform }) =>
+  trackAndRedirect({ request, platform }, 'cal.com page visited', 'https://cal.com/classroomio/demo');

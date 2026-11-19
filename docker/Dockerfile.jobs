@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim
+FROM node:24.22.1-bookworm-slim
 
 # ffmpeg is needed for media probe / thumbnail / audio-extract / transcode tasks.
 RUN apt-get update \
@@ -28,6 +28,10 @@ RUN pnpm install --offline --frozen-lockfile --ignore-scripts \
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 # Build the worker and all its workspace deps in topological order.
 RUN pnpm -r --filter @cio/jobs-worker... build
+
+# Reported in self-hosted usage pings. Set last so a new version doesn't bust the build cache.
+ARG CIO_VERSION=dev
+ENV CIO_VERSION=$CIO_VERSION
 
 # Run all worker entrypoints by default. Override CMD to scale media / transcribe
 # / maintenance independently.

@@ -20,6 +20,7 @@ export const AUDIENCE_IMPORT_ACCEPT = '.csv,text/csv';
 export const AudienceImportRowStatus = z.enum([
   'ready',
   'already_member',
+  'invite_resent',
   'invalid_email',
   'duplicate_in_file',
   'is_staff',
@@ -91,8 +92,13 @@ const HEADER_ALIASES: Record<string, 'email' | 'name' | 'courses'> = {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** RFC 5321 limit; also keeps EMAIL_PATTERN off very long strings. */
+const MAX_EMAIL_LENGTH = 254;
+
 export function isImportableEmail(value: string): boolean {
-  return EMAIL_PATTERN.test(value.trim().toLowerCase());
+  const email = value.trim().toLowerCase();
+
+  return email.length <= MAX_EMAIL_LENGTH && EMAIL_PATTERN.test(email);
 }
 
 /** The template offered for download, so the expected shape is unambiguous. */
@@ -217,17 +223,6 @@ export function parseAudienceImportCsv(text: string): ParsedImport {
       if (rows.length >= AUDIENCE_IMPORT_MAX_ROWS) break;
 
       const email = raw.trim().toLowerCase();
-
-      if (!email) {
-        rows.push({ line, email: '', courses: [], status: 'missing_email' });
-        continue;
-      }
-
-      if (!isImportableEmail(email)) {
-        rows.push({ line, email, courses: [], status: 'invalid_email' });
-        continue;
-      }
-
       const nameIndex = columns.indexOf('name');
       const coursesIndex = columns.indexOf('courses');
       const name = nameIndex >= 0 ? cells[nameIndex]?.trim() || undefined : undefined;
@@ -238,6 +233,16 @@ export function parseAudienceImportCsv(text: string): ParsedImport {
               .map((value) => value.trim())
               .filter(Boolean)
           : [];
+
+      if (!email) {
+        rows.push({ line, email: '', name, courses, status: 'missing_email' });
+        continue;
+      }
+
+      if (!isImportableEmail(email)) {
+        rows.push({ line, email, name, courses, status: 'invalid_email' });
+        continue;
+      }
 
       if (seen.has(email)) {
         rows.push({ line, email, name, courses, status: 'duplicate_in_file' });
@@ -250,4 +255,53 @@ export function parseAudienceImportCsv(text: string): ParsedImport {
   }
 
   return { rows, hadHeader: looksLikeHeader, unknownColumns, truncated };
+}
+
+/**
+ * Re-classifies rows after an edit with the same rules as the parser: blank, malformed, then a repeat of an earlier
+ * row. Compares addresses trimmed and lowercased but leaves the typed text untouched, so it is safe to run on every
+ * keystroke.
+ */
+export function reclassifyImportRows(rows: ParsedImportRow[]): ParsedImportRow[] {
+  const seen = new Set<string>();
+
+  return rows.map((row) => {
+    const normalized = row.email.trim().toLowerCase();
+
+    if (!normalized) {
+      return { ...row, status: 'missing_email' };
+    }
+
+    if (!isImportableEmail(normalized)) {
+      return { ...row, status: 'invalid_email' };
+    }
+
+    if (seen.has(normalized)) {
+      return { ...row, status: 'duplicate_in_file' };
+    }
+
+    seen.add(normalized);
+
+    return { ...row, status: 'ready' };
+  });
+}
+
+/** Rows shown per page in the import preview. */
+export const AUDIENCE_IMPORT_PREVIEW_PAGE_SIZE = 20;
+
+/**
+ * Indexes of the rows whose name or email contains the query, ignoring case and surrounding spaces.
+ * Every index for a blank query.
+ */
+export function filterImportRowIndexes(rows: Pick<ParsedImportRow, 'email' | 'name'>[], query: string): number[] {
+  const needle = query.trim().toLowerCase();
+  const indexes: number[] = [];
+
+  rows.forEach((row, index) => {
+    if (!needle || row.email.toLowerCase().includes(needle) || (row.name ?? '').toLowerCase().includes(needle)) {
+      indexes.push(index);
+    }
+  });
+
+  return indexes;
 }

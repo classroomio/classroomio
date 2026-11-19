@@ -2145,6 +2145,7 @@ export async function seedLearningPaths({
         id: lessonId,
         courseId: extra.courseId,
         title: extra.lessons[index],
+        slug: `${extra.slug}-lesson-${index + 1}`,
         order: index + 1
       }))
     );
@@ -2154,6 +2155,7 @@ export async function seedLearningPaths({
         id: exerciseId,
         courseId: extra.courseId,
         title: extra.exercises[index],
+        slug: `${extra.slug}-exercise-${index + 1}`,
         order: index + 1
       }))
     );

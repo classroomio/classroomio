@@ -12,6 +12,9 @@
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
+  import { Switch } from '@cio/ui/base/switch';
+  import { isFeaturedCourseShown, themeHasFeaturedCourse } from '@cio/ui/custom/org-landing-page/landing-page-utils';
+  import { resolvePreviewTheme } from '$features/org/utils/landing-page';
   import { orgApi } from '$features/org/api/org.svelte';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
   import type { OrgPublicCourses } from '$features/org/utils/types';
@@ -22,7 +25,7 @@
   interface OrderedCourseItem {
     id: string;
     title: string;
-    logo: string;
+    bannerImage: string;
     displayOrder: number | null;
   }
 
@@ -34,8 +37,6 @@
   }
 
   let { settings = $bindable(), markDirty, registerSaveHandler }: Props = $props();
-
-  void settings;
 
   type DndEvent = CustomEvent<{ items: OrderedCourseItem[] }>;
 
@@ -58,6 +59,17 @@
   let itemsBeforeDrag: OrderedCourseItem[] = [];
 
   const siteName = $derived($currentOrg.siteName || page.params.slug || '');
+
+  const showsFeaturedCourseToggle = $derived(
+    settings ? themeHasFeaturedCourse(resolvePreviewTheme(page.url.searchParams.get('theme'), settings.theme)) : false
+  );
+
+  function setFeaturedCourseShown(enabled: boolean) {
+    if (!settings) return;
+
+    settings = { ...settings, featuredCourse: { enabled } };
+    markDirty?.();
+  }
 
   const filteredCourses = $derived(
     searchQuery.trim()
@@ -107,7 +119,7 @@
     const items: OrderedCourseItem[] = courses.map((course) => ({
       id: course.id,
       title: typeof course.title === 'string' ? course.title : '',
-      logo: typeof course.logo === 'string' ? course.logo : '',
+      bannerImage: typeof course.bannerImage === 'string' ? course.bannerImage : '',
       displayOrder: typeof course.displayOrder === 'number' ? course.displayOrder : null
     }));
 
@@ -273,6 +285,20 @@
 
     <Field.Description>{$t('settings.landing_page.editor.sections.courses_desc')}</Field.Description>
 
+    {#if showsFeaturedCourseToggle}
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="landing-courses-featured-toggle"
+          checked={isFeaturedCourseShown(settings?.featuredCourse)}
+          onCheckedChange={(checked) => setFeaturedCourseShown(checked === true)}
+        />
+        <Field.Label for="landing-courses-featured-toggle">
+          {$t('settings.landing_page.editor.courses.featured_toggle')}
+        </Field.Label>
+      </Field.Field>
+      <Field.Description>{$t('settings.landing_page.editor.courses.featured_toggle_desc')}</Field.Description>
+    {/if}
+
     <div class="space-y-3">
       <p class="ui:text-muted-foreground text-xs">
         {$t('settings.landing_page.editor.courses.drag_hint')}
@@ -315,8 +341,8 @@
                 {index + 1}
               </span>
 
-              {#if courseItem.logo}
-                <img src={courseItem.logo} alt="" class="size-10 shrink-0 rounded object-cover" loading="lazy" />
+              {#if courseItem.bannerImage}
+                <img src={courseItem.bannerImage} alt="" class="size-10 shrink-0 rounded object-cover" loading="lazy" />
               {:else}
                 <div
                   class="ui:text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded bg-gray-100"

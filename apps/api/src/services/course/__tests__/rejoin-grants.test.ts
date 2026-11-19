@@ -75,7 +75,7 @@ vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
   invalidateOrgStats: mocks.invalidateOrgStats
 }));
 
-vi.mock('@cio/analytics', () => ({
+vi.mock('@cio/tracking', () => ({
   trackServerEvent: mocks.trackServerEvent,
   SERVER_EVENTS: { ENROLLMENT_COMPLETED: 'enrollment_completed' }
 }));

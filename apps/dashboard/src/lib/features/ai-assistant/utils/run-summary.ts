@@ -124,6 +124,21 @@ interface ToolCallView {
   args: Record<string, unknown> | null;
 }
 
+const LESSON_BLOCK_CHANGE_TOOLS = new Set([
+  'remove_lesson_block',
+  'move_lesson_block',
+  'add_lesson_slides_block',
+  'add_lesson_image_block',
+  'update_lesson_block_settings',
+  'update_lesson_block_requirements',
+  'detach_lesson_block',
+  'attach_library_block',
+  'move_lesson_block_to_lesson',
+  'attach_document_to_lesson',
+  'restore_lesson_version',
+  'undo_lesson_change'
+]);
+
 function aggregateToolCalls(
   calls: Iterable<ToolCallView>,
   resolveExerciseTitle: ExerciseTitleLookup
@@ -167,12 +182,19 @@ function aggregateToolCalls(
         tool === 'create_lesson' ? { kind: 'created' } : { kind: 'metadata_updated' },
         null
       );
-    } else if (tool === 'update_lesson_content') {
+    } else if (tool === 'update_lesson_content' || tool === 'add_lesson_note_block') {
       const id = asString(result?.lessonId);
       if (!id) continue;
       const contentLength = asNumber(result?.contentLength);
       const tokens = contentLength !== null ? Math.ceil(contentLength / 4) : null;
       upsert('lesson', id, asString(result?.lessonTitle), { kind: 'content_written' }, tokens);
+    } else if (LESSON_BLOCK_CHANGE_TOOLS.has(tool)) {
+      const id = asString(result?.lessonId);
+      if (!id) continue;
+      upsert('lesson', id, asString(result?.lessonTitle), { kind: 'content_written' }, null);
+
+      const fromLessonId = asString(result?.fromLessonId);
+      if (fromLessonId) upsert('lesson', fromLessonId, null, { kind: 'content_written' }, null);
     } else if (tool === 'create_exercise' || tool === 'update_exercise') {
       const id = asString(result?.id);
       if (!id) continue;

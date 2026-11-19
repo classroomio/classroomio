@@ -22,7 +22,8 @@
         { key: 'settings.sidebar.branding', path: '/settings/org' },
         { key: 'settings.tabs.domains_tab', path: '/settings/domains' },
         { key: 'settings.tabs.teams_tab', path: '/settings/teams' },
-        { key: 'settings.tabs.customize_lms_tab', path: '/settings/customize-lms' },
+        { key: 'settings.tabs.customize_lms_tab', path: '/settings/customize-lms', isNew: true },
+        { key: 'settings.tabs.emails_tab', path: '/settings/emails' },
         { key: 'settings.tabs.billing_tab', path: '/settings/billing' }
       ]
     },
@@ -59,9 +60,18 @@
           {#each group.items as item (item.path)}
             {@const href = `${currentPath}${item.path}`}
             <Sidebar.MenuItem>
-              <Sidebar.MenuButton isActive={isActive(page.url.pathname, href, undefined, item.path !== '/settings/auth')}>
+              <Sidebar.MenuButton
+                isActive={isActive(page.url.pathname, href, undefined, item.path !== '/settings/auth')}
+              >
                 {#snippet child({ props })}
-                  <a {href} {...props}>{t.get(item.key)}</a>
+                  <a {href} {...props}>
+                    {t.get(item.key)}
+                    {#if 'isNew' in item}
+                      <Sidebar.MenuBadge class="ui:text-primary ui:bg-primary/10">
+                        {t.get('settings.sidebar.new_badge')}
+                      </Sidebar.MenuBadge>
+                    {/if}
+                  </a>
                 {/snippet}
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>

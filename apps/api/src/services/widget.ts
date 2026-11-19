@@ -24,9 +24,12 @@ import {
   getDefaultWidgetConfig,
   normalizeWidgetConfig,
   type TCreateWidget,
+  type TListWidgetsQuery,
   type TRollbackWidget,
   type TUpdateWidget
 } from '@cio/utils/validation/widget';
+
+import type { OrgWidgetPagination } from '@api/types/org';
 
 import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/organization';
 import {
@@ -39,9 +42,21 @@ import {
   listWidgetAvailableEditorData
 } from './widget-payload';
 
-export async function listOrganizationWidgets(orgId: string) {
+export async function listOrganizationWidgets(orgId: string, query: TListWidgetsQuery) {
   try {
-    return await listWidgetsByOrganization(orgId);
+    const page = query.page;
+    const limit = query.limit;
+    const { items, total } = await listWidgetsByOrganization(orgId, query);
+
+    return {
+      items,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      } satisfies OrgWidgetPagination
+    };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list widgets',
@@ -51,12 +66,22 @@ export async function listOrganizationWidgets(orgId: string) {
   }
 }
 
-/**
- * Gets all archived widgets for an organization.
- */
-export async function listArchivedOrganizationWidgets(orgId: string) {
+export async function listArchivedOrganizationWidgets(orgId: string, query: TListWidgetsQuery) {
   try {
-    return await listArchivedWidgetsByOrganization(orgId);
+    const page = query.page;
+    const limit = query.limit;
+    const archivedQuery = { ...query, status: undefined };
+    const { items, total } = await listArchivedWidgetsByOrganization(orgId, archivedQuery);
+
+    return {
+      items,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      } satisfies OrgWidgetPagination
+    };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list archived widgets',

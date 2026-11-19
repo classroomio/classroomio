@@ -8,6 +8,8 @@ import type {
   CohortNewsfeed,
   CreateCohortInviteLinkRequest,
   GetCohortInviteLinkRequest,
+  ListCohortPeopleQuery,
+  ListCohortPeopleRequest,
   ToggleCohortInviteLinkRequest
 } from '../utils/types';
 import type {
@@ -148,8 +150,7 @@ class CohortApi extends BaseApiWithErrors {
         snackbar.success(t.get('cohorts.update_success'));
       },
       onError: (result) => {
-        const message = typeof result === 'string' ? result : result.error;
-        snackbar.error(message || 'Failed to update cohort');
+        snackbar.error(result.message || 'Failed to update cohort');
       },
       logContext: 'updateCohort'
     });
@@ -179,6 +180,27 @@ class CohortApi extends BaseApiWithErrors {
         this.loadedMembersCohortId = cohortId;
       },
       logContext: 'listCohortMembers'
+    });
+  }
+
+  /** Paginated, filtered roster for the people table; `members` stays unpaginated for role lookups. */
+  async listPeople(cohortId: string, query: ListCohortPeopleQuery) {
+    return this.execute<ListCohortPeopleRequest>({
+      requestFn: () =>
+        classroomio.cohort[':cohortId'].people.$get({
+          param: { cohortId },
+          query: {
+            page: String(query.page),
+            limit: String(query.limit),
+            search: query.search,
+            roleId: query.roleId === undefined ? undefined : String(query.roleId),
+            sortBy: query.sortBy,
+            sortOrder: query.sortOrder,
+            membership: query.membership,
+            lastLoginBefore: query.lastLoginBefore
+          } as ListCohortPeopleRequest['query']
+        }),
+      logContext: 'listCohortPeople'
     });
   }
 

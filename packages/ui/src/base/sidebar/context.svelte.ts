@@ -4,6 +4,16 @@ import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
 
 type Getter<T> = () => T;
 
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (target instanceof HTMLElement) {
+    if (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+      return true;
+    }
+  }
+
+  return target instanceof Element && Boolean(target.closest('[contenteditable]:not([contenteditable="false"])'));
+}
+
 export type SidebarStateProps = {
   /**
    * A getter function that returns the current open state of the sidebar.
@@ -42,10 +52,17 @@ class SidebarState {
 
   // Event handler to apply to the `<svelte:window>`
   handleShortcutKeydown = (e: KeyboardEvent) => {
-    if (e.key === SIDEBAR_KEYBOARD_SHORTCUT && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      this.toggle();
+    if (
+      e.defaultPrevented ||
+      e.key.toLowerCase() !== SIDEBAR_KEYBOARD_SHORTCUT ||
+      !(e.metaKey || e.ctrlKey) ||
+      isEditableTarget(e.target)
+    ) {
+      return;
     }
+
+    e.preventDefault();
+    this.toggle();
   };
 
   setOpenMobile = (value: boolean) => {

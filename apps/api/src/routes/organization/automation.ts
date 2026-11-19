@@ -2,6 +2,7 @@ import {
   ZCreateOrganizationApiKey,
   ZOrganizationAutomationUsageQuery,
   ZListOrganizationApiKeysQuery,
+  ZOAuthConnectedAppParam,
   ZOrganizationApiKeyParam
 } from '@cio/utils/validation/organization';
 import {
@@ -10,6 +11,7 @@ import {
   revokeOrganizationApiKeyService,
   rotateOrganizationApiKeyService
 } from '@api/services/organization/automation-key';
+import { listOAuthConnectedAppsService, revokeOAuthConnectedAppService } from '@api/services/oauth/oauth';
 import { getOrganizationAutomationUsageSummaryService } from '@api/services/organization/automation-usage';
 
 import { Hono } from '@api/utils/hono';
@@ -33,6 +35,33 @@ export const automationRouter = new Hono()
         return c.json({ success: true, data: usage }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to load organization automation usage');
+      }
+    }
+  )
+  .get('/connected-apps', authMiddleware, orgAdminMiddleware, async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const apps = await listOAuthConnectedAppsService(orgId);
+
+      return c.json({ success: true, data: apps }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to list connected apps');
+    }
+  })
+  .delete(
+    '/connected-apps/:consentId',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZOAuthConnectedAppParam),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { consentId } = c.req.valid('param');
+        await revokeOAuthConnectedAppService(orgId, consentId);
+
+        return c.json({ success: true, data: { consentId } }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to revoke connected app');
       }
     }
   )

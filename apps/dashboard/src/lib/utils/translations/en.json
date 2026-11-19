@@ -1,4 +1,19 @@
 {
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Account menu, signed in as {email}",
+      "trigger_label_anonymous": "Account menu",
+      "my_courses": "My Courses",
+      "my_certificates": "My Certificates",
+      "account_settings": "Account Settings",
+      "theme": "Theme",
+      "theme_light": "Light",
+      "theme_dark": "Dark",
+      "theme_system": "System",
+      "continue_learning": "Continue Learning",
+      "not_enrolled_note": "Not enrolled in this academy yet — learner destinations appear after joining."
+    }
+  },
   "aiTutor": {
     "page": {
       "org": {
@@ -17,7 +32,8 @@
       "loading": "Loading AI tutor settings…"
     },
     "snackbar": {
-      "saved": "AI tutor settings saved"
+      "saved": "AI tutor settings saved",
+      "fetchError": "Failed to load AI tutor settings"
     },
     "section": {
       "availability": "Availability",
@@ -115,7 +131,10 @@
   "account": {
     "switcher": {
       "your_account": "Your account",
-      "other_organizations": "Other organizations"
+      "other_organizations": "Other organizations",
+      "learning": "Learning",
+      "add_organization": "Add organization",
+      "current": "Current organization"
     },
     "workspaces": {
       "page_title": "Workspaces",
@@ -233,24 +252,141 @@
       "attempts_select_aria": "Your attempts",
       "privacy_hint": "Graded instantly in your browser — nothing is submitted.",
       "summary_template": "You got [[correct]] / [[total]] correct."
+    },
+    "copy_page": {
+      "copy": "Copy Page",
+      "copied": "Copied",
+      "view_as_markdown": "View as Markdown",
+      "open_in_chatgpt": "Open in ChatGPT",
+      "open_in_claude": "Open in Claude",
+      "more_actions": "More copy page actions",
+      "copy_failed": "Could not copy this lesson as Markdown"
+    },
+    "rail": {
+      "copy_as_markdown": "Copy as Markdown",
+      "open_in_chat": "Open in chat"
+    },
+    "share": {
+      "label": "Share this course",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Link copied. Paste it in Instagram."
+    },
+    "outline": {
+      "label": "On this page"
     }
   },
   "onboarding": {
-    "expanding": "On another platform, expanding here",
-    "employees": "Train my employees",
-    "customers": "Create courses for my customers",
-    "explore": "Just here to explore",
-    "articles": "Articles",
-    "search": "Search engine",
-    "social": "Social media",
-    "friends": "Friends and family",
+    "header": {
+      "tagline": "Customer Training Platform That Connects With Your Systems"
+    },
+    "org_setup": {
+      "title": "Set up your organization",
+      "subtitle": "Tell us about you and your organization to get started.",
+      "created_subtitle": "Your organization is set up. You can change these details later in Settings."
+    },
+    "step_of": "Step {current} of {total}",
+    "step_labels": {
+      "org_setup": "Organization",
+      "use_cases": "Use case",
+      "learning_methods": "Training today",
+      "company_size": "Company size",
+      "job_role": "Role",
+      "source": "Discovery"
+    },
     "fullname": "Full Name",
     "name": "Name of Organization",
     "organisation_sitename": "Academy subdomain",
-    "what_brings": "What brings you to",
-    "how": "How did you hear about us?",
     "back": "Back",
-    "continue": "Continue"
+    "continue": "Continue",
+    "skip": "Skip",
+    "finish_setup": "Finish setup",
+    "other": "Other (tell us)",
+    "other_placeholder": "Tell us more",
+    "other_required": "Please tell us more",
+    "ai_select": "Select an AI assistant",
+    "ai_required": "Please select an AI assistant",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
+    "ai_assistant": {
+      "label": "AI assistant",
+      "subtitle": "Which one recommended us?"
+    },
+    "use_cases": {
+      "label": "What do you want to use ClassroomIO for?",
+      "subtitle": "Choose all that apply. We'll shape your organization around it.",
+      "customer_training": "Train my customers on my product",
+      "customer_certification": "Certify customers or partners",
+      "partner_training": "Train partners or resellers",
+      "team_training": "Train my own team",
+      "sell_courses": "Sell courses to the public"
+    },
+    "learning_methods": {
+      "label": "How do your customers learn your product today?",
+      "subtitle": "Pick the one closest to how it works right now.",
+      "self_serve": "They figure it out on their own",
+      "live_onboarding": "Live onboarding sessions or calls",
+      "help_docs": "Help docs and support",
+      "no_training": "We don't have training yet"
+    },
+    "company_sizes": {
+      "label": "How big is your company?",
+      "subtitle": "Count everyone at the company, not just your team.",
+      "solo": {
+        "label": "Just me",
+        "description": "Solo"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "people"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "people"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "people"
+      },
+      "enterprise": {
+        "label": "200+",
+        "description": "people"
+      }
+    },
+    "job_roles": {
+      "label": "What's your role?",
+      "subtitle": "This helps us tailor your setup.",
+      "founder": "Founder or CEO",
+      "product_ops": "Product or operations",
+      "cs_education": "Customer success, education, or enablement",
+      "developer": "Developer or engineer"
+    },
+    "sources": {
+      "label": "How did you hear about us?",
+      "subtitle": "Optional, but it helps a small team know what's working.",
+      "blog": "Blog or article",
+      "ai": "AI assistant",
+      "search_engine": "Search engine",
+      "github": "GitHub or open source",
+      "youtube": "YouTube or podcast",
+      "social_media": "Social media",
+      "product_hunt": "Product Hunt or a review site",
+      "friends_family": "Friends, family, or a colleague"
+    },
+    "testimonials": {
+      "eyebrow": "From the teams using it",
+      "headline": "Stop training every customer {highlight}.",
+      "headline_highlight": "by hand",
+      "subtitle": "Set it up once, bulk enrol your customers through the API. Then track their progress with analytics.",
+      "footer": "Open source · Self-host or cloud"
+    }
   },
   "welcome_modal": {
     "we_at": "We at",
@@ -261,8 +397,8 @@
   "app": {
     "cancel": "Cancel",
     "save": "Save",
-    "previous": "Previous",
     "next": "Next",
+    "previous": "Previous",
     "search": {
       "placeholder": "Search",
       "command_palette": {
@@ -293,6 +429,17 @@
     }
   },
   "common": {
+    "loading": "Loading…",
+    "loading_states": {
+      "opening_academy": {
+        "title": "Opening your academy…",
+        "caption": "Getting your courses, students and settings ready."
+      },
+      "opening_course": {
+        "title": "Loading course…",
+        "caption": "Please wait while we load your course data."
+      }
+    },
     "unsaved_changes": {
       "message": "You have unsaved changes. Are you sure you want to leave?",
       "label": "Unsaved changes"
@@ -304,10 +451,23 @@
     },
     "discard": "Discard",
     "save_changes": "Save changes",
+    "cancel": "Cancel",
     "refresh": "Refresh",
     "scroll_to_top": "Scroll to top",
     "add": "Add",
     "remove": "Remove",
+    "delete": "Delete",
+    "restricted_page": {
+      "title": "Restricted page",
+      "description": "This organization is restricted. In the meantime, you can check out our features.",
+      "home": "Go home",
+      "learning_paths_heading": "Learning paths",
+      "learning_path_label": "Learning path",
+      "tracks_label": "{count, plural, one {# track} other {# tracks}}",
+      "included": "Included",
+      "untitled_lesson": "Untitled lesson",
+      "format": "Format"
+    },
     "back": "Back",
     "close": "Close",
     "edit": "Edit",
@@ -329,6 +489,14 @@
       "reward_help": "Offer students an incentive upon completion",
       "reward_description": "Reward description",
       "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+    },
+    "range": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "all": "All time",
+      "label": "Time range",
+      "locked": "Upgrade to unlock this range"
     }
   },
   "certificate": {
@@ -468,6 +636,7 @@
     "login_with_google": "Login with Google",
     "create_to_join": "Create a free account to join",
     "create_account": "Create Account",
+    "sign_in_to_continue": "Sign in to continue",
     "login_to_join": "Log in to join",
     "fields": {
       "email": "Your Email",
@@ -489,6 +658,10 @@
     "reset_password": {
       "heading": "New Password",
       "description": "Enter your new password details"
+    },
+    "existing_account": {
+      "message": "An account with this email already exists.",
+      "cta": "Log in instead"
     }
   },
   "profileMenu": {
@@ -515,10 +688,11 @@
       "billing": "Billing",
       "branding": "Branding",
       "ai": "AI",
-      "search": "Search settings..."
+      "search": "Search settings...",
+      "new_badge": "New"
     },
     "subheadings": {
-      "view_site": "Open Academy"
+      "view_site": "Your Academy"
     },
     "tabs": {
       "profile_tab": "Profile",
@@ -534,8 +708,104 @@
       "sso_tab": "SSO",
       "token_auth_tab": "Token Auth",
       "customize_lms_tab": "Customize LMS",
+      "emails_tab": "Emails",
       "domains_tab": "Domains",
       "teams_tab": "Teams"
+    },
+    "emails": {
+      "page_title": "Email templates",
+      "language_note": "Student emails use your organization's enforced language. When it is not enforced, emails use English.",
+      "heading": "Student email templates",
+      "description": "Customize the emails students receive. Staff emails always send in English.",
+      "paid_plan_note": "Upgrade your plan to translate and customize student emails.",
+      "sending_in": "Sending in",
+      "change": "Change",
+      "template_navigation": "Student email types",
+      "edited": "Edited",
+      "insert": "Insert",
+      "link_chip": "Link",
+      "variables": {
+        "organization": "Organization",
+        "expires_at": "Expiry date",
+        "course_name": "Course name",
+        "cohort_name": "Cohort name",
+        "student_name": "Student name",
+        "course_message": "Instructor message",
+        "course_names": "Courses",
+        "teacher_name": "Teacher name",
+        "teacher_email": "Teacher email",
+        "goal_title": "Goal",
+        "due_status": "Due status",
+        "completed_count": "Completed count",
+        "required_count": "Required count",
+        "exercise_title": "Exercise title",
+        "session_title": "Session title",
+        "session_time": "Session time",
+        "when": "Start time",
+        "status": "Status",
+        "score": "Score",
+        "lesson_title": "Lesson title",
+        "post_content": "Post content"
+      },
+      "edit": "Edit",
+      "preview": "Preview",
+      "unsaved_changes": "Unsaved changes",
+      "send_test": "Send test",
+      "test_dialog": {
+        "title": "Send a test email",
+        "description": "We'll send the current draft with example values in place of the placeholders. It doesn't need to be saved first.",
+        "recipients": "Send to",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Enter up to 5 valid email addresses, separated by commas."
+      },
+      "test_sent": "Test email queued for delivery",
+      "groups": {
+        "enrollment": "Enrollment",
+        "learning": "Learning",
+        "live_sessions": "Live sessions",
+        "updates_billing": "Updates & billing"
+      },
+      "descriptions": {
+        "studentCourseInvite": "Sent when you invite someone to a course.",
+        "studentOrgInvite": "Sent when you invite someone to your organization.",
+        "studentCourseWelcome": "Sent when a student receives access to a course.",
+        "studentCohortWelcome": "Sent when a student receives access to a cohort.",
+        "quizAssigned": "Sent when a quiz is assigned to a student.",
+        "submissionGraded": "Sent when a student's exercise submission is reviewed.",
+        "cohortGoalReminder": "Sent when a cohort goal is due or overdue.",
+        "studentCourseCompletion": "Sent when a student completes a course.",
+        "sessionReminder": "Sent before a scheduled live session.",
+        "sessionUpdated": "Sent when live session details change.",
+        "newsfeedPost": "Sent when a new course post is published.",
+        "studentProvePayment": "Sent when a student needs to provide payment proof."
+      },
+      "template": "Email",
+      "language": "Language",
+      "language_note_link": "Change your organization's language default here.",
+      "subject": "Subject",
+      "editor_heading": "Message body",
+      "editor_description": "Edit the message for this language. Dynamic values are added when the email is sent and are never translated.",
+      "editor_placeholder": "Write the email message",
+      "dynamic_content": "Dynamic content",
+      "dynamic_content_description": "Insert values or an optional link at the cursor. Keep the braces unchanged so the value can be added at send time.",
+      "dynamic_link": "Insert dynamic link",
+      "protected_content": "Protected email content",
+      "protected_content_description": "The required action button, destination, branding, and footer are managed by ClassroomIO and cannot be removed.",
+      "reset": "Reset to translated default",
+      "templates": {
+        "studentCourseInvite": "Course invitation",
+        "studentCourseWelcome": "Course welcome",
+        "studentCourseCompletion": "Course completion",
+        "studentOrgInvite": "Organization invitation",
+        "studentCohortWelcome": "Cohort welcome",
+        "studentProvePayment": "Payment proof request",
+        "cohortGoalReminder": "Cohort goal reminder",
+        "quizAssigned": "Quiz assigned",
+        "sessionReminder": "Live session reminder",
+        "sessionUpdated": "Live session updated",
+        "submissionGraded": "Submission graded",
+        "newsfeedPost": "Course newsfeed post"
+      }
     },
     "profile": {
       "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO.",
@@ -559,6 +829,10 @@
       "heading": "Profile",
       "update_profile": "Update Profile",
       "logout": "Log out"
+    },
+    "account": {
+      "language": "Language",
+      "select_language": "Select a language"
     },
     "notifications": {
       "heading": "Notifications",
@@ -685,7 +959,16 @@
       "actions_menu": "Token auth actions"
     },
     "teams": {
-      "page_subtitle": "Invite teammates and control who helps run this organization."
+      "permission": {
+        "title": "You don’t have permission to view this page",
+        "description": "Only organization administrators can view and manage the team. Contact an administrator if you need access."
+      },
+      "page_subtitle": "Invite teammates and control who helps run this organization.",
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Invite this student to the team?} other {Invite these students to the team?}}",
+        "confirm_description": "{count, plural, =1 {This person is already a student in this organization: {emails}. Send them an invitation to become {role}? Their role will change only after they accept.} other {These people are already students in this organization: {emails}. Send them an invitation to become {role}? Their roles will change only after they accept.}}",
+        "existing": "Already on the team: {members}. Use the role control in Team members to change their role."
+      }
     },
     "auth": {
       "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org.",
@@ -1058,7 +1341,9 @@
           "popover_title": "Select courses",
           "popover_empty": "No published courses available.",
           "search_no_results": "No courses match your search.",
-          "search_placeholder": "Search courses..."
+          "search_placeholder": "Search courses...",
+          "featured_toggle": "Show featured course",
+          "featured_toggle_desc": "Highlights your first course in a large block. Turn this off to list it with your other courses instead."
         }
       },
       "title": "Title",
@@ -1169,7 +1454,13 @@
       "active": "You don't have any active billing",
       "provider": "We use Polar to help manage your billing",
       "open_billing": "Open billing",
-      "error": "An error occurred while opening billing"
+      "admin_only": "Only organization admins can manage billing.",
+      "error": "An error occurred while opening billing",
+      "payment_failed": {
+        "warning": "Your last payment failed. Update your payment method before {date} to keep enrolling new students.",
+        "blocked": "Your last payment failed, so new students can't enrol. Update your payment method to resume enrollment.",
+        "action": "Update payment method"
+      }
     },
     "ai_credits": {
       "sub_title": "AI credits",
@@ -1242,6 +1533,45 @@
     "common": {
       "not_available": "N/A"
     },
+    "upload": {
+      "files": "Upload files",
+      "add_video_link": "Add a video link",
+      "more_options": "More upload options",
+      "dialog_title": "Upload files",
+      "drag_drop": "Drag and drop files here, or click to browse",
+      "limits": "Videos and documents. Up to {count} files at a time, {size} each.",
+      "limits_by_kind": "Up to {count} files at a time. Videos up to {videoSize}, documents up to {documentSize}.",
+      "add_more": "Add more files",
+      "minimize": "Minimize",
+      "maximize": "Open the upload window",
+      "expand": "Show files",
+      "collapse": "Hide files",
+      "close": "Close",
+      "done": "Done",
+      "keep_in_background": "Continue in background",
+      "upgrade": "Upgrade to upload files to your media library",
+      "status": {
+        "queued": "Waiting",
+        "completed": "Completed",
+        "failed": "Failed",
+        "retry": "Try again",
+        "remove": "Remove file",
+        "uploading_progress": "Uploading {percent}%",
+        "size_progress": "{uploaded} of {total}"
+      },
+      "summary": {
+        "uploading": "{done} of {total} files uploaded",
+        "completed": "{count} uploads complete",
+        "failed": "{count} of {total} uploads failed"
+      },
+      "errors": {
+        "unsupported_type": "{name} is not a supported video or document.",
+        "too_large": "{name} is larger than {size}.",
+        "too_many": "You can upload up to {count} files at a time.",
+        "generic": "Upload failed"
+      },
+      "switch_organization_confirm": "Switching organizations cancels the uploads still in progress. Switch anyway?"
+    },
     "storage": {
       "total_bytes": "Total Storage",
       "internal_bytes": "Internal Storage",
@@ -1250,7 +1580,6 @@
     },
     "filters": {
       "search_placeholder": "Search assets",
-      "apply": "Apply",
       "refresh": "Refresh",
       "kind_options": {
         "all": "All types",
@@ -1283,7 +1612,9 @@
     },
     "status": {
       "active": "Active",
-      "archived": "Archived"
+      "archived": "Archived",
+      "processing": "Processing",
+      "upload_not_finished": "Upload not finished"
     },
     "table": {
       "title": "Title",
@@ -1537,8 +1868,8 @@
     "back_to_app": "Back to app",
     "create": "Create",
     "dashboard": "Dashboard",
-    "stats": "Stats",
     "analytics": "Analytics",
+    "marketing": "Marketing",
     "compliance": "Compliance",
     "courses": "Courses",
     "tags": "Tags",
@@ -1561,7 +1892,10 @@
     "upgrade_students": "{studentCount} of {studentLimit} students",
     "upgrade_left": "{count} left",
     "cohorts": "Cohorts",
-    "learning_paths": "Learning Paths"
+    "learning_paths": "Learning Paths",
+    "exit_course": "Exit this course",
+    "exit_cohort": "Exit this cohort",
+    "org_analytics": "Academy"
   },
   "pricing": {
     "plan_names": {
@@ -1580,7 +1914,16 @@
       "monthly": "Monthly",
       "annually": "Annually",
       "popular": "Popular",
-      "per_org": "Per Organization"
+      "per_org": "Per Organization",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter rate · {days, plural, one {# day left} other {# days left}}",
+        "eyebrow_closing": "Early Adopter rate · Last {days} days",
+        "eyebrow_today": "Early Adopter rate · Ends today",
+        "title": "Priced low on purpose. Not for long.",
+        "title_closing": "Priced low on purpose. Closing soon.",
+        "body": "We keep ClassroomIO affordable because we build it with our customers, not for them. Lock in today’s rate before {date}. After that, the Early Adopter plan closes and new pricing applies.",
+        "link": "Read why we do it"
+      }
     }
   },
   "widgets": {
@@ -1816,6 +2159,20 @@
       "all": "All",
       "unpublished": "Unpublished",
       "course_type": "Course Type"
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filters",
+      "clear_all": "Clear all",
+      "search_placeholder": "Search by name",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Selection mode",
+      "no_results_title": "No widgets match your filters",
+      "no_results_description": "Try a different search term or clear your filters to see everything again.",
+      "no_results_page_title": "Nothing on this page",
+      "no_results_page_description": "These filters match fewer widgets than this page starts at.",
+      "back_to_first_page": "Back to first page"
     }
   },
   "setup": {
@@ -1864,6 +2221,26 @@
     "create": "Create",
     "sitename": "Academy subdomain already exists",
     "error_organization": "Something went wrong while creating this organization. Please reload and try again"
+  },
+  "org_chooser": {
+    "page_title": "Your organizations",
+    "title": "Pick an academy to continue",
+    "subtitle": "You have access to {count, plural, one {# academy} other {# academies}}. Choose where you want to land.",
+    "managed_heading": "Organizations you manage",
+    "learning_heading": "Learning in",
+    "invites_heading": "Pending invitations",
+    "open_dashboard": "Open the {name} dashboard",
+    "open_academy": "Open {name} on {host}",
+    "invited_as": "Invited as {role}",
+    "accept_invite": "Accept",
+    "invites_error": "Couldn't load your invitations. Check your connection and try again.",
+    "invites_retry": "Try again",
+    "create_heading": "Run your own academy",
+    "create_description": "Create an organization, publish courses and invite your own learners.",
+    "create_cta": "Create organization",
+    "for_teams": "For teams",
+    "different_account": "Not seeing your academy?",
+    "different_account_cta": "Try a different email"
   },
   "navigation": {
     "goto": "Go to",
@@ -1968,6 +2345,12 @@
       "customize_lms": {
         "page_subtitle": "Choose which tabs, banners, course tools, and extras students see.",
         "title": "Customize LMS",
+        "language": {
+          "title": "Language",
+          "description": "Choose the language used for the student-facing LMS interface.",
+          "default_language": "Default language",
+          "enforce": "Enforce this language for students"
+        },
         "disabled": "Disabled",
         "enabled": "Enabled",
         "save": "Save Changes",
@@ -1988,7 +2371,6 @@
         },
         "apps": {
           "title": "Apps",
-          "poll": "Poll",
           "live_comment": "Live comments"
         },
         "auth_background": {
@@ -1996,6 +2378,34 @@
           "description": "Optional background image behind login, signup, and other account pages on your organization's site.",
           "paid_plan_note": "Upgrade your plan to customize the sign-in background.",
           "preview_alt": "Sign-in background preview"
+        },
+        "student_home": {
+          "heading": "Student home",
+          "description": "Choose where signed-in students go when they open your academy’s homepage. Visitors who aren’t signed in, and your team, still see your landing page.",
+          "label": "Authenticated student home",
+          "learn_more": "Learn more",
+          "placeholder": "Search pages and courses",
+          "option_default": "Landing page (default)",
+          "group_pages": "Learning portal",
+          "group_courses": "Courses",
+          "reason_disabled_toggle": "Turn it on in the Dashboard section below",
+          "reason_paid_plan": "Available on paid plans",
+          "courses_empty": "No published courses yet",
+          "load_more": "Load more",
+          "search_empty": "No pages or courses match \"{query}\"",
+          "warning_unavailable": "{destination} isn’t available to students right now, so they’re sent to Dashboard instead. Choose another destination or make it available again.",
+          "warning_course_missing": "The course you chose was deleted or unpublished, so students are sent to Dashboard instead.",
+          "course_hint_open": "Enrolled students go straight to their next lesson. Students who aren’t enrolled can join in one click.",
+          "course_hint_restricted": "Enrolled students go straight to their next lesson. This course is paid or invite-only, so students who aren’t enrolled go to Dashboard.",
+          "unavailable_badge": "Unavailable",
+          "course_type_live": "Live",
+          "course_type_compliance": "Compliance"
+        }
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Signed-in students skip this page and go to {destination}.",
+          "change": "Change"
         }
       }
     }
@@ -2012,9 +2422,9 @@
     "afternoon_heading": "Good Afternoon",
     "evening_heading": "Good Evening",
     "create_course": "Create Course",
-    "view_site": "Open Academy",
-    "visit_site": "Open Academy",
-    "open_academy": "Open Academy",
+    "view_site": "Your Academy",
+    "visit_site": "Your Academy",
+    "open_academy": "Your Academy",
     "current_lesson": "Currently Learning",
     "currently_learning": "Currently Learning",
     "learner": "Student",
@@ -2104,6 +2514,7 @@
     "heading_button": "Create Course",
     "search_placeholder": "Find Course",
     "pricing_free": "Free",
+    "load_more": "Load more",
     "tag_filters": {
       "filter": "Filter",
       "active": "Active filters",
@@ -2126,7 +2537,9 @@
       "date_created": "Date Created",
       "last_updated_at": "Last Updated At",
       "published": "Published",
-      "lessons": "Lessons"
+      "lessons": "Lessons",
+      "name": "Name",
+      "price": "Price"
     },
     "course_card": {
       "empty_title": "No Courses Created",
@@ -2191,7 +2604,7 @@
       "create_button": "Create",
       "title_copy_format": "{title} (Copy)",
       "success": {
-        "course_cloned": "Course copied successfully"
+        "course_cloned": "Course cloned successfully"
       },
       "error": {
         "failed_to_clone": "Failed to clone course"
@@ -2221,7 +2634,7 @@
         "live_class": "Live Class"
       },
       "template": {
-        "heading": "Or start from a template",
+        "heading": "Or start with a prompt",
         "product_101": {
           "title": "Product 101 Course",
           "description": "A fundamentals course teaching customers how to use your product.",
@@ -2306,25 +2719,19 @@
     "certification": {
       "rules_heading": "Rules",
       "deadline_label": "Certification deadline",
-      "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+      "deadline_helper": "Students must complete the course before this datetime (local time). Leave empty for no deadline.",
       "deadline_required": "Compliance courses require a completion deadline before they can be published.",
       "deadline_required_enroll": "Compliance courses require a certificate deadline before students can be enrolled.",
       "deadline_invalid": "The course completion deadline is invalid.",
-      "threshold_label": "Minimum completion (%)",
-      "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
-      "final_exercise_label": "Final exercise (optional)",
-      "final_exercise_none": "none",
-      "final_exercise_helper": "When set, students must reach at least the minimum score on this exercise (best attempt counts) in addition to the completion percentage above.",
-      "final_exercise_multiple_attempts_note": "Students will be allowed unlimited attempts on the selected exercise.",
-      "min_exercise_score_label": "Minimum score on final exercise (%)",
-      "min_exercise_score_helper": "Score is a percentage of the total points possible on that exercise (0–100).",
+      "completion_rules_heading": "Completion rules",
+      "completion_rules_description": "These rules decide who earns this certificate. They are set on the course Settings tab.",
+      "completion_rules_deadline": "Complete by {date}",
+      "completion_rules_no_deadline": "No deadline",
+      "completion_rules_edit": "Edit completion rules",
+      "completion_rules_upgrade": "Upgrade to edit completion rules",
       "blocker_progress": "Your course progress is {current}%; {required}% is required.",
       "blocker_deadline": "The certification deadline has passed.",
       "blocker_no_content": "This course has no lessons or exercises to complete.",
-      "blocker_final_not_submitted": "Submit the required exercise \"{exerciseTitle}\" to qualify for the certificate.",
-      "blocker_final_pending": "Your attempt on \"{exerciseTitle}\" is still being graded.",
-      "blocker_final_score": "Your best score on \"{exerciseTitle}\" is {bestPercent}%; {requiredPercent}% is required.",
-      "blocker_final_misconfigured": "The certification exercise \"{exerciseTitle}\" has no points configured; ask your instructor to fix it.",
       "email_message_label": "Email Message",
       "email_message_placeholder": "e.g. We are proud of your progress — keep learning!"
     },
@@ -2336,15 +2743,18 @@
         "view_certificate": "View certificate",
         "later": "Close",
         "checking": "Checking eligibility…",
-        "not_eligible_title": "Almost there",
-        "retake_exercise": "Retake exercise"
+        "not_eligible_title": "Almost there"
       }
     },
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
       "view_as_student": "View as student",
-      "view_course_site": "View Course Site"
+      "view_course_site": "View Course Site",
+      "assistant_pop_out": "Pop out chat",
+      "assistant_close_floating": "Close floating chat",
+      "assistant_tip": "Tip: use the pop-out icon to float the assistant while you work.",
+      "assistant_tip_dismiss": "Dismiss tip"
     },
     "view_course_site": {
       "unpublished_title": "Publish your course",
@@ -2447,12 +2857,16 @@
           "manual_label": "Manual",
           "manual_description": "Students mark the lesson complete themselves.",
           "video_watch_label": "Video watch",
-          "video_watch_description": "The lesson completes automatically after students watch the selected videos.",
+          "video_watch_description": "The lesson completes automatically after students watch the selected uploaded videos. YouTube and external embeds can't be tracked.",
           "none_label": "None",
           "none_description": "This lesson does not block course progression.",
           "watch_threshold": "Watch threshold (%)"
         },
         "settings": {
+          "access": {
+            "title": "Access",
+            "description": "Students can't open a locked lesson until you unlock it."
+          },
           "comments": {
             "title": "Lesson comments",
             "description": "Choose whether students can view and add comments on this lesson.",
@@ -2467,7 +2881,9 @@
             "option_guide_heading": "What each option means",
             "watch_videos_heading": "Videos to enforce",
             "watch_videos_helper": "Only uploaded videos can be enforced. YouTube and external embeds cannot be tracked.",
-            "watch_videos_empty": "Add an uploaded video in the Video tab to use watch enforcement.",
+            "watch_videos_empty": "Video watch only tracks uploaded videos. YouTube and external embeds can't be tracked, so this lesson can't complete automatically and students can't mark it complete. Upload the video in the Video tab, or set the completion rule to Manual.",
+            "watch_videos_learn_more": "Learn more",
+            "watch_videos_no_uploads_title": "No uploaded videos in this lesson",
             "watch_videos_required": "Select at least one video when using video watch.",
             "students_only_note": "These rules apply to students only. You can preview and navigate freely while teaching."
           }
@@ -2482,7 +2898,7 @@
           "join": "Join session",
           "live_indicator": "This lesson is a live session",
           "heading": "Live session",
-          "intro": "Set the join link and scheduled time for this live class. Students get reminders 24 hours and 1 hour before.",
+          "intro": "Set the join link and scheduled time for this live class. Students get email reminders before each session. Choose when in Course settings.",
           "link_label": "Join link (Zoom, Meet, etc.)",
           "datetime_label": "Date and time",
           "timezone_label": "Timezone",
@@ -2511,7 +2927,15 @@
           "add_apple": "Apple Calendar (.ics)",
           "starts_in": "Starts in",
           "session_ended": "Session ended",
-          "link_copied": "Link copied"
+          "link_copied": "Link copied",
+          "duration_label": "Expected session length (minutes)",
+          "duration_helper": "Used to show when the session is live and when it has ended.",
+          "recording_url_label": "Recording link",
+          "recording_url_helper": "Shown to students after the session ends.",
+          "recording_url_invalid": "Enter a link that starts with http:// or https://",
+          "recording_url_needs_session": "Add a meeting link and start time before adding a recording",
+          "past_sessions_heading": "Past sessions",
+          "watch_recording": "Watch recording"
         },
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "student_share_your_knowledge": "No lessons have been added to this course yet. Please check back later.",
@@ -2522,6 +2946,12 @@
           "description": "You can now group lessons into sections to organize your content and make learning smoother for your students.",
           "activate": "Activate",
           "cancel": "Cancel"
+        },
+        "header": {
+          "mode_label": "Lesson mode",
+          "mode_edit": "Edit",
+          "mode_preview": "Preview",
+          "mode_shortcut": "Toggle mode"
         },
         "add_lesson": {
           "button_title": "Add",
@@ -2542,7 +2972,12 @@
           "delete_tooltip": "Delete this lesson",
           "cancel": "Cancel"
         },
+        "empty_title": "This course is empty",
+        "empty_description": "Add a lesson, an exercise or a certificate to start building it.",
+        "empty_drawer_certificates": "Certificates",
         "add_content": "Add content",
+        "expand_content": "Expand content",
+        "collapse_content": "Collapse content",
         "add_content_description": "Select the type of content you want to add.",
         "add_content_details": "Fill in the details for this content.",
         "add_content_adding_to": "Adding to",
@@ -2555,6 +2990,15 @@
         "add_content_create": "Create",
         "add_content_create_section": "Create section",
         "add_content_create_lesson": "Create lesson",
+        "add_content_created_section": "Section has been created successfully!",
+        "add_content_created_lesson": "Lesson has been created successfully!",
+        "add_content_created_exercise": "Exercise has been created successfully!",
+        "add_content_create_another_section": "Create another section",
+        "add_content_create_another_lesson": "Create another lesson",
+        "add_content_create_another_exercise": "Create another exercise",
+        "add_content_open_now": "Open now",
+        "add_content_later": "Later",
+        "add_content_add_to_section": "Add content",
         "add_content_options": {
           "section_title": "Section",
           "section_description": "Group lessons and exercises together.",
@@ -2585,7 +3029,6 @@
         "autosaving": "Autosaving...",
         "saving": "Saving…",
         "saved": "Saved",
-        "draft_recovery": "An unsaved draft was found for this lesson. Would you like to restore it?",
         "done": "Done",
         "edit": "Edit",
         "mark_as": "Mark as",
@@ -2596,12 +3039,6 @@
         "prev_shortcut": "Previous (←)",
         "next_shortcut": "Next (→)",
         "materials": {
-          "body_heading": "No note, video or slide added for this lesson yet",
-          "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
-          "get_started": "Get Started",
-          "no_content": "No Content",
-          "no_translation": "No translation for the selected language",
-          "button": "button",
           "show_transcript": "Show transcript",
           "summarize_lesson": "Summarize lesson",
           "summarize_lesson_prompt": {
@@ -2611,33 +3048,94 @@
           },
           "tabs": {
             "note": {
-              "title": "Note",
-              "placeholder": "Write your lesson note here",
-              "ai": {
-                "outline": "Generate Lesson Outline",
-                "note": "Generate Lesson Note",
-                "activities": "Generate Lesson Activities"
-              }
+              "placeholder": "Write your lesson note here"
             },
             "slide": {
               "title": "Slide",
-              "slide_link": "Slide Link",
-              "helper_message": "You can embed Google Slides or Canva Presentation"
-            },
-            "settings": {
-              "title": "Settings"
+              "add_slide": {
+                "title": "Add a slide",
+                "search": "Search platforms",
+                "empty_prompt": "Pick a platform to see step-by-step instructions and paste your embed code.",
+                "embed_code": "Paste embed code",
+                "embed_placeholder": "Paste the full iframe embed code here",
+                "how_to_embed": "How to embed",
+                "preview": "Preview",
+                "embed_ready": "Embed ready",
+                "invalid_embed": "Paste the full iframe embed code from this platform.",
+                "unsupported": "That embed is from a platform we do not support yet.",
+                "platform_mismatch": "This is a {detected} embed, not {selected}.",
+                "preview_in_platform": "Preview in {platform}"
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              }
             },
             "video": {
-              "title": "Video",
               "vimeo_link": "Vimeo Link",
               "embed_link": "Embed Link",
               "google_drive": "Google Drive",
               "upload": "Upload",
               "library": "Library",
-              "button": "Add/Edit Video(s)",
               "remove_video": "Remove video",
-              "empty_title": "No videos yet",
-              "empty_description": "Add videos from YouTube, Vimeo, Google Drive, embed links, upload, or your media library",
               "add_video": {
                 "title": "Add a Video",
                 "add_by": "Add By",
@@ -2650,7 +3148,7 @@
                 "size": "(Max 500 MB)",
                 "oops": "Oops `😬, couldn’t upload video",
                 "big_file": "Sorry we video wasn’t uploaded. The file size is too big,",
-                "maximum_size": "maximum size is 30 MB. Try again!",
+                "maximum_size": "maximum size is {size}. Try again!",
                 "button": "Try another file",
                 "try_again": "Please try again",
                 "unsupported_format": "Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on the server.",
@@ -2679,7 +3177,8 @@
                 "search_library_action": "Search",
                 "loading_library": "Loading media library...",
                 "no_library_videos": "No videos available in your media library",
-                "add_from_library": "Add from library",
+                "add_from_library": "Add",
+                "upload_not_finished": "Upload not finished. This video has no file yet, so it can't be added.",
                 "cancel_upload": "Cancel Upload",
                 "upload_cancelled": "Upload cancelled by user",
                 "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
@@ -2738,55 +3237,108 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Previous video transcript",
                 "next_video": "Next video transcript"
+              },
+              "hls_status": {
+                "encoding": "Encoding",
+                "ready": "Ready",
+                "failed": "Failed",
+                "skipped": "Not encoded",
+                "failed_hint": "Encoding failed. The video still plays, at its original quality.",
+                "skipped_hint": "Adaptive encoding is off, so this plays at its original quality."
               }
             },
             "document": {
-              "title": "Docs",
-              "add_document": "Add Document",
-              "no_document": "No documents uploaded yet",
-              "view_document": "View Document",
-              "download": "Download",
-              "upload_document": "Upload Document",
               "upload_title": "Upload Document",
-              "upload_description": "Upload PDF, DOCX, or DOC files. Maximum size: 5MB",
+              "upload_description": "Upload PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB, or PY files",
+              "up_to_size_each": "(up to {size} each)",
+              "uploading_progress": "Uploading {percent}%",
+              "queued": "Waiting",
+              "completed": "Completed",
+              "failed": "Failed",
+              "finish": "Finish",
+              "max_files_error": "You can upload up to {count} files at once.",
+              "size_progress": "{uploaded} of {total}",
               "drag_drop": "Drag and drop your document here",
-              "or": "or",
-              "choose_file": "Choose File",
-              "cancel": "Cancel",
-              "uploading": "Uploading...",
-              "upload_success": "Document uploaded successfully!",
               "upload_error": "Failed to upload document",
-              "file_type_error": "File type not supported. Please upload PDF, DOCX, or DOC files.",
+              "file_type_error": "File type not supported. Please upload PDF, DOCX, DOC, CSV, XLSX, XLS, IPYNB, or PY files.",
               "file_size_error": "File size too large. Maximum size is {size}.",
-              "type": "Type",
-              "size": "Size",
-              "upload_error_title": "Upload Error",
-              "upload_error_message": "Unsupported file format or upload failed",
-              "upload_error_try_again": "Please try again with a valid document file",
-              "try_again": "Try Again",
               "upgrade": "Upgrade your plan to upload documents",
-              "cancel_upload": "Cancel Upload",
-              "upload_cancelled": "Upload cancelled by user",
-              "downloading": "Downloading...",
-              "download_success": "Document downloaded successfully",
-              "download_error": "Failed to download document",
-              "view_pdf": "View PDF",
-              "remove_document": "Remove document",
-              "delete": "Delete",
-              "page_of": "Page {page} of {total}",
-              "loading_pdf": "Loading PDF...",
-              "failed_to_load_pdf": "Failed to load PDF document",
-              "failed_to_render_pdf": "Failed to render PDF page",
-              "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled.",
-              "empty_title": "No documents yet",
-              "empty_description": "Upload documents to share with your students",
-              "attachments_heading": "Attachments",
-              "file_count": "{count, plural, one {# file} other {# files}}",
-              "view_file": "View file",
-              "reorder_file": "Reorder file"
+              "no_library_documents": "No documents available in your media library",
+              "selected_count": "{count} selected",
+              "clear_selection": "Clear",
+              "add_one_file": "Add 1 file",
+              "add_files": "Add {count} files",
+              "remove_document": "Remove document"
             }
           },
-          "button_done": "Done"
+          "button_done": "Done",
+          "blocks": {
+            "add_content": "Add content",
+            "types": {
+              "note": "Note",
+              "video": "Video",
+              "slides": "Slides",
+              "document": "Document",
+              "image": "Image"
+            },
+            "ai": {
+              "title": "Draft a note with AI",
+              "prompt_label": "Prompt",
+              "prompt_placeholder": "e.g. A short introduction to the water cycle for beginners"
+            },
+            "example": "Example",
+            "change_type": "Change {type}",
+            "edit_type": "Edit {type}",
+            "remove": "Remove block",
+            "move_up": "Move up",
+            "move_down": "Move down",
+            "actions": "Block actions",
+            "drag": "Drag to reorder",
+            "drag_hint": "Drag the handle on a block to reorder it. You can also use Move up and Move down from its menu.",
+            "dismiss_hint": "Dismiss reorder hint",
+            "empty_title": "Start building this lesson",
+            "empty_description": "Add a note, video, slides, document, or image. You can add as many blocks as you need, in any order.",
+            "empty_preview_title": "Nothing to preview yet",
+            "empty_preview_description": "This lesson has no content for students to see. Switch to {editLabel} to add a note, video, slides, document, or image.",
+            "empty_learner_title": "This lesson isn't ready yet",
+            "empty_learner_description": "Your instructor hasn't added any content to this lesson. Check back soon.",
+            "empty_note": "This note is empty.",
+            "scroll_rail": "Lesson blocks",
+            "save_failed": "This change couldn't be saved, so the block was restored. {reason}",
+            "go_to_block": "Go to block {index}",
+            "reading_density": {
+              "title": "Reading density",
+              "description": "Controls the spacing between blocks for learners. It does not change the editing canvas.",
+              "compact": "Compact",
+              "comfortable": "Comfortable",
+              "spacious": "Spacious"
+            },
+            "settings": {
+              "title": "Lesson settings",
+              "description": "Manage this lesson without leaving the content canvas."
+            },
+            "image": {
+              "upload": "Upload image",
+              "upload_error": "Failed to upload image. Please try again.",
+              "change": "Change image",
+              "settings": "Image settings",
+              "alt": "Alt text",
+              "alt_placeholder": "Describe the image for learners using assistive technology",
+              "fit": "Fit",
+              "fit_cover": "Fill",
+              "fit_contain": "Fit"
+            },
+            "document": {
+              "view_file": "View file",
+              "download": "Download",
+              "download_success": "Document downloaded successfully",
+              "download_error": "Failed to download document",
+              "try_again": "Try Again"
+            },
+            "slides": {
+              "add_slide": "Add slide"
+            }
+          }
         },
         "exercises": {
           "heading": "All Exercises",
@@ -2843,6 +3395,8 @@
             "settings_completion_policy": "Completion rule",
             "settings_completion_submitted": "Submitted — any submission counts",
             "settings_completion_passed": "Passed — minimum score required",
+            "settings_completion_none": "None — optional",
+            "settings_completion_none_helper": "This exercise does not block course progression and is not required for course completion or certificates.",
             "settings_pass_threshold": "Pass threshold (%)",
             "settings_completion_passed_helper": "Students must reach the passing score before this exercise counts as complete.",
             "settings_manual_grading_warning": "Manually graded submissions must be graded before they can count as passed.",
@@ -2907,7 +3461,8 @@
               "title": "Title",
               "heading": "Description",
               "describe": "Describe the exercise to your student",
-              "no": "No description"
+              "no": "No description",
+              "expand": "Expand"
             },
             "delete_confirmation": {
               "title": "Delete question",
@@ -2971,6 +3526,8 @@
               }
             },
             "view_mode": {
+              "instructions": "Instructions",
+              "close_instructions": "Close instructions",
               "attempt_counter": "Attempt {current} of {total}",
               "previous_try": "Previous attempt",
               "next_try": "Next attempt",
@@ -3002,6 +3559,8 @@
               "not_passed_completion_result_description": "You scored {scorePercent}%. This exercise requires {requiredPercent}% to count as complete.",
               "checking_submission": "Checking your submission...",
               "instructor_feedback": "Instructor feedback",
+              "show_more": "Show more",
+              "show_less": "Show less",
               "back": "Back",
               "begin_section": "Start section",
               "complete_section": "Complete section"
@@ -3013,7 +3572,9 @@
                 "responses": "Responses",
                 "attempts": "Attempts",
                 "no_responses": "No responses yet",
-                "other": "Other"
+                "other": "Other",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "individual": {
                 "heading": "Individual",
@@ -3028,6 +3589,7 @@
                 "status_completed": "Graded",
                 "status_pending": "Pending",
                 "counts_as_complete": "Counts as complete",
+                "optional": "Optional",
                 "passed": "Passed",
                 "not_passed": "Not passed",
                 "no_submission_title": "This user has no submission for this exercise",
@@ -3060,6 +3622,7 @@
                   "description_placeholder": "Add additional context for this question",
                   "add_description": "Add description",
                   "remove_description": "Remove description",
+                  "expand": "Expand",
                   "media_menu_sr": "Question extras menu",
                   "add_image": "Add image",
                   "add_video": "Add video",
@@ -3076,6 +3639,14 @@
                   "upload_error_only_images": "Only image files are supported.",
                   "upload_error_skipped": "Some files were skipped because they are not images.",
                   "upload_error_failed": "Failed to upload image. Try again."
+                },
+                "media": {
+                  "enlarge_image": "Click to enlarge",
+                  "close": "Close",
+                  "zoom_in": "Zoom in",
+                  "zoom_out": "Zoom out",
+                  "previous_image": "Previous image",
+                  "next_image": "Next image"
                 }
               },
               "radio": {
@@ -3225,6 +3796,10 @@
                 "preview": {
                   "accepted_types_label": "Accepted types",
                   "max_size_label": "Max size (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "video_recording": {
@@ -3358,42 +3933,22 @@
           "placeholder": "What do you think about this lesson?",
           "comment_btn": "Comment",
           "cancel_btn": "Cancel",
-          "load_more_btn": "Load more",
-          "comment_error": "Failed to post comment. Please try again."
-        },
-        "polls": {
-          "title": "Poll",
-          "active_polls": "Active Polls",
-          "expired_polls": "Expired Polls",
-          "loading": "Loading...",
-          "no_polls": "No polls to display"
-        },
-        "poll": {
-          "voted": "Voted",
-          "created_by": "Created by",
-          "status": "Status",
-          "draft": "Draft",
-          "publish": "Publish",
-          "expiration": "Expiration",
-          "total_voted": "Total Votes",
-          "responses": "Responses",
-          "expires": "Expires",
-          "today": "Today",
-          "back": "Back",
-          "result": "Result",
+          "edit": "Edit",
           "delete": "Delete",
-          "create_poll": "Create poll",
-          "question": "Question",
-          "options": "Options",
-          "option_label": "Option Label",
-          "cancel": "Cancel",
-          "poll_question": "Poll Question"
+          "comment_error": "Failed to post comment. Please try again.",
+          "save_btn": "Save",
+          "unknown_user": "Unknown",
+          "actions": "Comment actions",
+          "read_more": "Read more",
+          "show_less": "Show less",
+          "see_all": "See all comments ({count})",
+          "show_more": "Show more comments"
         },
         "version_history": {
           "title": "Version history",
           "fetch_more_versions": "Fetch more versions",
           "current_version": "Current version",
-          "restore_version": "Restore this version",
+          "restore_version": "Restore this block",
           "edit_count": "{count, plural, one {# edit} other {# edits}}",
           "today": "Today",
           "yesterday": "Yesterday",
@@ -3403,8 +3958,41 @@
             "publish": "Published"
           },
           "by_author": "by {name}",
-          "empty": "No versions yet"
-        }
+          "empty": "No versions yet",
+          "block_label": "Text block {number} of {count}",
+          "restore_failed": "Could not restore this version",
+          "shared_restore_hint": "This text block is shared with other lessons. Restoring gives this lesson its own copy, and the other lessons keep their current text.",
+          "structure_change": "Structure",
+          "structure_state": "Starting point: how the lesson's blocks were laid out before the first recorded change.",
+          "restore_lesson": "Restore whole lesson",
+          "restore_lesson_failed": "Could not restore the lesson",
+          "undo_change": "Undo",
+          "undo_failed": "Could not undo this change. If something it changed was edited afterwards, restore the version you want instead.",
+          "removed_block_label": "Removed text block",
+          "restore_lesson_confirm": "Replace the whole lesson with this version?",
+          "by_assistant": "Assistant",
+          "by_restore": "Restore",
+          "by_ai_client": "AI client",
+          "by_api": "API",
+          "change_kind": {
+            "added": "Added",
+            "removed": "Removed",
+            "moved": "Moved",
+            "edited": "Changed"
+          },
+          "change_added": "Added {name}",
+          "change_removed": "Removed {name}",
+          "change_moved": "Moved {name}",
+          "change_edited": "Changed {name}",
+          "block_type": {
+            "note": "text block",
+            "video": "video",
+            "slides": "slides",
+            "document": "document",
+            "image": "image"
+          }
+        },
+        "no_section": "No section"
       },
       "attendance": {
         "title": "Attendance",
@@ -3417,6 +4005,10 @@
       },
       "submissions": {
         "title": "Submitted Exercises",
+        "access": {
+          "denied_title": "You can't grade submissions for this course",
+          "denied_description": "Ask an admin to add you as a course tutor, or as a mentor on a cohort that includes this course."
+        },
         "submission_status": {
           "submitted": "Submitted",
           "in_progress": "In Progress",
@@ -3451,6 +4043,22 @@
           "delete_prompt": "Delete",
           "delete_error": "Failed to delete submission",
           "delete_success": "Successfully deleted submission"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "marks": {
@@ -3706,6 +4314,13 @@
           "invite_sent": "Invite Sent",
           "you": "You",
           "remove": "Remove",
+          "change_role": {
+            "label": "Role for {email}",
+            "title": "Change role",
+            "description": "Change {email} from {currentRole} to {nextRole}?",
+            "cancel": "Cancel",
+            "approve": "Approve"
+          },
           "link_invite": {
             "heading": "Link Invite",
             "description": "Anyone with this link can join your organization.",
@@ -3717,6 +4332,35 @@
             "disabled_notice": "This link is disabled. Enable it to allow new members to join via link.",
             "select_role": "Select a role"
           }
+        },
+        "filter": {
+          "title": "Filter people",
+          "role": "Role",
+          "all_roles": "All roles",
+          "progress": "Progress",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "certificate": "Certificate",
+          "earned": "Earned",
+          "not_earned": "Not earned",
+          "no_login_since": "No login since",
+          "joined_within": "Joined within"
+        },
+        "window": {
+          "7d": "7 days",
+          "30d": "30 days",
+          "90d": "90 days",
+          "180d": "180 days",
+          "never": "Never"
+        },
+        "views": {
+          "all": "All people",
+          "not_started": "Not started",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "never_logged_in": "Never logged in",
+          "awaiting_certificate": "Awaiting certificate",
+          "custom": "Custom filters"
         }
       },
       "certificates": {
@@ -3867,7 +4511,8 @@
               "description": {
                 "min_char": "'Description is too short, min of 5 characters"
               }
-            }
+            },
+            "validation_error": "One or more reviews are invalid. Open each review and fix its name, avatar, rating and description before saving."
           },
           "certificate_form": {
             "upload_template": "Certificate template"
@@ -3922,7 +4567,10 @@
           "enrolled_success": "You're enrolled in this course.",
           "enrolled_verify_email": "You're enrolled! Verify your email to access this course.",
           "student_limit_reached": "{orgName} has reached its student capacity. Please contact your organization administrator.",
-          "members_only": "Only members of this organization can enroll. Ask an administrator for an invitation."
+          "members_only": "Only members of this organization can enroll. Ask an administrator for an invitation.",
+          "invite_restricted_email": "This invitation was sent to {inviteEmail}, but you're signed in as {currentEmail}. Sign out and continue with the invited email.",
+          "invite_restricted": "This invitation is restricted to a different account. Sign out and continue with the invited account.",
+          "switch_account": "Sign out and switch account"
         },
         "course_content": "Course content",
         "modules": "modules",
@@ -3975,6 +4623,7 @@
         "cover_image": "Cover Image",
         "optional_image": "This optional image will show up on your welcome page. If you include one, it should be at least 280 x 200",
         "replace": "Replace",
+        "remove": "Remove",
         "del": "Delete",
         "course_details": "Course Details",
         "course_title": "Course title",
@@ -3982,6 +4631,7 @@
         "placeholder": "Write your course description here",
         "course_title_placeholder": "Write the course title here",
         "setup_landing_for_link": "Setup landing page to get course link",
+        "setup_landing_page": "Set up landing page",
         "coming_soon": "Coming soon",
         "link": "Course Link",
         "generate_link": "Generate new link",
@@ -3991,17 +4641,18 @@
         "reports": "Make grading reports available for lessons",
         "disabled": "Disabled",
         "enabled": "Enabled",
-        "order": "Order Lessons Tab",
-        "drag": "Drag and drop the labels to re-order your material tabs",
         "welcome_email": {
           "title": "Welcome email",
           "description": "Customize the email students receive after they enroll. Add a personal note, instructions, or a live session link.",
           "placeholder": "Write the welcome message students get when they enroll…"
         },
+        "general_card_title": "General",
+        "content_card_title": "Content",
+        "access_card_title": "Access",
         "content_grouping_title": "Content grouping",
         "content_grouping_description": "Group lessons and exercises by section in the content list.",
         "progression_mode_title": "Student progression",
-        "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order.",
+        "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order. Video watch completion only tracks uploaded videos.",
         "progression_mode_free": "Free — unlocked content is accessible",
         "progression_mode_sequential": "Sequential — complete prior items to unlock next",
         "comments": {
@@ -4012,6 +4663,8 @@
         },
         "lesson_download": "Lesson download",
         "available": "Let registered students download lessons as PDF.",
+        "allow_markdown_export": "Allow learners to copy lesson pages as Markdown",
+        "allow_markdown_export_description": "When enabled, public lesson pages show a Copy Page button that exports the lesson content (excluding videos) as Markdown. This also publishes a public Markdown URL for each unlocked lesson.",
         "course_download": "Course download",
         "course_avail": "Download a copy of this course.",
         "download": "Download",
@@ -4028,7 +4681,7 @@
         "certificate_deadline_required_description": "Compliance courses require a certificate deadline before students can be enrolled. Please set a deadline in the course settings before publishing.",
         "go_to_completion_deadline": "Go to Completion Deadline",
         "completion_deadline_label": "Course Completion Deadline",
-        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+        "completion_deadline_helper": "Students must complete the course before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
           "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",
@@ -4038,12 +4691,49 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
+        "completion_rules_card_title": "Completion rules",
+        "completion_rules_card_desc": "Decide when students complete this course and earn its certificate. Compliance courses also use the deadline as each student's due date.",
+        "back_to_certificate_settings": "Back to certificate settings",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",
         "public": "Public",
-        "convert_to_public_blocked": "This course has questions that can’t be auto-graded, so it can’t be made Public yet.",
+        "convert_to_public_blocked": "Public courses require only auto-gradable questions.",
+        "convert_to_public_blocked_desc": "Exercises in a public course are graded automatically in the browser which is why we only support auto-gradable questions. Remove or replace the following questions before converting this course to Public:",
+        "question_in_exercise": "In \"{exercise}\"",
+        "fix_question": "Edit",
+        "fix": "Fix",
+        "fix_in_exercise": "Fix in exercise",
+        "cancel_conversion": "Cancel conversion",
         "fix_blocking_questions": "Fix blocking questions",
+        "save_changes_to_fix_questions": "Save your unsaved changes before navigating to fix questions.",
+        "public_conversion": {
+          "aria_label": "Public course conversion progress",
+          "banner_title": "Converting course to Public",
+          "all_exercises_fixed": "All {total} exercises fixed",
+          "ready_to_convert": "Ready to convert!",
+          "exercise_fixed": "This exercise is ready",
+          "questions_left_other_singular": "· {count} question left in other exercises",
+          "questions_left_other_plural": "· {count} questions left in other exercises",
+          "exercises_fixed": "{resolved}/{total} fixed",
+          "questions_left_singular": "fixed · {count} question left",
+          "questions_left_plural": "fixed · {count} questions left",
+          "progress_summary_singular": "{resolved}/{total} fixed · {remaining} question left",
+          "progress_summary_plural": "{resolved}/{total} fixed · {remaining} questions left",
+          "next_exercise": "Next: {exercise}",
+          "next": "Next",
+          "back_to_settings": "Back to Settings",
+          "complete_conversion": "Complete Public Conversion",
+          "jump_to": "Jump to",
+          "question_fallback": "Question {number}",
+          "question_count_singular": "{count} question",
+          "question_count_plural": "{count} questions",
+          "exercise_count_singular": "{count} exercise",
+          "exercise_count_plural": "{count} exercises",
+          "blocks_public_conversion": "Non-autogradable",
+          "blocks_public_conversion_title": "Manual grading isn't supported in Public courses",
+          "blocks_public_conversion_desc": "Public courses only support auto-gradable questions. Change this question's type or delete it to proceed with conversion."
+        },
         "callout": {
           "legend": "Public course callout",
           "description": "Shown at the bottom of each lesson and in place of locked items. Use it to drive students to your site or a paid course.",
@@ -4083,7 +4773,66 @@
         },
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
-        "save": "Save Changes"
+        "save": "Save Changes",
+        "live_session_reminders": {
+          "legend": "Session email reminders",
+          "description": "Choose when enrolled students get an email with the join link before each live session.",
+          "empty": "No reminders. Students won't get emails before live sessions.",
+          "add": "Add reminder",
+          "presets_label": "Quick add:",
+          "remove": "Remove reminder",
+          "unit_label": "Unit",
+          "units": {
+            "days": "Days",
+            "hours": "Hours",
+            "minutes": "Minutes"
+          },
+          "duration": {
+            "days": "{count, plural, one {# day} other {# days}}",
+            "hours": "{count, plural, one {# hour} other {# hours}}",
+            "minutes": "{count, plural, one {# minute} other {# minutes}}"
+          },
+          "preview": "{duration} before each session",
+          "offset_before": "{duration} before",
+          "max_count": "You can add up to {count} reminders.",
+          "validation": {
+            "amount": "Enter a whole number of 1 or more.",
+            "min": "Reminders must be at least 15 minutes before the session.",
+            "max": "Reminders can be at most 7 days before the session.",
+            "duplicate": "You already have a reminder at this time.",
+            "fix_errors": "Fix the session reminder errors before saving."
+          },
+          "log": {
+            "title": "Delivery log",
+            "description": "Reminder emails for sessions in the last 30 days and upcoming sessions.",
+            "view": "View logs",
+            "empty": "No reminders yet. They appear here as sessions get close.",
+            "load_error": "Could not load the reminder delivery log.",
+            "columns": {
+              "session": "Session",
+              "student": "Student",
+              "reminder": "Reminder",
+              "status": "Status",
+              "detail": "Detail"
+            }
+          },
+          "statuses": {
+            "pending": "Pending",
+            "queued": "Queued",
+            "sent": "Sent",
+            "failed": "Failed",
+            "skipped": "Skipped"
+          },
+          "skip_reasons": {
+            "preferences": "The student turned off session reminder emails.",
+            "no_email": "The student has no email address.",
+            "lesson_past": "The session had already started.",
+            "offset_removed": "This reminder was removed from the course settings.",
+            "lesson_rescheduled": "The session time or join link changed.",
+            "window_passed": "The reminder time had already passed when it was scheduled.",
+            "unenrolled": "The student is no longer enrolled."
+          }
+        }
       }
     },
     "not_permitted": {
@@ -4151,6 +4900,8 @@
     "status_expired": "Expired",
     "status_revoked": "Revoked",
     "date_joined": "Date Joined",
+    "certificate_earned": "{count} certificate earned",
+    "certificates_earned": "{count} certificates earned",
     "upgrade": "Upgrade your plan to invite more students",
     "select_all": "Select all",
     "selected_count": "{count} selected",
@@ -4226,6 +4977,10 @@
       "csv_hint": "UTF-8 CSV with an email column. Up to {rows} rows, 5 MB.",
       "download_template": "Download the template",
       "paste_hint": "One address per line, or comma separated.",
+      "edit_email": "Edit email",
+      "edit_name": "Edit name",
+      "search_placeholder": "Name or email",
+      "search_no_results": "No rows match your search.",
       "review": "Review",
       "done": "Done",
       "submit_count": "Import {count} students",
@@ -4241,6 +4996,7 @@
       "status": {
         "ready": "Ready",
         "already_member": "Already in audience",
+        "invite_resent": "Invite resent",
         "invalid_email": "Invalid email",
         "duplicate_in_file": "Duplicate in file",
         "is_staff": "Staff, not a student",
@@ -4287,7 +5043,6 @@
     "filter": {
       "status": "Member status",
       "status_active": "Active",
-      "status_deactivated": "Deactivated",
       "status_archived": "Archived",
       "last_login": "Last login",
       "last_activity": "Last activity",
@@ -4305,6 +5060,9 @@
       "not_started": "Not started",
       "in_progress": "In progress",
       "completed": "Completed",
+      "certificate": "Certificate",
+      "certificate_earned": "Earned",
+      "certificate_not_earned": "Not earned",
       "exclude_recent_joiners": "Exclude recent joiners",
       "exclude_recent_joiners_hint": "Leaves out students who joined too recently to be judged inactive.",
       "clear": "Clear filters",
@@ -4320,29 +5078,21 @@
       "clear": "Clear",
       "action": {
         "archive": "Archive {count} students",
-        "deactivate": "Deactivate {count} students",
-        "reactivate": "Reactivate {count} students",
         "unarchive": "Unarchive {count} students",
         "delete": "Delete {count} students"
       },
       "confirm_title": {
         "archive": "Archive {count} students?",
-        "deactivate": "Deactivate {count} students?",
-        "reactivate": "Reactivate {count} students?",
         "unarchive": "Unarchive {count} students?",
         "delete": "Permanently remove {count} students?"
       },
       "confirm_body": {
         "archive": "They lose access and free up a seat on your plan. You can unarchive them at any time.",
-        "deactivate": "They lose access but keep their seat on your plan. You can reactivate them at any time.",
-        "reactivate": "They regain access to your organization and its courses.",
         "unarchive": "They regain access and take a seat on your plan again.",
         "delete": "This removes them from this organization and cannot be undone. Their account, submissions and results are kept."
       },
       "confirm_action": {
         "archive": "Archive",
-        "deactivate": "Deactivate",
-        "reactivate": "Reactivate",
         "unarchive": "Unarchive",
         "delete": "Delete permanently"
       },
@@ -4365,92 +5115,15 @@
       "queued_lost": "We lost track of this run. Reload to see the current state."
     }
   },
-  "analytics": {
-    "title": "Analytics",
-    "courses": "Courses",
-    "progress": "Progress",
-    "progress_description": "{value, number} of {total, number} complete",
-    "incomplete": "Incomplete",
-    "completed": "Completed",
-    "complete": "complete",
-    "last_seen": "Last seen",
-    "a_while_ago": "a while ago",
-    "just_now": "just now",
-    "minutes_ago": "{count, plural, one {# minute ago} other {# minutes ago}}",
-    "hours_ago": "{count, plural, one {# hour ago} other {# hours ago}}",
-    "days_ago": "{count, plural, one {# day ago} other {# days ago}}",
-    "months_ago": "{count, plural, one {# month ago} other {# months ago}}",
-    "years_ago": "{count, plural, one {# year ago} other {# years ago}}",
-    "exercises": "Exercises",
-    "graded": "Graded",
-    "not_graded": "Not Graded",
-    "enrolled_courses": "Enrolled Courses",
-    "enrolled_courses_description": "All enrolled courses",
-    "overall_course_progress": "Overall Course Progress",
-    "overall_course_progress_description": "Percentage of completed lessons",
-    "total_average_grade": "Total Average Grade",
-    "total_average_grade_description": "Based on exercise grades across all course",
-    "overall_course_progress_user_description": "Based on lesson completion",
-    "assignment_completion": "Assignment Completion",
-    "assignment_completion_description": "Percentage of completed assignments",
-    "average_grade_description": "Average grade of all completed assignments",
-    "students": "Students",
-    "lessons": "Lessons",
-    "tutors": "tutors",
-    "avg_grade": "Avg grade",
-    "completion_rate": "Completion rate",
-    "student_progress_overview": "Student Progress Overview",
-    "student_name": "Student Name",
-    "lessons_completed": "Lessons Completed",
-    "exercises_submitted": "Exercises Submitted",
-    "average_grade": "Average Grade",
-    "actions": "Actions",
-    "view_details": "View Details",
-    "no_students_found": "No Students Found",
-    "no_students_description": "There are no students enrolled in this course yet. Students will appear here once they join the course.",
-    "showing_students": "Showing {start} to {end} of {total} students",
-    "no_analytics_data": "No Analytics Data",
-    "no_analytics_description": "Unable to load analytics data for this course. Please try again later or contact support if the issue persists.",
-    "student": "Student",
-    "student_progress_distribution": "Student Progress Distribution",
-    "grade_distribution": "Grade Distribution",
-    "progress_80_plus": "80%+ Progress",
-    "progress_60_79": "60-79% Progress",
-    "progress_below_60": "Below 60% Progress",
-    "grade_90_plus": "90%+ Grade",
-    "grade_80_89": "80-89% Grade",
-    "grade_70_79": "70-79% Grade",
-    "grade_below_70": "Below 70% Grade",
-    "number_of_students": "Number of Students",
-    "progress_range": "Progress Range",
-    "grade_range": "Grade Range",
-    "no_progress_data": "No progress data available",
-    "no_grade_data": "No grade data available",
-    "loading_chart": "Loading chart...",
-    "no_data_default": "No data available",
-    "no_data_default_description": "There is no data to display at this time.",
+  "marketing": {
+    "title": "Marketing",
     "subtitle": "Understand how visitors discover your courses and convert into students.",
-    "course_metrics": {
-      "page_subtitle": "Enrollment, lesson completion, grades, and per-student progress for this course.",
-      "progress_distribution_card_description": "How many students fall into each completion band.",
-      "grade_distribution_card_description": "How many students fall into each grade band.",
-      "students_table_description": "Sortable overview with links to student profiles.",
-      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mapped to lessons",
-      "kpi_progress_grade": "{grade}% average exercise grade across enrolled students"
-    },
     "tabs": {
       "overview": "Overview",
       "funnel": "Funnel",
       "geography": "Geography",
       "course_types": "Course types"
     },
-    "range": {
-      "7d": "Last 7 days",
-      "30d": "Last 30 days",
-      "90d": "Last 90 days"
-    },
-    "refresh": "Refresh",
     "kpi": {
       "landing_views": "Landing views",
       "unique_visitors": "Unique visitors",
@@ -4505,7 +5178,45 @@
       "empty": "No course page views yet",
       "course": "Course",
       "views": "Views"
-    },
+    }
+  },
+  "student_progress": {
+    "courses": "Courses",
+    "progress": "Progress",
+    "progress_description": "{value, number} of {total, number} complete",
+    "incomplete": "Incomplete",
+    "completed": "Completed",
+    "complete": "complete",
+    "last_seen": "Last seen",
+    "a_while_ago": "a while ago",
+    "just_now": "just now",
+    "minutes_ago": "{count, plural, one {# minute ago} other {# minutes ago}}",
+    "hours_ago": "{count, plural, one {# hour ago} other {# hours ago}}",
+    "days_ago": "{count, plural, one {# day ago} other {# days ago}}",
+    "months_ago": "{count, plural, one {# month ago} other {# months ago}}",
+    "years_ago": "{count, plural, one {# year ago} other {# years ago}}",
+    "exercises": "Exercises",
+    "graded": "Graded",
+    "not_graded": "Not Graded",
+    "enrolled_courses": "Enrolled Courses",
+    "enrolled_courses_description": "All enrolled courses",
+    "overall_course_progress": "Overall Course Progress",
+    "overall_course_progress_description": "Percentage of completed lessons",
+    "total_average_grade": "Total Average Grade",
+    "total_average_grade_description": "Based on exercise grades across all course",
+    "overall_course_progress_user_description": "Based on lesson completion",
+    "assignment_completion": "Assignment Completion",
+    "assignment_completion_description": "Percentage of completed assignments",
+    "average_grade_description": "Average grade of all completed assignments",
+    "lessons": "Lessons",
+    "tutors": "tutors",
+    "avg_grade": "Avg grade",
+    "lessons_completed": "Lessons Completed",
+    "average_grade": "Average Grade",
+    "student": "Student",
+    "loading_chart": "Loading chart...",
+    "no_data_default": "No data available",
+    "no_data_default_description": "There is no data to display at this time.",
     "course_progress": "Course progress",
     "exercises_completed": "Exercises Completed"
   },
@@ -4520,20 +5231,160 @@
     "required": "Upgrade Required",
     "enterprise_required": "This feature requires an Enterprise plan.",
     "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API.",
+    "webhooks_required": "Upgrade to Early Adopter or Enterprise to use webhooks.",
     "unlock_field": "Upgrade to unlock this setting"
   },
   "automation": {
     "title": "Automation",
     "subtitle": "Connect MCP clients now, with Zapier and the public API following on the same org-scoped key system.",
     "coming_soon": "Coming soon",
+    "read_docs": "Read docs",
     "permissions": {
       "disabled_title": "Read-only access",
-      "disabled_description": "Only organization admins can create, rotate, or revoke automation keys. Teachers can review the setup instructions here."
+      "disabled_description": "Only organization admins can manage automation, including connected apps and keys."
     },
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks",
+      "new_badge": "New"
+    },
+    "webhooks": {
+      "page_subtitle": "Send real-time ClassroomIO events to Slack, your CRM, or your own backend.",
+      "description": "ClassroomIO sends a signed HTTP POST to your URL whenever a selected event happens. Failed deliveries are retried automatically.",
+      "permissions_description": "Only organization admins can create, edit, or delete webhooks.",
+      "create": "New webhook",
+      "empty_title": "No webhooks yet",
+      "empty_description": "Create a webhook to push invites, enrollments, completions, and submissions to your other tools.",
+      "reveal_title": "Your new signing secret",
+      "reveal_description": "Copy this signing secret now. It won't be shown again, and you'll need it to verify requests.",
+      "reveal_docs": "How to verify requests",
+      "delete_confirm": "Delete the webhook \"{name}\"? Its delivery history will be removed too.",
+      "regenerate_confirm": "Regenerate the signing secret? The current secret stops working immediately.",
+      "events_all": "All events",
+      "events_count_one": "{count} event",
+      "events_count_other": "{count} events",
+      "no_deliveries": "No deliveries yet",
+      "retrying_hint": "Retrying failed deliveries",
+      "table": {
+        "name": "Destination",
+        "events": "Events",
+        "health": "Status",
+        "active": "Active",
+        "error_rate": "Error rate (24h)",
+        "error_rate_detail": "{failed} of {total} failed",
+        "no_recent_deliveries": "No deliveries in 24h"
+      },
+      "health": {
+        "healthy": "Healthy",
+        "retrying": "Retrying",
+        "degraded": "Failing",
+        "disabled": "Auto-disabled"
+      },
+      "actions": {
+        "label": "Webhook actions",
+        "edit": "Edit",
+        "test": "Send test event",
+        "deliveries": "View deliveries",
+        "regenerate_secret": "Regenerate secret",
+        "delete": "Delete"
+      },
+      "form": {
+        "create_title": "New webhook",
+        "edit_title": "Edit webhook",
+        "description": "Choose where ClassroomIO sends events and which events to send.",
+        "sections": {
+          "endpoint": "Endpoint",
+          "events": "Events"
+        },
+        "name": "Name",
+        "name_placeholder": "CRM sync",
+        "payload_url": "Payload URL",
+        "payload_url_help": "Must be a public HTTPS URL that returns a 2xx response within 10 seconds.",
+        "secret": "Signing secret",
+        "secret_placeholder": "Leave blank to generate one",
+        "secret_help": "Used to sign every request so you can verify it came from ClassroomIO.",
+        "secret_edit_placeholder": "Leave blank to keep the current secret",
+        "secret_edit_help": "Enter a new value to replace the secret. The current one is never shown.",
+        "verify_ssl": "Verify SSL certificate",
+        "verify_ssl_help": "Keep this on unless you are testing against a self-signed certificate.",
+        "active": "Active",
+        "events_help": "Pick the events that should trigger this webhook.",
+        "mode_all": "Send me everything",
+        "mode_selected": "Let me select individual events",
+        "cancel": "Cancel",
+        "save": "Save webhook",
+        "select_all": "Select all",
+        "events_selected": "{selected} of {total} selected"
+      },
+      "event_groups": {
+        "organization": "Organization",
+        "course": "Courses",
+        "cohort": "Cohorts",
+        "compliance": "Compliance",
+        "learning": "Learning progress"
+      },
+      "events": {
+        "organization_invite_created": "A team invite is sent",
+        "organization_invite_accepted": "A team invite is accepted",
+        "organization_invite_revoked": "A team invite is revoked or replaced",
+        "course_invite_created": "A student invite is created",
+        "course_invite_accepted": "A student accepts an invite and enrolls",
+        "course_invite_revoked": "A student invite is revoked",
+        "course_member_added": "A member is added to a course",
+        "course_member_removed": "A member is removed from a course",
+        "course_completed": "A student completes a course",
+        "course_certificate_issued": "A certificate is earned",
+        "course_submission_created": "An exercise submission is created",
+        "course_submission_status_changed": "A submission status changes, such as when it is graded",
+        "lesson_completion_updated": "A lesson is marked complete or reset",
+        "exercise_completion_updated": "An exercise is completed or reset",
+        "compliance_record_status_changed": "A student's compliance status changes",
+        "compliance_record_waived": "A student's compliance requirement is waived",
+        "organization_member_added": "A person joins the organization",
+        "organization_member_removed": "A person is removed from the organization",
+        "organization_member_updated": "A person's role or status changes",
+        "course_published": "A course is published",
+        "course_unpublished": "A course is unpublished",
+        "cohort_member_added": "A person is added to a cohort",
+        "cohort_member_removed": "A person is removed from a cohort",
+        "lesson_session_scheduled": "A live session is scheduled or moved",
+        "course_payment_request_created": "A student requests to pay for a course"
+      },
+      "deliveries": {
+        "title": "Deliveries",
+        "description": "Events from the last 30 days",
+        "back": "Back to deliveries",
+        "filter_all": "All statuses",
+        "empty": "No deliveries match this filter.",
+        "load_error": "Could not load deliveries. Please try again.",
+        "redeliver": "Redeliver",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Retrying",
+          "SUCCESS": "Success",
+          "FAILED": "Failed",
+          "GAVE_UP": "Failed"
+        },
+        "columns": {
+          "event": "Event",
+          "event_id": "Event ID",
+          "status": "Status",
+          "attempt": "Attempt",
+          "http": "HTTP status",
+          "duration": "Response time",
+          "time": "Sent",
+          "next_attempt": "Next retry"
+        },
+        "detail": {
+          "error": "Error",
+          "request_headers": "Request headers",
+          "payload": "Payload",
+          "response_body": "Response",
+          "no_response": "No response was received."
+        }
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -4550,8 +5401,6 @@
       "revoked": "Revoked",
       "rotate": "Rotate",
       "revoke": "Revoke",
-      "empty_title": "No MCP keys yet",
-      "empty_description": "Create the first org-scoped MCP key to connect Claude Code, Codex, Cursor, or OpenCode.",
       "created_at_label": "Created:",
       "last_used_label": "Last used:",
       "never_used": "Never",
@@ -4561,42 +5410,24 @@
       "table_last_used": "Last used",
       "scopes_label": "Scopes:",
       "revoke_confirm": "Revoke this automation key?",
-      "rotate_confirm": "Rotate this automation key?"
+      "rotate_confirm": "Rotate this automation key?",
+      "reveal": {
+        "description": "Copy this key now. It won't be shown again.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "how_to_use": "How to use this key",
+        "close": "Close"
+      }
     },
     "mcp": {
-      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
-      "usage": {
-        "title": "Usage and limits",
-        "description": "MCP is available on every plan. Usage is controlled by key limits and rate limits.",
-        "keys_title": "Active keys",
-        "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
-        "rate_limits_title": "Rate limits",
-        "rate_limits_description": "Read / write / publish requests allowed per minute.",
-        "used_label": "Used:"
-      },
+      "page_subtitle": "Connect AI tools to ClassroomIO by signing in. Remove an app anytime to cut off its access.",
       "keys": {
         "title": "MCP keys",
-        "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
-        "generate": "Generate MCP key",
-        "secret_once": "This secret is shown once. Copy it into your MCP client now.",
-        "modal": {
-          "title": "Create MCP key",
-          "description": "Choose a name for this MCP key before it is generated.",
-          "name_label": "Key name",
-          "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Cancel",
-          "save": "Create key"
-        }
+        "description": "These older keys keep working, but new MCP keys can no longer be created. Rotate or revoke them here, and connect new clients by signing in.",
+        "reveal_title": "Your new MCP key",
+        "deprecated_badge": "Deprecated"
       },
-      "setup": {
-        "title": "Client setup",
-        "description": "Use one org-scoped key per integration. If a key is rotated or revoked, the client stops working until the new secret is configured.",
-        "claude_code_description": "Registers `@classroomio/mcp` with Claude Code using the generated org-scoped key.",
-        "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
-        "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
-        "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
-      },
-      "view_docs": "View Docs"
+      "connections_tab": "Connections"
     },
     "api": {
       "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
@@ -4604,7 +5435,7 @@
         "title": "API keys",
         "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
         "generate": "Generate API key",
-        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "reveal_title": "Your new API key",
         "empty_title": "No API keys yet",
         "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
         "modal": {
@@ -4619,8 +5450,7 @@
       "setup": {
         "title": "Quick start",
         "description": "Use your API key as a Bearer token on every request. Replace the placeholder with a key from above, or paste the secret immediately after you generate one."
-      },
-      "view_docs": "View Docs"
+      }
     },
     "zapier": {
       "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
@@ -4700,7 +5530,7 @@
   "explore": {
     "heading": "Explore",
     "subtitle": "Discover learning experiences designed to help you get more value from the platform.",
-    "search_placeholder": "Search learning paths and courses\u2026",
+    "search_placeholder": "Search learning paths and courses…",
     "content_type": "Content type",
     "content_type_all": "All",
     "section_paths": "Learning Paths",
@@ -4724,6 +5554,17 @@
     "success_delete": "Deleted successfully",
     "error_update": "Failed to update",
     "social_auth_not_enabled": "This auth provider isn't enabled.",
+    "webhooks": {
+      "created": "Webhook created. Copy the signing secret now because it is only shown once.",
+      "updated": "Webhook updated.",
+      "enabled": "Webhook enabled.",
+      "disabled": "Webhook disabled.",
+      "deleted": "Webhook deleted.",
+      "secret_regenerated": "Signing secret regenerated. Copy it now because it is only shown once.",
+      "test_success": "Test event delivered successfully.",
+      "test_failed": "The test event failed. Open the delivery log to see why.",
+      "redelivered": "Event queued for redelivery."
+    },
     "automation": {
       "created": "Automation key created. Save it now because the full secret is only shown once.",
       "rotated": "Automation key rotated. Save the new secret now because it will not be shown again.",
@@ -4749,6 +5590,11 @@
       "workspace_not_found": "Workspace not found.",
       "not_primary_workspace": "Switch to your primary workspace to manage account workspaces."
     },
+    "report": {
+      "success": "Thanks. We’ll review this report.",
+      "error": "Could not submit the report. Please try again.",
+      "already_submitted": "You’ve already reported this."
+    },
     "public_course": {
       "url_copied": "Course URL copied",
       "url_copy_failed": "Could not copy URL"
@@ -4760,6 +5606,7 @@
     "update": "Update",
     "update_failed": "Update failed",
     "media_manager": {
+      "video_added": "Video added to your library",
       "list_failed": "Failed to load media assets",
       "storage_failed": "Failed to load storage summary",
       "create_failed": "Failed to create media asset",
@@ -4773,6 +5620,8 @@
       "delete_in_use": "This video is still attached to a lesson. Remove it there first.",
       "delete_failed": "Failed to delete video",
       "added_to_lesson": "Video added to lesson",
+      "document_added_to_lesson": "Document added to lesson",
+      "documents_added_to_lesson": "Documents added to lesson",
       "download_failed": "Failed to get asset download URL",
       "thumbnail_uploaded": "Thumbnail uploaded",
       "thumbnail_upload_failed": "Failed to upload thumbnail",
@@ -4794,17 +5643,6 @@
     "lesson_video": {
       "generate_1080_completed": "1080p rendition added",
       "generate_1080_failed": "Could not generate 1080p rendition"
-    },
-    "poll": {
-      "error": {
-        "creating_poll": "An error occurred while creating poll",
-        "updating_poll": "An error occurred while updating poll status",
-        "submitting_poll": "An error occurred while submitting poll"
-      },
-      "info": {
-        "not_published": "Poll is not published yet",
-        "vote_once": "You can only vote once"
-      }
     },
     "exercise": {
       "validation_errors": "Please fix all validation errors before saving.",
@@ -4851,7 +5689,8 @@
         "successful_integration": "Integration successful",
         "successful_deletion": "Integration deleted",
         "update_successful": "Update successful",
-        "link_generated": "Course link updated successfully"
+        "link_generated": "Course link updated successfully",
+        "converted_to_public": "Course successfully converted to Public"
       },
       "error": {
         "not_right": "Something's not right - Please try later",
@@ -4860,7 +5699,11 @@
         "description": "description cannot be empty",
         "failed_integration": "Integration Failed, please try again later",
         "failed_deletion": "Deletion Failed, please try again later"
-      }
+      },
+      "info": {
+        "conversion_blocked": "Fix the questions below to complete conversion to Public."
+      },
+      "sections_reorder_failed": "Could not reorder sections"
     },
     "course": {
       "success": {
@@ -4881,6 +5724,16 @@
       "people": {
         "progress_reset": "Progress reset",
         "progress_reset_failed": "Failed to reset progress"
+      },
+      "compliance": {
+        "overview_failed": "Failed to load compliance overview",
+        "history_failed": "Failed to load compliance history",
+        "reset_success": "Compliance cycle reset",
+        "reset_failed": "Failed to reset compliance cycle",
+        "extend_success": "Compliance deadline extended",
+        "extend_failed": "Failed to extend compliance deadline",
+        "waive_success": "Compliance requirement waived",
+        "waive_failed": "Failed to waive compliance requirement"
       }
     },
     "lms": {
@@ -4895,7 +5748,10 @@
       "user_exists": "User Already Exists",
       "invite_fail": "Failed to send invite, please try again",
       "remove_fail": "Failed to remove user, please try again",
-      "remove_success": "Member removed successfully"
+      "remove_success": "Member removed successfully",
+      "role_updated": "Role updated",
+      "role_update_failed": "Failed to update role",
+      "last_admin": "This organization needs at least one admin"
     },
     "link_invite": {
       "generated": "Link invite generated",
@@ -4938,12 +5794,11 @@
       "lesson_update_failed": "Failed to update lesson",
       "section_created": "Course section created successfully",
       "section_create_failed": "Failed to create course section",
+      "section_updated": "Course section updated successfully",
       "section_deleted": "Course section deleted successfully",
       "section_update_failed": "Failed to update course section",
       "sections_reordered": "Course sections reordered successfully",
       "sections_reorder_failed": "Failed to reorder course sections",
-      "lessons_reordered": "Lessons reordered successfully",
-      "lessons_reorder_failed": "Failed to reorder lessons",
       "comment_fetch_failed": "Failed to fetch lesson comments",
       "load_more_comments_failed": "Failed to load more comments",
       "comment_add_failed": "Failed to add comment",
@@ -4961,8 +5816,7 @@
       "error": {
         "try_later": "Something's not right - Please try later",
         "exercise_not_complete": "Complete all exercises to mark as complete"
-      },
-      "section_updated": "Course section updated successfully"
+      }
     },
     "marks": {
       "error": "Error fetching marks"
@@ -4979,7 +5833,11 @@
       "error": {
         "try_again": "Error - Please try again later",
         "deleting_comments": "Error deleting comments",
-        "deleting_question": "Error deleting question"
+        "deleting_question": "Error deleting question",
+        "comment_failed": "Failed to submit comment",
+        "delete_failed": "Failed to delete",
+        "missing_context": "Missing context - please reload the page",
+        "update_failed": "Failed to update question"
       },
       "success": {
         "question_updated": "Question Updated!",
@@ -5028,6 +5886,25 @@
           "cohort_newsfeed_comment_not_found": "That comment could not be found."
         }
       }
+    },
+    "analytics": {
+      "reminder_sent": "Reminder sent",
+      "reminder_not_sent": "Reminder not sent: already sent today, or the student turned off these emails",
+      "reminder_failed": "Couldn't send the reminder",
+      "reminders_sending": "Sending reminders…",
+      "reminders_sent": "{count, plural, one {# reminder sent} other {# reminders sent}}",
+      "reminders_truncated": "{count, plural, one {# reminder sent} other {# reminders sent}}. Too many overdue students to send at once — narrow the course to reach the rest.",
+      "students_refresh_failed": "Couldn't refresh the student list",
+      "refresh_failed": "Couldn't refresh analytics",
+      "target_saved": "Student target saved",
+      "target_failed": "Couldn't save the student target",
+      "target_invalid": "Enter a whole number from 1 to 1,000,000"
+    },
+    "oauth": {
+      "revoked": "App access removed"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Couldn't open that academy. Please try again."
     }
   },
   "specialization": {
@@ -5052,6 +5929,12 @@
         "joined": "Joined organization",
         "join_failed": "Failed to join organization",
         "try_again": "Try again"
+      },
+      "limit_reached": {
+        "title": "This academy is full right now",
+        "description": "{orgName} has reached its student limit on its current plan, so we couldn't add you. Your account is fine and nothing you did caused this.",
+        "technical_details": "Technical details",
+        "error_code": "Error"
       },
       "not_found": "This invite is no longer available.",
       "loading": "Loading invite..."
@@ -5080,6 +5963,14 @@
     "progress": "Progress"
   },
   "validations": {
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload URL must start with http:// or https://"
+      },
+      "event_types": {
+        "required": "Select at least one event"
+      }
+    },
     "user_profile": {
       "email": "Invalid email address",
       "username": "Username cannot be empty",
@@ -5267,16 +6158,16 @@
     "retry": "Retry",
     "run_monitor_aria": "Course generation in progress",
     "run_monitor": {
-      "cancel": "Cancel run",
+      "cancel": "Cancel generation",
       "dismiss": "Dismiss",
       "dismiss_confirm": "Walk away",
-      "dismiss_cancel": "Keep run",
-      "dismiss_confirm_body": "Walk away from this canceled run? The Resume button will be gone — any further chat will start fresh and won't continue the plan.",
+      "dismiss_cancel": "Stay here",
+      "dismiss_confirm_body": "Walk away from this canceled generation? The Resume button will be gone — any further chat will start fresh and won't continue the plan.",
       "now_doing": "Now",
       "input_disabled_hint": "Chat is paused while the agent finishes building the course. Cancel or wait for it to complete.",
       "stuck_queued": {
         "title": "Worker not responding",
-        "body": "This run has been waiting more than 30 seconds with no worker pickup. The background worker may be down or restarting."
+        "body": "Course generation has been waiting more than 30 seconds with no worker pickup. The background worker may be down or restarting."
       }
     },
     "plan_view": {
@@ -5304,21 +6195,21 @@
       }
     },
     "run_summary": {
-      "completed": "Run completed.",
-      "completed_with_counts": "Run completed — created {counts}.",
-      "failed": "Run failed.",
-      "failed_with_reason": "Run failed — {reason}.",
-      "canceled": "Run canceled.",
-      "canceled_with_counts": "Run canceled — created {counts} before stopping.",
-      "paused": "Run paused. Resume to continue.",
-      "paused_with_counts": "Run paused — created {counts} so far. Resume to continue."
+      "completed": "Course generation completed.",
+      "completed_with_counts": "Course generation completed — created {counts}.",
+      "failed": "Course generation failed.",
+      "failed_with_reason": "Course generation failed — {reason}.",
+      "canceled": "Course generation canceled.",
+      "canceled_with_counts": "Course generation canceled — created {counts} before stopping.",
+      "paused": "Course generation paused. Resume to continue.",
+      "paused_with_counts": "Course generation paused — created {counts} so far. Resume to continue."
     },
     "stopped_content_kept": "Stopped. Created content has been kept.",
     "run_failed_after": "{action} did not finish successfully.",
     "tool": {
       "pending": {
         "working": "Working",
-        "unknown_tool": "Running {toolName}",
+        "unknown_tool": "Working on {toolName}",
         "get_course_structure": "Reading course structure",
         "get_lesson_content": "Reading lesson content",
         "get_exercise_details": "Reading exercise",
@@ -5327,6 +6218,18 @@
         "create_lesson": "Creating lesson",
         "update_lesson": "Updating lesson",
         "update_lesson_content": "Writing lesson content",
+        "add_lesson_note_block": "Adding a text block",
+        "remove_lesson_block": "Removing a text block",
+        "move_lesson_block": "Moving a block",
+        "add_lesson_slides_block": "Adding slides",
+        "add_lesson_image_block": "Adding an image",
+        "update_lesson_block_settings": "Updating block settings",
+        "update_lesson_block_requirements": "Updating completion rules",
+        "detach_lesson_block": "Detaching a shared block",
+        "list_block_library": "Searching the block library",
+        "attach_library_block": "Adding a library block",
+        "move_lesson_block_to_lesson": "Moving a block to another lesson",
+        "attach_document_to_lesson": "Adding a document",
         "create_exercise": "Creating exercise",
         "create_exercise_section": "Creating exercise section",
         "update_exercise": "Updating exercise",
@@ -5343,7 +6246,10 @@
         "fetch_documentation_url_with_url": "Reading {url}",
         "list_youtube_playlist_videos": "Listing playlist videos",
         "get_lesson_transcript": "Reading video transcript",
-        "add_youtube_video_to_lesson": "Embedding YouTube video"
+        "add_youtube_video_to_lesson": "Embedding YouTube video",
+        "get_lesson_history": "Reading lesson history",
+        "restore_lesson_version": "Restoring an earlier version",
+        "undo_lesson_change": "Undoing a change"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
@@ -5358,6 +6264,17 @@
         "create_lesson": "Created lesson: {title}",
         "update_lesson": "Updated lesson: {title}",
         "update_lesson_content_fallback": "Wrote {count, plural, one {# character} other {# characters}}",
+        "remove_lesson_block": "Removed a text block from {title}",
+        "move_lesson_block": "Moved a block in {title}",
+        "add_lesson_slides_block": "Added slides to {title}",
+        "add_lesson_image_block": "Added an image to {title}",
+        "update_lesson_block_settings": "Updated a block in {title}",
+        "update_lesson_block_requirements": "Updated completion rules in {title}",
+        "detach_lesson_block": "Gave {title} its own copy of a shared block",
+        "list_block_library": "Searched the block library",
+        "attach_library_block": "Added a library block to {title}",
+        "move_lesson_block_to_lesson": "Moved a block to {title}",
+        "attach_document_to_lesson": "Added document: {title}",
         "create_exercise": "Created exercise «{title}» · {count, plural, one {# question} other {# questions}}",
         "update_exercise": "Updated exercise: {title}",
         "update_exercise_section": "Updated exercise section: {title}",
@@ -5383,7 +6300,10 @@
         "get_lesson_transcript_plan_gated": "Transcripts require a paid plan",
         "get_lesson_transcript_no_credits": "Out of AI credits to fetch transcripts",
         "get_lesson_transcript_unavailable": "No transcript available for {title}",
-        "add_youtube_video_to_lesson": "Embedded video: {title}"
+        "add_youtube_video_to_lesson": "Embedded video: {title}",
+        "get_lesson_history": "Lesson history loaded",
+        "restore_lesson_version": "Restored an earlier version of the lesson",
+        "undo_lesson_change": "Undid a change"
       }
     },
     "mention_lesson": "Lesson",
@@ -5412,6 +6332,11 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transcript"
+    },
+    "floating": {
+      "resize_aria": "Resize assistant window",
+      "expand_aria": "Expand to side panel",
+      "dock_hint": "Release to dock to the side"
     }
   },
   "cohorts": {
@@ -5462,7 +6387,8 @@
       "newsfeed": "Newsfeed",
       "courses": "Courses",
       "people": "People",
-      "settings": "Settings"
+      "settings": "Settings",
+      "analytics": "Analytics"
     },
     "create_modal": {
       "title": "Create Cohort",
@@ -5538,7 +6464,17 @@
       "add_another": "Add another",
       "invite_submit": "Send Invites",
       "empty_title": "No members yet",
-      "empty_description": "Invite people to join this cohort."
+      "empty_description": "Invite people to join this cohort.",
+      "name": "Name",
+      "joined": "Joined",
+      "filter_title": "Filter people",
+      "views": {
+        "all": "All people",
+        "tutors": "Tutors",
+        "students": "Students",
+        "pending_invites": "Pending invites",
+        "never_logged_in": "Never logged in"
+      }
     },
     "lms": {
       "empty_title": "No cohorts yet",
@@ -5679,6 +6615,28 @@
     },
     "watching_empty_title": "Nothing to watch yet",
     "watching_empty_description": "Updates on items you follow will show up here."
+  },
+  "report": {
+    "menu": "Report",
+    "title": "Report content",
+    "description": "Tell us what’s wrong. Our team will review this report.",
+    "reason_label": "Reason",
+    "reason_placeholder": "Select a reason",
+    "reason_required": "Please choose a reason",
+    "details_label": "Additional details",
+    "details_placeholder": "Add any context that will help us review this (optional)",
+    "submit": "Submit report",
+    "cancel": "Cancel",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harassment or bullying",
+      "hate_speech": "Hate speech",
+      "sexual_content": "Sexual content",
+      "violence": "Violence or threats",
+      "misinformation": "Misinformation",
+      "privacy": "Privacy violation",
+      "other": "Other"
+    }
   },
   "export": {
     "as_csv": "Export as CSV",
@@ -5871,41 +6829,129 @@
       "remove_course": "Remove from path"
     },
     "people": {
-      "heading": "People",
-      "subtitle": "{count} learners enrolled in this path.",
-      "search": "Search by name or email…",
-      "learner": "Learner",
-      "learners": "Learners",
-      "path_progress": "Path progress",
-      "current_course": "Current course",
-      "enrolled": "Enrolled",
-      "not_started": "Not started",
-      "completed": "Completed",
-      "certificate_earned": "Certificate earned",
-      "remove_member": "Remove learner",
-      "empty": "No learners match this search."
+      "title": "People",
+      "subtitle": "{count} {count, plural, =1 {student} other {students}} enrolled in this path",
+      "info_title": "About path enrollment",
+      "info_banner": "Adding a student to this path automatically enrolls them in all {count} {count, plural, =1 {course} other {courses}}. Removing them preserves their course access and progress.",
+      "search_placeholder": "Search by name or email…",
+      "filter": {
+        "all": "All progress",
+        "not_started": "Not started",
+        "in_progress": "In progress",
+        "completed": "Completed"
+      },
+      "table": {
+        "learner": "Student",
+        "progress": "Path progress",
+        "current_course": "Current course",
+        "enrolled": "Enrolled",
+        "actions": "Actions"
+      },
+      "badge": {
+        "certificate_earned": "Certificate earned",
+        "not_started": "Not started"
+      },
+      "remove": {
+        "title": "Remove student",
+        "title_non_student": "Remove member",
+        "confirm": "Are you sure you want to remove {name} from this learning path? They will keep their course access and progress.",
+        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "cancel": "Cancel",
+        "yes": "Remove"
+      },
+      "change_role_to_tutor": "Make tutor",
+      "change_role_to_student": "Make student",
+      "empty": "No students enrolled yet. Add students to get started.",
+      "no_results": "No students match your search.",
+      "invite": {
+        "title": "Add students to path",
+        "bulk_title": "Invite by email",
+        "bulk_description": "Enter email addresses separated by commas or new lines.",
+        "bulk_submit": "Add students"
+      },
+      "add": "Add",
+      "last_login_at": "Last login at",
+      "you": "You",
+      "view": "View",
+      "delete_profile": "Remove",
+      "invite_modal": {
+        "loading": "Adding…",
+        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "invite": "Invite Tutors",
+        "invite_students": "Add Students",
+        "finish": "Finish",
+        "bulk_enroll_queued": "Enrolling {count} members in the background…",
+        "bulk_enroll_success": "Enrolled {enrolled} members ({invited} invited)",
+        "bulk_enroll_partial": "Enrolled {enrolled} members ({invited} invited, {failed} failed)",
+        "bulk_enroll_failed": "Background enrollment failed",
+        "bulk_enroll_lost": "Lost track of the background enrollment",
+        "bulk_enroll_backgrounded": "Enrollment is still running in the background. Refresh People to see the results."
+      }
     },
     "analytics": {
-      "heading": "Analytics",
-      "subtitle": "How learners are moving through the path.",
-      "range": "Last 90 days",
-      "enrolled": "Enrolled",
-      "enrolled_hint": "total learners",
-      "active_learners": "Active learners",
-      "active_hint": "worked in the last 14 days",
-      "completion_rate": "Completion rate",
-      "completion_hint": "finished overall",
-      "avg_time": "Avg. time to finish",
-      "avg_time_hint": "across completions",
-      "funnel_heading": "Course funnel",
-      "funnel_subtitle": "How many learners have reached and completed each course, in order.",
-      "funnel_empty": "Add courses to see the funnel.",
-      "stuck_heading": "Where learners are stuck",
-      "stuck_subtitle": "Lessons and exercises blocking the most learners right now.",
-      "stuck_lesson": "Lesson",
-      "stuck_exercise": "Exercise",
-      "stuck_blocked_singular": "stuck",
-      "stuck_blocked_plural": "stuck"
+      "title": "Analytics",
+      "subtitle": "How students are moving through the path.",
+      "stat": {
+        "learners": "Students",
+        "active": "Active students",
+        "active_desc": "worked in the last 14 days",
+        "completion_rate": "Completion rate",
+        "completion_desc": "{completed} of {total} finished",
+        "avg_time": "Avg. time to finish",
+        "avg_time_desc": "across completions",
+        "enrolled_desc": "+{count} this month",
+        "pending_line": "{count} {count, plural, =1 {pending invite} other {pending invites}}",
+        "team_desc": "{count, plural, one {# tutor on the path team} other {# tutors on the path team}}",
+        "avg_time_weeks": "{value} wks",
+        "avg_time_days": "{value} days"
+      },
+      "funnel": {
+        "title": "Course funnel",
+        "subtitle": "How many students have reached and completed each course, in order.",
+        "completed": "completed",
+        "in_progress": "in progress",
+        "drop": "{count} {count, plural, =1 {student} other {students}} dropped after Course {n}",
+        "biggest_drop": "biggest drop-off",
+        "certificates": "{count} {count, plural, =1 {certificate} other {certificates}} awarded"
+      },
+      "stuck": {
+        "title": "Where students are stuck",
+        "subtitle": "Lessons and exercises blocking the most students right now.",
+        "badge": "{count} stuck",
+        "lesson_desc": "{count} {count, plural, =1 {student} other {students}} stopped at this lesson.",
+        "exercise_desc": "{count} {count, plural, =1 {student} other {students}} have had this exercise in progress for over 2 weeks.",
+        "empty": "No students are currently stuck. Great progress!",
+        "empty_desc": "When students get stuck, they'll show up here.",
+        "lesson_prefix": "Lesson:",
+        "exercise_prefix": "Exercise:",
+        "showing": "Showing {start} to {end} of {total} items",
+        "table": {
+          "item": "Item",
+          "course": "Course"
+        }
+      },
+      "students": {
+        "subtitle": "Per-student path progress, current course, and enrollment date.",
+        "courses_completed": "Courses Completed",
+        "title": "Student Progress Overview"
+      },
+      "member": {
+        "courses_title": "Courses",
+        "remove": "Remove from path",
+        "status": {
+          "not_started": "Not started",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "locked": "Locked"
+        },
+        "export": "Export CSV",
+        "progress_label": "Path progress"
+      },
+      "empty": "No data yet. Enroll students and they'll start showing up here.",
+      "empty_desc": "Enroll students in this path and their progress will show up here.",
+      "export": {
+        "status": "Status"
+      }
     },
     "landing_editor": {
       "heading": "Landing page",
@@ -5925,48 +6971,71 @@
       "preview_public_page": "Preview public page"
     },
     "certificate": {
-      "heading": "Certificate",
-      "subtitle": "Award a path-level certificate when a learner completes every course.",
-      "award_label": "Award a path certificate",
-      "award_description": "Issued automatically on completion and shown in the learner's Certificates page.",
-      "requirement_courses": "All courses completed — every lesson finished",
-      "requirement_exercises": "All exercises submitted or passed in each course",
-      "award_hint": "{count} certificates awarded so far.",
-      "details_heading": "Certificate details",
-      "details_description": "What appears on the issued certificate.",
-      "certificate_title": "Certificate title",
-      "certificate_issuer": "Issued by",
-      "preview_recipient": "This certifies that",
-      "preview_line": "successfully completed this learning path."
+      "title": "Certificates",
+      "awarded_count": "{count, plural, =0 {No certificates awarded yet} =1 {1 certificate awarded so far} other {# certificates awarded so far}}",
+      "allow": "Allow students download certificate",
+      "email_message_label": "Email Message",
+      "email_message_placeholder": "e.g. Congratulations on completing the learning path!",
+      "editor": {
+        "title": "Certificate design"
+      }
     },
     "settings": {
-      "heading": "Settings",
-      "subtitle": "Manage how this path appears, is priced, and behaves for learners.",
-      "identity_heading": "Identity",
-      "path_name": "Path name",
-      "description": "Description",
-      "pricing_heading": "Pricing",
-      "pricing_description": "Bundle price for this path. Individually these courses total {total}.",
-      "path_price": "Path price",
-      "savings_badge": "Learners save {savings}",
-      "show_savings": "Show savings vs. individual courses",
-      "behaviour_heading": "Behavior",
-      "self_enrollment": "Allow self-enrollment",
-      "sequential_unlock": "Unlock courses in order",
-      "auto_enroll": "Auto-enroll on purchase",
-      "status_heading": "Status",
-      "status_description": "Controls where the path shows up.",
-      "status_visible": "Visible",
-      "status_hidden": "Hidden",
-      "status_active": "Active",
-      "status_active_description": "Live on your landing page and in the LMS for enrolled learners.",
-      "status_draft": "Draft",
-      "status_draft_description": "Hidden from visitors and learners while you build it.",
-      "status_archived": "Archived",
-      "status_archived_description": "Removed everywhere. Learner progress and course access are preserved.",
-      "danger_heading": "Danger zone",
-      "archive_button": "Archive path",
-      "delete_button": "Delete path"
+      "title": "Settings",
+      "general": {
+        "legend": "Path Details",
+        "desc": "Basic details about this learning path.",
+        "name_label": "Path title",
+        "name_placeholder": "Write the path title here",
+        "name_required": "Path name is required",
+        "description_label": "Path Description",
+        "description_placeholder": "Write your path description here",
+        "description_required": "Description is required",
+        "link": "Path Link",
+        "slug_taken": "That link is already used by another learning path.",
+        "generate_link": "Generate new link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
+        "setup_landing_for_link": "Setup landing page to get path link"
+      },
+      "cover_image": {
+        "legend": "Cover Image",
+        "desc": "If you include one, it should be at least 280 x 200.",
+        "replace": "Replace",
+        "reset": "Reset",
+        "alt": "Path cover"
+      },
+      "welcome_email": {
+        "legend": "Welcome email",
+        "desc": "Customize the email students receive after they enroll. Add a personal note, instructions, or a live session link.",
+        "placeholder": "Write the welcome message students get when they enroll…"
+      },
+      "progression": {
+        "legend": "Student progression",
+        "desc": "Control whether students can access all courses or must complete them in order.",
+        "free": "Free — all courses are available",
+        "sequential": "Sequential — complete prior courses to unlock next"
+      },
+      "self_enrollment": {
+        "legend": "Students can enroll themselves",
+        "access": "When off, students can only join through an invite link or by being added from {people}.",
+        "access_people": "People",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "publishing": {
+        "legend": "Publish Path",
+        "desc": "This determines if your path displays on your landing page",
+        "published": "Published",
+        "unpublished": "Unpublished"
+      },
+      "danger": {
+        "legend": "Delete Path",
+        "desc": "Delete this path, this action cannot be undone. Courses, enrollments, and student progress are not deleted.",
+        "delete_button": "Delete Path",
+        "delete_title": "Delete Learning Path",
+        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+      }
     },
     "legacy": {
       "title": "Learning Paths",
@@ -6158,141 +7227,6 @@
       "settings_saved": "Learning path settings updated",
       "delete_failed": "Failed to delete learning path"
     },
-    "people": {
-      "title": "People",
-      "subtitle": "{count} {count, plural, =1 {student} other {students}} enrolled in this path",
-      "info_title": "About path enrollment",
-      "info_banner": "Adding a student to this path automatically enrolls them in all {count} {count, plural, =1 {course} other {courses}}. Removing them preserves their course access and progress.",
-      "search_placeholder": "Search by name or email…",
-      "filter": {
-        "all": "All progress",
-        "not_started": "Not started",
-        "in_progress": "In progress",
-        "completed": "Completed"
-      },
-      "table": {
-        "learner": "Student",
-        "progress": "Path progress",
-        "current_course": "Current course",
-        "enrolled": "Enrolled",
-        "actions": "Actions"
-      },
-      "badge": {
-        "certificate_earned": "Certificate earned",
-        "not_started": "Not started"
-      },
-      "remove": {
-        "title": "Remove student",
-        "title_non_student": "Remove member",
-        "confirm": "Are you sure you want to remove {name} from this learning path? They will keep their course access and progress.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
-        "cancel": "Cancel",
-        "yes": "Remove"
-      },
-      "change_role_to_tutor": "Make tutor",
-      "change_role_to_student": "Make student",
-      "empty": "No students enrolled yet. Add students to get started.",
-      "no_results": "No students match your search.",
-      "invite": {
-        "title": "Add students to path",
-        "bulk_title": "Invite by email",
-        "bulk_description": "Enter email addresses separated by commas or new lines.",
-        "bulk_submit": "Add students"
-      },
-      "add": "Add",
-      "last_login_at": "Last login at",
-      "you": "You",
-      "view": "View",
-      "delete_profile": "Remove",
-      "invite_modal": {
-        "loading": "Adding…",
-        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
-        "invite": "Invite Tutors",
-        "invite_students": "Add Students",
-        "finish": "Finish",
-        "bulk_enroll_queued": "Enrolling {count} members in the background…",
-        "bulk_enroll_success": "Enrolled {enrolled} members ({invited} invited)",
-        "bulk_enroll_partial": "Enrolled {enrolled} members ({invited} invited, {failed} failed)",
-        "bulk_enroll_failed": "Background enrollment failed",
-        "bulk_enroll_lost": "Lost track of the background enrollment",
-        "bulk_enroll_backgrounded": "Enrollment is still running in the background. Refresh People to see the results."
-      }
-    },
-    "analytics": {
-      "title": "Analytics",
-      "subtitle": "How students are moving through the path.",
-      "stat": {
-        "learners": "Students",
-        "active": "Active students",
-        "active_desc": "worked in the last 14 days",
-        "completion_rate": "Completion rate",
-        "completion_desc": "{completed} of {total} finished",
-        "avg_time": "Avg. time to finish",
-        "avg_time_desc": "across completions",
-        "enrolled_desc": "+{count} this month",
-        "pending_line": "{count} {count, plural, =1 {pending invite} other {pending invites}}",
-        "team_desc": "{count, plural, one {# tutor on the path team} other {# tutors on the path team}}",
-        "avg_time_weeks": "{value} wks",
-        "avg_time_days": "{value} days"
-      },
-      "funnel": {
-        "title": "Course funnel",
-        "subtitle": "How many students have reached and completed each course, in order.",
-        "completed": "completed",
-        "in_progress": "in progress",
-        "drop": "{count} {count, plural, =1 {student} other {students}} dropped after Course {n}",
-        "biggest_drop": "biggest drop-off",
-        "certificates": "{count} {count, plural, =1 {certificate} other {certificates}} awarded"
-      },
-      "stuck": {
-        "title": "Where students are stuck",
-        "subtitle": "Lessons and exercises blocking the most students right now.",
-        "badge": "{count} stuck",
-        "lesson_desc": "{count} {count, plural, =1 {student} other {students}} stopped at this lesson.",
-        "exercise_desc": "{count} {count, plural, =1 {student} other {students}} have had this exercise in progress for over 2 weeks.",
-        "empty": "No students are currently stuck. Great progress!",
-        "empty_desc": "When students get stuck, they'll show up here.",
-        "lesson_prefix": "Lesson:",
-        "exercise_prefix": "Exercise:",
-        "showing": "Showing {start} to {end} of {total} items",
-        "table": {
-          "item": "Item",
-          "course": "Course"
-        }
-      },
-      "students": {
-        "subtitle": "Per-student path progress, current course, and enrollment date.",
-        "courses_completed": "Courses Completed",
-        "title": "Student Progress Overview"
-      },
-      "member": {
-        "courses_title": "Courses",
-        "remove": "Remove from path",
-        "status": {
-          "not_started": "Not started",
-          "in_progress": "In progress",
-          "completed": "Completed",
-          "locked": "Locked"
-        },
-        "export": "Export CSV",
-        "progress_label": "Path progress"
-      },
-      "empty": "No data yet. Enroll students and they'll start showing up here.",
-      "empty_desc": "Enroll students in this path and their progress will show up here.",
-      "export": {
-        "status": "Status"
-      }
-    },
-    "certificate": {
-      "title": "Certificates",
-      "awarded_count": "{count, plural, =0 {No certificates awarded yet} =1 {1 certificate awarded so far} other {# certificates awarded so far}}",
-      "allow": "Allow students download certificate",
-      "email_message_label": "Email Message",
-      "email_message_placeholder": "e.g. Congratulations on completing the learning path!",
-      "editor": {
-        "title": "Certificate design"
-      }
-    },
     "landing": {
       "page_builder": "Page Builder",
       "display_section": "Display section",
@@ -6408,63 +7342,6 @@
         "gift": "About Gift"
       }
     },
-    "settings": {
-      "title": "Settings",
-      "general": {
-        "legend": "Path Details",
-        "desc": "Basic details about this learning path.",
-        "name_label": "Path title",
-        "name_placeholder": "Write the path title here",
-        "name_required": "Path name is required",
-        "description_label": "Path Description",
-        "description_placeholder": "Write your path description here",
-        "description_required": "Description is required",
-        "link": "Path Link",
-        "slug_taken": "That link is already used by another learning path.",
-        "generate_link": "Generate new link",
-        "open_link": "Open link in new tab",
-        "copy_link": "Copy link",
-        "setup_landing_for_link": "Setup landing page to get path link"
-      },
-      "cover_image": {
-        "legend": "Cover Image",
-        "desc": "If you include one, it should be at least 280 x 200.",
-        "replace": "Replace",
-        "reset": "Reset",
-        "alt": "Path cover"
-      },
-      "welcome_email": {
-        "legend": "Welcome email",
-        "desc": "Customize the email students receive after they enroll. Add a personal note, instructions, or a live session link.",
-        "placeholder": "Write the welcome message students get when they enroll…"
-      },
-      "progression": {
-        "legend": "Student progression",
-        "desc": "Control whether students can access all courses or must complete them in order.",
-        "free": "Free — all courses are available",
-        "sequential": "Sequential — complete prior courses to unlock next"
-      },
-      "self_enrollment": {
-        "legend": "Students can enroll themselves",
-        "access": "When off, students can only join through an invite link or by being added from {people}.",
-        "access_people": "People",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
-      },
-      "publishing": {
-        "legend": "Publish Path",
-        "desc": "This determines if your path displays on your landing page",
-        "published": "Published",
-        "unpublished": "Unpublished"
-      },
-      "danger": {
-        "legend": "Delete Path",
-        "desc": "Delete this path, this action cannot be undone. Courses, enrollments, and student progress are not deleted.",
-        "delete_button": "Delete Path",
-        "delete_title": "Delete Learning Path",
-        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
-      }
-    },
     "courses": {
       "lessons": "Lessons",
       "exercises": "Exercises"
@@ -6477,6 +7354,935 @@
     },
     "preview": {
       "courses_heading": "Courses in this path"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Create a new course",
+      "gallery": "Template gallery",
+      "yours": "Your courses",
+      "blank": "Blank course",
+      "blank_subtitle": "Start from scratch"
+    },
+    "card": {
+      "curated": "Curated template",
+      "yours": "Your template",
+      "used": "Your template · Used {date}"
+    },
+    "gallery": {
+      "back": "All courses",
+      "title": "Template gallery",
+      "subtitle": "Start a course from one of your templates or one built by ClassroomIO.",
+      "search": "Find template",
+      "scope_all": "All templates",
+      "scope_org": "My templates",
+      "scope_global": "ClassroomIO",
+      "empty_org": "You haven’t made any templates yet. Save any course as a template from its ⋯ menu.",
+      "no_match": "No templates match “{query}”.",
+      "empty_global": "No ClassroomIO templates yet."
+    },
+    "preview": {
+      "course_name": "Course name",
+      "use": "Use template",
+      "open": "Open template",
+      "cancel": "Cancel",
+      "loading": "Loading template…",
+      "copying": "Copying {sections, plural, one {# section} other {# sections}}, {lessons, plural, one {# lesson} other {# lessons}}…",
+      "created": "Course created from {title}",
+      "shows_off": "Shows off",
+      "settings": "Settings",
+      "certificate": "Certificate enabled",
+      "deadline": "Deadline {date}",
+      "sequential": "Lessons unlock in order",
+      "grading": "A tutor grades submissions",
+      "comments_off": "Lesson comments are off",
+      "lesson_download": "Learners can download lessons",
+      "self_enrollment": "Learners can join themselves",
+      "ai_tutor": "AI tutor is on",
+      "compliance_retake": "Retake every {months, plural, one {# month} other {# months}}",
+      "compliance_mandatory": "Mandatory",
+      "counts": "{sections} sections · {lessons} lessons · {exercises} exercises",
+      "questions": "{count, plural, one {# question} other {# questions}}"
+    },
+    "menu": {
+      "open": "Open",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "save": "Save as template…",
+      "create_course": "Create course from template",
+      "duplicated": "Template duplicated",
+      "deleted": "Template deleted"
+    },
+    "save": {
+      "title": "Save as template",
+      "copy": "Save a copy as template",
+      "copy_description": "The course stays as it is.",
+      "convert": "Convert this course",
+      "convert_description": "The course becomes a template. It can't be published or have students.",
+      "has_students": "Has {count, plural, one {# student} other {# students}} — save a copy instead.",
+      "unpublish": "Converting unpublishes this course.",
+      "name": "Template name",
+      "save_button": "Save template",
+      "convert_button": "Convert to template",
+      "saved": "Template saved",
+      "converted": "Course converted to a template",
+      "limit_title": "Your plan includes {count, plural, one {# template} other {# templates}}",
+      "limit_body": "You already have {used, plural, one {{title}} other {# templates}}. Upgrade for more templates, or delete one you have.",
+      "upgrade": "Upgrade",
+      "manage": "Manage templates",
+      "view_templates": "View templates"
+    },
+    "empty": {
+      "title": "No courses yet",
+      "description": "Build a course once, then enroll your customers in it. Create one yourself or let your agent draft it.",
+      "enrolled": "Enrolled"
+    },
+    "editor": {
+      "badge": "Template"
+    },
+    "sync": {
+      "alert_title": "Template has {count, plural, one {# update} other {# updates}}",
+      "alert_body": "{title} changed since you last pulled on {date}.",
+      "review_in_settings": "Review in settings",
+      "section_title": "Template",
+      "last_pulled": "Last pulled {date}",
+      "review": "Review updates",
+      "up_to_date": "Up to date with the template.",
+      "deleted": "{title} was deleted. This course keeps all its content; there's nothing left to pull.",
+      "deleted_unknown": "This template was deleted. This course keeps all its content; there's nothing left to pull.",
+      "available_detail": "{count, plural, one {# update available} other {# updates available}} — {list}.",
+      "join": "{rest} and {last}",
+      "sections_count": "{count, plural, one {# section} other {# sections}}",
+      "settings_count": "{count, plural, one {# setting} other {# settings}}",
+      "content": "Content",
+      "settings": "Settings",
+      "select_all": "Select all",
+      "new": "New",
+      "updated": "Updated",
+      "locked": "{count, plural, one {# submission — can't be updated} other {# submissions — can't be updated}}",
+      "edited_locally": "You edited this on {date} — pulling replaces your changes.",
+      "removed_locally": "You deleted this from your course.",
+      "also_adds": "Also adds {kind}: {title}",
+      "template_value": "Template: {value}",
+      "yours_value": "Yours: {value}",
+      "yes": "Yes",
+      "no": "No",
+      "empty_value": "None",
+      "custom_value": "Custom",
+      "selected": "{count, plural, one {# selected} other {# selected}}",
+      "pull": "Pull {count, plural, one {# change} other {# changes}}",
+      "pulled": "Pulled {count, plural, one {# change} other {# changes}} from {title}",
+      "kind": {
+        "section": "Section",
+        "lesson": "Lesson",
+        "exercise": "Exercise"
+      },
+      "detail": {
+        "title": "Title",
+        "content": "Content",
+        "locales": "{locales} added"
+      },
+      "setting": {
+        "description": "Description",
+        "bannerImage": "Cover image",
+        "welcomeEmail": "Welcome email",
+        "completionDeadline": "Completion deadline",
+        "contentGrouping": "Content grouping",
+        "progression": "Progression",
+        "comments": "Lesson comments",
+        "selfEnrollment": "Self-enrollment",
+        "markdownExport": "Markdown export",
+        "lessonDownload": "Lesson download",
+        "landingRequirements": "Landing requirements",
+        "landingDescription": "Landing description",
+        "landingGoals": "Landing goals",
+        "landingSkills": "Skills",
+        "landingTools": "Tools",
+        "landingInstructor": "Instructor",
+        "pricing": "Pricing",
+        "certificateDesign": "Certificate design",
+        "certificateRules": "Certificate rules",
+        "aiTutor": "AI tutor"
+      },
+      "section_description": "This course was created from a template. Pull its changes when you want them — nothing changes on its own.",
+      "updates_title": "{count, plural, one {# update available} other {# updates available}}",
+      "deleted_title": "Template deleted",
+      "sheet_title": "Template updates",
+      "sheet_description": "From {title}, since {date}. Pick what to pull — nothing is removed from your course.",
+      "nothing_selected": "Nothing selected",
+      "loading": "Loading updates…",
+      "value": {
+        "free": "Free",
+        "sequential": "Sequential",
+        "no_price": "Free"
+      },
+      "template_label": "Template",
+      "yours_label": "Yours"
+    },
+    "home": {
+      "heading": "Or start from a template",
+      "description": "A complete course with lessons, exercises and settings. Copy it, then make it yours.",
+      "browse": "Browse all templates"
+    }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Payment received. One step left.",
+      "body": "Create your account, or log in, and we connect your Early Adopter plan to your academy automatically.",
+      "sign_up": "Create my account",
+      "log_in": "Log in",
+      "continue": "Continue to my academy"
+    },
+    "success": {
+      "title": "Your Early Adopter plan is active",
+      "body": "Your rate is locked in and every Early Adopter feature is now unlocked for your academy.",
+      "continue": "Start building"
+    },
+    "errors": {
+      "invalid": "This link is not valid. Check the email we sent you, or contact support.",
+      "expired": "This link has expired. Contact support and we will help you connect your plan.",
+      "unavailable": "This plan link has already been used or is no longer active. Contact support if this is a mistake.",
+      "conflict": "This academy already has a paid plan, so we could not connect this one. Contact support and we will help."
+    }
+  },
+  "video_guide": {
+    "watch_video": "Watch video",
+    "new_badge": "New",
+    "close": "Close",
+    "dismiss": "Got it",
+    "lesson_blocks": {
+      "coach_title": "🎉 New! Lessons are now flexible.",
+      "coach_description": "Build each lesson from note, video, slides, document and image blocks, in any order. Select Edit to try it.",
+      "title": "Introducing lesson blocks",
+      "description": "Lessons are now built from blocks. See how it works in 5 minutes."
+    },
+    "connect_claude": {
+      "description": "See how to connect ClassroomIO to Claude and what you can ask it. 4 minutes.",
+      "title": "Connect ClassroomIO to Claude"
+    }
+  },
+  "whats_new": {
+    "new_badge": "New",
+    "read_full": "Read the full changelog",
+    "close": "Close"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "updated_seconds_ago": "updated {count}s ago",
+    "updated_minutes_ago": "{count, plural, one {updated # minute ago} other {updated # minutes ago}}",
+    "retry": "Try again",
+    "scope_empty": {
+      "title": {
+        "cohort": "No students in this cohort yet",
+        "course": "No students in this course yet",
+        "org": "No students in your organization yet"
+      },
+      "description": {
+        "cohort": "Analytics fill in as students open lessons and submit exercises.",
+        "cohort_no_courses": "Add courses, then invite students. Analytics fill in as they open lessons and submit exercises.",
+        "course": "Analytics fill in as students open lessons and submit exercises.",
+        "org": "Add students to your academy, then enrol them in courses or cohorts."
+      },
+      "pending": "{count, plural, one {# invitation is} other {# invitations are}} waiting to be accepted. Analytics fill in once students join.",
+      "invite_students": "Invite students",
+      "add_courses": "Add courses",
+      "add_students": "Add students"
+    },
+    "all_courses": "All courses",
+    "breakdown": {
+      "label": "Breakdown",
+      "courses": "Courses ({count})",
+      "cohorts": "Cohorts ({count})",
+      "all_students": "All students",
+      "by_cohort": "By cohort ({count})"
+    },
+    "cohorts": {
+      "picker": "Cohorts: {selected} of {total}",
+      "search": "Search cohorts",
+      "empty": "No cohorts match",
+      "newest": "Newest {count}",
+      "none": "Clear",
+      "students": "{count, plural, one {# student} other {# students}}",
+      "no_students": "No students yet",
+      "direct_included": "Direct students are always included.",
+      "select_all": "Select all",
+      "select_shown": "Select shown",
+      "load_more": "Load more",
+      "showing_matches": "Showing {shown} of {total}",
+      "loading": "Loading cohorts…",
+      "load_failed": "Could not load cohorts."
+    },
+    "course_picker": "Course",
+    "exercise_picker": "Exercise",
+    "not_in_section": "Not in a section",
+    "section_number": "Section {number}",
+    "section_with_title": "Section {number} · {title}",
+    "finished": "Finished",
+    "awaiting_grade": "Awaiting grade",
+    "awaiting_grade_short": "Pending",
+    "pass_mark_tag": "Pass mark {mark}%",
+    "of_total": "{count} of {total}",
+    "never": "Never",
+    "invited": "{count} invited",
+    "no_students": "No students",
+    "no_students_yet": "No students yet",
+    "no_graded_attempts": "No graded attempts",
+    "names_and_more": "{names} and {count} more",
+    "course_search": "Search courses",
+    "course_search_empty": "No course matches",
+    "certificate_issued": "{count, plural, one {Issued} other {# issued}}",
+    "question_hint": {
+      "context_and_answer": "{context} · most common wrong answer: {answer}",
+      "answer": "Most common wrong answer: {answer}"
+    },
+    "chips": {
+      "label": "About this dashboard",
+      "live": "Live · {updated}",
+      "live_every": "Live · {updated} · refreshes every {seconds}s",
+      "students": "{count, plural, one {# student} other {# students}}",
+      "courses": "Courses: {count}",
+      "cohorts": "Cohorts: {count}",
+      "active_cohorts": "{count, plural, one {# active cohort} other {# active cohorts}}",
+      "seats": "Seats: {used} of {limit}",
+      "seats_not_joined": "{count} not joined yet"
+    },
+    "pagination": {
+      "showing": "Showing {from}–{to} of {total}",
+      "cohorts_org": "Showing {from}–{to} of {total, plural, one {# cohort} other {# cohorts}} in organization",
+      "cohorts_course": "Showing {from}–{to} of {total, plural, one {# cohort} other {# cohorts}} taking this course",
+      "courses_cohort": "Showing {from}–{to} of {total, plural, one {# course} other {# courses}} in cohort",
+      "courses_org": "Showing {from}–{to} of {total, plural, one {# course} other {# courses}} in organization",
+      "sections_course": "Showing {from}–{to} of {total, plural, one {# section} other {# sections}} in course",
+      "overdue_cohort": "Showing {from}–{to} of {total, plural, one {# overdue student} other {# overdue students}} in cohort"
+    },
+    "now_tag": {
+      "label": "Now",
+      "hint": "Shows where students stand now. The range doesn't change this card."
+    },
+    "student_chips": {
+      "latest": "Latest",
+      "progress": "Progress",
+      "now_at": "now at {place}"
+    },
+    "donut": {
+      "students": "{count, plural, one {student} other {students}}"
+    },
+    "status": {
+      "at_risk": "At risk",
+      "lagging": "Lagging",
+      "on_track": "On track",
+      "completed": "Completed"
+    },
+    "flags": {
+      "overdue": "Overdue"
+    },
+    "legend": {
+      "middle_half": "Middle 50% of students",
+      "cohort_average": "Cohort average",
+      "student": "Student",
+      "all_students": "All students",
+      "direct_students": "Direct students",
+      "in_progress": "{name} (in progress)",
+      "enrolled_students": "Enrolled students",
+      "target": "Target",
+      "logins": "Logins"
+    },
+    "notes": {
+      "score_distribution": "Students per score band.",
+      "course_details": "Pick a course above to see scores by exercise, the section-by-section scorecard and the hardest questions.",
+      "section_scorecard": "One row per course section. Video attendance is the share of lesson videos watched. Classroom attendance is marked by the tutor.",
+      "needs_attention": "A student can appear under more than one reason.",
+      "overdue": "Students already get scheduled reminder emails before a deadline. \"Send reminder\" sends one right now.",
+      "hardest_questions": "The questions students miss most, with the most common wrong answer.",
+      "logins_per_day": "Students who signed in each day.",
+      "students": {
+        "all_courses": "Click a student to see their courses.",
+        "one_course": "Click a student to chart their scores. Search, filters and sort also apply to the export.",
+        "course_scope": "Select a student to open their progress in this course. Search, filters and sort also apply to the export."
+      },
+      "showing_first": "Showing the first {shown} of {total}.",
+      "cohorts_select": "Select a cohort to open its dashboard.",
+      "courses_select": "Select a course to open its dashboard.",
+      "cohorts_in_table": "{count, plural, one {The cohort} other {The # cohorts}} in the table above.",
+      "courses_in_table": "{count, plural, one {The course} other {The # courses}} in the table above.",
+      "not_counted_empty": "Not counted: {names} (no students yet).",
+      "not_charted_empty": "Not charted: {names} (no students yet).",
+      "direct_students_charted": "Direct students are not in a cohort; they appear as their own line.",
+      "bucketed_total": "Each bar adds up the logins over {days} days. A student counts once per day.",
+      "student_sheet_pick_course": "Click a course to chart their scores by exercise.",
+      "lesson_dropoff": "The steepest fall is between {from} and {to}.",
+      "no_pass_mark": "No exercise here has a pass mark yet, so there is no pass rate. Set a pass mark on an exercise to see it."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–25",
+        "1": "25–50",
+        "2": "50–75",
+        "3": "75–99",
+        "4": "Done"
+      },
+      "score": {
+        "4": "<50",
+        "5": "50s",
+        "6": "60s",
+        "7": "70s",
+        "8": "80s",
+        "9": "90+",
+        "null": "No score"
+      }
+    },
+    "kpi": {
+      "share_of_cohort": "{percent} of the cohort",
+      "share_of_enrolled": "{percent} of enrolled",
+      "share_of_completions": "{percent} of completions",
+      "avg_progress_hint": "required lessons and exercises completed / total",
+      "avg_score_hint": "across exercises taken",
+      "overdue_hint": "past their deadline, not done",
+      "completed_certified": "{percent} of the cohort · {count} certified",
+      "enrolled_this_week": "{count, plural, =0 {No new students this week} other {+# this week}}",
+      "enrolled_in_days": "{count, plural, =0 {No new students in the last {days} days} other {+# in the last {days} days}}",
+      "added_in_days": "{count, plural, =0 {None in the last {days} days} other {+# in the last {days} days}}",
+      "completed_in_days": "{percent} of the cohort{count, plural, =0 {} other { · +# in the last {days} days}}",
+      "logged_in_days": "Logged in, last {days} days",
+      "avg_score_in_days": "attempts in the last {days} days",
+      "first_try_in_days": "of {took} graded in the last {days} days{still, plural, =0 {} other { · # still to pass}}",
+      "median_days_in_days": "for completions in the last {days} days",
+      "first_try_context": "of {took} who took a pass-mark exercise{still, plural, =0 {} other { · # still to pass}}",
+      "median_days_hint": "enrolment to completion",
+      "needs_attention_hint": "inactive, low score or overdue",
+      "delta": {
+        "this_week": {
+          "up": "+{count} pts this week",
+          "down": "−{count} pts this week",
+          "flat": "No change this week"
+        },
+        "vs_last_week": {
+          "up": "+{count} pts vs last week",
+          "down": "−{count} pts vs last week",
+          "flat": "No change vs last week"
+        },
+        "in_days": {
+          "up": "+{count} pts in the last {days} days",
+          "down": "−{count} pts in the last {days} days",
+          "flat": "No change in the last {days} days"
+        },
+        "vs_days_ago": {
+          "up": "+{count} pts vs {days} days ago",
+          "down": "−{count} pts vs {days} days ago",
+          "flat": "No change vs {days} days ago"
+        }
+      },
+      "no_data": {
+        "students": "no students yet",
+        "graded": "no graded attempts yet",
+        "first_try": "no graded attempts on a pass-mark exercise yet",
+        "completions": "no completions yet",
+        "enrolments": "no enrolments yet",
+        "in_days": "none in the last {days} days"
+      }
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Logged in today"
+      },
+      "kpi_logged_in_week": {
+        "title": "Logged in, last 7 days"
+      },
+      "kpi_avg_progress": {
+        "title": "Average progress"
+      },
+      "kpi_avg_score": {
+        "title": "Average score"
+      },
+      "kpi_avg_grade": {
+        "title": "Average grade"
+      },
+      "kpi_overdue": {
+        "title": "Overdue"
+      },
+      "kpi_completed": {
+        "title": "Completed"
+      },
+      "kpi_enrolled": {
+        "title": "Enrolled"
+      },
+      "kpi_completion_rate": {
+        "title": "Completion rate"
+      },
+      "kpi_first_try_pass": {
+        "title": "Pass rate"
+      },
+      "kpi_median_days": {
+        "title": "Median days to finish"
+      },
+      "kpi_completions": {
+        "title": "Completions"
+      },
+      "kpi_certificates": {
+        "title": "Certificates issued"
+      },
+      "kpi_needs_attention": {
+        "title": "Needs attention"
+      },
+      "courses_summary": {
+        "title": "Courses in this cohort"
+      },
+      "students_by_status": {
+        "title": "Students by status"
+      },
+      "course_details": {
+        "title": "Course details"
+      },
+      "courses_at_a_glance": {
+        "title": "Courses at a glance"
+      },
+      "scores_by_exercise": {
+        "title": "Scores by exercise, {course}"
+      },
+      "scores_by_exercise_course": {
+        "title": "Scores by exercise"
+      },
+      "progress_distribution": {
+        "title": "Progress distribution"
+      },
+      "section_scores": {
+        "title": "Scores and attendance by section"
+      },
+      "score_distribution": {
+        "title": "Average score distribution"
+      },
+      "section_scorecard": {
+        "title": "Section-by-section scorecard"
+      },
+      "needs_attention": {
+        "title": "Needs attention, by reason"
+      },
+      "overdue": {
+        "title": "Overdue, with reminders"
+      },
+      "hardest_questions": {
+        "title": "Hardest questions"
+      },
+      "students": {
+        "title": "Students"
+      },
+      "logins_per_day": {
+        "title": "Students logged in per day"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Scores by exercise, by cohort"
+      },
+      "exercise_score_distribution": {
+        "title": "Score distribution, {exercise}"
+      },
+      "lesson_dropoff": {
+        "title": "Lesson completion drop-off"
+      },
+      "hardest_exercises": {
+        "title": "Hardest exercises"
+      },
+      "cohorts_in_course": {
+        "title": "Cohorts taking this course"
+      },
+      "cohort_details": {
+        "title": "Cohort details"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Cohorts at a glance"
+      },
+      "cohort_health": {
+        "title": "Students by cohort health"
+      },
+      "hiring_ramp": {
+        "title": "Enrolled students vs target"
+      },
+      "avg_score_by_cohort": {
+        "title": "Average score, by cohort"
+      },
+      "avg_score_by_course": {
+        "title": "Average score, by course"
+      },
+      "courses_by_completion": {
+        "title": "Courses by completion"
+      },
+      "cohort_empty": {
+        "title": "Cohorts without students"
+      }
+    },
+    "measures": {
+      "rows__count": "Students",
+      "progress_pct__avg": "Average progress",
+      "avg_score_pct__avg": "Average score",
+      "avg_progress_pct__value": "Average progress",
+      "avg_score_pct__value": "Average score",
+      "first_try_pass__pooled": "Pass rate",
+      "is_completed__count_if": "Completed",
+      "is_completed__rate": "Completion rate",
+      "is_inactive__count_if": "No login, 2+ days",
+      "is_low_score__count_if": "Average score under 50%",
+      "is_overdue__count_if": "Overdue",
+      "is_low_video__count_if": "Video attendance under 60%",
+      "logged_in__count_if": "Students logged in",
+      "section_score_pct__avg": "Average score",
+      "video_pct__avg": "Video attendance",
+      "attendance__pooled": "Classroom attendance",
+      "best_score_pct__avg": "Average score",
+      "is_complete__rate": "Completed",
+      "members_total__value": "Enrolled students"
+    },
+    "columns": {
+      "student": "Student",
+      "email": "Email",
+      "course": "Course",
+      "students": "Students",
+      "progress": "Progress",
+      "avg_progress": "Avg progress",
+      "avg_score": "Avg score",
+      "average_score": "Average score",
+      "completed": "Completed",
+      "took_pass_mark": "Took a pass-mark exercise",
+      "passed_first_try": "Pass rate",
+      "exercises_passed": "Exercises passed",
+      "now_at": "Now at",
+      "courses_completed": "Courses completed",
+      "video": "Video",
+      "classroom": "Classroom",
+      "video_attendance": "Video attendance",
+      "classroom_attendance": "Classroom attendance",
+      "certificate": "Certificate",
+      "certificates": "Certificates",
+      "last_login": "Last login",
+      "status": "Status",
+      "trend": "Trend",
+      "cohort": "Cohort",
+      "created": "Created",
+      "overdue": "Overdue",
+      "health": "Health",
+      "section": "Course section",
+      "exercises_taken": "Exercises taken",
+      "actions": "Actions"
+    },
+    "column_hints": {
+      "passed_first_try": "Students who reached the pass mark on their first graded attempt, on exercises that have a pass mark.",
+      "section_passed_first_try": "Students who reached the pass mark on their first graded attempt at every exercise with a pass mark in this section.",
+      "took_pass_mark": "Students graded on at least one exercise that has a pass mark.",
+      "exercises_passed": "Exercises with a pass mark that this student has reached the mark on, out of all exercises with a pass mark in the course."
+    },
+    "actions": {
+      "send_reminder": "Send reminder",
+      "queued": "Queued",
+      "remind_all_overdue": "Remind all {count, plural, one {# overdue student} other {# overdue students}}",
+      "reminders_queued": "Reminders queued"
+    },
+    "target": {
+      "set": "Set target",
+      "edit": "Edit target",
+      "label": "Student target",
+      "helper": "How many enrolled students you're aiming for. It shows as a dashed line.",
+      "clear": "Remove target",
+      "save": "Save target"
+    },
+    "hints": {
+      "exercise_score_distribution": "Pick an exercise to see its scores"
+    },
+    "student_sheet": {
+      "last_login": "Last login: {when}",
+      "courses_heading": "Courses",
+      "scores_heading": "Scores by exercise, {course}",
+      "open_profile": "Open course profile",
+      "all_courses": "All courses"
+    },
+    "students": {
+      "search": "Search by name or email",
+      "empty": "No students match these filters",
+      "failed": "Students couldn't load",
+      "cells_failed": "Exercise scores couldn't load",
+      "attempts_unavailable": "Couldn't check which exercises have attempts, so some locked exercises may be hidden.",
+      "showing": {
+        "cohort": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in cohort",
+        "course": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in course",
+        "org": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in organization"
+      },
+      "showing_paged": {
+        "cohort": "Showing {from}–{to} of {count, plural, one {# student} other {# students}} in cohort",
+        "course": "Showing {from}–{to} of {count, plural, one {# student} other {# students}} in course",
+        "org": "Showing {from}–{to} of {count, plural, one {# student} other {# students}} in organization"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# student} other {# students}} matching · {count, plural, one {# student} other {# students}} in cohort",
+        "course": "{total, plural, one {# student} other {# students}} matching · {count, plural, one {# student} other {# students}} in course",
+        "org": "{total, plural, one {# student} other {# students}} matching · {count, plural, one {# student} other {# students}} in organization"
+      },
+      "showing_all": {
+        "cohort": "{count, plural, one {# student} other {# students}} in cohort",
+        "course": "{count, plural, one {# student} other {# students}} in course",
+        "org": "{count, plural, one {# student} other {# students}} in organization"
+      },
+      "clear_filters": "{count, plural, one {Clear # filter} other {Clear # filters}}",
+      "sort": {
+        "status": "Sort: lagging first",
+        "progress": "Sort: least progress",
+        "name": "Sort: name A to Z",
+        "low_score": "Sort: lowest average score"
+      },
+      "filters": {
+        "status": {
+          "label": "Status",
+          "any": "All statuses",
+          "at_risk": "At risk",
+          "lagging": "Lagging",
+          "on_track": "On track",
+          "completed": "Completed"
+        },
+        "activity": {
+          "label": "Last login",
+          "any": "Any login",
+          "today": "Logged in today",
+          "idle": "No login 2+ days"
+        },
+        "score": {
+          "label": "Average score",
+          "any": "Any average score",
+          "lt50": "Under 50%",
+          "mid": "50% to 69%",
+          "gte70": "70% and above"
+        },
+        "flag": {
+          "label": "Flags",
+          "any": "Any flag",
+          "overdue": "Overdue",
+          "certified": "Certificate issued",
+          "not_certified": "No certificate"
+        },
+        "completion": {
+          "label": "Completion",
+          "any": "Any completion",
+          "incomplete": "Not completed"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Any video",
+          "low": "Video under 60%"
+        },
+        "cohort_chip": "{count, plural, one {# cohort} other {# cohorts}}"
+      }
+    },
+    "empty_states": {
+      "show_all_time": "Show all time",
+      "create_cohort": "Create a cohort",
+      "range": {
+        "title": "No activity in the last {days} days",
+        "description": "This card counts only what happened in the selected range."
+      },
+      "needs_attention": {
+        "title": "Nobody needs attention",
+        "description": "No student is inactive, scoring under 50%, overdue or behind on videos."
+      },
+      "overdue": {
+        "title": "Nobody is overdue",
+        "description": "Every student is within their deadlines."
+      },
+      "scores": {
+        "title": "No graded attempts yet",
+        "description": "Scores appear once students submit exercises and the attempts are graded."
+      },
+      "student_scores": {
+        "title": "No graded attempts yet",
+        "description": "This student's scores appear once their attempts are graded."
+      },
+      "hardest_exercises": {
+        "title": "Not enough graded attempts yet",
+        "description": "An exercise appears once at least 3 students have a graded attempt."
+      },
+      "questions": {
+        "title": "Not enough answers yet",
+        "description": "A question appears once at least 5 students have answered it in a graded attempt."
+      },
+      "logins": {
+        "title": "No logins yet",
+        "description": "Students appear here on the days they sign in."
+      },
+      "lessons": {
+        "title": "No lesson completions yet",
+        "description": "Each lesson's bar fills in as students complete it."
+      },
+      "growth": {
+        "title": "No students added yet",
+        "description": "The line starts with the first student added to your organization."
+      },
+      "courses_org": {
+        "title": "No course completions yet",
+        "description": "Courses appear here as students enrol and complete them."
+      },
+      "courses_cohort": {
+        "title": "No course activity yet",
+        "description": "Bars and rows fill in once students start lessons or exercises."
+      },
+      "cohorts_org": {
+        "title": "No cohorts yet",
+        "description": "Create a cohort to group students and compare their progress."
+      },
+      "cohorts_org_no_students": {
+        "title": "No students in these cohorts yet",
+        "description": "Add students to your organization to start comparing progress across cohorts."
+      },
+      "cohorts_course": {
+        "title": "No cohort includes this course",
+        "description": "Add this course to a cohort to compare cohorts here."
+      },
+      "cohorts_course_no_students": {
+        "title": "No students in these cohorts yet",
+        "description": "Invite students to this course to start comparing progress across cohorts."
+      },
+      "default": {
+        "title": "No data yet",
+        "description": "This card fills in as students use the course."
+      }
+    },
+    "empty": {
+      "failed": "This chart couldn't load",
+      "dashboard_failed": "Analytics couldn't load",
+      "not_permitted": "You don't have access to these analytics",
+      "no_exercises": "No exercises in this course",
+      "no_exercises_description": "Scores appear once exercises are added and students submit attempts."
+    },
+    "export": {
+      "students_capped": "Student list limited to the first {limit} rows.",
+      "exercises_capped": "Exercise scores limited to the first {limit} results.",
+      "yes": "Yes",
+      "no": "No",
+      "columns": {
+        "segment": "Group",
+        "metric": "Metric",
+        "value": "Value",
+        "details": "Details"
+      },
+      "dimensions": {
+        "student": "Student",
+        "course": "Course",
+        "cohort": "Cohort",
+        "exercise": "Exercise",
+        "section": "Section",
+        "lesson": "Lesson",
+        "question": "Question",
+        "item": "Item",
+        "day": "Day",
+        "period": "Period",
+        "status": "Status",
+        "overdue_kind": "Overdue type",
+        "progress_bucket_25": "Progress",
+        "score_bucket_10": "Average score"
+      }
+    },
+    "org_page_title": "Academy",
+    "widget_menu": {
+      "label": "Actions for {title}",
+      "view_students": "View students",
+      "open_in_students": "Open in Students tab",
+      "click_to_view": "Select a bar or slice to view its students"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# student} other {# students}}",
+      "description": "The students behind this number.",
+      "cohort_health": {
+        "any": "In cohorts with students",
+        "at_risk": "In at-risk cohorts",
+        "lagging": "In lagging cohorts",
+        "on_track": "In on-track cohorts",
+        "completed": "In completed cohorts"
+      },
+      "cohort_health_note": "The chart counts students in cohorts rated this way, not students with this status.",
+      "count_differs": "The chart counts {expected} because it counts a student once for every cohort they are in. This list shows {total}.",
+      "lesson_incomplete": "Not completed: {lesson}",
+      "lesson_fallback": "this lesson",
+      "score_bucket": "Average score {range}",
+      "scored": "With an average score"
+    }
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Connect an app to ClassroomIO",
+      "title": "Connect {client} to ClassroomIO",
+      "subtitle": "Pick the workspace {client} can access.",
+      "workspace_label": "Workspace",
+      "no_workspaces_title": "No workspace available",
+      "no_workspaces_description": "Only workspace admins can connect apps. Ask an admin or sign in with an admin account.",
+      "permissions_heading": "{client} will be able to:",
+      "stay_connected": "Stay connected until you remove access",
+      "admin_note": "Only workspace admins can connect apps. Access follows your admin permissions and ends if you lose them.",
+      "redirect_note": "After you approve, you will be sent to {host}.",
+      "allow": "Allow access",
+      "deny": "Deny",
+      "unknown_client": "This app",
+      "error_title": "This connection request is not valid",
+      "error_description": "Go back to the app you were connecting and start again."
+    },
+    "error": {
+      "generic": "Something went wrong. Please try again.",
+      "retry": "Try again"
+    },
+    "scope_group": {
+      "courses": {
+        "read": "View courses and their content",
+        "write": "Create, edit and publish courses and their content"
+      },
+      "exercises": {
+        "read": "View exercises and questions",
+        "write": "Create and edit exercises and questions"
+      },
+      "course_members": {
+        "read": "View course members",
+        "write": "Add and manage course members and their progress"
+      },
+      "certificates": {
+        "read": "View course certificates",
+        "write": "Manage course certificates"
+      },
+      "submissions": {
+        "read": "View exercise submissions and marks",
+        "write": "Grade submissions and manage marks"
+      },
+      "cohorts": {
+        "read": "View cohorts",
+        "write": "Create and manage cohorts"
+      },
+      "audience": {
+        "read": "View your audience",
+        "write": "Add and manage your audience"
+      },
+      "team": {
+        "read": "View team members",
+        "write": "Manage team members"
+      },
+      "organization": {
+        "read": "View workspace settings",
+        "write": "Edit workspace settings, landing page and email templates"
+      },
+      "analytics": {
+        "read": "View analytics",
+        "write": "View analytics"
+      },
+      "media": {
+        "read": "Upload media",
+        "write": "Upload media"
+      }
+    },
+    "connect": {
+      "title": "Connect from Claude or ChatGPT",
+      "description": "Add ClassroomIO as a custom connector in your AI app using this URL, then sign in and approve access.",
+      "step_1": "In your AI app, open the connectors or integrations settings and add a custom connector.",
+      "step_2": "Paste the URL above and start the connection.",
+      "step_3": "Sign in to ClassroomIO, choose this workspace and approve the permissions."
+    },
+    "connected_apps": {
+      "title": "Connected apps",
+      "description": "Apps you approved to act on this workspace. Remove an app to cut off its access immediately.",
+      "table_app": "App",
+      "table_authorized_by": "Authorized by",
+      "table_permissions": "Permissions",
+      "permissions_count": "{count} areas",
+      "revoke": "Remove access",
+      "revoke_confirm": "Remove this app's access? It will stop working immediately."
     }
   }
 }

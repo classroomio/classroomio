@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
   import * as Table from '@cio/ui/base/table';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
@@ -10,6 +10,8 @@
   import AwardIcon from '@lucide/svelte/icons/award';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import EyeIcon from '@lucide/svelte/icons/eye';
+  import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
+  import ArrowDownIcon from '@lucide/svelte/icons/arrow-down';
 
   import { Chip } from '@cio/ui/custom/chip';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -20,72 +22,92 @@
   import { TruncatedWithTooltip } from '$features/ui';
   import InvitationModal from '$features/people/components/invitation-modal.svelte';
   import GrantAccessModal from '$features/course/components/people/grant-access-modal.svelte';
-  import { ALL_SOURCES_FILTER, toPeopleSourceFilter } from '$features/course/utils/people-source-utils';
   import PeopleSourceCell from '$features/course/components/people/people-source-cell.svelte';
-  import PeopleSourceSelect from '$features/course/components/people/people-source-select.svelte';
   import DeleteConfirmation from '$features/course/components/people/delete-confirmation.svelte';
   import { isStudentLimitReached } from '$lib/utils/store/org';
 
   import { profile } from '$lib/utils/store/user';
-  import type { CourseMembers, CourseMember, CourseMembersPagination } from '$features/course/utils/types';
+  import type {
+    CourseMembers,
+    CourseMember,
+    CourseMembersPagination,
+    CoursePeopleView,
+    ListPeopleQuery
+  } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import UserIcon from '@lucide/svelte/icons/user';
   import { shortenName } from '$lib/utils/functions/string';
-  import * as Select from '@cio/ui/base/select';
-  import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { peopleApi } from '$features/course/api';
   import { deleteMemberModal } from '$features/course/components/people/store';
   import { Search } from '@cio/ui/custom/search';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
   import { onDestroy, untrack } from 'svelte';
   import {
-    ALL_ROLES_FILTER,
-    DEFAULT_PEOPLE_PAGE_SIZE,
     formatPeopleShortDate,
     getMemberAvatarUrl,
     getMemberProgressPercent,
+    getMemberRoleLabel,
     isStudentMember,
     obscureMemberEmail
   } from '$features/course/utils/people-utils';
+  import {
+    applyPeopleView,
+    clearPeopleFilters,
+    countActivePeopleFilters,
+    getPeopleQueryFromSearchParams,
+    getPeopleSearchParams,
+    matchPeopleView
+  } from '$features/course/utils/people-query-utils';
+  import PeopleFilterPopover from '$features/course/components/people/people-filter-popover.svelte';
+  import PeopleViewSwitcher from '$features/course/components/people/people-view-switcher.svelte';
 
   /** Fields the delete dialog reads from the row it targets. */
   type MemberDeleteTarget = Partial<Pick<CourseMember, 'id' | 'email' | 'profile'>>;
 
   let member = $state<MemberDeleteTarget>({});
-  let filterBy: string = $state(`${ROLES[0].value}`);
-  let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
   let memberRows = $state<CourseMembers>([]);
   let pagination = $state<CourseMembersPagination | null>(null);
-  let currentPage = $state(1);
   let isLoadingMembers = $state(false);
-  let sourceFilter: string = $state(ALL_SOURCES_FILTER);
   let membersRequestId = 0;
-  let searchDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
-  let loadedCourseId: string | null = null;
+  let loadedQueryKey: string | null = null;
 
-  async function loadMembers(courseId: string, page: number) {
+  // The URL owns filters, sort and pagination, so a filtered roster is shareable
+  // and the browser Back button undoes a filter change.
+  const query = $derived(getPeopleQueryFromSearchParams(page.url.searchParams));
+  const activeView = $derived(matchPeopleView(query));
+  const activeFilterCount = $derived(countActivePeopleFilters(query));
+
+  const search = new DebouncedSearch({
+    initial: untrack(() => query.search ?? ''),
+    onApply: (nextSearch) => void navigatePeople({ ...query, page: 1, search: nextSearch || undefined })
+  });
+
+  async function navigatePeople(nextQuery: ListPeopleQuery) {
+    const searchParams = getPeopleSearchParams(nextQuery, page.url.searchParams);
+    const nextSearch = searchParams.toString();
+    if (nextSearch === page.url.searchParams.toString()) return;
+
+    try {
+      await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    } catch (error) {
+      console.error('Failed to update the people roster URL:', error);
+    }
+  }
+
+  async function loadMembers(courseId: string, activeQuery: ListPeopleQuery) {
     const requestId = ++membersRequestId;
     isLoadingMembers = true;
 
     try {
-      const roleId = filterBy === ALL_ROLES_FILTER ? undefined : Number(filterBy);
-      // TODO(#1226): the URL-backed query carries `source`; drop this and `sourceFilter` when resolving.
-      const source = toPeopleSourceFilter(sourceFilter);
-      const response = await peopleApi.list(courseId, {
-        page,
-        limit: DEFAULT_PEOPLE_PAGE_SIZE,
-        search: searchValue.trim() || undefined,
-        roleId,
-        source
-      });
+      const response = await peopleApi.list(courseId, activeQuery);
       if (requestId !== membersRequestId) return;
 
       if (response?.data) {
         memberRows = response.data;
         pagination = response.pagination;
-        currentPage = response.pagination.page;
       }
     } catch (error) {
       console.error('Failed to load course members:', error);
@@ -99,58 +121,71 @@
     }
   }
 
-  // Only the course id should retrigger a load; the search and role filter reads inside
-  // loadMembers would otherwise make this effect refetch on every keystroke.
+  // Reloads when the course or the URL query changes. loadMembers is untracked so
+  // the local search box cannot retrigger it on every keystroke.
   $effect(() => {
     const courseId = courseApi.course?.id;
-    if (!courseId || courseId === loadedCourseId) return;
+    const activeQuery = query;
+    if (!courseId) return;
 
-    loadedCourseId = courseId;
-    untrack(() => reloadFirstPage());
+    const queryKey = `${courseId}:${JSON.stringify(activeQuery)}`;
+    if (queryKey === loadedQueryKey) return;
+
+    loadedQueryKey = queryKey;
+    isLoadingMembers = true;
+    memberRows = [];
+    pagination = null;
+    untrack(() => void loadMembers(courseId, activeQuery));
   });
 
   onDestroy(() => {
-    if (searchDebounceTimeout) {
-      clearTimeout(searchDebounceTimeout);
-    }
+    search.destroy();
   });
 
-  function reloadFirstPage() {
-    const courseId = courseApi.course?.id;
-    if (!courseId) return;
-
-    currentPage = 1;
-    void loadMembers(courseId, 1);
-  }
+  afterNavigate(() => {
+    search.sync(query.search ?? '');
+  });
 
   function refreshCurrentPage() {
     const courseId = courseApi.course?.id;
     if (!courseId) return;
 
-    void loadMembers(courseId, currentPage);
+    void loadMembers(courseId, query);
   }
 
-  function handleSearchValueChange(value: string) {
-    searchValue = value;
-
-    if (searchDebounceTimeout) {
-      clearTimeout(searchDebounceTimeout);
-    }
-
-    searchDebounceTimeout = setTimeout(reloadFirstPage, 300);
+  function handleFilterChange(patch: Partial<ListPeopleQuery>) {
+    void navigatePeople({ ...query, ...patch, page: 1, search: search.takePending() || undefined });
   }
 
-  function handleRoleChange(value: string) {
-    filterBy = value;
-    reloadFirstPage();
+  function handleSortChange(sortBy: ListPeopleQuery['sortBy'], sortOrder: ListPeopleQuery['sortOrder']) {
+    void navigatePeople({ ...query, sortBy, sortOrder, page: 1, search: search.takePending() || undefined });
   }
 
-  function handlePageChange(page: number) {
-    const courseId = courseApi.course?.id;
-    if (!courseId) return;
+  function handlePageChange(nextPage: number) {
+    void navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
+  }
 
-    currentPage = page;
-    void loadMembers(courseId, page);
+  function handleSelectView(view: CoursePeopleView) {
+    void navigatePeople({ ...applyPeopleView(view, query), search: search.takePending() || undefined });
+  }
+
+  function handleClearFilters() {
+    void navigatePeople(clearPeopleFilters(query));
+  }
+
+  // Stage is resolved in TypeScript after pagination, so it has no server sort key.
+  const tableColumns: { label: string; sortKey?: ListPeopleQuery['sortBy']; wide?: boolean }[] = $derived([
+    { label: $t('course.navItem.people.name'), sortKey: 'name' },
+    { label: $t('course.navItem.people.source') },
+    { label: $t('course.navItem.people.progress'), sortKey: 'progress' },
+    { label: $t('course.navItem.people.stage'), wide: true },
+    { label: $t('course.navItem.people.last_login_at'), sortKey: 'lastLogin' },
+    { label: $t('course.navItem.people.enrolled_at'), sortKey: 'enrolledAt' }
+  ]);
+
+  function handleSortByHeader(sortBy: ListPeopleQuery['sortBy']) {
+    const sortOrder = query.sortBy === sortBy && query.sortOrder === 'asc' ? 'desc' : 'asc';
+    handleSortChange(sortBy, sortOrder);
   }
 
   async function deletePerson() {
@@ -164,9 +199,12 @@
       courseApi.group.people = courseApi.group.people.filter((person: { id: string }) => person.id !== member.id);
       courseApi.group.tutors = courseApi.group.tutors.filter((person: CourseMember) => person.id !== member.id);
 
-      const nextPage = memberRows.length === 0 && currentPage > 1 ? currentPage - 1 : currentPage;
-      currentPage = nextPage;
-      await loadMembers(courseId, nextPage);
+      if (memberRows.length === 0 && query.page > 1) {
+        await navigatePeople({ ...query, page: query.page - 1, search: search.takePending() || undefined });
+        return;
+      }
+
+      await loadMembers(courseId, query);
     }
   }
 
@@ -174,16 +212,6 @@
     const { profile, email } = person;
 
     return profile ? profile.email : email;
-  }
-
-  // TODO(#1226): delete with <PeopleSourceSelect>; the popover patches `source` into the URL query instead.
-  /**
-   * Handles the legacy source-select change: stores the filter and reloads page 1.
-   * Kept until the URL-backed roster merges.
-   */
-  function handleSourceChange(value: string) {
-    sourceFilter = value;
-    reloadFirstPage();
   }
 
   function gotoPerson(person: CourseMember) {
@@ -233,8 +261,6 @@
       console.error('Failed to copy:', err);
     }
   }
-
-  const selectOptions = $derived(ROLES.map((role) => ({ label: $t(role.label), value: `${role.value}` })));
 </script>
 
 <InvitationModal onMembersChanged={refreshCurrentPage} />
@@ -248,27 +274,19 @@
 
 <section class="space-y-2">
   <div class="flex flex-col items-center justify-end gap-2 md:flex-row">
-    <!-- TODO(#1226): interim control; the roster filter popover takes over (see people-source-utils.ts). -->
-    <PeopleSourceSelect bind:value={sourceFilter} onValueChange={handleSourceChange} />
     <Search
       placeholder={$t('course.navItem.people.search')}
-      bind:value={searchValue}
-      onValueChange={handleSearchValueChange}
+      value={search.draft}
+      onValueChange={(nextValue) => search.input(nextValue)}
     />
-    <Select.Root type="single" name="roles" bind:value={filterBy} onValueChange={handleRoleChange}>
-      <Select.Trigger class="max-w-[80px]">
-        {$t(ROLE_LABEL[Number(filterBy)])}
-      </Select.Trigger>
-      <Select.Content>
-        <Select.Group>
-          {#each selectOptions as option (option.value)}
-            <Select.Item value={option.value} label={option.label} disabled={option.value === filterBy}>
-              {option.label}
-            </Select.Item>
-          {/each}
-        </Select.Group>
-      </Select.Content>
-    </Select.Root>
+    <PeopleFilterPopover
+      {query}
+      {activeFilterCount}
+      isLoading={isLoadingMembers}
+      onFilterChange={handleFilterChange}
+      onClearFilters={handleClearFilters}
+      onSortChange={handleSortChange}
+    />
   </div>
 
   <div class="overflow-x-auto rounded-md border">
@@ -276,13 +294,37 @@
       <Table.Root class="min-w-[880px]">
         <Table.Header>
           <Table.Row>
-            <Table.Head>{$t('course.navItem.people.learner')}</Table.Head>
-            <!-- TODO(#1226): becomes a `tableColumns` entry (no sortKey) right after the learner column. -->
-            <Table.Head>{$t('course.navItem.people.source')}</Table.Head>
-            <Table.Head>{$t('course.navItem.people.progress')}</Table.Head>
-            <Table.Head class="max-w-[220px]">{$t('course.navItem.people.stage')}</Table.Head>
-            <Table.Head>{$t('course.navItem.people.last_login_at')}</Table.Head>
-            <Table.Head>{$t('course.navItem.people.enrolled_at')}</Table.Head>
+            {#each tableColumns as column (column.label)}
+              <Table.Head
+                class={column.wide ? 'max-w-[220px]' : undefined}
+                aria-sort={column.sortKey
+                  ? query.sortBy === column.sortKey
+                    ? query.sortOrder === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                  : undefined}
+              >
+                {#if column.sortKey}
+                  <button
+                    type="button"
+                    class="hover:text-foreground focus-visible:ring-ring flex items-center gap-1 rounded focus-visible:ring-2 focus-visible:outline-none"
+                    onclick={() => handleSortByHeader(column.sortKey)}
+                  >
+                    {column.label}
+                    {#if query.sortBy === column.sortKey}
+                      {#if query.sortOrder === 'asc'}
+                        <ArrowUpIcon class="size-3.5" aria-hidden="true" />
+                      {:else}
+                        <ArrowDownIcon class="size-3.5" aria-hidden="true" />
+                      {/if}
+                    {/if}
+                  </button>
+                {:else}
+                  {column.label}
+                {/if}
+              </Table.Head>
+            {/each}
             <Table.Head class={stickyActionsHeadClass}></Table.Head>
           </Table.Row>
         </Table.Header>
@@ -308,6 +350,7 @@
                 onkeydown={(event) => handleRowKeydown(person, event)}
               >
                 <Table.Cell class="min-w-[220px]">
+                  {@const roleLabel = getMemberRoleLabel(person)}
                   {#if person.profile}
                     <div class="flex items-start lg:items-center">
                       <Avatar.Root class="mr-3">
@@ -323,8 +366,13 @@
                       </Avatar.Root>
                       <div class="flex flex-col items-start lg:flex-row lg:items-center">
                         <div class="mr-2">
-                          <p class="text-base font-normal dark:text-white">
-                            {person.profile.fullname}
+                          <p class="flex items-center gap-1.5 text-base font-normal dark:text-white">
+                            <span class="truncate">{person.profile.fullname}</span>
+                            {#if roleLabel}
+                              <Badge variant="secondary" class="shrink-0 px-1.5 py-0 text-[10px] leading-4 font-medium">
+                                {$t(roleLabel)}
+                              </Badge>
+                            {/if}
                           </p>
                           <p class="ui:text-primary line-clamp-1 text-xs">
                             {obscureMemberEmail(getEmail(person))}
@@ -360,6 +408,11 @@
                       <a href="mailto:{person.email}" class="text-md ui:text-primary mr-2 dark:text-white">
                         {person.email}
                       </a>
+                      {#if roleLabel}
+                        <Badge variant="secondary" class="mr-2 shrink-0 px-1.5 py-0 text-[10px] leading-4 font-medium">
+                          {$t(roleLabel)}
+                        </Badge>
+                      {/if}
                       <div class="flex items-center justify-between">
                         <RoleBasedSecurity allowedRoles={[1, 2]}>
                           <Button
@@ -536,7 +589,7 @@
       <TablePagination
         count={pagination.total}
         perPage={pagination.limit}
-        page={currentPage}
+        page={query.page}
         onPageChange={handlePageChange}
       />
     </div>

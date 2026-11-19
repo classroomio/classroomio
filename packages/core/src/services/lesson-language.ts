@@ -12,13 +12,17 @@ import {
 import { getLessonById } from '@cio/db/queries/lesson/lesson';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { db } from '@cio/db/drizzle';
-import { recordLessonLanguageVersion } from './lesson-version';
-import type { TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
+import { recordBlockLocaleVersion } from './block/block-version';
+import type { TBlockChangeSource, TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
+import { ensureLessonRevisionBaseline, recordLessonRevision } from './block/lesson-revision';
 
 export interface LessonVersionOptions {
   authorId?: string | null;
   versionIntent?: TLessonVersionIntent;
   versionLabel?: string | null;
+  source?: TBlockChangeSource;
+  /** Name of the AI client or integration behind an `mcp` or `api` change. */
+  clientName?: string | null;
 }
 
 /**
@@ -80,14 +84,25 @@ export async function upsertLessonLanguageService(
     const intent = options.versionIntent ?? 'auto';
 
     const language = await db.transaction(async (tx) => {
+      await ensureLessonRevisionBaseline(lessonId, tx);
       const saved = await upsertLessonLanguage({ ...data, content, lessonId }, tx);
 
-      await recordLessonLanguageVersion({
-        lessonLanguageId: saved.id,
+      await recordBlockLocaleVersion({
+        blockLocaleId: saved.id,
         content: saved.content,
         authorId: options.authorId ?? null,
         intent,
         label: options.versionLabel ?? null,
+        source: options.source,
+        clientName: options.clientName,
+        dbClient: tx
+      });
+      await recordLessonRevision({
+        lessonId,
+        authorId: options.authorId ?? null,
+        source: options.source ?? 'editor',
+        clientName: options.clientName,
+        changeSetId: null,
         dbClient: tx
       });
 
@@ -145,12 +160,14 @@ export async function updateLessonLanguageService(
 
       // A metadata-only update is not a content change, so it earns no snapshot.
       if (isContentWrite) {
-        await recordLessonLanguageVersion({
-          lessonLanguageId: saved.id,
+        await recordBlockLocaleVersion({
+          blockLocaleId: saved.id,
           content: saved.content,
           authorId: options.authorId ?? null,
           intent,
           label: options.versionLabel ?? null,
+          source: options.source,
+          clientName: options.clientName,
           dbClient: tx
         });
       }

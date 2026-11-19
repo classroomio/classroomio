@@ -27,7 +27,10 @@ export const listOrganizationApiKeys = async (
   type?: TOrganizationApiKeyType
 ): Promise<TOrganizationApiKey[]> => {
   try {
-    const conditions = [eq(schema.organizationApiKey.organizationId, organizationId)];
+    const conditions = [
+      eq(schema.organizationApiKey.organizationId, organizationId),
+      isNull(schema.organizationApiKey.oauthConsentId)
+    ];
 
     if (type) {
       conditions.push(eq(schema.organizationApiKey.type, type));
@@ -56,7 +59,8 @@ export const countActiveOrganizationApiKeys = async (
         and(
           eq(schema.organizationApiKey.organizationId, organizationId),
           eq(schema.organizationApiKey.type, type),
-          isNull(schema.organizationApiKey.revokedAt)
+          isNull(schema.organizationApiKey.revokedAt),
+          isNull(schema.organizationApiKey.oauthConsentId)
         )
       );
 
@@ -75,7 +79,13 @@ export const getOrganizationApiKeyById = async (
     const [row] = await db
       .select()
       .from(schema.organizationApiKey)
-      .where(and(eq(schema.organizationApiKey.organizationId, organizationId), eq(schema.organizationApiKey.id, keyId)))
+      .where(
+        and(
+          eq(schema.organizationApiKey.organizationId, organizationId),
+          eq(schema.organizationApiKey.id, keyId),
+          isNull(schema.organizationApiKey.oauthConsentId)
+        )
+      )
       .limit(1);
 
     return row || null;

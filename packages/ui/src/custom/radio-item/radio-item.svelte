@@ -38,7 +38,7 @@
   <RadioGroup.Item {value} disabled={disabled || isEditable} />
   {#if isEditable}
     <div class="ui:w-2/4">
-      <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" {onchange} />
+      <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" onChange={onchange} />
     </div>
   {:else}
     <span class="ui:ml-2 ui:dark:text-white">{label}</span>

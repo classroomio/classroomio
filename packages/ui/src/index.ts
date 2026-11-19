@@ -63,6 +63,7 @@ export * as FileDropZone from './custom/file-drop-zone';
 // import { EdraEditor } from '@cio/ui/custom/editor/ui';
 export * as ImageCropper from './custom/image-cropper';
 export { Chip } from './custom/chip';
+export { CompactLoader } from './custom/compact-loader';
 export { IconButton } from './custom/icon-button';
 export { TextareaField } from './custom/textarea-field';
 export { CheckboxField } from './custom/checkbox-field';
@@ -75,8 +76,10 @@ export {
 } from './custom/checkbox-option-card';
 export * as ResourceListRow from './custom/resource-list-row';
 export { DocumentCard } from './custom/document-card';
+export { UploadFileCard, FileTypeBadge } from './custom/upload-file-card';
+export type { UploadFileCardLabels, UploadFileCardStatus } from './custom/upload-file-card';
 export * as ExerciseQuestion from './custom/exercise-question';
-export { QuestionTypePicker } from './custom/question-type-picker';
+export { QuestionTypePicker, QuestionTypeIcon } from './custom/question-type-picker';
 export { MediaPlayer } from './custom/media-player';
 export { MultiSelectList, type MultiSelectListItem } from './custom/multi-select-list';
 export { MentionPopover, type MentionItem } from './custom/mention-popover';
@@ -99,6 +102,7 @@ export {
   type LearningPathCardLabels,
   type LearningPathCardStatus
 } from './custom/learning-path-card';
+export { TemplateCard } from './custom/template-card';
 export { NewsfeedReactions } from './custom/newsfeed-reactions';
 export * as PublicCourse from './custom/public-course';
 export * as CommentTree from './custom/comment-tree';
@@ -107,3 +111,26 @@ export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';
 export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
+export * as AddBlock from './custom/add-block';
+export * as Block from './custom/block';
+export { DensityControl } from './custom/density-control';
+export type { DensityControlOption, DensityControlValue } from './custom/density-control';
+export {
+  SlideEmbedCard,
+  SlideEmbedFrame,
+  SlideEmbedPicker,
+  SlidePlatformIcon,
+  DEFAULT_SLIDE_EMBED_PICKER_LABELS
+} from './custom/slide-embed';
+export type { SlideEmbed, SlideEmbedCardLabels, SlideEmbedPickerLabels, SlidePlatformId } from './custom/slide-embed';
+export { AttentionHighlight, type AttentionHighlightProps } from './custom/attention-highlight';
+export { CircularProgress } from './custom/circular-progress';
+export {
+  PageOutline,
+  injectHeadingIds,
+  outlineFromSections,
+  slugifyHeading,
+  stripHtml,
+  withPageTitle
+} from './custom/page-outline';
+export type { PageOutlineHideBelow, PageOutlineItem, PageOutlineLevel } from './custom/page-outline';

@@ -4,12 +4,13 @@ import {
   ZLessonCommentUpdate,
   ZLessonCommentsQuery,
   ZLessonCompletionUpdate,
+  ZLessonChangeSetUndo,
   ZLessonCreate,
   ZLessonGetParam,
   ZLessonHistoryParam,
   ZLessonHistoryQuery,
   ZLessonListQuery,
-  ZLessonReorder,
+  ZLessonHistoryEntryRestore,
   ZLessonUpdate,
   ZUpdateLessonWatchProgress
 } from '@cio/utils/validation/lesson';
@@ -22,15 +23,17 @@ import {
   getLessonCommentsPaginated,
   getLessonCompletionService,
   getLessonHistoryService,
+  getLessonVideoHlsStatusesService,
   getLessonWatchProgressService,
+  hideLessonRecordingsFromLearners,
   listLessons,
-  reorderLessons,
+  releaseLessonRecordingsForViewer,
   updateLessonCommentService,
   updateLessonService,
   updateLessonWatchProgressService,
   upsertLessonCompletionService
 } from '@api/services/lesson';
-import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
+import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
 import { recordCourseCompletionFromProgress } from '@api/services/course/progress-completion';
 import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ContentType } from '@cio/utils/constants';
@@ -40,10 +43,15 @@ import { ZLessonDownloadContent } from '@cio/utils/validation/course';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { lessonInCourseMiddleware } from '@api/middlewares/lesson-in-course';
+import { restoreLessonToEntry, undoLessonChangeSet } from '@cio/core/services/block/lesson-structure';
+import { restoreLessonBlockVersion } from '@cio/core/services/block/block';
+import { ZBlockVersionRestore } from '@cio/utils/validation/block';
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import { generateLessonPdf } from '@api/utils/lesson';
 import { ensureCourseGroupMemberId } from '@cio/core/services/course/course';
 import { handleError } from '@api/utils/errors';
+import { lessonBlockRouter } from '@api/routes/course/lesson-block';
 import { lessonLanguageRouter } from '@api/routes/course/lesson-language';
 import { zValidator } from '@hono/zod-validator';
 
@@ -51,23 +59,17 @@ export const lessonRouter = new Hono()
   // Lesson CRUD routes
   .get('/', authMiddleware, courseMemberMiddleware, zValidator('query', ZLessonListQuery), async (c) => {
     try {
+      const user = c.get('user')!;
       const { courseId, sectionId } = c.req.valid('query');
-      const lessons = await listLessons(courseId, sectionId);
+
+      await assertEnrolledStudentCourseAccess({ courseId, profileId: user.id });
+
+      const storedLessons = await listLessons(courseId, sectionId);
+      const lessons = await hideLessonRecordingsFromLearners(courseId, user.id, storedLessons);
 
       return c.json({ success: true, data: lessons }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list lessons');
-    }
-  })
-  .post('/reorder', authMiddleware, courseMemberMiddleware, zValidator('json', ZLessonReorder), async (c) => {
-    try {
-      const { lessons } = c.req.valid('json');
-
-      const updated = await reorderLessons(lessons);
-
-      return c.json({ success: true, data: updated }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to reorder lessons');
     }
   })
   .get('/:lessonId', authMiddleware, courseMemberMiddleware, zValidator('param', ZLessonGetParam), async (c) => {
@@ -83,22 +85,45 @@ export const lessonRouter = new Hono()
         type: ContentType.Lesson
       });
 
-      const [lesson, watchProgress] = await Promise.all([
+      const [storedLesson, watchProgress] = await Promise.all([
         getLesson(lessonId),
         getLessonWatchProgressService(lessonId, user.id)
       ]);
+      const [lesson] = await releaseLessonRecordingsForViewer(courseId, user.id, [storedLesson]);
 
       return c.json({ success: true, data: { ...lesson, watchProgress } }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to fetch lesson');
     }
   })
+  .get(
+    '/:lessonId/video-status',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZLessonGetParam),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const statuses = await getLessonVideoHlsStatusesService(lessonId);
+
+        return c.json({ success: true, data: { statuses } }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch lesson video status');
+      }
+    }
+  )
   .post('/', authMiddleware, courseMemberMiddleware, zValidator('json', ZLessonCreate), async (c) => {
     try {
+      const user = c.get('user')!;
       const courseId = c.req.param('courseId')!;
       const data = c.req.valid('json');
 
-      const lesson = await createLesson(courseId, { ...data, courseId });
+      const createdLesson = await createLesson(
+        courseId,
+        { ...data, courseId },
+        { actorProfileId: c.get('user')?.id ?? null }
+      );
+      const [lesson] = await hideLessonRecordingsFromLearners(courseId, user.id, [createdLesson]);
 
       return c.json({ success: true, data: lesson }, 201);
     } catch (error) {
@@ -113,10 +138,13 @@ export const lessonRouter = new Hono()
     zValidator('json', ZLessonUpdate),
     async (c) => {
       try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
         const { lessonId } = c.req.valid('param');
         const data = c.req.valid('json');
 
-        const lesson = await updateLessonService(lessonId, data);
+        const updatedLesson = await updateLessonService(lessonId, data, { actorProfileId: c.get('user')?.id ?? null });
+        const [lesson] = await hideLessonRecordingsFromLearners(courseId, user.id, [updatedLesson]);
 
         return c.json({ success: true, data: lesson }, 200);
       } catch (error) {
@@ -375,7 +403,8 @@ export const lessonRouter = new Hono()
   .get(
     '/:lessonId/history',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
     zValidator('param', ZLessonHistoryParam),
     zValidator('query', ZLessonHistoryQuery),
     async (c) => {
@@ -396,6 +425,81 @@ export const lessonRouter = new Hono()
       }
     }
   )
+  /**
+   * POST /course/:courseId/lesson/:lessonId/history/restore
+   * Restores one text block to a past version. A shared block is first replaced in this
+   * lesson by its own copy, so other lessons keep their current text.
+   */
+  .post(
+    '/:lessonId/history/restore',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonHistoryParam),
+    zValidator('json', ZBlockVersionRestore),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const input = c.req.valid('json');
+        const user = c.get('user')!;
+        const restored = await restoreLessonBlockVersion(lessonId, input, { actorProfileId: user.id });
+
+        return c.json({ success: true, data: restored }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to restore lesson version');
+      }
+    }
+  )
+  /**
+   * POST /course/:courseId/lesson/:lessonId/history/restore-lesson
+   * Restores the whole lesson to the moment of one history entry: block order and settings, and
+   * every locale of every text block as saved then.
+   */
+  .post(
+    '/:lessonId/history/restore-lesson',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonHistoryParam),
+    zValidator('json', ZLessonHistoryEntryRestore),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const entry = c.req.valid('json');
+        const user = c.get('user')!;
+        const restored = await restoreLessonToEntry(lessonId, entry, { authorId: user.id });
+
+        return c.json({ success: true, data: restored }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to restore lesson');
+      }
+    }
+  )
+  /**
+   * POST /course/:courseId/lesson/:lessonId/history/undo
+   * Reverts one change set (an assistant chat request or a restore) in this lesson, and refuses
+   * when something it touched was edited again afterwards.
+   */
+  .post(
+    '/:lessonId/history/undo',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonHistoryParam),
+    zValidator('json', ZLessonChangeSetUndo),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const { changeSetId } = c.req.valid('json');
+        const user = c.get('user')!;
+        const undone = await undoLessonChangeSet({ lessonId, changeSetId, authorId: user.id });
+
+        return c.json({ success: true, data: undone }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to undo lesson change');
+      }
+    }
+  )
   // PDF download route (existing)
   .post('/download/pdf', courseMemberMiddleware, zValidator('json', ZLessonDownloadContent), async (c) => {
     const validatedData = c.req.valid('json');
@@ -412,4 +516,5 @@ export const lessonRouter = new Hono()
       })
     );
   })
-  .route('/:lessonId/language', lessonLanguageRouter);
+  .route('/:lessonId/language', lessonLanguageRouter)
+  .route('/:lessonId/blocks', lessonBlockRouter);

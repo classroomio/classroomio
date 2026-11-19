@@ -50,7 +50,7 @@ through this worker.
 | ------------------ | ------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `emails`           | `send`                                                  | `enqueueTransactionalEmail` / `enqueueRawEmail` in `apps/api/src/services/jobs/email-jobs.ts` |
 | `media`            | `probe-metadata`, `generate-thumbnail`, `extract-audio` | `startMediaJob` after a video asset upload                                                    |
-| `media-transcribe` | `transcribe-audio`                                      | Same flow; only enqueued when `OPENAI_API_KEY` is set                                         |
+| `media-transcribe` | `transcribe-audio`                                      | Same flow; only enqueued when `OPENAI_API_KEY` is set on the API                               |
 | `maintenance`      | `retention-compact`, `dead-letter-cleanup`              | Repeatable scheduled jobs                                                                     |
 | `audience`         | `bulk-action`                                           | `enqueueAudienceBulkAction` when a bulk lifecycle action exceeds the synchronous ceiling      |
 
@@ -58,7 +58,7 @@ through this worker.
 
 The worker writes to three tables:
 
-- `media_job` — user-visible processing state (queued → probing → thumbnailing → extracting → completed). Surfaces as the upload progress bar in the dashboard.
+- `media_job` — user-visible processing state. Without transcription, it completes after probing and thumbnailing; with transcription, audio extraction and transcription follow. Surfaces as the upload progress bar in the dashboard.
 - `job_step` — per-step idempotency ledger so retries skip already-finished work (e.g. don't re-upload a thumbnail).
 - `dead_letter_job` — terminal failures after BullMQ exhausts retries. Used for operator triage.
 
@@ -147,7 +147,7 @@ curl -X POST "http://localhost:8787/jobs/media/asset/<assetId>/transcribe" \
 
 | HTTP    | Meaning                                                                            |
 | ------- | ---------------------------------------------------------------------------------- |
-| **202** | Job created and enqueued (`success: true`, `data` is the new `media_job` row).     |
+| **202** | Job created; enqueued when Redis is configured (`success: true`, `data` is the new `media_job` row). |
 | **503** | `OPENAI_KEY_MISSING` — `OPENAI_API_KEY` is not set on the API.                     |
 | **400** | `ASSET_NOT_TRANSCRIBABLE` — not an upload video with storage, or wrong asset kind. |
 | **409** | Another active `media_job` already exists for this asset.                          |

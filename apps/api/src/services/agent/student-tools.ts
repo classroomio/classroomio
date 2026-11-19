@@ -1,17 +1,19 @@
-import { and, asc, eq, ilike, or } from 'drizzle-orm';
+import { and, eq, ilike, or, sql } from 'drizzle-orm';
 import { tool } from 'ai';
 import { z } from 'zod';
 
-import { db } from '@cio/db';
+import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import type { AiTutorSettings } from '@cio/ai-assistant';
 
 import { getLesson } from '@cio/core/services/lesson/lesson';
+import { getLessonNoteHtml } from '@cio/core/services/block/block-text';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
-import { listCourseSections } from '@cio/core/services/course/section';
 import { getLearnerPathSummaries } from '@cio/db/queries/learning-path/journey';
 import { summarizeJourney } from '@api/services/learning-path/journey';
+import { getCourseOutlineSummary } from '@cio/core/services/course/outline';
+import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
 import { AppError } from '@api/utils/errors';
 import { AgentEvent, trackAgentEvent } from '@cio/core/utils/tinybird';
 import { verifyExerciseBelongsToCourse, verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
@@ -125,6 +127,10 @@ function makeSnippet(text: string, query: string, radius: number = SEARCH_SNIPPE
 const listCourseOutlineParam = z.object({});
 const readLessonParam = z.object({ lessonId: z.string() });
 const readExerciseParam = z.object({ exerciseId: z.string() });
+const readMySubmissionsParam = z.object({
+  exerciseId: z.string(),
+  attempt: z.number().int().min(1).optional()
+});
 const searchCourseParam = z.object({
   query: z.string().min(1).max(200),
   limit: z.number().int().min(1).max(20).default(8)
@@ -133,40 +139,18 @@ const listStudentLearningPathsParam = z.object({
   limit: z.number().int().min(1).max(20).optional().default(5)
 });
 
+/** Builds the read-only student tools scoped to one course and learner. */
 export function buildStudentAgentTools(orgId: string, userId: string, courseId: string, _settings: AiTutorSettings) {
   return {
     list_course_outline: tool({
       description:
-        'List the course outline (sections with their lessons and exercises). The courseId is automatically scoped — do not pass it. Returns titles and ids only.',
+        'List the course outline in course order: sections with their lessons and exercises, and lessons or exercises outside any section in their place. The courseId is automatically scoped — do not pass it. Returns titles and ids only.',
       inputSchema: listCourseOutlineParam,
       execute: async () => {
         return executeStudentTool('list_course_outline', { orgId, userId, courseId }, async () => {
-          const [sections, lessons, exercises] = await Promise.all([
-            listCourseSections(courseId),
-            db
-              .select({
-                id: schema.lesson.id,
-                title: schema.lesson.title,
-                sectionId: schema.lesson.sectionId,
-                order: schema.lesson.order
-              })
-              .from(schema.lesson)
-              .where(eq(schema.lesson.courseId, courseId))
-              .orderBy(asc(schema.lesson.order)),
-            db
-              .select({
-                id: schema.exercise.id,
-                title: schema.exercise.title,
-                lessonId: schema.exercise.lessonId,
-                sectionId: schema.exercise.sectionId,
-                order: schema.exercise.order
-              })
-              .from(schema.exercise)
-              .where(eq(schema.exercise.courseId, courseId))
-              .orderBy(asc(schema.exercise.order))
-          ]);
+          const outline = await getCourseOutlineSummary(courseId);
 
-          return { sections, lessons, exercises };
+          return { outline };
         });
       }
     }),
@@ -179,19 +163,13 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
         return executeStudentTool('read_lesson', { orgId, userId, courseId, args }, async () => {
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
           const lesson = await getLesson(args.lessonId);
-          const lessonWithLangs = lesson as {
-            id: string;
-            title: string;
-            note?: string | null;
-            lessonLanguages?: Array<{ locale: string; content: string | null }>;
-          };
-          const content = lessonWithLangs.lessonLanguages?.find((ll) => ll.locale === 'en')?.content ?? null;
+          const content = await getLessonNoteHtml(args.lessonId, 'en');
 
           return {
             id: lesson.id,
             title: lesson.title,
             content,
-            note: lessonWithLangs.note ?? null
+            note: lesson.note ?? null
           };
         });
       }
@@ -240,6 +218,22 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
       }
     }),
 
+    read_my_submissions: tool({
+      description:
+        "Read this learner's own submitted result for an exercise. Use this before answering questions such as 'what did I miss?', 'what was my score?', or 'what feedback did I get?'. Returns the latest attempt unless an attempt number is supplied. It never returns answer keys or another learner's data.",
+      inputSchema: readMySubmissionsParam,
+      execute: async (args) => {
+        return executeStudentTool('read_my_submissions', { orgId, userId, courseId, args }, async () => {
+          return getStudentSubmissionReview({
+            courseId,
+            profileId: userId,
+            exerciseId: args.exerciseId,
+            attempt: args.attempt
+          });
+        });
+      }
+    }),
+
     search_course: tool({
       description:
         'Search this course for lessons and exercises whose title or body contains the query. Returns up to `limit` ranked snippets with ids you can pass to read_lesson / read_exercise.',
@@ -248,23 +242,26 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
         return executeStudentTool('search_course', { orgId, userId, courseId, args }, async () => {
           const pattern = `%${args.query}%`;
           const limit = args.limit ?? 8;
+          const noteContent = sql<string | null>`(
+            SELECT string_agg(bl.content, E'\n' ORDER BY bp.position COLLATE "C")
+            FROM block_placement bp
+            JOIN block b ON b.id = bp.block_id AND b.type = 'note'
+            JOIN block_locale bl ON bl.block_id = b.id AND bl.locale = 'en'
+            WHERE bp.lesson_id = "lesson"."id"
+          )`;
 
           const [lessonMatches, exerciseMatches] = await Promise.all([
             db
               .select({
                 id: schema.lesson.id,
                 title: schema.lesson.title,
-                content: schema.lessonLanguage.content
+                content: noteContent
               })
               .from(schema.lesson)
-              .leftJoin(
-                schema.lessonLanguage,
-                and(eq(schema.lessonLanguage.lessonId, schema.lesson.id), eq(schema.lessonLanguage.locale, 'en'))
-              )
               .where(
                 and(
                   eq(schema.lesson.courseId, courseId),
-                  or(ilike(schema.lesson.title, pattern), ilike(schema.lessonLanguage.content, pattern))
+                  or(ilike(schema.lesson.title, pattern), ilike(noteContent, pattern))
                 )
               )
               .limit(limit),

@@ -41,7 +41,6 @@ export async function toggleLessonCompletion(courseId: string, lessonId: string)
     return true;
   }
 
-  const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
   openCourseCompletionModal(courseId);
 
   const certificationEvaluation = await courseApi.getCertificationEvaluation(courseId);
@@ -50,8 +49,7 @@ export async function toggleLessonCompletion(courseId: string, lessonId: string)
     updateCourseCompletionModal(
       courseId,
       hasCompletedCourse ? 'eligible' : 'not-eligible',
-      certificationEvaluation.data,
-      requiredExerciseId
+      certificationEvaluation.data
     );
   } else {
     closeCourseCompletionModal();

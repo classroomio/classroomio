@@ -97,7 +97,7 @@ export async function earnCourseCertificate(tx: DbOrTxClient, groupMemberId: str
   await tx.execute(sql`UPDATE groupmember SET certificate_earned_at = ${earnedAt} WHERE id = ${groupMemberId}`);
 }
 
-/** Records the course completion that `evaluateAndRecordCourseCompletion` writes once the learner meets the rule. */
+/** Records the course completion that `evaluateCourseCertification` writes once the learner meets the rule. */
 export async function recordCourseCompletion(tx: DbOrTxClient, groupMemberId: string, completedAt: string) {
   await tx.execute(sql`UPDATE groupmember SET completed_at = ${completedAt} WHERE id = ${groupMemberId}`);
 }

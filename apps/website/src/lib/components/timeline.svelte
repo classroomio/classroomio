@@ -25,7 +25,7 @@
           >
             <div class="z-50 h-4 w-4 rounded-full bg-blue-800"></div>
           </div>
-          <h1 class="text-2xl font-bold text-blue-800">{card.title}</h1>
+          <h1 class="text-2xl font-medium text-blue-800">{card.title}</h1>
         </div>
         <p class="text-base text-gray-500">
           {card.desc}

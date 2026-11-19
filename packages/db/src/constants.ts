@@ -36,3 +36,21 @@ export const TRUSTED_ORIGINS = [
 
 export const BASE_URL =
   PUBLIC_IS_SELFHOSTED === 'true' && dashboardOrigin ? dashboardOrigin : PUBLIC_SERVER_URL || 'http://localhost:3002';
+
+const DEFAULT_APP_ORIGIN =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
+
+export const APP_ORIGIN = dashboardOrigin || DEFAULT_APP_ORIGIN;
+
+export const OAUTH_ISSUER = `${APP_ORIGIN}/api/auth`;
+
+const CLOUD_MCP_URL = 'https://mcp.classroomio.com';
+
+const hasOwnMcpHost = PUBLIC_IS_SELFHOSTED === 'true' || process.env.NODE_ENV === 'development';
+
+export const MCP_RESOURCE = hasOwnMcpHost ? `${BASE_URL}/mcp` : CLOUD_MCP_URL;
+
+// MCP SDK clients (e.g. Claude Code) send `new URL(resource).href`, which adds a trailing slash to a bare origin.
+export const MCP_RESOURCE_IDENTIFIERS = [...new Set([MCP_RESOURCE, new URL(MCP_RESOURCE).href])];
+
+export const PUBLIC_API_RESOURCE = `${BASE_URL}/public-api/v1`;

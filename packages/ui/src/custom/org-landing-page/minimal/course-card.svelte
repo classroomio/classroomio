@@ -40,9 +40,9 @@
       ? ''
       : 'ui:hover:border-[var(--landing-border)] ui:transition-colors'}"
   >
-    {#if course.logo}
+    {#if course.bannerImage}
       <div class="ui:aspect-video ui:w-full ui:overflow-hidden">
-        <img src={course.logo} alt={course.title} class="ui:h-full ui:w-full ui:object-cover" />
+        <img src={course.bannerImage} alt={course.title} class="ui:h-full ui:w-full ui:object-cover" />
       </div>
     {/if}
     <Card.Content class="ui:p-8 ui:flex ui:flex-col ui:flex-1">

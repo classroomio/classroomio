@@ -1,9 +1,13 @@
 <script>
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
+  import { MachineBrandStand } from '@cio/ui/custom/animation/machines';
   import BoxedGrid from './boxed-grid.svelte';
   import Palette from '@lucide/svelte/icons/palette';
   import Globe from '@lucide/svelte/icons/globe';
   import Receipt from '@lucide/svelte/icons/receipt';
+  import Eyebrow from './ui/eyebrow.svelte';
+  import MachineCard from './ui/machine-card.svelte';
+  import Section from './ui/section.svelte';
 
   const academies = [
     {
@@ -57,77 +61,78 @@
   ];
 </script>
 
-<section class="bg-white px-6 py-12 lg:px-12 lg:py-16">
-  <div class="mx-auto max-w-[1100px]">
-    <!-- Header: eyebrow on top, headline + supporting text in a split row -->
-    <BlurFade once>
-      <div class="text-xs font-medium tracking-widest text-blue-700 uppercase">Multi-academy</div>
-    </BlurFade>
+<Section class="bg-white">
+  <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+    <div>
+      <BlurFade once>
+        <Eyebrow class="text-blue-700">Multi-academy</Eyebrow>
+      </BlurFade>
 
-    <div class="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end">
       <BlurFade delay={0.05} once>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight text-gray-950">
+        <h2 class="text-h3 mt-4 text-balance text-gray-950">
           One platform,
           <em class="text-gray-700 not-italic">every audience.</em>
         </h2>
       </BlurFade>
 
       <BlurFade delay={0.1} once>
-        <p class="max-w-[360px] text-sm leading-relaxed text-gray-500 lg:text-right lg:text-base">
+        <p class="text-lead mt-[18px] max-w-[480px] text-pretty text-gray-500">
           Three workspaces, three brands, three domains. One login. One bill.
         </p>
       </BlurFade>
     </div>
 
-    <!-- Academies list -->
-    <div class="mt-10 border-t border-gray-200">
-      {#each academies as a, i}
-        <BlurFade delay={0.05 * i + 0.15} once>
-          <div
-            class="grid grid-cols-[auto_1fr] gap-x-4 border-b border-gray-200 py-5 lg:grid-cols-[40px_1.6fr_1.6fr_1fr_auto] lg:items-center lg:gap-x-6"
-          >
-            <!-- Number -->
-            <p class="font-mono text-xs text-gray-400">{a.index}</p>
-
-            <!-- Name + domain -->
-            <div class="flex items-start gap-3">
-              <span class="mt-2 h-2 w-2 shrink-0 rounded-full {a.dot}"></span>
-              <div>
-                <p class="text-sm text-gray-950 lg:text-base">{a.name}</p>
-                <p class="font-mono text-[11px] text-gray-500 lg:text-xs">{a.domain}</p>
-              </div>
-            </div>
-
-            <!-- Audience -->
-            <p class="col-span-2 mt-2 text-sm text-gray-600 lg:col-span-1 lg:mt-0">{a.audience}</p>
-
-            <!-- Progress bar -->
-            <div class="col-span-2 mt-2 h-1 w-full overflow-hidden rounded-full bg-gray-100 lg:col-span-1 lg:mt-0">
-              <div class="h-full rounded-full {a.bar}" style="width: {a.barWidth}"></div>
-            </div>
-
-            <!-- Active badge -->
-            <span
-              class="col-span-2 mt-2 inline-block w-fit rounded-full px-2.5 py-1 text-xs font-medium {a.badge} lg:col-span-1 lg:mt-0"
-            >
-              Active
-            </span>
-          </div>
-        </BlurFade>
-      {/each}
-    </div>
-
-    <!-- Bottom feature row -->
-    <div class="mt-10">
-      <BoxedGrid items={benefits} cols={3} padding="p-5 lg:p-6">
-        {#snippet cell(benefit)}
-          <div class="text-gray-950">
-            <benefit.Icon size={18} strokeWidth={1.6} />
-          </div>
-          <h3 class="mt-3 text-sm font-medium text-gray-950 lg:text-base">{benefit.title}</h3>
-          <p class="mt-1.5 text-xs leading-relaxed text-gray-500 lg:text-sm">{benefit.description}</p>
-        {/snippet}
-      </BoxedGrid>
-    </div>
+    <BlurFade delay={0.1} once>
+      <MachineCard>
+        <MachineBrandStand
+          class="h-56 sm:h-64 lg:h-72"
+          label="Three academy brands, Acme, Northwind and Kestrel, rotating on one stand under learn.acme.com"
+        />
+      </MachineCard>
+    </BlurFade>
   </div>
-</section>
+
+  <div class="mt-12 border-t border-gray-200">
+    {#each academies as a, i}
+      <BlurFade delay={0.05 * i + 0.15} once>
+        <div
+          class="grid grid-cols-[auto_1fr] gap-x-4 border-b border-gray-200 py-5 lg:grid-cols-[40px_1.6fr_1.6fr_1fr_auto] lg:items-center lg:gap-x-6"
+        >
+          <p class="font-mono text-xs text-gray-400">{a.index}</p>
+
+          <div class="flex items-start gap-3">
+            <span class="mt-2 h-2 w-2 shrink-0 rounded-full {a.dot}"></span>
+            <div>
+              <p class="text-base font-medium text-gray-950">{a.name}</p>
+              <p class="font-mono text-[11px] text-gray-500 lg:text-xs">{a.domain}</p>
+            </div>
+          </div>
+
+          <p class="col-span-2 mt-2 text-sm text-gray-600 lg:col-span-1 lg:mt-0">{a.audience}</p>
+
+          <div class="col-span-2 mt-2 h-1 w-full overflow-hidden rounded-full bg-gray-100 lg:col-span-1 lg:mt-0">
+            <div class="h-full rounded-full {a.bar}" style="width: {a.barWidth}"></div>
+          </div>
+
+          <span
+            class="col-span-2 mt-2 inline-block w-fit rounded-full px-2.5 py-1 text-xs font-medium {a.badge} lg:col-span-1 lg:mt-0"
+          >
+            Active
+          </span>
+        </div>
+      </BlurFade>
+    {/each}
+  </div>
+
+  <div class="mt-12">
+    <BoxedGrid items={benefits} cols={3} padding="p-5 lg:p-6">
+      {#snippet cell(benefit)}
+        <div class="flex size-10 items-center justify-center rounded-md bg-gray-100 text-gray-950">
+          <benefit.Icon size={20} strokeWidth={1.8} />
+        </div>
+        <h3 class="text-card-title mt-5 font-medium text-gray-950">{benefit.title}</h3>
+        <p class="mt-2 text-[15px] leading-relaxed text-gray-500">{benefit.description}</p>
+      {/snippet}
+    </BoxedGrid>
+  </div>
+</Section>

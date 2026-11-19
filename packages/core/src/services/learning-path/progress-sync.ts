@@ -17,7 +17,7 @@ import {
 } from '@cio/db/queries/learning-path';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import type { TLearningPath } from '@cio/db/types';
-import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/tracking';
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import type { TLearningPathProgressReconcilePayload, TLearningPathProgressSyncPayload } from '@cio/jobs';
 import { ROLE } from '@cio/utils/constants';

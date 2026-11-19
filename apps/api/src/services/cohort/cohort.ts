@@ -1,3 +1,5 @@
+import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import type { TOrganizationmember } from '@cio/db/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isUniqueConstraintViolation } from '@cio/utils/errors';
 import {
@@ -14,6 +16,9 @@ import {
 import {
   addCourseToCohort,
   addCohortMember,
+  countCohortNewsfeedComments,
+  countCohortsByOrgForProfile,
+  countCoursesByCohort,
   createCohortWithCreatorMembership,
   createCohortNewsfeed as createCohortNewsfeedQuery,
   createCohortNewsfeedComment as createCohortNewsfeedCommentQuery,
@@ -24,6 +29,7 @@ import {
   getCohortById,
   isOrgAdminByCohortId,
   getCohortCoursePairsByCohortIds,
+  getCohortMemberByEmail,
   getCohortMemberById,
   getCohortMemberByProfileId,
   getCohortMembers,
@@ -37,12 +43,17 @@ import {
   getCohortMemberRole,
   isCohortCourse,
   isCohortMember,
+  listCohortEnrollmentMembers,
   removeCourseFromCohort,
   removeCohortMember,
   updateCohort as updateCohortQuery,
   updateCohortMember as updateCohortMemberQuery,
   updateCohortNewsfeed as updateCohortNewsfeedQuery,
-  updateCohortNewsfeedReaction
+  updateCohortNewsfeedReaction,
+  getPaginatedCohortPeople,
+  type PaginatedCohortPeopleOptions,
+  type TCohortListFilters,
+  type TCohortListPage
 } from '@cio/db/queries/cohort';
 import { getAddableOrgCourses, getCourseGroupIds, getCourseOrgInfo } from '@cio/db/queries/course';
 import { getGroupMemberByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
@@ -52,7 +63,8 @@ import { getProfileByEmail } from '@cio/db/queries/auth';
 import {
   getOrgMembersByProfileIds,
   getOrganizationMemberIdByOrgAndProfile,
-  insertOrganizationMembersOnConflictDoNothing
+  insertOrganizationMembersOnConflictDoNothing,
+  listActiveOrganizationRoles
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import type { TAddableCoursesQuery } from '@cio/utils/validation/course';
@@ -60,6 +72,9 @@ import { assertCourseAllowsDirectStudentAdd, filterOutPathOnlyCourseIds } from '
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
+import type { TGroupmember } from '@cio/db/types';
+import type { TEventSource } from '@cio/core/services/posthog';
+import { captureLearnersEnrolled } from '@api/services/product-events';
 
 type CohortMemberEnrollment = {
   profileId: string;
@@ -67,10 +82,60 @@ type CohortMemberEnrollment = {
   roleId: number;
 };
 
+type CohortCourseGroup = {
+  courseId: string;
+  groupId: string;
+};
+
+function isCohortStaffRole(roleId: number) {
+  return roleId === ROLE.ADMIN || roleId === ROLE.TUTOR;
+}
+
+async function listCohortCourseGroups(cohortId: string): Promise<CohortCourseGroup[]> {
+  const cohortCourses = await getCoursesByCohort(cohortId);
+  const courseIds = cohortCourses.map((row) => row.course.id);
+  const groups = await getCourseGroupIds(courseIds);
+
+  return groups.flatMap((row) => (row.groupId ? [{ courseId: row.courseId, groupId: row.groupId }] : []));
+}
+
+type CohortStudentEnrollment = {
+  enrolled: number;
+  milestone: StudentMilestoneNotification | null;
+  enrolledMembers: TGroupmember[];
+  createdOrganizationMembers: TOrganizationmember[];
+};
+
+const NO_COHORT_STUDENT_ENROLLMENT: CohortStudentEnrollment = {
+  enrolled: 0,
+  milestone: null,
+  enrolledMembers: [],
+  createdOrganizationMembers: []
+};
+
+async function announceCohortStudentEnrollment(
+  organizationId: string,
+  source: TEventSource,
+  enrollment: CohortStudentEnrollment
+) {
+  captureLearnersEnrolled(enrollment.enrolledMembers, 'cohort', source);
+
+  for (const createdMember of enrollment.createdOrganizationMembers) {
+    await emitOrganizationMemberWebhookEvent('organization.member.added', organizationId, createdMember);
+  }
+
+  if (enrollment.milestone) {
+    notifyStudentMilestone(enrollment.milestone).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
+  }
+}
+
 /**
  * Enrolls cohort STUDENT members into the groups of the given (non-path-only)
  * courses with COHORT grants. Inside a caller's transaction it returns the
- * student-limit milestone for the caller to send after commit.
+ * enrollment for the caller to announce after commit; standalone, it
+ * announces it here after commit.
  */
 async function enrollCohortStudentsInGroups(
   organizationId: string,
@@ -78,19 +143,20 @@ async function enrollCohortStudentsInGroups(
   members: CohortMemberEnrollment[],
   courseIds: string[],
   cohortId: string,
+  source: TEventSource,
   dbClient?: DbOrTxClient
-) {
+): Promise<CohortStudentEnrollment> {
   const { allowedCourseIds } = await filterOutPathOnlyCourseIds(courseIds, dbClient ?? db);
 
   if (allowedCourseIds.length === 0) {
-    return { enrolled: 0, milestone: null };
+    return NO_COHORT_STUDENT_ENROLLMENT;
   }
 
   const studentMembers = members.filter((member) => member.profileId && member.roleId === ROLE.STUDENT);
   const uniqueGroupIds = [...new Set(groupIds)];
 
   if (studentMembers.length === 0 || uniqueGroupIds.length === 0) {
-    return { enrolled: 0, milestone: null };
+    return NO_COHORT_STUDENT_ENROLLMENT;
   }
 
   const studentProfileIds = studentMembers
@@ -120,13 +186,16 @@ async function enrollCohortStudentsInGroups(
   );
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+  let createdOrganizationMembers: TOrganizationmember[] = [];
+
+  let enrolledMembers: TGroupmember[] = [];
 
   const run = async (tx: DbOrTxClient) => {
     studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size, tx, {
       deferNotification: true
     });
-    await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
-    await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
+    createdOrganizationMembers = await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
+    enrolledMembers = await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
     await recordDirectCourseGrantsBulk(
       {
         groupIds: uniqueGroupIds,
@@ -139,26 +208,62 @@ async function enrollCohortStudentsInGroups(
     );
   };
 
-  // Inside a caller's transaction the milestone email is returned for the
-  // caller to send after commit; standalone, it is sent here after commit.
   if (dbClient && dbClient !== db) {
     await run(dbClient);
-
-    return {
-      enrolled: groupMemberRows.length,
-      milestone: studentMilestoneNotification as StudentMilestoneNotification | null
-    };
+  } else {
+    await db.transaction(run);
   }
 
-  await db.transaction(run);
+  const enrollment: CohortStudentEnrollment = {
+    enrolled: groupMemberRows.length,
+    milestone: studentMilestoneNotification,
+    enrolledMembers,
+    createdOrganizationMembers
+  };
 
-  if (studentMilestoneNotification) {
-    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
-      console.error('notifyStudentMilestone error:', error);
-    });
+  if (dbClient && dbClient !== db) {
+    return enrollment;
   }
 
-  return { enrolled: groupMemberRows.length, milestone: null };
+  await announceCohortStudentEnrollment(organizationId, source, enrollment);
+
+  return { ...enrollment, milestone: null };
+}
+
+async function enrollCohortStaffInCourseGroups(
+  organizationId: string,
+  groupIds: string[],
+  members: CohortMemberEnrollment[],
+  dbClient: DbOrTxClient
+) {
+  const cohortStaff = members.filter((member) => member.profileId && isCohortStaffRole(member.roleId));
+  const uniqueGroupIds = [...new Set(groupIds)];
+
+  if (uniqueGroupIds.length === 0 || cohortStaff.length === 0) {
+    return;
+  }
+
+  const profileIds = cohortStaff.map((member) => member.profileId);
+  const organizationRoles = await listActiveOrganizationRoles(organizationId, profileIds, dbClient);
+  const organizationStaffIds = new Set(
+    organizationRoles.filter((member) => isCohortStaffRole(member.roleId)).map((member) => member.profileId)
+  );
+  const staff = cohortStaff.filter((member) => organizationStaffIds.has(member.profileId));
+
+  if (staff.length === 0) {
+    return;
+  }
+
+  const membershipRows = uniqueGroupIds.flatMap((groupId) =>
+    staff.map((member) => ({
+      groupId,
+      roleId: member.roleId,
+      profileId: member.profileId,
+      email: member.email ?? undefined
+    }))
+  );
+
+  await insertGroupMembersOnConflictDoNothing(membershipRows, dbClient);
 }
 
 // ─── Cohort CRUD ─────────────────────────────────────────────────────────────
@@ -217,6 +322,20 @@ export async function listOrgCohorts(organizationId: string, profileId: string) 
   }
 }
 
+export async function listOrgCohortsPage(
+  organizationId: string,
+  profileId: string,
+  query: TCohortListPage & TCohortListFilters
+) {
+  const { page, limit, ...filters } = query;
+  const [items, total] = await Promise.all([
+    getCohortsByOrgForProfile(organizationId, profileId, { page, limit }, filters),
+    countCohortsByOrgForProfile(organizationId, profileId, filters)
+  ]);
+
+  return { items, total };
+}
+
 export async function updateCohort(cohortId: string, data: TUpdateCohort) {
   try {
     const updated = await updateCohortQuery(cohortId, data);
@@ -240,6 +359,7 @@ export async function deleteCohort(cohortId: string) {
     if (!deleted) {
       throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
     }
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -322,28 +442,85 @@ export async function ensureCohortCourseGrants(
   }
 }
 
-export async function addCohortMembers(cohortId: string, data: TAddCohortMembers, actorProfileId?: string) {
+export async function listPaginatedCohortPeople(cohortId: string, query: PaginatedCohortPeopleOptions) {
+  try {
+    const { items, total } = await getPaginatedCohortPeople(cohortId, query);
+
+    return {
+      items,
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: total === 0 ? 0 : Math.ceil(total / query.limit)
+      }
+    };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to list cohort people',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+export async function addCohortMembers(
+  cohortId: string,
+  data: TAddCohortMembers,
+  actorProfileId: string | null = null
+) {
+  const results = await addCohortMembersSettled(cohortId, data, 'dashboard', actorProfileId);
+  const cohortCourses = await getCoursesByCohort(cohortId);
+  const { skippedPathOnlyCourseIds } = await filterOutPathOnlyCourseIds(cohortCourses.map((row) => row.course.id));
+
+  const added = results
+    .filter((r) => r.status === 'fulfilled')
+    .map((r) => (r as PromiseFulfilledResult<unknown>).value);
+  const errors = results
+    .filter((r) => r.status === 'rejected')
+    .map((r) => (r as PromiseRejectedResult).reason?.message || 'Unknown error');
+
+  return { added, errors, skippedPathOnlyCourseIds };
+}
+
+/** One settled result per `data.members` entry, in request order. */
+export async function addCohortMembersSettled(
+  cohortId: string,
+  data: TAddCohortMembers,
+  source: TEventSource = 'dashboard',
+  actorProfileId: string | null = null
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
       throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
     }
 
-    const cohortCourses = await getCoursesByCohort(cohortId);
-    const allCourseIds = cohortCourses.map((course) => course.course.id);
-    const { allowedCourseIds, skippedPathOnlyCourseIds } = await filterOutPathOnlyCourseIds(allCourseIds);
-    const courseGroupIds = (await getCourseGroupIds(allowedCourseIds)).map((courseGroup) => courseGroup.groupId);
+    const courseGroups = await listCohortCourseGroups(cohortId);
+    const { allowedCourseIds } = await filterOutPathOnlyCourseIds(courseGroups.map((courseGroup) => courseGroup.courseId));
+    const allowedCourseIdSet = new Set(allowedCourseIds);
+    const courseGroupIds = courseGroups.map((courseGroup) => courseGroup.groupId);
+    const studentCourseGroupIds = courseGroups
+      .filter((courseGroup) => allowedCourseIdSet.has(courseGroup.courseId))
+      .map((courseGroup) => courseGroup.groupId);
 
-    const results = await Promise.allSettled(
+    return await Promise.allSettled(
       data.members.map(async ({ profileId: providedProfileId, email, roleId }) => {
         const profile = !providedProfileId && email ? await getProfileByEmail(email) : null;
         const profileId = providedProfileId ?? profile?.id ?? null;
         const normalizedEmail = email?.toLowerCase().trim() ?? profile?.email ?? null;
 
-        if (profileId) {
-          const existing = await getCohortMemberByProfileId(cohortId, profileId);
+        if (profileId || normalizedEmail) {
+          const existing = profileId
+            ? await getCohortMemberByProfileId(cohortId, profileId)
+            : await getCohortMemberByEmail(cohortId, normalizedEmail!);
           if (existing) {
-            throw new AppError(`${email} is already a member of this cohort`, ErrorCodes.MEMBER_ALREADY_IN_COHORT, 409);
+            throw new AppError(
+              `${email ?? profileId} is already a member of this cohort`,
+              ErrorCodes.MEMBER_ALREADY_IN_COHORT,
+              409
+            );
           }
         }
 
@@ -357,6 +534,8 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
 
         const transactionResult = await db.transaction(async (tx) => {
           let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+          let enrolledMembers: TGroupmember[] = [];
+          let createdOrgMembers: TOrganizationmember[] = [];
           const member = await addCohortMember(
             {
               cohortId,
@@ -367,8 +546,8 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
             tx
           );
 
-          if (member && member.roleId === ROLE.STUDENT && member.profileId && courseGroupIds.length > 0) {
-            const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
+          if (member && member.roleId === ROLE.STUDENT && member.profileId && studentCourseGroupIds.length > 0) {
+            const validCourseGroupIds = studentCourseGroupIds;
 
             const existingOrgMemberId = await getOrganizationMemberIdByOrgAndProfile(
               cohort.organizationId,
@@ -381,7 +560,7 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
               });
             }
 
-            await insertOrganizationMembersOnConflictDoNothing(
+            createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
               [
                 {
                   organizationId: cohort.organizationId,
@@ -394,7 +573,7 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
               tx
             );
 
-            await insertGroupMembersOnConflictDoNothing(
+            enrolledMembers = await insertGroupMembersOnConflictDoNothing(
               validCourseGroupIds.map((groupId) => ({
                 groupId,
                 roleId: ROLE.STUDENT,
@@ -404,11 +583,30 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
               tx
             );
 
-            await ensureCohortCourseGrants(cohortId, member.profileId, actorProfileId, tx, allowedCourseIds);
+            await ensureCohortCourseGrants(cohortId, member.profileId, actorProfileId ?? undefined, tx, allowedCourseIds);
           }
 
-          return { member, studentMilestoneNotification };
+          if (member?.profileId && (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR)) {
+            const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
+
+            await enrollCohortStaffInCourseGroups(
+              cohort.organizationId,
+              validCourseGroupIds,
+              [
+                {
+                  profileId: member.profileId,
+                  email: normalizedEmail,
+                  roleId: member.roleId
+                }
+              ],
+              tx
+            );
+          }
+
+          return { member, studentMilestoneNotification, enrolledMembers, createdOrgMembers };
         });
+
+        captureLearnersEnrolled(transactionResult.enrolledMembers, 'cohort', source);
 
         if (transactionResult.studentMilestoneNotification) {
           notifyStudentMilestone(transactionResult.studentMilestoneNotification).catch((error) => {
@@ -416,18 +614,28 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
           });
         }
 
+        for (const createdOrgMember of transactionResult.createdOrgMembers) {
+          await emitOrganizationMemberWebhookEvent(
+            'organization.member.added',
+            cohort.organizationId,
+            createdOrgMember,
+            actorProfileId
+          );
+        }
+
+        if (transactionResult.member) {
+          await emitCohortMemberWebhookEvent(
+            'cohort.member.added',
+            cohort.organizationId,
+            cohortId,
+            transactionResult.member,
+            actorProfileId
+          );
+        }
+
         return transactionResult.member;
       })
     );
-
-    const added = results
-      .filter((r) => r.status === 'fulfilled')
-      .map((r) => (r as PromiseFulfilledResult<unknown>).value);
-    const errors = results
-      .filter((r) => r.status === 'rejected')
-      .map((r) => (r as PromiseRejectedResult).reason?.message || 'Unknown error');
-
-    return { added, errors, skippedPathOnlyCourseIds };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -442,7 +650,11 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
  * Removes a member from a cohort and revokes their COHORT grants in one
  * transaction, scoped to the cohort so another cohort's member 404s.
  */
-export async function removeCohortMemberService(cohortId: string, memberId: string) {
+export async function removeCohortMemberService(
+  cohortId: string,
+  memberId: string,
+  actorProfileId: string | null = null
+) {
   try {
     const deleted = await db.transaction(async (tx) => {
       const removed = await removeCohortMember(cohortId, memberId, tx);
@@ -458,6 +670,17 @@ export async function removeCohortMemberService(cohortId: string, memberId: stri
       return removed;
     });
 
+    const cohort = await getCohortById(cohortId);
+    if (cohort) {
+      await emitCohortMemberWebhookEvent(
+        'cohort.member.removed',
+        cohort.organizationId,
+        cohortId,
+        deleted,
+        actorProfileId
+      );
+    }
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -470,10 +693,11 @@ export async function removeCohortMemberService(cohortId: string, memberId: stri
 }
 
 /**
- * Changes a member's role between student and tutor, scoped to the cohort so
- * another cohort's member 404s. Course access moves with the role in the same
- * transaction: a demoted student loses their COHORT grants, and a tutor made a
- * student is enrolled in the cohort's courses like a newly added student.
+ * Changes a member's role, scoped to the cohort so another cohort's member
+ * 404s. Course access moves with the role in the same transaction: a member
+ * promoted to cohort staff joins the cohort's course groups as staff, a
+ * demoted student loses their COHORT grants, and a tutor made a student is
+ * enrolled in the cohort's courses like a newly added student.
  */
 export async function updateCohortMemberService(cohortId: string, memberId: string, data: TUpdateCohortMember) {
   try {
@@ -483,6 +707,10 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
       throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
     }
 
+    const staffCourseGroupIds = isCohortStaffRole(data.roleId)
+      ? (await listCohortCourseGroups(cohortId)).map((courseGroup) => courseGroup.groupId)
+      : [];
+
     const result = await db.transaction(async (tx) => {
       const member = await getCohortMemberById(cohortId, memberId, tx);
 
@@ -491,7 +719,7 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
       }
 
       if (member.roleId === data.roleId) {
-        return { updated: member, milestone: null };
+        return { updated: member, enrollment: null };
       }
 
       // Only applies while the role is still the one read above, so grants
@@ -507,17 +735,26 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
       }
 
       if (!updated.profileId) {
-        return { updated, milestone: null };
+        return { updated, enrollment: null };
+      }
+
+      if (!isCohortStaffRole(member.roleId) && isCohortStaffRole(updated.roleId)) {
+        await enrollCohortStaffInCourseGroups(
+          cohort.organizationId,
+          staffCourseGroupIds,
+          [{ profileId: updated.profileId, email: updated.email, roleId: updated.roleId }],
+          tx
+        );
       }
 
       if (member.roleId === ROLE.STUDENT) {
         await revokeCohortGrants(cohortId, updated.profileId, tx);
 
-        return { updated, milestone: null };
+        return { updated, enrollment: null };
       }
 
       if (data.roleId !== ROLE.STUDENT) {
-        return { updated, milestone: null };
+        return { updated, enrollment: null };
       }
 
       const coursePairs = await getCohortCoursePairsByCohortIds([cohortId], tx);
@@ -535,16 +772,15 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
         [student],
         allowedCourseIds,
         cohortId,
+        'dashboard',
         tx
       );
 
-      return { updated, milestone: enrollment.milestone };
+      return { updated, enrollment };
     });
 
-    if (result.milestone) {
-      notifyStudentMilestone(result.milestone).catch((error) => {
-        console.error('notifyStudentMilestone error:', error);
-      });
+    if (result.enrollment) {
+      await announceCohortStudentEnrollment(cohort.organizationId, 'dashboard', result.enrollment);
     }
 
     return result.updated;
@@ -573,10 +809,25 @@ export async function getEnrolledCohorts(profileId: string) {
 
 // ─── Cohort Courses ──────────────────────────────────────────────────────────
 
+async function seesOnlyPublishedCohortCourses(cohortId: string, profileId: string) {
+  const roleId = await getCohortMemberRole(cohortId, profileId);
+
+  return roleId === ROLE.STUDENT;
+}
+
+export async function listCohortCoursesPage(cohortId: string, profileId: string, page: TCohortListPage) {
+  const onlyPublished = await seesOnlyPublishedCohortCourses(cohortId, profileId);
+  const [items, total] = await Promise.all([
+    getCoursesByCohort(cohortId, onlyPublished, page),
+    countCoursesByCohort(cohortId, onlyPublished)
+  ]);
+
+  return { items, total };
+}
+
 export async function listCohortCourses(cohortId: string, profileId: string) {
   try {
-    const roleId = await getCohortMemberRole(cohortId, profileId);
-    const onlyPublished = roleId === ROLE.STUDENT;
+    const onlyPublished = await seesOnlyPublishedCohortCourses(cohortId, profileId);
 
     return getCoursesByCohort(cohortId, onlyPublished);
   } catch (error) {
@@ -617,7 +868,11 @@ export async function listAddableCohortCoursesService(cohortId: string, actorId:
   return { items, pagination: { page: query.page, limit: query.limit, total, totalPages } };
 }
 
-export async function addCourseToCohortService(cohortId: string, data: TAddCourseToCohort) {
+export async function addCourseToCohortService(
+  cohortId: string,
+  data: TAddCourseToCohort,
+  source: TEventSource = 'dashboard'
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -634,7 +889,7 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
 
     await assertCourseAllowsDirectStudentAdd(data.courseId);
 
-    const { added, milestone } = await db.transaction(async (tx) => {
+    const { added, enrollment } = await db.transaction(async (tx) => {
       const alreadyAdded = await isCohortCourse(cohortId, data.courseId, tx);
 
       if (alreadyAdded) {
@@ -642,17 +897,17 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
       }
 
       const added = await addCourseToCohort(cohortId, data.courseId, tx);
-      const memberRows = await getCohortMembers(cohortId, tx);
-      const studentRows = memberRows
-        .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
-        .map((member) => ({
-          profileId: member.profileId!,
-          email: member.email ?? null,
-          roleId: member.roleId
-        }));
+      const members = await listCohortEnrollmentMembers(cohortId, tx);
+      const enrollmentRows = members.flatMap((member) =>
+        member.profileId ? [{ profileId: member.profileId, email: member.email, roleId: member.roleId }] : []
+      );
+      const staffRows = enrollmentRows.filter((member) => isCohortStaffRole(member.roleId));
+      const studentRows = enrollmentRows.filter((member) => member.roleId === ROLE.STUDENT);
       const groups = (await getCourseGroupIds([data.courseId], tx))
         .map((courseGroup) => courseGroup.groupId)
         .filter((groupId): groupId is string => Boolean(groupId));
+
+      await enrollCohortStaffInCourseGroups(cohort.organizationId, groups, staffRows, tx);
 
       if (studentRows.length > 0 && groups.length > 0) {
         const enrollment = await enrollCohortStudentsInGroups(
@@ -661,20 +916,19 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
           studentRows,
           [data.courseId],
           cohortId,
+          source,
           tx
         );
 
-        return { added, milestone: enrollment.milestone };
+        return { added, enrollment };
       }
 
-      return { added, milestone: null };
+      return { added, enrollment: null };
     });
 
-    // Sent only after commit, so a rolled-back add never emails admins.
-    if (milestone) {
-      notifyStudentMilestone(milestone).catch((notifyError) => {
-        console.error('notifyStudentMilestone error:', notifyError);
-      });
+    // Announced only after commit, so a rolled-back add never emails admins.
+    if (enrollment) {
+      await announceCohortStudentEnrollment(cohort.organizationId, source, enrollment);
     }
 
     return added;
@@ -705,6 +959,7 @@ export async function removeCourseFromCohortService(cohortId: string, courseId: 
     if (!deleted) {
       throw new AppError('Course not found in cohort', ErrorCodes.NOT_FOUND, 404);
     }
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -754,13 +1009,13 @@ export async function createCohortNewsfeedService(cohortId: string, profileId: s
   }
 }
 
-export async function updateCohortNewsfeedService(feedId: string, data: TUpdateCohortNewsfeed) {
+export async function updateCohortNewsfeedService(cohortId: string, feedId: string, data: TUpdateCohortNewsfeed) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return updateCohortNewsfeedQuery(feedId, data);
+    return updateCohortNewsfeedQuery(cohortId, feedId, data);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -771,13 +1026,17 @@ export async function updateCohortNewsfeedService(feedId: string, data: TUpdateC
   }
 }
 
-export async function updateCohortNewsfeedReactionService(feedId: string, data: TUpdateCohortReaction) {
+export async function updateCohortNewsfeedReactionService(
+  cohortId: string,
+  feedId: string,
+  data: TUpdateCohortReaction
+) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return updateCohortNewsfeedReaction(feedId, data.reaction);
+    return updateCohortNewsfeedReaction(cohortId, feedId, data.reaction);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -788,13 +1047,13 @@ export async function updateCohortNewsfeedReactionService(feedId: string, data: 
   }
 }
 
-export async function deleteCohortNewsfeedService(feedId: string) {
+export async function deleteCohortNewsfeedService(cohortId: string, feedId: string) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return deleteCohortNewsfeedQuery(feedId);
+    return deleteCohortNewsfeedQuery(cohortId, feedId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -807,13 +1066,29 @@ export async function deleteCohortNewsfeedService(feedId: string) {
 
 // ─── Cohort Newsfeed Comments ────────────────────────────────────────────────
 
-export async function listCohortNewsfeedComments(feedId: string) {
+async function assertCohortNewsfeedExists(cohortId: string, feedId: string) {
+  const feed = await getCohortNewsfeedById(cohortId, feedId);
+  if (!feed) {
+    throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
+  }
+}
+
+export async function listCohortNewsfeedCommentsPage(cohortId: string, feedId: string, page: TCohortListPage) {
+  await assertCohortNewsfeedExists(cohortId, feedId);
+
+  const [items, total] = await Promise.all([
+    getCohortNewsfeedComments(cohortId, feedId, page),
+    countCohortNewsfeedComments(cohortId, feedId)
+  ]);
+
+  return { items, total };
+}
+
+export async function listCohortNewsfeedComments(cohortId: string, feedId: string) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
-    if (!feed) {
-      throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
-    }
-    return getCohortNewsfeedComments(feedId);
+    await assertCohortNewsfeedExists(cohortId, feedId);
+
+    return getCohortNewsfeedComments(cohortId, feedId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -825,12 +1100,13 @@ export async function listCohortNewsfeedComments(feedId: string) {
 }
 
 export async function createCohortNewsfeedCommentService(
+  cohortId: string,
   feedId: string,
   profileId: string,
   data: TCreateCohortNewsfeedComment
 ) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
@@ -853,17 +1129,20 @@ export async function createCohortNewsfeedCommentService(
   }
 }
 
-export async function deleteCohortNewsfeedCommentService(commentId: number) {
+export async function deleteCohortNewsfeedCommentService(cohortId: string, feedId: string, commentId: number) {
   try {
     const comment = await getCohortNewsfeedCommentById(commentId);
     if (!comment) {
       throw new AppError('Comment not found', ErrorCodes.COHORT_NEWSFEED_COMMENT_NOT_FOUND, 404);
     }
-    const feed = await getCohortNewsfeedById(comment.cohortNewsfeedId!);
+    const feed = await getCohortNewsfeedById(cohortId, comment.cohortNewsfeedId!);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return deleteCohortNewsfeedCommentQuery(commentId);
+    if (feed.id !== feedId) {
+      throw new AppError('Comment not found', ErrorCodes.COHORT_NEWSFEED_COMMENT_NOT_FOUND, 404);
+    }
+    return deleteCohortNewsfeedCommentQuery(feedId, commentId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

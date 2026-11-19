@@ -85,7 +85,7 @@
 
 <div
   data-slot="attachment-list"
-  class={cn('ui:flex ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-md ui:border ui:border-border', className)}
+  class={cn('ui:flex ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-md', className)}
 >
   {#if mode === 'view'}
     <div class="ui:flex ui:items-center ui:justify-between ui:border-b ui:border-border ui:p-2">

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI skills · Acadia Tutors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .skill-row { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto auto; gap: 14px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+      .skill-row:last-child { border-bottom: none; }
+      .skill-ic { width: 36px; height: 36px; border-radius: 9px; background: #0b1020; color: #a5b4fc; display: grid; place-items: center; }
+      .editor { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.8px; line-height: 1.65; min-height: 300px; }
+      .split { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 20px; }
+      @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-app-sidebar="ai"></div>
+      <div class="main">
+        <header class="topbar">
+          <div class="crumbs"><a href="#">Settings</a><span class="sep">/</span><span class="here">AI skills</span></div>
+          <div class="top-actions">
+            <a class="btn btn-outline btn-sm" href="discover-browse.html?type=skill">Browse skills on Discover</a>
+            <button class="btn btn-primary btn-sm" data-go="edit"><span data-icon="plus"></span>New skill</button>
+            <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"><span data-icon="sun"></span></button>
+          </div>
+        </header>
+        <main class="content">
+          <div class="wrap">
+            <div class="page-head"><div><h1 class="page-title">AI skills</h1><p class="page-sub">Reusable instructions that teach the AI course assistant how your team builds a kind of course.</p></div></div>
+            <div class="callout callout-info" style="margin-bottom: 18px"><span data-icon="info"></span><div><b>Skills will run in the AI course assistant when AI skills launch.</b> Until then you can write, install and share them — they'll be ready to use on day one.</div></div>
+
+            <div data-state-view="list">
+              <div class="card">
+                <div class="skill-row">
+                  <div class="skill-ic"><span data-icon="skill"></span></div>
+                  <div><div style="font-weight: 500">Band 7 essay feedback rubric</div><div class="hint" style="margin: 0">Created by your team · Edited Sep 21 · <span style="color: var(--destructive)">Marketplace: changes requested</span></div></div>
+                  <a class="btn btn-outline btn-sm" href="publish.html?state=changes">Resubmit</a>
+                  <button class="btn btn-ghost btn-sm" data-go="edit">Edit</button>
+                </div>
+                <div class="skill-row">
+                  <div class="skill-ic"><span data-icon="skill"></span></div>
+                  <div><div style="font-weight: 500">IELTS reading passage exercises</div><div class="hint" style="margin: 0">Created by your team · Edited Sep 9</div></div>
+                  <a class="btn btn-outline btn-sm" href="publish.html?state=skill">Publish</a>
+                  <button class="btn btn-ghost btn-sm" data-go="edit">Edit</button>
+                </div>
+                <div class="skill-row">
+                  <div class="skill-ic"><span data-icon="skill"></span></div>
+                  <div><div style="font-weight: 500">Build a Product 101 course from your docs</div><div class="hint frow" style="margin: 0; gap: 5px">From <span class="pub-av" style="background: #1d4ed8; width: 14px; height: 14px; font-size: 8px">L</span><a class="text-primary" href="listing-other.html?type=skill">Loopwise on ClassroomIO</a> · CC BY · Installed Sep 2</div></div>
+                  <span></span>
+                  <button class="btn btn-ghost btn-sm" data-go="edit">Edit</button>
+                </div>
+              </div>
+            </div>
+
+            <div data-state-view="empty">
+              <div class="card" style="padding: 44px 24px; text-align: center">
+                <div class="skill-ic" style="margin: 0 auto 12px; width: 44px; height: 44px"><span data-icon="skill"></span></div>
+                <h2 class="sec-title">No skills yet</h2>
+                <p class="page-sub" style="max-width: 440px; margin: 6px auto 16px">Write down how your team likes courses built — structure, tone, question styles — once, and reuse it every time.</p>
+                <div class="frow" style="justify-content: center"><button class="btn btn-primary btn-sm" data-go="edit">New skill</button><a class="btn btn-outline btn-sm" href="discover-browse.html?type=skill">Browse skills</a></div>
+              </div>
+            </div>
+
+            <div data-state-view="edit">
+              <a class="back-link text-muted" href="#" data-go="list" style="font-size: 13px; text-decoration: none">← All skills</a>
+              <div class="split" style="margin-top: 12px">
+                <div class="card card-pad">
+                  <div class="field"><label class="label" for="n">Name</label><input class="input" id="n" maxlength="80" value="IELTS reading passage exercises" /></div>
+                  <div class="field"><label class="label" for="d">Description</label><input class="input" id="d" maxlength="280" value="Builds an academic reading exercise with 13 questions across the three IELTS question families." /><p class="hint">Shown when choosing a skill, and on Discover if you publish it.</p></div>
+                  <div class="field"><label class="label" for="i">Instructions <span class="hint" style="font-weight: 400; float: right" id="i-count"></span></label><textarea class="textarea editor" id="i"># IELTS reading passage exercise
+
+## Ask first
+- The passage topic and target band.
+- Whether to write a new passage or use one the tutor pastes in.
+
+## Build
+1. A 700–900 word academic passage in three to five paragraphs.
+2. 13 questions, in this order:
+   - 5 True / False / Not Given
+   - 4 matching headings
+   - 4 sentence completion (no more than two words)
+3. Mark every question auto-graded. Put the answer and the line
+   that proves it in the tutor note.
+
+## Never
+- Reuse passages from official Cambridge test books.</textarea><p class="hint">Markdown. 20,000 characters max.</p></div>
+                </div>
+                <div>
+                  <div class="card card-pad" style="font-size: 13px">
+                    <div class="label">Tips</div>
+                    <ul style="padding-left: 18px; margin: 8px 0 0; line-height: 1.6; color: var(--muted-foreground)"><li>Say what to ask before drafting.</li><li>Describe structure as numbered steps.</li><li>List what the AI must never do.</li><li>Don't paste learner data or secrets — shared skills are public.</li></ul>
+                  </div>
+                  <div class="frow" style="margin-top: 12px; justify-content: flex-end"><button class="btn btn-secondary btn-sm" data-go="list">Cancel</button><button class="btn btn-primary btn-sm" data-go="list">Save skill</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="state-bar"><span class="lbl">State</span><button data-state="list">Library</button><button data-state="empty">Empty</button><button data-state="edit">Editor</button><a href="index.html">← Map</a></div>
+
+    <script>
+      Object.assign(ICONS, {
+        plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>',
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
+      });
+      document.querySelectorAll('[data-icon]').forEach((node) => (node.outerHTML = ICONS[node.dataset.icon]));
+      const instructions = document.getElementById('i');
+      const count = () => (document.getElementById('i-count').textContent = `${instructions.value.length.toLocaleString()} / 20,000`);
+      instructions.addEventListener('input', count);
+      count();
+      document.querySelectorAll('[data-go]').forEach((control) =>
+        control.addEventListener('click', (event) => {
+          event.preventDefault();
+          document.querySelector(`.state-bar [data-state="${control.dataset.go}"]`).click();
+        })
+      );
+      bindStatePicker('list');
+    </script>
+  </body>
+</html>

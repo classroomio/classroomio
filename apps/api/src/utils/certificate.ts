@@ -11,7 +11,7 @@ import { getCloudflarePdfBuffer, getCloudflarePngBuffer } from '@api/utils/cloud
 import { fallbackSequence, formatCertificateId, slugifyForFilename } from '@cio/utils/functions';
 import { getProfileById } from '@cio/db/queries/auth/profile';
 
-export { resolveCertificateDesign };
+export { resolveCertificateDesign, slugifyForFilename };
 
 export interface CertificateRenderInput {
   design: CertificateDesign;

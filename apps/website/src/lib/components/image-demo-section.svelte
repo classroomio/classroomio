@@ -1,6 +1,8 @@
 <script>
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import ImagePlaceholder from './image-placeholder.svelte';
+  import Section from './ui/section.svelte';
+  import SectionHeader from './ui/section-header.svelte';
 
   /**
    * Heading row + full-width image preview. Renders a real image when `imageSrc` is set,
@@ -32,26 +34,18 @@
   } = $props();
 </script>
 
-<section class="px-6 py-12 lg:px-12 lg:py-16 {bgClass}">
-  <div class="mx-auto max-w-[1100px]">
-    <div class="mb-10 max-w-[620px]">
-      <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">{eyebrow}</div>
-      <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">{title}</h2>
-      {#if description}
-        <p class="mt-5 text-base leading-relaxed text-gray-500">{description}</p>
-      {/if}
-    </div>
+{#snippet heading()}{title}{/snippet}
 
-    <BlurFade delay={0.1} once>
-      <div class="mx-auto max-w-[1100px]">
-        {#if imageSrc}
-          <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
-            <img src={imageSrc} alt={imageAlt} class="block h-auto w-full" loading="lazy" decoding="async" />
-          </div>
-        {:else}
-          <ImagePlaceholder {suggestedFile} {caption} {aspect} />
-        {/if}
+<Section class={bgClass}>
+  <SectionHeader {eyebrow} eyebrowClass="text-blue-700" ledeClass="text-gray-500" lede={description} title={heading} />
+
+  <BlurFade delay={0.1} once class="mt-14">
+    {#if imageSrc}
+      <div class="overflow-hidden rounded-xl bg-white ring-1 ring-gray-200">
+        <img src={imageSrc} alt={imageAlt} class="block h-auto w-full" loading="lazy" decoding="async" />
       </div>
-    </BlurFade>
-  </div>
-</section>
+    {:else}
+      <ImagePlaceholder {suggestedFile} {caption} {aspect} />
+    {/if}
+  </BlurFade>
+</Section>

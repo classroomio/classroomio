@@ -12,7 +12,7 @@ import { enrollProfileInLearningPath } from './member-management';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { sendLearningPathWelcomeEmail } from './email';
 import { scheduleLearningPathProgressSync } from './progress-sync-jobs';
-import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/tracking';
 
 /**
  * Enrolls a student into a learning path and grants them course access for its courses.

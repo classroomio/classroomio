@@ -1,0 +1,2 @@
+export interface VideoTestimonialProps { image: string; quote: string; attribution: string; duration?: string; caseStudy?: boolean; size?: 'lg'|'sm'; onPlay?: () => void; style?: React.CSSProperties; }
+export declare function VideoTestimonial(props: VideoTestimonialProps): JSX.Element;

@@ -148,13 +148,36 @@ export const agentUploadKeyGenerator = (c: Context): string => {
 };
 
 /**
- * Redis keys for engagement analytics read endpoints (landing-stats, funnel,
+ * Redis keys for marketing read endpoints (landing-stats, funnel,
  * country breakdown, popular types, top courses). Value: JSON.
  */
-export function dashAnalyticsKey(route: string, orgId: string, days: number, extra?: string): string {
+export function marketingKey(route: string, orgId: string, days: number, extra?: string): string {
   const suffix = extra ? `:${extra}` : '';
-  return `dash:analytics:${route}:${orgId}:${days}${suffix}`;
+  return `marketing:${route}:${orgId}:${days}${suffix}`;
 }
 
-/** TTL for engagement analytics caches (10 min). */
-export const DASH_ANALYTICS_TTL_SECONDS = 600;
+/** TTL for marketing caches (10 min). */
+export const MARKETING_TTL_SECONDS = 600;
+
+/**
+ * Redis key for one public API analytics section, e.g. `public-api:analytics:traffic:{orgId}:30`.
+ * Value: `{ data, generatedAt }`. TTL: `PUBLIC_API_ANALYTICS_TTL_SECONDS`, or 24h for login activity.
+ */
+export function publicApiAnalyticsKey(section: string, ...parts: Array<string | number>): string {
+  return ['public-api:analytics', section, ...parts].join(':');
+}
+
+export const PUBLIC_API_ANALYTICS_TTL_SECONDS = 600;
+export const PUBLIC_API_LOGIN_ACTIVITY_TTL_SECONDS = 86_400;
+
+/**
+ * Redis key for a course's cached content structure (sections, lessons, exercises; no
+ * per-student completion). `version` is `getCourseContentVersion`'s stamp, so an edit to the
+ * course changes the key instead of waiting on the TTL. Value: `{ data, generatedAt }`.
+ */
+export function courseContentStructureKey(courseId: string, version: string): string {
+  return `course-content:structure:${courseId}:${version}`;
+}
+
+/** Safety-net TTL for the course content structure cache (1h); the version in the key is what actually invalidates it. */
+export const COURSE_CONTENT_STRUCTURE_TTL_SECONDS = 3600;

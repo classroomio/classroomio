@@ -1,4 +1,4 @@
-import { getLicenseStatus } from '@api/services/license';
+import { getLicenseStatus } from '@cio/core/services/license';
 import { Hono } from '@api/utils/hono';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { handleError } from '@api/utils/errors';

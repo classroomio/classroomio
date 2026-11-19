@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Home - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .main { min-width: 0; display: flex; flex-direction: column; }
+
+      /* Sidebar mirrors the current org sidebar (Home · Create · Distribute · People · Tools). */
+      .hs { width: 256px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--sidebar, var(--muted)); display: flex; flex-direction: column; padding: 10px; gap: 2px; min-height: 100vh; }
+      .hs .brand { display: flex; align-items: center; gap: 8px; padding: 4px 8px 12px; font-size: 13px; }
+      .hs .brand .logo { width: 18px; height: 14px; display: flex; gap: 2px; }
+      .hs .brand .logo i { flex: 1; border-radius: 4px; background: #2563eb; }
+      .hs .brand .plan { border: 1px solid var(--border); border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 500; background: var(--background); }
+      .hs .grp { font-size: 12px; color: var(--muted-foreground); padding: 14px 8px 6px; }
+      .hs a { display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 8px; border-radius: var(--radius-md); color: var(--foreground); text-decoration: none; font-size: 14px; }
+      .hs a svg { width: 16px; height: 16px; stroke-width: 1.75; }
+      .hs a:hover { background: var(--accent); }
+      .hs a.on { background: color-mix(in oklch, var(--primary) 14%, transparent); color: var(--primary); font-weight: 500; }
+      .hs a .n { margin-left: auto; font-size: 12px; color: var(--muted-foreground); }
+      .hs .foot { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 8px; font-size: 13.5px; }
+      .hs .foot .av { width: 26px; height: 26px; border-radius: 99px; background: #111827; color: #fff; display: grid; place-items: center; font-size: 11px; }
+      .hs .foot .rl { font-size: 12px; color: var(--muted-foreground); }
+
+      .hh { height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-bottom: 1px solid var(--border); }
+      .hh .org { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+      .hh .org .mk { width: 24px; height: 24px; border-radius: 6px; background: #111; color: #fff; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+      .hh .grow { flex: 1; }
+      .hh .search { display: flex; align-items: center; gap: 8px; height: 34px; width: 222px; padding: 0 10px; border: 1px solid var(--input); border-radius: var(--radius-md); color: var(--muted-foreground); font-size: 14px; }
+      .hh .search .kbd { margin-left: auto; }
+
+      .stage { flex: 1; display: flex; justify-content: center; padding: 72px 24px 96px; }
+      .col { width: 100%; max-width: 768px; }
+      .col h1 { text-align: center; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 32px; }
+
+      .composer { border: 1px solid var(--border); border-radius: 14px; padding: 18px 16px 14px; background: var(--card); box-shadow: 0 1px 2px rgb(0 0 0 / 0.03); }
+      .composer .ph { color: var(--muted-foreground); font-size: 14px; min-height: 44px; padding: 0 12px; }
+      .composer .row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+      .composer .sel { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 14px; }
+      .composer .sel .d { color: #16a34a; font-weight: 600; }
+      .composer .send { margin-left: auto; width: 36px; height: 36px; border-radius: 8px; background: color-mix(in oklch, var(--primary) 55%, white); color: #fff; display: grid; place-items: center; border: 0; }
+
+      .or { text-align: center; font-size: 14px; color: var(--muted-foreground); margin: 22px 0 14px; font-weight: 500; }
+      .prompts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .pcard { text-align: left; border: 1px solid var(--border); border-radius: 14px; padding: 22px; background: var(--card); cursor: pointer; font: inherit; color: inherit; }
+      .pcard:hover { border-color: var(--primary); }
+      .pcard .ic { width: 40px; height: 40px; border-radius: 10px; background: color-mix(in oklch, var(--primary) 10%, transparent); color: var(--foreground); display: grid; place-items: center; margin-bottom: 18px; }
+      .pcard .ic svg { width: 20px; height: 20px; }
+      .pcard .t { font-weight: 600; font-size: 14px; }
+      .pcard .d { font-size: 12.5px; color: var(--muted-foreground); margin-top: 10px; line-height: 1.4; }
+
+      .tsec { margin-top: 40px; }
+      .tsec-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+      .tsec-head h2 { font-size: 15px; font-weight: 600; margin: 0; }
+      .tsec-head p { font-size: 13px; color: var(--muted-foreground); margin: 2px 0 0; }
+      .tsec-head a { font-size: 13px; color: var(--primary); text-decoration: none; white-space: nowrap; }
+      .tgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+      .tthumb.photo { background-size: cover; background-position: center; }
+      .tcard .ts .own { color: var(--primary); }
+      .sk { border-radius: var(--radius-md); background: var(--muted); animation: pulse 1.4s ease-in-out infinite; }
+      @keyframes pulse { 50% { opacity: 0.55; } }
+
+
+      .note { max-width: 768px; margin: 28px auto 0; border: 1px dashed var(--border); border-radius: var(--radius-lg); padding: 12px 14px; font-size: 12.5px; color: var(--muted-foreground); line-height: 1.55; }
+      .note b { color: var(--foreground); font-weight: 500; }
+
+      @media (max-width: 900px) {
+        .hs { display: none; }
+        .prompts { grid-template-columns: 1fr; }
+        .tgrid { grid-template-columns: repeat(2, 1fr); }
+        .hh .search { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="hs" id="sidebar"></aside>
+      <div class="main">
+        <header class="hh">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep" style="width: 1px; height: 18px; background: var(--border)"></span>
+          <span class="org"><span class="mk">CT</span>Coursera Test <span data-icon="chevDown"></span></span>
+          <span class="grow"></span>
+          <a class="btn btn-outline btn-sm" href="#">Your Academy <span data-icon="ext"></span></a>
+          <div class="search"><span data-icon="search"></span>Search<span class="kbd">⌘</span><span class="kbd">K</span></div>
+          <button class="btn btn-secondary btn-sm" aria-label="Notifications" style="padding: 0 8px" id="bell"></button>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <main class="stage">
+          <div class="col">
+            <h1>What course do you want to create?</h1>
+            <div class="composer">
+              <div class="ph">Ask ClassroomIO to create a course for you...</div>
+              <div class="row">
+                <span class="sel">Beginner <span data-icon="chevDown"></span></span>
+                <span class="sel">Gemini 3.1 Flash Lite <span class="d">$</span> <span data-icon="chevDown"></span></span>
+                <button class="send" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7" /></svg></button>
+              </div>
+            </div>
+
+            <!-- Prompt starters, then course templates -->
+            <div data-state-view="rows loading">
+              <div class="or">Or start with a prompt</div>
+              <div class="prompts" data-prompts></div>
+
+              <section class="tsec">
+                <div class="tsec-head">
+                  <div>
+                    <h2>Or start from a template</h2>
+                    <p>A complete course with lessons, exercises and settings. Copy it, then make it yours.</p>
+                  </div>
+                  <a href="templates.html">Browse all templates →</a>
+                </div>
+                <div class="tgrid" data-template-grid></div>
+              </section>
+            </div>
+
+            <div class="note" data-state-view="rows loading">
+              <b>Why two headings:</b> the current “Or start from a template” cards are AI prompt starters: they fill the box above. Calling both things “template” makes a real course template look like a prompt. This layout renames the starters to “Or start with a prompt” and gives course templates their own section. Clicking a template card opens the same preview as the gallery, with <b>Use template</b>.
+            </div>
+
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">State</span>
+      <button data-state="rows">Loaded</button>
+      <button data-state="loading">Loading</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const SVG = (paths) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${paths}</svg>`;
+      const NAV = [
+        [null, [['Home', '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>', null, true], ['Dashboard', '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'], ['Stats', '<path d="M3 3v18h18"/><path d="M8 17V11M13 17V7M18 17v-4"/>']]],
+        ['Create', [['Courses', '<path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6"/>', 43], ['Cohorts', '<path d="M4 6h10M4 12h10M4 18h10"/><path d="m17 6 1.5 1.5L21 5"/>', 1], ['Media', '<path d="m21 12-8.5 8.5a5 5 0 0 1-7-7L14 5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8"/>', 42], ['Tags', '<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>']]],
+        ['Distribute', [['Widgets', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16"/>'], ['Landing Page', '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>']]],
+        ['People', [['Audience', '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/>'], ['Community', '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>']]],
+        ['Tools', [['Automation', '<rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 4v4M9 13h.01M15 13h.01"/>']]]
+      ];
+      document.getElementById('sidebar').innerHTML =
+        `<div class="brand"><span class="logo"><i></i><i style="background:#60a5fa"></i></span>ClassroomIO <span class="plan">Enterprise</span></div>` +
+        NAV.map(([group, items]) => (group ? `<div class="grp">${group}</div>` : '') + items.map(([label, paths, count, on]) => `<a class="${on ? 'on' : ''}" href="${label === 'Courses' ? 'courses.html' : '#'}">${SVG(paths)}${label}${count ? `<span class="n">${count}</span>` : ''}</a>`).join('')).join('') +
+        `<div class="foot"><span class="av">EA</span><div><div>Enterprise Admin</div><div class="rl">Admin</div></div></div>`;
+      document.getElementById('bell').innerHTML = SVG('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>');
+
+      const PROMPTS = [
+        ['<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>', 'Product 101 Course', 'A fundamentals course teaching customers how to use your product.'],
+        ['<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>', 'Product Onboarding Training', 'An onboarding training that gets new users productive in their first week.'],
+        ['<circle cx="12" cy="9" r="6"/><path d="m9 14-1.5 7L12 19l4.5 2L15 14"/>', 'Become an Expert on X', 'A depth course turning students into experts on a specific topic or niche.']
+      ];
+      document.querySelectorAll('[data-prompts]').forEach((node) => {
+        node.innerHTML = PROMPTS.map(([icon, title, description]) => `<button class="pcard"><span class="ic">${SVG(icon)}</span><div class="t">${title}</div><div class="d">${description}</div></button>`).join('');
+      });
+
+      const CDN = 'https://assets.cdn.clsrio.com/www/course-templates/';
+      const HOME_TEMPLATES = [
+        { title: 'Onboarding Academy (Coursera Test)', sub: '<span class="own">Your template</span> · Used Sep 20', image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=640&q=70&auto=format&fit=crop', href: 'templates.html?preview=org-onboarding' },
+        { title: 'AI Fluency: Framework & Foundations', sub: 'by ClassroomIO · 12 lessons', image: `${CDN}ai-fluency-framework-foundations.jpg`, href: 'templates.html' },
+        { title: 'Salesforce CPQ Admin Essentials', sub: 'by ClassroomIO · 9 lessons', image: `${CDN}salesforce-cpq-admin-essentials.jpg`, href: 'templates.html' },
+        { title: 'HubSpot Sales Hub Essentials', sub: 'by ClassroomIO · 7 lessons', image: `${CDN}hubspot-sales-hub-essentials.jpg`, href: 'templates.html' }
+      ];
+      function templateCards() {
+        return HOME_TEMPLATES.map((template) => `<a class="tcard" href="${template.href}"><span class="tthumb photo" style="background-image:url('${template.image}')"></span><span class="tt">${template.title}</span><span class="ts">${template.sub}</span></a>`).join('');
+      }
+      function skeletonCards() {
+        return [0, 1, 2, 3].map(() => `<div><div class="sk" style="aspect-ratio:16/10;margin-bottom:9px"></div><div class="sk" style="height:12px;width:80%;margin-bottom:6px"></div><div class="sk" style="height:10px;width:50%"></div></div>`).join('');
+      }
+      document.addEventListener('statechange', (event) => {
+        const markup = event.detail === 'loading' ? skeletonCards() : templateCards();
+        document.querySelectorAll('[data-template-grid]').forEach((grid) => (grid.innerHTML = markup));
+      });
+
+      bindStatePicker('rows');
+    </script>
+  </body>
+</html>

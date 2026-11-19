@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PageSignupCTA, PageHeader } from '$lib/components';
-  import { Button } from '@cio/ui/base/button';
+  import { CtaButton, NotchCard, Section, SectionHeader } from '$lib/components/ui';
   import * as Accordion from '@cio/ui/base/accordion';
 
   const whyStart = [
@@ -82,111 +82,122 @@
 </svelte:head>
 
 <section>
-  <PageHeader className="flex items-center justify-evenly px-5 flex-wrap text-left">
-    <div>
-      <h1 class="text-3xl lg:text-5xl">Teach with us</h1>
-      <p class="my-5 text-center lg:w-[77%] lg:text-left">
-        With ClassroomIO, you can make side income while teaching the subject you love
-      </p>
+  <PageHeader className="mx-auto max-w-content px-6 md:px-10">
+    <div class="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
+      <div class="flex flex-col items-center text-center lg:items-start lg:text-left">
+        <h1 class="text-display text-balance">Teach with us</h1>
+        <p class="text-lead mt-6 max-w-[580px] text-pretty">
+          With ClassroomIO, you can make side income while teaching the subject you love
+        </p>
 
-      <Button href="/teach/register" target="_blank">Register</Button>
-    </div>
+        <div class="mt-9">
+          <CtaButton href="/teach/register" target="_blank">Register</CtaButton>
+        </div>
+      </div>
 
-    <div class=" ">
-      <img src="https://assets.cdn.clsrio.com/www/teach/teacher-hero.png" alt="" class="w-full" />
+      <div>
+        <img src="https://assets.cdn.clsrio.com/www/teach/teacher-hero.png" alt="" class="w-full" />
+      </div>
     </div>
   </PageHeader>
 
-  <div class="mx-auto mt-10">
-    <div class="border-b border-slate-100 px-[10%] pb-10">
-      <h1 class="flex items-center justify-center gap-3 pb-28 text-center text-3xl">
-        Why you should teach with us? <img src="https://assets.cdn.clsrio.com/www/teach/star.svg" alt="" />
-      </h1>
+  <Section class="border-b border-slate-100">
+    <SectionHeader titleClass="">
+      {#snippet title()}
+        <span class="inline-flex items-center justify-center gap-3">
+          Why you should teach with us? <img src="https://assets.cdn.clsrio.com/www/teach/star.svg" alt="" />
+        </span>
+      {/snippet}
+    </SectionHeader>
 
-      <div class="mt-10 flex flex-wrap justify-center lg:justify-between">
-        {#each whyStart as why}
-          <figure
-            class="flex h-full max-h-[380px] w-full max-w-[250px] flex-col items-center justify-center gap-3 px-2 text-center"
-          >
-            <img src={why.src} alt="" class="h-[80px] w-[80px]" />
-            <figcaption>
-              <h1 class="text-base">{why.header}</h1>
-              <p class="mt-1 text-sm">
-                {why.subText}
-              </p>
-            </figcaption>
-          </figure>
-        {/each}
-      </div>
-    </div>
-
-    <div class="mt-10 px-[10%] py-10">
-      <h1 class="mb-28 flex items-center justify-center gap-3 text-center text-3xl">
-        How to get started <img src="https://assets.cdn.clsrio.com/www/teach/thumbs-up.svg" alt="" />
-      </h1>
-
-      <div class="mx-auto mt-5 flex flex-wrap justify-between gap-y-10">
-        {#each steps as step, i}
-          <div class="px-10 py-5 lg:max-w-[40%]">
-            <h1 class="text-2xl">
-              <span class="mr-3 rounded-md bg-[#F7F7F7] px-2 py-1">{i + 1}</span>
-              {step.title}
-            </h1>
-            <p class="mt-5 text-base text-gray-600">
-              {step.subText}
+    <div class="mt-16 grid gap-6 md:grid-cols-3">
+      {#each whyStart as why}
+        <NotchCard class="h-full items-center gap-5 bg-gray-50 text-center">
+          <img src={why.src} alt="" class="size-20" />
+          <div>
+            <h3 class="text-card-title font-medium">{why.header}</h3>
+            <p class="mt-2 text-[15px] leading-relaxed">
+              {why.subText}
             </p>
           </div>
-        {/each}
-      </div>
-      <div class="mt-3 flex justify-center px-[5%]">
-        <Button href="/teach/register" target="_blank" rel="noopener noreferrer nofollow">Get Started</Button>
-      </div>
+        </NotchCard>
+      {/each}
     </div>
+  </Section>
 
-    <div class="my-10 h-[75%] px-2 py-12 lg:h-[80%] lg:px-[12%]">
-      <h1 class="flex items-center justify-center gap-3 text-center text-2xl">Word from our fufilled facilitators</h1>
+  <Section>
+    <SectionHeader titleClass="">
+      {#snippet title()}
+        <span class="inline-flex items-center justify-center gap-3">
+          How to get started <img src="https://assets.cdn.clsrio.com/www/teach/thumbs-up.svg" alt="" />
+        </span>
+      {/snippet}
+    </SectionHeader>
 
-      <div
-        class="relative mx-auto mt-10 w-full rounded-md border bg-white py-6 text-center shadow-sm before:absolute before:top-0 before:left-0 before:h-full before:w-[4.5%] before:rounded-tl-md before:rounded-bl-md before:bg-[#0233BD] md:w-2/4"
-      >
-        <h1 class="mx-auto w-[77%] text-base leading-5 font-medium">
-          With ClassroomIO, I am training over 100 students. I am making more money than expected with little effort and
-          my students are happy. Love the product
-        </h1>
-        <div class="mt-3 flex flex-row items-center justify-center gap-4">
-          <img src="https://assets.cdn.clsrio.com/www/teach/user-profile.png" alt="" class="w-8" />
-          <p class="text-sm">
-            <span class="mr-2 font-semibold"> Bilik Diana </span> English tutor
+    <div class="mt-16 grid gap-6 md:grid-cols-2">
+      {#each steps as step, i}
+        <NotchCard class="h-full bg-gray-50">
+          <h3 class="text-h4 flex items-center font-medium">
+            <span class="rounded-tag mr-3 bg-[#F7F7F7] px-2 py-1 font-mono text-base ring-1 ring-gray-200">{i + 1}</span
+            >
+            {step.title}
+          </h3>
+          <p class="mt-4 text-base leading-relaxed text-gray-600">
+            {step.subText}
           </p>
-        </div>
+        </NotchCard>
+      {/each}
+    </div>
+    <div class="mt-12 flex justify-center">
+      <CtaButton href="/teach/register" target="_blank" rel="noopener noreferrer nofollow">Get Started</CtaButton>
+    </div>
+  </Section>
+
+  <Section>
+    <h2 class="text-h3 text-center text-balance">Word from our fufilled facilitators</h2>
+
+    <div
+      class="relative mx-auto mt-12 w-full overflow-hidden rounded-xl border border-gray-200 bg-white py-8 pl-[4.5%] text-center before:absolute before:top-0 before:left-0 before:h-full before:w-[4.5%] before:bg-[#0233BD] md:w-2/4"
+    >
+      <p class="text-quote mx-auto w-[77%] font-medium">
+        With ClassroomIO, I am training over 100 students. I am making more money than expected with little effort and
+        my students are happy. Love the product
+      </p>
+      <div class="mt-5 flex flex-row items-center justify-center gap-4">
+        <img src="https://assets.cdn.clsrio.com/www/teach/user-profile.png" alt="" class="w-8 rounded-full" />
+        <p class="text-sm">
+          <span class="mr-2 font-semibold"> Bilik Diana </span> English tutor
+        </p>
       </div>
     </div>
+  </Section>
 
-    <div class="mx-auto my-10 mt-10 px-10 lg:max-w-[65%] lg:px-[15%]">
-      <h1 class="text-center text-xl">Frequently asked questions</h1>
-
-      <div class="mt-10">
-        <Accordion.Root type="single" class="w-full">
-          {#each faqs as faq}
-            <Accordion.Item value={faq.value}>
-              <Accordion.Trigger class="text-left md:text-center">
-                {faq.question}
-              </Accordion.Trigger>
-              <Accordion.Content>
-                {faq.answer}
-              </Accordion.Content>
-            </Accordion.Item>
-          {/each}
-        </Accordion.Root>
-      </div>
+  <Section innerClass="grid gap-10 lg:grid-cols-12 lg:gap-12">
+    <div class="lg:col-span-4">
+      <h2 class="text-h3 text-balance lg:sticky lg:top-28">Frequently asked questions</h2>
     </div>
 
-    <PageSignupCTA
-      header="Kick off your Teaching Business in Minutes"
-      subText="Don't wait, let's get you started."
-      btnLabel="Register"
-      link="/teach/register"
-      demo={false}
-    />
-  </div>
+    <div class="lg:col-span-8">
+      <Accordion.Root type="single" class="w-full">
+        {#each faqs as faq}
+          <Accordion.Item value={faq.value}>
+            <Accordion.Trigger class="text-left">
+              {faq.question}
+            </Accordion.Trigger>
+            <Accordion.Content>
+              {faq.answer}
+            </Accordion.Content>
+          </Accordion.Item>
+        {/each}
+      </Accordion.Root>
+    </div>
+  </Section>
+
+  <PageSignupCTA
+    header="Kick off your Teaching Business in Minutes"
+    subText="Don't wait, let's get you started."
+    btnLabel="Register"
+    link="/teach/register"
+    demo={false}
+  />
 </section>

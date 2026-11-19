@@ -35,10 +35,10 @@
   aria-disabled={disableCourseLinks}
   tabindex={disableCourseLinks ? -1 : undefined}
 >
-  {#if course.logo}
+  {#if course.bannerImage}
     <div
       class="ui:h-40 ui:w-full ui:bg-cover ui:bg-center ui:relative"
-      style={`background-image: url(${course.logo});`}
+      style={`background-image: url(${course.bannerImage});`}
     >
       {#if courseTypeMeta}
         <span

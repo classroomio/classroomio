@@ -10,7 +10,7 @@ import type {
   GetUserCourseAnalyticsRequest,
   ListStudentInvitesRequest,
   ListPeopleRequest,
-  ListPeopleQueryWithSource,
+  ListPeopleQuery,
   ResetMemberCourseProgressRequest,
   RevokeStudentInviteRequest,
   ToggleCourseInviteLinkRequest,
@@ -18,7 +18,7 @@ import type {
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 
-import { toPeopleRequestQueryWithSource } from '$features/course/utils/people-source-utils';
+import { toPeopleRequestQuery } from '$features/course/utils/people-utils';
 
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import { t } from '$lib/utils/functions/translations';
@@ -38,8 +38,8 @@ export class PeopleApi extends BaseApiWithErrors {
    * @param courseId Course ID
    * @returns Array of course members with profile data
    */
-  async list(courseId: string, query: ListPeopleQueryWithSource) {
-    const requestQuery = toPeopleRequestQueryWithSource(query);
+  async list(courseId: string, query: ListPeopleQuery) {
+    const requestQuery = toPeopleRequestQuery(query);
 
     return this.execute<ListPeopleRequest>({
       requestFn: () =>
@@ -54,10 +54,8 @@ export class PeopleApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to list course members');
-        }
+      onError: () => {
+        snackbar.error('Failed to list course members');
       }
     });
   }
@@ -84,10 +82,8 @@ export class PeopleApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to add course members');
-        }
+      onError: () => {
+        snackbar.error('Failed to add course members');
       }
     });
   }
@@ -111,14 +107,10 @@ export class PeopleApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to create student invite');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-        } else if ('error' in result) {
-          this.errors.general = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          this.errors.general = result.message;
         }
       }
     });
@@ -141,10 +133,8 @@ export class PeopleApi extends BaseApiWithErrors {
         this.success = true;
         this.errors = {};
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to list invites');
-        }
+      onError: () => {
+        snackbar.error('Failed to list invites');
       }
     });
 
@@ -167,10 +157,8 @@ export class PeopleApi extends BaseApiWithErrors {
         this.success = true;
         this.errors = {};
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to revoke invite');
-        }
+      onError: () => {
+        snackbar.error('Failed to revoke invite');
       }
     });
 
@@ -193,10 +181,8 @@ export class PeopleApi extends BaseApiWithErrors {
         this.success = true;
         this.errors = {};
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to load invite audit');
-        }
+      onError: () => {
+        snackbar.error('Failed to load invite audit');
       }
     });
 
@@ -286,16 +272,12 @@ export class PeopleApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to update course member');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -321,10 +303,8 @@ export class PeopleApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to delete course member');
-        }
+      onError: () => {
+        snackbar.error('Failed to delete course member');
       }
     });
   }
@@ -348,10 +328,8 @@ export class PeopleApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch user course analytics');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch user course analytics');
       }
     });
   }
@@ -371,10 +349,8 @@ export class PeopleApi extends BaseApiWithErrors {
         this.success = true;
         this.errors = {};
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.course.people.progress_reset_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.course.people.progress_reset_failed');
       }
     });
   }

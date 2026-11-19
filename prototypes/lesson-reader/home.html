@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student dashboard · Lesson reader · ClassroomIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="reader.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .org-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .org-brand .av {
+        display: grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        background: color-mix(in oklab, var(--primary) 12%, transparent);
+        color: var(--primary);
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .side-user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      .side-user .av {
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: var(--secondary);
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .dash {
+        max-width: 896px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+      }
+
+      .dash-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+      }
+
+      .dash-title em {
+        color: var(--primary);
+      }
+
+      .hero {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 24px;
+        border: 1px solid color-mix(in oklab, var(--primary) 20%, transparent);
+        border-radius: 4px;
+        background: color-mix(in oklab, var(--primary) 10%, transparent);
+      }
+
+      .hero .eyebrow {
+        margin: 0 0 8px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--primary);
+      }
+
+      .hero h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .acts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin: 24px 0;
+      }
+
+      .act-card {
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+      }
+
+      .act-card .k {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--muted-foreground);
+      }
+
+      .act-card .v {
+        margin-top: 8px;
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .act-card .s {
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+      }
+
+      .nb-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 24px;
+      }
+
+      .resurface {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        overflow: hidden;
+      }
+
+      .rs-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .rs-head .sub {
+        font-size: 12.5px;
+        font-weight: 400;
+        color: var(--muted-foreground);
+      }
+
+      .rs-head .nav {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--muted-foreground);
+      }
+
+      .rs-body {
+        padding: 18px 18px 14px;
+        min-height: 188px;
+      }
+
+      .rs-quote {
+        margin: 0;
+        padding-left: 14px;
+        border-left: 4px solid;
+        font-size: 18px;
+        line-height: 1.55;
+        letter-spacing: -0.005em;
+        animation: rd-in 0.25s var(--ease-out);
+      }
+
+      .rs-note {
+        display: flex;
+        gap: 6px;
+        margin: 12px 0 0 18px;
+        font-size: 13px;
+        color: var(--muted-foreground);
+      }
+
+      .rs-note svg {
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+      }
+
+      .rs-src {
+        margin: 14px 0 0 18px;
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+      }
+
+      .rs-src b {
+        color: var(--foreground);
+        font-weight: 500;
+      }
+
+      .rs-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 14px;
+        border-top: 1px solid var(--border);
+      }
+
+      .rs-foot {
+        padding: 0 14px 12px;
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+
+      .rs-answer {
+        margin: 14px 0 0 18px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: var(--muted);
+        font-size: 13.5px;
+        line-height: 1.5;
+        animation: rd-in 0.25s var(--ease-out);
+      }
+
+      .asked {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+      }
+
+      .asked-item {
+        display: block;
+        padding: 12px 14px;
+        border-top: 1px solid var(--border);
+        color: inherit;
+        text-decoration: none;
+        font-size: 13.5px;
+      }
+
+      .asked-item:hover {
+        background: var(--accent);
+      }
+
+      .asked-item .q {
+        font-weight: 500;
+        line-height: 1.4;
+      }
+
+      .asked-item .m {
+        margin-top: 3px;
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+
+      @media (max-width: 767px) {
+        .dash {
+          padding: 0 16px 80px;
+        }
+
+        .acts,
+        .nb-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .rs-clip {
+        position: relative;
+        display: grid;
+        grid-template-columns: 168px minmax(0, 1fr);
+        gap: 14px;
+        align-items: center;
+      }
+
+      .rs-clip-frame {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        border-radius: 8px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #151923, #0b0d12);
+        color: #f4f5f7;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .rs-clip-frame .lbl {
+        position: absolute;
+        inset: 10px 10px auto;
+        font-size: 11px;
+        font-weight: 500;
+        text-align: left;
+      }
+
+      .rs-clip-frame code {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        top: 32px;
+        padding: 5px 6px;
+        border-radius: 4px;
+        background: rgb(255 255 255 / 0.07);
+        font-family: 'Geist Mono', ui-monospace, monospace;
+        font-size: 8.5px;
+        text-align: left;
+        color: oklch(0.8 0.13 264);
+      }
+
+      .rs-clip-frame .pl {
+        position: absolute;
+        left: 50%;
+        bottom: 14px;
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        margin-left: -14px;
+        border-radius: 999px;
+        background: rgb(255 255 255 / 0.18);
+      }
+
+      .rs-clip-frame .bar {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 3px;
+        width: 0;
+        background: var(--primary);
+      }
+
+      .rs-clip-frame.playing .bar {
+        width: 100%;
+        transition: width 3s linear;
+      }
+
+      .rs-clip-line {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 600px) {
+        .rs-clip {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      window.READER_CONFIG = { surface: 'course', view: 'learner', noInit: true };
+    </script>
+    <script src="lesson-data.js"></script>
+    <script src="video-data.js"></script>
+    <script src="reader.js"></script>
+    <script>
+      const RESURFACE = [
+        {
+          clip: { from: 408, to: 436 },
+          exact: 'agg shrinks each group down to one row. transform returns a result the same length as the original, so it lines up row for row.',
+          note: '',
+          lesson: 'Grouping and aggregating',
+          when: 'Asked about 2 days ago',
+          answer: "Use transform when you want to keep every row and attach the group's value to it, such as each order's share of its store's total. agg gives you one row per store."
+        },
+        {
+          exact: 'the median of the column is a safer stand-in than the mean',
+          color: 'green',
+          note: 'Use this in the sales exercise for missing prices.',
+          lesson: 'Cleaning messy data',
+          p: 11,
+          when: 'Highlighted 5 days ago',
+          answer: 'Because a few very large orders pull the mean upward. Filling gaps with the mean would make the missing rows look bigger than a typical sale.'
+        },
+        {
+          exact: 'loc selects by label and iloc selects by position.',
+          color: 'green',
+          note: 'loc = label, iloc = integer position',
+          lesson: 'Selecting rows and columns',
+          p: 2,
+          when: 'Highlighted 3 weeks ago',
+          answer: 'df.loc["ORD-1042"] looks up the row labelled ORD-1042. df.iloc[0] takes the first row, whatever its label.'
+        },
+        {
+          exact: 'Chained indexing like df[df.x > 0]["y"] = 1 may modify a copy, not the original DataFrame.',
+          color: 'yellow',
+          note: '',
+          lesson: 'Selecting rows and columns',
+          p: 9,
+          when: 'Highlighted 3 weeks ago',
+          answer: 'Use one .loc call instead: df.loc[df.x > 0, "y"] = 1 always writes to the original DataFrame.'
+        }
+      ];
+      const state = { index: 0, revealed: false, dismissed: false };
+
+      document.body.innerHTML = `
+        <div class="cs-app">
+          <aside class="cs-side">
+            <div class="org-brand"><span class="av">U</span>${COURSE.org}</div>
+            <div class="cs-side-scroll" style="padding-top:8px">
+              <a class="cs-nav active" href="home.html">${icon('content')}<span>Dashboard</span></a>
+              <a class="cs-nav" href="#">${icon('lesson')}<span>My Learning</span></a>
+              <a class="cs-nav" href="#">${icon('exercise')}<span>Exercise</span></a>
+              <a class="cs-nav" href="#">${icon('newsFeed')}<span>Community</span></a>
+              <a class="cs-nav" href="#">${icon('globe')}<span>Explore</span></a>
+              <a class="cs-nav" href="#">${icon('certificates')}<span>Certificates</span></a>
+            </div>
+            <div class="cs-side-foot"><div class="side-user"><span class="av">${COURSE.learner.initials}</span><span>${COURSE.learner.name}<br><span style="font-size:12px;color:var(--muted-foreground)">Student</span></span></div></div>
+          </aside>
+          <main class="cs-main" id="cs-main">
+            <div class="dash">
+              <div class="pg-head" style="display:block">
+                <p class="pg-sub" style="margin:0 0 4px">Saturday, 18 October</p>
+                <h1 class="dash-title">Good Morning, <em>Maya.</em></h1>
+                <p class="pg-sub">You're 58% through your learning - every step counts.</p>
+              </div>
+              <section class="hero">
+                <div><p class="eyebrow">Pick up where you left off</p><h2>${COURSE.title} awaits you</h2></div>
+                <a class="btn btn-outline" href="lesson.html?state=returning">Continue Learning</a>
+              </section>
+              <div class="acts">
+                <div class="act-card"><div class="k">${icon('chart')}Progress</div><div class="v">58%</div><div class="s">7 of 12 items done</div></div>
+                <div class="act-card"><div class="k">${icon('sun')}Streak</div><div class="v">6</div><div class="s">days active</div></div>
+                <div class="act-card"><div class="k">${icon('certificates')}Certificates</div><div class="v">1</div><div class="s">earned this year</div></div>
+              </div>
+              <div class="nb-grid">
+                <section class="resurface" id="resurface"></section>
+                <section class="asked">
+                  <div class="rs-head" style="border-bottom:0">${icon('question', 16, 'style="color:var(--pen)"')}Recently asked</div>
+                  <a class="asked-item" href="lesson.html?state=returning#p14"><div class="q">What does errors="coerce" mean here?</div><div class="m">Cleaning messy data · ¶14 · Mon</div></a>
+                  <a class="asked-item" href="lesson.html"><div class="q">Why would I set the index when loading?</div><div class="m">Loading data with pandas · ¶6 · Sep 24</div></a>
+                  <a class="asked-item" href="lesson.html"><div class="q">What does rolling(7).mean() mean here?</div><div class="m">Visualising trends · ¶4 · Oct 2</div></a>
+                  <a class="asked-item" href="notebook.html" style="color:var(--muted-foreground);font-size:12.5px">Open notebook ${icon('chevronRight', 12, 'style="vertical-align:-2px"')}</a>
+                </section>
+              </div>
+            </div>
+          </main>
+        </div>`;
+
+      function renderResurface() {
+        const holder = document.getElementById('resurface');
+        if (state.dismissed) {
+          holder.innerHTML = `<div class="rs-head">${icon('notebook', 16, 'style="color:var(--pen)"')}From your notebook</div>
+            <div class="nb-empty"><span class="ic">${icon('check')}</span><span class="t">All caught up</span><span>You've reviewed today's highlights. More come back tomorrow.</span></div>`;
+          return;
+        }
+
+        const item = RESURFACE[state.index];
+        const color = item.clip ? 'var(--pen)' : HL[item.color].swatch;
+        const clipTime = (seconds) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+        const body = item.clip
+          ? `<div class="rs-clip">
+              <button class="rs-clip-frame" data-rs="clip" aria-label="Play the ${item.clip.to - item.clip.from} second clip"><span class="lbl">agg vs transform</span><code>.transform("sum")</code><span class="pl">${icon('play', 13)}</span><span class="bar"></span></button>
+              <div><p class="rs-clip-line">“${esc(item.exact)}”</p>
+              <p class="rs-src"><b>${esc(item.lesson)}</b> · video ${clipTime(item.clip.from)}–${clipTime(item.clip.to)} · ${item.when}</p></div>
+            </div>`
+          : `<p class="rs-quote" style="border-color:${color}">${esc(item.exact)}</p>
+            ${item.note ? `<div class="rs-note">${icon('note')}<span>${esc(item.note)}</span></div>` : ''}
+            <p class="rs-src"><b>${esc(item.lesson)}</b> · ¶${item.p} · ${item.when}</p>`;
+        const openHref = item.clip ? `video-lesson.html?state=returning&t=${item.clip.from}` : `lesson.html?state=returning#p${item.p}`;
+        holder.innerHTML = `
+          <div class="rs-head">${icon('notebook', 16, 'style="color:var(--pen)"')}From your notebook<span class="sub">· worth another look</span>
+            <span class="nav"><button class="btn-ghost-icon" data-rs="prev" aria-label="Previous">${icon('chevronLeft', 14)}</button>${state.index + 1} / ${RESURFACE.length}<button class="btn-ghost-icon" data-rs="next" aria-label="Next">${icon('chevronRight', 14)}</button></span>
+          </div>
+          <div class="rs-body">
+            ${body}
+            ${state.revealed ? `<div class="rs-answer"><b style="color:var(--pen)">Can you explain it?</b> ${esc(item.answer)}</div>` : ''}
+          </div>
+          <div class="rs-actions">
+            <a class="btn btn-outline btn-sm" href="${openHref}">${icon(item.clip ? 'play' : 'bookOpen')}${item.clip ? 'Watch in lesson' : 'Open in lesson'}</a>
+            <button class="btn btn-outline btn-sm" data-rs="reveal">${icon('sparkles')}${state.revealed ? 'Hide' : 'Test me on this'}</button>
+            <button class="btn btn-secondary btn-sm" data-rs="done" style="margin-left:auto">${icon('check')}Got it</button>
+          </div>
+          <div class="rs-foot">Highlights and video moments come back after 1 day, 3 days, a week and a month. Got it pushes this one back.</div>`;
+      }
+
+      document.addEventListener('click', (event) => {
+        const action = event.target.closest('[data-rs]')?.dataset.rs;
+        if (!action) return;
+
+        if (action === 'clip') {
+          const frame = event.target.closest('.rs-clip-frame');
+          frame.classList.remove('playing');
+          void frame.offsetWidth;
+          frame.classList.add('playing');
+          return;
+        }
+
+        if (action === 'next') state.index = (state.index + 1) % RESURFACE.length;
+        if (action === 'prev') state.index = (state.index - 1 + RESURFACE.length) % RESURFACE.length;
+        if (action === 'reveal') state.revealed = !state.revealed;
+        else state.revealed = false;
+        if (action === 'done') {
+          if (state.index === RESURFACE.length - 1) state.dismissed = true;
+          else state.index += 1;
+          toast('Back in your queue in 3 days');
+        }
+        renderResurface();
+      });
+
+      renderResurface();
+      renderProto();
+    </script>
+  </body>
+</html>

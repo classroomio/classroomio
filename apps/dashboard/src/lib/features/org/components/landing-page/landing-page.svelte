@@ -6,13 +6,15 @@
   import { appInitApi } from '$features/app/init.svelte';
   import PageLoader from './page-loader.svelte';
   import type { AccountOrg } from '$features/app/types';
+  import { page } from '$app/state';
   import {
     buildOrgLandingPageProps,
     importThemeComponent,
     normalizeLandingPageSettings
   } from '$features/org/utils/landing-page';
-  import { user } from '$lib/utils/store/user';
-  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { user, profile } from '$lib/utils/store/user';
+  import { resolveOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { resolveOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
 
   interface Props {
     orgSiteName?: string;
@@ -26,12 +28,21 @@
   let ThemeComponent = $state<Component | null>(null);
 
   const authAction = $derived(
-    getOrgLandingAuthAction({
-      isLoggedIn: $user.isLoggedIn,
-      isInitialized: appInitApi.isInitializedAndReady,
+    resolveOrgLandingAuthAction({
       org,
-      organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
-      hasPendingInvite: !!appInitApi.pendingOrgInvite
+      locals: page.data?.locals,
+      user: $user,
+      appInitApi
+    })
+  );
+
+  const learnerAccount = $derived(
+    resolveOrgLandingLearnerAccount({
+      org,
+      locals: page.data?.locals,
+      user: $user,
+      profile: $profile,
+      appInitApi
     })
   );
 
@@ -42,7 +53,8 @@
       hasMoreCourses: orgApi.hasMorePublicCourses,
       hasMoreLearningPaths: orgApi.hasMorePublicLearningPaths,
       coursesLoaded: hasLoadedCourses,
-      authAction
+      authAction,
+      learnerAccount
     })
   );
 

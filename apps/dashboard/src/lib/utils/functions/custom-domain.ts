@@ -1,5 +1,5 @@
 import { env } from '$env/dynamic/private';
-import { isLocalOrPrivateHost } from '@cio/utils/functions';
+import { isFirstPartyOrgSiteHost, isLocalOrPrivateHost } from '@cio/utils/functions';
 
 /**
  * True when a request arrived on a customer's BYOD domain rather than a host we
@@ -9,6 +9,10 @@ import { isLocalOrPrivateHost } from '@cio/utils/functions';
 export function isCustomDomainHost(url: URL): boolean {
   if (url.host.includes('localhost') || isLocalOrPrivateHost(url.hostname)) {
     return false;
+  }
+
+  if (isFirstPartyOrgSiteHost(url.hostname, env.FIRST_PARTY_ORG_SITE_HOSTS)) {
+    return true;
   }
 
   const appHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'myclassroomio.com'].filter(Boolean);

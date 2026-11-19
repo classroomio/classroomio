@@ -15,6 +15,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { CERTIFICATE_PREVIEW_SEQ, formatCertificateId } from '@cio/utils/functions';
+  import { UnsavedChanges } from '$features/ui';
 
   import CertificateEditorHeader from './certificate-editor-header.svelte';
   import TemplatesPanel from './panels/templates-panel.svelte';
@@ -135,6 +136,7 @@
   }
 </script>
 
+<UnsavedChanges hasUnsavedChanges={store.isDirty} onAbandon={() => store.reset()} />
 <div class="ui:bg-background ui:text-foreground flex h-dvh flex-col">
   <CertificateEditorHeader
     {title}

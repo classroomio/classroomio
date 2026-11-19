@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { OrgLandingPageProps, CourseItem } from '../types';
+  import type { OrgLandingPageLabels, OrgLandingPageProps, CourseItem } from '../types';
   import type { Snippet } from 'svelte';
   import { safeHref } from '../safe-href';
   import { Button } from '../../../base/button';
@@ -10,13 +10,23 @@
     orgName?: OrgLandingPageProps['orgName'];
     hero: OrgLandingPageProps['hero'];
     courses: OrgLandingPageProps['courses'];
+    labels?: OrgLandingPageLabels;
     navigation: Snippet;
     showActions?: boolean;
     compact?: boolean;
     children?: Snippet;
   }
 
-  let { orgName = '', hero, courses = [], navigation, showActions = true, compact = false, children }: Props = $props();
+  let {
+    orgName = '',
+    hero,
+    courses = [],
+    labels,
+    navigation,
+    showActions = true,
+    compact = false,
+    children
+  }: Props = $props();
 
   const coursesCount = $derived(courses.length);
   const learnersCount = $derived(courses.reduce((sum, course) => sum + (course.totalStudents ?? 0), 0));
@@ -130,17 +140,16 @@
         "
         >
           <span style="color: var(--landing-accent);">&gt;</span>
-          <span
-            ><span class="ui:font-medium ui:text-[var(--landing-fg)]">{coursesCount}</span>
-            {coursesCount === 1 ? 'course' : 'courses'} running</span
-          >
+          <span>{labels?.courseCountLabel?.(coursesCount) ?? `${coursesCount} courses running`}</span>
           {#if learnersCount > 0}
             <span class="ui:inline-block ui:w-px ui:h-3 ui:bg-[var(--landing-border)]"></span>
-            <span><span class="ui:font-medium ui:text-[var(--landing-fg)]">{learnersFormatted}</span> learners</span>
+            <span>
+              {labels?.learnersLabel?.(learnersCount) ?? `${learnersFormatted} learners`}
+            </span>
           {/if}
           {#if tracksCount > 1}
             <span class="ui:inline-block ui:w-px ui:h-3 ui:bg-[var(--landing-border)]"></span>
-            <span><span class="ui:font-medium ui:text-[var(--landing-fg)]">{tracksCount}</span> tracks</span>
+            <span>{labels?.tracksLabel?.(tracksCount) ?? `${tracksCount} tracks`}</span>
           {/if}
         </span>
       {/if}
@@ -242,7 +251,7 @@
             style="border-top: 1px solid var(--landing-border-soft);"
           >
             <div class="ui:flex ui:gap-4">
-              <span>Enter enroll</span>
+              <span>{labels?.terminalEnrollLabel ?? 'Enter enroll'}</span>
               <span>↑/↓ navigate</span>
               <span>^q quit</span>
             </div>

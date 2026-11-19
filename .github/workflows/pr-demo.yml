@@ -139,7 +139,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           # Pin to the repo engines/.nvmrc version (repo-wide Node upgrade is out of scope for this PR).
-          node-version: '20.19.3'
+          node-version: '24.22.1'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -197,6 +197,8 @@ jobs:
         run: |
           pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
           pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=6144"
 
       - name: Start API
         if: steps.gate.outputs.run_demo == 'true'

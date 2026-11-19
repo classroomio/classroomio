@@ -5,10 +5,13 @@
 
   interface Props {
     instructor: CourseInstructor;
+    logoUrl?: string;
     labels?: CourseLandingPageLabels;
   }
 
-  let { instructor, labels }: Props = $props();
+  let { instructor, logoUrl, labels }: Props = $props();
+
+  const avatarSrc = $derived(instructor.imgUrl || logoUrl);
 </script>
 
 {#if instructor.name}
@@ -19,8 +22,8 @@
     heading={labels?.instructorHeading ?? 'Taught by a practitioner'}
   >
     <div class="ui:flex ui:gap-5">
-      {#if instructor.imgUrl}
-        <img src={instructor.imgUrl} alt="" class="ui:size-14 ui:shrink-0 ui:rounded-[14px] ui:object-cover" />
+      {#if avatarSrc}
+        <img src={avatarSrc} alt="" class="ui:size-14 ui:shrink-0 ui:rounded-[14px] ui:object-cover" />
       {:else}
         <span class="ui:size-14 ui:shrink-0 ui:rounded-[14px] ui:bg-[var(--landing-card-soft)]"></span>
       {/if}

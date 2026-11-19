@@ -12,6 +12,7 @@ import type {
   GetLinkInviteRequest,
   GetOrgPublicCoursesRequest,
   GetOrgPublicLearningPathsRequest,
+  GetStudentEmailTemplatesRequest,
   ImportAudienceRequest,
   InviteTeamRequest,
   JoinAcademyRequest,
@@ -23,13 +24,26 @@ import type {
   OrganizationAudienceQuery,
   OrganizationTeamMembers,
   ResendAudienceInviteRequest,
+  ResetStudentEmailTemplateRequest,
   ReorderOrgCoursesRequest,
   RevokeAudienceInviteRequest,
+  SaveStudentEmailTemplateRequest,
+  SendStudentEmailTemplateTestRequest,
+  StudentEmailTemplateTestDraft,
   ToggleLinkInviteRequest,
   UndoBulkAudienceActionRequest,
-  UpdateOrganizationRequest
+  UpdateOrganizationRequest,
+  UpdateTeamMemberRoleRequest,
+  TOrgUpdateForm
 } from '../utils/types';
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import type { EmailLocale, StudentEmailId } from '@cio/utils/email';
+import {
+  BaseApiWithErrors,
+  classroomio,
+  hasErrorCode,
+  matchesError,
+  type NormalizedApiError
+} from '$lib/utils/services/api';
 import type {
   TAssignAudienceCourses,
   TAudienceInviteByEmail,
@@ -38,14 +52,15 @@ import type {
   TCourseReorder,
   TBulkAudienceAction,
   TImportAudienceMembers,
-  TUpdateOrganization
+  TUpdateOrganization,
+  TUpdateTeamMemberRole
 } from '@cio/utils/validation/organization';
 import { ZBulkAudienceAction, ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
 import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 
 import type { AccountOrg } from '$features/app/types';
 import type { GetTeamRequest } from '../utils/types';
-import { ROLE } from '@cio/utils/constants';
+import { ROLE, ErrorCodes } from '@cio/utils/constants';
 import { ROLE_LABEL } from '$lib/utils/constants/roles';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -65,23 +80,6 @@ import type { ZodError } from 'zod';
 
 const PUBLISHED_COURSES_ORDERING_LIMIT = 100;
 
-export interface TOrgUpdateForm {
-  name?: string;
-  avatar?: string | File | undefined;
-  favicon?: string | File | null | undefined;
-  theme?: string;
-  landingpage?: AccountOrg['landingpage'];
-  siteName?: string;
-  customDomain?: string | null;
-  isCustomDomainVerified?: boolean;
-  customization?: AccountOrg['customization'];
-  disableSignup?: boolean;
-  disableSignupMessage?: string;
-  disableEmailPassword?: boolean;
-  disableGoogleAuth?: boolean;
-  settings?: { signup?: { inviteOnly?: boolean }; emailNotifications?: Record<string, boolean> };
-}
-
 /**
  * API class for organization operations
  */
@@ -95,6 +93,7 @@ class OrgApi extends BaseApiWithErrors {
   publicLearningPaths: OrgPublicLearningPaths = $state([]);
   hasMorePublicLearningPaths = $state(false);
   publicLearningPathsLoadedSiteName: string | null = $state(null);
+  joinErrorCode = $state<string | null>(null);
 
   isFetchingOrgPublicCourses = $state(false);
   isFetchingOrgPublicLearningPaths = $state(false);
@@ -107,6 +106,8 @@ class OrgApi extends BaseApiWithErrors {
   private activeAudienceRequestController: AbortController | null = null;
 
   async joinAcademy(orgId: string, redirectTo = '/lms') {
+    this.joinErrorCode = null;
+
     return this.execute<JoinAcademyRequest>({
       requestFn: () => classroomio.organization.join.$post({}, { headers: { 'cio-org-id': orgId } }),
       logContext: 'joining academy',
@@ -119,7 +120,11 @@ class OrgApi extends BaseApiWithErrors {
         await authClient.getSession({ query: { disableCookieCache: true } });
         window.location.href = resolveOrgJoinRedirect(redirectTo, window.location.origin);
       },
-      onError: () => {
+      onError: (result) => {
+        if (result.code) {
+          this.joinErrorCode = result.code;
+        }
+
         snackbar.error('invite.organization.messages.join_failed');
       }
     });
@@ -532,12 +537,10 @@ class OrgApi extends BaseApiWithErrors {
         goto(resolve(`/org/${organization.siteName}`, {}));
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-        if ('error' in result) {
-          this.handleValidationError(result);
+        this.handleValidationError(result);
+
+        if (!result.field) {
+          snackbar.error(result.message);
         }
       }
     });
@@ -555,6 +558,7 @@ class OrgApi extends BaseApiWithErrors {
     fields: TOrgUpdateForm,
     options: { onSuccess?: (data: TUpdateOrganization) => void } = {}
   ) {
+    this.success = false;
     const { avatar, favicon, ...rest } = fields;
     const validationPayload = {
       ...rest,
@@ -644,8 +648,6 @@ class OrgApi extends BaseApiWithErrors {
             theme: response.data.theme ?? undefined,
             landingpage: response.data.landingpage ?? undefined,
             siteName: response.data.siteName ?? undefined,
-            customDomain: response.data.customDomain,
-            isCustomDomainVerified: response.data.isCustomDomainVerified ?? undefined,
             customization: response.data.customization ?? undefined
           });
           return;
@@ -656,43 +658,77 @@ class OrgApi extends BaseApiWithErrors {
       onError: (error) => {
         console.error('Error updating organization:', error);
 
-        if (typeof error === 'object' && error !== null && 'error' in error) {
-          const apiError = error as {
-            success: false;
-            error: string;
-            code?: string;
-            field?: string;
-          };
-
-          if (apiError.field === 'siteName' || apiError.code === 'SITENAME_EXISTS') {
-            const message = typeof apiError.error === 'string' ? apiError.error : 'Site name already exists';
-            this.errors = { ...this.errors, siteName: message };
-            snackbar.error(message);
-            return;
-          }
-
-          if (apiError.field && typeof apiError.error === 'string') {
-            this.errors = { ...this.errors, [apiError.field]: apiError.error };
-            snackbar.error(apiError.error);
-            return;
-          }
-
-          if (typeof apiError.error === 'string') {
-            this.errors = { ...this.errors, general: apiError.error };
-            snackbar.error(apiError.error);
-            return;
-          }
-
-          this.errors = { ...this.errors, general: t.get('snackbar.update_failed') };
-          snackbar.error(t.get('snackbar.update_failed'));
+        if (matchesError(error, { field: 'siteName' }) || hasErrorCode(error, ErrorCodes.SITENAME_EXISTS)) {
+          this.errors = { ...this.errors, siteName: error.message };
+          snackbar.error(error.message);
           return;
         }
 
-        const message =
-          error instanceof Error ? error.message : typeof error === 'string' ? error : t.get('snackbar.update_failed');
-        this.errors = { ...this.errors, general: message };
-        snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
+        if (error.field) {
+          this.errors = { ...this.errors, [error.field]: error.message };
+          snackbar.error(error.message);
+          return;
+        }
+
+        this.errors = { ...this.errors, general: error.message };
+        snackbar.error(`${t.get('snackbar.update_failed')}: ${error.message}`);
       }
+    });
+  }
+
+  private showStudentEmailTemplateError(result: NormalizedApiError) {
+    snackbar.error(result.message || 'snackbar.something');
+  }
+
+  async listStudentEmailTemplates() {
+    return this.execute<GetStudentEmailTemplatesRequest>({
+      requestFn: () => classroomio.organization['email-templates'].$get(),
+      logContext: 'fetching student email templates',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async saveStudentEmailTemplate(
+    emailId: StudentEmailId,
+    locale: EmailLocale,
+    content: string,
+    subject?: string | null
+  ) {
+    return this.execute<SaveStudentEmailTemplateRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].$put({
+          param: { emailId, locale },
+          json: { content, subject }
+        }),
+      logContext: 'saving student email template',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async resetStudentEmailTemplate(emailId: StudentEmailId, locale: EmailLocale) {
+    return this.execute<ResetStudentEmailTemplateRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].$delete({
+          param: { emailId, locale }
+        }),
+      logContext: 'resetting student email template',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async sendStudentEmailTemplateTest(
+    emailId: StudentEmailId,
+    locale: EmailLocale,
+    draft: StudentEmailTemplateTestDraft
+  ) {
+    return this.execute<SendStudentEmailTemplateTestRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].test.$post({
+          param: { emailId, locale },
+          json: draft
+        }),
+      logContext: 'sending student email test',
+      onError: (result) => this.showStudentEmailTemplateError(result)
     });
   }
 
@@ -702,24 +738,51 @@ class OrgApi extends BaseApiWithErrors {
    * @param emails Array of email addresses
    * @param roleId Role ID (ADMIN or TUTOR)
    */
-  async inviteTeamMembers(emails: string[], roleId: number) {
+  async inviteTeamMembers(emails: string[], roleId: number, confirmedStudentEmails: string[] = []) {
     return this.execute<InviteTeamRequest>({
       requestFn: () =>
         classroomio.organization.team.invite.$post({
-          json: { emails, roleId }
+          json: { emails, roleId, confirmedStudentEmails }
         }),
       logContext: 'inviting team members',
-      onSuccess: () => {
-        this.getOrgTeam();
+      onSuccess: (response) => {
+        if (response.data.queuedCount > 0) void this.getOrgTeam();
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          snackbar.error(result.message);
+        }
+      }
+    });
+  }
+
+  /**
+   * Changes another team member's organization role.
+   *
+   * @param memberId Member ID to update
+   * @param roleId Admin or tutor role id
+   */
+  async updateTeamMemberRole(memberId: number, roleId: TUpdateTeamMemberRole['roleId']) {
+    return this.execute<UpdateTeamMemberRoleRequest>({
+      requestFn: () =>
+        classroomio.organization.team[':memberId'].$patch({
+          param: { memberId: memberId.toString() },
+          json: { roleId }
+        }),
+      logContext: 'updating team member role',
+      onSuccess: async () => {
+        snackbar.success('snackbar.team_members.role_updated');
+        await this.getOrgTeam();
+      },
+      onError: (result) => {
+        if (hasErrorCode(result, ErrorCodes.ORG_TEAM_LAST_ADMIN)) {
+          snackbar.error('snackbar.team_members.last_admin');
           return;
         }
-        if ('error' in result && 'field' in result) {
-          this.errors[result.field as string] = result.error;
-        }
+
+        snackbar.error('snackbar.team_members.role_update_failed');
       }
     });
   }
@@ -740,9 +803,7 @@ class OrgApi extends BaseApiWithErrors {
         this.getOrgTeam();
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -768,9 +829,7 @@ class OrgApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -798,12 +857,10 @@ class OrgApi extends BaseApiWithErrors {
         this.success = true;
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-        if ('error' in result && 'field' in result) {
-          this.errors[result.field as string] = result.error;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          snackbar.error(result.message);
         }
       }
     });
@@ -843,13 +900,7 @@ class OrgApi extends BaseApiWithErrors {
         this.success = true;
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-        if ('error' in result) {
-          snackbar.error(result.error);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -869,9 +920,7 @@ class OrgApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -887,9 +936,7 @@ class OrgApi extends BaseApiWithErrors {
         snackbar.success('audience.invite.revoke_snackbar_success');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-        }
+        snackbar.error(result.message);
       }
     });
   }
@@ -906,7 +953,7 @@ class OrgApi extends BaseApiWithErrors {
         }),
       logContext: 'building audience export',
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -923,7 +970,7 @@ class OrgApi extends BaseApiWithErrors {
         }),
       logContext: 'previewing bulk audience action',
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -940,7 +987,7 @@ class OrgApi extends BaseApiWithErrors {
       requestFn: () => classroomio.organization.audience['bulk-action'].$post({ json: parsed.data }),
       logContext: 'applying bulk audience action',
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -958,7 +1005,7 @@ class OrgApi extends BaseApiWithErrors {
         }),
       logContext: 'reading bulk audience action status',
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -971,7 +1018,7 @@ class OrgApi extends BaseApiWithErrors {
         snackbar.success('audience.bulk.undo_success');
       },
       onError: (result) => {
-        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
@@ -987,21 +1034,16 @@ class OrgApi extends BaseApiWithErrors {
         snackbar.success('audience.delete.snackbar_success');
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
-
-        snackbar.error('error' in result ? result.error : result.message);
+        snackbar.error(result.message);
       }
     });
   }
 
   linkInvite = $state<OrgLinkInvite>(null);
 
-  async getLinkInvite() {
+  async getLinkInvite(roleId: number) {
     return this.execute<GetLinkInviteRequest>({
-      requestFn: () => classroomio.organization['link-invite'].$get(),
+      requestFn: () => classroomio.organization['link-invite'].$get({ query: { roleId: roleId.toString() } }),
       logContext: 'fetching link invite',
       onSuccess: (response) => {
         this.linkInvite = response.data;
@@ -1024,9 +1066,9 @@ class OrgApi extends BaseApiWithErrors {
     });
   }
 
-  async toggleLinkInvite(isRevoked: boolean) {
+  async toggleLinkInvite(roleId: number, isRevoked: boolean) {
     return this.execute<ToggleLinkInviteRequest>({
-      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { isRevoked } }),
+      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { roleId, isRevoked } }),
       logContext: 'toggling link invite',
       onSuccess: (response) => {
         this.linkInvite = response.data;

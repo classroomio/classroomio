@@ -38,26 +38,28 @@
   });
 
   $effect(() => {
-    if (!data.exercise || isLockedForStudent) return;
+    const currentExerciseId = data.exerciseId;
+    if (!currentExerciseId || !data.exercise || isLockedForStudent) return;
 
     const meta = get(questionnaireMetaData);
-    if (meta.isFinished && meta.exerciseId === data.exerciseId) {
+    if (meta.exerciseId === currentExerciseId) {
       return;
     }
-    if (meta.exerciseId != null && meta.exerciseId !== data.exerciseId) {
+
+    if (meta.exerciseId != null && meta.exerciseId !== currentExerciseId) {
       reset();
     }
 
-    hydrateExercisePageData(data.exercise, data.exerciseId);
+    hydrateExercisePageData(data.exercise, currentExerciseId);
 
     // Puts back work stashed before an upgrade checkout redirect.
-    if (restoreExerciseDraft(data.courseId, data.exerciseId)) {
+    if (restoreExerciseDraft(data.courseId, currentExerciseId)) {
       snackbar.success('snackbar.exercise.draft_restored');
     }
   });
 </script>
 
-<Page.Root class="mx-auto flex w-full px-3 sm:w-[90%] sm:px-4 lg:max-w-5xl">
+<Page.Root class="mx-auto flex w-full gap-0! pb-0!">
   {#if $isOrgStudent && !isCourseReady}
     <div class="flex justify-center py-16">
       <Spinner />
@@ -69,6 +71,7 @@
       isFetching={false}
       submissions={data.submissions ?? []}
       mySubmissions={data.mySubmissions ?? []}
+      canGradeSubmissions={data.canGradeSubmissions ?? false}
     />
   {/if}
 </Page.Root>

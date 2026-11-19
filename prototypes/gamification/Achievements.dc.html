@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Achievements and XP history</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@500;600&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:oklch(0.488 0.243 264.376)}a:hover{color:oklch(0.42 0.22 264.376)}
+</style>
+</helmet>
+<div style="font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; color: oklch(0.145 0 0); background: #ffffff; min-height: 100vh; display: flex; flex-wrap: wrap; align-items: stretch">
+
+  <nav aria-label="Learner navigation" style="flex: 1 1 232px; max-width: 100%; box-sizing: border-box; background: oklch(0.985 0 0); border-right: 1px solid oklch(0.922 0 0); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px">
+      <div style="width: 32px; height: 32px; border-radius: 8px; background: oklch(0.488 0.243 264.376); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px">U</div>
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 14px; font-weight: 600">Udemy Test</span>
+        <span style="font-size: 12px; color: oklch(0.45 0 0)">Learner</span>
+      </div>
+    </div>
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M9 22V12h6v10"></path></svg>Home</a>
+    <a href="Lesson.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>My learning</a>
+    <a href="Achievements.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; background: oklch(0.94 0 0); color: oklch(0.145 0 0); font-size: 14px; font-weight: 500; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>Achievements</a>
+    <a href="Leaderboard.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>Leaderboard</a>
+    <a href="#" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Exercises</a>
+    <a href="#" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>Community</a>
+    <a href="#" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"></rect><path d="M7 9h10"></path><path d="M7 13h6"></path><path d="m15 18 1.5 3 1.5-3"></path></svg>Certificates</a>
+    <div style="margin-top: auto; padding: 12px 8px 4px; border-top: 1px solid oklch(0.922 0 0); display: flex; align-items: center; gap: 10px">
+      <div style="width: 32px; height: 32px; border-radius: 999px; background: oklch(0.9 0.05 264); color: oklch(0.35 0.15 264); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px">AL</div>
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 13px; font-weight: 600">Ada Lovelace</span>
+        <span style="font-size: 12px; color: oklch(0.45 0 0)">Level 7 · 1,420 XP</span>
+      </div>
+    </div>
+  </nav>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 48px">
+    <div style="max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px">
+
+      <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 20px; border-radius: 16px; border: 1px solid oklch(0.922 0 0)">
+        <div style="width: 72px; height: 72px; border-radius: 999px; background: oklch(0.9 0.05 264); color: oklch(0.35 0.15 264); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 24px">AL</div>
+        <div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 4px">
+          <h1 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em">Ada Lovelace</h1>
+          <span style="font-size: 14px; color: oklch(0.45 0 0)">Learning at Udemy Test since March</span>
+        </div>
+        <dl style="margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px">
+          <div style="display: flex; flex-direction: column-reverse; gap: 2px"><dt style="font-size: 12px; color: oklch(0.45 0 0)">Level</dt><dd style="margin: 0; font-size: 22px; font-weight: 700">7</dd></div>
+          <div style="display: flex; flex-direction: column-reverse; gap: 2px"><dt style="font-size: 12px; color: oklch(0.45 0 0)">Total XP</dt><dd style="margin: 0; font-size: 22px; font-weight: 700">1,420</dd></div>
+          <div style="display: flex; flex-direction: column-reverse; gap: 2px"><dt style="font-size: 12px; color: oklch(0.45 0 0)">Best streak</dt><dd style="margin: 0; font-size: 22px; font-weight: 700">21d</dd></div>
+          <div style="display: flex; flex-direction: column-reverse; gap: 2px"><dt style="font-size: 12px; color: oklch(0.45 0 0)">Badges</dt><dd style="margin: 0; font-size: 22px; font-weight: 700">6/10</dd></div>
+        </dl>
+      </header>
+
+      <section aria-labelledby="badges-h" style="display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+          <h2 id="badges-h" style="margin: 0; font-size: 18px; font-weight: 600">Badges</h2>
+          <div role="tablist" aria-label="Filter badges" style="display: inline-flex; padding: 3px; border-radius: 10px; background: oklch(0.96 0 0); gap: 2px">
+            <sc-for list="{{tabs}}" as="tab" hint-placeholder-count="3">
+              <button type="button" role="tab" aria-selected="{{tab.selected}}" onClick="{{tab.pick}}" style="{{tab.style}}">{{tab.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px">
+          <sc-for list="{{badges}}" as="badge" hint-placeholder-count="8">
+            <article style="{{badge.cardStyle}}">
+              <div style="{{badge.medalStyle}}">
+                <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{badge.iconA}}"></path><path d="{{badge.iconB}}"></path></svg>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 2px">
+                <span style="font-size: 14px; font-weight: 600">{{badge.name}}</span>
+                <span style="font-size: 12px; color: oklch(0.45 0 0); line-height: 1.4">{{badge.rule}}</span>
+              </div>
+              <sc-if value="{{badge.earned}}" hint-placeholder-val="{{ true }}">
+                <span style="font-size: 12px; font-weight: 500; color: oklch(0.45 0.12 163)">Earned {{badge.when}}</span>
+              </sc-if>
+              <sc-if value="{{badge.locked}}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 4px; width: 100%">
+                  <div style="height: 6px; border-radius: 999px; background: oklch(0.93 0 0); overflow: hidden"><div style="{{badge.barStyle}}"></div></div>
+                  <span style="font-size: 12px; color: oklch(0.45 0 0)">{{badge.progress}}</span>
+                </div>
+              </sc-if>
+            </article>
+          </sc-for>
+        </div>
+      </section>
+
+      <section aria-labelledby="xp-h" style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <h2 id="xp-h" style="margin: 0; font-size: 18px; font-weight: 600">XP history</h2>
+          <span style="font-size: 13px; color: oklch(0.45 0 0)">Every point traces back to something you did. Retries and re-watches never pay twice.</span>
+        </div>
+        <div style="border: 1px solid oklch(0.922 0 0); border-radius: 12px; overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px">
+            <thead>
+              <tr style="background: oklch(0.985 0 0); text-align: left">
+                <th scope="col" style="padding: 10px 14px; font-weight: 600; color: oklch(0.4 0 0)">When</th>
+                <th scope="col" style="padding: 10px 14px; font-weight: 600; color: oklch(0.4 0 0)">Activity</th>
+                <th scope="col" style="padding: 10px 14px; font-weight: 600; color: oklch(0.4 0 0)">Course</th>
+                <th scope="col" style="padding: 10px 14px; font-weight: 600; color: oklch(0.4 0 0); text-align: right">XP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ledger}}" as="entry" hint-placeholder-count="7">
+                <tr style="border-top: 1px solid oklch(0.922 0 0)">
+                  <td style="padding: 10px 14px; color: oklch(0.45 0 0); white-space: nowrap">{{entry.when}}</td>
+                  <td style="padding: 10px 14px">{{entry.activity}}</td>
+                  <td style="padding: 10px 14px; color: oklch(0.4 0 0)">{{entry.course}}</td>
+                  <td style="padding: 10px 14px; text-align: right; font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600; color: oklch(0.42 0.22 264.376)">+{{entry.xp}}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: 'all' };
+  }
+  renderVals() {
+    const filter = this.state.filter;
+    const icons = {
+      flame: ['M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z', ''],
+      check: ['M20 6 9 17l-5-5', ''],
+      target: ['M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20', 'M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8'],
+      calendar: ['M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z', 'm9 15 2 2 4-4'],
+      message: ['M7.9 20A9 9 0 1 0 4 16.1L2 22Z', ''],
+      award: ['M12 2a6 6 0 1 0 0 12a6 6 0 1 0 0-12', 'M15.477 12.89 17 22l-5-3-5 3 1.523-9.11'],
+      zap: ['M13 2 3 14h9l-1 8 10-12h-9l1-8z', ''],
+      clock: ['M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20', 'M12 6v6l4 2']
+    };
+    const hues = { amber: 'oklch(0.666 0.179 58.318)', green: 'oklch(0.596 0.145 163.225)', blue: 'oklch(0.488 0.243 264.376)', purple: 'oklch(0.55 0.2 300)' };
+    const all = [
+      { name: 'First lesson', rule: 'Complete any lesson', icon: 'check', hue: 'blue', earned: true, when: 'Mar 4' },
+      { name: '7-day streak', rule: 'Learn 7 days in a row', icon: 'flame', hue: 'amber', earned: true, when: 'Sep 30' },
+      { name: 'Perfect score', rule: '100% on a first attempt', icon: 'target', hue: 'green', earned: true, when: 'Oct 2' },
+      { name: 'Showed up live', rule: 'Attend 3 live sessions', icon: 'calendar', hue: 'blue', earned: true, when: 'Oct 9' },
+      { name: 'Early bird', rule: 'Submit 5 exercises before the due date', icon: 'clock', hue: 'green', earned: true, when: 'Aug 21' },
+      { name: 'Level 5', rule: 'Reach 1,000 XP', icon: 'zap', hue: 'purple', earned: true, when: 'Sep 12' },
+      { name: '30-day streak', rule: 'Learn 30 days in a row', icon: 'flame', hue: 'amber', earned: false, done: 12, total: 30, unit: 'days' },
+      { name: 'Course finisher', rule: 'Complete a whole course', icon: 'award', hue: 'purple', earned: false, done: 68, total: 100, unit: '% of Data Science' },
+      { name: 'Helpful answer', rule: 'An instructor marks your community answer helpful', icon: 'message', hue: 'blue', earned: false, done: 0, total: 1, unit: 'answers' },
+      { name: 'Never missed', rule: 'Attend every live session in a course', icon: 'calendar', hue: 'green', earned: false, done: 4, total: 6, unit: 'sessions' }
+    ];
+    const badges = all
+      .filter((badge) => filter === 'all' || (filter === 'earned' ? badge.earned : !badge.earned))
+      .map((badge) => {
+        const color = hues[badge.hue];
+        const pct = badge.earned ? 100 : Math.round((badge.done / badge.total) * 100);
+        return {
+          name: badge.name,
+          rule: badge.rule,
+          earned: badge.earned,
+          locked: !badge.earned,
+          when: badge.when || '',
+          iconA: icons[badge.icon][0],
+          iconB: icons[badge.icon][1],
+          progress: badge.earned ? '' : badge.done + ' / ' + badge.total + ' ' + badge.unit,
+          barStyle: 'width: ' + pct + '%; height: 100%; background: ' + color + ';',
+          cardStyle: 'border: 1px solid oklch(0.922 0 0); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px;' + (badge.earned ? '' : ' background: oklch(0.985 0 0);'),
+          medalStyle: 'width: 56px; height: 56px; border-radius: 999px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;' + (badge.earned
+            ? ' border: 2px solid ' + color + '; color: ' + color + '; background: color-mix(in oklch, ' + color + ' 12%, white);'
+            : ' border: 2px dashed oklch(0.8 0 0); color: oklch(0.6 0 0); background: #ffffff;')
+        };
+      });
+    const tabDefs = [{ id: 'all', label: 'All' }, { id: 'earned', label: 'Earned' }, { id: 'locked', label: 'In progress' }];
+    const tabs = tabDefs.map((tab) => ({
+      label: tab.label,
+      selected: tab.id === filter ? 'true' : 'false',
+      pick: () => this.setState({ filter: tab.id }),
+      style: 'font: inherit; font-size: 13px; font-weight: 500; min-height: 32px; padding: 0 12px; border: 0; border-radius: 8px; cursor: pointer;' + (tab.id === filter ? ' background: #ffffff; color: oklch(0.145 0 0); box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);' : ' background: transparent; color: oklch(0.4 0 0);')
+    }));
+    const ledger = [
+      { when: 'Today, 2:14 pm', activity: 'Completed lesson · State with useState', course: 'Modern Web Development with React', xp: 20 },
+      { when: 'Today, 2:14 pm', activity: '7-day streak badge', course: '—', xp: 50 },
+      { when: 'Yesterday', activity: 'Attended live session · Office hours', course: 'Data Science with Python and Pandas', xp: 15 },
+      { when: 'Yesterday', activity: 'Exercise graded · 100% on first attempt', course: 'Data Science with Python and Pandas', xp: 40 },
+      { when: 'Oct 11', activity: 'Submitted exercise before due date', course: 'Data Science with Python and Pandas', xp: 10 },
+      { when: 'Oct 11', activity: 'Reached 25% milestone', course: 'Getting started with MVC', xp: 25 },
+      { when: 'Oct 10', activity: 'Completed lesson · Lists and keys', course: 'Modern Web Development with React', xp: 20 }
+    ];
+    return { badges, tabs, ledger };
+  }
+}
+</script>
+</body>
+</html>

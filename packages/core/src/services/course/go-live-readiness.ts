@@ -9,10 +9,10 @@ import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { getDashboardBaseUrl } from '../../config/dashboard-url';
-import { updateCourse } from './course';
+import { captureCoursePublished, updateCourse } from './course';
+import { emitCoursePublishWebhookEvent } from '../webhook/emit';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
-import { sealLessonVersionsOnPublish } from '../lesson-version';
-import { db } from '@cio/db/drizzle';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 export type CourseGoLiveIssue = {
   code: string;
@@ -39,8 +39,8 @@ type CourseReadinessInput = {
     | 'description'
     | 'overview'
     | 'slug'
-    | 'logo'
     | 'bannerImage'
+    | 'logo'
     | 'metadata'
     | 'type'
     | 'cost'
@@ -148,8 +148,10 @@ export function evaluateCourseGoLiveReadiness(input: CourseReadinessInput): Cour
     metadataFixes.requirements = '';
   }
 
-  if (!course.logo && !course.bannerImage) {
-    blockers.push(buildIssue('LANDING_IMAGE_MISSING', 'Add a landing-page banner or course image.', 'course.logo'));
+  if (!resolveCourseBannerImage(course)) {
+    blockers.push(
+      buildIssue('LANDING_IMAGE_MISSING', 'Add a landing-page banner or course image.', 'course.bannerImage')
+    );
     landingPageFixes.generateImage = true;
   }
 
@@ -253,7 +255,7 @@ export async function getCourseGoLiveReadiness(courseId: string): Promise<Course
 
   const organizationId = await getCourseOrganizationId(courseId);
   const [contentItems, organization] = await Promise.all([
-    getCourseContentItems(courseId),
+    getCourseContentItems(courseId, undefined, undefined, { includeNoteContent: true }),
     organizationId ? getOrganizationById(organizationId) : Promise.resolve(null)
   ]);
 
@@ -269,7 +271,7 @@ export async function getCourseGoLiveReadiness(courseId: string): Promise<Course
   });
 }
 
-export async function publishCourseWhenReady(courseId: string) {
+export async function publishCourseWhenReady(courseId: string, profileId: string | null = null) {
   const readiness = await getCourseGoLiveReadiness(courseId);
   if (!readiness.ready) {
     const blockerList = readiness.blockers.map((blocker) => blocker.message).join(' ');
@@ -281,15 +283,26 @@ export async function publishCourseWhenReady(courseId: string) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
+  if (course.isTemplate) {
+    throw new AppError('Templates cannot be published', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
   const slug = await ensureCourseSlug(courseId, course.title);
 
-  // Publishing seals the snapshot students were served, so both writes share one transaction.
-  const publishedCourse = await db.transaction(async (tx) => {
-    const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
-    await sealLessonVersionsOnPublish(courseId, tx);
-
-    return updated;
+  const {
+    course: publishedCourse,
+    publishedNow,
+    publishChange
+  } = await updateCourse(courseId, {
+    slug,
+    isPublished: true
   });
+
+  if (publishedNow) {
+    captureCoursePublished(publishedCourse, profileId ?? undefined, 'agent');
+  }
+
+  await emitCoursePublishWebhookEvent(courseId, publishChange, profileId);
 
   const publishedReadiness = await getCourseGoLiveReadiness(courseId);
 

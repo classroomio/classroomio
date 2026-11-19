@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   deleteSubmission: vi.fn(),
   getProfileByGroupMemberId: vi.fn(),
   syncComplianceProgressFromSubmission: vi.fn(),
-  evaluateAndRecordCourseCompletion: vi.fn(),
+  evaluateCourseCertification: vi.fn(),
   syncCourseProgressInLearningPaths: vi.fn()
 }));
 
@@ -35,7 +35,7 @@ vi.mock('@api/services/course/compliance', () => ({
 }));
 
 vi.mock('@api/services/course/completion', () => ({
-  evaluateAndRecordCourseCompletion: mocks.evaluateAndRecordCourseCompletion
+  evaluateCourseCertification: mocks.evaluateCourseCertification
 }));
 
 vi.mock('@api/services/learning-path', () => ({
@@ -43,6 +43,10 @@ vi.mock('@api/services/learning-path', () => ({
 }));
 
 vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmail: vi.fn() }));
+
+vi.mock('@cio/db/queries/course/progression', () => ({
+  isExerciseCompletedForMember: vi.fn().mockResolvedValue(true)
+}));
 
 import {
   deleteSubmissionService,
@@ -63,17 +67,17 @@ describe('learning-path progress sync after a submission change', () => {
     vi.clearAllMocks();
     mocks.getSubmissionById.mockResolvedValue(graded);
     mocks.getProfileByGroupMemberId.mockResolvedValue({ id: 'profile-1' });
-    mocks.evaluateAndRecordCourseCompletion.mockResolvedValue({ completedAt: null });
+    mocks.evaluateCourseCertification.mockResolvedValue({ completedAt: null });
     mocks.syncCourseProgressInLearningPaths.mockResolvedValue(undefined);
   });
 
   it('evaluates certification before syncing after a teacher grades, without recording learner activity', async () => {
     mocks.updateSubmissionGrades.mockResolvedValue(graded);
 
-    await updateSubmissionGradesBatch('submission-1', { answers: [], total: 8 } as never);
+    await updateSubmissionGradesBatch('submission-1', 'course-1', { answers: [], total: 8 } as never);
 
     await vi.waitFor(() => {
-      expect(mocks.evaluateAndRecordCourseCompletion).toHaveBeenCalledWith('course-1', 'profile-1');
+      expect(mocks.evaluateCourseCertification).toHaveBeenCalledWith('course-1', 'profile-1');
       expect(mocks.syncCourseProgressInLearningPaths).toHaveBeenCalledWith('course-1', 'profile-1', undefined, {
         recordActivity: false
       });
@@ -82,14 +86,14 @@ describe('learning-path progress sync after a submission change', () => {
 
   it('syncs when a single update completes grading, and not otherwise', async () => {
     mocks.updateSubmission.mockResolvedValue(graded);
-    await updateSubmissionService('submission-1', { feedback: 'Good' } as never);
+    await updateSubmissionService('submission-1', 'course-1', { feedback: 'Good' } as never);
 
     await vi.waitFor(() => expect(mocks.syncCourseProgressInLearningPaths).toHaveBeenCalledOnce());
 
     mocks.syncCourseProgressInLearningPaths.mockClear();
     mocks.getSubmissionById.mockResolvedValue({ ...graded, gradingState: 'queued', statusId: 1 });
     mocks.updateSubmission.mockResolvedValue({ ...graded, gradingState: 'queued' });
-    await updateSubmissionService('submission-1', { feedback: 'Pending' } as never);
+    await updateSubmissionService('submission-1', 'course-1', { feedback: 'Pending' } as never);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(mocks.syncCourseProgressInLearningPaths).not.toHaveBeenCalled();
@@ -98,7 +102,7 @@ describe('learning-path progress sync after a submission change', () => {
   it('syncs after a submission is deleted, since that can reopen a course', async () => {
     mocks.deleteSubmission.mockResolvedValue(graded);
 
-    await deleteSubmissionService('submission-1');
+    await deleteSubmissionService('submission-1', 'course-1');
 
     await vi.waitFor(() => {
       expect(mocks.syncCourseProgressInLearningPaths).toHaveBeenCalledWith('course-1', 'profile-1', undefined, {
@@ -111,7 +115,7 @@ describe('learning-path progress sync after a submission change', () => {
     mocks.updateSubmissionGrades.mockResolvedValue(graded);
     mocks.syncCourseProgressInLearningPaths.mockRejectedValue(new Error('sync down'));
 
-    await expect(updateSubmissionGradesBatch('submission-1', { answers: [], total: 8 } as never)).resolves.toEqual(
+    await expect(updateSubmissionGradesBatch('submission-1', 'course-1', { answers: [], total: 8 } as never)).resolves.toEqual(
       graded
     );
   });

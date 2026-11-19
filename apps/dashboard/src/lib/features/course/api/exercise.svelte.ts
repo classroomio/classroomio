@@ -1,6 +1,7 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   CreateExerciseFromTemplateRequest,
+  CreateExerciseFromTemplateOptions,
   CreateExerciseRequest,
   DeleteExerciseRequest,
   Exercise,
@@ -55,10 +56,8 @@ export class ExerciseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch exercise');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch exercise');
       }
     });
   }
@@ -133,13 +132,21 @@ export class ExerciseApi extends BaseApiWithErrors {
 
   /**
    * Creates a new exercise
+   * @returns The created exercise, or undefined when validation or the request fails.
    */
-  async create(courseId: string, fields: Omit<TExerciseCreate, 'courseId'>) {
+  async create(
+    courseId: string,
+    fields: Omit<TExerciseCreate, 'courseId'>,
+    options: { silent?: boolean } = {}
+  ): Promise<Exercise | undefined> {
     const result = ZExerciseCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'exercise');
       return;
     }
+
+    const silent = options.silent ?? false;
+    let createdExercise: Exercise | undefined;
 
     await this.execute<CreateExerciseRequest>({
       requestFn: () =>
@@ -150,26 +157,27 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'creating exercise',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data as unknown as Exercise;
-          snackbar.success('Exercise created successfully');
+          createdExercise = response.data as unknown as Exercise;
+          this.exercise = createdExercise;
+          if (!silent) {
+            snackbar.success('Exercise created successfully');
+          }
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to create exercise');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
+
+    return createdExercise;
   }
 
   /**
@@ -199,16 +207,12 @@ export class ExerciseApi extends BaseApiWithErrors {
       },
       onError: (result) => {
         this.success = false;
-        if (typeof result === 'string') {
-          snackbar.error('Failed to update exercise');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -231,10 +235,8 @@ export class ExerciseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to delete exercise');
-        }
+      onError: () => {
+        snackbar.error('Failed to delete exercise');
       }
     });
   }
@@ -266,16 +268,12 @@ export class ExerciseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to submit exercise');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -353,11 +351,9 @@ export class ExerciseApi extends BaseApiWithErrors {
    * @param templateId Template ID
    * @returns The created exercise data or null on error
    */
-  async createFromTemplate(
-    courseId: string,
-    templateId: number | string,
-    options: { lessonId?: string; sectionId?: string; order?: number } = {}
-  ) {
+  async createFromTemplate(courseId: string, templateId: number | string, options: CreateExerciseFromTemplateOptions) {
+    const silent = options.silent ?? false;
+    let createdExercise: Exercise | undefined;
     const templateIdValue = Number(templateId);
     await this.execute<CreateExerciseFromTemplateRequest>({
       requestFn: () =>
@@ -373,26 +369,27 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'creating exercise from template',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data as unknown as Exercise;
-          snackbar.success('Exercise created successfully');
+          createdExercise = response.data as unknown as Exercise;
+          this.exercise = createdExercise;
+          if (!silent) {
+            snackbar.success('Exercise created successfully');
+          }
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to create exercise from template');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
+
+    return createdExercise;
   }
 
   /**

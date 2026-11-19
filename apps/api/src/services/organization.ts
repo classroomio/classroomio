@@ -1,3 +1,5 @@
+import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { invalidateAnalyticsPlan } from '@cio/core/utils/redis/analytics-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -5,13 +7,18 @@ import type {
   TGetAudienceQuery,
   TGetEarnedCertificates,
   TGetEnrolled,
-  TGetOrganizationCoursesQuery
+  TGetOrganizationCoursesQuery,
+  TOrganizationCourseSort,
+  TStudentHomeDestination
 } from '@cio/utils/validation/organization';
+import type { LmsAvailabilityContext } from '@cio/utils/lms';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   activateOrganizationPlan,
   cancelOrganizationPlan,
   checkSiteNameExists,
+  countOrganizationAdmins,
   createOrganizationPlan,
   deleteOrganizationAudienceMember,
   deleteOrganizationMember,
@@ -28,8 +35,11 @@ import {
   getOrganizationMemberIdByOrgAndProfile,
   getOrganizationPlanBySubscriptionId,
   getOrganizationTeam,
+  getOrganizationTeamMemberById,
   getOrganizations,
+  lockOrganizationForUpdate,
   revokeActiveOrganizationInvitesByEmails,
+  setOrganizationStudentHome,
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
@@ -53,7 +63,7 @@ import { countLearningPathsByOrg, listPublicLearningPaths } from '@cio/db/querie
 import { getEnrolled } from '@cio/db/queries/enrolled';
 import { getEarnedCertificates } from '@cio/db/queries/certificates';
 import { getAccountPrimary } from '@cio/db/queries/account';
-import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
+import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/student-progress';
 
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
 import { canUseBasicAuthSettings, PLAN } from '@cio/utils/plans';
@@ -63,9 +73,12 @@ import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
+import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
+import { assertStudentHomeDestination } from './organization/student-home';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
+
+export { updateTeamMemberRole } from './organization/team-role';
 
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
 const ORG_COURSES_PAGE_SIZE = 6;
@@ -96,10 +109,14 @@ async function resolveOrgIdBySiteNameOrThrow(siteName: string): Promise<string> 
 export async function createOrg(profileId: string, data: { name: string; siteName: string }) {
   try {
     // Reuse existing function from onboarding service
-    return await createOrganizationWithOwner(profileId, {
-      orgName: data.name,
-      siteName: data.siteName
-    });
+    return await createOrganizationWithOwner(
+      profileId,
+      {
+        orgName: data.name,
+        siteName: data.siteName
+      },
+      'add_org'
+    );
   } catch (error) {
     // Re-throw AppError as-is
     if (error instanceof AppError) {
@@ -211,6 +228,7 @@ export async function getOrgAudience(
         inviteStatus: query.inviteStatus,
         enrollment: query.enrollment,
         completion: query.completion,
+        certificate: query.certificate,
         lastLoginBefore: query.lastLoginBefore,
         lastActiveBefore: query.lastActiveBefore,
         excludeRecentJoiners: query.excludeRecentJoiners
@@ -274,9 +292,23 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
     }
 
     void invalidateOrgStats(orgId).catch(() => {});
+    await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
     if (deleted.email && removedByProfileId) {
-      await revokeActiveOrganizationInvitesByEmails(orgId, [deleted.email.toLowerCase()], removedByProfileId);
+      const targetEmail = deleted.email.toLowerCase();
+      const revoked = await revokeActiveOrganizationInvitesByEmails(orgId, [targetEmail], removedByProfileId);
+      await recordOrganizationInviteAudits(
+        revoked.map((invite) => ({
+          inviteId: invite.id,
+          organizationId: orgId,
+          eventType: 'REVOKED' as const,
+          actorProfileId: removedByProfileId,
+          targetEmail,
+          ipAddress: null,
+          userAgent: null,
+          metadata: { reason: 'member_removed' }
+        }))
+      );
     }
 
     return deleted;
@@ -454,7 +486,17 @@ export async function getOrganizationCourses(
       throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    const { page, limit, search } = query;
+    const { page, limit, search, type, status, sort, order } = query;
+    const listQuery = {
+      page,
+      limit,
+      search,
+      tags: query.tags,
+      type,
+      status,
+      sort,
+      order
+    };
     const tagSlugs = query.tags
       ?.split(',')
       .map((value) => value.trim())
@@ -472,12 +514,7 @@ export async function getOrganizationCourses(
             total: 0,
             totalPages: 0
           },
-          query: {
-            page,
-            limit,
-            search,
-            tags: query.tags
-          }
+          query: listQuery
         };
       }
     }
@@ -489,7 +526,11 @@ export async function getOrganizationCourses(
           courseIds: filteredCourseIds,
           page,
           limit,
-          search
+          search,
+          type,
+          publishedStatus: status,
+          sortKey: sort,
+          order
         });
         const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
           orgId,
@@ -507,12 +548,7 @@ export async function getOrganizationCourses(
             total: courses.total,
             totalPages: courses.totalPages
           },
-          query: {
-            page,
-            limit,
-            search,
-            tags: query.tags
-          }
+          query: listQuery
         };
       }
       case ROLE.TUTOR: {
@@ -522,7 +558,11 @@ export async function getOrganizationCourses(
           courseIds: filteredCourseIds,
           page,
           limit,
-          search
+          search,
+          type,
+          publishedStatus: status,
+          sortKey: sort,
+          order
         });
         const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
           orgId,
@@ -540,12 +580,7 @@ export async function getOrganizationCourses(
             total: courses.total,
             totalPages: courses.totalPages
           },
-          query: {
-            page,
-            limit,
-            search,
-            tags: query.tags
-          }
+          query: listQuery
         };
       }
       default:
@@ -672,9 +707,16 @@ export async function getUserEarnedCertificates(orgId: string, userId: string, q
  * @param userId - User ID to exclude enrolled courses
  * @returns Array of recommended courses
  */
-export async function getRecommendedCourses(orgId: string, userId: string, limit?: number, page?: number) {
+export async function getRecommendedCourses(
+  orgId: string,
+  userId: string,
+  limit?: number,
+  page?: number,
+  sort?: TOrganizationCourseSort,
+  order?: 'asc' | 'desc'
+) {
   try {
-    return await getExploreCourses({ orgId, profileId: userId, limit, page });
+    return await getExploreCourses({ orgId, profileId: userId, limit, page, sortKey: sort, order });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -812,6 +854,7 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
       isActive: true,
       provider: 'polar'
     });
+    void invalidateAnalyticsPlan(targetOrgId);
     return plan;
   } catch (error) {
     if (error instanceof AppError) {
@@ -900,7 +943,12 @@ async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrgan
   }
 }
 
-export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
+/** `dbClient` lets callers compose the organization write into their own transaction. */
+export async function updateOrg(
+  orgId: string,
+  data: Partial<TOrganization> & { studentHome?: TStudentHomeDestination | null },
+  dbClient: DbOrTxClient = db
+) {
   try {
     if (data.siteName) {
       const exists = await checkSiteNameExists(data.siteName, orgId); // exclude current org
@@ -936,7 +984,40 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       }
     }
 
-    const organization = await updateOrganization(orgId, data);
+    const { studentHome, ...orgData } = data;
+
+    let updateData = orgData;
+
+    if (orgData.customization) {
+      const apps = { ...orgData.customization.apps };
+      Reflect.deleteProperty(apps, 'poll');
+      const customization = { ...orgData.customization, apps };
+      updateData = { ...orgData, customization };
+    }
+
+    const hasOrgUpdates = Object.values(updateData).some((value) => value !== undefined);
+
+    const writeOrganization = async (client: DbOrTxClient) => {
+      if (studentHome !== undefined) {
+        const existing = await getOrganizationById(orgId, client);
+        const home = await assertStudentHomeDestination(
+          orgId,
+          studentHome,
+          (orgData.customization ?? existing?.customization ?? null) as LmsAvailabilityContext['customization'],
+          client
+        );
+        await setOrganizationStudentHome(orgId, home, client);
+      }
+
+      if (!hasOrgUpdates) {
+        return getOrganizationById(orgId, client);
+      }
+
+      return updateOrganization(orgId, updateData, client);
+    };
+
+    const organization =
+      dbClient === db ? await db.transaction((tx) => writeOrganization(tx)) : await writeOrganization(dbClient);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }
@@ -976,6 +1057,9 @@ export async function updateOrgPlan(subscriptionId: string, payload: TOrganizati
     if (!plan) {
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
     }
+    if (plan.orgId) {
+      void invalidateAnalyticsPlan(plan.orgId);
+    }
     return plan;
   } catch (error) {
     if (error instanceof AppError) {
@@ -1004,6 +1088,9 @@ export async function activateOrgPlan(data: TNewOrganizationPlan) {
     const activatedPlan = await activateOrganizationPlan(data.subscriptionId, data.payload);
 
     if (activatedPlan) {
+      if (activatedPlan.orgId) {
+        void invalidateAnalyticsPlan(activatedPlan.orgId);
+      }
       return activatedPlan;
     }
 
@@ -1032,6 +1119,9 @@ export async function cancelOrgPlan(subscriptionId: string, payload: TOrganizati
     const plan = await cancelOrganizationPlan(subscriptionId, payload);
     if (!plan) {
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
+    }
+    if (plan.orgId) {
+      void invalidateAnalyticsPlan(plan.orgId);
     }
     return plan;
   } catch (error) {
@@ -1070,13 +1160,51 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
  */
 export async function removeTeamMember(orgId: string, memberId: number, removedByProfileId?: string) {
   try {
-    const deleted = await deleteOrganizationMember(orgId, memberId);
-    if (!deleted) {
-      throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
-    }
+    const { deleted, targetEmail, revoked } = await db.transaction(async (tx) => {
+      await lockOrganizationForUpdate(orgId, tx);
 
-    if (deleted.email && removedByProfileId) {
-      await revokeActiveOrganizationInvitesByEmails(orgId, [deleted.email.toLowerCase()], removedByProfileId);
+      const member = await getOrganizationTeamMemberById(orgId, memberId, tx);
+      if (!member) {
+        throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+      }
+
+      if (member.profileId && member.profileId === removedByProfileId) {
+        throw new AppError('You cannot remove yourself from the team', ErrorCodes.ORG_TEAM_REMOVE_SELF, 400);
+      }
+
+      const removed = await deleteOrganizationMember(orgId, memberId, tx);
+      if (!removed) {
+        throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+      }
+
+      if ((await countOrganizationAdmins(orgId, tx)) < 1) {
+        throw new AppError('The organization must keep at least one admin', ErrorCodes.ORG_TEAM_LAST_ADMIN, 400);
+      }
+
+      const removedEmail = removed.email?.toLowerCase() ?? null;
+      const revokedInvites =
+        removedEmail && removedByProfileId
+          ? await revokeActiveOrganizationInvitesByEmails(orgId, [removedEmail], removedByProfileId, tx)
+          : [];
+
+      return { deleted: removed, targetEmail: removedEmail, revoked: revokedInvites };
+    });
+
+    await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
+
+    if (targetEmail && removedByProfileId && revoked.length > 0) {
+      await recordOrganizationInviteAudits(
+        revoked.map((invite) => ({
+          inviteId: invite.id,
+          organizationId: orgId,
+          eventType: 'REVOKED' as const,
+          actorProfileId: removedByProfileId,
+          targetEmail,
+          ipAddress: null,
+          userAgent: null,
+          metadata: { reason: 'member_removed' }
+        }))
+      );
     }
 
     return deleted;

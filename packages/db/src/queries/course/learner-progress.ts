@@ -28,7 +28,7 @@ export function learnerCourseProgressCtes(profileId: string): SQL {
         COUNT(*) FILTER (WHERE lc.is_complete) AS completed,
         MAX(COALESCE(lc.updated_at, lc.created_at)) AS last_at
       FROM tracked_courses tc
-      JOIN ${schema.lesson} l ON l.course_id = tc.course_id
+      JOIN ${schema.lesson} l ON l.course_id = tc.course_id AND l.completion_policy != 'none'
       LEFT JOIN ${schema.lessonCompletion} lc ON lc.lesson_id = l.id AND lc.profile_id = ${profileId}
       GROUP BY l.course_id
     ),
@@ -53,7 +53,7 @@ export function learnerCourseProgressCtes(profileId: string): SQL {
         COUNT(*) AS total,
         COUNT(done.exercise_id) AS completed
       FROM tracked_courses tc
-      JOIN ${schema.exercise} ex ON ex.course_id = tc.course_id
+      JOIN ${schema.exercise} ex ON ex.course_id = tc.course_id AND ex.completion_policy != 'none'
       LEFT JOIN (SELECT DISTINCT exercise_id FROM exercise_attempts WHERE meets_policy) done
         ON done.exercise_id = ex.id
       GROUP BY ex.course_id

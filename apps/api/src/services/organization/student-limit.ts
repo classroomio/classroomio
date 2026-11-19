@@ -4,8 +4,9 @@ import {
   notifyStudentMilestone,
   type StudentMilestoneNotification
 } from '@cio/core/services/organization/student-milestone';
-import { getStudentLimit } from '@cio/utils/plans';
+import { getStudentLimit, isPaymentBlocked } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
+import { capturePlanLimitReached } from '@cio/core/services/posthog';
 import { type DbOrTxClient, db } from '@cio/db/drizzle';
 import {
   countActiveStudents,
@@ -27,6 +28,9 @@ export async function getRemainingStudentSeats(orgId: string, dbClient: DbOrTxCl
   if (env.PUBLIC_IS_SELFHOSTED === 'true') return Number.POSITIVE_INFINITY;
 
   const activePlan = await getActiveOrganizationPlan(orgId, dbClient);
+
+  if (isPaymentBlocked(activePlan)) return 0;
+
   const limit = getStudentLimit(activePlan?.planName);
 
   if (!Number.isFinite(limit)) return Number.POSITIVE_INFINITY;
@@ -38,8 +42,9 @@ export async function getRemainingStudentSeats(orgId: string, dbClient: DbOrTxCl
 
 /**
  * Throws `UPGRADE_REQUIRED` when adding `additionalStudents` new student-role
- * members would push the org past its plan's student limit. Self-hosted orgs
- * and plans with an unlimited allowance are exempt.
+ * members would push the org past its plan's student limit, or when the plan's
+ * payment has been failing past the block date. Self-hosted orgs and plans with
+ * an unlimited allowance are exempt from the limit.
  *
  * When the addition is allowed and crosses a milestone (50% or the limit), it
  * fires a one-time admin email (fire-and-forget). Blocked attempts do NOT email.
@@ -56,6 +61,11 @@ export async function assertStudentCapacityOrThrow(
   await lockOrganizationForStudentCapacity(orgId, dbClient);
 
   const activePlan = await getActiveOrganizationPlan(orgId, dbClient);
+
+  if (isPaymentBlocked(activePlan)) {
+    throw new AppError('This organization is not accepting new students right now', ErrorCodes.UPGRADE_REQUIRED, 403);
+  }
+
   const limit = getStudentLimit(activePlan?.planName);
 
   if (!Number.isFinite(limit)) return null;
@@ -64,6 +74,15 @@ export async function assertStudentCapacityOrThrow(
   const newCount = currentCount + additionalStudents;
 
   if (newCount > limit) {
+    capturePlanLimitReached({
+      orgId,
+      limitType: 'students',
+      plan: activePlan?.planName,
+      limit,
+      current: currentCount,
+      blocked: true
+    });
+
     throw new AppError(
       `This organization has reached its ${limit}-student limit on the Free plan`,
       ErrorCodes.UPGRADE_REQUIRED,
@@ -72,6 +91,17 @@ export async function assertStudentCapacityOrThrow(
   }
 
   const notification = getCrossedStudentMilestone(orgId, currentCount, newCount, limit);
+
+  if (notification?.milestone === 'reached') {
+    capturePlanLimitReached({
+      orgId,
+      limitType: 'students',
+      plan: activePlan?.planName,
+      limit,
+      current: newCount,
+      blocked: false
+    });
+  }
 
   if (notification && !options.deferNotification) {
     notifyStudentMilestone(notification).catch((error) => {

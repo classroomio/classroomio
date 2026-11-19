@@ -1,4 +1,5 @@
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import type { TLocale } from '@cio/db/types';
 
 export type AccountResponse = InferResponseType<typeof classroomio.account.$get> | null;
 
@@ -27,6 +28,10 @@ export type PublicOrg = Pick<
     signup?: {
       inviteOnly?: boolean;
     };
+    language?: {
+      locale?: TLocale;
+      enforced?: boolean;
+    };
   };
   customization: {
     auth?: {
@@ -34,4 +39,5 @@ export type PublicOrg = Pick<
     };
   };
   plans: Array<Pick<AccountOrg['plans'][number], 'planName' | 'isActive'>>;
+  hasStudentHome: boolean;
 };

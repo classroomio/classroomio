@@ -41,6 +41,7 @@ export interface AgentContext {
   lessonContent?: string;
   exerciseId?: string;
   exerciseTitle?: string;
+  studentSubmission?: unknown;
   documentId?: string;
   documentText?: string;
   /** Metadata for documents attached to this conversation — used to attach originals to lessons. */
@@ -132,6 +133,17 @@ export const ToolName = {
   CREATE_LESSON: 'create_lesson',
   UPDATE_LESSON: 'update_lesson',
   UPDATE_LESSON_CONTENT: 'update_lesson_content',
+  ADD_LESSON_NOTE_BLOCK: 'add_lesson_note_block',
+  REMOVE_LESSON_BLOCK: 'remove_lesson_block',
+  MOVE_LESSON_BLOCK: 'move_lesson_block',
+  ADD_LESSON_SLIDES_BLOCK: 'add_lesson_slides_block',
+  ADD_LESSON_IMAGE_BLOCK: 'add_lesson_image_block',
+  UPDATE_LESSON_BLOCK_SETTINGS: 'update_lesson_block_settings',
+  UPDATE_LESSON_BLOCK_REQUIREMENTS: 'update_lesson_block_requirements',
+  DETACH_LESSON_BLOCK: 'detach_lesson_block',
+  LIST_BLOCK_LIBRARY: 'list_block_library',
+  ATTACH_LIBRARY_BLOCK: 'attach_library_block',
+  MOVE_LESSON_BLOCK_TO_LESSON: 'move_lesson_block_to_lesson',
   CREATE_EXERCISE: 'create_exercise',
   CREATE_EXERCISE_SECTION: 'create_exercise_section',
   UPDATE_EXERCISE: 'update_exercise',
@@ -142,6 +154,7 @@ export const ToolName = {
   CHECK_COURSE_GO_LIVE_READINESS: 'check_course_go_live_readiness',
   GO_LIVE_COURSE: 'go_live_course',
   // Agent tools
+  GET_BLOCK_RECIPE: 'get_block_recipe',
   GENERATE_COURSE_PLAN: 'generate_course_plan',
   ASK_TEMPLATE_QUESTIONS: 'ask_template_questions',
   FETCH_DOCUMENTATION_URL: 'fetch_documentation_url',
@@ -149,6 +162,7 @@ export const ToolName = {
   LIST_COURSE_OUTLINE: 'list_course_outline',
   READ_LESSON: 'read_lesson',
   READ_EXERCISE: 'read_exercise',
+  READ_MY_SUBMISSIONS: 'read_my_submissions',
   SEARCH_COURSE: 'search_course',
   GET_STUDENT_LEARNING_PATHS: 'get_student_learning_paths'
 } as const;

@@ -1,22 +1,19 @@
 <script lang="ts">
-  import type { NavItem } from '../types';
+  import type { LandingNavAuthAction, NavItem, OrgLandingPageProps } from '../types';
   import { safeHref } from '../safe-href';
-  import { Button } from '../../../base/button';
   import EditableLandingSection from '../editable-section.svelte';
+  import LearnerMenu from '../learner-menu.svelte';
+  import LandingNavCta from '../landing-nav-cta.svelte';
 
   interface Props {
     orgName: string;
     logoUrl?: string;
     navItems: NavItem[];
-    authAction?: {
-      label: string;
-      href: string;
-      loading?: boolean;
-      disabled?: boolean;
-    };
+    authAction?: LandingNavAuthAction;
+    learnerAccount?: OrgLandingPageProps['learnerAccount'];
   }
 
-  let { orgName, logoUrl, navItems, authAction }: Props = $props();
+  let { orgName, logoUrl, navItems, authAction, learnerAccount }: Props = $props();
 
   const navigationGradientBackground = `
     linear-gradient(
@@ -48,16 +45,15 @@
           >
         {/each}
       </nav>
-      {#if authAction}
-        <Button
-          href={safeHref(authAction.href)}
-          loading={authAction.loading}
-          disabled={authAction.disabled}
-          variant="outline"
-          class="ui:rounded-full"
-        >
-          {authAction.label}
-        </Button>
+      {#if authAction || learnerAccount}
+        <div class="ui:flex ui:items-center ui:gap-3">
+          {#if authAction}
+            <LandingNavCta {authAction} theme="minimal" />
+          {/if}
+          {#if learnerAccount}
+            <LearnerMenu account={learnerAccount} {authAction} theme="minimal" />
+          {/if}
+        </div>
       {/if}
     </div>
   </header>

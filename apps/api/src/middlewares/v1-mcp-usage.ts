@@ -1,0 +1,296 @@
+import { Context, Next } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
+
+import {
+  completeMcpAutomationUsage,
+  releaseMcpAutomationUsage,
+  reserveMcpAutomationUsage
+} from '@api/services/organization/automation-usage';
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import { ORG_ANALYTICS_PAGE, ORG_ANALYTICS_TOOLS } from '@cio/utils/constants/analytics-pages';
+import {
+  MCP_TOOL_CREDIT_COST,
+  getMcpAutomationCategory,
+  type TAutomationUsageCategory,
+  type TMcpToolName
+} from '@cio/utils/plans';
+
+type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
+  '/public-api/v1/audience': { GET: 'list_audience_members', POST: 'add_audience_member' },
+  '/public-api/v1/audience/assign-courses': { POST: 'assign_audience_courses' },
+  '/public-api/v1/audience/bulk-status': { POST: 'set_audience_status' },
+  '/public-api/v1/audience/:memberId': {
+    GET: 'get_audience_member',
+    PUT: 'update_audience_member',
+    DELETE: 'remove_audience_member'
+  },
+  '/public-api/v1/team': { GET: 'list_team_members' },
+  '/public-api/v1/team/invites': { POST: 'invite_team_members' },
+  '/public-api/v1/team/invite-link': {
+    GET: 'get_team_invite_link',
+    POST: 'set_team_invite_link',
+    PATCH: 'set_team_invite_link'
+  },
+  '/public-api/v1/team/:memberId': {
+    GET: 'get_team_member',
+    PUT: 'update_team_member',
+    DELETE: 'remove_team_member'
+  },
+  '/public-api/v1/organization': { GET: 'get_organization', PATCH: 'update_organization' },
+  '/public-api/v1/organization/customization': {
+    GET: 'get_organization_customization',
+    PATCH: 'update_organization_customization'
+  },
+  '/public-api/v1/organization/landing-page/featured-courses': { PUT: 'set_featured_courses' },
+  '/public-api/v1/organization/domain': { GET: 'get_domain', PATCH: 'update_domain' },
+  '/public-api/v1/organization/domain/custom': { PUT: 'connect_custom_domain', DELETE: 'remove_custom_domain' },
+  '/public-api/v1/organization/domain/custom/refresh': { POST: 'refresh_custom_domain' },
+  '/public-api/v1/courses': { GET: 'list_org_courses', POST: 'create_course' },
+  '/public-api/v1/courses/:courseId/structure': { GET: 'get_course_structure' },
+  '/public-api/v1/courses/:courseId/publish': { POST: 'publish_course' },
+  '/public-api/v1/courses/:courseId/unpublish': { POST: 'unpublish_course' },
+  '/public-api/v1/courses/:courseId/clone': { POST: 'clone_course' },
+  '/public-api/v1/courses/:courseId/related': { GET: 'list_related_courses' },
+  '/public-api/v1/organization/email-templates': { GET: 'list_email_templates' },
+  '/public-api/v1/organization/email-templates/:emailId/:locale': {
+    GET: 'get_email_template',
+    PUT: 'update_email_template',
+    DELETE: 'reset_email_template'
+  },
+  '/public-api/v1/organization/email-templates/:emailId/:locale/test': { POST: 'send_test_email_template' },
+  // MCP keys can only send tagIds or addTagIds here.
+  '/public-api/v1/courses/:courseId': { PUT: 'set_course_tags' },
+  '/public-api/v1/tags': { GET: 'list_tags', POST: 'create_tag' },
+  '/public-api/v1/tags/:tagId': { PUT: 'update_tag' },
+  '/public-api/v1/tags/groups': { POST: 'create_tag_group' },
+  '/public-api/v1/tags/groups/:groupId': { PUT: 'update_tag_group' },
+  '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
+  '/public-api/v1/courses/:courseId/members/:memberId': {
+    GET: 'get_course_member',
+    PUT: 'update_course_member',
+    DELETE: 'delete_course_member'
+  },
+  '/public-api/v1/courses/:courseId/members/:memberId/reset-progress': { POST: 'reset_course_member_progress' },
+  '/public-api/v1/courses/:courseId/members/:memberId/analytics': { GET: 'get_course_member_analytics' },
+  '/public-api/v1/courses/:courseId/invites': { GET: 'list_course_invites', POST: 'create_course_invite' },
+  '/public-api/v1/courses/:courseId/invites/:inviteId/revoke': { POST: 'revoke_course_invite' },
+  '/public-api/v1/courses/:courseId/certificate': { GET: 'get_course_certificate', PATCH: 'update_course_certificate' },
+  '/public-api/v1/courses/:courseId/certificates': { GET: 'list_course_certificates' },
+  '/public-api/v1/courses/:courseId/certificates/:memberId/download': { GET: 'download_course_certificate' },
+  '/public-api/v1/courses/:courseId/sections': { GET: 'list_course_sections', POST: 'create_course_section' },
+  '/public-api/v1/courses/:courseId/sections/:sectionId': {
+    PUT: 'update_course_section',
+    DELETE: 'delete_course_section'
+  },
+  '/public-api/v1/courses/:courseId/lessons': { GET: 'list_course_lessons' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId': { GET: 'get_course_lesson', DELETE: 'delete_course_lesson' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/notify-session-update': {
+    POST: 'notify_course_lesson_session_update'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/translations': { GET: 'list_course_lesson_translations' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/translations/:locale': { PUT: 'set_course_lesson_translation' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/history': { GET: 'list_course_lesson_history' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks': { GET: 'list_lesson_blocks', POST: 'add_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/attach': { POST: 'attach_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/placements/:placementId': {
+    PATCH: 'update_lesson_block_placement',
+    DELETE: 'remove_lesson_block'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/placements/:placementId/move': {
+    PUT: 'move_lesson_block'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId': { PATCH: 'update_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId/locale/:locale': {
+    PUT: 'set_lesson_block_content'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/blocks/:blockId/duplicate': { POST: 'duplicate_lesson_block' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/comments': {
+    GET: 'list_course_lesson_comments',
+    POST: 'create_course_lesson_comment'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/comments/:commentId': {
+    PUT: 'update_course_lesson_comment',
+    DELETE: 'delete_course_lesson_comment'
+  },
+  '/public-api/v1/courses/:courseId/content/reorder': { PUT: 'reorder_course_content' },
+  '/public-api/v1/courses/:courseId/content': {
+    PATCH: 'set_course_content_unlocked',
+    DELETE: 'delete_course_content'
+  },
+  '/public-api/v1/courses/:courseId/exercises': { GET: 'list_course_exercises', POST: 'create_course_exercise' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId': {
+    GET: 'get_course_exercise',
+    PUT: 'update_course_exercise',
+    DELETE: 'delete_course_exercise'
+  },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify': { POST: 'notify_course_exercise' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions': { POST: 'add_exercise_question' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions/:questionId': {
+    PATCH: 'update_exercise_question',
+    DELETE: 'delete_exercise_question'
+  },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/sections': { POST: 'add_exercise_section' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/sections/:sectionId': {
+    PATCH: 'update_exercise_section',
+    DELETE: 'delete_exercise_section'
+  },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify/:jobId': { GET: 'get_course_exercise_notify_status' },
+  '/public-api/v1/exercise-templates': { GET: 'list_exercise_templates' },
+  '/public-api/v1/exercise-templates/:templateId': { GET: 'get_exercise_template' },
+  '/public-api/v1/course-templates': { GET: 'list_course_templates' },
+  '/public-api/v1/course-templates/:templateId': { GET: 'get_course_template' },
+  '/public-api/v1/course-templates/:templateId/courses': { POST: 'create_course_from_template' },
+  '/public-api/v1/courses/:courseId/template': { POST: 'save_course_as_template' },
+  '/public-api/v1/courses/:courseId/submissions': { GET: 'list_course_submissions' },
+  '/public-api/v1/courses/:courseId/submissions/:submissionId': {
+    GET: 'get_course_submission',
+    PATCH: 'update_course_submission',
+    DELETE: 'delete_course_submission'
+  },
+  '/public-api/v1/courses/:courseId/submissions/:submissionId/grades': { PUT: 'grade_course_submission' },
+  '/public-api/v1/courses/:courseId/marks': { GET: 'get_course_marks' },
+  '/public-api/v1/cohorts': { GET: 'list_org_cohorts', POST: 'create_cohort' },
+  '/public-api/v1/cohorts/enrolled': { GET: 'list_my_enrolled_cohorts' },
+  '/public-api/v1/cohorts/my/goals': { GET: 'list_my_cohort_goals' },
+  '/public-api/v1/cohorts/goals/overview': { GET: 'get_org_goals_overview' },
+  '/public-api/v1/cohorts/:cohortId/invite': { POST: 'invite_students_to_cohort' },
+  '/public-api/v1/cohorts/:cohortId/invite/assign': { POST: 'assign_students_to_cohort' },
+  '/public-api/v1/cohorts/:cohortId/invite-link': {
+    GET: 'get_cohort_invite_link',
+    POST: 'create_cohort_invite_link',
+    PATCH: 'set_cohort_invite_link_revoked'
+  },
+  '/public-api/v1/cohorts/:cohortId/goals/evaluate-all': { POST: 'evaluate_all_cohort_goals' },
+  '/public-api/v1/cohorts/:cohortId/goals/:goalId/evaluate': { POST: 'evaluate_cohort_goal' },
+  '/public-api/v1/cohorts/:cohortId': { GET: 'get_cohort', PUT: 'update_cohort', DELETE: 'delete_cohort' },
+  '/public-api/v1/cohorts/:cohortId/members': { GET: 'list_cohort_members', POST: 'add_cohort_members' },
+  '/public-api/v1/cohorts/:cohortId/members/:memberId': { PUT: 'update_cohort_member', DELETE: 'delete_cohort_member' },
+  '/public-api/v1/cohorts/:cohortId/courses': { GET: 'list_cohort_courses', POST: 'add_cohort_course' },
+  '/public-api/v1/cohorts/:cohortId/courses/:courseId': { DELETE: 'remove_cohort_course' },
+  '/public-api/v1/cohorts/:cohortId/newsfeed': { GET: 'list_cohort_newsfeed', POST: 'create_cohort_newsfeed_post' },
+  '/public-api/v1/cohorts/:cohortId/newsfeed/:feedId': {
+    PUT: 'update_cohort_newsfeed_post',
+    DELETE: 'delete_cohort_newsfeed_post'
+  },
+  '/public-api/v1/cohorts/:cohortId/newsfeed/:feedId/react': { PUT: 'update_cohort_newsfeed_reaction' },
+  '/public-api/v1/cohorts/:cohortId/newsfeed/:feedId/comments': { GET: 'list_cohort_newsfeed_comments' },
+  '/public-api/v1/cohorts/:cohortId/newsfeed/:feedId/comment': { POST: 'create_cohort_newsfeed_comment' },
+  '/public-api/v1/cohorts/:cohortId/newsfeed/:feedId/comment/:commentId': { DELETE: 'delete_cohort_newsfeed_comment' },
+  '/public-api/v1/cohorts/:cohortId/goals': { GET: 'list_cohort_goals', POST: 'create_cohort_goal' },
+  '/public-api/v1/cohorts/:cohortId/goals/:goalId': {
+    GET: 'get_cohort_goal',
+    PUT: 'update_cohort_goal',
+    DELETE: 'delete_cohort_goal'
+  },
+  '/public-api/v1/cohorts/:cohortId/goals/:goalId/archive': { POST: 'archive_cohort_goal' },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}`]: { GET: ORG_ANALYTICS_TOOLS.snapshot },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/students`]: { GET: ORG_ANALYTICS_TOOLS.students },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`]: { GET: ORG_ANALYTICS_TOOLS.catalog },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`]: { POST: ORG_ANALYTICS_TOOLS.query },
+  '/public-api/v1/courses/:courseId/analytics': { GET: 'get_course_analytics' },
+  '/public-api/v1/courses/:courseId/analytics/students': { GET: 'list_course_analytics_students' },
+  '/public-api/v1/cohorts/:cohortId/analytics': { GET: 'get_cohort_analytics' },
+  '/public-api/v1/cohorts/:cohortId/analytics/students': { GET: 'list_cohort_analytics_students' },
+  '/public-api/v1/analytics/marketing': { GET: 'get_marketing_analytics' },
+  '/public-api/v1/analytics/marketing/courses/:courseId': { GET: 'get_course_marketing_analytics' },
+  '/public-api/v1/analytics/compliance': { GET: 'get_compliance_analytics' },
+  '/public-api/v1/analytics/compliance/students': { GET: 'list_compliance_students' },
+  '/public-api/v1/organization/overview': { GET: 'get_org_overview' },
+  '/public-api/v1/audience/:profileId/analytics': { GET: 'get_student_analytics' },
+  '/public-api/v1/cohorts/:cohortId/goals/remind-overdue': { POST: 'remind_overdue_cohort_goals' }
+};
+
+function resolveMcpToolName(method: string, routePath: string): TMcpToolName | undefined {
+  return MCP_V1_ROUTE_TOOL_MAP[routePath]?.[method as TRouteMethod];
+}
+
+function routePatternMatches(pattern: string, requestSegments: string[]): boolean {
+  const patternSegments = pattern.split('/');
+
+  return (
+    patternSegments.length === requestSegments.length &&
+    patternSegments.every(
+      (patternSegment, segmentIndex) =>
+        patternSegment === requestSegments[segmentIndex] ||
+        (patternSegment.startsWith(':') && requestSegments[segmentIndex]!.length > 0)
+    )
+  );
+}
+
+function routePatternSpecificity(pattern: string): number {
+  return pattern.split('/').filter((patternSegment) => !patternSegment.startsWith(':')).length;
+}
+
+// Hono resolves `c.req.routePath` only once the handler runs, so the reserve-time match cannot use it.
+export function resolveMcpToolNameForRequest(method: string, path: string): TMcpToolName | undefined {
+  const requestSegments = path.split('/');
+  let bestMatch: { pattern: string; tool: TMcpToolName } | undefined;
+
+  for (const [pattern, methods] of Object.entries(MCP_V1_ROUTE_TOOL_MAP)) {
+    const tool = methods[method as TRouteMethod];
+    if (!tool || !routePatternMatches(pattern, requestSegments)) continue;
+
+    if (!bestMatch || routePatternSpecificity(pattern) > routePatternSpecificity(bestMatch.pattern)) {
+      bestMatch = { pattern, tool };
+    }
+  }
+
+  return bestMatch?.tool;
+}
+
+function resolveMcpAutomationCategory(method: string, path: string): TAutomationUsageCategory {
+  const reservedTool = resolveMcpToolNameForRequest(method, path);
+  if (reservedTool) return getMcpAutomationCategory(reservedTool);
+
+  return method === 'GET' || method === 'HEAD' ? 'read' : 'write';
+}
+
+export const v1McpUsageMiddleware = async (c: Context, next: Next) => {
+  const automationKey = c.get('automationKey');
+
+  if (automationKey?.type !== 'mcp') {
+    return next();
+  }
+
+  const category = resolveMcpAutomationCategory(c.req.method, c.req.path);
+
+  let reservationId: string;
+  try {
+    reservationId = await reserveMcpAutomationUsage(automationKey, category, `pending ${c.req.method}`);
+  } catch (error) {
+    if (error instanceof AppError) {
+      return c.json(
+        { success: false, error: error.message, code: error.code },
+        error.statusCode as ContentfulStatusCode
+      );
+    }
+    return c.json(
+      { success: false, error: 'Failed to verify automation usage', code: ErrorCodes.AUTOMATION_USAGE_UNAVAILABLE },
+      503
+    );
+  }
+
+  let succeeded = false;
+  try {
+    await next();
+    succeeded = c.res.status >= 200 && c.res.status < 300;
+  } finally {
+    if (succeeded) {
+      const toolName = resolveMcpToolName(c.req.method, c.req.routePath);
+      const action = toolName ?? `${c.req.method} ${c.req.routePath}`;
+      const creditsConsumed = toolName ? MCP_TOOL_CREDIT_COST[toolName] : 0;
+
+      // The slot is already counted, so a failure here only under-reports credits; the limit still holds.
+      await completeMcpAutomationUsage(reservationId, action, creditsConsumed).catch((error) => {
+        console.error('v1McpUsageMiddleware: failed to complete automation usage', error);
+      });
+    } else {
+      // Failed requests don't count. If the release fails the slot stays counted, which errs on the safe side.
+      await releaseMcpAutomationUsage(reservationId).catch((error) => {
+        console.error('v1McpUsageMiddleware: failed to release automation usage', error);
+      });
+    }
+  }
+};

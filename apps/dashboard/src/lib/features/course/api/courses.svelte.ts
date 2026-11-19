@@ -3,12 +3,14 @@ import type {
   GetOrgCoursesRequest,
   GetOrgCoursesRequestQuery,
   GetRecommendedCoursesRequest,
+  GetRecommendedCoursesRequestQuery,
   GetUserEnrolledCoursesRequest,
   OrgCourses,
   OrgCoursesPagination,
   OrgCoursesQuery,
   RecommendedCourses,
   RecommendedCoursesPagination,
+  RecommendedCoursesQuery,
   UserEnrolledCourses
 } from '$features/course/types';
 
@@ -22,6 +24,7 @@ export class CoursesApi extends BaseApiWithErrors {
   orgCoursesPagination = $state<OrgCoursesPagination | null>(null);
   enrolledCourses = $state<UserEnrolledCourses>([]);
   recommendedCourses = $state<RecommendedCourses>([]);
+  private recommendedRequestId = 0;
   recommendedCoursesPagination = $state<RecommendedCoursesPagination | null>(null);
   private activeOrgCoursesRequestController: AbortController | null = null;
 
@@ -76,7 +79,11 @@ export class CoursesApi extends BaseApiWithErrors {
       page: String(query.page ?? 1),
       limit: String(query.limit ?? 20),
       search: query.search,
-      tags: normalizedTagSlugs.length > 0 ? normalizedTagSlugs.join(',') : undefined
+      tags: normalizedTagSlugs.length > 0 ? normalizedTagSlugs.join(',') : undefined,
+      type: query.type,
+      status: query.status,
+      sort: query.sort,
+      order: query.order
     };
 
     let requestSignal = options.signal;
@@ -138,10 +145,15 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches recommended courses (published courses user isn't enrolled in) for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getRecommendedCourses(options?: { limit?: number; page?: number }) {
-    const query: Record<string, string> = {};
-    if (options?.limit) query.limit = String(options.limit);
-    if (options?.page) query.page = String(options.page);
+  async getRecommendedCourses(options: RecommendedCoursesQuery = {}) {
+    const query: GetRecommendedCoursesRequestQuery = {
+      limit: options.limit ? String(options.limit) : undefined,
+      page: options.page ? String(options.page) : undefined,
+      sort: options.sort,
+      order: options.order
+    };
+
+    const requestId = ++this.recommendedRequestId;
 
     await this.execute<GetRecommendedCoursesRequest>({
       requestFn: () =>
@@ -150,6 +162,8 @@ export class CoursesApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching recommended courses',
       onSuccess: (response) => {
+        if (requestId !== this.recommendedRequestId) return;
+
         if (response.data) {
           this.recommendedCourses = response.data;
         }
@@ -159,13 +173,7 @@ export class CoursesApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          console.error('Failed to fetch recommended courses:', result);
-          return;
-        }
-        if ('error' in result) {
-          console.error('Failed to fetch recommended courses:', result.error);
-        }
+        console.error('Failed to fetch recommended courses:', result.message);
       }
     });
   }

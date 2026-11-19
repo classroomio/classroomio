@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { CourseCurriculum, CourseLandingPageLabels, OrgLandingPageTheme } from './types';
+  import type { CourseCurriculum, CourseCurriculumLesson, CourseLandingPageLabels, OrgLandingPageTheme } from './types';
   import { courseLandingTokens } from './course-landing-page.tokens';
   import EditableLandingSection from './editable-section.svelte';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
   import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
 
   interface Props {
     variant: OrgLandingPageTheme;
@@ -48,12 +49,20 @@
     return labels?.exercisesLabel?.(count) ?? `${count} ${count === 1 ? 'exercise' : 'exercises'}`;
   }
 
+  function standaloneLabel(kind: 'lesson' | 'exercise'): string {
+    if (kind === 'exercise') return labels?.standaloneExerciseLabel ?? 'Exercise';
+
+    return labels?.standaloneLessonLabel ?? 'Lesson';
+  }
+
+  const firstSectionId = $derived(curriculum.sections.find((section) => !section.standalone)?.id);
+
   // Accordion state — first section open by default.
   let expanded = $state<Record<string, boolean>>({});
   $effect(() => {
     const initial: Record<string, boolean> = {};
-    curriculum.sections.forEach((section, idx) => {
-      if (!(section.id in expanded)) initial[section.id] = idx === 0;
+    curriculum.sections.forEach((section) => {
+      if (!(section.id in expanded)) initial[section.id] = section.id === firstSectionId;
     });
     if (Object.keys(initial).length > 0) expanded = { ...expanded, ...initial };
   });
@@ -62,6 +71,23 @@
     expanded = { ...expanded, [id]: !expanded[id] };
   }
 </script>
+
+{#snippet itemRow(item: CourseCurriculumLesson, itemIdx: number)}
+  <div class={t.curriculumLessonRow}>
+    <span class={t.curriculumLessonPrefix}>{lecturePrefix(itemIdx)}</span>
+    {#if item.kind === 'exercise'}
+      <ListChecksIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
+    {:else}
+      <CircleCheckIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
+    {/if}
+    <span class={t.curriculumLessonTitle}>{item.title}</span>
+    {#if item.durationMinutes}
+      <span class="ui:ml-auto ui:text-xs ui:text-[var(--landing-fg-muted)]">
+        {item.durationMinutes} min
+      </span>
+    {/if}
+  </div>
+{/snippet}
 
 <EditableLandingSection sectionKey="curriculum">
   <section id="curriculum" class={t.sectionShell}>
@@ -76,41 +102,42 @@
         <div class={t.curriculumContainer}>
           {#each curriculum.sections as section (section.id)}
             <div class={t.curriculumModule}>
-              <button
-                type="button"
-                class={t.curriculumModuleHeader}
-                onclick={() => toggle(section.id)}
-                aria-expanded={expanded[section.id] ?? false}
-              >
-                <span class="ui:flex ui:items-center ui:gap-3">
-                  {#if expanded[section.id]}
-                    <ChevronUpIcon class="ui:size-4 ui:text-[var(--landing-fg-muted)]" />
-                  {:else}
-                    <ChevronDownIcon class="ui:size-4 ui:text-[var(--landing-fg-muted)]" />
-                  {/if}
-                  <span class={t.curriculumModuleTitle}>{section.title}</span>
-                </span>
-                <span class={t.curriculumModuleMeta}>
-                  {lessonsLabel(section.lessons.length)}{section.exerciseCount
-                    ? ` · ${exercisesLabel(section.exerciseCount)}`
-                    : ''}
-                </span>
-              </button>
-              {#if expanded[section.id]}
-                <div>
-                  {#each section.lessons as lesson, lessonIdx (lesson.id)}
-                    <div class={t.curriculumLessonRow}>
-                      <span class={t.curriculumLessonPrefix}>{lecturePrefix(lessonIdx)}</span>
-                      <CircleCheckIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
-                      <span class={t.curriculumLessonTitle}>{lesson.title}</span>
-                      {#if lesson.durationMinutes}
-                        <span class="ui:ml-auto ui:text-xs ui:text-[var(--landing-fg-muted)]">
-                          {lesson.durationMinutes} min
-                        </span>
-                      {/if}
-                    </div>
-                  {/each}
+              {#if section.standalone}
+                <div class={t.curriculumModuleHeader}>
+                  <span class="ui:flex ui:items-center ui:gap-3">
+                    <span class="ui:size-4 ui:shrink-0" aria-hidden="true"></span>
+                    <span class={t.curriculumModuleTitle}>{section.title}</span>
+                  </span>
+                  <span class={t.curriculumModuleMeta}>{standaloneLabel(section.standalone)}</span>
                 </div>
+              {:else}
+                <button
+                  type="button"
+                  class={t.curriculumModuleHeader}
+                  onclick={() => toggle(section.id)}
+                  aria-expanded={expanded[section.id] ?? false}
+                >
+                  <span class="ui:flex ui:items-center ui:gap-3">
+                    {#if expanded[section.id]}
+                      <ChevronUpIcon class="ui:size-4 ui:text-[var(--landing-fg-muted)]" />
+                    {:else}
+                      <ChevronDownIcon class="ui:size-4 ui:text-[var(--landing-fg-muted)]" />
+                    {/if}
+                    <span class={t.curriculumModuleTitle}>{section.title}</span>
+                  </span>
+                  <span class={t.curriculumModuleMeta}>
+                    {lessonsLabel(section.lessons.length)}{section.exerciseCount
+                      ? ` · ${exercisesLabel(section.exerciseCount)}`
+                      : ''}
+                  </span>
+                </button>
+                {#if expanded[section.id]}
+                  <div>
+                    {#each section.items ?? section.lessons as item, itemIdx (item.id)}
+                      {@render itemRow(item, itemIdx)}
+                    {/each}
+                  </div>
+                {/if}
               {/if}
             </div>
           {/each}
@@ -132,25 +159,22 @@
                   <h3 class={t.curriculumModuleTitle}>{section.title}</h3>
                 </div>
                 <span class={t.curriculumModuleMeta}>
-                  {lessonsLabel(section.lessons.length)}{section.exerciseCount
-                    ? ` · ${exercisesLabel(section.exerciseCount)}`
-                    : ''}
+                  {#if section.standalone}
+                    {standaloneLabel(section.standalone)}
+                  {:else}
+                    {lessonsLabel(section.lessons.length)}{section.exerciseCount
+                      ? ` · ${exercisesLabel(section.exerciseCount)}`
+                      : ''}
+                  {/if}
                 </span>
               </div>
-              <div class="ui:flex ui:flex-col">
-                {#each section.lessons as lesson, lessonIdx (lesson.id)}
-                  <div class={t.curriculumLessonRow}>
-                    <span class={t.curriculumLessonPrefix}>{lecturePrefix(lessonIdx)}</span>
-                    <CircleCheckIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
-                    <span class={t.curriculumLessonTitle}>{lesson.title}</span>
-                    {#if lesson.durationMinutes}
-                      <span class="ui:ml-auto ui:text-xs ui:text-[var(--landing-fg-muted)]">
-                        {lesson.durationMinutes} min
-                      </span>
-                    {/if}
-                  </div>
-                {/each}
-              </div>
+              {#if !section.standalone}
+                <div class="ui:flex ui:flex-col">
+                  {#each section.items ?? section.lessons as item, itemIdx (item.id)}
+                    {@render itemRow(item, itemIdx)}
+                  {/each}
+                </div>
+              {/if}
             </div>
           {/each}
         </div>

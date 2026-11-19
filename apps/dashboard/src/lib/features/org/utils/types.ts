@@ -1,4 +1,8 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
+import type { TLocale } from '@cio/db/types';
+import type { AccountOrg } from '$features/app/types';
+import type { LmsDestinationKey } from '@cio/utils/lms';
+import type { TStudentHomeDestination } from '@cio/utils/validation/organization';
 
 export type GetOrganizationRequest = typeof classroomio.organization.$get;
 export type GetOrganizationResponse = InferResponseType<GetOrganizationRequest> | null;
@@ -35,10 +39,11 @@ export type OrganizationAudienceSuccess = Extract<InferResponseType<GetAudienceR
 export type OrganizationAudienceRequestQuery = NonNullable<InferRequestType<GetAudienceRequest>['query']>;
 export type OrganizationAudienceSortBy = 'createdAt' | 'name' | 'email' | 'lastLoginAt' | 'lastActiveAt';
 export type OrganizationAudienceSortOrder = 'asc' | 'desc';
-export type OrganizationAudienceMemberStatus = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
+export type OrganizationAudienceMemberStatus = 'ACTIVE' | 'ARCHIVED';
 export type OrganizationAudienceInviteStatus = 'active' | 'pending' | 'expired' | 'revoked';
 export type OrganizationAudienceEnrollment = 'enrolled' | 'not_enrolled';
 export type OrganizationAudienceCompletion = 'not_started' | 'in_progress' | 'completed';
+export type OrganizationAudienceCertificate = 'earned' | 'not_earned';
 export type OrganizationAudienceActivityWindow = '7d' | '30d' | '90d' | '180d' | 'never';
 
 export type OrganizationAudienceQuery = {
@@ -51,6 +56,7 @@ export type OrganizationAudienceQuery = {
   inviteStatus?: OrganizationAudienceInviteStatus;
   enrollment?: OrganizationAudienceEnrollment;
   completion?: OrganizationAudienceCompletion;
+  certificate?: OrganizationAudienceCertificate;
   lastLoginBefore?: OrganizationAudienceActivityWindow;
   lastActiveBefore?: OrganizationAudienceActivityWindow;
   excludeRecentJoiners: boolean;
@@ -105,9 +111,16 @@ export type LoginActivityData = LoginActivitySuccess['data'];
 export type InviteTeamRequest = (typeof classroomio.organization)['team']['invite']['$post'];
 export type InviteTeamSuccess = Extract<InferResponseType<InviteTeamRequest>, { success: true }>;
 export type InviteTeamData = InviteTeamSuccess['data'];
+export type TeamInviteConfirmation = Pick<InferRequestType<InviteTeamRequest>['json'], 'emails' | 'roleId'> & {
+  organizationId: string;
+  studentEmails: InviteTeamData['studentEmails'];
+};
 
 export type DeleteTeamRequest = (typeof classroomio.organization)['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamRequest>, { success: true }>;
+
+export type UpdateTeamMemberRoleRequest = (typeof classroomio.organization)['team'][':memberId']['$patch'];
+export type UpdateTeamMemberRoleSuccess = Extract<InferResponseType<UpdateTeamMemberRoleRequest>, { success: true }>;
 export type BulkAudienceActionRequest = (typeof classroomio.organization)['audience']['bulk-action']['$post'];
 export type BulkAudienceActionSuccess = Extract<InferResponseType<BulkAudienceActionRequest>, { success: true }>;
 export type BulkAudienceActionResult = BulkAudienceActionSuccess['data'];
@@ -142,7 +155,7 @@ export type BulkAudienceActionOutcome = {
 };
 
 /** The lifecycle actions the bulk bar offers. `delete` requires every target to be ARCHIVED. */
-export type AudienceBulkAction = 'deactivate' | 'reactivate' | 'archive' | 'unarchive' | 'delete';
+export type AudienceBulkAction = 'archive' | 'unarchive' | 'delete';
 
 export type DeleteAudienceMemberRequest = (typeof classroomio.organization)['audience'][':memberId']['$delete'];
 export type DeleteAudienceMemberSuccess = Extract<InferResponseType<DeleteAudienceMemberRequest>, { success: true }>;
@@ -151,6 +164,40 @@ export type DeleteAudienceMemberSuccess = Extract<InferResponseType<DeleteAudien
 export type UpdateOrganizationRequest = (typeof classroomio.organization)['$put'];
 export type UpdateOrganizationResponse = InferResponseType<UpdateOrganizationRequest>;
 export type UpdateOrganizationSuccess = Extract<UpdateOrganizationResponse, { success: true }>;
+export type GetStudentEmailTemplatesRequest = (typeof classroomio.organization)['email-templates']['$get'];
+export type StudentEmailTemplateRecord = Extract<
+  InferResponseType<GetStudentEmailTemplatesRequest>,
+  { success: true }
+>['data'][number];
+export type SaveStudentEmailTemplateRequest =
+  (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['$put'];
+export type ResetStudentEmailTemplateRequest =
+  (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['$delete'];
+export type SendStudentEmailTemplateTestRequest =
+  (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['test']['$post'];
+export type StudentEmailTemplateTestDraft = InferRequestType<SendStudentEmailTemplateTestRequest>['json'];
+export type StudentEmailTemplateTestInput = Omit<StudentEmailTemplateTestDraft, 'recipientEmails'> & {
+  recipients: string;
+};
+export interface TOrgUpdateForm {
+  name?: string;
+  avatar?: string | File | undefined;
+  favicon?: string | File | null | undefined;
+  theme?: string;
+  landingpage?: AccountOrg['landingpage'];
+  siteName?: string;
+  customization?: AccountOrg['customization'];
+  disableSignup?: boolean;
+  disableSignupMessage?: string;
+  disableEmailPassword?: boolean;
+  disableGoogleAuth?: boolean;
+  studentHome?: TStudentHomeDestination | null;
+  settings?: {
+    signup?: { inviteOnly?: boolean };
+    language?: { locale?: TLocale; enforced?: boolean };
+    emailNotifications?: Record<string, boolean>;
+  };
+}
 
 // domain request types
 export type DomainRequestRequest = typeof classroomio.domain.$post;
@@ -218,3 +265,15 @@ export type GetTokenAuthRequest = (typeof classroomio.organization)['token-auth'
 export type RotateTokenAuthRequest = (typeof classroomio.organization)['token-auth']['rotate']['$post'];
 export type DeleteTokenAuthRequest = (typeof classroomio.organization)['token-auth']['$delete'];
 export type ActivateTokenAuthRequest = (typeof classroomio.organization)['token-auth']['activate']['$put'];
+
+// Student home types
+export type ResolveStudentHomeRequest = (typeof classroomio.organization)['student-home']['resolve']['$get'];
+export type ResolveStudentHomeSuccess = Extract<InferResponseType<ResolveStudentHomeRequest>, { success: true }>;
+export type GetStudentHomeCoursesRequest = (typeof classroomio.organization)['student-home']['courses']['$get'];
+export type GetStudentHomeCoursesSuccess = Extract<InferResponseType<GetStudentHomeCoursesRequest>, { success: true }>;
+export type StudentHomeCourseOption = GetStudentHomeCoursesSuccess['data'][number];
+export type StudentHomeCoursesPagination = GetStudentHomeCoursesSuccess['pagination'];
+export type StudentHomeOption =
+  | { kind: 'default' }
+  | { kind: 'page'; key: LmsDestinationKey }
+  | { kind: 'course'; courseId: string };

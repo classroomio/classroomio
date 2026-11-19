@@ -76,12 +76,12 @@ export default (menuList: Component<any, any, ''>): Extension =>
             view.focus();
           },
           items: ({ query }: { query: string }) => {
+            const queryNormalized = query.toLowerCase().trim();
             const withFilteredCommands = GROUPS.map((group) => ({
               ...group,
               commands: group.actions.filter((item) => {
-                const labelNormalized = item.tooltip!.toLowerCase().trim();
-                const queryNormalized = query.toLowerCase().trim();
-                return labelNormalized.includes(queryNormalized);
+                const label = `${item.tooltip ?? ''} ${item.name}`.toLowerCase();
+                return label.includes(queryNormalized);
               })
             }));
 

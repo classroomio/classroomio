@@ -7,13 +7,49 @@ import type {
   TWidgetCourse,
   TWidgetVersion
 } from '@db/types';
-import { and, asc, desc, eq, ilike, inArray, isNull, ne, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, ne, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
 export type TWidgetListItem = TWidget & {
   courseCount: number;
 };
+
+export type TWidgetListStatusFilter = 'DRAFT' | 'PUBLISHED';
+
+export interface ListOrganizationWidgetsOptions {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: TWidgetListStatusFilter | TWidgetListStatusFilter[];
+  layoutType?: TWidget['layoutType'] | TWidget['layoutType'][];
+  selectionMode?: TWidget['selectionMode'] | TWidget['selectionMode'][];
+}
+
+export interface TWidgetListPage {
+  items: TWidgetListItem[];
+  total: number;
+}
+
+const WIDGET_SEARCH_ESCAPE_CHAR = '!';
+
+/**
+ * `%` and `_` are ILIKE wildcards, so a search for `100%` would otherwise match any
+ * name beginning with `100`, and `a_b` would match `axb`. Escape those, plus the
+ * escape character itself, before the surrounding wildcards are added.
+ */
+function escapeWidgetSearchPattern(value: string) {
+  return value.replace(/[!%_]/g, (character) => `${WIDGET_SEARCH_ESCAPE_CHAR}${character}`);
+}
+
+/** Contains-match on the widget name, with the caller's text treated as literal text. */
+function widgetNameContainsIlike(search: string) {
+  const pattern = `%${escapeWidgetSearchPattern(search.trim())}%`;
+
+  // The escape character is a module constant inlined as a literal: Postgres cannot
+  // infer a type for a bind parameter in an ESCAPE clause.
+  return sql`${schema.widget.name} ILIKE ${pattern} ESCAPE '${sql.raw(WIDGET_SEARCH_ESCAPE_CHAR)}'`;
+}
 
 function widgetListItemSelect() {
   return {
@@ -36,45 +72,84 @@ function widgetListItemSelect() {
   };
 }
 
-export async function listWidgetsByOrganization(orgId: string): Promise<TWidgetListItem[]> {
+function toFilterArray<T>(value: T | T[] | undefined | null): T[] {
+  if (value === undefined || value === null) return [];
+
+  return Array.isArray(value) ? value : [value];
+}
+
+function buildWidgetListWhereClause(orgId: string, options: ListOrganizationWidgetsOptions, archived: boolean) {
+  const conditions = [eq(schema.widget.organizationId, orgId), isNull(schema.widget.deletedAt)];
+
+  conditions.push(archived ? eq(schema.widget.status, 'ARCHIVED') : ne(schema.widget.status, 'ARCHIVED'));
+
+  const search = options.search?.trim();
+  if (search) {
+    conditions.push(widgetNameContainsIlike(search));
+  }
+
+  const statuses = toFilterArray(options.status);
+  if (statuses.length > 0 && !archived) {
+    conditions.push(inArray(schema.widget.status, statuses));
+  }
+
+  const layoutTypes = toFilterArray(options.layoutType);
+  if (layoutTypes.length > 0) {
+    conditions.push(inArray(schema.widget.layoutType, layoutTypes));
+  }
+
+  const selectionModes = toFilterArray(options.selectionMode);
+  if (selectionModes.length > 0) {
+    conditions.push(inArray(schema.widget.selectionMode, selectionModes));
+  }
+
+  return and(...conditions)!;
+}
+
+async function listWidgets(orgId: string, options: ListOrganizationWidgetsOptions, archived: boolean) {
+  const page = options.page && options.page > 0 ? options.page : 1;
+  const limit = options.limit && options.limit > 0 ? Math.min(options.limit, 100) : 20;
+  const offset = (page - 1) * limit;
+  const whereClause = buildWidgetListWhereClause(orgId, options, archived);
+
+  const [totalRow] = await db
+    .select({ count: count(schema.widget.id) })
+    .from(schema.widget)
+    .where(whereClause);
+
+  const total = Number(totalRow?.count ?? 0);
+
+  const items = await db
+    .select(widgetListItemSelect())
+    .from(schema.widget)
+    .leftJoin(schema.widgetCourse, eq(schema.widgetCourse.widgetId, schema.widget.id))
+    .where(whereClause)
+    .groupBy(schema.widget.id)
+    .orderBy(desc(schema.widget.updatedAt), asc(schema.widget.name))
+    .limit(limit)
+    .offset(offset);
+
+  return { items, total } satisfies TWidgetListPage;
+}
+
+export async function listWidgetsByOrganization(
+  orgId: string,
+  options: ListOrganizationWidgetsOptions = {}
+): Promise<TWidgetListPage> {
   try {
-    return db
-      .select(widgetListItemSelect())
-      .from(schema.widget)
-      .leftJoin(schema.widgetCourse, eq(schema.widgetCourse.widgetId, schema.widget.id))
-      .where(
-        and(
-          eq(schema.widget.organizationId, orgId),
-          isNull(schema.widget.deletedAt),
-          ne(schema.widget.status, 'ARCHIVED')
-        )
-      )
-      .groupBy(schema.widget.id)
-      .orderBy(desc(schema.widget.updatedAt), asc(schema.widget.name));
+    return await listWidgets(orgId, options, false);
   } catch (error) {
     console.error('listWidgetsByOrganization error:', error);
     throw new Error('Failed to list widgets');
   }
 }
 
-/**
- * Gets all archived widgets for an organization.
- */
-export async function listArchivedWidgetsByOrganization(orgId: string): Promise<TWidgetListItem[]> {
+export async function listArchivedWidgetsByOrganization(
+  orgId: string,
+  options: ListOrganizationWidgetsOptions = {}
+): Promise<TWidgetListPage> {
   try {
-    return db
-      .select(widgetListItemSelect())
-      .from(schema.widget)
-      .leftJoin(schema.widgetCourse, eq(schema.widgetCourse.widgetId, schema.widget.id))
-      .where(
-        and(
-          eq(schema.widget.organizationId, orgId),
-          isNull(schema.widget.deletedAt),
-          eq(schema.widget.status, 'ARCHIVED')
-        )
-      )
-      .groupBy(schema.widget.id)
-      .orderBy(desc(schema.widget.updatedAt), asc(schema.widget.name));
+    return await listWidgets(orgId, options, true);
   } catch (error) {
     console.error('listArchivedWidgetsByOrganization error:', error);
     throw new Error('Failed to list archived widgets');
@@ -83,8 +158,6 @@ export async function listArchivedWidgetsByOrganization(orgId: string): Promise<
 
 export async function searchOrgWidgets(orgId: string, search: string, limit: number): Promise<TWidgetListItem[]> {
   try {
-    const searchValue = `%${search.trim()}%`;
-
     return await db
       .select(widgetListItemSelect())
       .from(schema.widget)
@@ -94,7 +167,7 @@ export async function searchOrgWidgets(orgId: string, search: string, limit: num
           eq(schema.widget.organizationId, orgId),
           isNull(schema.widget.deletedAt),
           ne(schema.widget.status, 'ARCHIVED'),
-          ilike(schema.widget.name, searchValue)
+          widgetNameContainsIlike(search)
         )
       )
       .groupBy(schema.widget.id)

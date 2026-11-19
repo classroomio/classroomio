@@ -1,0 +1,21 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Marketing" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page)}.lbl{font-family:var(--font-mono);font-size:10px;color:var(--ink-500);letter-spacing:.08em}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].NotchCard && window[k].Button; } catch (e) { return false; } })] || {};
+const { SectionHeader, FAQItem, TestimonialCard, VideoTestimonial, CTABand, ProductMenu } = NS;
+function FAQ() { const [o, setO] = React.useState(1); const qs = ['Can I self-host it?', 'What happens to the videos I already have?', 'Can my AI agent build and update courses?'];
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{qs.map((q, i) => <FAQItem key={i} index={i + 1} question={q} answer="Yes — ClassroomIO is open source." open={o === i} onToggle={() => setO(o === i ? -1 : i)} z={qs.length - i} tab={i < qs.length - 1}/>)}</div>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{ zoom: 0.5 }}>
+<SectionHeader eyebrow="Customers" title="Teams that run their academy on ClassroomIO."/>
+<div style={{ marginTop: 32, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+<VideoTestimonial size="sm" image="../../assets/images/portrait-1.jpg" duration="2:48" caseStudy quote="New customers are certified before their kickoff." attribution="Amara Okafor · Ledgerly"/>
+<TestimonialCard quote="It looks like our product, not a bolt-on LMS." name="Sofia Almeida" role="Product Operations" company="Brightdesk"/>
+</div>
+<div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}><FAQ/><CTABand style={{ padding: '56px 32px' }}/></div>
+</div>);
+</script></body></html>

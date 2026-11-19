@@ -12,25 +12,34 @@ import {
   pgEnum,
   pgTable,
   pgView,
+  primaryKey,
   serial,
   text,
   timestamp,
   unique,
   uniqueIndex,
   uuid,
-  varchar
+  varchar,
+  type AnyPgColumn
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
 import type { CertificateTemplateId } from '@cio/certificates';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
-import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
+import { EMAIL_LOCALES } from '@cio/utils/email';
+import { LESSON_VERSION_KIND_VALUES, type TBlockChangeSource } from '@cio/utils/constants/lesson-version';
+import {
+  LIVE_SESSION_REMINDER_STATUS_VALUES,
+  type TLiveSessionReminderSkipReason
+} from '@cio/utils/constants/live-session-reminder';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
-export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
+export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
+export const earlyAdopterClaimStatus = pgEnum('EARLY_ADOPTER_CLAIM_STATUS', ['pending', 'claimed', 'canceled']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
@@ -81,9 +90,10 @@ export const organizationInviteType = pgEnum('ORGANIZATION_INVITE_TYPE', ['EMAIL
  * is allowed in.
  *
  * - `ACTIVE` — normal member.
- * - `DEACTIVATED` — access suspended, reversible, still occupies a plan seat.
  * - `ARCHIVED` — access suspended, reversible, and releases the plan seat
  *   (see `countActiveStudents`). The intended answer to "remove them".
+ * - `DEACTIVATED` — retired and never assigned. Postgres cannot drop an enum
+ *   value, so it stays in the type.
  */
 export const organizationMemberStatus = pgEnum('ORGANIZATION_MEMBER_STATUS', ['ACTIVE', 'DEACTIVATED', 'ARCHIVED']);
 
@@ -189,6 +199,184 @@ export const verification = pgTable('verification', {
     .notNull()
 });
 
+export const jwks = pgTable('jwks', {
+  id: uuid('id')
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  publicKey: text('public_key').notNull(),
+  privateKey: text('private_key').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at'),
+  alg: text('alg'),
+  crv: text('crv')
+});
+
+export const oauthClient = pgTable('oauth_client', {
+  id: uuid('id')
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  clientId: text('client_id').notNull().unique(),
+  clientSecret: text('client_secret'),
+  clientDiscoveryId: text('client_discovery_id'),
+  disabled: boolean('disabled').default(false),
+  skipConsent: boolean('skip_consent'),
+  enableEndSession: boolean('enable_end_session'),
+  subjectType: text('subject_type'),
+  scopes: text('scopes').array(),
+  clientCredentialsScopes: text('client_credentials_scopes').array(),
+  userId: uuid('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date()),
+  name: text('name'),
+  uri: text('uri'),
+  icon: text('icon'),
+  contacts: text('contacts').array(),
+  tos: text('tos'),
+  policy: text('policy'),
+  softwareId: text('software_id'),
+  softwareVersion: text('software_version'),
+  softwareStatement: text('software_statement'),
+  redirectUris: text('redirect_uris').array().notNull(),
+  postLogoutRedirectUris: text('post_logout_redirect_uris').array(),
+  backchannelLogoutUri: text('backchannel_logout_uri'),
+  backchannelLogoutSessionRequired: boolean('backchannel_logout_session_required'),
+  tokenEndpointAuthMethod: text('token_endpoint_auth_method'),
+  applicationType: text('application_type'),
+  jwks: text('jwks'),
+  jwksUri: text('jwks_uri'),
+  grantTypes: text('grant_types').array(),
+  responseTypes: text('response_types').array(),
+  requirePKCE: boolean('require_pkce'),
+  dpopBoundAccessTokens: boolean('dpop_bound_access_tokens'),
+  referenceId: text('reference_id'),
+  metadata: jsonb('metadata')
+});
+
+export const oauthResource = pgTable('oauth_resource', {
+  id: uuid('id')
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  identifier: text('identifier').notNull().unique(),
+  name: text('name').notNull(),
+  accessTokenTtl: integer('access_token_ttl'),
+  refreshTokenTtl: integer('refresh_token_ttl'),
+  signingAlgorithm: text('signing_algorithm'),
+  signingKeyId: text('signing_key_id'),
+  allowedScopes: text('allowed_scopes').array(),
+  customClaims: jsonb('custom_claims'),
+  dpopBoundAccessTokensRequired: boolean('dpop_bound_access_tokens_required'),
+  disabled: boolean('disabled').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date()),
+  policyVersion: integer('policy_version'),
+  metadata: jsonb('metadata')
+});
+
+export const oauthClientResource = pgTable('oauth_client_resource', {
+  id: uuid('id')
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  clientId: text('client_id')
+    .notNull()
+    .references(() => oauthClient.clientId, { onDelete: 'cascade' }),
+  resourceId: text('resource_id')
+    .notNull()
+    .references(() => oauthResource.identifier, { onDelete: 'cascade' }),
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+export const oauthRefreshToken = pgTable('oauth_refresh_token', {
+  id: uuid('id')
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  token: text('token').notNull().unique(),
+  clientId: text('client_id')
+    .notNull()
+    .references(() => oauthClient.clientId, { onDelete: 'cascade' }),
+  sessionId: uuid('session_id').references(() => session.id, { onDelete: 'set null' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  referenceId: text('reference_id'),
+  authorizationCodeId: text('authorization_code_id'),
+  resources: text('resources').array(),
+  requestedUserInfoClaims: text('requested_user_info_claims').array(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  revoked: timestamp('revoked'),
+  rotatedAt: timestamp('rotated_at'),
+  rotationReplayResponse: text('rotation_replay_response'),
+  rotationReplayExpiresAt: timestamp('rotation_replay_expires_at'),
+  authTime: timestamp('auth_time'),
+  confirmation: jsonb('confirmation'),
+  scopes: text('scopes').array().notNull()
+});
+
+export const oauthAccessToken = pgTable('oauth_access_token', {
+  id: uuid('id')
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  token: text('token').unique(),
+  clientId: text('client_id')
+    .notNull()
+    .references(() => oauthClient.clientId, { onDelete: 'cascade' }),
+  sessionId: uuid('session_id').references(() => session.id, { onDelete: 'set null' }),
+  userId: uuid('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  referenceId: text('reference_id'),
+  authorizationCodeId: text('authorization_code_id'),
+  resources: text('resources').array(),
+  requestedUserInfoClaims: text('requested_user_info_claims').array(),
+  refreshId: uuid('refresh_id').references(() => oauthRefreshToken.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  revoked: timestamp('revoked'),
+  confirmation: jsonb('confirmation'),
+  scopes: text('scopes').array().notNull()
+});
+
+export const oauthConsent = pgTable(
+  'oauth_consent',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    clientId: text('client_id')
+      .notNull()
+      .references(() => oauthClient.clientId, { onDelete: 'cascade' }),
+    userId: uuid('user_id').references(() => user.id, { onDelete: 'cascade' }),
+    referenceId: text('reference_id'),
+    resources: text('resources').array(),
+    requestedUserInfoClaims: text('requested_user_info_claims').array(),
+    scopes: text('scopes').array().notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull()
+  },
+  (table) => [index('oauth_consent_reference_id_idx').on(table.referenceId)]
+);
+
+export const oauthClientAssertion = pgTable('oauth_client_assertion', {
+  id: uuid('id')
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  expiresAt: timestamp('expires_at').notNull()
+});
+
 export const analyticsLoginEvents = pgTable(
   'analytics_login_events',
   {
@@ -207,7 +395,6 @@ export const analyticsLoginEvents = pgTable(
       'btree',
       table.loggedInAt.asc().nullsLast().op('timestamptz_ops')
     ),
-    index('idx_analytics_login_events_user_id').using('btree', table.userId.asc().nullsLast().op('uuid_ops')),
     index('idx_analytics_login_events_logged_in_date').using(
       'btree',
       table.loggedInDate.asc().nullsLast().op('date_ops')
@@ -307,18 +494,29 @@ export const analyticsCountryDaily = pgTable(
   ]
 );
 
-export const courseSection = pgTable('course_section', {
-  id: uuid().defaultRandom().primaryKey().notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-  title: varchar(),
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-  order: bigint({ mode: 'number' }).default(sql`'0'`),
-  courseId: uuid('course_id').references(() => course.id, {
-    onDelete: 'cascade',
-    onUpdate: 'cascade'
-  })
-});
+export const courseSection = pgTable(
+  'course_section',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    title: varchar(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    order: bigint({ mode: 'number' }).notNull(),
+    courseId: uuid('course_id').references(() => course.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
+    }),
+    sourceId: uuid('source_id').references((): AnyPgColumn => courseSection.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    index('course_section_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`),
+    index('idx_course_section_course_id').on(table.courseId)
+  ]
+);
 
 export const group = pgTable(
   'group',
@@ -371,7 +569,9 @@ export const groupAttendance = pgTable(
       columns: [table.studentId],
       foreignColumns: [groupmember.id],
       name: 'group_attendance_student_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    index('idx_group_attendance_course_id_lesson_id').on(table.courseId, table.lessonId),
+    index('idx_group_attendance_student_id').on(table.studentId)
   ]
 );
 
@@ -388,31 +588,6 @@ export const currency = pgTable('currency', {
   name: varchar()
 });
 
-export const appsPollOption = pgTable(
-  'apps_poll_option',
-  {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
-      name: 'apps_poll_option_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      cache: 1
-    }),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }),
-    pollId: uuid('poll_id'),
-    label: varchar()
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.pollId],
-      foreignColumns: [appsPoll.id],
-      name: 'apps_poll_option_poll_id_fkey'
-    })
-  ]
-);
-
 export const profile = pgTable(
   'profile',
   {
@@ -426,7 +601,17 @@ export const profile = pgTable(
     canAddCourse: boolean('can_add_course').default(true),
     role: varchar(),
     goal: varchar(),
+    useCases: jsonb('use_cases').default([]).notNull().$type<string[]>(),
+    useCaseOther: text('use_case_other'),
+    learningMethod: varchar('learning_method'),
+    learningMethodOther: text('learning_method_other'),
+    companySize: varchar('company_size'),
+    jobRole: varchar('job_role'),
+    jobRoleOther: text('job_role_other'),
     source: varchar(),
+    sourceOther: text('source_other'),
+    aiProvider: varchar('ai_provider'),
+    aiProviderOther: text('ai_provider_other'),
     metadata: json(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     telegramChatId: bigint('telegram_chat_id', { mode: 'number' }),
@@ -446,7 +631,6 @@ export const profile = pgTable(
     }),
     unique('profile_username_key').on(table.username),
     unique('profile_email_key').on(table.email),
-    index('idx_profile_id').on(table.id),
     index('idx_profile_email').on(table.email)
   ]
 );
@@ -476,7 +660,8 @@ export const option = pgTable(
       columns: [table.questionId],
       foreignColumns: [question.id],
       name: 'option_question_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    index('idx_option_on_question_id').on(table.questionId)
   ]
 );
 
@@ -615,6 +800,7 @@ export const submission = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     exerciseId: uuid('exercise_id').notNull(),
     submittedBy: uuid('submitted_by'),
+    gradedBy: uuid('graded_by'),
     courseId: uuid('course_id'),
     feedback: text()
   },
@@ -639,7 +825,8 @@ export const submission = pgTable(
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
     }).onDelete('set null'),
-    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
+    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId),
+    index('idx_submission_exercise_id_submitted_by').on(table.exerciseId, table.submittedBy)
   ]
 );
 
@@ -673,7 +860,10 @@ export const course = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     groupId: uuid('group_id'),
-    isTemplate: boolean('is_template').default(true),
+    isTemplate: boolean('is_template').default(false).notNull(),
+    templateId: uuid('template_id').references((): AnyPgColumn => course.id, { onDelete: 'set null' }),
+    publicForAll: boolean('public_for_all').default(false).notNull(),
+    seedKey: varchar('seed_key'),
     logo: text().default('').notNull(),
     slug: varchar(),
     metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{
@@ -719,14 +909,18 @@ export const course = pgTable(
       allowSelfEnrollment?: boolean;
       /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. Kept because there is no backfill. */
       allowNewStudent?: boolean;
+      /** When true, public lesson pages expose a Copy Page / Markdown export surface. Off by default. */
+      allowMarkdownExport?: boolean;
       /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
       welcomeEmailMessage?: string | null;
       /** IANA timezone for this course's live sessions (display + scheduling). */
       sessionTimezone?: string | null;
+      /** Minutes before each live session that students get an email reminder. Missing = platform default. */
+      liveSessionReminderOffsetsMinutes?: number[];
       sectionDisplay?: Record<string, boolean>;
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
-      progressionMode?: 'free' | 'sequential';
+      progressionMode?: CourseProgressionMode;
       /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
       commentsEnabled?: boolean;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
@@ -770,16 +964,13 @@ export const course = pgTable(
         accentColor: string;
         subtitle?: string;
         descriptionOverride?: string;
-        signatories: [
+        signatories?: [
           { name: string; role: string; enabled?: boolean; signatureUrl?: string },
           { name: string; role: string; enabled?: boolean; signatureUrl?: string }
         ];
         idFormat?: string;
       };
       deadline?: string | null;
-      threshold?: number;
-      requiredExerciseId?: string | null;
-      exerciseMinScorePercent?: number | null;
       emailMessage?: string | null;
     }>(),
     compliance: jsonb().$type<{
@@ -789,7 +980,6 @@ export const course = pgTable(
       isMandatory?: boolean;
       framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
       maxRetakeAttempts?: number | null;
-      passingScore?: number;
     }>(),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('SELF_PACED'),
@@ -808,8 +998,40 @@ export const course = pgTable(
       name: 'course_group_id_fkey'
     }),
     unique('course_slug_key').on(table.slug),
-    index('idx_course_group_id').on(table.groupId)
+    index('idx_course_group_id').on(table.groupId),
+    index('course_template_id_idx')
+      .on(table.templateId)
+      .where(sql`${table.templateId} is not null`),
+    uniqueIndex('course_seed_key_unique')
+      .on(table.seedKey)
+      .where(sql`${table.seedKey} is not null`)
   ]
+);
+
+export const templateHighlight = pgTable(
+  'template_highlight',
+  {
+    id: uuid().defaultRandom().primaryKey(),
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    position: integer().notNull(),
+    title: varchar({ length: 80 }).notNull(),
+    description: varchar({ length: 200 })
+  },
+  (table) => [index('template_highlight_course_id_idx').on(table.courseId)]
+);
+
+export const courseTemplateSettingSync = pgTable(
+  'course_template_setting_sync',
+  {
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    settingKey: varchar('setting_key').notNull(),
+    syncedAt: timestamp('synced_at', { withTimezone: true, mode: 'string' }).notNull()
+  },
+  (table) => [primaryKey({ columns: [table.courseId, table.settingKey] })]
 );
 
 export const courseCompletionRecord = pgTable(
@@ -933,33 +1155,6 @@ export const courseCertificateIssue = pgTable(
   ]
 );
 
-export const appsPoll = pgTable(
-  'apps_poll',
-  {
-    id: uuid().defaultRandom().primaryKey().notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    question: text(),
-    authorId: uuid(),
-    isPublic: boolean(),
-    status: varchar().default('draft'),
-    expiration: timestamp({ withTimezone: true, mode: 'string' }),
-    courseId: uuid()
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.authorId],
-      foreignColumns: [groupmember.id],
-      name: 'apps_poll_authorId_fkey'
-    }).onDelete('set null'),
-    foreignKey({
-      columns: [table.courseId],
-      foreignColumns: [course.id],
-      name: 'apps_poll_courseId_fkey'
-    })
-  ]
-);
-
 export const videoTranscripts = pgTable('video_transcripts', {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
@@ -1003,9 +1198,30 @@ export const organizationEmaillist = pgTable(
 export const lesson = pgTable(
   'lesson',
   {
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     note: varchar(),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     videoUrl: varchar('video_url'),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     slideUrl: varchar('slide_url'),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
+    slides: jsonb().default([]).$type<
+      {
+        id: string;
+        src: string;
+        platform:
+          | 'google-slides'
+          | 'canva'
+          | 'powerpoint'
+          | 'keynote'
+          | 'figma'
+          | 'prezi'
+          | 'pitch'
+          | 'gamma'
+          | 'slideshare'
+          | 'beautiful';
+      }[]
+    >(),
     courseId: uuid('course_id').notNull(),
     id: uuid()
       .default(sql`gen_random_uuid()`)
@@ -1015,16 +1231,23 @@ export const lesson = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     title: varchar().notNull(),
     public: boolean().default(false),
-    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }),
     teacherId: uuid('teacher_id'),
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),
+    sessionDurationMinutes: integer('session_duration_minutes'),
+    recordingUrl: text('recording_url'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }),
+    order: bigint({ mode: 'number' }).notNull(),
     isUnlocked: boolean('is_unlocked').default(true),
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
     commentsEnabled: boolean('comments_enabled').default(true).notNull(),
+    readingDensity: varchar('reading_density')
+      .$type<'compact' | 'comfortable' | 'spacious'>()
+      .default('compact')
+      .notNull(),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     videos: jsonb().default([]).$type<
       {
         type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
@@ -1047,6 +1270,7 @@ export const lesson = pgTable(
         };
       }[]
     >(),
+    /** @deprecated Content lives in `block` rows placed through `block_placement`. */
     documents: jsonb().default([]).$type<
       {
         type: string;
@@ -1061,7 +1285,9 @@ export const lesson = pgTable(
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-    slug: varchar()
+    slug: varchar().notNull(),
+    sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1074,7 +1300,11 @@ export const lesson = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_teacher_id_fkey'
     }),
-    index('idx_lesson_course_slug').on(table.courseId, table.slug)
+    index('idx_lesson_course_slug').on(table.courseId, table.slug),
+    index('idx_lesson_section_id').on(table.sectionId),
+    index('lesson_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
   ]
 );
 
@@ -1107,6 +1337,7 @@ export const asset = pgTable(
     aspectRatio: text('aspect_ratio'),
     isExternal: boolean('is_external').default(false).notNull(),
     status: varchar().default('active').notNull(),
+    hlsStatus: varchar('hls_status').default('none').notNull(),
     metadata: jsonb().default({}),
     createdByProfileId: uuid('created_by_profile_id'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -1127,7 +1358,6 @@ export const asset = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('set null'),
-    index('idx_assets_organization_id').on(table.organizationId),
     index('idx_assets_organization_status').on(table.organizationId, table.status),
     index('idx_assets_organization_kind_status').on(table.organizationId, table.kind, table.status),
     index('idx_assets_organization_created_at').on(table.organizationId, table.createdAt),
@@ -1188,52 +1418,17 @@ export const assetUsage = pgTable(
   ]
 );
 
-export const appsPollSubmission = pgTable(
-  'apps_poll_submission',
-  {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
-      name: 'apps_poll_submision_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      cache: 1
-    }),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    pollOptionId: bigint('poll_option_id', { mode: 'number' }),
-    selectedById: uuid('selected_by_id'),
-    pollId: uuid('poll_id')
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.pollId],
-      foreignColumns: [appsPoll.id],
-      name: 'apps_poll_submission_poll_id_fkey'
-    }),
-    foreignKey({
-      columns: [table.pollOptionId],
-      foreignColumns: [appsPollOption.id],
-      name: 'apps_poll_submission_poll_option_id_fkey'
-    }),
-    foreignKey({
-      columns: [table.selectedById],
-      foreignColumns: [groupmember.id],
-      name: 'apps_poll_submission_selected_by_id_fkey'
-    }).onDelete('set null')
-  ]
-);
-
 export const exercise = pgTable(
   'exercise',
   {
     title: varchar().notNull(),
     description: varchar(),
+    // @deprecated - we no longer support exercises belonging to a lesson
     lessonId: uuid('lesson_id'),
     courseId: uuid('course_id'),
     sectionId: uuid('section_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }),
+    order: bigint({ mode: 'number' }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
@@ -1246,7 +1441,9 @@ export const exercise = pgTable(
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
     completionPolicy: varchar('completion_policy').default('submitted').notNull(),
     passThreshold: integer('pass_threshold'),
-    slug: varchar()
+    slug: varchar().notNull(),
+    sourceId: uuid('source_id').references((): AnyPgColumn => exercise.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1264,7 +1461,12 @@ export const exercise = pgTable(
       foreignColumns: [courseSection.id],
       name: 'exercise_section_id_fkey'
     }),
-    index('idx_exercise_course_slug').on(table.courseId, table.slug)
+    index('idx_exercise_course_slug').on(table.courseId, table.slug),
+    index('idx_exercise_section_id').on(table.sectionId),
+    index('exercise_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`),
+    index('idx_exercise_lesson_id').on(table.lessonId)
   ]
 );
 
@@ -1308,10 +1510,9 @@ export const groupmember = pgTable(
     email: varchar(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     assignedStudentId: varchar('assigned_student_id'),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
     certificateEarnedAt: timestamp('certificate_earned_at', { withTimezone: true, mode: 'string' }),
-    certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' }),
-    /** First time the learner met the course's certification rule, on any plan. */
-    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' })
+    certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1331,7 +1532,8 @@ export const groupmember = pgTable(
     }),
     unique('unique_entries').on(table.groupId, table.profileId, table.email),
     unique('unique_group_email').on(table.groupId, table.email),
-    unique('unique_group_profile').on(table.groupId, table.profileId)
+    unique('unique_group_profile').on(table.groupId, table.profileId),
+    index('idx_groupmember_profile_id').on(table.profileId)
   ]
 );
 
@@ -1655,10 +1857,7 @@ export const lessonCompletion = pgTable(
       name: 'lesson_completion_profile_id_fkey'
     }),
     unique('unique_lesson_profile').on(table.lessonId, table.profileId),
-    // Profile-first lookups (e.g. the enrolled feed reading a learner's
-    // completions across many courses). The unique constraint above leads with
-    // lesson_id and cannot serve that access pattern.
-    index('idx_lesson_completion_profile_lesson').on(table.profileId, table.lessonId)
+    index('idx_lesson_completion_profile_id_lesson_id').on(table.profileId, table.lessonId)
   ]
 );
 
@@ -1837,6 +2036,7 @@ export const organizationPlan = pgTable(
     planName: plan('plan_name'),
     isActive: boolean('is_active'),
     deactivatedAt: timestamp('deactivated_at', { withTimezone: true, mode: 'string' }),
+    paymentFailedAt: timestamp('payment_failed_at', { withTimezone: true, mode: 'string' }),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     payload: jsonb(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -1860,6 +2060,66 @@ export const organizationPlan = pgTable(
   ]
 );
 
+export const earlyAdopterClaim = pgTable(
+  'early_adopter_claim',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'early_adopter_claim_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    tokenHash: text('token_hash').notNull(),
+    polarSubscriptionId: text('polar_subscription_id').notNull(),
+    polarCustomerId: text('polar_customer_id'),
+    polarCheckoutId: text('polar_checkout_id'),
+    email: text().notNull(),
+    status: earlyAdopterClaimStatus().default('pending').notNull(),
+    claimedOrgId: uuid('claimed_org_id'),
+    claimedByProfileId: uuid('claimed_by_profile_id'),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    reminderSentAt: timestamp('reminder_sent_at', { withTimezone: true, mode: 'string' }),
+    payload: jsonb(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    claimedAt: timestamp('claimed_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.claimedOrgId],
+      foreignColumns: [organization.id],
+      name: 'early_adopter_claim_claimed_org_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.claimedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'early_adopter_claim_claimed_by_profile_id_fkey'
+    }),
+    unique('early_adopter_claim_token_hash_key').on(table.tokenHash),
+    unique('early_adopter_claim_polar_subscription_id_key').on(table.polarSubscriptionId),
+    index('idx_early_adopter_claim_status_created_at').on(table.status, table.createdAt)
+  ]
+);
+
+/**
+ * Single row holding this install's anonymous ID, reported in self-hosted usage pings.
+ */
+export const instance = pgTable(
+  'instance',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    singleton: boolean().default(true).notNull(),
+    firstReportedAt: timestamp('first_reported_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('instance_singleton_key').on(table.singleton),
+    check('instance_singleton_check', sql`${table.singleton}`)
+  ]
+);
+
+/** @deprecated Localized note content lives in `block_locale`. */
 export const lessonLanguage = pgTable(
   'lesson_language',
   {
@@ -1873,7 +2133,8 @@ export const lessonLanguage = pgTable(
     }),
     content: text(),
     lessonId: uuid('lesson_id').defaultRandom(),
-    locale: locale().default('en')
+    locale: locale().default('en'),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [
     foreignKey({
@@ -1882,7 +2143,8 @@ export const lessonLanguage = pgTable(
       name: 'public_lesson_language_lesson_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade')
+      .onDelete('cascade'),
+    index('idx_lesson_language_on_lesson_id_locale').on(table.lessonId, table.locale)
   ]
 );
 
@@ -1943,6 +2205,221 @@ export const lessonLanguageHistory = pgTable(
   ]
 );
 
+export const block = pgTable(
+  'block',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    type: varchar().notNull(),
+    schemaVersion: integer('schema_version').default(1).notNull(),
+    data: jsonb().default({}).notNull().$type<Record<string, unknown>>(),
+    version: integer().default(1).notNull(),
+    createdBy: uuid('created_by'),
+    sourceId: uuid('source_id').references((): AnyPgColumn => block.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    /** Set when the block left its last lesson; the maintenance job purges it after the retention window. */
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'block_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdBy],
+      foreignColumns: [profile.id],
+      name: 'block_created_by_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('block_organization_type_idx').on(table.organizationId, table.type),
+    index('block_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`),
+    index('block_deleted_at_idx')
+      .on(table.deletedAt)
+      .where(sql`${table.deletedAt} is not null`)
+  ]
+);
+
+export const blockPlacement = pgTable(
+  'block_placement',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    blockId: uuid('block_id').notNull(),
+    position: text().notNull(),
+    required: boolean().default(false).notNull(),
+    watchThreshold: integer('watch_threshold'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'block_placement_lesson_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.blockId],
+      foreignColumns: [block.id],
+      name: 'block_placement_block_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    unique('block_placement_lesson_position_unique').on(table.lessonId, table.position),
+    unique('block_placement_lesson_block_unique').on(table.lessonId, table.blockId),
+    index('block_placement_block_id_idx').on(table.blockId)
+  ]
+);
+
+export const blockLocale = pgTable(
+  'block_locale',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'block_locale_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    blockId: uuid('block_id').notNull(),
+    locale: locale().default('en').notNull(),
+    content: text(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.blockId],
+      foreignColumns: [block.id],
+      name: 'block_locale_block_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    unique('block_locale_block_locale_unique').on(table.blockId, table.locale)
+  ]
+);
+
+/**
+ * One row per editing session of a block's localized content, with the same
+ * coalescing rules `lesson_language_history` used. `old_content` is derived by
+ * the `block_versions` view from the previous row.
+ */
+export const blockLocaleHistory = pgTable(
+  'block_locale_history',
+  {
+    id: serial().primaryKey().notNull(),
+    blockLocaleId: bigint('block_locale_id', { mode: 'number' }).notNull(),
+    newContent: text('new_content'),
+    kind: lessonVersionKind().default('auto').notNull(),
+    label: text(),
+    authorId: uuid('author_id'),
+    sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    timestamp: timestamp({ mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    editCount: integer('edit_count').default(1).notNull(),
+    isSealed: boolean('is_sealed').default(false).notNull(),
+    source: varchar().default('editor').notNull().$type<TBlockChangeSource>(),
+    clientName: varchar('client_name', { length: 120 }),
+    changeSetId: uuid('change_set_id')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.blockLocaleId],
+      foreignColumns: [blockLocale.id],
+      name: 'block_locale_history_block_locale_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'block_locale_history_author_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('block_locale_history_locale_timestamp_idx').using(
+      'btree',
+      table.blockLocaleId.asc(),
+      table.timestamp.desc()
+    ),
+    index('block_locale_history_change_set_idx')
+      .on(table.changeSetId)
+      .where(sql`${table.changeSetId} is not null`)
+  ]
+);
+
+/** One placed block as recorded in a lesson revision. */
+export interface TLessonRevisionPlacement {
+  placementId: string;
+  blockId: string;
+  type: string;
+  position: string;
+  required: boolean;
+  watchThreshold: number | null;
+  data: Record<string, unknown>;
+}
+
+/**
+ * The ordered block list of a lesson after a structural change (a block added, removed, moved,
+ * detached, or its data or placement settings changed). Text lives in `block_locale_history`;
+ * together they rebuild the lesson as it was at any moment.
+ */
+export const lessonRevision = pgTable(
+  'lesson_revision',
+  {
+    id: serial().primaryKey().notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    placements: jsonb().notNull().$type<TLessonRevisionPlacement[]>(),
+    authorId: uuid('author_id'),
+    source: varchar().default('editor').notNull().$type<TBlockChangeSource>(),
+    clientName: varchar('client_name', { length: 120 }),
+    changeSetId: uuid('change_set_id'),
+    sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    timestamp: timestamp({ mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    editCount: integer('edit_count').default(1).notNull(),
+    isSealed: boolean('is_sealed').default(false).notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'lesson_revision_lesson_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'lesson_revision_author_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('lesson_revision_lesson_timestamp_idx').using('btree', table.lessonId.asc(), table.timestamp.desc()),
+    index('lesson_revision_change_set_idx')
+      .on(table.changeSetId)
+      .where(sql`${table.changeSetId} is not null`)
+  ]
+);
+
 export const organizationmember = pgTable(
   'organizationmember',
   {
@@ -1995,8 +2472,6 @@ export const organizationmember = pgTable(
       foreignColumns: [role.id],
       name: 'organizationmember_role_id_fkey'
     }),
-    index('idx_organizationmember_profile_id').on(table.profileId),
-    index('idx_organizationmember_organization_id').on(table.organizationId),
     index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId),
     index('idx_orgmember_org_role_status').on(table.organizationId, table.roleId, table.status),
     index('idx_orgmember_org_last_active').on(table.organizationId, table.lastActiveAt),
@@ -2073,7 +2548,6 @@ export const question = pgTable(
       foreignColumns: [questionType.id],
       name: 'question_question_type_id_fkey'
     }),
-    // The 'passed' completion policy sums an exercise's question points per submission.
     index('idx_question_exercise_id').on(table.exerciseId)
   ]
 );
@@ -2116,7 +2590,8 @@ export const questionAnswer = pgTable(
       columns: [table.submissionId],
       foreignColumns: [submission.id],
       name: 'question_answer_submission_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    index('idx_question_answer_submission_id').on(table.submissionId)
   ]
 );
 
@@ -2196,6 +2671,10 @@ export const organization = pgTable(
         inviteOnly?: boolean;
       };
       internalEnrollmentOnly?: boolean;
+      language?: {
+        locale?: (typeof locale.enumValues)[number];
+        enforced?: boolean;
+      };
       studentLimitNotified?: {
         half?: boolean;
         reached?: boolean;
@@ -2210,6 +2689,9 @@ export const organization = pgTable(
         session?: boolean;
         enrollmentWelcome?: boolean;
         courseCompletion?: boolean;
+      };
+      analytics?: {
+        studentTarget?: number | null;
       };
     }>(),
     landingpage: jsonb().default({}).$type<{
@@ -2321,7 +2803,7 @@ export const organization = pgTable(
       .notNull(),
     customization: json()
       .default({
-        apps: { poll: true, comments: true },
+        apps: { comments: true },
         course: { grading: true, newsfeed: true },
         dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
       })
@@ -2337,8 +2819,10 @@ export const organization = pgTable(
           grading: boolean;
         };
         apps: {
-          poll: boolean;
           comments: boolean;
+        };
+        auth?: {
+          backgroundImage: string;
         };
       }>()
       .notNull(),
@@ -2353,6 +2837,10 @@ export const organization = pgTable(
     disableGoogleAuth: boolean('disable_google_auth').default(false),
     parentOrganizationId: uuid('parent_organization_id'),
     readOnlyUntil: timestamp('read_only_until', { withTimezone: true, mode: 'string' }),
+    studentHomePath: text('student_home_path'),
+    studentHomeCourseId: uuid('student_home_course_id').references((): AnyPgColumn => course.id, {
+      onDelete: 'set null'
+    }),
     aiTutorSettings: jsonb('ai_tutor_settings')
       .default({
         enabled: true,
@@ -2402,7 +2890,31 @@ export const organization = pgTable(
       foreignColumns: [table.id],
       name: 'organization_parent_organization_id_fkey'
     }).onDelete('set null'),
+    check(
+      'organization_student_home_single_destination',
+      sql`${table.studentHomePath} IS NULL OR ${table.studentHomeCourseId} IS NULL`
+    ),
     index('idx_organization_parent_id').on(table.parentOrganizationId)
+  ]
+);
+
+export const organizationStudentEmailTemplate = pgTable(
+  'organization_student_email_template',
+  {
+    organizationId: uuid('organization_id').notNull(),
+    emailId: varchar('email_id').notNull(),
+    subject: text(),
+    locale: locale().notNull(),
+    content: text().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    primaryKey({ columns: [table.organizationId, table.emailId, table.locale] }),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_student_email_template_organization_id_fkey'
+    }).onDelete('cascade')
   ]
 );
 
@@ -2663,6 +3175,28 @@ export const lessonVersions = pgView('lesson_versions', {
   sql`SELECT llh.id, lag(llh.new_content) OVER (PARTITION BY llh.lesson_language_id ORDER BY llh."timestamp", llh.id) AS old_content, llh.new_content, llh.kind, llh.label, llh.session_started_at, llh."timestamp", llh.edit_count, llh.is_sealed, llh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id LEFT JOIN profile p ON p.id = llh.author_id`
 );
 
+export const blockVersions = pgView('block_versions', {
+  id: integer(),
+  oldContent: text('old_content'),
+  newContent: text('new_content'),
+  kind: lessonVersionKind(),
+  label: text(),
+  sessionStartedAt: timestamp('session_started_at', { mode: 'string' }),
+  timestamp: timestamp({ mode: 'string' }),
+  editCount: integer('edit_count'),
+  isSealed: boolean('is_sealed'),
+  authorId: uuid('author_id'),
+  authorName: text('author_name'),
+  authorAvatarUrl: text('author_avatar_url'),
+  locale: locale(),
+  blockId: uuid('block_id'),
+  source: varchar().$type<TBlockChangeSource>(),
+  clientName: varchar('client_name', { length: 120 }),
+  changeSetId: uuid('change_set_id')
+}).as(
+  sql`SELECT bh.id, lag(bh.new_content) OVER (PARTITION BY bh.block_locale_id ORDER BY bh."timestamp", bh.id) AS old_content, bh.new_content, bh.kind, bh.label, bh.session_started_at, bh."timestamp", bh.edit_count, bh.is_sealed, bh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, bl.locale, bl.block_id, bh.source, bh.client_name, bh.change_set_id FROM block_locale_history bh JOIN block_locale bl ON bl.id = bh.block_locale_id LEFT JOIN profile p ON p.id = bh.author_id`
+);
+
 export const exerciseTemplate = pgTable('exercise_template', {
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
     name: 'exercise_template_id_seq',
@@ -2735,8 +3269,7 @@ export const organizationAuthPolicy = pgTable(
       columns: [table.defaultRoleId],
       foreignColumns: [role.id],
       name: 'organization_auth_policy_default_role_id_fkey'
-    }),
-    index('idx_organization_auth_policy_org_id').on(table.organizationId)
+    })
   ]
 );
 
@@ -2801,6 +3334,35 @@ export const organizationTokenAuth = pgTable(
   (table) => [index('idx_organization_token_auth_org_id').on(table.organizationId)]
 );
 
+/**
+ * Binds an external app's stable user id (`sub`) to a ClassroomIO user, per org.
+ * Token exchange keys off this, not the email, so one org's secret can never sign
+ * in a user it has not provisioned.
+ */
+export const organizationTokenAuthIdentity = pgTable(
+  'organization_token_auth_identity',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    externalSubject: text('external_subject').notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('organization_token_auth_identity_org_subject_unique').on(table.organizationId, table.externalSubject),
+    index('idx_organization_token_auth_identity_user_id').on(table.userId)
+  ]
+);
+
 export const organizationApiKey = pgTable(
   'organization_api_key',
   {
@@ -2822,6 +3384,7 @@ export const organizationApiKey = pgTable(
     lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' }),
     expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
     revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    oauthConsentId: uuid('oauth_consent_id').references(() => oauthConsent.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull(),
@@ -2830,6 +3393,9 @@ export const organizationApiKey = pgTable(
       .notNull()
   },
   (table) => [
+    uniqueIndex('uq_org_api_key_oauth_consent_type')
+      .on(table.oauthConsentId, table.type)
+      .where(sql`${table.oauthConsentId} IS NOT NULL`),
     index('idx_organization_api_key_org_id').on(table.organizationId),
     index('idx_organization_api_key_type').on(table.type),
     uniqueIndex('organization_api_key_secret_hash_unique').on(table.secretHash)
@@ -3237,7 +3803,8 @@ export const cohortCourse = pgTable(
       name: 'cohort_course_course_id_fkey'
     }).onDelete('cascade'),
     unique('cohort_course_cohort_id_course_id_unique').on(table.cohortId, table.courseId),
-    index('idx_cohort_course_cohort_id').on(table.cohortId)
+    index('idx_cohort_course_cohort_id').on(table.cohortId),
+    index('idx_cohort_course_course_id').on(table.courseId)
   ]
 );
 
@@ -4275,7 +4842,7 @@ export const mediaJob = pgTable(
     progressPercent: integer('progress_percent').default(0),
     /** Latest BullMQ root job id from the FlowProducer tree. Operational only. */
     rootJobId: text('root_job_id'),
-    /** All BullMQ job ids for this run, keyed by job name (operational). */
+    /** BullMQ job ids keyed by job name; a planned step has an empty id until enqueued. */
     jobIds: jsonb('job_ids').default({}).$type<Record<string, string>>(),
     attempt: integer().default(0).notNull(),
     maxAttempts: integer('max_attempts').default(3).notNull(),
@@ -4471,5 +5038,272 @@ export const deadLetterJob = pgTable(
   (table) => [
     index('idx_dead_letter_job_domain_created').on(table.domain, table.createdAt),
     index('idx_dead_letter_job_org_created').on(table.organizationId, table.createdAt)
+  ]
+);
+
+export const contentReportTargetType = pgEnum('CONTENT_REPORT_TARGET_TYPE', [
+  'course_newsfeed_post',
+  'course_newsfeed_comment',
+  'cohort_newsfeed_post',
+  'cohort_newsfeed_comment',
+  'community_question',
+  'community_answer',
+  'lesson_comment',
+  'profile'
+]);
+
+export const contentReportReason = pgEnum('CONTENT_REPORT_REASON', [
+  'spam',
+  'harassment',
+  'hate_speech',
+  'sexual_content',
+  'violence',
+  'misinformation',
+  'privacy',
+  'other'
+]);
+
+export const contentReportStatus = pgEnum('CONTENT_REPORT_STATUS', ['open', 'in_review', 'actioned', 'dismissed']);
+
+export const contentReportResolutionCode = pgEnum('CONTENT_REPORT_RESOLUTION_CODE', [
+  'removed',
+  'warned',
+  'restricted',
+  'no_action',
+  'duplicate'
+]);
+
+/**
+ * `content_report` — user-submitted flags of UGC for platform review.
+ * Email alerts notify ops; this row is the source of truth, including a
+ * snapshot of the reported content so evidence survives hard-deletes.
+ */
+export const contentReport = pgTable(
+  'content_report',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    reporterId: uuid('reporter_id'),
+    targetType: contentReportTargetType('target_type').notNull(),
+    targetId: text('target_id').notNull(),
+    targetAuthorId: uuid('target_author_id'),
+    reason: contentReportReason().notNull(),
+    details: text(),
+    status: contentReportStatus().default('open').notNull(),
+    priority: integer().default(2).notNull(),
+    contentSnapshot: jsonb('content_snapshot')
+      .$type<{
+        text: string;
+        title?: string | null;
+        authorId: string | null;
+        authorName: string | null;
+        surface: string;
+        url?: string | null;
+        capturedAt: string;
+      }>()
+      .notNull(),
+    assignedTo: uuid('assigned_to'),
+    resolutionCode: contentReportResolutionCode('resolution_code'),
+    resolutionNote: text('resolution_note'),
+    reviewedBy: uuid('reviewed_by'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'content_report_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.reporterId],
+      foreignColumns: [profile.id],
+      name: 'content_report_reporter_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.targetAuthorId],
+      foreignColumns: [profile.id],
+      name: 'content_report_target_author_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.assignedTo],
+      foreignColumns: [profile.id],
+      name: 'content_report_assigned_to_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.reviewedBy],
+      foreignColumns: [profile.id],
+      name: 'content_report_reviewed_by_fkey'
+    }).onDelete('set null'),
+    index('idx_content_report_status_priority_created').on(table.status, table.priority, table.createdAt),
+    index('idx_content_report_org_created').on(table.organizationId, table.createdAt),
+    index('idx_content_report_target').on(table.targetType, table.targetId),
+    uniqueIndex('content_report_reporter_target_open_unique')
+      .on(table.organizationId, table.reporterId, table.targetType, table.targetId)
+      .where(sql`${table.reporterId} IS NOT NULL AND ${table.status} IN ('open', 'in_review')`)
+  ]
+);
+
+export const liveSessionReminderStatus = pgEnum('LIVE_SESSION_REMINDER_STATUS', [
+  ...LIVE_SESSION_REMINDER_STATUS_VALUES
+]);
+
+/**
+ * `live_session_reminder_delivery` — one reminder email per (live lesson × student × offset). The reminder scan
+ * owns pending/skipped transitions; the email worker owns sent/failed.
+ */
+export const liveSessionReminderDelivery = pgTable(
+  'live_session_reminder_delivery',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    offsetMinutes: integer('offset_minutes').notNull(),
+    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }).notNull(),
+    status: liveSessionReminderStatus().default('pending').notNull(),
+    skipReason: varchar('skip_reason', { length: 64 }).$type<TLiveSessionReminderSkipReason>(),
+    bullmqJobId: text('bullmq_job_id'),
+    providerId: text('provider_id'),
+    lastError: text('last_error'),
+    attemptCount: integer('attempt_count').default(0).notNull(),
+    queuedAt: timestamp('queued_at', { withTimezone: true, mode: 'string' }),
+    sentAt: timestamp('sent_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'live_session_reminder_delivery_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'live_session_reminder_delivery_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'live_session_reminder_delivery_lesson_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'live_session_reminder_delivery_profile_id_fkey'
+    }).onDelete('cascade'),
+    uniqueIndex('live_session_reminder_delivery_lesson_profile_offset_unique').on(
+      table.lessonId,
+      table.profileId,
+      table.offsetMinutes
+    ),
+    index('idx_live_session_reminder_delivery_organization_id').on(table.organizationId),
+    index('idx_live_session_reminder_delivery_course_lesson_at').on(table.courseId, table.lessonAt),
+    index('idx_live_session_reminder_delivery_profile_id').on(table.profileId),
+    index('idx_live_session_reminder_delivery_status_lesson_at').on(table.status, table.lessonAt)
+  ]
+);
+
+export const webhookDeliveryStatus = pgEnum('WEBHOOK_DELIVERY_STATUS', ['PENDING', 'SUCCESS', 'FAILED', 'GAVE_UP']);
+
+export const webhookEndpoint = pgTable(
+  'webhook_endpoint',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 120 }).notNull(),
+    payloadUrl: text('payload_url').notNull(),
+    secretCiphertext: text('secret_ciphertext'),
+    secretLast4: varchar('secret_last4', { length: 4 }),
+    verifySsl: boolean('verify_ssl').default(true).notNull(),
+    eventMode: varchar('event_mode', { length: 16 }).default('selected').notNull(),
+    isActive: boolean('is_active').default(true).notNull(),
+    consecutiveFailures: integer('consecutive_failures').default(0).notNull(),
+    autoDisabledAt: timestamp('auto_disabled_at', { withTimezone: true, mode: 'string' }),
+    lastDeliveryStatus: webhookDeliveryStatus('last_delivery_status'),
+    lastDeliveryAt: timestamp('last_delivery_at', { withTimezone: true, mode: 'string' }),
+    createdByProfileId: uuid('created_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    updatedByProfileId: uuid('updated_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_webhook_endpoint_org_id').on(table.organizationId)]
+);
+
+export const webhookSubscription = pgTable(
+  'webhook_subscription',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    webhookId: uuid('webhook_id')
+      .notNull()
+      .references(() => webhookEndpoint.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 64 }).notNull()
+  },
+  (table) => [
+    unique('webhook_subscription_webhook_event_key').on(table.webhookId, table.eventType),
+    index('idx_webhook_subscription_event_type').on(table.eventType)
+  ]
+);
+
+export const webhookEvent = pgTable(
+  'webhook_event',
+  {
+    id: text('id').primaryKey().notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 64 }).notNull(),
+    payload: jsonb('payload').notNull().$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_webhook_event_created_at').on(table.createdAt),
+    index('idx_webhook_event_org_created_at').on(table.organizationId, table.createdAt)
+  ]
+);
+
+export const webhookDelivery = pgTable(
+  'webhook_delivery',
+  {
+    id: text('id').primaryKey().notNull(),
+    webhookId: uuid('webhook_id')
+      .notNull()
+      .references(() => webhookEndpoint.id, { onDelete: 'cascade' }),
+    eventId: text('event_id')
+      .notNull()
+      .references(() => webhookEvent.id, { onDelete: 'cascade' }),
+    attempt: integer('attempt').default(0).notNull(),
+    status: webhookDeliveryStatus('status').default('PENDING').notNull(),
+    isTest: boolean('is_test').default(false).notNull(),
+    nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true, mode: 'string' }),
+    requestHeaders: jsonb('request_headers').$type<Record<string, string>>(),
+    responseStatus: integer('response_status'),
+    responseBody: text('response_body'),
+    errorMessage: text('error_message'),
+    durationMs: integer('duration_ms'),
+    deliveredAt: timestamp('delivered_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_webhook_delivery_webhook_created_at').on(table.webhookId, table.createdAt),
+    index('idx_webhook_delivery_status_next_attempt').on(table.status, table.nextAttemptAt),
+    index('idx_webhook_delivery_event_id').on(table.eventId)
   ]
 );

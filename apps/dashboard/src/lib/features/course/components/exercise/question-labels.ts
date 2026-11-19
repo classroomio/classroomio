@@ -91,6 +91,27 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'question.edit.upload_error_failed': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.question.edit.upload_error_failed'
     ),
+    'question.edit.expand_description': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.question.edit.expand'
+    ),
+    'question.media.enlarge_image': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.enlarge_image'
+    ),
+    'question.media.close': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.close'
+    ),
+    'question.media.zoom_in': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.zoom_in'
+    ),
+    'question.media.zoom_out': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.zoom_out'
+    ),
+    'question.media.previous_image': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.previous_image'
+    ),
+    'question.media.next_image': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.next_image'
+    ),
     'radio.edit.helper': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.radio.edit.helper'),
     'radio.edit.correct_selected_tooltip': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.radio.edit.correct_selected_tooltip'
@@ -300,6 +321,12 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'file_upload.preview.max_size_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.preview.max_size_label'
     ),
+    'file_upload.review.empty': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.review.empty'
+    ),
+    'file_upload.review.unavailable': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.review.unavailable'
+    ),
     'video_recording.edit.max_duration_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.edit.max_duration_label'
     ),
@@ -500,6 +527,10 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'submission.list.responses': t.get('course.navItem.lessons.exercises.all_exercises.analytics.summary.responses'),
     'submission.list.no_responses': t.get(
       'course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'
-    )
+    ),
+    'submission.list.unknown_student': t.get(
+      'course.navItem.lessons.exercises.all_exercises.analytics.summary.unknown_student'
+    ),
+    'submission.list.no_file': t.get('course.navItem.lessons.exercises.all_exercises.analytics.summary.no_file')
   };
 }

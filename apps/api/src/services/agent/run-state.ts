@@ -53,7 +53,7 @@ async function assertCourseRunAccess(courseId: string, userId: string, orgId: st
   const hasCourseAccess = await isCourseTeamMemberOrOrgAdmin(courseId, userId);
 
   if (!hasCourseAccess) {
-    throw new AppError('You must be a course team member to manage agent runs', 'NOT_COURSE_TEAM_MEMBER', 403);
+    throw new AppError('You must be a course team member to manage course generation', 'NOT_COURSE_TEAM_MEMBER', 403);
   }
 }
 
@@ -75,11 +75,11 @@ async function getOwnedAgentRun(runId: string, userId: string, orgId: string): P
   const run = await getAgentRun(runId, userId);
 
   if (!run) {
-    throw new AppError('Agent run not found', 'AGENT_RUN_NOT_FOUND', 404);
+    throw new AppError('Course generation not found', 'AGENT_RUN_NOT_FOUND', 404);
   }
 
   if (run.orgId !== orgId) {
-    throw new AppError('Agent run does not belong to this organization', 'AGENT_RUN_ORG_MISMATCH', 403);
+    throw new AppError('This course generation does not belong to this organization', 'AGENT_RUN_ORG_MISMATCH', 403);
   }
 
   return run;
@@ -172,7 +172,7 @@ async function enqueueAgentRun(run: TAiAgentRun, reason: 'created' | 'resumed' |
 
     return updatedRun;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to enqueue agent run';
+    const message = error instanceof Error ? error.message : 'Failed to start course generation';
     await updateOwnedAgentRun(run.id, run.userId, {
       status: 'failed',
       phase: 'failed',
@@ -199,7 +199,7 @@ async function updateOwnedAgentRun(
   const updatedRun = await updateAgentRun({ runId, userId, ...update });
 
   if (!updatedRun) {
-    throw new AppError('Agent run not found', 'AGENT_RUN_NOT_FOUND', 404);
+    throw new AppError('Course generation not found', 'AGENT_RUN_NOT_FOUND', 404);
   }
 
   return updatedRun;
@@ -258,7 +258,7 @@ export async function cancelAgentRunState(runId: string, userId: string, orgId: 
   }
 
   if (run.status === 'completed') {
-    throw new AppError('Completed agent runs cannot be canceled', 'AGENT_RUN_ALREADY_COMPLETED', 409);
+    throw new AppError('Completed course generation cannot be canceled', 'AGENT_RUN_ALREADY_COMPLETED', 409);
   }
 
   await removeQueuedBullmqJob(run);
@@ -297,15 +297,15 @@ export async function resumeAgentRunState(runId: string, userId: string, orgId: 
   }
 
   if (run.status === 'completed') {
-    throw new AppError('Completed agent runs cannot be resumed', 'AGENT_RUN_ALREADY_COMPLETED', 409);
+    throw new AppError('Completed course generation cannot be resumed', 'AGENT_RUN_ALREADY_COMPLETED', 409);
   }
 
   if (run.status === 'canceled') {
-    throw new AppError('Canceled agent runs cannot be resumed', 'AGENT_RUN_CANCELED', 409);
+    throw new AppError('Canceled course generation cannot be resumed', 'AGENT_RUN_CANCELED', 409);
   }
 
   if (run.status === 'failed') {
-    throw new AppError('Failed agent runs must be retried', 'AGENT_RUN_RETRY_REQUIRED', 409);
+    throw new AppError('Failed course generation must be retried', 'AGENT_RUN_RETRY_REQUIRED', 409);
   }
 
   const updatedRun = await updateOwnedAgentRun(runId, userId, {
@@ -336,11 +336,11 @@ export async function retryAgentRunState(runId: string, userId: string, orgId: s
   }
 
   if (run.status !== 'failed') {
-    throw new AppError('Only failed agent runs can be retried', 'AGENT_RUN_NOT_RETRYABLE', 409);
+    throw new AppError('Only failed course generation can be retried', 'AGENT_RUN_NOT_RETRYABLE', 409);
   }
 
   if (run.attempt >= run.maxAttempts) {
-    throw new AppError('Agent run has reached its retry limit', 'AGENT_RUN_RETRY_LIMIT_REACHED', 409);
+    throw new AppError('Course generation has reached its retry limit', 'AGENT_RUN_RETRY_LIMIT_REACHED', 409);
   }
 
   const updatedRun = await updateOwnedAgentRun(runId, userId, {
@@ -374,7 +374,7 @@ export async function appendAgentRunInstructionState(
   const run = await getOwnedAgentRun(runId, userId, orgId);
 
   if (!ACTIVE_RUN_STATUSES.has(run.status) && run.status !== 'failed') {
-    throw new AppError('Agent run is no longer accepting instructions', 'AGENT_RUN_NOT_ACCEPTING_INPUT', 409);
+    throw new AppError('Course generation is no longer accepting instructions', 'AGENT_RUN_NOT_ACCEPTING_INPUT', 409);
   }
 
   const instruction: AgentRunInstruction = {
@@ -387,7 +387,7 @@ export async function appendAgentRunInstructionState(
   const updatedRun = await appendAgentRunInstruction(runId, userId, instruction);
 
   if (!updatedRun) {
-    throw new AppError('Agent run not found', 'AGENT_RUN_NOT_FOUND', 404);
+    throw new AppError('Course generation not found', 'AGENT_RUN_NOT_FOUND', 404);
   }
 
   await createAgentRunEvent({

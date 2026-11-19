@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { Switch } from '@cio/ui/base/switch';
   import { Textarea } from '@cio/ui/base/textarea';
   import * as Field from '@cio/ui/base/field';
@@ -14,6 +15,8 @@
     errors?: Record<string, string>;
     /** Stable hook for Playwright on the enable toggle. Only set by callers that need one. */
     toggleTestId?: string;
+    /** Extra sections rendered between the rules and the email message, e.g. completion rules. */
+    children?: Snippet;
   }
 
   let {
@@ -23,7 +26,8 @@
     onUpdate,
     disabled = false,
     errors = {},
-    toggleTestId
+    toggleTestId,
+    children
   }: Props = $props();
 
   function onEmailMessageInput(e: Event) {
@@ -54,6 +58,12 @@
   </Field.Set>
 
   <Field.Separator />
+
+  {#if children}
+    {@render children()}
+
+    <Field.Separator />
+  {/if}
 
   <Field.Set>
     <Field.Legend>{$t('certificate.email_message_label')}</Field.Legend>

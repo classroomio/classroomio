@@ -448,6 +448,8 @@ export async function getEnrolled(
             ...row.course,
             lessonCount: row.lessonsTotal ?? 0,
             exerciseCount: row.exercisesTotal ?? 0,
+            progressLessonCount: row.lessonsTotal ?? 0,
+            progressExerciseCount: row.exercisesTotal ?? 0,
             progressRate: row.lessonsCompleted ?? 0,
             exercisesCompleted: row.exercisesCompleted ?? 0,
             certificateEarnedAt: row.certificateEarnedAt ?? null,

@@ -1,10 +1,12 @@
 import type { DbOrTxClient } from '@cio/db/drizzle';
+import type { TCourseCompletionRecord, TGroupmember } from '@cio/db/types';
 import { getOrgCourseGroups, getEnrollOnlyInLearningPathCourses } from '@cio/db/queries/course';
 import {
   addCohortMember,
   getCohortCoursePairsByCohortIds,
   getCourseIdsByCohortIds,
-  getExistingCohortMembers
+  getExistingCohortMembers,
+  type TCohortMember
 } from '@cio/db/queries/cohort';
 import { enrollUsersInCourseGroups, getGroupMemberByGroupAndProfile } from '@cio/db/queries/group';
 import {
@@ -27,13 +29,20 @@ export interface TInviteEnrollmentParams {
   roleId: number;
   grantedByProfileId?: string;
   assertCapacity?: (organizationId: string, additional: number, tx: DbOrTxClient) => Promise<unknown>;
-  ensureCompliance?: (courseIds: string[], profileIds: string[], tx: DbOrTxClient) => Promise<unknown>;
+  ensureCompliance?: (
+    courseIds: string[],
+    profileIds: string[],
+    tx: DbOrTxClient
+  ) => Promise<{ createdRecords: TCourseCompletionRecord[] }>;
 }
 
 export interface TInviteEnrollmentResult {
   enrolledCount: number;
   skippedPathOnlyCourseIds: string[];
   enrolledPathIds: string[];
+  enrolledMembers: TGroupmember[];
+  complianceRecords: TCourseCompletionRecord[];
+  cohortMembers: TCohortMember[];
 }
 
 /** No-op capacity check for callers that enforce the student limit themselves. */
@@ -53,6 +62,9 @@ export async function enrollOrganizationInviteUserCore(
   let enrolledCount = 0;
   let skippedPathOnlyCourseIds: string[] = [];
   const enrolledPathIds: string[] = [];
+  const enrolledMembers: TGroupmember[] = [];
+  const complianceRecords: TCourseCompletionRecord[] = [];
+  const cohortMembers: TCohortMember[] = [];
   const assertCapacity = params.assertCapacity ?? defaultAssertCapacity;
   const ensureCompliance = params.ensureCompliance;
 
@@ -66,12 +78,14 @@ export async function enrollOrganizationInviteUserCore(
       const courseGroupMappings = await getOrgCourseGroups(params.organizationId, directCourseIds, tx);
       const courseGroupIds = courseGroupMappings.map((mapping) => mapping.groupId).filter(Boolean) as string[];
 
-      enrolledCount += await enrollUsersInCourseGroups(
+      const courseMembers = await enrollUsersInCourseGroups(
         courseGroupIds,
         [{ profileId: params.profileId, email: params.email }],
         params.roleId,
         tx
       );
+      enrolledMembers.push(...courseMembers);
+      enrolledCount += courseMembers.length;
 
       if (params.roleId === ROLE.STUDENT) {
         await bulkInsertDirectCourseGrants(
@@ -87,7 +101,8 @@ export async function enrollOrganizationInviteUserCore(
       }
 
       if (ensureCompliance) {
-        await ensureCompliance(directCourseIds, [params.profileId], tx);
+        const enrollment = await ensureCompliance(directCourseIds, [params.profileId], tx);
+        complianceRecords.push(...enrollment.createdRecords);
       }
     }
   }
@@ -102,7 +117,7 @@ export async function enrollOrganizationInviteUserCore(
     );
 
     for (const cohortId of cohortIdsToInsert) {
-      await addCohortMember(
+      const cohortMember = await addCohortMember(
         {
           cohortId,
           roleId: params.roleId,
@@ -111,6 +126,7 @@ export async function enrollOrganizationInviteUserCore(
         },
         tx
       );
+      cohortMembers.push(cohortMember);
     }
 
     const allCohortCourseIds = await getCourseIdsByCohortIds(params.cohortIds, tx);
@@ -124,15 +140,18 @@ export async function enrollOrganizationInviteUserCore(
       const cohortCourseGroups = await getOrgCourseGroups(params.organizationId, courseIdsToEnroll, tx);
       const cohortGroupIds = cohortCourseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
 
-      enrolledCount += await enrollUsersInCourseGroups(
+      const cohortCourseMembers = await enrollUsersInCourseGroups(
         cohortGroupIds,
         [{ profileId: params.profileId, email: params.email }],
         params.roleId,
         tx
       );
+      enrolledMembers.push(...cohortCourseMembers);
+      enrolledCount += cohortCourseMembers.length;
 
       if (ensureCompliance) {
-        await ensureCompliance(courseIdsToEnroll, [params.profileId], tx);
+        const enrollment = await ensureCompliance(courseIdsToEnroll, [params.profileId], tx);
+        complianceRecords.push(...enrollment.createdRecords);
       }
     }
 
@@ -198,5 +217,12 @@ export async function enrollOrganizationInviteUserCore(
     }
   }
 
-  return { enrolledCount, skippedPathOnlyCourseIds, enrolledPathIds };
+  return {
+    enrolledCount,
+    skippedPathOnlyCourseIds,
+    enrolledPathIds,
+    enrolledMembers,
+    complianceRecords,
+    cohortMembers
+  };
 }

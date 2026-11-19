@@ -10,7 +10,7 @@
   import { ROLE } from '@cio/utils/constants';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
-  import { currentOrg, isStudentLimitReached } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { peopleApi } from '$features/course/api';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
@@ -136,7 +136,7 @@
   });
 
   function loadTeam(orgId: string | undefined) {
-    if (!orgId) return;
+    if (!orgId || !$isOrgAdmin) return;
     untrack(async () => {
       await orgApi.getOrgTeam();
       if (orgApi.error) {
@@ -146,7 +146,7 @@
   }
 
   function loadStudents(orgId: string | undefined) {
-    if (!orgId) return;
+    if (!orgId || !$isOrgAdmin) return;
 
     untrack(async () => {
       isLoadingStudents = true;
@@ -160,7 +160,7 @@
 
   async function handleStudentSearch(value: string) {
     const orgId = resourceOrgId;
-    if (!orgId) {
+    if (!orgId || !$isOrgAdmin) {
       return;
     }
 
@@ -471,9 +471,11 @@
 
     <UnderlineTabs.Root bind:value={activeTab}>
       <UnderlineTabs.List class="flex flex-wrap">
-        <UnderlineTabs.Trigger value="tutors">
-          {$t(`${INVITE_MODAL}.invite`)}
-        </UnderlineTabs.Trigger>
+        {#if $isOrgAdmin}
+          <UnderlineTabs.Trigger value="tutors">
+            {$t(`${INVITE_MODAL}.invite`)}
+          </UnderlineTabs.Trigger>
+        {/if}
         <UnderlineTabs.Trigger value="students" disabled={isPathGated}>
           {$t(`${INVITE_MODAL}.invite_students`)}
         </UnderlineTabs.Trigger>
@@ -491,35 +493,39 @@
               description={$t(`${INVITE_MODAL}.path_only_notice_description`)}
             />
           {/if}
-          <TutorSelectSection
-            {tutors}
-            bind:selectedIds
-            isLoading={orgApi.isLoading}
-            helperHref={`/org/${$currentOrg.siteName}/settings/teams`}
-          />
+          {#if $isOrgAdmin}
+            <TutorSelectSection
+              {tutors}
+              bind:selectedIds
+              isLoading={orgApi.isLoading}
+              helperHref={`/org/${$currentOrg.siteName}/settings/teams`}
+            />
 
-          <div class="mt-5 flex flex-row-reverse items-center gap-2">
-            <Button
-              variant="secondary"
-              type="button"
-              testId="invitation-modal-tutors-submit"
-              onclick={onSubmit}
-              loading={isLearningPath ? pathMembersApi.isLoading : peopleApi.isLoading}
-            >
-              {$t(`${INVITE_MODAL}.finish`)}
-            </Button>
-          </div>
+            <div class="mt-5 flex flex-row-reverse items-center gap-2">
+              <Button
+                variant="secondary"
+                type="button"
+                testId="invitation-modal-tutors-submit"
+                onclick={onSubmit}
+                loading={isLearningPath ? pathMembersApi.isLoading : peopleApi.isLoading}
+              >
+                {$t(`${INVITE_MODAL}.finish`)}
+              </Button>
+            </div>
+          {/if}
         </div>
       </UnderlineTabs.Content>
 
       <UnderlineTabs.Content value="students">
         <div class="space-y-6">
-          <ExistingStudentsSection
-            students={availableStudents}
-            isLoading={isLoadingStudents}
-            onSearchValueChange={handleStudentSearch}
-            onAssign={assignExistingStudents}
-          />
+          {#if $isOrgAdmin}
+            <ExistingStudentsSection
+              students={availableStudents}
+              isLoading={isLoadingStudents}
+              onSearchValueChange={handleStudentSearch}
+              onAssign={assignExistingStudents}
+            />
+          {/if}
 
           {#if $isStudentLimitReached}
             <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>

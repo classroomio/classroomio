@@ -1,0 +1,2 @@
+export interface BadgeProps { variant?: 'default'|'secondary'|'destructive'|'warning'|'success'|'outline'; href?: string; children?: React.ReactNode; style?: React.CSSProperties; }
+export declare function Badge(props: BadgeProps): JSX.Element;

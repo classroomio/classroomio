@@ -51,7 +51,7 @@
 
   // Archive leads: it is reversible, it frees a seat, and it is the right answer
   // to almost every "remove them" instinct. Delete sits last and apart.
-  const actions: AudienceBulkAction[] = ['archive', 'deactivate', 'reactivate', 'unarchive'];
+  const actions: AudienceBulkAction[] = ['archive', 'unarchive'];
 
   /** Both menus load the same document; only the destination differs. */
   async function withDocument(run: (doc: ExportDocument<Row>) => Promise<void> | void, failureKey: string) {
@@ -154,13 +154,7 @@
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>
       {#snippet child({ props })}
-        <Button
-          {...props}
-          testId="audience-bulk-export"
-          variant="secondary"
-          size="xs"
-          disabled={isApplying || isBusy}
-        >
+        <Button {...props} testId="audience-bulk-export" variant="secondary" size="xs" disabled={isApplying || isBusy}>
           <DownloadIcon class="size-4" aria-hidden="true" />
           {$t('export.label')}
           <ChevronDownIcon class="size-4" aria-hidden="true" />

@@ -3,9 +3,15 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { copyCourseModal, deleteCourseModal } from '$features/course/utils/store';
+  import {
+    copyCourseModal,
+    copyCourseModalInitialState,
+    deleteCourseModal,
+    saveTemplateModal
+  } from '$features/course/utils/store';
+  import { isOrgAdmin, currentOrgPath } from '$lib/utils/store/org';
   import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
-  import { currentOrgDomain, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrgDomain } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { goAndHighlight } from '$lib/routing/go-and-highlight';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
@@ -26,6 +32,8 @@
     includeOpen?: boolean;
     /** Hide org management actions (clone, share, invite, delete) */
     hideOrgActions?: boolean;
+    isTemplate?: boolean;
+    studentCount?: number;
   }
 
   let {
@@ -39,7 +47,9 @@
     includeViewAsStudent = false,
     onViewAsStudent,
     includeOpen = false,
-    hideOrgActions = false
+    hideOrgActions = false,
+    isTemplate = false,
+    studentCount = 0
   }: Props = $props();
 
   const showPublicCourseLinks = $derived(isPublished && courseType === 'PUBLIC' && slug.trim().length > 0);
@@ -78,21 +88,33 @@
 
     const isOnOrgCoursesList = /\/org\/[^/]+\/courses\/?$/.test(page.url.pathname);
     if (isOnOrgCoursesList) {
-      $deleteCourseModal.open = true;
-      $deleteCourseModal.id = id;
-      $deleteCourseModal.title = title;
+      deleteCourseModal.set({ open: true, id, title, isDeleting: false });
       return;
     }
 
     redirect(`/courses/${id}/settings#delete`);
   }
 
+  function handleSaveAsTemplate() {
+    saveTemplateModal.set({
+      open: true,
+      id,
+      title,
+      name: title,
+      mode: 'copy',
+      isPublished,
+      studentCount
+    });
+  }
+
+  function handleCreateFromTemplate() {
+    goto(`${$currentOrgPath}/courses/templates?preview=${id}`);
+  }
+
   function handleCloneCourse() {
-    $copyCourseModal.open = true;
-    $copyCourseModal.id = id;
-    $copyCourseModal.title = $t('courses.copy_course.title_copy_format', { title });
-    $copyCourseModal.description = description;
-    $copyCourseModal.isSaving = false;
+    const copyTitle = $t('courses.copy_course.title_copy_format', { title });
+
+    copyCourseModal.set({ ...copyCourseModalInitialState, open: true, id, title: copyTitle, description });
   }
 
   function handleOpenCourse() {
@@ -139,7 +161,7 @@
     {#if !hideOrgActions || includeOpen}
       <DropdownMenu.Separator />
     {/if}
-  {:else}
+  {:else if !isTemplate}
     <DropdownMenu.Item onclick={handlePublishCourse}>
       {$t('courses.course_card.context_menu.publish_course')}
     </DropdownMenu.Item>
@@ -155,17 +177,29 @@
   {/if}
 
   {#if !hideOrgActions}
-    {#if $isOrgAdmin}
+    {#if isTemplate && $isOrgAdmin}
+      <DropdownMenu.Item onclick={handleCreateFromTemplate}>
+        {$t('course_templates.menu.create_course')}
+      </DropdownMenu.Item>
+    {/if}
+    {#if !isTemplate && $isOrgAdmin}
       <DropdownMenu.Item onclick={handleCloneCourse}>
         {$t('courses.course_card.context_menu.clone')}
+      </DropdownMenu.Item>
+    {/if}
+    {#if !isTemplate && $isOrgAdmin}
+      <DropdownMenu.Item onclick={handleSaveAsTemplate}>
+        {$t('course_templates.menu.save')}
       </DropdownMenu.Item>
     {/if}
     <DropdownMenu.Item onclick={handleShareCourse}>
       {$t('courses.course_card.context_menu.share')}
     </DropdownMenu.Item>
-    <DropdownMenu.Item onclick={handleInvite}>
-      {$t('courses.course_card.context_menu.invite')}
-    </DropdownMenu.Item>
+    {#if !isTemplate}
+      <DropdownMenu.Item onclick={handleInvite}>
+        {$t('courses.course_card.context_menu.invite')}
+      </DropdownMenu.Item>
+    {/if}
 
     {#if $isOrgAdmin}
       <DropdownMenu.Separator />

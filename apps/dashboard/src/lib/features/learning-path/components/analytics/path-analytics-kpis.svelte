@@ -3,7 +3,7 @@
   import ClockIcon from '@lucide/svelte/icons/clock';
   import PlayIcon from '@lucide/svelte/icons/play';
   import UsersIcon from '@lucide/svelte/icons/users';
-  import { KpiCard } from '$features/analytics';
+  import { KpiCard } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import type { PathAnalyticsSummary } from '../../utils/types';
   import { formatAvgTime } from '../../utils/analytics-utils';

@@ -72,7 +72,7 @@ Both are prompt-trust mitigations. Neither is enforcement.
 
 Every tool defined in `chat-tools.ts` is callable from both endpoints. The notable mutation-heavy ones:
 
-- `update_lesson_content` — writes full lesson HTML. A single call can be 5–20k tokens of output.
+- `update_lesson_content` — writes the full HTML of one text block. A single call can be 5–20k tokens of output.
 - `add_questions` / `update_questions` — can add/update arbitrary-sized question batches in one call.
 - `create_lesson`, `update_lesson`, `create_exercise`, `update_exercise`.
 - `update_course_landing_page` — full landing-page mutation, including image generation.

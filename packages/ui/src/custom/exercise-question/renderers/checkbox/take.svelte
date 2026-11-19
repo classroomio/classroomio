@@ -5,6 +5,7 @@
   import OptionImage from '../option-image.svelte';
   import { getOptionImageUrl, hasOptionImages } from '../option-image-utils';
   import { cn } from '../../../../tools';
+  import { isOptionCardControlClick } from '../shared/option-card';
 
   let {
     question,
@@ -53,6 +54,12 @@
 
     onAnswerChange({ type: 'CHECKBOX', optionIds });
   }
+
+  function handleOptionCardClick(event: MouseEvent, optionValue: string) {
+    if (disabled || isOptionCardControlClick(event)) return;
+
+    toggleOption(optionValue);
+  }
 </script>
 
 <div class="ui:space-y-2">
@@ -63,16 +70,20 @@
       {@const optionImageUrl = getOptionImageUrl(option)}
       {@const isSelected = isOptionSelected(option, index)}
 
+      <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
       <div
         class={cn(
           'ui:rounded-md ui:p-2 ui:border',
+          !disabled && 'ui:cursor-pointer',
           isSelected ? 'ui:border-primary' : 'ui:border-border',
           optionsHaveImages ? 'ui:space-y-2' : 'ui:flex ui:items-center ui:gap-2'
         )}
+        onclick={(event) => handleOptionCardClick(event, optionValue)}
       >
         <OptionImage
           src={optionImageUrl}
           alt={label('question.edit.image_alt')}
+          {labels}
           variant="take"
           hasAnyImageInOptions={optionsHaveImages}
         />

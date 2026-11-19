@@ -3,7 +3,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@cio/db/queries/organization', () => ({
   createOrganizationMember: vi.fn(),
   getOrganizationById: vi.fn(),
-  getOrganizationMemberIdByOrgAndProfile: vi.fn()
+  getOrganizationMemberIdByOrgAndProfile: vi.fn(),
+  hasLapsedStudentInvite: vi.fn()
+}));
+
+vi.mock('@cio/core/services/webhook/emit', () => ({
+  emitOrganizationMemberWebhookEvent: vi.fn().mockResolvedValue(undefined)
 }));
 
 vi.mock('@cio/db/queries/organization/invite', () => ({
@@ -17,11 +22,12 @@ vi.mock('@cio/db/queries/auth', () => ({
 }));
 
 vi.mock('@cio/db/drizzle', () => ({
-  db: {}
+  db: { transaction: vi.fn((callback: (tx: unknown) => unknown) => callback({})) }
 }));
 
 vi.mock('@api/services/organization/student-limit', () => ({
-  assertStudentCapacityOrThrow: vi.fn()
+  assertStudentCapacityOrThrow: vi.fn(),
+  notifyStudentMilestone: vi.fn().mockResolvedValue(undefined)
 }));
 
 vi.mock('@cio/core/config/env', () => ({
@@ -40,7 +46,8 @@ import { getProfileById } from '@cio/db/queries/auth';
 import {
   createOrganizationMember,
   getOrganizationById,
-  getOrganizationMemberIdByOrgAndProfile
+  getOrganizationMemberIdByOrgAndProfile,
+  hasLapsedStudentInvite
 } from '@cio/db/queries/organization';
 import {
   getActivePendingOrgInviteForEmail,
@@ -57,6 +64,8 @@ describe('joinOrganization', () => {
     vi.clearAllMocks();
     env.PUBLIC_IS_SELFHOSTED = 'false';
     vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null);
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
+    vi.mocked(createOrganizationMember).mockResolvedValue({ id: 1 } as never);
     vi.mocked(getProfileById).mockResolvedValue({ id: USER_ID, email: 'Learner@Example.com' } as never);
     vi.mocked(getActivePendingOrgInviteForEmail).mockResolvedValue(null);
     vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue(null as never);
@@ -112,6 +121,50 @@ describe('joinOrganization', () => {
     );
     expect(result).toEqual({ alreadyMember: true, linkedExistingMember: true });
     expect(createOrganizationMember).not.toHaveBeenCalled();
+  });
+
+  it('links a still-invited student without a new seat check', async () => {
+    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue({
+      id: 'member-1',
+      profileId: null,
+      roleId: ROLE.STUDENT
+    } as never);
+
+    await joinOrganization(USER_ID, ORG_ID);
+
+    expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+    expect(updateOrganizationMemberById).toHaveBeenCalled();
+  });
+
+  it('takes a seat when linking a student whose invite was revoked or expired', async () => {
+    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue({
+      id: 'member-1',
+      profileId: null,
+      roleId: ROLE.STUDENT
+    } as never);
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(true);
+
+    await joinOrganization(USER_ID, ORG_ID);
+
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG_ID, 1, expect.anything(), {
+      deferNotification: true
+    });
+    expect(updateOrganizationMemberById).toHaveBeenCalled();
+  });
+
+  it('does not link a lapsed invite when the plan is full', async () => {
+    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue({
+      id: 'member-1',
+      profileId: null,
+      roleId: ROLE.STUDENT
+    } as never);
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(true);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(
+      Object.assign(new Error('Student limit reached'), { statusCode: 403 })
+    );
+
+    await expect(joinOrganization(USER_ID, ORG_ID)).rejects.toMatchObject({ statusCode: 403 });
+    expect(updateOrganizationMemberById).not.toHaveBeenCalled();
   });
 
   it('rejects joins when public signup is disabled', async () => {

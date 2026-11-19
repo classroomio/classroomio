@@ -20,27 +20,37 @@ import {
 } from '@cio/utils/validation/course';
 import { ZCourseTagAssignment, ZCourseTagParam } from '@cio/utils/validation/tag';
 import {
+  captureCoursePublished,
   createCourse,
   deleteCourse,
   getCourse,
-  getCourseAnalytics,
-  getCourseProgress,
   updateCourse
 } from '@cio/core/services/course/course';
-import { assertCertificateDownloadAllowed, evaluateAndRecordCourseCompletion } from '@api/services/course/completion';
+import { getCourseProgressForRequester } from '@api/services/course/progress-access';
+import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '@api/services/course/completion';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
 import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
+import { liveSessionReminderRouter } from '@api/routes/course/live-session-reminder';
 import { authMiddleware } from '@api/middlewares/auth';
 import { resolveCourseRedirect } from '@api/services/course/redirect';
+import { getEventSource } from '@api/utils/event-source';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
+import { getCourseLandingPage } from '@api/services/course/landing-page';
+import {
+  courseTemplateActionsRouter,
+  courseTemplateRouter,
+  courseTemplateUpdatesRouter
+} from '@api/routes/course/course-template';
 import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { complianceRouter } from '@api/routes/course/compliance';
 import { contentRouter } from '@api/routes/course/content';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseMemberOrGraderMiddleware } from '@api/middlewares/course-grader';
+import { canAccessCourseSubmissions } from '@cio/db/queries/group';
 import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
@@ -54,15 +64,19 @@ import {
   assertCertificatePreviewAllowed
 } from '@api/services/course/certificate';
 import { generateCoursePdf } from '@api/utils/course';
+import { getCourseById, getCourseOrganizationId } from '@db/queries';
+import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { invitesRouter } from '@api/routes/course/invite';
 import { katexRouter } from '@api/routes/course/katex';
+import { blockLibraryRouter } from '@api/routes/course/block-library';
 import { lessonRouter } from '@api/routes/course/lesson';
 import { markRouter } from '@api/routes/course/mark';
 import { membersRouter } from '@api/routes/course/people';
 import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
+import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
@@ -70,7 +84,9 @@ import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
+import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { updateCourseWithTags } from '@api/services/course/update-course';
+import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 
 async function loadCertificateInput(courseId: string, userId: string, body: TCertificateDownloadRequest) {
   if (body.previewMode) {
@@ -96,6 +112,9 @@ const enrollRateLimit = createRateLimiter({
 });
 
 export const courseRouter = new Hono()
+  .route('/template', courseTemplateRouter)
+  .route('/:courseId/template', courseTemplateActionsRouter)
+  .route('/:courseId/template-updates', courseTemplateUpdatesRouter)
   /**
    * GET /course/slug/:slug
    * Gets a course by slug (public route, no authentication required)
@@ -104,7 +123,7 @@ export const courseRouter = new Hono()
   .get('/slug/:slug', zValidator('param', ZCourseGetBySlugParam), async (c) => {
     try {
       const { slug } = c.req.valid('param');
-      const course = await getCourse(undefined, slug);
+      const course = await getCourseLandingPage(slug);
 
       return c.json(
         {
@@ -127,7 +146,7 @@ export const courseRouter = new Hono()
       const user = c.get('user')!;
       const validatedData = c.req.valid('json');
 
-      const result = await createCourse(user.id, validatedData);
+      const result = await createCourse(user.id, validatedData, getEventSource(c));
 
       return c.json(
         {
@@ -234,13 +253,13 @@ export const courseRouter = new Hono()
   )
   /**
    * GET /course/:courseId
-   * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)
-   * Query param: slug (optional) - if provided, courseId is ignored and course is fetched by slug
-   * Requires authentication and course membership
+   * Gets a course with its group, members, lessons, sections, and attendance.
+   * An optional slug must resolve to this course id.
+   * Requires authentication. Course members and submission graders may read it.
    */
   .get(
     '/:courseId',
-    courseMemberMiddleware,
+    courseMemberOrGraderMiddleware,
     zValidator('param', ZCourseGetParam),
     zValidator('query', ZCourseGetQuery),
     async (c) => {
@@ -249,11 +268,16 @@ export const courseRouter = new Hono()
         const { slug } = c.req.valid('query');
         const user = c.get('user')!;
         const course = await getCourse(slug ? undefined : courseId, slug, user.id);
+        if (course.id !== courseId) {
+          throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+        }
+
+        const canGrade = await canAccessCourseSubmissions(courseId, user.id);
 
         return c.json(
           {
             success: true,
-            data: course
+            data: { ...course, canGrade }
           },
           200
         );
@@ -316,16 +340,16 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
-        const { tagIds, ...rest } = validatedData;
-        const courseData = rest.metadata?.welcomeEmailMessage
-          ? {
-              ...rest,
-              metadata: {
-                ...rest.metadata,
-                welcomeEmailMessage: sanitizeHtml(rest.metadata.welcomeEmailMessage)
-              }
-            }
-          : rest;
+        const { tagIds, ...courseData } = validatedData;
+
+        await assertCertificateChangeAllowed(courseId, courseData.certificate);
+
+        if (courseData.metadata?.welcomeEmailMessage) {
+          courseData.metadata = {
+            ...courseData.metadata,
+            welcomeEmailMessage: sanitizeHtml(courseData.metadata.welcomeEmailMessage)
+          };
+        }
 
         if (tagIds !== undefined) {
           const orgId = c.req.header('cio-org-id');
@@ -349,6 +373,11 @@ export const courseRouter = new Hono()
             updatedByUserId: user.id,
             tagIds
           });
+          await emitCoursePublishWebhookEvent(courseId, result.publishChange, user.id);
+
+          if (result.publishedNow) {
+            captureCoursePublished(result.course, user.id, getEventSource(c));
+          }
 
           return c.json(
             {
@@ -356,18 +385,32 @@ export const courseRouter = new Hono()
               data: {
                 ...result.course,
                 tags: result.tags
-              }
+              },
+              conversionBlocked: result.conversionOffenders ?? undefined
             },
             200
           );
         }
 
-        const result = await updateCourse(courseId, courseData);
+        const {
+          course: result,
+          conversionOffenders,
+          publishedNow,
+          publishChange
+        } = await updateCourse(courseId, courseData);
+        const userId = c.get('user')?.id ?? null;
+
+        if (publishedNow) {
+          captureCoursePublished(result, c.get('user')!.id, getEventSource(c));
+        }
+
+        await emitCoursePublishWebhookEvent(courseId, publishChange, userId);
 
         return c.json(
           {
             success: true,
-            data: result
+            data: result,
+            conversionBlocked: conversionOffenders ?? undefined
           },
           200
         );
@@ -389,6 +432,16 @@ export const courseRouter = new Hono()
     async (c) => {
       try {
         const { courseId } = c.req.valid('param');
+        const [existingCourse] = await getCourseById(courseId);
+        if (existingCourse?.isTemplate) {
+          const orgId = c.req.header('cio-org-id');
+          const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+          const templateOrgId = await getCourseOrganizationId(courseId);
+          if (!orgId || orgRoles?.[orgId] !== ROLE.ADMIN || templateOrgId !== orgId) {
+            throw new AppError('Only admins can delete templates', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+          }
+        }
+
         const result = await deleteCourse(courseId);
 
         return c.json(
@@ -407,7 +460,7 @@ export const courseRouter = new Hono()
    * GET /course/:courseId/progress
    * Gets course progress for a profile
    * Query param: profileId (required)
-   * Requires authentication and course membership
+   * Requires course membership; reading another member's progress requires a course team member or org admin
    */
   .get(
     '/:courseId/progress',
@@ -419,7 +472,8 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const { profileId } = c.req.valid('query');
-        const progress = await getCourseProgress(courseId, profileId);
+        const user = c.get('user')!;
+        const progress = await getCourseProgressForRequester({ courseId, requesterId: user.id, profileId });
 
         return c.json(
           {
@@ -468,7 +522,7 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const user = c.get('user')!;
-        const data = await evaluateAndRecordCourseCompletion(courseId, user.id);
+        const data = await evaluateCourseCertification(courseId, user.id);
 
         return c.json(
           {
@@ -479,33 +533,6 @@ export const courseRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to evaluate certification');
-      }
-    }
-  )
-  /**
-   * GET /course/:courseId/analytics
-   * Gets course analytics including student progress, completion rates, and grades
-   * Requires authentication and course membership (admin/tutor role)
-   */
-  .get(
-    '/:courseId/analytics',
-    authMiddleware,
-    courseTeamMemberMiddleware,
-    zValidator('param', ZCourseProgressParam),
-    async (c) => {
-      try {
-        const { courseId } = c.req.valid('param');
-        const analytics = await getCourseAnalytics(courseId);
-
-        return c.json(
-          {
-            success: true,
-            data: analytics
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch course analytics');
       }
     }
   )
@@ -581,7 +608,7 @@ export const courseRouter = new Hono()
   .post(
     '/:courseId/clone',
     authMiddleware,
-    orgMemberMiddleware,
+    orgTeamMemberMiddleware,
     zValidator('param', ZCourseCloneParam),
     zValidator('json', ZCourseClone),
     async (c) => {
@@ -589,11 +616,31 @@ export const courseRouter = new Hono()
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
         const { title, description, slug, organizationId } = validatedData;
-
+        const orgId = c.req.header('cio-org-id')!;
         const user = c.get('user')!;
+        const [sourceCourse] = await getCourseById(courseId);
+        const sourceOrgId = await getCourseOrganizationId(courseId);
+        if (
+          !sourceCourse ||
+          sourceCourse.status === 'DELETED' ||
+          !sourceOrgId ||
+          sourceOrgId !== orgId ||
+          (organizationId && organizationId !== orgId)
+        ) {
+          throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+        }
 
-        // Clone the course
-        const newCourse = await cloneCourse(courseId, title, user.id, description, slug, organizationId);
+        if (sourceCourse.isTemplate) {
+          throw new AppError('Templates are copied with Use template', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+        }
+
+        const newCourse = await cloneCourse(courseId, {
+          title,
+          userId: user.id,
+          description,
+          slug,
+          organizationId
+        });
 
         return c.json(
           {
@@ -613,6 +660,7 @@ export const courseRouter = new Hono()
   .route('/:courseId/compliance', complianceRouter)
   .route('/:courseId/section', sectionRouter)
   .route('/:courseId/lesson', lessonRouter)
+  .route('/:courseId/block-library', blockLibraryRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)
   .route('/:courseId/attendance', attendanceRouter)
@@ -621,4 +669,5 @@ export const courseRouter = new Hono()
   .route('/:courseId/members', membersRouter)
   .route('/:courseId/invites', invitesRouter)
   .route('/:courseId/ai-tutor', courseAiTutorRouter)
+  .route('/:courseId/live-session-reminders', liveSessionReminderRouter)
   .route('/presign', presignRouter);

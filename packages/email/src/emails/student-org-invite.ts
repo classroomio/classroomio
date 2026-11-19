@@ -1,12 +1,13 @@
 import * as z from 'zod';
 
 import { defineEmail } from '../send';
-import { getDefaultTemplate } from '../templates';
 import { ZEmailBranding } from '../core/branding';
+import { renderStudentEmail, renderStudentEmailSubject } from '../core/student-email';
+import { escapeHtml } from '../utils/functions/email-helpers';
 
 export const studentOrgInviteEmail = defineEmail({
   id: 'studentOrgInvite',
-  subject: 'You have been invited to join as a student',
+  subject: (fields, context) => renderStudentEmailSubject('studentOrgInvite', fields, context),
   schema: z.object({
     email: z.string().email(),
     orgName: z.string().min(1),
@@ -15,21 +16,16 @@ export const studentOrgInviteEmail = defineEmail({
     courseNames: z.string().optional(),
     branding: ZEmailBranding
   }),
-  render: (fields) => {
-    const courseLine = fields.courseNames
-      ? `<p>You have been given access to: <strong>${fields.courseNames}</strong>.</p>`
-      : '';
+  render: (fields, context) => {
+    const courseLine = fields.courseNames ? `<p><strong>${escapeHtml(fields.courseNames)}</strong></p>` : '';
 
-    const content = `
-      <p>Hi there,</p>
-      <p>You have been invited to join <strong>${fields.orgName}</strong> as a student.</p>
-      ${courseLine}
-      <p>This invite expires on ${fields.expiresAt} (UTC).</p>
-      <div>
-        <a class="button" href="${fields.inviteLink}">Accept Invitation</a>
-      </div>
-    `;
-
-    return getDefaultTemplate(content, fields.branding);
+    return renderStudentEmail({
+      id: 'studentOrgInvite',
+      values: { org_name: fields.orgName, expires_at: fields.expiresAt },
+      trustedHtml: { course_names: courseLine },
+      actionUrl: fields.inviteLink,
+      branding: fields.branding,
+      context
+    });
   }
 });

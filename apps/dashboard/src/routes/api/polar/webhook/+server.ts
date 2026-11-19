@@ -1,20 +1,34 @@
 import { OrgPlanApiServer } from '$features/org/api/org-plan.server';
 import { CreditPurchaseApiServer } from '$features/agent/api/credit-purchase.server';
-import { PLAN, TOKEN_PACK } from '@cio/utils/plans';
-import type { TCreateOrgPlan } from '@cio/utils/validation/organization';
+import { EARLY_ADOPTER_CLAIM_CHECKOUT_KIND, PLAN, TOKEN_PACK } from '@cio/utils/plans';
+import type { TCreateOrgPlan, TEarlyAdopterSubscriptionEvent } from '@cio/utils/validation/organization';
 import type {
   PolarOrderWebhookPayload,
   PolarSubscriptionWebhookPayload,
   PolarWebhookPayload,
   SubscriptionData
 } from '$lib/utils/types/polar';
-import { Webhooks } from '@polar-sh/sveltekit';
+import { verifyPolarWebhook } from '$lib/utils/functions/polar-webhook.server';
 import { env } from '$env/dynamic/private';
+import type { RequestHandler } from './$types';
 
-export const POST = Webhooks({
-  webhookSecret: env.POLAR_WEBHOOK_SECRET!,
-  onPayload
-});
+export const POST: RequestHandler = async ({ request }) => {
+  const body = await request.text();
+  const headers = {
+    'webhook-id': request.headers.get('webhook-id') ?? '',
+    'webhook-timestamp': request.headers.get('webhook-timestamp') ?? '',
+    'webhook-signature': request.headers.get('webhook-signature') ?? ''
+  };
+  const payload = verifyPolarWebhook(body, headers, env.POLAR_WEBHOOK_SECRET!);
+
+  if (!payload) {
+    return new Response(JSON.stringify({ received: false }), { status: 403 });
+  }
+
+  await onPayload(payload);
+
+  return new Response(JSON.stringify({ received: true }), { status: 200 });
+};
 
 function isSubscriptionPayload(payload: PolarWebhookPayload): payload is PolarSubscriptionWebhookPayload {
   return (
@@ -26,6 +40,58 @@ function isSubscriptionPayload(payload: PolarWebhookPayload): payload is PolarSu
 
 function isOrderPayload(payload: PolarWebhookPayload): payload is PolarOrderWebhookPayload {
   return payload.type === 'order.paid' || payload.type === 'order.created' || payload.type === 'order.refunded';
+}
+
+function getEarlyAdopterEvent(type: string, data: SubscriptionData): TEarlyAdopterSubscriptionEvent['event'] | null {
+  const isActive = data.status === 'active';
+
+  switch (type) {
+    case 'subscription.created':
+      return isActive ? 'activated' : null;
+    case 'subscription.updated':
+      return isActive ? 'activated' : 'updated';
+    case 'subscription.active':
+    case 'subscription.uncanceled':
+      return 'activated';
+    case 'subscription.past_due':
+    case 'subscription.canceled':
+      return 'updated';
+    case 'subscription.revoked':
+      return 'revoked';
+    default:
+      return null;
+  }
+}
+
+async function recordEarlyAdopterPurchase(type: string, data: SubscriptionData) {
+  const event = getEarlyAdopterEvent(type, data);
+
+  if (!event) {
+    return;
+  }
+
+  const customerEmail = data.customer?.email;
+
+  if (!customerEmail) {
+    console.error('early adopter subscription event missing customer email', data.id);
+
+    return;
+  }
+
+  const customerId = data.customerId ?? data.customer_id;
+  const checkoutId = data.checkoutId ?? data.checkout_id;
+  const result = await OrgPlanApiServer.recordEarlyAdopterEvent({
+    event,
+    subscriptionId: data.id,
+    customerId,
+    customerEmail,
+    checkoutId,
+    payload: data as unknown as Record<string, unknown>
+  });
+
+  if (!result) {
+    throw new Error('Early adopter purchase request failed');
+  }
 }
 
 function getOrgPlanData(data: SubscriptionData): TCreateOrgPlan | null {
@@ -54,6 +120,25 @@ function getOrgPlanData(data: SubscriptionData): TCreateOrgPlan | null {
     subscriptionId: data.id,
     payload: data as unknown as Record<string, unknown>
   };
+}
+
+async function recordPastDue(subscriptionId: string, data: SubscriptionData) {
+  const result = await OrgPlanApiServer.markOrgPlanPastDue({
+    subscriptionId,
+    payload: data as unknown as Record<string, unknown>
+  });
+
+  if (result.status === 'failed') {
+    throw new Error('Failed payment request failed');
+  }
+
+  if (result.status === 'not_found') {
+    console.log('Past-due subscription has no organization plan yet', subscriptionId);
+
+    return;
+  }
+
+  console.log('Subscription past due recorded', result.plan);
 }
 
 async function onPayload(payload: PolarWebhookPayload) {
@@ -119,6 +204,19 @@ async function onPayload(payload: PolarWebhookPayload) {
   }
 
   const data = payload.data as SubscriptionData;
+
+  if (data.metadata?.kind === EARLY_ADOPTER_CLAIM_CHECKOUT_KIND) {
+    if (payload.type.startsWith('subscription.')) {
+      await recordEarlyAdopterPurchase(payload.type, data);
+    }
+
+    if (payload.type === 'subscription.past_due') {
+      await recordPastDue(data.id, data);
+    }
+
+    return;
+  }
+
   const subscriptionId = data.id;
   const isSubscriptionActive = data.status === 'active';
 
@@ -201,6 +299,9 @@ async function onPayload(payload: PolarWebhookPayload) {
       break;
     }
     case 'subscription.past_due':
+      await recordPastDue(subscriptionId, data);
+
+      break;
     case 'subscription.canceled':
       try {
         const result = await OrgPlanApiServer.updateOrgPlan({

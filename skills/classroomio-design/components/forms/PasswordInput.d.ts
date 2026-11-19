@@ -1,0 +1,2 @@
+export interface PasswordInputProps { value?: string; defaultValue?: string; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; placeholder?: string; showStrength?: boolean; style?: React.CSSProperties; }
+export declare function PasswordInput(props: PasswordInputProps): JSX.Element;

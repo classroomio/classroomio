@@ -4,16 +4,20 @@ import {
   ZAddCourseToCohort,
   ZAddCohortMembers,
   ZAssignExistingStudentsToCohort,
+  ZCohortNewsfeedListQuery,
   ZCreateCohort,
   ZCreateCohortGoal,
   ZCreateCohortNewsfeed,
   ZCreateCohortNewsfeedComment,
   ZInviteStudentsToCohort,
+  ZRemindOverdueCohortGoals,
   ZUpdateCohort,
   ZUpdateCohortGoal,
   ZUpdateCohortMember,
   ZUpdateCohortNewsfeed,
-  ZUpdateCohortReaction
+  ZUpdateCohortReaction,
+  ZCohortPeopleParam,
+  ZCohortPeopleQuery
 } from '@cio/utils/validation/cohort';
 import {
   addCourseToCohortService,
@@ -31,6 +35,7 @@ import {
   listOrgCohorts,
   listCohortCourses,
   listCohortMembers,
+  listPaginatedCohortPeople,
   listCohortNewsfeed,
   listCohortNewsfeedComments,
   removeCourseFromCohortService,
@@ -57,6 +62,7 @@ import {
   getOrgGoalsOverview,
   listGoals,
   removeGoal,
+  sendOverdueCohortGoalRemindersNow,
   updateGoal
 } from '@api/services/cohort/goal';
 
@@ -66,7 +72,8 @@ import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { cohortMemberMiddleware } from '@api/middlewares/cohort-member';
 import { cohortTeamMemberMiddleware } from '@api/middlewares/cohort-team-member';
 import { cohortNewsfeedCommentAuthorOrTeamMiddleware } from '@api/middlewares/cohort-newsfeed-comment-author-or-team';
-import { handleError } from '@api/utils/errors';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 const ZCohortParam = z.object({ cohortId: z.string().uuid() });
@@ -79,11 +86,14 @@ const ZCommentParam = z.object({
   commentId: z.coerce.number().int()
 });
 const ZGoalParam = z.object({ cohortId: z.string().uuid(), goalId: z.string().uuid() });
-const ZListQuery = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(50).default(10)
-});
 const ZOrgQuery = z.object({ organizationId: z.string().uuid() });
+
+const cohortGoalReminderRateLimit = createRateLimiter({
+  windowMs: 60_000,
+  maxRequests: 20,
+  message: 'Too many reminders. Please try again shortly.',
+  keyGenerator: (c) => `cohort_goal_remind:${c.get('user')?.id ?? 'anonymous'}`
+});
 
 export const cohortRouter = new Hono()
   // ── Enrolled Cohorts (LMS) ─── must be before /:cohortId ───────────────
@@ -126,11 +136,15 @@ export const cohortRouter = new Hono()
   .post(
     '/',
     authMiddleware,
+    orgTeamMemberMiddleware,
     zValidator('json', ZCreateCohort.extend({ organizationId: z.string().uuid() })),
     async (c) => {
       try {
         const user = c.get('user')!;
         const { organizationId, ...data } = c.req.valid('json');
+        if (organizationId !== c.req.header('cio-org-id')) {
+          throw new AppError('Organization mismatch', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+        }
         const cohort = await createCohort(organizationId, user.id, data);
         return c.json({ success: true, data: cohort }, 201);
       } catch (error) {
@@ -206,6 +220,27 @@ export const cohortRouter = new Hono()
   })
 
   /**
+   * Returns one filtered, sorted page of the cohort roster.
+   */
+  .get(
+    '/:cohortId/people',
+    authMiddleware,
+    cohortMemberMiddleware,
+    zValidator('param', ZCohortPeopleParam),
+    zValidator('query', ZCohortPeopleQuery),
+    async (c) => {
+      try {
+        const { cohortId } = c.req.valid('param');
+        const result = await listPaginatedCohortPeople(cohortId, c.req.valid('query'));
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list cohort people');
+      }
+    }
+  )
+
+  /**
    * POST /cohort/:cohortId/members
    * Add members to a cohort
    */
@@ -262,7 +297,7 @@ export const cohortRouter = new Hono()
     async (c) => {
       try {
         const { cohortId, memberId } = c.req.valid('param');
-        const member = await removeCohortMemberService(cohortId, memberId);
+        const member = await removeCohortMemberService(cohortId, memberId, c.get('user')?.id ?? null);
         return c.json({ success: true, data: member }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to remove cohort member');
@@ -312,7 +347,7 @@ export const cohortRouter = new Hono()
       try {
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await assignExistingStudentsToCohort(cohortId, data);
+        const result = await assignExistingStudentsToCohort(cohortId, data, 'dashboard', c.get('user')?.id ?? null);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to assign students to cohort');
@@ -480,7 +515,7 @@ export const cohortRouter = new Hono()
     authMiddleware,
     cohortMemberMiddleware,
     zValidator('param', ZCohortParam),
-    zValidator('query', ZListQuery),
+    zValidator('query', ZCohortNewsfeedListQuery),
     async (c) => {
       try {
         const { cohortId } = c.req.valid('param');
@@ -528,9 +563,9 @@ export const cohortRouter = new Hono()
     zValidator('json', ZUpdateCohortNewsfeed),
     async (c) => {
       try {
-        const { feedId } = c.req.valid('param');
+        const { cohortId, feedId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const feed = await updateCohortNewsfeedService(feedId, data);
+        const feed = await updateCohortNewsfeedService(cohortId, feedId, data);
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update cohort newsfeed post');
@@ -550,9 +585,9 @@ export const cohortRouter = new Hono()
     zValidator('json', ZUpdateCohortReaction),
     async (c) => {
       try {
-        const { feedId } = c.req.valid('param');
+        const { cohortId, feedId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const feed = await updateCohortNewsfeedReactionService(feedId, data);
+        const feed = await updateCohortNewsfeedReactionService(cohortId, feedId, data);
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update cohort newsfeed reaction');
@@ -571,8 +606,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZFeedParam),
     async (c) => {
       try {
-        const { feedId } = c.req.valid('param');
-        const feed = await deleteCohortNewsfeedService(feedId);
+        const { cohortId, feedId } = c.req.valid('param');
+        const feed = await deleteCohortNewsfeedService(cohortId, feedId);
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to delete cohort newsfeed post');
@@ -591,8 +626,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZFeedParam),
     async (c) => {
       try {
-        const { feedId } = c.req.valid('param');
-        const comments = await listCohortNewsfeedComments(feedId);
+        const { cohortId, feedId } = c.req.valid('param');
+        const comments = await listCohortNewsfeedComments(cohortId, feedId);
         return c.json({ success: true, data: comments }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to list cohort newsfeed comments');
@@ -613,9 +648,9 @@ export const cohortRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const { feedId } = c.req.valid('param');
+        const { cohortId, feedId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const comment = await createCohortNewsfeedCommentService(feedId, user.id, data);
+        const comment = await createCohortNewsfeedCommentService(cohortId, feedId, user.id, data);
         return c.json({ success: true, data: comment }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to create cohort newsfeed comment');
@@ -634,8 +669,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZCommentParam),
     async (c) => {
       try {
-        const { commentId } = c.req.valid('param');
-        const comment = await deleteCohortNewsfeedCommentService(commentId);
+        const { cohortId, feedId, commentId } = c.req.valid('param');
+        const comment = await deleteCohortNewsfeedCommentService(cohortId, feedId, commentId);
         return c.json({ success: true, data: comment }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to delete cohort newsfeed comment');
@@ -720,8 +755,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZGoalParam),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
-        const goal = await getGoal(goalId);
+        const { cohortId, goalId } = c.req.valid('param');
+        const goal = await getGoal(cohortId, goalId);
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to get cohort goal');
@@ -740,9 +775,9 @@ export const cohortRouter = new Hono()
     zValidator('json', ZUpdateCohortGoal),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
+        const { cohortId, goalId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const goal = await updateGoal(goalId, data);
+        const goal = await updateGoal(cohortId, goalId, data);
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update cohort goal');
@@ -761,8 +796,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZGoalParam),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
-        const goal = await removeGoal(goalId);
+        const { cohortId, goalId } = c.req.valid('param');
+        const goal = await removeGoal(cohortId, goalId);
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to delete cohort goal');
@@ -780,8 +815,8 @@ export const cohortRouter = new Hono()
     zValidator('param', ZGoalParam),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
-        const goal = await archiveGoal(goalId);
+        const { cohortId, goalId } = c.req.valid('param');
+        const goal = await archiveGoal(cohortId, goalId);
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to archive cohort goal');
@@ -800,8 +835,9 @@ export const cohortRouter = new Hono()
     zValidator('param', ZGoalParam),
     async (c) => {
       try {
-        const { goalId } = c.req.valid('param');
-        const result = await evaluateGoal(goalId);
+        const { cohortId, goalId } = c.req.valid('param');
+        const goal = await getGoal(cohortId, goalId);
+        const result = await evaluateGoal(goal.id);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to evaluate cohort goal');
@@ -825,6 +861,30 @@ export const cohortRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to evaluate cohort goals');
+      }
+    }
+  )
+
+  /**
+   * POST /cohort/:cohortId/goal-assignments/remind-overdue
+   * Email every overdue student on the cohort's active goals.
+   */
+  .post(
+    '/:cohortId/goal-assignments/remind-overdue',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    cohortGoalReminderRateLimit,
+    zValidator('param', ZCohortParam),
+    zValidator('json', ZRemindOverdueCohortGoals),
+    async (c) => {
+      try {
+        const { cohortId } = c.req.valid('param');
+        const input = c.req.valid('json');
+        const result = await sendOverdueCohortGoalRemindersNow(cohortId, input);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to send reminders');
       }
     }
   );

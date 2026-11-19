@@ -5,13 +5,15 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import VideoIcon from '@lucide/svelte/icons/video';
   import { lessonApi } from '$features/course/api';
+  import { addLessonVideos } from '../media-picks';
   import { mediaApi } from '$features/media/api';
-  import type { OrganizationAsset } from '$features/media/utils';
-  import { onMount } from 'svelte';
+  import { isUnfinishedVideoUpload, type OrganizationAsset } from '$features/media/utils';
+  import { onDestroy, onMount } from 'svelte';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
 
   interface Props {
     lessonId?: string;
@@ -21,8 +23,15 @@
 
   const PAGE_SIZE = 20;
 
-  let search = $state('');
+  const search = new DebouncedSearch({
+    onApply: () => void loadLibrary(1)
+  });
+
+  onDestroy(() => {
+    search.destroy();
+  });
   let isLoading = $state(false);
+  let isInitialLoading = $state(true);
   let addingAssetId = $state<string | null>(null);
   // Local copy so the fetch (which also backs the media manager page via the
   // shared mediaApi.assets store) doesn't leak removals between surfaces.
@@ -30,6 +39,7 @@
   let page = $state(1);
   let totalPages = $state(1);
   let totalCount = $state(0);
+  let libraryRequestId = 0;
 
   // Asset ids already attached to this lesson, so the library hides them.
   const addedAssetIds = $derived(
@@ -43,18 +53,29 @@
   const visibleAssets = $derived(assets.filter((asset) => !addedAssetIds.has(asset.id)));
 
   async function loadLibrary(targetPage = 1) {
+    const requestId = ++libraryRequestId;
     isLoading = true;
-    page = targetPage;
-    await mediaApi.listAssets({
-      kind: 'video',
-      limit: PAGE_SIZE,
-      page: targetPage,
-      search: search.trim() || undefined
-    });
-    assets = mediaApi.assets.filter((asset) => asset.kind === 'video' && (asset.status ?? 'active') !== 'archived');
-    totalPages = mediaApi.pagination?.totalPages ?? 1;
-    totalCount = mediaApi.pagination?.total ?? assets.length;
-    isLoading = false;
+    try {
+      await mediaApi.listAssets(
+        {
+          kind: 'video',
+          limit: PAGE_SIZE,
+          page: targetPage,
+          search: search.applied || undefined
+        },
+        { abortPrevious: true }
+      );
+      if (requestId !== libraryRequestId) return;
+      page = targetPage;
+      assets = mediaApi.assets.filter((asset) => asset.kind === 'video' && (asset.status ?? 'active') !== 'archived');
+      totalPages = mediaApi.pagination?.totalPages ?? 1;
+      totalCount = mediaApi.pagination?.total ?? assets.length;
+    } finally {
+      if (requestId === libraryRequestId) {
+        isLoading = false;
+        isInitialLoading = false;
+      }
+    }
   }
 
   async function addFromLibrary(asset: OrganizationAsset) {
@@ -73,7 +94,7 @@
         return;
       }
 
-      lessonApi.updateLessonState('videos', [lessonVideo], { append: true });
+      addLessonVideos([lessonVideo]);
       snackbar.success('snackbar.media_manager.added_to_lesson');
     } finally {
       addingAssetId = null;
@@ -89,16 +110,28 @@
   <div class="flex items-end gap-3">
     <InputField
       label={`${$t('course.navItem.lessons.materials.tabs.video.add_video.search_library')} (${totalCount})`}
-      bind:value={search}
+      value={search.draft}
+      onInput={(e) => search.input(e.currentTarget.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') search.flush();
+      }}
       className="flex-1"
       placeholder={$t('course.navItem.lessons.materials.tabs.video.add_video.search_library')}
     />
-    <Button onclick={() => loadLibrary(1)} loading={isLoading} disabled={isLoading}>
+    <Button
+      variant="secondary"
+      onclick={() => {
+        search.takePending();
+        void loadLibrary(1);
+      }}
+      loading={isLoading}
+      disabled={isLoading}
+    >
       {$t('course.navItem.lessons.materials.tabs.video.add_video.search_library_action')}
     </Button>
   </div>
 
-  {#if isLoading}
+  {#if isInitialLoading}
     <Empty
       description={$t('course.navItem.lessons.materials.tabs.video.add_video.loading_library')}
       icon={Spinner}
@@ -109,8 +142,9 @@
       {$t('course.navItem.lessons.materials.tabs.video.add_video.no_library_videos')}
     </p>
   {:else}
-    <div class="max-h-[360px] space-y-2 overflow-x-hidden">
+    <div class="max-h-[360px] space-y-2 overflow-x-hidden transition-opacity" class:opacity-60={isLoading}>
       {#each visibleAssets as asset (asset.id)}
+        {@const isUnfinished = isUnfinishedVideoUpload(asset)}
         <div
           class="flex items-center justify-between gap-3 rounded-md border p-3"
           animate:flip={{ duration: 250 }}
@@ -128,7 +162,13 @@
             </div>
             <div class="min-w-0 flex-1">
               <p class="truncate text-sm font-medium">{asset.title || asset.storageKey || asset.id}</p>
-              <p class="ui:text-muted-foreground text-xs">{asset.provider}</p>
+              {#if isUnfinished}
+                <p class="ui:text-destructive text-xs">
+                  {$t('course.navItem.lessons.materials.tabs.video.add_video.upload_not_finished')}
+                </p>
+              {:else}
+                <p class="ui:text-muted-foreground text-xs">{asset.provider}</p>
+              {/if}
             </div>
           </div>
           <Button
@@ -136,7 +176,7 @@
             class="shrink-0"
             onclick={() => addFromLibrary(asset)}
             loading={addingAssetId === asset.id}
-            disabled={addingAssetId !== null}
+            disabled={addingAssetId !== null || isUnfinished}
           >
             {$t('course.navItem.lessons.materials.tabs.video.add_video.add_from_library')}
           </Button>

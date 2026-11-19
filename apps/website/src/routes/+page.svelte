@@ -1,6 +1,7 @@
 <script>
   import {
     Hero,
+    CustomerStorySection,
     RoiBand,
     AiBuildsSection,
     FeaturesSection,
@@ -8,11 +9,14 @@
     AutomationBand,
     MultiAcademySection,
     Testimonial,
+    ChangelogSection,
     PageSignupCTA
   } from '$lib/components';
 </script>
 
 <Hero />
+
+<CustomerStorySection />
 
 <RoiBand />
 
@@ -34,6 +38,8 @@
 <MultiAcademySection />
 
 <Testimonial />
+
+<ChangelogSection />
 
 <PageSignupCTA
   header="Stop forwarding help articles."

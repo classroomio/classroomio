@@ -27,8 +27,8 @@
 <Card.Root class="ui:gap-0 ui:overflow-hidden ui:py-0">
   <div class="flex items-start gap-3 p-4">
     <div class="h-12 w-16 shrink-0 overflow-hidden rounded-sm">
-      {#if course.logo}
-        <img src={course.logo} alt="" class="h-full w-full object-cover" />
+      {#if course.bannerImage}
+        <img src={course.bannerImage} alt="" class="h-full w-full object-cover" />
       {:else}
         <img src="/images/classroomio-course-img-template.jpg" alt="" class="h-full w-full object-cover" />
       {/if}
@@ -41,7 +41,7 @@
         {#if isComplete(course)}
           <Badge variant="success">
             <CircleCheckIcon class="custom" />
-            {$t('analytics.completed')}
+            {$t('student_progress.completed')}
           </Badge>
         {:else if course.lessons_completed === 0}
           <Badge variant="outline">{$t('audience.user_analytics.not_started')}</Badge>
@@ -59,17 +59,17 @@
     <PercentRingProgress value={course.progress_percentage} />
     <div class="grid flex-1 grid-cols-3 gap-2 text-xs">
       <div class="flex flex-col">
-        <span class="ui:text-muted-foreground">{$t('analytics.lessons')}</span>
+        <span class="ui:text-muted-foreground">{$t('student_progress.lessons')}</span>
         <span class="ui:tabular-nums font-medium">{course.lessons_completed}/{course.lessons_count}</span>
       </div>
       <div class="flex flex-col">
-        <span class="ui:text-muted-foreground">{$t('analytics.exercises')}</span>
+        <span class="ui:text-muted-foreground">{$t('student_progress.exercises')}</span>
         <span class="ui:tabular-nums font-medium">
           {course.exercises_completed}/{course.exercises_count}
         </span>
       </div>
       <div class="flex flex-col">
-        <span class="ui:text-muted-foreground">{$t('analytics.average_grade')}</span>
+        <span class="ui:text-muted-foreground">{$t('student_progress.average_grade')}</span>
         <span class="ui:tabular-nums font-medium">{gradeLabel(course.average_grade)}</span>
       </div>
     </div>

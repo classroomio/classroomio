@@ -37,14 +37,20 @@ import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
+import {
+  courseMemberGraderOrAutomationKeyMiddleware,
+  courseMemberOrGraderMiddleware
+} from '@api/middlewares/course-grader';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-member-or-automation-key';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { createSubmissionService, listExerciseSubmissionsOverview } from '@api/services/submission';
-import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
+import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
 import { ContentType } from '@cio/utils/constants';
 import { zValidator } from '@hono/zod-validator';
 
+// Published @classroomio/mcp clients up to 0.0.10 call these routes with a cio_mcp_ key. Key support stays for one
+// release so they can move to /public-api/v1/courses/:courseId/exercises, then goes with the middlewares it uses.
 export const exerciseRouter = new Hono()
   // Exercise CRUD routes
   .get(
@@ -63,6 +69,10 @@ export const exerciseRouter = new Hono()
           await assertMcpAutomationUsageAllowed(automationKey, 'list_course_exercises');
         }
 
+        if (user?.id) {
+          await assertEnrolledStudentCourseAccess({ courseId, profileId: user.id });
+        }
+
         const exercises = await listExercises(courseId, { lessonId, sectionId }, user?.id);
 
         if (automationKey?.type === 'mcp') {
@@ -75,7 +85,7 @@ export const exerciseRouter = new Hono()
       }
     }
   )
-  .get('/:exerciseId/submissions', authMiddleware, courseMemberMiddleware, async (c) => {
+  .get('/:exerciseId/submissions', authMiddleware, courseMemberOrGraderMiddleware, async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
       const exerciseId = c.req.param('exerciseId')!;
@@ -113,7 +123,7 @@ export const exerciseRouter = new Hono()
   .get(
     '/:exerciseId',
     authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:read']),
+    courseMemberGraderOrAutomationKeyMiddleware(['course:exercise:read']),
     zValidator('param', ZExerciseGetParam),
     async (c) => {
       try {
@@ -359,7 +369,7 @@ export const exerciseRouter = new Hono()
   .get(
     '/:exerciseId/submission/:submissionId/question/:questionId/video-recording/playback',
     authMiddleware,
-    courseMemberMiddleware,
+    courseMemberOrGraderMiddleware,
     zValidator('param', ZExerciseVideoRecordingPlaybackParam),
     async (c) => {
       try {

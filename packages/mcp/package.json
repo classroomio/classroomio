@@ -1,11 +1,15 @@
 {
   "name": "@classroomio/mcp",
-  "version": "0.0.10",
+  "version": "0.5.0",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
+    }
   },
   "files": [
     "dist"
@@ -14,7 +18,7 @@
     "classroomio-mcp": "./dist/index.js"
   },
   "scripts": {
-    "build": "rimraf dist tsconfig.tsbuildinfo && node ./scripts/build.mjs",
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc --emitDeclarationOnly && node ./scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
@@ -36,15 +40,15 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@cio/question-types": "workspace:*",
-    "@cio/utils": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.27.1"
   },
   "peerDependencies": {
     "zod": "^4.1.8"
   },
   "devDependencies": {
+    "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*",
+    "@cio/utils": "workspace:*",
     "@types/node": "^24.10.1",
     "esbuild": "^0.25.11",
     "tsx": "^4.20.3",

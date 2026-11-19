@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isLiveSessionJoinable, liveSessionClock } from '$features/course/utils/live-session-phase';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
   import { dndzone } from 'svelte-dnd-action';
@@ -9,7 +10,6 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import UnlockIcon from '@lucide/svelte/icons/lock-open';
   import VideoIcon from '@lucide/svelte/icons/video';
-  import { HoverableItem, AttachmentIcon } from '@cio/ui/custom/moving-icons';
   import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
   import { lessonApi, exerciseApi, courseApi, contentApi } from '$features/course/api';
@@ -31,9 +31,10 @@
 
   interface Props {
     reorder?: boolean;
+    standaloneItem?: CourseContentItem;
   }
 
-  let { reorder = false }: Props = $props();
+  let { reorder = false, standaloneItem }: Props = $props();
 
   let prevTitle: string | undefined = $state();
   let errors: Record<string, string> = $state({});
@@ -62,7 +63,7 @@
   let contentItems = $state<ContentDndItem[]>([]);
 
   function buildContentItems(): ContentDndItem[] {
-    return (contentData.items || []).map((item) => ({
+    return (standaloneItem ? [standaloneItem] : contentData.items || []).map((item) => ({
       ...item,
       id: `${item.type}-${item.id}`,
       contentId: item.id
@@ -70,7 +71,33 @@
   }
 
   function syncCourseContentItems(items: ContentDndItem[]) {
-    if (!courseApi.course?.content || courseApi.course.content.grouped) return;
+    if (!courseApi.course?.content) return;
+
+    if (courseApi.course.content.grouped) {
+      const updatedStandaloneItems = items.map(({ contentId, id: _dndId, ...rest }) => ({
+        ...rest,
+        id: contentId
+      }));
+
+      courseApi.course.content = {
+        ...courseApi.course.content,
+        sections: courseApi.course.content.sections.map((section) => {
+          if (section.id !== 'ungrouped') return section;
+
+          return {
+            ...section,
+            items: section.items.map((existing) => {
+              const updated = updatedStandaloneItems.find(
+                (item) => item.id === existing.id && item.type === existing.type
+              );
+
+              return updated ?? existing;
+            })
+          };
+        })
+      };
+      return;
+    }
 
     const updatedItems = items.map(({ contentId, id: _dndId, ...rest }, index) => ({
       ...rest,
@@ -89,7 +116,7 @@
   }
 
   async function applyPendingReorder() {
-    if (!contentItems.length) return;
+    if (!contentItems.length || standaloneItem) return;
 
     const contentUpdates: Array<{
       id: string;
@@ -266,11 +293,13 @@
 />
 
 <section
-  class="mx-auto w-full p-3 lg:w-11/12 {reorder ? 'cursor-grab active:cursor-grabbing' : ''}"
+  class="mx-auto w-full px-3 lg:w-11/12 {standaloneItem ? '' : 'py-3'} {reorder
+    ? 'cursor-grab active:cursor-grabbing'
+    : ''}"
   use:dndzone={{
     items: contentItems,
     flipDurationMs,
-    dragDisabled: !reorder,
+    dragDisabled: !reorder || Boolean(standaloneItem),
     dropTargetStyle: {
       border: '2px #1d4ed8 solid',
       'border-style': 'dashed'
@@ -286,7 +315,11 @@
       ? $t('course.navItem.lessons.add_lesson.lock')
       : $t('course.navItem.lessons.add_lesson.unlock')}
     {@const canRenderJoinButton =
-      item.type === ContentType.Lesson && isLiveCourse && Boolean(item.callUrl) && !itemLocked && !isEditingItem}
+      item.type === ContentType.Lesson &&
+      isLiveCourse &&
+      isLiveSessionJoinable(item, $liveSessionClock) &&
+      !itemLocked &&
+      !isEditingItem}
     {@const canRenderContinueButton = isStudentView && !itemLocked}
     {@const isLockPending = Boolean(lockPendingItemKeys[getItemLockKey(item)])}
     {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
@@ -295,15 +328,18 @@
         ? 'border-primary-300 bg-primary-50/40 cursor-grab shadow-sm active:cursor-grabbing'
         : ''}"
     >
-      <div class="mt-0.5 mr-5">
-        <Chip value={getContentOrder(item.contentId, item.type)} />
-      </div>
+      {#if !standaloneItem}
+        <div class="mt-0.5 mr-5">
+          <Chip value={getContentOrder(item.contentId, item.type)} />
+        </div>
+      {/if}
 
       {#if item.type === ContentType.Lesson}
         <ContentRow
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}
@@ -312,9 +348,7 @@
           {#snippet meta()}
             {@const hasVideos = (item.videosCount ?? 0) > 0}
             {@const hasDocuments = (item.documentsCount ?? 0) > 0}
-            {@const hasNote = item.hasNoteContent === true}
             {@const hasSlide = item.hasSlideContent === true}
-            {@const hasAnyMaterials = hasVideos || hasDocuments || hasNote || hasSlide}
             <div class="mt-2 flex flex-wrap items-center gap-1.5">
               {#if hasVideos}
                 <span class={metaChipClass}>
@@ -330,29 +364,11 @@
                 </span>
               {/if}
 
-              {#if hasNote}
-                <span class={metaChipClass}>
-                  <FileTextIcon size={12} />
-                  {$t('course.navItem.lessons.materials.tabs.note.title')}
-                </span>
-              {/if}
-
               {#if hasSlide}
                 <span class={metaChipClass}>
                   <FileTextIcon size={12} />
                   {$t('course.navItem.lessons.materials.tabs.slide.title')}
                 </span>
-              {/if}
-
-              {#if !hasAnyMaterials}
-                <HoverableItem>
-                  {#snippet children(isHovered)}
-                    <span class={metaChipClass}>
-                      <AttachmentIcon size={11} {isHovered} />
-                      {$t('course.navItem.lessons.materials.no_content')}
-                    </span>
-                  {/snippet}
-                </HoverableItem>
               {/if}
 
               {#if isLiveCourse && item.lessonAt}
@@ -375,6 +391,7 @@
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}

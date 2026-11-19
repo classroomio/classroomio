@@ -1,0 +1,2 @@
+export interface FAQItemProps { index: number; question: string; answer?: React.ReactNode; open?: boolean; onToggle?: () => void; /** interlocking tab into the next item (omit on last) */ tab?: boolean; /** stacking order — give earlier items higher z */ z?: number; pageColor?: string; }
+export declare function FAQItem(props: FAQItemProps): JSX.Element;

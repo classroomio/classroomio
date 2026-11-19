@@ -26,7 +26,7 @@
     placeholder={label('link.edit.instructions_placeholder')}
     value={String((question.settings?.instructions as string | undefined) ?? '')}
     {disabled}
-    onchange={(event) => patchSettings({ instructions: event.currentTarget.value })}
+    oninput={(event) => patchSettings({ instructions: event.currentTarget.value })}
   />
 
   <p class="ui:text-muted-foreground ui:text-xs">{label('link.edit.helper')}</p>

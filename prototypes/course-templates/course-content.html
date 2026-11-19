@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Onboarding Academy — Brightpath - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar="course" data-active="Content"></div>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Content</span>
+          <span class="badge badge-success-soft">Published</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-assistant"><span data-icon="sparkles"></span>Assistant</button>
+          <div class="bgroup">
+            <button class="btn btn-outline btn-sm"><span data-icon="ext"></span>View Course Site</button>
+            <button class="btn btn-outline btn-sm" aria-label="More"><span data-icon="more"></span></button>
+          </div>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <div class="content-wrap">
+          <h1 class="page-title" style="margin-bottom: 14px">Onboarding Academy — Brightpath</h1>
+
+          <div class="alert alert-information" role="alert" data-state-view="updates" style="margin-bottom: 20px">
+            <span data-icon="info"></span>
+            <div class="alert-title">Template has 6 updates</div>
+            <div class="alert-description">Customer Onboarding Academy changed since you last pulled on Sep 12. <a href="course-settings.html?state=updates#template">Review in settings</a></div>
+          </div>
+
+          <div class="csec">
+            <div class="csec-h">1. Welcome aboard <span class="n">3 lessons · 1 exercise</span></div>
+            <div class="crow"><span data-icon="lesson"></span>Why you're here, in two minutes</div>
+            <div class="crow"><span data-icon="lesson"></span>How this academy works</div>
+            <div class="crow"><span data-icon="lesson"></span>Meet the Brightpath success team</div>
+            <div class="crow"><span data-icon="exercise"></span>Quick check: getting started <span class="meta">4 questions · 38 submissions</span></div>
+          </div>
+          <div class="csec">
+            <div class="csec-h">2. Set up your account <span class="n">4 lessons · 1 exercise</span></div>
+            <div class="crow"><span data-icon="lesson"></span>Create your workspace</div>
+            <div class="crow"><span data-icon="lesson"></span>Connect your data sources</div>
+            <div class="crow"><span data-icon="lesson"></span>Roles and permissions</div>
+            <div class="crow"><span data-icon="lesson"></span>Notifications that matter</div>
+            <div class="crow"><span data-icon="exercise"></span>Setup checklist <span class="meta">6 questions · 12 submissions</span></div>
+          </div>
+          <div class="csec">
+            <div class="csec-h">3. Your first workflow <span class="n">4 lessons · 2 exercises</span></div>
+            <div class="crow"><span data-icon="lesson"></span>The core loop</div>
+            <div class="crow"><span data-icon="lesson"></span>Templates and shortcuts</div>
+            <div class="crow"><span data-icon="exercise"></span>Scenario quiz <span class="meta">10 questions</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar"><span class="lbl">State</span><button data-state="updates">Has updates</button><button data-state="uptodate">Up to date</button><a href="index.html">← Map</a></div>
+    <script>bindStatePicker('updates');</script>
+  </body>
+</html>

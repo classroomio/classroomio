@@ -20,6 +20,7 @@ import {
 } from '@cio/ui/custom/org-landing-page/footer-social-platform';
 import { isAllowedHref } from '@cio/utils/validation/shared';
 import { t } from '$lib/utils/functions/translations';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 export const landingPageThemes = [
   'minimal',
@@ -34,6 +35,16 @@ export const landingPageThemes = [
   'vibrant',
   'quartz'
 ] as const satisfies OrgLandingPageTheme[];
+
+export function isLandingPageTheme(value: string | null): value is (typeof landingPageThemes)[number] {
+  if (value === null) return false;
+
+  return (landingPageThemes as readonly string[]).includes(value);
+}
+
+export function resolvePreviewTheme(queryTheme: string | null, savedTheme: OrgLandingPageTheme): OrgLandingPageTheme {
+  return isLandingPageTheme(queryTheme) ? queryTheme : savedTheme;
+}
 
 export const defaultLandingPageHero: OrgLandingPageHero = {
   heading: 'Become a Certified AI Engineer',
@@ -555,7 +566,22 @@ function normalizeHeroEyebrow(value: unknown): string | undefined {
   return value.trim();
 }
 
+function normalizeFeaturedCourse(value: unknown): OrgLandingPageJson['featuredCourse'] {
+  if (!isRecord(value)) return undefined;
+
+  return { enabled: value.enabled !== false };
+}
+
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {
+  const settings = normalizeLandingPageSections(value);
+  if (!isRecord(value)) return settings;
+
+  const featuredCourse = normalizeFeaturedCourse(value.featuredCourse);
+
+  return featuredCourse ? { ...settings, featuredCourse } : settings;
+}
+
+function normalizeLandingPageSections(value: unknown): OrgLandingPageJson {
   const defaultSettings = createDefaultLandingPageSettings();
 
   if (!isRecord(value)) {
@@ -737,21 +763,29 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     const exerciseCount = readRecordNumber(courseRecord, 'exerciseCount');
     const totalStudents = readRecordNumber(courseRecord, 'totalStudents');
     const image = readRecordString(courseRecord, 'image');
-    const logo = readRecordString(courseRecord, 'logo');
+    const bannerImage = resolveCourseBannerImage({
+      bannerImage: readRecordString(courseRecord, 'bannerImage') ?? null,
+      logo: readRecordString(courseRecord, 'logo') ?? null
+    });
     const price = readRecordString(courseRecord, 'price');
     const duration = readRecordString(courseRecord, 'duration');
     const level = readRecordString(courseRecord, 'level');
     const description = readRecordString(courseRecord, 'description') ?? '';
     const type = readRecordString(courseRecord, 'type');
+    const typeLabel =
+      type && ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC'].includes(type)
+        ? t.get(`marketing.popularTypes.types.${type}`)
+        : undefined;
     const isPublished = typeof courseRecord.isPublished === 'boolean' ? courseRecord.isPublished : true;
 
     return {
       id: course.id,
       slug: readRecordString(courseRecord, 'slug'),
-      logo: logo ?? null,
+      bannerImage,
       title: readRecordString(courseRecord, 'title') ?? '',
       description,
       type,
+      typeLabel,
       isPublished,
       cost: courseIsPaid ? courseCost : 0,
       currency: courseCurrency,
@@ -808,8 +842,38 @@ export function mapPublicLearningPathsToLandingPagePaths(
 
 export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
   return {
+    catalogEyebrow: t.get('public_courses.heading'),
+    catalogHeading: t.get('public_courses.heading'),
+    catalogDescription: t.get('public_courses.subtitle'),
+    browseCoursesLabel: t.get('dashboard.view_more'),
+    enrollLabel: t.get('courses.course_card.learn_more'),
+    freeLabel: t.get('course.navItem.landing_page.pricing_section.free'),
+    featuredLabel: t.get('public_courses.heading'),
+    filterAllLabel: t.get('audience.import.all_courses'),
+    startCourseLabel: t.get('course.navItem.landing_page.start_course'),
+    lessonsLabel: (count) => t.get('courses.course_card.lessons_count', { count }),
+    exercisesLabel: (count) => t.get('courses.course_card.exercises_count', { count }),
+    enrolledLabel: (count) => t.get('audience.learner_count', { count }),
+    resourcesEyebrow: t.get('settings.landing_page.editor.sections.links'),
+    embedEyebrow: t.get('settings.landing_page.editor.sections.embed'),
+    calloutEyebrow: t.get('settings.landing_page.editor.sections.callout'),
+    learnMoreLabel: t.get('courses.course_card.learn_more'),
     catalogEmptyTitle: t.get('public_courses.catalog_empty.title'),
-    catalogEmptyDescription: t.get('public_courses.catalog_empty.description')
+    catalogEmptyDescription: t.get('public_courses.catalog_empty.description'),
+    learningPathsHeading: t.get('common.restricted_page.learning_paths_heading'),
+    browseLearningPathsLabel: t.get('dashboard.view_more'),
+    learningPathLabel: t.get('common.restricted_page.learning_path_label'),
+    learningPathCourseCountLabel: (count) => t.get('marketing.popularTypes.course_count', { count }),
+    learningPathsEmptyTitle: t.get('public_courses.catalog_empty.title'),
+    learningPathsEmptyDescription: t.get('public_courses.catalog_empty.description'),
+    learningPathHoursLabel: (hours) => `${hours}h`,
+    learningPathCertificateLabel: t.get('course.navItem.landing_page.certificate'),
+    courseOutlineHeading: t.get('course.navItem.landing_page.course_content'),
+    courseOutlineDescription: t.get('public_courses.subtitle'),
+    courseCountLabel: (count) => t.get('marketing.popularTypes.course_count', { count }),
+    learnersLabel: (count) => t.get('audience.learner_count', { count }),
+    tracksLabel: (count) => t.get('common.restricted_page.tracks_label', { count }),
+    terminalEnrollLabel: t.get('course.navItem.landing_page.pricing_section.enroll')
   };
 }
 
@@ -820,6 +884,7 @@ export interface BuildOrgLandingPagePropsInput {
   hasMoreLearningPaths?: boolean;
   coursesLoaded?: boolean;
   authAction?: OrgLandingPageProps['authAction'];
+  learnerAccount?: OrgLandingPageProps['learnerAccount'];
 }
 
 export function buildOrgLandingPageProps(
@@ -833,7 +898,8 @@ export function buildOrgLandingPageProps(
     hasMoreCourses = false,
     hasMoreLearningPaths = false,
     coursesLoaded = true,
-    authAction
+    authAction,
+    learnerAccount
   } = input;
   const normalizedLandingPage = normalizeLandingPageSettings(landingpage);
   const configuredPrimaryAction = normalizedLandingPage.hero.primaryAction;
@@ -846,6 +912,7 @@ export function buildOrgLandingPageProps(
     orgName: org.name,
     logoUrl: org.avatarUrl || undefined,
     authAction,
+    learnerAccount,
     ...normalizedLandingPage,
     hero: {
       ...normalizedLandingPage.hero,

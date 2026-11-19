@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { buildProxiedApiResponse, proxyRequestToApi, shouldForwardToApi } from './proxy-api-request';
 
 describe('shouldForwardToApi', () => {
@@ -8,9 +10,22 @@ describe('shouldForwardToApi', () => {
     expect(shouldForwardToApi('/api/auth/get-session')).toBe(true);
   });
 
+  it('forwards OAuth discovery documents', () => {
+    expect(shouldForwardToApi('/.well-known/oauth-authorization-server')).toBe(true);
+    expect(shouldForwardToApi('/.well-known/oauth-protected-resource')).toBe(true);
+    expect(shouldForwardToApi('/.well-known/openid-configuration/api/auth')).toBe(true);
+  });
+
+  it('forwards the remote MCP endpoint', () => {
+    expect(shouldForwardToApi('/mcp')).toBe(true);
+    expect(shouldForwardToApi('/mcp/')).toBe(true);
+    expect(shouldForwardToApi('/mcpx')).toBe(false);
+  });
+
   it('does not forward unrelated paths', () => {
     expect(shouldForwardToApi('/login')).toBe(false);
     expect(shouldForwardToApi('/api/csp-report')).toBe(false);
+    expect(shouldForwardToApi('/.well-known/security.txt')).toBe(false);
   });
 });
 
@@ -96,7 +111,7 @@ describe('proxyRequestToApi', () => {
     }
 
     global.fetch = originalFetch;
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('returns 502 when PRIVATE_SERVER_URL is missing', async () => {
@@ -111,7 +126,7 @@ describe('proxyRequestToApi', () => {
   it('requests identity encoding and returns a stripped response', async () => {
     process.env.PRIVATE_SERVER_URL = 'http://api.internal:3081';
 
-    const fetchMock = jest.fn().mockResolvedValue(
+    const fetchMock = vi.fn().mockResolvedValue(
       new Response('{"session":null}', {
         status: 200,
         headers: {

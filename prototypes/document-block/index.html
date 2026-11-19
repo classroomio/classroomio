@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Document Block</title>
+    <script>
+      (function () {
+        var saved = null;
+        try { saved = localStorage.getItem('documentBlockTheme'); } catch (e) {}
+        var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+<style>
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --primary: oklch(0.488 0.243 264.376);
+    --primary-foreground: oklch(0.97 0.014 254.604);
+    --secondary: oklch(0.967 0.001 286.375);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --canvas: oklch(0.965 0 0);
+    --page: #fff;
+    --page-ink: oklch(0.85 0 0);
+    --pdf: oklch(0.577 0.215 27.325);
+    --pdf-soft: oklch(0.577 0.215 27.325 / 0.12);
+    --doc: oklch(0.546 0.215 262.881);
+    --doc-soft: oklch(0.546 0.215 262.881 / 0.12);
+    --xls: oklch(0.596 0.145 163.225);
+    --xls-soft: oklch(0.596 0.145 163.225 / 0.14);
+    --radius: 0.625rem;
+    --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --primary: oklch(0.424 0.199 265.638);
+      --secondary: oklch(0.274 0.006 286.033);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --canvas: oklch(0.18 0 0);
+      --page: oklch(0.94 0 0);
+      --page-ink: oklch(0.78 0 0);
+      --pdf: oklch(0.704 0.191 22.216);
+      --pdf-soft: oklch(0.704 0.191 22.216 / 0.16);
+      --doc: oklch(0.707 0.165 254.624);
+      --doc-soft: oklch(0.707 0.165 254.624 / 0.16);
+      --xls: oklch(0.696 0.17 162.48);
+      --xls-soft: oklch(0.696 0.17 162.48 / 0.16);
+    }
+  }
+  :root[data-theme='dark'] {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --primary: oklch(0.424 0.199 265.638);
+    --secondary: oklch(0.274 0.006 286.033);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --canvas: oklch(0.18 0 0);
+    --page: oklch(0.94 0 0);
+    --page-ink: oklch(0.78 0 0);
+    --pdf: oklch(0.704 0.191 22.216);
+    --pdf-soft: oklch(0.704 0.191 22.216 / 0.16);
+    --doc: oklch(0.707 0.165 254.624);
+    --doc-soft: oklch(0.707 0.165 254.624 / 0.16);
+    --xls: oklch(0.696 0.17 162.48);
+    --xls-soft: oklch(0.696 0.17 162.48 / 0.16);
+  }
+
+  * { box-sizing: border-box; border-color: var(--border); }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  svg { flex-shrink: 0; }
+  [hidden] { display: none !important; }
+
+  /* prototype chrome (wayfinding only) */
+  .chrome {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    background: color-mix(in oklab, var(--foreground) 5%, var(--background));
+    border-bottom: 1px solid var(--border);
+  }
+  .chrome strong { font-size: 13px; margin-right: 6px; }
+  .seg { display: inline-flex; padding: 3px; border-radius: 8px; background: var(--muted); gap: 2px; }
+  .seg button { border: 0; background: transparent; padding: 4px 10px; border-radius: 6px; font-size: 12.5px; color: var(--muted-foreground); }
+  .seg button.on { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-2xs); }
+  .chrome .spacer { flex: 1; }
+  .brief {
+    max-width: 776px; margin: 16px auto 0; padding: 12px 14px;
+    border: 1px dashed var(--border); border-radius: var(--radius);
+    color: var(--muted-foreground); font-size: 13px;
+  }
+  .brief b { color: var(--foreground); }
+  .brief ul { margin: 6px 0 0; padding-left: 18px; }
+
+  /* lesson column */
+  .lesson { padding: 24px 16px 80px; }
+  .lesson.edit { background: var(--canvas); }
+  .column { max-width: 776px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  .lesson.view .column { gap: 28px; }
+  .note p { margin: 0; font-size: 15px; }
+  .slide-mock {
+    aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(110deg, #0f1b6b 0 62%, #1530a8 62%);
+    color: #fff; padding: 7% 6%; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .slide-mock h2 { margin: 0; font-size: clamp(22px, 4.6vw, 40px); line-height: 1.05; max-width: 55%; }
+  .slide-mock p { margin: 0; opacity: .85; font-size: clamp(12px, 2vw, 16px); }
+
+  /* block shell (matches packages/ui block-shell) */
+  .shell { background: var(--card); border-radius: 12px; padding: 10px 12px 12px; }
+  .shell-head { display: flex; align-items: center; gap: 8px; padding: 0 4px 8px; }
+  .shell-head .grip { color: var(--muted-foreground); opacity: .5; display: grid; place-items: center; width: 24px; height: 24px; cursor: grab; }
+  .shell:hover .shell-head .grip { opacity: 1; }
+  .shell-label { font-size: 11.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); }
+  .shell-menu { margin-left: auto; border: 0; background: transparent; width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center; color: var(--muted-foreground); }
+  .shell-menu:hover { background: var(--muted); color: var(--foreground); }
+  .add-row { display: flex; justify-content: center; margin: -6px 0; }
+  .add-row button { width: 30px; height: 30px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); color: var(--muted-foreground); display: grid; place-items: center; box-shadow: var(--shadow-2xs); }
+
+  /* shared bits */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px;
+    border-radius: 8px; border: 1px solid var(--input); background: var(--background); font-size: 13px; font-weight: 500;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--muted); }
+  .btn.icon { width: 32px; padding: 0; justify-content: center; }
+  .btn.primary { background: var(--primary); border-color: transparent; color: var(--primary-foreground); }
+  .btn.primary:hover { background: color-mix(in oklab, var(--primary) 90%, transparent); }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px;
+    border-radius: 8px; border: 0; background: color-mix(in oklab, var(--background) 92%, transparent);
+    box-shadow: var(--shadow-sm); font-size: 13px; font-weight: 500; color: var(--foreground);
+  }
+  .type-tile {
+    width: 44px; height: 52px; border-radius: 8px; display: grid; place-items: center; position: relative;
+    font-size: 10px; font-weight: 700; letter-spacing: .03em;
+  }
+  .type-tile svg { margin-top: -8px; }
+  .type-tile span { position: absolute; bottom: 5px; }
+  .t-pdf { background: var(--pdf-soft); color: var(--pdf); }
+  .t-doc { background: var(--doc-soft); color: var(--doc); }
+  .t-xls { background: var(--xls-soft); color: var(--xls); }
+  .name { font-weight: 600; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meta { color: var(--muted-foreground); font-size: 13px; }
+
+  /* Idea A: file card */
+  .file-card {
+    position: relative; display: flex; align-items: center; gap: 14px;
+    padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--card);
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  .lesson.view .file-card { cursor: pointer; }
+  .lesson.view .file-card:hover { border-color: color-mix(in oklab, var(--foreground) 22%, var(--border)); box-shadow: var(--shadow-sm); }
+  .file-card .text { min-width: 0; flex: 1; }
+  .file-card .actions { display: flex; gap: 6px; }
+  .file-card.drop { border-style: dashed; border-color: var(--primary); background: color-mix(in oklab, var(--primary) 6%, var(--card)); }
+  .file-card .drop-hint {
+    position: absolute; inset: 0; border-radius: 12px; display: none; align-items: center; justify-content: center; gap: 8px;
+    font-weight: 500; color: var(--primary); background: color-mix(in oklab, var(--card) 85%, transparent);
+  }
+  .file-card.drop .drop-hint { display: flex; }
+  .progress { height: 4px; border-radius: 999px; background: var(--muted); overflow: hidden; margin-top: 8px; }
+  .progress i { display: block; height: 100%; width: 64%; background: var(--primary); border-radius: inherit; }
+
+  /* Idea B: preview card */
+  .preview-card { position: relative; }
+  .stage {
+    position: relative; height: 260px; border-radius: 12px; overflow: hidden;
+    background: var(--muted); display: flex; align-items: flex-end; justify-content: center;
+  }
+  .page {
+    width: 176px; height: 228px; background: var(--page); border-radius: 4px 4px 0 0;
+    box-shadow: var(--shadow-md); padding: 20px 18px; display: flex; flex-direction: column; gap: 7px;
+    transition: transform .2s;
+  }
+  .lesson.view .preview-card .stage { cursor: zoom-in; }
+  .lesson.view .preview-card .stage:hover .page { transform: translateY(-4px); }
+  .page .h { height: 10px; width: 70%; background: var(--pdf); opacity: .75; border-radius: 2px; margin-bottom: 6px; }
+  .page .l { height: 5px; background: var(--page-ink); border-radius: 2px; }
+  .page .l.s { width: 60%; }
+  .page .img { height: 46px; background: color-mix(in oklab, var(--page-ink) 55%, var(--page)); border-radius: 3px; margin: 4px 0; }
+  .stage .chip {
+    position: absolute; left: 12px; bottom: 12px; padding: 2px 8px; border-radius: 999px;
+    background: color-mix(in oklab, var(--background) 90%, transparent); font-size: 12px; font-weight: 500; box-shadow: var(--shadow-2xs);
+  }
+  .stage .change { position: absolute; top: 12px; right: 12px; }
+  .stage.fallback { height: 160px; align-items: center; }
+  .stage.fallback .type-tile { width: 72px; height: 86px; border-radius: 12px; font-size: 13px; }
+  .stage.fallback .type-tile svg { width: 30px; height: 30px; margin-top: -14px; }
+  .stage.fallback .type-tile span { bottom: 9px; }
+  .title-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 4px 0; }
+  .title-row .text { min-width: 0; flex: 1; }
+  .title-row .actions { display: flex; gap: 6px; }
+  .viewer { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--muted); }
+  .viewer-bar {
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--card);
+    border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .viewer-bar .name { font-size: 13px; flex: 1; min-width: 0; }
+  .viewer-pages { height: 460px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .viewer-pages .page { width: min(100%, 420px); height: auto; aspect-ratio: 8.5 / 11; border-radius: 4px; padding: 36px 34px; gap: 10px; }
+  .viewer-pages .page .l { height: 7px; }
+  .viewer-pages .page .h { height: 14px; }
+  .viewer-pages .page .img { height: 110px; }
+
+  @media (max-width: 560px) {
+    .file-card .actions .label { display: none; }
+    .file-card .actions .btn:not(.icon) { width: 32px; padding: 0; justify-content: center; }
+    .title-row { flex-direction: column; }
+    .stage { height: 220px; }
+    .page { width: 150px; height: 196px; }
+  }
+</style>
+  </head>
+  <body>
+    <div class="chrome">
+      <strong>Document block</strong>
+      <div class="seg" id="idea-switch">
+        <button data-idea="a" class="on">Idea A · File card</button>
+        <button data-idea="b">Idea B · Preview card</button>
+      </div>
+      <div class="seg" id="mode-switch">
+        <button data-mode="view" class="on">View</button>
+        <button data-mode="edit">Edit</button>
+      </div>
+      <span class="spacer"></span>
+      <div class="seg" id="theme-switch">
+        <button data-theme-value="light">Light</button>
+        <button data-theme-value="dark">Dark</button>
+      </div>
+    </div>
+
+    <div class="brief" id="brief"></div>
+
+    <main class="lesson view" id="lesson">
+      <div class="column" id="column"></div>
+    </main>
+
+<script>
+  var ICONS = {
+    file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    download: '<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>',
+    eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+    external: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3"/>',
+    pencil: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+    upload: '<path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>',
+    grip: '<circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/>',
+    more: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
+  };
+
+  function icon(name, size) {
+    var px = size || 16;
+    return '<svg width="' + px + '" height="' + px + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
+  }
+
+  var DOCUMENTS = [
+    { id: 'd1', name: 'BC Ecommerce Fulfillment Technical Guide.pdf', kind: 'pdf', ext: 'PDF', size: '458.79 KB', pages: 12 },
+    { id: 'd2', name: 'ClassroomIO-Proposal-Pacific-Global-Solutions.pdf', kind: 'pdf', ext: 'PDF', size: '50.7 KB', pages: 4 },
+    { id: 'd3', name: 'Customer objection worksheet.docx', kind: 'doc', ext: 'DOCX', size: '31.2 KB', pages: null }
+  ];
+
+  var BRIEFS = {
+    a: '<b>Idea A — File card.</b> One block is one file, so the block drops the "Attachments · 1 file" list header and renders a single card.' +
+      '<ul><li><b>View:</b> type tile, file name, "PDF · 458.79 KB". The whole card opens the file; Download is the secondary action.</li>' +
+      '<li><b>Edit:</b> same card inside the block shell. "Change document" sits on the card. Drag a file onto the card to replace it (try dragging any file here). The third card shows the uploading state.</li></ul>',
+    b: '<b>Idea B — Preview card.</b> Treats a document like the video and slide blocks: a visual stage on top, a title row below.' +
+      '<ul><li><b>View:</b> first-page thumbnail with a page count. Preview expands an inline reader in place; Download stays in the title row. Files we can\'t render (DOCX) fall back to a large type tile.</li>' +
+      '<li><b>Edit:</b> the "Change document" pill sits top-right on the stage, in the same spot as "Change Video".</li></ul>'
+  };
+
+  var state = { idea: 'a', mode: 'view', expanded: {} };
+
+  function typeTile(doc) {
+    return '<div class="type-tile t-' + doc.kind + '">' + icon('file', 18) + '<span>' + doc.ext + '</span></div>';
+  }
+
+  function metaLine(doc, withPages) {
+    var parts = [doc.ext, doc.size];
+    if (withPages && doc.pages) parts.push(doc.pages + ' pages');
+    return parts.join(' · ');
+  }
+
+  function fileCard(doc, uploading) {
+    var isEdit = state.mode === 'edit';
+    var actions;
+    if (isEdit) {
+      actions = uploading
+        ? '<button class="btn">' + icon('x', 14) + '<span class="label">Cancel</span></button>'
+        : '<button class="btn">' + icon('pencil', 14) + '<span class="label">Change document</span></button>' +
+          '<button class="btn icon" title="Open file" aria-label="Open file">' + icon('external', 15) + '</button>';
+    } else {
+      actions = '<button class="btn" data-stop>' + icon('download', 15) + '<span class="label">Download</span></button>';
+    }
+    var meta = uploading
+      ? '<div class="meta">Uploading · 64%</div><div class="progress"><i></i></div>'
+      : '<div class="meta">' + metaLine(doc, false) + '</div>';
+    return '<div class="file-card" data-card role="' + (isEdit ? 'group' : 'link') + '" tabindex="' + (isEdit ? '-1' : '0') + '" title="' + (isEdit ? '' : 'Open ' + doc.name) + '">' +
+      typeTile(doc) +
+      '<div class="text"><div class="name">' + doc.name + '</div>' + meta + '</div>' +
+      '<div class="actions">' + actions + '</div>' +
+      '<div class="drop-hint">' + icon('upload', 16) + 'Drop to replace this file</div>' +
+    '</div>';
+  }
+
+  function pageMock() {
+    return '<div class="page"><div class="h"></div><div class="l"></div><div class="l"></div><div class="l s"></div><div class="img"></div><div class="l"></div><div class="l"></div><div class="l s"></div></div>';
+  }
+
+  function previewCard(doc) {
+    var isEdit = state.mode === 'edit';
+    if (!isEdit && state.expanded[doc.id]) {
+      var pages = '';
+      for (var i = 0; i < Math.min(doc.pages, 3); i++) pages += pageMock();
+      return '<div class="viewer">' +
+        '<div class="viewer-bar">' + icon('file', 15) + '<span class="name">' + doc.name + '</span>' +
+          '<button class="btn icon" title="Open in new tab" aria-label="Open in new tab">' + icon('external', 15) + '</button>' +
+          '<button class="btn icon" title="Download" aria-label="Download">' + icon('download', 15) + '</button>' +
+          '<button class="btn" data-collapse="' + doc.id + '">' + icon('x', 14) + 'Close</button>' +
+        '</div>' +
+        '<div class="viewer-pages">' + pages + '</div>' +
+      '</div>';
+    }
+
+    var canPreview = doc.kind === 'pdf';
+    var stage = canPreview
+      ? '<div class="stage" data-expand="' + doc.id + '">' + pageMock() + '<span class="chip">' + doc.pages + ' pages</span>'
+      : '<div class="stage fallback">' + typeTile(doc);
+    if (isEdit) stage += '<button class="pill change">' + icon('pencil', 14) + 'Change document</button>';
+    stage += '</div>';
+
+    var actions = isEdit
+      ? ''
+      : (canPreview ? '<button class="btn" data-expand="' + doc.id + '">' + icon('eye', 15) + 'Preview</button>' : '<button class="btn">' + icon('external', 15) + 'Open</button>') +
+        '<button class="btn icon" title="Download" aria-label="Download">' + icon('download', 15) + '</button>';
+
+    return '<div class="preview-card">' + stage +
+      '<div class="title-row"><div class="text"><div class="name">' + doc.name + '</div><div class="meta">' + metaLine(doc, true) + '</div></div>' +
+      (actions ? '<div class="actions">' + actions + '</div>' : '') + '</div>' +
+    '</div>';
+  }
+
+  function wrap(label, inner) {
+    if (state.mode === 'view') return inner;
+    return '<section class="shell"><div class="shell-head"><span class="grip">' + icon('grip', 14) + '</span>' +
+      '<span class="shell-label">' + label + '</span>' +
+      '<button class="shell-menu" aria-label="Block actions">' + icon('more', 16) + '</button></div>' + inner + '</section>';
+  }
+
+  function addRow() {
+    return state.mode === 'edit' ? '<div class="add-row"><button aria-label="Add content">' + icon('plus', 15) + '</button></div>' : '';
+  }
+
+  function render() {
+    var column = document.getElementById('column');
+    var blocks = [];
+    blocks.push(wrap('Note', '<div class="note"><p>Practice: write a response to a customer who is unsure whether the product fits their team.</p></div>'));
+    blocks.push(wrap('Slides', '<div class="slide-mock"><h2>ClassroomIO: Modern Learning Platform</h2><p>Ada Okoro<br />October 29, 2026</p></div>'));
+    DOCUMENTS.forEach(function (doc, index) {
+      var uploading = state.idea === 'a' && state.mode === 'edit' && index === 2;
+      var inner = state.idea === 'a' ? fileCard(doc, uploading) : previewCard(doc);
+      blocks.push(wrap('Document', inner));
+    });
+    column.innerHTML = blocks.join(addRow());
+
+    document.getElementById('lesson').className = 'lesson ' + state.mode;
+    document.getElementById('brief').innerHTML = BRIEFS[state.idea];
+    setOn('idea-switch', 'idea', state.idea);
+    setOn('mode-switch', 'mode', state.mode);
+    bindDrop();
+  }
+
+  function setOn(groupId, key, value) {
+    document.querySelectorAll('#' + groupId + ' button').forEach(function (button) {
+      button.classList.toggle('on', button.dataset[key] === value);
+    });
+  }
+
+  function bindDrop() {
+    if (state.idea !== 'a' || state.mode !== 'edit') return;
+
+    document.querySelectorAll('[data-card]').forEach(function (card) {
+      card.addEventListener('dragover', function (event) { event.preventDefault(); card.classList.add('drop'); });
+      card.addEventListener('dragleave', function () { card.classList.remove('drop'); });
+      card.addEventListener('drop', function (event) { event.preventDefault(); card.classList.remove('drop'); });
+    });
+  }
+
+  document.getElementById('idea-switch').addEventListener('click', function (event) {
+    var button = event.target.closest('button');
+    if (!button) return;
+
+    state.idea = button.dataset.idea;
+    state.expanded = {};
+    render();
+  });
+
+  document.getElementById('mode-switch').addEventListener('click', function (event) {
+    var button = event.target.closest('button');
+    if (!button) return;
+
+    state.mode = button.dataset.mode;
+    state.expanded = {};
+    render();
+  });
+
+  document.getElementById('column').addEventListener('click', function (event) {
+    var expand = event.target.closest('[data-expand]');
+    var collapse = event.target.closest('[data-collapse]');
+    if (expand && state.mode === 'view') {
+      state.expanded[expand.dataset.expand] = true;
+      render();
+      return;
+    }
+
+    if (collapse) {
+      delete state.expanded[collapse.dataset.collapse];
+      render();
+    }
+  });
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { localStorage.setItem('documentBlockTheme', theme); } catch (e) {}
+    setOn('theme-switch', 'themeValue', theme);
+  }
+
+  document.getElementById('theme-switch').addEventListener('click', function (event) {
+    var button = event.target.closest('button');
+    if (button) applyTheme(button.dataset.themeValue);
+  });
+
+  setOn('theme-switch', 'themeValue', document.documentElement.getAttribute('data-theme'));
+  render();
+</script>
+  </body>
+</html>

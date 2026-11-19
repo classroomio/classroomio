@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { seedAccount } from '@db/utils/seed/account';
 import { seedCompliance } from '@db/utils/seed/compliance';
 import { MVC_SECTION_ID, PANDAS_SECTION_ID, REACT_SECTION_ID, seedCourseSections } from '@db/utils/seed/courseSection';
+import { seedCourseraDummyCourses } from '@db/utils/seed/courseraDummyCourses';
 import { EARLY_ADOPTER_COURSE_ID, seedCourses } from '@db/utils/seed/course';
 import { seedExercise } from '@db/utils/seed/exercise';
 import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
@@ -26,6 +27,7 @@ import {
   backfillCohortCourseEnrollmentGrants,
   backfillMissingCourseEnrollmentGrants
 } from '@db/queries/learning-path/enrollment-grant';
+import { resetLaunchTemplates, seedLaunchTemplates } from '@db/utils/seed/platform-templates/insert';
 import usersData from '../../users.json';
 
 // Constants for IDs used across multiple seed functions
@@ -64,11 +66,13 @@ const orderedSeeds = [
   'exercises',
   'questions',
   'templates',
+  'coursera-dummy-courses',
   'compliance',
   'react-people-progress',
   'learner-lifecycle',
   'learning-paths',
-  'newsfeed-threads'
+  'newsfeed-threads',
+  'launch-templates'
 ] as const;
 
 type SeedName = (typeof orderedSeeds)[number];
@@ -115,7 +119,15 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
     organizationId: ENTERPRISE_ORG_ID,
     userIds: [ENTERPRISE_ADMIN_USER_ID, ENTERPRISE_STUDENT_USER_ID],
     groupIds: [],
-    seedNames: [...COMMON_ORGANIZATION_SEEDS, 'organization-plan', 'compliance', 'learning-paths', 'newsfeed-threads']
+    seedNames: [
+      ...COMMON_ORGANIZATION_SEEDS,
+      'organization-plan',
+      'coursera-dummy-courses',
+      'compliance',
+      'learning-paths',
+      'newsfeed-threads',
+      'launch-templates'
+    ]
   },
   'skillshare-test': {
     organizationId: EARLY_ADOPTER_ORG_ID,
@@ -212,8 +224,11 @@ Flags:
   --exercises                Seed exercises
   --questions                Seed questions
   --templates                Seed exercise templates
+  --coursera-dummy-courses   Seed 40 dummy courses on coursera-test
   --compliance               Seed compliance demo data (coursera-test org)
   --newsfeed-threads         Seed nested newsfeed comment threads (coursera-test org)
+  --launch-templates         Seed ClassroomIO launch templates into coursera-test
+  --reset                    With --launch-templates, retire the previously seeded templates first
   --react-people-progress    Seed React course students with varied progress (udemy-test)
   --learner-lifecycle        Seed the learner lifecycle roster (udemy-test)
   --learning-paths           Seed learning paths, members, progress caches and grants (all course orgs)
@@ -366,6 +381,14 @@ const seedFunctions = {
     console.log('📝 Seeding exercise templates...');
     await seedExerciseTemplates();
   },
+  'coursera-dummy-courses': async () => {
+    console.log('📝 Seeding 40 dummy courses (coursera-test)...');
+    await seedCourseraDummyCourses({
+      enterpriseOrgId: ENTERPRISE_ORG_ID,
+      enterpriseAdminUserId: ENTERPRISE_ADMIN_USER_ID,
+      enterpriseStudentUserId: ENTERPRISE_STUDENT_USER_ID
+    });
+  },
   compliance: async () => {
     console.log('📝 Seeding compliance demo data (coursera-test)...');
     await seedCompliance({ enterpriseOrgId: ENTERPRISE_ORG_ID });
@@ -401,6 +424,15 @@ const seedFunctions = {
   'newsfeed-threads': async () => {
     console.log('📝 Seeding nested newsfeed threads (coursera-test)...');
     await seedNewsfeedThreads({ enterpriseOrgId: ENTERPRISE_ORG_ID });
+  },
+  'launch-templates': async () => {
+    if (cliOptions.flags.has('reset')) {
+      const retiredCount = await resetLaunchTemplates(ENTERPRISE_ORG_ID);
+      console.log(`🧹 Retired ${retiredCount} previously seeded launch templates (coursera-test)`);
+    }
+
+    console.log('📝 Seeding ClassroomIO launch templates (coursera-test)...');
+    await seedLaunchTemplates(ENTERPRISE_ORG_ID);
   },
   'react-people-progress': async () => {
     console.log('📝 Seeding React course people progress demo (udemy-test)...');

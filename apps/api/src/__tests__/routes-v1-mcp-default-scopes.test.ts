@@ -1,0 +1,219 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Context, Next } from 'hono';
+import { Hono } from '@api/utils/hono';
+
+const mocks = vi.hoisted(() => ({
+  authenticate: vi.fn(),
+  complete: vi.fn()
+}));
+
+vi.mock('@hono/node-server/conninfo', () => ({
+  getConnInfo: () => ({ remote: { address: '127.0.0.1' } })
+}));
+
+vi.mock('@api/middlewares/rate-limiter', () => ({
+  createAuthenticationFailureRateLimiter: () => async (_c: Context, next: Next) => next(),
+  createRateLimiter: () => async (_c: Context, next: Next) => next()
+}));
+
+vi.mock('@api/services/organization/automation-key', () => ({
+  authenticateOrganizationApiKeyService: mocks.authenticate,
+  organizationApiKeyHasScopes: (keyScopes: string[], requiredScopes: string[]) =>
+    requiredScopes.every((scope) => keyScopes.includes(scope)),
+  touchOrganizationApiKeyLastUsedService: vi.fn()
+}));
+
+vi.mock('@api/services/organization/automation-usage', () => ({
+  reserveMcpAutomationUsage: vi.fn().mockResolvedValue('reservation-id'),
+  completeMcpAutomationUsage: mocks.complete,
+  releaseMcpAutomationUsage: vi.fn().mockResolvedValue(undefined)
+}));
+
+vi.mock('@api/services/v1/cohorts/cohort', () => ({
+  listCohortsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
+vi.mock('@api/services/v1/courses/certificates', () => ({
+  getPublicApiCourseCertificateService: vi.fn().mockResolvedValue({})
+}));
+
+vi.mock('@api/services/v1/courses/exercises', () => ({
+  listCourseExercisesService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
+vi.mock('@api/services/v1/courses/submissions', () => ({
+  listCourseSubmissionsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
+vi.mock('@api/services/v1/audience', () => ({
+  listAudienceService: vi.fn().mockResolvedValue({ items: [], pagination: {}, query: {} })
+}));
+
+vi.mock('@api/services/v1/team', () => ({
+  listTeamService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
+vi.mock('@api/services/v1/organization/email-templates', () => ({
+  listEmailTemplatesService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
+vi.mock('@api/services/v1/organization/domain', () => ({
+  getDomainService: vi.fn().mockResolvedValue({})
+}));
+
+vi.mock('@api/services/v1/courses/members', () => ({
+  listCourseMembersService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 })
+}));
+
+vi.mock('@api/services/v1/tags', () => ({
+  listPublicApiTagGroupsService: vi.fn().mockResolvedValue({ items: [], pagination: {} }),
+  createPublicApiTagService: vi.fn().mockResolvedValue({ id: 'tag-id' }),
+  createPublicApiTagGroupService: vi.fn(),
+  updatePublicApiTagService: vi.fn(),
+  updatePublicApiTagGroupService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/courses/course', () => ({
+  createPublicApiCourseService: vi.fn().mockResolvedValue({ course: { isPublished: false } }),
+  deletePublicApiCourseService: vi.fn(),
+  exportCourseService: vi.fn().mockResolvedValue({ courseId: 'course-id', draft: {} }),
+  publishPublicApiCourseService: vi.fn().mockResolvedValue({ published: true, course: {}, blockers: [] }),
+  unpublishPublicApiCourseService: vi.fn().mockResolvedValue({ course: {} }),
+  getCourseService: vi.fn(),
+  listCoursesService: vi.fn().mockResolvedValue({ items: [], pagination: {}, query: {} }),
+  listCourseStudentsService: vi.fn(),
+  updatePublicApiCourseService: vi.fn().mockResolvedValue({ course: { tags: [] }, conversionOffenders: null }),
+  updatePublicApiCourseStructureService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/courses/sections', () => ({
+  listPublicApiCourseSectionsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
+import { v1Router } from '@api/routes/v1';
+
+const COURSE_ID = '11111111-1111-4111-8111-111111111111';
+
+const TAG_ID = '22222222-2222-4222-8222-222222222222';
+
+// DEFAULT_SCOPES.mcp in services/organization/automation-key.ts.
+const MCP_DEFAULT_SCOPES = [
+  'course:read',
+  'course:write',
+  'course:tag:write',
+  'course:exercise:read',
+  'course:exercise:write',
+  'cohort:read',
+  'cohort:write',
+  'course:member:read',
+  'course:member:write',
+  'course:certificate:read',
+  'course:certificate:write',
+  'analytics:read',
+  'media:write',
+  'course:submission:read',
+  'course:submission:write',
+  'course:student:write',
+  'audience:read',
+  'audience:write',
+  'team:read',
+  'team:write',
+  'organization:read',
+  'organization:write',
+  'organization:domain:write'
+];
+
+const app = new Hono().route('/public-api/v1', v1Router);
+
+const request = (path: string, method = 'GET', body?: unknown) =>
+  app.request(`/public-api/v1${path}`, {
+    method,
+    headers: { Authorization: 'Bearer cio_mcp_test', 'content-type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
+
+describe('default MCP key across the cohort, course member, certificate, exercise, submission, audience, team, organization, and tag APIs', () => {
+  beforeEach(() => {
+    mocks.complete.mockReset().mockResolvedValue(undefined);
+    mocks.authenticate.mockResolvedValue({
+      id: 'key-id',
+      organizationId: 'org-id',
+      createdByProfileId: 'actor-id',
+      type: 'mcp',
+      scopes: MCP_DEFAULT_SCOPES
+    });
+  });
+
+  it.each([
+    ['/courses', 'list_org_courses'],
+    ['/cohorts', 'list_org_cohorts'],
+    [`/courses/${COURSE_ID}/members`, 'list_course_members'],
+    [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate'],
+    [`/courses/${COURSE_ID}/sections`, 'list_course_sections'],
+    [`/courses/${COURSE_ID}/exercises`, 'list_course_exercises'],
+    [`/courses/${COURSE_ID}/submissions`, 'list_course_submissions'],
+    ['/audience', 'list_audience_members'],
+    ['/team', 'list_team_members'],
+    ['/organization/email-templates', 'list_email_templates'],
+    ['/organization/domain', 'get_domain']
+  ])('reaches %s and meters it as %s', async (path, toolName) => {
+    const response = await request(path);
+
+    expect(response.status).toBe(200);
+    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, 0);
+  });
+
+  it.each([
+    ['GET', `/courses/${COURSE_ID}`],
+    ['DELETE', `/courses/${COURSE_ID}`],
+    ['PUT', `/courses/${COURSE_ID}/structure`],
+    ['GET', `/courses/${COURSE_ID}/publish`]
+  ])('is kept out of %s %s', async (method, path) => {
+    const response = await request(path, method);
+
+    expect(response.status).toBe(403);
+    expect(mocks.complete).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['GET', '/tags', 'list_tags', 0, 200, undefined],
+    ['POST', '/tags', 'create_tag', 1, 201, { name: 'Safety', groupId: TAG_ID, color: '#EF4444' }],
+    ['PUT', `/tags/${TAG_ID}`, 'update_tag', 1, 200, { color: '#F97316' }],
+    ['POST', '/tags/groups', 'create_tag_group', 1, 201, { name: 'Topics' }],
+    ['PUT', `/tags/groups/${TAG_ID}`, 'update_tag_group', 1, 200, { order: 1 }],
+    ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { tagIds: [TAG_ID] }],
+    ['PUT', `/courses/${COURSE_ID}`, 'set_course_tags', 1, 200, { addTagIds: [TAG_ID] }],
+    ['POST', '/courses', 'create_course', 1, 201, { title: 'New course', description: 'About it', type: 'SELF_PACED' }],
+    ['GET', `/courses/${COURSE_ID}/structure`, 'get_course_structure', 0, 200, undefined],
+    ['POST', `/courses/${COURSE_ID}/publish`, 'publish_course', 1, 200, undefined],
+    ['POST', `/courses/${COURSE_ID}/unpublish`, 'unpublish_course', 1, 200, undefined]
+  ])('reaches %s %s and meters it as %s (%i credits)', async (method, path, toolName, credits, status, body) => {
+    const response = await request(path, method, body);
+
+    expect(response.status).toBe(status);
+    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, credits);
+  });
+
+  it.each([
+    { title: 'New title' },
+    { title: 'New title', tagIds: [TAG_ID] },
+    { title: 'New title', addTagIds: [TAG_ID] },
+    {}
+  ])('refuses a course update with fields other than tagIds (%o)', async (body) => {
+    const response = await request(`/courses/${COURSE_ID}`, 'PUT', body);
+
+    expect(response.status).toBe(403);
+    expect(mocks.complete).not.toHaveBeenCalled();
+  });
+
+  it('refuses tagIds and addTagIds together', async () => {
+    const response = await request(`/courses/${COURSE_ID}`, 'PUT', { tagIds: [TAG_ID], addTagIds: [TAG_ID] });
+
+    expect(response.status).toBe(400);
+    expect(mocks.complete).not.toHaveBeenCalled();
+  });
+
+  it('is kept out of course delete', async () => {
+    expect((await request(`/courses/${COURSE_ID}`, 'DELETE')).status).toBe(403);
+  });
+});

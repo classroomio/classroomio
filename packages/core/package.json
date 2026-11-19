@@ -34,7 +34,8 @@
     }
   },
   "scripts": {
-    "build": "tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
+    "build:incremental": "tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
     "dev": "tsc --watch",
     "format": "prettier --write ."
   },
@@ -43,16 +44,18 @@
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
     "@cio/ai-assistant": "workspace:*",
-    "@cio/analytics": "workspace:*",
     "@cio/db": "workspace:*",
     "@cio/email": "workspace:*",
     "@cio/jobs": "workspace:*",
     "@cio/question-types": "workspace:*",
+    "@cio/tracking": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",
+    "@supadata/js": "^1.4.0",
     "ai": "^6.0.158",
     "axios": "^1.4.0",
     "drizzle-orm": "^0.44.7",
+    "fractional-indexing": "^4.0.0",
     "ioredis": "^5.4.1",
     "isomorphic-dompurify": "^3.7.1",
     "jszip": "^3.10.1",
@@ -60,11 +63,10 @@
     "nanoid": "^5.1.5",
     "pdf-parse": "^1.1.1",
     "redis": "^4.7.0",
-    "@supadata/js": "^1.4.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.10.1",
     "@types/pdf-parse": "^1.1.5",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.7.1",

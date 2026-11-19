@@ -14,20 +14,10 @@ type GetPublicCourseRequest = (typeof classroomio)['org-site']['course'][':cours
 type GetPublicCourseSuccess = Extract<InferResponseType<GetPublicCourseRequest>, { success: true }>;
 
 export const load = async ({ params = { slug: '' }, parent, url }) => {
-  const { org: parentOrg } = await parent();
-
-  // PUBLIC courses are served by the anonymous org-site endpoint and bypass the
-  // regular landing page entirely — redirect straight to the first item.
-  const publicTreeResult = await safeServerApi<GetPublicCourseSuccess>(() =>
+  const publicTreeRequest = safeServerApi<GetPublicCourseSuccess>(() =>
     classroomio['org-site'].course[':courseSlug'].$get({ param: { courseSlug: params.slug } }, getApiKeyHeaders())
   );
-
-  if (publicTreeResult.ok && publicTreeResult.body.data.items.length > 0) {
-    const firstItem = publicTreeResult.body.data.items[0]!;
-    throw redirect(302, `/course/${params.slug}/lesson/${firstItem.slug}`);
-  }
-
-  const courseResult = await safeServerApi<GetCourseBySlugSuccess>(() =>
+  const courseRequest = safeServerApi<GetCourseBySlugSuccess>(() =>
     classroomio.course.slug[':slug'].$get(
       {
         param: { slug: params.slug }
@@ -35,6 +25,18 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
       getApiKeyHeaders()
     )
   );
+  const { org: parentOrg } = await parent();
+
+  // PUBLIC courses are served by the anonymous org-site endpoint and bypass the
+  // regular landing page entirely — redirect straight to the first item.
+  const publicTreeResult = await publicTreeRequest;
+
+  if (publicTreeResult.ok && publicTreeResult.body.data.items.length > 0) {
+    const firstItem = publicTreeResult.body.data.items[0]!;
+    throw redirect(302, `/course/${params.slug}/lesson/${firstItem.slug}`);
+  }
+
+  const courseResult = await courseRequest;
 
   if (!courseResult.ok || !courseResult.body.data) {
     console.error('Failed to fetch course:', courseResult);
@@ -66,6 +68,7 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
   }
 
   const canonicalUrl = new URL(url.pathname, url.origin).href;
+  const ogImage = course.bannerImage || '';
 
   const pageMetaTags = Object.freeze({
     title: course.title,
@@ -78,11 +81,11 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
       description: course.description,
       images: [
         {
-          url: course.logo || '',
+          url: ogImage,
           alt: course.title,
           width: 1200,
           height: 630,
-          secureUrl: course.logo,
+          secureUrl: ogImage.startsWith('https://') ? ogImage : undefined,
           type: 'image/jpeg'
         }
       ]
@@ -93,7 +96,7 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
       cardType: 'summary_large_image' as const,
       title: course.title,
       description: course.description,
-      image: course.logo,
+      image: ogImage || undefined,
       imageAlt: course.title
     }
   }) satisfies MetaTagsProps;

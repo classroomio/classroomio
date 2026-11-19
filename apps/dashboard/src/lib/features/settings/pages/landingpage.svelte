@@ -13,10 +13,11 @@
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { t } from '$lib/utils/functions/translations';
-  import { user } from '$lib/utils/store/user';
-  import { basePath } from '$lib/utils/store/app';
+  import { user, profile } from '$lib/utils/store/user';
   import type { AccountOrg } from '$features/app/types';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { getPreviewOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { getPreviewOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
   import { snackbar } from '$features/ui/snackbar/store';
 
   import { Button } from '@cio/ui/base/button';
@@ -27,6 +28,7 @@
   import { PremiumIcon } from '@cio/ui/custom/moving-icons';
 
   import ThemePreviewDialog from '$features/settings/components/theme-preview-dialog.svelte';
+  import { StudentHomeNotice } from '$features/settings/components';
 
   import {
     createDefaultLandingPageSettings,
@@ -133,18 +135,13 @@
     return !isFreeLandingPageTheme(theme);
   }
 
-  const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve(`${$basePath !== '#' ? $basePath : '/lms'}`, {})
-        }
-      : { label: t.get('navigation.login'), href: '/login' }
-  );
+  const authAction = $derived(getPreviewOrgLandingAuthAction($user.isLoggedIn));
 
   const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
 
   const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
+
+  const learnerAccount = $derived(getPreviewOrgLandingLearnerAccount($profile, $currentOrg));
 
   const previewProps = $derived.by(() =>
     buildOrgLandingPageProps($currentOrg, normalized, {
@@ -153,7 +150,8 @@
       hasMoreCourses: orgApi.hasMorePublicCourses,
       hasMoreLearningPaths: orgApi.hasMorePublicLearningPaths,
       coursesLoaded,
-      authAction
+      authAction,
+      learnerAccount
     })
   );
 
@@ -228,6 +226,8 @@
 </script>
 
 <div class="w-full space-y-10 px-2 pb-12">
+  <StudentHomeNotice />
+
   <section>
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div

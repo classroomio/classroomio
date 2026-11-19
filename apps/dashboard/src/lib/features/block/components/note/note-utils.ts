@@ -1,0 +1,1 @@
+export const EXAMPLE_NOTE_HTML = `<h2>Lesson overview</h2><p>Use this note to introduce the lesson and set expectations. Replace this guidance with the ideas your learners need.</p><ul><li>What the lesson covers</li><li>Why it matters</li><li>What learners will do next</li></ul>`;

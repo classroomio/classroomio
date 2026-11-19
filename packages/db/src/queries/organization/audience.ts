@@ -6,8 +6,12 @@ import type { SQL } from 'drizzle-orm';
 import { AUDIENCE_ACTIVITY_WINDOW_DAYS } from '@cio/utils/validation/organization';
 import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
+
+import { inviteStatusSql } from './invite-status';
+import { toAudienceMemberStatus } from './member-lifecycle';
 import type {
   TAudienceActivityWindow,
+  TAudienceCertificate,
   TAudienceCompletion,
   TAudienceEnrollment,
   TAudienceInviteStatus,
@@ -26,6 +30,7 @@ export type GetOrganizationAudienceOptions = {
   inviteStatus?: TAudienceInviteStatus;
   enrollment?: TAudienceEnrollment;
   completion?: TAudienceCompletion;
+  certificate?: TAudienceCertificate;
   lastLoginBefore?: TAudienceActivityWindow;
   lastActiveBefore?: TAudienceActivityWindow;
   excludeRecentJoiners?: boolean;
@@ -55,6 +60,12 @@ const lastLoginAtSql = sql<string | null>`(
  * An exercise belongs to a course directly or through its lesson, and a
  * submission is keyed by `groupmember`, not profile.
  *
+ * Exercise lookups are split into a direct (`exercise.course_id = c.id`) and
+ * a legacy lesson-linked leg instead of one `exercise.course_id = c.id OR
+ * lesson.course_id = c.id` over a left join, for the same reason as
+ * `getCourseContentStructure`'s exercise union: that `OR` blocks index use on
+ * both sides, and this runs once per enrolled course per member.
+ *
  * `leftJoinLateral` emits the LATERAL keyword, so this is the subquery only.
  */
 const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
@@ -73,11 +84,13 @@ const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
   FROM (
     SELECT
       (SELECT COUNT(*) FROM lesson l WHERE l.course_id = c.id)
+        + (SELECT COUNT(*) FROM exercise e WHERE e.course_id = c.id)
         + (
           SELECT COUNT(*)
           FROM exercise e
-          LEFT JOIN lesson el ON el.id = e.lesson_id
-          WHERE e.course_id = c.id OR el.course_id = c.id
+          JOIN lesson el ON el.id = e.lesson_id
+          WHERE (e.course_id IS NULL OR e.course_id <> c.id)
+            AND el.course_id = c.id
         ) AS total_items,
       (
         SELECT COUNT(*)
@@ -92,8 +105,16 @@ const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
           SELECT COUNT(DISTINCT s.exercise_id)
           FROM submission s
           JOIN exercise e ON e.id = s.exercise_id
-          LEFT JOIN lesson el ON el.id = e.lesson_id
-          WHERE (e.course_id = c.id OR el.course_id = c.id)
+          WHERE e.course_id = c.id
+            AND s.submitted_by = gm.id
+        )
+        + (
+          SELECT COUNT(DISTINCT s.exercise_id)
+          FROM submission s
+          JOIN exercise e ON e.id = s.exercise_id
+          JOIN lesson el ON el.id = e.lesson_id
+          WHERE (e.course_id IS NULL OR e.course_id <> c.id)
+            AND el.course_id = c.id
             AND s.submitted_by = gm.id
         ) AS completed_items
     FROM groupmember gm
@@ -108,30 +129,6 @@ const completedCountSql = sql<number>`COALESCE(enrolment.completed_count, 0)`;
 const inProgressCountSql = sql<number>`COALESCE(enrolment.in_progress_count, 0)`;
 const completedItemsSql = sql<number>`COALESCE(enrolment.completed_items, 0)`;
 const totalItemsSql = sql<number>`COALESCE(enrolment.total_items, 0)`;
-
-/**
- * Mirrors `deriveAudienceMemberStatus` so invite status can be filtered before
- * `LIMIT`. That function still owns the value returned to clients — keep both
- * in step.
- */
-const inviteStatusSql = sql<string>`(
-  CASE
-    WHEN ${schema.organizationmember.profileId} IS NOT NULL THEN 'active'
-    ELSE COALESCE((
-      SELECT CASE
-               WHEN oi.accepted_at IS NOT NULL THEN 'active'
-               WHEN oi.is_revoked THEN 'revoked'
-               WHEN oi.expires_at <= now() THEN 'expired'
-               ELSE 'pending'
-             END
-      FROM organization_invite oi
-      WHERE oi.organization_id = ${schema.organizationmember.organizationId}
-        AND lower(oi.email) = lower(${schema.organizationmember.email})
-      ORDER BY oi.created_at DESC
-      LIMIT 1
-    ), 'pending')
-  END
-)`;
 
 /** Grace period before a newly invited learner can be judged dormant. */
 const RECENT_JOINER_GRACE_DAYS = 7;
@@ -184,6 +181,22 @@ function completionCondition(completion: TAudienceCompletion): SQL {
   )`;
 }
 
+function certificateCountSql(orgId: string): SQL<number> {
+  return sql<number>`(
+    SELECT COUNT(*)::int
+    FROM ${schema.groupmember} gmc
+    JOIN ${schema.group} gc ON gc.id = gmc.group_id AND gc.organization_id = ${orgId}
+    WHERE gmc.profile_id = ${schema.profile.id}
+      AND gmc.certificate_earned_at IS NOT NULL
+  )`;
+}
+
+function certificateCondition(orgId: string, certificate: TAudienceCertificate): SQL {
+  const certificateCount = certificateCountSql(orgId);
+
+  return certificate === 'earned' ? sql`${certificateCount} > 0` : sql`${certificateCount} = 0`;
+}
+
 /**
  * Same shape as a `getOrganizationAudience` row, so the detail view and list
  * agree. Not status-filtered — a link to an archived learner should still work.
@@ -196,8 +209,10 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
       memberId: schema.organizationmember.id,
       profileId: schema.organizationmember.profileId,
       fullname: schema.profile.fullname,
+      username: schema.profile.username,
       email: audienceEmailSql.as('email'),
       avatarUrl: schema.profile.avatarUrl,
+      locale: schema.profile.locale,
       memberCreatedAt: schema.organizationmember.createdAt,
       memberStatus: schema.organizationmember.status,
       lastActiveAt: schema.organizationmember.lastActiveAt,
@@ -205,7 +220,8 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
       enrolledCount: enrolledCountSql.as('enrolledCount'),
       completedCount: completedCountSql.as('completedCount'),
       completedItems: completedItemsSql.as('completedItems'),
-      totalItems: totalItemsSql.as('totalItems')
+      totalItems: totalItemsSql.as('totalItems'),
+      certificateCount: certificateCountSql(orgId).as('certificateCount')
     })
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -236,15 +252,18 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
     id: row.memberId,
     profileId: row.profileId ?? null,
     name,
+    username: row.username ?? null,
     email,
     avatarUrl: row.avatarUrl || '',
+    locale: row.locale ?? null,
     createdAt,
-    memberStatus: row.memberStatus,
+    memberStatus: toAudienceMemberStatus(row.memberStatus),
     lastLoginAt: row.lastLoginAt ?? null,
     lastActiveAt: row.lastActiveAt ?? null,
     enrolledCount: Number(row.enrolledCount ?? 0),
     completedCount: Number(row.completedCount ?? 0),
-    progressPercent: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
+    progressPercent: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0,
+    certificateCount: Number(row.certificateCount ?? 0)
   };
 };
 
@@ -307,6 +326,10 @@ export function buildAudienceWhereClause(
 
   if (options.completion) {
     conditions.push(completionCondition(options.completion));
+  }
+
+  if (options.certificate) {
+    conditions.push(certificateCondition(orgId, options.certificate));
   }
 
   if (options.lastLoginBefore) {
@@ -467,29 +490,61 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
     ? [sql`${orderByExpression} IS NOT NULL`, orderedExpression, desc(schema.organizationmember.id)]
     : [orderedExpression, desc(schema.organizationmember.id)];
 
-  const result = await db
-    .select({
-      memberId: schema.organizationmember.id,
-      profileId: schema.profile.id,
-      fullname: schema.profile.fullname,
-      email: audienceEmailSql.as('email'),
-      avatarUrl: schema.profile.avatarUrl,
-      memberCreatedAt: schema.organizationmember.createdAt,
-      memberStatus: schema.organizationmember.status,
-      lastActiveAt: schema.organizationmember.lastActiveAt,
-      lastLoginAt: lastLoginAtSql.as('lastLoginAt'),
-      enrolledCount: enrolledCountSql.as('enrolledCount'),
-      completedCount: completedCountSql.as('completedCount'),
-      completedItems: completedItemsSql.as('completedItems'),
-      totalItems: totalItemsSql.as('totalItems')
-    })
+  const listColumns = {
+    memberId: schema.organizationmember.id,
+    profileId: schema.profile.id,
+    fullname: schema.profile.fullname,
+    username: schema.profile.username,
+    email: audienceEmailSql.as('email'),
+    avatarUrl: schema.profile.avatarUrl,
+    locale: schema.profile.locale,
+    memberCreatedAt: schema.organizationmember.createdAt,
+    memberStatus: schema.organizationmember.status,
+    lastActiveAt: schema.organizationmember.lastActiveAt,
+    lastLoginAt: lastLoginAtSql.as('lastLoginAt'),
+    enrolledCount: enrolledCountSql.as('enrolledCount'),
+    completedCount: completedCountSql.as('completedCount'),
+    completedItems: completedItemsSql.as('completedItems'),
+    totalItems: totalItemsSql.as('totalItems'),
+    certificateCount: certificateCountSql(orgId).as('certificateCount')
+  };
+
+  const listQuery = db
+    .select(listColumns)
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
     .leftJoinLateral(enrolmentLateral, sql`true`)
-    .where(whereClause)
-    .orderBy(...orderBy)
-    .limit(limit)
-    .offset(offset);
+    .$dynamic();
+
+  let result: Awaited<ReturnType<typeof listQuery.where>>;
+
+  if (countNeedsEnrolment) {
+    // The filter itself reads the lateral's output, so it has to run before
+    // LIMIT regardless — there is no cheaper id-only pre-pass here.
+    result = await listQuery
+      .where(whereClause)
+      .orderBy(...orderBy)
+      .limit(limit)
+      .offset(offset);
+  } else {
+    // None of the sort keys read the lateral, so resolve this page's member
+    // ids first without it, then run the expensive per-member progress
+    // lateral only against that already-paginated set instead of every match.
+    const pagedMembers = await db
+      .select({ memberId: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .where(whereClause)
+      .orderBy(...orderBy)
+      .limit(limit)
+      .offset(offset);
+
+    const pagedMemberIds = pagedMembers.map((row) => row.memberId);
+
+    result = pagedMemberIds.length
+      ? await listQuery.where(inArray(schema.organizationmember.id, pagedMemberIds)).orderBy(...orderBy)
+      : [];
+  }
 
   return {
     items: result.map((row) => {
@@ -504,15 +559,18 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
         id: row.memberId,
         profileId: row.profileId ?? null,
         name,
+        username: row.username ?? null,
         email,
         avatarUrl: row.avatarUrl || '',
+        locale: row.locale ?? null,
         createdAt,
-        memberStatus: row.memberStatus,
+        memberStatus: toAudienceMemberStatus(row.memberStatus),
         lastLoginAt: row.lastLoginAt ?? null,
         lastActiveAt: row.lastActiveAt ?? null,
         enrolledCount: Number(row.enrolledCount ?? 0),
         completedCount: Number(row.completedCount ?? 0),
-        progressPercent
+        progressPercent,
+        certificateCount: Number(row.certificateCount ?? 0)
       };
     }),
     page,

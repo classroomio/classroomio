@@ -3,7 +3,12 @@ import * as schema from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { jwtVerify } from 'jose';
 
-import { getAllActiveTokenAuth } from '@db/queries/organization/token-auth';
+import {
+  getAllActiveTokenAuth,
+  getTokenAuthIdentityUserId,
+  isEmailKnownToOrg,
+  linkTokenAuthIdentity
+} from '@db/queries/organization/token-auth';
 import { ensureOrgMembership } from './hooks/sso-provisioning';
 import { db } from '@db/drizzle';
 import { ZTokenExchangePayload } from '@cio/utils/validation/organization';
@@ -64,31 +69,59 @@ export async function exchangeToken(
     throw new TokenExchangeError('Invalid token payload', 'TOKEN_EXCHANGE_INVALID_TOKEN', 400);
   }
 
-  const { email, name, avatar } = parsed.data;
+  const { sub, email, name, avatar } = parsed.data;
   const emailLower = email.toLowerCase();
 
-  const [existingUser] = await db.select().from(schema.user).where(eq(schema.user.email, emailLower)).limit(1);
-
   let user: User;
-  if (existingUser) {
-    user = existingUser as User;
+  let createdNewUser = false;
+
+  // Identity is the (org, sub) pair, never the email alone. A previously bound user is the only
+  // account this token can resolve to, so an org can't reach another org's user by reusing their email.
+  const linkedUserId = await getTokenAuthIdentityUserId(orgId, sub);
+
+  if (linkedUserId) {
+    const [linkedUser] = await db.select().from(schema.user).where(eq(schema.user.id, linkedUserId)).limit(1);
+    if (!linkedUser) {
+      throw new TokenExchangeError('Invalid token', 'TOKEN_EXCHANGE_INVALID_TOKEN', 400);
+    }
+    user = linkedUser as User;
   } else {
-    const randomPassword = crypto.randomUUID() + crypto.randomUUID();
-    const signUpBody: { name: string; email: string; password: string; image?: string } = {
-      name: name ?? emailLower.split('@')[0],
-      email: emailLower,
-      password: randomPassword
-    };
-    if (avatar) signUpBody.image = avatar;
-    const result = await authApi.signUpEmail({
-      body: signUpBody
-    });
-    user = result.user;
+    const [existingUser] = await db.select().from(schema.user).where(eq(schema.user.email, emailLower)).limit(1);
+
+    if (existingUser) {
+      // The email already has a ClassroomIO account. Only sign it in if this org already knows the
+      // person (member or pending invite); otherwise the org is reaching for an account it never provisioned.
+      const known = await isEmailKnownToOrg(orgId, emailLower, existingUser.id);
+      if (!known) {
+        throw new TokenExchangeError(
+          'This email is already registered to another ClassroomIO account. Invite them to your organization first.',
+          'TOKEN_EXCHANGE_EMAIL_CONFLICT',
+          409
+        );
+      }
+      user = existingUser as User;
+    } else {
+      const randomPassword = crypto.randomUUID() + crypto.randomUUID();
+      const signUpBody: { name: string; email: string; password: string; image?: string } = {
+        name: name ?? emailLower.split('@')[0],
+        email: emailLower,
+        password: randomPassword
+      };
+      if (avatar) signUpBody.image = avatar;
+      const result = await authApi.signUpEmail({
+        body: signUpBody
+      });
+      user = result.user;
+      createdNewUser = true;
+    }
+
+    await linkTokenAuthIdentity(orgId, sub, user.id);
   }
 
   await ensureOrgMembership(user.id, user.email ?? emailLower, orgId);
 
-  if (avatar) {
+  // Only on a user we just created — never overwrite an existing user's avatar from a token.
+  if (avatar && createdNewUser) {
     await db
       .update(schema.profile)
       .set({ avatarUrl: avatar, updatedAt: new Date().toISOString() })

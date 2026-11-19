@@ -43,26 +43,15 @@ async function runPnpmCommand(commandLabel: string, args: string[]) {
   });
 }
 
-async function truncatePublicTables() {
-  const sql = postgres(connectionString);
+async function dropAndRecreateSchemas() {
+  const sql = postgres(connectionString, { max: 1 });
 
   try {
-    console.log('Resetting database tables in public schema...');
-    await sql`
-      DO $$
-      DECLARE
-        table_record RECORD;
-      BEGIN
-        FOR table_record IN
-          SELECT tablename
-          FROM pg_tables
-          WHERE schemaname = 'public'
-        LOOP
-          EXECUTE format('TRUNCATE TABLE %I.%I RESTART IDENTITY CASCADE', 'public', table_record.tablename);
-        END LOOP;
-      END $$;
-    `;
-    console.log('✓ Public schema tables reset');
+    console.log('Dropping public and drizzle schemas...');
+    await sql`DROP SCHEMA IF EXISTS public CASCADE`;
+    await sql`DROP SCHEMA IF EXISTS drizzle CASCADE`;
+    await sql`CREATE SCHEMA public`;
+    console.log('✓ Schemas dropped and recreated');
   } finally {
     await sql.end();
   }
@@ -88,7 +77,7 @@ async function runSetupAndSeed() {
 
 async function resetDatabase() {
   try {
-    await truncatePublicTables();
+    await dropAndRecreateSchemas();
     await runSetupAndSeed();
     console.log('✅ Database reset complete');
   } catch (error) {

@@ -1,0 +1,2 @@
+export interface SectionHeaderProps { eyebrow?: string; title: React.ReactNode; lede?: string; align?: 'center'|'left'; size?: 'display'|'h2'|'h3'; style?: React.CSSProperties; }
+export declare function SectionHeader(props: SectionHeaderProps): JSX.Element;

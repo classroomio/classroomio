@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Customer Onboarding Academy · Templates · Acadia Tutors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .credit { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--muted); font-size: 13px; margin-bottom: 18px; }
+      .credit .grow a { color: inherit; font-weight: 500; }
+      .sec { border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 10px; background: var(--card); }
+      .sec-h { display: flex; align-items: center; gap: 10px; padding: 12px 14px; font-weight: 500; font-size: 14px; border-bottom: 1px solid var(--border); }
+      .sec-h .n { margin-left: auto; font-weight: 400; font-size: 12.5px; color: var(--muted-foreground); }
+      .row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; font-size: 13.5px; border-bottom: 1px solid var(--border); }
+      .row:last-child { border-bottom: none; }
+      .row svg { color: var(--muted-foreground); }
+      .toast { position: fixed; right: 20px; bottom: 76px; z-index: 300; background: var(--foreground); color: var(--background); padding: 11px 14px; border-radius: var(--radius-md); font-size: 13px; display: flex; gap: 10px; align-items: center; box-shadow: var(--shadow-md); animation: rise 0.25s cubic-bezier(0.23, 1, 0.32, 1); }
+      @keyframes rise { from { transform: translateY(8px); opacity: 0; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-app-sidebar="courses"></div>
+      <div class="main">
+        <header class="topbar">
+          <div class="crumbs"><a href="#">Courses</a><span class="sep">/</span><a href="#">Templates</a><span class="sep">/</span><span class="here">Customer Onboarding Academy</span></div>
+          <div class="top-actions">
+            <span class="badge badge-secondary">Template</span>
+            <button class="btn btn-primary btn-sm"><span data-icon="plus"></span>Create course from template</button>
+            <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"><span data-icon="sun"></span></button>
+          </div>
+        </header>
+        <main class="content">
+          <div class="wrap">
+            <div class="credit">
+              <span class="pub-av" style="background: #1d4ed8">L</span>
+              <div class="grow" data-state-view="fresh rate normal">From <a href="listing-course.html">Loopwise on ClassroomIO</a> · CC BY · Imported Sep 12, 2026</div>
+              <div class="grow" data-state-view="unpublished">From Loopwise on ClassroomIO · CC BY · Imported Sep 12, 2026 <span class="hint">(listing no longer available)</span></div>
+              <button class="btn btn-outline btn-sm" id="rate-btn" data-state-view="fresh rate normal unpublished"><span data-icon="star"></span>Rate this template</button>
+            </div>
+
+            <div class="page-head">
+              <div><h1 class="page-title">Customer Onboarding Academy</h1><p class="page-sub">4 sections · 14 lessons · 5 exercises · English, Français, Deutsch</p></div>
+            </div>
+
+            <div class="sec"><div class="sec-h">1. Welcome aboard <span class="n">3 lessons · 1 exercise</span></div>
+              <div class="row"><span data-icon="lesson"></span>Why you're here, in two minutes</div>
+              <div class="row"><span data-icon="lesson"></span>How this academy works</div>
+              <div class="row"><span data-icon="lesson"></span>Meet your success team</div>
+              <div class="row"><span data-icon="exercise"></span>Quick check: getting started</div>
+            </div>
+            <div class="sec"><div class="sec-h">2. Set up your account <span class="n">4 lessons · 1 exercise</span></div>
+              <div class="row"><span data-icon="lesson"></span>Create your workspace</div>
+              <div class="row"><span data-icon="lesson"></span>Connect your data sources</div>
+              <div class="row"><span data-icon="lesson"></span>Roles and permissions</div>
+            </div>
+            <div class="sec"><div class="sec-h">3. Your first workflow <span class="n">4 lessons · 2 exercises</span></div></div>
+            <div class="sec"><div class="sec-h">4. Bring your team <span class="n">3 lessons · 1 exercise</span></div></div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="toast" data-state-view="fresh"><span data-icon="check"></span>Imported into Acadia Tutors. It's in your Templates.</div>
+
+    <div class="scrim" id="rate" data-state-view="rate">
+      <div class="dialog" style="max-width: 480px">
+        <div class="dialog-head"><h2 class="dialog-title">Rate Customer Onboarding Academy</h2><p class="dialog-desc">Your review is shown on the listing with your organization's name and your first name. One review per organization — you can edit it anytime.</p></div>
+        <div class="dialog-body">
+          <div class="star-input" id="stars" role="radiogroup" aria-label="Rating"></div>
+          <div class="hint" id="star-label" style="margin: 4px 0 14px">Select a rating</div>
+          <div class="field"><label class="label" for="rv">Review <span class="hint" style="font-weight: 400">(optional)</span></label><textarea class="textarea" id="rv" rows="4" maxlength="1000" placeholder="What worked, what did you change, who is it good for?"></textarea></div>
+          <p class="hint">Shown as <b>Acadia Tutors · Priya</b></p>
+        </div>
+        <div class="dialog-foot"><button class="btn btn-outline btn-sm" id="rate-cancel">Cancel</button><button class="btn btn-primary btn-sm" id="rate-submit" disabled>Post review</button></div>
+      </div>
+    </div>
+
+    <div class="state-bar"><span class="lbl">State</span><button data-state="fresh">Just imported</button><button data-state="normal">Credit banner</button><button data-state="rate">Rate dialog</button><button data-state="unpublished">Listing unpublished</button><a href="index.html">← Map</a></div>
+
+    <script>
+      Object.assign(ICONS, {
+        plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>',
+        lesson: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
+        exercise: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+        check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>'
+      });
+      document.querySelectorAll('[data-icon]').forEach((node) => (node.outerHTML = ICONS[node.dataset.icon].replace('<svg viewBox="0 0 24 24">', '<svg viewBox="0 0 24 24" fill="currentColor" style="color:oklch(0.769 0.188 70.08)">')));
+
+      const labels = ['Poor', 'Fair', 'Good', 'Very good', 'Excellent'];
+      const starsBox = document.getElementById('stars');
+      starsBox.innerHTML = labels.map((label, index) => `<button role="radio" aria-label="${index + 1} stars — ${label}" data-v="${index + 1}">${ICONS.star}</button>`).join('');
+      starsBox.querySelectorAll('button').forEach((button) =>
+        button.addEventListener('click', () => {
+          const value = Number(button.dataset.v);
+          starsBox.querySelectorAll('button').forEach((star) => star.classList.toggle('on', Number(star.dataset.v) <= value));
+          document.getElementById('star-label').textContent = labels[value - 1];
+          document.getElementById('rate-submit').disabled = false;
+        })
+      );
+
+      const rateState = document.querySelector('.state-bar [data-state="rate"]');
+      const normalState = document.querySelector('.state-bar [data-state="normal"]');
+      document.getElementById('rate-btn').addEventListener('click', () => rateState.click());
+      document.getElementById('rate-cancel').addEventListener('click', () => normalState.click());
+      document.getElementById('rate-submit').addEventListener('click', () => normalState.click());
+      bindStatePicker('normal');
+    </script>
+  </body>
+</html>
