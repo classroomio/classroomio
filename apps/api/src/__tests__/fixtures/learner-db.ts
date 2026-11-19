@@ -79,7 +79,8 @@ export async function insertCourse(
       ${options.enrollOnlyInLearningPath ?? false}, ${certificate}::jsonb)`);
   for (const [order, lessonId] of lessonIds.entries()) {
     await tx.execute(sql`
-      INSERT INTO lesson (id, title, course_id, "order") VALUES (${lessonId}, 'Lesson', ${courseId}, ${order})`);
+      INSERT INTO lesson (id, title, slug, course_id, "order")
+      VALUES (${lessonId}, 'Lesson', ${`lesson-${lessonId}`}, ${courseId}, ${order})`);
   }
 
   return { courseId, groupId, lessonIds };
@@ -140,8 +141,8 @@ export async function insertExercise(
 ) {
   const exerciseId = randomUUID();
   await tx.execute(sql`
-    INSERT INTO exercise (id, title, course_id, completion_policy, pass_threshold, "order")
-    VALUES (${exerciseId}, 'Exercise', ${courseId}, ${policy.name}, ${policy.passThreshold || null}, 0)`);
+    INSERT INTO exercise (id, title, slug, course_id, completion_policy, pass_threshold, "order")
+    VALUES (${exerciseId}, 'Exercise', ${`exercise-${exerciseId}`}, ${courseId}, ${policy.name}, ${policy.passThreshold || null}, 0)`);
 
   return exerciseId;
 }

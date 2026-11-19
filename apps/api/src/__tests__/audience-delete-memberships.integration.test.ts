@@ -99,7 +99,9 @@ async function seedLearner(tag: string, memberStatus = 'ACTIVE'): Promise<Seeded
   }
 
   const exerciseId = randomUUID();
-  await db.execute(sql`INSERT INTO exercise (id, title, course_id) VALUES (${exerciseId}, 'Ex', ${courseId})`);
+  await db.execute(
+    sql`INSERT INTO exercise (id, title, slug, course_id, "order") VALUES (${exerciseId}, 'Ex', ${`ex-${exerciseId}`}, ${courseId}, 0)`
+  );
   await db.execute(sql`INSERT INTO submission (exercise_id, submitted_by, total)
     VALUES (${exerciseId}, ${groupMemberId}, 0)`);
 
