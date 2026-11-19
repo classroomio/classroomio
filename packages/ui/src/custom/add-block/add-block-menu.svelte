@@ -1,5 +1,6 @@
 <script lang="ts">
   import PlusIcon from '@lucide/svelte/icons/plus';
+  import { tick } from 'svelte';
   import { cn } from '../../tools';
   import { IconButton } from '../icon-button';
   import AiButton from './add-block-ai-button.svelte';
@@ -32,9 +33,13 @@
     onAi
   }: Props = $props();
 
-  const POPOVER_CLEARANCE = 260;
+  const MENU_GAP = 4;
+  const VIEWPORT_MARGIN = 8;
 
   let opensBelow = $state(false);
+  let maxHeight = $state<number | null>(null);
+  let anchorRef = $state<HTMLElement | null>(null);
+  let menuRef = $state<HTMLElement | null>(null);
 
   function select(type: string) {
     onClose();
@@ -46,14 +51,39 @@
     onAi?.();
   }
 
-  function toggle(trigger: HTMLElement) {
-    if (!open) opensBelow = trigger.getBoundingClientRect().top < POPOVER_CLEARANCE;
-
+  async function toggle() {
+    const wasOpen = open;
     onToggle();
+    if (wasOpen) return;
+
+    opensBelow = false;
+    maxHeight = null;
+    await tick();
+    placeMenu();
+  }
+
+  /**
+   * Opens the menu above the row when it fits, below when only that side fits, and otherwise on the
+   * roomier side with a height cap so it scrolls instead of leaving the viewport.
+   */
+  function placeMenu() {
+    if (!anchorRef || !menuRef) return;
+
+    const anchor = anchorRef.getBoundingClientRect();
+    const menuHeight = menuRef.scrollHeight + MENU_GAP;
+    const spaceAbove = anchor.top - VIEWPORT_MARGIN;
+    const spaceBelow = window.innerHeight - anchor.bottom - VIEWPORT_MARGIN;
+
+    if (menuHeight <= spaceAbove) return;
+
+    opensBelow = menuHeight <= spaceBelow || spaceBelow > spaceAbove;
+    if (menuHeight > Math.max(spaceAbove, spaceBelow)) {
+      maxHeight = Math.max(spaceAbove, spaceBelow) - MENU_GAP;
+    }
   }
 </script>
 
-<div class="ui:group/lines ui:relative ui:my-4 ui:flex ui:w-full ui:items-center ui:py-1">
+<div class="ui:group/lines ui:relative ui:my-4 ui:flex ui:w-full ui:items-center ui:py-1" bind:this={anchorRef}>
   <div class="ui:group/gap ui:flex ui:w-full ui:items-center ui:justify-center ui:gap-4">
     <div
       class={cn(
@@ -76,7 +106,7 @@
       aria-expanded={open}
       onclick={(event) => {
         event.stopPropagation();
-        toggle(event.currentTarget);
+        void toggle();
       }}
     >
       <PlusIcon size={12} class="custom" />
@@ -96,8 +126,11 @@
         'ui:border-border ui:bg-popover ui:absolute ui:left-1/2 ui:z-50 ui:flex ui:w-[min(440px,calc(100vw-32px))] ui:-translate-x-1/2 ui:flex-col ui:gap-2 ui:rounded-xl ui:border ui:p-2.5 ui:shadow-lg ui:animate-in ui:fade-in ui:zoom-in-[.97] ui:duration-150',
         opensBelow
           ? 'ui:top-full ui:mt-1 ui:origin-top ui:slide-in-from-top-1.5'
-          : 'ui:bottom-full ui:mb-1 ui:origin-bottom ui:slide-in-from-bottom-1.5'
+          : 'ui:bottom-full ui:mb-1 ui:origin-bottom ui:slide-in-from-bottom-1.5',
+        maxHeight !== null && 'ui:overflow-y-auto'
       )}
+      style:max-height={maxHeight !== null ? `${maxHeight}px` : undefined}
+      bind:this={menuRef}
       role="dialog"
       tabindex="-1"
       aria-label={addLabel}

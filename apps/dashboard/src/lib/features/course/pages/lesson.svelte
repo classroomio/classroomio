@@ -519,6 +519,12 @@
   {/snippet}
 </Page.Body>
 
+<svelte:window
+  onbeforeunload={(event) => {
+    if (lessonBlockList.hasPendingEdits) event.preventDefault();
+  }}
+/>
+
 <UnsavedChanges bind:hasUnsavedChanges />
 
 <LessonSettingsSheet

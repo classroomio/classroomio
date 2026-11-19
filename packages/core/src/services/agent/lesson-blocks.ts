@@ -30,6 +30,7 @@ export interface AgentLessonBlock {
   type: string;
   content?: string | null;
   data?: Record<string, unknown>;
+  version?: number;
   label?: string;
   sharedWithOtherLessons?: number;
 }
@@ -103,7 +104,7 @@ function toAgentLessonBlock(block: LessonBlock, locale: TLocale): AgentLessonBlo
 
   const agentData = readAgentBlockData(block.type, block.data);
   if (agentData) {
-    return { blockId: block.id, type: block.type, data: agentData, sharedWithOtherLessons };
+    return { blockId: block.id, type: block.type, data: agentData, version: block.version, sharedWithOtherLessons };
   }
 
   const label = readBlockLabel(block.data);
@@ -301,8 +302,10 @@ export async function moveAgentLessonBlock(
 
 /**
  * Creates a block the assistant authors whole, such as a chart, or with `blockId` replaces that block's data.
+ * A replacement must carry the `expectedVersion` the assistant read, so it cannot undo a newer edit.
  * The input is validated against the type's agent schema, then the stored block against its data schema.
- * @throws AppError when the type cannot be authored, the input is invalid, or the target is another type or shared.
+ * @throws AppError when the type cannot be authored, the input is invalid, the target is another type or
+ * shared, or the block changed since the assistant read it.
  */
 export async function writeAgentAuthoredBlock(
   input: {
@@ -310,10 +313,11 @@ export async function writeAgentAuthoredBlock(
     type: TBlockType;
     data: unknown;
     blockId?: string;
+    expectedVersion?: number;
     actorProfileId?: string;
     changeSetId?: string;
   } & BlockAnchor
-): Promise<{ blockId: string; created: boolean }> {
+): Promise<{ blockId: string; created: boolean; version: number }> {
   const authoring = getBlockAgentAuthoring(input.type);
   if (!authoring) {
     throw new AppError(`The assistant cannot write ${input.type} blocks.`, ErrorCodes.BLOCK_INVALID_DATA, 400);
@@ -343,10 +347,23 @@ export async function writeAgentAuthoredBlock(
     }
 
     assertNotShared(target);
-    const data = authoring.fromInput(parsed.data, target.data);
-    await updateLessonBlock(input.lessonId, target.id, { data, expectedVersion: target.version }, actor);
+    if (input.expectedVersion !== target.version) {
+      throw new AppError(
+        `Block ${target.id} changed since you read it. Call get_lesson_content again and apply the change to its current content.`,
+        ErrorCodes.BLOCK_VERSION_CONFLICT,
+        409
+      );
+    }
 
-    return { blockId: target.id, created: false };
+    const data = authoring.fromInput(parsed.data, target.data);
+    const updated = await updateLessonBlock(
+      input.lessonId,
+      target.id,
+      { data, expectedVersion: input.expectedVersion },
+      actor
+    );
+
+    return { blockId: target.id, created: false, version: updated.version };
   }
 
   const anchor = resolveAnchor(blocks, input);
@@ -354,7 +371,7 @@ export async function writeAgentAuthoredBlock(
   const blockInput = { type: input.type, data, ...anchor } as TBlockCreate;
   const created = await createLessonBlock(input.lessonId, blockInput, actor);
 
-  return { blockId: created.id, created: true };
+  return { blockId: created.id, created: true, version: created.version };
 }
 
 function editableFieldsOf(type: string): readonly string[] {
@@ -669,7 +686,7 @@ export async function formatLessonBlocksForPrompt(lessonId: string, locale: TLoc
       }
 
       if (block.data) {
-        return `<lesson_block blockId="${block.blockId}" type="${block.type}"${shared}>\n${JSON.stringify(block.data)}\n</lesson_block>`;
+        return `<lesson_block blockId="${block.blockId}" type="${block.type}" version="${block.version}"${shared}>\n${JSON.stringify(block.data)}\n</lesson_block>`;
       }
 
       const label = block.label ? `\n${block.label}\n` : '';

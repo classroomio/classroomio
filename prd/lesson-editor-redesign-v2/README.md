@@ -256,10 +256,11 @@ Notes for developers:
 
 The AI assistant can create and edit all five new blocks, the same way it writes Notes.
 
-* It has one tool per block: `write_lesson_chart_block`, `write_lesson_flashcards_block`, `write_lesson_tabs_block`, `write_lesson_multiple_choice_block` and `write_lesson_process_block`. Without a block id the tool adds a new block, at the end or next to a block the assistant names; with a block id it replaces that block's content.
+* It has one tool per block: `write_lesson_chart_block`, `write_lesson_flashcards_block`, `write_lesson_tabs_block`, `write_lesson_multiple_choice_block` and `write_lesson_process_block`. Without a block id the tool adds a new block, at the end or next to a block the assistant names; with a block id and the `version` it read (as `expectedVersion`) it replaces that block's content. If the block changed since the assistant read it, including being placed in another lesson, the tool refuses with a version conflict and the assistant reads the lesson again and redoes the change.
 * It reads these blocks' content when it looks at a lesson, so it can edit them, and it can remove them. It still cannot remove Video, Slides, Document or Image blocks.
 * A request for a multiple-choice question inside a lesson becomes a Multiple Choice block. A graded quiz is still an exercise.
 * It can give a tab an image from a link the teacher provides, but it cannot add a video or pick a different one. When it rewrites the tabs, a tab it keeps (same id) without sending an image keeps its video; giving that tab an image, or removing the tab, removes the video.
+* Images the assistant writes (a tab image, a Multiple Choice image, a Process step image) must be https links. An existing image that is not https is shown to it as `keepImage`; sending `keepImage` back keeps the image, and leaving out both the image and `keepImage` removes it.
 * Each block type declares this in its contract (`agent` in `packages/utils/src/validation/block/definitions/`), so the assistant's tools are built from the registry.
 
 ## Non-goals

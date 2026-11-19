@@ -3200,7 +3200,7 @@
               }
             },
             "flashcards": {
-              "edit_hint": "Click any text on the card to edit it · use the flip button to edit the answer side",
+              "edit_hint": "Click any text on the card to edit it · use the flip button to edit the answers",
               "flip_hint": "Click the card to flip",
               "question": "Question",
               "answer": "Answer",

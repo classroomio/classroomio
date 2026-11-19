@@ -2747,7 +2747,7 @@
               }
             },
             "flashcards": {
-              "edit_hint": "Kliknij dowolny tekst na karcie, aby go edytować · użyj przycisku odwracania, aby edytować odpowiedź",
+              "edit_hint": "Kliknij dowolny tekst na karcie, aby go edytować · użyj przycisku odwracania, aby edytować odpowiedzi",
               "flip_hint": "Kliknij kartę, aby ją odwrócić",
               "question": "Pytanie",
               "answer": "Odpowiedź",

@@ -2747,7 +2747,7 @@
               }
             },
             "flashcards": {
-              "edit_hint": "Klik på en tekst på kortet for at redigere den · brug vendeknappen til at redigere svarsiden",
+              "edit_hint": "Klik på en tekst på kortet for at redigere den · brug vendeknappen til at redigere svarene",
               "flip_hint": "Klik på kortet for at vende det",
               "question": "Spørgsmål",
               "answer": "Svar",

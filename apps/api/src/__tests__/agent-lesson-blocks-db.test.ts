@@ -388,9 +388,11 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
 
     expect(written.created).toBe(true);
     expect(blocks.map((block) => block.blockId).slice(0, 3)).toEqual([intro.id, written.blockId, video.id]);
-    expect(blocks[1]).toMatchObject({ type: 'multiple_choice', data });
+    expect(blocks[1]).toMatchObject({ type: 'multiple_choice', data, version: written.version });
     const prompt = await formatLessonBlocksForPrompt(lessonId, 'en');
-    expect(prompt).toContain(`<lesson_block blockId="${written.blockId}" type="multiple_choice">`);
+    expect(prompt).toContain(
+      `<lesson_block blockId="${written.blockId}" type="multiple_choice" version="${written.version}">`
+    );
     expect(prompt).toContain('"correctOptionId":"b"');
   });
 
@@ -433,6 +435,7 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
       lessonId,
       type: 'tabs',
       blockId: tabs.id,
+      expectedVersion: read.version,
       data: {
         align: 'left',
         tabs: [
@@ -444,7 +447,7 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
     });
     const [stored] = await getLessonBlocks(lessonId);
 
-    expect(written).toEqual({ blockId: tabs.id, created: false });
+    expect(written).toEqual({ blockId: tabs.id, created: false, version: tabs.version + 1 });
     expect(stored.data).toMatchObject({
       align: 'left',
       tabs: [
@@ -459,6 +462,57 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
     });
   });
 
+  it('refuses to replace a block with data read before a newer edit', async () => {
+    const lessonId = await createLesson('agent-authored-stale');
+    const chart = await writeAgentAuthoredBlock({
+      lessonId,
+      type: 'chart',
+      data: { title: 'Sales', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+    });
+    const [readByAssistant] = await listAgentLessonBlocks(lessonId, 'en');
+    await writeAgentAuthoredBlock({
+      lessonId,
+      type: 'chart',
+      blockId: chart.blockId,
+      expectedVersion: readByAssistant.version,
+      data: { title: 'Sales', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 4 }] }
+    });
+
+    await expect(
+      writeAgentAuthoredBlock({
+        lessonId,
+        type: 'chart',
+        blockId: chart.blockId,
+        expectedVersion: readByAssistant.version,
+        data: { title: 'Revenue', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+      })
+    ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_VERSION_CONFLICT });
+    const [stored] = await getLessonBlocks(lessonId);
+    expect(stored.data).toMatchObject({ title: 'Sales', points: [{ value: 4 }] });
+  });
+
+  it('refuses an edit read before the block was shared with another lesson', async () => {
+    const lessonId = await createLesson('agent-authored-shared-later');
+    const chart = await writeAgentAuthoredBlock({
+      lessonId,
+      type: 'chart',
+      data: { title: 'Sales', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+    });
+    const otherLesson = await createLesson('agent-authored-shared-other');
+    await attachLessonBlock(otherLesson, { blockId: chart.blockId });
+    await removeAgentLessonBlock({ lessonId: otherLesson, blockId: chart.blockId });
+
+    await expect(
+      writeAgentAuthoredBlock({
+        lessonId,
+        type: 'chart',
+        blockId: chart.blockId,
+        expectedVersion: chart.version,
+        data: { title: 'Revenue', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+      })
+    ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_VERSION_CONFLICT });
+  });
+
   it('refuses to rewrite a block of another type', async () => {
     const { lessonId, intro } = await createNoteVideoNoteLesson();
 
@@ -467,6 +521,7 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
         lessonId,
         type: 'flashcards',
         blockId: intro.id,
+        expectedVersion: intro.version,
         data: { cards: [{ id: 'a', question: 'Q', answer: 'A' }] }
       })
     ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_INVALID_DATA });

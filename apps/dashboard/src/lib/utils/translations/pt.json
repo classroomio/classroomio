@@ -2747,7 +2747,7 @@
               }
             },
             "flashcards": {
-              "edit_hint": "Clique em qualquer texto do cartão para editá-lo · use o botão de virar para editar a resposta",
+              "edit_hint": "Clique em qualquer texto do cartão para editá-lo · use o botão de virar para editar as respostas",
               "flip_hint": "Clique no cartão para virá-lo",
               "question": "Pergunta",
               "answer": "Resposta",

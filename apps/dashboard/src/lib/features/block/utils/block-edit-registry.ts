@@ -73,27 +73,52 @@ export const BLOCK_EDITORS: BlockEditRegistry = {
   chart: {
     icon: ChartColumnIcon,
     edit: ChartEdit,
-    createInitial: () => ({ data: createExampleChart(getChartExampleCopy()) })
+    createInitial: () => {
+      const copy = getChartExampleCopy();
+      const data = createExampleChart(copy);
+
+      return { data };
+    }
   },
   flashcards: {
     icon: GalleryHorizontalEndIcon,
     edit: FlashcardsEdit,
-    createInitial: () => ({ data: createExampleFlashcards(getFlashcardsExampleCopy()) })
+    createInitial: () => {
+      const copy = getFlashcardsExampleCopy();
+      const data = createExampleFlashcards(copy);
+
+      return { data };
+    }
   },
   tabs: {
     icon: PanelsTopLeftIcon,
     edit: TabsEdit,
-    createInitial: () => ({ data: createExampleTabs(getTabsExampleCopy()) })
+    createInitial: () => {
+      const copy = getTabsExampleCopy();
+      const data = createExampleTabs(copy);
+
+      return { data };
+    }
   },
   multiple_choice: {
     icon: ListChecksIcon,
     edit: MultipleChoiceEdit,
-    createInitial: () => ({ data: createExampleMultipleChoice(getMultipleChoiceExampleCopy()) })
+    createInitial: () => {
+      const copy = getMultipleChoiceExampleCopy();
+      const data = createExampleMultipleChoice(copy);
+
+      return { data };
+    }
   },
   process: {
     icon: ArrowRightIcon,
     edit: ProcessEdit,
-    createInitial: () => ({ data: createExampleProcess(getProcessExampleCopy()) })
+    createInitial: () => {
+      const copy = getProcessExampleCopy();
+      const data = createExampleProcess(copy);
+
+      return { data };
+    }
   }
 };
 

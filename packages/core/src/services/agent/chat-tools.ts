@@ -584,7 +584,7 @@ export function buildAgentTools(
       const toolName = authoredBlockToolName(type);
       const blockLabel = type.replaceAll('_', ' ');
       const authoredTool = tool({
-        description: `${authoring.purpose} Without blockId this adds a new ${blockLabel} block; pass afterBlockId or beforeBlockId to place it, or neither to put it at the end. With blockId it replaces that ${blockLabel} block's whole content: start from the data get_lesson_content returned, keep the ids of the items you keep, and change only what the teacher asked. Write plain text, not HTML.`,
+        description: `${authoring.purpose} Without blockId this adds a new ${blockLabel} block; pass afterBlockId or beforeBlockId to place it, or neither to put it at the end. With blockId and the expectedVersion get_lesson_content returned, it replaces that ${blockLabel} block's whole content: start from the data get_lesson_content returned, keep the ids of the items you keep, and change only what the teacher asked. Write plain text, not HTML.`,
         inputSchema: writeLessonAuthoredBlockParam(authoring.inputSchema),
         execute: async (args) => {
           return executeAgentTool(toolName, { orgId, userId, courseId, args }, async () => {
@@ -595,6 +595,7 @@ export function buildAgentTools(
               type,
               data: args.data,
               blockId: args.blockId,
+              expectedVersion: args.expectedVersion,
               afterBlockId: args.afterBlockId,
               beforeBlockId: args.beforeBlockId,
               actorProfileId: userId,
@@ -606,6 +607,7 @@ export function buildAgentTools(
               lessonTitle: lesson.title,
               blockType: type,
               blockId: written.blockId,
+              version: written.version,
               added: written.created,
               updated: !written.created
             };
@@ -633,7 +635,7 @@ export function buildAgentTools(
 
     get_lesson_content: tool({
       description:
-        "Get a lesson's blocks in display order. A lesson is a list of blocks: text (note) blocks carry HTML in `content` for the locale; chart, flashcards, tabs, multiple_choice and process blocks carry their content in `data`; video, slides, document and image blocks only carry a `label`. Use a text block's `blockId` with update_lesson_content, add_lesson_note_block and remove_lesson_block, a chart, flashcards, tabs, multiple_choice or process block's `blockId` with its write_lesson_<type>_block tool and remove_lesson_block, and any block's `blockId` with move_lesson_block.",
+        "Get a lesson's blocks in display order. A lesson is a list of blocks: text (note) blocks carry HTML in `content` for the locale; chart, flashcards, tabs, multiple_choice and process blocks carry their content in `data` and a `version` to send back when you change them; video, slides, document and image blocks only carry a `label`. Use a text block's `blockId` with update_lesson_content, add_lesson_note_block and remove_lesson_block, a chart, flashcards, tabs, multiple_choice or process block's `blockId` with its write_lesson_<type>_block tool and remove_lesson_block, and any block's `blockId` with move_lesson_block.",
       inputSchema: lessonReadParam,
       execute: async (args) => {
         return executeAgentTool('get_lesson_content', { orgId, userId, courseId, args }, async () => {

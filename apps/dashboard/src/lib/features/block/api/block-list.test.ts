@@ -159,4 +159,37 @@ describe('BlockListApi data saves', () => {
     expect(server.get('a')?.data).toEqual({ url: 'https://a.test/2.png' });
     expect(server.get('a')?.version).toBe(3);
   });
+
+  it("saves the previous lesson's pending edit before loading the next lesson", async () => {
+    const lessonA = createVersionedOwner([createRecord('a', { url: 'https://a.test/1.png' })]);
+    const lessonB = createVersionedOwner([createRecord('b', { url: 'https://b.test/1.png' })]);
+    const api = new BlockListApi();
+    await api.load(lessonA.owner);
+
+    api.setData('a', { url: 'https://a.test/2.png' });
+    expect(api.hasPendingEdits).toBe(true);
+    await api.load(lessonB.owner);
+
+    expect(lessonA.server.get('a')?.data).toEqual({ url: 'https://a.test/2.png' });
+    expect(lessonB.owner.updateData).not.toHaveBeenCalled();
+    expect(api.blocks.map((block) => block.id)).toEqual(['b']);
+    expect(api.hasPendingEdits).toBe(false);
+  });
+
+  it('keeps an edit made on the next lesson while the previous save is still in flight', async () => {
+    const lessonA = createVersionedOwner([createRecord('a', { url: 'https://a.test/1.png' })]);
+    const lessonB = createVersionedOwner([createRecord('b', { url: 'https://b.test/1.png' })]);
+    const api = new BlockListApi();
+    await api.load(lessonA.owner);
+
+    api.setData('a', { url: 'https://a.test/2.png' });
+    void api.flush();
+    await api.load(lessonB.owner);
+    api.setData('b', { url: 'https://b.test/2.png' });
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(lessonA.server.get('a')?.data).toEqual({ url: 'https://a.test/2.png' });
+    expect(lessonA.owner.updateData).toHaveBeenCalledTimes(1);
+    expect(lessonB.server.get('b')?.data).toEqual({ url: 'https://b.test/2.png' });
+  });
 });

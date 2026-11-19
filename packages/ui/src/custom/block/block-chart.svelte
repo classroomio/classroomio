@@ -1,5 +1,9 @@
 <script lang="ts">
+  import ChartColumnIcon from '@lucide/svelte/icons/chart-column';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import ChartPieIcon from '@lucide/svelte/icons/chart-pie';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import TableIcon from '@lucide/svelte/icons/table';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
@@ -87,11 +91,11 @@
   const canAddPoint = $derived(points.length < maxPoints);
   const canRemovePoint = $derived(points.length > 1);
 
-  const CHART_TYPE_ICONS: Record<ChartBlockType, string> = {
-    bar: 'M3 3v18h18 M8 17v-5 M13 17V7 M18 17v-3',
-    line: 'M3 3v18h18 M7 15l4-5 3 3 5-6',
-    pie: 'M21.21 15.89A10 10 0 1 1 8 2.83 M22 12A10 10 0 0 0 12 2v10z',
-    donut: ''
+  const CHART_TYPE_ICONS: Record<ChartBlockType, typeof ChartColumnIcon> = {
+    bar: ChartColumnIcon,
+    line: ChartLineIcon,
+    pie: ChartPieIcon,
+    donut: CircleDotIcon
   };
 
   /** Starts the entrance animation the first time the chart scrolls into view. */
@@ -136,26 +140,6 @@
     onPointValueInput?.(pointId, value ?? 0);
   }
 </script>
-
-{#snippet typeIcon(chartType: ChartBlockType)}
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="ui:size-4"
-    aria-hidden="true"
-  >
-    {#if chartType === 'donut'}
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="3.5" />
-    {:else}
-      <path d={CHART_TYPE_ICONS[chartType]} />
-    {/if}
-  </svg>
-{/snippet}
 
 {#snippet axisChart(isLine: boolean)}
   <div class="chart-axis-grid" style:--axis-width={axisWidth}>
@@ -310,7 +294,8 @@
                     data-testid={testId ? `${testId}-type-${chartType}` : undefined}
                     class="ui:text-muted-foreground ui:hover:text-foreground ui:data-[state=active]:bg-card ui:data-[state=active]:text-primary ui:dark:data-[state=active]:bg-card ui:dark:data-[state=active]:text-primary ui:h-[30px] ui:w-9 ui:flex-none ui:px-0 ui:data-[state=active]:shadow-none"
                   >
-                    {@render typeIcon(chartType)}
+                    {@const TypeIcon = CHART_TYPE_ICONS[chartType]}
+                    <TypeIcon class="ui:size-4" aria-hidden="true" />
                   </Tabs.Trigger>
                 {/snippet}
               </Tooltip.Trigger>
@@ -529,6 +514,7 @@
   }
 
   .chart-bar {
+    flex-shrink: 0;
     width: min(58%, 60px);
     min-height: 4px;
     border-radius: 9px 9px 3px 3px;

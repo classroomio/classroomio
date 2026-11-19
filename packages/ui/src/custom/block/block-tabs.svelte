@@ -1,5 +1,8 @@
 <script lang="ts">
   import PlusIcon from '@lucide/svelte/icons/plus';
+  import TextAlignCenterIcon from '@lucide/svelte/icons/text-align-center';
+  import TextAlignEndIcon from '@lucide/svelte/icons/text-align-end';
+  import TextAlignStartIcon from '@lucide/svelte/icons/text-align-start';
   import XIcon from '@lucide/svelte/icons/x';
   import { tick, type Snippet } from 'svelte';
   import * as Tabs from '../../base/tabs';
@@ -43,10 +46,10 @@
   }: Props = $props();
 
   const ALIGNMENTS: TabsBlockAlignment[] = ['left', 'center', 'right'];
-  const ALIGNMENT_ICON_PATHS: Record<TabsBlockAlignment, string> = {
-    left: 'M4 6h16M4 12h10M4 18h14',
-    center: 'M4 6h16M7 12h10M5 18h14',
-    right: 'M4 6h16M10 12h10M6 18h14'
+  const ALIGNMENT_ICONS: Record<TabsBlockAlignment, typeof TextAlignStartIcon> = {
+    left: TextAlignStartIcon,
+    center: TextAlignCenterIcon,
+    right: TextAlignEndIcon
   };
 
   let requestedTabId = $state('');
@@ -98,20 +101,6 @@
     'ui:text-muted-foreground ui:hover:text-foreground ui:data-[state=active]:bg-primary ui:data-[state=active]:text-primary-foreground ui:dark:data-[state=active]:bg-primary ui:dark:data-[state=active]:text-primary-foreground ui:dark:data-[state=active]:border-transparent ui:h-auto ui:max-w-[260px] ui:flex-none ui:rounded-full ui:border-0 ui:py-[9px] ui:text-[13.5px] ui:font-semibold ui:data-[state=active]:shadow-none ui:max-[560px]:py-2 ui:max-[560px]:text-[13px]';
 </script>
 
-{#snippet alignmentIcon(alignment: TabsBlockAlignment)}
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    class="ui:size-3.5"
-    aria-hidden="true"
-  >
-    <path d={ALIGNMENT_ICON_PATHS[alignment]} />
-  </svg>
-{/snippet}
-
 <div
   class={cn(
     'ui:flex ui:flex-col ui:gap-5',
@@ -147,7 +136,8 @@
             data-testid={testId ? `${testId}-align-${alignment}` : undefined}
             class="ui:text-muted-foreground ui:hover:text-foreground ui:data-[state=on]:bg-primary ui:data-[state=on]:text-primary-foreground ui:h-6 ui:min-w-[26px] ui:rounded-full ui:px-0 ui:hover:bg-transparent"
           >
-            {@render alignmentIcon(alignment)}
+            {@const AlignmentIcon = ALIGNMENT_ICONS[alignment]}
+            <AlignmentIcon class="ui:size-3.5" aria-hidden="true" />
           </ToggleGroup.Item>
         {/each}
       </ToggleGroup.Root>

@@ -14,6 +14,7 @@ export class BlockListApi {
   blocks = $state<BlockRecord[]>([]);
   isReady = $state(false);
   lastInsertedId = $state('');
+  hasPendingEdits = $state(false);
 
   private owner: BlockOwner | null = null;
   private loadId = 0;
@@ -26,15 +27,22 @@ export class BlockListApi {
   private saveQueue: Promise<void> = Promise.resolve();
   private payloadSignature = '';
 
+  /**
+   * Saves the previous owner's pending edits, then loads the blocks of `owner`.
+   */
   async load(owner: BlockOwner): Promise<void> {
     const loadId = ++this.loadId;
 
-    this.owner = owner;
     this.isReady = false;
+    await this.flush();
+    if (loadId !== this.loadId) return;
+
+    this.owner = owner;
     this.blocks = [];
     this.lastInsertedId = '';
     this.unsavedContent.clear();
     this.unsavedData.clear();
+    this.syncPendingEdits();
 
     const records = await owner.list();
     if (loadId !== this.loadId) return;
@@ -156,6 +164,7 @@ export class BlockListApi {
     this.blocks = this.blocks.filter((candidate) => candidate.id !== blockId);
     this.unsavedContent.delete(blockId);
     this.unsavedData.delete(blockId);
+    this.syncPendingEdits();
     if (this.lastInsertedId === blockId) this.lastInsertedId = '';
   }
 
@@ -207,6 +216,7 @@ export class BlockListApi {
     this.revision += 1;
     block.data = data as BlockRecord['data'];
     this.unsavedData.add(blockId);
+    this.syncPendingEdits();
 
     return true;
   }
@@ -246,6 +256,15 @@ export class BlockListApi {
     const locales = this.unsavedContent.get(blockId) ?? new Set<TLocale>();
     locales.add(locale);
     this.unsavedContent.set(blockId, locales);
+    this.syncPendingEdits();
+  }
+
+  private syncPendingEdits(): void {
+    this.hasPendingEdits =
+      this.unsavedContent.size > 0 ||
+      this.unsavedData.size > 0 ||
+      this.savingContent.size > 0 ||
+      this.savingData.size > 0;
   }
 
   private async saveUnsavedEdits(): Promise<void> {
@@ -254,6 +273,7 @@ export class BlockListApi {
 
     await this.saveUnsavedContent(owner);
     await this.saveUnsavedData(owner);
+    this.syncPendingEdits();
   }
 
   private async saveUnsavedContent(owner: BlockOwner): Promise<void> {

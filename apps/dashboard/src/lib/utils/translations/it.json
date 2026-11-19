@@ -3194,7 +3194,7 @@
               }
             },
             "flashcards": {
-              "edit_hint": "Fai clic su qualsiasi testo della carta per modificarlo · usa il pulsante di rotazione per modificare la risposta",
+              "edit_hint": "Fai clic su qualsiasi testo della carta per modificarlo · usa il pulsante di rotazione per modificare le risposte",
               "flip_hint": "Fai clic sulla carta per girarla",
               "question": "Domanda",
               "answer": "Risposta",

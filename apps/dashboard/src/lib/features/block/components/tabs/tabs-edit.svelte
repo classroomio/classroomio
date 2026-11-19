@@ -3,7 +3,7 @@
   import { TAB_NAME_MAX_LENGTH, TAB_NOTE_MAX_LENGTH, TABS_MAX_TABS } from '@cio/utils/validation/block';
   import type { BlockEditProps } from '../../utils/types';
   import { getNewTabName, getTabsLabels } from './tabs-labels';
-  import TabsMedia from './tabs-media.svelte';
+  import TabsMediaEdit from './tabs-media-edit.svelte';
   import { addTab, removeTab, setTabMedia, setTabName, setTabNote, setTabsAlignment } from './tabs-utils';
 
   let { block, index, onDataChange, onRequestImage, onRequestVideo }: BlockEditProps<'tabs'> = $props();
@@ -40,12 +40,9 @@
 >
   {#snippet content(tabId)}
     {@const tab = block.data.tabs.find((candidate) => candidate.id === tabId)}
-    <TabsMedia
+    <TabsMediaEdit
       media={tab?.media}
-      blockId={block.id}
-      {tabId}
       {index}
-      editable
       onAddImage={() => void addImage(tabId)}
       onAddVideo={() => void addVideo(tabId)}
       onChange={(media) => onDataChange(setTabMedia(block.data, tabId, media))}

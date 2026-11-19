@@ -87,8 +87,9 @@
   function removeStep() {
     if (!canRemoveStep || !currentStep) return;
 
+    const removedIndex = currentIndex;
     onRemoveStep?.(currentStep.id);
-    requestedIndex = Math.max(currentIndex - 1, 0);
+    requestedIndex = Math.max(removedIndex - 1, 0);
   }
 
   function nodeClass(index: number): string {

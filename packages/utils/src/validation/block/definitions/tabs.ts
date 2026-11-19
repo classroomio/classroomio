@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { defineBlock } from '../definition';
+import { defineBlock, isAgentImageUrl, ZAgentImageUrl, ZAgentKeepImage } from '../definition';
 import { ZImageBlockData, type TImageBlockData } from './image';
 import { toPublicVideoData, ZVideoBlockData, type TVideoBlockData } from './video';
 
@@ -54,13 +54,12 @@ export const ZTabsAgentInput = z
           note: z.string().max(TAB_NOTE_MAX_LENGTH).describe('Plain text shown under the tab name.'),
           image: z
             .object({
-              url: z
-                .url({ protocol: /^https$/ })
-                .describe('https URL of the image, exactly as the teacher or a tool gave it.'),
+              url: ZAgentImageUrl,
               alt: z.string().max(300).optional()
             })
             .optional()
-            .describe('The image the tab shows. Leave it out for no image.')
+            .describe('The image the tab shows. Leave it and keepImage out for no image.'),
+          keepImage: ZAgentKeepImage
         })
       )
       .min(TABS_MIN_TABS)
@@ -72,23 +71,31 @@ export const ZTabsAgentInput = z
   });
 export type TTabsAgentInput = z.infer<typeof ZTabsAgentInput>;
 
+function toAgentImage(media: TTabMedia | undefined) {
+  if (media?.kind !== 'image') return {};
+  if (!isAgentImageUrl(media.data.url)) return { keepImage: true as const };
+
+  const image = { url: media.data.url, ...(media.data.alt ? { alt: media.data.alt } : {}) };
+
+  return { image };
+}
+
 function toAgentTab(tab: TTab) {
   const media = tab.media;
-  const image =
-    media?.kind === 'image' ? { url: media.data.url, ...(media.data.alt ? { alt: media.data.alt } : {}) } : null;
 
   return {
     id: tab.id,
     name: tab.name,
     note: tab.note,
-    ...(image ? { image } : {}),
+    ...toAgentImage(media),
     ...(media?.kind === 'video' ? { hasVideo: true } : {})
   };
 }
 
 /**
- * Builds a tab's media from the assistant's input. An image it sends replaces what the tab showed; a video
- * the tab already had stays, because the assistant cannot pick videos.
+ * Builds a tab's media from the assistant's input. An image it sends replaces what the tab showed;
+ * `keepImage` keeps the tab's image, and a video the tab already had stays, because the assistant cannot
+ * pick videos.
  */
 function fromAgentTab(input: TTabsAgentInput['tabs'][number], previous: TTab | undefined): TTab {
   const previousMedia = previous?.media;
@@ -105,7 +112,9 @@ function fromAgentTab(input: TTabsAgentInput['tabs'][number], previous: TTab | u
     return { ...tab, media: { kind: 'image', data } };
   }
 
-  return previousMedia?.kind === 'video' ? { ...tab, media: previousMedia } : tab;
+  const keepsMedia = previousMedia?.kind === 'video' || (input.keepImage && previousMedia?.kind === 'image');
+
+  return keepsMedia ? { ...tab, media: previousMedia } : tab;
 }
 
 function hasVideo(tab: TTab): tab is TTab & { media: { kind: 'video'; data: TVideoBlockData } } {

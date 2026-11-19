@@ -8,7 +8,9 @@
 
   const video = $derived(block.data as LessonVideo);
 
-  function handleMetadataUpdated(patch: Record<string, unknown>) {
+  function handleMetadataUpdated(patch: Record<string, unknown>, sourceAssetId?: string) {
+    if (sourceAssetId && sourceAssetId !== block.data.assetId) return;
+
     onDataChange({ ...block.data, metadata: { ...block.data.metadata, ...patch } });
   }
 </script>
