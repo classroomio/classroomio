@@ -34,6 +34,8 @@
     class: className
   }: Props = $props();
 
+  const id = $props.id();
+
   const trendClass: Record<NonNullable<Props['trend']>, string> = {
     up: 'text-emerald-600 dark:text-emerald-400',
     down: 'text-rose-600 dark:text-rose-400',
@@ -46,13 +48,6 @@
     warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
     danger: 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
   };
-
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-
-    event.preventDefault();
-    onClick?.();
-  }
 
   const sparklinePath = $derived.by(() => {
     if (!sparkline || sparkline.length < 2) return '';
@@ -72,26 +67,27 @@
 </script>
 
 <Card.Root
-  class={cn(
-    'ui:bg-card relative overflow-hidden',
-    onClick &&
-      'ui:hover:bg-muted/50 ui:focus-visible:ring-ring cursor-pointer transition-colors focus-visible:ring-2 focus-visible:outline-none',
-    className
-  )}
-  role={onClick ? 'button' : undefined}
-  tabindex={onClick ? 0 : undefined}
-  aria-label={onClick ? clickLabel : undefined}
-  data-testid={onClick ? 'kpi-card-button' : undefined}
-  onclick={onClick}
-  onkeydown={onClick ? handleKeydown : undefined}
+  class={cn('ui:bg-card relative overflow-hidden', onClick && 'ui:hover:bg-muted/50 transition-colors', className)}
 >
+  {#if onClick}
+    <button
+      type="button"
+      class="ui:focus-visible:ring-ring absolute inset-0 cursor-pointer rounded-lg focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset"
+      aria-label={clickLabel}
+      aria-describedby={description ? `${id}-value ${id}-description` : `${id}-value`}
+      data-testid="kpi-card-button"
+      onclick={onClick}
+    ></button>
+  {/if}
   <Card.Header class="pb-2">
     <div class="flex items-start justify-between gap-2">
       <div class="flex items-center gap-2">
         <Card.Title class="ui:text-muted-foreground text-xs font-medium tracking-wide uppercase">
           {title}
         </Card.Title>
-        {@render badge?.()}
+        <div class="relative z-10">
+          {@render badge?.()}
+        </div>
       </div>
       {#if Icon}
         <div class={cn('flex h-9 w-9 items-center justify-center rounded-full', accentClass[accent])}>
@@ -104,13 +100,13 @@
     {#if loading}
       <Skeleton class="h-9 w-24" />
     {:else}
-      <p class="ui:text-foreground text-3xl font-semibold tabular-nums">{value}</p>
+      <p id="{id}-value" class="ui:text-foreground text-3xl font-semibold tabular-nums">{value}</p>
     {/if}
     {#if description}
       {#if loading}
         <Skeleton class="mt-2 h-3 w-32" />
       {:else}
-        <p class={cn('mt-1 text-xs tabular-nums', trendClass[trend])}>{description}</p>
+        <p id="{id}-description" class={cn('mt-1 text-xs tabular-nums', trendClass[trend])}>{description}</p>
       {/if}
     {/if}
     {#if sparklinePath && !loading}

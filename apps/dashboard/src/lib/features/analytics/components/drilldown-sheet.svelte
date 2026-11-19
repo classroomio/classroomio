@@ -16,8 +16,10 @@
   import { analyticsApi, analyticsDrilldownApi, analyticsStudentSheetApi, analyticsStudentsApi } from '../api';
   import {
     attemptedByExercise,
+    DRILLDOWN_PANEL_ID,
     drilldownCourseId,
     drilldownHeading,
+    drilldownTabId,
     isAnalyticsStatus,
     numberCell,
     scopeCourse,
@@ -62,6 +64,7 @@
 
     return healthKey ? $t('analytics.drilldown.cohort_health_note') : null;
   });
+  const isTabbed = $derived(drilldownApi.switcher?.control === 'tabs');
   const studentsTab = $derived(drilldown ? drilldownApi.studentsTabFor(drilldown) : null);
 
   function handleOpenChange(isOpen: boolean) {
@@ -104,7 +107,12 @@
 
     <DrilldownSegmentSwitcher />
 
-    <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-auto px-4 pb-4">
+    <div
+      class="flex min-h-0 flex-1 flex-col gap-4 overflow-auto px-4 pb-4"
+      id={isTabbed ? DRILLDOWN_PANEL_ID : undefined}
+      role={isTabbed ? 'tabpanel' : undefined}
+      aria-labelledby={isTabbed && drilldownApi.switcher ? drilldownTabId(drilldownApi.switcher.activeKey) : undefined}
+    >
       {#if !drilldownApi.hasLoaded}
         <div class="space-y-2" aria-busy="true">
           {#each [0, 1, 2, 3, 4] as index (index)}

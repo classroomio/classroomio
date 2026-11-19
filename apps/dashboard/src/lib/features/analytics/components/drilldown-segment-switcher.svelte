@@ -4,6 +4,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   import { analyticsDrilldownApi } from '../api';
+  import { DRILLDOWN_PANEL_ID, drilldownTabId } from '../utils/analytics-utils';
 
   const switcher = $derived(analyticsDrilldownApi.switcher);
   const activeOption = $derived(switcher?.options.find((option) => option.key === switcher.activeKey));
@@ -40,7 +41,12 @@
           data-testid="analytics-drilldown-switcher"
         >
           {#each switcher.options as option (option.key)}
-            <Tabs.Trigger value={option.key} data-testid="analytics-drilldown-segment-{option.key}">
+            <Tabs.Trigger
+              value={option.key}
+              id={drilldownTabId(option.key)}
+              aria-controls={DRILLDOWN_PANEL_ID}
+              data-testid="analytics-drilldown-segment-{option.key}"
+            >
               {option.label}
               {#if option.count !== null}
                 <span class="ui:text-muted-foreground tabular-nums">{option.count}</span>

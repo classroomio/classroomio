@@ -779,6 +779,12 @@ export function toHbarItems(result: AnalyticsResult, dimension: string | null, t
   });
 }
 
+export const DRILLDOWN_PANEL_ID = 'analytics-drilldown-panel';
+
+export function drilldownTabId(segmentKey: string): string {
+  return `analytics-drilldown-tab-${segmentKey}`;
+}
+
 export const ATTENTION_REASONS: ReadonlyArray<{ key: string; tone: AnalyticsTone }> = [
   { key: 'is_inactive__count_if', tone: 'danger' },
   { key: 'is_low_score__count_if', tone: 'danger' },

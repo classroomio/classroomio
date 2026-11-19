@@ -76,8 +76,8 @@
 </script>
 
 <Story name="Default">
-  {#snippet template()}
-    <ButtonGroup.Root>
+  {#snippet template(args)}
+    <ButtonGroup.Root orientation={args.orientation} variant={args.variant}>
       <ButtonGroup.Root class="hidden sm:flex">
         <Button variant="outline" size="icon" aria-label="Go Back">
           <ArrowLeft />
@@ -150,11 +150,11 @@
   {/snippet}
 </Story>
 
-<Story name="Toolbar">
-  {#snippet template()}
+<Story name="Toolbar" args={{ variant: 'toolbar' }}>
+  {#snippet template(args)}
     <div class="flex flex-col items-start gap-8">
       <Tooltip.Provider>
-        <ButtonGroup.Root variant="toolbar" aria-label="Widget actions">
+        <ButtonGroup.Root orientation={args.orientation} variant={args.variant} aria-label="Widget actions">
           <Tooltip.Root>
             <Tooltip.Trigger>
               {#snippet child({ props })}
@@ -181,10 +181,10 @@
   {/snippet}
 </Story>
 
-<Story name="Toolbar single button">
-  {#snippet template()}
+<Story name="Toolbar single button" args={{ variant: 'toolbar' }}>
+  {#snippet template(args)}
     <Tooltip.Provider>
-      <ButtonGroup.Root variant="toolbar" aria-label="Widget actions">
+      <ButtonGroup.Root orientation={args.orientation} variant={args.variant} aria-label="Widget actions">
         <Tooltip.Root>
           <Tooltip.Trigger>
             {#snippet child({ props })}
@@ -200,9 +200,9 @@
   {/snippet}
 </Story>
 
-<Story name="Toolbar disabled">
-  {#snippet template()}
-    <ButtonGroup.Root variant="toolbar" aria-label="Widget actions">
+<Story name="Toolbar disabled" args={{ variant: 'toolbar' }}>
+  {#snippet template(args)}
+    <ButtonGroup.Root orientation={args.orientation} variant={args.variant} aria-label="Widget actions">
       <Button variant="secondary" size="icon-sm" aria-label="Expand" disabled>
         <Maximize2 />
       </Button>
@@ -213,9 +213,9 @@
   {/snippet}
 </Story>
 
-<Story name="Orientation">
-  {#snippet template()}
-    <ButtonGroup.Root orientation="vertical" aria-label="Media controls" class="h-fit">
+<Story name="Orientation" args={{ orientation: 'vertical' }}>
+  {#snippet template(args)}
+    <ButtonGroup.Root orientation={args.orientation} variant={args.variant} aria-label="Media controls" class="h-fit">
       <Button variant="outline" size="icon">
         <Plus />
       </Button>
