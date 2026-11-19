@@ -11,7 +11,6 @@ import {
   toHealthSegments
 } from './analytics-utils';
 import type {
-  AnalyticsKpiDisplay,
   AnalyticsResult,
   AnalyticsRow,
   AnalyticsStructureItem,
@@ -138,31 +137,19 @@ function exportCell(value: AnalyticsRow[string] | undefined, translate: Translat
 }
 
 /**
- * The rows behind a widget as the chart shows them: segments for donuts, the headline figure for KPIs, and one
- * labelled row per result row for everything else.
+ * The rows behind a widget as the chart shows them: segments for donuts, and one labelled row per result row for
+ * everything else.
  */
 export function buildWidgetExportDocument(params: {
   widget: AnalyticsWidget;
   result: AnalyticsResult;
   title: string;
   subtitle?: string;
-  kpi?: AnalyticsKpiDisplay;
   translate: Translate;
 }): ExportDocument<WidgetExportRow> {
-  const { widget, result, title, subtitle, kpi, translate } = params;
+  const { widget, result, title, subtitle, translate } = params;
   const document = { filename: title, title, subtitle };
   const dimensions = widget.spec.dimensions ?? [];
-
-  if (widget.viz === 'kpi' && kpi) {
-    const columns = [
-      rowColumn('metric', translate('analytics.export.columns.metric')),
-      rowColumn('value', translate('analytics.export.columns.value')),
-      rowColumn('details', translate('analytics.export.columns.details'))
-    ];
-    const rows = [{ metric: kpi.title ?? title, value: kpi.value, details: kpi.description ?? null }];
-
-    return { ...document, columns, rows };
-  }
 
   const isDonut = widget.viz === 'donut';
   if (isDonut && dimensions[0]) {

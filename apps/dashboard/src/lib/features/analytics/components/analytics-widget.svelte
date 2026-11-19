@@ -25,9 +25,9 @@
   import StudentsTable from './students/students-table.svelte';
   import NowTag from './now-tag.svelte';
   import WidgetEmpty from './widget-empty.svelte';
-  import WidgetMenu from './widget-menu.svelte';
   import WidgetPagination from './widget-pagination.svelte';
   import WidgetSkeleton from './widget-skeleton.svelte';
+  import WidgetToolbar from './widget-toolbar.svelte';
   import { rendererFor } from './widgets';
 
   interface Props {
@@ -73,14 +73,14 @@
       <NowTag />
     {/if}
     {#if !isSelfLoading}
-      <WidgetMenu {widget} {title} hasStudents={context.studentCount > 0} />
+      <WidgetToolbar {widget} {title} />
     {/if}
   </div>
 {/snippet}
 
 <StatsPanelCard
   {title}
-  class={cn('col-span-1 min-w-0', spanClass)}
+  class={cn('group col-span-1 min-w-0', spanClass)}
   action={showNowTag || !isSelfLoading ? headerAction : undefined}
 >
   {#if showExercisePicker}

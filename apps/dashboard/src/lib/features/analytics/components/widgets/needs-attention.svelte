@@ -2,22 +2,15 @@
   import { t } from '$lib/utils/functions/translations';
 
   import { analyticsApi } from '../../api';
-  import { formatCount, numberCell } from '../../utils/analytics-utils';
+  import { ATTENTION_REASONS, formatCount, numberCell } from '../../utils/analytics-utils';
   import type { HbarItem, WidgetRendererProps } from '../../utils/types';
   import HbarList from '../charts/hbar-list.svelte';
 
   let { result, onSegmentSelect }: WidgetRendererProps = $props();
 
-  const REASONS: ReadonlyArray<{ key: string; tone: HbarItem['tone'] }> = [
-    { key: 'is_inactive__count_if', tone: 'danger' },
-    { key: 'is_low_score__count_if', tone: 'danger' },
-    { key: 'is_overdue__count_if', tone: 'warning' },
-    { key: 'is_low_video__count_if', tone: 'warning' }
-  ];
-
   const row = $derived(result.rows[0]);
   const items = $derived(
-    REASONS.map(({ key, tone }): HbarItem => {
+    ATTENTION_REASONS.map(({ key, tone }): HbarItem => {
       const value = numberCell(row, key);
       const label = $t(`analytics.measures.${key}`);
 

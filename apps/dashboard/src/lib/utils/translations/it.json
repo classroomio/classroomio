@@ -7172,10 +7172,7 @@
       "yes": "Sì",
       "no": "No",
       "columns": {
-        "segment": "Gruppo",
-        "metric": "Metrica",
-        "value": "Valore",
-        "details": "Dettagli"
+        "segment": "Gruppo"
       },
       "dimensions": {
         "student": "Studente",
@@ -7195,11 +7192,10 @@
       }
     },
     "org_page_title": "Accademia",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "Azioni per {title}",
-      "view_students": "Visualizza studenti",
-      "open_in_students": "Apri nella scheda Studenti",
-      "click_to_view": "Seleziona una barra o una fetta per vedere i suoi studenti"
+      "expand": "Espandi",
+      "download": "Scarica CSV"
     },
     "drilldown": {
       "count": "{count, plural, one {# studente} other {# studenti}}",
@@ -7216,7 +7212,10 @@
       "lesson_incomplete": "Non completato: {lesson}",
       "lesson_fallback": "questa lezione",
       "score_bucket": "Punteggio medio {range}",
-      "scored": "Con un punteggio medio"
+      "scored": "Con un punteggio medio",
+      "open_in_students": "Apri nella scheda Studenti",
+      "kpi_label": "Visualizza studenti: {title}",
+      "segment_label": "Segmento"
     }
   },
   "oauth": {

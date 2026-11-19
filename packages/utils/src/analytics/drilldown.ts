@@ -229,6 +229,34 @@ export function hasSegmentDrilldown(widgetId: string): boolean {
   return Boolean(DRILLDOWN_RULES[widgetId]?.segment);
 }
 
+const EXPAND_WIDGET_IDS: readonly string[] = [
+  'cohort_health',
+  'overdue',
+  'score_distribution',
+  'score_distribution_course',
+  'students_by_status',
+  'students_by_status_course',
+  'needs_attention',
+  'lesson_dropoff'
+];
+
+/**
+ * Whether a widget's toolbar offers Expand: the drawer lists the exact students behind the whole widget, or behind
+ * one of its segments.
+ */
+export function hasExpandDrilldown(widgetId: string): boolean {
+  if (!EXPAND_WIDGET_IDS.includes(widgetId)) return false;
+
+  return hasWholeDrilldown(widgetId) || hasSegmentDrilldown(widgetId);
+}
+
+/**
+ * Whether Expand on a widget opens a segment, so the drawer needs a switcher to reach the others.
+ */
+export function expandNeedsSegmentSwitcher(widgetId: string): boolean {
+  return hasExpandDrilldown(widgetId) && !hasWholeDrilldown(widgetId);
+}
+
 /**
  * The students behind a widget number, as the one place that decides which student filters reproduce it. A null
  * segment key drills into the whole widget. Returns null when the widget or segment has no exact student list.
