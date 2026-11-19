@@ -85,7 +85,7 @@
         <Card.Title class="ui:text-muted-foreground text-xs font-medium tracking-wide uppercase">
           {title}
         </Card.Title>
-        <div class="relative z-10">
+        <div class="relative z-10 flex">
           {@render badge?.()}
         </div>
       </div>
