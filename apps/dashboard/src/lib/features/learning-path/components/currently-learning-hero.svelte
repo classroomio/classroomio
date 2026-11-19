@@ -27,7 +27,7 @@
   type Props = (PathVariantProps | CourseVariantProps) & {
     href: string;
     coverGradient?: string;
-    coverImage?: string;
+    coverImage?: string | null;
     progressPercent: number;
   };
 

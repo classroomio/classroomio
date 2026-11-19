@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import * as Block from '@cio/ui/custom/block';
+  import { Empty } from '@cio/ui/custom/empty';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
   import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';

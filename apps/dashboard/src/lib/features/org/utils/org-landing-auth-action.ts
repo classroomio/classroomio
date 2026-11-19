@@ -7,7 +7,7 @@ import type { LandingNavAuthAction } from '@cio/ui/custom/org-landing-page';
 
 type OrganizationMembership = {
   id: string;
-  roleId: number;
+  roleId?: number;
   siteName?: string | null;
 };
 

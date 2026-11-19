@@ -866,7 +866,6 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
     learningPathCourseCountLabel: (count) => t.get('marketing.popularTypes.course_count', { count }),
     learningPathsEmptyTitle: t.get('public_courses.catalog_empty.title'),
     learningPathsEmptyDescription: t.get('public_courses.catalog_empty.description'),
-    learningPathHoursLabel: (hours) => `${hours}h`,
     learningPathCertificateLabel: t.get('course.navItem.landing_page.certificate'),
     courseOutlineHeading: t.get('course.navItem.landing_page.course_content'),
     courseOutlineDescription: t.get('public_courses.subtitle'),

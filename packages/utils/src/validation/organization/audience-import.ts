@@ -58,6 +58,7 @@ export const ZImportAudienceMembers = z
   });
 
 export type TImportAudienceMembers = z.infer<typeof ZImportAudienceMembers>;
+export type TImportAudienceMembersInput = z.input<typeof ZImportAudienceMembers>;
 
 export type AudienceImportRowResult = {
   email: string;

@@ -387,6 +387,7 @@ export interface TPublicLearningPathListItem {
   coverImage: string | null;
   cost: number;
   currency: string;
+  selfEnrollment: boolean;
   landingPage: TLearningPath['landingPage'];
   courseCount: number;
 }

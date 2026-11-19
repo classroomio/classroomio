@@ -106,7 +106,11 @@ class PathMembersApi extends BaseApiWithErrors {
    * Reads one status envelope for a queued bulk add. The invitation-modal
    * drives the poll loop so a closed dialog stops polling.
    */
-  async getBulkEnrollStatus(pathId: string, jobId: string, pollCount = 0) {
+  async getBulkEnrollStatus(
+    pathId: string,
+    jobId: string,
+    pollCount = 0
+  ): Promise<GetBulkEnrollStatusSuccess['data'] | null> {
     let envelope: GetBulkEnrollStatusSuccess['data'] | null = null;
 
     await this.execute<GetBulkEnrollStatusRequest>({

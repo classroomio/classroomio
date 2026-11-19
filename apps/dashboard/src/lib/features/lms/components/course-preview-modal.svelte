@@ -17,14 +17,14 @@
     id: string;
     title: string;
     description?: string | null;
-    logo?: string | null;
+    bannerImage?: string | null;
     slug?: string | null;
     lessonCount?: number | null;
     exerciseCount?: number | null;
     cost?: number | null;
     currency?: string | null;
     metadata?: CourseMetadata | null;
-    type?: string;
+    type?: string | null;
   }
 
   interface Props {

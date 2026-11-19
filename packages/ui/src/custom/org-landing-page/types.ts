@@ -3,9 +3,19 @@ import type {
   LearningPathCertificateInfo,
   LearningPathFaqItem,
   LearningPathInstructorItem,
+  LearningPathPricingInfo,
   LearningPathReviewItem,
   LearningPathSeriesCourse
 } from './learning-path-detail.types';
+
+export type {
+  LearningPathCertificateInfo,
+  LearningPathFaqItem,
+  LearningPathInstructorItem,
+  LearningPathPricingInfo,
+  LearningPathReviewItem,
+  LearningPathSeriesCourse
+};
 
 export type NavItem = { label: string; href: string };
 
@@ -81,7 +91,7 @@ export type LearningPathItem = {
   cost?: number;
   currency?: string;
   courseCount?: number;
-  totalHours?: number;
+  totalStudents?: number;
   hasCertificate?: boolean;
   metadata?: {
     discount?: number;

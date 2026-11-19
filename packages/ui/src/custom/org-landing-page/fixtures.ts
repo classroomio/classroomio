@@ -16,7 +16,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 149.0,
     currency: 'USD',
     courseCount: 3,
-    totalHours: 16,
     hasCertificate: true,
     totalStudents: 942,
     metadata: { showDiscount: true, discount: 20 }
@@ -31,7 +30,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 0,
     currency: 'USD',
     courseCount: 3,
-    totalHours: 7,
     hasCertificate: true,
     totalStudents: 2104
   },
@@ -45,7 +43,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 199.0,
     currency: 'USD',
     courseCount: 6,
-    totalHours: 96,
     hasCertificate: true,
     totalStudents: 1687,
     metadata: { showDiscount: true, discount: 15 }
@@ -60,7 +57,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 129.0,
     currency: 'USD',
     courseCount: 5,
-    totalHours: 64,
     hasCertificate: true,
     totalStudents: 1203
   },
@@ -74,7 +70,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 89.0,
     currency: 'USD',
     courseCount: 4,
-    totalHours: 32,
     hasCertificate: true,
     totalStudents: 946
   },
@@ -88,7 +83,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 79.0,
     currency: 'USD',
     courseCount: 4,
-    totalHours: 28,
     hasCertificate: true,
     totalStudents: 758
   },
@@ -102,7 +96,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 0,
     currency: 'USD',
     courseCount: 3,
-    totalHours: 18,
     hasCertificate: false,
     totalStudents: 315
   },
@@ -116,7 +109,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 179.0,
     currency: 'USD',
     courseCount: 5,
-    totalHours: 72,
     hasCertificate: true,
     totalStudents: 881,
     metadata: { showDiscount: true, discount: 10 }
@@ -131,7 +123,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 149.0,
     currency: 'USD',
     courseCount: 4,
-    totalHours: 52,
     hasCertificate: true,
     totalStudents: 1342
   },
@@ -145,7 +136,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 0,
     currency: 'USD',
     courseCount: 3,
-    totalHours: 22,
     hasCertificate: true,
     totalStudents: 2924
   },
@@ -159,7 +149,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 119.0,
     currency: 'USD',
     courseCount: 4,
-    totalHours: 40,
     hasCertificate: true,
     totalStudents: 1094
   },
@@ -173,7 +162,6 @@ export const mockLearningPaths: LearningPathItem[] = [
     cost: 59.0,
     currency: 'USD',
     courseCount: 3,
-    totalHours: 14,
     hasCertificate: false,
     totalStudents: 436
   }

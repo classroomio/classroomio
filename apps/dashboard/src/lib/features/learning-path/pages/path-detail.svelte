@@ -109,7 +109,7 @@
       <Spinner />
     </div>
   {/if}
-{:else if !journey}
+{:else if !journey || !path}
   <Empty
     icon={PathIcon}
     title={$t('learningPath.empty.path_not_found_title')}

@@ -96,7 +96,6 @@
     title,
     description,
     coverImage,
-    coverGradient = 'linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))',
     typeBadge,
     visibilityBadge,
     lessonCount,
@@ -325,7 +324,7 @@
       <Progress value={progressPercent} class="ui:h-1.5 ui:rounded-full" />
     {/if}
 
-    {#if showCompliance}
+    {#if showCompliance && compliance}
       <div class="ui:mt-1 ui:flex ui:flex-wrap ui:items-center ui:gap-2">
         {#if compliance.statusLabel}
           <Badge variant={compliance.statusVariant}>{compliance.statusLabel}</Badge>

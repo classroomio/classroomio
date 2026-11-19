@@ -294,7 +294,7 @@
           bind:value={name}
           errorMessage={errors.name}
           testId="path-settings-title"
-          onInputChange={() => {
+          onInput={() => {
             hasUnsavedChanges = true;
           }}
         />

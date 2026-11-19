@@ -35,7 +35,7 @@
     name: string;
     description: string;
     coverGradient?: string;
-    coverImage?: string;
+    coverImage?: string | null;
     courseCount: number;
     totalHours?: number;
     progressPercent?: number;
@@ -61,10 +61,8 @@
     href,
     name,
     description,
-    coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
     coverImage,
     courseCount,
-    totalHours,
     progressPercent = 0,
     coursesCompleted = 0,
     certificateEarned = false,

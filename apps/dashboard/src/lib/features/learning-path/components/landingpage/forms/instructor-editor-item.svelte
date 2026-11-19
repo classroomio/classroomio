@@ -60,7 +60,7 @@
     label={$t('learningPath.landing.instructors.name')}
     placeholder={$t('learningPath.landing.instructors.name_placeholder')}
     bind:value={instructor.name}
-    oninput={onChange}
+    onInput={onChange}
   />
 
   <InputField
@@ -68,7 +68,7 @@
     label={$t('learningPath.landing.instructors.role')}
     placeholder={$t('learningPath.landing.instructors.role_placeholder')}
     bind:value={instructor.role}
-    oninput={onChange}
+    onInput={onChange}
   />
 
   <TextareaField
@@ -85,7 +85,7 @@
     label={$t('learningPath.landing.instructors.total')}
     type="number"
     bind:value={instructor.coursesNo}
-    oninput={onChange}
+    onInput={onChange}
   />
 
   <div class="flex items-center justify-between border-t pt-3">

@@ -9,9 +9,9 @@ import { ROLE_LABEL } from '$lib/utils/constants/roles';
  * meaningful values there, whatever the API sends for other roles, so
  * consumers must narrow with `isStudentMember` before reading them.
  */
-type CourseMemberWithProgress = Extract<CourseMember, { progressPercent: number }>;
+export type CourseMemberStage = NonNullable<Extract<CourseMember, { stage: unknown }>['stage']>;
 
-export type CourseMemberStage = NonNullable<CourseMemberWithProgress['stage']>;
+type CourseMemberWithProgress = Extract<CourseMember, { progressPercent: number }> & { stage?: CourseMemberStage };
 
 export const DEFAULT_PEOPLE_PAGE_SIZE = 20;
 

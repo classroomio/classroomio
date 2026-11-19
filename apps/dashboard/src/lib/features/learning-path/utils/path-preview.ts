@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { snackbar } from '$features/ui/snackbar/store';
 import { accountApi } from '$features/account/api/account.svelte';
-import { currentOrg, getOrgPublicOrigin } from '$lib/utils/store/org';
+import { currentOrg, getOrgHandoffOrigin, getOrgPublicOrigin } from '$lib/utils/store/org';
 
 interface OpenPathPreviewOptions {
   pathId: string;
@@ -13,7 +13,6 @@ interface OpenPathPreviewOptions {
 interface ViewPathAsStudentOptions {
   pathId?: string | null;
   pathSlug?: string | null;
-  currentOrgDomain?: string;
 }
 
 /** Absolute URL for the org-site public path page (`/path/{slug}`). Client-only. */
@@ -49,7 +48,11 @@ export function openPathPreview({ pathId, pathSlug, currentOrgDomain = '' }: Ope
   return true;
 }
 
-export async function viewPathAsStudent({ pathId, pathSlug, currentOrgDomain = '' }: ViewPathAsStudentOptions) {
+/**
+ * "View as student" handoff for a path. Mirrors the course flow: mints a login-link
+ * token and signs the user in on the org handoff origin before opening the path page.
+ */
+export async function viewPathAsStudent({ pathId, pathSlug }: ViewPathAsStudentOptions) {
   if (typeof window === 'undefined') {
     return false;
   }
@@ -64,15 +67,21 @@ export async function viewPathAsStudent({ pathId, pathSlug, currentOrgDomain = '
     return false;
   }
 
-  const token = await accountApi.createViewAsStudentToken();
+  const handoffOrigin = getOrgHandoffOrigin(get(currentOrg));
+  if (!handoffOrigin) {
+    snackbar.error('snackbar.view_as_student.failed');
+
+    return false;
+  }
+
+  const token = await accountApi.createLoginLinkToken();
   if (!token) {
     snackbar.error('snackbar.view_as_student.failed');
 
     return false;
   }
 
-  const origin = currentOrgDomain?.trim() || getOrgPublicOrigin(get(currentOrg));
-  const loginLinkUrl = new URL('/api/auth/login-link', origin);
+  const loginLinkUrl = new URL('/api/auth/login-link', handoffOrigin);
   loginLinkUrl.searchParams.set('token', token);
   loginLinkUrl.searchParams.set('redirect', `/learning-paths/${pathSlug}`);
 

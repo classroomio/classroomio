@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import { resolve } from '$app/paths';
-  import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE, type CourseCardLabels } from '@cio/ui';
+  import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE, type CourseCardCompliance, type CourseCardLabels } from '@cio/ui';
 
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseProgress, calcProgressRate, getCourseProgressCounts } from '$features/course/utils/functions';
@@ -154,7 +154,7 @@
           : 'NOT_STARTED'
   );
 
-  const compliance = $derived.by(() => {
+  const compliance = $derived.by((): CourseCardCompliance | null => {
     if (isLMS && type === 'COMPLIANCE' && !isExplore) {
       return {
         statusLabel: showComplianceStatusBadge && complianceStatusKey ? $t(complianceStatusKey) : undefined,

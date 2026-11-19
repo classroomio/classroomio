@@ -31,7 +31,7 @@
 
     try {
       // Opens the student view in a new tab; close the modal once the handoff starts.
-      const ok = await viewPathAsStudent({ pathId, pathSlug, currentOrgDomain });
+      const ok = await viewPathAsStudent({ pathId, pathSlug });
 
       if (ok) {
         open = false;

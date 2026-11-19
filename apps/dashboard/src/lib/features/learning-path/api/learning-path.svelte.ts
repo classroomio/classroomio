@@ -728,30 +728,22 @@ class LearnerPathStore extends BaseApiWithErrors {
       onSuccess: () => {
         enrolled = true;
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          failureMessage = t.get('snackbar.invite.failed_join');
-          snackbar.error('snackbar.invite.failed_join');
-          return;
-        }
-
-        const code =
-          typeof result === 'object' && result !== null && 'code' in result
-            ? String((result as { code?: unknown }).code ?? '')
-            : '';
-
-        if (code === ErrorCodes.UPGRADE_REQUIRED) {
-          failureMessage = t.get('course.navItem.landing_page.enroll_page.student_limit_reached', {
+      onError: (error) => {
+        let message: string;
+        if (error.code === ErrorCodes.UPGRADE_REQUIRED) {
+          message = t.get('course.navItem.landing_page.enroll_page.student_limit_reached', {
             orgName: get(currentOrg)?.name ?? ''
           });
-        } else if (code === ErrorCodes.VALIDATION_ERROR) {
-          failureMessage = t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');
-        } else if (code === ErrorCodes.FORBIDDEN) {
-          failureMessage = t.get('course.navItem.landing_page.pricing_section.not_accepting');
+        } else if (error.code === ErrorCodes.VALIDATION_ERROR) {
+          message = t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');
+        } else if (error.code === ErrorCodes.FORBIDDEN) {
+          message = t.get('course.navItem.landing_page.pricing_section.not_accepting');
         } else {
-          failureMessage = t.get('snackbar.invite.failed_join');
+          message = t.get('snackbar.invite.failed_join');
         }
-        snackbar.error(failureMessage);
+
+        failureMessage = message;
+        snackbar.error(message);
       }
     });
     if (enrolled) {
@@ -761,8 +753,8 @@ class LearnerPathStore extends BaseApiWithErrors {
     return { enrolled, error: failureMessage };
   }
 
-  async downloadCertificate(pathId: string, name: string, format: 'pdf' | 'png'): Promise<boolean> {
-    if (!pathId || this.isDownloadingCertificate) return false;
+  async downloadCertificate(pathId: string, name: string, format: 'pdf' | 'png'): Promise<void> {
+    if (!pathId || this.isDownloadingCertificate) return;
 
     this.isDownloadingCertificate = true;
     try {
@@ -788,13 +780,9 @@ class LearnerPathStore extends BaseApiWithErrors {
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
-
-      return true;
     } catch (error) {
       console.error('Error downloading learning path certificate:', error);
       snackbar.error('course.navItem.certificates.unexpected_error');
-
-      return false;
     } finally {
       this.isDownloadingCertificate = false;
     }

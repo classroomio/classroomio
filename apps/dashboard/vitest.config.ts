@@ -13,6 +13,7 @@ export default defineConfig({
       { find: '$lib', replacement: path.resolve(currentDir, 'src/lib') },
       { find: '$features', replacement: path.resolve(currentDir, 'src/lib/features') },
       { find: '$mail', replacement: path.resolve(currentDir, 'src/mail') },
+      { find: '$app/state', replacement: path.resolve(currentDir, 'src/test/app-state.ts') },
       { find: /^@cio\/ui$/, replacement: path.resolve(currentDir, '../../packages/ui/src') },
       {
         find: /^@cio\/ui\/(.*)$/,

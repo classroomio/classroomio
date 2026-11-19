@@ -45,7 +45,7 @@
         <InputField
           label={$t('learningPath.landing.header.title_label')}
           value={title}
-          oninput={(e) => handleTitleInput((e.currentTarget as HTMLInputElement).value)}
+          onInput={(e) => handleTitleInput((e.currentTarget as HTMLInputElement).value)}
           placeholder={path.name || $t('learningPath.landing.header.title_placeholder')}
         />
       </Field.Field>

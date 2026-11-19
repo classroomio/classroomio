@@ -231,10 +231,10 @@ const skills = [
 
 export const mockLearningPathDetails: Record<string, LearningPathDetail> = Object.fromEntries(
   mockLearningPaths.map((path) => [
-    path.slug,
+    path.slug ?? path.id,
     {
       id: path.id,
-      slug: path.slug,
+      slug: path.slug ?? path.id,
       title: path.title,
       description: path.description,
       chip: 'Learning Path · Certificate',
@@ -242,14 +242,14 @@ export const mockLearningPathDetails: Record<string, LearningPathDetail> = Objec
       cost: path.cost || 199,
       currency: path.currency || 'USD',
       courseCount: path.courseCount || 5,
-      hasCertificate: path.hasCertificate,
+      hasCertificate: path.hasCertificate ?? false,
       totalStudents: path.totalStudents || 942,
       rating: 4.7,
       reviewsCount: 213,
       level: 'Beginner',
       outcomes,
       skills,
-      series: buildSeries(path.slug),
+      series: buildSeries(path.slug ?? path.id),
       instructors: mockLearningPathLandingPageProps.instructors ?? instructors,
       certificate: mockLearningPathLandingPageProps.certificate ?? certificate,
       reviews: mockLearningPathLandingPageProps.reviews ?? reviews,
