@@ -1,12 +1,9 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { LearningPathHero, LearningPathLandingPageLabels, OrgLandingPageTheme } from './types';
-  import { courseLandingTokens } from './course-landing-page.tokens';
   import { safeHref } from './safe-href';
   import CheckIcon from '@lucide/svelte/icons/check';
-  import AwardIcon from '@lucide/svelte/icons/award';
   import StarIcon from '@lucide/svelte/icons/star';
-  import GitForkIcon from '@lucide/svelte/icons/git-fork';
   import GitBranchIcon from '@lucide/svelte/icons/git-branch';
 
   interface Props {
@@ -17,9 +14,7 @@
     navigation?: Snippet;
   }
 
-  let { variant, hero, labels, navigation }: Props = $props();
-
-  const t = $derived(courseLandingTokens(variant));
+  let { hero, labels, navigation }: Props = $props();
 
   const isFree = $derived(hero.cost === 0);
   const costDisplay = $derived(
