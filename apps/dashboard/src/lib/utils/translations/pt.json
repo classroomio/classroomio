@@ -46,28 +46,28 @@
       "label": "Intervalo de tempo",
       "locked": "Faça upgrade para desbloquear este período"
     },
-    "add": "Add",
-    "remove": "Remove",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
-    "back_to_my_learning": "Back to My Learning",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "close": "Fechar",
+    "edit": "Editar",
+    "coming_soon": "Em breve",
+    "back_to_my_learning": "Voltar para Meu aprendizado",
     "pricing": {
-      "enable_paid": "Enable Paid",
-      "yes": "Yes",
-      "no": "No",
-      "currency": "Currency",
-      "cost": "Price",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required when paid is enabled",
-      "payment_invalid_url": "Please enter a valid URL",
-      "discount": "Discount",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer students an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "enable_paid": "Ativar pago",
+      "yes": "Sim",
+      "no": "Não",
+      "currency": "Moeda",
+      "cost": "Preço",
+      "payment_link": "Link de pagamento",
+      "payment_required": "O link de pagamento é obrigatório quando o pago está ativado",
+      "payment_invalid_url": "Insira uma URL válida",
+      "discount": "Desconto",
+      "show_discount": "Mostrar desconto",
+      "discount_percentage": "Percentual de desconto",
+      "reward": "Recompensa / Brinde",
+      "reward_help": "Ofereça aos alunos um incentivo na conclusão",
+      "reward_description": "Descrição da recompensa",
+      "placeholder_reward": "ex.: sessão de mentoria individual, brindes ou acesso exclusivo à comunidade"
     }
   },
   "validations": {
@@ -578,17 +578,17 @@
   },
   "explore": {
     "heading": "Explorar",
-    "subtitle": "Discover learning experiences designed to help you get more value from the platform.",
-    "search_placeholder": "Search learning paths and courses…",
-    "content_type": "Content type",
-    "content_type_all": "All",
-    "section_paths": "Learning Paths",
-    "section_courses": "Courses",
-    "view_learning_path": "View Learning Path",
-    "paths_empty_title": "No paths found",
-    "paths_empty_description": "Try a different search or clear your filters.",
-    "courses_empty_title": "No courses match your search",
-    "courses_empty_description": "Try a different search term.",
+    "subtitle": "Descubra experiências de aprendizagem criadas para ajudar você a aproveitar mais a plataforma.",
+    "search_placeholder": "Pesquisar trilhas de aprendizagem e cursos…",
+    "content_type": "Tipo de conteúdo",
+    "content_type_all": "Todos",
+    "section_paths": "Trilhas de aprendizagem",
+    "section_courses": "Cursos",
+    "view_learning_path": "Ver trilha de aprendizagem",
+    "paths_empty_title": "Nenhuma trilha encontrada",
+    "paths_empty_description": "Tente uma pesquisa diferente ou limpe os filtros.",
+    "courses_empty_title": "Nenhum curso corresponde à sua pesquisa",
+    "courses_empty_description": "Tente um termo de pesquisa diferente.",
     "courses_browse_empty_title": "Ainda não há cursos",
     "courses_browse_empty_description": "Os cursos criados nesta organização aparecerão aqui.",
     "paths_browse_empty_title": "Ainda não há trilhas de aprendizagem",
@@ -604,26 +604,26 @@
     "in_progress": "Avaliação em andamento",
     "graded": "Classificado",
     "total": "Total",
-    "completed": "Completed",
-    "overdue": "Overdue",
-    "empty": "No exercises yet.",
+    "completed": "Concluído",
+    "overdue": "Atrasado",
+    "empty": "Nenhum exercício ainda.",
     "table": {
-      "assignment": "Assignment",
-      "course": "Course",
+      "assignment": "Tarefa",
+      "course": "Curso",
       "status": "Status",
-      "due_date": "Due Date",
-      "submission": "Submission",
-      "grade": "Grade"
+      "due_date": "Data de entrega",
+      "submission": "Envio",
+      "grade": "Nota"
     },
     "submission_states": {
-      "not_submitted": "Not submitted",
-      "awaiting_grade": "Awaiting grade",
-      "submitted": "Submitted"
+      "not_submitted": "Não enviado",
+      "awaiting_grade": "Aguardando nota",
+      "submitted": "Enviado"
     },
     "actions": {
-      "view": "View",
-      "continue": "Continue",
-      "start": "Start"
+      "view": "Ver",
+      "continue": "Continuar",
+      "start": "Iniciar"
     }
   },
   "my_learning": {
@@ -648,8 +648,8 @@
     "no_results_title": "Nenhum certificado encontrado",
     "no_results_description": "Tente outro termo de pesquisa.",
     "go_to_my_learning": "Ir para Meu aprendizado",
-    "load_error_title": "Couldn't load your certificates",
-    "load_error_description": "Something went wrong while loading your certificates.",
+    "load_error_title": "Não foi possível carregar seus certificados",
+    "load_error_description": "Algo deu errado ao carregar seus certificados.",
     "retry": "Tentar novamente"
   },
   "lms_navigation": {
@@ -662,8 +662,8 @@
     "help": "Ajuda",
     "settings": "Configurações",
     "cohorts": "Coortes",
-    "learning_paths": "Learning Paths",
-    "my_courses": "My Courses"
+    "learning_paths": "Trilhas de aprendizagem",
+    "my_courses": "Meus cursos"
   },
   "upgrade": {
     "certificate": "Atualize seu plano para gerar certificados",
@@ -757,8 +757,8 @@
       "snackbar_success": "{assigned} usuários atribuídos aos cursos ({alreadyEnrolled} já inscrito, {emailsSent} e-mails enviados)",
       "snackbar_no_courses": "Selecione pelo menos um curso",
       "snackbar_failed": "Falha ao atribuir cursos",
-      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
-      "path_only_badge": "Path-only"
+      "snackbar_partial": "{assigned} usuários atribuídos ({alreadyEnrolled} já tinham acesso, {emailsSent} e-mails enviados). Cursos exclusivos de trilha ignorados: {names} — atribua a trilha de aprendizagem que os contém ou desative 'Matricular somente na trilha de aprendizagem' nas configurações do curso.",
+      "path_only_badge": "Somente trilha"
     },
     "import": {
       "title": "Importar usuários",
@@ -810,13 +810,13 @@
       "submit_count": "Importar {count} alunos",
       "result_heading": "{count} alunos importados",
       "start_over": "Escolha um arquivo diferente",
-      "select_paths_placeholder": "Choose learning paths...",
-      "path_access": "Learning Path Access",
-      "no_paths": "No learning path assignment",
-      "all_paths": "All learning paths",
-      "select_paths": "Select specific learning paths",
-      "skipped_path_only_title": "Skipped {count} path-only courses",
-      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings."
+      "select_paths_placeholder": "Escolha trilhas de aprendizagem...",
+      "path_access": "Acesso a trilhas de aprendizagem",
+      "no_paths": "Nenhuma atribuição de trilha de aprendizagem",
+      "all_paths": "Todas as trilhas de aprendizagem",
+      "select_paths": "Selecionar trilhas de aprendizagem específicas",
+      "skipped_path_only_title": "{count} cursos exclusivos de trilha ignorados",
+      "skipped_path_only_description": "{names}. Esses cursos só permitem matrícula por meio de uma trilha de aprendizagem. Atribua a trilha de aprendizagem que os contém (isso também concede acesso aos outros cursos dela) ou desative 'Matricular somente na trilha de aprendizagem' nas configurações do curso."
     },
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {
@@ -949,7 +949,7 @@
     "learner_count": "{count} alunos",
     "certificate_earned": "{count} certificado obtido",
     "certificates_earned": "{count} certificados obtidos",
-    "path_only_badge": "Path-only"
+    "path_only_badge": "Somente trilha"
   },
   "community": {
     "title": "Comunidade",
@@ -1208,8 +1208,8 @@
             "unenrolled": "O aluno não está mais inscrito."
           }
         },
-        "enroll_only_in_learning_path": "Enroll only in Learning Path",
-        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved."
+        "enroll_only_in_learning_path": "Matricular somente na trilha de aprendizagem",
+        "enroll_only_in_learning_path_desc": "Quando ativado, os alunos só podem se matricular neste curso por meio de uma trilha de aprendizagem. As matrículas existentes são preservadas."
       },
       "analytics": {
         "title": "Análises"
@@ -1459,11 +1459,11 @@
           "signature_dont_crop": "Não corte",
           "signature_upload_in_progress": "Aguarde o término do upload da assinatura antes de salvar.",
           "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente.",
-          "signatory_one": "Signatory 1",
-          "signatory_two": "Signatory 2",
-          "signatory_name": "Signatory name",
-          "signatory_role": "Signatory role",
-          "signature_image": "Signature image"
+          "signatory_one": "Signatário 1",
+          "signatory_two": "Signatário 2",
+          "signatory_name": "Nome do signatário",
+          "signatory_role": "Cargo do signatário",
+          "signature_image": "Imagem da assinatura"
         }
       },
       "people": {
@@ -1590,7 +1590,7 @@
             "description": "Conceda acesso a {email} a este curso. Enviaremos um e-mail de convite para que a pessoa entre na sua organização e se inscreva neste curso.",
             "cancel": "Cancelar",
             "send_invite": "Enviar convite",
-            "path_only_notice": "This course can only be enrolled in through a learning path, so direct access can't be granted. Assign the containing learning path instead — or turn off 'Enroll only in Learning Path' in the course settings."
+            "path_only_notice": "Este curso só permite matrícula por meio de uma trilha de aprendizagem, então o acesso direto não pode ser concedido. Atribua a trilha de aprendizagem que o contém — ou desative 'Matricular somente na trilha de aprendizagem' nas configurações do curso."
           },
           "invite_new_students_title": "Convidar novos alunos",
           "invite_new_students_description": "Convide novas pessoas para sua organização e pré-atribua-as a este curso. Elas criarão uma conta, aceitarão o convite e terão acesso.",
@@ -1636,9 +1636,9 @@
             "custom": "Personalizado"
           },
           "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos.",
-          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
-          "path_only_notice_title": "Students join through a learning path",
-          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings."
+          "members_added": "{count, plural, one {# membro adicionado com sucesso} other {# membros adicionados com sucesso}}",
+          "path_only_notice_title": "Os alunos entram por uma trilha de aprendizagem",
+          "path_only_notice_description": "Este curso só permite matrícula por meio de uma trilha de aprendizagem, então não é possível convidar alunos aqui. Você ainda pode convidar tutores abaixo. Para dar acesso aos alunos, atribua a trilha de aprendizagem que contém o curso — ou desative 'Matricular somente na trilha de aprendizagem' nas configurações do curso."
         },
         "learner": "Aluno",
         "views": {
@@ -1670,11 +1670,11 @@
           "no_login_since": "Sem login desde",
           "joined_within": "Juntou-se dentro"
         },
-        "source": "Source",
-        "source_filter_all": "All sources",
-        "source_filter_direct": "Direct",
-        "source_learning_path": "Learning Path",
-        "source_cohort": "Cohort",
+        "source": "Origem",
+        "source_filter_all": "Todas as origens",
+        "source_filter_direct": "Direta",
+        "source_learning_path": "Trilha de aprendizagem",
+        "source_cohort": "Coorte",
         "completed": "Concluído"
       },
       "marks": {
@@ -3218,9 +3218,9 @@
       "go_to_lms": "Acesse o LMS"
     },
     "not_found": {
-      "header": "Course not found",
-      "body": "The course you are looking for does not exist or may have been deleted.",
-      "button": "Go home"
+      "header": "Curso não encontrado",
+      "body": "O curso que você procura não existe ou pode ter sido excluído.",
+      "button": "Ir para o início"
     }
   },
   "courses": {
@@ -3240,7 +3240,7 @@
       "success": {
         "course_cloned": "Curso clonado com sucesso"
       },
-      "title_copy_format": "{title} (Copy)"
+      "title_copy_format": "{title} (Cópia)"
     },
     "new_course_modal": {
       "heading": "Crie um curso",
@@ -3324,7 +3324,7 @@
     },
     "page_subtitle": "Onde lições viram cursos e cursos viram matrículas.",
     "load_more": "Carregar mais",
-    "pricing_free": "Free"
+    "pricing_free": "Grátis"
   },
   "ai": {
     "help_me": "Ajude-me a escrever",
@@ -3399,23 +3399,23 @@
     "explore_more_courses": "Explorar mais cursos",
     "view_more": "Ver mais",
     "upcoming_sessions_heading": "Sessões ao vivo",
-    "completed": "Completed",
-    "completed_of": "{completed} of {total}",
-    "continue_course": "Continue Course",
-    "course_position": "Course {course} of {total}",
-    "enrolled": "Enrolled",
-    "explore_courses_hours": "{count} courses · {hours}h",
-    "explore_lessons_count": "{count} lessons",
-    "explore_something_new": "Explore Something New",
-    "exercise_status_in_progress": "In Progress",
-    "exercise_status_overdue": "Overdue",
-    "exercise_status_not_submitted": "Not Submitted",
-    "lessons_done": "{completed} of {total} lessons done",
-    "no_exercises": "No upcoming exercises",
-    "no_exercises_description": "Exercises you need to submit will appear here.",
-    "no_recommendations": "Nothing recommended yet",
-    "no_recommendations_description": "Explore the catalog to find your next course or learning path.",
-    "upcoming_exercises": "Upcoming Exercises"
+    "completed": "Concluído",
+    "completed_of": "{completed} de {total}",
+    "continue_course": "Continuar curso",
+    "course_position": "Curso {course} de {total}",
+    "enrolled": "Matriculado",
+    "explore_courses_hours": "{count} cursos · {hours}h",
+    "explore_lessons_count": "{count} aulas",
+    "explore_something_new": "Explore algo novo",
+    "exercise_status_in_progress": "Em andamento",
+    "exercise_status_overdue": "Atrasado",
+    "exercise_status_not_submitted": "Não enviado",
+    "lessons_done": "{completed} de {total} aulas concluídas",
+    "no_exercises": "Nenhum exercício próximo",
+    "no_exercises_description": "Os exercícios que você precisa enviar aparecerão aqui.",
+    "no_recommendations": "Nada recomendado ainda",
+    "no_recommendations_description": "Explore o catálogo para encontrar seu próximo curso ou trilha de aprendizagem.",
+    "upcoming_exercises": "Próximos exercícios"
   },
   "schedule": {
     "title": "Sua programação",
@@ -3723,7 +3723,7 @@
     "tools": "Ferramentas",
     "marketing": "Marketing",
     "org_analytics": "Academia",
-    "learning_paths": "Learning Paths"
+    "learning_paths": "Trilhas de aprendizagem"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -4817,7 +4817,7 @@
           "students": "Alunos",
           "settings": "Configurações",
           "cohorts": "Coortes",
-          "learning_paths": "Learning paths"
+          "learning_paths": "Trilhas de aprendizagem"
         }
       }
     },
@@ -6181,10 +6181,10 @@
       "published_access_callout_title": "Acesso de estudante",
       "published_access_callout_description": "Os alunos só têm acesso aos cursos publicados. Os cursos podem estar neste grupo para sua equipe enquanto ainda não foram publicados, mas permanecem ocultos aos alunos até que você os publique.",
       "empty_student_description": "Ainda não há cursos publicados nesta coorte.",
-      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
-      "adding": "Adding courses…",
-      "load_failed": "Failed to load courses.",
-      "retry": "Retry"
+      "add_count": "Adicionar {count} {count, plural, =1 {curso} other {cursos}}",
+      "adding": "Adicionando cursos…",
+      "load_failed": "Falha ao carregar os cursos.",
+      "retry": "Tentar novamente"
     },
     "newsfeed": {
       "post": "Nova postagem",
@@ -6364,12 +6364,12 @@
       "closed": "Não estamos mais aceitando novos membros.",
       "succeeded": "Você se inscreveu",
       "failed": "Não foi possível se inscrever. Tente novamente.",
-      "learning_path_button": "Join learning path"
+      "learning_path_button": "Entrar na trilha de aprendizagem"
     },
     "load_failed": "Não foi possível carregar o link de convite",
     "generate_failed": "Não foi possível criar o link de convite",
     "toggle_failed": "Não foi possível atualizar o link de convite",
-    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one."
+    "learning_path_description": "Qualquer pessoa com este link pode entrar nesta trilha de aprendizagem e em todos os cursos dela. Compartilhe-o em vez de inserir e-mails um por um."
   },
   "lms": {
     "view_landing_page": "Início"
@@ -7447,72 +7447,72 @@
   },
   "certificate": {
     "tab_design": "Design",
-    "tab_settings": "Settings",
-    "allow": "Allow students download certificate",
-    "email_message_label": "Email Message",
-    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
-    "rules": "Rules",
+    "tab_settings": "Configurações",
+    "allow": "Permitir que os alunos baixem o certificado",
+    "email_message_label": "Mensagem de e-mail",
+    "email_message_placeholder": "ex.: Temos orgulho do seu progresso — continue aprendendo!",
+    "rules": "Regras",
     "editor": {
-      "title": "Certificate design",
-      "back": "Back",
-      "unsaved": "Unsaved changes",
-      "free_plan": "Available on Pro",
-      "discard": "Discard",
-      "save": "Save",
-      "saved": "Certificate design saved.",
-      "save_failed": "Could not save the certificate design. Check the form and try again.",
-      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
-      "sections": "Editor sections",
-      "preview": "Certificate preview",
-      "panel_templates": "Templates",
-      "panel_templates_subtitle": "Select a template for your certificate.",
-      "panel_content": "Content",
-      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
-      "panel_colors": "Colors",
-      "panel_colors_subtitle": "Customize the accent color.",
-      "panel_export": "Export",
-      "panel_export_subtitle": "Preview the current design as it will be delivered.",
-      "section_header": "Header copy",
-      "section_signatories": "Signatories",
-      "section_reference": "Reference",
-      "subtitle": "Subtitle",
-      "subtitle_placeholder": "Awarded with Highest Distinction",
-      "description_override": "Description override",
-      "description_override_placeholder": "Defaults to the description.",
-      "description_override_hint": "Leave blank to fall back to the description on save.",
-      "signatory_one_name": "Signatory 1 name",
-      "signatory_one_role": "Signatory 1 role",
-      "signatory_two_name": "Signatory 2 name",
-      "signatory_two_role": "Signatory 2 role",
-      "signatory_one_toggle": "Show signatory 1",
-      "signatory_two_toggle": "Show signatory 2",
-      "signature_upload": "Signature image",
-      "signature_upload_hint": "Upload a signature image (optional)",
-      "signature_dont_crop": "Don't Crop",
-      "id_format": "Certificate ID format",
-      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
-      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
-      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
-      "download_pdf": "Download PDF",
-      "download_png": "Download PNG",
-      "print": "Print",
-      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
-      "preview_failed": "Could not generate certificate preview",
+      "title": "Design do certificado",
+      "back": "Voltar",
+      "unsaved": "Alterações não salvas",
+      "free_plan": "Disponível no Pro",
+      "discard": "Descartar",
+      "save": "Salvar",
+      "saved": "Design do certificado salvo.",
+      "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente.",
+      "signature_upload_in_progress": "Aguarde o término do envio da assinatura antes de salvar.",
+      "sections": "Seções do editor",
+      "preview": "Pré-visualização do certificado",
+      "panel_templates": "Modelos",
+      "panel_templates_subtitle": "Selecione um modelo para o seu certificado.",
+      "panel_content": "Conteúdo",
+      "panel_content_subtitle": "Configure subtítulos, descrições e signatários.",
+      "panel_colors": "Cores",
+      "panel_colors_subtitle": "Personalize a cor de destaque.",
+      "panel_export": "Exportar",
+      "panel_export_subtitle": "Visualize o design atual como será entregue.",
+      "section_header": "Texto do cabeçalho",
+      "section_signatories": "Signatários",
+      "section_reference": "Referência",
+      "subtitle": "Subtítulo",
+      "subtitle_placeholder": "Concedido com Distinção Máxima",
+      "description_override": "Substituição da descrição",
+      "description_override_placeholder": "Usa a descrição por padrão.",
+      "description_override_hint": "Deixe em branco para usar a descrição ao salvar.",
+      "signatory_one_name": "Nome do signatário 1",
+      "signatory_one_role": "Cargo do signatário 1",
+      "signatory_two_name": "Nome do signatário 2",
+      "signatory_two_role": "Cargo do signatário 2",
+      "signatory_one_toggle": "Mostrar signatário 1",
+      "signatory_two_toggle": "Mostrar signatário 2",
+      "signature_upload": "Imagem da assinatura",
+      "signature_upload_hint": "Envie uma imagem da assinatura (opcional)",
+      "signature_dont_crop": "Não cortar",
+      "id_format": "Formato do ID do certificado",
+      "id_format_hint": "Use '{'seq'}' para os quatro últimos dígitos, '{'year'}' para o ano de emissão, '{'month'}' para o mês.",
+      "accent_hint": "A cor de destaque aparece na linha do destinatário, nos selos e no destaque do título do modelo.",
+      "templates_hint": "Os modelos são renderizados com o mesmo renderizador usado para o PDF e o PNG baixados.",
+      "download_pdf": "Baixar PDF",
+      "download_png": "Baixar PNG",
+      "print": "Imprimir",
+      "export_hint": "As exportações usam seu nome como destinatário para que você veja o layout final.",
+      "preview_failed": "Não foi possível gerar a pré-visualização do certificado",
       "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certificate of Excellence",
-      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
+      "sample_course": "Certificado de Excelência",
+      "sample_description": "Em reconhecimento ao desempenho excepcional e à dedicação exemplar ao ofício.",
       "sample_org": "The Royal Academy of Arts",
-      "summary_title": "Active design",
-      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
-      "field_template": "Template",
-      "field_accent": "Accent",
-      "field_signatories": "Signatories",
-      "customize_design": "Customize design",
-      "signatory_one": "Signatory 1",
-      "signatory_two": "Signatory 2",
-      "signatory_name": "Signatory name",
-      "signatory_role": "Signatory role",
-      "signature_image": "Signature image"
+      "summary_title": "Design ativo",
+      "summary_subtitle": "Resumo de como o certificado ficará quando emitido.",
+      "field_template": "Modelo",
+      "field_accent": "Destaque",
+      "field_signatories": "Signatários",
+      "customize_design": "Personalizar design",
+      "signatory_one": "Signatário 1",
+      "signatory_two": "Signatário 2",
+      "signatory_name": "Nome do signatário",
+      "signatory_role": "Cargo do signatário",
+      "signature_image": "Imagem da assinatura"
     }
   },
   "public_learning_paths": {
@@ -7546,7 +7546,6 @@
       "reviews_heading": "Avaliações",
       "reviews_lead": "De pessoas que concluíram a trilha.",
       "faq_heading": "Perguntas frequentes",
-      "no_faq": "Nenhuma pergunta ainda.",
       "pricing_heading": "Inscrição",
       "pricing_eyebrow": "Inscrição",
       "enroll_path": "Inscreva-se nesta trilha",
@@ -7558,7 +7557,7 @@
       "taught_by_two": "Ministrado por {first} e {second}",
       "taught_by_many": "Ministrado por {names} + {count} outros",
       "features_courses_line": "Todos os {courseCount} cursos, desbloqueados em ordem",
-      "features_content_line": "{lessons} lições · {exercises} exercícios · 1 projeto final",
+      "features_content_line": "{lessons} lições · {exercises} exercícios",
       "features_certificate_line": "Certificado da trilha ao concluir",
       "features_milestone_line": "Conclusão verificada de marcos da trilha",
       "features_access_line": "Acesso vitalício, aprenda no seu ritmo",
@@ -7566,9 +7565,7 @@
       "stat_courses": "cursos na série",
       "stat_enrolled": "inscritos",
       "stat_certificate": "Certificado",
-      "stat_beginner": "Iniciante",
       "stat_on_completion": "ao concluir",
-      "stat_no_experience": "sem experiência",
       "stat_reviews": "{count} avaliações",
       "full_path": "Trilha completa",
       "save_percent": "Economize {percent}%",
@@ -7760,7 +7757,7 @@
       "title": "Pessoas",
       "subtitle": "{count} {count, plural, =1 {aluno} other {alunos}} inscritos neste caminho",
       "info_title": "Sobre inscrição de caminho",
-      "info_banner": "Adicionar um aluno a este caminho o inscreve automaticamente em todos os {count} {count, plural, =1 {curso} other {cursos}}. Removê-los preserva o acesso e o progresso do curso.",
+      "info_banner": "Adicionar um aluno a esta trilha o matricula automaticamente em todos os {count} {count, plural, =1 {curso} other {cursos}}. Removê-lo encerra o acesso aos cursos concedido por esta trilha, mas mantém o progresso dele.",
       "search_placeholder": "Pesquise por nome ou e-mail…",
       "filter": {
         "all": "Todo o progresso",
@@ -8217,7 +8214,7 @@
       "reviews": {
         "title": "Avaliações",
         "untitled": "Avaliação sem título",
-        "name_placeholder": "Jane Doe",
+        "name_placeholder": "Maria Silva",
         "avatar_placeholder": "https://...",
         "avatar_url": "URL da imagem do avatar",
         "rating_placeholder": "Opcional (1-5)",

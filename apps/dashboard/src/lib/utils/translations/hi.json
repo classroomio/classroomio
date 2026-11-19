@@ -46,28 +46,28 @@
       "label": "समय सीमा",
       "locked": "इस अवधि को अनलॉक करने के लिए अपग्रेड करें"
     },
-    "add": "Add",
-    "remove": "Remove",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
-    "back_to_my_learning": "Back to My Learning",
+    "add": "जोड़ें",
+    "remove": "हटाएँ",
+    "close": "बंद करें",
+    "edit": "संपादित करें",
+    "coming_soon": "जल्द आ रहा है",
+    "back_to_my_learning": "मेरी लर्निंग पर वापस जाएँ",
     "pricing": {
-      "enable_paid": "Enable Paid",
-      "yes": "Yes",
-      "no": "No",
-      "currency": "Currency",
-      "cost": "Price",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required when paid is enabled",
-      "payment_invalid_url": "Please enter a valid URL",
-      "discount": "Discount",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer students an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "enable_paid": "भुगतान सक्षम करें",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "currency": "मुद्रा",
+      "cost": "मूल्य",
+      "payment_link": "भुगतान लिंक",
+      "payment_required": "भुगतान सक्षम होने पर भुगतान लिंक आवश्यक है",
+      "payment_invalid_url": "कृपया एक मान्य URL दर्ज करें",
+      "discount": "छूट",
+      "show_discount": "छूट दिखाएँ",
+      "discount_percentage": "छूट प्रतिशत",
+      "reward": "पुरस्कार / उपहार",
+      "reward_help": "पूरा करने पर छात्रों को प्रोत्साहन दें",
+      "reward_description": "पुरस्कार का विवरण",
+      "placeholder_reward": "जैसे 1-on-1 मेंटरशिप सत्र, स्वैग या विशेष कम्युनिटी एक्सेस"
     }
   },
   "validations": {
@@ -578,17 +578,17 @@
   },
   "explore": {
     "heading": "अन्वेषण करें",
-    "subtitle": "Discover learning experiences designed to help you get more value from the platform.",
-    "search_placeholder": "Search learning paths and courses…",
-    "content_type": "Content type",
-    "content_type_all": "All",
-    "section_paths": "Learning Paths",
-    "section_courses": "Courses",
-    "view_learning_path": "View Learning Path",
-    "paths_empty_title": "No paths found",
-    "paths_empty_description": "Try a different search or clear your filters.",
-    "courses_empty_title": "No courses match your search",
-    "courses_empty_description": "Try a different search term.",
+    "subtitle": "ऐसे सीखने के अनुभव खोजें जो आपको प्लेटफ़ॉर्म से अधिक लाभ उठाने में मदद करें।",
+    "search_placeholder": "लर्निंग पाथ और कोर्स खोजें…",
+    "content_type": "सामग्री का प्रकार",
+    "content_type_all": "सभी",
+    "section_paths": "लर्निंग पाथ",
+    "section_courses": "कोर्स",
+    "view_learning_path": "लर्निंग पाथ देखें",
+    "paths_empty_title": "कोई पाथ नहीं मिला",
+    "paths_empty_description": "कोई अलग खोज आज़माएँ या अपने फ़िल्टर साफ़ करें।",
+    "courses_empty_title": "कोई कोर्स आपकी खोज से मेल नहीं खाता",
+    "courses_empty_description": "कोई अलग खोज शब्द आज़माएँ।",
     "courses_browse_empty_title": "अभी कोई पाठ्यक्रम नहीं",
     "courses_browse_empty_description": "इस संगठन में बनाए गए पाठ्यक्रम यहाँ दिखेंगे।",
     "paths_browse_empty_title": "अभी कोई लर्निंग पाथ नहीं",
@@ -603,27 +603,27 @@
     "submitted": "प्रस्तुत किया गया",
     "in_progress": "ग्रेडिंग प्रगति पर है",
     "graded": "श्रेणीबद्ध",
-    "total": "Total",
-    "completed": "Completed",
-    "overdue": "Overdue",
-    "empty": "No exercises yet.",
+    "total": "कुल",
+    "completed": "पूर्ण",
+    "overdue": "अतिदेय",
+    "empty": "अभी कोई अभ्यास नहीं।",
     "table": {
-      "assignment": "Assignment",
-      "course": "Course",
-      "status": "Status",
-      "due_date": "Due Date",
-      "submission": "Submission",
-      "grade": "Grade"
+      "assignment": "असाइनमेंट",
+      "course": "कोर्स",
+      "status": "स्थिति",
+      "due_date": "नियत तिथि",
+      "submission": "सबमिशन",
+      "grade": "ग्रेड"
     },
     "submission_states": {
-      "not_submitted": "Not submitted",
-      "awaiting_grade": "Awaiting grade",
-      "submitted": "Submitted"
+      "not_submitted": "जमा नहीं किया",
+      "awaiting_grade": "ग्रेड की प्रतीक्षा में",
+      "submitted": "जमा किया गया"
     },
     "actions": {
-      "view": "View",
-      "continue": "Continue",
-      "start": "Start"
+      "view": "देखें",
+      "continue": "जारी रखें",
+      "start": "शुरू करें"
     }
   },
   "my_learning": {
@@ -648,8 +648,8 @@
     "no_results_title": "कोई प्रमाणपत्र नहीं मिला",
     "no_results_description": "कोई अलग खोज शब्द आज़माएँ।",
     "go_to_my_learning": "मेरी सीख पर जाएँ",
-    "load_error_title": "Couldn't load your certificates",
-    "load_error_description": "Something went wrong while loading your certificates.",
+    "load_error_title": "आपके प्रमाणपत्र लोड नहीं हो सके",
+    "load_error_description": "आपके प्रमाणपत्र लोड करते समय कुछ गड़बड़ हो गई।",
     "retry": "पुनः प्रयास करें"
   },
   "lms_navigation": {
@@ -662,8 +662,8 @@
     "help": "मदद",
     "settings": "सेटिंग्स",
     "cohorts": "कोहोर्ट",
-    "learning_paths": "Learning Paths",
-    "my_courses": "My Courses"
+    "learning_paths": "लर्निंग पाथ",
+    "my_courses": "मेरे कोर्स"
   },
   "upgrade": {
     "certificate": "प्रमाणपत्र बनाने की अपनी योजना को अपग्रेड करें",
@@ -757,8 +757,8 @@
       "snackbar_success": "पाठ्यक्रमों के लिए {assigned} उपयोगकर्ताओं को असाइन किया गया ({alreadyEnrolled} पहले से ही नामांकित, {emailsSent} ईमेल भेजे गए)",
       "snackbar_no_courses": "कृपया कम से कम एक पाठ्यक्रम चुनें",
       "snackbar_failed": "पाठ्यक्रम आवंटित करने में विफल",
-      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
-      "path_only_badge": "Path-only"
+      "snackbar_partial": "{assigned} उपयोगकर्ता असाइन किए गए ({alreadyEnrolled} के पास पहले से पहुँच थी, {emailsSent} ईमेल भेजे गए)। छोड़े गए केवल-पाथ कोर्स: {names} — इन्हें शामिल करने वाला लर्निंग पाथ असाइन करें या कोर्स सेटिंग्स में 'केवल लर्निंग पाथ में नामांकन' बंद करें।",
+      "path_only_badge": "केवल पाथ"
     },
     "import": {
       "title": "उपयोगकर्ता आयात करें",
@@ -810,13 +810,13 @@
       "submit_count": "{count} छात्रों को आयात करें",
       "result_heading": "{count} छात्रों को आयात किया गया",
       "start_over": "कोई भिन्न फ़ाइल चुनें",
-      "select_paths_placeholder": "Choose learning paths...",
-      "path_access": "Learning Path Access",
-      "no_paths": "No learning path assignment",
-      "all_paths": "All learning paths",
-      "select_paths": "Select specific learning paths",
-      "skipped_path_only_title": "Skipped {count} path-only courses",
-      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings."
+      "select_paths_placeholder": "लर्निंग पाथ चुनें...",
+      "path_access": "लर्निंग पाथ एक्सेस",
+      "no_paths": "कोई लर्निंग पाथ असाइनमेंट नहीं",
+      "all_paths": "सभी लर्निंग पाथ",
+      "select_paths": "विशिष्ट लर्निंग पाथ चुनें",
+      "skipped_path_only_title": "{count} केवल-पाथ कोर्स छोड़े गए",
+      "skipped_path_only_description": "{names}। इन कोर्स में केवल लर्निंग पाथ के माध्यम से नामांकन हो सकता है। या तो इन्हें शामिल करने वाला लर्निंग पाथ असाइन करें (इससे उसके अन्य कोर्स की पहुँच भी मिलती है), या कोर्स सेटिंग्स में 'केवल लर्निंग पाथ में नामांकन' बंद करें।"
     },
     "page_subtitle": "देखें कि आपके संगठन में कौन शामिल है, कौन सीख रहा है, किसे आमंत्रित किया गया है, और उन तक कैसे पहुँचें।",
     "user_analytics": {
@@ -949,7 +949,7 @@
     "learner_count": "{count} छात्र",
     "certificate_earned": "{count} सर्टिफ़िकेट हासिल किए",
     "certificates_earned": "{count} सर्टिफ़िकेट हासिल किए",
-    "path_only_badge": "Path-only"
+    "path_only_badge": "केवल पाथ"
   },
   "community": {
     "title": "समुदाय",
@@ -1208,8 +1208,8 @@
             "unenrolled": "छात्र अब नामांकित नहीं है।"
           }
         },
-        "enroll_only_in_learning_path": "Enroll only in Learning Path",
-        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved."
+        "enroll_only_in_learning_path": "केवल लर्निंग पाथ में नामांकन",
+        "enroll_only_in_learning_path_desc": "चालू होने पर, छात्र इस कोर्स में केवल लर्निंग पाथ के माध्यम से नामांकन कर सकते हैं। मौजूदा नामांकन सुरक्षित रहते हैं।"
       },
       "analytics": {
         "title": "विश्लेषिकी"
@@ -1459,11 +1459,11 @@
           "signature_dont_crop": "फसल मत करो",
           "signature_upload_in_progress": "सहेजने से पहले हस्ताक्षर अपलोड समाप्त होने तक प्रतीक्षा करें।",
           "save_failed": "प्रमाणपत्र डिज़ाइन सहेजा नहीं जा सका. फ़ॉर्म की जाँच करें और पुनः प्रयास करें.",
-          "signatory_one": "Signatory 1",
-          "signatory_two": "Signatory 2",
-          "signatory_name": "Signatory name",
-          "signatory_role": "Signatory role",
-          "signature_image": "Signature image"
+          "signatory_one": "हस्ताक्षरकर्ता 1",
+          "signatory_two": "हस्ताक्षरकर्ता 2",
+          "signatory_name": "हस्ताक्षरकर्ता का नाम",
+          "signatory_role": "हस्ताक्षरकर्ता की भूमिका",
+          "signature_image": "हस्ताक्षर की छवि"
         }
       },
       "people": {
@@ -1590,7 +1590,7 @@
             "description": "{email} को इस कोर्स का एक्सेस दें। हम उन्हें आपके संगठन में शामिल होने और इस कोर्स में नामांकन के लिए आमंत्रण ईमेल भेजेंगे।",
             "cancel": "रद्द करें",
             "send_invite": "निमंत्रण भेजें",
-            "path_only_notice": "This course can only be enrolled in through a learning path, so direct access can't be granted. Assign the containing learning path instead — or turn off 'Enroll only in Learning Path' in the course settings."
+            "path_only_notice": "इस कोर्स में केवल लर्निंग पाथ के माध्यम से नामांकन हो सकता है, इसलिए सीधी पहुँच नहीं दी जा सकती। इसे शामिल करने वाला लर्निंग पाथ असाइन करें — या कोर्स सेटिंग्स में 'केवल लर्निंग पाथ में नामांकन' बंद करें।"
           },
           "invite_new_students_title": "नए छात्रों को आमंत्रित करें",
           "invite_new_students_description": "अपने संगठन में नए लोगों को आमंत्रित करें और उन्हें इस पाठ्यक्रम में पहले से नियुक्त करें। वे खाता बनाएंगे, निमंत्रण स्वीकार करेंगे और पहुँच प्राप्त करेंगे।",
@@ -1636,9 +1636,9 @@
             "custom": "कस्टम"
           },
           "student_limit_reached": "आप अपनी योजना की छात्र सीमा तक पहुँच गए हैं। अधिक छात्रों को आमंत्रित करने के लिए अपग्रेड करें।",
-          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
-          "path_only_notice_title": "Students join through a learning path",
-          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings."
+          "members_added": "{count, plural, one {# सदस्य सफलतापूर्वक जोड़ा गया} other {# सदस्य सफलतापूर्वक जोड़े गए}}",
+          "path_only_notice_title": "छात्र लर्निंग पाथ के माध्यम से जुड़ते हैं",
+          "path_only_notice_description": "इस कोर्स में केवल लर्निंग पाथ के माध्यम से नामांकन हो सकता है, इसलिए यहाँ छात्रों को आमंत्रित नहीं किया जा सकता। आप नीचे ट्यूटर्स को अब भी आमंत्रित कर सकते हैं। छात्रों को पहुँच देने के लिए, कोर्स वाला लर्निंग पाथ असाइन करें — या कोर्स सेटिंग्स में 'केवल लर्निंग पाथ में नामांकन' बंद करें।"
         },
         "learner": "छात्र",
         "views": {
@@ -1670,11 +1670,11 @@
           "no_login_since": "तब से कोई लॉगिन नहीं",
           "joined_within": "भीतर जुड़ गया"
         },
-        "source": "Source",
-        "source_filter_all": "All sources",
-        "source_filter_direct": "Direct",
-        "source_learning_path": "Learning Path",
-        "source_cohort": "Cohort",
+        "source": "स्रोत",
+        "source_filter_all": "सभी स्रोत",
+        "source_filter_direct": "सीधे",
+        "source_learning_path": "लर्निंग पाथ",
+        "source_cohort": "कोहोर्ट",
         "completed": "पूरा हुआ"
       },
       "marks": {
@@ -3218,9 +3218,9 @@
       "go_to_lms": "एलएमएस पर जाएं"
     },
     "not_found": {
-      "header": "Course not found",
-      "body": "The course you are looking for does not exist or may have been deleted.",
-      "button": "Go home"
+      "header": "कोर्स नहीं मिला",
+      "body": "आप जो कोर्स खोज रहे हैं वह मौजूद नहीं है या हटा दिया गया हो सकता है।",
+      "button": "होम पर जाएँ"
     }
   },
   "courses": {
@@ -3240,7 +3240,7 @@
       "success": {
         "course_cloned": "पाठ्यक्रम सफलतापूर्वक क्लोन किया गया"
       },
-      "title_copy_format": "{title} (Copy)"
+      "title_copy_format": "{title} (कॉपी)"
     },
     "new_course_modal": {
       "heading": "एक कोर्स बनाएं",
@@ -3324,7 +3324,7 @@
     },
     "page_subtitle": "जहाँ पाठ पाठ्यक्रम बनते हैं और पाठ्यक्रम नामांकन बनते हैं।",
     "load_more": "और लोड करें",
-    "pricing_free": "Free"
+    "pricing_free": "निःशुल्क"
   },
   "ai": {
     "help_me": "मुझे लिखने में मदद करें",
@@ -3399,23 +3399,23 @@
     "explore_more_courses": "अधिक पाठ्यक्रम खोजें",
     "view_more": "और देखें",
     "upcoming_sessions_heading": "लाइव सत्र",
-    "completed": "Completed",
-    "completed_of": "{completed} of {total}",
-    "continue_course": "Continue Course",
-    "course_position": "Course {course} of {total}",
-    "enrolled": "Enrolled",
-    "explore_courses_hours": "{count} courses · {hours}h",
-    "explore_lessons_count": "{count} lessons",
-    "explore_something_new": "Explore Something New",
-    "exercise_status_in_progress": "In Progress",
-    "exercise_status_overdue": "Overdue",
-    "exercise_status_not_submitted": "Not Submitted",
-    "lessons_done": "{completed} of {total} lessons done",
-    "no_exercises": "No upcoming exercises",
-    "no_exercises_description": "Exercises you need to submit will appear here.",
-    "no_recommendations": "Nothing recommended yet",
-    "no_recommendations_description": "Explore the catalog to find your next course or learning path.",
-    "upcoming_exercises": "Upcoming Exercises"
+    "completed": "पूर्ण",
+    "completed_of": "{completed} / {total}",
+    "continue_course": "कोर्स जारी रखें",
+    "course_position": "कोर्स {course} / {total}",
+    "enrolled": "नामांकित",
+    "explore_courses_hours": "{count} कोर्स · {hours} घंटे",
+    "explore_lessons_count": "{count} पाठ",
+    "explore_something_new": "कुछ नया खोजें",
+    "exercise_status_in_progress": "प्रगति में",
+    "exercise_status_overdue": "अतिदेय",
+    "exercise_status_not_submitted": "जमा नहीं किया",
+    "lessons_done": "{completed} / {total} पाठ पूरे",
+    "no_exercises": "कोई आगामी अभ्यास नहीं",
+    "no_exercises_description": "जो अभ्यास आपको जमा करने हैं, वे यहाँ दिखाई देंगे।",
+    "no_recommendations": "अभी कोई सुझाव नहीं",
+    "no_recommendations_description": "अपना अगला कोर्स या लर्निंग पाथ खोजने के लिए कैटलॉग देखें।",
+    "upcoming_exercises": "आगामी अभ्यास"
   },
   "schedule": {
     "title": "आपका शेड्यूल",
@@ -3723,7 +3723,7 @@
     "tools": "उपकरण",
     "marketing": "विपणन",
     "org_analytics": "अकादमी",
-    "learning_paths": "Learning Paths"
+    "learning_paths": "लर्निंग पाथ"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -4817,7 +4817,7 @@
           "students": "छात्र",
           "settings": "सेटिंग्स",
           "cohorts": "कोहोर्ट",
-          "learning_paths": "Learning paths"
+          "learning_paths": "लर्निंग पाथ"
         }
       }
     },
@@ -6181,10 +6181,10 @@
       "published_access_callout_title": "छात्र प्रवेश",
       "published_access_callout_description": "छात्रों को केवल प्रकाशित पाठ्यक्रमों तक ही पहुंच है। पाठ्यक्रम अप्रकाशित रहते हुए भी आपकी टीम के लिए इस समूह में हो सकते हैं, लेकिन जब तक आप उन्हें प्रकाशित नहीं करते तब तक वे छात्रों से छिपे रहते हैं।",
       "empty_student_description": "इस समूह में अभी तक कोई प्रकाशित पाठ्यक्रम नहीं है।",
-      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
-      "adding": "Adding courses…",
-      "load_failed": "Failed to load courses.",
-      "retry": "Retry"
+      "add_count": "{count} {count, plural, =1 {कोर्स} other {कोर्स}} जोड़ें",
+      "adding": "कोर्स जोड़े जा रहे हैं…",
+      "load_failed": "कोर्स लोड करने में विफल।",
+      "retry": "पुनः प्रयास करें"
     },
     "newsfeed": {
       "post": "नई पोस्ट",
@@ -6364,12 +6364,12 @@
       "closed": "अब इसमें नए सदस्य शामिल नहीं हो रहे हैं।",
       "succeeded": "आप जुड़ चुके हैं",
       "failed": "जुड़ नहीं पाए। कृपया पुनः प्रयास करें।",
-      "learning_path_button": "Join learning path"
+      "learning_path_button": "लर्निंग पाथ में शामिल हों"
     },
     "load_failed": "आमंत्रण लिंक लोड नहीं हो सका",
     "generate_failed": "आमंत्रण लिंक नहीं बन सका",
     "toggle_failed": "आमंत्रण लिंक अपडेट नहीं हो सका",
-    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one."
+    "learning_path_description": "इस लिंक वाला कोई भी व्यक्ति इस लर्निंग पाथ और इसके हर कोर्स में शामिल हो सकता है। एक-एक करके ईमेल दर्ज करने के बजाय इसे साझा करें।"
   },
   "lms": {
     "view_landing_page": "मुखपृष्ठ"
@@ -7446,73 +7446,73 @@
     "dismiss": "समझ गया"
   },
   "certificate": {
-    "tab_design": "Design",
-    "tab_settings": "Settings",
-    "allow": "Allow students download certificate",
-    "email_message_label": "Email Message",
-    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
-    "rules": "Rules",
+    "tab_design": "डिज़ाइन",
+    "tab_settings": "सेटिंग्स",
+    "allow": "छात्रों को प्रमाणपत्र डाउनलोड करने दें",
+    "email_message_label": "ईमेल संदेश",
+    "email_message_placeholder": "जैसे हमें आपकी प्रगति पर गर्व है — सीखते रहिए!",
+    "rules": "नियम",
     "editor": {
-      "title": "Certificate design",
-      "back": "Back",
-      "unsaved": "Unsaved changes",
-      "free_plan": "Available on Pro",
-      "discard": "Discard",
-      "save": "Save",
-      "saved": "Certificate design saved.",
-      "save_failed": "Could not save the certificate design. Check the form and try again.",
-      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
-      "sections": "Editor sections",
-      "preview": "Certificate preview",
-      "panel_templates": "Templates",
-      "panel_templates_subtitle": "Select a template for your certificate.",
-      "panel_content": "Content",
-      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
-      "panel_colors": "Colors",
-      "panel_colors_subtitle": "Customize the accent color.",
-      "panel_export": "Export",
-      "panel_export_subtitle": "Preview the current design as it will be delivered.",
-      "section_header": "Header copy",
-      "section_signatories": "Signatories",
-      "section_reference": "Reference",
-      "subtitle": "Subtitle",
-      "subtitle_placeholder": "Awarded with Highest Distinction",
-      "description_override": "Description override",
-      "description_override_placeholder": "Defaults to the description.",
-      "description_override_hint": "Leave blank to fall back to the description on save.",
-      "signatory_one_name": "Signatory 1 name",
-      "signatory_one_role": "Signatory 1 role",
-      "signatory_two_name": "Signatory 2 name",
-      "signatory_two_role": "Signatory 2 role",
-      "signatory_one_toggle": "Show signatory 1",
-      "signatory_two_toggle": "Show signatory 2",
-      "signature_upload": "Signature image",
-      "signature_upload_hint": "Upload a signature image (optional)",
-      "signature_dont_crop": "Don't Crop",
-      "id_format": "Certificate ID format",
-      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
-      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
-      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
-      "download_pdf": "Download PDF",
-      "download_png": "Download PNG",
-      "print": "Print",
-      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
-      "preview_failed": "Could not generate certificate preview",
+      "title": "प्रमाणपत्र डिज़ाइन",
+      "back": "वापस",
+      "unsaved": "सहेजे नहीं गए बदलाव",
+      "free_plan": "Pro में उपलब्ध",
+      "discard": "छोड़ें",
+      "save": "सहेजें",
+      "saved": "प्रमाणपत्र डिज़ाइन सहेजा गया।",
+      "save_failed": "प्रमाणपत्र डिज़ाइन सहेजा नहीं जा सका। फ़ॉर्म जाँचें और फिर प्रयास करें।",
+      "signature_upload_in_progress": "सहेजने से पहले हस्ताक्षर अपलोड पूरा होने तक प्रतीक्षा करें।",
+      "sections": "एडिटर अनुभाग",
+      "preview": "प्रमाणपत्र पूर्वावलोकन",
+      "panel_templates": "टेम्पलेट",
+      "panel_templates_subtitle": "अपने प्रमाणपत्र के लिए एक टेम्पलेट चुनें।",
+      "panel_content": "सामग्री",
+      "panel_content_subtitle": "उपशीर्षक, विवरण और हस्ताक्षरकर्ता कॉन्फ़िगर करें।",
+      "panel_colors": "रंग",
+      "panel_colors_subtitle": "एक्सेंट रंग अनुकूलित करें।",
+      "panel_export": "निर्यात",
+      "panel_export_subtitle": "वर्तमान डिज़ाइन का पूर्वावलोकन देखें, जैसा वह प्रदान किया जाएगा।",
+      "section_header": "हेडर टेक्स्ट",
+      "section_signatories": "हस्ताक्षरकर्ता",
+      "section_reference": "संदर्भ",
+      "subtitle": "उपशीर्षक",
+      "subtitle_placeholder": "सर्वोच्च सम्मान के साथ प्रदान किया गया",
+      "description_override": "विवरण ओवरराइड",
+      "description_override_placeholder": "डिफ़ॉल्ट रूप से विवरण का उपयोग होता है।",
+      "description_override_hint": "सहेजते समय विवरण का उपयोग करने के लिए खाली छोड़ें।",
+      "signatory_one_name": "हस्ताक्षरकर्ता 1 का नाम",
+      "signatory_one_role": "हस्ताक्षरकर्ता 1 की भूमिका",
+      "signatory_two_name": "हस्ताक्षरकर्ता 2 का नाम",
+      "signatory_two_role": "हस्ताक्षरकर्ता 2 की भूमिका",
+      "signatory_one_toggle": "हस्ताक्षरकर्ता 1 दिखाएँ",
+      "signatory_two_toggle": "हस्ताक्षरकर्ता 2 दिखाएँ",
+      "signature_upload": "हस्ताक्षर की छवि",
+      "signature_upload_hint": "हस्ताक्षर की छवि अपलोड करें (वैकल्पिक)",
+      "signature_dont_crop": "क्रॉप न करें",
+      "id_format": "प्रमाणपत्र ID प्रारूप",
+      "id_format_hint": "अंतिम चार अंकों के लिए '{'seq'}', जारी करने के वर्ष के लिए '{'year'}', महीने के लिए '{'month'}' का उपयोग करें।",
+      "accent_hint": "एक्सेंट रंग प्राप्तकर्ता की रेखा, मुहरों और टेम्पलेट के शीर्षक हाइलाइट पर दिखाई देता है।",
+      "templates_hint": "टेम्पलेट उसी रेंडरर से बनते हैं जो डाउनलोड किए गए PDF और PNG में उपयोग होता है।",
+      "download_pdf": "PDF डाउनलोड करें",
+      "download_png": "PNG डाउनलोड करें",
+      "print": "प्रिंट करें",
+      "export_hint": "निर्यात में प्राप्तकर्ता के रूप में आपका नाम उपयोग होता है, ताकि आप अंतिम लेआउट देख सकें।",
+      "preview_failed": "प्रमाणपत्र पूर्वावलोकन नहीं बन सका",
       "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certificate of Excellence",
-      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
-      "sample_org": "The Royal Academy of Arts",
-      "summary_title": "Active design",
-      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
-      "field_template": "Template",
-      "field_accent": "Accent",
-      "field_signatories": "Signatories",
-      "customize_design": "Customize design",
-      "signatory_one": "Signatory 1",
-      "signatory_two": "Signatory 2",
-      "signatory_name": "Signatory name",
-      "signatory_role": "Signatory role",
-      "signature_image": "Signature image"
+      "sample_course": "उत्कृष्टता प्रमाणपत्र",
+      "sample_description": "उत्कृष्ट उपलब्धि और कला के प्रति अनुकरणीय समर्पण की सराहना में।",
+      "sample_org": "द रॉयल एकेडमी ऑफ आर्ट्स",
+      "summary_title": "सक्रिय डिज़ाइन",
+      "summary_subtitle": "जारी होने पर प्रमाणपत्र कैसा दिखेगा, इसका स्नैपशॉट।",
+      "field_template": "टेम्पलेट",
+      "field_accent": "एक्सेंट",
+      "field_signatories": "हस्ताक्षरकर्ता",
+      "customize_design": "डिज़ाइन अनुकूलित करें",
+      "signatory_one": "हस्ताक्षरकर्ता 1",
+      "signatory_two": "हस्ताक्षरकर्ता 2",
+      "signatory_name": "हस्ताक्षरकर्ता का नाम",
+      "signatory_role": "हस्ताक्षरकर्ता की भूमिका",
+      "signature_image": "हस्ताक्षर की छवि"
     }
   },
   "public_learning_paths": {
@@ -7546,7 +7546,6 @@
       "reviews_heading": "समीक्षाएँ",
       "reviews_lead": "उन लोगों से जिन्होंने यह पाथ पूरा किया।",
       "faq_heading": "अक्सर पूछे जाने वाले प्रश्न",
-      "no_faq": "अभी तक कोई प्रश्न नहीं।",
       "pricing_heading": "नामांकन",
       "pricing_eyebrow": "नामांकन",
       "enroll_path": "इस पाथ में नामांकन करें",
@@ -7558,7 +7557,7 @@
       "taught_by_two": "{first} और {second} द्वारा पढ़ाया गया",
       "taught_by_many": "{names} + {count} अन्य द्वारा पढ़ाया गया",
       "features_courses_line": "सभी {courseCount} कोर्स, क्रम से अनलॉक",
-      "features_content_line": "{lessons} पाठ · {exercises} अभ्यास · 1 कैपस्टोन",
+      "features_content_line": "{lessons} पाठ · {exercises} अभ्यास",
       "features_certificate_line": "पूरा होने पर पाथ प्रमाणपत्र",
       "features_milestone_line": "सत्यापित पाथ माइलस्टोन पूर्णता",
       "features_access_line": "आजीवन एक्सेस, अपनी गति से सीखें",
@@ -7566,9 +7565,7 @@
       "stat_courses": "शृंखला में कोर्स",
       "stat_enrolled": "नामांकित",
       "stat_certificate": "प्रमाणपत्र",
-      "stat_beginner": "शुरुआती",
       "stat_on_completion": "पूरा होने पर",
-      "stat_no_experience": "बिना पूर्व अनुभव",
       "stat_reviews": "{count} समीक्षाएं",
       "full_path": "पूरा पाथ",
       "save_percent": "{percent}% बचाएं",
@@ -7760,7 +7757,7 @@
       "title": "लोग",
       "subtitle": "{count} {count, plural, =1 {छात्र} other {छात्र}} इस पथ में नामांकित हैं",
       "info_title": "पथ नामांकन के बारे में",
-      "info_banner": "किसी छात्र को इस पथ में जोड़ने से उन्हें सभी {count} {count, plural, =1 {पाठ्यक्रम} other {पाठ्यक्रमों}} में स्वचालित रूप से नामांकित किया जाता है। उन्हें हटाने से उनकी पाठ्यक्रम तक पहुंच और प्रगति बरकरार रहती है।",
+      "info_banner": "इस पाथ में किसी छात्र को जोड़ने पर वह सभी {count} {count, plural, =1 {कोर्स} other {कोर्स}} में अपने आप नामांकित हो जाता है। उसे हटाने पर इस पाथ से मिली कोर्स पहुँच समाप्त हो जाती है, लेकिन उसकी प्रगति सुरक्षित रहती है।",
       "search_placeholder": "नाम या ईमेल से खोजें...",
       "filter": {
         "all": "सबकी प्रगति",

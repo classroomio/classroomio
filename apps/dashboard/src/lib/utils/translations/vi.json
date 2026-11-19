@@ -46,28 +46,28 @@
       "label": "Phạm vi thời gian",
       "locked": "Nâng cấp để mở khóa khoảng thời gian này"
     },
-    "add": "Add",
-    "remove": "Remove",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
-    "back_to_my_learning": "Back to My Learning",
+    "add": "Thêm",
+    "remove": "Xóa",
+    "close": "Đóng",
+    "edit": "Chỉnh sửa",
+    "coming_soon": "Sắp ra mắt",
+    "back_to_my_learning": "Quay lại Học tập của tôi",
     "pricing": {
-      "enable_paid": "Enable Paid",
-      "yes": "Yes",
-      "no": "No",
-      "currency": "Currency",
-      "cost": "Price",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required when paid is enabled",
-      "payment_invalid_url": "Please enter a valid URL",
-      "discount": "Discount",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer students an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "enable_paid": "Bật tính phí",
+      "yes": "Có",
+      "no": "Không",
+      "currency": "Tiền tệ",
+      "cost": "Giá",
+      "payment_link": "Liên kết thanh toán",
+      "payment_required": "Cần có liên kết thanh toán khi bật tính phí",
+      "payment_invalid_url": "Vui lòng nhập URL hợp lệ",
+      "discount": "Giảm giá",
+      "show_discount": "Hiển thị giảm giá",
+      "discount_percentage": "Phần trăm giảm giá",
+      "reward": "Phần thưởng / Quà tặng",
+      "reward_help": "Tặng học viên một ưu đãi khi hoàn thành",
+      "reward_description": "Mô tả phần thưởng",
+      "placeholder_reward": "VD: buổi cố vấn 1-1, quà tặng hoặc quyền truy cập cộng đồng độc quyền"
     }
   },
   "validations": {
@@ -578,17 +578,17 @@
   },
   "explore": {
     "heading": "Khám phá",
-    "subtitle": "Discover learning experiences designed to help you get more value from the platform.",
-    "search_placeholder": "Search learning paths and courses…",
-    "content_type": "Content type",
-    "content_type_all": "All",
-    "section_paths": "Learning Paths",
-    "section_courses": "Courses",
-    "view_learning_path": "View Learning Path",
-    "paths_empty_title": "No paths found",
-    "paths_empty_description": "Try a different search or clear your filters.",
-    "courses_empty_title": "No courses match your search",
-    "courses_empty_description": "Try a different search term.",
+    "subtitle": "Khám phá các trải nghiệm học tập giúp bạn khai thác nhiều giá trị hơn từ nền tảng.",
+    "search_placeholder": "Tìm kiếm lộ trình học tập và khóa học…",
+    "content_type": "Loại nội dung",
+    "content_type_all": "Tất cả",
+    "section_paths": "Lộ trình học tập",
+    "section_courses": "Khóa học",
+    "view_learning_path": "Xem lộ trình học tập",
+    "paths_empty_title": "Không tìm thấy lộ trình",
+    "paths_empty_description": "Hãy thử tìm kiếm khác hoặc xóa bộ lọc.",
+    "courses_empty_title": "Không có khóa học nào khớp với tìm kiếm",
+    "courses_empty_description": "Hãy thử từ khóa khác.",
     "courses_browse_empty_title": "Chưa có khóa học nào",
     "courses_browse_empty_description": "Các khóa học được tạo trong tổ chức này sẽ hiển thị ở đây.",
     "paths_browse_empty_title": "Chưa có lộ trình học nào",
@@ -603,27 +603,27 @@
     "submitted": "Đã gửi",
     "in_progress": "Đang tiến hành chấm điểm",
     "graded": "Đã chấm điểm",
-    "total": "Total",
-    "completed": "Completed",
-    "overdue": "Overdue",
-    "empty": "No exercises yet.",
+    "total": "Tổng",
+    "completed": "Đã hoàn thành",
+    "overdue": "Quá hạn",
+    "empty": "Chưa có bài tập nào.",
     "table": {
-      "assignment": "Assignment",
-      "course": "Course",
-      "status": "Status",
-      "due_date": "Due Date",
-      "submission": "Submission",
-      "grade": "Grade"
+      "assignment": "Bài tập",
+      "course": "Khóa học",
+      "status": "Trạng thái",
+      "due_date": "Hạn nộp",
+      "submission": "Bài nộp",
+      "grade": "Điểm"
     },
     "submission_states": {
-      "not_submitted": "Not submitted",
-      "awaiting_grade": "Awaiting grade",
-      "submitted": "Submitted"
+      "not_submitted": "Chưa nộp",
+      "awaiting_grade": "Đang chờ chấm điểm",
+      "submitted": "Đã nộp"
     },
     "actions": {
-      "view": "View",
-      "continue": "Continue",
-      "start": "Start"
+      "view": "Xem",
+      "continue": "Tiếp tục",
+      "start": "Bắt đầu"
     }
   },
   "my_learning": {
@@ -648,8 +648,8 @@
     "no_results_title": "Không tìm thấy chứng chỉ",
     "no_results_description": "Hãy thử một từ khóa tìm kiếm khác.",
     "go_to_my_learning": "Đi tới Học tập của tôi",
-    "load_error_title": "Couldn't load your certificates",
-    "load_error_description": "Something went wrong while loading your certificates.",
+    "load_error_title": "Không thể tải chứng chỉ của bạn",
+    "load_error_description": "Đã xảy ra lỗi khi tải chứng chỉ của bạn.",
     "retry": "Thử lại"
   },
   "lms_navigation": {
@@ -662,8 +662,8 @@
     "help": "Trợ giúp",
     "settings": "Cài đặt",
     "cohorts": "Nhóm học tập",
-    "learning_paths": "Learning Paths",
-    "my_courses": "My Courses"
+    "learning_paths": "Lộ trình học tập",
+    "my_courses": "Khóa học của tôi"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",
@@ -757,8 +757,8 @@
       "snackbar_success": "Đã chỉ định người dùng {assigned} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
       "snackbar_no_courses": "Vui lòng chọn ít nhất một khóa học",
       "snackbar_failed": "Không thể chỉ định khóa học",
-      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
-      "path_only_badge": "Path-only"
+      "snackbar_partial": "Đã gán {assigned} người dùng ({alreadyEnrolled} người đã có quyền truy cập, đã gửi {emailsSent} email). Đã bỏ qua các khóa học chỉ có trong lộ trình: {names} — hãy gán lộ trình học tập chứa chúng hoặc tắt 'Chỉ đăng ký qua Lộ trình học tập' trong cài đặt khóa học.",
+      "path_only_badge": "Chỉ lộ trình"
     },
     "import": {
       "title": "Nhập người dùng",
@@ -810,13 +810,13 @@
       "submit_count": "Nhập {count} học viên",
       "result_heading": "{count} học viên đã được nhập",
       "start_over": "Chọn một tập tin khác",
-      "select_paths_placeholder": "Choose learning paths...",
-      "path_access": "Learning Path Access",
-      "no_paths": "No learning path assignment",
-      "all_paths": "All learning paths",
-      "select_paths": "Select specific learning paths",
-      "skipped_path_only_title": "Skipped {count} path-only courses",
-      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings."
+      "select_paths_placeholder": "Chọn lộ trình học tập...",
+      "path_access": "Quyền truy cập lộ trình học tập",
+      "no_paths": "Không gán lộ trình học tập",
+      "all_paths": "Tất cả lộ trình học tập",
+      "select_paths": "Chọn lộ trình học tập cụ thể",
+      "skipped_path_only_title": "Đã bỏ qua {count} khóa học chỉ có trong lộ trình",
+      "skipped_path_only_description": "{names}. Các khóa học này chỉ có thể đăng ký thông qua lộ trình học tập. Hãy gán lộ trình học tập chứa chúng (việc này cũng cấp quyền truy cập các khóa học khác trong đó) hoặc tắt 'Chỉ đăng ký qua Lộ trình học tập' trong cài đặt khóa học."
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
@@ -949,7 +949,7 @@
     "learner_count": "{count} học sinh",
     "certificate_earned": "Đã đạt được {count} chứng chỉ",
     "certificates_earned": "Đã đạt được {count} chứng chỉ",
-    "path_only_badge": "Path-only"
+    "path_only_badge": "Chỉ lộ trình"
   },
   "community": {
     "title": "cộng đồng",
@@ -1208,8 +1208,8 @@
             "unenrolled": "Học viên không còn đăng ký khóa học."
           }
         },
-        "enroll_only_in_learning_path": "Enroll only in Learning Path",
-        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved."
+        "enroll_only_in_learning_path": "Chỉ đăng ký qua Lộ trình học tập",
+        "enroll_only_in_learning_path_desc": "Khi bật, học viên chỉ có thể đăng ký khóa học này thông qua lộ trình học tập. Các lượt đăng ký hiện có được giữ nguyên."
       },
       "analytics": {
         "title": "Phân tích"
@@ -1459,11 +1459,11 @@
           "signature_dont_crop": "Đừng cắt xén",
           "signature_upload_in_progress": "Đợi quá trình tải lên chữ ký hoàn tất trước khi lưu.",
           "save_failed": "Không thể lưu thiết kế chứng chỉ. Hãy kiểm tra biểu mẫu và thử lại.",
-          "signatory_one": "Signatory 1",
-          "signatory_two": "Signatory 2",
-          "signatory_name": "Signatory name",
-          "signatory_role": "Signatory role",
-          "signature_image": "Signature image"
+          "signatory_one": "Người ký 1",
+          "signatory_two": "Người ký 2",
+          "signatory_name": "Tên người ký",
+          "signatory_role": "Chức vụ người ký",
+          "signature_image": "Hình ảnh chữ ký"
         }
       },
       "people": {
@@ -1590,7 +1590,7 @@
             "description": "Cấp cho {email} quyền truy cập khóa học này. Chúng tôi sẽ gửi email mời để tham gia tổ chức của bạn và đăng ký khóa học.",
             "cancel": "Hủy",
             "send_invite": "Gửi lời mời",
-            "path_only_notice": "This course can only be enrolled in through a learning path, so direct access can't be granted. Assign the containing learning path instead — or turn off 'Enroll only in Learning Path' in the course settings."
+            "path_only_notice": "Khóa học này chỉ có thể đăng ký thông qua lộ trình học tập, nên không thể cấp quyền truy cập trực tiếp. Hãy gán lộ trình học tập chứa khóa học này — hoặc tắt 'Chỉ đăng ký qua Lộ trình học tập' trong cài đặt khóa học."
           },
           "invite_new_students_title": "Mời học viên mới",
           "invite_new_students_description": "Mời người mới vào tổ chức của bạn và gán trước cho khóa học này. Họ sẽ tạo tài khoản, chấp nhận lời mời và nhận quyền truy cập.",
@@ -1636,9 +1636,9 @@
             "custom": "tùy chỉnh"
           },
           "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên.",
-          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
-          "path_only_notice_title": "Students join through a learning path",
-          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings."
+          "members_added": "{count, plural, other {Đã thêm # thành viên thành công}}",
+          "path_only_notice_title": "Học viên tham gia qua lộ trình học tập",
+          "path_only_notice_description": "Khóa học này chỉ có thể đăng ký thông qua lộ trình học tập, nên không thể mời học viên tại đây. Bạn vẫn có thể mời gia sư bên dưới. Để cấp quyền truy cập cho học viên, hãy gán lộ trình học tập chứa khóa học — hoặc tắt 'Chỉ đăng ký qua Lộ trình học tập' trong cài đặt khóa học."
         },
         "learner": "Học viên",
         "views": {
@@ -1670,11 +1670,11 @@
           "no_login_since": "Không đăng nhập kể từ đó",
           "joined_within": "Đã tham gia bên trong"
         },
-        "source": "Source",
-        "source_filter_all": "All sources",
-        "source_filter_direct": "Direct",
-        "source_learning_path": "Learning Path",
-        "source_cohort": "Cohort",
+        "source": "Nguồn",
+        "source_filter_all": "Tất cả nguồn",
+        "source_filter_direct": "Trực tiếp",
+        "source_learning_path": "Lộ trình học tập",
+        "source_cohort": "Nhóm học tập",
         "completed": "Đã hoàn thành"
       },
       "marks": {
@@ -3218,9 +3218,9 @@
       "go_to_lms": "Đi tới LMS"
     },
     "not_found": {
-      "header": "Course not found",
-      "body": "The course you are looking for does not exist or may have been deleted.",
-      "button": "Go home"
+      "header": "Không tìm thấy khóa học",
+      "body": "Khóa học bạn đang tìm không tồn tại hoặc có thể đã bị xóa.",
+      "button": "Về trang chủ"
     }
   },
   "courses": {
@@ -3240,7 +3240,7 @@
       "success": {
         "course_cloned": "Khóa học được nhân bản thành công"
       },
-      "title_copy_format": "{title} (Copy)"
+      "title_copy_format": "{title} (Bản sao)"
     },
     "new_course_modal": {
       "heading": "Tạo một khóa học",
@@ -3324,7 +3324,7 @@
     },
     "page_subtitle": "Nơi các bài học trở thành khóa học và khóa học trở thành đăng ký.",
     "load_more": "Tải thêm",
-    "pricing_free": "Free"
+    "pricing_free": "Miễn phí"
   },
   "ai": {
     "help_me": "Giúp tôi viết",
@@ -3399,23 +3399,23 @@
     "explore_more_courses": "Khám phá thêm các khóa học",
     "view_more": "Xem thêm",
     "upcoming_sessions_heading": "Phiên trực tiếp",
-    "completed": "Completed",
-    "completed_of": "{completed} of {total}",
-    "continue_course": "Continue Course",
-    "course_position": "Course {course} of {total}",
-    "enrolled": "Enrolled",
-    "explore_courses_hours": "{count} courses · {hours}h",
-    "explore_lessons_count": "{count} lessons",
-    "explore_something_new": "Explore Something New",
-    "exercise_status_in_progress": "In Progress",
-    "exercise_status_overdue": "Overdue",
-    "exercise_status_not_submitted": "Not Submitted",
-    "lessons_done": "{completed} of {total} lessons done",
-    "no_exercises": "No upcoming exercises",
-    "no_exercises_description": "Exercises you need to submit will appear here.",
-    "no_recommendations": "Nothing recommended yet",
-    "no_recommendations_description": "Explore the catalog to find your next course or learning path.",
-    "upcoming_exercises": "Upcoming Exercises"
+    "completed": "Đã hoàn thành",
+    "completed_of": "{completed} trên {total}",
+    "continue_course": "Tiếp tục khóa học",
+    "course_position": "Khóa học {course} trên {total}",
+    "enrolled": "Đã đăng ký",
+    "explore_courses_hours": "{count} khóa học · {hours} giờ",
+    "explore_lessons_count": "{count} bài học",
+    "explore_something_new": "Khám phá điều mới",
+    "exercise_status_in_progress": "Đang tiến hành",
+    "exercise_status_overdue": "Quá hạn",
+    "exercise_status_not_submitted": "Chưa nộp",
+    "lessons_done": "Đã hoàn thành {completed}/{total} bài học",
+    "no_exercises": "Không có bài tập sắp tới",
+    "no_exercises_description": "Các bài tập bạn cần nộp sẽ xuất hiện ở đây.",
+    "no_recommendations": "Chưa có đề xuất nào",
+    "no_recommendations_description": "Khám phá danh mục để tìm khóa học hoặc lộ trình học tập tiếp theo.",
+    "upcoming_exercises": "Bài tập sắp tới"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
@@ -3723,7 +3723,7 @@
     "tools": "Công cụ",
     "marketing": "Tiếp thị",
     "org_analytics": "Học viện",
-    "learning_paths": "Learning Paths"
+    "learning_paths": "Lộ trình học tập"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -4817,7 +4817,7 @@
           "students": "Sinh viên",
           "settings": "Cài đặt",
           "cohorts": "Nhóm học tập",
-          "learning_paths": "Learning paths"
+          "learning_paths": "Lộ trình học tập"
         }
       }
     },
@@ -6181,10 +6181,10 @@
       "published_access_callout_title": "Quyền truy cập của sinh viên",
       "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể nằm trong nhóm này cho nhóm của bạn mặc dù vẫn chưa được xuất bản nhưng chúng vẫn bị ẩn với học sinh cho đến khi bạn xuất bản chúng.",
       "empty_student_description": "Chưa có khóa học nào được xuất bản trong nhóm này.",
-      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
-      "adding": "Adding courses…",
-      "load_failed": "Failed to load courses.",
-      "retry": "Retry"
+      "add_count": "Thêm {count} {count, plural, other {khóa học}}",
+      "adding": "Đang thêm khóa học…",
+      "load_failed": "Không thể tải khóa học.",
+      "retry": "Thử lại"
     },
     "newsfeed": {
       "post": "Bài đăng mới",
@@ -6364,12 +6364,12 @@
       "closed": "Hiện không còn nhận thêm thành viên mới.",
       "succeeded": "Bạn đã tham gia",
       "failed": "Không thể tham gia. Vui lòng thử lại.",
-      "learning_path_button": "Join learning path"
+      "learning_path_button": "Tham gia lộ trình học tập"
     },
     "load_failed": "Không thể tải liên kết mời",
     "generate_failed": "Không thể tạo liên kết mời",
     "toggle_failed": "Không thể cập nhật liên kết mời",
-    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one."
+    "learning_path_description": "Bất kỳ ai có liên kết này đều có thể tham gia lộ trình học tập này và mọi khóa học trong đó. Hãy chia sẻ liên kết thay vì nhập từng email."
   },
   "lms": {
     "view_landing_page": "Trang chủ"
@@ -7446,73 +7446,73 @@
     "dismiss": "Hiểu rồi"
   },
   "certificate": {
-    "tab_design": "Design",
-    "tab_settings": "Settings",
-    "allow": "Allow students download certificate",
-    "email_message_label": "Email Message",
-    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
-    "rules": "Rules",
+    "tab_design": "Thiết kế",
+    "tab_settings": "Cài đặt",
+    "allow": "Cho phép học viên tải chứng chỉ",
+    "email_message_label": "Nội dung email",
+    "email_message_placeholder": "VD: Chúng tôi tự hào về tiến bộ của bạn — hãy tiếp tục học nhé!",
+    "rules": "Quy tắc",
     "editor": {
-      "title": "Certificate design",
-      "back": "Back",
-      "unsaved": "Unsaved changes",
-      "free_plan": "Available on Pro",
-      "discard": "Discard",
-      "save": "Save",
-      "saved": "Certificate design saved.",
-      "save_failed": "Could not save the certificate design. Check the form and try again.",
-      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
-      "sections": "Editor sections",
-      "preview": "Certificate preview",
-      "panel_templates": "Templates",
-      "panel_templates_subtitle": "Select a template for your certificate.",
-      "panel_content": "Content",
-      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
-      "panel_colors": "Colors",
-      "panel_colors_subtitle": "Customize the accent color.",
-      "panel_export": "Export",
-      "panel_export_subtitle": "Preview the current design as it will be delivered.",
-      "section_header": "Header copy",
-      "section_signatories": "Signatories",
-      "section_reference": "Reference",
-      "subtitle": "Subtitle",
-      "subtitle_placeholder": "Awarded with Highest Distinction",
-      "description_override": "Description override",
-      "description_override_placeholder": "Defaults to the description.",
-      "description_override_hint": "Leave blank to fall back to the description on save.",
-      "signatory_one_name": "Signatory 1 name",
-      "signatory_one_role": "Signatory 1 role",
-      "signatory_two_name": "Signatory 2 name",
-      "signatory_two_role": "Signatory 2 role",
-      "signatory_one_toggle": "Show signatory 1",
-      "signatory_two_toggle": "Show signatory 2",
-      "signature_upload": "Signature image",
-      "signature_upload_hint": "Upload a signature image (optional)",
-      "signature_dont_crop": "Don't Crop",
-      "id_format": "Certificate ID format",
-      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
-      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
-      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
-      "download_pdf": "Download PDF",
-      "download_png": "Download PNG",
-      "print": "Print",
-      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
-      "preview_failed": "Could not generate certificate preview",
+      "title": "Thiết kế chứng chỉ",
+      "back": "Quay lại",
+      "unsaved": "Thay đổi chưa lưu",
+      "free_plan": "Có trong gói Pro",
+      "discard": "Hủy bỏ",
+      "save": "Lưu",
+      "saved": "Đã lưu thiết kế chứng chỉ.",
+      "save_failed": "Không thể lưu thiết kế chứng chỉ. Hãy kiểm tra biểu mẫu và thử lại.",
+      "signature_upload_in_progress": "Hãy đợi tải lên chữ ký hoàn tất trước khi lưu.",
+      "sections": "Các mục của trình chỉnh sửa",
+      "preview": "Xem trước chứng chỉ",
+      "panel_templates": "Mẫu",
+      "panel_templates_subtitle": "Chọn một mẫu cho chứng chỉ của bạn.",
+      "panel_content": "Nội dung",
+      "panel_content_subtitle": "Cấu hình phụ đề, mô tả và người ký.",
+      "panel_colors": "Màu sắc",
+      "panel_colors_subtitle": "Tùy chỉnh màu nhấn.",
+      "panel_export": "Xuất",
+      "panel_export_subtitle": "Xem trước thiết kế hiện tại như khi được cấp.",
+      "section_header": "Nội dung tiêu đề",
+      "section_signatories": "Người ký",
+      "section_reference": "Mã tham chiếu",
+      "subtitle": "Phụ đề",
+      "subtitle_placeholder": "Trao tặng với danh hiệu xuất sắc nhất",
+      "description_override": "Ghi đè mô tả",
+      "description_override_placeholder": "Mặc định lấy theo mô tả.",
+      "description_override_hint": "Để trống để dùng mô tả khi lưu.",
+      "signatory_one_name": "Tên người ký 1",
+      "signatory_one_role": "Chức vụ người ký 1",
+      "signatory_two_name": "Tên người ký 2",
+      "signatory_two_role": "Chức vụ người ký 2",
+      "signatory_one_toggle": "Hiển thị người ký 1",
+      "signatory_two_toggle": "Hiển thị người ký 2",
+      "signature_upload": "Hình ảnh chữ ký",
+      "signature_upload_hint": "Tải lên hình ảnh chữ ký (không bắt buộc)",
+      "signature_dont_crop": "Không cắt",
+      "id_format": "Định dạng ID chứng chỉ",
+      "id_format_hint": "Dùng '{'seq'}' cho bốn chữ số cuối, '{'year'}' cho năm cấp, '{'month'}' cho tháng.",
+      "accent_hint": "Màu nhấn xuất hiện trên đường kẻ người nhận, con dấu và phần nổi bật của tiêu đề mẫu.",
+      "templates_hint": "Các mẫu được hiển thị bằng cùng trình kết xuất dùng cho PDF và PNG tải xuống.",
+      "download_pdf": "Tải PDF",
+      "download_png": "Tải PNG",
+      "print": "In",
+      "export_hint": "Bản xuất dùng tên của bạn làm người nhận để bạn xem trước bố cục cuối cùng.",
+      "preview_failed": "Không thể tạo bản xem trước chứng chỉ",
       "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certificate of Excellence",
-      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
+      "sample_course": "Chứng chỉ Xuất sắc",
+      "sample_description": "Ghi nhận thành tích nổi bật và sự cống hiến mẫu mực cho nghề.",
       "sample_org": "The Royal Academy of Arts",
-      "summary_title": "Active design",
-      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
-      "field_template": "Template",
-      "field_accent": "Accent",
-      "field_signatories": "Signatories",
-      "customize_design": "Customize design",
-      "signatory_one": "Signatory 1",
-      "signatory_two": "Signatory 2",
-      "signatory_name": "Signatory name",
-      "signatory_role": "Signatory role",
-      "signature_image": "Signature image"
+      "summary_title": "Thiết kế đang dùng",
+      "summary_subtitle": "Tổng quan chứng chỉ sẽ trông như thế nào khi được cấp.",
+      "field_template": "Mẫu",
+      "field_accent": "Màu nhấn",
+      "field_signatories": "Người ký",
+      "customize_design": "Tùy chỉnh thiết kế",
+      "signatory_one": "Người ký 1",
+      "signatory_two": "Người ký 2",
+      "signatory_name": "Tên người ký",
+      "signatory_role": "Chức vụ người ký",
+      "signature_image": "Hình ảnh chữ ký"
     }
   },
   "public_learning_paths": {
@@ -7546,7 +7546,6 @@
       "reviews_heading": "Đánh giá",
       "reviews_lead": "Từ những người đã hoàn thành lộ trình.",
       "faq_heading": "Các câu hỏi thường gặp",
-      "no_faq": "Chưa có câu hỏi nào.",
       "pricing_heading": "Ghi danh",
       "pricing_eyebrow": "Ghi danh",
       "enroll_path": "Ghi danh vào lộ trình này",
@@ -7558,7 +7557,7 @@
       "taught_by_two": "Được giảng dạy bởi {first} và {second}",
       "taught_by_many": "Được giảng dạy bởi {names} + {count} người khác",
       "features_courses_line": "Tất cả {courseCount} khóa học, được mở khóa theo thứ tự",
-      "features_content_line": "{lessons} bài học · {exercises} bài tập · 1 đồ án",
+      "features_content_line": "{lessons} bài học · {exercises} bài tập",
       "features_certificate_line": "Chứng chỉ lộ trình khi hoàn thành",
       "features_milestone_line": "Hoàn thành cột mốc lộ trình đã xác minh",
       "features_access_line": "Truy cập trọn đời, học theo tốc độ của bạn",
@@ -7566,9 +7565,7 @@
       "stat_courses": "khóa học trong chuỗi",
       "stat_enrolled": "đã ghi danh",
       "stat_certificate": "Chứng chỉ",
-      "stat_beginner": "Người mới",
       "stat_on_completion": "khi hoàn thành",
-      "stat_no_experience": "không cần kinh nghiệm",
       "stat_reviews": "{count} đánh giá",
       "full_path": "Lộ trình đầy đủ",
       "save_percent": "Tiết kiệm {percent}%",
@@ -7760,7 +7757,7 @@
       "title": "mọi người",
       "subtitle": "{count} {count, plural, =1 {học viên} other {học viên}} đã đăng ký vào đường dẫn này",
       "info_title": "Giới thiệu về đăng ký lộ trình",
-      "info_banner": "Việc thêm một sinh viên vào đường dẫn này sẽ tự động đăng ký họ vào tất cả {count} {count, plural, =1 {khóa học} other {khóa học}} khác. Việc loại bỏ chúng sẽ bảo toàn quyền truy cập và tiến độ khóa học của họ.",
+      "info_banner": "Thêm học viên vào lộ trình này sẽ tự động đăng ký họ vào tất cả {count} {count, plural, other {khóa học}}. Việc gỡ họ sẽ chấm dứt quyền truy cập khóa học do lộ trình này cấp, nhưng vẫn giữ tiến độ của họ.",
       "search_placeholder": "Tìm kiếm theo tên hoặc email…",
       "filter": {
         "all": "Tất cả tiến độ",
@@ -8217,7 +8214,7 @@
       "reviews": {
         "title": "Đánh giá",
         "untitled": "Đánh giá chưa có tiêu đề",
-        "name_placeholder": "Jane Doe",
+        "name_placeholder": "Nguyễn Văn A",
         "avatar_placeholder": "https://...",
         "avatar_url": "URL ảnh đại diện",
         "rating_placeholder": "Tùy chọn (1-5)",

@@ -46,28 +46,28 @@
       "label": "Временной диапазон",
       "locked": "Обновите план, чтобы открыть этот период"
     },
-    "add": "Add",
-    "remove": "Remove",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
-    "back_to_my_learning": "Back to My Learning",
+    "add": "Добавить",
+    "remove": "Удалить",
+    "close": "Закрыть",
+    "edit": "Редактировать",
+    "coming_soon": "Скоро",
+    "back_to_my_learning": "Вернуться в «Моё обучение»",
     "pricing": {
-      "enable_paid": "Enable Paid",
-      "yes": "Yes",
-      "no": "No",
-      "currency": "Currency",
-      "cost": "Price",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required when paid is enabled",
-      "payment_invalid_url": "Please enter a valid URL",
-      "discount": "Discount",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer students an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "enable_paid": "Включить платный доступ",
+      "yes": "Да",
+      "no": "Нет",
+      "currency": "Валюта",
+      "cost": "Цена",
+      "payment_link": "Ссылка на оплату",
+      "payment_required": "Ссылка на оплату обязательна, если включён платный доступ",
+      "payment_invalid_url": "Введите корректный URL",
+      "discount": "Скидка",
+      "show_discount": "Показать скидку",
+      "discount_percentage": "Процент скидки",
+      "reward": "Награда / Подарок",
+      "reward_help": "Предложите студентам поощрение за завершение",
+      "reward_description": "Описание награды",
+      "placeholder_reward": "напр., индивидуальная менторская сессия, сувениры или эксклюзивный доступ к сообществу"
     }
   },
   "validations": {
@@ -578,17 +578,17 @@
   },
   "explore": {
     "heading": "Исследуйте",
-    "subtitle": "Discover learning experiences designed to help you get more value from the platform.",
-    "search_placeholder": "Search learning paths and courses…",
-    "content_type": "Content type",
-    "content_type_all": "All",
-    "section_paths": "Learning Paths",
-    "section_courses": "Courses",
-    "view_learning_path": "View Learning Path",
-    "paths_empty_title": "No paths found",
-    "paths_empty_description": "Try a different search or clear your filters.",
-    "courses_empty_title": "No courses match your search",
-    "courses_empty_description": "Try a different search term.",
+    "subtitle": "Откройте для себя форматы обучения, которые помогут получить больше пользы от платформы.",
+    "search_placeholder": "Поиск учебных треков и курсов…",
+    "content_type": "Тип контента",
+    "content_type_all": "Все",
+    "section_paths": "Учебные треки",
+    "section_courses": "Курсы",
+    "view_learning_path": "Открыть учебный трек",
+    "paths_empty_title": "Треки не найдены",
+    "paths_empty_description": "Попробуйте другой запрос или сбросьте фильтры.",
+    "courses_empty_title": "Нет курсов, соответствующих запросу",
+    "courses_empty_description": "Попробуйте другой поисковый запрос.",
     "courses_browse_empty_title": "Курсов пока нет",
     "courses_browse_empty_description": "Курсы, созданные в этой организации, появятся здесь.",
     "paths_browse_empty_title": "Учебных траекторий пока нет",
@@ -603,27 +603,27 @@
     "submitted": "Отправлено",
     "in_progress": "Выставление оценок в процессе",
     "graded": "Оцененный",
-    "total": "Total",
-    "completed": "Completed",
-    "overdue": "Overdue",
-    "empty": "No exercises yet.",
+    "total": "Всего",
+    "completed": "Завершено",
+    "overdue": "Просрочено",
+    "empty": "Заданий пока нет.",
     "table": {
-      "assignment": "Assignment",
-      "course": "Course",
-      "status": "Status",
-      "due_date": "Due Date",
-      "submission": "Submission",
-      "grade": "Grade"
+      "assignment": "Задание",
+      "course": "Курс",
+      "status": "Статус",
+      "due_date": "Срок сдачи",
+      "submission": "Отправка",
+      "grade": "Оценка"
     },
     "submission_states": {
-      "not_submitted": "Not submitted",
-      "awaiting_grade": "Awaiting grade",
-      "submitted": "Submitted"
+      "not_submitted": "Не отправлено",
+      "awaiting_grade": "Ожидает оценки",
+      "submitted": "Отправлено"
     },
     "actions": {
-      "view": "View",
-      "continue": "Continue",
-      "start": "Start"
+      "view": "Просмотреть",
+      "continue": "Продолжить",
+      "start": "Начать"
     }
   },
   "my_learning": {
@@ -648,8 +648,8 @@
     "no_results_title": "Сертификаты не найдены",
     "no_results_description": "Попробуйте другой поисковый запрос.",
     "go_to_my_learning": "Перейти к Моему обучению",
-    "load_error_title": "Couldn't load your certificates",
-    "load_error_description": "Something went wrong while loading your certificates.",
+    "load_error_title": "Не удалось загрузить ваши сертификаты",
+    "load_error_description": "Что-то пошло не так при загрузке ваших сертификатов.",
     "retry": "Попробовать снова"
   },
   "lms_navigation": {
@@ -662,8 +662,8 @@
     "help": "Помощь",
     "settings": "Настройки",
     "cohorts": "Когорты",
-    "learning_paths": "Learning Paths",
-    "my_courses": "My Courses"
+    "learning_paths": "Учебные треки",
+    "my_courses": "Мои курсы"
   },
   "upgrade": {
     "certificate": "Обновите свой план для создания сертификатов",
@@ -757,8 +757,8 @@
       "snackbar_success": "Назначены пользователи {assigned} для курсов ({alreadyEnrolled} уже зачислены, письма {emailsSent} отправлены)",
       "snackbar_no_courses": "Пожалуйста, выберите хотя бы один курс",
       "snackbar_failed": "Не удалось назначить курсы.",
-      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
-      "path_only_badge": "Path-only"
+      "snackbar_partial": "Назначено пользователей: {assigned} ({alreadyEnrolled} уже имели доступ, отправлено писем: {emailsSent}). Пропущены курсы только для треков: {names} — назначьте учебный трек, в который они входят, или отключите «Запись только через учебный трек» в настройках курса.",
+      "path_only_badge": "Только трек"
     },
     "import": {
       "title": "Импортировать пользователей",
@@ -810,13 +810,13 @@
       "submit_count": "Импорт {count} студентов",
       "result_heading": "Импортировано {count} студентов",
       "start_over": "Выбрать другой файл",
-      "select_paths_placeholder": "Choose learning paths...",
-      "path_access": "Learning Path Access",
-      "no_paths": "No learning path assignment",
-      "all_paths": "All learning paths",
-      "select_paths": "Select specific learning paths",
-      "skipped_path_only_title": "Skipped {count} path-only courses",
-      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings."
+      "select_paths_placeholder": "Выберите учебные треки...",
+      "path_access": "Доступ к учебным трекам",
+      "no_paths": "Без назначения учебного трека",
+      "all_paths": "Все учебные треки",
+      "select_paths": "Выбрать конкретные учебные треки",
+      "skipped_path_only_title": "Пропущено курсов только для треков: {count}",
+      "skipped_path_only_description": "{names}. На эти курсы можно записаться только через учебный трек. Назначьте учебный трек, в который они входят (это также даст доступ к другим его курсам), или отключите «Запись только через учебный трек» в настройках курса."
     },
     "page_subtitle": "Узнайте, кто входит в вашу организацию, кто учится, кто приглашён и как с ними связаться.",
     "user_analytics": {
@@ -949,7 +949,7 @@
     "learner_count": "{count} студентов",
     "certificate_earned": "{count} сертификат получен",
     "certificates_earned": "{count} сертификатов получено",
-    "path_only_badge": "Path-only"
+    "path_only_badge": "Только трек"
   },
   "community": {
     "title": "Сообщество",
@@ -1208,8 +1208,8 @@
             "unenrolled": "Студент больше не записан на курс."
           }
         },
-        "enroll_only_in_learning_path": "Enroll only in Learning Path",
-        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved."
+        "enroll_only_in_learning_path": "Запись только через учебный трек",
+        "enroll_only_in_learning_path_desc": "Если включено, студенты могут записаться на этот курс только через учебный трек. Существующие записи сохраняются."
       },
       "analytics": {
         "title": "Аналитика"
@@ -1459,11 +1459,11 @@
           "signature_dont_crop": "Не обрезать",
           "signature_upload_in_progress": "Прежде чем сохранять, дождитесь завершения загрузки подписи.",
           "save_failed": "Не удалось сохранить дизайн сертификата. Проверьте форму и повторите попытку.",
-          "signatory_one": "Signatory 1",
-          "signatory_two": "Signatory 2",
-          "signatory_name": "Signatory name",
-          "signatory_role": "Signatory role",
-          "signature_image": "Signature image"
+          "signatory_one": "Подписант 1",
+          "signatory_two": "Подписант 2",
+          "signatory_name": "Имя подписанта",
+          "signatory_role": "Должность подписанта",
+          "signature_image": "Изображение подписи"
         }
       },
       "people": {
@@ -1590,7 +1590,7 @@
             "description": "Предоставьте {email} доступ к этому курсу. Мы отправим приглашение по электронной почте, чтобы присоединиться к вашей организации и записаться на курс.",
             "cancel": "Отмена",
             "send_invite": "Отправить приглашение",
-            "path_only_notice": "This course can only be enrolled in through a learning path, so direct access can't be granted. Assign the containing learning path instead — or turn off 'Enroll only in Learning Path' in the course settings."
+            "path_only_notice": "На этот курс можно записаться только через учебный трек, поэтому прямой доступ предоставить нельзя. Назначьте учебный трек, в который он входит, или отключите «Запись только через учебный трек» в настройках курса."
           },
           "invite_new_students_title": "Пригласить новых студентов",
           "invite_new_students_description": "Пригласите новых людей в организацию и заранее назначьте их на этот курс. Они создадут аккаунт, примут приглашение и получат доступ.",
@@ -1636,9 +1636,9 @@
             "custom": "Пользовательский"
           },
           "student_limit_reached": "Вы достигли лимита учащихся, предусмотренного вашим планом. Обновите, чтобы пригласить больше студентов.",
-          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
-          "path_only_notice_title": "Students join through a learning path",
-          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings."
+          "members_added": "{count, plural, one {# участник успешно добавлен} few {# участника успешно добавлены} many {# участников успешно добавлены} other {# участника успешно добавлены}}",
+          "path_only_notice_title": "Студенты присоединяются через учебный трек",
+          "path_only_notice_description": "На этот курс можно записаться только через учебный трек, поэтому приглашать студентов здесь нельзя. Репетиторов можно пригласить ниже. Чтобы дать студентам доступ, назначьте учебный трек, в который входит курс, или отключите «Запись только через учебный трек» в настройках курса."
         },
         "learner": "Студент",
         "views": {
@@ -1670,11 +1670,11 @@
           "no_login_since": "Нет входа в систему с тех пор",
           "joined_within": "Присоединился внутри"
         },
-        "source": "Source",
-        "source_filter_all": "All sources",
-        "source_filter_direct": "Direct",
-        "source_learning_path": "Learning Path",
-        "source_cohort": "Cohort",
+        "source": "Источник",
+        "source_filter_all": "Все источники",
+        "source_filter_direct": "Напрямую",
+        "source_learning_path": "Учебный трек",
+        "source_cohort": "Когорта",
         "completed": "Завершено"
       },
       "marks": {
@@ -3218,9 +3218,9 @@
       "go_to_lms": "Перейти в СДО"
     },
     "not_found": {
-      "header": "Course not found",
-      "body": "The course you are looking for does not exist or may have been deleted.",
-      "button": "Go home"
+      "header": "Курс не найден",
+      "body": "Курс, который вы ищете, не существует или был удалён.",
+      "button": "На главную"
     }
   },
   "courses": {
@@ -3240,7 +3240,7 @@
       "success": {
         "course_cloned": "Курс успешно клонирован"
       },
-      "title_copy_format": "{title} (Copy)"
+      "title_copy_format": "{title} (копия)"
     },
     "new_course_modal": {
       "heading": "Создать курс",
@@ -3324,7 +3324,7 @@
     },
     "page_subtitle": "Здесь уроки превращаются в курсы, а курсы — в зачисления.",
     "load_more": "Загрузить больше",
-    "pricing_free": "Free"
+    "pricing_free": "Бесплатно"
   },
   "ai": {
     "help_me": "Помогите мне написать",
@@ -3399,23 +3399,23 @@
     "explore_more_courses": "Ознакомьтесь с другими курсами",
     "view_more": "Посмотреть больше",
     "upcoming_sessions_heading": "Живые сессии",
-    "completed": "Completed",
-    "completed_of": "{completed} of {total}",
-    "continue_course": "Continue Course",
-    "course_position": "Course {course} of {total}",
-    "enrolled": "Enrolled",
-    "explore_courses_hours": "{count} courses · {hours}h",
-    "explore_lessons_count": "{count} lessons",
-    "explore_something_new": "Explore Something New",
-    "exercise_status_in_progress": "In Progress",
-    "exercise_status_overdue": "Overdue",
-    "exercise_status_not_submitted": "Not Submitted",
-    "lessons_done": "{completed} of {total} lessons done",
-    "no_exercises": "No upcoming exercises",
-    "no_exercises_description": "Exercises you need to submit will appear here.",
-    "no_recommendations": "Nothing recommended yet",
-    "no_recommendations_description": "Explore the catalog to find your next course or learning path.",
-    "upcoming_exercises": "Upcoming Exercises"
+    "completed": "Завершено",
+    "completed_of": "{completed} из {total}",
+    "continue_course": "Продолжить курс",
+    "course_position": "Курс {course} из {total}",
+    "enrolled": "Записан",
+    "explore_courses_hours": "{count, plural, one {# курс} few {# курса} many {# курсов} other {# курса}} · {hours} ч",
+    "explore_lessons_count": "{count, plural, one {# урок} few {# урока} many {# уроков} other {# урока}}",
+    "explore_something_new": "Откройте для себя новое",
+    "exercise_status_in_progress": "В процессе",
+    "exercise_status_overdue": "Просрочено",
+    "exercise_status_not_submitted": "Не отправлено",
+    "lessons_done": "{completed} из {total} уроков пройдено",
+    "no_exercises": "Нет предстоящих заданий",
+    "no_exercises_description": "Задания, которые нужно сдать, появятся здесь.",
+    "no_recommendations": "Пока нет рекомендаций",
+    "no_recommendations_description": "Изучите каталог, чтобы найти следующий курс или учебный трек.",
+    "upcoming_exercises": "Предстоящие задания"
   },
   "schedule": {
     "title": "Ваше расписание",
@@ -3723,7 +3723,7 @@
     "tools": "Инструменты",
     "marketing": "Маркетинг",
     "org_analytics": "Академия",
-    "learning_paths": "Learning Paths"
+    "learning_paths": "Учебные треки"
   },
   "media_manager": {
     "page_title": "Медиаменеджер — ClassroomIO",
@@ -4817,7 +4817,7 @@
           "students": "Студенты",
           "settings": "Настройки",
           "cohorts": "Когорты",
-          "learning_paths": "Learning paths"
+          "learning_paths": "Учебные треки"
         }
       }
     },
@@ -6181,10 +6181,10 @@
       "published_access_callout_title": "Доступ для студентов",
       "published_access_callout_description": "Студенты имеют доступ только к опубликованным курсам. Курсы могут находиться в этой когорте для вашей команды, пока они еще не опубликованы, но они остаются скрытыми от учащихся, пока вы их не опубликуете.",
       "empty_student_description": "В этой группе пока нет опубликованных курсов.",
-      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
-      "adding": "Adding courses…",
-      "load_failed": "Failed to load courses.",
-      "retry": "Retry"
+      "add_count": "Добавить {count} {count, plural, one {курс} few {курса} many {курсов} other {курса}}",
+      "adding": "Добавление курсов…",
+      "load_failed": "Не удалось загрузить курсы.",
+      "retry": "Повторить"
     },
     "newsfeed": {
       "post": "Новое сообщение",
@@ -6364,12 +6364,12 @@
       "closed": "Прием новых участников прекращен.",
       "succeeded": "Вы присоединились",
       "failed": "Не удалось присоединиться. Пожалуйста, попробуйте еще раз.",
-      "learning_path_button": "Join learning path"
+      "learning_path_button": "Присоединиться к учебному треку"
     },
     "load_failed": "Не удалось загрузить ссылку-приглашение",
     "generate_failed": "Не удалось создать ссылку-приглашение",
     "toggle_failed": "Не удалось обновить ссылку-приглашение",
-    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one."
+    "learning_path_description": "Любой, у кого есть эта ссылка, может присоединиться к этому учебному треку и ко всем его курсам. Поделитесь ею вместо того, чтобы вводить адреса по одному."
   },
   "lms": {
     "view_landing_page": "Главная"
@@ -7446,73 +7446,73 @@
     }
   },
   "certificate": {
-    "tab_design": "Design",
-    "tab_settings": "Settings",
-    "allow": "Allow students download certificate",
-    "email_message_label": "Email Message",
-    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
-    "rules": "Rules",
+    "tab_design": "Дизайн",
+    "tab_settings": "Настройки",
+    "allow": "Разрешить студентам скачивать сертификат",
+    "email_message_label": "Текст письма",
+    "email_message_placeholder": "напр., Мы гордимся вашим прогрессом — продолжайте учиться!",
+    "rules": "Правила",
     "editor": {
-      "title": "Certificate design",
-      "back": "Back",
-      "unsaved": "Unsaved changes",
-      "free_plan": "Available on Pro",
-      "discard": "Discard",
-      "save": "Save",
-      "saved": "Certificate design saved.",
-      "save_failed": "Could not save the certificate design. Check the form and try again.",
-      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
-      "sections": "Editor sections",
-      "preview": "Certificate preview",
-      "panel_templates": "Templates",
-      "panel_templates_subtitle": "Select a template for your certificate.",
-      "panel_content": "Content",
-      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
-      "panel_colors": "Colors",
-      "panel_colors_subtitle": "Customize the accent color.",
-      "panel_export": "Export",
-      "panel_export_subtitle": "Preview the current design as it will be delivered.",
-      "section_header": "Header copy",
-      "section_signatories": "Signatories",
-      "section_reference": "Reference",
-      "subtitle": "Subtitle",
-      "subtitle_placeholder": "Awarded with Highest Distinction",
-      "description_override": "Description override",
-      "description_override_placeholder": "Defaults to the description.",
-      "description_override_hint": "Leave blank to fall back to the description on save.",
-      "signatory_one_name": "Signatory 1 name",
-      "signatory_one_role": "Signatory 1 role",
-      "signatory_two_name": "Signatory 2 name",
-      "signatory_two_role": "Signatory 2 role",
-      "signatory_one_toggle": "Show signatory 1",
-      "signatory_two_toggle": "Show signatory 2",
-      "signature_upload": "Signature image",
-      "signature_upload_hint": "Upload a signature image (optional)",
-      "signature_dont_crop": "Don't Crop",
-      "id_format": "Certificate ID format",
-      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
-      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
-      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
-      "download_pdf": "Download PDF",
-      "download_png": "Download PNG",
-      "print": "Print",
-      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
-      "preview_failed": "Could not generate certificate preview",
+      "title": "Дизайн сертификата",
+      "back": "Назад",
+      "unsaved": "Несохранённые изменения",
+      "free_plan": "Доступно в Pro",
+      "discard": "Отменить",
+      "save": "Сохранить",
+      "saved": "Дизайн сертификата сохранён.",
+      "save_failed": "Не удалось сохранить дизайн сертификата. Проверьте форму и повторите попытку.",
+      "signature_upload_in_progress": "Дождитесь окончания загрузки подписи перед сохранением.",
+      "sections": "Разделы редактора",
+      "preview": "Предпросмотр сертификата",
+      "panel_templates": "Шаблоны",
+      "panel_templates_subtitle": "Выберите шаблон сертификата.",
+      "panel_content": "Содержимое",
+      "panel_content_subtitle": "Настройте подзаголовки, описания и подписантов.",
+      "panel_colors": "Цвета",
+      "panel_colors_subtitle": "Настройте акцентный цвет.",
+      "panel_export": "Экспорт",
+      "panel_export_subtitle": "Просмотрите текущий дизайн в том виде, в каком он будет выдан.",
+      "section_header": "Текст заголовка",
+      "section_signatories": "Подписанты",
+      "section_reference": "Реквизиты",
+      "subtitle": "Подзаголовок",
+      "subtitle_placeholder": "Присвоено с высшим отличием",
+      "description_override": "Замена описания",
+      "description_override_placeholder": "По умолчанию используется описание.",
+      "description_override_hint": "Оставьте пустым, чтобы при сохранении использовалось описание.",
+      "signatory_one_name": "Имя подписанта 1",
+      "signatory_one_role": "Должность подписанта 1",
+      "signatory_two_name": "Имя подписанта 2",
+      "signatory_two_role": "Должность подписанта 2",
+      "signatory_one_toggle": "Показать подписанта 1",
+      "signatory_two_toggle": "Показать подписанта 2",
+      "signature_upload": "Изображение подписи",
+      "signature_upload_hint": "Загрузите изображение подписи (необязательно)",
+      "signature_dont_crop": "Не обрезать",
+      "id_format": "Формат ID сертификата",
+      "id_format_hint": "Используйте '{'seq'}' для последних четырёх цифр, '{'year'}' для года выдачи, '{'month'}' для месяца.",
+      "accent_hint": "Акцентный цвет используется в линии получателя, печатях и выделении заголовка шаблона.",
+      "templates_hint": "Шаблоны отображаются тем же механизмом, что и скачиваемые PDF и PNG.",
+      "download_pdf": "Скачать PDF",
+      "download_png": "Скачать PNG",
+      "print": "Печать",
+      "export_hint": "В экспорте используется ваше имя в качестве получателя, чтобы вы могли оценить итоговый макет.",
+      "preview_failed": "Не удалось создать предпросмотр сертификата",
       "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certificate of Excellence",
-      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
+      "sample_course": "Сертификат отличия",
+      "sample_description": "В знак признания выдающихся достижений и образцовой преданности делу.",
       "sample_org": "The Royal Academy of Arts",
-      "summary_title": "Active design",
-      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
-      "field_template": "Template",
-      "field_accent": "Accent",
-      "field_signatories": "Signatories",
-      "customize_design": "Customize design",
-      "signatory_one": "Signatory 1",
-      "signatory_two": "Signatory 2",
-      "signatory_name": "Signatory name",
-      "signatory_role": "Signatory role",
-      "signature_image": "Signature image"
+      "summary_title": "Активный дизайн",
+      "summary_subtitle": "Как будет выглядеть сертификат при выдаче.",
+      "field_template": "Шаблон",
+      "field_accent": "Акцент",
+      "field_signatories": "Подписанты",
+      "customize_design": "Настроить дизайн",
+      "signatory_one": "Подписант 1",
+      "signatory_two": "Подписант 2",
+      "signatory_name": "Имя подписанта",
+      "signatory_role": "Должность подписанта",
+      "signature_image": "Изображение подписи"
     }
   },
   "public_learning_paths": {
@@ -7546,7 +7546,6 @@
       "reviews_heading": "Отзывы",
       "reviews_lead": "От людей, завершивших траекторию.",
       "faq_heading": "Часто задаваемые вопросы",
-      "no_faq": "Вопросов пока нет.",
       "pricing_heading": "Запись",
       "pricing_eyebrow": "Запись",
       "enroll_path": "Записаться на эту траекторию",
@@ -7558,7 +7557,7 @@
       "taught_by_two": "Преподают {first} и {second}",
       "taught_by_many": "Преподают {names} и ещё {count}",
       "features_courses_line": "Все {courseCount} курса, открываются по порядку",
-      "features_content_line": "{lessons} уроков · {exercises} упражнений · 1 итоговый проект",
+      "features_content_line": "{lessons} уроков · {exercises} упражнений",
       "features_certificate_line": "Сертификат траектории по завершении",
       "features_milestone_line": "Подтверждённое завершение этапов траектории",
       "features_access_line": "Доступ навсегда, учитесь в своём темпе",
@@ -7566,9 +7565,7 @@
       "stat_courses": "курсов в серии",
       "stat_enrolled": "записано",
       "stat_certificate": "Сертификат",
-      "stat_beginner": "Новичок",
       "stat_on_completion": "по завершении",
-      "stat_no_experience": "без опыта",
       "stat_reviews": "{count} отзывов",
       "full_path": "Вся траектория",
       "save_percent": "Экономия {percent}%",
@@ -7760,7 +7757,7 @@
       "title": "Люди",
       "subtitle": "{count} {count, plural, one {студент} few {студентов} many {студентов} other {студентов}} зачислены на этот путь",
       "info_title": "О регистрации пути",
-      "info_banner": "Добавление студента к этому пути автоматически зачисляет его на все {count} {count, plural, one {курс} few {курса} many {курсов} other {курсов}}. Их удаление сохранит доступ к курсу и прогресс.",
+      "info_banner": "Добавление студента в этот трек автоматически записывает его на все {count} {count, plural, one {курс} few {курса} many {курсов} other {курса}}. Его удаление прекращает доступ к курсам, предоставленный этим треком, но сохраняет прогресс.",
       "search_placeholder": "Поиск по имени или адресу электронной почты…",
       "filter": {
         "all": "Весь прогресс",
@@ -8217,7 +8214,7 @@
       "reviews": {
         "title": "Оценки",
         "untitled": "Отзыв без названия",
-        "name_placeholder": "Jane Doe",
+        "name_placeholder": "Иван Петров",
         "avatar_placeholder": "https://...",
         "avatar_url": "URL изображения аватара",
         "rating_placeholder": "Необязательно (1-5)",

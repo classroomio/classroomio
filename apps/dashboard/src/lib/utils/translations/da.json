@@ -46,28 +46,28 @@
       "label": "Tidsinterval",
       "locked": "Opgrader for at låse denne periode op"
     },
-    "add": "Add",
-    "remove": "Remove",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
-    "back_to_my_learning": "Back to My Learning",
+    "add": "Tilføj",
+    "remove": "Fjern",
+    "close": "Luk",
+    "edit": "Rediger",
+    "coming_soon": "Kommer snart",
+    "back_to_my_learning": "Tilbage til Min læring",
     "pricing": {
-      "enable_paid": "Enable Paid",
-      "yes": "Yes",
-      "no": "No",
-      "currency": "Currency",
-      "cost": "Price",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required when paid is enabled",
-      "payment_invalid_url": "Please enter a valid URL",
-      "discount": "Discount",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer students an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "enable_paid": "Aktivér betaling",
+      "yes": "Ja",
+      "no": "Nej",
+      "currency": "Valuta",
+      "cost": "Pris",
+      "payment_link": "Betalingslink",
+      "payment_required": "Betalingslink er påkrævet, når betaling er aktiveret",
+      "payment_invalid_url": "Indtast en gyldig URL",
+      "discount": "Rabat",
+      "show_discount": "Vis rabat",
+      "discount_percentage": "Rabatprocent",
+      "reward": "Belønning / gave",
+      "reward_help": "Tilbyd kursister et incitament, når de gennemfører",
+      "reward_description": "Beskrivelse af belønning",
+      "placeholder_reward": "f.eks. 1-til-1 mentorsession, merchandise eller eksklusiv adgang til fællesskabet"
     }
   },
   "validations": {
@@ -578,17 +578,17 @@
   },
   "explore": {
     "heading": "Udforsk",
-    "subtitle": "Discover learning experiences designed to help you get more value from the platform.",
-    "search_placeholder": "Search learning paths and courses…",
-    "content_type": "Content type",
-    "content_type_all": "All",
-    "section_paths": "Learning Paths",
-    "section_courses": "Courses",
-    "view_learning_path": "View Learning Path",
-    "paths_empty_title": "No paths found",
-    "paths_empty_description": "Try a different search or clear your filters.",
-    "courses_empty_title": "No courses match your search",
-    "courses_empty_description": "Try a different search term.",
+    "subtitle": "Opdag læringsoplevelser, der hjælper dig med at få mere ud af platformen.",
+    "search_placeholder": "Søg i læringsforløb og kurser…",
+    "content_type": "Indholdstype",
+    "content_type_all": "Alle",
+    "section_paths": "Læringsforløb",
+    "section_courses": "Kurser",
+    "view_learning_path": "Se læringsforløb",
+    "paths_empty_title": "Ingen forløb fundet",
+    "paths_empty_description": "Prøv en anden søgning, eller ryd dine filtre.",
+    "courses_empty_title": "Ingen kurser matcher din søgning",
+    "courses_empty_description": "Prøv et andet søgeord.",
     "courses_browse_empty_title": "Ingen kurser endnu",
     "courses_browse_empty_description": "Kurser, der oprettes i denne organisation, vises her.",
     "paths_browse_empty_title": "Ingen læringsstier endnu",
@@ -603,26 +603,26 @@
     "submitted": "Indsendt",
     "in_progress": "Bedømmelse i gang",
     "graded": "Bedømt",
-    "total": "Total",
-    "completed": "Completed",
-    "overdue": "Overdue",
-    "empty": "No exercises yet.",
+    "total": "I alt",
+    "completed": "Gennemført",
+    "overdue": "Forfalden",
+    "empty": "Ingen opgaver endnu.",
     "table": {
-      "assignment": "Assignment",
-      "course": "Course",
+      "assignment": "Opgave",
+      "course": "Kursus",
       "status": "Status",
-      "due_date": "Due Date",
-      "submission": "Submission",
-      "grade": "Grade"
+      "due_date": "Afleveringsfrist",
+      "submission": "Aflevering",
+      "grade": "Karakter"
     },
     "submission_states": {
-      "not_submitted": "Not submitted",
-      "awaiting_grade": "Awaiting grade",
-      "submitted": "Submitted"
+      "not_submitted": "Ikke afleveret",
+      "awaiting_grade": "Afventer bedømmelse",
+      "submitted": "Afleveret"
     },
     "actions": {
-      "view": "View",
-      "continue": "Continue",
+      "view": "Vis",
+      "continue": "Fortsæt",
       "start": "Start"
     }
   },
@@ -648,8 +648,8 @@
     "no_results_title": "Ingen certifikater fundet",
     "no_results_description": "Prøv et andet søgeord.",
     "go_to_my_learning": "Gå til Min Læring",
-    "load_error_title": "Couldn't load your certificates",
-    "load_error_description": "Something went wrong while loading your certificates.",
+    "load_error_title": "Dine certifikater kunne ikke indlæses",
+    "load_error_description": "Noget gik galt under indlæsning af dine certifikater.",
     "retry": "Prøv igen"
   },
   "lms_navigation": {
@@ -662,8 +662,8 @@
     "help": "Hjælp",
     "settings": "Indstillinger",
     "cohorts": "Kohorter",
-    "learning_paths": "Learning Paths",
-    "my_courses": "My Courses"
+    "learning_paths": "Læringsforløb",
+    "my_courses": "Mine kurser"
   },
   "upgrade": {
     "certificate": "Opgrader din plan for at generere certifikater",
@@ -757,8 +757,8 @@
       "snackbar_success": "Tildelt {assigned} brugere til kurser ({alreadyEnrolled} allerede tilmeldt, {emailsSent} e-mails sendt)",
       "snackbar_no_courses": "Vælg venligst mindst ét kursus",
       "snackbar_failed": "Kunne ikke tildele kurser",
-      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
-      "path_only_badge": "Path-only"
+      "snackbar_partial": "Tildelte {assigned} brugere ({alreadyEnrolled} havde allerede adgang, {emailsSent} e-mails sendt). Sprang kurser kun for forløb over: {names} — tildel det læringsforløb, der indeholder kurset, eller slå 'Tilmeld kun via læringsforløb' fra i kursusindstillingerne.",
+      "path_only_badge": "Kun forløb"
     },
     "import": {
       "title": "Importer brugere",
@@ -810,13 +810,13 @@
       "submit_count": "Importer {count} studerende",
       "result_heading": "{count} studerende importeret",
       "start_over": "Vælg en anden fil",
-      "select_paths_placeholder": "Choose learning paths...",
-      "path_access": "Learning Path Access",
-      "no_paths": "No learning path assignment",
-      "all_paths": "All learning paths",
-      "select_paths": "Select specific learning paths",
-      "skipped_path_only_title": "Skipped {count} path-only courses",
-      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings."
+      "select_paths_placeholder": "Vælg læringsforløb...",
+      "path_access": "Adgang til læringsforløb",
+      "no_paths": "Ingen tildeling til læringsforløb",
+      "all_paths": "Alle læringsforløb",
+      "select_paths": "Vælg bestemte læringsforløb",
+      "skipped_path_only_title": "Sprang {count} kurser kun for forløb over",
+      "skipped_path_only_description": "{names}. Disse kurser kan kun tilmeldes via et læringsforløb. Tildel enten det læringsforløb, der indeholder kurset (det giver også adgang til forløbets øvrige kurser), eller slå 'Tilmeld kun via læringsforløb' fra i kursusindstillingerne."
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
@@ -949,7 +949,7 @@
     "learner_count": "{count} elever",
     "certificate_earned": "{count} certifikat opnået",
     "certificates_earned": "{count} certifikater opnået",
-    "path_only_badge": "Path-only"
+    "path_only_badge": "Kun forløb"
   },
   "community": {
     "title": "Fællesskab",
@@ -1208,8 +1208,8 @@
             "unenrolled": "Eleven er ikke længere tilmeldt."
           }
         },
-        "enroll_only_in_learning_path": "Enroll only in Learning Path",
-        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved."
+        "enroll_only_in_learning_path": "Tilmeld kun via læringsforløb",
+        "enroll_only_in_learning_path_desc": "Når slået til, kan kursister kun tilmelde sig dette kursus via et læringsforløb. Eksisterende tilmeldinger bevares."
       },
       "analytics": {
         "title": "Analyse"
@@ -1459,11 +1459,11 @@
           "signature_dont_crop": "Beskær ikke",
           "signature_upload_in_progress": "Vent på, at signaturoverførslen er færdig, før du gemmer.",
           "save_failed": "Kunne ikke gemme certifikatdesignet. Tjek formularen og prøv igen.",
-          "signatory_one": "Signatory 1",
-          "signatory_two": "Signatory 2",
-          "signatory_name": "Signatory name",
-          "signatory_role": "Signatory role",
-          "signature_image": "Signature image"
+          "signatory_one": "Underskriver 1",
+          "signatory_two": "Underskriver 2",
+          "signatory_name": "Navn på underskriver",
+          "signatory_role": "Underskrivers rolle",
+          "signature_image": "Signaturbillede"
         }
       },
       "people": {
@@ -1590,7 +1590,7 @@
             "description": "Giv {email} adgang til dette kursus. Vi sender en invitationsmail, så vedkommende kan tilslutte sig din organisation og tilmelde sig kurset.",
             "cancel": "Annuller",
             "send_invite": "Send invitationen",
-            "path_only_notice": "This course can only be enrolled in through a learning path, so direct access can't be granted. Assign the containing learning path instead — or turn off 'Enroll only in Learning Path' in the course settings."
+            "path_only_notice": "Dette kursus kan kun tilmeldes via et læringsforløb, så direkte adgang kan ikke gives. Tildel det læringsforløb, der indeholder kurset — eller slå 'Tilmeld kun via læringsforløb' fra i kursusindstillingerne."
           },
           "invite_new_students_title": "Inviter nye studerende",
           "invite_new_students_description": "Inviter nye personer til din organisation og forudtildel dem til dette kursus. De opretter en konto, accepterer invitationen og får adgang.",
@@ -1636,9 +1636,9 @@
             "custom": "Brugerdefineret"
           },
           "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever.",
-          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
-          "path_only_notice_title": "Students join through a learning path",
-          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings."
+          "members_added": "{count, plural, one {# medlem tilføjet} other {# medlemmer tilføjet}}",
+          "path_only_notice_title": "Kursister tilmelder sig via et læringsforløb",
+          "path_only_notice_description": "Dette kursus kan kun tilmeldes via et læringsforløb, så kursister kan ikke inviteres her. Du kan stadig invitere undervisere nedenfor. For at give kursister adgang skal du tildele det læringsforløb, der indeholder kurset — eller slå 'Tilmeld kun via læringsforløb' fra i kursusindstillingerne."
         },
         "learner": "Studerende",
         "views": {
@@ -1670,11 +1670,11 @@
           "no_login_since": "Intet login siden",
           "joined_within": "Tiltrådte indenfor"
         },
-        "source": "Source",
-        "source_filter_all": "All sources",
-        "source_filter_direct": "Direct",
-        "source_learning_path": "Learning Path",
-        "source_cohort": "Cohort",
+        "source": "Kilde",
+        "source_filter_all": "Alle kilder",
+        "source_filter_direct": "Direkte",
+        "source_learning_path": "Læringsforløb",
+        "source_cohort": "Hold",
         "completed": "Afsluttet"
       },
       "marks": {
@@ -3218,9 +3218,9 @@
       "go_to_lms": "Gå til LMS"
     },
     "not_found": {
-      "header": "Course not found",
-      "body": "The course you are looking for does not exist or may have been deleted.",
-      "button": "Go home"
+      "header": "Kursus ikke fundet",
+      "body": "Det kursus, du leder efter, findes ikke eller er muligvis blevet slettet.",
+      "button": "Gå til forsiden"
     }
   },
   "courses": {
@@ -3240,7 +3240,7 @@
       "success": {
         "course_cloned": "Kurset blev klonet"
       },
-      "title_copy_format": "{title} (Copy)"
+      "title_copy_format": "{title} (kopi)"
     },
     "new_course_modal": {
       "heading": "Opret et kursus",
@@ -3324,7 +3324,7 @@
     },
     "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger.",
     "load_more": "Indlæs mere",
-    "pricing_free": "Free"
+    "pricing_free": "Gratis"
   },
   "ai": {
     "help_me": "Hjælp mig med at skrive",
@@ -3399,23 +3399,23 @@
     "explore_more_courses": "Udforsk flere kurser",
     "view_more": "Se mere",
     "upcoming_sessions_heading": "Live sessioner",
-    "completed": "Completed",
-    "completed_of": "{completed} of {total}",
-    "continue_course": "Continue Course",
-    "course_position": "Course {course} of {total}",
-    "enrolled": "Enrolled",
-    "explore_courses_hours": "{count} courses · {hours}h",
-    "explore_lessons_count": "{count} lessons",
-    "explore_something_new": "Explore Something New",
-    "exercise_status_in_progress": "In Progress",
-    "exercise_status_overdue": "Overdue",
-    "exercise_status_not_submitted": "Not Submitted",
-    "lessons_done": "{completed} of {total} lessons done",
-    "no_exercises": "No upcoming exercises",
-    "no_exercises_description": "Exercises you need to submit will appear here.",
-    "no_recommendations": "Nothing recommended yet",
-    "no_recommendations_description": "Explore the catalog to find your next course or learning path.",
-    "upcoming_exercises": "Upcoming Exercises"
+    "completed": "Gennemført",
+    "completed_of": "{completed} af {total}",
+    "continue_course": "Fortsæt kursus",
+    "course_position": "Kursus {course} af {total}",
+    "enrolled": "Tilmeldt",
+    "explore_courses_hours": "{count} kurser · {hours} t",
+    "explore_lessons_count": "{count} lektioner",
+    "explore_something_new": "Udforsk noget nyt",
+    "exercise_status_in_progress": "I gang",
+    "exercise_status_overdue": "Forfalden",
+    "exercise_status_not_submitted": "Ikke afleveret",
+    "lessons_done": "{completed} af {total} lektioner gennemført",
+    "no_exercises": "Ingen kommende opgaver",
+    "no_exercises_description": "Opgaver, du skal aflevere, vises her.",
+    "no_recommendations": "Intet anbefalet endnu",
+    "no_recommendations_description": "Udforsk kataloget for at finde dit næste kursus eller læringsforløb.",
+    "upcoming_exercises": "Kommende opgaver"
   },
   "schedule": {
     "title": "Dit skema",
@@ -3723,7 +3723,7 @@
     "tools": "Værktøjer",
     "marketing": "Markedsføring",
     "org_analytics": "Akademi",
-    "learning_paths": "Learning Paths"
+    "learning_paths": "Læringsforløb"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -4817,7 +4817,7 @@
           "students": "studerende",
           "settings": "Indstillinger",
           "cohorts": "Kohorter",
-          "learning_paths": "Learning paths"
+          "learning_paths": "Læringsforløb"
         }
       }
     },
@@ -6181,10 +6181,10 @@
       "published_access_callout_title": "Studerendes adgang",
       "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i denne kohorte for dit team, mens de stadig ikke er udgivet, men de forbliver skjulte for eleverne, indtil du udgiver dem.",
       "empty_student_description": "Der er endnu ingen offentliggjorte kurser i denne kohorte.",
-      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
-      "adding": "Adding courses…",
-      "load_failed": "Failed to load courses.",
-      "retry": "Retry"
+      "add_count": "Tilføj {count} {count, plural, =1 {kursus} other {kurser}}",
+      "adding": "Tilføjer kurser…",
+      "load_failed": "Kurserne kunne ikke indlæses.",
+      "retry": "Prøv igen"
     },
     "newsfeed": {
       "post": "Nyt indlæg",
@@ -6364,12 +6364,12 @@
       "closed": "Dette accepterer ikke længere nye medlemmer.",
       "succeeded": "Du er tilmeldt",
       "failed": "Kunne ikke deltage. Prøv igen.",
-      "learning_path_button": "Join learning path"
+      "learning_path_button": "Deltag i læringsforløb"
     },
     "load_failed": "Kunne ikke indlæse invitationslinket",
     "generate_failed": "Kunne ikke oprette invitationslinket",
     "toggle_failed": "Kunne ikke opdatere invitationslinket",
-    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one."
+    "learning_path_description": "Alle med dette link kan deltage i dette læringsforløb og alle kurser i det. Del det i stedet for at indtaste e-mails én ad gangen."
   },
   "lms": {
     "view_landing_page": "Hjem"
@@ -7447,72 +7447,72 @@
   },
   "certificate": {
     "tab_design": "Design",
-    "tab_settings": "Settings",
-    "allow": "Allow students download certificate",
-    "email_message_label": "Email Message",
-    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
-    "rules": "Rules",
+    "tab_settings": "Indstillinger",
+    "allow": "Lad kursister downloade certifikat",
+    "email_message_label": "E-mailbesked",
+    "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt — bliv ved med at lære!",
+    "rules": "Regler",
     "editor": {
-      "title": "Certificate design",
-      "back": "Back",
-      "unsaved": "Unsaved changes",
-      "free_plan": "Available on Pro",
-      "discard": "Discard",
-      "save": "Save",
-      "saved": "Certificate design saved.",
-      "save_failed": "Could not save the certificate design. Check the form and try again.",
-      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
-      "sections": "Editor sections",
-      "preview": "Certificate preview",
-      "panel_templates": "Templates",
-      "panel_templates_subtitle": "Select a template for your certificate.",
-      "panel_content": "Content",
-      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
-      "panel_colors": "Colors",
-      "panel_colors_subtitle": "Customize the accent color.",
-      "panel_export": "Export",
-      "panel_export_subtitle": "Preview the current design as it will be delivered.",
-      "section_header": "Header copy",
-      "section_signatories": "Signatories",
+      "title": "Certifikatdesign",
+      "back": "Tilbage",
+      "unsaved": "Ikke-gemte ændringer",
+      "free_plan": "Tilgængelig på Pro",
+      "discard": "Kassér",
+      "save": "Gem",
+      "saved": "Certifikatdesign gemt.",
+      "save_failed": "Certifikatdesignet kunne ikke gemmes. Tjek formularen, og prøv igen.",
+      "signature_upload_in_progress": "Vent til upload af signaturen er færdig, før du gemmer.",
+      "sections": "Editorsektioner",
+      "preview": "Certifikatvisning",
+      "panel_templates": "Skabeloner",
+      "panel_templates_subtitle": "Vælg en skabelon til dit certifikat.",
+      "panel_content": "Indhold",
+      "panel_content_subtitle": "Konfigurer undertitler, beskrivelser og underskrivere.",
+      "panel_colors": "Farver",
+      "panel_colors_subtitle": "Tilpas accentfarven.",
+      "panel_export": "Eksport",
+      "panel_export_subtitle": "Se et eksempel på det aktuelle design, som det bliver leveret.",
+      "section_header": "Overskriftstekst",
+      "section_signatories": "Underskrivere",
       "section_reference": "Reference",
-      "subtitle": "Subtitle",
-      "subtitle_placeholder": "Awarded with Highest Distinction",
-      "description_override": "Description override",
-      "description_override_placeholder": "Defaults to the description.",
-      "description_override_hint": "Leave blank to fall back to the description on save.",
-      "signatory_one_name": "Signatory 1 name",
-      "signatory_one_role": "Signatory 1 role",
-      "signatory_two_name": "Signatory 2 name",
-      "signatory_two_role": "Signatory 2 role",
-      "signatory_one_toggle": "Show signatory 1",
-      "signatory_two_toggle": "Show signatory 2",
-      "signature_upload": "Signature image",
-      "signature_upload_hint": "Upload a signature image (optional)",
-      "signature_dont_crop": "Don't Crop",
-      "id_format": "Certificate ID format",
-      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
-      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
-      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
+      "subtitle": "Undertitel",
+      "subtitle_placeholder": "Tildelt med højeste udmærkelse",
+      "description_override": "Overskriv beskrivelse",
+      "description_override_placeholder": "Bruger som standard beskrivelsen.",
+      "description_override_hint": "Lad feltet være tomt for at bruge beskrivelsen ved gemning.",
+      "signatory_one_name": "Navn på underskriver 1",
+      "signatory_one_role": "Rolle for underskriver 1",
+      "signatory_two_name": "Navn på underskriver 2",
+      "signatory_two_role": "Rolle for underskriver 2",
+      "signatory_one_toggle": "Vis underskriver 1",
+      "signatory_two_toggle": "Vis underskriver 2",
+      "signature_upload": "Signaturbillede",
+      "signature_upload_hint": "Upload et signaturbillede (valgfrit)",
+      "signature_dont_crop": "Beskær ikke",
+      "id_format": "Certifikat-ID-format",
+      "id_format_hint": "Brug '{'seq'}' til de sidste fire cifre, '{'year'}' til udstedelsesåret, '{'month'}' til måneden.",
+      "accent_hint": "Accentfarven vises på modtagerlinjen, stempler og skabelonens fremhævede overskrift.",
+      "templates_hint": "Skabeloner gengives med samme renderer som den downloadede PDF og PNG.",
       "download_pdf": "Download PDF",
       "download_png": "Download PNG",
-      "print": "Print",
-      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
-      "preview_failed": "Could not generate certificate preview",
+      "print": "Udskriv",
+      "export_hint": "Eksport bruger dit navn som modtager, så du kan se det endelige layout.",
+      "preview_failed": "Certifikatvisningen kunne ikke genereres",
       "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certificate of Excellence",
-      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
-      "sample_org": "The Royal Academy of Arts",
-      "summary_title": "Active design",
-      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
-      "field_template": "Template",
+      "sample_course": "Fortrinlighedscertifikat",
+      "sample_description": "Til anerkendelse af enestående præstation og eksemplarisk dedikation til faget.",
+      "sample_org": "Det Kongelige Kunstakademi",
+      "summary_title": "Aktivt design",
+      "summary_subtitle": "Overblik over, hvordan certifikatet ser ud, når det udstedes.",
+      "field_template": "Skabelon",
       "field_accent": "Accent",
-      "field_signatories": "Signatories",
-      "customize_design": "Customize design",
-      "signatory_one": "Signatory 1",
-      "signatory_two": "Signatory 2",
-      "signatory_name": "Signatory name",
-      "signatory_role": "Signatory role",
-      "signature_image": "Signature image"
+      "field_signatories": "Underskrivere",
+      "customize_design": "Tilpas design",
+      "signatory_one": "Underskriver 1",
+      "signatory_two": "Underskriver 2",
+      "signatory_name": "Navn på underskriver",
+      "signatory_role": "Underskrivers rolle",
+      "signature_image": "Signaturbillede"
     }
   },
   "public_learning_paths": {
@@ -7546,7 +7546,6 @@
       "reviews_heading": "Anmeldelser",
       "reviews_lead": "Fra personer, der har afsluttet stien.",
       "faq_heading": "Ofte stillede spørgsmål",
-      "no_faq": "Ingen spørgsmål endnu.",
       "pricing_heading": "Tilmelding",
       "pricing_eyebrow": "Tilmelding",
       "enroll_path": "Tilmeld dig denne sti",
@@ -7558,7 +7557,7 @@
       "taught_by_two": "Undervist af {first} og {second}",
       "taught_by_many": "Undervist af {names} + {count} mere",
       "features_courses_line": "Alle {courseCount} kurser, låst op i rækkefølge",
-      "features_content_line": "{lessons} lektioner · {exercises} øvelser · 1 afgangsprojekt",
+      "features_content_line": "{lessons} lektioner · {exercises} øvelser",
       "features_certificate_line": "Sti-certifikat ved afslutning",
       "features_milestone_line": "Verificeret milepælsafslutning for sti",
       "features_access_line": "Livstidsadgang, lær i dit eget tempo",
@@ -7566,9 +7565,7 @@
       "stat_courses": "kurser i serien",
       "stat_enrolled": "tilmeldte",
       "stat_certificate": "Certifikat",
-      "stat_beginner": "Begynder",
       "stat_on_completion": "ved afslutning",
-      "stat_no_experience": "ingen erfaring krævet",
       "stat_reviews": "{count} anmeldelser",
       "full_path": "Komplet sti",
       "save_percent": "Spar {percent}%",
@@ -7760,7 +7757,7 @@
       "title": "Mennesker",
       "subtitle": "{count} {count, plural, =1 {elev} other {elever}} tilmeldt denne sti",
       "info_title": "Om stitilmelding",
-      "info_banner": "Hvis du tilføjer en elev til denne sti, tilmeldes vedkommende automatisk i alle {count} {count, plural, =1 {kursus} other {kurser}}. Fjernelse af dem bevarer deres kursusadgang og fremskridt.",
+      "info_banner": "Når du tilføjer en kursist til dette forløb, bliver vedkommende automatisk tilmeldt alle {count} {count, plural, =1 {kursus} other {kurser}}. Når du fjerner vedkommende, ophører den kursusadgang, forløbet gav, men fremskridt bevares.",
       "search_placeholder": "Søg på navn eller e-mail...",
       "filter": {
         "all": "Alle fremskridt",
@@ -8161,7 +8158,7 @@
       "header": {
         "title_placeholder": "f.eks. Fullstack webudvikling",
         "description_placeholder": "Et omfattende overblik over, hvad eleverne vil opnå…",
-        "title": "Header",
+        "title": "Overskrift",
         "title_label": "Titel",
         "description_label": "Beskrivelse"
       },
