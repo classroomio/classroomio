@@ -20,7 +20,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgDomain, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { learningPathApi } from '../../api';
-  import { generatePathSlug } from '../../utils/path-slug';
+  import { generatePathSlug } from '@cio/utils/functions';
   import type { LearningPathDetail, UpdateLearningPathInput } from '../../utils/types';
 
   interface Props {

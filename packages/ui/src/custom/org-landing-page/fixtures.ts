@@ -852,7 +852,6 @@ export const mockLearningPathLandingPageProps: LearningPathLandingPageProps = {
     instructorsHeading: 'Your instructors',
     reviewsHeading: 'What learners say',
     faqHeading: 'Frequently asked questions',
-    noFaqLabel: 'No questions yet.',
     lockedLabel: 'Locked',
     unlockedLabel: 'Unlocked',
     enrollFreeLabel: 'Enroll free',

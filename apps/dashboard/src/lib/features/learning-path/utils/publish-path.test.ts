@@ -6,7 +6,7 @@ vi.mock('../api', () => ({
 
 import { learningPathApi } from '../api';
 import { publishPath } from './publish-path';
-import { MAX_PATH_SLUG_LENGTH } from './path-slug';
+import { MAX_PATH_SLUG_LENGTH } from '@cio/utils/functions';
 import type { LearningPathDetail, UpdateLearningPathData } from './types';
 
 const updateMock = vi.mocked(learningPathApi.update);

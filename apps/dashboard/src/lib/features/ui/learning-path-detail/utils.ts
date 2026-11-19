@@ -36,7 +36,6 @@ function buildLabels(): LearningPathLandingPageLabels {
     reviewsHeading: t.get('public_learning_paths.detail.reviews_heading'),
     reviewsLead: t.get('public_learning_paths.detail.reviews_lead'),
     faqHeading: t.get('public_learning_paths.detail.faq_heading'),
-    noFaqLabel: t.get('public_learning_paths.detail.no_faq'),
     pricingEyebrow: t.get('public_learning_paths.detail.pricing_eyebrow'),
     enrollPathLabel: t.get('public_learning_paths.detail.enroll_path'),
     lockedLabel: t.get('public_learning_paths.detail.locked_label'),
@@ -63,9 +62,7 @@ function buildLabels(): LearningPathLandingPageLabels {
     statCoursesLabel: t.get('public_learning_paths.detail.stat_courses'),
     statEnrolledLabel: t.get('public_learning_paths.detail.stat_enrolled'),
     statCertificateLabel: t.get('public_learning_paths.detail.stat_certificate'),
-    statBeginnerLabel: t.get('public_learning_paths.detail.stat_beginner'),
     statOnCompletionLabel: t.get('public_learning_paths.detail.stat_on_completion'),
-    statNoExperienceLabel: t.get('public_learning_paths.detail.stat_no_experience'),
     statReviewsLabel: (count: number) => t.get('public_learning_paths.detail.stat_reviews', { count }),
     fullPathLabel: t.get('public_learning_paths.detail.full_path'),
     savePercentLabel: (percent: number) => t.get('public_learning_paths.detail.save_percent', { percent }),
@@ -114,6 +111,15 @@ export function buildLearningPathLandingPageProps(
     (detail.metadata?.discount ? Math.round(detail.cost / (1 - detail.metadata.discount / 100)) : undefined);
   const originalCost = displayCost > 0 && showDiscount ? computedOriginalCost : undefined;
   const heroTotals = pathHeroTotals(detail);
+  const completionLine = detail.hasCertificate
+    ? t.get('public_learning_paths.detail.features_certificate_line')
+    : t.get('public_learning_paths.detail.features_milestone_line');
+  const pricingFeatures = detail.pricing?.features ?? [
+    t.get('public_learning_paths.detail.features_courses_line', { courseCount: detail.courseCount }),
+    t.get('public_learning_paths.detail.features_content_line', heroTotals),
+    completionLine,
+    t.get('public_learning_paths.detail.features_access_line')
+  ];
 
   return {
     theme: landing.theme,
@@ -156,7 +162,7 @@ export function buildLearningPathLandingPageProps(
           originalCost,
           discount: detail.metadata?.discount,
           showDiscount,
-          features: detail.pricing?.features,
+          features: pricingFeatures,
           ctaLabel: primaryActionLabel,
           ctaHref: options.enrollHref
         }

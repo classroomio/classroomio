@@ -335,23 +335,27 @@ export async function countPendingPathLearners(learningPathId: string, dbClient:
 }
 
 /**
- * Counts joined members in a learning path (removed rows excluded).
- * Feeds the public detail page's learner count.
+ * Counts joined students in a learning path (tutors and removed rows excluded).
+ * Feeds the path's learner count on the public and admin detail pages.
  */
-export async function countActivePathMembers(learningPathId: string, dbClient: DbOrTxClient = db): Promise<number> {
+export async function countActivePathStudents(learningPathId: string, dbClient: DbOrTxClient = db): Promise<number> {
   try {
     const [row] = await dbClient
       .select({ count: count(schema.learningPathMember.id) })
       .from(schema.learningPathMember)
       .where(
-        and(eq(schema.learningPathMember.learningPathId, learningPathId), isNull(schema.learningPathMember.removedAt))
+        and(
+          eq(schema.learningPathMember.learningPathId, learningPathId),
+          eq(schema.learningPathMember.roleId, ROLE.STUDENT),
+          isNull(schema.learningPathMember.removedAt)
+        )
       );
 
     return Number(row?.count ?? 0);
   } catch (error) {
-    console.error('countActivePathMembers error:', error);
+    console.error('countActivePathStudents error:', error);
     throw new Error(
-      `Failed to count active members for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to count active students for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

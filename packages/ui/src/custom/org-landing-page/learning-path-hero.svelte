@@ -58,7 +58,7 @@
   const defaultFeatures = $derived([
     labels?.featuresCoursesLine?.(hero.courseCount ?? 5) ?? `All ${hero.courseCount ?? 5} courses, unlocked in order`,
     labels?.featuresContentLine?.(hero.totalLessons ?? 52, hero.totalExercises ?? 13) ??
-      `${hero.totalLessons ?? 52} lessons · ${hero.totalExercises ?? 13} exercises · 1 capstone`,
+      `${hero.totalLessons ?? 52} lessons · ${hero.totalExercises ?? 13} exercises`,
     hero.hasCertificate
       ? (labels?.featuresCertificateLine ?? 'Path certificate on completion')
       : (labels?.featuresMilestoneLine ?? 'Verified path milestone completion'),
@@ -176,18 +176,16 @@
             </span>
           </div>
 
-          <div class="ui:flex ui:flex-col">
-            <span class="ui:text-2xl ui:font-semibold ui:text-[var(--landing-fg)]">
-              {hero.hasCertificate
-                ? (labels?.statCertificateLabel ?? 'Certificate')
-                : (labels?.statBeginnerLabel ?? 'Beginner')}
-            </span>
-            <span class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:uppercase ui:tracking-wider ui:mt-0.5">
-              {hero.hasCertificate
-                ? (labels?.statOnCompletionLabel ?? 'on completion')
-                : (labels?.statNoExperienceLabel ?? 'no prior exp.')}
-            </span>
-          </div>
+          {#if hero.hasCertificate}
+            <div class="ui:flex ui:flex-col">
+              <span class="ui:text-2xl ui:font-semibold ui:text-[var(--landing-fg)]">
+                {labels?.statCertificateLabel ?? 'Certificate'}
+              </span>
+              <span class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:uppercase ui:tracking-wider ui:mt-0.5">
+                {labels?.statOnCompletionLabel ?? 'on completion'}
+              </span>
+            </div>
+          {/if}
 
           {#if (hero.reviewsCount ?? 0) > 0}
             <div class="ui:flex ui:flex-col">

@@ -494,7 +494,6 @@ export interface LearningPathLandingPageLabels {
   reviewsLead?: string;
   faqEyebrow?: string;
   faqHeading?: string;
-  noFaqLabel?: string;
   pricingEyebrow?: string;
   pricingHeading?: string;
   enrollPathLabel?: string;
@@ -542,12 +541,8 @@ export interface LearningPathLandingPageLabels {
   statEnrolledLabel?: string;
   /** Hero stat value. Default: "Certificate". */
   statCertificateLabel?: string;
-  /** Hero stat value. Default: "Beginner". */
-  statBeginnerLabel?: string;
   /** Hero stat caption. Default: "on completion". */
   statOnCompletionLabel?: string;
-  /** Hero stat caption. Default: "no prior exp.". */
-  statNoExperienceLabel?: string;
   /** Hero stat caption. Default: "{count} reviews". */
   statReviewsLabel?: (count: number) => string;
   /** Enroll box eyebrow. Default: "Full path". */

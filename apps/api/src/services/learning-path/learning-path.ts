@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes, throwAsInternal } from '@api/utils/errors';
 import { getPostgresError } from '@cio/utils/errors';
+import { generatePathSlug } from '@cio/utils/functions';
 import { ROLE } from '@cio/utils/constants';
 import { containsDisallowedHrefs } from '@cio/utils/validation/shared';
 import { db } from '@cio/db/drizzle';
@@ -14,7 +15,7 @@ import type {
   TUpdateLearningPath
 } from '@cio/utils/validation/learning-path';
 import {
-  countActivePathMembers,
+  countActivePathStudents,
   countIssuedCertificates,
   createLearningPath,
   deleteLearningPath,
@@ -239,7 +240,7 @@ export async function getLearningPathDetail(
       const courses = await listLearningPathCourses(path.id, tx);
       const isTeam = roleId === ROLE.ADMIN || (roleId === ROLE.TUTOR && (await isTutorAssigned(path, userId, tx)));
       const certificatesIssued = isTeam ? await countIssuedCertificates(path.id, tx) : 0;
-      const totalStudents = await countActivePathMembers(path.id, tx);
+      const totalStudents = await countActivePathStudents(path.id, tx);
 
       return {
         ...path,
@@ -310,7 +311,9 @@ export async function updateLearningPathService(
         throw new AppError('Landing page contains disallowed links', ErrorCodes.VALIDATION_ERROR, 400);
       }
 
-      const updated = await updateLearningPath(path.id, data, tx);
+      const needsPublicSlug = data.isPublished === true && !data.slug && !path.slug;
+      const slug = needsPublicSlug ? generatePathSlug(data.name ?? path.name) : data.slug;
+      const updated = await updateLearningPath(path.id, { ...data, slug }, tx);
 
       if (!updated) {
         throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
@@ -408,7 +411,7 @@ export async function getPublicLearningPathBySlug(
 
       const courses = await listLearningPathCourses(path.id, tx);
       const certificatesIssued = await countIssuedCertificates(path.id, tx);
-      const totalStudents = await countActivePathMembers(path.id, tx);
+      const totalStudents = await countActivePathStudents(path.id, tx);
 
       const { welcomeEmailMessage: _welcomeEmailMessage, ...publicPath } = path;
 

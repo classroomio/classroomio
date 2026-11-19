@@ -21,17 +21,17 @@
   }
 </script>
 
-<section id="faq" class={t.sectionShell}>
-  <div class="ui:max-w-[800px] ui:mx-auto">
-    <div class={t.sectionHeader}>
-      {#if labels?.faqEyebrow}
-        <span class={t.eyebrow}>{labels.faqEyebrow}</span>
-      {/if}
-      <h2 class={t.heading}>{labels?.faqHeading ?? 'Frequently asked questions'}</h2>
-      <span class={t.headingRule} aria-hidden="true"></span>
-    </div>
+{#if faq.length > 0}
+  <section id="faq" class={t.sectionShell}>
+    <div class="ui:max-w-[800px] ui:mx-auto">
+      <div class={t.sectionHeader}>
+        {#if labels?.faqEyebrow}
+          <span class={t.eyebrow}>{labels.faqEyebrow}</span>
+        {/if}
+        <h2 class={t.heading}>{labels?.faqHeading ?? 'Frequently asked questions'}</h2>
+        <span class={t.headingRule} aria-hidden="true"></span>
+      </div>
 
-    {#if faq.length > 0}
       <div
         class="ui:flex ui:flex-col ui:bg-[var(--landing-card)] ui:border ui:border-[var(--landing-border)] ui:[border-radius:var(--landing-radius-card)] ui:[box-shadow:var(--landing-shadow-card)] ui:divide-y ui:divide-[var(--landing-border)] ui:mt-6"
       >
@@ -62,8 +62,6 @@
           </div>
         {/each}
       </div>
-    {:else}
-      <p class="ui:text-sm ui:text-[var(--landing-fg-muted)] ui:mt-4">{labels?.noFaqLabel ?? 'No questions yet.'}</p>
-    {/if}
-  </div>
-</section>
+    </div>
+  </section>
+{/if}

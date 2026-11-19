@@ -1,5 +1,5 @@
 import { learningPathApi } from '../api';
-import { generatePathSlug } from './path-slug';
+import { generatePathSlug } from '@cio/utils/functions';
 import type { LearningPathDetail } from './types';
 
 export type PublishPathResult = { ok: true; slug: string } | { ok: false; reason: 'failed' | 'slug_taken' };

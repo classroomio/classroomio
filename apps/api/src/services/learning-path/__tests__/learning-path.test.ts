@@ -30,7 +30,7 @@ const mocks = vi.hoisted(() => ({
   revokeLearningPathGrantsForPath: vi.fn(),
   listPublicLearningPaths: vi.fn(),
   countIssuedCertificates: vi.fn(),
-  countActivePathMembers: vi.fn(),
+  countActivePathStudents: vi.fn(),
   getCourseGroupIds: vi.fn(),
   getGroupMemberIdByGroupAndProfile: vi.fn(),
   insertGroupMembersOnConflictDoNothing: vi.fn(),
@@ -71,7 +71,7 @@ vi.mock('@cio/core/config/env', () => ({
 
 vi.mock('@cio/db/queries/learning-path', () => ({
   countIssuedCertificates: mocks.countIssuedCertificates,
-  countActivePathMembers: mocks.countActivePathMembers,
+  countActivePathStudents: mocks.countActivePathStudents,
   getLearningPathById: mocks.getLearningPathById,
   getLearningPathByPublicId: mocks.getLearningPathByPublicId,
   getLearningPathBySlug: mocks.getLearningPathBySlug,
@@ -287,7 +287,7 @@ describe('learning-path services', () => {
       mocks.getLearningPathBySlug.mockResolvedValue(mockPath);
       mocks.listLearningPathCourses.mockResolvedValue([]);
       mocks.countIssuedCertificates.mockResolvedValue(0);
-      mocks.countActivePathMembers.mockResolvedValue(7);
+      mocks.countActivePathStudents.mockResolvedValue(7);
 
       const result = await getPublicLearningPathBySlug('org-1', 'published-path');
 
@@ -362,6 +362,36 @@ describe('learning-path services', () => {
         expect.anything()
       );
       expect(result).toEqual(paginatedResult);
+    });
+  });
+
+  describe('updateLearningPathService', () => {
+    const mockUuid = '12345678-1234-1234-1234-123456789abc';
+    const adminRoles = { 'org-1': ROLE.ADMIN };
+
+    it('mints a public slug when a path without one is published', async () => {
+      mocks.getLearningPathById.mockResolvedValue({
+        id: mockUuid,
+        organizationId: 'org-1',
+        name: 'AI at Work',
+        slug: null
+      });
+      mocks.updateLearningPath.mockImplementation(async (id: string, data: object) => ({ id, ...data }));
+
+      await updateLearningPathService(mockUuid, 'user-admin', { isPublished: true }, adminRoles);
+
+      const [, data] = mocks.updateLearningPath.mock.calls[0];
+      expect(data.slug).toMatch(/^ai-at-work-\d+$/);
+    });
+
+    it('keeps the existing slug when publishing', async () => {
+      mocks.getLearningPathById.mockResolvedValue({ id: mockUuid, organizationId: 'org-1', name: 'AI', slug: 'ai' });
+      mocks.updateLearningPath.mockImplementation(async (id: string, data: object) => ({ id, ...data }));
+
+      await updateLearningPathService(mockUuid, 'user-admin', { isPublished: true }, adminRoles);
+
+      const [, data] = mocks.updateLearningPath.mock.calls[0];
+      expect(data.slug).toBeUndefined();
     });
   });
 
@@ -1256,7 +1286,7 @@ describe('learning-path services', () => {
       mocks.getLearningPathById.mockResolvedValue(testPath);
       mocks.listLearningPathCourses.mockResolvedValue([{ id: 'c-1', title: 'Course 1' }]);
       mocks.countIssuedCertificates.mockResolvedValue(5);
-      mocks.countActivePathMembers.mockResolvedValue(12);
+      mocks.countActivePathStudents.mockResolvedValue(12);
 
       const result = await getLearningPathDetail(testPath.id, 'user-1', { 'org-1': ROLE.ADMIN });
 
@@ -1264,7 +1294,7 @@ describe('learning-path services', () => {
       expect(result.courses).toHaveLength(1);
       expect(result.totalStudents).toBe(12);
       expect(mocks.countIssuedCertificates).toHaveBeenCalledWith(testPath.id, transactionClient);
-      expect(mocks.countActivePathMembers).toHaveBeenCalledWith(testPath.id, transactionClient);
+      expect(mocks.countActivePathStudents).toHaveBeenCalledWith(testPath.id, transactionClient);
     });
 
     it('returns certificatesIssued for an assigned path tutor', async () => {

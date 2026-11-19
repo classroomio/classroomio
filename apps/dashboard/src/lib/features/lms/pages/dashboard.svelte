@@ -174,7 +174,7 @@
     coursesApi.getEnrolledCourses();
     coursesApi.getRecommendedCourses({ limit: 3 });
     lmsExercisesApi.fetchLMSExercises($currentOrg.id);
-    enrolledApi.fetchEnrolled({ status: 'all', limit: 100 });
+    enrolledApi.fetchEnrolled({ status: 'all', limit: 50 });
     learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id).finally(() => {
       learnerPathStore.loadExplorePaths();
     });

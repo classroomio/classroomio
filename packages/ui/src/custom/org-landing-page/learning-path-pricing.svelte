@@ -43,8 +43,7 @@
 
   const defaultFeatures = [
     'All courses unlocked in sequential order',
-    'Full curriculum with lessons, exercises & capstone',
-    'Verified path certificate on completion',
+    'Full curriculum with lessons and exercises',
     'Permanent lifetime access'
   ];
 
