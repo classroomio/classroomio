@@ -7,7 +7,10 @@ vi.mock('@cio/db/queries/cohort', () => ({
   getCohortMemberByProfileId: vi.fn(),
   getCoursesByCohort: vi.fn()
 }));
-vi.mock('@cio/db/queries/course', () => ({ getCourseGroupIds: vi.fn() }));
+vi.mock('@cio/db/queries/course', () => ({
+  getCourseGroupIds: vi.fn(),
+  getEnrollOnlyInLearningPathCourses: vi.fn().mockResolvedValue([])
+}));
 vi.mock('@cio/db/queries/group', () => ({
   insertGroupMembersOnConflictDoNothing: vi.fn()
 }));
