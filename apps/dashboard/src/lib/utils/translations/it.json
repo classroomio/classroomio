@@ -416,11 +416,11 @@
           "suggested": "Suggerito",
           "courses": "Corsi",
           "cohorts": "Coorti",
-          "learning_paths": "Learning paths",
           "widgets": "Widget",
           "tags": "Tag",
           "students": "Studenti",
-          "settings": "Impostazioni"
+          "settings": "Impostazioni",
+          "learning_paths": "Learning paths"
         },
         "result_types": {
           "page": "Pagina"
@@ -454,8 +454,6 @@
     "cancel": "Annulla",
     "refresh": "Aggiorna",
     "scroll_to_top": "Scorri verso l'alto",
-    "add": "Add",
-    "remove": "Remove",
     "delete": "Eliminare",
     "restricted_page": {
       "title": "Pagina riservata",
@@ -469,6 +467,16 @@
       "format": "Formato"
     },
     "back": "Indietro",
+    "range": {
+      "7d": "Ultimi 7 giorni",
+      "30d": "Ultimi 30 giorni",
+      "90d": "Ultimi 90 giorni",
+      "all": "Di tutti i tempi",
+      "label": "Intervallo di tempo",
+      "locked": "Passa a un piano superiore per sbloccare questo intervallo"
+    },
+    "add": "Add",
+    "remove": "Remove",
     "close": "Close",
     "edit": "Edit",
     "coming_soon": "Coming soon",
@@ -489,84 +497,6 @@
       "reward_help": "Offer students an incentive upon completion",
       "reward_description": "Reward description",
       "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
-    },
-    "range": {
-      "7d": "Ultimi 7 giorni",
-      "30d": "Ultimi 30 giorni",
-      "90d": "Ultimi 90 giorni",
-      "all": "Di tutti i tempi",
-      "label": "Intervallo di tempo",
-      "locked": "Passa a un piano superiore per sbloccare questo intervallo"
-    }
-  },
-  "certificate": {
-    "tab_design": "Design",
-    "tab_settings": "Settings",
-    "allow": "Allow students download certificate",
-    "email_message_label": "Email Message",
-    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
-    "rules": "Rules",
-    "editor": {
-      "title": "Certificate design",
-      "back": "Back",
-      "unsaved": "Unsaved changes",
-      "free_plan": "Available on Pro",
-      "discard": "Discard",
-      "save": "Save",
-      "saved": "Certificate design saved.",
-      "save_failed": "Could not save the certificate design. Check the form and try again.",
-      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
-      "sections": "Editor sections",
-      "preview": "Certificate preview",
-      "panel_templates": "Templates",
-      "panel_templates_subtitle": "Select a template for your certificate.",
-      "panel_content": "Content",
-      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
-      "panel_colors": "Colors",
-      "panel_colors_subtitle": "Customize the accent color.",
-      "panel_export": "Export",
-      "panel_export_subtitle": "Preview the current design as it will be delivered.",
-      "section_header": "Header copy",
-      "section_signatories": "Signatories",
-      "section_reference": "Reference",
-      "subtitle": "Subtitle",
-      "subtitle_placeholder": "Awarded with Highest Distinction",
-      "description_override": "Description override",
-      "description_override_placeholder": "Defaults to the description.",
-      "description_override_hint": "Leave blank to fall back to the description on save.",
-      "signatory_one_name": "Signatory 1 name",
-      "signatory_one_role": "Signatory 1 role",
-      "signatory_two_name": "Signatory 2 name",
-      "signatory_two_role": "Signatory 2 role",
-      "signatory_one_toggle": "Show signatory 1",
-      "signatory_two_toggle": "Show signatory 2",
-      "signature_upload": "Signature image",
-      "signature_upload_hint": "Upload a signature image (optional)",
-      "signature_dont_crop": "Don't Crop",
-      "id_format": "Certificate ID format",
-      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
-      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
-      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
-      "download_pdf": "Download PDF",
-      "download_png": "Download PNG",
-      "print": "Print",
-      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
-      "preview_failed": "Could not generate certificate preview",
-      "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certificate of Excellence",
-      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
-      "sample_org": "The Royal Academy of Arts",
-      "summary_title": "Active design",
-      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
-      "field_template": "Template",
-      "field_accent": "Accent",
-      "field_signatories": "Signatories",
-      "customize_design": "Customize design",
-      "signatory_one": "Signatory 1",
-      "signatory_two": "Signatory 2",
-      "signatory_name": "Signatory name",
-      "signatory_role": "Signatory role",
-      "signature_image": "Signature image"
     }
   },
   "compliance": {
@@ -959,11 +889,11 @@
       "actions_menu": "Azioni di autenticazione del token"
     },
     "teams": {
+      "page_subtitle": "Invita i compagni di squadra e controlla chi aiuta a gestire questa organizzazione.",
       "permission": {
         "title": "Non hai il permesso di visualizzare questa pagina",
         "description": "Solo gli amministratori dell’organizzazione possono visualizzare e gestire il team. Contatta un amministratore se hai bisogno di accedere."
       },
-      "page_subtitle": "Invita i compagni di squadra e controlla chi aiuta a gestire questa organizzazione.",
       "invite": {
         "confirm_title": "{count, plural, =1 {Invitare questo studente nel team?} other {Invitare questi studenti nel team?}}",
         "confirm_description": "{count, plural, =1 {Questa persona è già uno studente di questa organizzazione: {emails}. Vuoi inviarle un invito per diventare {role}? Il suo ruolo cambierà solo dopo aver accettato l’invito.} other {Queste persone sono già studenti di questa organizzazione: {emails}. Vuoi invitarle come {role}? I loro ruoli cambieranno solo dopo aver accettato l’invito.}}",
@@ -1790,76 +1720,6 @@
       "description": "Torna presto per nuovi corsi."
     }
   },
-  "public_learning_paths": {
-    "heading": "Learning Paths",
-    "subtitle": "Guided multi-course tracks with one enrollment, ordered courses, and a certificate at the end.",
-    "search_placeholder": "Search learning paths...",
-    "clear_search": "Clear search",
-    "label": "Learning Path",
-    "certificate_label": "Certificate",
-    "free_label": "Free",
-    "course_count_label": "{count} courses",
-    "enrolled_label": "{count} enrolled",
-    "navigation_failed": "Couldn't load the page. Please try again.",
-    "empty": {
-      "title": "No learning paths found",
-      "description": "Try clearing your search or check back later."
-    },
-    "detail": {
-      "about_heading": "What you'll learn",
-      "about_lead": "Practical, project-first skills — every course ends with something you built.",
-      "skills_heading": "Skills you'll gain",
-      "series_heading": "Course series",
-      "series_eyebrow": "Series · take in order",
-      "series_lead": "Each course unlocks the next once you finish its lessons and exercises.",
-      "rating_label": "Rated {rating} out of 5",
-      "certificate_heading": "Certificate",
-      "certificate_issuer": "Issued by",
-      "certificate_validity": "Validity",
-      "instructors_heading": "Instructors",
-      "instructors_lead": "The tutors behind the courses in this path.",
-      "reviews_heading": "Reviews",
-      "reviews_lead": "From people who finished the path.",
-      "faq_heading": "Frequently asked questions",
-      "no_faq": "No questions yet.",
-      "pricing_heading": "Enrollment",
-      "pricing_eyebrow": "Enrollment",
-      "enroll_path": "Enroll in this path",
-      "locked_label": "Locked",
-      "unlocked_label": "Unlocked",
-      "enroll_free": "Enroll free",
-      "enroll_label": "Enroll for {currency} {cost}",
-      "view_all": "View all learning paths",
-      "taught_by_two": "Taught by {first} and {second}",
-      "taught_by_many": "Taught by {names} + {count} more",
-      "features_courses_line": "All {courseCount} courses, unlocked in order",
-      "features_content_line": "{lessons} lessons · {exercises} exercises · 1 capstone",
-      "features_certificate_line": "Path certificate on completion",
-      "features_milestone_line": "Verified path milestone completion",
-      "features_access_line": "Lifetime access, learn at your pace",
-      "save_vs_individual": "Save {amount} vs individual courses",
-      "stat_courses": "courses in series",
-      "stat_enrolled": "enrolled",
-      "stat_certificate": "Certificate",
-      "stat_beginner": "Beginner",
-      "stat_on_completion": "on completion",
-      "stat_no_experience": "no prior exp.",
-      "stat_reviews": "{count} reviews",
-      "full_path": "Full path",
-      "save_percent": "Save {percent}%",
-      "social_proof": "{students} already enrolled · {rating} ★ from {reviews} reviews",
-      "enroll_with_cost": "Enroll · {cost}",
-      "series_heading_count": "{count} courses in this path",
-      "series_course": "Course {index}",
-      "series_lessons": "{count} lessons",
-      "series_outcomes_heading": "What you'll learn",
-      "show_outline": "Show lesson outline",
-      "hide_outline": "Hide lesson outline",
-      "preview_badge": "Preview",
-      "unavailable": "This learning path is currently unavailable for enrollment.",
-      "back_to_path": "Back to learning path"
-    }
-  },
   "org_navigation": {
     "platform": "Piattaforma",
     "home": "Home",
@@ -1869,7 +1729,6 @@
     "create": "Creare",
     "dashboard": "Pannello di controllo",
     "analytics": "Analitica",
-    "marketing": "Marketing",
     "compliance": "Conformità",
     "courses": "Corsi",
     "tags": "Tag",
@@ -1892,10 +1751,11 @@
     "upgrade_students": "{studentCount} Di {studentLimit} studenti",
     "upgrade_left": "{count} Sinistra",
     "cohorts": "Coorti",
-    "learning_paths": "Learning Paths",
     "exit_course": "Esci da questo corso",
     "exit_cohort": "Esci da questa coorte",
-    "org_analytics": "Accademia"
+    "marketing": "Marketing",
+    "org_analytics": "Accademia",
+    "learning_paths": "Learning Paths"
   },
   "pricing": {
     "plan_names": {
@@ -2383,7 +2243,6 @@
           "heading": "Home studente",
           "description": "Scegli dove vanno gli studenti che hanno effettuato l'accesso quando aprono la home page della tua accademia. I visitatori che non hanno effettuato l'accesso e il tuo team continuano a vedere la tua pagina di destinazione.",
           "label": "Home per studenti autenticati",
-          "learn_more": "Scopri di più",
           "placeholder": "Cerca pagine e corsi",
           "option_default": "Pagina di destinazione (predefinita)",
           "group_pages": "Portale di apprendimento",
@@ -2399,7 +2258,8 @@
           "course_hint_restricted": "Gli studenti iscritti vanno direttamente alla lezione successiva. Questo corso è a pagamento o solo su invito, quindi gli studenti non iscritti accedono al Pannello di controllo.",
           "unavailable_badge": "Non disponibile",
           "course_type_live": "In diretta",
-          "course_type_compliance": "Conformità"
+          "course_type_compliance": "Conformità",
+          "learn_more": "Scopri di più"
         }
       },
       "landing_page": {
@@ -2513,7 +2373,6 @@
     "page_subtitle": "Dove le lezioni si trasformano in corsi e i corsi si trasformano in iscrizioni.",
     "heading_button": "Crea corso",
     "search_placeholder": "Trova corso",
-    "pricing_free": "Free",
     "load_more": "Carica di più",
     "tag_filters": {
       "filter": "Filtro",
@@ -2602,14 +2461,15 @@
       "course_description_label": "Descrizione del corso",
       "course_description_placeholder": "Inserisci una descrizione per il tuo corso",
       "create_button": "Creare",
-      "title_copy_format": "{title} (Copy)",
       "success": {
         "course_cloned": "Corso clonato con successo"
       },
       "error": {
         "failed_to_clone": "Impossibile clonare il corso"
-      }
-    }
+      },
+      "title_copy_format": "{title} (Copy)"
+    },
+    "pricing_free": "Free"
   },
   "course": {
     "creator": {
@@ -2687,7 +2547,6 @@
     },
     "sidebar": {
       "back_to_course": "Ritorno al corso",
-      "back_to_path": "Back to path",
       "compliance": {
         "title": "Conformità",
         "due_date": "Dovuto",
@@ -2707,7 +2566,8 @@
         "label": "Navigazione nei contenuti del corso",
         "previous": "Precedente",
         "next": "Prossimo"
-      }
+      },
+      "back_to_path": "Back to path"
     },
     "search": {
       "placeholder": "Cerca lezioni o esercizi",
@@ -2863,10 +2723,6 @@
           "watch_threshold": "Soglia di controllo (%)"
         },
         "settings": {
-          "access": {
-            "title": "Accesso",
-            "description": "Gli studenti non possono aprire una lezione bloccata finché non la sblocchi."
-          },
           "comments": {
             "title": "Commenti alla lezione",
             "description": "Scegli se gli studenti possono visualizzare e aggiungere commenti su questa lezione.",
@@ -2886,6 +2742,10 @@
             "watch_videos_no_uploads_title": "Nessun video caricato in questa lezione",
             "watch_videos_required": "Seleziona almeno un video quando usi la visione video.",
             "students_only_note": "Queste regole si applicano solo agli studenti. Puoi visualizzare l'anteprima e navigare liberamente mentre insegni."
+          },
+          "access": {
+            "title": "Accesso",
+            "description": "Gli studenti non possono aprire una lezione bloccata finché non la sblocchi."
           }
         },
         "watch_progress": {
@@ -2946,12 +2806,6 @@
           "description": "Ora puoi raggruppare le lezioni in sezioni per organizzare i tuoi contenuti e rendere l'apprendimento più agevole per i tuoi studenti.",
           "activate": "Attivare",
           "cancel": "Annulla"
-        },
-        "header": {
-          "mode_label": "Modalità lezione",
-          "mode_edit": "Modificare",
-          "mode_preview": "Anteprima",
-          "mode_shortcut": "Cambia modalità"
         },
         "add_lesson": {
           "button_title": "Aggiungere",
@@ -3274,18 +3128,6 @@
           "button_done": "Fatto",
           "blocks": {
             "add_content": "Aggiungi contenuto",
-            "types": {
-              "note": "Nota",
-              "video": "Video",
-              "slides": "diapositive",
-              "document": "Documento",
-              "image": "Immagine"
-            },
-            "ai": {
-              "title": "Redigi una nota con l'IA",
-              "prompt_label": "Richiesta",
-              "prompt_placeholder": "Ad esempio, una breve introduzione al ciclo dell'acqua per principianti."
-            },
             "example": "Esempio",
             "change_type": "Modifica {type}",
             "edit_type": "Modifica {type}",
@@ -3298,25 +3140,10 @@
             "dismiss_hint": "Ignora suggerimento di riordino",
             "empty_title": "Inizia a costruire questa lezione",
             "empty_description": "Aggiungi una nota, un video, delle diapositive, un documento o un'immagine. Puoi aggiungere tutti i blocchi che ti servono, in qualsiasi ordine.",
-            "empty_preview_title": "Niente da vedere in anteprima ancora",
-            "empty_preview_description": "Questa lezione non ha contenuti visibili agli studenti. Passa a {editLabel} per aggiungere una nota, un video, diapositive, un documento o un'immagine.",
-            "empty_learner_title": "Questa lezione non è ancora pronta",
-            "empty_learner_description": "Il tuo insegnante non ha aggiunto alcun contenuto a questa lezione. Ricontrolla presto.",
             "empty_note": "Questa banconota è vuota.",
             "scroll_rail": "Blocchi di lezione",
             "save_failed": "Impossibile salvare questa modifica, quindi il blocco è stato ripristinato. {reason}",
             "go_to_block": "Vai al blocco {index}",
-            "reading_density": {
-              "title": "diversità di lettura",
-              "description": "Controlla la spaziatura tra i blocchi per gli studenti. Non modifica l'area di modifica.",
-              "compact": "Compatto",
-              "comfortable": "Comodo",
-              "spacious": "Elegante"
-            },
-            "settings": {
-              "title": "Impostazioni della lezione",
-              "description": "Gestisci questa lezione senza uscire dalla schermata dei contenuti."
-            },
             "image": {
               "upload": "Carica immagine",
               "upload_error": "Impossibile caricare l'immagine. Riprova.",
@@ -3328,6 +3155,33 @@
               "fit_cover": "Riempire",
               "fit_contain": "Adatto"
             },
+            "settings": {
+              "title": "Impostazioni della lezione",
+              "description": "Gestisci questa lezione senza uscire dalla schermata dei contenuti."
+            },
+            "reading_density": {
+              "title": "diversità di lettura",
+              "description": "Controlla la spaziatura tra i blocchi per gli studenti. Non modifica l'area di modifica.",
+              "compact": "Compatto",
+              "comfortable": "Comodo",
+              "spacious": "Elegante"
+            },
+            "ai": {
+              "title": "Redigi una nota con l'IA",
+              "prompt_label": "Richiesta",
+              "prompt_placeholder": "Ad esempio, una breve introduzione al ciclo dell'acqua per principianti."
+            },
+            "types": {
+              "note": "Nota",
+              "video": "Video",
+              "slides": "diapositive",
+              "document": "Documento",
+              "image": "Immagine"
+            },
+            "empty_preview_title": "Niente da vedere in anteprima ancora",
+            "empty_preview_description": "Questa lezione non ha contenuti visibili agli studenti. Passa a {editLabel} per aggiungere una nota, un video, diapositive, un documento o un'immagine.",
+            "empty_learner_title": "Questa lezione non è ancora pronta",
+            "empty_learner_description": "Il tuo insegnante non ha aggiunto alcun contenuto a questa lezione. Ricontrolla presto.",
             "document": {
               "view_file": "Visualizza file",
               "download": "Scaricamento",
@@ -3395,8 +3249,6 @@
             "settings_completion_policy": "Regola di completamento",
             "settings_completion_submitted": "Inviato: qualsiasi invio conta",
             "settings_completion_passed": "Superato: punteggio minimo richiesto",
-            "settings_completion_none": "Nessuno: facoltativo",
-            "settings_completion_none_helper": "Questo esercizio non blocca la progressione del corso e non è richiesto per il completamento del corso o per i certificati.",
             "settings_pass_threshold": "Soglia superata (%)",
             "settings_completion_passed_helper": "Gli studenti devono raggiungere il punteggio minimo prima che l'esercizio venga considerato completato.",
             "settings_manual_grading_warning": "I contributi valutati manualmente devono essere valutati prima di poter essere considerati superati.",
@@ -3589,11 +3441,11 @@
                 "status_completed": "Classificato",
                 "status_pending": "In attesa di",
                 "counts_as_complete": "Conta come completo",
-                "optional": "Facoltativo",
                 "passed": "Superato",
                 "not_passed": "Non superato",
                 "no_submission_title": "Questo utente non ha invii per questo esercizio",
-                "no_submission_description": "I contributi verranno visualizzati qui una volta che lo studente avrà completato l'esercizio."
+                "no_submission_description": "I contributi verranno visualizzati qui una volta che lo studente avrà completato l'esercizio.",
+                "optional": "Facoltativo"
               },
               "submissions": "Presentazioni",
               "loading_submissions": "Caricamento invii...",
@@ -3922,7 +3774,9 @@
                   "max_characters_placeholder": "Caratteri massimi"
                 }
               }
-            }
+            },
+            "settings_completion_none": "Nessuno: facoltativo",
+            "settings_completion_none_helper": "Questo esercizio non blocca la progressione del corso e non è richiesto per il completamento del corso o per i certificati."
           }
         },
         "disabled": "La funzionalità è disabilitata",
@@ -3948,7 +3802,6 @@
           "title": "Cronologia delle versioni",
           "fetch_more_versions": "Ottieni più versioni",
           "current_version": "Versione attuale",
-          "restore_version": "Ripristina questo blocco",
           "edit_count": "{count, plural, one {# modificare} other {# modifiche}}",
           "today": "Oggi",
           "yesterday": "Ieri",
@@ -3963,23 +3816,12 @@
           "restore_failed": "Impossibile ripristinare questa versione",
           "shared_restore_hint": "Questo blocco di testo è condiviso con altre lezioni. Il ripristino fornisce a questa lezione la propria copia e le altre lezioni mantengono il testo corrente.",
           "structure_change": "Struttura",
-          "structure_state": "Punto di partenza: come erano disposti i blocchi della lezione prima della prima modifica registrata.",
-          "restore_lesson": "Ripristina l'intera lezione",
           "restore_lesson_failed": "Impossibile ripristinare la lezione",
           "undo_change": "Annulla",
-          "undo_failed": "Impossibile annullare questa modifica. Se qualcosa è stato modificato in seguito, ripristina invece la versione desiderata.",
-          "removed_block_label": "Blocco di testo rimosso",
-          "restore_lesson_confirm": "Sostituire l'intera lezione con questa versione?",
           "by_assistant": "Assistente",
           "by_restore": "Ripristina",
           "by_ai_client": "Client IA",
           "by_api": "API",
-          "change_kind": {
-            "added": "Aggiunto",
-            "removed": "Rimosso",
-            "moved": "Spostato",
-            "edited": "Cambiato"
-          },
           "change_added": "Aggiunto {name}",
           "change_removed": "Rimosso {name}",
           "change_moved": "{name} spostato",
@@ -3990,9 +3832,27 @@
             "slides": "diapositive",
             "document": "documento",
             "image": "immagine"
-          }
+          },
+          "change_kind": {
+            "added": "Aggiunto",
+            "removed": "Rimosso",
+            "moved": "Spostato",
+            "edited": "Cambiato"
+          },
+          "restore_version": "Ripristina questo blocco",
+          "restore_lesson": "Ripristina l'intera lezione",
+          "undo_failed": "Impossibile annullare questa modifica. Se qualcosa è stato modificato in seguito, ripristina invece la versione desiderata.",
+          "removed_block_label": "Blocco di testo rimosso",
+          "restore_lesson_confirm": "Sostituire l'intera lezione con questa versione?",
+          "structure_state": "Punto di partenza: come erano disposti i blocchi della lezione prima della prima modifica registrata."
         },
-        "no_section": "Nessuna sezione"
+        "no_section": "Nessuna sezione",
+        "header": {
+          "mode_label": "Modalità lezione",
+          "mode_edit": "Modificare",
+          "mode_preview": "Anteprima",
+          "mode_shortcut": "Cambia modalità"
+        }
       },
       "attendance": {
         "title": "Partecipazione",
@@ -4162,15 +4022,9 @@
         "learner": "Studente",
         "progress": "Progressi",
         "stage": "Palcoscenico",
-        "source": "Source",
-        "source_filter_all": "All sources",
-        "source_filter_direct": "Direct",
-        "source_learning_path": "Learning Path",
-        "source_cohort": "Cohort",
         "last_login_at": "Ultimo accesso a",
         "enrolled_at": "Iscritto a",
         "certificate_earned": "Certificato ottenuto",
-        "completed": "Completed",
         "not_started": "Non iniziato",
         "role": "Ruolo",
         "action": "Azione",
@@ -4192,7 +4046,6 @@
           "copy_link": "Copia collegamento",
           "success": "Copiato con successo",
           "finish": "Fine",
-          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
           "loading": "Caricamento...",
           "student_invite_settings": "Impostazioni di invito degli studenti",
           "student_invite_settings_description": "Scegli per quanto tempo dura l'invito e quanti studenti possono utilizzarlo.",
@@ -4234,8 +4087,6 @@
           "invite_new_students_title": "Invita nuovi studenti",
           "invite_new_students_description": "Invita nuove persone nella tua organizzazione e pre-assegnale a questo corso. Creeranno un account, accetteranno l'invito e otterranno l'accesso.",
           "invite_new_students": "Invita studenti",
-          "path_only_notice_title": "Students join through a learning path",
-          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings.",
           "existing_invites": "Inviti esistenti",
           "refresh": "Aggiorna",
           "loading_invites": "Caricamento inviti...",
@@ -4269,7 +4120,10 @@
           "snackbar_failed_load_audit": "Impossibile caricare il controllo dell'invito",
           "snackbar_metadata_copied": "Metadati dell'invito copiati",
           "snackbar_email_invites_success": "Creato {count} invito(i). Inviato {sent}, fallito {failed}. Saltato {duplicates} duplicato(i).",
-          "select_at_least_one_student": "Seleziona almeno uno studente esistente"
+          "select_at_least_one_student": "Seleziona almeno uno studente esistente",
+          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
+          "path_only_notice_title": "Students join through a learning path",
+          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings."
         },
         "delete_confirmation": {
           "title": "Eliminare",
@@ -4314,13 +4168,6 @@
           "invite_sent": "Invito inviato",
           "you": "Voi",
           "remove": "Rimuovere",
-          "change_role": {
-            "label": "Ruolo di {email}",
-            "title": "Cambia ruolo",
-            "description": "Cambiare {email} da {currentRole} a {nextRole}?",
-            "cancel": "Annulla",
-            "approve": "Approva"
-          },
           "link_invite": {
             "heading": "Invito al collegamento",
             "description": "Chiunque abbia questo collegamento può unirsi alla tua organizzazione.",
@@ -4331,6 +4178,13 @@
             "toggle_label": "Invito al collegamento attivo",
             "disabled_notice": "Questo collegamento è disabilitato. Abilitalo per consentire ai nuovi membri di iscriversi tramite collegamento.",
             "select_role": "Seleziona un ruolo"
+          },
+          "change_role": {
+            "label": "Ruolo di {email}",
+            "title": "Cambia ruolo",
+            "description": "Cambiare {email} da {currentRole} a {nextRole}?",
+            "cancel": "Annulla",
+            "approve": "Approva"
           }
         },
         "filter": {
@@ -4361,7 +4215,13 @@
           "never_logged_in": "Mai effettuato l'accesso",
           "awaiting_certificate": "In attesa di certificato",
           "custom": "Filtri personalizzati"
-        }
+        },
+        "source": "Source",
+        "source_filter_all": "All sources",
+        "source_filter_direct": "Direct",
+        "source_learning_path": "Learning Path",
+        "source_cohort": "Cohort",
+        "completed": "Completed"
       },
       "certificates": {
         "title": "Certificati",
@@ -4671,8 +4531,6 @@
         "allow": "Gli studenti possono iscriversi da soli",
         "access": "Quando questa opzione è disattivata, gli studenti possono partecipare solo tramite un collegamento di invito o essendo aggiunti da {people}.",
         "access_people": "Persone",
-        "enroll_only_in_learning_path": "Enroll only in Learning Path",
-        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved.",
         "publish": "Pubblica corso",
         "determines": "Ciò determina se il tuo corso viene visualizzato sulla tua pagina di destinazione",
         "published": "Pubblicato",
@@ -4832,7 +4690,9 @@
             "window_passed": "L'orario del promemoria era già passato al momento della programmazione.",
             "unenrolled": "Lo studente non è più iscritto."
           }
-        }
+        },
+        "enroll_only_in_learning_path": "Enroll only in Learning Path",
+        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved."
       }
     },
     "not_permitted": {
@@ -4900,8 +4760,6 @@
     "status_expired": "Scaduto",
     "status_revoked": "Revocato",
     "date_joined": "Data di iscrizione",
-    "certificate_earned": "{count} certificato ottenuto",
-    "certificates_earned": "{count} certificati ottenuti",
     "upgrade": "Aggiorna il tuo piano per invitare più studenti",
     "select_all": "Seleziona tutto",
     "selected_count": "{count} selezionato",
@@ -4958,7 +4816,6 @@
       "select_courses": "Seleziona corsi specifici",
       "select_courses_placeholder": "Scegli i corsi...",
       "select_cohorts_placeholder": "Scegli coorti...",
-      "select_paths_placeholder": "Choose learning paths...",
       "send_email": "Invia e-mail di invito agli utenti importati",
       "back": "Indietro",
       "start_over": "Scegli un file diverso",
@@ -4969,10 +4826,6 @@
       "no_cohorts": "Nessun incarico di coorte",
       "all_cohorts": "Tutte le coorti",
       "select_cohorts": "Seleziona gruppi specifici",
-      "path_access": "Learning Path Access",
-      "no_paths": "No learning path assignment",
-      "all_paths": "All learning paths",
-      "select_paths": "Select specific learning paths",
       "drop_csv": "Trascina un CSV qui o fai clic per sceglierne uno",
       "csv_hint": "CSV UTF-8 con una colonna email. Fino a {rows} righe, 5 MB.",
       "download_template": "Scarica il modello",
@@ -4991,8 +4844,6 @@
       "unknown_columns": "Colonne ignorate non riconosciute: {columns}",
       "result_heading": "{count} studenti importati",
       "download_errors": "Scarica le righe non riuscite",
-      "skipped_path_only_title": "Skipped {count} path-only courses",
-      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings.",
       "status": {
         "ready": "Pronto",
         "already_member": "Già tra il pubblico",
@@ -5002,7 +4853,14 @@
         "is_staff": "Personale, non studente",
         "over_seat_limit": "Nessun posto rimasto",
         "missing_email": "Nessuna e-mail"
-      }
+      },
+      "select_paths_placeholder": "Choose learning paths...",
+      "path_access": "Learning Path Access",
+      "no_paths": "No learning path assignment",
+      "all_paths": "All learning paths",
+      "select_paths": "Select specific learning paths",
+      "skipped_path_only_title": "Skipped {count} path-only courses",
+      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings."
     },
     "assign": {
       "title": "Assegnare ai corsi",
@@ -5013,10 +4871,10 @@
       "submit": "Assegnare",
       "cancel": "Annulla",
       "snackbar_success": "Assegnato {assigned} utenti ({alreadyEnrolled} aveva già accesso, {emailsSent} email inviate)",
-      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
-      "path_only_badge": "Path-only",
       "snackbar_no_courses": "Seleziona almeno un corso",
-      "snackbar_failed": "Impossibile assegnare i corsi"
+      "snackbar_failed": "Impossibile assegnare i corsi",
+      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
+      "path_only_badge": "Path-only"
     },
     "invite": {
       "row_actions_aria": "Azioni aperte",
@@ -5027,7 +4885,6 @@
       "revoke_snackbar_success": "Invito in sospeso revocato"
     },
     "never": "Mai",
-    "path_only_badge": "Path-only",
     "progress": "Progressi",
     "learner_count": "{count} studenti",
     "enrolled_ratio": "{completed} / {total}",
@@ -5060,15 +4917,15 @@
       "not_started": "Non iniziato",
       "in_progress": "In corso",
       "completed": "Completato",
-      "certificate": "Certificato",
-      "certificate_earned": "Ottenuto",
-      "certificate_not_earned": "Non ottenuto",
       "exclude_recent_joiners": "Escludi i partecipanti recenti",
       "exclude_recent_joiners_hint": "Esclude gli studenti che si sono iscritti troppo di recente per essere giudicati inattivi.",
       "clear": "Cancella filtri",
       "empty_title": "Nessuno studente corrisponde a questi filtri",
       "empty_description": "Prova ad ampliare l'intervallo di date o a cancellare un filtro.",
-      "invite_status": "Stato dell'invito"
+      "invite_status": "Stato dell'invito",
+      "certificate": "Certificato",
+      "certificate_earned": "Ottenuto",
+      "certificate_not_earned": "Non ottenuto"
     },
     "bulk": {
       "actions": "Azioni",
@@ -5113,72 +4970,10 @@
       "queued_running": "Candidatura a {count} studenti. Puoi continuare a lavorare: ti diremo quando finirà.",
       "queued_failed": "Questa azione collettiva non è terminata. Non è stato applicato altro.",
       "queued_lost": "Abbiamo perso traccia di questa corsa. Ricarica per vedere lo stato attuale."
-    }
-  },
-  "marketing": {
-    "title": "Marketing",
-    "subtitle": "Comprendi come i visitatori scoprono i tuoi corsi e si trasformano in studenti.",
-    "tabs": {
-      "overview": "Panoramica",
-      "funnel": "Imbuto",
-      "geography": "Geografia",
-      "course_types": "Tipi di corso"
     },
-    "kpi": {
-      "landing_views": "Viste dell'atterraggio",
-      "unique_visitors": "Visitatori unici",
-      "course_page_views": "Visualizzazioni delle pagine del corso",
-      "enrollments": "Iscrizioni",
-      "range_description": "Nell'intervallo selezionato"
-    },
-    "trend": {
-      "heading": "Traffico nel tempo",
-      "description": "Visualizzazioni delle pagine e iscrizioni per giorno",
-      "empty": "Nessun traffico nell'intervallo selezionato",
-      "views": "Viste",
-      "enrollments": "Iscrizioni"
-    },
-    "funnel": {
-      "heading": "Imbuto di conversione",
-      "description": "Dalla prima visita al completamento del corso",
-      "empty": "Nessun dato sulla canalizzazione ancora",
-      "step": {
-        "landing_view": "Viste dell'atterraggio",
-        "course_page_view": "Visualizzazioni delle pagine del corso",
-        "enrollment_completed": "Iscrizioni",
-        "course_completed": "Completamenti"
-      }
-    },
-    "countries": {
-      "heading": "I migliori paesi",
-      "subtitle": "{total} visitatori totali",
-      "empty": "Nessun dato sulla posizione ancora",
-      "country": "Paese",
-      "visitors": "Visitatori",
-      "enrollments_short": "iscritto"
-    },
-    "popularTypes": {
-      "heading": "Tipi di corsi popolari",
-      "description": "Iscrizioni raggruppate per tipologia di corso",
-      "subtitle": "{total} iscrizioni di tutte le tipologie",
-      "empty": "Nessun dato di registrazione ancora",
-      "course_count": "{count, plural, one {# corso} other {# corsi}}",
-      "views_short": "viste",
-      "types": {
-        "SELF_PACED": "Autoapprendimento",
-        "LIVE_CLASS": "Lezione dal vivo",
-        "COMPLIANCE": "Conformità",
-        "PUBLIC": "Pubblico"
-      }
-    },
-    "topCourses": {
-      "heading": "I migliori corsi per visualizzazioni",
-      "description": "Corsi classificati in base alle visualizzazioni di pagina",
-      "subtitle": "Classificato in base alle visualizzazioni di pagina in questo intervallo",
-      "empty": "Nessuna pagina del corso ancora visualizzata",
-      "course": "Corso",
-      "views": "Viste"
-    }
+    "certificate_earned": "{count} certificato ottenuto",
+    "certificates_earned": "{count} certificati ottenuti",
+    "path_only_badge": "Path-only"
   },
   "student_progress": {
     "courses": "Corsi",
@@ -5231,8 +5026,8 @@
     "required": "Aggiornamento richiesto",
     "enterprise_required": "Questa funzionalità richiede un piano Enterprise.",
     "public_api_required": "Esegui l'upgrade a Early Adopter o Enterprise per accedere all'API pubblica.",
-    "webhooks_required": "Passa a Early Adopter o Enterprise per usare i webhook.",
-    "unlock_field": "Esegui l'upgrade per sbloccare questa impostazione"
+    "unlock_field": "Esegui l'upgrade per sbloccare questa impostazione",
+    "webhooks_required": "Passa a Early Adopter o Enterprise per usare i webhook."
   },
   "automation": {
     "title": "Automazione",
@@ -5249,6 +5044,75 @@
       "api": "API",
       "webhooks": "Webhook",
       "new_badge": "Nuovo"
+    },
+    "clients": {
+      "claude_code": "Claude Code",
+      "codex": "Codex",
+      "cursor": "Cursor",
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
+    },
+    "keys": {
+      "active": "Attivo",
+      "revoked": "Revocato",
+      "rotate": "Ruotare",
+      "revoke": "Revocare",
+      "created_at_label": "Creato:",
+      "last_used_label": "Ultimo utilizzo:",
+      "never_used": "Mai",
+      "table_key": "Chiave",
+      "table_status": "Stato",
+      "table_created": "Creato",
+      "table_last_used": "Ultimo usato",
+      "scopes_label": "Ambiti:",
+      "revoke_confirm": "Revocare questa chiave di automazione?",
+      "rotate_confirm": "Ruotare questa chiave di automazione?",
+      "reveal": {
+        "description": "Copia subito questa chiave. Non verrà più mostrata.",
+        "copy": "Copia",
+        "copied": "Copiato",
+        "how_to_use": "Come utilizzare questa chiave",
+        "close": "Chiudi"
+      }
+    },
+    "mcp": {
+      "page_subtitle": "Collega gli strumenti di IA a ClassroomIO accedendo. Rimuovi un'app in qualsiasi momento per interromperne l'accesso.",
+      "keys": {
+        "title": "Chiavi MCP",
+        "description": "Queste chiavi meno recenti continuano a funzionare, ma non è più possibile creare nuove chiavi MCP. Ruotale o revocale qui e collega i nuovi client accedendo.",
+        "reveal_title": "La tua nuova chiave MCP",
+        "deprecated_badge": "Obsoleto"
+      },
+      "connections_tab": "Connessioni"
+    },
+    "api": {
+      "subtitle": "Gestisci le chiavi API per l'integrazione con l'API pubblica ClassroomIO.",
+      "keys": {
+        "title": "Chiavi API",
+        "description": "Queste chiavi autenticano l'organizzazione corrente quando si chiama l'API pubblica ClassroomIO.",
+        "generate": "Genera chiave API",
+        "empty_title": "Nessuna chiave API ancora",
+        "empty_description": "Crea la prima chiave API con ambito organizzazione per utilizzare l'API pubblica ClassroomIO.",
+        "modal": {
+          "title": "Crea chiave API",
+          "description": "Scegli un nome per questa chiave API prima che venga generata.",
+          "name_label": "Nome chiave",
+          "name_placeholder": "La mia integrazione API",
+          "cancel": "Annulla",
+          "save": "Crea chiave"
+        },
+        "reveal_title": "La tua nuova chiave API"
+      },
+      "setup": {
+        "title": "Avvio rapido",
+        "description": "Utilizza la tua chiave API come token Bearer su ogni richiesta. Sostituisci il segnaposto con una chiave dall'alto o incolla il segreto immediatamente dopo averne generato uno."
+      }
+    },
+    "zapier": {
+      "page_subtitle": "Automatizza ClassroomIO con migliaia di app tramite Zapier. Prossimamente."
     },
     "webhooks": {
       "page_subtitle": "Invia in tempo reale gli eventi di ClassroomIO a Slack, al tuo CRM o al tuo backend.",
@@ -5321,9 +5185,9 @@
       "event_groups": {
         "organization": "Organizzazione",
         "course": "Corsi",
+        "learning": "Progressi di apprendimento",
         "cohort": "Coorti",
-        "compliance": "Conformità",
-        "learning": "Progressi di apprendimento"
+        "compliance": "Conformità"
       },
       "events": {
         "organization_invite_created": "Viene inviato un invito al team",
@@ -5385,75 +5249,6 @@
           "no_response": "Non è stata ricevuta alcuna risposta."
         }
       }
-    },
-    "clients": {
-      "claude_code": "Claude Code",
-      "codex": "Codex",
-      "cursor": "Cursor",
-      "opencode": "OpenCode",
-      "curl": "cURL",
-      "javascript": "JavaScript",
-      "python": "Python",
-      "go": "Go"
-    },
-    "keys": {
-      "active": "Attivo",
-      "revoked": "Revocato",
-      "rotate": "Ruotare",
-      "revoke": "Revocare",
-      "created_at_label": "Creato:",
-      "last_used_label": "Ultimo utilizzo:",
-      "never_used": "Mai",
-      "table_key": "Chiave",
-      "table_status": "Stato",
-      "table_created": "Creato",
-      "table_last_used": "Ultimo usato",
-      "scopes_label": "Ambiti:",
-      "revoke_confirm": "Revocare questa chiave di automazione?",
-      "rotate_confirm": "Ruotare questa chiave di automazione?",
-      "reveal": {
-        "description": "Copia subito questa chiave. Non verrà più mostrata.",
-        "copy": "Copia",
-        "copied": "Copiato",
-        "how_to_use": "Come utilizzare questa chiave",
-        "close": "Chiudi"
-      }
-    },
-    "mcp": {
-      "page_subtitle": "Collega gli strumenti di IA a ClassroomIO accedendo. Rimuovi un'app in qualsiasi momento per interromperne l'accesso.",
-      "keys": {
-        "title": "Chiavi MCP",
-        "description": "Queste chiavi meno recenti continuano a funzionare, ma non è più possibile creare nuove chiavi MCP. Ruotale o revocale qui e collega i nuovi client accedendo.",
-        "reveal_title": "La tua nuova chiave MCP",
-        "deprecated_badge": "Obsoleto"
-      },
-      "connections_tab": "Connessioni"
-    },
-    "api": {
-      "subtitle": "Gestisci le chiavi API per l'integrazione con l'API pubblica ClassroomIO.",
-      "keys": {
-        "title": "Chiavi API",
-        "description": "Queste chiavi autenticano l'organizzazione corrente quando si chiama l'API pubblica ClassroomIO.",
-        "generate": "Genera chiave API",
-        "reveal_title": "La tua nuova chiave API",
-        "empty_title": "Nessuna chiave API ancora",
-        "empty_description": "Crea la prima chiave API con ambito organizzazione per utilizzare l'API pubblica ClassroomIO.",
-        "modal": {
-          "title": "Crea chiave API",
-          "description": "Scegli un nome per questa chiave API prima che venga generata.",
-          "name_label": "Nome chiave",
-          "name_placeholder": "La mia integrazione API",
-          "cancel": "Annulla",
-          "save": "Crea chiave"
-        }
-      },
-      "setup": {
-        "title": "Avvio rapido",
-        "description": "Utilizza la tua chiave API come token Bearer su ogni richiesta. Sostituisci il segnaposto con una chiave dall'alto o incolla il segreto immediatamente dopo averne generato uno."
-      }
-    },
-    "zapier": {
-      "page_subtitle": "Automatizza ClassroomIO con migliaia di app tramite Zapier. Prossimamente."
     }
   },
   "lms_navigation": {
@@ -5500,12 +5295,12 @@
   },
   "exercises": {
     "heading": "Esercizi",
-    "total": "Total",
-    "completed": "Completed",
     "not_submitted": "Non inviato",
     "submitted": "Inviato",
     "in_progress": "Valutazione in corso",
     "graded": "Classificato",
+    "total": "Total",
+    "completed": "Completed",
     "overdue": "Overdue",
     "empty": "No exercises yet.",
     "table": {
@@ -5554,17 +5349,6 @@
     "success_delete": "Eliminato con successo",
     "error_update": "Impossibile aggiornare",
     "social_auth_not_enabled": "Questo provider di autenticazione non è abilitato.",
-    "webhooks": {
-      "created": "Webhook creato. Copia ora il segreto di firma perché viene mostrato una sola volta.",
-      "updated": "Webhook aggiornato.",
-      "enabled": "Webhook attivato.",
-      "disabled": "Webhook disattivato.",
-      "deleted": "Webhook eliminato.",
-      "secret_regenerated": "Segreto di firma rigenerato. Copialo ora perché viene mostrato una sola volta.",
-      "test_success": "Evento di prova consegnato con successo.",
-      "test_failed": "L'evento di prova non è riuscito. Apri il registro delle consegne per vedere il motivo.",
-      "redelivered": "Evento messo in coda per il reinvio."
-    },
     "automation": {
       "created": "Chiave di automazione creata. Salvalo ora perché il segreto completo viene mostrato solo una volta.",
       "rotated": "Chiave automazione ruotata. Salva subito il nuovo segreto perché non verrà più mostrato.",
@@ -5887,18 +5671,29 @@
         }
       }
     },
+    "webhooks": {
+      "created": "Webhook creato. Copia ora il segreto di firma perché viene mostrato una sola volta.",
+      "updated": "Webhook aggiornato.",
+      "enabled": "Webhook attivato.",
+      "disabled": "Webhook disattivato.",
+      "deleted": "Webhook eliminato.",
+      "secret_regenerated": "Segreto di firma rigenerato. Copialo ora perché viene mostrato una sola volta.",
+      "test_success": "Evento di prova consegnato con successo.",
+      "test_failed": "L'evento di prova non è riuscito. Apri il registro delle consegne per vedere il motivo.",
+      "redelivered": "Evento messo in coda per il reinvio."
+    },
     "analytics": {
       "reminder_sent": "Promemoria inviato",
       "reminder_not_sent": "Promemoria non inviato: già inviato oggi, oppure lo studente ha disattivato queste email",
       "reminder_failed": "Impossibile inviare il promemoria",
       "reminders_sending": "Invio di promemoria…",
       "reminders_sent": "{count, plural, one {# promemoria inviato} other {# promemoria inviati}}",
-      "reminders_truncated": "{count, plural, one {# promemoria inviato} other {# promemoria inviati}}. Troppi studenti in ritardo per un solo invio — limita il corso per raggiungere gli altri.",
-      "students_refresh_failed": "Impossibile aggiornare l'elenco degli studenti",
-      "refresh_failed": "Impossibile aggiornare le analisi",
       "target_saved": "Obiettivo di studenti salvato",
       "target_failed": "Impossibile salvare l'obiettivo di studenti",
-      "target_invalid": "Inserisci un numero intero compreso tra 1 e 1.000.000"
+      "target_invalid": "Inserisci un numero intero compreso tra 1 e 1.000.000",
+      "reminders_truncated": "{count, plural, one {# promemoria inviato} other {# promemoria inviati}}. Troppi studenti in ritardo per un solo invio — limita il corso per raggiungere gli altri.",
+      "students_refresh_failed": "Impossibile aggiornare l'elenco degli studenti",
+      "refresh_failed": "Impossibile aggiornare le analisi"
     },
     "oauth": {
       "revoked": "Accesso dell'app rimosso"
@@ -5963,14 +5758,6 @@
     "progress": "Progressi"
   },
   "validations": {
-    "webhook": {
-      "payload_url": {
-        "protocol": "L'URL del payload deve iniziare con http:// o https://"
-      },
-      "event_types": {
-        "required": "Seleziona almeno un evento"
-      }
-    },
     "user_profile": {
       "email": "Indirizzo e-mail non valido",
       "username": "Il nome utente non può essere vuoto",
@@ -6094,6 +5881,14 @@
       "custom": "{message}",
       "required_field": "Questo campo è obbligatorio",
       "invalid_field": "Valore non valido"
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "L'URL del payload deve iniziare con http:// o https://"
+      },
+      "event_types": {
+        "required": "Seleziona almeno un evento"
+      }
     }
   },
   "ai_assistant": {
@@ -6218,18 +6013,6 @@
         "create_lesson": "Creazione della lezione",
         "update_lesson": "Lezione di aggiornamento",
         "update_lesson_content": "Contenuto della lezione di scrittura",
-        "add_lesson_note_block": "Aggiunta di un blocco di testo",
-        "remove_lesson_block": "Rimozione di un blocco di testo",
-        "move_lesson_block": "Spostare un blocco",
-        "add_lesson_slides_block": "Aggiunta di diapositive",
-        "add_lesson_image_block": "Aggiunta di un'immagine",
-        "update_lesson_block_settings": "Aggiornamento delle impostazioni di blocco",
-        "update_lesson_block_requirements": "Aggiornamento delle regole di completamento",
-        "detach_lesson_block": "Scollegamento di un blocco condiviso",
-        "list_block_library": "Ricerca nella libreria dei blocchi",
-        "attach_library_block": "Aggiunta di un blocco di libreria",
-        "move_lesson_block_to_lesson": "Spostare un blocco in un'altra lezione",
-        "attach_document_to_lesson": "Aggiunta di un documento",
         "create_exercise": "Creare esercizio",
         "create_exercise_section": "Creazione della sezione esercizi",
         "update_exercise": "Esercizio di aggiornamento",
@@ -6247,6 +6030,18 @@
         "list_youtube_playlist_videos": "Elenco dei video della playlist",
         "get_lesson_transcript": "Lettura della trascrizione del video",
         "add_youtube_video_to_lesson": "Incorporamento di video di YouTube",
+        "add_lesson_note_block": "Aggiunta di un blocco di testo",
+        "remove_lesson_block": "Rimozione di un blocco di testo",
+        "move_lesson_block": "Spostare un blocco",
+        "add_lesson_slides_block": "Aggiunta di diapositive",
+        "add_lesson_image_block": "Aggiunta di un'immagine",
+        "update_lesson_block_settings": "Aggiornamento delle impostazioni di blocco",
+        "update_lesson_block_requirements": "Aggiornamento delle regole di completamento",
+        "detach_lesson_block": "Scollegamento di un blocco condiviso",
+        "list_block_library": "Ricerca nella libreria dei blocchi",
+        "attach_library_block": "Aggiunta di un blocco di libreria",
+        "move_lesson_block_to_lesson": "Spostare un blocco in un'altra lezione",
+        "attach_document_to_lesson": "Aggiunta di un documento",
         "get_lesson_history": "Lettura della cronologia delle lezioni",
         "restore_lesson_version": "Ripristino di una versione precedente",
         "undo_lesson_change": "Annullare una modifica"
@@ -6264,17 +6059,6 @@
         "create_lesson": "Lezione creata: {title}",
         "update_lesson": "Lezione aggiornata: {title}",
         "update_lesson_content_fallback": "Ha scritto {count, plural, one {# carattere} other {# caratteri}}",
-        "remove_lesson_block": "Rimosso un blocco di testo da {title}",
-        "move_lesson_block": "Spostato un blocco in {title}",
-        "add_lesson_slides_block": "Aggiunte diapositive a {title}",
-        "add_lesson_image_block": "Aggiunta un'immagine a {title}",
-        "update_lesson_block_settings": "Aggiornato un blocco in {title}",
-        "update_lesson_block_requirements": "Regole di completamento aggiornate in {title}",
-        "detach_lesson_block": "Ha fornito a {title} la propria copia di un blocco condiviso",
-        "list_block_library": "Ho cercato nella libreria dei blocchi",
-        "attach_library_block": "Aggiunto un blocco libreria a {title}",
-        "move_lesson_block_to_lesson": "Spostato un blocco in {title}",
-        "attach_document_to_lesson": "Documento aggiunto: {title}",
         "create_exercise": "Esercizio creato «{title}» · {count, plural, one {# domanda} other {# domande}}",
         "update_exercise": "Esercizio aggiornato: {title}",
         "update_exercise_section": "Sezione esercizi aggiornata: {title}",
@@ -6301,6 +6085,17 @@
         "get_lesson_transcript_no_credits": "Crediti AI esauriti per recuperare le trascrizioni",
         "get_lesson_transcript_unavailable": "Nessuna trascrizione disponibile per {title}",
         "add_youtube_video_to_lesson": "Video incorporato: {title}",
+        "remove_lesson_block": "Rimosso un blocco di testo da {title}",
+        "move_lesson_block": "Spostato un blocco in {title}",
+        "add_lesson_slides_block": "Aggiunte diapositive a {title}",
+        "add_lesson_image_block": "Aggiunta un'immagine a {title}",
+        "update_lesson_block_settings": "Aggiornato un blocco in {title}",
+        "update_lesson_block_requirements": "Regole di completamento aggiornate in {title}",
+        "detach_lesson_block": "Ha fornito a {title} la propria copia di un blocco condiviso",
+        "list_block_library": "Ho cercato nella libreria dei blocchi",
+        "attach_library_block": "Aggiunto un blocco libreria a {title}",
+        "move_lesson_block_to_lesson": "Spostato un blocco in {title}",
+        "attach_document_to_lesson": "Documento aggiunto: {title}",
         "get_lesson_history": "Cronologia delle lezioni caricata",
         "restore_lesson_version": "Ripristinata una versione precedente della lezione",
         "undo_lesson_change": "Annullato un cambiamento"
@@ -6437,8 +6232,6 @@
     "courses": {
       "add": "Aggiungi corso",
       "add_modal_title": "Aggiungi corso alla coorte",
-      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
-      "adding": "Adding courses…",
       "select_course": "Seleziona un corso",
       "select_courses": "Seleziona i corsi",
       "select_placeholder": "Scegli un corso...",
@@ -6447,13 +6240,15 @@
       "no_matching_courses": "Nessun corso corrisponde alla tua ricerca.",
       "no_matching_cohort_courses": "Nessun corso di coorte corrisponde alla tua ricerca.",
       "pagination_status": "Pagina {page} Di {totalPages}",
-      "load_failed": "Failed to load courses.",
-      "retry": "Retry",
       "empty_title": "Nessun corso ancora",
       "empty_description": "Aggiungi corsi a questa coorte.",
       "empty_student_description": "Non ci sono ancora corsi pubblicati in questa coorte.",
       "published_access_callout_title": "Accesso degli studenti",
-      "published_access_callout_description": "Gli studenti hanno accesso solo ai corsi pubblicati. I corsi possono essere in questa coorte per il tuo team anche se non ancora pubblicati, ma rimangono nascosti agli studenti finché non li pubblichi."
+      "published_access_callout_description": "Gli studenti hanno accesso solo ai corsi pubblicati. I corsi possono essere in questa coorte per il tuo team anche se non ancora pubblicati, ma rimangono nascosti agli studenti finché non li pubblichi.",
+      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
+      "adding": "Adding courses…",
+      "load_failed": "Failed to load courses.",
+      "retry": "Retry"
     },
     "people": {
       "invite": "Invitare",
@@ -6567,7 +6362,6 @@
     "description": "Chiunque abbia questo link può partecipare. Condividilo invece di inserire le email una per una.",
     "course_description": "Chiunque abbia questo collegamento può partecipare a questo corso come studente. Condividilo invece di inserire le email una per una.",
     "cohort_description": "Chiunque abbia questo collegamento può unirsi a questo gruppo e a tutti i corsi in esso contenuti. Condividilo invece di inserire le email una per una.",
-    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one.",
     "generate": "Crea collegamento di invito",
     "copy": "Copia il link di invito",
     "copied": "Link di invito copiato",
@@ -6592,7 +6386,8 @@
     "snackbar": {
       "enabled": "Collegamento di invito abilitato",
       "disabled": "Collegamento di invito disabilitato"
-    }
+    },
+    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one."
   },
   "notifications": {
     "title": "Notifiche",
@@ -6656,6 +6451,1140 @@
     "format_json": "JSON",
     "copied": "Copiato negli appunti",
     "copy_failed": "Impossibile copiare negli appunti"
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Crea un nuovo corso",
+      "gallery": "Galleria di modelli",
+      "yours": "I tuoi corsi",
+      "blank": "Corso vuoto",
+      "blank_subtitle": "Inizia da zero"
+    },
+    "card": {
+      "curated": "Modello curato",
+      "yours": "Il tuo modello",
+      "used": "Il tuo modello · Usato {date}"
+    },
+    "gallery": {
+      "back": "Tutti i corsi",
+      "title": "Galleria di modelli",
+      "subtitle": "Inizia un corso da uno dei tuoi modelli o da uno creato da ClassroomIO.",
+      "search": "Trova modello",
+      "scope_all": "Tutti i modelli",
+      "scope_org": "I miei modelli",
+      "scope_global": "ClassroomIO",
+      "empty_org": "Non hai ancora creato alcun modello. Salva qualsiasi corso come modello dal suo menu ⋯.",
+      "no_match": "Nessun modello corrisponde a \"{query}”.",
+      "empty_global": "Nessun modello ClassroomIO ancora."
+    },
+    "preview": {
+      "course_name": "Nome del corso",
+      "use": "Usa il modello",
+      "open": "Apri modello",
+      "cancel": "Annulla",
+      "loading": "Caricamento modello…",
+      "copying": "Copiare {sections, plural, one {# sezione} other {# sezioni}}, {lessons, plural, one {# lezione} other {# lezioni}}…",
+      "created": "Corso creato da {title}",
+      "shows_off": "Si mette in mostra",
+      "settings": "Impostazioni",
+      "certificate": "Certificato abilitato",
+      "deadline": "Scadenza {date}",
+      "sequential": "Le lezioni si sbloccano in ordine",
+      "grading": "Un tutor valuta gli elaborati",
+      "comments_off": "I commenti delle lezioni sono disattivati",
+      "lesson_download": "Gli studenti possono scaricare le lezioni",
+      "self_enrollment": "Gli studenti possono unirsi a se stessi",
+      "ai_tutor": "Il tutor AI è attivo",
+      "compliance_retake": "Riprendi ogni {months, plural, one {# mese} other {# mesi}}",
+      "compliance_mandatory": "Obbligatorio",
+      "counts": "{sections} sezioni · {lessons} lezioni · {exercises} esercizi",
+      "questions": "{count, plural, one {# domanda} other {# domande}}"
+    },
+    "menu": {
+      "open": "Aprire",
+      "duplicate": "Duplicato",
+      "delete": "Eliminare",
+      "save": "Salva come modello...",
+      "create_course": "Crea corso da modello",
+      "duplicated": "Modello duplicato",
+      "deleted": "Modello eliminato"
+    },
+    "save": {
+      "title": "Salva come modello",
+      "copy": "Salva una copia come modello",
+      "copy_description": "Il corso resta com'è.",
+      "convert": "Converti questo corso",
+      "convert_description": "Il corso diventa un modello. Non può essere pubblicato o avere studenti.",
+      "has_students": "Ha {count, plural, one {# studente} other {# studenti}} - salva invece una copia.",
+      "unpublish": "La conversione annulla la pubblicazione di questo corso.",
+      "name": "Nome del modello",
+      "save_button": "Salva modello",
+      "convert_button": "Converti in modello",
+      "saved": "Modello salvato",
+      "converted": "Corso convertito in un modello",
+      "limit_title": "Il tuo piano include {count, plural, one {# modello} other {# modelli}}",
+      "limit_body": "L'hai già fatto {used, plural, one {{title}} other {# modelli}}. Esegui l'upgrade per avere più modelli o eliminane uno che hai.",
+      "upgrade": "Aggiornamento",
+      "manage": "Gestisci modelli",
+      "view_templates": "Visualizza modelli"
+    },
+    "empty": {
+      "title": "Nessun corso ancora",
+      "description": "Crea un corso una volta sola, poi iscrivi i tuoi clienti. Crealo tu stesso o lascia che il tuo agente ne prepari una bozza.",
+      "enrolled": "Iscritto"
+    },
+    "editor": {
+      "badge": "Modello"
+    },
+    "sync": {
+      "alert_title": "Il modello ha {count, plural, one {# aggiornamento} other {# aggiornamenti}}",
+      "alert_body": "{title} cambiato dall'ultima volta che hai indossato {date}.",
+      "review_in_settings": "Controlla nelle impostazioni",
+      "section_title": "Modello",
+      "last_pulled": "Ultimo tirato {date}",
+      "review": "Rivedi gli aggiornamenti",
+      "up_to_date": "Aggiornato con il modello.",
+      "deleted": "{title} è stato cancellato. Questo corso mantiene tutti i suoi contenuti; non c'è più niente da tirare.",
+      "deleted_unknown": "Questo modello è stato eliminato. Questo corso mantiene tutti i suoi contenuti; non c'è più niente da tirare.",
+      "available_detail": "{count, plural, one {# aggiornamento disponibile} other {# aggiornamenti disponibili}} — {list}.",
+      "join": "{rest} E {last}",
+      "sections_count": "{count, plural, one {# sezione} other {# sezioni}}",
+      "settings_count": "{count, plural, one {# collocamento} other {# impostazioni}}",
+      "content": "Contenuto",
+      "settings": "Impostazioni",
+      "select_all": "Seleziona tutto",
+      "new": "Nuovo",
+      "updated": "Aggiornato",
+      "locked": "{count, plural, one {# invio: non può essere aggiornato} other {# invii: impossibile aggiornare}}",
+      "edited_locally": "L'hai modificato tu {date} - tirare sostituisce le tue modifiche.",
+      "removed_locally": "L'hai eliminato dal tuo corso.",
+      "also_adds": "Aggiunge anche {kind}: {title}",
+      "template_value": "Modello: {value}",
+      "yours_value": "Il tuo: {value}",
+      "yes": "SÌ",
+      "no": "NO",
+      "empty_value": "Nessuno",
+      "custom_value": "Costume",
+      "selected": "{count, plural, one {# selezionato} other {# selezionato}}",
+      "pull": "Tiro {count, plural, one {# modifica} other {# modifiche}}",
+      "pulled": "Tirato {count, plural, one {# modifica} other {# modifiche}} da {title}",
+      "kind": {
+        "section": "Sezione",
+        "lesson": "Lezione",
+        "exercise": "Esercizio"
+      },
+      "detail": {
+        "title": "Titolo",
+        "content": "Contenuto",
+        "locales": "{locales} aggiunto"
+      },
+      "setting": {
+        "description": "Descrizione",
+        "bannerImage": "Immagine di copertina",
+        "welcomeEmail": "E-mail di benvenuto",
+        "completionDeadline": "Termine ultimo per il completamento",
+        "contentGrouping": "Raggruppamento dei contenuti",
+        "progression": "Progressione",
+        "comments": "Commenti alla lezione",
+        "selfEnrollment": "Autoiscrizione",
+        "markdownExport": "Esportazione con ribasso",
+        "lessonDownload": "Scarica la lezione",
+        "landingRequirements": "Requisiti di atterraggio",
+        "landingDescription": "Descrizione dello sbarco",
+        "landingGoals": "Obiettivi di atterraggio",
+        "landingSkills": "Competenze",
+        "landingTools": "Utensili",
+        "landingInstructor": "Istruttore",
+        "pricing": "Prezzi",
+        "certificateDesign": "Progettazione del certificato",
+        "certificateRules": "Regole del certificato",
+        "aiTutor": "Tutor dell'intelligenza artificiale"
+      },
+      "section_description": "Questo corso è stato creato da un modello. Apporta le modifiche quando vuoi: nulla cambia da solo.",
+      "updates_title": "{count, plural, one {# aggiornamento disponibile} other {# aggiornamenti disponibili}}",
+      "deleted_title": "Modello eliminato",
+      "sheet_title": "Aggiornamenti del modello",
+      "sheet_description": "Da {title}, Da {date}. Scegli cosa tirare: nulla verrà rimosso dal tuo corso.",
+      "nothing_selected": "Niente selezionato",
+      "loading": "Caricamento aggiornamenti...",
+      "value": {
+        "free": "Gratuito",
+        "sequential": "Sequenziale",
+        "no_price": "Gratuito"
+      },
+      "template_label": "Modello",
+      "yours_label": "Il tuo"
+    },
+    "home": {
+      "heading": "Oppure inizia da un modello",
+      "description": "Un corso completo con lezioni, esercizi e impostazioni. Copialo e poi fallo tuo.",
+      "browse": "Sfoglia tutti i modelli"
+    }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Pagamento ricevuto. Manca un passaggio.",
+      "body": "Crea il tuo account o accedi e collegheremo automaticamente il tuo piano Early Adopter alla tua accademia.",
+      "sign_up": "Crea il mio account",
+      "log_in": "Accedi",
+      "continue": "Continua verso la mia accademia"
+    },
+    "success": {
+      "title": "Il tuo piano Early Adopter è attivo",
+      "body": "La tua tariffa è bloccata e tutte le funzionalità Early Adopter sono ora sbloccate per la tua accademia.",
+      "continue": "Inizia a creare"
+    },
+    "errors": {
+      "invalid": "Questo link non è valido. Controlla l’e-mail che ti abbiamo inviato o contatta l’assistenza.",
+      "expired": "Questo link è scaduto. Contatta l’assistenza e ti aiuteremo a collegare il tuo piano.",
+      "unavailable": "Questo link del piano è già stato usato o non è più attivo. Contatta l’assistenza se si tratta di un errore.",
+      "conflict": "Questa accademia ha già un piano a pagamento, quindi non siamo riusciti a collegare questo. Contatta l’assistenza e ti aiuteremo."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Nuovo",
+    "read_full": "Leggi il changelog completo",
+    "close": "Chiudi"
+  },
+  "marketing": {
+    "title": "Marketing",
+    "subtitle": "Comprendi come i visitatori scoprono i tuoi corsi e si trasformano in studenti.",
+    "tabs": {
+      "overview": "Panoramica",
+      "funnel": "Imbuto",
+      "geography": "Geografia",
+      "course_types": "Tipi di corso"
+    },
+    "kpi": {
+      "landing_views": "Viste dell'atterraggio",
+      "unique_visitors": "Visitatori unici",
+      "course_page_views": "Visualizzazioni delle pagine del corso",
+      "enrollments": "Iscrizioni",
+      "range_description": "Nell'intervallo selezionato"
+    },
+    "trend": {
+      "heading": "Traffico nel tempo",
+      "description": "Visualizzazioni delle pagine e iscrizioni per giorno",
+      "empty": "Nessun traffico nell'intervallo selezionato",
+      "views": "Viste",
+      "enrollments": "Iscrizioni"
+    },
+    "funnel": {
+      "heading": "Imbuto di conversione",
+      "description": "Dalla prima visita al completamento del corso",
+      "empty": "Nessun dato sulla canalizzazione ancora",
+      "step": {
+        "landing_view": "Viste dell'atterraggio",
+        "course_page_view": "Visualizzazioni delle pagine del corso",
+        "enrollment_completed": "Iscrizioni",
+        "course_completed": "Completamenti"
+      }
+    },
+    "countries": {
+      "heading": "I migliori paesi",
+      "subtitle": "{total} visitatori totali",
+      "empty": "Nessun dato sulla posizione ancora",
+      "country": "Paese",
+      "visitors": "Visitatori",
+      "enrollments_short": "iscritto"
+    },
+    "popularTypes": {
+      "heading": "Tipi di corsi popolari",
+      "description": "Iscrizioni raggruppate per tipologia di corso",
+      "subtitle": "{total} iscrizioni di tutte le tipologie",
+      "empty": "Nessun dato di registrazione ancora",
+      "course_count": "{count, plural, one {# corso} other {# corsi}}",
+      "views_short": "viste",
+      "types": {
+        "SELF_PACED": "Autoapprendimento",
+        "LIVE_CLASS": "Lezione dal vivo",
+        "COMPLIANCE": "Conformità",
+        "PUBLIC": "Pubblico"
+      }
+    },
+    "topCourses": {
+      "heading": "I migliori corsi per visualizzazioni",
+      "description": "Corsi classificati in base alle visualizzazioni di pagina",
+      "subtitle": "Classificato in base alle visualizzazioni di pagina in questo intervallo",
+      "empty": "Nessuna pagina del corso ancora visualizzata",
+      "course": "Corso",
+      "views": "Viste"
+    }
+  },
+  "analytics": {
+    "title": "Analisi",
+    "updated_seconds_ago": "aggiornato {count}s fa",
+    "updated_minutes_ago": "{count, plural, one {aggiornato # minuto fa} other {aggiornato # minuti fa}}",
+    "retry": "Riprova",
+    "all_courses": "Tutti i corsi",
+    "course_picker": "Corso",
+    "exercise_picker": "Esercizio",
+    "not_in_section": "Non in una sezione",
+    "section_number": "Sezione {number}",
+    "section_with_title": "Sezione {number} · {title}",
+    "finished": "Finito",
+    "awaiting_grade": "In attesa del voto",
+    "awaiting_grade_short": "In attesa",
+    "pass_mark_tag": "Voto minimo per il superamento {mark}%",
+    "of_total": "{count} di {total}",
+    "never": "Mai",
+    "invited": "{count} invitato",
+    "no_students": "Nessun studente",
+    "no_students_yet": "Ancora nessuno studente",
+    "no_graded_attempts": "Nessun tentativo valutato",
+    "names_and_more": "{names} e altri {count}",
+    "certificate_issued": "{count, plural, one {Rilasciato} other {# rilasciato}}",
+    "question_hint": {
+      "context_and_answer": "{context} · la risposta errata più comune: {answer}",
+      "answer": "Risposta errata più comune: {answer}"
+    },
+    "chips": {
+      "label": "Informazioni su questa dashboard",
+      "live": "In diretta · {updated}",
+      "live_every": "In diretta · {updated} · si aggiorna ogni {seconds}s",
+      "students": "{count, plural, one {# studente} other {# studenti}}",
+      "courses": "Corsi: {count}",
+      "cohorts": "Coorti: {count}",
+      "active_cohorts": "{count, plural, one {# coorte attiva} other {# coorti attive}}",
+      "seats": "Posti: {used} di {limit}",
+      "seats_not_joined": "{count} non ancora iscritti"
+    },
+    "now_tag": {
+      "label": "Ora",
+      "hint": "Mostra il livello attuale degli studenti. L'intervallo non modifica questa scheda."
+    },
+    "student_chips": {
+      "latest": "Ultimo",
+      "progress": "Progressi",
+      "now_at": "ora a {place}"
+    },
+    "donut": {
+      "students": "{count, plural, one {studente} other {studenti}}"
+    },
+    "status": {
+      "at_risk": "A rischio",
+      "lagging": "Ritardo",
+      "on_track": "In pista",
+      "completed": "Completato"
+    },
+    "flags": {
+      "overdue": "In ritardo"
+    },
+    "legend": {
+      "middle_half": "Il 50% centrale degli studenti",
+      "cohort_average": "media della coorte",
+      "student": "Studente",
+      "all_students": "Tutti gli studenti",
+      "in_progress": "{name} (in corso)",
+      "enrolled_students": "studenti iscritti",
+      "target": "Bersaglio",
+      "logins": "Accessi",
+      "direct_students": "Studenti diretti"
+    },
+    "notes": {
+      "score_distribution": "Studenti per fascia di punteggio.",
+      "course_details": "Seleziona un corso qui sopra per visualizzare i punteggi per esercizio, la scheda dei punteggi sezione per sezione e le domande più difficili.",
+      "section_scorecard": "Una riga per ogni sezione del corso. La presenza ai video indica la percentuale di video delle lezioni visualizzati. La presenza in aula viene registrata dal docente.",
+      "needs_attention": "Uno studente può comparire per più di un motivo.",
+      "overdue": "Gli studenti ricevono già email di promemoria programmate prima di una scadenza. \"Invia promemoria\" ne invia uno immediatamente.",
+      "hardest_questions": "Le domande a cui gli studenti rispondono più spesso in modo errato, ovvero quelle in cui la risposta sbagliata è la più comune.",
+      "logins_per_day": "Studenti che hanno effettuato l'accesso ogni giorno.",
+      "students": {
+        "all_courses": "Fai clic su uno studente per visualizzare i suoi corsi.",
+        "one_course": "Fai clic su uno studente per visualizzare il grafico dei suoi punteggi. Le funzioni di ricerca, filtro e ordinamento si applicano anche all'esportazione.",
+        "course_scope": "Seleziona uno studente per visualizzare i suoi progressi in questo corso. Le opzioni di ricerca, filtro e ordinamento si applicano anche all'esportazione."
+      },
+      "showing_first": "Mostra i primi {shown} di {total}.",
+      "cohorts_select": "Seleziona una coorte per aprire la sua dashboard.",
+      "cohorts_in_table": "{count, plural, one {La coorte} other {Le # coorti}} nella tabella sopra.",
+      "courses_in_table": "{count, plural, one {Il corso} other {I # corsi}} nella tabella sopra.",
+      "not_counted_empty": "Non conteggiati: {names} (ancora nessuno studente).",
+      "not_charted_empty": "Non mostrati nel grafico: {names} (ancora nessuno studente).",
+      "lesson_dropoff": "La discesa più ripida si verifica tra {from} e {to}.",
+      "no_pass_mark": "Nessun esercizio qui ha ancora una soglia di superamento, quindi non è disponibile un tasso di superamento. Imposta una soglia di superamento per un esercizio per visualizzarlo.",
+      "bucketed_total": "Ogni barra somma gli accessi in {days} giorni. Uno studente conta una volta al giorno.",
+      "student_sheet_pick_course": "Fai clic su un corso per tracciare i relativi punteggi per esercizio.",
+      "direct_students_charted": "Gli studenti diretti non appartengono a una coorte; compaiono su una linea dedicata.",
+      "courses_select": "Seleziona un corso per aprire la sua dashboard."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–25",
+        "1": "25–50",
+        "2": "50–75",
+        "3": "75–99",
+        "4": "Fatto"
+      },
+      "score": {
+        "4": "<50",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
+        "9": "90+",
+        "null": "Nessun punteggio"
+      }
+    },
+    "kpi": {
+      "share_of_cohort": "{percent} della coorte",
+      "share_of_enrolled": "{percent} di iscritti",
+      "share_of_completions": "{percent} di completamenti",
+      "avg_progress_hint": "lezioni ed esercizi obbligatori completati/totale",
+      "avg_score_hint": "attraverso gli esercizi seguiti",
+      "overdue_hint": "oltre la scadenza, non fatto",
+      "completed_certified": "{percent} del gruppo · {count} certificato",
+      "enrolled_this_week": "{count, plural, =0 {Nessun nuovo studente questa settimana} other {+# questa settimana}}",
+      "enrolled_in_days": "{count, plural, =0 {Nessun nuovo studente negli ultimi {days} giorni} other {+# negli ultimi {days} giorni}}",
+      "added_in_days": "{count, plural, =0 {Nessuno negli ultimi {days} giorni} other {+# negli ultimi {days} giorni}}",
+      "completed_in_days": "{percent} della coorte{count, plural, =0 {} other { · +# negli ultimi {days} giorni}}",
+      "logged_in_days": "Accesso effettuato negli ultimi {days} giorni",
+      "avg_score_in_days": "tentativi negli ultimi {days} giorni",
+      "first_try_in_days": "di {took} valutati negli ultimi {days} giorni{still, plural, =0 {} other { · # ancora da superare}}",
+      "median_days_in_days": "per i completamenti negli ultimi {days} giorni",
+      "first_try_context": "di {took} che hanno sostenuto un esercizio con punteggio minimo{still, plural, =0 {} other { · # ancora da superare}}",
+      "median_days_hint": "iscrizione al completamento",
+      "needs_attention_hint": "inattivo, punteggio basso o in ritardo",
+      "delta": {
+        "this_week": {
+          "up": "+{count} punti questa settimana",
+          "down": "−{count} punti questa settimana",
+          "flat": "Nessun cambiamento questa settimana"
+        },
+        "vs_last_week": {
+          "up": "+{count} punti rispetto alla settimana scorsa",
+          "down": "−{count} punti rispetto alla settimana scorsa",
+          "flat": "Nessun cambiamento rispetto alla settimana scorsa."
+        },
+        "in_days": {
+          "up": "+{count} punti negli ultimi {days} giorni",
+          "down": "−{count} punti negli ultimi {days} giorni",
+          "flat": "Nessun cambiamento negli ultimi {days} giorni"
+        },
+        "vs_days_ago": {
+          "up": "+{count} punti contro {days} giorni fa",
+          "down": "−{count} punti contro {days} giorni fa",
+          "flat": "Nessun cambiamento rispetto a {days} giorni fa"
+        }
+      },
+      "no_data": {
+        "students": "nessuno studente per ora",
+        "graded": "nessun tentativo valutato per ora",
+        "first_try": "nessun tentativo valutato su un esercizio con soglia di superamento",
+        "completions": "nessun completamento per ora",
+        "enrolments": "nessuna iscrizione per ora",
+        "in_days": "nessuno negli ultimi {days} giorni"
+      }
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Accesso effettuato oggi"
+      },
+      "kpi_logged_in_week": {
+        "title": "Accesso effettuato negli ultimi 7 giorni"
+      },
+      "kpi_avg_progress": {
+        "title": "Progresso medio"
+      },
+      "kpi_avg_score": {
+        "title": "Punteggio medio"
+      },
+      "kpi_avg_grade": {
+        "title": "Voto medio"
+      },
+      "kpi_overdue": {
+        "title": "In ritardo"
+      },
+      "kpi_completed": {
+        "title": "Completato"
+      },
+      "kpi_enrolled": {
+        "title": "Iscritto"
+      },
+      "kpi_completion_rate": {
+        "title": "Tasso di completamento"
+      },
+      "kpi_first_try_pass": {
+        "title": "Tasso di superamento"
+      },
+      "kpi_median_days": {
+        "title": "Giorni mediani per completare"
+      },
+      "kpi_completions": {
+        "title": "Completamenti"
+      },
+      "kpi_certificates": {
+        "title": "Certificati rilasciati"
+      },
+      "kpi_needs_attention": {
+        "title": "Necessita di attenzione"
+      },
+      "courses_summary": {
+        "title": "Corsi di questa coorte"
+      },
+      "students_by_status": {
+        "title": "Studenti in base allo status"
+      },
+      "course_details": {
+        "title": "Dettagli del corso"
+      },
+      "scores_by_exercise": {
+        "title": "Punteggi per esercizio, {course}"
+      },
+      "progress_distribution": {
+        "title": "Distribuzione progressiva"
+      },
+      "section_scores": {
+        "title": "Risultati e presenze per settore"
+      },
+      "score_distribution": {
+        "title": "Distribuzione del punteggio medio"
+      },
+      "section_scorecard": {
+        "title": "Scheda di valutazione sezione per sezione"
+      },
+      "needs_attention": {
+        "title": "Necessita di attenzione, per ragione"
+      },
+      "overdue": {
+        "title": "In ritardo, con solleciti"
+      },
+      "hardest_questions": {
+        "title": "Le domande più difficili"
+      },
+      "students": {
+        "title": "studenti"
+      },
+      "logins_per_day": {
+        "title": "Numero di studenti connessi al giorno"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Punteggi per esercizio, per coorte"
+      },
+      "exercise_score_distribution": {
+        "title": "Distribuzione dei punteggi, {exercise}"
+      },
+      "lesson_dropoff": {
+        "title": "Consegna al termine della lezione"
+      },
+      "hardest_exercises": {
+        "title": "Gli esercizi più difficili"
+      },
+      "cohorts_in_course": {
+        "title": "Gruppi che seguono questo corso"
+      },
+      "cohort_details": {
+        "title": "Dettagli della coorte"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Panoramica delle coorti"
+      },
+      "cohort_health": {
+        "title": "Salute degli studenti per coorte"
+      },
+      "hiring_ramp": {
+        "title": "Studenti iscritti rispetto all'obiettivo"
+      },
+      "avg_score_by_cohort": {
+        "title": "Punteggio medio per coorte"
+      },
+      "courses_by_completion": {
+        "title": "Corsi da completare"
+      },
+      "courses_at_a_glance": {
+        "title": "Corsi in sintesi"
+      },
+      "scores_by_exercise_course": {
+        "title": "Punteggi per esercizio"
+      },
+      "avg_score_by_course": {
+        "title": "Punteggio medio, per corso"
+      },
+      "cohort_empty": {
+        "title": "Coorti senza studenti"
+      }
+    },
+    "measures": {
+      "rows__count": "studenti",
+      "progress_pct__avg": "Progresso medio",
+      "avg_score_pct__avg": "Punteggio medio",
+      "avg_progress_pct__value": "Progresso medio",
+      "avg_score_pct__value": "Punteggio medio",
+      "first_try_pass__pooled": "Tasso di superamento",
+      "is_completed__count_if": "Completato",
+      "is_completed__rate": "Tasso di completamento",
+      "is_inactive__count_if": "Nessun accesso, da più di 2 giorni",
+      "is_low_score__count_if": "Punteggio medio inferiore al 50%",
+      "is_overdue__count_if": "In ritardo",
+      "is_low_video__count_if": "Partecipazione ai video inferiore al 60%",
+      "logged_in__count_if": "Gli studenti hanno effettuato l'accesso.",
+      "section_score_pct__avg": "Punteggio medio",
+      "video_pct__avg": "Rilevamento presenze tramite video",
+      "attendance__pooled": "Frequenza in classe",
+      "best_score_pct__avg": "Punteggio medio",
+      "is_complete__rate": "Completato",
+      "members_total__value": "studenti iscritti"
+    },
+    "columns": {
+      "student": "Studente",
+      "email": "E-mail",
+      "course": "Corso",
+      "students": "studenti",
+      "progress": "Progressi",
+      "avg_progress": "Progresso medio",
+      "avg_score": "Punteggio medio",
+      "average_score": "Punteggio medio",
+      "completed": "Completato",
+      "took_pass_mark": "Ho sostenuto un esercizio di passaggio",
+      "passed_first_try": "Tasso di superamento",
+      "exercises_passed": "Esercizi superati",
+      "now_at": "Ora a",
+      "courses_completed": "Corsi completati",
+      "video": "Video",
+      "classroom": "Aula",
+      "video_attendance": "Rilevamento presenze tramite video",
+      "classroom_attendance": "Frequenza in classe",
+      "certificate": "Certificato",
+      "certificates": "Certificati",
+      "last_login": "Ultimo accesso",
+      "status": "Stato",
+      "trend": "Tendenza",
+      "cohort": "Coorte",
+      "created": "Creato",
+      "overdue": "In ritardo",
+      "health": "Salute",
+      "section": "Sezione del corso",
+      "exercises_taken": "Esercizi eseguiti",
+      "actions": "Azioni"
+    },
+    "column_hints": {
+      "passed_first_try": "Studenti che hanno raggiunto la sufficienza al primo tentativo negli esercizi valutati, per i quali era prevista una soglia di superamento.",
+      "section_passed_first_try": "Studenti che hanno raggiunto la sufficienza al primo tentativo in ogni esercizio valutato di questa sezione.",
+      "took_pass_mark": "Gli studenti vengono valutati in base ad almeno un esercizio che prevede una soglia di superamento.",
+      "exercises_passed": "Esercizi con voto di superamento in cui questo studente ha raggiunto il voto, tra tutti gli esercizi con voto di superamento del corso."
+    },
+    "actions": {
+      "send_reminder": "Invia promemoria",
+      "queued": "In coda",
+      "remind_all_overdue": "Ricorda a tutti {count, plural, one {# studente in ritardo} other {# studenti in ritardo}}",
+      "reminders_queued": "Promemoria in coda"
+    },
+    "target": {
+      "set": "Imposta l'obiettivo",
+      "edit": "Modifica destinazione",
+      "label": "Obiettivo di studenti",
+      "helper": "Il numero di studenti iscritti che si intende raggiungere. Viene indicato con una linea tratteggiata.",
+      "clear": "Rimuovi il bersaglio",
+      "save": "Salva obiettivo"
+    },
+    "hints": {
+      "exercise_score_distribution": "Seleziona un esercizio per visualizzarne i punteggi."
+    },
+    "students": {
+      "search": "Cerca per nome o indirizzo email",
+      "empty": "Nessun candidato corrisponde a questi filtri",
+      "showing": {
+        "cohort": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nella coorte",
+        "course": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nel corso",
+        "org": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
+      },
+      "clear_filters": "{count, plural, one {Cancella # filtro} other {Cancella # filtri}}",
+      "sort": {
+        "status": "Ordina: prima i più indietro",
+        "progress": "Ordina per: minor progresso",
+        "name": "Ordina per nome dalla A alla Z",
+        "low_score": "Ordina per punteggio medio più basso"
+      },
+      "filters": {
+        "status": {
+          "label": "Stato",
+          "any": "Tutti gli stati",
+          "at_risk": "A rischio",
+          "lagging": "Ritardo",
+          "on_track": "In pista",
+          "completed": "Completato"
+        },
+        "activity": {
+          "label": "Ultimo accesso",
+          "any": "Qualsiasi accesso",
+          "today": "Accesso effettuato oggi",
+          "idle": "Nessun accesso per più di 2 giorni"
+        },
+        "score": {
+          "label": "Punteggio medio",
+          "any": "Qualsiasi punteggio medio",
+          "lt50": "Meno del 50%",
+          "mid": "Dal 50% al 69%",
+          "gte70": "70% e oltre"
+        },
+        "flag": {
+          "label": "Bandiere",
+          "any": "Qualsiasi bandiera",
+          "overdue": "In ritardo",
+          "certified": "Certificato rilasciato",
+          "not_certified": "Nessun certificato"
+        },
+        "completion": {
+          "label": "Completamento",
+          "any": "Qualsiasi completamento",
+          "incomplete": "Non completato"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Qualsiasi video",
+          "low": "Video sotto il 60%"
+        },
+        "cohort_chip": "{count, plural, one {# coorte} other {# coorti}}"
+      },
+      "showing_paged": {
+        "cohort": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nella coorte",
+        "course": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nel corso",
+        "org": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nella coorte",
+        "course": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nel corso",
+        "org": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
+      },
+      "showing_all": {
+        "cohort": "{count, plural, one {# studente} other {# studenti}} nella coorte",
+        "course": "{count, plural, one {# studente} other {# studenti}} nel corso",
+        "org": "{count, plural, one {# studente} other {# studenti}} nell'organizzazione"
+      },
+      "failed": "Impossibile caricare gli studenti",
+      "cells_failed": "Impossibile caricare i punteggi degli esercizi",
+      "attempts_unavailable": "Impossibile verificare quali esercizi hanno tentativi, quindi alcuni esercizi bloccati potrebbero essere nascosti."
+    },
+    "empty": {
+      "failed": "Impossibile caricare questo grafico",
+      "dashboard_failed": "Impossibile caricare Analytics",
+      "not_permitted": "Non hai accesso a questi dati analitici",
+      "no_exercises": "Nessun esercizio in questo corso",
+      "no_exercises_description": "I punteggi compaiono quando vengono aggiunti gli esercizi e gli studenti inviano i tentativi."
+    },
+    "scope_empty": {
+      "title": {
+        "cohort": "Nessuno studente in questa coorte per ora",
+        "course": "Nessuno studente in questo corso per ora",
+        "org": "Nessuno studente nella tua organizzazione per ora"
+      },
+      "description": {
+        "cohort": "Le analisi si popolano man mano che gli studenti aprono le lezioni e inviano gli esercizi.",
+        "cohort_no_courses": "Aggiungi corsi, poi invita gli studenti. Le analisi si popolano man mano che aprono le lezioni e inviano gli esercizi.",
+        "course": "Le analisi si popolano man mano che gli studenti aprono le lezioni e inviano gli esercizi.",
+        "org": "Aggiungi studenti alla tua academy, poi iscrivili a corsi o coorti."
+      },
+      "pending": "{count, plural, one {# invito è in attesa di essere accettato} other {# inviti sono in attesa di essere accettati}}. Le analisi si popolano quando gli studenti si uniscono.",
+      "invite_students": "Invita studenti",
+      "add_courses": "Aggiungi corsi",
+      "add_students": "Aggiungi studenti"
+    },
+    "student_sheet": {
+      "last_login": "Ultimo accesso: {when}",
+      "courses_heading": "Corsi",
+      "scores_heading": "Punteggi per esercizio, {course}",
+      "open_profile": "Apri il profilo del corso",
+      "all_courses": "Tutti i corsi"
+    },
+    "pagination": {
+      "showing": "Visualizzazione di {from}–{to} su {total}",
+      "cohorts_org": "Visualizzazione di {from}–{to} su {total, plural, one {# coorte} other {# coorti}} nell'organizzazione",
+      "cohorts_course": "Visualizzazione di {from}–{to} su {total, plural, one {# coorte} other {# coorti}} che seguono questo corso",
+      "courses_cohort": "Visualizzazione di {from}–{to} su {total, plural, one {# corso} other {# corsi}} nella coorte",
+      "courses_org": "Visualizzazione di {from}–{to} su {total, plural, one {# corso} other {# corsi}} nell'organizzazione",
+      "sections_course": "Visualizzazione di {from}–{to} su {total, plural, one {# sezione} other {# sezioni}} nel corso",
+      "overdue_cohort": "Visualizzazione di {from}–{to} su {total, plural, one {# studente in ritardo} other {# studenti in ritardo}} nella coorte"
+    },
+    "breakdown": {
+      "label": "Dettaglio",
+      "courses": "Corsi ({count})",
+      "cohorts": "Coorti ({count})",
+      "all_students": "Tutti gli studenti",
+      "by_cohort": "Per coorte ({count})"
+    },
+    "cohorts": {
+      "picker": "Coorti: {selected} di {total}",
+      "search": "Cerca coorti",
+      "empty": "Nessuna coorte corrisponde",
+      "newest": "Più recenti {count}",
+      "none": "Cancella",
+      "students": "{count, plural, one {# studente} other {# studenti}}",
+      "no_students": "Ancora nessuno studente",
+      "direct_included": "Gli studenti diretti sono sempre inclusi.",
+      "select_all": "Seleziona tutti",
+      "select_shown": "Seleziona mostrati",
+      "load_more": "Carica altri",
+      "showing_matches": "Mostrati {shown} di {total}",
+      "loading": "Caricamento coorti…",
+      "load_failed": "Impossibile caricare le coorti."
+    },
+    "course_search": "Cerca corsi",
+    "course_search_empty": "Nessun corso corrisponde",
+    "empty_states": {
+      "show_all_time": "Mostra tutto il periodo",
+      "create_cohort": "Crea una coorte",
+      "range": {
+        "title": "Nessuna attività negli ultimi {days} giorni",
+        "description": "Questa scheda conta solo ciò che è successo nel periodo selezionato."
+      },
+      "needs_attention": {
+        "title": "Nessuno richiede attenzione",
+        "description": "Nessuno studente è inattivo, sotto il 50%, in ritardo o indietro con i video."
+      },
+      "overdue": {
+        "title": "Nessuno è in ritardo",
+        "description": "Tutti gli studenti rispettano le scadenze."
+      },
+      "scores": {
+        "title": "Nessun tentativo valutato per ora",
+        "description": "I punteggi compaiono quando gli studenti inviano gli esercizi e i tentativi vengono valutati."
+      },
+      "student_scores": {
+        "title": "Nessun tentativo valutato per ora",
+        "description": "I punteggi di questo studente compaiono quando i suoi tentativi vengono valutati."
+      },
+      "hardest_exercises": {
+        "title": "Non ci sono ancora abbastanza tentativi valutati",
+        "description": "Un esercizio compare quando almeno 3 studenti hanno un tentativo valutato."
+      },
+      "questions": {
+        "title": "Non ci sono ancora abbastanza risposte",
+        "description": "Una domanda compare quando almeno 5 studenti hanno risposto in un tentativo valutato."
+      },
+      "logins": {
+        "title": "Nessun accesso per ora",
+        "description": "Gli studenti compaiono qui nei giorni in cui accedono."
+      },
+      "lessons": {
+        "title": "Nessuna lezione completata per ora",
+        "description": "La barra di ogni lezione si riempie man mano che gli studenti la completano."
+      },
+      "growth": {
+        "title": "Nessuno studente aggiunto per ora",
+        "description": "La linea inizia con il primo studente aggiunto alla tua organizzazione."
+      },
+      "courses_org": {
+        "title": "Nessun corso completato per ora",
+        "description": "I corsi compaiono qui quando gli studenti si iscrivono e li completano."
+      },
+      "courses_cohort": {
+        "title": "Nessuna attività del corso per ora",
+        "description": "Barre e righe si riempiono quando gli studenti iniziano lezioni o esercizi."
+      },
+      "cohorts_org": {
+        "title": "Nessuna coorte per ora",
+        "description": "Crea una coorte per raggruppare gli studenti e confrontare i loro progressi."
+      },
+      "cohorts_org_no_students": {
+        "title": "Nessuno studente in queste coorti per ora",
+        "description": "Aggiungi studenti alla tua organizzazione per iniziare a confrontare i progressi tra le coorti."
+      },
+      "cohorts_course": {
+        "title": "Nessuna coorte include questo corso",
+        "description": "Aggiungi questo corso a una coorte per confrontare le coorti qui."
+      },
+      "cohorts_course_no_students": {
+        "title": "Nessuno studente in queste coorti per ora",
+        "description": "Invita studenti a questo corso per iniziare a confrontare i progressi tra le coorti."
+      },
+      "default": {
+        "title": "Nessun dato per ora",
+        "description": "Questa scheda si riempie man mano che gli studenti usano il corso."
+      }
+    },
+    "export": {
+      "students_capped": "L'elenco degli studenti è limitato alle prime {limit} righe.",
+      "exercises_capped": "I punteggi degli esercizi sono limitati ai primi {limit} risultati.",
+      "yes": "Sì",
+      "no": "No",
+      "columns": {
+        "segment": "Gruppo",
+        "metric": "Metrica",
+        "value": "Valore",
+        "details": "Dettagli"
+      },
+      "dimensions": {
+        "student": "Studente",
+        "course": "Corso",
+        "cohort": "Coorte",
+        "exercise": "Esercizio",
+        "section": "Sezione",
+        "lesson": "Lezione",
+        "question": "Domanda",
+        "item": "Elemento",
+        "day": "Giorno",
+        "period": "Periodo",
+        "status": "Stato",
+        "overdue_kind": "Tipo di ritardo",
+        "progress_bucket_25": "Progressi",
+        "score_bucket_10": "Punteggio medio"
+      }
+    },
+    "org_page_title": "Accademia",
+    "widget_menu": {
+      "label": "Azioni per {title}",
+      "view_students": "Visualizza studenti",
+      "open_in_students": "Apri nella scheda Studenti",
+      "click_to_view": "Seleziona una barra o una fetta per vedere i suoi studenti"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# studente} other {# studenti}}",
+      "description": "Gli studenti dietro questo numero.",
+      "cohort_health": {
+        "any": "In coorti con studenti",
+        "at_risk": "In coorti a rischio",
+        "lagging": "In coorti in ritardo",
+        "on_track": "In coorti in pista",
+        "completed": "In coorti completate"
+      },
+      "cohort_health_note": "Il grafico conta gli studenti nelle coorti con questa valutazione, non gli studenti con questo stato.",
+      "count_differs": "Il grafico conta {expected} perché conta uno studente una volta per ogni coorte di cui fa parte. Questo elenco ne mostra {total}.",
+      "lesson_incomplete": "Non completato: {lesson}",
+      "lesson_fallback": "questa lezione",
+      "score_bucket": "Punteggio medio {range}",
+      "scored": "Con un punteggio medio"
+    }
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "Collega un'app a ClassroomIO",
+      "title": "Collega {client} a ClassroomIO",
+      "subtitle": "Scegli lo spazio di lavoro a cui {client} può accedere.",
+      "workspace_label": "Spazio di lavoro",
+      "no_workspaces_title": "Nessuno spazio di lavoro disponibile",
+      "no_workspaces_description": "Solo gli amministratori dello spazio di lavoro possono collegare le app. Chiedi a un amministratore o accedi con un account amministratore.",
+      "permissions_heading": "{client} potrà:",
+      "stay_connected": "Rimani connesso finché non rimuovi l'accesso",
+      "admin_note": "Solo gli amministratori dello spazio di lavoro possono collegare le app. L'accesso segue le tue autorizzazioni da amministratore e termina se le perdi.",
+      "redirect_note": "Dopo l'approvazione verrai reindirizzato a {host}.",
+      "allow": "Consenti l'accesso",
+      "deny": "Nega",
+      "unknown_client": "Questa app",
+      "error_title": "Questa richiesta di connessione non è valida",
+      "error_description": "Torna all'app che volevi collegare e ricomincia."
+    },
+    "error": {
+      "generic": "Qualcosa è andato storto. Riprova.",
+      "retry": "Riprova"
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Visualizzare i corsi e i loro contenuti",
+        "write": "Creare, modificare e pubblicare corsi e i loro contenuti"
+      },
+      "exercises": {
+        "read": "Visualizzare esercizi e domande",
+        "write": "Creare e modificare esercizi e domande"
+      },
+      "course_members": {
+        "read": "Visualizzare i membri del corso",
+        "write": "Aggiungere e gestire i membri del corso e i loro progressi"
+      },
+      "certificates": {
+        "read": "Visualizzare i certificati del corso",
+        "write": "Gestire i certificati del corso"
+      },
+      "submissions": {
+        "read": "Visualizzare consegne e voti",
+        "write": "Valutare le consegne e gestire i voti"
+      },
+      "cohorts": {
+        "read": "Visualizzare le coorti",
+        "write": "Creare e gestire coorti"
+      },
+      "audience": {
+        "read": "Visualizzare il tuo pubblico",
+        "write": "Aggiungere e gestire il tuo pubblico"
+      },
+      "team": {
+        "read": "Visualizzare i membri del team",
+        "write": "Gestire i membri del team"
+      },
+      "organization": {
+        "read": "Visualizzare le impostazioni dello spazio di lavoro",
+        "write": "Modificare impostazioni, landing page e modelli di email"
+      },
+      "analytics": {
+        "read": "Visualizzare le analisi",
+        "write": "Visualizzare le analisi"
+      },
+      "media": {
+        "read": "Caricare contenuti multimediali",
+        "write": "Caricare contenuti multimediali"
+      }
+    },
+    "connect": {
+      "title": "Collega da Claude o ChatGPT",
+      "description": "Aggiungi ClassroomIO come connettore personalizzato nella tua app di IA con questo URL, poi accedi e approva l'accesso.",
+      "step_1": "Nella tua app di IA, apri le impostazioni di connettori o integrazioni e aggiungi un connettore personalizzato.",
+      "step_2": "Incolla l'URL qui sopra e avvia il collegamento.",
+      "step_3": "Accedi a ClassroomIO, scegli questo spazio di lavoro e approva le autorizzazioni."
+    },
+    "connected_apps": {
+      "title": "App collegate",
+      "description": "App che hai autorizzato a operare su questo spazio di lavoro. Rimuovi un'app per interrompere subito il suo accesso.",
+      "table_app": "App",
+      "table_authorized_by": "Autorizzata da",
+      "table_permissions": "Autorizzazioni",
+      "permissions_count": "{count} aree",
+      "revoke": "Rimuovi accesso",
+      "revoke_confirm": "Rimuovere l'accesso di questa app? Smetterà di funzionare subito."
+    }
+  },
+  "video_guide": {
+    "watch_video": "Guarda il video",
+    "new_badge": "Nuovo",
+    "connect_claude": {
+      "title": "Collega ClassroomIO a Claude",
+      "description": "Scopri come connettere ClassroomIO a Claude e cosa puoi chiedergli. 4 minuti."
+    },
+    "lesson_blocks": {
+      "title": "Presentazione dei blocchi di lezioni",
+      "description": "Le lezioni ora sono costruite da blocchi. Scopri come funziona in 5 minuti.",
+      "coach_description": "Costruisci ogni lezione da note, video, diapositive, documenti e blocchi di immagini, in qualsiasi ordine. Seleziona Modifica per provarlo.",
+      "coach_title": "🎉 Novità! Le lezioni ora sono flessibili."
+    },
+    "close": "Chiudi",
+    "dismiss": "Capito"
+  },
+  "certificate": {
+    "tab_design": "Design",
+    "tab_settings": "Settings",
+    "allow": "Allow students download certificate",
+    "email_message_label": "Email Message",
+    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
+    "rules": "Rules",
+    "editor": {
+      "title": "Certificate design",
+      "back": "Back",
+      "unsaved": "Unsaved changes",
+      "free_plan": "Available on Pro",
+      "discard": "Discard",
+      "save": "Save",
+      "saved": "Certificate design saved.",
+      "save_failed": "Could not save the certificate design. Check the form and try again.",
+      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
+      "sections": "Editor sections",
+      "preview": "Certificate preview",
+      "panel_templates": "Templates",
+      "panel_templates_subtitle": "Select a template for your certificate.",
+      "panel_content": "Content",
+      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
+      "panel_colors": "Colors",
+      "panel_colors_subtitle": "Customize the accent color.",
+      "panel_export": "Export",
+      "panel_export_subtitle": "Preview the current design as it will be delivered.",
+      "section_header": "Header copy",
+      "section_signatories": "Signatories",
+      "section_reference": "Reference",
+      "subtitle": "Subtitle",
+      "subtitle_placeholder": "Awarded with Highest Distinction",
+      "description_override": "Description override",
+      "description_override_placeholder": "Defaults to the description.",
+      "description_override_hint": "Leave blank to fall back to the description on save.",
+      "signatory_one_name": "Signatory 1 name",
+      "signatory_one_role": "Signatory 1 role",
+      "signatory_two_name": "Signatory 2 name",
+      "signatory_two_role": "Signatory 2 role",
+      "signatory_one_toggle": "Show signatory 1",
+      "signatory_two_toggle": "Show signatory 2",
+      "signature_upload": "Signature image",
+      "signature_upload_hint": "Upload a signature image (optional)",
+      "signature_dont_crop": "Don't Crop",
+      "id_format": "Certificate ID format",
+      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
+      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
+      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
+      "download_pdf": "Download PDF",
+      "download_png": "Download PNG",
+      "print": "Print",
+      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
+      "preview_failed": "Could not generate certificate preview",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Certificate of Excellence",
+      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
+      "sample_org": "The Royal Academy of Arts",
+      "summary_title": "Active design",
+      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
+      "field_template": "Template",
+      "field_accent": "Accent",
+      "field_signatories": "Signatories",
+      "customize_design": "Customize design",
+      "signatory_one": "Signatory 1",
+      "signatory_two": "Signatory 2",
+      "signatory_name": "Signatory name",
+      "signatory_role": "Signatory role",
+      "signature_image": "Signature image"
+    }
+  },
+  "public_learning_paths": {
+    "heading": "Learning Paths",
+    "subtitle": "Guided multi-course tracks with one enrollment, ordered courses, and a certificate at the end.",
+    "search_placeholder": "Search learning paths...",
+    "clear_search": "Clear search",
+    "label": "Learning Path",
+    "certificate_label": "Certificate",
+    "free_label": "Free",
+    "course_count_label": "{count} courses",
+    "enrolled_label": "{count} enrolled",
+    "navigation_failed": "Couldn't load the page. Please try again.",
+    "empty": {
+      "title": "No learning paths found",
+      "description": "Try clearing your search or check back later."
+    },
+    "detail": {
+      "about_heading": "What you'll learn",
+      "about_lead": "Practical, project-first skills — every course ends with something you built.",
+      "skills_heading": "Skills you'll gain",
+      "series_heading": "Course series",
+      "series_eyebrow": "Series · take in order",
+      "series_lead": "Each course unlocks the next once you finish its lessons and exercises.",
+      "rating_label": "Rated {rating} out of 5",
+      "certificate_heading": "Certificate",
+      "certificate_issuer": "Issued by",
+      "certificate_validity": "Validity",
+      "instructors_heading": "Instructors",
+      "instructors_lead": "The tutors behind the courses in this path.",
+      "reviews_heading": "Reviews",
+      "reviews_lead": "From people who finished the path.",
+      "faq_heading": "Frequently asked questions",
+      "no_faq": "No questions yet.",
+      "pricing_heading": "Enrollment",
+      "pricing_eyebrow": "Enrollment",
+      "enroll_path": "Enroll in this path",
+      "locked_label": "Locked",
+      "unlocked_label": "Unlocked",
+      "enroll_free": "Enroll free",
+      "enroll_label": "Enroll for {currency} {cost}",
+      "view_all": "View all learning paths",
+      "taught_by_two": "Taught by {first} and {second}",
+      "taught_by_many": "Taught by {names} + {count} more",
+      "features_courses_line": "All {courseCount} courses, unlocked in order",
+      "features_content_line": "{lessons} lessons · {exercises} exercises · 1 capstone",
+      "features_certificate_line": "Path certificate on completion",
+      "features_milestone_line": "Verified path milestone completion",
+      "features_access_line": "Lifetime access, learn at your pace",
+      "save_vs_individual": "Save {amount} vs individual courses",
+      "stat_courses": "courses in series",
+      "stat_enrolled": "enrolled",
+      "stat_certificate": "Certificate",
+      "stat_beginner": "Beginner",
+      "stat_on_completion": "on completion",
+      "stat_no_experience": "no prior exp.",
+      "stat_reviews": "{count} reviews",
+      "full_path": "Full path",
+      "save_percent": "Save {percent}%",
+      "social_proof": "{students} already enrolled · {rating} ★ from {reviews} reviews",
+      "enroll_with_cost": "Enroll · {cost}",
+      "series_heading_count": "{count} courses in this path",
+      "series_course": "Course {index}",
+      "series_lessons": "{count} lessons",
+      "series_outcomes_heading": "What you'll learn",
+      "show_outline": "Show lesson outline",
+      "hide_outline": "Hide lesson outline",
+      "preview_badge": "Preview",
+      "unavailable": "This learning path is currently unavailable for enrollment.",
+      "back_to_path": "Back to learning path"
+    }
   },
   "learningPath": {
     "badge": {
@@ -7354,935 +8283,6 @@
     },
     "preview": {
       "courses_heading": "Courses in this path"
-    }
-  },
-  "course_templates": {
-    "row": {
-      "heading": "Crea un nuovo corso",
-      "gallery": "Galleria di modelli",
-      "yours": "I tuoi corsi",
-      "blank": "Corso vuoto",
-      "blank_subtitle": "Inizia da zero"
-    },
-    "card": {
-      "curated": "Modello curato",
-      "yours": "Il tuo modello",
-      "used": "Il tuo modello · Usato {date}"
-    },
-    "gallery": {
-      "back": "Tutti i corsi",
-      "title": "Galleria di modelli",
-      "subtitle": "Inizia un corso da uno dei tuoi modelli o da uno creato da ClassroomIO.",
-      "search": "Trova modello",
-      "scope_all": "Tutti i modelli",
-      "scope_org": "I miei modelli",
-      "scope_global": "ClassroomIO",
-      "empty_org": "Non hai ancora creato alcun modello. Salva qualsiasi corso come modello dal suo menu ⋯.",
-      "no_match": "Nessun modello corrisponde a \"{query}”.",
-      "empty_global": "Nessun modello ClassroomIO ancora."
-    },
-    "preview": {
-      "course_name": "Nome del corso",
-      "use": "Usa il modello",
-      "open": "Apri modello",
-      "cancel": "Annulla",
-      "loading": "Caricamento modello…",
-      "copying": "Copiare {sections, plural, one {# sezione} other {# sezioni}}, {lessons, plural, one {# lezione} other {# lezioni}}…",
-      "created": "Corso creato da {title}",
-      "shows_off": "Si mette in mostra",
-      "settings": "Impostazioni",
-      "certificate": "Certificato abilitato",
-      "deadline": "Scadenza {date}",
-      "sequential": "Le lezioni si sbloccano in ordine",
-      "grading": "Un tutor valuta gli elaborati",
-      "comments_off": "I commenti delle lezioni sono disattivati",
-      "lesson_download": "Gli studenti possono scaricare le lezioni",
-      "self_enrollment": "Gli studenti possono unirsi a se stessi",
-      "ai_tutor": "Il tutor AI è attivo",
-      "compliance_retake": "Riprendi ogni {months, plural, one {# mese} other {# mesi}}",
-      "compliance_mandatory": "Obbligatorio",
-      "counts": "{sections} sezioni · {lessons} lezioni · {exercises} esercizi",
-      "questions": "{count, plural, one {# domanda} other {# domande}}"
-    },
-    "menu": {
-      "open": "Aprire",
-      "duplicate": "Duplicato",
-      "delete": "Eliminare",
-      "save": "Salva come modello...",
-      "create_course": "Crea corso da modello",
-      "duplicated": "Modello duplicato",
-      "deleted": "Modello eliminato"
-    },
-    "save": {
-      "title": "Salva come modello",
-      "copy": "Salva una copia come modello",
-      "copy_description": "Il corso resta com'è.",
-      "convert": "Converti questo corso",
-      "convert_description": "Il corso diventa un modello. Non può essere pubblicato o avere studenti.",
-      "has_students": "Ha {count, plural, one {# studente} other {# studenti}} - salva invece una copia.",
-      "unpublish": "La conversione annulla la pubblicazione di questo corso.",
-      "name": "Nome del modello",
-      "save_button": "Salva modello",
-      "convert_button": "Converti in modello",
-      "saved": "Modello salvato",
-      "converted": "Corso convertito in un modello",
-      "limit_title": "Il tuo piano include {count, plural, one {# modello} other {# modelli}}",
-      "limit_body": "L'hai già fatto {used, plural, one {{title}} other {# modelli}}. Esegui l'upgrade per avere più modelli o eliminane uno che hai.",
-      "upgrade": "Aggiornamento",
-      "manage": "Gestisci modelli",
-      "view_templates": "Visualizza modelli"
-    },
-    "empty": {
-      "title": "Nessun corso ancora",
-      "description": "Crea un corso una volta sola, poi iscrivi i tuoi clienti. Crealo tu stesso o lascia che il tuo agente ne prepari una bozza.",
-      "enrolled": "Iscritto"
-    },
-    "editor": {
-      "badge": "Modello"
-    },
-    "sync": {
-      "alert_title": "Il modello ha {count, plural, one {# aggiornamento} other {# aggiornamenti}}",
-      "alert_body": "{title} cambiato dall'ultima volta che hai indossato {date}.",
-      "review_in_settings": "Controlla nelle impostazioni",
-      "section_title": "Modello",
-      "last_pulled": "Ultimo tirato {date}",
-      "review": "Rivedi gli aggiornamenti",
-      "up_to_date": "Aggiornato con il modello.",
-      "deleted": "{title} è stato cancellato. Questo corso mantiene tutti i suoi contenuti; non c'è più niente da tirare.",
-      "deleted_unknown": "Questo modello è stato eliminato. Questo corso mantiene tutti i suoi contenuti; non c'è più niente da tirare.",
-      "available_detail": "{count, plural, one {# aggiornamento disponibile} other {# aggiornamenti disponibili}} — {list}.",
-      "join": "{rest} E {last}",
-      "sections_count": "{count, plural, one {# sezione} other {# sezioni}}",
-      "settings_count": "{count, plural, one {# collocamento} other {# impostazioni}}",
-      "content": "Contenuto",
-      "settings": "Impostazioni",
-      "select_all": "Seleziona tutto",
-      "new": "Nuovo",
-      "updated": "Aggiornato",
-      "locked": "{count, plural, one {# invio: non può essere aggiornato} other {# invii: impossibile aggiornare}}",
-      "edited_locally": "L'hai modificato tu {date} - tirare sostituisce le tue modifiche.",
-      "removed_locally": "L'hai eliminato dal tuo corso.",
-      "also_adds": "Aggiunge anche {kind}: {title}",
-      "template_value": "Modello: {value}",
-      "yours_value": "Il tuo: {value}",
-      "yes": "SÌ",
-      "no": "NO",
-      "empty_value": "Nessuno",
-      "custom_value": "Costume",
-      "selected": "{count, plural, one {# selezionato} other {# selezionato}}",
-      "pull": "Tiro {count, plural, one {# modifica} other {# modifiche}}",
-      "pulled": "Tirato {count, plural, one {# modifica} other {# modifiche}} da {title}",
-      "kind": {
-        "section": "Sezione",
-        "lesson": "Lezione",
-        "exercise": "Esercizio"
-      },
-      "detail": {
-        "title": "Titolo",
-        "content": "Contenuto",
-        "locales": "{locales} aggiunto"
-      },
-      "setting": {
-        "description": "Descrizione",
-        "bannerImage": "Immagine di copertina",
-        "welcomeEmail": "E-mail di benvenuto",
-        "completionDeadline": "Termine ultimo per il completamento",
-        "contentGrouping": "Raggruppamento dei contenuti",
-        "progression": "Progressione",
-        "comments": "Commenti alla lezione",
-        "selfEnrollment": "Autoiscrizione",
-        "markdownExport": "Esportazione con ribasso",
-        "lessonDownload": "Scarica la lezione",
-        "landingRequirements": "Requisiti di atterraggio",
-        "landingDescription": "Descrizione dello sbarco",
-        "landingGoals": "Obiettivi di atterraggio",
-        "landingSkills": "Competenze",
-        "landingTools": "Utensili",
-        "landingInstructor": "Istruttore",
-        "pricing": "Prezzi",
-        "certificateDesign": "Progettazione del certificato",
-        "certificateRules": "Regole del certificato",
-        "aiTutor": "Tutor dell'intelligenza artificiale"
-      },
-      "section_description": "Questo corso è stato creato da un modello. Apporta le modifiche quando vuoi: nulla cambia da solo.",
-      "updates_title": "{count, plural, one {# aggiornamento disponibile} other {# aggiornamenti disponibili}}",
-      "deleted_title": "Modello eliminato",
-      "sheet_title": "Aggiornamenti del modello",
-      "sheet_description": "Da {title}, Da {date}. Scegli cosa tirare: nulla verrà rimosso dal tuo corso.",
-      "nothing_selected": "Niente selezionato",
-      "loading": "Caricamento aggiornamenti...",
-      "value": {
-        "free": "Gratuito",
-        "sequential": "Sequenziale",
-        "no_price": "Gratuito"
-      },
-      "template_label": "Modello",
-      "yours_label": "Il tuo"
-    },
-    "home": {
-      "heading": "Oppure inizia da un modello",
-      "description": "Un corso completo con lezioni, esercizi e impostazioni. Copialo e poi fallo tuo.",
-      "browse": "Sfoglia tutti i modelli"
-    }
-  },
-  "early_adopter_claim": {
-    "page": {
-      "title": "Pagamento ricevuto. Manca un passaggio.",
-      "body": "Crea il tuo account o accedi e collegheremo automaticamente il tuo piano Early Adopter alla tua accademia.",
-      "sign_up": "Crea il mio account",
-      "log_in": "Accedi",
-      "continue": "Continua verso la mia accademia"
-    },
-    "success": {
-      "title": "Il tuo piano Early Adopter è attivo",
-      "body": "La tua tariffa è bloccata e tutte le funzionalità Early Adopter sono ora sbloccate per la tua accademia.",
-      "continue": "Inizia a creare"
-    },
-    "errors": {
-      "invalid": "Questo link non è valido. Controlla l’e-mail che ti abbiamo inviato o contatta l’assistenza.",
-      "expired": "Questo link è scaduto. Contatta l’assistenza e ti aiuteremo a collegare il tuo piano.",
-      "unavailable": "Questo link del piano è già stato usato o non è più attivo. Contatta l’assistenza se si tratta di un errore.",
-      "conflict": "Questa accademia ha già un piano a pagamento, quindi non siamo riusciti a collegare questo. Contatta l’assistenza e ti aiuteremo."
-    }
-  },
-  "video_guide": {
-    "watch_video": "Guarda il video",
-    "new_badge": "Nuovo",
-    "close": "Chiudi",
-    "dismiss": "Capito",
-    "lesson_blocks": {
-      "coach_title": "🎉 Novità! Le lezioni ora sono flessibili.",
-      "coach_description": "Costruisci ogni lezione da note, video, diapositive, documenti e blocchi di immagini, in qualsiasi ordine. Seleziona Modifica per provarlo.",
-      "title": "Presentazione dei blocchi di lezioni",
-      "description": "Le lezioni ora sono costruite da blocchi. Scopri come funziona in 5 minuti."
-    },
-    "connect_claude": {
-      "description": "Scopri come connettere ClassroomIO a Claude e cosa puoi chiedergli. 4 minuti.",
-      "title": "Collega ClassroomIO a Claude"
-    }
-  },
-  "whats_new": {
-    "new_badge": "Nuovo",
-    "read_full": "Leggi il changelog completo",
-    "close": "Chiudi"
-  },
-  "analytics": {
-    "title": "Analisi",
-    "updated_seconds_ago": "aggiornato {count}s fa",
-    "updated_minutes_ago": "{count, plural, one {aggiornato # minuto fa} other {aggiornato # minuti fa}}",
-    "retry": "Riprova",
-    "scope_empty": {
-      "title": {
-        "cohort": "Nessuno studente in questa coorte per ora",
-        "course": "Nessuno studente in questo corso per ora",
-        "org": "Nessuno studente nella tua organizzazione per ora"
-      },
-      "description": {
-        "cohort": "Le analisi si popolano man mano che gli studenti aprono le lezioni e inviano gli esercizi.",
-        "cohort_no_courses": "Aggiungi corsi, poi invita gli studenti. Le analisi si popolano man mano che aprono le lezioni e inviano gli esercizi.",
-        "course": "Le analisi si popolano man mano che gli studenti aprono le lezioni e inviano gli esercizi.",
-        "org": "Aggiungi studenti alla tua academy, poi iscrivili a corsi o coorti."
-      },
-      "pending": "{count, plural, one {# invito è in attesa di essere accettato} other {# inviti sono in attesa di essere accettati}}. Le analisi si popolano quando gli studenti si uniscono.",
-      "invite_students": "Invita studenti",
-      "add_courses": "Aggiungi corsi",
-      "add_students": "Aggiungi studenti"
-    },
-    "all_courses": "Tutti i corsi",
-    "breakdown": {
-      "label": "Dettaglio",
-      "courses": "Corsi ({count})",
-      "cohorts": "Coorti ({count})",
-      "all_students": "Tutti gli studenti",
-      "by_cohort": "Per coorte ({count})"
-    },
-    "cohorts": {
-      "picker": "Coorti: {selected} di {total}",
-      "search": "Cerca coorti",
-      "empty": "Nessuna coorte corrisponde",
-      "newest": "Più recenti {count}",
-      "none": "Cancella",
-      "students": "{count, plural, one {# studente} other {# studenti}}",
-      "no_students": "Ancora nessuno studente",
-      "direct_included": "Gli studenti diretti sono sempre inclusi.",
-      "select_all": "Seleziona tutti",
-      "select_shown": "Seleziona mostrati",
-      "load_more": "Carica altri",
-      "showing_matches": "Mostrati {shown} di {total}",
-      "loading": "Caricamento coorti…",
-      "load_failed": "Impossibile caricare le coorti."
-    },
-    "course_picker": "Corso",
-    "exercise_picker": "Esercizio",
-    "not_in_section": "Non in una sezione",
-    "section_number": "Sezione {number}",
-    "section_with_title": "Sezione {number} · {title}",
-    "finished": "Finito",
-    "awaiting_grade": "In attesa del voto",
-    "awaiting_grade_short": "In attesa",
-    "pass_mark_tag": "Voto minimo per il superamento {mark}%",
-    "of_total": "{count} di {total}",
-    "never": "Mai",
-    "invited": "{count} invitato",
-    "no_students": "Nessun studente",
-    "no_students_yet": "Ancora nessuno studente",
-    "no_graded_attempts": "Nessun tentativo valutato",
-    "names_and_more": "{names} e altri {count}",
-    "course_search": "Cerca corsi",
-    "course_search_empty": "Nessun corso corrisponde",
-    "certificate_issued": "{count, plural, one {Rilasciato} other {# rilasciato}}",
-    "question_hint": {
-      "context_and_answer": "{context} · la risposta errata più comune: {answer}",
-      "answer": "Risposta errata più comune: {answer}"
-    },
-    "chips": {
-      "label": "Informazioni su questa dashboard",
-      "live": "In diretta · {updated}",
-      "live_every": "In diretta · {updated} · si aggiorna ogni {seconds}s",
-      "students": "{count, plural, one {# studente} other {# studenti}}",
-      "courses": "Corsi: {count}",
-      "cohorts": "Coorti: {count}",
-      "active_cohorts": "{count, plural, one {# coorte attiva} other {# coorti attive}}",
-      "seats": "Posti: {used} di {limit}",
-      "seats_not_joined": "{count} non ancora iscritti"
-    },
-    "pagination": {
-      "showing": "Visualizzazione di {from}–{to} su {total}",
-      "cohorts_org": "Visualizzazione di {from}–{to} su {total, plural, one {# coorte} other {# coorti}} nell'organizzazione",
-      "cohorts_course": "Visualizzazione di {from}–{to} su {total, plural, one {# coorte} other {# coorti}} che seguono questo corso",
-      "courses_cohort": "Visualizzazione di {from}–{to} su {total, plural, one {# corso} other {# corsi}} nella coorte",
-      "courses_org": "Visualizzazione di {from}–{to} su {total, plural, one {# corso} other {# corsi}} nell'organizzazione",
-      "sections_course": "Visualizzazione di {from}–{to} su {total, plural, one {# sezione} other {# sezioni}} nel corso",
-      "overdue_cohort": "Visualizzazione di {from}–{to} su {total, plural, one {# studente in ritardo} other {# studenti in ritardo}} nella coorte"
-    },
-    "now_tag": {
-      "label": "Ora",
-      "hint": "Mostra il livello attuale degli studenti. L'intervallo non modifica questa scheda."
-    },
-    "student_chips": {
-      "latest": "Ultimo",
-      "progress": "Progressi",
-      "now_at": "ora a {place}"
-    },
-    "donut": {
-      "students": "{count, plural, one {studente} other {studenti}}"
-    },
-    "status": {
-      "at_risk": "A rischio",
-      "lagging": "Ritardo",
-      "on_track": "In pista",
-      "completed": "Completato"
-    },
-    "flags": {
-      "overdue": "In ritardo"
-    },
-    "legend": {
-      "middle_half": "Il 50% centrale degli studenti",
-      "cohort_average": "media della coorte",
-      "student": "Studente",
-      "all_students": "Tutti gli studenti",
-      "direct_students": "Studenti diretti",
-      "in_progress": "{name} (in corso)",
-      "enrolled_students": "studenti iscritti",
-      "target": "Bersaglio",
-      "logins": "Accessi"
-    },
-    "notes": {
-      "score_distribution": "Studenti per fascia di punteggio.",
-      "course_details": "Seleziona un corso qui sopra per visualizzare i punteggi per esercizio, la scheda dei punteggi sezione per sezione e le domande più difficili.",
-      "section_scorecard": "Una riga per ogni sezione del corso. La presenza ai video indica la percentuale di video delle lezioni visualizzati. La presenza in aula viene registrata dal docente.",
-      "needs_attention": "Uno studente può comparire per più di un motivo.",
-      "overdue": "Gli studenti ricevono già email di promemoria programmate prima di una scadenza. \"Invia promemoria\" ne invia uno immediatamente.",
-      "hardest_questions": "Le domande a cui gli studenti rispondono più spesso in modo errato, ovvero quelle in cui la risposta sbagliata è la più comune.",
-      "logins_per_day": "Studenti che hanno effettuato l'accesso ogni giorno.",
-      "students": {
-        "all_courses": "Fai clic su uno studente per visualizzare i suoi corsi.",
-        "one_course": "Fai clic su uno studente per visualizzare il grafico dei suoi punteggi. Le funzioni di ricerca, filtro e ordinamento si applicano anche all'esportazione.",
-        "course_scope": "Seleziona uno studente per visualizzare i suoi progressi in questo corso. Le opzioni di ricerca, filtro e ordinamento si applicano anche all'esportazione."
-      },
-      "showing_first": "Mostra i primi {shown} di {total}.",
-      "cohorts_select": "Seleziona una coorte per aprire la sua dashboard.",
-      "courses_select": "Seleziona un corso per aprire la sua dashboard.",
-      "cohorts_in_table": "{count, plural, one {La coorte} other {Le # coorti}} nella tabella sopra.",
-      "courses_in_table": "{count, plural, one {Il corso} other {I # corsi}} nella tabella sopra.",
-      "not_counted_empty": "Non conteggiati: {names} (ancora nessuno studente).",
-      "not_charted_empty": "Non mostrati nel grafico: {names} (ancora nessuno studente).",
-      "direct_students_charted": "Gli studenti diretti non appartengono a una coorte; compaiono su una linea dedicata.",
-      "bucketed_total": "Ogni barra somma gli accessi in {days} giorni. Uno studente conta una volta al giorno.",
-      "student_sheet_pick_course": "Fai clic su un corso per tracciare i relativi punteggi per esercizio.",
-      "lesson_dropoff": "La discesa più ripida si verifica tra {from} e {to}.",
-      "no_pass_mark": "Nessun esercizio qui ha ancora una soglia di superamento, quindi non è disponibile un tasso di superamento. Imposta una soglia di superamento per un esercizio per visualizzarlo."
-    },
-    "buckets": {
-      "progress": {
-        "0": "0–25",
-        "1": "25–50",
-        "2": "50–75",
-        "3": "75–99",
-        "4": "Fatto"
-      },
-      "score": {
-        "4": "<50",
-        "5": "50–59",
-        "6": "60–69",
-        "7": "70–79",
-        "8": "80–89",
-        "9": "90+",
-        "null": "Nessun punteggio"
-      }
-    },
-    "kpi": {
-      "share_of_cohort": "{percent} della coorte",
-      "share_of_enrolled": "{percent} di iscritti",
-      "share_of_completions": "{percent} di completamenti",
-      "avg_progress_hint": "lezioni ed esercizi obbligatori completati/totale",
-      "avg_score_hint": "attraverso gli esercizi seguiti",
-      "overdue_hint": "oltre la scadenza, non fatto",
-      "completed_certified": "{percent} del gruppo · {count} certificato",
-      "enrolled_this_week": "{count, plural, =0 {Nessun nuovo studente questa settimana} other {+# questa settimana}}",
-      "enrolled_in_days": "{count, plural, =0 {Nessun nuovo studente negli ultimi {days} giorni} other {+# negli ultimi {days} giorni}}",
-      "added_in_days": "{count, plural, =0 {Nessuno negli ultimi {days} giorni} other {+# negli ultimi {days} giorni}}",
-      "completed_in_days": "{percent} della coorte{count, plural, =0 {} other { · +# negli ultimi {days} giorni}}",
-      "logged_in_days": "Accesso effettuato negli ultimi {days} giorni",
-      "avg_score_in_days": "tentativi negli ultimi {days} giorni",
-      "first_try_in_days": "di {took} valutati negli ultimi {days} giorni{still, plural, =0 {} other { · # ancora da superare}}",
-      "median_days_in_days": "per i completamenti negli ultimi {days} giorni",
-      "first_try_context": "di {took} che hanno sostenuto un esercizio con punteggio minimo{still, plural, =0 {} other { · # ancora da superare}}",
-      "median_days_hint": "iscrizione al completamento",
-      "needs_attention_hint": "inattivo, punteggio basso o in ritardo",
-      "delta": {
-        "this_week": {
-          "up": "+{count} punti questa settimana",
-          "down": "−{count} punti questa settimana",
-          "flat": "Nessun cambiamento questa settimana"
-        },
-        "vs_last_week": {
-          "up": "+{count} punti rispetto alla settimana scorsa",
-          "down": "−{count} punti rispetto alla settimana scorsa",
-          "flat": "Nessun cambiamento rispetto alla settimana scorsa."
-        },
-        "in_days": {
-          "up": "+{count} punti negli ultimi {days} giorni",
-          "down": "−{count} punti negli ultimi {days} giorni",
-          "flat": "Nessun cambiamento negli ultimi {days} giorni"
-        },
-        "vs_days_ago": {
-          "up": "+{count} punti contro {days} giorni fa",
-          "down": "−{count} punti contro {days} giorni fa",
-          "flat": "Nessun cambiamento rispetto a {days} giorni fa"
-        }
-      },
-      "no_data": {
-        "students": "nessuno studente per ora",
-        "graded": "nessun tentativo valutato per ora",
-        "first_try": "nessun tentativo valutato su un esercizio con soglia di superamento",
-        "completions": "nessun completamento per ora",
-        "enrolments": "nessuna iscrizione per ora",
-        "in_days": "nessuno negli ultimi {days} giorni"
-      }
-    },
-    "widgets": {
-      "kpi_logged_in_today": {
-        "title": "Accesso effettuato oggi"
-      },
-      "kpi_logged_in_week": {
-        "title": "Accesso effettuato negli ultimi 7 giorni"
-      },
-      "kpi_avg_progress": {
-        "title": "Progresso medio"
-      },
-      "kpi_avg_score": {
-        "title": "Punteggio medio"
-      },
-      "kpi_avg_grade": {
-        "title": "Voto medio"
-      },
-      "kpi_overdue": {
-        "title": "In ritardo"
-      },
-      "kpi_completed": {
-        "title": "Completato"
-      },
-      "kpi_enrolled": {
-        "title": "Iscritto"
-      },
-      "kpi_completion_rate": {
-        "title": "Tasso di completamento"
-      },
-      "kpi_first_try_pass": {
-        "title": "Tasso di superamento"
-      },
-      "kpi_median_days": {
-        "title": "Giorni mediani per completare"
-      },
-      "kpi_completions": {
-        "title": "Completamenti"
-      },
-      "kpi_certificates": {
-        "title": "Certificati rilasciati"
-      },
-      "kpi_needs_attention": {
-        "title": "Necessita di attenzione"
-      },
-      "courses_summary": {
-        "title": "Corsi di questa coorte"
-      },
-      "students_by_status": {
-        "title": "Studenti in base allo status"
-      },
-      "course_details": {
-        "title": "Dettagli del corso"
-      },
-      "courses_at_a_glance": {
-        "title": "Corsi in sintesi"
-      },
-      "scores_by_exercise": {
-        "title": "Punteggi per esercizio, {course}"
-      },
-      "scores_by_exercise_course": {
-        "title": "Punteggi per esercizio"
-      },
-      "progress_distribution": {
-        "title": "Distribuzione progressiva"
-      },
-      "section_scores": {
-        "title": "Risultati e presenze per settore"
-      },
-      "score_distribution": {
-        "title": "Distribuzione del punteggio medio"
-      },
-      "section_scorecard": {
-        "title": "Scheda di valutazione sezione per sezione"
-      },
-      "needs_attention": {
-        "title": "Necessita di attenzione, per ragione"
-      },
-      "overdue": {
-        "title": "In ritardo, con solleciti"
-      },
-      "hardest_questions": {
-        "title": "Le domande più difficili"
-      },
-      "students": {
-        "title": "studenti"
-      },
-      "logins_per_day": {
-        "title": "Numero di studenti connessi al giorno"
-      },
-      "scores_by_exercise_by_cohort": {
-        "title": "Punteggi per esercizio, per coorte"
-      },
-      "exercise_score_distribution": {
-        "title": "Distribuzione dei punteggi, {exercise}"
-      },
-      "lesson_dropoff": {
-        "title": "Consegna al termine della lezione"
-      },
-      "hardest_exercises": {
-        "title": "Gli esercizi più difficili"
-      },
-      "cohorts_in_course": {
-        "title": "Gruppi che seguono questo corso"
-      },
-      "cohort_details": {
-        "title": "Dettagli della coorte"
-      },
-      "cohorts_at_a_glance": {
-        "title": "Panoramica delle coorti"
-      },
-      "cohort_health": {
-        "title": "Salute degli studenti per coorte"
-      },
-      "hiring_ramp": {
-        "title": "Studenti iscritti rispetto all'obiettivo"
-      },
-      "avg_score_by_cohort": {
-        "title": "Punteggio medio per coorte"
-      },
-      "avg_score_by_course": {
-        "title": "Punteggio medio, per corso"
-      },
-      "courses_by_completion": {
-        "title": "Corsi da completare"
-      },
-      "cohort_empty": {
-        "title": "Coorti senza studenti"
-      }
-    },
-    "measures": {
-      "rows__count": "studenti",
-      "progress_pct__avg": "Progresso medio",
-      "avg_score_pct__avg": "Punteggio medio",
-      "avg_progress_pct__value": "Progresso medio",
-      "avg_score_pct__value": "Punteggio medio",
-      "first_try_pass__pooled": "Tasso di superamento",
-      "is_completed__count_if": "Completato",
-      "is_completed__rate": "Tasso di completamento",
-      "is_inactive__count_if": "Nessun accesso, da più di 2 giorni",
-      "is_low_score__count_if": "Punteggio medio inferiore al 50%",
-      "is_overdue__count_if": "In ritardo",
-      "is_low_video__count_if": "Partecipazione ai video inferiore al 60%",
-      "logged_in__count_if": "Gli studenti hanno effettuato l'accesso.",
-      "section_score_pct__avg": "Punteggio medio",
-      "video_pct__avg": "Rilevamento presenze tramite video",
-      "attendance__pooled": "Frequenza in classe",
-      "best_score_pct__avg": "Punteggio medio",
-      "is_complete__rate": "Completato",
-      "members_total__value": "studenti iscritti"
-    },
-    "columns": {
-      "student": "Studente",
-      "email": "E-mail",
-      "course": "Corso",
-      "students": "studenti",
-      "progress": "Progressi",
-      "avg_progress": "Progresso medio",
-      "avg_score": "Punteggio medio",
-      "average_score": "Punteggio medio",
-      "completed": "Completato",
-      "took_pass_mark": "Ho sostenuto un esercizio di passaggio",
-      "passed_first_try": "Tasso di superamento",
-      "exercises_passed": "Esercizi superati",
-      "now_at": "Ora a",
-      "courses_completed": "Corsi completati",
-      "video": "Video",
-      "classroom": "Aula",
-      "video_attendance": "Rilevamento presenze tramite video",
-      "classroom_attendance": "Frequenza in classe",
-      "certificate": "Certificato",
-      "certificates": "Certificati",
-      "last_login": "Ultimo accesso",
-      "status": "Stato",
-      "trend": "Tendenza",
-      "cohort": "Coorte",
-      "created": "Creato",
-      "overdue": "In ritardo",
-      "health": "Salute",
-      "section": "Sezione del corso",
-      "exercises_taken": "Esercizi eseguiti",
-      "actions": "Azioni"
-    },
-    "column_hints": {
-      "passed_first_try": "Studenti che hanno raggiunto la sufficienza al primo tentativo negli esercizi valutati, per i quali era prevista una soglia di superamento.",
-      "section_passed_first_try": "Studenti che hanno raggiunto la sufficienza al primo tentativo in ogni esercizio valutato di questa sezione.",
-      "took_pass_mark": "Gli studenti vengono valutati in base ad almeno un esercizio che prevede una soglia di superamento.",
-      "exercises_passed": "Esercizi con voto di superamento in cui questo studente ha raggiunto il voto, tra tutti gli esercizi con voto di superamento del corso."
-    },
-    "actions": {
-      "send_reminder": "Invia promemoria",
-      "queued": "In coda",
-      "remind_all_overdue": "Ricorda a tutti {count, plural, one {# studente in ritardo} other {# studenti in ritardo}}",
-      "reminders_queued": "Promemoria in coda"
-    },
-    "target": {
-      "set": "Imposta l'obiettivo",
-      "edit": "Modifica destinazione",
-      "label": "Obiettivo di studenti",
-      "helper": "Il numero di studenti iscritti che si intende raggiungere. Viene indicato con una linea tratteggiata.",
-      "clear": "Rimuovi il bersaglio",
-      "save": "Salva obiettivo"
-    },
-    "hints": {
-      "exercise_score_distribution": "Seleziona un esercizio per visualizzarne i punteggi."
-    },
-    "student_sheet": {
-      "last_login": "Ultimo accesso: {when}",
-      "courses_heading": "Corsi",
-      "scores_heading": "Punteggi per esercizio, {course}",
-      "open_profile": "Apri il profilo del corso",
-      "all_courses": "Tutti i corsi"
-    },
-    "students": {
-      "search": "Cerca per nome o indirizzo email",
-      "empty": "Nessun candidato corrisponde a questi filtri",
-      "failed": "Impossibile caricare gli studenti",
-      "cells_failed": "Impossibile caricare i punteggi degli esercizi",
-      "attempts_unavailable": "Impossibile verificare quali esercizi hanno tentativi, quindi alcuni esercizi bloccati potrebbero essere nascosti.",
-      "showing": {
-        "cohort": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nella coorte",
-        "course": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nel corso",
-        "org": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
-      },
-      "showing_paged": {
-        "cohort": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nella coorte",
-        "course": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nel corso",
-        "org": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
-      },
-      "showing_filtered": {
-        "cohort": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nella coorte",
-        "course": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nel corso",
-        "org": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
-      },
-      "showing_all": {
-        "cohort": "{count, plural, one {# studente} other {# studenti}} nella coorte",
-        "course": "{count, plural, one {# studente} other {# studenti}} nel corso",
-        "org": "{count, plural, one {# studente} other {# studenti}} nell'organizzazione"
-      },
-      "clear_filters": "{count, plural, one {Cancella # filtro} other {Cancella # filtri}}",
-      "sort": {
-        "status": "Ordina: prima i più indietro",
-        "progress": "Ordina per: minor progresso",
-        "name": "Ordina per nome dalla A alla Z",
-        "low_score": "Ordina per punteggio medio più basso"
-      },
-      "filters": {
-        "status": {
-          "label": "Stato",
-          "any": "Tutti gli stati",
-          "at_risk": "A rischio",
-          "lagging": "Ritardo",
-          "on_track": "In pista",
-          "completed": "Completato"
-        },
-        "activity": {
-          "label": "Ultimo accesso",
-          "any": "Qualsiasi accesso",
-          "today": "Accesso effettuato oggi",
-          "idle": "Nessun accesso per più di 2 giorni"
-        },
-        "score": {
-          "label": "Punteggio medio",
-          "any": "Qualsiasi punteggio medio",
-          "lt50": "Meno del 50%",
-          "mid": "Dal 50% al 69%",
-          "gte70": "70% e oltre"
-        },
-        "flag": {
-          "label": "Bandiere",
-          "any": "Qualsiasi bandiera",
-          "overdue": "In ritardo",
-          "certified": "Certificato rilasciato",
-          "not_certified": "Nessun certificato"
-        },
-        "completion": {
-          "label": "Completamento",
-          "any": "Qualsiasi completamento",
-          "incomplete": "Non completato"
-        },
-        "video": {
-          "label": "Video",
-          "any": "Qualsiasi video",
-          "low": "Video sotto il 60%"
-        },
-        "cohort_chip": "{count, plural, one {# coorte} other {# coorti}}"
-      }
-    },
-    "empty_states": {
-      "show_all_time": "Mostra tutto il periodo",
-      "create_cohort": "Crea una coorte",
-      "range": {
-        "title": "Nessuna attività negli ultimi {days} giorni",
-        "description": "Questa scheda conta solo ciò che è successo nel periodo selezionato."
-      },
-      "needs_attention": {
-        "title": "Nessuno richiede attenzione",
-        "description": "Nessuno studente è inattivo, sotto il 50%, in ritardo o indietro con i video."
-      },
-      "overdue": {
-        "title": "Nessuno è in ritardo",
-        "description": "Tutti gli studenti rispettano le scadenze."
-      },
-      "scores": {
-        "title": "Nessun tentativo valutato per ora",
-        "description": "I punteggi compaiono quando gli studenti inviano gli esercizi e i tentativi vengono valutati."
-      },
-      "student_scores": {
-        "title": "Nessun tentativo valutato per ora",
-        "description": "I punteggi di questo studente compaiono quando i suoi tentativi vengono valutati."
-      },
-      "hardest_exercises": {
-        "title": "Non ci sono ancora abbastanza tentativi valutati",
-        "description": "Un esercizio compare quando almeno 3 studenti hanno un tentativo valutato."
-      },
-      "questions": {
-        "title": "Non ci sono ancora abbastanza risposte",
-        "description": "Una domanda compare quando almeno 5 studenti hanno risposto in un tentativo valutato."
-      },
-      "logins": {
-        "title": "Nessun accesso per ora",
-        "description": "Gli studenti compaiono qui nei giorni in cui accedono."
-      },
-      "lessons": {
-        "title": "Nessuna lezione completata per ora",
-        "description": "La barra di ogni lezione si riempie man mano che gli studenti la completano."
-      },
-      "growth": {
-        "title": "Nessuno studente aggiunto per ora",
-        "description": "La linea inizia con il primo studente aggiunto alla tua organizzazione."
-      },
-      "courses_org": {
-        "title": "Nessun corso completato per ora",
-        "description": "I corsi compaiono qui quando gli studenti si iscrivono e li completano."
-      },
-      "courses_cohort": {
-        "title": "Nessuna attività del corso per ora",
-        "description": "Barre e righe si riempiono quando gli studenti iniziano lezioni o esercizi."
-      },
-      "cohorts_org": {
-        "title": "Nessuna coorte per ora",
-        "description": "Crea una coorte per raggruppare gli studenti e confrontare i loro progressi."
-      },
-      "cohorts_org_no_students": {
-        "title": "Nessuno studente in queste coorti per ora",
-        "description": "Aggiungi studenti alla tua organizzazione per iniziare a confrontare i progressi tra le coorti."
-      },
-      "cohorts_course": {
-        "title": "Nessuna coorte include questo corso",
-        "description": "Aggiungi questo corso a una coorte per confrontare le coorti qui."
-      },
-      "cohorts_course_no_students": {
-        "title": "Nessuno studente in queste coorti per ora",
-        "description": "Invita studenti a questo corso per iniziare a confrontare i progressi tra le coorti."
-      },
-      "default": {
-        "title": "Nessun dato per ora",
-        "description": "Questa scheda si riempie man mano che gli studenti usano il corso."
-      }
-    },
-    "empty": {
-      "failed": "Impossibile caricare questo grafico",
-      "dashboard_failed": "Impossibile caricare Analytics",
-      "not_permitted": "Non hai accesso a questi dati analitici",
-      "no_exercises": "Nessun esercizio in questo corso",
-      "no_exercises_description": "I punteggi compaiono quando vengono aggiunti gli esercizi e gli studenti inviano i tentativi."
-    },
-    "export": {
-      "students_capped": "L'elenco degli studenti è limitato alle prime {limit} righe.",
-      "exercises_capped": "I punteggi degli esercizi sono limitati ai primi {limit} risultati.",
-      "yes": "Sì",
-      "no": "No",
-      "columns": {
-        "segment": "Gruppo",
-        "metric": "Metrica",
-        "value": "Valore",
-        "details": "Dettagli"
-      },
-      "dimensions": {
-        "student": "Studente",
-        "course": "Corso",
-        "cohort": "Coorte",
-        "exercise": "Esercizio",
-        "section": "Sezione",
-        "lesson": "Lezione",
-        "question": "Domanda",
-        "item": "Elemento",
-        "day": "Giorno",
-        "period": "Periodo",
-        "status": "Stato",
-        "overdue_kind": "Tipo di ritardo",
-        "progress_bucket_25": "Progressi",
-        "score_bucket_10": "Punteggio medio"
-      }
-    },
-    "org_page_title": "Accademia",
-    "widget_menu": {
-      "label": "Azioni per {title}",
-      "view_students": "Visualizza studenti",
-      "open_in_students": "Apri nella scheda Studenti",
-      "click_to_view": "Seleziona una barra o una fetta per vedere i suoi studenti"
-    },
-    "drilldown": {
-      "count": "{count, plural, one {# studente} other {# studenti}}",
-      "description": "Gli studenti dietro questo numero.",
-      "cohort_health": {
-        "any": "In coorti con studenti",
-        "at_risk": "In coorti a rischio",
-        "lagging": "In coorti in ritardo",
-        "on_track": "In coorti in pista",
-        "completed": "In coorti completate"
-      },
-      "cohort_health_note": "Il grafico conta gli studenti nelle coorti con questa valutazione, non gli studenti con questo stato.",
-      "count_differs": "Il grafico conta {expected} perché conta uno studente una volta per ogni coorte di cui fa parte. Questo elenco ne mostra {total}.",
-      "lesson_incomplete": "Non completato: {lesson}",
-      "lesson_fallback": "questa lezione",
-      "score_bucket": "Punteggio medio {range}",
-      "scored": "Con un punteggio medio"
-    }
-  },
-  "oauth": {
-    "consent": {
-      "page_title": "Collega un'app a ClassroomIO",
-      "title": "Collega {client} a ClassroomIO",
-      "subtitle": "Scegli lo spazio di lavoro a cui {client} può accedere.",
-      "workspace_label": "Spazio di lavoro",
-      "no_workspaces_title": "Nessuno spazio di lavoro disponibile",
-      "no_workspaces_description": "Solo gli amministratori dello spazio di lavoro possono collegare le app. Chiedi a un amministratore o accedi con un account amministratore.",
-      "permissions_heading": "{client} potrà:",
-      "stay_connected": "Rimani connesso finché non rimuovi l'accesso",
-      "admin_note": "Solo gli amministratori dello spazio di lavoro possono collegare le app. L'accesso segue le tue autorizzazioni da amministratore e termina se le perdi.",
-      "redirect_note": "Dopo l'approvazione verrai reindirizzato a {host}.",
-      "allow": "Consenti l'accesso",
-      "deny": "Nega",
-      "unknown_client": "Questa app",
-      "error_title": "Questa richiesta di connessione non è valida",
-      "error_description": "Torna all'app che volevi collegare e ricomincia."
-    },
-    "error": {
-      "generic": "Qualcosa è andato storto. Riprova.",
-      "retry": "Riprova"
-    },
-    "scope_group": {
-      "courses": {
-        "read": "Visualizzare i corsi e i loro contenuti",
-        "write": "Creare, modificare e pubblicare corsi e i loro contenuti"
-      },
-      "exercises": {
-        "read": "Visualizzare esercizi e domande",
-        "write": "Creare e modificare esercizi e domande"
-      },
-      "course_members": {
-        "read": "Visualizzare i membri del corso",
-        "write": "Aggiungere e gestire i membri del corso e i loro progressi"
-      },
-      "certificates": {
-        "read": "Visualizzare i certificati del corso",
-        "write": "Gestire i certificati del corso"
-      },
-      "submissions": {
-        "read": "Visualizzare consegne e voti",
-        "write": "Valutare le consegne e gestire i voti"
-      },
-      "cohorts": {
-        "read": "Visualizzare le coorti",
-        "write": "Creare e gestire coorti"
-      },
-      "audience": {
-        "read": "Visualizzare il tuo pubblico",
-        "write": "Aggiungere e gestire il tuo pubblico"
-      },
-      "team": {
-        "read": "Visualizzare i membri del team",
-        "write": "Gestire i membri del team"
-      },
-      "organization": {
-        "read": "Visualizzare le impostazioni dello spazio di lavoro",
-        "write": "Modificare impostazioni, landing page e modelli di email"
-      },
-      "analytics": {
-        "read": "Visualizzare le analisi",
-        "write": "Visualizzare le analisi"
-      },
-      "media": {
-        "read": "Caricare contenuti multimediali",
-        "write": "Caricare contenuti multimediali"
-      }
-    },
-    "connect": {
-      "title": "Collega da Claude o ChatGPT",
-      "description": "Aggiungi ClassroomIO come connettore personalizzato nella tua app di IA con questo URL, poi accedi e approva l'accesso.",
-      "step_1": "Nella tua app di IA, apri le impostazioni di connettori o integrazioni e aggiungi un connettore personalizzato.",
-      "step_2": "Incolla l'URL qui sopra e avvia il collegamento.",
-      "step_3": "Accedi a ClassroomIO, scegli questo spazio di lavoro e approva le autorizzazioni."
-    },
-    "connected_apps": {
-      "title": "App collegate",
-      "description": "App che hai autorizzato a operare su questo spazio di lavoro. Rimuovi un'app per interrompere subito il suo accesso.",
-      "table_app": "App",
-      "table_authorized_by": "Autorizzata da",
-      "table_permissions": "Autorizzazioni",
-      "permissions_count": "{count} aree",
-      "revoke": "Rimuovi accesso",
-      "revoke_confirm": "Rimuovere l'accesso di questa app? Smetterà di funzionare subito."
     }
   }
 }

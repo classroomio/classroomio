@@ -279,28 +279,12 @@
     }
   },
   "onboarding": {
-    "header": {
-      "tagline": "Sistemlerinize Bağlantı Kuran Müşteri Eğitim Platformu"
-    },
-    "org_setup": {
-      "title": "Kuruluşunuzu kurun",
-      "subtitle": "Başlamak için bize kendinizden ve kuruluşunuzdan bahsedin.",
-      "created_subtitle": "Kuruluşunuz kuruldu. Bu ayrıntıları daha sonra Ayarlar'dan değiştirebilirsiniz."
-    },
-    "step_of": "{total} adımının {current}. adımı",
-    "step_labels": {
-      "org_setup": "Kuruluş",
-      "use_cases": "Kullanım örneği",
-      "learning_methods": "Bugün antrenman",
-      "company_size": "Şirket büyüklüğü",
-      "job_role": "Rol",
-      "source": "Keşif"
-    },
     "fullname": "Tam Ad",
     "name": "Kuruluşun Adı",
     "organisation_sitename": "Akademi alt alan adı",
     "back": "Back",
     "continue": "Devam et",
+    "step_of": "{total} adımının {current}. adımı",
     "skip": "Atla",
     "finish_setup": "Kurulumu bitir",
     "other": "Diğer (bize söyleyin)",
@@ -308,66 +292,6 @@
     "other_required": "Lütfen bize daha fazlasını anlatın",
     "ai_select": "Bir yapay zeka asistanı seçin",
     "ai_required": "Lütfen bir yapay zeka asistanı seçin",
-    "ai_providers": {
-      "chatgpt": "ChatGPT",
-      "claude": "Claude",
-      "gemini": "Gemini",
-      "grok": "Grok",
-      "perplexity": "Perplexity"
-    },
-    "ai_assistant": {
-      "label": "Yapay zeka asistanı",
-      "subtitle": "Hangisi bizi önerdi?"
-    },
-    "use_cases": {
-      "label": "ClassroomIO'yu ne için kullanmak istiyorsunuz?",
-      "subtitle": "Geçerli olanların tümünü seçin. Kuruluşunuzu bunun etrafında şekillendireceğiz.",
-      "customer_training": "Müşterilerimi ürünüm hakkında eğitin",
-      "customer_certification": "Müşterileri veya iş ortaklarını sertifikalandırın",
-      "partner_training": "İş ortaklarını veya satıcıları eğitin",
-      "team_training": "Kendi takımımı eğit",
-      "sell_courses": "Kursları halka satmak"
-    },
-    "learning_methods": {
-      "label": "Müşterileriniz bugün ürününüzü nasıl öğreniyor?",
-      "subtitle": "Şu anda nasıl çalıştığına en yakın olanı seçin.",
-      "self_serve": "Bunu kendi başlarına çözüyorlar",
-      "live_onboarding": "Canlı katılım oturumları veya çağrılar",
-      "help_docs": "Yardım belgeleri ve destek",
-      "no_training": "Henüz eğitimimiz yok"
-    },
-    "company_sizes": {
-      "label": "Şirketiniz ne kadar büyük?",
-      "subtitle": "Sadece ekibinizi değil, şirketteki herkesi sayın.",
-      "solo": {
-        "label": "Sadece ben",
-        "description": "Yalnız"
-      },
-      "small": {
-        "label": "2–9",
-        "description": "insanlar"
-      },
-      "medium": {
-        "label": "10–50",
-        "description": "insanlar"
-      },
-      "large": {
-        "label": "51–200",
-        "description": "insanlar"
-      },
-      "enterprise": {
-        "label": "200+",
-        "description": "insanlar"
-      }
-    },
-    "job_roles": {
-      "label": "Rolünüz nedir?",
-      "subtitle": "Bu, kurulumunuzu uyarlamamıza yardımcı olur.",
-      "founder": "Kurucu veya CEO",
-      "product_ops": "Ürün veya işlemler",
-      "cs_education": "Müşteri başarısı, eğitimi veya etkinleştirilmesi",
-      "developer": "Geliştirici veya mühendis"
-    },
     "sources": {
       "label": "Bizi nasıl duydunuz?",
       "subtitle": "İsteğe bağlıdır ancak küçük bir ekibin neyin işe yaradığını bilmesine yardımcı olur.",
@@ -380,12 +304,88 @@
       "product_hunt": "Product Hunt veya inceleme sitesi",
       "friends_family": "Arkadaşlar, aile veya iş arkadaşı"
     },
+    "job_roles": {
+      "label": "Rolünüz nedir?",
+      "subtitle": "Bu, kurulumunuzu uyarlamamıza yardımcı olur.",
+      "founder": "Kurucu veya CEO",
+      "product_ops": "Ürün veya işlemler",
+      "cs_education": "Müşteri başarısı, eğitimi veya etkinleştirilmesi",
+      "developer": "Geliştirici veya mühendis"
+    },
+    "company_sizes": {
+      "label": "Şirketiniz ne kadar büyük?",
+      "subtitle": "Sadece ekibinizi değil, şirketteki herkesi sayın.",
+      "enterprise": {
+        "label": "200+",
+        "description": "insanlar"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "insanlar"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "insanlar"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "insanlar"
+      },
+      "solo": {
+        "label": "Sadece ben",
+        "description": "Yalnız"
+      }
+    },
+    "learning_methods": {
+      "label": "Müşterileriniz bugün ürününüzü nasıl öğreniyor?",
+      "subtitle": "Şu anda nasıl çalıştığına en yakın olanı seçin.",
+      "self_serve": "Bunu kendi başlarına çözüyorlar",
+      "live_onboarding": "Canlı katılım oturumları veya çağrılar",
+      "help_docs": "Yardım belgeleri ve destek",
+      "no_training": "Henüz eğitimimiz yok"
+    },
+    "use_cases": {
+      "label": "ClassroomIO'yu ne için kullanmak istiyorsunuz?",
+      "customer_training": "Müşterilerimi ürünüm hakkında eğitin",
+      "customer_certification": "Müşterileri veya iş ortaklarını sertifikalandırın",
+      "partner_training": "İş ortaklarını veya satıcıları eğitin",
+      "team_training": "Kendi takımımı eğit",
+      "sell_courses": "Kursları halka satmak",
+      "subtitle": "Geçerli olanların tümünü seçin. Kuruluşunuzu bunun etrafında şekillendireceğiz."
+    },
+    "ai_assistant": {
+      "label": "Yapay zeka asistanı",
+      "subtitle": "Hangisi bizi önerdi?"
+    },
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
+    "step_labels": {
+      "use_cases": "Kullanım örneği",
+      "learning_methods": "Bugün antrenman",
+      "company_size": "Şirket büyüklüğü",
+      "job_role": "Rol",
+      "source": "Keşif",
+      "org_setup": "Kuruluş"
+    },
+    "org_setup": {
+      "subtitle": "Başlamak için bize kendinizden ve kuruluşunuzdan bahsedin.",
+      "title": "Kuruluşunuzu kurun",
+      "created_subtitle": "Kuruluşunuz kuruldu. Bu ayrıntıları daha sonra Ayarlar'dan değiştirebilirsiniz."
+    },
+    "header": {
+      "tagline": "Sistemlerinize Bağlantı Kuran Müşteri Eğitim Platformu"
+    },
     "testimonials": {
       "eyebrow": "Bunu kullanan ekiplerden",
+      "footer": "Açık kaynak · Kendi kendine barındırılan veya bulut",
       "headline": "Her müşteriyi {highlight} eğitmeyi bırakın.",
       "headline_highlight": "elle",
-      "subtitle": "Bir kez kurun, müşterilerinizi API aracılığıyla toplu olarak kaydedin. Daha sonra ilerlemelerini analitiklerle takip edin.",
-      "footer": "Açık kaynak · Kendi kendine barındırılan veya bulut"
+      "subtitle": "Bir kez kurun, müşterilerinizi API aracılığıyla toplu olarak kaydedin. Daha sonra ilerlemelerini analitiklerle takip edin."
     }
   },
   "welcome_modal": {
@@ -416,11 +416,11 @@
           "suggested": "Önerilen",
           "courses": "Kurslar",
           "cohorts": "Gruplar",
-          "learning_paths": "Learning paths",
           "widgets": "Widget'lar",
           "tags": "Etiketler",
           "students": "Öğrenciler",
-          "settings": "Ayarlar"
+          "settings": "Ayarlar",
+          "learning_paths": "Learning paths"
         },
         "result_types": {
           "page": "Page"
@@ -429,17 +429,6 @@
     }
   },
   "common": {
-    "loading": "Yükleniyor…",
-    "loading_states": {
-      "opening_academy": {
-        "title": "Akademiniz açılıyor…",
-        "caption": "Kurslarınız, öğrencileriniz ve ayarlarınız hazırlanıyor."
-      },
-      "opening_course": {
-        "title": "Kurs yükleniyor…",
-        "caption": "Kurs verileriniz yüklenirken lütfen bekleyin."
-      }
-    },
     "unsaved_changes": {
       "message": "Kaydedilmemiş değişiklikleriniz var. Ayrılmak istediğinizden emin misiniz?",
       "label": "Kaydedilmemiş değişiklikler"
@@ -454,8 +443,6 @@
     "cancel": "İptal",
     "refresh": "Yenile",
     "scroll_to_top": "Şuraya kaydır: top",
-    "add": "Add",
-    "remove": "Remove",
     "delete": "Delete",
     "restricted_page": {
       "title": "Kısıtlı sayfa",
@@ -468,7 +455,28 @@
       "untitled_lesson": "Başlıksız ders",
       "format": "Biçim"
     },
+    "loading": "Yükleniyor…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Kurs yükleniyor…",
+        "caption": "Kurs verileriniz yüklenirken lütfen bekleyin."
+      },
+      "opening_academy": {
+        "title": "Akademiniz açılıyor…",
+        "caption": "Kurslarınız, öğrencileriniz ve ayarlarınız hazırlanıyor."
+      }
+    },
     "back": "Geri",
+    "range": {
+      "7d": "Lson 7 gün",
+      "30d": "Lson 30 gün",
+      "90d": "Lson 90 gün",
+      "all": "Tüm zamanlar",
+      "label": "Zaman aralığı",
+      "locked": "Bu aralığın kilidini açmak için yükseltin"
+    },
+    "add": "Add",
+    "remove": "Remove",
     "close": "Close",
     "edit": "Edit",
     "coming_soon": "Coming soon",
@@ -489,84 +497,6 @@
       "reward_help": "Offer students an incentive upon completion",
       "reward_description": "Reward description",
       "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
-    },
-    "range": {
-      "7d": "Lson 7 gün",
-      "30d": "Lson 30 gün",
-      "90d": "Lson 90 gün",
-      "all": "Tüm zamanlar",
-      "label": "Zaman aralığı",
-      "locked": "Bu aralığın kilidini açmak için yükseltin"
-    }
-  },
-  "certificate": {
-    "tab_design": "Design",
-    "tab_settings": "Settings",
-    "allow": "Allow students download certificate",
-    "email_message_label": "Email Message",
-    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
-    "rules": "Rules",
-    "editor": {
-      "title": "Certificate design",
-      "back": "Back",
-      "unsaved": "Unsaved changes",
-      "free_plan": "Available on Pro",
-      "discard": "Discard",
-      "save": "Save",
-      "saved": "Certificate design saved.",
-      "save_failed": "Could not save the certificate design. Check the form and try again.",
-      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
-      "sections": "Editor sections",
-      "preview": "Certificate preview",
-      "panel_templates": "Templates",
-      "panel_templates_subtitle": "Select a template for your certificate.",
-      "panel_content": "Content",
-      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
-      "panel_colors": "Colors",
-      "panel_colors_subtitle": "Customize the accent color.",
-      "panel_export": "Export",
-      "panel_export_subtitle": "Preview the current design as it will be delivered.",
-      "section_header": "Header copy",
-      "section_signatories": "Signatories",
-      "section_reference": "Reference",
-      "subtitle": "Subtitle",
-      "subtitle_placeholder": "Awarded with Highest Distinction",
-      "description_override": "Description override",
-      "description_override_placeholder": "Defaults to the description.",
-      "description_override_hint": "Leave blank to fall back to the description on save.",
-      "signatory_one_name": "Signatory 1 name",
-      "signatory_one_role": "Signatory 1 role",
-      "signatory_two_name": "Signatory 2 name",
-      "signatory_two_role": "Signatory 2 role",
-      "signatory_one_toggle": "Show signatory 1",
-      "signatory_two_toggle": "Show signatory 2",
-      "signature_upload": "Signature image",
-      "signature_upload_hint": "Upload a signature image (optional)",
-      "signature_dont_crop": "Don't Crop",
-      "id_format": "Certificate ID format",
-      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
-      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
-      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
-      "download_pdf": "Download PDF",
-      "download_png": "Download PNG",
-      "print": "Print",
-      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
-      "preview_failed": "Could not generate certificate preview",
-      "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certificate of Excellence",
-      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
-      "sample_org": "The Royal Academy of Arts",
-      "summary_title": "Active design",
-      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
-      "field_template": "Template",
-      "field_accent": "Accent",
-      "field_signatories": "Signatories",
-      "customize_design": "Customize design",
-      "signatory_one": "Signatory 1",
-      "signatory_two": "Signatory 2",
-      "signatory_name": "Signatory name",
-      "signatory_role": "Signatory role",
-      "signature_image": "Signature image"
     }
   },
   "compliance": {
@@ -708,104 +638,9 @@
       "sso_tab": "SSO",
       "token_auth_tab": "Token Kimlik Doğrulaması",
       "customize_lms_tab": "Customize LMS",
-      "emails_tab": "E-postalar",
       "domains_tab": "Domains",
-      "teams_tab": "Teams"
-    },
-    "emails": {
-      "page_title": "E-posta şablonları",
-      "language_note": "Öğrenci e-postaları kuruluşunuzun zorunlu dilini kullanır. Zorunlu olmadığında e-postalarda İngilizce kullanılır.",
-      "heading": "Öğrenci e-posta şablonları",
-      "description": "Öğrencilerin aldığı e-postaları özelleştirin. Personel e-postaları her zaman İngilizce gönderilir.",
-      "paid_plan_note": "Öğrenci e-postalarını tercüme etmek ve özelleştirmek için planınızı yükseltin.",
-      "sending_in": "Gönderiliyor",
-      "change": "Değiştir",
-      "template_navigation": "Öğrenci e-posta türleri",
-      "edited": "Düzenlendi",
-      "insert": "Ekle",
-      "link_chip": "Bağlantı",
-      "variables": {
-        "organization": "Organizasyon",
-        "expires_at": "Son kullanma tarihi",
-        "course_name": "Kurs adı",
-        "cohort_name": "Kohort adı",
-        "student_name": "Öğrenci adı",
-        "course_message": "Eğitmen mesajı",
-        "course_names": "Kurslar",
-        "teacher_name": "Öğretmen adı",
-        "teacher_email": "Öğretmen e-postası",
-        "goal_title": "Gol",
-        "due_status": "Vade durumu",
-        "completed_count": "Tamamlanan sayım",
-        "required_count": "Gerekli sayım",
-        "exercise_title": "Egzersiz başlığı",
-        "session_title": "Oturum başlığı",
-        "session_time": "Oturum süresi",
-        "when": "Başlangıç zamanı",
-        "status": "Durum",
-        "score": "Puan",
-        "lesson_title": "Ders başlığı",
-        "post_content": "İçerik yayınlayın"
-      },
-      "edit": "Düzenle",
-      "preview": "Önizleme",
-      "unsaved_changes": "Kaydedilmemiş değişiklikler",
-      "send_test": "Testi gönder",
-      "test_dialog": {
-        "title": "Test e-postası gönder",
-        "description": "Yer tutucuların yerine örnek değerleri içeren mevcut taslağı göndereceğiz. Önce kaydedilmesine gerek yok.",
-        "recipients": "Gönder",
-        "recipients_placeholder": "you@example.com, colleague@example.com",
-        "invalid_recipients": "Virgülle ayırarak en fazla 5 geçerli e-posta adresi girin."
-      },
-      "test_sent": "Teslim edilmek üzere kuyruğa alınan e-postayı test edin",
-      "groups": {
-        "enrollment": "Kayıt",
-        "learning": "Öğrenme",
-        "live_sessions": "Canlı oturumlar",
-        "updates_billing": "Güncellemeler ve faturalandırma"
-      },
-      "descriptions": {
-        "studentCourseInvite": "Birini kursa davet ettiğinizde gönderilir.",
-        "studentOrgInvite": "Birini kuruluşunuza davet ettiğinizde gönderilir.",
-        "studentCourseWelcome": "Öğrenci bir kursa erişim sağladığında gönderilir.",
-        "studentCohortWelcome": "Bir öğrenci bir gruba erişim aldığında gönderilir.",
-        "quizAssigned": "Bir öğrenciye test atandığında gönderilir.",
-        "submissionGraded": "Bir öğrencinin alıştırma gönderimi incelendiğinde gönderilir.",
-        "cohortGoalReminder": "Bir grup hedefinin vadesi geldiğinde veya geciktiğinde gönderilir.",
-        "studentCourseCompletion": "Öğrenci bir kursu tamamladığında gönderilir.",
-        "sessionReminder": "Planlanmış bir canlı oturumdan önce gönderildi.",
-        "sessionUpdated": "Canlı oturum ayrıntıları değiştiğinde gönderilir.",
-        "newsfeedPost": "Yeni bir kurs gönderisi yayınlandığında gönderilir.",
-        "studentProvePayment": "Bir öğrencinin ödeme kanıtı sunması gerektiğinde gönderilir."
-      },
-      "template": "E-posta",
-      "language": "Dil",
-      "language_note_link": "Kuruluşunuzun dil varsayılanını buradan değiştirin.",
-      "subject": "Konu",
-      "editor_heading": "Mesaj gövdesi",
-      "editor_description": "Bu dil için mesajı düzenleyin. Dinamik değerler e-posta gönderildiğinde eklenir ve hiçbir zaman çevrilmez.",
-      "editor_placeholder": "E-posta mesajını yazın",
-      "dynamic_content": "Dinamik içerik",
-      "dynamic_content_description": "İmlecin üzerine değerler veya isteğe bağlı bir bağlantı ekleyin. Değerin gönderme sırasında eklenebilmesi için parantezleri değiştirmeden bırakın.",
-      "dynamic_link": "Dinamik bağlantı ekle",
-      "protected_content": "Korumalı e-posta içeriği",
-      "protected_content_description": "Gerekli eylem düğmesi, hedef, markalama ve alt bilgi ClassroomIO tarafından yönetilir ve kaldırılamaz.",
-      "reset": "Çevrilen varsayılana sıfırla",
-      "templates": {
-        "studentCourseInvite": "Kurs daveti",
-        "studentCourseWelcome": "Kurs hoş geldiniz",
-        "studentCourseCompletion": "Kurs tamamlama",
-        "studentOrgInvite": "Organizasyon davetiyesi",
-        "studentCohortWelcome": "Kohorta hoş geldiniz",
-        "studentProvePayment": "Ödeme kanıtı talebi",
-        "cohortGoalReminder": "Kohort hedefi hatırlatıcısı",
-        "quizAssigned": "Test atandı",
-        "sessionReminder": "Canlı oturum hatırlatıcısı",
-        "sessionUpdated": "Canlı oturum güncellendi",
-        "submissionGraded": "Gönderime not verildi",
-        "newsfeedPost": "Kurs haber akışı gönderisi"
-      }
+      "teams_tab": "Teams",
+      "emails_tab": "E-postalar"
     },
     "profile": {
       "page_subtitle": "Adınız, e-posta adresiniz ve Classroom'da çalıştığınız her yerde nasıl göründüğünüzIO.",
@@ -959,11 +794,11 @@
       "actions_menu": "Token kimlik doğrulama eylemleri"
     },
     "teams": {
+      "page_subtitle": "Ekip arkadaşlarınızı davet edin ve bu organizasyonun yönetilmesine kimin yardımcı olacağını kontrol edin.",
       "permission": {
         "title": "Bu sayfayı görüntüleme izniniz yok",
         "description": "Yalnızca kuruluş yöneticileri ekibi görüntüleyebilir ve yönetebilir. Erişime ihtiyacınız varsa bir yöneticiyle iletişime geçin."
       },
-      "page_subtitle": "Ekip arkadaşlarınızı davet edin ve bu organizasyonun yönetilmesine kimin yardımcı olacağını kontrol edin.",
       "invite": {
         "confirm_title": "{count, plural, =1 {Bu öğrenci ekibe davet edilsin mi?} other {Bu öğrenciler ekibe davet edilsin mi?}}",
         "confirm_description": "{count, plural, =1 {Bu kişi zaten bu kuruluşta öğrenci: {emails}. Onu {role} rolüyle davet etmek istiyor musunuz? Rolü yalnızca daveti kabul ettiğinde değişir.} other {Bu kişiler zaten bu kuruluşta öğrenci: {emails}. Onları {role} rolüyle davet etmek istiyor musunuz? Rolleri yalnızca daveti kabul ettiklerinde değişir.}}",
@@ -1500,6 +1335,101 @@
         "preview": "{quantity} paket · {tokens} kredi · ${dollars}",
         "buy_button": "Buy for ${dollars}"
       }
+    },
+    "emails": {
+      "page_title": "E-posta şablonları",
+      "language_note": "Öğrenci e-postaları kuruluşunuzun zorunlu dilini kullanır. Zorunlu olmadığında e-postalarda İngilizce kullanılır.",
+      "heading": "Öğrenci e-posta şablonları",
+      "description": "Öğrencilerin aldığı e-postaları özelleştirin. Personel e-postaları her zaman İngilizce gönderilir.",
+      "paid_plan_note": "Öğrenci e-postalarını tercüme etmek ve özelleştirmek için planınızı yükseltin.",
+      "sending_in": "Gönderiliyor",
+      "change": "Değiştir",
+      "template_navigation": "Öğrenci e-posta türleri",
+      "edited": "Düzenlendi",
+      "insert": "Ekle",
+      "link_chip": "Bağlantı",
+      "edit": "Düzenle",
+      "preview": "Önizleme",
+      "unsaved_changes": "Kaydedilmemiş değişiklikler",
+      "send_test": "Testi gönder",
+      "test_sent": "Teslim edilmek üzere kuyruğa alınan e-postayı test edin",
+      "template": "E-posta",
+      "language": "Dil",
+      "language_note_link": "Kuruluşunuzun dil varsayılanını buradan değiştirin.",
+      "subject": "Konu",
+      "editor_heading": "Mesaj gövdesi",
+      "editor_description": "Bu dil için mesajı düzenleyin. Dinamik değerler e-posta gönderildiğinde eklenir ve hiçbir zaman çevrilmez.",
+      "editor_placeholder": "E-posta mesajını yazın",
+      "dynamic_content": "Dinamik içerik",
+      "dynamic_content_description": "İmlecin üzerine değerler veya isteğe bağlı bir bağlantı ekleyin. Değerin gönderme sırasında eklenebilmesi için parantezleri değiştirmeden bırakın.",
+      "dynamic_link": "Dinamik bağlantı ekle",
+      "protected_content": "Korumalı e-posta içeriği",
+      "protected_content_description": "Gerekli eylem düğmesi, hedef, markalama ve alt bilgi ClassroomIO tarafından yönetilir ve kaldırılamaz.",
+      "reset": "Çevrilen varsayılana sıfırla",
+      "templates": {
+        "studentCourseInvite": "Kurs daveti",
+        "studentCourseWelcome": "Kurs hoş geldiniz",
+        "studentCourseCompletion": "Kurs tamamlama",
+        "studentOrgInvite": "Organizasyon davetiyesi",
+        "studentCohortWelcome": "Kohorta hoş geldiniz",
+        "studentProvePayment": "Ödeme kanıtı talebi",
+        "cohortGoalReminder": "Kohort hedefi hatırlatıcısı",
+        "quizAssigned": "Test atandı",
+        "sessionReminder": "Canlı oturum hatırlatıcısı",
+        "sessionUpdated": "Canlı oturum güncellendi",
+        "submissionGraded": "Gönderime not verildi",
+        "newsfeedPost": "Kurs haber akışı gönderisi"
+      },
+      "descriptions": {
+        "studentCourseInvite": "Birini kursa davet ettiğinizde gönderilir.",
+        "studentOrgInvite": "Birini kuruluşunuza davet ettiğinizde gönderilir.",
+        "studentCourseWelcome": "Öğrenci bir kursa erişim sağladığında gönderilir.",
+        "studentCohortWelcome": "Bir öğrenci bir gruba erişim aldığında gönderilir.",
+        "quizAssigned": "Bir öğrenciye test atandığında gönderilir.",
+        "submissionGraded": "Bir öğrencinin alıştırma gönderimi incelendiğinde gönderilir.",
+        "cohortGoalReminder": "Bir grup hedefinin vadesi geldiğinde veya geciktiğinde gönderilir.",
+        "studentCourseCompletion": "Öğrenci bir kursu tamamladığında gönderilir.",
+        "sessionReminder": "Planlanmış bir canlı oturumdan önce gönderildi.",
+        "sessionUpdated": "Canlı oturum ayrıntıları değiştiğinde gönderilir.",
+        "newsfeedPost": "Yeni bir kurs gönderisi yayınlandığında gönderilir.",
+        "studentProvePayment": "Bir öğrencinin ödeme kanıtı sunması gerektiğinde gönderilir."
+      },
+      "groups": {
+        "enrollment": "Kayıt",
+        "learning": "Öğrenme",
+        "live_sessions": "Canlı oturumlar",
+        "updates_billing": "Güncellemeler ve faturalandırma"
+      },
+      "variables": {
+        "organization": "Organizasyon",
+        "expires_at": "Son kullanma tarihi",
+        "course_name": "Kurs adı",
+        "cohort_name": "Kohort adı",
+        "student_name": "Öğrenci adı",
+        "course_message": "Eğitmen mesajı",
+        "course_names": "Kurslar",
+        "teacher_name": "Öğretmen adı",
+        "teacher_email": "Öğretmen e-postası",
+        "goal_title": "Gol",
+        "due_status": "Vade durumu",
+        "completed_count": "Tamamlanan sayım",
+        "required_count": "Gerekli sayım",
+        "exercise_title": "Egzersiz başlığı",
+        "session_title": "Oturum başlığı",
+        "session_time": "Oturum süresi",
+        "when": "Başlangıç zamanı",
+        "status": "Durum",
+        "score": "Puan",
+        "lesson_title": "Ders başlığı",
+        "post_content": "İçerik yayınlayın"
+      },
+      "test_dialog": {
+        "title": "Test e-postası gönder",
+        "description": "Yer tutucuların yerine örnek değerleri içeren mevcut taslağı göndereceğiz. Önce kaydedilmesine gerek yok.",
+        "recipients": "Gönder",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Virgülle ayırarak en fazla 5 geçerli e-posta adresi girin."
+      }
     }
   },
   "hls_upload": {
@@ -1790,76 +1720,6 @@
       "description": "Yakında tekrar kontrol edin yeni kurslar için."
     }
   },
-  "public_learning_paths": {
-    "heading": "Learning Paths",
-    "subtitle": "Guided multi-course tracks with one enrollment, ordered courses, and a certificate at the end.",
-    "search_placeholder": "Search learning paths...",
-    "clear_search": "Clear search",
-    "label": "Learning Path",
-    "certificate_label": "Certificate",
-    "free_label": "Free",
-    "course_count_label": "{count} courses",
-    "enrolled_label": "{count} enrolled",
-    "navigation_failed": "Couldn't load the page. Please try again.",
-    "empty": {
-      "title": "No learning paths found",
-      "description": "Try clearing your search or check back later."
-    },
-    "detail": {
-      "about_heading": "What you'll learn",
-      "about_lead": "Practical, project-first skills — every course ends with something you built.",
-      "skills_heading": "Skills you'll gain",
-      "series_heading": "Course series",
-      "series_eyebrow": "Series · take in order",
-      "series_lead": "Each course unlocks the next once you finish its lessons and exercises.",
-      "rating_label": "Rated {rating} out of 5",
-      "certificate_heading": "Certificate",
-      "certificate_issuer": "Issued by",
-      "certificate_validity": "Validity",
-      "instructors_heading": "Instructors",
-      "instructors_lead": "The tutors behind the courses in this path.",
-      "reviews_heading": "Reviews",
-      "reviews_lead": "From people who finished the path.",
-      "faq_heading": "Frequently asked questions",
-      "no_faq": "No questions yet.",
-      "pricing_heading": "Enrollment",
-      "pricing_eyebrow": "Enrollment",
-      "enroll_path": "Enroll in this path",
-      "locked_label": "Locked",
-      "unlocked_label": "Unlocked",
-      "enroll_free": "Enroll free",
-      "enroll_label": "Enroll for {currency} {cost}",
-      "view_all": "View all learning paths",
-      "taught_by_two": "Taught by {first} and {second}",
-      "taught_by_many": "Taught by {names} + {count} more",
-      "features_courses_line": "All {courseCount} courses, unlocked in order",
-      "features_content_line": "{lessons} lessons · {exercises} exercises · 1 capstone",
-      "features_certificate_line": "Path certificate on completion",
-      "features_milestone_line": "Verified path milestone completion",
-      "features_access_line": "Lifetime access, learn at your pace",
-      "save_vs_individual": "Save {amount} vs individual courses",
-      "stat_courses": "courses in series",
-      "stat_enrolled": "enrolled",
-      "stat_certificate": "Certificate",
-      "stat_beginner": "Beginner",
-      "stat_on_completion": "on completion",
-      "stat_no_experience": "no prior exp.",
-      "stat_reviews": "{count} reviews",
-      "full_path": "Full path",
-      "save_percent": "Save {percent}%",
-      "social_proof": "{students} already enrolled · {rating} ★ from {reviews} reviews",
-      "enroll_with_cost": "Enroll · {cost}",
-      "series_heading_count": "{count} courses in this path",
-      "series_course": "Course {index}",
-      "series_lessons": "{count} lessons",
-      "series_outcomes_heading": "What you'll learn",
-      "show_outline": "Show lesson outline",
-      "hide_outline": "Hide lesson outline",
-      "preview_badge": "Preview",
-      "unavailable": "This learning path is currently unavailable for enrollment.",
-      "back_to_path": "Back to learning path"
-    }
-  },
   "org_navigation": {
     "platform": "Platform",
     "home": "Home",
@@ -1869,7 +1729,6 @@
     "create": "Create",
     "dashboard": "Dashboard",
     "analytics": "Analytics",
-    "marketing": "Pazarlama",
     "compliance": "Uyumluluk",
     "courses": "Kurslar",
     "tags": "Tags",
@@ -1892,10 +1751,11 @@
     "upgrade_students": "{studentCount} {studentLimit} öğrenciden",
     "upgrade_left": "{count} kaldı",
     "cohorts": "Cohorts",
-    "learning_paths": "Learning Paths",
     "exit_course": "Bu kurstan çık",
     "exit_cohort": "Bu gruptan çık",
-    "org_analytics": "Akademi"
+    "marketing": "Pazarlama",
+    "org_analytics": "Akademi",
+    "learning_paths": "Learning Paths"
   },
   "pricing": {
     "plan_names": {
@@ -2383,7 +2243,6 @@
           "heading": "Öğrenci ana sayfası",
           "description": "Oturum açan öğrencilerin akademinizin ana sayfasını açtıklarında nereye gideceklerini seçin. Oturum açmamış ziyaretçiler ve ekibiniz açılış sayfanızı görmeye devam eder.",
           "label": "Oturum açmış öğrenci ana sayfası",
-          "learn_more": "Daha fazla bilgi edinin",
           "placeholder": "Sayfaları ve kursları arayın",
           "option_default": "Açılış sayfası (varsayılan)",
           "group_pages": "Öğrenim portalı",
@@ -2399,7 +2258,8 @@
           "course_hint_restricted": "Kayıtlı öğrenciler doğrudan bir sonraki derse geçerler. Bu kurs ücretlidir veya yalnızca davetle yapılabilir; dolayısıyla kayıtlı olmayan öğrenciler Kontrol Paneli'ne gider.",
           "unavailable_badge": "Kullanılamıyor",
           "course_type_live": "Canlı",
-          "course_type_compliance": "Uyumluluk"
+          "course_type_compliance": "Uyumluluk",
+          "learn_more": "Daha fazla bilgi edinin"
         }
       },
       "landing_page": {
@@ -2513,7 +2373,6 @@
     "page_subtitle": "Derslerin kurslara ve kursların kayıtlara dönüştüğü yer.",
     "heading_button": "Kurs Oluştur",
     "search_placeholder": "Kurs Bul",
-    "pricing_free": "Free",
     "load_more": "LDaha fazlasını yükle",
     "tag_filters": {
       "filter": "Filter",
@@ -2602,14 +2461,15 @@
       "course_description_label": "Kurs açıklaması",
       "course_description_placeholder": "Kursunuz için bir açıklama girin kurs",
       "create_button": "Create",
-      "title_copy_format": "{title} (Copy)",
       "success": {
         "course_cloned": "Kurs başarıyla kopyalandı"
       },
       "error": {
         "failed_to_clone": "Kurs kopyalanamadı"
-      }
-    }
+      },
+      "title_copy_format": "{title} (Copy)"
+    },
+    "pricing_free": "Free"
   },
   "course": {
     "creator": {
@@ -2687,7 +2547,6 @@
     },
     "sidebar": {
       "back_to_course": "Kursa geri dön",
-      "back_to_path": "Back to path",
       "compliance": {
         "title": "Uyumluluk",
         "due_date": "Due",
@@ -2707,7 +2566,8 @@
         "label": "Kurs içeriğinde gezinme",
         "previous": "Önceki",
         "next": "Sonraki"
-      }
+      },
+      "back_to_path": "Back to path"
     },
     "search": {
       "placeholder": "Ders veya alıştırmalarda ara",
@@ -2863,10 +2723,6 @@
           "watch_threshold": "İzleme eşiği (%)"
         },
         "settings": {
-          "access": {
-            "title": "Erişim",
-            "description": "Siz kilidi açana kadar öğrenciler kilitli bir dersi açamazlar."
-          },
           "comments": {
             "title": "Lders yorumları",
             "description": "Öğrencilerin bu dersi görüntüleyip görüntüleyemeyeceğini ve yorum ekleyip ekleyemeyeceğini seçin.",
@@ -2886,6 +2742,10 @@
             "watch_videos_no_uploads_title": "Bu derste yüklenmiş video yok",
             "watch_videos_required": "Video izlemeyi kullanırken en az bir video seçin.",
             "students_only_note": "Bu kurallar yalnızca öğrenciler için geçerlidir. Öğretirken özgürce önizleyebilir ve gezinebilirsiniz."
+          },
+          "access": {
+            "title": "Erişim",
+            "description": "Siz kilidi açana kadar öğrenciler kilitli bir dersi açamazlar."
           }
         },
         "watch_progress": {
@@ -2947,12 +2807,6 @@
           "activate": "Etkinleştir",
           "cancel": "İptal"
         },
-        "header": {
-          "mode_label": "Ders modu",
-          "mode_edit": "Düzenlemek",
-          "mode_preview": "Önizleme",
-          "mode_shortcut": "Modu değiştir"
-        },
         "add_lesson": {
           "button_title": "Add",
           "start_reorder": "Yeniden Sipariş",
@@ -2976,8 +2830,6 @@
         "empty_description": "Oluşturmaya başlamak için bir ders, alıştırma veya sertifika ekleyin.",
         "empty_drawer_certificates": "Sertifikalar",
         "add_content": "Add içerik",
-        "expand_content": "İçeriği genişlet",
-        "collapse_content": "İçeriği daralt",
         "add_content_description": "Eklemek istediğiniz içerik türünü seçin.",
         "add_content_details": "Bu içeriğe ilişkin ayrıntıları girin.",
         "add_content_adding_to": "Ekleniyor",
@@ -3274,18 +3126,6 @@
           "button_done": "Done",
           "blocks": {
             "add_content": "İçerik ekle",
-            "types": {
-              "note": "Not",
-              "video": "Video",
-              "slides": "Slaytlar",
-              "document": "Belge",
-              "image": "Görüntü"
-            },
-            "ai": {
-              "title": "Yapay zekâ ile bir not taslağı oluşturun.",
-              "prompt_label": "Çabuk",
-              "prompt_placeholder": "Örneğin, yeni başlayanlar için su döngüsüne kısa bir giriş."
-            },
             "example": "Örnek",
             "change_type": "{type} türünü değiştir",
             "edit_type": "{type} düzenle",
@@ -3298,25 +3138,10 @@
             "dismiss_hint": "Yeniden sipariş ipucunu göz ardı et",
             "empty_title": "Bu dersi oluşturmaya başlayın.",
             "empty_description": "Not, video, slayt, belge veya resim ekleyin. İstediğiniz kadar blok ekleyebilir ve istediğiniz sırayla düzenleyebilirsiniz.",
-            "empty_preview_title": "Henüz önizlenecek bir şey yok",
-            "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik bulunmamaktadır. Not, video, slayt, belge veya resim eklemek için {editLabel}'a geçin.",
-            "empty_learner_title": "Bu ders henüz hazır değil",
-            "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin.",
             "empty_note": "Bu not boş.",
             "scroll_rail": "Ders blokları",
             "save_failed": "Bu değişiklik kaydedilemedi, bu yüzden blok geri yüklendi. {reason}",
             "go_to_block": "{index} bloğuna git",
-            "reading_density": {
-              "title": "Okuma yoğunluğu",
-              "description": "Öğrenciler için bloklar arasındaki boşluğu kontrol eder. Düzenleme alanını değiştirmez.",
-              "compact": "Kompakt",
-              "comfortable": "Rahat",
-              "spacious": "Ferah"
-            },
-            "settings": {
-              "title": "Ders ayarları",
-              "description": "Bu dersi içerik tuvalinden ayrılmadan yönetin."
-            },
             "image": {
               "upload": "Resim yükle",
               "upload_error": "Resim yüklenemedi. Lütfen tekrar deneyin.",
@@ -3328,6 +3153,33 @@
               "fit_cover": "Doldurmak",
               "fit_contain": "Yerleştirmek"
             },
+            "settings": {
+              "title": "Ders ayarları",
+              "description": "Bu dersi içerik tuvalinden ayrılmadan yönetin."
+            },
+            "reading_density": {
+              "title": "Okuma yoğunluğu",
+              "description": "Öğrenciler için bloklar arasındaki boşluğu kontrol eder. Düzenleme alanını değiştirmez.",
+              "compact": "Kompakt",
+              "comfortable": "Rahat",
+              "spacious": "Ferah"
+            },
+            "ai": {
+              "title": "Yapay zekâ ile bir not taslağı oluşturun.",
+              "prompt_label": "Çabuk",
+              "prompt_placeholder": "Örneğin, yeni başlayanlar için su döngüsüne kısa bir giriş."
+            },
+            "types": {
+              "note": "Not",
+              "video": "Video",
+              "slides": "Slaytlar",
+              "document": "Belge",
+              "image": "Görüntü"
+            },
+            "empty_preview_title": "Henüz önizlenecek bir şey yok",
+            "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik bulunmamaktadır. Not, video, slayt, belge veya resim eklemek için {editLabel}'a geçin.",
+            "empty_learner_title": "Bu ders henüz hazır değil",
+            "empty_learner_description": "Eğitmeniniz bu derse herhangi bir içerik eklemedi. Yakında tekrar kontrol edin.",
             "document": {
               "view_file": "Dosyayı görüntüle",
               "download": "İndir",
@@ -3395,8 +3247,6 @@
             "settings_completion_policy": "Tamamlama kuralı",
             "settings_completion_submitted": "Gönderildi — tüm gönderimler sayılır",
             "settings_completion_passed": "Geçildi — minimum puan gerekli",
-            "settings_completion_none": "Yok — isteğe bağlı",
-            "settings_completion_none_helper": "Bu alıştırma kursun ilerlemesini engellemez ve kursun tamamlanması veya sertifikalar için gerekli değildir.",
             "settings_pass_threshold": "Geçiş eşiği (%)",
             "settings_completion_passed_helper": "Öğrencilerin bu alıştırmanın tamamlanmış olarak sayılması için geçme puanına ulaşması gerekir.",
             "settings_manual_grading_warning": "Manuel olarak not verilen gönderimlerin geçti olarak sayılabilmesi için önce notlandırılması gerekir.",
@@ -3559,11 +3409,11 @@
               "not_passed_completion_result_description": "%{scorePercent} puan aldınız. Bu alıştırmanın tamamlanmış olarak sayılması için %{requiredPercent} gerekiyor.",
               "checking_submission": "Gönderiminiz kontrol ediliyor...",
               "instructor_feedback": "Eğitmen geri bildirimi",
-              "show_more": "Daha fazlasını göster",
-              "show_less": "Daha az göster",
               "back": "Geri",
               "begin_section": "Bölümü başlat",
-              "complete_section": "Bölümü tamamla"
+              "complete_section": "Bölümü tamamla",
+              "show_more": "Daha fazlasını göster",
+              "show_less": "Daha az göster"
             },
             "analytics": {
               "summary": {
@@ -3589,11 +3439,11 @@
                 "status_completed": "Notlandırılmış",
                 "status_pending": "Beklemede",
                 "counts_as_complete": "Tamamlandı olarak sayılır",
-                "optional": "İsteğe bağlı",
                 "passed": "Geçildi",
                 "not_passed": "Geçilmedi",
                 "no_submission_title": "Bu kullanıcının bu alıştırma için gönderimi yok",
-                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek."
+                "no_submission_description": "Gönderimler, bu öğrenci egzersizi tamamladığında burada görünecek.",
+                "optional": "İsteğe bağlı"
               },
               "submissions": "Gönderimler",
               "loading_submissions": "Lyükleniyor gönderimler...",
@@ -3922,7 +3772,9 @@
                   "max_characters_placeholder": "Maksimum karakter"
                 }
               }
-            }
+            },
+            "settings_completion_none": "Yok — isteğe bağlı",
+            "settings_completion_none_helper": "Bu alıştırma kursun ilerlemesini engellemez ve kursun tamamlanması veya sertifikalar için gerekli değildir."
           }
         },
         "disabled": "Özellik devre dışı",
@@ -3948,7 +3800,6 @@
           "title": "Sürüm geçmişi",
           "fetch_more_versions": "Daha fazla sürüm getir",
           "current_version": "Geçerli sürüm",
-          "restore_version": "Bu bloğu geri yükle",
           "edit_count": "{count, plural, one {# düzenleme} other {# düzenleme}}",
           "today": "Bugün",
           "yesterday": "Dün",
@@ -3963,23 +3814,12 @@
           "restore_failed": "Bu sürüm geri yüklenemedi",
           "shared_restore_hint": "Bu metin bloğu diğer derslerle paylaşılıyor. Geri yükleme bu derse kendi kopyasını verir ve diğer dersler geçerli metinlerini korur.",
           "structure_change": "Yapı",
-          "structure_state": "Başlangıç noktası: kaydedilen ilk değişiklikten önce ders bloklarının nasıl düzenlendiği.",
-          "restore_lesson": "Dersin tamamını geri yükle",
           "restore_lesson_failed": "Ders geri yüklenemedi",
           "undo_change": "Geri al",
-          "undo_failed": "Bu değişiklik geri alınamadı. Değiştirilen bir şey daha sonra düzenlendiyse bunun yerine istediğiniz sürümü geri yükleyin.",
-          "removed_block_label": "Metin bloğu kaldırıldı",
-          "restore_lesson_confirm": "Dersin tamamı bu sürümle değiştirilsin mi?",
           "by_assistant": "Asistan",
           "by_restore": "Geri yükle",
           "by_ai_client": "Yapay zeka istemcisi",
           "by_api": "API",
-          "change_kind": {
-            "added": "Eklendi",
-            "removed": "Kaldırıldı",
-            "moved": "Taşındı",
-            "edited": "Değiştirildi"
-          },
           "change_added": "{name} eklendi",
           "change_removed": "{name} kaldırıldı",
           "change_moved": "{name} taşındı",
@@ -3990,9 +3830,29 @@
             "slides": "slaytlar",
             "document": "belge",
             "image": "resim"
-          }
+          },
+          "change_kind": {
+            "added": "Eklendi",
+            "removed": "Kaldırıldı",
+            "moved": "Taşındı",
+            "edited": "Değiştirildi"
+          },
+          "restore_version": "Bu bloğu geri yükle",
+          "restore_lesson": "Dersin tamamını geri yükle",
+          "undo_failed": "Bu değişiklik geri alınamadı. Değiştirilen bir şey daha sonra düzenlendiyse bunun yerine istediğiniz sürümü geri yükleyin.",
+          "removed_block_label": "Metin bloğu kaldırıldı",
+          "restore_lesson_confirm": "Dersin tamamı bu sürümle değiştirilsin mi?",
+          "structure_state": "Başlangıç noktası: kaydedilen ilk değişiklikten önce ders bloklarının nasıl düzenlendiği."
         },
-        "no_section": "Bölüm yok"
+        "expand_content": "İçeriği genişlet",
+        "collapse_content": "İçeriği daralt",
+        "no_section": "Bölüm yok",
+        "header": {
+          "mode_label": "Ders modu",
+          "mode_edit": "Düzenlemek",
+          "mode_preview": "Önizleme",
+          "mode_shortcut": "Modu değiştir"
+        }
       },
       "attendance": {
         "title": "Attendance",
@@ -4162,15 +4022,9 @@
         "learner": "Student",
         "progress": "Progress",
         "stage": "Stage",
-        "source": "Source",
-        "source_filter_all": "All sources",
-        "source_filter_direct": "Direct",
-        "source_learning_path": "Learning Path",
-        "source_cohort": "Cohort",
         "last_login_at": "LSon Giriş Tarihi:",
         "enrolled_at": "Kayıt Tarihi:",
         "certificate_earned": "Sertifika kazanıldı",
-        "completed": "Completed",
         "not_started": "Başlatılmadı",
         "role": "Role",
         "action": "Action",
@@ -4192,7 +4046,6 @@
           "copy_link": "Bağlantıyı kopyala",
           "success": "Başarıyla Kopyalandı",
           "finish": "Finish",
-          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
           "loading": "LYükleniyor...",
           "student_invite_settings": "Öğrenci Davet Ayarları",
           "student_invite_settings_description": "Davetin ne kadar süreyle çalışacağını ve kaç öğrencinin kullanabileceğini seçin.",
@@ -4234,8 +4087,6 @@
           "invite_new_students_title": "Yeni öğrencileri davet edin",
           "invite_new_students_description": "Kuruluşunuza yeni kişileri davet edin ve onları bu kursa önceden atayın. Bir hesap oluşturacaklar, daveti kabul edecekler ve erişim elde edecekler.",
           "invite_new_students": "Öğrencileri Davet Et",
-          "path_only_notice_title": "Students join through a learning path",
-          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings.",
           "existing_invites": "Mevcut Davetler",
           "refresh": "Yenile",
           "loading_invites": "LDavetler yükleniyor...",
@@ -4269,7 +4120,10 @@
           "snackbar_failed_load_audit": "Davet denetimi yüklenemedi",
           "snackbar_metadata_copied": "Davet meta veriler kopyalandı",
           "snackbar_email_invites_success": "{count} davet(ler)i oluşturuldu. {sent} gönderildi, {failed} başarısız oldu. {duplicates} kopyalar atlandı.",
-          "select_at_least_one_student": "En az bir mevcut öğrenciyi seçin"
+          "select_at_least_one_student": "En az bir mevcut öğrenciyi seçin",
+          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}",
+          "path_only_notice_title": "Students join through a learning path",
+          "path_only_notice_description": "This course can only be enrolled in through a learning path, so students can't be invited here. You can still invite tutors below. To give students access, assign the containing learning path — or turn off 'Enroll only in Learning Path' in the course settings."
         },
         "delete_confirmation": {
           "title": "Sil",
@@ -4314,13 +4168,6 @@
           "invite_sent": "Davet Gönderildi",
           "you": "You",
           "remove": "Kaldır",
-          "change_role": {
-            "label": "{email} için rol",
-            "title": "Rolü değiştir",
-            "description": "{email} rolü {currentRole} iken {nextRole} olsun mu?",
-            "cancel": "İptal",
-            "approve": "Onayla"
-          },
           "link_invite": {
             "heading": "Bağlantı Davetiye",
             "description": "Bu bağlantıya sahip olan herkes kuruluşunuza katılabilir.",
@@ -4331,6 +4178,13 @@
             "toggle_label": "Bağlantı daveti etkin",
             "disabled_notice": "Bu bağlantı devre dışı bırakıldı. Yeni üyelerin bağlantı yoluyla katılmasına izin vermek için etkinleştirin.",
             "select_role": "Bir rol seçin"
+          },
+          "change_role": {
+            "label": "{email} için rol",
+            "title": "Rolü değiştir",
+            "description": "{email} rolü {currentRole} iken {nextRole} olsun mu?",
+            "cancel": "İptal",
+            "approve": "Onayla"
           }
         },
         "filter": {
@@ -4361,7 +4215,13 @@
           "never_logged_in": "Hiç giriş yapmadı",
           "awaiting_certificate": "Sertifika bekliyor",
           "custom": "Özel filtreler"
-        }
+        },
+        "source": "Source",
+        "source_filter_all": "All sources",
+        "source_filter_direct": "Direct",
+        "source_learning_path": "Learning Path",
+        "source_cohort": "Cohort",
+        "completed": "Completed"
       },
       "certificates": {
         "title": "Sertifikalar",
@@ -4671,8 +4531,6 @@
         "allow": "Öğrenciler kendileri kaydolabilir",
         "access": "Kapalıyken, öğrenciler yalnızca bir davet bağlantısı aracılığıyla veya {people}'ten eklenerek katılabilirler.",
         "access_people": "People",
-        "enroll_only_in_learning_path": "Enroll only in Learning Path",
-        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved.",
         "publish": "Kursu Yayınla",
         "determines": "Bu, kursunuzun açılış sayfanızda görüntülenip görüntülenmeyeceğini belirler",
         "published": "Published",
@@ -4832,7 +4690,9 @@
             "window_passed": "Planlandığında hatırlatma zamanı zaten geçmişti.",
             "unenrolled": "Öğrenci artık kayıtlı değil."
           }
-        }
+        },
+        "enroll_only_in_learning_path": "Enroll only in Learning Path",
+        "enroll_only_in_learning_path_desc": "When on, students can only enroll in this course through a learning path. Existing enrollments are preserved."
       }
     },
     "not_permitted": {
@@ -4900,8 +4760,6 @@
     "status_expired": "Sona Erdi",
     "status_revoked": "İptal Edildi",
     "date_joined": "Katılım Tarihi",
-    "certificate_earned": "{count} sertifika kazanıldı",
-    "certificates_earned": "{count} sertifika kazanıldı",
     "upgrade": "Daha fazla öğrenci davet etmek için planınızı yükseltin",
     "select_all": "Tümünü seç",
     "selected_count": "{count} seçildi",
@@ -4958,7 +4816,6 @@
       "select_courses": "Belirli kursları seçin",
       "select_courses_placeholder": "Kursları seçin...",
       "select_cohorts_placeholder": "Grupları seçin...",
-      "select_paths_placeholder": "Choose learning paths...",
       "send_email": "İçe aktarılan kullanıcılara davetiye e-postası gönder",
       "back": "Geri",
       "start_over": "Farklı bir dosya seçin",
@@ -4969,10 +4826,6 @@
       "no_cohorts": "Grup ataması yok",
       "all_cohorts": "Tüm gruplar",
       "select_cohorts": "Belirli grupları seçin",
-      "path_access": "Learning Path Access",
-      "no_paths": "No learning path assignment",
-      "all_paths": "All learning paths",
-      "select_paths": "Select specific learning paths",
       "drop_csv": "Buraya bir CSV bırakın veya birini seçmek için tıklayın",
       "csv_hint": "UTF-8 E-posta sütunlu CSV. En fazla {rows} satır, 5 MB.",
       "download_template": "Şablonu indirin",
@@ -4991,8 +4844,6 @@
       "unknown_columns": "Yoksayılan tanınmayan sütunlar: {columns}",
       "result_heading": "{count} öğrenciler içe aktarıldı",
       "download_errors": "Başarısız olan satırları indirin",
-      "skipped_path_only_title": "Skipped {count} path-only courses",
-      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings.",
       "status": {
         "ready": "Ready",
         "already_member": "Zaten hedef kitlede",
@@ -5002,7 +4853,14 @@
         "is_staff": "Personel, öğrenci değil",
         "over_seat_limit": "Koltuk kalmadı",
         "missing_email": "E-posta yok"
-      }
+      },
+      "select_paths_placeholder": "Choose learning paths...",
+      "path_access": "Learning Path Access",
+      "no_paths": "No learning path assignment",
+      "all_paths": "All learning paths",
+      "select_paths": "Select specific learning paths",
+      "skipped_path_only_title": "Skipped {count} path-only courses",
+      "skipped_path_only_description": "{names}. These courses can only be enrolled in through a learning path. Either assign the containing learning path (this also grants its other courses), or turn off 'Enroll only in Learning Path' in the course settings."
     },
     "assign": {
       "title": "Kurslara Ata",
@@ -5013,10 +4871,10 @@
       "submit": "Assign",
       "cancel": "İptal",
       "snackbar_success": "Atanan {assigned} kullanıcıları ({alreadyEnrolled}'in zaten erişimi vardı, {emailsSent} e-posta gönderildi)",
-      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
-      "path_only_badge": "Path-only",
       "snackbar_no_courses": "Lütfen en az bir kurs seçin",
-      "snackbar_failed": "Ders atanamadı"
+      "snackbar_failed": "Ders atanamadı",
+      "snackbar_partial": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent). Skipped path-only courses: {names} — assign the containing learning path or turn off 'Enroll only in Learning Path' in course settings.",
+      "path_only_badge": "Path-only"
     },
     "invite": {
       "row_actions_aria": "İşlemleri aç",
@@ -5027,7 +4885,6 @@
       "revoke_snackbar_success": "Bekleyen davetiye iptal edildi"
     },
     "never": "Asla",
-    "path_only_badge": "Path-only",
     "progress": "İlerleme",
     "learner_count": "{count} öğrenciler",
     "enrolled_ratio": "{completed} / {total}",
@@ -5060,15 +4917,15 @@
       "not_started": "Başlamadı",
       "in_progress": "Devam ediyor",
       "completed": "Tamamlandı",
-      "certificate": "Sertifika",
-      "certificate_earned": "Kazanıldı",
-      "certificate_not_earned": "Kazanılmadı",
       "exclude_recent_joiners": "Yeni katılanları hariç tut",
       "exclude_recent_joiners_hint": "LYargılanamayacak kadar yakın zamanda katılan öğrencileri dışarıda bırakır etkin değil.",
       "clear": "Filtreleri temizle",
       "empty_title": "Bu filtrelerle eşleşen öğrenci yok",
       "empty_description": "Tarih aralığını genişletmeyi veya bir filtreyi temizlemeyi deneyin.",
-      "invite_status": "Davet durumu"
+      "invite_status": "Davet durumu",
+      "certificate": "Sertifika",
+      "certificate_earned": "Kazanıldı",
+      "certificate_not_earned": "Kazanılmadı"
     },
     "bulk": {
       "actions": "Eylemler",
@@ -5113,72 +4970,10 @@
       "queued_running": "{count} öğrencilerine uygulanıyor. Çalışmaya devam edebilirsiniz; bittiğinde size haber vereceğiz.",
       "queued_failed": "Bu toplu işlem tamamlanmadı. Başka hiçbir şey uygulanmadı.",
       "queued_lost": "Bu koşunun izini kaybettik. Mevcut durumu görmek için yeniden yükleyin."
-    }
-  },
-  "marketing": {
-    "title": "Pazarlama",
-    "subtitle": "Ziyaretçilerin kurslarınızı nasıl keşfettiğini ve öğrenciye nasıl dönüştüğünü anlayın.",
-    "tabs": {
-      "overview": "Overview",
-      "funnel": "Funnel",
-      "geography": "Coğrafya",
-      "course_types": "Kurs türleri"
     },
-    "kpi": {
-      "landing_views": "Laçılış görünümleri",
-      "unique_visitors": "Benzersiz ziyaretçiler",
-      "course_page_views": "Kurs sayfası görüntülemeleri",
-      "enrollments": "Kayıtlar",
-      "range_description": "Seçili aralıkta"
-    },
-    "trend": {
-      "heading": "Zaman içindeki trafik",
-      "description": "Güne göre sayfa görüntülemeleri ve kayıtları",
-      "empty": "Seçilen aralıkta trafik yok",
-      "views": "Görüntülemeler",
-      "enrollments": "Kayıtlar"
-    },
-    "funnel": {
-      "heading": "Dönüşüm hunisi",
-      "description": "İlk ziyaretten kursun tamamlanmasına kadar",
-      "empty": "Henüz dönüşüm hunisi verisi yok",
-      "step": {
-        "landing_view": "Laçılış görünümleri",
-        "course_page_view": "Kurs sayfası görüntülemeleri",
-        "enrollment_completed": "Kayıtlar",
-        "course_completed": "Tamamlananlar"
-      }
-    },
-    "countries": {
-      "heading": "En iyi ülkeler",
-      "subtitle": "{total} toplam ziyaretçi",
-      "empty": "Henüz konum verisi yok",
-      "country": "Ülke",
-      "visitors": "Ziyaretçiler",
-      "enrollments_short": "kaydedilen"
-    },
-    "popularTypes": {
-      "heading": "Popüler kurs türleri",
-      "description": "Kurs türüne göre gruplandırılmış kayıtlar",
-      "subtitle": "{total} tüm türlerdeki kayıtlar",
-      "empty": "Henüz kayıt verisi yok",
-      "course_count": "{count, plural, one {# kurs} other {# kurs}}",
-      "views_short": "görüntülemeler",
-      "types": {
-        "SELF_PACED": "Self-paced",
-        "LIVE_CLASS": "Live class",
-        "COMPLIANCE": "Compliance",
-        "PUBLIC": "Public"
-      }
-    },
-    "topCourses": {
-      "heading": "Görüntülemelere göre en iyi kurslar",
-      "description": "Sayfa görüntülemelerine göre sıralanan kurslar",
-      "subtitle": "Bu aralıktaki sayfa görüntülemelerine göre sıralanmış",
-      "empty": "Henüz kurs sayfası görüntüleme yok",
-      "course": "Kurs",
-      "views": "Görünümler"
-    }
+    "certificate_earned": "{count} sertifika kazanıldı",
+    "certificates_earned": "{count} sertifika kazanıldı",
+    "path_only_badge": "Path-only"
   },
   "student_progress": {
     "courses": "Courses",
@@ -5231,8 +5026,8 @@
     "required": "Yükseltme Gerekli",
     "enterprise_required": "Bu özellik bir Kurumsal plan gerektirir.",
     "public_api_required": "Erişim için Erken Benimseyen veya Kurumsal sürümüne yükseltin genel API.",
-    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin.",
-    "unlock_field": "Bu ayarın kilidini açmak için yükseltme"
+    "unlock_field": "Bu ayarın kilidini açmak için yükseltme",
+    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin."
   },
   "automation": {
     "title": "Automation",
@@ -5249,6 +5044,75 @@
       "api": "API",
       "webhooks": "Webhook'lar",
       "new_badge": "Yeni"
+    },
+    "clients": {
+      "claude_code": "Claude Code",
+      "codex": "Codex",
+      "cursor": "Cursor",
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
+    },
+    "keys": {
+      "active": "Active",
+      "revoked": "Revoked",
+      "rotate": "Rotate",
+      "revoke": "Revoke",
+      "created_at_label": "Oluşturuldu:",
+      "last_used_label": "LSon kullanım:",
+      "never_used": "Never",
+      "table_key": "Key",
+      "table_status": "Status",
+      "table_created": "Created",
+      "table_last_used": "LSon kullanılan",
+      "scopes_label": "Kapsamlar:",
+      "revoke_confirm": "Bu otomasyon anahtarı iptal edilsin mi?",
+      "rotate_confirm": "Bu otomasyon anahtarı döndürülsün mü?",
+      "reveal": {
+        "description": "Bu anahtarı şimdi kopyalayın. Bir daha gösterilmeyecek.",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "how_to_use": "Bu anahtar nasıl kullanılır",
+        "close": "Kapat"
+      }
+    },
+    "mcp": {
+      "page_subtitle": "Giriş yaparak yapay zeka araçlarını ClassroomIO'ya bağlayın. Erişimini kesmek için bir uygulamayı istediğiniz zaman kaldırın.",
+      "keys": {
+        "title": "MCP anahtarları",
+        "description": "Bu eski anahtarlar çalışmaya devam eder, ancak artık yeni MCP anahtarları oluşturulamaz. Bunları buradan yenileyin veya iptal edin, yeni istemcileri giriş yaparak bağlayın.",
+        "reveal_title": "Yeni MCP anahtarınız",
+        "deprecated_badge": "Kullanımdan kaldırıldı"
+      },
+      "connections_tab": "Bağlantılar"
+    },
+    "api": {
+      "subtitle": "ClassroomIO genel API'si ile entegre olmak için API anahtarlarını yönetin.",
+      "keys": {
+        "title": "API anahtarları",
+        "description": "Bu anahtarlar, ClassroomIO genel API'si çağrılırken mevcut kuruluşun kimliğini doğrular.",
+        "generate": "API anahtarı oluştur",
+        "empty_title": "Henüz API anahtarı yok",
+        "empty_description": "ClassroomIO genel API'sini kullanmak için ilk kuruluş kapsamlı API anahtarını oluşturun.",
+        "modal": {
+          "title": "API anahtarı oluşturun",
+          "description": "Oluşturulmadan önce bu API anahtarı için bir ad seçin.",
+          "name_label": "Anahtar adı",
+          "name_placeholder": "API entegrasyonum",
+          "cancel": "İptal",
+          "save": "Anahtar oluştur"
+        },
+        "reveal_title": "Yeni API anahtarınız"
+      },
+      "setup": {
+        "title": "Hızlı başlangıç",
+        "description": "API anahtarınızı her istekte Taşıyıcı belirteci olarak kullanın. Yer tutucuyu yukarıdan bir anahtarla değiştirin veya gizli anahtarı oluşturduktan hemen sonra yapıştırın."
+      }
+    },
+    "zapier": {
+      "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında."
     },
     "webhooks": {
       "page_subtitle": "ClassroomIO olaylarını gerçek zamanlı olarak Slack'e, CRM'inize veya kendi arka ucunuza gönderin.",
@@ -5321,9 +5185,9 @@
       "event_groups": {
         "organization": "Kuruluş",
         "course": "Kurslar",
+        "learning": "Öğrenme ilerlemesi",
         "cohort": "Gruplar",
-        "compliance": "Compliance",
-        "learning": "Öğrenme ilerlemesi"
+        "compliance": "Compliance"
       },
       "events": {
         "organization_invite_created": "Bir ekip daveti gönderildiğinde",
@@ -5385,75 +5249,6 @@
           "no_response": "Yanıt alınamadı."
         }
       }
-    },
-    "clients": {
-      "claude_code": "Claude Code",
-      "codex": "Codex",
-      "cursor": "Cursor",
-      "opencode": "OpenCode",
-      "curl": "cURL",
-      "javascript": "JavaScript",
-      "python": "Python",
-      "go": "Go"
-    },
-    "keys": {
-      "active": "Active",
-      "revoked": "Revoked",
-      "rotate": "Rotate",
-      "revoke": "Revoke",
-      "created_at_label": "Oluşturuldu:",
-      "last_used_label": "LSon kullanım:",
-      "never_used": "Never",
-      "table_key": "Key",
-      "table_status": "Status",
-      "table_created": "Created",
-      "table_last_used": "LSon kullanılan",
-      "scopes_label": "Kapsamlar:",
-      "revoke_confirm": "Bu otomasyon anahtarı iptal edilsin mi?",
-      "rotate_confirm": "Bu otomasyon anahtarı döndürülsün mü?",
-      "reveal": {
-        "description": "Bu anahtarı şimdi kopyalayın. Bir daha gösterilmeyecek.",
-        "copy": "Kopyala",
-        "copied": "Kopyalandı",
-        "how_to_use": "Bu anahtar nasıl kullanılır",
-        "close": "Kapat"
-      }
-    },
-    "mcp": {
-      "page_subtitle": "Giriş yaparak yapay zeka araçlarını ClassroomIO'ya bağlayın. Erişimini kesmek için bir uygulamayı istediğiniz zaman kaldırın.",
-      "keys": {
-        "title": "MCP anahtarları",
-        "description": "Bu eski anahtarlar çalışmaya devam eder, ancak artık yeni MCP anahtarları oluşturulamaz. Bunları buradan yenileyin veya iptal edin, yeni istemcileri giriş yaparak bağlayın.",
-        "reveal_title": "Yeni MCP anahtarınız",
-        "deprecated_badge": "Kullanımdan kaldırıldı"
-      },
-      "connections_tab": "Bağlantılar"
-    },
-    "api": {
-      "subtitle": "ClassroomIO genel API'si ile entegre olmak için API anahtarlarını yönetin.",
-      "keys": {
-        "title": "API anahtarları",
-        "description": "Bu anahtarlar, ClassroomIO genel API'si çağrılırken mevcut kuruluşun kimliğini doğrular.",
-        "generate": "API anahtarı oluştur",
-        "reveal_title": "Yeni API anahtarınız",
-        "empty_title": "Henüz API anahtarı yok",
-        "empty_description": "ClassroomIO genel API'sini kullanmak için ilk kuruluş kapsamlı API anahtarını oluşturun.",
-        "modal": {
-          "title": "API anahtarı oluşturun",
-          "description": "Oluşturulmadan önce bu API anahtarı için bir ad seçin.",
-          "name_label": "Anahtar adı",
-          "name_placeholder": "API entegrasyonum",
-          "cancel": "İptal",
-          "save": "Anahtar oluştur"
-        }
-      },
-      "setup": {
-        "title": "Hızlı başlangıç",
-        "description": "API anahtarınızı her istekte Taşıyıcı belirteci olarak kullanın. Yer tutucuyu yukarıdan bir anahtarla değiştirin veya gizli anahtarı oluşturduktan hemen sonra yapıştırın."
-      }
-    },
-    "zapier": {
-      "page_subtitle": "ClassroomIO'yu Zapier aracılığıyla binlerce uygulamayla otomatikleştirin. Çok yakında."
     }
   },
   "lms_navigation": {
@@ -5500,12 +5295,12 @@
   },
   "exercises": {
     "heading": "Alıştırmalar",
-    "total": "Total",
-    "completed": "Completed",
     "not_submitted": "Gönderilmedi",
     "submitted": "Gönderildi",
     "in_progress": "Not Verme Progress",
     "graded": "Graded",
+    "total": "Total",
+    "completed": "Completed",
     "overdue": "Overdue",
     "empty": "No exercises yet.",
     "table": {
@@ -5554,17 +5349,6 @@
     "success_delete": "Silindi başarıyla",
     "error_update": "Güncelleme başarısız oldu",
     "social_auth_not_enabled": "Bu kimlik doğrulama sağlayıcısı etkin değil.",
-    "webhooks": {
-      "created": "Webhook oluşturuldu. İmza sırrını şimdi kopyalayın, çünkü yalnızca bir kez gösterilir.",
-      "updated": "Webhook güncellendi.",
-      "enabled": "Webhook etkinleştirildi.",
-      "disabled": "Webhook devre dışı bırakıldı.",
-      "deleted": "Webhook silindi.",
-      "secret_regenerated": "İmza sırrı yeniden oluşturuldu. Şimdi kopyalayın, çünkü yalnızca bir kez gösterilir.",
-      "test_success": "Test olayı başarıyla teslim edildi.",
-      "test_failed": "Test olayı başarısız oldu. Nedenini görmek için teslimat günlüğünü açın.",
-      "redelivered": "Olay yeniden teslim için sıraya alındı."
-    },
     "automation": {
       "created": "Otomasyon anahtarı oluşturuldu. Gizli anahtarın tamamı yalnızca bir kez gösterildiğinden şimdi kaydedin.",
       "rotated": "Otomasyon anahtarı döndürüldü. Bir daha gösterilmeyeceği için yeni sırrı şimdi kaydedin.",
@@ -5887,21 +5671,32 @@
         }
       }
     },
+    "webhooks": {
+      "created": "Webhook oluşturuldu. İmza sırrını şimdi kopyalayın, çünkü yalnızca bir kez gösterilir.",
+      "updated": "Webhook güncellendi.",
+      "enabled": "Webhook etkinleştirildi.",
+      "disabled": "Webhook devre dışı bırakıldı.",
+      "deleted": "Webhook silindi.",
+      "secret_regenerated": "İmza sırrı yeniden oluşturuldu. Şimdi kopyalayın, çünkü yalnızca bir kez gösterilir.",
+      "test_success": "Test olayı başarıyla teslim edildi.",
+      "test_failed": "Test olayı başarısız oldu. Nedenini görmek için teslimat günlüğünü açın.",
+      "redelivered": "Olay yeniden teslim için sıraya alındı."
+    },
+    "oauth": {
+      "revoked": "Uygulama erişimi kaldırıldı"
+    },
     "analytics": {
       "reminder_sent": "Hatırlatma gönderildi",
       "reminder_not_sent": "Hatırlatma gönderilmedi: bugün zaten gönderildi veya öğrenci bu e-postaları kapattı",
       "reminder_failed": "Hatırlatma gönderilemedi.",
       "reminders_sending": "Hatırlatma gönderiliyor…",
       "reminders_sent": "{count, plural, one {# hatırlatma gönderildi} other {# hatırlatma gönderildi}}",
-      "reminders_truncated": "{count, plural, one {# hatırlatma gönderildi} other {# hatırlatma gönderildi}}. Tek seferde göndermek için çok fazla gecikmiş öğrenci var — kalanlara ulaşmak için kursu daraltın.",
-      "students_refresh_failed": "Öğrenci listesi yenilenemedi",
-      "refresh_failed": "Analizler yenilenemedi",
       "target_saved": "Öğrenci hedefi kaydedildi",
       "target_failed": "Öğrenci hedefi kaydedilemedi",
-      "target_invalid": "1'den 1.000.000'a kadar bir tam sayı girin"
-    },
-    "oauth": {
-      "revoked": "Uygulama erişimi kaldırıldı"
+      "target_invalid": "1'den 1.000.000'a kadar bir tam sayı girin",
+      "reminders_truncated": "{count, plural, one {# hatırlatma gönderildi} other {# hatırlatma gönderildi}}. Tek seferde göndermek için çok fazla gecikmiş öğrenci var — kalanlara ulaşmak için kursu daraltın.",
+      "students_refresh_failed": "Öğrenci listesi yenilenemedi",
+      "refresh_failed": "Analizler yenilenemedi"
     },
     "org_switcher": {
       "open_academy_failed": "Akademi açılamadı. Lütfen tekrar deneyin."
@@ -5963,14 +5758,6 @@
     "progress": "Progress"
   },
   "validations": {
-    "webhook": {
-      "payload_url": {
-        "protocol": "Payload URL'si http:// veya https:// ile başlamalıdır"
-      },
-      "event_types": {
-        "required": "En az bir olay seçin"
-      }
-    },
     "user_profile": {
       "email": "Geçersiz e-posta adresi",
       "username": "Kullanıcı adı olamaz boş olmalı",
@@ -6094,6 +5881,14 @@
       "custom": "{message}",
       "required_field": "Bu alan zorunludur",
       "invalid_field": "Geçersiz değer"
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload URL'si http:// veya https:// ile başlamalıdır"
+      },
+      "event_types": {
+        "required": "En az bir olay seçin"
+      }
     }
   },
   "ai_assistant": {
@@ -6218,18 +6013,6 @@
         "create_lesson": "Ders oluşturma",
         "update_lesson": "Ders güncelleme",
         "update_lesson_content": "Ders içeriği yazma",
-        "add_lesson_note_block": "Metin bloğu ekleme",
-        "remove_lesson_block": "Bir metin bloğunu kaldırma",
-        "move_lesson_block": "Bir bloğu taşıma",
-        "add_lesson_slides_block": "Slayt ekleme",
-        "add_lesson_image_block": "Resim ekleme",
-        "update_lesson_block_settings": "Blok ayarları güncelleniyor",
-        "update_lesson_block_requirements": "Tamamlama kuralları güncelleniyor",
-        "detach_lesson_block": "Paylaşılan bir bloğu ayırma",
-        "list_block_library": "Blok kütüphanesinde arama",
-        "attach_library_block": "Kütüphane bloğu ekleme",
-        "move_lesson_block_to_lesson": "Bir bloğu başka bir derse taşıma",
-        "attach_document_to_lesson": "Belge ekleme",
         "create_exercise": "Alıştırma oluşturma",
         "create_exercise_section": "Egzersiz bölümü oluşturma",
         "update_exercise": "Egzersizi güncelleme",
@@ -6247,6 +6030,18 @@
         "list_youtube_playlist_videos": "Loynatma listesi videolarını listeleme",
         "get_lesson_transcript": "Video transkripsiyonunu okuma",
         "add_youtube_video_to_lesson": "YouTube videosunu yerleştirme",
+        "add_lesson_note_block": "Metin bloğu ekleme",
+        "remove_lesson_block": "Bir metin bloğunu kaldırma",
+        "move_lesson_block": "Bir bloğu taşıma",
+        "add_lesson_slides_block": "Slayt ekleme",
+        "add_lesson_image_block": "Resim ekleme",
+        "update_lesson_block_settings": "Blok ayarları güncelleniyor",
+        "update_lesson_block_requirements": "Tamamlama kuralları güncelleniyor",
+        "detach_lesson_block": "Paylaşılan bir bloğu ayırma",
+        "list_block_library": "Blok kütüphanesinde arama",
+        "attach_library_block": "Kütüphane bloğu ekleme",
+        "move_lesson_block_to_lesson": "Bir bloğu başka bir derse taşıma",
+        "attach_document_to_lesson": "Belge ekleme",
         "get_lesson_history": "Ders geçmişini okuma",
         "restore_lesson_version": "Daha önceki bir sürümü geri yükleme",
         "undo_lesson_change": "Bir değişikliği geri alma"
@@ -6264,17 +6059,6 @@
         "create_lesson": "Oluşturulan ders: {title}",
         "update_lesson": "Güncellenen ders: {title}",
         "update_lesson_content_fallback": "{count, plural, one {# karakter yazıldı} other {# karakter yazıldı}}",
-        "remove_lesson_block": "{title}'dan bir metin bloğu kaldırıldı",
-        "move_lesson_block": "{title} içinde bir blok taşındı",
-        "add_lesson_slides_block": "{title} dosyasına slaytlar eklendi",
-        "add_lesson_image_block": "{title}'a bir resim eklendi",
-        "update_lesson_block_settings": "{title} içindeki bir blok güncellendi",
-        "update_lesson_block_requirements": "{title} içindeki tamamlama kuralları güncellendi",
-        "detach_lesson_block": "{title} adlı kullanıcıya paylaşılan bloğun kendi kopyasını verdi",
-        "list_block_library": "Blok kütüphanesinde arama yapıldı",
-        "attach_library_block": "{title}'a bir kütüphane bloğu eklendi",
-        "move_lesson_block_to_lesson": "Bir blok {title}'a taşındı",
-        "attach_document_to_lesson": "Doküman eklendi: {title}",
         "create_exercise": "Oluşturulan egzersiz «{title}» · {count, plural, one {# question} other {# questions}}",
         "update_exercise": "Güncellenen egzersiz: {title}",
         "update_exercise_section": "Güncellenen egzersiz bölümü: {title}",
@@ -6301,6 +6085,17 @@
         "get_lesson_transcript_no_credits": "Transkriptleri getirmek için AI kredisi bitti",
         "get_lesson_transcript_unavailable": "No transcript available for {title}",
         "add_youtube_video_to_lesson": "Gömülü video: {title}",
+        "remove_lesson_block": "{title}'dan bir metin bloğu kaldırıldı",
+        "move_lesson_block": "{title} içinde bir blok taşındı",
+        "add_lesson_slides_block": "{title} dosyasına slaytlar eklendi",
+        "add_lesson_image_block": "{title}'a bir resim eklendi",
+        "update_lesson_block_settings": "{title} içindeki bir blok güncellendi",
+        "update_lesson_block_requirements": "{title} içindeki tamamlama kuralları güncellendi",
+        "detach_lesson_block": "{title} adlı kullanıcıya paylaşılan bloğun kendi kopyasını verdi",
+        "list_block_library": "Blok kütüphanesinde arama yapıldı",
+        "attach_library_block": "{title}'a bir kütüphane bloğu eklendi",
+        "move_lesson_block_to_lesson": "Bir blok {title}'a taşındı",
+        "attach_document_to_lesson": "Doküman eklendi: {title}",
         "get_lesson_history": "Ders geçmişi yüklendi",
         "restore_lesson_version": "Dersin önceki bir sürümü geri yüklendi",
         "undo_lesson_change": "Bir değişiklik geri alındı"
@@ -6437,8 +6232,6 @@
     "courses": {
       "add": "Kurs Ekle",
       "add_modal_title": "Grup'a Kurs Ekle",
-      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
-      "adding": "Adding courses…",
       "select_course": "Bir kurs seçin",
       "select_courses": "Kurs seçin",
       "select_placeholder": "Bir kurs seçin…",
@@ -6447,13 +6240,15 @@
       "no_matching_courses": "Aramanızla eşleşen kurs yok.",
       "no_matching_cohort_courses": "Aramanızla eşleşen kohort kursu yok.",
       "pagination_status": "Page {page} / {totalPages}",
-      "load_failed": "Failed to load courses.",
-      "retry": "Retry",
       "empty_title": "Henüz kurs yok",
       "empty_description": "Bu gruba kurs ekleyin.",
       "empty_student_description": "Bu grupta henüz yayınlanmış kurs yok.",
       "published_access_callout_title": "Öğrenci erişimi",
-      "published_access_callout_description": "Öğrenciler yalnızca yayınlanan kurslara erişebilir. Kurslar, yayınlanmamış durumdayken ekibiniz için bu grupta yer alabilir, ancak siz onları yayınlayana kadar öğrencilerden gizli kalır."
+      "published_access_callout_description": "Öğrenciler yalnızca yayınlanan kurslara erişebilir. Kurslar, yayınlanmamış durumdayken ekibiniz için bu grupta yer alabilir, ancak siz onları yayınlayana kadar öğrencilerden gizli kalır.",
+      "add_count": "Add {count} {count, plural, =1 {Course} other {Courses}}",
+      "adding": "Adding courses…",
+      "load_failed": "Failed to load courses.",
+      "retry": "Retry"
     },
     "people": {
       "invite": "Invite",
@@ -6567,7 +6362,6 @@
     "description": "Bu bağlantıya sahip olan herkes katılabilir. E-postaları tek tek girmek yerine paylaşın.",
     "course_description": "Bu bağlantıya sahip olan herkes bu kursa öğrenci olarak katılabilir. E-postaları tek tek girmek yerine paylaşın.",
     "cohort_description": "Bu bağlantıya sahip olan herkes bu gruba ve içindeki her kursa katılabilir. E-postaları tek tek girmek yerine paylaşın.",
-    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one.",
     "generate": "Davet bağlantısı oluştur",
     "copy": "Davet bağlantısını kopyala",
     "copied": "Davet bağlantısı kopyalandı",
@@ -6592,7 +6386,8 @@
     "snackbar": {
       "enabled": "Davet bağlantısı etkin",
       "disabled": "Davet bağlantısı devre dışı"
-    }
+    },
+    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one."
   },
   "notifications": {
     "title": "Bildirimler",
@@ -6656,6 +6451,1140 @@
     "format_json": "JSON",
     "copied": "Panoya kopyalandı",
     "copy_failed": "Panoya kopyalanamadı"
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Yeni bir kurs oluştur",
+      "gallery": "Şablon galerisi",
+      "yours": "Kurslarınız",
+      "blank": "Boş kurs",
+      "blank_subtitle": "Sıfırdan başla"
+    },
+    "card": {
+      "curated": "Önceden hazırlanmış şablon",
+      "yours": "Şablonunuz",
+      "used": "Şablonunuz · Kullanılan {date}"
+    },
+    "gallery": {
+      "back": "Tüm kurslar",
+      "title": "Şablon galerisi",
+      "subtitle": "Şablonlarınızın birinden bir kurs başlatın veya ClassroomIO.",
+      "search": "Şablon bul",
+      "scope_all": "Tüm şablonlar",
+      "scope_org": "Şablonlarım",
+      "scope_global": "ClassroomIO",
+      "empty_org": "Henüz herhangi bir şablon oluşturmadınız. ⋯ menüsünden herhangi bir kursu şablon olarak kaydedin.",
+      "no_match": "“{query}” ile eşleşen şablon yok.",
+      "empty_global": "Henüz ClassroomIO şablonu yok."
+    },
+    "preview": {
+      "course_name": "Ders adı",
+      "use": "Şablonu kullan",
+      "open": "Şablonu aç",
+      "cancel": "İptal",
+      "loading": "Lşablon yükleniyor…",
+      "copying": "Kopyalanıyor {sections, plural, one {# bölüm} other {# bölüm}}, {lessons, plural, one {# ders} other {# ders}}…",
+      "created": "Course created from {title}",
+      "shows_off": "Gösterilir",
+      "settings": "Ayarlar",
+      "certificate": "Sertifika etkin",
+      "deadline": "Son tarih {date}",
+      "sequential": "Lessons unlock in order",
+      "grading": "A öğretmen gönderimlere not verir",
+      "comments_off": "Lders yorumları kapalı",
+      "lesson_download": "LÖğrenciler dersleri indirebilir",
+      "self_enrollment": "LÖğrenciler kendilerine katılabilir",
+      "ai_tutor": "AI öğretmeni açık",
+      "compliance_retake": "{months, plural, one {Her ay} other {Her # ayda bir}} tekrar alın",
+      "compliance_mandatory": "Zorunlu",
+      "counts": "{sections} bölümler · {lessons} dersler · {exercises} egzersizler",
+      "questions": "{count, plural, one {# soru} other {# soru}}"
+    },
+    "menu": {
+      "open": "Open",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "save": "Şablon olarak kaydet…",
+      "create_course": "Şablondan ders oluştur",
+      "duplicated": "Çoğaltılmış şablon",
+      "deleted": "Şablon silindi"
+    },
+    "save": {
+      "title": "Şablon olarak kaydet",
+      "copy": "Bir kopyasını şablon olarak kaydet",
+      "copy_description": "Kurs olduğu gibi kalır.",
+      "convert": "Bu kursu dönüştürün",
+      "convert_description": "Kurs bir şablon haline gelir. Yayınlanamaz veya öğrencileri olamaz.",
+      "has_students": "{count, plural, one {# student} other {# students}} vardır — bunun yerine bir kopyasını kaydedin.",
+      "unpublish": "Dönüştürme bu kursu yayından kaldırır.",
+      "name": "Şablon adı",
+      "save_button": "Şablonu kaydet",
+      "convert_button": "Şablona dönüştürün",
+      "saved": "Şablon kaydedildi",
+      "converted": "Kurs şablona dönüştürüldü",
+      "limit_title": "Planınız şunları içeriyor: {count, plural, one {# template} other {# templates}}",
+      "limit_body": "Zaten {used, plural, one {{title}} other {# templates}} var. Daha fazla şablon için yükseltme yapın veya sahip olduğunuz birini silin.",
+      "upgrade": "Yükselt",
+      "manage": "Şablonları yönet",
+      "view_templates": "Şablonları görüntüle"
+    },
+    "empty": {
+      "title": "Henüz kurs yok",
+      "description": "Bir kursu bir kez oluşturun, ardından müşterilerinizi kursa kaydedin. Kursu kendiniz oluşturun veya taslağı ajanınıza hazırlatın.",
+      "enrolled": "Kayıtlı"
+    },
+    "editor": {
+      "badge": "Template"
+    },
+    "sync": {
+      "alert_title": "Template'te {count, plural, one {# update} other {# updates}}",
+      "alert_body": "{title}, {date}'i son çektiğinizden beri değişti.",
+      "review_in_settings": "Ayarlarda incele",
+      "section_title": "Template",
+      "last_pulled": "LSon çekilen {date}",
+      "review": "Güncellemeleri inceleyin",
+      "up_to_date": "Şablonla güncel.",
+      "deleted": "{title} silindi. Bu kurs tüm içeriğini korur; çekilecek hiçbir şey kalmadı.",
+      "deleted_unknown": "Bu şablon silindi. Bu kurs tüm içeriğini korur; çekilecek hiçbir şey kalmadı.",
+      "available_detail": "{count, plural, one {# güncelleme mevcut} other {# güncelleme mevcut}} — {list}.",
+      "join": "{rest} ve {last}",
+      "sections_count": "{count, plural, one {# bölüm} other {# bölüm}}",
+      "settings_count": "{count, plural, one {# ayar} other {# ayar}}",
+      "content": "İçerik",
+      "settings": "Ayarlar",
+      "select_all": "Tümünü seç",
+      "new": "Yeni",
+      "updated": "Güncellendi",
+      "locked": "{count, plural, one {# gönderim — güncellenemez} other {# gönderim — güncellenemez}}",
+      "edited_locally": "Bunu tarihinde düzenlediniz {date} — çekme, değişikliklerinizin yerini alır.",
+      "removed_locally": "Bunu kursunuzdan sildiniz.",
+      "also_adds": "Ayrıca {kind}: {title}",
+      "template_value": "Şablon: {value}",
+      "yours_value": "Sizinkiler: {value}",
+      "yes": "Evet",
+      "no": "No",
+      "empty_value": "None",
+      "custom_value": "Custom",
+      "selected": "{count, plural, one {# seçili} other {# seçili}}",
+      "pull": "{count, plural, one {# değişikliği çek} other {# değişikliği çek}}",
+      "pulled": "Pulled {count, plural, one {# change} other {# changes}} from {title}",
+      "kind": {
+        "section": "Section",
+        "lesson": "Lesson",
+        "exercise": "Egzersiz"
+      },
+      "detail": {
+        "title": "Başlık",
+        "content": "İçerik",
+        "locales": "{locales} eklendi"
+      },
+      "setting": {
+        "description": "Açıklama",
+        "bannerImage": "Kapak resmi",
+        "welcomeEmail": "Karşılama e-postası",
+        "completionDeadline": "Tamamlanma tarihi",
+        "contentGrouping": "İçerik gruplama",
+        "progression": "İlerleme",
+        "comments": "Lders yorumları",
+        "selfEnrollment": "Kendi kendine kayıt",
+        "markdownExport": "Markdown dışa aktarma",
+        "lessonDownload": "Lders indirme",
+        "landingRequirements": "Laçılış gereksinimleri",
+        "landingDescription": "Laçılış açıklaması",
+        "landingGoals": "Laçılış hedefleri",
+        "landingSkills": "Beceriler",
+        "landingTools": "Araçlar",
+        "landingInstructor": "Eğitmen",
+        "pricing": "Fiyatlandırma",
+        "certificateDesign": "Sertifika tasarımı",
+        "certificateRules": "Sertifika kuralları",
+        "aiTutor": "AI öğretmeni"
+      },
+      "section_description": "Bu kurs bir şablondan oluşturulmuştur. Değişiklikleri istediğiniz zaman çekin; hiçbir şey kendi başına değişmez.",
+      "updates_title": "{count, plural, one {# güncelleme mevcut} other {# güncelleme mevcut}}",
+      "deleted_title": "Şablon silindi",
+      "sheet_title": "Şablon güncellemeleri",
+      "sheet_description": "{title}'ten, {date}'ten beri. Ne çekeceğinizi seçin; kursunuzdan hiçbir şey kaldırılmaz.",
+      "nothing_selected": "Hiçbir şey seçilmedi",
+      "loading": "Lgüncellemeler yükleniyor…",
+      "value": {
+        "free": "Free",
+        "sequential": "Sequential",
+        "no_price": "Free"
+      },
+      "template_label": "Template",
+      "yours_label": "Sizinkiler"
+    },
+    "home": {
+      "heading": "Veya bir şablondan başlayın",
+      "description": "Dersler, alıştırmalar ve ayarlarla eksiksiz bir kurs. Kopyalayın ve kendinize ait yapın.",
+      "browse": "Tüm şablonlara göz atın"
+    }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Ödeme alındı. Bir adım kaldı.",
+      "body": "Hesabınızı oluşturun veya giriş yapın, Early Adopter planınızı akademinize otomatik olarak bağlayalım.",
+      "sign_up": "Hesabımı oluştur",
+      "log_in": "Giriş yap",
+      "continue": "Akademime devam et"
+    },
+    "success": {
+      "title": "Early Adopter planınız etkin",
+      "body": "Fiyatınız sabitlendi ve tüm Early Adopter özellikleri artık akademiniz için açık.",
+      "continue": "Oluşturmaya başla"
+    },
+    "errors": {
+      "invalid": "Bu bağlantı geçerli değil. Size gönderdiğimiz e-postayı kontrol edin veya destekle iletişime geçin.",
+      "expired": "Bu bağlantının süresi doldu. Destekle iletişime geçin, planınızı bağlamanıza yardım edelim.",
+      "unavailable": "Bu plan bağlantısı daha önce kullanıldı veya artık etkin değil. Bir hata olduğunu düşünüyorsanız destekle iletişime geçin.",
+      "conflict": "Bu akademinin zaten ücretli bir planı var, bu yüzden bunu bağlayamadık. Destekle iletişime geçin, yardımcı olalım."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Yeni",
+    "read_full": "Tüm değişiklik günlüğünü oku",
+    "close": "Kapat"
+  },
+  "oauth": {
+    "consent": {
+      "page_title": "ClassroomIO'ya bir uygulama bağla",
+      "title": "{client} uygulamasını ClassroomIO'ya bağla",
+      "subtitle": "{client} uygulamasının erişebileceği çalışma alanını seçin.",
+      "workspace_label": "Çalışma alanı",
+      "no_workspaces_title": "Kullanılabilir çalışma alanı yok",
+      "no_workspaces_description": "Uygulamaları yalnızca çalışma alanı yöneticileri bağlayabilir. Bir yöneticiden yardım isteyin veya yönetici hesabıyla giriş yapın.",
+      "permissions_heading": "{client} şunları yapabilecek:",
+      "stay_connected": "Erişimi kaldırana kadar bağlı kal",
+      "admin_note": "Uygulamaları yalnızca çalışma alanı yöneticileri bağlayabilir. Erişim yönetici izinlerinizi izler ve onları kaybederseniz sona erer.",
+      "redirect_note": "Onayladıktan sonra {host} adresine yönlendirileceksiniz.",
+      "allow": "Erişime izin ver",
+      "deny": "Reddet",
+      "unknown_client": "Bu uygulama",
+      "error_title": "Bu bağlantı isteği geçerli değil",
+      "error_description": "Bağlamak istediğiniz uygulamaya dönün ve yeniden başlayın."
+    },
+    "error": {
+      "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+      "retry": "Tekrar dene"
+    },
+    "scope_group": {
+      "courses": {
+        "read": "Kursları ve içeriklerini görüntüle",
+        "write": "Kursları ve içeriklerini oluştur, düzenle ve yayınla"
+      },
+      "exercises": {
+        "read": "Alıştırmaları ve soruları görüntüle",
+        "write": "Alıştırmaları ve soruları oluştur ve düzenle"
+      },
+      "course_members": {
+        "read": "Kurs üyelerini görüntüle",
+        "write": "Kurs üyelerini ve ilerlemelerini ekle ve yönet"
+      },
+      "certificates": {
+        "read": "Kurs sertifikalarını görüntüle",
+        "write": "Kurs sertifikalarını yönet"
+      },
+      "submissions": {
+        "read": "Gönderimleri ve notları görüntüle",
+        "write": "Gönderimleri notlandır ve notları yönet"
+      },
+      "cohorts": {
+        "read": "Kohortları görüntüle",
+        "write": "Kohortları oluştur ve yönet"
+      },
+      "audience": {
+        "read": "Hedef kitlenizi görüntüle",
+        "write": "Hedef kitlenizi ekle ve yönet"
+      },
+      "team": {
+        "read": "Ekip üyelerini görüntüle",
+        "write": "Ekip üyelerini yönet"
+      },
+      "organization": {
+        "read": "Çalışma alanı ayarlarını görüntüle",
+        "write": "Ayarları, açılış sayfasını ve e-posta şablonlarını düzenle"
+      },
+      "analytics": {
+        "read": "Analizleri görüntüle",
+        "write": "Analizleri görüntüle"
+      },
+      "media": {
+        "read": "Medya yükle",
+        "write": "Medya yükle"
+      }
+    },
+    "connect": {
+      "title": "Claude veya ChatGPT'den bağlan",
+      "description": "Bu URL ile ClassroomIO'yu yapay zeka uygulamanıza özel bağlayıcı olarak ekleyin, ardından giriş yapıp erişimi onaylayın.",
+      "step_1": "Yapay zeka uygulamanızda bağlayıcılar veya entegrasyonlar ayarlarını açın ve özel bir bağlayıcı ekleyin.",
+      "step_2": "Yukarıdaki URL'yi yapıştırın ve bağlantıyı başlatın.",
+      "step_3": "ClassroomIO'ya giriş yapın, bu çalışma alanını seçin ve izinleri onaylayın."
+    },
+    "connected_apps": {
+      "title": "Bağlı uygulamalar",
+      "description": "Bu çalışma alanında işlem yapması için onayladığınız uygulamalar. Erişimini hemen kesmek için bir uygulamayı kaldırın.",
+      "table_app": "Uygulama",
+      "table_authorized_by": "Yetkilendiren",
+      "table_permissions": "İzinler",
+      "permissions_count": "{count} alan",
+      "revoke": "Erişimi kaldır",
+      "revoke_confirm": "Bu uygulamanın erişimi kaldırılsın mı? Hemen çalışmayı durduracak."
+    }
+  },
+  "video_guide": {
+    "watch_video": "Videoyu izle",
+    "new_badge": "Yeni",
+    "connect_claude": {
+      "title": "ClassroomIO'yu Claude'a bağlayın",
+      "description": "ClassroomIO'yu Claude'a nasıl bağlayacağınızı ve ona neler sorabileceğinizi görün. 4 dakika."
+    },
+    "lesson_blocks": {
+      "title": "Ders bloklarıyla tanışın",
+      "description": "Dersler artık bloklardan oluşturuluyor. 5 dakikada nasıl çalıştığını görün.",
+      "coach_description": "Her dersi not, video, slayt, belge ve resim bloklarından istediğiniz sırayla oluşturun. Denemek için Düzenle'yi seçin.",
+      "coach_title": "🎉 Yeni! Dersler artık esnek."
+    },
+    "close": "Kapat",
+    "dismiss": "Anladım"
+  },
+  "marketing": {
+    "title": "Pazarlama",
+    "subtitle": "Ziyaretçilerin kurslarınızı nasıl keşfettiğini ve öğrenciye nasıl dönüştüğünü anlayın.",
+    "tabs": {
+      "overview": "Overview",
+      "funnel": "Funnel",
+      "geography": "Coğrafya",
+      "course_types": "Kurs türleri"
+    },
+    "kpi": {
+      "landing_views": "Laçılış görünümleri",
+      "unique_visitors": "Benzersiz ziyaretçiler",
+      "course_page_views": "Kurs sayfası görüntülemeleri",
+      "enrollments": "Kayıtlar",
+      "range_description": "Seçili aralıkta"
+    },
+    "trend": {
+      "heading": "Zaman içindeki trafik",
+      "description": "Güne göre sayfa görüntülemeleri ve kayıtları",
+      "empty": "Seçilen aralıkta trafik yok",
+      "views": "Görüntülemeler",
+      "enrollments": "Kayıtlar"
+    },
+    "funnel": {
+      "heading": "Dönüşüm hunisi",
+      "description": "İlk ziyaretten kursun tamamlanmasına kadar",
+      "empty": "Henüz dönüşüm hunisi verisi yok",
+      "step": {
+        "landing_view": "Laçılış görünümleri",
+        "course_page_view": "Kurs sayfası görüntülemeleri",
+        "enrollment_completed": "Kayıtlar",
+        "course_completed": "Tamamlananlar"
+      }
+    },
+    "countries": {
+      "heading": "En iyi ülkeler",
+      "subtitle": "{total} toplam ziyaretçi",
+      "empty": "Henüz konum verisi yok",
+      "country": "Ülke",
+      "visitors": "Ziyaretçiler",
+      "enrollments_short": "kaydedilen"
+    },
+    "popularTypes": {
+      "heading": "Popüler kurs türleri",
+      "description": "Kurs türüne göre gruplandırılmış kayıtlar",
+      "subtitle": "{total} tüm türlerdeki kayıtlar",
+      "empty": "Henüz kayıt verisi yok",
+      "course_count": "{count, plural, one {# kurs} other {# kurs}}",
+      "views_short": "görüntülemeler",
+      "types": {
+        "SELF_PACED": "Self-paced",
+        "LIVE_CLASS": "Live class",
+        "COMPLIANCE": "Compliance",
+        "PUBLIC": "Public"
+      }
+    },
+    "topCourses": {
+      "heading": "Görüntülemelere göre en iyi kurslar",
+      "description": "Sayfa görüntülemelerine göre sıralanan kurslar",
+      "subtitle": "Bu aralıktaki sayfa görüntülemelerine göre sıralanmış",
+      "empty": "Henüz kurs sayfası görüntüleme yok",
+      "course": "Kurs",
+      "views": "Görünümler"
+    }
+  },
+  "analytics": {
+    "title": "Analitik",
+    "updated_seconds_ago": "{count}s önce güncellendi",
+    "updated_minutes_ago": "{count, plural, one {# dakika önce güncellendi} other {# dakika önce güncellendi}}",
+    "retry": "Tekrar deneyin",
+    "all_courses": "Tüm kurslar",
+    "course_picker": "Kurs",
+    "exercise_picker": "Alıştırma",
+    "not_in_section": "Bir bölümde değil",
+    "section_number": "Bölüm {number}",
+    "section_with_title": "Bölüm {number} · {title}",
+    "finished": "Bitmiş",
+    "awaiting_grade": "Not bekleniyor",
+    "awaiting_grade_short": "Askıda olması",
+    "pass_mark_tag": "Geçme notu {mark}%",
+    "of_total": "{count} / {total}",
+    "never": "Asla",
+    "invited": "{count} davet edildi",
+    "no_students": "Öğrenci yok",
+    "no_students_yet": "Henüz öğrenci yok",
+    "no_graded_attempts": "Değerlendirilmiş deneme yok",
+    "names_and_more": "{names} ve {count} kişi daha",
+    "certificate_issued": "{count, plural, one {Veriliş} other {# Veriliş}}",
+    "question_hint": {
+      "context_and_answer": "{context} · en yaygın yanlış cevap: {answer}",
+      "answer": "En yaygın yanlış cevap: {answer}"
+    },
+    "chips": {
+      "label": "Bu kontrol paneli hakkında",
+      "live": "Canlı · {updated}",
+      "live_every": "Canlı · {updated} · her {seconds}s'de yenilenir",
+      "students": "{count, plural, one {# öğrenci} other {# öğrenci}}",
+      "courses": "Kurslar: {count}",
+      "cohorts": "Gruplar: {count}",
+      "active_cohorts": "{count, plural, one {# aktif grup} other {# aktif grup}}",
+      "seats": "Koltuklar: {used} / {limit}",
+      "seats_not_joined": "{count} henüz katılmadı"
+    },
+    "now_tag": {
+      "label": "Şimdi",
+      "hint": "Öğrencilerin şu anda nerede durduğunu gösterir. Menzil bu kartı değiştirmez."
+    },
+    "student_chips": {
+      "latest": "En sonuncu",
+      "progress": "İlerlemek",
+      "now_at": "şimdi {place}'da"
+    },
+    "donut": {
+      "students": "{count, plural, one {öğrenci} other {öğrenciler}}"
+    },
+    "status": {
+      "at_risk": "Risk altında",
+      "lagging": "Gecikme",
+      "on_track": "Yolda",
+      "completed": "Tamamlanmış"
+    },
+    "flags": {
+      "overdue": "vadesi geçmiş"
+    },
+    "legend": {
+      "middle_half": "Öğrencilerin orta %50'si",
+      "cohort_average": "Kohort ortalaması",
+      "student": "Öğrenci",
+      "all_students": "Tüm öğrenciler",
+      "in_progress": "{name} (devam ediyor)",
+      "enrolled_students": "Kayıtlı öğrenciler",
+      "target": "Hedef",
+      "logins": "Girişler",
+      "direct_students": "Doğrudan öğrenciler"
+    },
+    "notes": {
+      "score_distribution": "Puan bandı başına öğrenciler.",
+      "course_details": "Alıştırmalara göre puanları, bölüm bölüm puan kartını ve en zor soruları görmek için yukarıdan bir kurs seçin.",
+      "section_scorecard": "Kurs bölümü başına bir satır. Video katılım, izlenen ders videolarının payıdır. Derse devam durumu öğretmen tarafından işaretlenir.",
+      "needs_attention": "Bir öğrenci birden fazla nedenden dolayı ortaya çıkabilir.",
+      "overdue": "Öğrenciler zaten son tarihten önce planlanmış hatırlatma e-postaları alıyor. \"Hatırlatıcı gönder\" hemen bir tane gönderir.",
+      "hardest_questions": "Öğrencilerin en çok gözden kaçırdığı sorular ve en yaygın yanlış cevap.",
+      "logins_per_day": "Her gün oturum açan öğrenciler.",
+      "students": {
+        "all_courses": "Kurslarını görmek için bir öğrenciye tıklayın.",
+        "one_course": "Puanlarının grafiğini görmek için bir öğrenciye tıklayın. Arama, filtreler ve sıralama aynı zamanda dışa aktarma için de geçerlidir.",
+        "course_scope": "Bu kurstaki ilerlemesini açmak için bir öğrenci seçin. Arama, filtreler ve sıralama aynı zamanda dışa aktarma için de geçerlidir."
+      },
+      "showing_first": "{total} içinden ilk {shown} gösteriliyor.",
+      "cohorts_select": "Kontrol panelini açmak için bir grup seçin.",
+      "cohorts_in_table": "Yukarıdaki tabloda {count, plural, one {kohort} other {# kohort}}.",
+      "courses_in_table": "{count, plural, one {Yukarıdaki tabloda # kurs} other {Yukarıdaki tabloda # kurs}} var.",
+      "not_counted_empty": "Sayılmadı: {names} (henüz öğrenci yok).",
+      "not_charted_empty": "Grafikte gösterilmedi: {names} (henüz öğrenci yok).",
+      "lesson_dropoff": "En dik düşüş {from} ile {to} arasındadır.",
+      "no_pass_mark": "Buradaki hiçbir egzersizin henüz geçme notu yok, dolayısıyla geçme oranı yok. Görmek için bir egzersize geçme notu koyun.",
+      "bucketed_total": "Her çubuk {days} gün boyunca yapılan girişleri toplar. Bir öğrenci günde bir kez sayılır.",
+      "student_sheet_pick_course": "Puanlarını alıştırmaya göre grafiklendirmek için bir kursa tıklayın.",
+      "direct_students_charted": "Doğrudan öğrenciler bir kohorta ait değildir; kendi çizgilerinde görünür.",
+      "courses_select": "Kontrol panelini açmak için bir kurs seçin."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–25",
+        "1": "25–50",
+        "2": "50–75",
+        "3": "75–99",
+        "4": "Tamamlamak"
+      },
+      "score": {
+        "4": "<50",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
+        "9": "90+",
+        "null": "Puan yok"
+      }
+    },
+    "kpi": {
+      "share_of_cohort": "Grubun {percent}'si",
+      "share_of_enrolled": "{percent} kayıtlı kişi",
+      "share_of_completions": "{percent} tamamlama sayısı",
+      "avg_progress_hint": "tamamlanan zorunlu dersler ve alıştırmalar / toplam",
+      "avg_score_hint": "yapılan egzersizler arasında",
+      "overdue_hint": "son teslim tarihi geçmiş, yapılmamış",
+      "completed_certified": "Grubun {percent}'si · {count} sertifikalı",
+      "enrolled_this_week": "{count, plural, =0 {Bu hafta yeni öğrenci yok} other {+# bu hafta}}",
+      "enrolled_in_days": "{count, plural, =0 {Son {days} günde yeni öğrenci yok} other {+# son {days} günde}}",
+      "added_in_days": "{count, plural, =0 {Son {days} günde yok} other {+# son {days} günde}}",
+      "completed_in_days": "Grubun {percent}'si{count, plural, =0 {} other { · +# son {days} günde}}",
+      "logged_in_days": "Giriş yaptınız, son {days} gün",
+      "avg_score_in_days": "son {days} gün içindeki girişimler",
+      "first_try_in_days": "son {days} gün içinde not verilen {took} sayısı{still, plural, =0 {} other { · # hala geçilecek}}",
+      "median_days_in_days": "son {days} günde tamamlananlar için",
+      "first_try_context": "geçme notu egzersizi yapan {took} kişi sayısı{still, plural, =0 {} other { · # hala geçilecek}}",
+      "median_days_hint": "tamamlanana kadar kayıt",
+      "needs_attention_hint": "etkin değil, düşük puan veya gecikmiş",
+      "delta": {
+        "this_week": {
+          "up": "Bu hafta +{count} puan",
+          "down": "−{count} puan bu hafta",
+          "flat": "Bu hafta değişiklik yok"
+        },
+        "vs_last_week": {
+          "up": "+{count} puan geçen haftaya göre",
+          "down": "−{count} puan geçen haftaya göre",
+          "flat": "Geçen haftaya göre değişiklik yok"
+        },
+        "in_days": {
+          "up": "Son {days} günde +{count} puan",
+          "down": "−{count} son {days} günde puan",
+          "flat": "Son {days} günde değişiklik yok"
+        },
+        "vs_days_ago": {
+          "up": "+{count} puan vs {days} gün önce",
+          "down": "−{count} puan vs {days} gün önce",
+          "flat": "{days} gün öncesine göre değişiklik yok"
+        }
+      },
+      "no_data": {
+        "students": "henüz öğrenci yok",
+        "graded": "henüz değerlendirilmiş deneme yok",
+        "first_try": "geçme notu olan bir alıştırmada henüz değerlendirilmiş deneme yok",
+        "completions": "henüz tamamlama yok",
+        "enrolments": "henüz kayıt yok",
+        "in_days": "son {days} günde yok"
+      }
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Bugün giriş yapanlar"
+      },
+      "kpi_logged_in_week": {
+        "title": "Giriş yaptım, son 7 gün"
+      },
+      "kpi_avg_progress": {
+        "title": "Ortalama ilerleme"
+      },
+      "kpi_avg_score": {
+        "title": "Ortalama puan"
+      },
+      "kpi_avg_grade": {
+        "title": "Ortalama not"
+      },
+      "kpi_overdue": {
+        "title": "vadesi geçmiş"
+      },
+      "kpi_completed": {
+        "title": "Tamamlanmış"
+      },
+      "kpi_enrolled": {
+        "title": "Kayıtlı"
+      },
+      "kpi_completion_rate": {
+        "title": "Tamamlanma oranı"
+      },
+      "kpi_first_try_pass": {
+        "title": "Geçme oranı"
+      },
+      "kpi_median_days": {
+        "title": "Bitirmek için medyan gün sayısı"
+      },
+      "kpi_completions": {
+        "title": "Tamamlamalar"
+      },
+      "kpi_certificates": {
+        "title": "Verilen sertifikalar"
+      },
+      "kpi_needs_attention": {
+        "title": "Dikkat edilmesi gerekiyor"
+      },
+      "courses_summary": {
+        "title": "Bu gruptaki kurslar"
+      },
+      "students_by_status": {
+        "title": "Duruma göre öğrenciler"
+      },
+      "course_details": {
+        "title": "Kurs detayları"
+      },
+      "scores_by_exercise": {
+        "title": "Egzersize göre puanlar, {course}"
+      },
+      "progress_distribution": {
+        "title": "İlerleme dağılımı"
+      },
+      "section_scores": {
+        "title": "Bölümlere göre puanlar ve katılım"
+      },
+      "score_distribution": {
+        "title": "Ortalama puan dağılımı"
+      },
+      "section_scorecard": {
+        "title": "Bölüm bölüm puan kartı"
+      },
+      "needs_attention": {
+        "title": "Nedeniyle dikkat edilmesi gerekiyor"
+      },
+      "overdue": {
+        "title": "Hatırlatıcılarla gecikmiş"
+      },
+      "hardest_questions": {
+        "title": "En zor sorular"
+      },
+      "students": {
+        "title": "Öğrenciler"
+      },
+      "logins_per_day": {
+        "title": "Günlük olarak giriş yapan öğrenciler"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Alıştırmaya göre puanlar, kohorta göre"
+      },
+      "exercise_score_distribution": {
+        "title": "Puan dağılımı, {exercise}"
+      },
+      "lesson_dropoff": {
+        "title": "Ders tamamlama bırakma"
+      },
+      "hardest_exercises": {
+        "title": "En zor egzersizler"
+      },
+      "cohorts_in_course": {
+        "title": "Bu kursu alan gruplar"
+      },
+      "cohort_details": {
+        "title": "Kohort ayrıntıları"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Bir bakışta kohortlar"
+      },
+      "cohort_health": {
+        "title": "Grup sağlığına göre öğrenciler"
+      },
+      "hiring_ramp": {
+        "title": "Kayıtlı öğrenciler ve hedef"
+      },
+      "avg_score_by_cohort": {
+        "title": "Grup bazında ortalama puan"
+      },
+      "courses_by_completion": {
+        "title": "Tamamlanan kurslar"
+      },
+      "courses_at_a_glance": {
+        "title": "Kurslara genel bakış"
+      },
+      "scores_by_exercise_course": {
+        "title": "Alıştırmaya göre puanlar"
+      },
+      "avg_score_by_course": {
+        "title": "Ortalama puan, kursa göre"
+      },
+      "cohort_empty": {
+        "title": "Öğrencisi olmayan kohortlar"
+      }
+    },
+    "measures": {
+      "rows__count": "Öğrenciler",
+      "progress_pct__avg": "Ortalama ilerleme",
+      "avg_score_pct__avg": "Ortalama puan",
+      "avg_progress_pct__value": "Ortalama ilerleme",
+      "avg_score_pct__value": "Ortalama puan",
+      "first_try_pass__pooled": "Geçme oranı",
+      "is_completed__count_if": "Tamamlanmış",
+      "is_completed__rate": "Tamamlanma oranı",
+      "is_inactive__count_if": "Giriş yok, 2+ gün",
+      "is_low_score__count_if": "Ortalama puan %50'nin altında",
+      "is_overdue__count_if": "vadesi geçmiş",
+      "is_low_video__count_if": "Video katılımı %60'ın altında",
+      "logged_in__count_if": "Öğrenciler giriş yaptı",
+      "section_score_pct__avg": "Ortalama puan",
+      "video_pct__avg": "Video katılımı",
+      "attendance__pooled": "Sınıfa katılım",
+      "best_score_pct__avg": "Ortalama puan",
+      "is_complete__rate": "Tamamlanmış",
+      "members_total__value": "Kayıtlı öğrenciler"
+    },
+    "columns": {
+      "student": "Öğrenci",
+      "email": "E-posta",
+      "course": "Kurs",
+      "students": "Öğrenciler",
+      "progress": "İlerlemek",
+      "avg_progress": "Ortalama ilerleme",
+      "avg_score": "Ortalama puan",
+      "average_score": "Ortalama puan",
+      "completed": "Tamamlanmış",
+      "took_pass_mark": "Geçme notlu alıştırma yapanlar",
+      "passed_first_try": "Geçme oranı",
+      "exercises_passed": "Geçilen alıştırmalar",
+      "now_at": "Şimdi",
+      "courses_completed": "Tamamlanan kurslar",
+      "video": "Video",
+      "classroom": "Sınıf",
+      "video_attendance": "Video katılımı",
+      "classroom_attendance": "Sınıfa katılım",
+      "certificate": "Sertifika",
+      "certificates": "Sertifikalar",
+      "last_login": "Son giriş",
+      "status": "Durum",
+      "trend": "Eğilim",
+      "cohort": "Kohort",
+      "created": "Oluşturuldu",
+      "overdue": "vadesi geçmiş",
+      "health": "Sağlık",
+      "section": "Kurs bölümü",
+      "exercises_taken": "Alınan egzersizler",
+      "actions": "Eylemler"
+    },
+    "column_hints": {
+      "passed_first_try": "Geçme notu olan alıştırmalarda, ilk not verilen denemelerinde geçme notuna ulaşan öğrenciler.",
+      "section_passed_first_try": "Bu bölümde geçme notu bulunan her alıştırmada birinci not denemesinde geçme notuna ulaşan öğrenciler.",
+      "took_pass_mark": "Öğrenciler geçme notu olan en az bir alıştırmaya not verdi.",
+      "exercises_passed": "Kurstaki geçme notu olan tüm alıştırmalar arasında, bu öğrencinin işarete ulaştığı geçme notu olan alıştırmalar."
+    },
+    "actions": {
+      "send_reminder": "Hatırlatıcı gönder",
+      "queued": "Sıraya alındı",
+      "remind_all_overdue": "Tüm {count, plural, one {#gecikmiş öğrenci} other {# gecikmiş öğrenciler}}'yu hatırlat",
+      "reminders_queued": "Hatırlatıcılar sıraya alındı"
+    },
+    "target": {
+      "set": "Hedefi belirle",
+      "edit": "Hedefi düzenle",
+      "label": "Öğrenci hedefi",
+      "helper": "Hedeflediğiniz kayıtlı öğrenci sayısı. Kesikli çizgi olarak gösterir.",
+      "clear": "Hedefi kaldır",
+      "save": "Hedefi kaydet"
+    },
+    "hints": {
+      "exercise_score_distribution": "Puanlarını görmek için bir egzersiz seçin"
+    },
+    "students": {
+      "search": "Ada veya e-postaya göre arayın",
+      "empty": "Bu filtrelerle eşleşen öğrenci yok",
+      "showing": {
+        "cohort": "Grupta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "course": "Kurstaki {from}–{to} / {total} eşleşmesi gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "org": "Kuruluşta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}"
+      },
+      "clear_filters": "{count, plural, one {# filtreyi temizle} other {# filtreyi temizle}}",
+      "sort": {
+        "status": "Sırala: ilk önce gecikme",
+        "progress": "Sırala: en az ilerleme",
+        "name": "Sırala: A'dan Z'ye ad",
+        "low_score": "Sırala: en düşük ortalama puan"
+      },
+      "filters": {
+        "status": {
+          "label": "Durum",
+          "any": "Tüm durumlar",
+          "at_risk": "Risk altında",
+          "lagging": "Gecikme",
+          "on_track": "Yolda",
+          "completed": "Tamamlanmış"
+        },
+        "activity": {
+          "label": "Son giriş",
+          "any": "Herhangi bir giriş",
+          "today": "Bugün giriş yapanlar",
+          "idle": "2+ gün boyunca giriş yapılmadı"
+        },
+        "score": {
+          "label": "Ortalama puan",
+          "any": "Herhangi bir ortalama puan",
+          "lt50": "%50'nin altında",
+          "mid": "%50 ila %69",
+          "gte70": "%70 ve üzeri"
+        },
+        "flag": {
+          "label": "Bayraklar",
+          "any": "Herhangi bir bayrak",
+          "overdue": "vadesi geçmiş",
+          "certified": "Sertifika verildi",
+          "not_certified": "Sertifika yok"
+        },
+        "completion": {
+          "label": "Tamamlama",
+          "any": "Herhangi bir tamamlama",
+          "incomplete": "Tamamlanmadı"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Herhangi bir video",
+          "low": "%60'ın altında video"
+        },
+        "cohort_chip": "{count, plural, one {# kohort} other {# kohort}}"
+      },
+      "showing_paged": {
+        "cohort": "Grupta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
+        "course": "Kurstaki {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
+        "org": "Kuruluşta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "course": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "org": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
+      },
+      "showing_all": {
+        "cohort": "Grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "course": "Kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "org": "Kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
+      },
+      "failed": "Öğrenciler yüklenemedi",
+      "cells_failed": "Alıştırma puanları yüklenemedi",
+      "attempts_unavailable": "Hangi alıştırmalarda deneme olduğu kontrol edilemedi, bu yüzden bazı kilitli alıştırmalar gizli olabilir."
+    },
+    "empty": {
+      "failed": "Bu grafik yüklenemedi",
+      "dashboard_failed": "Analytics yüklenemedi",
+      "not_permitted": "Bu analizlere erişiminiz yok",
+      "no_exercises": "Bu kursta alıştırma yok",
+      "no_exercises_description": "Puanlar, alıştırmalar eklendiğinde ve öğrenciler denemeleri gönderdiğinde görünür."
+    },
+    "scope_empty": {
+      "title": {
+        "cohort": "Bu kohortta henüz öğrenci yok",
+        "course": "Bu kursta henüz öğrenci yok",
+        "org": "Kuruluşunuzda henüz öğrenci yok"
+      },
+      "description": {
+        "cohort": "Öğrenciler dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
+        "cohort_no_courses": "Kurs ekleyin, ardından öğrencileri davet edin. Dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
+        "course": "Öğrenciler dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
+        "org": "Akademinize öğrenci ekleyin, ardından onları kurslara veya kohortlara kaydedin."
+      },
+      "pending": "{count, plural, one {# davet} other {# davet}} kabul edilmeyi bekliyor. Öğrenciler katıldığında analizler dolar.",
+      "invite_students": "Öğrencileri davet et",
+      "add_courses": "Kurs ekle",
+      "add_students": "Öğrenci ekle"
+    },
+    "student_sheet": {
+      "last_login": "Son giriş: {when}",
+      "courses_heading": "Kurslar",
+      "scores_heading": "Egzersize göre puanlar, {course}",
+      "open_profile": "Kurs profilini aç",
+      "all_courses": "Tüm kurslar"
+    },
+    "pagination": {
+      "showing": "{total} öğeden {from}–{to} arası gösteriliyor",
+      "cohorts_org": "Kuruluştaki {total} kohorttan {from}–{to} arası gösteriliyor",
+      "cohorts_course": "Bu kursu alan {total} kohorttan {from}–{to} arası gösteriliyor",
+      "courses_cohort": "Kohorttaki {total} kurstan {from}–{to} arası gösteriliyor",
+      "courses_org": "Kuruluştaki {total} kurstan {from}–{to} arası gösteriliyor",
+      "sections_course": "Kurstaki {total} bölümden {from}–{to} arası gösteriliyor",
+      "overdue_cohort": "Kohorttaki {total} geciken öğrenciden {from}–{to} arası gösteriliyor"
+    },
+    "breakdown": {
+      "label": "Dağılım",
+      "courses": "Kurslar ({count})",
+      "cohorts": "Kohortlar ({count})",
+      "all_students": "Tüm öğrenciler",
+      "by_cohort": "Kohorta göre ({count})"
+    },
+    "cohorts": {
+      "picker": "Kohortlar: {total} içinden {selected}",
+      "search": "Kohort ara",
+      "empty": "Eşleşen kohort yok",
+      "newest": "En yeni {count}",
+      "none": "Temizle",
+      "students": "{count, plural, one {# öğrenci} other {# öğrenci}}",
+      "no_students": "Henüz öğrenci yok",
+      "direct_included": "Doğrudan öğrenciler her zaman dahildir.",
+      "select_all": "Tümünü seç",
+      "select_shown": "Görünenleri seç",
+      "load_more": "Daha fazla yükle",
+      "showing_matches": "{total} sonuçtan {shown} tanesi gösteriliyor",
+      "loading": "Kohortlar yükleniyor…",
+      "load_failed": "Kohortlar yüklenemedi."
+    },
+    "course_search": "Kurs ara",
+    "course_search_empty": "Eşleşen kurs yok",
+    "empty_states": {
+      "show_all_time": "Tüm zamanları göster",
+      "create_cohort": "Kohort oluştur",
+      "range": {
+        "title": "Son {days} günde etkinlik yok",
+        "description": "Bu kart yalnızca seçilen aralıkta olanları sayar."
+      },
+      "needs_attention": {
+        "title": "Kimsenin ilgiye ihtiyacı yok",
+        "description": "Etkin olmayan, %50'nin altında puan alan, gecikmiş veya videolarda geride kalan öğrenci yok."
+      },
+      "overdue": {
+        "title": "Gecikmiş kimse yok",
+        "description": "Her öğrenci son tarihleri içinde."
+      },
+      "scores": {
+        "title": "Henüz değerlendirilmiş deneme yok",
+        "description": "Puanlar, öğrenciler alıştırmaları gönderip denemeler değerlendirildiğinde görünür."
+      },
+      "student_scores": {
+        "title": "Henüz değerlendirilmiş deneme yok",
+        "description": "Bu öğrencinin puanları, denemeleri değerlendirildiğinde görünür."
+      },
+      "hardest_exercises": {
+        "title": "Henüz yeterli değerlendirilmiş deneme yok",
+        "description": "Bir alıştırma, en az 3 öğrencinin değerlendirilmiş denemesi olduğunda görünür."
+      },
+      "questions": {
+        "title": "Henüz yeterli yanıt yok",
+        "description": "Bir soru, en az 5 öğrenci değerlendirilmiş bir denemede yanıtladığında görünür."
+      },
+      "logins": {
+        "title": "Henüz giriş yok",
+        "description": "Öğrenciler, oturum açtıkları günlerde burada görünür."
+      },
+      "lessons": {
+        "title": "Henüz tamamlanmış ders yok",
+        "description": "Her dersin çubuğu, öğrenciler tamamladıkça dolar."
+      },
+      "growth": {
+        "title": "Henüz öğrenci eklenmedi",
+        "description": "Çizgi, kuruluşunuza eklenen ilk öğrenciyle başlar."
+      },
+      "courses_org": {
+        "title": "Henüz tamamlanmış kurs yok",
+        "description": "Kurslar, öğrenciler kaydolup tamamladıkça burada görünür."
+      },
+      "courses_cohort": {
+        "title": "Henüz kurs etkinliği yok",
+        "description": "Çubuklar ve satırlar, öğrenciler derslere veya alıştırmalara başladıkça dolar."
+      },
+      "cohorts_org": {
+        "title": "Henüz kohort yok",
+        "description": "Öğrencileri gruplamak ve ilerlemelerini karşılaştırmak için bir kohort oluşturun."
+      },
+      "cohorts_org_no_students": {
+        "title": "Bu kohortlarda henüz öğrenci yok",
+        "description": "Kohortlar arasındaki ilerlemeyi karşılaştırmaya başlamak için kuruluşunuza öğrenci ekleyin."
+      },
+      "cohorts_course": {
+        "title": "Bu kursu içeren kohort yok",
+        "description": "Kohortları burada karşılaştırmak için bu kursu bir kohorta ekleyin."
+      },
+      "cohorts_course_no_students": {
+        "title": "Bu kohortlarda henüz öğrenci yok",
+        "description": "Kohortlar arasındaki ilerlemeyi karşılaştırmaya başlamak için öğrencileri bu kursa davet edin."
+      },
+      "default": {
+        "title": "Henüz veri yok",
+        "description": "Bu kart, öğrenciler kursu kullandıkça dolar."
+      }
+    },
+    "export": {
+      "students_capped": "Öğrenci listesi ilk {limit} satırla sınırlıdır.",
+      "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır.",
+      "yes": "Evet",
+      "no": "Hayır",
+      "columns": {
+        "segment": "Grup",
+        "metric": "Ölçüt",
+        "value": "Değer",
+        "details": "Ayrıntılar"
+      },
+      "dimensions": {
+        "student": "Öğrenci",
+        "course": "Kurs",
+        "cohort": "Kohort",
+        "exercise": "Alıştırma",
+        "section": "Bölüm",
+        "lesson": "Ders",
+        "question": "Soru",
+        "item": "Öğe",
+        "day": "Gün",
+        "period": "Dönem",
+        "status": "Durum",
+        "overdue_kind": "Gecikme türü",
+        "progress_bucket_25": "İlerleme",
+        "score_bucket_10": "Ortalama puan"
+      }
+    },
+    "org_page_title": "Akademi",
+    "widget_menu": {
+      "label": "{title} için işlemler",
+      "view_students": "Öğrencileri görüntüle",
+      "open_in_students": "Öğrenciler sekmesinde aç",
+      "click_to_view": "Öğrencilerini görmek için bir çubuk veya dilim seçin"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# öğrenci} other {# öğrenci}}",
+      "description": "Bu sayının arkasındaki öğrenciler.",
+      "cohort_health": {
+        "any": "Öğrencisi olan kohortlarda",
+        "at_risk": "Risk altındaki kohortlarda",
+        "lagging": "Geride kalan kohortlarda",
+        "on_track": "Yolda olan kohortlarda",
+        "completed": "Tamamlanan kohortlarda"
+      },
+      "cohort_health_note": "Grafik, bu değerlendirmeye sahip kohortlardaki öğrencileri sayar; bu durumdaki öğrencileri değil.",
+      "count_differs": "Grafik {expected} sayar çünkü bir öğrenciyi bulunduğu her kohort için bir kez sayar. Bu liste {total} gösterir.",
+      "lesson_incomplete": "Tamamlanmadı: {lesson}",
+      "lesson_fallback": "bu ders",
+      "score_bucket": "Ortalama puan {range}",
+      "scored": "Ortalama puanı olan"
+    }
+  },
+  "certificate": {
+    "tab_design": "Design",
+    "tab_settings": "Settings",
+    "allow": "Allow students download certificate",
+    "email_message_label": "Email Message",
+    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
+    "rules": "Rules",
+    "editor": {
+      "title": "Certificate design",
+      "back": "Back",
+      "unsaved": "Unsaved changes",
+      "free_plan": "Available on Pro",
+      "discard": "Discard",
+      "save": "Save",
+      "saved": "Certificate design saved.",
+      "save_failed": "Could not save the certificate design. Check the form and try again.",
+      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
+      "sections": "Editor sections",
+      "preview": "Certificate preview",
+      "panel_templates": "Templates",
+      "panel_templates_subtitle": "Select a template for your certificate.",
+      "panel_content": "Content",
+      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
+      "panel_colors": "Colors",
+      "panel_colors_subtitle": "Customize the accent color.",
+      "panel_export": "Export",
+      "panel_export_subtitle": "Preview the current design as it will be delivered.",
+      "section_header": "Header copy",
+      "section_signatories": "Signatories",
+      "section_reference": "Reference",
+      "subtitle": "Subtitle",
+      "subtitle_placeholder": "Awarded with Highest Distinction",
+      "description_override": "Description override",
+      "description_override_placeholder": "Defaults to the description.",
+      "description_override_hint": "Leave blank to fall back to the description on save.",
+      "signatory_one_name": "Signatory 1 name",
+      "signatory_one_role": "Signatory 1 role",
+      "signatory_two_name": "Signatory 2 name",
+      "signatory_two_role": "Signatory 2 role",
+      "signatory_one_toggle": "Show signatory 1",
+      "signatory_two_toggle": "Show signatory 2",
+      "signature_upload": "Signature image",
+      "signature_upload_hint": "Upload a signature image (optional)",
+      "signature_dont_crop": "Don't Crop",
+      "id_format": "Certificate ID format",
+      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
+      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
+      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
+      "download_pdf": "Download PDF",
+      "download_png": "Download PNG",
+      "print": "Print",
+      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
+      "preview_failed": "Could not generate certificate preview",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Certificate of Excellence",
+      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
+      "sample_org": "The Royal Academy of Arts",
+      "summary_title": "Active design",
+      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
+      "field_template": "Template",
+      "field_accent": "Accent",
+      "field_signatories": "Signatories",
+      "customize_design": "Customize design",
+      "signatory_one": "Signatory 1",
+      "signatory_two": "Signatory 2",
+      "signatory_name": "Signatory name",
+      "signatory_role": "Signatory role",
+      "signature_image": "Signature image"
+    }
+  },
+  "public_learning_paths": {
+    "heading": "Learning Paths",
+    "subtitle": "Guided multi-course tracks with one enrollment, ordered courses, and a certificate at the end.",
+    "search_placeholder": "Search learning paths...",
+    "clear_search": "Clear search",
+    "label": "Learning Path",
+    "certificate_label": "Certificate",
+    "free_label": "Free",
+    "course_count_label": "{count} courses",
+    "enrolled_label": "{count} enrolled",
+    "navigation_failed": "Couldn't load the page. Please try again.",
+    "empty": {
+      "title": "No learning paths found",
+      "description": "Try clearing your search or check back later."
+    },
+    "detail": {
+      "about_heading": "What you'll learn",
+      "about_lead": "Practical, project-first skills — every course ends with something you built.",
+      "skills_heading": "Skills you'll gain",
+      "series_heading": "Course series",
+      "series_eyebrow": "Series · take in order",
+      "series_lead": "Each course unlocks the next once you finish its lessons and exercises.",
+      "rating_label": "Rated {rating} out of 5",
+      "certificate_heading": "Certificate",
+      "certificate_issuer": "Issued by",
+      "certificate_validity": "Validity",
+      "instructors_heading": "Instructors",
+      "instructors_lead": "The tutors behind the courses in this path.",
+      "reviews_heading": "Reviews",
+      "reviews_lead": "From people who finished the path.",
+      "faq_heading": "Frequently asked questions",
+      "no_faq": "No questions yet.",
+      "pricing_heading": "Enrollment",
+      "pricing_eyebrow": "Enrollment",
+      "enroll_path": "Enroll in this path",
+      "locked_label": "Locked",
+      "unlocked_label": "Unlocked",
+      "enroll_free": "Enroll free",
+      "enroll_label": "Enroll for {currency} {cost}",
+      "view_all": "View all learning paths",
+      "taught_by_two": "Taught by {first} and {second}",
+      "taught_by_many": "Taught by {names} + {count} more",
+      "features_courses_line": "All {courseCount} courses, unlocked in order",
+      "features_content_line": "{lessons} lessons · {exercises} exercises · 1 capstone",
+      "features_certificate_line": "Path certificate on completion",
+      "features_milestone_line": "Verified path milestone completion",
+      "features_access_line": "Lifetime access, learn at your pace",
+      "save_vs_individual": "Save {amount} vs individual courses",
+      "stat_courses": "courses in series",
+      "stat_enrolled": "enrolled",
+      "stat_certificate": "Certificate",
+      "stat_beginner": "Beginner",
+      "stat_on_completion": "on completion",
+      "stat_no_experience": "no prior exp.",
+      "stat_reviews": "{count} reviews",
+      "full_path": "Full path",
+      "save_percent": "Save {percent}%",
+      "social_proof": "{students} already enrolled · {rating} ★ from {reviews} reviews",
+      "enroll_with_cost": "Enroll · {cost}",
+      "series_heading_count": "{count} courses in this path",
+      "series_course": "Course {index}",
+      "series_lessons": "{count} lessons",
+      "series_outcomes_heading": "What you'll learn",
+      "show_outline": "Show lesson outline",
+      "hide_outline": "Hide lesson outline",
+      "preview_badge": "Preview",
+      "unavailable": "This learning path is currently unavailable for enrollment.",
+      "back_to_path": "Back to learning path"
+    }
   },
   "learningPath": {
     "badge": {
@@ -7354,935 +8283,6 @@
     },
     "preview": {
       "courses_heading": "Courses in this path"
-    }
-  },
-  "course_templates": {
-    "row": {
-      "heading": "Yeni bir kurs oluştur",
-      "gallery": "Şablon galerisi",
-      "yours": "Kurslarınız",
-      "blank": "Boş kurs",
-      "blank_subtitle": "Sıfırdan başla"
-    },
-    "card": {
-      "curated": "Önceden hazırlanmış şablon",
-      "yours": "Şablonunuz",
-      "used": "Şablonunuz · Kullanılan {date}"
-    },
-    "gallery": {
-      "back": "Tüm kurslar",
-      "title": "Şablon galerisi",
-      "subtitle": "Şablonlarınızın birinden bir kurs başlatın veya ClassroomIO.",
-      "search": "Şablon bul",
-      "scope_all": "Tüm şablonlar",
-      "scope_org": "Şablonlarım",
-      "scope_global": "ClassroomIO",
-      "empty_org": "Henüz herhangi bir şablon oluşturmadınız. ⋯ menüsünden herhangi bir kursu şablon olarak kaydedin.",
-      "no_match": "“{query}” ile eşleşen şablon yok.",
-      "empty_global": "Henüz ClassroomIO şablonu yok."
-    },
-    "preview": {
-      "course_name": "Ders adı",
-      "use": "Şablonu kullan",
-      "open": "Şablonu aç",
-      "cancel": "İptal",
-      "loading": "Lşablon yükleniyor…",
-      "copying": "Kopyalanıyor {sections, plural, one {# bölüm} other {# bölüm}}, {lessons, plural, one {# ders} other {# ders}}…",
-      "created": "Course created from {title}",
-      "shows_off": "Gösterilir",
-      "settings": "Ayarlar",
-      "certificate": "Sertifika etkin",
-      "deadline": "Son tarih {date}",
-      "sequential": "Lessons unlock in order",
-      "grading": "A öğretmen gönderimlere not verir",
-      "comments_off": "Lders yorumları kapalı",
-      "lesson_download": "LÖğrenciler dersleri indirebilir",
-      "self_enrollment": "LÖğrenciler kendilerine katılabilir",
-      "ai_tutor": "AI öğretmeni açık",
-      "compliance_retake": "{months, plural, one {Her ay} other {Her # ayda bir}} tekrar alın",
-      "compliance_mandatory": "Zorunlu",
-      "counts": "{sections} bölümler · {lessons} dersler · {exercises} egzersizler",
-      "questions": "{count, plural, one {# soru} other {# soru}}"
-    },
-    "menu": {
-      "open": "Open",
-      "duplicate": "Duplicate",
-      "delete": "Delete",
-      "save": "Şablon olarak kaydet…",
-      "create_course": "Şablondan ders oluştur",
-      "duplicated": "Çoğaltılmış şablon",
-      "deleted": "Şablon silindi"
-    },
-    "save": {
-      "title": "Şablon olarak kaydet",
-      "copy": "Bir kopyasını şablon olarak kaydet",
-      "copy_description": "Kurs olduğu gibi kalır.",
-      "convert": "Bu kursu dönüştürün",
-      "convert_description": "Kurs bir şablon haline gelir. Yayınlanamaz veya öğrencileri olamaz.",
-      "has_students": "{count, plural, one {# student} other {# students}} vardır — bunun yerine bir kopyasını kaydedin.",
-      "unpublish": "Dönüştürme bu kursu yayından kaldırır.",
-      "name": "Şablon adı",
-      "save_button": "Şablonu kaydet",
-      "convert_button": "Şablona dönüştürün",
-      "saved": "Şablon kaydedildi",
-      "converted": "Kurs şablona dönüştürüldü",
-      "limit_title": "Planınız şunları içeriyor: {count, plural, one {# template} other {# templates}}",
-      "limit_body": "Zaten {used, plural, one {{title}} other {# templates}} var. Daha fazla şablon için yükseltme yapın veya sahip olduğunuz birini silin.",
-      "upgrade": "Yükselt",
-      "manage": "Şablonları yönet",
-      "view_templates": "Şablonları görüntüle"
-    },
-    "empty": {
-      "title": "Henüz kurs yok",
-      "description": "Bir kursu bir kez oluşturun, ardından müşterilerinizi kursa kaydedin. Kursu kendiniz oluşturun veya taslağı ajanınıza hazırlatın.",
-      "enrolled": "Kayıtlı"
-    },
-    "editor": {
-      "badge": "Template"
-    },
-    "sync": {
-      "alert_title": "Template'te {count, plural, one {# update} other {# updates}}",
-      "alert_body": "{title}, {date}'i son çektiğinizden beri değişti.",
-      "review_in_settings": "Ayarlarda incele",
-      "section_title": "Template",
-      "last_pulled": "LSon çekilen {date}",
-      "review": "Güncellemeleri inceleyin",
-      "up_to_date": "Şablonla güncel.",
-      "deleted": "{title} silindi. Bu kurs tüm içeriğini korur; çekilecek hiçbir şey kalmadı.",
-      "deleted_unknown": "Bu şablon silindi. Bu kurs tüm içeriğini korur; çekilecek hiçbir şey kalmadı.",
-      "available_detail": "{count, plural, one {# güncelleme mevcut} other {# güncelleme mevcut}} — {list}.",
-      "join": "{rest} ve {last}",
-      "sections_count": "{count, plural, one {# bölüm} other {# bölüm}}",
-      "settings_count": "{count, plural, one {# ayar} other {# ayar}}",
-      "content": "İçerik",
-      "settings": "Ayarlar",
-      "select_all": "Tümünü seç",
-      "new": "Yeni",
-      "updated": "Güncellendi",
-      "locked": "{count, plural, one {# gönderim — güncellenemez} other {# gönderim — güncellenemez}}",
-      "edited_locally": "Bunu tarihinde düzenlediniz {date} — çekme, değişikliklerinizin yerini alır.",
-      "removed_locally": "Bunu kursunuzdan sildiniz.",
-      "also_adds": "Ayrıca {kind}: {title}",
-      "template_value": "Şablon: {value}",
-      "yours_value": "Sizinkiler: {value}",
-      "yes": "Evet",
-      "no": "No",
-      "empty_value": "None",
-      "custom_value": "Custom",
-      "selected": "{count, plural, one {# seçili} other {# seçili}}",
-      "pull": "{count, plural, one {# değişikliği çek} other {# değişikliği çek}}",
-      "pulled": "Pulled {count, plural, one {# change} other {# changes}} from {title}",
-      "kind": {
-        "section": "Section",
-        "lesson": "Lesson",
-        "exercise": "Egzersiz"
-      },
-      "detail": {
-        "title": "Başlık",
-        "content": "İçerik",
-        "locales": "{locales} eklendi"
-      },
-      "setting": {
-        "description": "Açıklama",
-        "bannerImage": "Kapak resmi",
-        "welcomeEmail": "Karşılama e-postası",
-        "completionDeadline": "Tamamlanma tarihi",
-        "contentGrouping": "İçerik gruplama",
-        "progression": "İlerleme",
-        "comments": "Lders yorumları",
-        "selfEnrollment": "Kendi kendine kayıt",
-        "markdownExport": "Markdown dışa aktarma",
-        "lessonDownload": "Lders indirme",
-        "landingRequirements": "Laçılış gereksinimleri",
-        "landingDescription": "Laçılış açıklaması",
-        "landingGoals": "Laçılış hedefleri",
-        "landingSkills": "Beceriler",
-        "landingTools": "Araçlar",
-        "landingInstructor": "Eğitmen",
-        "pricing": "Fiyatlandırma",
-        "certificateDesign": "Sertifika tasarımı",
-        "certificateRules": "Sertifika kuralları",
-        "aiTutor": "AI öğretmeni"
-      },
-      "section_description": "Bu kurs bir şablondan oluşturulmuştur. Değişiklikleri istediğiniz zaman çekin; hiçbir şey kendi başına değişmez.",
-      "updates_title": "{count, plural, one {# güncelleme mevcut} other {# güncelleme mevcut}}",
-      "deleted_title": "Şablon silindi",
-      "sheet_title": "Şablon güncellemeleri",
-      "sheet_description": "{title}'ten, {date}'ten beri. Ne çekeceğinizi seçin; kursunuzdan hiçbir şey kaldırılmaz.",
-      "nothing_selected": "Hiçbir şey seçilmedi",
-      "loading": "Lgüncellemeler yükleniyor…",
-      "value": {
-        "free": "Free",
-        "sequential": "Sequential",
-        "no_price": "Free"
-      },
-      "template_label": "Template",
-      "yours_label": "Sizinkiler"
-    },
-    "home": {
-      "heading": "Veya bir şablondan başlayın",
-      "description": "Dersler, alıştırmalar ve ayarlarla eksiksiz bir kurs. Kopyalayın ve kendinize ait yapın.",
-      "browse": "Tüm şablonlara göz atın"
-    }
-  },
-  "early_adopter_claim": {
-    "page": {
-      "title": "Ödeme alındı. Bir adım kaldı.",
-      "body": "Hesabınızı oluşturun veya giriş yapın, Early Adopter planınızı akademinize otomatik olarak bağlayalım.",
-      "sign_up": "Hesabımı oluştur",
-      "log_in": "Giriş yap",
-      "continue": "Akademime devam et"
-    },
-    "success": {
-      "title": "Early Adopter planınız etkin",
-      "body": "Fiyatınız sabitlendi ve tüm Early Adopter özellikleri artık akademiniz için açık.",
-      "continue": "Oluşturmaya başla"
-    },
-    "errors": {
-      "invalid": "Bu bağlantı geçerli değil. Size gönderdiğimiz e-postayı kontrol edin veya destekle iletişime geçin.",
-      "expired": "Bu bağlantının süresi doldu. Destekle iletişime geçin, planınızı bağlamanıza yardım edelim.",
-      "unavailable": "Bu plan bağlantısı daha önce kullanıldı veya artık etkin değil. Bir hata olduğunu düşünüyorsanız destekle iletişime geçin.",
-      "conflict": "Bu akademinin zaten ücretli bir planı var, bu yüzden bunu bağlayamadık. Destekle iletişime geçin, yardımcı olalım."
-    }
-  },
-  "video_guide": {
-    "watch_video": "Videoyu izle",
-    "new_badge": "Yeni",
-    "close": "Kapat",
-    "dismiss": "Anladım",
-    "lesson_blocks": {
-      "coach_title": "🎉 Yeni! Dersler artık esnek.",
-      "coach_description": "Her dersi not, video, slayt, belge ve resim bloklarından istediğiniz sırayla oluşturun. Denemek için Düzenle'yi seçin.",
-      "title": "Ders bloklarıyla tanışın",
-      "description": "Dersler artık bloklardan oluşturuluyor. 5 dakikada nasıl çalıştığını görün."
-    },
-    "connect_claude": {
-      "description": "ClassroomIO'yu Claude'a nasıl bağlayacağınızı ve ona neler sorabileceğinizi görün. 4 dakika.",
-      "title": "ClassroomIO'yu Claude'a bağlayın"
-    }
-  },
-  "whats_new": {
-    "new_badge": "Yeni",
-    "read_full": "Tüm değişiklik günlüğünü oku",
-    "close": "Kapat"
-  },
-  "analytics": {
-    "title": "Analitik",
-    "updated_seconds_ago": "{count}s önce güncellendi",
-    "updated_minutes_ago": "{count, plural, one {# dakika önce güncellendi} other {# dakika önce güncellendi}}",
-    "retry": "Tekrar deneyin",
-    "scope_empty": {
-      "title": {
-        "cohort": "Bu kohortta henüz öğrenci yok",
-        "course": "Bu kursta henüz öğrenci yok",
-        "org": "Kuruluşunuzda henüz öğrenci yok"
-      },
-      "description": {
-        "cohort": "Öğrenciler dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
-        "cohort_no_courses": "Kurs ekleyin, ardından öğrencileri davet edin. Dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
-        "course": "Öğrenciler dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
-        "org": "Akademinize öğrenci ekleyin, ardından onları kurslara veya kohortlara kaydedin."
-      },
-      "pending": "{count, plural, one {# davet} other {# davet}} kabul edilmeyi bekliyor. Öğrenciler katıldığında analizler dolar.",
-      "invite_students": "Öğrencileri davet et",
-      "add_courses": "Kurs ekle",
-      "add_students": "Öğrenci ekle"
-    },
-    "all_courses": "Tüm kurslar",
-    "breakdown": {
-      "label": "Dağılım",
-      "courses": "Kurslar ({count})",
-      "cohorts": "Kohortlar ({count})",
-      "all_students": "Tüm öğrenciler",
-      "by_cohort": "Kohorta göre ({count})"
-    },
-    "cohorts": {
-      "picker": "Kohortlar: {total} içinden {selected}",
-      "search": "Kohort ara",
-      "empty": "Eşleşen kohort yok",
-      "newest": "En yeni {count}",
-      "none": "Temizle",
-      "students": "{count, plural, one {# öğrenci} other {# öğrenci}}",
-      "no_students": "Henüz öğrenci yok",
-      "direct_included": "Doğrudan öğrenciler her zaman dahildir.",
-      "select_all": "Tümünü seç",
-      "select_shown": "Görünenleri seç",
-      "load_more": "Daha fazla yükle",
-      "showing_matches": "{total} sonuçtan {shown} tanesi gösteriliyor",
-      "loading": "Kohortlar yükleniyor…",
-      "load_failed": "Kohortlar yüklenemedi."
-    },
-    "course_picker": "Kurs",
-    "exercise_picker": "Alıştırma",
-    "not_in_section": "Bir bölümde değil",
-    "section_number": "Bölüm {number}",
-    "section_with_title": "Bölüm {number} · {title}",
-    "finished": "Bitmiş",
-    "awaiting_grade": "Not bekleniyor",
-    "awaiting_grade_short": "Askıda olması",
-    "pass_mark_tag": "Geçme notu {mark}%",
-    "of_total": "{count} / {total}",
-    "never": "Asla",
-    "invited": "{count} davet edildi",
-    "no_students": "Öğrenci yok",
-    "no_students_yet": "Henüz öğrenci yok",
-    "no_graded_attempts": "Değerlendirilmiş deneme yok",
-    "names_and_more": "{names} ve {count} kişi daha",
-    "course_search": "Kurs ara",
-    "course_search_empty": "Eşleşen kurs yok",
-    "certificate_issued": "{count, plural, one {Veriliş} other {# Veriliş}}",
-    "question_hint": {
-      "context_and_answer": "{context} · en yaygın yanlış cevap: {answer}",
-      "answer": "En yaygın yanlış cevap: {answer}"
-    },
-    "chips": {
-      "label": "Bu kontrol paneli hakkında",
-      "live": "Canlı · {updated}",
-      "live_every": "Canlı · {updated} · her {seconds}s'de yenilenir",
-      "students": "{count, plural, one {# öğrenci} other {# öğrenci}}",
-      "courses": "Kurslar: {count}",
-      "cohorts": "Gruplar: {count}",
-      "active_cohorts": "{count, plural, one {# aktif grup} other {# aktif grup}}",
-      "seats": "Koltuklar: {used} / {limit}",
-      "seats_not_joined": "{count} henüz katılmadı"
-    },
-    "pagination": {
-      "showing": "{total} öğeden {from}–{to} arası gösteriliyor",
-      "cohorts_org": "Kuruluştaki {total} kohorttan {from}–{to} arası gösteriliyor",
-      "cohorts_course": "Bu kursu alan {total} kohorttan {from}–{to} arası gösteriliyor",
-      "courses_cohort": "Kohorttaki {total} kurstan {from}–{to} arası gösteriliyor",
-      "courses_org": "Kuruluştaki {total} kurstan {from}–{to} arası gösteriliyor",
-      "sections_course": "Kurstaki {total} bölümden {from}–{to} arası gösteriliyor",
-      "overdue_cohort": "Kohorttaki {total} geciken öğrenciden {from}–{to} arası gösteriliyor"
-    },
-    "now_tag": {
-      "label": "Şimdi",
-      "hint": "Öğrencilerin şu anda nerede durduğunu gösterir. Menzil bu kartı değiştirmez."
-    },
-    "student_chips": {
-      "latest": "En sonuncu",
-      "progress": "İlerlemek",
-      "now_at": "şimdi {place}'da"
-    },
-    "donut": {
-      "students": "{count, plural, one {öğrenci} other {öğrenciler}}"
-    },
-    "status": {
-      "at_risk": "Risk altında",
-      "lagging": "Gecikme",
-      "on_track": "Yolda",
-      "completed": "Tamamlanmış"
-    },
-    "flags": {
-      "overdue": "vadesi geçmiş"
-    },
-    "legend": {
-      "middle_half": "Öğrencilerin orta %50'si",
-      "cohort_average": "Kohort ortalaması",
-      "student": "Öğrenci",
-      "all_students": "Tüm öğrenciler",
-      "direct_students": "Doğrudan öğrenciler",
-      "in_progress": "{name} (devam ediyor)",
-      "enrolled_students": "Kayıtlı öğrenciler",
-      "target": "Hedef",
-      "logins": "Girişler"
-    },
-    "notes": {
-      "score_distribution": "Puan bandı başına öğrenciler.",
-      "course_details": "Alıştırmalara göre puanları, bölüm bölüm puan kartını ve en zor soruları görmek için yukarıdan bir kurs seçin.",
-      "section_scorecard": "Kurs bölümü başına bir satır. Video katılım, izlenen ders videolarının payıdır. Derse devam durumu öğretmen tarafından işaretlenir.",
-      "needs_attention": "Bir öğrenci birden fazla nedenden dolayı ortaya çıkabilir.",
-      "overdue": "Öğrenciler zaten son tarihten önce planlanmış hatırlatma e-postaları alıyor. \"Hatırlatıcı gönder\" hemen bir tane gönderir.",
-      "hardest_questions": "Öğrencilerin en çok gözden kaçırdığı sorular ve en yaygın yanlış cevap.",
-      "logins_per_day": "Her gün oturum açan öğrenciler.",
-      "students": {
-        "all_courses": "Kurslarını görmek için bir öğrenciye tıklayın.",
-        "one_course": "Puanlarının grafiğini görmek için bir öğrenciye tıklayın. Arama, filtreler ve sıralama aynı zamanda dışa aktarma için de geçerlidir.",
-        "course_scope": "Bu kurstaki ilerlemesini açmak için bir öğrenci seçin. Arama, filtreler ve sıralama aynı zamanda dışa aktarma için de geçerlidir."
-      },
-      "showing_first": "{total} içinden ilk {shown} gösteriliyor.",
-      "cohorts_select": "Kontrol panelini açmak için bir grup seçin.",
-      "courses_select": "Kontrol panelini açmak için bir kurs seçin.",
-      "cohorts_in_table": "Yukarıdaki tabloda {count, plural, one {kohort} other {# kohort}}.",
-      "courses_in_table": "{count, plural, one {Yukarıdaki tabloda # kurs} other {Yukarıdaki tabloda # kurs}} var.",
-      "not_counted_empty": "Sayılmadı: {names} (henüz öğrenci yok).",
-      "not_charted_empty": "Grafikte gösterilmedi: {names} (henüz öğrenci yok).",
-      "direct_students_charted": "Doğrudan öğrenciler bir kohorta ait değildir; kendi çizgilerinde görünür.",
-      "bucketed_total": "Her çubuk {days} gün boyunca yapılan girişleri toplar. Bir öğrenci günde bir kez sayılır.",
-      "student_sheet_pick_course": "Puanlarını alıştırmaya göre grafiklendirmek için bir kursa tıklayın.",
-      "lesson_dropoff": "En dik düşüş {from} ile {to} arasındadır.",
-      "no_pass_mark": "Buradaki hiçbir egzersizin henüz geçme notu yok, dolayısıyla geçme oranı yok. Görmek için bir egzersize geçme notu koyun."
-    },
-    "buckets": {
-      "progress": {
-        "0": "0–25",
-        "1": "25–50",
-        "2": "50–75",
-        "3": "75–99",
-        "4": "Tamamlamak"
-      },
-      "score": {
-        "4": "<50",
-        "5": "50–59",
-        "6": "60–69",
-        "7": "70–79",
-        "8": "80–89",
-        "9": "90+",
-        "null": "Puan yok"
-      }
-    },
-    "kpi": {
-      "share_of_cohort": "Grubun {percent}'si",
-      "share_of_enrolled": "{percent} kayıtlı kişi",
-      "share_of_completions": "{percent} tamamlama sayısı",
-      "avg_progress_hint": "tamamlanan zorunlu dersler ve alıştırmalar / toplam",
-      "avg_score_hint": "yapılan egzersizler arasında",
-      "overdue_hint": "son teslim tarihi geçmiş, yapılmamış",
-      "completed_certified": "Grubun {percent}'si · {count} sertifikalı",
-      "enrolled_this_week": "{count, plural, =0 {Bu hafta yeni öğrenci yok} other {+# bu hafta}}",
-      "enrolled_in_days": "{count, plural, =0 {Son {days} günde yeni öğrenci yok} other {+# son {days} günde}}",
-      "added_in_days": "{count, plural, =0 {Son {days} günde yok} other {+# son {days} günde}}",
-      "completed_in_days": "Grubun {percent}'si{count, plural, =0 {} other { · +# son {days} günde}}",
-      "logged_in_days": "Giriş yaptınız, son {days} gün",
-      "avg_score_in_days": "son {days} gün içindeki girişimler",
-      "first_try_in_days": "son {days} gün içinde not verilen {took} sayısı{still, plural, =0 {} other { · # hala geçilecek}}",
-      "median_days_in_days": "son {days} günde tamamlananlar için",
-      "first_try_context": "geçme notu egzersizi yapan {took} kişi sayısı{still, plural, =0 {} other { · # hala geçilecek}}",
-      "median_days_hint": "tamamlanana kadar kayıt",
-      "needs_attention_hint": "etkin değil, düşük puan veya gecikmiş",
-      "delta": {
-        "this_week": {
-          "up": "Bu hafta +{count} puan",
-          "down": "−{count} puan bu hafta",
-          "flat": "Bu hafta değişiklik yok"
-        },
-        "vs_last_week": {
-          "up": "+{count} puan geçen haftaya göre",
-          "down": "−{count} puan geçen haftaya göre",
-          "flat": "Geçen haftaya göre değişiklik yok"
-        },
-        "in_days": {
-          "up": "Son {days} günde +{count} puan",
-          "down": "−{count} son {days} günde puan",
-          "flat": "Son {days} günde değişiklik yok"
-        },
-        "vs_days_ago": {
-          "up": "+{count} puan vs {days} gün önce",
-          "down": "−{count} puan vs {days} gün önce",
-          "flat": "{days} gün öncesine göre değişiklik yok"
-        }
-      },
-      "no_data": {
-        "students": "henüz öğrenci yok",
-        "graded": "henüz değerlendirilmiş deneme yok",
-        "first_try": "geçme notu olan bir alıştırmada henüz değerlendirilmiş deneme yok",
-        "completions": "henüz tamamlama yok",
-        "enrolments": "henüz kayıt yok",
-        "in_days": "son {days} günde yok"
-      }
-    },
-    "widgets": {
-      "kpi_logged_in_today": {
-        "title": "Bugün giriş yapanlar"
-      },
-      "kpi_logged_in_week": {
-        "title": "Giriş yaptım, son 7 gün"
-      },
-      "kpi_avg_progress": {
-        "title": "Ortalama ilerleme"
-      },
-      "kpi_avg_score": {
-        "title": "Ortalama puan"
-      },
-      "kpi_avg_grade": {
-        "title": "Ortalama not"
-      },
-      "kpi_overdue": {
-        "title": "vadesi geçmiş"
-      },
-      "kpi_completed": {
-        "title": "Tamamlanmış"
-      },
-      "kpi_enrolled": {
-        "title": "Kayıtlı"
-      },
-      "kpi_completion_rate": {
-        "title": "Tamamlanma oranı"
-      },
-      "kpi_first_try_pass": {
-        "title": "Geçme oranı"
-      },
-      "kpi_median_days": {
-        "title": "Bitirmek için medyan gün sayısı"
-      },
-      "kpi_completions": {
-        "title": "Tamamlamalar"
-      },
-      "kpi_certificates": {
-        "title": "Verilen sertifikalar"
-      },
-      "kpi_needs_attention": {
-        "title": "Dikkat edilmesi gerekiyor"
-      },
-      "courses_summary": {
-        "title": "Bu gruptaki kurslar"
-      },
-      "students_by_status": {
-        "title": "Duruma göre öğrenciler"
-      },
-      "course_details": {
-        "title": "Kurs detayları"
-      },
-      "courses_at_a_glance": {
-        "title": "Kurslara genel bakış"
-      },
-      "scores_by_exercise": {
-        "title": "Egzersize göre puanlar, {course}"
-      },
-      "scores_by_exercise_course": {
-        "title": "Alıştırmaya göre puanlar"
-      },
-      "progress_distribution": {
-        "title": "İlerleme dağılımı"
-      },
-      "section_scores": {
-        "title": "Bölümlere göre puanlar ve katılım"
-      },
-      "score_distribution": {
-        "title": "Ortalama puan dağılımı"
-      },
-      "section_scorecard": {
-        "title": "Bölüm bölüm puan kartı"
-      },
-      "needs_attention": {
-        "title": "Nedeniyle dikkat edilmesi gerekiyor"
-      },
-      "overdue": {
-        "title": "Hatırlatıcılarla gecikmiş"
-      },
-      "hardest_questions": {
-        "title": "En zor sorular"
-      },
-      "students": {
-        "title": "Öğrenciler"
-      },
-      "logins_per_day": {
-        "title": "Günlük olarak giriş yapan öğrenciler"
-      },
-      "scores_by_exercise_by_cohort": {
-        "title": "Alıştırmaya göre puanlar, kohorta göre"
-      },
-      "exercise_score_distribution": {
-        "title": "Puan dağılımı, {exercise}"
-      },
-      "lesson_dropoff": {
-        "title": "Ders tamamlama bırakma"
-      },
-      "hardest_exercises": {
-        "title": "En zor egzersizler"
-      },
-      "cohorts_in_course": {
-        "title": "Bu kursu alan gruplar"
-      },
-      "cohort_details": {
-        "title": "Kohort ayrıntıları"
-      },
-      "cohorts_at_a_glance": {
-        "title": "Bir bakışta kohortlar"
-      },
-      "cohort_health": {
-        "title": "Grup sağlığına göre öğrenciler"
-      },
-      "hiring_ramp": {
-        "title": "Kayıtlı öğrenciler ve hedef"
-      },
-      "avg_score_by_cohort": {
-        "title": "Grup bazında ortalama puan"
-      },
-      "avg_score_by_course": {
-        "title": "Ortalama puan, kursa göre"
-      },
-      "courses_by_completion": {
-        "title": "Tamamlanan kurslar"
-      },
-      "cohort_empty": {
-        "title": "Öğrencisi olmayan kohortlar"
-      }
-    },
-    "measures": {
-      "rows__count": "Öğrenciler",
-      "progress_pct__avg": "Ortalama ilerleme",
-      "avg_score_pct__avg": "Ortalama puan",
-      "avg_progress_pct__value": "Ortalama ilerleme",
-      "avg_score_pct__value": "Ortalama puan",
-      "first_try_pass__pooled": "Geçme oranı",
-      "is_completed__count_if": "Tamamlanmış",
-      "is_completed__rate": "Tamamlanma oranı",
-      "is_inactive__count_if": "Giriş yok, 2+ gün",
-      "is_low_score__count_if": "Ortalama puan %50'nin altında",
-      "is_overdue__count_if": "vadesi geçmiş",
-      "is_low_video__count_if": "Video katılımı %60'ın altında",
-      "logged_in__count_if": "Öğrenciler giriş yaptı",
-      "section_score_pct__avg": "Ortalama puan",
-      "video_pct__avg": "Video katılımı",
-      "attendance__pooled": "Sınıfa katılım",
-      "best_score_pct__avg": "Ortalama puan",
-      "is_complete__rate": "Tamamlanmış",
-      "members_total__value": "Kayıtlı öğrenciler"
-    },
-    "columns": {
-      "student": "Öğrenci",
-      "email": "E-posta",
-      "course": "Kurs",
-      "students": "Öğrenciler",
-      "progress": "İlerlemek",
-      "avg_progress": "Ortalama ilerleme",
-      "avg_score": "Ortalama puan",
-      "average_score": "Ortalama puan",
-      "completed": "Tamamlanmış",
-      "took_pass_mark": "Geçme notlu alıştırma yapanlar",
-      "passed_first_try": "Geçme oranı",
-      "exercises_passed": "Geçilen alıştırmalar",
-      "now_at": "Şimdi",
-      "courses_completed": "Tamamlanan kurslar",
-      "video": "Video",
-      "classroom": "Sınıf",
-      "video_attendance": "Video katılımı",
-      "classroom_attendance": "Sınıfa katılım",
-      "certificate": "Sertifika",
-      "certificates": "Sertifikalar",
-      "last_login": "Son giriş",
-      "status": "Durum",
-      "trend": "Eğilim",
-      "cohort": "Kohort",
-      "created": "Oluşturuldu",
-      "overdue": "vadesi geçmiş",
-      "health": "Sağlık",
-      "section": "Kurs bölümü",
-      "exercises_taken": "Alınan egzersizler",
-      "actions": "Eylemler"
-    },
-    "column_hints": {
-      "passed_first_try": "Geçme notu olan alıştırmalarda, ilk not verilen denemelerinde geçme notuna ulaşan öğrenciler.",
-      "section_passed_first_try": "Bu bölümde geçme notu bulunan her alıştırmada birinci not denemesinde geçme notuna ulaşan öğrenciler.",
-      "took_pass_mark": "Öğrenciler geçme notu olan en az bir alıştırmaya not verdi.",
-      "exercises_passed": "Kurstaki geçme notu olan tüm alıştırmalar arasında, bu öğrencinin işarete ulaştığı geçme notu olan alıştırmalar."
-    },
-    "actions": {
-      "send_reminder": "Hatırlatıcı gönder",
-      "queued": "Sıraya alındı",
-      "remind_all_overdue": "Tüm {count, plural, one {#gecikmiş öğrenci} other {# gecikmiş öğrenciler}}'yu hatırlat",
-      "reminders_queued": "Hatırlatıcılar sıraya alındı"
-    },
-    "target": {
-      "set": "Hedefi belirle",
-      "edit": "Hedefi düzenle",
-      "label": "Öğrenci hedefi",
-      "helper": "Hedeflediğiniz kayıtlı öğrenci sayısı. Kesikli çizgi olarak gösterir.",
-      "clear": "Hedefi kaldır",
-      "save": "Hedefi kaydet"
-    },
-    "hints": {
-      "exercise_score_distribution": "Puanlarını görmek için bir egzersiz seçin"
-    },
-    "student_sheet": {
-      "last_login": "Son giriş: {when}",
-      "courses_heading": "Kurslar",
-      "scores_heading": "Egzersize göre puanlar, {course}",
-      "open_profile": "Kurs profilini aç",
-      "all_courses": "Tüm kurslar"
-    },
-    "students": {
-      "search": "Ada veya e-postaya göre arayın",
-      "empty": "Bu filtrelerle eşleşen öğrenci yok",
-      "failed": "Öğrenciler yüklenemedi",
-      "cells_failed": "Alıştırma puanları yüklenemedi",
-      "attempts_unavailable": "Hangi alıştırmalarda deneme olduğu kontrol edilemedi, bu yüzden bazı kilitli alıştırmalar gizli olabilir.",
-      "showing": {
-        "cohort": "Grupta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "course": "Kurstaki {from}–{to} / {total} eşleşmesi gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "Kuruluşta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}"
-      },
-      "showing_paged": {
-        "cohort": "Grupta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
-        "course": "Kurstaki {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
-        "org": "Kuruluşta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor"
-      },
-      "showing_filtered": {
-        "cohort": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "course": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
-      },
-      "showing_all": {
-        "cohort": "Grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "course": "Kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "Kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
-      },
-      "clear_filters": "{count, plural, one {# filtreyi temizle} other {# filtreyi temizle}}",
-      "sort": {
-        "status": "Sırala: ilk önce gecikme",
-        "progress": "Sırala: en az ilerleme",
-        "name": "Sırala: A'dan Z'ye ad",
-        "low_score": "Sırala: en düşük ortalama puan"
-      },
-      "filters": {
-        "status": {
-          "label": "Durum",
-          "any": "Tüm durumlar",
-          "at_risk": "Risk altında",
-          "lagging": "Gecikme",
-          "on_track": "Yolda",
-          "completed": "Tamamlanmış"
-        },
-        "activity": {
-          "label": "Son giriş",
-          "any": "Herhangi bir giriş",
-          "today": "Bugün giriş yapanlar",
-          "idle": "2+ gün boyunca giriş yapılmadı"
-        },
-        "score": {
-          "label": "Ortalama puan",
-          "any": "Herhangi bir ortalama puan",
-          "lt50": "%50'nin altında",
-          "mid": "%50 ila %69",
-          "gte70": "%70 ve üzeri"
-        },
-        "flag": {
-          "label": "Bayraklar",
-          "any": "Herhangi bir bayrak",
-          "overdue": "vadesi geçmiş",
-          "certified": "Sertifika verildi",
-          "not_certified": "Sertifika yok"
-        },
-        "completion": {
-          "label": "Tamamlama",
-          "any": "Herhangi bir tamamlama",
-          "incomplete": "Tamamlanmadı"
-        },
-        "video": {
-          "label": "Video",
-          "any": "Herhangi bir video",
-          "low": "%60'ın altında video"
-        },
-        "cohort_chip": "{count, plural, one {# kohort} other {# kohort}}"
-      }
-    },
-    "empty_states": {
-      "show_all_time": "Tüm zamanları göster",
-      "create_cohort": "Kohort oluştur",
-      "range": {
-        "title": "Son {days} günde etkinlik yok",
-        "description": "Bu kart yalnızca seçilen aralıkta olanları sayar."
-      },
-      "needs_attention": {
-        "title": "Kimsenin ilgiye ihtiyacı yok",
-        "description": "Etkin olmayan, %50'nin altında puan alan, gecikmiş veya videolarda geride kalan öğrenci yok."
-      },
-      "overdue": {
-        "title": "Gecikmiş kimse yok",
-        "description": "Her öğrenci son tarihleri içinde."
-      },
-      "scores": {
-        "title": "Henüz değerlendirilmiş deneme yok",
-        "description": "Puanlar, öğrenciler alıştırmaları gönderip denemeler değerlendirildiğinde görünür."
-      },
-      "student_scores": {
-        "title": "Henüz değerlendirilmiş deneme yok",
-        "description": "Bu öğrencinin puanları, denemeleri değerlendirildiğinde görünür."
-      },
-      "hardest_exercises": {
-        "title": "Henüz yeterli değerlendirilmiş deneme yok",
-        "description": "Bir alıştırma, en az 3 öğrencinin değerlendirilmiş denemesi olduğunda görünür."
-      },
-      "questions": {
-        "title": "Henüz yeterli yanıt yok",
-        "description": "Bir soru, en az 5 öğrenci değerlendirilmiş bir denemede yanıtladığında görünür."
-      },
-      "logins": {
-        "title": "Henüz giriş yok",
-        "description": "Öğrenciler, oturum açtıkları günlerde burada görünür."
-      },
-      "lessons": {
-        "title": "Henüz tamamlanmış ders yok",
-        "description": "Her dersin çubuğu, öğrenciler tamamladıkça dolar."
-      },
-      "growth": {
-        "title": "Henüz öğrenci eklenmedi",
-        "description": "Çizgi, kuruluşunuza eklenen ilk öğrenciyle başlar."
-      },
-      "courses_org": {
-        "title": "Henüz tamamlanmış kurs yok",
-        "description": "Kurslar, öğrenciler kaydolup tamamladıkça burada görünür."
-      },
-      "courses_cohort": {
-        "title": "Henüz kurs etkinliği yok",
-        "description": "Çubuklar ve satırlar, öğrenciler derslere veya alıştırmalara başladıkça dolar."
-      },
-      "cohorts_org": {
-        "title": "Henüz kohort yok",
-        "description": "Öğrencileri gruplamak ve ilerlemelerini karşılaştırmak için bir kohort oluşturun."
-      },
-      "cohorts_org_no_students": {
-        "title": "Bu kohortlarda henüz öğrenci yok",
-        "description": "Kohortlar arasındaki ilerlemeyi karşılaştırmaya başlamak için kuruluşunuza öğrenci ekleyin."
-      },
-      "cohorts_course": {
-        "title": "Bu kursu içeren kohort yok",
-        "description": "Kohortları burada karşılaştırmak için bu kursu bir kohorta ekleyin."
-      },
-      "cohorts_course_no_students": {
-        "title": "Bu kohortlarda henüz öğrenci yok",
-        "description": "Kohortlar arasındaki ilerlemeyi karşılaştırmaya başlamak için öğrencileri bu kursa davet edin."
-      },
-      "default": {
-        "title": "Henüz veri yok",
-        "description": "Bu kart, öğrenciler kursu kullandıkça dolar."
-      }
-    },
-    "empty": {
-      "failed": "Bu grafik yüklenemedi",
-      "dashboard_failed": "Analytics yüklenemedi",
-      "not_permitted": "Bu analizlere erişiminiz yok",
-      "no_exercises": "Bu kursta alıştırma yok",
-      "no_exercises_description": "Puanlar, alıştırmalar eklendiğinde ve öğrenciler denemeleri gönderdiğinde görünür."
-    },
-    "export": {
-      "students_capped": "Öğrenci listesi ilk {limit} satırla sınırlıdır.",
-      "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır.",
-      "yes": "Evet",
-      "no": "Hayır",
-      "columns": {
-        "segment": "Grup",
-        "metric": "Ölçüt",
-        "value": "Değer",
-        "details": "Ayrıntılar"
-      },
-      "dimensions": {
-        "student": "Öğrenci",
-        "course": "Kurs",
-        "cohort": "Kohort",
-        "exercise": "Alıştırma",
-        "section": "Bölüm",
-        "lesson": "Ders",
-        "question": "Soru",
-        "item": "Öğe",
-        "day": "Gün",
-        "period": "Dönem",
-        "status": "Durum",
-        "overdue_kind": "Gecikme türü",
-        "progress_bucket_25": "İlerleme",
-        "score_bucket_10": "Ortalama puan"
-      }
-    },
-    "org_page_title": "Akademi",
-    "widget_menu": {
-      "label": "{title} için işlemler",
-      "view_students": "Öğrencileri görüntüle",
-      "open_in_students": "Öğrenciler sekmesinde aç",
-      "click_to_view": "Öğrencilerini görmek için bir çubuk veya dilim seçin"
-    },
-    "drilldown": {
-      "count": "{count, plural, one {# öğrenci} other {# öğrenci}}",
-      "description": "Bu sayının arkasındaki öğrenciler.",
-      "cohort_health": {
-        "any": "Öğrencisi olan kohortlarda",
-        "at_risk": "Risk altındaki kohortlarda",
-        "lagging": "Geride kalan kohortlarda",
-        "on_track": "Yolda olan kohortlarda",
-        "completed": "Tamamlanan kohortlarda"
-      },
-      "cohort_health_note": "Grafik, bu değerlendirmeye sahip kohortlardaki öğrencileri sayar; bu durumdaki öğrencileri değil.",
-      "count_differs": "Grafik {expected} sayar çünkü bir öğrenciyi bulunduğu her kohort için bir kez sayar. Bu liste {total} gösterir.",
-      "lesson_incomplete": "Tamamlanmadı: {lesson}",
-      "lesson_fallback": "bu ders",
-      "score_bucket": "Ortalama puan {range}",
-      "scored": "Ortalama puanı olan"
-    }
-  },
-  "oauth": {
-    "consent": {
-      "page_title": "ClassroomIO'ya bir uygulama bağla",
-      "title": "{client} uygulamasını ClassroomIO'ya bağla",
-      "subtitle": "{client} uygulamasının erişebileceği çalışma alanını seçin.",
-      "workspace_label": "Çalışma alanı",
-      "no_workspaces_title": "Kullanılabilir çalışma alanı yok",
-      "no_workspaces_description": "Uygulamaları yalnızca çalışma alanı yöneticileri bağlayabilir. Bir yöneticiden yardım isteyin veya yönetici hesabıyla giriş yapın.",
-      "permissions_heading": "{client} şunları yapabilecek:",
-      "stay_connected": "Erişimi kaldırana kadar bağlı kal",
-      "admin_note": "Uygulamaları yalnızca çalışma alanı yöneticileri bağlayabilir. Erişim yönetici izinlerinizi izler ve onları kaybederseniz sona erer.",
-      "redirect_note": "Onayladıktan sonra {host} adresine yönlendirileceksiniz.",
-      "allow": "Erişime izin ver",
-      "deny": "Reddet",
-      "unknown_client": "Bu uygulama",
-      "error_title": "Bu bağlantı isteği geçerli değil",
-      "error_description": "Bağlamak istediğiniz uygulamaya dönün ve yeniden başlayın."
-    },
-    "error": {
-      "generic": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
-      "retry": "Tekrar dene"
-    },
-    "scope_group": {
-      "courses": {
-        "read": "Kursları ve içeriklerini görüntüle",
-        "write": "Kursları ve içeriklerini oluştur, düzenle ve yayınla"
-      },
-      "exercises": {
-        "read": "Alıştırmaları ve soruları görüntüle",
-        "write": "Alıştırmaları ve soruları oluştur ve düzenle"
-      },
-      "course_members": {
-        "read": "Kurs üyelerini görüntüle",
-        "write": "Kurs üyelerini ve ilerlemelerini ekle ve yönet"
-      },
-      "certificates": {
-        "read": "Kurs sertifikalarını görüntüle",
-        "write": "Kurs sertifikalarını yönet"
-      },
-      "submissions": {
-        "read": "Gönderimleri ve notları görüntüle",
-        "write": "Gönderimleri notlandır ve notları yönet"
-      },
-      "cohorts": {
-        "read": "Kohortları görüntüle",
-        "write": "Kohortları oluştur ve yönet"
-      },
-      "audience": {
-        "read": "Hedef kitlenizi görüntüle",
-        "write": "Hedef kitlenizi ekle ve yönet"
-      },
-      "team": {
-        "read": "Ekip üyelerini görüntüle",
-        "write": "Ekip üyelerini yönet"
-      },
-      "organization": {
-        "read": "Çalışma alanı ayarlarını görüntüle",
-        "write": "Ayarları, açılış sayfasını ve e-posta şablonlarını düzenle"
-      },
-      "analytics": {
-        "read": "Analizleri görüntüle",
-        "write": "Analizleri görüntüle"
-      },
-      "media": {
-        "read": "Medya yükle",
-        "write": "Medya yükle"
-      }
-    },
-    "connect": {
-      "title": "Claude veya ChatGPT'den bağlan",
-      "description": "Bu URL ile ClassroomIO'yu yapay zeka uygulamanıza özel bağlayıcı olarak ekleyin, ardından giriş yapıp erişimi onaylayın.",
-      "step_1": "Yapay zeka uygulamanızda bağlayıcılar veya entegrasyonlar ayarlarını açın ve özel bir bağlayıcı ekleyin.",
-      "step_2": "Yukarıdaki URL'yi yapıştırın ve bağlantıyı başlatın.",
-      "step_3": "ClassroomIO'ya giriş yapın, bu çalışma alanını seçin ve izinleri onaylayın."
-    },
-    "connected_apps": {
-      "title": "Bağlı uygulamalar",
-      "description": "Bu çalışma alanında işlem yapması için onayladığınız uygulamalar. Erişimini hemen kesmek için bir uygulamayı kaldırın.",
-      "table_app": "Uygulama",
-      "table_authorized_by": "Yetkilendiren",
-      "table_permissions": "İzinler",
-      "permissions_count": "{count} alan",
-      "revoke": "Erişimi kaldır",
-      "revoke_confirm": "Bu uygulamanın erişimi kaldırılsın mı? Hemen çalışmayı durduracak."
     }
   }
 }
