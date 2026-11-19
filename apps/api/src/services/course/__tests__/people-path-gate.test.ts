@@ -15,7 +15,12 @@ const mocks = vi.hoisted(() => ({
   invalidateOrgStats: vi.fn().mockResolvedValue(undefined),
   enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined),
   ensureComplianceEnrollmentRecordsForProfiles: vi.fn().mockResolvedValue({ createdCount: 0 }),
-  getWelcomeSessionIcs: vi.fn().mockResolvedValue(undefined)
+  getWelcomeSessionIcs: vi.fn().mockResolvedValue(undefined),
+  transaction: vi.fn((callback: (tx: object) => unknown) => callback({}))
+}));
+
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: mocks.transaction }
 }));
 
 vi.mock('@cio/db/queries/course/people', () => ({
