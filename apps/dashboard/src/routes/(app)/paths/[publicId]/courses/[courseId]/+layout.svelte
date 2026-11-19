@@ -123,6 +123,18 @@
     }
   });
 
+  const isPathAccessReady = $derived.by(() => {
+    if ($isOrgStudent === false) return true;
+    if ($isOrgStudent === null || !journeySettled) return false;
+
+    const journey = learnerPathStore.selectedJourney;
+    const matches = journey && (journey.path.publicId === data.publicId || journey.path.id === data.publicId);
+    if (!matches) return false;
+
+    const current = journey.courses.find((course) => course.courseId === data.courseId);
+    return !current || current.isUnlocked;
+  });
+
   const user: CourseMember | undefined = $derived(
     courseApi.group.people.find((person) => person.profileId === $profile.id)
   );
@@ -287,7 +299,7 @@
           </div>
         </Empty>
       </div>
-    {:else if !isCourseReady}
+    {:else if !isCourseReady || !isPathAccessReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
         <Empty
           title="Loading course…"
