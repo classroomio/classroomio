@@ -287,4 +287,83 @@ describe('block registry', () => {
 
     expect(authoring?.inputSchema.safeParse(input).success).toBe(false);
   });
+
+  it('accepts only https images from the assistant in a multiple choice or process block', () => {
+    const multipleChoice = getBlockAgentAuthoring('multiple_choice');
+    const process = getBlockAgentAuthoring('process');
+    const options = [
+      { id: 'a', text: 'Yes' },
+      { id: 'b', text: 'No' }
+    ];
+    const question = { question: 'Q', options, correctOptionId: 'a' };
+
+    expect(multipleChoice?.inputSchema.safeParse({ ...question, imageUrl: 'http://x.test/a.png' }).success).toBe(false);
+    expect(multipleChoice?.inputSchema.safeParse({ ...question, imageUrl: 'https://x.test/a.png' }).success).toBe(true);
+    expect(multipleChoice?.inputSchema.safeParse(question).success).toBe(true);
+    expect(
+      process?.inputSchema.safeParse({
+        steps: [{ id: 'a', heading: 'Start', body: '', imageUrl: 'http://x.test/a.png' }]
+      }).success
+    ).toBe(false);
+  });
+
+  it('keeps an existing http image through a text-only edit by the assistant', () => {
+    const tabs = getBlockAgentAuthoring('tabs');
+    const tabsData = {
+      align: 'center',
+      tabs: [{ id: 'a', name: 'One', note: '', media: { kind: 'image', data: { url: 'http://x.test/a.png' } } }]
+    };
+    const tabsRead = tabs?.toInput(tabsData);
+    expect(tabsRead).toEqual({ align: 'center', tabs: [{ id: 'a', name: 'One', note: '', keepImage: true }] });
+    const tabsInput = tabs?.inputSchema.parse({
+      align: 'center',
+      tabs: [{ id: 'a', name: 'Renamed', note: '', keepImage: true }]
+    });
+    expect(tabsInput ? tabs?.fromInput(tabsInput, tabsData) : null).toEqual({
+      align: 'center',
+      tabs: [{ id: 'a', name: 'Renamed', note: '', media: { kind: 'image', data: { url: 'http://x.test/a.png' } } }]
+    });
+
+    const multipleChoice = getBlockAgentAuthoring('multiple_choice');
+    const questionData = {
+      question: 'Q',
+      options: [
+        { id: 'a', text: 'Yes' },
+        { id: 'b', text: 'No' }
+      ],
+      correctOptionId: 'a',
+      imageUrl: 'http://x.test/q.png'
+    };
+    const questionRead = multipleChoice?.inputSchema.parse(multipleChoice.toInput(questionData));
+    expect(questionRead).toMatchObject({ keepImage: true });
+    expect(questionRead).not.toHaveProperty('imageUrl');
+    expect(questionRead ? multipleChoice?.fromInput({ ...questionRead, question: 'New' }, questionData) : null).toEqual(
+      {
+        ...questionData,
+        question: 'New'
+      }
+    );
+
+    const process = getBlockAgentAuthoring('process');
+    const processData = {
+      steps: [
+        { id: 'a', heading: 'Start', body: '', imageUrl: 'http://x.test/a.png' },
+        { id: 'b', heading: 'Next', body: '', imageUrl: 'https://x.test/b.png' }
+      ]
+    };
+    const processRead = process?.inputSchema.parse(process.toInput(processData));
+    expect(processRead).toEqual({
+      steps: [
+        { id: 'a', heading: 'Start', body: '', keepImage: true },
+        { id: 'b', heading: 'Next', body: '', imageUrl: 'https://x.test/b.png' }
+      ]
+    });
+    expect(processRead ? process?.fromInput(processRead, processData) : null).toEqual(processData);
+    expect(processRead ? process?.fromInput(processRead, null) : null).toEqual({
+      steps: [
+        { id: 'a', heading: 'Start', body: '' },
+        { id: 'b', heading: 'Next', body: '', imageUrl: 'https://x.test/b.png' }
+      ]
+    });
+  });
 });

@@ -3191,7 +3191,7 @@
               }
             },
             "flashcards": {
-              "edit_hint": "Düzenlemek için karttaki herhangi bir metne tıklayın · cevap tarafını düzenlemek için çevirme düğmesini kullanın",
+              "edit_hint": "Düzenlemek için karttaki herhangi bir metne tıklayın · cevapları düzenlemek için çevirme düğmesini kullanın",
               "flip_hint": "Çevirmek için karta tıklayın",
               "question": "Soru",
               "answer": "Cevap",

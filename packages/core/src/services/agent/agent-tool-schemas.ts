@@ -185,10 +185,19 @@ export function writeLessonAuthoredBlockParam(dataSchema: z.ZodType<Record<strin
         .describe(
           'Replace the content of this existing block (from get_lesson_content). Leave out to add a new block.'
         ),
+      expectedVersion: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Required with blockId: the version get_lesson_content returned for that block.'),
       data: dataSchema.describe('The whole content of the block.'),
       ...blockAnchorFields
     })
     .refine(singleAnchor, singleAnchorMessage)
+    .refine((data) => !data.blockId || data.expectedVersion !== undefined, {
+      message: 'Pass the expectedVersion get_lesson_content returned when you pass blockId'
+    })
     .refine((data) => !(data.blockId && (data.afterBlockId || data.beforeBlockId)), {
       message: 'Pass afterBlockId or beforeBlockId only when adding a new block; use move_lesson_block to move one'
     });

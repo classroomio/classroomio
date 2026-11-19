@@ -153,7 +153,7 @@
           aria-label={labels.removeImage}
           onclick={onRemoveImage}
         >
-          <XIcon />
+          <XIcon class="custom" />
         </IconButton>
       {/if}
     </div>
@@ -210,7 +210,7 @@
             <span
               class="ui:text-success ui:inline-flex ui:shrink-0 ui:items-center ui:gap-[5px] ui:text-[11.5px] ui:font-bold"
             >
-              <CheckIcon size={13} strokeWidth={3} class="custom ui:text-success" />
+              <CheckIcon size={13} strokeWidth={3} class="custom" />
               {labels.correctBadge}
             </span>
           {/if}
@@ -223,7 +223,7 @@
             data-testid={testId ? `${testId}-remove-option` : undefined}
             onclick={() => onRemoveOption?.(option.id)}
           >
-            <XIcon size={13} strokeWidth={2.4} class="custom ui:text-destructive" />
+            <XIcon size={13} strokeWidth={2.4} class="custom" />
           </button>
         </div>
       {/each}
@@ -273,12 +273,12 @@
               <RadioGroup.Item
                 id={optionId}
                 value={option.id}
-                class="ui:absolute ui:inset-0 ui:size-full! ui:rounded-full ui:border-0! ui:bg-transparent! ui:opacity-0 ui:shadow-none!"
+                class="ui:absolute ui:inset-0 ui:size-full! ui:rounded-full ui:border-0! ui:bg-transparent! ui:opacity-0! ui:shadow-none! ui:ring-0!"
               />
               {#if checked && isCorrect}
-                <CheckIcon size={15} strokeWidth={3} />
+                <CheckIcon size={15} strokeWidth={3} class="custom" />
               {:else if checked && isSelected}
-                <XIcon size={15} strokeWidth={3} />
+                <XIcon size={15} strokeWidth={3} class="custom" />
               {:else}
                 {optionLetter(index)}
               {/if}
@@ -305,10 +305,10 @@
           role="status"
         >
           {#if answeredCorrectly}
-            <CircleCheckIcon size={18} strokeWidth={2.4} />
+            <CircleCheckIcon size={18} strokeWidth={2.4} class="custom" />
             {labels.correctFeedback}
           {:else}
-            <CircleXIcon size={18} strokeWidth={2.4} />
+            <CircleXIcon size={18} strokeWidth={2.4} class="custom" />
             {labels.wrongFeedback}
           {/if}
         </div>

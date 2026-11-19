@@ -7,6 +7,42 @@ export const ZBlockItemId = z
   .max(64)
   .describe('Short id, unique within this block, such as "a" or "step-1". Keep the ids you read when editing.');
 
+/** An image URL the assistant writes. Stored images may also be http, so the assistant keeps those with `keepImage`. */
+export const ZAgentImageUrl = z
+  .url({ protocol: /^https$/ })
+  .describe('https URL of the image, exactly as the teacher or a tool gave it.');
+
+export const ZAgentKeepImage = z
+  .literal(true)
+  .optional()
+  .describe('Present when the item already shows an image you cannot read. Send it back to keep that image.');
+
+export function isAgentImageUrl(url: string): boolean {
+  return ZAgentImageUrl.safeParse(url).success;
+}
+
+/**
+ * The assistant's view of a stored image URL: https URLs as they are, any other URL as `keepImage`.
+ */
+export function toAgentImageUrl(url: string | undefined): { imageUrl?: string; keepImage?: true } {
+  if (!url) return {};
+
+  return isAgentImageUrl(url) ? { imageUrl: url } : { keepImage: true };
+}
+
+/**
+ * The stored image URL for the assistant's input: a URL it sent, or the previous one when it sent `keepImage`.
+ */
+export function fromAgentImageUrl(
+  input: { imageUrl?: string; keepImage?: true },
+  previousUrl: string | undefined
+): { imageUrl?: string } {
+  if (input.imageUrl) return { imageUrl: input.imageUrl };
+  if (input.keepImage && previousUrl) return { imageUrl: previousUrl };
+
+  return {};
+}
+
 export type TBlockMediaKind = 'video' | 'document';
 
 /** One media item a block plays or links: the block's own data, or media kept inside it, such as a tab's video. */

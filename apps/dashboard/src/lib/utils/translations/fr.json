@@ -2715,7 +2715,7 @@
               }
             },
             "flashcards": {
-              "edit_hint": "Cliquez sur un texte de la carte pour le modifier · utilisez le bouton de retournement pour modifier la réponse",
+              "edit_hint": "Cliquez sur un texte de la carte pour le modifier · utilisez le bouton de retournement pour modifier les réponses",
               "flip_hint": "Cliquez sur la carte pour la retourner",
               "question": "Question",
               "answer": "Réponse",

@@ -40,6 +40,9 @@
     onRemoveCard
   }: Props = $props();
 
+  const uid = $props.id();
+  const faceTextId = `${uid}-face`;
+
   let requestedIndex = $state(0);
   let flipped = $state(false);
   let questionRef = $state<HTMLElement | null>();
@@ -80,8 +83,9 @@
   function removeCard(cardId: string) {
     if (!canRemoveCard) return;
 
+    const removedIndex = currentIndex;
     onRemoveCard?.(cardId);
-    requestedIndex = Math.max(currentIndex - 1, 0);
+    requestedIndex = Math.max(removedIndex - 1, 0);
     flipped = false;
   }
 
@@ -275,6 +279,7 @@
           role="button"
           tabindex="0"
           aria-label={flipped ? labels.showQuestion : labels.showAnswer}
+          aria-describedby={faceTextId}
           data-flipped={flipped}
           data-testid={testId ? `${testId}-card` : undefined}
           onclick={flip}
@@ -282,6 +287,9 @@
         >
           {@render cardFaces(currentCard)}
         </div>
+        <p id={faceTextId} class="ui:sr-only" aria-live="polite">
+          {flipped ? labels.answer : labels.question}: {flipped ? currentCard.answer : currentCard.question}
+        </p>
       {/if}
     </div>
 

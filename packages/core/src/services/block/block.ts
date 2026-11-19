@@ -17,6 +17,7 @@ import type { TBlock, TBlockLocale, TBlockPlacement, TLocale } from '@cio/db/typ
 import type { TBlockChangeSource, TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
+  bumpBlockVersion,
   bumpBlockVersionIfVersion,
   copyBlockLocales,
   countBlockPlacements,
@@ -349,6 +350,7 @@ export async function createLessonBlock(
 
 /**
  * Places an existing organization block in this lesson; edits to it show up in every lesson that uses it.
+ * Bumps the block's version, so an edit read before the block was shared fails with a version conflict.
  */
 export async function attachLessonBlock(
   lessonId: string,
@@ -383,6 +385,7 @@ export async function attachLessonBlock(
       },
       tx
     );
+    const sharedBlock = (await bumpBlockVersion(block.id, tx)) ?? block;
 
     await syncLessonAssetUsages(lessonId, scope.organizationId, actorProfileId, tx);
     await recordLessonRevision({
@@ -394,7 +397,7 @@ export async function attachLessonBlock(
       dbClient: tx
     });
 
-    return { placement, block, courseId: scope.courseId };
+    return { placement, block: sharedBlock, courseId: scope.courseId };
   });
 
   await touchCourseUpdatedAt(attached.courseId);

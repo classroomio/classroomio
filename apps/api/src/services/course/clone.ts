@@ -1,5 +1,5 @@
 import { db, type DbOrTxClient } from '@db/drizzle';
-import { TAsset, TCourse, TCourseSection, TLesson } from '@db/types';
+import { TAsset, TCourse, TCourseSection } from '@db/types';
 import {
   addGroupMember,
   createCourse,
@@ -31,7 +31,7 @@ import {
 
 import { ROLE } from '@cio/utils/constants';
 import { copyLessonBlocks } from '@cio/core/services/block/copy';
-import { withDerivedLessonContent } from '@db/queries/block/legacy';
+import { listBlockMedia } from '@cio/utils/validation/block';
 import { listBlockRowsForLessons } from '@db/queries/block/placement';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { captureServerEvent } from '@cio/core/services/posthog';
@@ -85,9 +85,41 @@ export async function remapContentAssets<T>(
   return replaceAssetIds(value, copiedIds);
 }
 
-type LessonAssetRefs = Pick<TLesson, 'id' | 'videos' | 'documents'>;
+interface LessonAssetRef {
+  assetId?: string | null;
+}
+
+interface LessonAssetRefs {
+  id: string;
+  videos?: LessonAssetRef[] | null;
+  documents?: LessonAssetRef[] | null;
+}
 
 const LESSON_MEDIA_SLOTS = ['lesson_video', 'lesson_document'];
+
+/**
+ * Lists the videos and documents each lesson's blocks play, including media kept inside a block such
+ * as a tab's video.
+ */
+export async function listLessonAssetRefs(lessonIds: string[], dbClient: DbOrTxClient = db) {
+  const refsByLesson = new Map<string, LessonAssetRefs>(
+    lessonIds.map((lessonId) => [lessonId, { id: lessonId, videos: [], documents: [] }])
+  );
+  const rows = await listBlockRowsForLessons(lessonIds, dbClient);
+
+  for (const row of rows) {
+    const refs = refsByLesson.get(row.lessonId);
+    if (!refs) continue;
+
+    for (const item of listBlockMedia(row.block.type, row.block.data)) {
+      const assetId = typeof item.data.assetId === 'string' ? item.data.assetId : null;
+      const list = item.media === 'video' ? refs.videos : refs.documents;
+      list?.push({ assetId });
+    }
+  }
+
+  return [...refsByLesson.values()];
+}
 
 /**
  * Makes each lesson's `lesson_video` and `lesson_document` usages match the videos
@@ -408,7 +440,9 @@ async function cloneCourseWithClient(
   }
 
   if (targetOrgId) {
-    await syncLessonAssetUsages(await withDerivedLessonContent(newLessons, tx), targetOrgId, options.userId, tx);
+    const newLessonIds = newLessons.map((lesson) => lesson.id);
+    const newLessonAssets = await listLessonAssetRefs(newLessonIds, tx);
+    await syncLessonAssetUsages(newLessonAssets, targetOrgId, options.userId, tx);
   }
 
   const exerciseCopies = replaceAssetIds(oldExercises, assetIds);

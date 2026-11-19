@@ -37,7 +37,6 @@ import {
 } from '@db/queries';
 import { env } from '@cio/core/config/env';
 import { pullLessonBlocksFromSource } from '@cio/core/services/block/copy';
-import { withDerivedLessonContent } from '@cio/db/queries/block/legacy';
 import { withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 import {
   applySettingChanges,
@@ -59,7 +58,7 @@ import {
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { invalidateAnalyticsCourseStructure } from '@cio/core/utils/redis/analytics-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { syncLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
+import { listLessonAssetRefs, syncLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
 
 type SyncGraph = {
   sections: TCourseSection[];
@@ -614,8 +613,9 @@ export async function pullCourseTemplateUpdates(
           transform: (value) => remapContentAssets(value, templateOrgId, courseOrgId, userId, tx),
           dbClient: tx
         });
-        const pulledWithContent = await withDerivedLessonContent([...pulledLessons.values()], tx);
-        await syncLessonAssetUsages(pulledWithContent, courseOrgId, userId, tx);
+        const pulledLessonIds = [...pulledLessons.values()].map((lesson) => lesson.id);
+        const pulledLessonAssets = await listLessonAssetRefs(pulledLessonIds, tx);
+        await syncLessonAssetUsages(pulledLessonAssets, courseOrgId, userId, tx);
       }
 
       const templateExercises = templateGraph.exercises.slice().sort((left, right) => left.order - right.order);

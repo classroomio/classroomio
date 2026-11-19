@@ -36,7 +36,14 @@ export function chartColor(type: ChartBlockType, index: number): string {
   return isRadialChart(type) ? CHART_COLORS[index % CHART_COLORS.length] : 'var(--primary)';
 }
 
+/**
+ * Formats a value with up to two decimals, or three significant digits below 1 so small values
+ * such as 0.001 and 0.002 stay distinct instead of rounding to 0.
+ */
 export function formatChartValue(value: number): string {
+  const magnitude = Math.abs(value);
+  if (magnitude > 0 && magnitude < 1) return value.toLocaleString(undefined, { maximumSignificantDigits: 3 });
+
   return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 

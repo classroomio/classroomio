@@ -85,7 +85,8 @@ export async function bumpBlockVersionIfVersion(
 
 /**
  * Bumps a block's version without touching its data, for restores writing text or
- * data from history; editors with a stale version then get a conflict prompt.
+ * data from history and for attaching the block to another lesson; editors with a
+ * stale version then get a conflict prompt.
  */
 export async function bumpBlockVersion(blockId: string, dbClient: DbOrTxClient = db): Promise<TBlock | null> {
   try {
