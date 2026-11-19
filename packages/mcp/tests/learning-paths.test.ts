@@ -67,14 +67,13 @@ describe('ClassroomIoApiClient', () => {
     expect(Object.fromEntries(requestedUrl.searchParams)).toEqual({ page: '2', limit: '10', search: 'react' });
   });
 
-  it('listOrganizationCourses still returns the data array, not the envelope', async () => {
-    fetchMock.mockResolvedValue(
-      jsonResponse({ success: true, data: [{ id: COURSE_ID }], pagination: { page: 1, total: 1 } })
-    );
+  it('listOrganizationCourses keeps pagination next to data', async () => {
+    const pagination = { page: 1, total: 1 };
+    fetchMock.mockResolvedValue(jsonResponse({ success: true, data: [{ id: COURSE_ID }], pagination }));
 
     const result = await createClient().listOrganizationCourses({} as never);
 
-    expect(result).toEqual([{ id: COURSE_ID }]);
+    expect(result).toEqual({ data: [{ id: COURSE_ID }], pagination });
   });
 
   it('encodes path and course ids into separate URL segments', async () => {
