@@ -1,3 +1,5 @@
+const RELATIVE_URL_BASE = 'http://localhost';
+
 /** Course invite token from the sign-up URL, either directly or inside its `redirect` target. */
 export function getInviteTokenFromSignupUrl(searchParams: URLSearchParams): string | null {
   const directToken = searchParams.get('invite_token');
@@ -12,11 +14,9 @@ export function getInviteTokenFromSignupUrl(searchParams: URLSearchParams): stri
     return null;
   }
 
-  const queryStart = redirectUrl.indexOf('?');
-
-  if (queryStart === -1) {
+  try {
+    return new URL(redirectUrl, RELATIVE_URL_BASE).searchParams.get('invite_token');
+  } catch {
     return null;
   }
-
-  return new URLSearchParams(redirectUrl.slice(queryStart + 1)).get('invite_token');
 }
