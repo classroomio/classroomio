@@ -231,6 +231,44 @@ function getEmailDomain(email: string): string {
   return domain;
 }
 
+function isEmailAllowedByInvite(
+  invite: { allowedEmails: string[] | null; allowedDomains: string[] | null },
+  email: string
+) {
+  const normalizedEmail = email.toLowerCase().trim();
+  const allowedEmails = invite.allowedEmails?.map((allowed) => allowed.toLowerCase()) ?? [];
+  const allowedDomains = invite.allowedDomains?.map((domain) => domain.toLowerCase()) ?? [];
+
+  if (allowedEmails.length > 0 && !allowedEmails.includes(normalizedEmail)) {
+    return false;
+  }
+
+  return allowedDomains.length === 0 || allowedDomains.includes(getEmailDomain(normalizedEmail));
+}
+
+/**
+ * True when the token is an active course invite of the organization and its email restrictions admit the email.
+ * Never throws; lookup failures count as not allowed.
+ */
+export async function canSignUpWithCourseInvite(organizationId: string, token: string, email: string) {
+  try {
+    const data = await getCourseInviteByTokenHash(hashToken(token));
+
+    if (!data || data.organization.id !== organizationId) {
+      return false;
+    }
+
+    if (getInviteStatus(data.invite) !== 'ACTIVE') {
+      return false;
+    }
+
+    return isEmailAllowedByInvite(data.invite, email);
+  } catch (error) {
+    console.error('canSignUpWithCourseInvite error:', error);
+    return false;
+  }
+}
+
 function getExpiryLabel(expiresAtIso: string): string {
   return new Date(expiresAtIso).toLocaleString('en-US', {
     dateStyle: 'medium',

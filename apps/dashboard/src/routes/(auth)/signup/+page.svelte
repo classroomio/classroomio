@@ -26,6 +26,7 @@
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
   import { isOrgChooserAvailable, ORG_CHOOSER_PATH } from '$features/app/utils/post-auth-destination';
   import { buildLoginInsteadHref, isExistingAccountError } from '$features/auth/utils/auth-errors';
+  import { getInviteTokenFromSignupUrl } from '$features/auth/utils/invite-token';
 
   let { data } = $props();
   const emailFromUrl = page.url.searchParams.get('email') ?? '';
@@ -46,7 +47,7 @@
 
   const disableSubmit = $derived(getDisableSubmit(fields));
   const redirectUrl = $derived(page.url.searchParams.get('redirect'));
-  const inviteToken = $derived(page.url.searchParams.get('invite_token'));
+  const inviteToken = $derived(getInviteTokenFromSignupUrl(page.url.searchParams));
 
   // Use org from store or layout data (layout data ensures org is available on self-hosted before store is set)
   const org = $derived($currentOrg?.id ? $currentOrg : (data.org ?? $currentOrg));
@@ -148,7 +149,9 @@
 
       // if in selfhosted instance always pass org id
       // if in cloud instance, ONLY pass when on subdomain i.e student experience
-      const headers = $globalStore.isOrgSite ? { 'cio-org-id': org.id } : undefined;
+      const headers = $globalStore.isOrgSite
+        ? { 'cio-org-id': org.id, ...(inviteToken ? { 'cio-invite-token': inviteToken } : {}) }
+        : undefined;
 
       const { error } = await authClient.signUp.email(
         {
