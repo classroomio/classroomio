@@ -27,6 +27,8 @@ const mocks = vi.hoisted(() => ({
   isCohortCourse: vi.fn(),
   addCourseToCohort: vi.fn(),
   getCohortMembers: vi.fn(),
+  listCohortEnrollmentMembers: vi.fn(),
+  listActiveOrganizationRoles: vi.fn(async () => []),
   recordDirectCourseGrantsBulk: vi.fn(),
   assertCourseAllowsDirectStudentAdd: vi.fn(),
   isOrgAdminByCohortId: vi.fn(),
@@ -52,6 +54,7 @@ vi.mock('@cio/db/queries/cohort', () => ({
   getCohortMemberByProfileId: mocks.getCohortMemberByProfileId,
   getCoursesByCohort: mocks.getCoursesByCohort,
   getCohortMembers: mocks.getCohortMembers,
+  listCohortEnrollmentMembers: mocks.listCohortEnrollmentMembers,
   getCohortsByOrg: vi.fn(),
   isCohortCourse: mocks.isCohortCourse,
   addCourseToCohort: mocks.addCourseToCohort,
@@ -85,7 +88,8 @@ vi.mock('@cio/db/queries/auth', () => ({
 vi.mock('@cio/db/queries/organization', () => ({
   getOrgMembersByProfileIds: mocks.getOrgMembersByProfileIds,
   getOrganizationMemberIdByOrgAndProfile: mocks.getOrganizationMemberIdByOrgAndProfile,
-  insertOrganizationMembersOnConflictDoNothing: mocks.insertOrganizationMembersOnConflictDoNothing
+  insertOrganizationMembersOnConflictDoNothing: mocks.insertOrganizationMembersOnConflictDoNothing,
+  listActiveOrganizationRoles: mocks.listActiveOrganizationRoles
 }));
 
 vi.mock('@api/services/course/path-gate', () => ({
@@ -333,7 +337,8 @@ describe('updateCohortMemberService role changes', () => {
     mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
     mocks.getOrgMembersByProfileIds.mockResolvedValue([]);
     mocks.assertStudentCapacityOrThrow.mockResolvedValue(null);
-    mocks.insertGroupMembersOnConflictDoNothing.mockResolvedValue(undefined);
+    mocks.insertOrganizationMembersOnConflictDoNothing.mockResolvedValue([]);
+    mocks.insertGroupMembersOnConflictDoNothing.mockResolvedValue([]);
     mocks.revokeCohortGrants.mockResolvedValue(undefined);
     mocks.notifyStudentMilestone.mockResolvedValue(undefined);
   });
@@ -452,7 +457,9 @@ describe('addCourseToCohortService', () => {
     mocks.getCohortById.mockResolvedValue(COHORT);
     mocks.isCohortCourse.mockResolvedValue(false);
     mocks.addCourseToCohort.mockResolvedValue({ id: 'cc-1', cohortId: COHORT.id, courseId: 'c-1' });
-    mocks.getCohortMembers.mockResolvedValue([studentRow]);
+    mocks.listCohortEnrollmentMembers.mockResolvedValue([studentRow]);
+    mocks.insertOrganizationMembersOnConflictDoNothing.mockResolvedValue([]);
+    mocks.insertGroupMembersOnConflictDoNothing.mockResolvedValue([]);
     mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
     mocks.getOrgMembersByProfileIds.mockResolvedValue([]);
     mocks.assertStudentCapacityOrThrow.mockResolvedValue(null);

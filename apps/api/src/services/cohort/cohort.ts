@@ -470,9 +470,12 @@ export async function addCohortMembers(
   data: TAddCohortMembers,
   actorProfileId: string | null = null
 ) {
-  const results = await addCohortMembersSettled(cohortId, data, 'dashboard', actorProfileId);
-  const cohortCourses = await getCoursesByCohort(cohortId);
-  const { skippedPathOnlyCourseIds } = await filterOutPathOnlyCourseIds(cohortCourses.map((row) => row.course.id));
+  const { results, skippedPathOnlyCourseIds } = await addCohortMembersWithCourseGate(
+    cohortId,
+    data,
+    'dashboard',
+    actorProfileId
+  );
 
   const added = results
     .filter((r) => r.status === 'fulfilled')
@@ -491,6 +494,21 @@ export async function addCohortMembersSettled(
   source: TEventSource = 'dashboard',
   actorProfileId: string | null = null
 ) {
+  const { results } = await addCohortMembersWithCourseGate(cohortId, data, source, actorProfileId);
+
+  return results;
+}
+
+/**
+ * Adds cohort members, enrolling students only in the cohort courses that are
+ * not path-only, and reports the path-only courses it skipped.
+ */
+async function addCohortMembersWithCourseGate(
+  cohortId: string,
+  data: TAddCohortMembers,
+  source: TEventSource,
+  actorProfileId: string | null
+) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -498,14 +516,16 @@ export async function addCohortMembersSettled(
     }
 
     const courseGroups = await listCohortCourseGroups(cohortId);
-    const { allowedCourseIds } = await filterOutPathOnlyCourseIds(courseGroups.map((courseGroup) => courseGroup.courseId));
+    const { allowedCourseIds, skippedPathOnlyCourseIds } = await filterOutPathOnlyCourseIds(
+      courseGroups.map((courseGroup) => courseGroup.courseId)
+    );
     const allowedCourseIdSet = new Set(allowedCourseIds);
     const courseGroupIds = courseGroups.map((courseGroup) => courseGroup.groupId);
     const studentCourseGroupIds = courseGroups
       .filter((courseGroup) => allowedCourseIdSet.has(courseGroup.courseId))
       .map((courseGroup) => courseGroup.groupId);
 
-    return await Promise.allSettled(
+    const results = await Promise.allSettled(
       data.members.map(async ({ profileId: providedProfileId, email, roleId }) => {
         const profile = !providedProfileId && email ? await getProfileByEmail(email) : null;
         const profileId = providedProfileId ?? profile?.id ?? null;
@@ -583,7 +603,13 @@ export async function addCohortMembersSettled(
               tx
             );
 
-            await ensureCohortCourseGrants(cohortId, member.profileId, actorProfileId ?? undefined, tx, allowedCourseIds);
+            await ensureCohortCourseGrants(
+              cohortId,
+              member.profileId,
+              actorProfileId ?? undefined,
+              tx,
+              allowedCourseIds
+            );
           }
 
           if (member?.profileId && (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR)) {
@@ -636,6 +662,8 @@ export async function addCohortMembersSettled(
         return transactionResult.member;
       })
     );
+
+    return { results, skippedPathOnlyCourseIds };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
