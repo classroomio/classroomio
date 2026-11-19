@@ -62,7 +62,11 @@ vi.mock('@cio/db/queries/learning-path', () => ({
 vi.mock('@api/services/learning-path/member-management', () => ({
   enrollProfileInLearningPath: vi.fn()
 }));
-vi.mock('@cio/core/config/dashboard-url', () => ({ getAppBaseUrl: vi.fn(() => 'https://app.test') }));
+vi.mock('@cio/core/config/dashboard-url', () => ({
+  getAppBaseUrl: vi.fn(() => 'https://app.test'),
+  buildTeamInviteLink: vi.fn((token: string) => `https://app.test/invite/${encodeURIComponent(token)}`),
+  buildOrgInviteLink: vi.fn((token: string) => `https://app.test/invite/${encodeURIComponent(token)}`)
+}));
 vi.mock('@api/services/organization/student-limit', () => ({ assertStudentCapacityOrThrow: vi.fn() }));
 vi.mock('@api/utils/org', () => ({
   parseCourseIdsFromInviteMetadata: vi.fn(() => []),
