@@ -1,6 +1,7 @@
 import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 import BookOpenIcon from '@lucide/svelte/icons/book-open';
 import ChartColumnIcon from '@lucide/svelte/icons/chart-column';
+import CodeXmlIcon from '@lucide/svelte/icons/code-xml';
 import FileTextIcon from '@lucide/svelte/icons/file-text';
 import GalleryHorizontalEndIcon from '@lucide/svelte/icons/gallery-horizontal-end';
 import ImageIcon from '@lucide/svelte/icons/image';
@@ -20,7 +21,8 @@ export const ALL_CHOICES: AddBlockChoice[] = [
   { type: 'flashcards', label: 'Flashcards', icon: GalleryHorizontalEndIcon },
   { type: 'tabs', label: 'Tabs', icon: PanelsTopLeftIcon },
   { type: 'multiple_choice', label: 'Multiple Choice', icon: ListChecksIcon },
-  { type: 'process', label: 'Process', icon: ArrowRightIcon }
+  { type: 'process', label: 'Process', icon: ArrowRightIcon },
+  { type: 'html', label: 'HTML', icon: CodeXmlIcon }
 ];
 
 export const AI_SHORTCUT = { modifier: '⌘', key: 'I' };

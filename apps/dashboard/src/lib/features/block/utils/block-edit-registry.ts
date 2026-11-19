@@ -1,5 +1,6 @@
 import BookOpenIcon from '@lucide/svelte/icons/book-open';
 import ChartColumnIcon from '@lucide/svelte/icons/chart-column';
+import CodeXmlIcon from '@lucide/svelte/icons/code-xml';
 import FileTextIcon from '@lucide/svelte/icons/file-text';
 import GalleryHorizontalEndIcon from '@lucide/svelte/icons/gallery-horizontal-end';
 import ImageIcon from '@lucide/svelte/icons/image';
@@ -18,6 +19,8 @@ import { createExampleDocument } from '../components/document/document-utils';
 import FlashcardsEdit from '../components/flashcards/flashcards-edit.svelte';
 import { getFlashcardsExampleCopy } from '../components/flashcards/flashcards-labels';
 import { createExampleFlashcards } from '../components/flashcards/flashcards-utils';
+import HtmlEdit from '../components/html/html-edit.svelte';
+import HtmlPicker from '../components/html/html-picker.svelte';
 import ImageEdit from '../components/image/image-edit.svelte';
 import ImagePicker from '../components/image/image-picker.svelte';
 import { createExampleImage } from '../components/image/image-utils';
@@ -119,6 +122,12 @@ export const BLOCK_EDITORS: BlockEditRegistry = {
 
       return { data };
     }
+  },
+  html: {
+    icon: CodeXmlIcon,
+    edit: HtmlEdit,
+    picker: HtmlPicker,
+    createInitial: () => null
   }
 };
 

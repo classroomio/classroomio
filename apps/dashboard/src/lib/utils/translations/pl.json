@@ -1757,7 +1757,8 @@
             "flashcards": "fiszki",
             "tabs": "karty",
             "multiple_choice": "pytanie wielokrotnego wyboru",
-            "process": "proces"
+            "process": "proces",
+            "html": "strona HTML"
           },
           "change_kind": {
             "added": "Dodano",
@@ -2643,6 +2644,61 @@
               "fit_cover": "Wypełnić",
               "fit_contain": "Pasować"
             },
+            "html": {
+              "dialog_title": "Dodaj HTML",
+              "add_tab": "Dodaj",
+              "code_tab": "Wklej kod",
+              "upload": "Prześlij plik HTML",
+              "upload_hint": "Lub przeciągnij i upuść tutaj",
+              "create_with_ai": "Utwórz z AI",
+              "describe_placeholder": "Lub opisz swój pomysł...",
+              "beta": "Beta",
+              "generate": "Generuj",
+              "generating": "Generowanie strony. To może potrwać minutę…",
+              "remove_template": "Usuń szablon",
+              "code_placeholder": "<!doctype html>\n<html>…</html>",
+              "insert": "Wstaw",
+              "frame_title": "Osadzona strona HTML",
+              "interact": "Interakcja",
+              "full_screen": "Pełny ekran",
+              "more": "Więcej działań",
+              "change": "Zastąp HTML",
+              "download": "Pobierz HTML",
+              "resize_width": "Przeciągnij, aby zmienić szerokość",
+              "resize_height": "Przeciągnij, aby zmienić wysokość",
+              "edit_with_ai": "Edytuj z AI",
+              "ai_edit_placeholder": "Opisz zmianę, np. Użyj ciemnego motywu i dodaj przycisk resetowania",
+              "ai_edit_submit": "Zastosuj",
+              "generate_error": "Nie udało się wygenerować strony. Spróbuj ponownie.",
+              "too_large": "Ta strona jest za duża. Strona może mieć maksymalnie 500 000 znaków.",
+              "empty_file": "Ten plik jest pusty.",
+              "templates": {
+                "slides": {
+                  "label": "Slajdy",
+                  "prompt": "Utwórz dopracowaną prezentację na temat tej lekcji, ze slajdem tytułowym, 5–7 slajdami z treścią, nawigacją klawiaturą i przyciskami oraz licznikiem slajdów."
+                },
+                "dashboard": {
+                  "label": "Pulpit",
+                  "prompt": "Utwórz interaktywny pulpit z przykładowymi danymi na temat tej lekcji, z kluczowymi liczbami, dwoma wykresami narysowanymi w SVG i filtrami, które je aktualizują."
+                },
+                "report": {
+                  "label": "Raport",
+                  "prompt": "Utwórz przejrzysty, dobrze zorganizowany jednostronicowy raport na temat tej lekcji, z podsumowaniem, kluczowymi wnioskami, tabelą porównawczą i krótkim zakończeniem."
+                },
+                "explainer": {
+                  "label": "Objaśnienie",
+                  "prompt": "Utwórz interaktywne objaśnienie, które krok po kroku uczy tematu tej lekcji, z diagramem do eksplorowania i krótkim quizem sprawdzającym zrozumienie."
+                },
+                "prototype": {
+                  "label": "Prototyp",
+                  "prompt": "Utwórz klikalny prototyp aplikacji związany z tematem tej lekcji, z dwoma lub trzema ekranami, realistyczną przykładową treścią i działającą nawigacją między nimi."
+                },
+                "game": {
+                  "label": "Gra",
+                  "prompt": "Utwórz dopracowaną, grywalną grę, która pomoże uczniom ćwiczyć temat tej lekcji. Uwzględnij jasne instrukcje, intuicyjne sterowanie, pełną pętlę gry, wynik i możliwość ponownego rozpoczęcia."
+                }
+              }
+            },
             "settings": {
               "title": "Ustawienia lekcji",
               "description": "Zarządzaj tą lekcją, nie opuszczając obszaru roboczego."
@@ -2669,7 +2725,8 @@
               "flashcards": "Fiszki",
               "tabs": "Karty",
               "multiple_choice": "Wielokrotny wybór",
-              "process": "Proces"
+              "process": "Proces",
+              "html": "HTML"
             },
             "empty_preview_title": "Nie ma jeszcze nic do podglądu",
             "empty_preview_description": "Ta lekcja nie ma treści dla uczniów. Przełącz na {editLabel}, aby ją dodać.",

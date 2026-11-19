@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { AGENT_MODEL_IDS } from '../../agent-models';
+import { HTML_BLOCK_MAX_LENGTH } from '../block/definitions/html';
 
 const ZAgentCourseId = z.string().min(1);
 const ZAgentJsonRecord = z.record(z.string(), z.unknown());
@@ -174,6 +175,17 @@ export const ZAgentGenerateTextBody = z.object({
 });
 
 export type TAgentGenerateTextBody = z.infer<typeof ZAgentGenerateTextBody>;
+
+// ─── POST /agent/generate-html ───────────────────────────────────────────────
+
+export const ZAgentGenerateHtmlBody = z.object({
+  prompt: z.string().trim().min(1).max(4000),
+  html: z.string().max(HTML_BLOCK_MAX_LENGTH).optional(),
+  courseId: ZAgentCourseId,
+  lessonId: z.string().uuid()
+});
+
+export type TAgentGenerateHtmlBody = z.infer<typeof ZAgentGenerateHtmlBody>;
 
 // ─── Agent durable runs ─────────────────────────────────────────────────────
 

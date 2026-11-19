@@ -10,6 +10,8 @@ import type {
 } from '@cio/utils/validation/block';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 
+export type GenerateHtmlRequest = (typeof classroomio.agent)['generate-html']['$post'];
+
 type BlocksRoute = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['blocks'];
 
 export type BlockRecord = Extract<InferResponseType<BlocksRoute['$get']>, { success: true }>['data'][number];
@@ -80,6 +82,7 @@ export interface BlockViewHost {
 
 /** What the editor's pickers need from the surface they run on. */
 export interface BlockEditHost {
+  courseId: string;
   lessonId: string;
 }
 

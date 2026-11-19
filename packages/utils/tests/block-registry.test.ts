@@ -58,6 +58,10 @@ describe('block registry', () => {
       process: {
         type: 'process',
         data: { steps: [{ id: 'a', heading: 'Introduction', body: 'Start here.' }] }
+      },
+      html: {
+        type: 'html',
+        data: { name: 'demo.html', html: '<h1>Hi</h1>', width: 80, height: 400 }
       }
     };
 
@@ -66,6 +70,24 @@ describe('block registry', () => {
     for (const sample of Object.values(samples)) {
       expect(ZBlockCreate.safeParse(sample).success).toBe(true);
     }
+  });
+
+  it('keeps an html block non-empty and its size within bounds', () => {
+    const html = (data: Record<string, unknown>) => ({
+      type: 'html',
+      data: { name: 'a.html', html: '<p>A</p>', ...data }
+    });
+
+    expect(ZBlockCreate.safeParse(html({})).success).toBe(true);
+    expect(ZBlockCreate.safeParse(html({ html: '' })).success).toBe(false);
+    expect(ZBlockCreate.safeParse(html({ width: 29 })).success).toBe(false);
+    expect(ZBlockCreate.safeParse(html({ width: 101 })).success).toBe(false);
+    expect(ZBlockCreate.safeParse(html({ height: 159 })).success).toBe(false);
+    expect(ZBlockCreate.safeParse(html({ height: 2001 })).success).toBe(false);
+    expect(toPublicBlockData('html', { name: 'a.html', html: '<p>A</p>' })).toEqual({
+      name: 'a.html',
+      html: '<p>A</p>'
+    });
   });
 
   it('requires at least one flashcard with a unique id', () => {

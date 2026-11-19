@@ -3,6 +3,7 @@ import type { TBlockType } from '@cio/utils/validation/block';
 import ChartView from '../components/chart/chart-view.svelte';
 import DocumentView from '../components/document/document-view.svelte';
 import FlashcardsView from '../components/flashcards/flashcards-view.svelte';
+import HtmlView from '../components/html/html-view.svelte';
 import ImageView from '../components/image/image-view.svelte';
 import MultipleChoiceView from '../components/multiple-choice/multiple-choice-view.svelte';
 import ProcessView from '../components/process/process-view.svelte';
@@ -22,5 +23,6 @@ export const BLOCK_VIEWS: { [K in TBlockType]: Component<BlockViewProps<K>> } = 
   flashcards: FlashcardsView,
   tabs: TabsView,
   multiple_choice: MultipleChoiceView,
-  process: ProcessView
+  process: ProcessView,
+  html: HtmlView
 };

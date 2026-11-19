@@ -3111,6 +3111,61 @@
               "fit_cover": "Riempire",
               "fit_contain": "Adatto"
             },
+            "html": {
+              "dialog_title": "Aggiungi HTML",
+              "add_tab": "Aggiungi",
+              "code_tab": "Incolla codice",
+              "upload": "Carica file HTML",
+              "upload_hint": "Oppure trascinalo qui",
+              "create_with_ai": "Crea con l'IA",
+              "describe_placeholder": "Oppure descrivi la tua idea...",
+              "beta": "Beta",
+              "generate": "Genera",
+              "generating": "Generazione della pagina in corso. Potrebbe richiedere un minuto…",
+              "remove_template": "Rimuovi modello",
+              "code_placeholder": "<!doctype html>\n<html>…</html>",
+              "insert": "Inserisci",
+              "frame_title": "Pagina HTML incorporata",
+              "interact": "Interagisci",
+              "full_screen": "Schermo intero",
+              "more": "Altre azioni",
+              "change": "Sostituisci HTML",
+              "download": "Scarica HTML",
+              "resize_width": "Trascina per ridimensionare la larghezza",
+              "resize_height": "Trascina per ridimensionare l'altezza",
+              "edit_with_ai": "Modifica con l'IA",
+              "ai_edit_placeholder": "Descrivi cosa cambiare, ad es. Usa un tema scuro e aggiungi un pulsante di reset",
+              "ai_edit_submit": "Applica",
+              "generate_error": "Impossibile generare la pagina. Riprova.",
+              "too_large": "Questa pagina è troppo grande. Una pagina può contenere fino a 500.000 caratteri.",
+              "empty_file": "Questo file è vuoto.",
+              "templates": {
+                "slides": {
+                  "label": "Diapositive",
+                  "prompt": "Crea una presentazione curata sull'argomento di questa lezione, con una diapositiva del titolo, da 5 a 7 diapositive di contenuto, navigazione da tastiera e con pulsanti e un contatore delle diapositive."
+                },
+                "dashboard": {
+                  "label": "Dashboard",
+                  "prompt": "Crea una dashboard interattiva con dati di esempio sull'argomento di questa lezione, con numeri chiave, due grafici disegnati in SVG e filtri che li aggiornano."
+                },
+                "report": {
+                  "label": "Report",
+                  "prompt": "Crea un report di una pagina chiaro e ben strutturato sull'argomento di questa lezione, con un riepilogo, i risultati principali, una tabella di confronto e una breve conclusione."
+                },
+                "explainer": {
+                  "label": "Spiegazione",
+                  "prompt": "Crea una spiegazione interattiva che insegni l'argomento di questa lezione passo dopo passo, con un diagramma da esplorare e un breve quiz di verifica."
+                },
+                "prototype": {
+                  "label": "Prototipo",
+                  "prompt": "Crea un prototipo di app cliccabile legato all'argomento di questa lezione, con due o tre schermate, contenuti di esempio realistici e una navigazione funzionante tra di esse."
+                },
+                "game": {
+                  "label": "Gioco",
+                  "prompt": "Crea un gioco curato e giocabile che aiuti gli studenti a esercitarsi sull'argomento di questa lezione. Includi istruzioni chiare, comandi intuitivi, un ciclo di gioco completo, un punteggio e un modo per ricominciare."
+                }
+              }
+            },
             "settings": {
               "title": "Impostazioni della lezione",
               "description": "Gestisci questa lezione senza uscire dalla schermata dei contenuti."
@@ -3137,7 +3192,8 @@
               "flashcards": "Flashcard",
               "tabs": "Schede",
               "multiple_choice": "Scelta multipla",
-              "process": "Processo"
+              "process": "Processo",
+              "html": "HTML"
             },
             "empty_preview_title": "Niente da vedere in anteprima ancora",
             "empty_preview_description": "Questa lezione non ha contenuti visibili agli studenti. Passa a {editLabel} per aggiungerne.",
@@ -3925,7 +3981,8 @@
             "flashcards": "flashcard",
             "tabs": "schede",
             "multiple_choice": "domanda a scelta multipla",
-            "process": "processo"
+            "process": "processo",
+            "html": "pagina HTML"
           },
           "change_kind": {
             "added": "Aggiunto",
