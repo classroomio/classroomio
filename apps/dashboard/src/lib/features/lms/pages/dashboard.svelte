@@ -22,12 +22,11 @@
   import ClipboardListIcon from '@lucide/svelte/icons/clipboard-list';
   import CopyIcon from '@lucide/svelte/icons/copy';
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-  import FileCheckIcon from '@lucide/svelte/icons/file-check';
   import TargetIcon from '@lucide/svelte/icons/target';
   import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
   import { getStudentCourseProgressPercent, isStudentCourseComplete } from '$features/course/utils/compliance-utils';
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
-  import { GitBranch, SquareCheckBig } from '@lucide/svelte';
+  import { SquareCheckBig } from '@lucide/svelte';
   import { PathIcon } from '@cio/ui/custom/moving-icons';
   import { getCourseProgressCounts } from '$features/course/utils/functions';
 

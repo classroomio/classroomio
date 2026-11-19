@@ -532,9 +532,7 @@
 
                 <Table.Cell class="min-w-[110px]">
                   <span class="ui:text-muted-foreground text-sm">
-                    {formatPeopleShortDate(
-                      isStudentMember(person) ? (person.enrolledAt ?? person.createdAt) : person.createdAt
-                    )}
+                    {formatPeopleShortDate((isStudentMember(person) && person.enrolledAt) || person.createdAt)}
                   </span>
                 </Table.Cell>
 

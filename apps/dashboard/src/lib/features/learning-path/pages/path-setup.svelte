@@ -24,7 +24,6 @@
 
   const steps = $derived(getSetupSteps(path, basePath));
   const progress = $derived(getSetupProgress(steps));
-  const stepsLeft = $derived(progress.total - progress.completed);
 
   function getStepIcon(stepId: string) {
     switch (stepId) {

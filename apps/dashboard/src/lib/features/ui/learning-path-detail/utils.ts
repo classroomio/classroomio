@@ -20,7 +20,7 @@ function ratingLabel(rating: number): string {
   return t.get('public_learning_paths.detail.rating_label', { rating });
 }
 
-function buildLabels(detail: LearningPathDetail): LearningPathLandingPageLabels {
+function buildLabels(): LearningPathLandingPageLabels {
   return {
     aboutHeading: t.get('public_learning_paths.detail.about_heading') || "What you'll learn",
     aboutLead: t.get('public_learning_paths.detail.about_lead'),
@@ -162,6 +162,6 @@ export function buildLearningPathLandingPageProps(
         }
       : undefined,
     footer: landing.footer,
-    labels: buildLabels(detail)
+    labels: buildLabels()
   };
 }

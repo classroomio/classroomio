@@ -51,7 +51,7 @@ import type {
   TGetOrganizations,
   TCourseReorder,
   TBulkAudienceAction,
-  TImportAudienceMembers,
+  TImportAudienceMembersInput,
   TUpdateOrganization,
   TUpdateTeamMemberRole
 } from '@cio/utils/validation/organization';
@@ -837,7 +837,7 @@ class OrgApi extends BaseApiWithErrors {
   /**
    * Imports users into the organization as students
    */
-  async importAudienceMembers(data: TImportAudienceMembers) {
+  async importAudienceMembers(data: TImportAudienceMembersInput) {
     return this.execute<ImportAudienceRequest>({
       requestFn: () =>
         classroomio.organization.audience.import.$post({

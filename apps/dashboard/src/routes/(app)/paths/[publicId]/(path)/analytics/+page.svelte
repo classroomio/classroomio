@@ -4,8 +4,7 @@
   import { fade } from 'svelte/transition';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
-  import { AnalyticsPanelCard } from '$features/analytics';
-  import { ExportMenu, RefreshPageData, EmptyState } from '$features/ui';
+  import { ExportMenu, RefreshPageData, EmptyState, StatsPanelCard } from '$features/ui';
   import {
     AnalyticsSkeleton,
     CourseFunnel,
@@ -80,25 +79,25 @@
         <div class="space-y-6" in:fade>
           <PathAnalyticsKpis summary={analytics.summary} />
 
-          <AnalyticsPanelCard
+          <StatsPanelCard
             title={$t('learningPath.analytics.funnel.title')}
             description={$t('learningPath.analytics.funnel.subtitle')}
           >
             {#snippet children()}
               <CourseFunnel funnel={analytics.funnel} enrolled={analytics.summary.enrolled} />
             {/snippet}
-          </AnalyticsPanelCard>
+          </StatsPanelCard>
 
-          <AnalyticsPanelCard
+          <StatsPanelCard
             title={$t('learningPath.analytics.stuck.title')}
             description={$t('learningPath.analytics.stuck.subtitle')}
           >
             {#snippet children()}
               <StuckItemsList items={analytics.stuckItems} />
             {/snippet}
-          </AnalyticsPanelCard>
+          </StatsPanelCard>
 
-          <AnalyticsPanelCard
+          <StatsPanelCard
             title={$t('learningPath.analytics.students.title')}
             description={$t('learningPath.analytics.students.subtitle')}
           >
@@ -110,7 +109,7 @@
                 backPath={page.url.pathname}
               />
             {/snippet}
-          </AnalyticsPanelCard>
+          </StatsPanelCard>
         </div>
       {:else}
         <EmptyState title={$t('learningPath.analytics.empty')} description={$t('learningPath.analytics.empty_desc')} />

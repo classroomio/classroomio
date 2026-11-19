@@ -1,38 +1,31 @@
-import type {
-  CompletionFilter,
-  EnrollmentFilter,
-  PathSortBy as PathSortByValue,
-  PathSortOrder as PathSortOrderValue,
-  StatusFilter,
-  ViewMode
-} from './types';
+import type { CompletionFilter, EnrollmentFilter, PathSortBy, PathSortOrder, StatusFilter, ViewMode } from './types';
 
 export const LEARNING_PATHS_VIEW_MODE_KEY = 'pathView';
 export const DEFAULT_VIEW_MODE: ViewMode = 'grid';
 
 /** Named sort keys for learning path lists (URL `sort`, localStorage, filter UI). Values match the backend `LEARNING_PATH_LIST_SORT_BY`. */
-export const PathSortBy = {
+export const PATH_SORT_BY = {
   DateCreated: 'date_created',
   LastUpdatedAt: 'last_updated_at',
   Published: 'published',
   Courses: 'courses'
 } as const;
 
-export const DEFAULT_PATH_SORT: PathSortByValue = PathSortBy.DateCreated;
+export const DEFAULT_PATH_SORT: PathSortBy = PATH_SORT_BY.DateCreated;
 
 /** URL `order` param and filter toggle (ascending vs descending). Values match the backend `LEARNING_PATH_LIST_SORT_ORDERS`. */
-export const PathSortOrder = {
+export const PATH_SORT_ORDER = {
   Asc: 'asc',
   Desc: 'desc'
 } as const;
 
-export const DEFAULT_SORT_ORDER: PathSortOrderValue = PathSortOrder.Desc;
+export const DEFAULT_SORT_ORDER: PathSortOrder = PATH_SORT_ORDER.Desc;
 
 export const PATH_SORT_OPTIONS = [
-  { value: PathSortBy.DateCreated, label: 'learningPath.listing.filters.sort_date_created' },
-  { value: PathSortBy.LastUpdatedAt, label: 'learningPath.listing.filters.sort_last_updated_at' },
-  { value: PathSortBy.Published, label: 'learningPath.listing.filters.sort_published' },
-  { value: PathSortBy.Courses, label: 'learningPath.listing.filters.sort_courses' }
+  { value: PATH_SORT_BY.DateCreated, label: 'learningPath.listing.filters.sort_date_created' },
+  { value: PATH_SORT_BY.LastUpdatedAt, label: 'learningPath.listing.filters.sort_last_updated_at' },
+  { value: PATH_SORT_BY.Published, label: 'learningPath.listing.filters.sort_published' },
+  { value: PATH_SORT_BY.Courses, label: 'learningPath.listing.filters.sort_courses' }
 ] as const;
 
 export const STATUS_FILTER_OPTIONS: { id: StatusFilter; labelKey: string }[] = [
