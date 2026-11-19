@@ -1,4 +1,9 @@
-import { cohortHealth, type AnalyticsDrilldown, type AnalyticsDrilldownFacet } from '@cio/utils/analytics';
+import {
+  cohortHealth,
+  expandNeedsSegmentSwitcher,
+  type AnalyticsDrilldown,
+  type AnalyticsDrilldownFacet
+} from '@cio/utils/analytics';
 import {
   ANALYTICS_DEFAULT_PERIOD_DAYS,
   ANALYTICS_LIMITS,
@@ -11,6 +16,8 @@ import {
 
 import type {
   DonutSegment,
+  DrilldownSegment,
+  DrilldownSegmentSet,
   HbarItem,
   AnalyticsCell,
   AnalyticsChartPoint,
@@ -770,6 +777,68 @@ export function toHbarItems(result: AnalyticsResult, dimension: string | null, t
 
     return { key: point.key, label: point.label, value, display: format(value) };
   });
+}
+
+export const DRILLDOWN_PANEL_ID = 'analytics-drilldown-panel';
+
+export function drilldownTabId(segmentKey: string): string {
+  return `analytics-drilldown-tab-${segmentKey}`;
+}
+
+export const ATTENTION_REASONS: ReadonlyArray<{ key: string; tone: AnalyticsTone }> = [
+  { key: 'is_inactive__count_if', tone: 'danger' },
+  { key: 'is_low_score__count_if', tone: 'danger' },
+  { key: 'is_overdue__count_if', tone: 'warning' },
+  { key: 'is_low_video__count_if', tone: 'warning' }
+];
+
+const COMPLETE_PERCENT = 100;
+
+/**
+ * The segments a widget's drawer can switch between, built from the same result rows the chart draws so each
+ * option's count matches the chart. Null for a widget whose Expand opens one whole list, or that has no segments.
+ */
+export function drilldownSegmentSet(
+  widgetId: string,
+  result: AnalyticsResult,
+  translate: Translate
+): DrilldownSegmentSet | null {
+  if (!expandNeedsSegmentSwitcher(widgetId)) return null;
+
+  if (widgetId === 'needs_attention') {
+    const row = result.rows[0];
+    const options = ATTENTION_REASONS.map(({ key }): DrilldownSegment => {
+      const count = numberCell(row, key) ?? 0;
+
+      return { key, label: translate(`analytics.measures.${key}`), count, isEmpty: count === 0 };
+    });
+
+    return { control: 'tabs', options };
+  }
+
+  if (widgetId === 'lesson_dropoff') {
+    const options = toHbarItems(result, 'lesson', translate).map(
+      (item): DrilldownSegment => ({
+        key: item.key,
+        label: item.label,
+        count: null,
+        isEmpty: (item.value ?? COMPLETE_PERCENT) >= COMPLETE_PERCENT
+      })
+    );
+
+    return options.length > 0 ? { control: 'select', options } : null;
+  }
+
+  const options = toDonutSegments(result, 'status', translate).map(
+    (segment): DrilldownSegment => ({
+      key: segment.key,
+      label: segment.label,
+      count: segment.value,
+      isEmpty: segment.value === 0
+    })
+  );
+
+  return options.length > 0 ? { control: 'tabs', options } : null;
 }
 
 export function hbarMax(items: HbarItem[], isPercent: boolean): number {

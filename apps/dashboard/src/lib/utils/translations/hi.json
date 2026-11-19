@@ -7297,10 +7297,7 @@
       "yes": "हाँ",
       "no": "नहीं",
       "columns": {
-        "segment": "श्रेणी",
-        "metric": "मापदंड",
-        "value": "मान",
-        "details": "विवरण"
+        "segment": "श्रेणी"
       },
       "dimensions": {
         "student": "छात्र",
@@ -7320,11 +7317,10 @@
       }
     },
     "org_page_title": "अकादमी",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "{title} के लिए कार्रवाइयाँ",
-      "view_students": "छात्र देखें",
-      "open_in_students": "छात्र टैब में खोलें",
-      "click_to_view": "इसके छात्र देखने के लिए कोई बार या हिस्सा चुनें"
+      "expand": "विस्तृत करें",
+      "download": "CSV डाउनलोड करें"
     },
     "drilldown": {
       "count": "{count, plural, one {# छात्र} other {# छात्र}}",
@@ -7341,7 +7337,10 @@
       "lesson_incomplete": "पूर्ण नहीं: {lesson}",
       "lesson_fallback": "यह पाठ",
       "score_bucket": "औसत स्कोर {range}",
-      "scored": "औसत स्कोर के साथ"
+      "scored": "औसत स्कोर के साथ",
+      "open_in_students": "छात्र टैब में खोलें",
+      "kpi_label": "छात्र देखें: {title}",
+      "segment_label": "खंड"
     }
   },
   "oauth": {

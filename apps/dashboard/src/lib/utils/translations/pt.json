@@ -7297,10 +7297,7 @@
       "yes": "Sim",
       "no": "Não",
       "columns": {
-        "segment": "Grupo",
-        "metric": "Métrica",
-        "value": "Valor",
-        "details": "Detalhes"
+        "segment": "Grupo"
       },
       "dimensions": {
         "student": "Aluno",
@@ -7320,11 +7317,10 @@
       }
     },
     "org_page_title": "Academia",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "Ações para {title}",
-      "view_students": "Ver alunos",
-      "open_in_students": "Abrir na aba Alunos",
-      "click_to_view": "Selecione uma barra ou fatia para ver seus alunos"
+      "expand": "Expandir",
+      "download": "Baixar CSV"
     },
     "drilldown": {
       "count": "{count, plural, one {# aluno} other {# alunos}}",
@@ -7341,7 +7337,10 @@
       "lesson_incomplete": "Não concluído: {lesson}",
       "lesson_fallback": "esta aula",
       "score_bucket": "Pontuação média {range}",
-      "scored": "Com uma pontuação média"
+      "scored": "Com uma pontuação média",
+      "open_in_students": "Abrir na aba Alunos",
+      "kpi_label": "Ver alunos: {title}",
+      "segment_label": "Segmento"
     }
   },
   "oauth": {

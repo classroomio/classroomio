@@ -6,6 +6,7 @@ import { buildWidgetExportDocument } from './analytics-export';
 import {
   countActiveStudentFilters,
   drilldownHeading,
+  drilldownSegmentSet,
   emptyStudentFilters,
   parseStudentUrlFilters,
   studentQueryParts,
@@ -279,17 +280,75 @@ describe('buildWidgetExportDocument', () => {
       'Is complete rate'
     ]);
   });
+});
 
-  it('exports the headline figure of a KPI', () => {
-    const widget = { id: 'kpi_needs_attention', viz: 'kpi', spec: {} } as unknown as AnalyticsWidget;
-    const document = buildWidgetExportDocument({
-      widget,
-      result: donutResult,
-      title: 'Needs attention',
-      kpi: { value: '20', description: 'flagged' },
-      translate
-    });
+describe('drilldownSegmentSet', () => {
+  const statusResult = {
+    columns: [{ key: 'students__count', role: 'measure', valueType: 'count' }],
+    rows: [
+      { status_id: 'completed', status_label: 'completed', students__count: 5 },
+      { status_id: 'on_track', status_label: 'on_track', students__count: 12 },
+      { status_id: 'at_risk', status_label: 'at_risk', students__count: 0 },
+      { status_id: 'lagging', status_label: 'lagging', students__count: 4 }
+    ],
+    total: 4
+  } as unknown as AnalyticsResult;
 
-    expect(document.rows).toEqual([{ metric: 'Needs attention', value: '20', details: 'flagged' }]);
+  it('lists the visible status segments in chart order with their counts', () => {
+    const set = drilldownSegmentSet('students_by_status', statusResult, translate);
+
+    expect(set?.control).toBe('tabs');
+    expect(set?.options.map((option) => [option.key, option.count])).toEqual([
+      ['on_track', 12],
+      ['lagging', 4],
+      ['completed', 5]
+    ]);
+  });
+
+  it('lists every attention reason and marks the empty ones', () => {
+    const result = {
+      columns: [],
+      rows: [
+        {
+          is_inactive__count_if: 0,
+          is_low_score__count_if: 3,
+          is_overdue__count_if: 0,
+          is_low_video__count_if: 2
+        }
+      ],
+      total: 1
+    } as unknown as AnalyticsResult;
+    const set = drilldownSegmentSet('needs_attention', result, translate);
+
+    expect(set?.control).toBe('tabs');
+    expect(set?.options.map((option) => [option.key, option.count, option.isEmpty])).toEqual([
+      ['is_inactive__count_if', 0, true],
+      ['is_low_score__count_if', 3, false],
+      ['is_overdue__count_if', 0, true],
+      ['is_low_video__count_if', 2, false]
+    ]);
+  });
+
+  it('offers one select option per lesson and treats a fully completed lesson as empty', () => {
+    const result = {
+      columns: [{ key: 'is_complete__rate', role: 'measure', valueType: 'percent' }],
+      rows: [
+        { lesson_id: LESSON_ID, lesson_label: 'Lesson 1', is_complete__rate: 100 },
+        { lesson_id: COHORT_ID, lesson_label: 'Lesson 2', is_complete__rate: 40 }
+      ],
+      total: 2
+    } as unknown as AnalyticsResult;
+    const set = drilldownSegmentSet('lesson_dropoff', result, translate);
+
+    expect(set?.control).toBe('select');
+    expect(set?.options.map((option) => [option.key, option.isEmpty])).toEqual([
+      [LESSON_ID, true],
+      [COHORT_ID, false]
+    ]);
+  });
+
+  it('is null for widgets whose Expand opens one whole list', () => {
+    expect(drilldownSegmentSet('cohort_health', statusResult, translate)).toBeNull();
+    expect(drilldownSegmentSet('overdue', statusResult, translate)).toBeNull();
   });
 });

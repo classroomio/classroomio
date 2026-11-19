@@ -7297,10 +7297,7 @@
       "yes": "Có",
       "no": "Không",
       "columns": {
-        "segment": "Nhóm",
-        "metric": "Chỉ số",
-        "value": "Giá trị",
-        "details": "Chi tiết"
+        "segment": "Nhóm"
       },
       "dimensions": {
         "student": "Người học",
@@ -7320,11 +7317,10 @@
       }
     },
     "org_page_title": "Học viện",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "Thao tác cho {title}",
-      "view_students": "Xem người học",
-      "open_in_students": "Mở trong tab Người học",
-      "click_to_view": "Chọn một cột hoặc một phần để xem người học của nó"
+      "expand": "Mở rộng",
+      "download": "Tải xuống CSV"
     },
     "drilldown": {
       "count": "{count, plural, other {# người học}}",
@@ -7341,7 +7337,10 @@
       "lesson_incomplete": "Chưa hoàn thành: {lesson}",
       "lesson_fallback": "bài học này",
       "score_bucket": "Điểm trung bình {range}",
-      "scored": "Có điểm trung bình"
+      "scored": "Có điểm trung bình",
+      "open_in_students": "Mở trong tab Người học",
+      "kpi_label": "Xem người học: {title}",
+      "segment_label": "Phân khúc"
     }
   },
   "oauth": {

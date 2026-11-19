@@ -112,6 +112,12 @@ export type WidgetRendererProps = {
   onSegmentSelect?: (segmentKey: string) => void;
 };
 
+export type DrilldownSegment = { key: string; label: string; count: number | null; isEmpty: boolean };
+
+export type DrilldownSegmentSet = { control: 'tabs' | 'select'; options: DrilldownSegment[] };
+
+export type DrilldownSwitcher = DrilldownSegmentSet & { widget: AnalyticsWidget; activeKey: string };
+
 export type DonutSegment = { key: string; label: string; value: number; color: string };
 
 export type HbarItem = {

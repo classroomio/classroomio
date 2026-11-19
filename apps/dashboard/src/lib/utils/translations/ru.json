@@ -7399,10 +7399,7 @@
       "yes": "Да",
       "no": "Нет",
       "columns": {
-        "segment": "Группа",
-        "metric": "Показатель",
-        "value": "Значение",
-        "details": "Подробности"
+        "segment": "Группа"
       },
       "dimensions": {
         "student": "Студент",
@@ -7422,11 +7419,10 @@
       }
     },
     "org_page_title": "Академия",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "Действия для: {title}",
-      "view_students": "Показать студентов",
-      "open_in_students": "Открыть на вкладке «Студенты»",
-      "click_to_view": "Выберите столбец или сегмент, чтобы увидеть его студентов"
+      "expand": "Развернуть",
+      "download": "Скачать CSV"
     },
     "drilldown": {
       "count": "{count, plural, one {# студент} few {# студента} many {# студентов} other {# студента}}",
@@ -7443,7 +7439,10 @@
       "lesson_incomplete": "Не завершено: {lesson}",
       "lesson_fallback": "этот урок",
       "score_bucket": "Средний балл {range}",
-      "scored": "Со средним баллом"
+      "scored": "Со средним баллом",
+      "open_in_students": "Открыть на вкладке «Студенты»",
+      "kpi_label": "Показать студентов: {title}",
+      "segment_label": "Сегмент"
     }
   },
   "certificate": {

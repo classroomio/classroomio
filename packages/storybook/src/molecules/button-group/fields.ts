@@ -1,1 +1,1 @@
-export const FIELDS = ['class', 'orientation'] as string[];
+export const FIELDS = ['class', 'orientation', 'variant'] as string[];

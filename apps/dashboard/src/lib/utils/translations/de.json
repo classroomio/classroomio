@@ -7297,10 +7297,7 @@
       "yes": "Ja",
       "no": "Nein",
       "columns": {
-        "segment": "Gruppe",
-        "metric": "Kennzahl",
-        "value": "Wert",
-        "details": "Details"
+        "segment": "Gruppe"
       },
       "dimensions": {
         "student": "Studierender",
@@ -7320,11 +7317,10 @@
       }
     },
     "org_page_title": "Akademie",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "Aktionen für {title}",
-      "view_students": "Studierende anzeigen",
-      "open_in_students": "Im Tab „Studierende“ öffnen",
-      "click_to_view": "Wähle einen Balken oder ein Segment, um die zugehörigen Studierenden anzuzeigen"
+      "expand": "Erweitern",
+      "download": "CSV herunterladen"
     },
     "drilldown": {
       "count": "{count, plural, one {# Studierender} other {# Studierende}}",
@@ -7341,7 +7337,10 @@
       "lesson_incomplete": "Nicht abgeschlossen: {lesson}",
       "lesson_fallback": "diese Lektion",
       "score_bucket": "Durchschnittliche Punktzahl {range}",
-      "scored": "Mit einer durchschnittlichen Punktzahl"
+      "scored": "Mit einer durchschnittlichen Punktzahl",
+      "open_in_students": "Im Tab „Studierende“ öffnen",
+      "kpi_label": "Studierende anzeigen: {title}",
+      "segment_label": "Segment"
     }
   },
   "oauth": {

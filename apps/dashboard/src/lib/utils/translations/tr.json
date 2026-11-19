@@ -7399,10 +7399,7 @@
       "yes": "Evet",
       "no": "Hayır",
       "columns": {
-        "segment": "Grup",
-        "metric": "Ölçüt",
-        "value": "Değer",
-        "details": "Ayrıntılar"
+        "segment": "Grup"
       },
       "dimensions": {
         "student": "Öğrenci",
@@ -7422,11 +7419,10 @@
       }
     },
     "org_page_title": "Akademi",
-    "widget_menu": {
+    "widget_toolbar": {
       "label": "{title} için işlemler",
-      "view_students": "Öğrencileri görüntüle",
-      "open_in_students": "Öğrenciler sekmesinde aç",
-      "click_to_view": "Öğrencilerini görmek için bir çubuk veya dilim seçin"
+      "expand": "Genişlet",
+      "download": "CSV indir"
     },
     "drilldown": {
       "count": "{count, plural, one {# öğrenci} other {# öğrenci}}",
@@ -7443,7 +7439,10 @@
       "lesson_incomplete": "Tamamlanmadı: {lesson}",
       "lesson_fallback": "bu ders",
       "score_bucket": "Ortalama puan {range}",
-      "scored": "Ortalama puanı olan"
+      "scored": "Ortalama puanı olan",
+      "open_in_students": "Öğrenciler sekmesinde aç",
+      "kpi_label": "Öğrencileri görüntüle: {title}",
+      "segment_label": "Segment"
     }
   },
   "certificate": {
