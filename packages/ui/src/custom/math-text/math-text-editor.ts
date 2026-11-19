@@ -1,4 +1,4 @@
-import { Editor, InputRule, Node, mergeAttributes, type JSONContent } from '@tiptap/core';
+import { Editor, Extension, InputRule, Node, mergeAttributes, type JSONContent } from '@tiptap/core';
 import { InlineMath } from '@tiptap/extension-mathematics';
 import { UndoRedo } from '@tiptap/extensions';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
@@ -19,6 +19,7 @@ export interface MathTextEditorOptions {
   attributes: Record<string, string>;
   onChange: (value: string) => void;
   onMathClick: (click: MathNodeClick) => void;
+  onOpenMath: () => void;
 }
 
 export interface MathTextEditorController {
@@ -30,6 +31,7 @@ export interface MathTextEditorController {
   destroy: () => void;
 }
 
+const SLASH_MATH_INPUT = /(^|\s)\/math$/;
 const DOLLAR_MATH_INPUT = /(^|[^$\\])\$([^\s$](?:[^$\n]*[^\s$\\])?)\$$/;
 
 const SingleLineDocument = Node.create({
@@ -122,6 +124,28 @@ export function createMathTextEditor(options: MathTextEditorOptions): MathTextEd
       SingleLineParagraph,
       SingleLineText,
       UndoRedo,
+      Extension.create({
+        name: 'mathShortcut',
+        addKeyboardShortcuts() {
+          return {
+            'Mod-m': () => {
+              options.onOpenMath();
+              return true;
+            }
+          };
+        },
+        addInputRules() {
+          return [
+            new InputRule({
+              find: SLASH_MATH_INPUT,
+              handler: ({ state, range, match }) => {
+                state.tr.delete(range.from + match[1].length, range.to);
+                options.onOpenMath();
+              }
+            })
+          ];
+        }
+      }),
       SingleLineMath.configure({
         onClick: (node, pos) => {
           if (!editor.isEditable) return;

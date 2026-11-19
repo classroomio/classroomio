@@ -26,6 +26,8 @@
     invalid?: boolean;
     ariaLabel?: string;
     labels?: MathEditLabels;
+    /** Shows an inline insert-math button; leave off for generic text, where typing `/math` or pressing Ctrl/Cmd+M opens the math box. */
+    showMathButton?: boolean;
     class?: string;
   }
 
@@ -37,6 +39,7 @@
     invalid = false,
     ariaLabel,
     labels = DEFAULT_MATH_EDIT_LABELS,
+    showMathButton = false,
     class: className = ''
   }: Props = $props();
 
@@ -62,6 +65,10 @@
     editingMathPos = pos;
     mathAnchor = anchor;
     isMathPopoverOpen = true;
+  }
+
+  export function openMath() {
+    openMathPopover('', null, wrapperElement);
   }
 
   function handleMathClick(click: MathNodeClick) {
@@ -95,7 +102,8 @@
         editable: !disabled,
         attributes,
         onChange: handleEditorChange,
-        onMathClick: handleMathClick
+        onMathClick: handleMathClick,
+        onOpenMath: openMath
       });
     });
 
@@ -141,17 +149,20 @@
     <div bind:this={editorElement}></div>
   </div>
 
-  <IconButton
-    type="button"
-    size="icon-sm"
-    tooltip={labels.insertMath}
-    disabled={disabled || !controller}
-    class="ui:text-muted-foreground ui:shrink-0"
-    onclick={() => openMathPopover('', null, wrapperElement)}
-  >
-    <RadicalIcon class="ui:size-4" />
-    <span class="ui:sr-only">{labels.insertMath}</span>
-  </IconButton>
+  {#if showMathButton}
+    <IconButton
+      type="button"
+      size="icon-sm"
+      variant="secondary"
+      tooltip={labels.insertMath}
+      disabled={disabled || !controller}
+      class="ui:text-muted-foreground ui:shrink-0"
+      onclick={openMath}
+    >
+      <RadicalIcon class="ui:size-4" />
+      <span class="ui:sr-only">{labels.insertMath}</span>
+    </IconButton>
+  {/if}
 </div>
 
 <MathEditPopover

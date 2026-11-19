@@ -21,6 +21,7 @@
 
 <script lang="ts">
   let titleValue = $state('Solve $x^2-5x+6=0$');
+  let mathButtonValue = $state('Expand $2(x+1)$');
   let emptyValue = $state('');
   let optionValue = $state('$\\frac{3}{4}$');
   let legacyValue = $state('A book costs $5');
@@ -37,6 +38,20 @@
       />
       <p class="ui:text-muted-foreground text-sm">Saved: <code>{titleValue}</code></p>
       <p class="text-sm">Rendered: <MathText text={titleValue} /></p>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="With Math Button">
+  {#snippet template()}
+    <div class="w-[28rem]">
+      <MathTextInput
+        value={mathButtonValue}
+        placeholder="Write your question"
+        ariaLabel="Question title"
+        showMathButton
+        onValueChange={(value) => (mathButtonValue = value)}
+      />
     </div>
   {/snippet}
 </Story>

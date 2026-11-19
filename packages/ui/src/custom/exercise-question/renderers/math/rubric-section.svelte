@@ -51,10 +51,7 @@
 </script>
 
 <div class="ui:space-y-3 ui:rounded-md ui:border ui:p-3" data-testid="rubric-section">
-  <div class="ui:space-y-1">
-    <Label>{label('math.rubric.heading')}</Label>
-    <p class="ui:text-muted-foreground ui:text-xs">{label('math.rubric.helper')}</p>
-  </div>
+  <Label>{label('math.rubric.heading')}</Label>
 
   {#each rubric.steps as step, stepIndex (step.id)}
     <div class="ui:flex ui:items-end ui:gap-2" data-testid="rubric-step">
@@ -97,7 +94,7 @@
     <p class="ui:text-destructive ui:text-xs" data-testid="rubric-mismatch">{label('math.rubric.total_mismatch')}</p>
   {/if}
 
-  <div class="ui:flex ui:items-start ui:gap-3 ui:border-t ui:pt-3">
+  <div class="ui:flex ui:items-center ui:gap-3 ui:border-t ui:pt-3">
     <Switch
       checked={isAiEnabled}
       disabled={disabled || rubric.steps.length === 0 || isAiLocked}
@@ -106,7 +103,6 @@
     />
     <div class="ui:space-y-1">
       <Label>{label('math.rubric.ai_label')}</Label>
-      <p class="ui:text-muted-foreground ui:text-xs">{label('math.rubric.ai_helper')}</p>
       {#if isAiLocked}
         <Button type="button" variant="outline" size="sm" onclick={$mathPlanGate.onUpgrade} testId="ai-grading-upgrade">
           {label('math.upgrade.required')}

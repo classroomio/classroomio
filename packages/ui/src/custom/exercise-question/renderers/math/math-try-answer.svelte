@@ -51,7 +51,6 @@
 
 <div class="ui:space-y-2 ui:rounded-md ui:border ui:border-dashed ui:p-3" data-testid="math-try-answer">
   <Label>{label('math.edit.try_label')}</Label>
-  <p class="ui:text-muted-foreground ui:text-xs">{label('math.edit.try_helper')}</p>
   <div class="ui:flex ui:items-center ui:gap-2">
     <MathInput
       class="ui:flex-1"

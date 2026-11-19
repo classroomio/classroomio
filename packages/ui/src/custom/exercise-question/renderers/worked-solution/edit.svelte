@@ -37,42 +37,44 @@
 </script>
 
 <div class="ui:space-y-4">
-  <MathSettingsFields settings={question.settings} {labels} {disabled} onPatchSettings={patchSettings} />
-  <VariablesSection {question} {labels} {disabled} onPatchSettings={patchSettings} />
+  <MathSettingsFields settings={question.settings} {labels} {disabled} onPatchSettings={patchSettings}>
+    {#snippet more()}
+      <VariablesSection {question} {labels} {disabled} onPatchSettings={patchSettings} />
 
-  <div class="ui:grid ui:gap-3 ui:md:grid-cols-2">
-    <div class="ui:space-y-1">
-      <Label>{label('math.worked.edit.answer_points_label')}</Label>
-      <NumberField
-        min={0}
-        max={questionPoints}
-        isDisabled={disabled}
-        value={settings.answerPoints}
-        onValueChange={(next) => patchSettings({ answerPoints: next ?? 0 })}
-      />
-    </div>
-    <div class="ui:space-y-1">
-      <Label>{label('math.worked.edit.working_points_label')}</Label>
-      <p class="ui:text-sm ui:font-medium" data-testid="worked-working-points">{workingPoints}</p>
-      <p class="ui:text-muted-foreground ui:text-xs">{label('math.worked.edit.working_points_helper')}</p>
-    </div>
-  </div>
-
-  <div class="ui:space-y-2">
-    <Label>{label('math.worked.edit.working_inputs_label')}</Label>
-    <div class="ui:flex ui:flex-wrap ui:gap-4">
-      {#each WORKING_INPUTS as input (input)}
-        <div class="ui:flex ui:items-center ui:gap-2">
-          <Checkbox
-            {disabled}
-            checked={settings.workingInputs.includes(input)}
-            onCheckedChange={(checked) => toggleWorkingInput(input, checked === true)}
+      <div class="ui:grid ui:gap-3 ui:md:grid-cols-2">
+        <div class="ui:space-y-1">
+          <Label>{label('math.worked.edit.answer_points_label')}</Label>
+          <NumberField
+            min={0}
+            max={questionPoints}
+            isDisabled={disabled}
+            value={settings.answerPoints}
+            onValueChange={(next) => patchSettings({ answerPoints: next ?? 0 })}
           />
-          <span class="ui:text-sm">{label(`math.worked.input.${input}`)}</span>
         </div>
-      {/each}
-    </div>
-  </div>
+        <div class="ui:space-y-1">
+          <Label>{label('math.worked.edit.working_points_label')}</Label>
+          <p class="ui:text-sm ui:font-medium" data-testid="worked-working-points">{workingPoints}</p>
+        </div>
+      </div>
+
+      <div class="ui:space-y-2">
+        <Label>{label('math.worked.edit.working_inputs_label')}</Label>
+        <div class="ui:flex ui:flex-wrap ui:gap-4">
+          {#each WORKING_INPUTS as input (input)}
+            <div class="ui:flex ui:items-center ui:gap-2">
+              <Checkbox
+                {disabled}
+                checked={settings.workingInputs.includes(input)}
+                onCheckedChange={(checked) => toggleWorkingInput(input, checked === true)}
+              />
+              <span class="ui:text-sm">{label(`math.worked.input.${input}`)}</span>
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/snippet}
+  </MathSettingsFields>
 
   <RubricSection settings={question.settings} {workingPoints} {labels} {disabled} onPatchSettings={patchSettings} />
 </div>

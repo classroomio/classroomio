@@ -10,7 +10,8 @@
   }
 </script>
 
-<div class="ui:space-y-4">
-  <MathSettingsFields settings={question.settings} {labels} {disabled} onPatchSettings={patchSettings} />
-  <VariablesSection {question} {labels} {disabled} onPatchSettings={patchSettings} />
-</div>
+<MathSettingsFields settings={question.settings} {labels} {disabled} onPatchSettings={patchSettings}>
+  {#snippet more()}
+    <VariablesSection {question} {labels} {disabled} onPatchSettings={patchSettings} />
+  {/snippet}
+</MathSettingsFields>

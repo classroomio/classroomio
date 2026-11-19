@@ -19,7 +19,7 @@
     trailingContent
   }: EdraToolbarProps = $props();
 
-  const toolbarCommands = Object.keys(commands).filter((key) => !excludedCommands?.includes(key));
+  const toolbarCommands = Object.keys(commands).filter((key) => key !== 'math' && !excludedCommands?.includes(key));
   const emailFormatting = commands['text-formatting'].filter((command) =>
     ['bold', 'italic', 'underline', 'link'].includes(command.name)
   );

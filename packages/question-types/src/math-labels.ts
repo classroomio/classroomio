@@ -1,5 +1,6 @@
 /** English copy for the math question renderers; apps translate each key from `math_question.<key without "math.">`. */
 export const MATH_QUESTION_LABEL_DEFAULTS = {
+  'math.edit.more': 'More options',
   'math.edit.accepted_answers_label': 'Accepted answers',
   'math.edit.accepted_answers_helper': 'Type each correct answer the way a student would. Any of them is accepted.',
   'math.edit.add_answer': 'Add another accepted answer',

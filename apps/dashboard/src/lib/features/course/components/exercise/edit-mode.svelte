@@ -541,9 +541,6 @@
         <PlusIcon class="size-4" />
         {$t('math_question.parts.add')}
       </Button>
-      {#if parts.length === 0}
-        <p class="ui:text-muted-foreground mt-2 text-xs">{$t('math_question.parts.helper')}</p>
-      {/if}
     </div>
   {/if}
 {/snippet}

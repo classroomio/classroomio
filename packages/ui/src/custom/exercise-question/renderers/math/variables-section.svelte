@@ -120,28 +120,22 @@
   }
 </script>
 
-<div class="ui:space-y-3 ui:rounded-md ui:border ui:p-3" data-testid="variables-section">
-  <div class="ui:flex ui:items-start ui:justify-between ui:gap-2">
-    <div class="ui:space-y-1">
+<div class={parameters ? 'ui:space-y-3 ui:rounded-md ui:border ui:p-3' : ''} data-testid="variables-section">
+  {#if parameters}
+    <div class="ui:flex ui:items-center ui:justify-between ui:gap-2">
       <Label>{label('math.variables.heading')}</Label>
-      <p class="ui:text-muted-foreground ui:text-xs">
-        {label('math.variables.helper')}
-        <code class="ui:rounded ui:bg-muted ui:px-1">{'{{a}}'}</code>
-      </p>
-    </div>
-    {#if parameters}
       <Button type="button" variant="ghost" size="sm" {disabled} onclick={disable}>
         {label('math.variables.disable')}
       </Button>
-    {/if}
-  </div>
+    </div>
+  {/if}
 
   {#if !parameters && $mathPlanGate.locked}
     <Button type="button" variant="outline" size="sm" onclick={$mathPlanGate.onUpgrade} testId="variables-upgrade">
       {label('math.upgrade.required')}
     </Button>
   {:else if !parameters}
-    <Button type="button" variant="outline" size="sm" {disabled} onclick={enable}>
+    <Button type="button" variant="ghost" size="sm" {disabled} onclick={enable}>
       <PlusIcon class="ui:mr-1 ui:size-4" />
       {label('math.variables.enable')}
     </Button>
@@ -239,7 +233,6 @@
 
     <div class="ui:space-y-1">
       <Label>{label('math.variables.constraints_label')}</Label>
-      <p class="ui:text-muted-foreground ui:text-xs">{label('math.variables.constraints_helper')}</p>
       <Textarea
         value={constraintsText}
         rows={2}
@@ -258,10 +251,6 @@
 
     <div class="ui:space-y-1">
       <Label>{label('math.variables.answer_formula_label')}</Label>
-      <p class="ui:text-muted-foreground ui:text-xs">
-        {label('math.variables.answer_formula_helper')}
-        <code class="ui:rounded ui:bg-muted ui:px-1">{'{{answer}}'}</code>
-      </p>
       <Input
         value={parameters.answerFormula}
         {disabled}

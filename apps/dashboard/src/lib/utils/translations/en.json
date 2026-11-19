@@ -7409,6 +7409,7 @@
       "feedback_text_placeholder": "Hint for the student",
       "add_feedback": "Add feedback",
       "remove": "Remove",
+      "more": "More options",
       "try_label": "Try an answer",
       "try_helper": "Check how a student answer would be marked before you publish.",
       "try_placeholder": "Type a sample student answer",

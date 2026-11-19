@@ -17,6 +17,7 @@
     createVariantSeed,
     getExerciseQuestionLabel,
     getMathQuestionLabel,
+    QUESTION_TYPE_KEY,
     readQuestionParameters
   } from '@cio/question-types';
   import PlusIcon from '@lucide/svelte/icons/plus';
@@ -112,6 +113,16 @@
   const mathEditLabels = $derived(getQuestionMathEditLabels(contract.labels));
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(contract.labels, key, fallback);
+
+  const MATH_QUESTION_TYPES: ReadonlySet<string> = new Set([
+    QUESTION_TYPE_KEY.MATH_EXPRESSION,
+    QUESTION_TYPE_KEY.NUMERIC,
+    QUESTION_TYPE_KEY.WORKED_SOLUTION,
+    QUESTION_TYPE_KEY.GRAPH_PLOT,
+    QUESTION_TYPE_KEY.GRAPH_READ
+  ]);
+  const isMathQuestion = $derived(MATH_QUESTION_TYPES.has(contract.question?.questionType ?? ''));
+  let titleInput = $state<ReturnType<typeof MathTextInput> | null>(null);
 
   let imageFileInput = $state<HTMLInputElement | null>(null);
   let isImageUploading = $state(false);
@@ -352,10 +363,11 @@
 {#snippet content()}
   {#if contract.mode === 'edit'}
     <div class="ui:space-y-3">
-      <div class="ui:flex ui:min-w-0 ui:flex-col ui:items-stretch ui:gap-2 ui:sm:flex-row ui:sm:items-end">
+      <div class="ui:flex ui:min-w-0 ui:flex-col ui:items-stretch ui:gap-2 ui:sm:flex-row ui:sm:items-start">
         <div class="ui:min-w-0 ui:flex-1 ui:space-y-1">
-          <p class="ui:text-sm ui:font-medium">{label('question.edit.title_label')}</p>
           <MathTextInput
+            bind:this={titleInput}
+            showMathButton={isMathQuestion}
             value={contract.question.title}
             placeholder={label('question.edit.title_placeholder')}
             ariaLabel={label('question.edit.title_label')}
@@ -381,6 +393,9 @@
           <DropdownMenu.Content align="end">
             <DropdownMenu.Item disabled={contract.disabled} onclick={onDescriptionAction}>
               {hasDescription ? label('question.edit.remove_description') : label('question.edit.add_description')}
+            </DropdownMenu.Item>
+            <DropdownMenu.Item disabled={contract.disabled} onclick={() => titleInput?.openMath()}>
+              {mathEditLabels.insertMath}
             </DropdownMenu.Item>
             <DropdownMenu.Item disabled={contract.disabled || isImageUploading} onclick={openImagePicker}>
               {label('question.edit.add_image')}
