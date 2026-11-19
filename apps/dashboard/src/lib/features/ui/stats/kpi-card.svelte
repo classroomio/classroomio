@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import * as Card from '@cio/ui/base/card';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { cn } from '@cio/ui/tools';
@@ -67,7 +68,11 @@
 </script>
 
 <Card.Root
-  class={cn('ui:bg-card relative overflow-hidden', onClick && 'ui:hover:bg-muted/50 transition-colors', className)}
+  class={cn(
+    'ui:bg-card relative overflow-hidden',
+    onClick && 'ui:group ui:hover:bg-muted ui:hover:border-muted-foreground/40 transition-colors',
+    className
+  )}
 >
   {#if onClick}
     <button
@@ -89,9 +94,19 @@
           {@render badge?.()}
         </div>
       </div>
-      {#if Icon}
-        <div class={cn('flex h-9 w-9 items-center justify-center rounded-full', accentClass[accent])}>
-          <Icon class="h-4 w-4" />
+      {#if Icon || onClick}
+        <div class="flex items-center gap-2">
+          {#if Icon}
+            <div class={cn('flex h-9 w-9 items-center justify-center rounded-full', accentClass[accent])}>
+              <Icon class="h-4 w-4" />
+            </div>
+          {/if}
+          {#if onClick}
+            <ArrowUpRightIcon
+              class="custom ui:text-muted-foreground ui:group-hover:text-foreground ui:group-focus-within:text-foreground size-4 shrink-0 transition-colors"
+              aria-hidden="true"
+            />
+          {/if}
         </div>
       {/if}
     </div>
