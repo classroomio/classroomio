@@ -645,6 +645,10 @@ exports[`public tag contract > ZPublicApiUpdateCourseResponse 1`] = `
         },
       ],
     },
+    "enrollOnlyInLearningPath": {
+      "description": "True when learners can join the course only through a learning path that contains it",
+      "type": "boolean",
+    },
     "groupId": {
       "anyOf": [
         {
@@ -1033,6 +1037,7 @@ exports[`public tag contract > ZPublicApiUpdateCourseResponse 1`] = `
     "status",
     "type",
     "callout",
+    "enrollOnlyInLearningPath",
     "tags",
   ],
   "type": "object",
