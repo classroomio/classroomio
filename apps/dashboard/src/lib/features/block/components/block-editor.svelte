@@ -4,7 +4,12 @@
   import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import * as Block from '@cio/ui/custom/block';
-  import { isBlockType, type TBlockDataByType, type TBlockType } from '@cio/utils/validation/block';
+  import {
+    isBlockType,
+    type TBlockDataByType,
+    type TBlockType,
+    type TVideoBlockData
+  } from '@cio/utils/validation/block';
   import type { TLocale } from '@cio/db/types';
   import { t } from '$lib/utils/functions/translations';
   import type { BlockListApi } from '../api/block-list.svelte';
@@ -16,7 +21,12 @@
   import type { BlockEditHost, BlockOf, BlockRecord } from '../utils/types';
   import { VideoGuideCard } from '@cio/ui/custom/video-guide';
   import { VIDEO_GUIDES } from '$features/video-guide/utils/video-guide-utils';
+  import { browser } from '$app/environment';
+  import { isAiPromptShortcut, getAiShortcut, requestAiPrompt } from '../utils/ai-prompt-request';
   import BlockAddRow from './block-add-row.svelte';
+  import BlockEmptyAdd from './block-empty-add.svelte';
+  import ImagePicker from './image/image-picker.svelte';
+  import VideoPicker from './video/video-picker.svelte';
 
   interface Props {
     api: BlockListApi;
@@ -31,6 +41,15 @@
 
   const DRAG_HINT_KEY = 'classroomio:lesson-block-drag-hint-dismissed';
 
+  const isMac = $derived(browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform));
+
+  function handleWindowKeydown(event: KeyboardEvent) {
+    if (!isAiPromptShortcut(event)) return;
+
+    event.preventDefault();
+    requestAiPrompt();
+  }
+
   interface PickerRequest {
     type: TBlockType;
     index: number;
@@ -40,6 +59,38 @@
   let picker = $state<PickerRequest | null>(null);
 
   const Picker = $derived(picker ? getBlockEditor(picker.type).picker : undefined);
+
+  let resolveImageRequest = $state<((url: string | null) => void) | null>(null);
+
+  function requestImage(): Promise<string | null> {
+    resolveImageRequest?.(null);
+
+    return new Promise((resolve) => {
+      resolveImageRequest = resolve;
+    });
+  }
+
+  let resolveVideoRequest = $state<((video: TVideoBlockData | null) => void) | null>(null);
+
+  function requestVideo(): Promise<TVideoBlockData | null> {
+    resolveVideoRequest?.(null);
+
+    return new Promise((resolve) => {
+      resolveVideoRequest = resolve;
+    });
+  }
+
+  function settleVideoRequest(video: TVideoBlockData | null) {
+    const resolve = resolveVideoRequest;
+    resolveVideoRequest = null;
+    resolve?.(video);
+  }
+
+  function settleImageRequest(url: string | null) {
+    const resolve = resolveImageRequest;
+    resolveImageRequest = null;
+    resolve?.(url);
+  }
 
   function add(type: TBlockType, index: number) {
     const initial = getBlockEditor(type).createInitial();
@@ -110,12 +161,17 @@
   }
 </script>
 
+<svelte:window onkeydown={handleWindowKeydown} />
+
 <Block.List
   items={api.blocks}
   editable
   {spacingClass}
   addChoices={getAddBlockChoices()}
   addLabel={t.get('course.navItem.lessons.materials.blocks.add_content')}
+  addAiLabel={t.get('course.navItem.lessons.materials.blocks.ask_ai_instead')}
+  addAiShortcut={getAiShortcut(isMac)}
+  gapTestId="block-gap-add"
   emptyTitle={t.get('course.navItem.lessons.materials.blocks.empty_title')}
   emptyDescription={t.get('course.navItem.lessons.materials.blocks.empty_description')}
   emptyMachineHeading={t.get('course.navItem.lessons.add_content_options.lesson_title').toLocaleUpperCase()}
@@ -127,10 +183,11 @@
   storageKey={DRAG_HINT_KEY}
   highlightId={api.lastInsertedId}
   onAdd={handleAdd}
+  onAddAi={requestAiPrompt}
   onReorder={(blocks) => void api.reorder(blocks)}
 >
   {#snippet emptyAction()}
-    <BlockAddRow onSelect={(type) => add(type, 0)} />
+    <BlockEmptyAdd onSelect={(type) => add(type, 0)} />
     <div class="mt-6 w-full">
       <VideoGuideCard
         videoId={VIDEO_GUIDES.lessonBlocks.videoId}
@@ -161,9 +218,11 @@
         {index}
         {locale}
         content={getBlockContent(block, locale)}
-        onDataChange={(data: Record<string, unknown>) => void api.updateData(block.id, data)}
+        onDataChange={(data: Record<string, unknown>) => api.setData(block.id, data)}
         onContentChange={(content: string) => api.setContent(block.id, locale, content)}
         onRequestSource={editor.picker ? () => requestSource(block) : undefined}
+        onRequestImage={requestImage}
+        onRequestVideo={requestVideo}
       />
     </Block.Shell>
   {/snippet}
@@ -183,4 +242,16 @@
 
 {#if picker && Picker}
   <Picker open onPick={handlePick} onClose={() => (picker = null)} />
+{/if}
+
+{#if resolveImageRequest}
+  <ImagePicker
+    open
+    onPick={(items) => settleImageRequest(items[0]?.url ?? null)}
+    onClose={() => settleImageRequest(null)}
+  />
+{/if}
+
+{#if resolveVideoRequest}
+  <VideoPicker open onPick={(items) => settleVideoRequest(items[0] ?? null)} onClose={() => settleVideoRequest(null)} />
 {/if}

@@ -2,7 +2,7 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import {
   BLOCK_DEFINITIONS,
   blockHasLocalizedContent,
-  getBlockAssetId,
+  listBlockMedia,
   parseBlockData,
   type TBlockAttach,
   type TBlockCreate,
@@ -145,25 +145,25 @@ async function assertAssetsBelongToOrganization(
   organizationId: string,
   dbClient: DbOrTxClient
 ): Promise<void> {
-  if (!BLOCK_DEFINITIONS[type].media) return;
-
-  const assetId = getBlockAssetId(type, data);
-  if (assetId) {
-    const asset = await getAssetById(assetId, organizationId, dbClient);
-    if (!asset) {
-      throw new AppError('Asset not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
+  for (const item of listBlockMedia(type, data)) {
+    const assetId = typeof item.data.assetId === 'string' ? item.data.assetId : '';
+    if (assetId) {
+      const asset = await getAssetById(assetId, organizationId, dbClient);
+      if (!asset) {
+        throw new AppError('Asset not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
+      }
     }
-  }
 
-  const storageKey = typeof data.key === 'string' ? data.key : '';
-  if (storageKey && !(await isStorageKeyOwnedBy(storageKey, organizationId, dbClient))) {
-    throw new AppError('File not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
+    const storageKey = typeof item.data.key === 'string' ? item.data.key : '';
+    if (storageKey && !(await isStorageKeyOwnedBy(storageKey, organizationId, dbClient))) {
+      throw new AppError('File not found', ErrorCodes.BLOCK_INVALID_DATA, 400);
+    }
   }
 }
 
 /**
- * Rewrites the lesson's media usage rows from its current video and document blocks,
- * so the media library always reflects what each lesson actually plays.
+ * Rewrites the lesson's media usage rows from the videos and documents its blocks play, including
+ * videos kept inside a block such as a tab, so the media library reflects what each lesson plays.
  */
 export async function syncLessonAssetUsages(
   lessonId: string,
@@ -176,12 +176,12 @@ export async function syncLessonAssetUsages(
   await deleteAssetUsagesByTargetSlots('lesson', lessonId, Object.values(LESSON_MEDIA_SLOTS), dbClient);
 
   const seen = new Set<string>();
-  for (const [position, row] of rows.entries()) {
-    const assetId = getBlockAssetId(row.block.type, row.block.data);
+  const mediaItems = rows.flatMap((row) => listBlockMedia(row.block.type, row.block.data));
+  for (const [position, item] of mediaItems.entries()) {
+    const assetId = typeof item.data.assetId === 'string' ? item.data.assetId : '';
     if (!assetId) continue;
 
-    const media = BLOCK_DEFINITIONS[row.block.type as TBlockType].media as TBlockMediaKind;
-    const slotType = LESSON_MEDIA_SLOTS[media];
+    const slotType = LESSON_MEDIA_SLOTS[item.media];
 
     const usageKey = `${slotType}:${assetId}`;
     if (seen.has(usageKey)) continue;

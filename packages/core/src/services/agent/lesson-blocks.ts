@@ -2,7 +2,14 @@ import type { TLocale } from '@cio/db/types';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { getFileUploadTypeKeyForMimeType } from '@cio/utils/file-upload';
 import { parseSlideEmbed } from '@cio/utils/functions/slide-embed';
-import { BLOCK_DEFINITIONS, blockHasLocalizedContent, isBlockType, type TBlockType } from '@cio/utils/validation/block';
+import {
+  BLOCK_DEFINITIONS,
+  blockHasLocalizedContent,
+  getBlockAgentAuthoring,
+  isBlockType,
+  type TBlockCreate,
+  type TBlockType
+} from '@cio/utils/validation/block';
 
 import {
   attachLessonBlock,
@@ -22,6 +29,7 @@ export interface AgentLessonBlock {
   blockId: string;
   type: string;
   content?: string | null;
+  data?: Record<string, unknown>;
   label?: string;
   sharedWithOtherLessons?: number;
 }
@@ -71,11 +79,31 @@ function wrapUntrustedLabel(label: string): string {
   return `<external_untrusted_document src="lesson-block-label">${label}</external_untrusted_document>`;
 }
 
+/**
+ * The data of a block the assistant authors whole, in the shape it writes back.
+ * @returns null for other types, or when stored data predates the shape the reader expects.
+ */
+function readAgentBlockData(type: string, data: Record<string, unknown>): Record<string, unknown> | null {
+  const authoring = getBlockAgentAuthoring(type);
+  if (!authoring) return null;
+
+  try {
+    return authoring.toInput(data);
+  } catch {
+    return null;
+  }
+}
+
 function toAgentLessonBlock(block: LessonBlock, locale: TLocale): AgentLessonBlock {
   const sharedWithOtherLessons = block.usageCount > 1 ? block.usageCount - 1 : undefined;
 
   if (blockHasLocalizedContent(block.type)) {
     return { blockId: block.id, type: block.type, content: block.contents[locale] ?? null, sharedWithOtherLessons };
+  }
+
+  const agentData = readAgentBlockData(block.type, block.data);
+  if (agentData) {
+    return { blockId: block.id, type: block.type, data: agentData, sharedWithOtherLessons };
   }
 
   const label = readBlockLabel(block.data);
@@ -95,6 +123,19 @@ function findLessonBlock(blocks: LessonBlock[], blockId: string): LessonBlock {
       `Block ${blockId} is not in this lesson. Call get_lesson_content for the current block ids.`,
       ErrorCodes.BLOCK_NOT_FOUND,
       404
+    );
+  }
+
+  return block;
+}
+
+function findRemovableBlock(blocks: LessonBlock[], blockId: string): LessonBlock {
+  const block = findLessonBlock(blocks, blockId);
+  if (!blockHasLocalizedContent(block.type) && !getBlockAgentAuthoring(block.type)) {
+    throw new AppError(
+      `Block ${blockId} is a ${block.type} block. You cannot remove media blocks; ask the teacher to remove it in the editor.`,
+      ErrorCodes.BLOCK_INVALID_DATA,
+      400
     );
   }
 
@@ -158,7 +199,7 @@ function pickTargetTextBlock(blocks: LessonBlock[]): LessonBlock | null {
 
 /**
  * Lists a lesson's blocks in display order as the agent sees them: text blocks carry their HTML
- * for `locale`, media blocks carry an untrusted display label.
+ * for `locale`, blocks it authors whole carry their data, media blocks carry an untrusted display label.
  */
 export async function listAgentLessonBlocks(lessonId: string, locale: TLocale): Promise<AgentLessonBlock[]> {
   const blocks = await loadLessonBlocks(lessonId);
@@ -220,16 +261,17 @@ export async function addAgentLessonTextBlock(input: AgentTextWrite & BlockAncho
 }
 
 /**
- * Removes a text block from the lesson. A block shared with other lessons stays in those lessons.
+ * Removes a text block, or a block the assistant authors whole, from the lesson. A block shared with
+ * other lessons stays in those lessons.
  */
-export async function removeAgentLessonTextBlock(input: {
+export async function removeAgentLessonBlock(input: {
   lessonId: string;
   blockId: string;
   actorProfileId?: string;
   changeSetId?: string;
 }): Promise<void> {
   const blocks = await loadLessonBlocks(input.lessonId);
-  const target = findTextBlock(blocks, input.blockId);
+  const target = findRemovableBlock(blocks, input.blockId);
 
   await removeLessonPlacement(input.lessonId, target.placementId, {
     actorProfileId: input.actorProfileId,
@@ -255,6 +297,64 @@ export async function moveAgentLessonBlock(
     source: 'assistant',
     changeSetId: input.changeSetId ?? null
   });
+}
+
+/**
+ * Creates a block the assistant authors whole, such as a chart, or with `blockId` replaces that block's data.
+ * The input is validated against the type's agent schema, then the stored block against its data schema.
+ * @throws AppError when the type cannot be authored, the input is invalid, or the target is another type or shared.
+ */
+export async function writeAgentAuthoredBlock(
+  input: {
+    lessonId: string;
+    type: TBlockType;
+    data: unknown;
+    blockId?: string;
+    actorProfileId?: string;
+    changeSetId?: string;
+  } & BlockAnchor
+): Promise<{ blockId: string; created: boolean }> {
+  const authoring = getBlockAgentAuthoring(input.type);
+  if (!authoring) {
+    throw new AppError(`The assistant cannot write ${input.type} blocks.`, ErrorCodes.BLOCK_INVALID_DATA, 400);
+  }
+
+  const parsed = authoring.inputSchema.safeParse(input.data);
+  if (!parsed.success) {
+    const issues = parsed.error.issues.map((issue) => `${issue.path.join('.') || 'data'}: ${issue.message}`);
+    throw new AppError(`Invalid ${input.type} block: ${issues.join('; ')}`, ErrorCodes.BLOCK_INVALID_DATA, 400);
+  }
+
+  const actor = {
+    actorProfileId: input.actorProfileId,
+    source: 'assistant' as const,
+    changeSetId: input.changeSetId ?? null
+  };
+  const blocks = await loadLessonBlocks(input.lessonId);
+
+  if (input.blockId) {
+    const target = findLessonBlock(blocks, input.blockId);
+    if (target.type !== input.type) {
+      throw new AppError(
+        `Block ${target.id} is a ${target.type} block, not a ${input.type} block.`,
+        ErrorCodes.BLOCK_INVALID_DATA,
+        400
+      );
+    }
+
+    assertNotShared(target);
+    const data = authoring.fromInput(parsed.data, target.data);
+    await updateLessonBlock(input.lessonId, target.id, { data, expectedVersion: target.version }, actor);
+
+    return { blockId: target.id, created: false };
+  }
+
+  const anchor = resolveAnchor(blocks, input);
+  const data = authoring.fromInput(parsed.data, null);
+  const blockInput = { type: input.type, data, ...anchor } as TBlockCreate;
+  const created = await createLessonBlock(input.lessonId, blockInput, actor);
+
+  return { blockId: created.id, created: true };
 }
 
 function editableFieldsOf(type: string): readonly string[] {
@@ -566,6 +666,10 @@ export async function formatLessonBlocksForPrompt(lessonId: string, locale: TLoc
       const shared = block.sharedWithOtherLessons ? ` sharedWithOtherLessons="${block.sharedWithOtherLessons}"` : '';
       if (block.content !== undefined) {
         return `<lesson_block blockId="${block.blockId}" type="${block.type}"${shared}>\n${block.content ?? ''}\n</lesson_block>`;
+      }
+
+      if (block.data) {
+        return `<lesson_block blockId="${block.blockId}" type="${block.type}"${shared}>\n${JSON.stringify(block.data)}\n</lesson_block>`;
       }
 
       const label = block.label ? `\n${block.label}\n` : '';

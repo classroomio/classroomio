@@ -3,6 +3,8 @@ export const FIELDS = [
   'spacingClass',
   'addChoices',
   'addLabel',
+  'addAiLabel',
+  'addAiShortcut',
   'emptyTitle',
   'emptyDescription',
   'emptyMachineHeading',

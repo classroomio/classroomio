@@ -1,4 +1,5 @@
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { ErrorCodes } from '@cio/utils/constants';
+import { BaseApiWithErrors, classroomio, hasErrorCode } from '$lib/utils/services/api';
 import { t } from '$lib/utils/functions/translations';
 import { snackbar } from '$features/ui/snackbar/store';
 import type { TBlockLocaleCode } from '@cio/utils/validation/block';
@@ -82,6 +83,8 @@ class LessonBlockApi extends BaseApiWithErrors {
         classroomio.course[':courseId'].lesson[':lessonId'].blocks[':blockId'].$patch({ param: params, json }),
       logContext: 'updating lesson block',
       onError: (error) => {
+        if (hasErrorCode(error, ErrorCodes.BLOCK_VERSION_CONFLICT)) return;
+
         const reason = error.message;
         snackbar.error(t.get('course.navItem.lessons.materials.blocks.save_failed', { reason }));
       }

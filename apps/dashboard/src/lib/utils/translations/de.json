@@ -1774,7 +1774,12 @@
             "video": "Video",
             "slides": "Folien",
             "document": "Dokument",
-            "image": "Bild"
+            "image": "Bild",
+            "chart": "Diagramm",
+            "flashcards": "Lernkarten",
+            "tabs": "Tabs",
+            "multiple_choice": "Multiple-Choice-Frage",
+            "process": "Ablauf"
           },
           "change_kind": {
             "added": "Hinzugefügt",
@@ -2642,6 +2647,7 @@
           },
           "blocks": {
             "add_content": "Inhalte hinzufügen",
+            "ask_ai_instead": "Stattdessen KI fragen",
             "example": "Beispiel",
             "change_type": "Ändern Sie {type}",
             "edit_type": "Bearbeiten {type}",
@@ -2652,8 +2658,8 @@
             "drag": "Zum Neuanordnen ziehen",
             "drag_hint": "Ziehen Sie den Griff eines Blocks, um ihn neu anzuordnen. Sie können auch die Optionen „Nach oben“ und „Nach unten“ aus dem zugehörigen Menü verwenden.",
             "dismiss_hint": "Hinweis zum Umsortieren ablehnen",
-            "empty_title": "Beginnen Sie mit dem Aufbau dieser Lektion.",
-            "empty_description": "Fügen Sie eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzu. Sie können beliebig viele Blöcke in beliebiger Reihenfolge hinzufügen.",
+            "empty_title": "Was gehört in diese Lektion?",
+            "empty_description": "Wähle einen Block, um zu beginnen. Du kannst jederzeit weitere hinzufügen.",
             "empty_note": "Diese Notiz ist leer.",
             "scroll_rail": "Unterrichtsblöcke",
             "save_failed": "Diese Änderung konnte nicht gespeichert werden, daher wurde der Block wiederhergestellt. {reason}",
@@ -2681,7 +2687,7 @@
               "spacious": "Geräumig"
             },
             "ai": {
-              "title": "Erstellen Sie eine Notiz mit KI",
+              "title": "KI bitten, etwas zu dieser Lektion hinzuzufügen",
               "prompt_label": "Prompt",
               "prompt_placeholder": "z. B. Eine kurze Einführung in den Wasserkreislauf für Anfänger"
             },
@@ -2690,10 +2696,15 @@
               "video": "Video",
               "slides": "Folien",
               "document": "Dokumentieren",
-              "image": "Bild"
+              "image": "Bild",
+              "chart": "Diagramm",
+              "flashcards": "Lernkarten",
+              "tabs": "Tabs",
+              "multiple_choice": "Multiple Choice",
+              "process": "Ablauf"
             },
             "empty_preview_title": "Es gibt noch nichts zur Vorschau",
-            "empty_preview_description": "Diese Lektion enthält keinen Inhalt, den die Schüler sehen können. Wechseln Sie zu {editLabel}, um eine Notiz, ein Video, Folien, ein Dokument oder ein Bild hinzuzufügen.",
+            "empty_preview_description": "Diese Lektion enthält keinen Inhalt, den die Schüler sehen können. Wechseln Sie zu {editLabel}, um Inhalte hinzuzufügen.",
             "empty_learner_title": "Diese Lektion ist noch nicht fertig",
             "empty_learner_description": "Ihr Kursleiter hat dieser Lektion keine Inhalte hinzugefügt. Schauen Sie bald wieder vorbei.",
             "document": {
@@ -2705,6 +2716,134 @@
             },
             "slides": {
               "add_slide": "Folie hinzufügen"
+            },
+            "chart": {
+              "title": "Diagrammtitel",
+              "title_placeholder": "Diagrammtitel",
+              "chart_type": "Diagrammtyp",
+              "types": {
+                "bar": "Balkendiagramm",
+                "line": "Liniendiagramm",
+                "pie": "Kreisdiagramm",
+                "donut": "Ringdiagramm"
+              },
+              "point_count": "{count, plural, one {# Datenpunkt} other {# Datenpunkte}}",
+              "highest": "Höchster Wert",
+              "total": "Gesamt",
+              "edit_data": "Daten bearbeiten",
+              "live_hint": "Änderungen aktualisieren das Diagramm sofort.",
+              "label": "Beschriftung",
+              "value": "Wert",
+              "label_placeholder": "Beschriftung",
+              "add_point": "Datenpunkt hinzufügen",
+              "remove_point": "Datenpunkt entfernen",
+              "new_point": "Neu",
+              "example": {
+                "title": "Quartalsumsatz",
+                "label_1": "Q1",
+                "label_2": "Q2",
+                "label_3": "Q3",
+                "label_4": "Q4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Klicke auf einen Text auf der Karte, um ihn zu bearbeiten · nutze die Umdrehen-Taste, um die Antwortseite zu bearbeiten",
+              "flip_hint": "Klicke auf die Karte, um sie umzudrehen",
+              "question": "Frage",
+              "answer": "Antwort",
+              "question_placeholder": "Frage eingeben",
+              "answer_placeholder": "Antwort eingeben",
+              "flip": "Karte umdrehen",
+              "show_question": "Lernkarte zeigt die Antwort. Drücke die Leertaste, um die Frage zu sehen.",
+              "show_answer": "Lernkarte zeigt die Frage. Drücke die Leertaste, um die Antwort zu sehen.",
+              "previous": "Vorherige Karte",
+              "next": "Nächste Karte",
+              "progress": "Fortschritt im Stapel",
+              "cards": "Karten",
+              "add_card": "Karte hinzufügen",
+              "remove_card": "Karte entfernen",
+              "example": {
+                "question_1": "Was ist Kundenbindung?",
+                "answer_1": "Die Fähigkeit eines Unternehmens, seine Kunden langfristig zu halten.",
+                "question_2": "Warum ist Kundenbindung wichtiger als Neukundengewinnung?",
+                "answer_2": "Einen bestehenden Kunden zu halten ist meist 5–7× günstiger, als einen neuen zu gewinnen.",
+                "question_3": "Wie lässt sie sich einfach messen?",
+                "answer_3": "Vergleiche, wie viele Kunden du zu Beginn eines Zeitraums hattest, mit der Zahl, die am Ende noch da ist."
+              }
+            },
+            "tabs": {
+              "tab_list": "Tabs",
+              "position": "Position der Tabs",
+              "align_left": "Tabs links ausrichten",
+              "align_center": "Tabs zentrieren",
+              "align_right": "Tabs rechts ausrichten",
+              "tab_name": "Tab-Name",
+              "untitled_tab": "Unbenannter Tab",
+              "note_placeholder": "Notiz für diesen Tab schreiben…",
+              "add_tab": "Tab hinzufügen",
+              "remove_tab": "Tab entfernen",
+              "new_tab": "Neuer Tab",
+              "add_image": "Bild hinzufügen",
+              "add_video": "Video hinzufügen",
+              "remove_image": "Bild entfernen",
+              "remove_video": "Video entfernen",
+              "example": {
+                "name_1": "Überblick",
+                "note_1": "Ein kurzer Überblick über die Inhalte dieses Abschnitts.",
+                "name_2": "Einrichtung",
+                "note_2": "Was Lernende vor dem Start bereitstellen müssen.",
+                "name_3": "Fortgeschritten",
+                "note_3": "Tiefer einsteigen, sobald die Grundlagen sitzen."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Klicke auf einen Buchstaben, um die richtige Antwort zu markieren.",
+              "learner_hint": "Wähle eine Antwort.",
+              "question_placeholder": "Gib deine Frage ein",
+              "option_placeholder": "Gib eine Antwort ein",
+              "mark_correct": "Als richtige Antwort markieren",
+              "correct_badge": "Richtige Antwort",
+              "add_option": "Option hinzufügen",
+              "new_option": "Neue Option",
+              "remove_option": "Option entfernen",
+              "add_media": "Medium hinzufügen",
+              "remove_image": "Bild entfernen",
+              "check": "Antwort prüfen",
+              "try_again": "Erneut versuchen",
+              "correct_feedback": "Richtig, gut gemacht!",
+              "wrong_feedback": "Nicht ganz. Die richtige Antwort ist hervorgehoben.",
+              "example": {
+                "question": "Was ist die Hauptstadt von Italien?",
+                "correct_option": "Rom",
+                "other_option_1": "Athen",
+                "other_option_2": "Lissabon"
+              }
+            },
+            "process": {
+              "stepper": "Schritte",
+              "go_to_step": "Zu Schritt {step}",
+              "untitled_step": "Unbenannter Schritt",
+              "heading_placeholder": "Überschrift des Schritts",
+              "body_placeholder": "Beschreibe diesen Schritt",
+              "add_media": "Medien hinzufügen",
+              "image_option": "Bild",
+              "remove_image": "Bild entfernen",
+              "delete_step": "Diesen Schritt löschen",
+              "add_step": "Schritt hinzufügen",
+              "back": "Zurück",
+              "next": "Weiter",
+              "start_over": "Von vorn beginnen",
+              "progress": "Fortschritt im Ablauf",
+              "new_step_heading": "Neuer Schritt",
+              "new_step_body": "Beschreibe diesen Schritt.",
+              "example": {
+                "heading_1": "Einführung",
+                "body_1": "Künstliche Intelligenz, kurz KI, ist zu einem der wandlungsfähigsten und am schnellsten wachsenden Bereiche der Technologie geworden. Sie umfasst die Entwicklung intelligenter Maschinen, die Aufgaben übernehmen, die man typischerweise mit menschlicher Intelligenz verbindet, etwa Lernen, Problemlösen und Entscheiden.",
+                "heading_2": "So funktioniert es",
+                "body_2": "Beschreibe, was in diesem Schritt des Ablaufs passiert.",
+                "heading_3": "Anwenden",
+                "body_3": "Zeige, wie Lernende das gerade Gesehene anwenden."
+              }
             }
           }
         },
@@ -6033,6 +6172,11 @@
         "move_lesson_block": "Einen Block verschieben",
         "add_lesson_slides_block": "Folien hinzufügen",
         "add_lesson_image_block": "Ein Bild hinzufügen",
+        "write_lesson_chart_block": "Diagramm wird gespeichert",
+        "write_lesson_flashcards_block": "Lernkarten werden gespeichert",
+        "write_lesson_tabs_block": "Tabs werden gespeichert",
+        "write_lesson_multiple_choice_block": "Multiple-Choice-Frage wird gespeichert",
+        "write_lesson_process_block": "Ablauf wird gespeichert",
         "update_lesson_block_settings": "Blockeinstellungen aktualisieren",
         "update_lesson_block_requirements": "Abschlussregeln aktualisieren",
         "detach_lesson_block": "Einen gemeinsam genutzten Block trennen",
@@ -6087,6 +6231,11 @@
         "move_lesson_block": "Einen Block in {title} verschoben",
         "add_lesson_slides_block": "Folien zu {title} hinzugefügt",
         "add_lesson_image_block": "Ein Bild zu {title} hinzugefügt",
+        "write_lesson_chart_block": "Diagramm in {title} gespeichert",
+        "write_lesson_flashcards_block": "Lernkarten in {title} gespeichert",
+        "write_lesson_tabs_block": "Tabs in {title} gespeichert",
+        "write_lesson_multiple_choice_block": "Multiple-Choice-Frage in {title} gespeichert",
+        "write_lesson_process_block": "Ablauf in {title} gespeichert",
         "update_lesson_block_settings": "Einen Block in {title} aktualisiert",
         "update_lesson_block_requirements": "Aktualisierte Vervollständigungsregeln in {title}",
         "detach_lesson_block": "Hat {title} eine eigene Kopie eines gemeinsam genutzten Blocks gegeben",
@@ -8057,7 +8206,7 @@
     "lesson_blocks": {
       "title": "Einführung in Unterrichtsblöcke",
       "description": "Der Unterricht wird jetzt aus Blöcken aufgebaut. Sehen Sie, wie es in 5 Minuten funktioniert.",
-      "coach_description": "Erstellen Sie jede Lektion aus Notizen, Videos, Folien, Dokumenten und Bildblöcken in beliebiger Reihenfolge. Wählen Sie Bearbeiten, um es auszuprobieren.",
+      "coach_description": "Erstellen Sie jede Lektion aus Blöcken wie Notizen, Videos, Diagrammen, Lernkarten und Multiple-Choice-Fragen, in beliebiger Reihenfolge. Wählen Sie Bearbeiten, um es auszuprobieren.",
       "coach_title": "🎉 Neu! Der Unterricht ist jetzt flexibel."
     },
     "close": "Schließen",

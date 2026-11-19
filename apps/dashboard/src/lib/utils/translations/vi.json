@@ -1774,7 +1774,12 @@
             "video": "video",
             "slides": "slide",
             "document": "tài liệu",
-            "image": "hình ảnh"
+            "image": "hình ảnh",
+            "chart": "biểu đồ",
+            "flashcards": "thẻ ghi nhớ",
+            "tabs": "thẻ",
+            "multiple_choice": "câu hỏi trắc nghiệm",
+            "process": "quy trình"
           },
           "change_kind": {
             "added": "Đã thêm",
@@ -2642,6 +2647,7 @@
           },
           "blocks": {
             "add_content": "Thêm nội dung",
+            "ask_ai_instead": "Hỏi AI",
             "example": "Ví dụ",
             "change_type": "Thay đổi {type}",
             "edit_type": "Chỉnh sửa {type}",
@@ -2652,8 +2658,8 @@
             "drag": "Kéo để sắp xếp lại",
             "drag_hint": "Kéo cần điều khiển trên một khối để sắp xếp lại thứ tự. Bạn cũng có thể sử dụng chức năng Di chuyển lên và Di chuyển xuống từ menu của nó.",
             "dismiss_hint": "Bỏ qua gợi ý sắp xếp lại",
-            "empty_title": "Hãy bắt đầu xây dựng bài học này.",
-            "empty_description": "Thêm ghi chú, video, slide, tài liệu hoặc hình ảnh. Bạn có thể thêm bao nhiêu khối tùy thích, theo bất kỳ thứ tự nào.",
+            "empty_title": "Bài học này gồm những gì?",
+            "empty_description": "Chọn một khối để bắt đầu. Bạn có thể thêm khối khác bất cứ lúc nào.",
             "empty_note": "Ghi chú này trống.",
             "scroll_rail": "Khối bài học",
             "save_failed": "Không thể lưu thay đổi này nên khối đã được khôi phục. {reason}",
@@ -2681,7 +2687,7 @@
               "spacious": "Rộng rãi"
             },
             "ai": {
-              "title": "Soạn thảo ghi chú bằng AI",
+              "title": "Nhờ AI thêm nội dung vào bài học này",
               "prompt_label": "Lời nhắc",
               "prompt_placeholder": "Ví dụ: Giới thiệu ngắn gọn về chu trình nước dành cho người mới bắt đầu"
             },
@@ -2690,10 +2696,15 @@
               "video": "Băng hình",
               "slides": "Các slide",
               "document": "Tài liệu",
-              "image": "Hình ảnh"
+              "image": "Hình ảnh",
+              "chart": "Biểu đồ",
+              "flashcards": "Thẻ ghi nhớ",
+              "tabs": "Thẻ",
+              "multiple_choice": "Trắc nghiệm",
+              "process": "Quy trình"
             },
             "empty_preview_title": "Chưa có gì để xem trước",
-            "empty_preview_description": "Bài học này không có nội dung cho học sinh xem. Chuyển sang {editLabel} để thêm ghi chú, video, trang trình bày, tài liệu hoặc hình ảnh.",
+            "empty_preview_description": "Bài học này chưa có nội dung cho học viên. Chuyển sang {editLabel} để thêm nội dung.",
             "empty_learner_title": "Bài học này chưa sẵn sàng",
             "empty_learner_description": "Người hướng dẫn của bạn chưa thêm bất kỳ nội dung nào vào bài học này. Kiểm tra lại sớm.",
             "document": {
@@ -2705,6 +2716,134 @@
             },
             "slides": {
               "add_slide": "Thêm slide"
+            },
+            "chart": {
+              "title": "Tiêu đề biểu đồ",
+              "title_placeholder": "Tiêu đề biểu đồ",
+              "chart_type": "Loại biểu đồ",
+              "types": {
+                "bar": "Biểu đồ cột",
+                "line": "Biểu đồ đường",
+                "pie": "Biểu đồ tròn",
+                "donut": "Biểu đồ vành khuyên"
+              },
+              "point_count": "{count, plural, other {# điểm dữ liệu}}",
+              "highest": "Cao nhất",
+              "total": "Tổng",
+              "edit_data": "Chỉnh sửa dữ liệu",
+              "live_hint": "Thay đổi sẽ cập nhật biểu đồ ngay lập tức.",
+              "label": "Nhãn",
+              "value": "Giá trị",
+              "label_placeholder": "Nhãn",
+              "add_point": "Thêm điểm dữ liệu",
+              "remove_point": "Xóa điểm dữ liệu",
+              "new_point": "Mới",
+              "example": {
+                "title": "Doanh thu theo quý",
+                "label_1": "Q1",
+                "label_2": "Q2",
+                "label_3": "Q3",
+                "label_4": "Q4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Nhấp vào bất kỳ văn bản nào trên thẻ để chỉnh sửa · dùng nút lật để chỉnh sửa mặt câu trả lời",
+              "flip_hint": "Nhấp vào thẻ để lật",
+              "question": "Câu hỏi",
+              "answer": "Câu trả lời",
+              "question_placeholder": "Nhập câu hỏi",
+              "answer_placeholder": "Nhập câu trả lời",
+              "flip": "Lật thẻ",
+              "show_question": "Thẻ đang hiển thị câu trả lời. Nhấn Space để xem câu hỏi.",
+              "show_answer": "Thẻ đang hiển thị câu hỏi. Nhấn Space để xem câu trả lời.",
+              "previous": "Thẻ trước",
+              "next": "Thẻ tiếp theo",
+              "progress": "Tiến độ bộ thẻ",
+              "cards": "Thẻ",
+              "add_card": "Thêm thẻ",
+              "remove_card": "Xóa thẻ",
+              "example": {
+                "question_1": "Giữ chân khách hàng là gì?",
+                "answer_1": "Khả năng của một doanh nghiệp giữ được khách hàng theo thời gian.",
+                "question_2": "Vì sao giữ chân khách hàng quan trọng hơn thu hút khách mới?",
+                "answer_2": "Giữ một khách hàng hiện có thường rẻ hơn 5–7 lần so với giành được khách hàng mới.",
+                "question_3": "Cách đơn giản để đo lường là gì?",
+                "answer_3": "So sánh số khách hàng bạn có ở đầu kỳ với số khách hàng còn lại ở cuối kỳ."
+              }
+            },
+            "tabs": {
+              "tab_list": "Thẻ",
+              "position": "Vị trí thẻ",
+              "align_left": "Căn thẻ sang trái",
+              "align_center": "Căn thẻ vào giữa",
+              "align_right": "Căn thẻ sang phải",
+              "tab_name": "Tên thẻ",
+              "untitled_tab": "Thẻ chưa có tên",
+              "note_placeholder": "Viết ghi chú cho thẻ này…",
+              "add_tab": "Thêm thẻ",
+              "remove_tab": "Xóa thẻ",
+              "new_tab": "Thẻ mới",
+              "add_image": "Thêm hình ảnh",
+              "add_video": "Thêm video",
+              "remove_image": "Xóa hình ảnh",
+              "remove_video": "Xóa video",
+              "example": {
+                "name_1": "Tổng quan",
+                "note_1": "Tổng quan nhanh về những gì phần này đề cập.",
+                "name_2": "Chuẩn bị",
+                "note_2": "Những gì người học cần chuẩn bị trước khi bắt đầu.",
+                "name_3": "Nâng cao",
+                "note_3": "Đi sâu hơn khi đã nắm vững kiến thức cơ bản."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Nhấp vào một chữ cái để đánh dấu đáp án đúng.",
+              "learner_hint": "Chọn một đáp án.",
+              "question_placeholder": "Nhập câu hỏi của bạn",
+              "option_placeholder": "Nhập một đáp án",
+              "mark_correct": "Đánh dấu là đáp án đúng",
+              "correct_badge": "Đáp án đúng",
+              "add_option": "Thêm lựa chọn",
+              "new_option": "Lựa chọn mới",
+              "remove_option": "Xóa lựa chọn",
+              "add_media": "Thêm phương tiện",
+              "remove_image": "Xóa hình ảnh",
+              "check": "Kiểm tra đáp án",
+              "try_again": "Thử lại",
+              "correct_feedback": "Chính xác, làm tốt lắm!",
+              "wrong_feedback": "Chưa đúng. Đáp án đúng đã được làm nổi bật.",
+              "example": {
+                "question": "Thủ đô của Ý là thành phố nào?",
+                "correct_option": "Rome",
+                "other_option_1": "Athens",
+                "other_option_2": "Lisbon"
+              }
+            },
+            "process": {
+              "stepper": "Các bước",
+              "go_to_step": "Đi tới bước {step}",
+              "untitled_step": "Bước chưa có tiêu đề",
+              "heading_placeholder": "Tiêu đề bước",
+              "body_placeholder": "Mô tả bước này",
+              "add_media": "Thêm phương tiện",
+              "image_option": "Hình ảnh",
+              "remove_image": "Xóa hình ảnh",
+              "delete_step": "Xóa bước này",
+              "add_step": "Thêm bước",
+              "back": "Quay lại",
+              "next": "Tiếp",
+              "start_over": "Bắt đầu lại",
+              "progress": "Tiến độ quy trình",
+              "new_step_heading": "Bước mới",
+              "new_step_body": "Mô tả bước này.",
+              "example": {
+                "heading_1": "Giới thiệu",
+                "body_1": "Trí tuệ nhân tạo, hay AI, đã trở thành một trong những lĩnh vực mang tính chuyển đổi và phát triển nhanh nhất của công nghệ. Nó liên quan đến việc tạo ra những cỗ máy thông minh có thể thực hiện các nhiệm vụ thường gắn với trí tuệ con người, như học hỏi, giải quyết vấn đề và ra quyết định.",
+                "heading_2": "Cách hoạt động",
+                "body_2": "Mô tả điều gì diễn ra ở bước này của quy trình.",
+                "heading_3": "Áp dụng vào thực tế",
+                "body_3": "Cho thấy người học áp dụng những gì họ vừa xem như thế nào."
+              }
             }
           }
         },
@@ -6033,6 +6172,11 @@
         "move_lesson_block": "Di chuyển một khối",
         "add_lesson_slides_block": "Thêm slide",
         "add_lesson_image_block": "Thêm một hình ảnh",
+        "write_lesson_chart_block": "Đang lưu biểu đồ",
+        "write_lesson_flashcards_block": "Đang lưu thẻ ghi nhớ",
+        "write_lesson_tabs_block": "Đang lưu các thẻ",
+        "write_lesson_multiple_choice_block": "Đang lưu câu hỏi trắc nghiệm",
+        "write_lesson_process_block": "Đang lưu quy trình",
         "update_lesson_block_settings": "Cập nhật cài đặt khối",
         "update_lesson_block_requirements": "Cập nhật quy tắc hoàn thành",
         "detach_lesson_block": "Tách khối chia sẻ",
@@ -6087,6 +6231,11 @@
         "move_lesson_block": "Đã di chuyển một khối trong {title}",
         "add_lesson_slides_block": "Đã thêm trang trình bày vào {title}",
         "add_lesson_image_block": "Đã thêm hình ảnh vào {title}",
+        "write_lesson_chart_block": "Đã lưu biểu đồ vào {title}",
+        "write_lesson_flashcards_block": "Đã lưu thẻ ghi nhớ vào {title}",
+        "write_lesson_tabs_block": "Đã lưu các thẻ vào {title}",
+        "write_lesson_multiple_choice_block": "Đã lưu câu hỏi trắc nghiệm vào {title}",
+        "write_lesson_process_block": "Đã lưu quy trình vào {title}",
         "update_lesson_block_settings": "Đã cập nhật một khối trong {title}",
         "update_lesson_block_requirements": "Đã cập nhật quy tắc hoàn thành trong {title}",
         "detach_lesson_block": "Đã cấp cho {title} bản sao của khối chia sẻ",
@@ -8057,7 +8206,7 @@
     "lesson_blocks": {
       "title": "Giới thiệu khối bài học",
       "description": "Bài học bây giờ được xây dựng từ các khối. Xem cách nó hoạt động trong 5 phút.",
-      "coach_description": "Xây dựng từng bài học từ các khối ghi chú, video, slide, tài liệu và hình ảnh, theo bất kỳ thứ tự nào. Chọn Chỉnh sửa để thử.",
+      "coach_description": "Xây dựng từng bài học từ các khối như ghi chú, video, biểu đồ, thẻ ghi nhớ và câu hỏi trắc nghiệm, theo bất kỳ thứ tự nào. Chọn Chỉnh sửa để thử.",
       "coach_title": "🎉 Mới! Các bài học bây giờ rất linh hoạt."
     },
     "close": "Đóng",

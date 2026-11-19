@@ -1774,7 +1774,12 @@
             "video": "wideo",
             "slides": "slajdy",
             "document": "dokument",
-            "image": "obraz"
+            "image": "obraz",
+            "chart": "wykres",
+            "flashcards": "fiszki",
+            "tabs": "karty",
+            "multiple_choice": "pytanie wielokrotnego wyboru",
+            "process": "proces"
           },
           "change_kind": {
             "added": "Dodano",
@@ -2642,6 +2647,7 @@
           },
           "blocks": {
             "add_content": "Dodaj treść",
+            "ask_ai_instead": "Zapytaj AI",
             "example": "Przykład",
             "change_type": "Zmień {type}",
             "edit_type": "Edytuj {type}",
@@ -2652,8 +2658,8 @@
             "drag": "Przeciągnij, aby zmienić kolejność",
             "drag_hint": "Przeciągnij uchwyt bloku, aby zmienić jego kolejność. Możesz również użyć opcji Przesuń w górę i Przesuń w dół z menu.",
             "dismiss_hint": "Odrzuć wskazówkę dotyczącą zmiany kolejności",
-            "empty_title": "Zacznij budować tę lekcję",
-            "empty_description": "Dodaj notatkę, film, slajdy, dokument lub obraz. Możesz dodać dowolną liczbę bloków w dowolnej kolejności.",
+            "empty_title": "Co znajdzie się w tej lekcji?",
+            "empty_description": "Wybierz blok, aby zacząć. W każdej chwili możesz dodać kolejne.",
             "empty_note": "Ta notatka jest pusta.",
             "scroll_rail": "Bloki lekcji",
             "save_failed": "Nie udało się zapisać tej zmiany, więc blok został przywrócony. {reason}",
@@ -2681,7 +2687,7 @@
               "spacious": "Przestronny"
             },
             "ai": {
-              "title": "Sporządź notatkę za pomocą sztucznej inteligencji",
+              "title": "Poproś AI o dodanie treści do tej lekcji",
               "prompt_label": "Podpowiedź",
               "prompt_placeholder": "np. Krótkie wprowadzenie do cyklu wodnego dla początkujących"
             },
@@ -2690,10 +2696,15 @@
               "video": "Wideo",
               "slides": "Slajdy",
               "document": "Dokument",
-              "image": "Obraz"
+              "image": "Obraz",
+              "chart": "Wykres",
+              "flashcards": "Fiszki",
+              "tabs": "Karty",
+              "multiple_choice": "Wielokrotny wybór",
+              "process": "Proces"
             },
             "empty_preview_title": "Nie ma jeszcze nic do podglądu",
-            "empty_preview_description": "Ta lekcja nie zawiera treści, które uczniowie mogliby zobaczyć. Przejdź do {editLabel}, aby dodać notatkę, film, slajdy, dokument lub obraz.",
+            "empty_preview_description": "Ta lekcja nie ma treści dla uczniów. Przełącz na {editLabel}, aby ją dodać.",
             "empty_learner_title": "Ta lekcja nie jest jeszcze gotowa",
             "empty_learner_description": "Twój instruktor nie dodał żadnych treści do tej lekcji. Sprawdź ponownie wkrótce.",
             "document": {
@@ -2705,6 +2716,134 @@
             },
             "slides": {
               "add_slide": "Dodaj slajd"
+            },
+            "chart": {
+              "title": "Tytuł wykresu",
+              "title_placeholder": "Tytuł wykresu",
+              "chart_type": "Typ wykresu",
+              "types": {
+                "bar": "Wykres słupkowy",
+                "line": "Wykres liniowy",
+                "pie": "Wykres kołowy",
+                "donut": "Wykres pierścieniowy"
+              },
+              "point_count": "{count, plural, one {# punkt danych} few {# punkty danych} many {# punktów danych} other {# punktu danych}}",
+              "highest": "Najwyższa",
+              "total": "Suma",
+              "edit_data": "Edytuj dane",
+              "live_hint": "Zmiany od razu aktualizują wykres.",
+              "label": "Etykieta",
+              "value": "Wartość",
+              "label_placeholder": "Etykieta",
+              "add_point": "Dodaj punkt danych",
+              "remove_point": "Usuń punkt danych",
+              "new_point": "Nowy",
+              "example": {
+                "title": "Przychody kwartalne",
+                "label_1": "Q1",
+                "label_2": "Q2",
+                "label_3": "Q3",
+                "label_4": "Q4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Kliknij dowolny tekst na karcie, aby go edytować · użyj przycisku odwracania, aby edytować odpowiedź",
+              "flip_hint": "Kliknij kartę, aby ją odwrócić",
+              "question": "Pytanie",
+              "answer": "Odpowiedź",
+              "question_placeholder": "Wpisz pytanie",
+              "answer_placeholder": "Wpisz odpowiedź",
+              "flip": "Odwróć kartę",
+              "show_question": "Fiszka pokazuje odpowiedź. Naciśnij spację, aby zobaczyć pytanie.",
+              "show_answer": "Fiszka pokazuje pytanie. Naciśnij spację, aby zobaczyć odpowiedź.",
+              "previous": "Poprzednia karta",
+              "next": "Następna karta",
+              "progress": "Postęp talii",
+              "cards": "Karty",
+              "add_card": "Dodaj kartę",
+              "remove_card": "Usuń kartę",
+              "example": {
+                "question_1": "Czym jest utrzymanie klientów?",
+                "answer_1": "Zdolność firmy do zatrzymywania swoich klientów w czasie.",
+                "question_2": "Dlaczego utrzymanie jest ważniejsze niż pozyskiwanie?",
+                "answer_2": "Utrzymanie obecnego klienta jest zwykle 5–7 razy tańsze niż zdobycie nowego.",
+                "question_3": "Jak można to prosto zmierzyć?",
+                "answer_3": "Porównaj, ilu klientów miałeś na początku okresu, z tym, ilu zostało na końcu."
+              }
+            },
+            "tabs": {
+              "tab_list": "Karty",
+              "position": "Położenie kart",
+              "align_left": "Wyrównaj karty do lewej",
+              "align_center": "Wyśrodkuj karty",
+              "align_right": "Wyrównaj karty do prawej",
+              "tab_name": "Nazwa karty",
+              "untitled_tab": "Karta bez nazwy",
+              "note_placeholder": "Napisz notatkę do tej karty…",
+              "add_tab": "Dodaj kartę",
+              "remove_tab": "Usuń kartę",
+              "new_tab": "Nowa karta",
+              "add_image": "Dodaj obraz",
+              "add_video": "Dodaj wideo",
+              "remove_image": "Usuń obraz",
+              "remove_video": "Usuń wideo",
+              "example": {
+                "name_1": "Przegląd",
+                "note_1": "Krótki przegląd tego, co obejmuje ta sekcja.",
+                "name_2": "Przygotowanie",
+                "note_2": "Co uczestnicy muszą przygotować przed rozpoczęciem.",
+                "name_3": "Zaawansowane",
+                "note_3": "Wejdź głębiej, gdy podstawy są opanowane."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Kliknij literę, aby oznaczyć poprawną odpowiedź.",
+              "learner_hint": "Wybierz jedną odpowiedź.",
+              "question_placeholder": "Wpisz pytanie",
+              "option_placeholder": "Wpisz odpowiedź",
+              "mark_correct": "Oznacz jako poprawną odpowiedź",
+              "correct_badge": "Poprawna odpowiedź",
+              "add_option": "Dodaj opcję",
+              "new_option": "Nowa opcja",
+              "remove_option": "Usuń opcję",
+              "add_media": "Dodaj multimedia",
+              "remove_image": "Usuń obraz",
+              "check": "Sprawdź odpowiedź",
+              "try_again": "Spróbuj ponownie",
+              "correct_feedback": "Dobrze, świetna robota!",
+              "wrong_feedback": "Nie do końca. Poprawna odpowiedź jest wyróżniona.",
+              "example": {
+                "question": "Jaka jest stolica Włoch?",
+                "correct_option": "Rzym",
+                "other_option_1": "Ateny",
+                "other_option_2": "Lizbona"
+              }
+            },
+            "process": {
+              "stepper": "Kroki",
+              "go_to_step": "Przejdź do kroku {step}",
+              "untitled_step": "Krok bez tytułu",
+              "heading_placeholder": "Nagłówek kroku",
+              "body_placeholder": "Opisz ten krok",
+              "add_media": "Dodaj multimedia",
+              "image_option": "Obraz",
+              "remove_image": "Usuń obraz",
+              "delete_step": "Usuń ten krok",
+              "add_step": "Dodaj krok",
+              "back": "Wstecz",
+              "next": "Dalej",
+              "start_over": "Zacznij od nowa",
+              "progress": "Postęp procesu",
+              "new_step_heading": "Nowy krok",
+              "new_step_body": "Opisz ten krok.",
+              "example": {
+                "heading_1": "Wprowadzenie",
+                "body_1": "Sztuczna inteligencja, czyli AI, stała się jedną z najbardziej przełomowych i najszybciej rozwijających się dziedzin technologii. Polega na tworzeniu inteligentnych maszyn, które potrafią wykonywać zadania zwykle kojarzone z ludzką inteligencją, takie jak uczenie się, rozwiązywanie problemów i podejmowanie decyzji.",
+                "heading_2": "Jak to działa",
+                "body_2": "Opisz, co dzieje się w tym kroku procesu.",
+                "heading_3": "Zastosowanie w praktyce",
+                "body_3": "Pokaż, jak uczestnicy stosują to, co właśnie zobaczyli."
+              }
             }
           }
         },
@@ -6033,6 +6172,11 @@
         "move_lesson_block": "Przenoszenie bloku",
         "add_lesson_slides_block": "Dodawanie slajdów",
         "add_lesson_image_block": "Dodawanie obrazu",
+        "write_lesson_chart_block": "Zapisywanie wykresu",
+        "write_lesson_flashcards_block": "Zapisywanie fiszek",
+        "write_lesson_tabs_block": "Zapisywanie kart",
+        "write_lesson_multiple_choice_block": "Zapisywanie pytania wielokrotnego wyboru",
+        "write_lesson_process_block": "Zapisywanie procesu",
         "update_lesson_block_settings": "Aktualizacja ustawień bloku",
         "update_lesson_block_requirements": "Aktualizacja zasad ukończenia",
         "detach_lesson_block": "Odłączanie udostępnionego bloku",
@@ -6087,6 +6231,11 @@
         "move_lesson_block": "Przeniesiono blok w {title}",
         "add_lesson_slides_block": "Dodano slajdy do {title}",
         "add_lesson_image_block": "Dodano obraz do {title}",
+        "write_lesson_chart_block": "Zapisano wykres w {title}",
+        "write_lesson_flashcards_block": "Zapisano fiszki w {title}",
+        "write_lesson_tabs_block": "Zapisano karty w {title}",
+        "write_lesson_multiple_choice_block": "Zapisano pytanie wielokrotnego wyboru w {title}",
+        "write_lesson_process_block": "Zapisano proces w {title}",
         "update_lesson_block_settings": "Zaktualizowano blok w {title}",
         "update_lesson_block_requirements": "Zaktualizowano zasady ukończenia w {title}",
         "detach_lesson_block": "Dałem {title} własną kopię udostępnionego bloku",
@@ -8057,7 +8206,7 @@
     "lesson_blocks": {
       "title": "Przedstawiamy bloki lekcyjne",
       "description": "Lekcje są teraz budowane z bloków. Zobacz jak to działa w 5 minut.",
-      "coach_description": "Twórz każdą lekcję z notatek, wideo, slajdów, bloków dokumentów i obrazów, w dowolnej kolejności. Wybierz opcję Edytuj, aby spróbować.",
+      "coach_description": "Twórz każdą lekcję z bloków takich jak notatki, wideo, wykresy, fiszki i pytania wielokrotnego wyboru, w dowolnej kolejności. Wybierz opcję Edytuj, aby spróbować.",
       "coach_title": "🎉 Nowość! Lekcje są teraz elastyczne."
     },
     "close": "Zamknij",

@@ -4,6 +4,9 @@ import { t } from '$lib/utils/functions/translations';
 import { BLOCK_EDITORS } from './block-edit-registry';
 import { blockTypeLabelKey } from './block-labels';
 
+/**
+ * The add-menu choices in registry order.
+ */
 export function getAddBlockChoices(): AddBlockChoice[] {
   return BLOCK_TYPES.map((type) => ({ type, label: t.get(blockTypeLabelKey(type)), icon: BLOCK_EDITORS[type].icon }));
 }

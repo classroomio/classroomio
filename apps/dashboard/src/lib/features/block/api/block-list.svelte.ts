@@ -1,9 +1,11 @@
 import type { TLocale } from '@cio/db/types';
 import type { TBlockCreate, TBlockType, TPlacementUpdate } from '@cio/utils/validation/block';
-import type { BlockInitialContent, BlockOwner, BlockRecord } from '../utils/types';
+import { snackbar } from '$features/ui/snackbar/store';
+import { t } from '$lib/utils/functions/translations';
+import type { BlockDataSaveResult, BlockInitialContent, BlockOwner, BlockRecord } from '../utils/types';
 import { anchorForIndex, findMovedId, insertAt, moveBy } from '../utils/block-list-utils';
 
-const CONTENT_SAVE_DELAY_MS = 500;
+const SAVE_DELAY_MS = 500;
 
 /**
  * The ordered blocks of one owner, such as a lesson, and every write to them.
@@ -18,6 +20,8 @@ export class BlockListApi {
   private revision = 0;
   private unsavedContent = new Map<string, Set<TLocale>>();
   private savingContent = new Map<string, Set<TLocale>>();
+  private unsavedData = new Set<string>();
+  private savingData = new Set<string>();
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
   private saveQueue: Promise<void> = Promise.resolve();
   private payloadSignature = '';
@@ -30,6 +34,7 @@ export class BlockListApi {
     this.blocks = [];
     this.lastInsertedId = '';
     this.unsavedContent.clear();
+    this.unsavedData.clear();
 
     const records = await owner.list();
     if (loadId !== this.loadId) return;
@@ -88,21 +93,22 @@ export class BlockListApi {
     return record;
   }
 
+  /**
+   * Applies a data edit locally and saves it after a short pause, so typing sends one request.
+   */
+  setData(blockId: string, data: Record<string, unknown>): void {
+    if (!this.writeDataLocally(blockId, data)) return;
+
+    this.scheduleSave();
+  }
+
+  /**
+   * Applies a data edit locally and saves it, with every other pending edit, before resolving.
+   */
   async updateData(blockId: string, data: Record<string, unknown>): Promise<void> {
-    const owner = this.owner;
-    const block = this.find(blockId);
-    if (!owner || !block) return;
+    if (!this.writeDataLocally(blockId, data)) return;
 
-    this.revision += 1;
-    block.data = data as BlockRecord['data'];
-
-    const record = await owner.updateData(blockId, data, block.version);
-    if (!record) {
-      await this.refresh();
-      return;
-    }
-
-    this.replace(record);
+    await this.flush();
   }
 
   async setPlacement(blockId: string, settings: TPlacementUpdate): Promise<void> {
@@ -121,16 +127,11 @@ export class BlockListApi {
 
     block.contents[locale] = content;
     this.markUnsaved(blockId, locale);
-
-    if (this.saveTimer) clearTimeout(this.saveTimer);
-    this.saveTimer = setTimeout(() => {
-      this.saveTimer = null;
-      void this.flush();
-    }, CONTENT_SAVE_DELAY_MS);
+    this.scheduleSave();
   }
 
   /**
-   * Saves every pending text edit, one request at a time.
+   * Saves every pending text and data edit, one request at a time.
    */
   flush(): Promise<void> {
     if (this.saveTimer) {
@@ -138,7 +139,7 @@ export class BlockListApi {
       this.saveTimer = null;
     }
 
-    this.saveQueue = this.saveQueue.then(() => this.saveUnsavedContent());
+    this.saveQueue = this.saveQueue.then(() => this.saveUnsavedEdits());
 
     return this.saveQueue;
   }
@@ -154,6 +155,7 @@ export class BlockListApi {
 
     this.blocks = this.blocks.filter((candidate) => candidate.id !== blockId);
     this.unsavedContent.delete(blockId);
+    this.unsavedData.delete(blockId);
     if (this.lastInsertedId === blockId) this.lastInsertedId = '';
   }
 
@@ -198,22 +200,46 @@ export class BlockListApi {
     return this.blocks.length;
   }
 
+  private writeDataLocally(blockId: string, data: Record<string, unknown>): boolean {
+    const block = this.find(blockId);
+    if (!block) return false;
+
+    this.revision += 1;
+    block.data = data as BlockRecord['data'];
+    this.unsavedData.add(blockId);
+
+    return true;
+  }
+
+  private scheduleSave(): void {
+    if (this.saveTimer) clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => {
+      this.saveTimer = null;
+      void this.flush();
+    }, SAVE_DELAY_MS);
+  }
+
   private replace(record: BlockRecord): void {
-    const merged = this.withUnsavedContent(record);
+    const merged = this.withLocalEdits(record);
     this.blocks = this.blocks.map((block) => (block.id === record.id ? merged : block));
   }
 
-  private withUnsavedContent(record: BlockRecord): BlockRecord {
+  private withLocalEdits(record: BlockRecord): BlockRecord {
     const local = this.find(record.id);
+    if (!local) return record;
+
     const locales = [...(this.unsavedContent.get(record.id) ?? []), ...(this.savingContent.get(record.id) ?? [])];
-    if (!local || locales.length === 0) return record;
+    const hasLocalData = this.unsavedData.has(record.id) || this.savingData.has(record.id);
+    if (locales.length === 0 && !hasLocalData) return record;
 
     const contents = { ...record.contents };
     for (const locale of locales) {
       contents[locale] = local.contents[locale];
     }
 
-    return { ...record, contents };
+    const data = hasLocalData ? local.data : record.data;
+
+    return { ...record, contents, data };
   }
 
   private markUnsaved(blockId: string, locale: TLocale): void {
@@ -222,10 +248,15 @@ export class BlockListApi {
     this.unsavedContent.set(blockId, locales);
   }
 
-  private async saveUnsavedContent(): Promise<void> {
+  private async saveUnsavedEdits(): Promise<void> {
     const owner = this.owner;
     if (!owner) return;
 
+    await this.saveUnsavedContent(owner);
+    await this.saveUnsavedData(owner);
+  }
+
+  private async saveUnsavedContent(owner: BlockOwner): Promise<void> {
     this.savingContent = new Map(this.unsavedContent);
     this.unsavedContent.clear();
 
@@ -234,12 +265,41 @@ export class BlockListApi {
         const saved = await this.saveContent(owner, blockId, locale);
         if (saved) continue;
 
-        const retried = await this.retryAfterRefresh(owner, blockId, locale);
+        await this.reloadForRetry(owner);
+        const retried = await this.saveContent(owner, blockId, locale);
         if (!retried) this.markUnsaved(blockId, locale);
       }
     }
 
     this.savingContent.clear();
+  }
+
+  private async saveUnsavedData(owner: BlockOwner): Promise<void> {
+    this.savingData = new Set(this.unsavedData);
+    this.unsavedData.clear();
+
+    let rejected = false;
+    for (const blockId of this.savingData) {
+      const result = await this.saveData(owner, blockId);
+      if (result.status === 'saved') continue;
+
+      if (result.status === 'failed') {
+        rejected = true;
+        continue;
+      }
+
+      await this.reloadForRetry(owner);
+      const retried = await this.saveData(owner, blockId);
+      if (retried.status === 'saved') continue;
+
+      rejected = true;
+      if (retried.status === 'conflict') {
+        snackbar.error(t.get('course.navItem.lessons.materials.blocks.save_failed', { reason: retried.reason }));
+      }
+    }
+
+    this.savingData.clear();
+    if (rejected) await this.reloadForRetry(owner);
   }
 
   private async saveContent(owner: BlockOwner, blockId: string, locale: TLocale): Promise<boolean> {
@@ -255,16 +315,27 @@ export class BlockListApi {
     return true;
   }
 
-  private async retryAfterRefresh(owner: BlockOwner, blockId: string, locale: TLocale): Promise<boolean> {
+  private async saveData(owner: BlockOwner, blockId: string): Promise<BlockDataSaveResult | { status: 'saved' }> {
+    const block = this.find(blockId);
+    if (!block) return { status: 'saved' };
+
+    const result = await owner.updateData(blockId, block.data, block.version);
+    if (result.status !== 'saved') return result;
+
+    const current = this.find(blockId);
+    if (current) current.version = result.record.version;
+
+    return result;
+  }
+
+  private async reloadForRetry(owner: BlockOwner): Promise<void> {
     this.revision += 1;
     this.apply(owner, await owner.list());
-
-    return this.saveContent(owner, blockId, locale);
   }
 
   private apply(owner: BlockOwner, records: BlockRecord[] | null): void {
     if (!records || owner !== this.owner) return;
 
-    this.blocks = records.map((record) => this.withUnsavedContent(record));
+    this.blocks = records.map((record) => this.withLocalEdits(record));
   }
 }

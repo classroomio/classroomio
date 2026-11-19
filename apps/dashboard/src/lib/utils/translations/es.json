@@ -1774,7 +1774,12 @@
             "video": "vídeo",
             "slides": "diapositivas",
             "document": "documento",
-            "image": "imagen"
+            "image": "imagen",
+            "chart": "gráfico",
+            "flashcards": "tarjetas",
+            "tabs": "pestañas",
+            "multiple_choice": "pregunta de opción múltiple",
+            "process": "proceso"
           },
           "change_kind": {
             "added": "Añadido",
@@ -2642,6 +2647,7 @@
           },
           "blocks": {
             "add_content": "Agregar contenido",
+            "ask_ai_instead": "Preguntar a la IA",
             "example": "Ejemplo",
             "change_type": "Cambiar {type}",
             "edit_type": "Editar {type}",
@@ -2652,8 +2658,8 @@
             "drag": "Arrastra para reordenar",
             "drag_hint": "Arrastra el tirador de un bloque para reordenarlo. También puedes usar las opciones \"Mover hacia arriba\" y \"Mover hacia abajo\" de su menú.",
             "dismiss_hint": "Descartar sugerencia de reordenar",
-            "empty_title": "Comienza a construir esta lección",
-            "empty_description": "Añade una nota, un vídeo, diapositivas, un documento o una imagen. Puedes añadir tantos bloques como necesites, en cualquier orden.",
+            "empty_title": "¿Qué incluye esta lección?",
+            "empty_description": "Elige un bloque para empezar. Puedes añadir más en cualquier momento.",
             "empty_note": "Esta nota está vacía.",
             "scroll_rail": "Bloques de lecciones",
             "save_failed": "No se pudo guardar este cambio, así que se restauró el bloque. {reason}",
@@ -2681,7 +2687,7 @@
               "spacious": "Espacioso"
             },
             "ai": {
-              "title": "Redacta una nota con IA",
+              "title": "Pide a la IA que añada contenido a esta lección",
               "prompt_label": "Inmediato",
               "prompt_placeholder": "Por ejemplo: Una breve introducción al ciclo del agua para principiantes."
             },
@@ -2690,10 +2696,15 @@
               "video": "Video",
               "slides": "Diapositivas",
               "document": "Documento",
-              "image": "Imagen"
+              "image": "Imagen",
+              "chart": "Gráfico",
+              "flashcards": "Tarjetas",
+              "tabs": "Pestañas",
+              "multiple_choice": "Opción múltiple",
+              "process": "Proceso"
             },
             "empty_preview_title": "Aún no hay nada que previsualizar",
-            "empty_preview_description": "Esta lección no tiene contenido para que los estudiantes la vean. Cambie a {editLabel} para agregar una nota, video, diapositivas, documento o imagen.",
+            "empty_preview_description": "Esta lección no tiene contenido para los estudiantes. Cambia a {editLabel} para añadirlo.",
             "empty_learner_title": "Esta lección aún no está lista",
             "empty_learner_description": "Su instructor no ha agregado ningún contenido a esta lección. Vuelve pronto.",
             "document": {
@@ -2705,6 +2716,134 @@
             },
             "slides": {
               "add_slide": "Añadir diapositiva"
+            },
+            "chart": {
+              "title": "Título del gráfico",
+              "title_placeholder": "Título del gráfico",
+              "chart_type": "Tipo de gráfico",
+              "types": {
+                "bar": "Gráfico de barras",
+                "line": "Gráfico de líneas",
+                "pie": "Gráfico circular",
+                "donut": "Gráfico de anillo"
+              },
+              "point_count": "{count, plural, one {# punto de datos} other {# puntos de datos}}",
+              "highest": "Máximo",
+              "total": "Total",
+              "edit_data": "Editar datos",
+              "live_hint": "Los cambios actualizan el gráfico al instante.",
+              "label": "Etiqueta",
+              "value": "Valor",
+              "label_placeholder": "Etiqueta",
+              "add_point": "Añadir punto de datos",
+              "remove_point": "Quitar punto de datos",
+              "new_point": "Nuevo",
+              "example": {
+                "title": "Ingresos trimestrales",
+                "label_1": "T1",
+                "label_2": "T2",
+                "label_3": "T3",
+                "label_4": "T4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Haz clic en cualquier texto de la tarjeta para editarlo · usa el botón de girar para editar la respuesta",
+              "flip_hint": "Haz clic en la tarjeta para girarla",
+              "question": "Pregunta",
+              "answer": "Respuesta",
+              "question_placeholder": "Escribe la pregunta",
+              "answer_placeholder": "Escribe la respuesta",
+              "flip": "Girar tarjeta",
+              "show_question": "Tarjeta mostrando la respuesta. Pulsa Espacio para ver la pregunta.",
+              "show_answer": "Tarjeta mostrando la pregunta. Pulsa Espacio para ver la respuesta.",
+              "previous": "Tarjeta anterior",
+              "next": "Tarjeta siguiente",
+              "progress": "Progreso del mazo",
+              "cards": "Tarjetas",
+              "add_card": "Añadir tarjeta",
+              "remove_card": "Quitar tarjeta",
+              "example": {
+                "question_1": "¿Qué es la retención de clientes?",
+                "answer_1": "La capacidad de una empresa para conservar a sus clientes con el tiempo.",
+                "question_2": "¿Por qué importa más la retención que la captación?",
+                "answer_2": "Suele ser entre 5 y 7 veces más barato conservar a un cliente que conseguir uno nuevo.",
+                "question_3": "¿Cuál es una forma sencilla de medirla?",
+                "answer_3": "Compara cuántos clientes tenías al inicio de un periodo con cuántos siguen al final."
+              }
+            },
+            "tabs": {
+              "tab_list": "Pestañas",
+              "position": "Posición de las pestañas",
+              "align_left": "Alinear pestañas a la izquierda",
+              "align_center": "Centrar pestañas",
+              "align_right": "Alinear pestañas a la derecha",
+              "tab_name": "Nombre de la pestaña",
+              "untitled_tab": "Pestaña sin título",
+              "note_placeholder": "Escribe una nota para esta pestaña…",
+              "add_tab": "Añadir pestaña",
+              "remove_tab": "Quitar pestaña",
+              "new_tab": "Nueva pestaña",
+              "add_image": "Añadir imagen",
+              "add_video": "Añadir vídeo",
+              "remove_image": "Quitar imagen",
+              "remove_video": "Quitar vídeo",
+              "example": {
+                "name_1": "Resumen",
+                "note_1": "Un resumen rápido de lo que cubre esta sección.",
+                "name_2": "Preparación",
+                "note_2": "Lo que los alumnos necesitan tener listo antes de empezar.",
+                "name_3": "Avanzado",
+                "note_3": "Profundiza cuando domines lo básico."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Haz clic en una letra para marcar la respuesta correcta.",
+              "learner_hint": "Elige una respuesta.",
+              "question_placeholder": "Escribe tu pregunta",
+              "option_placeholder": "Escribe una respuesta",
+              "mark_correct": "Marcar como respuesta correcta",
+              "correct_badge": "Respuesta correcta",
+              "add_option": "Añadir opción",
+              "new_option": "Nueva opción",
+              "remove_option": "Quitar opción",
+              "add_media": "Añadir medio",
+              "remove_image": "Quitar imagen",
+              "check": "Comprobar respuesta",
+              "try_again": "Intentar de nuevo",
+              "correct_feedback": "¡Correcto, bien hecho!",
+              "wrong_feedback": "No del todo. La respuesta correcta está resaltada.",
+              "example": {
+                "question": "¿Cuál es la capital de Italia?",
+                "correct_option": "Roma",
+                "other_option_1": "Atenas",
+                "other_option_2": "Lisboa"
+              }
+            },
+            "process": {
+              "stepper": "Pasos",
+              "go_to_step": "Ir al paso {step}",
+              "untitled_step": "Paso sin título",
+              "heading_placeholder": "Título del paso",
+              "body_placeholder": "Describe este paso",
+              "add_media": "Añadir multimedia",
+              "image_option": "Imagen",
+              "remove_image": "Quitar imagen",
+              "delete_step": "Eliminar este paso",
+              "add_step": "Añadir paso",
+              "back": "Atrás",
+              "next": "Siguiente",
+              "start_over": "Empezar de nuevo",
+              "progress": "Progreso del proceso",
+              "new_step_heading": "Nuevo paso",
+              "new_step_body": "Describe este paso.",
+              "example": {
+                "heading_1": "Introducción",
+                "body_1": "La inteligencia artificial, o IA, se ha convertido en uno de los campos más transformadores y de más rápida evolución de la tecnología. Consiste en crear máquinas inteligentes capaces de realizar tareas que solemos asociar con la inteligencia humana, como aprender, resolver problemas y tomar decisiones.",
+                "heading_2": "Cómo funciona",
+                "body_2": "Describe qué ocurre en este paso del proceso.",
+                "heading_3": "Ponerlo en práctica",
+                "body_3": "Muestra cómo los alumnos aplican lo que acaban de ver."
+              }
             }
           }
         },
@@ -6033,6 +6172,11 @@
         "move_lesson_block": "Mover un bloque",
         "add_lesson_slides_block": "Agregar diapositivas",
         "add_lesson_image_block": "Agregar una imagen",
+        "write_lesson_chart_block": "Guardando un gráfico",
+        "write_lesson_flashcards_block": "Guardando tarjetas",
+        "write_lesson_tabs_block": "Guardando pestañas",
+        "write_lesson_multiple_choice_block": "Guardando una pregunta de opción múltiple",
+        "write_lesson_process_block": "Guardando un proceso",
         "update_lesson_block_settings": "Actualizar la configuración del bloque",
         "update_lesson_block_requirements": "Actualizar reglas de finalización",
         "detach_lesson_block": "Separar un bloque compartido",
@@ -6087,6 +6231,11 @@
         "move_lesson_block": "Se movió un bloque en {title}",
         "add_lesson_slides_block": "Se agregaron diapositivas a {title}",
         "add_lesson_image_block": "Se agregó una imagen a {title}",
+        "write_lesson_chart_block": "Se guardó un gráfico en {title}",
+        "write_lesson_flashcards_block": "Se guardaron tarjetas en {title}",
+        "write_lesson_tabs_block": "Se guardaron pestañas en {title}",
+        "write_lesson_multiple_choice_block": "Se guardó una pregunta de opción múltiple en {title}",
+        "write_lesson_process_block": "Se guardó un proceso en {title}",
         "update_lesson_block_settings": "Se actualizó un bloque en {title}",
         "update_lesson_block_requirements": "Reglas de finalización actualizadas en {title}",
         "detach_lesson_block": "Le dio a {title} su propia copia de un bloque compartido",
@@ -8057,7 +8206,7 @@
     "lesson_blocks": {
       "title": "Introducción de bloques de lecciones",
       "description": "Las lecciones ahora se construyen a partir de bloques. Mira cómo funciona en 5 minutos.",
-      "coach_description": "Cree cada lección a partir de bloques de notas, videos, diapositivas, documentos e imágenes, en cualquier orden. Seleccione Editar para probarlo.",
+      "coach_description": "Cree cada lección con bloques como notas, videos, gráficos, tarjetas y preguntas de opción múltiple, en cualquier orden. Seleccione Editar para probarlo.",
       "coach_title": "🎉 ¡Nuevo! Las lecciones ahora son flexibles."
     },
     "close": "Cerrar",

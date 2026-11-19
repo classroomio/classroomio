@@ -2,24 +2,54 @@
   import PlusIcon from '@lucide/svelte/icons/plus';
   import { cn } from '../../tools';
   import { IconButton } from '../icon-button';
-  import Item from './add-block-item.svelte';
-  import type { AddBlockChoice } from './types';
+  import AiButton from './add-block-ai-button.svelte';
+  import Grid from './add-block-grid.svelte';
+  import type { AddBlockChoice, AddBlockShortcut } from './types';
 
   interface Props {
     open: boolean;
     choices: AddBlockChoice[];
     addLabel?: string;
+    aiLabel?: string;
+    aiShortcut?: AddBlockShortcut | null;
     testId?: string;
     onToggle: () => void;
     onClose: () => void;
     onSelect: (type: string) => void;
+    onAi?: () => void;
   }
 
-  let { open, choices, addLabel = 'Add content', testId, onToggle, onClose, onSelect }: Props = $props();
+  let {
+    open,
+    choices,
+    addLabel = 'Add content',
+    aiLabel,
+    aiShortcut = null,
+    testId,
+    onToggle,
+    onClose,
+    onSelect,
+    onAi
+  }: Props = $props();
+
+  const POPOVER_CLEARANCE = 260;
+
+  let opensBelow = $state(false);
 
   function select(type: string) {
     onClose();
     onSelect(type);
+  }
+
+  function askAi() {
+    onClose();
+    onAi?.();
+  }
+
+  function toggle(trigger: HTMLElement) {
+    if (!open) opensBelow = trigger.getBoundingClientRect().top < POPOVER_CLEARANCE;
+
+    onToggle();
   }
 </script>
 
@@ -46,7 +76,7 @@
       aria-expanded={open}
       onclick={(event) => {
         event.stopPropagation();
-        onToggle();
+        toggle(event.currentTarget);
       }}
     >
       <PlusIcon size={12} class="custom" />
@@ -62,16 +92,29 @@
 
   {#if open}
     <div
-      class="ui:border-border ui:bg-background ui:absolute ui:bottom-full ui:left-1/2 ui:z-50 ui:mb-3 ui:flex ui:-translate-x-1/2 ui:animate-in ui:items-center ui:rounded-md ui:border ui:p-1 ui:shadow-md ui:fade-in ui:zoom-in-95 ui:duration-150"
-      role="toolbar"
+      class={cn(
+        'ui:border-border ui:bg-popover ui:absolute ui:left-1/2 ui:z-50 ui:flex ui:w-[min(440px,calc(100vw-32px))] ui:-translate-x-1/2 ui:flex-col ui:gap-2 ui:rounded-xl ui:border ui:p-2.5 ui:shadow-lg ui:animate-in ui:fade-in ui:zoom-in-[.97] ui:duration-150',
+        opensBelow
+          ? 'ui:top-full ui:mt-1 ui:origin-top ui:slide-in-from-top-1.5'
+          : 'ui:bottom-full ui:mb-1 ui:origin-bottom ui:slide-in-from-bottom-1.5'
+      )}
+      role="dialog"
       tabindex="-1"
       aria-label={addLabel}
+      data-testid={testId ? `${testId}-menu` : undefined}
       onclick={(event) => event.stopPropagation()}
       onkeydown={(event) => event.stopPropagation()}
     >
-      {#each choices as choice (choice.type)}
-        <Item {choice} compact onSelect={select} />
-      {/each}
+      <Grid {choices} label={addLabel} size="sm" testId={testId ? `${testId}-grid` : undefined} onSelect={select} />
+      {#if onAi && aiLabel}
+        <AiButton
+          label={aiLabel}
+          shortcut={aiShortcut}
+          variant="menu"
+          testId={testId ? `${testId}-ai` : undefined}
+          onclick={askAi}
+        />
+      {/if}
     </div>
   {/if}
 </div>
