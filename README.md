@@ -175,6 +175,8 @@ The repository also contains shared packages under `packages/` (for example `pac
      PUBLIC_IS_SELFHOSTED=false
      ```
 
+   - Guided onboarding (account, business, workspace, customise, AI course builder) is the default for new workspaces. The AI steps need a provider key (for example `GOOGLE_API_KEY`) on the API; without one the starter courses are built-in samples and the builder step is skipped.
+
    - Running the background workers? Also create `apps/jobs/.env` (e.g. `cp apps/api/.env apps/jobs/.env`); it needs `REDIS_URL`. The `packages/db/.env` used by the DB scripts is set up in step 6.
    - Optional for self-hosted Enterprise-only features (SSO, token-auth, no-tracking): set `LICENSE_KEY` in `apps/api/.env`.
    - Optional upload size limits: set matching `UPLOAD_MAX_*_MB` values in **both** `apps/api/.env` and `apps/dashboard/.env` (see `apps/api/.env.example`). Defaults are 5 MB documents, 2 MB assignment files, 1 GB videos.

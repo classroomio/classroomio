@@ -1,0 +1,763 @@
+{
+  "version": 1,
+  "purpose": "Primary sample: organisations that look like our customers (process-heavy, vertical B2B products in energy, facilities and maintenance, field service, EHS and quality, construction, fleet and logistics, manufacturing and property operations). Plan section 13 targets are measured on this sample.",
+  "splitRule": "Domain list fixed on 2026-11-19 from product knowledge only; homepages were fetched only to confirm each company exists. Excludes every site studied in research.md section 1.1 and every site of the scale sample. Domains sorted by SHA-256 of the domain; the first 25 are development, the remaining 15 held out.",
+  "organisations": {
+    "uplight.com": {
+      "name": "Uplight",
+      "productUrl": "https://uplight.com/"
+    },
+    "arcadia.com": {
+      "name": "Arcadia",
+      "productUrl": "https://arcadia.com/"
+    },
+    "measurabl.com": {
+      "name": "Measurabl",
+      "productUrl": "https://measurabl.com/"
+    },
+    "watershed.com": {
+      "name": "Watershed",
+      "productUrl": "https://watershed.com/"
+    },
+    "persefoni.com": {
+      "name": "Persefoni",
+      "productUrl": "https://persefoni.com/"
+    },
+    "sweep.net": {
+      "name": "Sweep",
+      "productUrl": "https://sweep.net/"
+    },
+    "powerfactors.com": {
+      "name": "Power Factors",
+      "productUrl": "https://powerfactors.com/"
+    },
+    "enverus.com": {
+      "name": "Enverus",
+      "productUrl": "https://enverus.com/"
+    },
+    "upkeep.com": {
+      "name": "UpKeep",
+      "productUrl": "https://upkeep.com/"
+    },
+    "fiixsoftware.com": {
+      "name": "Fiix",
+      "productUrl": "https://fiixsoftware.com/"
+    },
+    "limblecmms.com": {
+      "name": "Limble",
+      "productUrl": "https://limblecmms.com/"
+    },
+    "getmaintainx.com": {
+      "name": "MaintainX",
+      "productUrl": "https://getmaintainx.com/"
+    },
+    "facilio.com": {
+      "name": "Facilio",
+      "productUrl": "https://facilio.com/"
+    },
+    "eptura.com": {
+      "name": "Eptura",
+      "productUrl": "https://eptura.com/"
+    },
+    "jobber.com": {
+      "name": "Jobber",
+      "productUrl": "https://jobber.com/"
+    },
+    "housecallpro.com": {
+      "name": "Housecall Pro",
+      "productUrl": "https://housecallpro.com/"
+    },
+    "fieldedge.com": {
+      "name": "FieldEdge",
+      "productUrl": "https://fieldedge.com/"
+    },
+    "simprogroup.com": {
+      "name": "Simpro",
+      "productUrl": "https://simprogroup.com/"
+    },
+    "workiz.com": {
+      "name": "Workiz",
+      "productUrl": "https://workiz.com/"
+    },
+    "intelex.com": {
+      "name": "Intelex",
+      "productUrl": "https://intelex.com/"
+    },
+    "cority.com": {
+      "name": "Cority",
+      "productUrl": "https://cority.com/"
+    },
+    "ecoonline.com": {
+      "name": "EcoOnline",
+      "productUrl": "https://ecoonline.com/"
+    },
+    "greenlight.guru": {
+      "name": "Greenlight Guru",
+      "productUrl": "https://greenlight.guru/"
+    },
+    "mastercontrol.com": {
+      "name": "MasterControl",
+      "productUrl": "https://mastercontrol.com/"
+    },
+    "ideagen.com": {
+      "name": "Ideagen",
+      "productUrl": "https://ideagen.com/"
+    },
+    "assent.com": {
+      "name": "Assent",
+      "productUrl": "https://assent.com/"
+    },
+    "buildertrend.com": {
+      "name": "Buildertrend",
+      "productUrl": "https://buildertrend.com/"
+    },
+    "rakenapp.com": {
+      "name": "Raken",
+      "productUrl": "https://rakenapp.com/"
+    },
+    "fleetio.com": {
+      "name": "Fleetio",
+      "productUrl": "https://fleetio.com/"
+    },
+    "samsara.com": {
+      "name": "Samsara",
+      "productUrl": "https://samsara.com/"
+    },
+    "gomotive.com": {
+      "name": "Motive",
+      "productUrl": "https://gomotive.com/"
+    },
+    "onfleet.com": {
+      "name": "Onfleet",
+      "productUrl": "https://onfleet.com/"
+    },
+    "project44.com": {
+      "name": "project44",
+      "productUrl": "https://project44.com/"
+    },
+    "katanamrp.com": {
+      "name": "Katana",
+      "productUrl": "https://katanamrp.com/"
+    },
+    "mrpeasy.com": {
+      "name": "MRPeasy",
+      "productUrl": "https://mrpeasy.com/"
+    },
+    "fishbowlinventory.com": {
+      "name": "Fishbowl",
+      "productUrl": "https://fishbowlinventory.com/"
+    },
+    "buildium.com": {
+      "name": "Buildium",
+      "productUrl": "https://buildium.com/"
+    },
+    "appfolio.com": {
+      "name": "AppFolio",
+      "productUrl": "https://appfolio.com/"
+    },
+    "connecteam.com": {
+      "name": "Connecteam",
+      "productUrl": "https://connecteam.com/"
+    },
+    "kissflow.com": {
+      "name": "Kissflow",
+      "productUrl": "https://kissflow.com/"
+    }
+  },
+  "split": {
+    "development": [
+      "limblecmms.com",
+      "cority.com",
+      "gomotive.com",
+      "buildium.com",
+      "uplight.com",
+      "buildertrend.com",
+      "mastercontrol.com",
+      "powerfactors.com",
+      "housecallpro.com",
+      "ideagen.com",
+      "samsara.com",
+      "workiz.com",
+      "fieldedge.com",
+      "arcadia.com",
+      "fiixsoftware.com",
+      "project44.com",
+      "measurabl.com",
+      "appfolio.com",
+      "assent.com",
+      "sweep.net",
+      "eptura.com",
+      "rakenapp.com",
+      "mrpeasy.com",
+      "fishbowlinventory.com",
+      "upkeep.com"
+    ],
+    "heldOut": [
+      "ecoonline.com",
+      "getmaintainx.com",
+      "connecteam.com",
+      "katanamrp.com",
+      "kissflow.com",
+      "persefoni.com",
+      "simprogroup.com",
+      "onfleet.com",
+      "enverus.com",
+      "facilio.com",
+      "greenlight.guru",
+      "fleetio.com",
+      "jobber.com",
+      "watershed.com",
+      "intelex.com"
+    ]
+  },
+  "groundTruth": {
+    "limblecmms.com": {
+      "name": "Limble",
+      "productUrl": "https://limblecmms.com/",
+      "sources": [
+        {
+          "url": "https://help.limblecmms.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://apidocs.limblecmms.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": ["https://community.limble.com/", "https://limble.com/resources/guides-reports"],
+      "pageCounts": {
+        "https://help.limblecmms.com/": 212,
+        "https://apidocs.limblecmms.com/": null
+      }
+    },
+    "cority.com": {
+      "name": "Cority",
+      "productUrl": "https://cority.com/",
+      "sources": [
+        {
+          "url": "https://uc.cority.com/s",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": ["https://uc.cority.com/UCLogin", "https://www.cority.com/faq"],
+      "pageCounts": {
+        "https://uc.cority.com/s": null
+      }
+    },
+    "gomotive.com": {
+      "name": "Motive",
+      "productUrl": "https://gomotive.com/",
+      "sources": [
+        {
+          "url": "https://developer.gomotive.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://helpcenter.gomotive.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": ["https://gomotive.com/guides", "https://learn.gomotive.com/"],
+      "pageCounts": {
+        "https://developer.gomotive.com/": 298,
+        "https://helpcenter.gomotive.com/": 1411
+      }
+    },
+    "buildium.com": {
+      "name": "Buildium",
+      "productUrl": "https://buildium.com/",
+      "sources": [
+        {
+          "url": "https://developer.buildium.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://help.buildium.com/hc/s",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://academy.buildium.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": [
+        "https://www.buildium.com/portfolios/association-management-software",
+        "https://www.buildium.com/help-hub",
+        "https://www.buildium.com/support",
+        "https://learn.buildium.com/"
+      ],
+      "pageCounts": {
+        "https://developer.buildium.com/": null,
+        "https://help.buildium.com/hc/s": 837,
+        "https://academy.buildium.com/": null
+      }
+    },
+    "uplight.com": {
+      "name": "Uplight",
+      "productUrl": "https://uplight.com/",
+      "sources": [
+        {
+          "url": "https://uplightinc.atlassian.net/",
+          "kind": "support"
+        },
+        {
+          "url": "https://docs.uplight.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": ["https://uplight.com/community"],
+      "pageCounts": {
+        "https://uplightinc.atlassian.net/": null,
+        "https://docs.uplight.com/": null
+      }
+    },
+    "buildertrend.com": {
+      "name": "Buildertrend",
+      "productUrl": "https://buildertrend.com/",
+      "sources": [
+        {
+          "url": "https://buildertrend.com/help-article",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://learn.buildertrend.net/",
+          "kind": "academy"
+        },
+        {
+          "url": "https://developer.buildertrend.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://buildertrend.com/buildertrend-learning-academy",
+        "https://community.buildertrend.com/private/login",
+        "https://buildertrend.com/support",
+        "https://buildertrend.com/events/buildertrend-university"
+      ],
+      "pageCounts": {
+        "https://buildertrend.com/help-article": 173,
+        "https://learn.buildertrend.net/": null,
+        "https://developer.buildertrend.com/": null
+      }
+    },
+    "mastercontrol.com": {
+      "name": "MasterControl",
+      "productUrl": "https://mastercontrol.com/",
+      "sources": [
+        {
+          "url": "https://learn.mastercontrol.com/",
+          "kind": "academy"
+        },
+        {
+          "url": "https://knowledge.mastercontrol.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://labs.mastercontrol.com/insights-help",
+          "kind": "docs"
+        }
+      ],
+      "notSources": ["https://www.mastercontrol.com/docs", "https://support.mastercontrol.com/"],
+      "pageCounts": {
+        "https://learn.mastercontrol.com/": null,
+        "https://knowledge.mastercontrol.com/": null,
+        "https://labs.mastercontrol.com/insights-help": null
+      }
+    },
+    "powerfactors.com": {
+      "name": "Power Factors",
+      "productUrl": "https://powerfactors.com/",
+      "sources": [
+        {
+          "url": "https://support.powerfactors.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://learn.powerfactors.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": ["https://community.powerfactors.com/private/login"],
+      "pageCounts": {
+        "https://support.powerfactors.com/": 34,
+        "https://learn.powerfactors.com/": null
+      }
+    },
+    "housecallpro.com": {
+      "name": "Housecall Pro",
+      "productUrl": "https://housecallpro.com/",
+      "sources": [
+        {
+          "url": "https://help.housecallpro.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://docs.housecallpro.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://www.housecallpro.com/resources/ebooks",
+        "https://www.housecallpro.com/community",
+        "https://tradeacademy.com/"
+      ],
+      "pageCounts": {
+        "https://help.housecallpro.com/": 673,
+        "https://docs.housecallpro.com/": null
+      }
+    },
+    "ideagen.com": {
+      "name": "Ideagen",
+      "productUrl": "https://ideagen.com/",
+      "sources": [
+        {
+          "url": "https://help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://ehs.help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://pleasereview.help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://inphase.help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://devonway.help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://coruson.help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://auditanalytics.help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://mazlan.help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://workrite.help.ideagen.com/hc/en-gb",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [
+        "https://community.ideagen.com/",
+        "https://www.ideagen.com/solutions/quality/training-management",
+        "https://www.ideagen.com/solutions/quality/workplace-training"
+      ],
+      "pageCounts": {
+        "https://help.ideagen.com/hc/en-gb": 158,
+        "https://ehs.help.ideagen.com/hc/en-gb": 499,
+        "https://pleasereview.help.ideagen.com/hc/en-gb": 452,
+        "https://inphase.help.ideagen.com/hc/en-gb": 383,
+        "https://devonway.help.ideagen.com/hc/en-gb": 335,
+        "https://coruson.help.ideagen.com/hc/en-gb": 218,
+        "https://auditanalytics.help.ideagen.com/hc/en-gb": 172,
+        "https://mazlan.help.ideagen.com/hc/en-gb": 107,
+        "https://workrite.help.ideagen.com/hc/en-gb": 106
+      }
+    },
+    "samsara.com": {
+      "name": "Samsara",
+      "productUrl": "https://samsara.com/",
+      "sources": [
+        {
+          "url": "https://academy.samsara.com/",
+          "kind": "academy"
+        },
+        {
+          "url": "https://kb.samsara.com/hc/en-us",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developers.samsara.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://community.samsara.com/login?returnTo=%2F",
+        "https://www.samsara.com/products/workforce-management/connected-training",
+        "https://www.samsara.com/resources/guides",
+        "https://www.samsara.com/support/developers"
+      ],
+      "pageCounts": {
+        "https://academy.samsara.com/": 223,
+        "https://kb.samsara.com/hc/en-us": 439,
+        "https://developers.samsara.com/": 1206
+      }
+    },
+    "workiz.com": {
+      "name": "Workiz",
+      "productUrl": "https://workiz.com/",
+      "sources": [
+        {
+          "url": "https://help.workiz.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developer.workiz.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": ["https://www.workiz.com/developers", "https://www.workiz.com/faq"],
+      "pageCounts": {
+        "https://help.workiz.com/": 661,
+        "https://developer.workiz.com/": null
+      }
+    },
+    "fieldedge.com": {
+      "name": "FieldEdge",
+      "productUrl": "https://fieldedge.com/",
+      "sources": [
+        {
+          "url": "https://training.fieldedge.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": ["https://fieldedge.com/academy", "https://fieldedge.com/member-training"],
+      "pageCounts": {
+        "https://training.fieldedge.com/": null
+      }
+    },
+    "arcadia.com": {
+      "name": "Arcadia",
+      "productUrl": "https://arcadia.com/",
+      "sources": [
+        {
+          "url": "https://docs.arcadia.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [],
+      "pageCounts": {
+        "https://docs.arcadia.com/": 485
+      }
+    },
+    "fiixsoftware.com": {
+      "name": "Fiix",
+      "productUrl": "https://fiixsoftware.com/",
+      "sources": [
+        {
+          "url": "https://helpdesk.fiixsoftware.com/hc",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [
+        "https://fiixsoftware.com/community",
+        "https://fiixsoftware.com/support-videos",
+        "https://community.fiixsoftware.com/",
+        "https://fiixsoftware.com/training-and-implementation"
+      ],
+      "pageCounts": {
+        "https://helpdesk.fiixsoftware.com/hc": 1124
+      }
+    },
+    "project44.com": {
+      "name": "project44",
+      "productUrl": "https://project44.com/",
+      "sources": [
+        {
+          "url": "https://support.project44.com/hc/en-us",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developers.project44.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://www.project44.com/carriers/faqs",
+        "https://www.project44.com/help-center",
+        "https://www.project44.com/company/customer-knowledge-base",
+        "https://help.project44.com/"
+      ],
+      "pageCounts": {
+        "https://support.project44.com/hc/en-us": 544,
+        "https://developers.project44.com/": 409
+      }
+    },
+    "measurabl.com": {
+      "name": "Measurabl",
+      "productUrl": "https://measurabl.com/",
+      "sources": [
+        {
+          "url": "https://support.measurabl.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://api.measurabl.com/api-docs",
+          "kind": "docs"
+        }
+      ],
+      "notSources": ["https://learn.measurabl.com/"],
+      "pageCounts": {
+        "https://support.measurabl.com/": 225,
+        "https://api.measurabl.com/api-docs": null
+      }
+    },
+    "appfolio.com": {
+      "name": "AppFolio",
+      "productUrl": "https://appfolio.com/",
+      "sources": [
+        {
+          "url": "https://help.appfolio.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://knowledge.appfolio.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://training.appfolio.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": [
+        "https://www.appfolio.com/markets/hoa",
+        "https://community.appfolio.com/private/login",
+        "https://www.appfolio.com/",
+        "https://learn.appfolio.com/"
+      ],
+      "pageCounts": {
+        "https://help.appfolio.com/": null,
+        "https://knowledge.appfolio.com/": 4,
+        "https://training.appfolio.com/": null
+      }
+    },
+    "assent.com": {
+      "name": "Assent",
+      "productUrl": "https://assent.com/",
+      "sources": [
+        {
+          "url": "https://assentcompliance.my.site.com/SupplierCustomerPortal/s",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://assentu.assent.com/learn",
+          "kind": "academy"
+        }
+      ],
+      "notSources": ["https://www.assent.com/resources/knowledge-center"],
+      "pageCounts": {
+        "https://assentcompliance.my.site.com/SupplierCustomerPortal/s": null,
+        "https://assentu.assent.com/learn": null
+      }
+    },
+    "sweep.net": {
+      "name": "Sweep",
+      "productUrl": "https://sweep.net/",
+      "sources": [
+        {
+          "url": "https://help.sweep.net/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": ["https://www.sweep.net/solutions-guides", "https://www.sweep.net/guides"],
+      "pageCounts": {
+        "https://help.sweep.net/": null
+      }
+    },
+    "eptura.com": {
+      "name": "Eptura",
+      "productUrl": "https://eptura.com/",
+      "sources": [
+        {
+          "url": "https://knowledge.eptura.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": ["https://eptura.com/support", "https://eptura.com/resource-type/guide"],
+      "pageCounts": {
+        "https://knowledge.eptura.com/": 10770
+      }
+    },
+    "rakenapp.com": {
+      "name": "Raken",
+      "productUrl": "https://rakenapp.com/",
+      "sources": [
+        {
+          "url": "https://help.rakenapp.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [],
+      "pageCounts": {
+        "https://help.rakenapp.com/": 233
+      }
+    },
+    "mrpeasy.com": {
+      "name": "MRPeasy",
+      "productUrl": "https://mrpeasy.com/",
+      "sources": [
+        {
+          "url": "https://www.mrpeasy.com/resources/user-manual",
+          "kind": "docs"
+        },
+        {
+          "url": "https://mrpeasy.readme.io/reference",
+          "kind": "docs"
+        }
+      ],
+      "notSources": ["https://www.mrpeasy.com/resources/get-started"],
+      "pageCounts": {
+        "https://www.mrpeasy.com/resources/user-manual": 187,
+        "https://mrpeasy.readme.io/reference": 133
+      }
+    },
+    "fishbowlinventory.com": {
+      "name": "Fishbowl",
+      "productUrl": "https://fishbowlinventory.com/",
+      "sources": [
+        {
+          "url": "https://help.fishbowlinventory.com/advanced/s",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://help.fishbowlinventory.com/advanced/s/apidocs",
+          "kind": "docs"
+        },
+        {
+          "url": "https://help.fishbowlonline.com/s",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": ["https://www.fishbowlinventory.com/guides"],
+      "pageCounts": {
+        "https://help.fishbowlinventory.com/advanced/s": null,
+        "https://help.fishbowlinventory.com/advanced/s/apidocs": 18,
+        "https://help.fishbowlonline.com/s": 33
+      }
+    },
+    "upkeep.com": {
+      "name": "UpKeep",
+      "productUrl": "https://upkeep.com/",
+      "sources": [
+        {
+          "url": "https://upkeep.teachable.com/",
+          "kind": "learn"
+        },
+        {
+          "url": "https://help.onupkeep.com/en",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developers.onupkeep.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [],
+      "pageCounts": {
+        "https://upkeep.teachable.com/": 326,
+        "https://help.onupkeep.com/en": 356,
+        "https://developers.onupkeep.com/": null
+      }
+    }
+  }
+}

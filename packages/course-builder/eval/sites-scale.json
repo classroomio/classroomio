@@ -1,0 +1,805 @@
+{
+  "version": 1,
+  "splitRule": "Domain list fixed on 2026-11-19 from product knowledge only, before any site was fetched. Domains sorted by SHA-256 of the domain; the first 25 are development, the remaining 15 held out.",
+  "organisations": {
+    "atlassian.com": {
+      "name": "Atlassian",
+      "productUrl": "https://www.atlassian.com/"
+    },
+    "zendesk.com": {
+      "name": "Zendesk",
+      "productUrl": "https://www.zendesk.com/"
+    },
+    "hubspot.com": {
+      "name": "HubSpot",
+      "productUrl": "https://www.hubspot.com/"
+    },
+    "salesforce.com": {
+      "name": "Salesforce",
+      "productUrl": "https://www.salesforce.com/"
+    },
+    "servicenow.com": {
+      "name": "ServiceNow",
+      "productUrl": "https://www.servicenow.com/"
+    },
+    "workday.com": {
+      "name": "Workday",
+      "productUrl": "https://www.workday.com/"
+    },
+    "sap.com": {
+      "name": "SAP",
+      "productUrl": "https://www.sap.com/"
+    },
+    "xero.com": {
+      "name": "Xero",
+      "productUrl": "https://www.xero.com/"
+    },
+    "stripe.com": {
+      "name": "Stripe",
+      "productUrl": "https://stripe.com/"
+    },
+    "twilio.com": {
+      "name": "Twilio",
+      "productUrl": "https://www.twilio.com/"
+    },
+    "shopify.com": {
+      "name": "Shopify",
+      "productUrl": "https://www.shopify.com/"
+    },
+    "klaviyo.com": {
+      "name": "Klaviyo",
+      "productUrl": "https://www.klaviyo.com/"
+    },
+    "braze.com": {
+      "name": "Braze",
+      "productUrl": "https://www.braze.com/"
+    },
+    "mixpanel.com": {
+      "name": "Mixpanel",
+      "productUrl": "https://mixpanel.com/"
+    },
+    "tableau.com": {
+      "name": "Tableau",
+      "productUrl": "https://www.tableau.com/"
+    },
+    "snowflake.com": {
+      "name": "Snowflake",
+      "productUrl": "https://www.snowflake.com/"
+    },
+    "databricks.com": {
+      "name": "Databricks",
+      "productUrl": "https://www.databricks.com/"
+    },
+    "mongodb.com": {
+      "name": "MongoDB",
+      "productUrl": "https://www.mongodb.com/"
+    },
+    "gitlab.com": {
+      "name": "GitLab",
+      "productUrl": "https://about.gitlab.com/"
+    },
+    "github.com": {
+      "name": "GitHub",
+      "productUrl": "https://github.com/"
+    },
+    "circleci.com": {
+      "name": "CircleCI",
+      "productUrl": "https://circleci.com/"
+    },
+    "datadoghq.com": {
+      "name": "Datadog",
+      "productUrl": "https://www.datadoghq.com/"
+    },
+    "pagerduty.com": {
+      "name": "PagerDuty",
+      "productUrl": "https://www.pagerduty.com/"
+    },
+    "cloudflare.com": {
+      "name": "Cloudflare",
+      "productUrl": "https://www.cloudflare.com/"
+    },
+    "okta.com": {
+      "name": "Okta",
+      "productUrl": "https://www.okta.com/"
+    },
+    "1password.com": {
+      "name": "1Password",
+      "productUrl": "https://1password.com/"
+    },
+    "snyk.io": {
+      "name": "Snyk",
+      "productUrl": "https://snyk.io/"
+    },
+    "vanta.com": {
+      "name": "Vanta",
+      "productUrl": "https://www.vanta.com/"
+    },
+    "drata.com": {
+      "name": "Drata",
+      "productUrl": "https://drata.com/"
+    },
+    "rippling.com": {
+      "name": "Rippling",
+      "productUrl": "https://www.rippling.com/"
+    },
+    "gusto.com": {
+      "name": "Gusto",
+      "productUrl": "https://gusto.com/"
+    },
+    "bamboohr.com": {
+      "name": "BambooHR",
+      "productUrl": "https://www.bamboohr.com/"
+    },
+    "asana.com": {
+      "name": "Asana",
+      "productUrl": "https://asana.com/"
+    },
+    "monday.com": {
+      "name": "monday.com",
+      "productUrl": "https://monday.com/"
+    },
+    "airtable.com": {
+      "name": "Airtable",
+      "productUrl": "https://www.airtable.com/"
+    },
+    "zapier.com": {
+      "name": "Zapier",
+      "productUrl": "https://zapier.com/"
+    },
+    "intercom.com": {
+      "name": "Intercom",
+      "productUrl": "https://www.intercom.com/"
+    },
+    "freshworks.com": {
+      "name": "Freshworks",
+      "productUrl": "https://www.freshworks.com/"
+    },
+    "procore.com": {
+      "name": "Procore",
+      "productUrl": "https://www.procore.com/"
+    },
+    "avalara.com": {
+      "name": "Avalara",
+      "productUrl": "https://www.avalara.com/"
+    }
+  },
+  "split": {
+    "development": [
+      "hubspot.com",
+      "zapier.com",
+      "cloudflare.com",
+      "snyk.io",
+      "vanta.com",
+      "workday.com",
+      "gusto.com",
+      "stripe.com",
+      "1password.com",
+      "gitlab.com",
+      "datadoghq.com",
+      "freshworks.com",
+      "airtable.com",
+      "tableau.com",
+      "klaviyo.com",
+      "github.com",
+      "bamboohr.com",
+      "shopify.com",
+      "databricks.com",
+      "snowflake.com",
+      "servicenow.com",
+      "salesforce.com",
+      "circleci.com",
+      "atlassian.com",
+      "avalara.com"
+    ],
+    "heldOut": [
+      "asana.com",
+      "zendesk.com",
+      "mongodb.com",
+      "xero.com",
+      "mixpanel.com",
+      "drata.com",
+      "pagerduty.com",
+      "intercom.com",
+      "sap.com",
+      "braze.com",
+      "twilio.com",
+      "okta.com",
+      "monday.com",
+      "procore.com",
+      "rippling.com"
+    ]
+  },
+  "groundTruth": {
+    "workday.com": {
+      "name": "Workday",
+      "productUrl": "https://www.workday.com/",
+      "sources": [
+        {
+          "url": "https://docs.workday.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://community-content.workday.com/content/workday-community/en-us/public/home.html",
+        "https://community-content.workday.com/content/workday-community/en-us/public/home.html",
+        "https://developer.workday.com/"
+      ],
+      "pageCounts": {
+        "https://docs.workday.com/": null
+      }
+    },
+    "hubspot.com": {
+      "name": "HubSpot",
+      "productUrl": "https://www.hubspot.com/",
+      "sources": [
+        {
+          "url": "https://academy.hubspot.com/",
+          "kind": "academy"
+        },
+        {
+          "url": "https://knowledge.hubspot.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developers.hubspot.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://community.hubspot.com/",
+        "https://www.hubspot.com/resources",
+        "https://help.hubspot.com/"
+      ],
+      "pageCounts": {
+        "https://academy.hubspot.com/": 1848,
+        "https://knowledge.hubspot.com/": 1951,
+        "https://developers.hubspot.com/": 597
+      }
+    },
+    "zapier.com": {
+      "name": "Zapier",
+      "productUrl": "https://zapier.com/",
+      "sources": [
+        {
+          "url": "https://help.zapier.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://docs.zapier.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://learn.zapier.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": [
+        "https://community.zapier.com/",
+        "https://zapier.com/resources/guides",
+        "https://zapier.com/apps/help-scout/integrations",
+        "https://zapier.com/app/get-help"
+      ],
+      "pageCounts": {
+        "https://help.zapier.com/": 1715,
+        "https://docs.zapier.com/": 450,
+        "https://learn.zapier.com/": 24
+      }
+    },
+    "cloudflare.com": {
+      "name": "Cloudflare",
+      "productUrl": "https://www.cloudflare.com/",
+      "sources": [
+        {
+          "url": "https://developers.cloudflare.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://support.cloudflare.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://learn.cloudflare.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": ["https://www.cloudflare.com/learning", "https://www.cloudflare.com/community"],
+      "pageCounts": {
+        "https://developers.cloudflare.com/": 9116,
+        "https://support.cloudflare.com/": null,
+        "https://learn.cloudflare.com/": 46
+      }
+    },
+    "snyk.io": {
+      "name": "Snyk",
+      "productUrl": "https://snyk.io/",
+      "sources": [
+        {
+          "url": "https://learn.snyk.io/",
+          "kind": "academy"
+        },
+        {
+          "url": "https://docs.snyk.io/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [],
+      "pageCounts": {
+        "https://learn.snyk.io/": 206,
+        "https://docs.snyk.io/": 1298
+      }
+    },
+    "vanta.com": {
+      "name": "Vanta",
+      "productUrl": "https://www.vanta.com/",
+      "sources": [
+        {
+          "url": "https://help.vanta.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developer.vanta.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://community.vanta.com/",
+        "https://www.vanta.com/training",
+        "https://www.vanta.com/downloads/your-free-iso-27001-documentation-policy-template"
+      ],
+      "pageCounts": {
+        "https://help.vanta.com/": 751,
+        "https://developer.vanta.com/": 459
+      }
+    },
+    "gusto.com": {
+      "name": "Gusto",
+      "productUrl": "https://gusto.com/",
+      "sources": [
+        {
+          "url": "https://docs.gusto.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://help.gusto.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [],
+      "pageCounts": {
+        "https://docs.gusto.com/": 861,
+        "https://help.gusto.com/": null
+      }
+    },
+    "stripe.com": {
+      "name": "Stripe",
+      "productUrl": "https://stripe.com/",
+      "sources": [
+        {
+          "url": "https://docs.stripe.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://support.stripe.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [
+        "https://www.stripecommunity.com/",
+        "https://www.stripecommunity.com/",
+        "https://stripe.com/guides"
+      ],
+      "pageCounts": {
+        "https://docs.stripe.com/": 5207,
+        "https://support.stripe.com/": 1888
+      }
+    },
+    "1password.com": {
+      "name": "1Password",
+      "productUrl": "https://1password.com/",
+      "sources": [
+        {
+          "url": "https://support.1password.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://www.1password.dev/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://www.1password.community/",
+        "https://www.1password.dev/community",
+        "https://community.1password.com/",
+        "https://www.1password.dev/index.html",
+        "https://1password.com/developer-security",
+        "https://help.1password.com/",
+        "https://docs.1password.com/",
+        "https://kb.1password.com/",
+        "https://knowledge.1password.com/",
+        "https://helpcenter.1password.com/",
+        "https://academy.1password.com/",
+        "https://learn.1password.com/"
+      ],
+      "pageCounts": {
+        "https://support.1password.com/": 848,
+        "https://www.1password.dev/": 361
+      }
+    },
+    "gitlab.com": {
+      "name": "GitLab",
+      "productUrl": "https://about.gitlab.com/",
+      "sources": [
+        {
+          "url": "https://docs.gitlab.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://university.gitlab.com/",
+          "kind": "academy"
+        },
+        {
+          "url": "https://support.gitlab.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": ["https://about.gitlab.com/community", "https://about.gitlab.com/get-started"],
+      "pageCounts": {
+        "https://docs.gitlab.com/": 7483,
+        "https://university.gitlab.com/": 353,
+        "https://support.gitlab.com/": 751
+      }
+    },
+    "datadoghq.com": {
+      "name": "Datadog",
+      "productUrl": "https://www.datadoghq.com/",
+      "sources": [
+        {
+          "url": "https://docs.datadoghq.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://www.datadoghq.com/vendor-help",
+        "https://community.datadoghq.com/account/login?next=%2F",
+        "https://www.datadoghq.com/learn",
+        "https://www.datadoghq.com/support",
+        "https://help.datadoghq.com/",
+        "https://support.datadoghq.com/",
+        "https://kb.datadoghq.com/",
+        "https://knowledge.datadoghq.com/",
+        "https://helpcenter.datadoghq.com/",
+        "https://academy.datadoghq.com/"
+      ],
+      "pageCounts": {
+        "https://docs.datadoghq.com/": 16394
+      }
+    },
+    "freshworks.com": {
+      "name": "Freshworks",
+      "productUrl": "https://www.freshworks.com/",
+      "sources": [
+        {
+          "url": "https://support.freshworks.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developers.freshworks.com/docs",
+          "kind": "docs"
+        },
+        {
+          "url": "https://university.freshworks.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": [
+        "https://community.freshworks.com/",
+        "https://knowledge.freshworks.com/",
+        "https://helpcenter.freshworks.com/"
+      ],
+      "pageCounts": {
+        "https://support.freshworks.com/": 206,
+        "https://developers.freshworks.com/docs": null,
+        "https://university.freshworks.com/": null
+      }
+    },
+    "airtable.com": {
+      "name": "Airtable",
+      "productUrl": "https://www.airtable.com/",
+      "sources": [
+        {
+          "url": "https://academy.airtable.com/",
+          "kind": "academy"
+        },
+        {
+          "url": "https://airtable.com/developers",
+          "kind": "docs"
+        },
+        {
+          "url": "https://support.airtable.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": ["https://community.airtable.com/", "https://www.airtable.com/guides"],
+      "pageCounts": {
+        "https://academy.airtable.com/": null,
+        "https://airtable.com/developers": 147,
+        "https://support.airtable.com/": 517
+      }
+    },
+    "tableau.com": {
+      "name": "Tableau",
+      "productUrl": "https://www.tableau.com/",
+      "sources": [
+        {
+          "url": "https://help.tableau.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [],
+      "pageCounts": {
+        "https://help.tableau.com/": 3046
+      }
+    },
+    "klaviyo.com": {
+      "name": "Klaviyo",
+      "productUrl": "https://www.klaviyo.com/",
+      "sources": [
+        {
+          "url": "https://help.klaviyo.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developers.klaviyo.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://academy.klaviyo.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": ["https://www.klaviyo.com/marketing-resources", "https://www.youtube.com/@klaviyo?cbrd=1&ucbcb=1"],
+      "pageCounts": {
+        "https://help.klaviyo.com/": 1690,
+        "https://developers.klaviyo.com/": 587,
+        "https://academy.klaviyo.com/": 270
+      }
+    },
+    "github.com": {
+      "name": "GitHub",
+      "productUrl": "https://github.com/",
+      "sources": [
+        {
+          "url": "https://docs.github.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://github.com/orgs/community/discussions",
+        "https://github.com/orgs/community/discussions",
+        "https://github.com/community",
+        "https://help.github.com/",
+        "https://github.com/education"
+      ],
+      "pageCounts": {
+        "https://docs.github.com/": 3251
+      }
+    },
+    "bamboohr.com": {
+      "name": "BambooHR",
+      "productUrl": "https://www.bamboohr.com/",
+      "sources": [
+        {
+          "url": "https://help.bamboohr.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developers.bamboohr.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": ["https://community.bamboohr.com/signin", "https://www.bamboohr.com/"],
+      "pageCounts": {
+        "https://help.bamboohr.com/": 809,
+        "https://developers.bamboohr.com/": null
+      }
+    },
+    "shopify.com": {
+      "name": "Shopify",
+      "productUrl": "https://www.shopify.com/",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs",
+          "kind": "docs"
+        },
+        {
+          "url": "https://help.shopify.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [
+        "https://community.shopify.com/",
+        "https://www.shopify.com/blog/topics/guides",
+        "https://www.shopify.com/"
+      ],
+      "pageCounts": {
+        "https://shopify.dev/docs": 17214,
+        "https://help.shopify.com/": 2689
+      }
+    },
+    "databricks.com": {
+      "name": "Databricks",
+      "productUrl": "https://www.databricks.com/",
+      "sources": [
+        {
+          "url": "https://docs.databricks.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://kb.databricks.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [
+        "https://www.databricks.com/developers",
+        "https://www.databricks.com/learn",
+        "https://www.databricks.com/university",
+        "https://www.databricks.com/support",
+        "https://www.databricks.com/databricks-documentation",
+        "https://knowledge.databricks.com/",
+        "https://helpcenter.databricks.com/",
+        "https://learn.databricks.com/"
+      ],
+      "pageCounts": {
+        "https://docs.databricks.com/": 38159,
+        "https://kb.databricks.com/": 1110
+      }
+    },
+    "snowflake.com": {
+      "name": "Snowflake",
+      "productUrl": "https://www.snowflake.com/",
+      "sources": [
+        {
+          "url": "https://learn.snowflake.com/",
+          "kind": "academy"
+        },
+        {
+          "url": "https://docs.snowflake.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": [
+        "https://www.snowflake.com/en/resources/learn/training",
+        "https://www.snowflake.com/en/developers/guides"
+      ],
+      "pageCounts": {
+        "https://learn.snowflake.com/": 221,
+        "https://docs.snowflake.com/": 9621
+      }
+    },
+    "servicenow.com": {
+      "name": "ServiceNow",
+      "productUrl": "https://www.servicenow.com/",
+      "sources": [
+        {
+          "url": "https://support.servicenow.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://www.servicenow.com/docs",
+          "kind": "docs"
+        },
+        {
+          "url": "https://developer.servicenow.com/",
+          "kind": "docs"
+        }
+      ],
+      "notSources": ["https://www.servicenow.com/community"],
+      "pageCounts": {
+        "https://support.servicenow.com/": 29379,
+        "https://www.servicenow.com/docs": 1505,
+        "https://developer.servicenow.com/": 4086
+      }
+    },
+    "salesforce.com": {
+      "name": "Salesforce",
+      "productUrl": "https://www.salesforce.com/",
+      "sources": [
+        {
+          "url": "https://help.salesforce.com/",
+          "kind": "help-center"
+        },
+        {
+          "url": "https://developer.salesforce.com/docs",
+          "kind": "docs"
+        },
+        {
+          "url": "https://trailhead.salesforce.com/",
+          "kind": "academy"
+        }
+      ],
+      "notSources": [
+        "https://trailhead.salesforce.com/community",
+        "https://trailhead.salesforce.com/trailblazer-community/feed",
+        "https://trailhead.salesforce.com/trailblazer-community/neighborhoods/slack",
+        "https://trailhead.salesforce.com/trailblazer-community/neighborhoods/mulesoft",
+        "https://trailhead.salesforce.com/trailblazer-community/neighborhoods/tableau",
+        "https://www.salesforce.com/company/careers/university?bc=DB",
+        "https://www.salesforce.com/education",
+        "https://developer.salesforce.com/",
+        "https://docs.salesforce.com/"
+      ],
+      "pageCounts": {
+        "https://help.salesforce.com/": null,
+        "https://developer.salesforce.com/docs": null,
+        "https://trailhead.salesforce.com/": 8553
+      }
+    },
+    "circleci.com": {
+      "name": "CircleCI",
+      "productUrl": "https://circleci.com/",
+      "sources": [
+        {
+          "url": "https://circleci.com/docs",
+          "kind": "docs"
+        },
+        {
+          "url": "https://support.circleci.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [
+        "https://circleci.com/resources",
+        "https://discuss.circleci.com/",
+        "https://circleci.com/developer"
+      ],
+      "pageCounts": {
+        "https://circleci.com/docs": 494,
+        "https://support.circleci.com/": 1097
+      }
+    },
+    "atlassian.com": {
+      "name": "Atlassian",
+      "productUrl": "https://www.atlassian.com/",
+      "sources": [
+        {
+          "url": "https://developer.atlassian.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://support.atlassian.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": [
+        "https://community.atlassian.com/",
+        "https://confluence.atlassian.com/alldoc/atlassian-documentation-32243719.html",
+        "https://community.atlassian.com/learning",
+        "https://www.atlassian.com/developers",
+        "https://academy.atlassian.com/"
+      ],
+      "pageCounts": {
+        "https://developer.atlassian.com/": 4741,
+        "https://support.atlassian.com/": 20626
+      }
+    },
+    "avalara.com": {
+      "name": "Avalara",
+      "productUrl": "https://www.avalara.com/",
+      "sources": [
+        {
+          "url": "https://developer.avalara.com/",
+          "kind": "docs"
+        },
+        {
+          "url": "https://knowledge.avalara.com/",
+          "kind": "help-center"
+        }
+      ],
+      "notSources": ["https://training.avalara.com/"],
+      "pageCounts": {
+        "https://developer.avalara.com/": 9754,
+        "https://knowledge.avalara.com/": 18624
+      }
+    }
+  }
+}

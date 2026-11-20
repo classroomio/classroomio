@@ -9,7 +9,7 @@
     parameters: {
       layout: 'centered',
       controls: {
-        include: ['placeholder', 'disabled', 'class']
+        include: ['placeholder', 'disabled', 'showStrength', 'showLockIcon', 'strengthLabel', 'class']
       }
     },
     tags: ['autodocs']
@@ -18,6 +18,7 @@
   let password = $state('');
   let passwordWithError = $state('');
   let passwordDisabled = $state('password123');
+  let strengthPassword = $state('');
 </script>
 
 <Story name="Default">
@@ -90,6 +91,33 @@
         hidePasswordTooltip="Click to hide password"
         showPasswordAriaLabel="Show password"
         hidePasswordAriaLabel="Hide password"
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="With Strength Meter">
+  {#snippet template()}
+    <div class="flex w-96 flex-col gap-4">
+      <Password
+        bind:value={strengthPassword}
+        placeholder="Enter password"
+        showStrength
+        strengthLabel="Password strength"
+      />
+      <p class="ui:text-muted-foreground text-sm">Try 8 characters, then a number, then 12 characters.</p>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Without Lock Icon">
+  {#snippet template()}
+    <div class="w-96">
+      <Password
+        placeholder="At least 8 characters"
+        showLockIcon={false}
+        showStrength
+        strengthLabel="Password strength"
       />
     </div>
   {/snippet}

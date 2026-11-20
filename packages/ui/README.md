@@ -177,6 +177,36 @@ Cuts the brand notch (a trapezoid with flared top corners and rounded bottom cor
 </div>
 ```
 
+### Step progress (`src/custom/step-progress/`)
+
+Segmented progress bar with a "Step N of M" counter and a step name, exposed as a `progressbar`. Props: `current`, `total`, `stepText`, `label`, `ariaLabel`, `hideLabelOnMobile`. The host supplies every string. Used by the guided onboarding.
+
+### Product tour (`src/custom/product-tour/`)
+
+Dependency-free guided tour. Each step anchors to an element by selector (for example `[data-testid="courses-list"]`), dims the page with a spotlight cutout and shows a popover (bottom sheet at 640px or narrower) with a step counter, Back, Next/Done and Skip. Steps whose target is missing or has no box are skipped, and the counter counts only available steps. Props: `steps` (`{ id, target, title, body, hint?, advanceOnTargetClick? }[]`), `completedStepIds`, `open`, `labels` (`counter(position, total)`, `next`, `back`, `done`, `skip`, `region`), `onStepComplete(stepId)`, `onFinish('done' | 'skipped')`. The host supplies every string and persists progress.
+
+Keyboard: Left/Right/Enter move between steps, Escape skips, Tab stays inside the popover and focus returns to the previous element on finish. The page behind stays clickable; a step with `advanceOnTargetClick` completes when its target is clicked. The spotlight sits on `ui:z-modal` and the popover on `ui:z-menu-elevated`; the spotlight transition is disabled under reduced motion.
+
+### Domain input (`src/custom/domain-input/`)
+
+Text input with optional `prefix` and `suffix` addons (for example `.classroomio.com`). `variant="tray"` renders the addons as shaded monospace trays on a 44px field, as on the onboarding workspace step.
+
+### Password (`src/custom/password/`)
+
+Password input with a show/hide toggle. `showStrength` adds a three-bar meter (length of 8, a non-letter, length of 12); one bar fills in a muted tone, two or more in the primary colour. `showLockIcon={false}` drops the leading lock icon for forms that show only the placeholder.
+
+### Brand mono font (`ui:font-brand-mono`)
+
+`ui:font-brand-mono` sets Geist Mono for brand labels (eyebrows, block kinds, footers). The dashboard self-hosts the font in `static/fonts/geist-mono`; elsewhere it falls back to the system monospace.
+
+### Highlight text (`src/custom/highlight-text/`)
+
+Renders `text` with the words in `highlight` marked. `variant="mark"` (default) fills the words with a primary tint; `variant="swipe"` draws the brand's low primary band behind them, as in the onboarding panel headlines. When `highlight` is not a substring of `text`, the text renders unmarked.
+
+### Block stack (`src/custom/block-stack/`)
+
+Stack of blocks (`blocks: { id?, kind, label, tone, width }[]`). The default `list` variant is a top-down list that fades in while `animate` is set. `variant="notch"` renders the brand's notched blocks stacked bottom-up (the first block sits at the bottom), with tones `sand`, `tint`, `soft`, `blue`, `ink` and a dashed `empty` placeholder; `width` takes a named width or a pixel number, and `size` is `md` (64px) or `lg` (72px). `animate` is `drop` (blocks fall in, staggered) or `settle` (a block fades and scales in when it mounts; change its `id` to replay). Reduced motion shows the still frame. Used by the onboarding business preview, the preparing screen and the loaders.
+
 ### Exercise question (`src/custom/exercise-question/`)
 
 Learner and author UIs for exercise questions (take, preview, review, submission, edit per question type).
@@ -202,6 +232,21 @@ Full-screen image viewer for screenshots and other detailed images. `ZoomableIma
 
 ```svelte
 <BoardFrame src={coverUrl} alt={title} url="feedback.classroomio.com/updates" />
+```
+
+### Owner edit bar (`src/custom/owner-edit-bar/`)
+
+`OwnerEditBar` is a pill fixed to the bottom centre of the viewport (16px from the bottom, at most `100vw - 32px` wide, wrapping on narrow screens) that gives an academy owner shortcuts back to the admin app while they browse the public site. It renders a `region` landmark with a muted `label` and one link per entry in `links`; a link with `primary: true` is filled, the rest are quiet. Every string comes from the host (`label`, `regionLabel`, each `links[].label`), links open in the same tab, and each link carries `data-testid="academy-edit-bar-link"`. The bar itself uses `data-testid={testId}` (default `academy-edit-bar`). The component does not decide who may see it: the host must render it only for a verified org manager. See `Molecules/OwnerEditBar` in Storybook.
+
+```svelte
+<OwnerEditBar
+  label="Viewing as owner"
+  regionLabel="Academy owner tools"
+  links={[
+    { href: `${adminOrigin}/courses/${id}/landingpage`, label: 'Edit landing page', primary: true },
+    { href: `${adminOrigin}/courses/${id}/settings`, label: 'Settings' }
+  ]}
+/>
 ```
 
 ### Video guide (`src/custom/video-guide/`)

@@ -3904,6 +3904,8 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                   "prompt",
                   "pdf",
                   "course",
+                  "website",
+                  "sample",
                 ],
                 "type": "string",
               },

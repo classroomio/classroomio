@@ -24,7 +24,30 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
+import { COURSE_IMPORT_SOURCE_TYPES } from '@cio/utils/constants/course-import';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import {
+  COURSE_BUILD_COURSE_STATUSES,
+  COURSE_BUILD_SOURCE_STATUSES,
+  COURSE_BUILD_STAGES,
+  COURSE_BUILD_STATUSES
+} from '@cio/utils/constants/course-build';
+import {
+  ONBOARDING_COMPLETION_ROUTES,
+  ONBOARDING_PHASES,
+  STARTER_JOB_MODES,
+  STARTER_JOB_STAGES,
+  STARTER_JOB_STATUSES,
+  type TOnboardingCompletionRoute,
+  type TStarterJobMode
+} from '@cio/utils/constants/onboarding';
+import type {
+  TOnboardingBrand,
+  TOnboardingBusinessDraft,
+  TOnboardingStarterInput,
+  TOnboardingTour,
+  TOnboardingWebsiteExtraction
+} from '@cio/utils/validation/onboarding';
 import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES, type TBlockChangeSource } from '@cio/utils/constants/lesson-version';
@@ -39,7 +62,16 @@ export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const earlyAdopterClaimStatus = pgEnum('EARLY_ADOPTER_CLAIM_STATUS', ['pending', 'claimed', 'canceled']);
-export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
+export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', COURSE_IMPORT_SOURCE_TYPES);
+export const onboardingPhase = pgEnum('ONBOARDING_PHASE', [...ONBOARDING_PHASES]);
+export const onboardingStarterJobStatus = pgEnum('ONBOARDING_STARTER_JOB_STATUS', [...STARTER_JOB_STATUSES]);
+export const onboardingStarterJobStage = pgEnum('ONBOARDING_STARTER_JOB_STAGE', [...STARTER_JOB_STAGES]);
+export const onboardingStarterJobMode = pgEnum('ONBOARDING_STARTER_JOB_MODE', [...STARTER_JOB_MODES]);
+export const onboardingCompletionRoute = pgEnum('ONBOARDING_COMPLETION_ROUTE', [...ONBOARDING_COMPLETION_ROUTES]);
+export const courseBuildStatus = pgEnum('COURSE_BUILD_STATUS', [...COURSE_BUILD_STATUSES]);
+export const courseBuildStage = pgEnum('COURSE_BUILD_STAGE', [...COURSE_BUILD_STAGES]);
+export const courseBuildSourceStatus = pgEnum('COURSE_BUILD_SOURCE_STATUS', [...COURSE_BUILD_SOURCE_STATUSES]);
+export const courseBuildCourseStatus = pgEnum('COURSE_BUILD_COURSE_STATUS', [...COURSE_BUILD_COURSE_STATUSES]);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
 export const automationUsageCategory = pgEnum('AUTOMATION_USAGE_CATEGORY', ['read', 'write', 'publish']);
@@ -3438,6 +3470,180 @@ export const courseImportDraft = pgTable(
   ]
 );
 
+export const onboardingSession = pgTable(
+  'onboarding_session',
+  {
+    profileId: uuid('profile_id')
+      .primaryKey()
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'set null' }),
+    phase: onboardingPhase().default('business').notNull(),
+    business: jsonb().default({}).notNull().$type<TOnboardingBusinessDraft>(),
+    brand: jsonb().default({}).notNull().$type<TOnboardingBrand>(),
+    tour: jsonb().default({}).notNull().$type<TOnboardingTour>(),
+    termsAcceptedAt: timestamp('terms_accepted_at', { withTimezone: true, mode: 'string' }),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    completedVia: onboardingCompletionRoute('completed_via').$type<TOnboardingCompletionRoute>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_onboarding_session_org_id').on(table.organizationId)]
+);
+
+export const onboardingStarterJob = pgTable(
+  'onboarding_starter_job',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    status: onboardingStarterJobStatus().default('PENDING').notNull(),
+    stage: onboardingStarterJobStage().default('queued').notNull(),
+    mode: onboardingStarterJobMode().$type<TStarterJobMode>().notNull(),
+    inputHash: varchar('input_hash').notNull(),
+    input: jsonb().notNull().$type<TOnboardingStarterInput>(),
+    extraction: jsonb().$type<TOnboardingWebsiteExtraction>(),
+    error: jsonb().$type<{ code: string; message: string }>(),
+    modelId: varchar('model_id'),
+    /** The website build behind this starter job, when the organisation gave a website. */
+    courseBuildJobId: uuid('course_build_job_id').references(() => courseBuildJob.id, { onDelete: 'set null' }),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    finishedAt: timestamp('finished_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_onboarding_starter_job_org_created').on(table.organizationId, table.createdAt),
+    uniqueIndex('onboarding_starter_job_org_input_active')
+      .on(table.organizationId, table.inputHash)
+      .where(sql`${table.status} in ('PENDING', 'RUNNING')`)
+  ]
+);
+
+export const courseBuildJob = pgTable(
+  'course_build_job',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    status: courseBuildStatus().default('PENDING').notNull(),
+    stage: courseBuildStage().default('queued').notNull(),
+    /** The website, locale, onboarding answers, course count, page limits and budget. */
+    scope: jsonb().notNull().$type<Record<string, unknown>>(),
+    /** Discovery's source map without the accepted sources, which are rows of `course_build_source`. */
+    sourceMap: jsonb('source_map').$type<Record<string, unknown>>(),
+    gate: jsonb().$type<Record<string, unknown>>(),
+    /** Page cards' failures, the glossary, product pages and alias conflicts. */
+    understanding: jsonb().$type<Record<string, unknown>>(),
+    courseList: jsonb('course_list').$type<Record<string, unknown>>(),
+    costUsd: doublePrecision('cost_usd').default(0).notNull(),
+    costByRole: jsonb('cost_by_role').default({}).notNull().$type<Record<string, number>>(),
+    secondsByStage: jsonb('seconds_by_stage').default({}).notNull().$type<Record<string, number>>(),
+    error: jsonb().$type<{ code: string; message: string }>(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    finishedAt: timestamp('finished_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_course_build_job_org_created').on(table.organizationId, table.createdAt)]
+);
+
+export const courseBuildSource = pgTable(
+  'course_build_source',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    jobId: uuid('job_id')
+      .notNull()
+      .references(() => courseBuildJob.id, { onDelete: 'cascade' }),
+    position: integer().notNull(),
+    kind: varchar().notNull(),
+    url: varchar().notNull(),
+    /** The discovered source: evidence, access, redirects, sitemaps. */
+    source: jsonb().notNull().$type<Record<string, unknown>>(),
+    status: courseBuildSourceStatus().default('PENDING').notNull(),
+    outcome: varchar(),
+    completeness: jsonb().$type<Record<string, unknown>>(),
+    pagesRead: integer('pages_read').default(0).notNull(),
+    readAt: timestamp('read_at', { withTimezone: true, mode: 'string' }),
+    error: jsonb().$type<{ code: string; message: string }>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_course_build_source_job').on(table.jobId, table.position)]
+);
+
+export const courseBuildPage = pgTable(
+  'course_build_page',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    jobId: uuid('job_id')
+      .notNull()
+      .references(() => courseBuildJob.id, { onDelete: 'cascade' }),
+    sourceId: uuid('source_id')
+      .notNull()
+      .references(() => courseBuildSource.id, { onDelete: 'cascade' }),
+    url: varchar().notNull(),
+    position: integer().notNull(),
+    /** The page as read: title, place in the site's tree, locale, updated date and main content. */
+    page: jsonb().notNull().$type<Record<string, unknown>>(),
+    /** Its images (with the stored copy) and videos. */
+    media: jsonb().$type<Record<string, unknown>>(),
+    /** The page card, set by the understand stage. The cleaned corpus is rebuilt from `page` by each stage that needs it. */
+    card: jsonb().$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_course_build_page_job').on(table.jobId, table.sourceId, table.position)]
+);
+
+export const courseBuildCourse = pgTable(
+  'course_build_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    jobId: uuid('job_id')
+      .notNull()
+      .references(() => courseBuildJob.id, { onDelete: 'cascade' }),
+    position: integer().notNull(),
+    title: varchar().notNull(),
+    status: courseBuildCourseStatus().default('PLANNED').notNull(),
+    plan: jsonb().notNull().$type<Record<string, unknown>>(),
+    sectionsTotal: integer('sections_total').default(0).notNull(),
+    sectionsWritten: integer('sections_written').default(0).notNull(),
+    written: jsonb().$type<Record<string, unknown>>(),
+    finished: jsonb().$type<Record<string, unknown>>(),
+    courseImportDraftId: uuid('course_import_draft_id').references(() => courseImportDraft.id, {
+      onDelete: 'set null'
+    }),
+    courseId: uuid('course_id').references(() => course.id, { onDelete: 'set null' }),
+    error: jsonb().$type<{ code: string; message: string }>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_course_build_course_job').on(table.jobId, table.position)]
+);
+
 // ─── Programs ────────────────────────────────────────────────────────────────
 
 export const programStatus = pgEnum('PROGRAM_STATUS', ['ACTIVE', 'INACTIVE', 'ARCHIVED']);
@@ -4053,6 +4259,7 @@ export const aiTokenUsage = pgTable(
     promptTokens: integer('prompt_tokens').notNull(),
     completionTokens: integer('completion_tokens').notNull(),
     costUnits: integer('cost_units'),
+    countsTowardBalance: boolean('counts_toward_balance').default(true).notNull(),
     model: text().notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },

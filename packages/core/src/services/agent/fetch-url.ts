@@ -229,7 +229,7 @@ async function incrementOrgDailyFetchQuota(orgId: string, maxPerDay: number): Pr
   }
 }
 
-async function fetchMarkdownFromJina(url: string): Promise<{ markdown: string; status: number }> {
+async function fetchMarkdownFromJina(url: string, signal?: AbortSignal): Promise<{ markdown: string; status: number }> {
   const readerHref = `${JINA_READER_PREFIX}${url}`;
   const headers: Record<string, string> = {};
 
@@ -242,7 +242,8 @@ async function fetchMarkdownFromJina(url: string): Promise<{ markdown: string; s
   try {
     response = await fetch(readerHref, {
       headers,
-      redirect: 'follow'
+      redirect: 'follow',
+      signal
     });
   } catch {
     throw new AppError('Failed to reach documentation reader', 'DOCUMENTATION_FETCH_FAILED', 502);
@@ -339,5 +340,30 @@ export async function fetchDocumentationUrl(params: {
     contentTokens: Math.ceil(truncated.text.length / 4),
     fetchedAt,
     cacheHit: false
+  };
+}
+
+/**
+ * Reads a public page as markdown through the reader service, without the plan gate, quota or cache that the
+ * assistant tool applies. Callers own their own limits. Throws `INVALID_DOCUMENTATION_URL` or `DOCUMENTATION_FETCH_FAILED`.
+ */
+export async function readPublicPageMarkdown(
+  rawUrl: string,
+  signal?: AbortSignal
+): Promise<{
+  url: string;
+  pageTitle: string;
+  markdown: string;
+  links: string[];
+}> {
+  const normalizedUrl = assertFetchableDocumentationUrl(rawUrl);
+  const { markdown } = await fetchMarkdownFromJina(normalizedUrl.href, signal);
+  const truncated = truncateMarkdown(markdown);
+
+  return {
+    url: normalizedUrl.href,
+    pageTitle: guessPageTitle(truncated.text, normalizedUrl.href),
+    markdown: truncated.text,
+    links: extractSameOriginLinks(truncated.text, normalizedUrl)
   };
 }

@@ -43,7 +43,7 @@
     <span class="grow"></span>
 
     <AppSetup />
-    <VisitOrgSiteBtn variant="outline" labelKey="dashboard.open_academy" />
+    <VisitOrgSiteBtn variant="outline" labelKey="dashboard.open_academy" testId="visit-org-site" />
 
     <Search />
 

@@ -46,7 +46,7 @@
   onDestroy(() => clearTimeout(galleryIconTimer));
 </script>
 
-<section class="ui:bg-muted/30 ui:border-border border-b py-4">
+<section class="ui:bg-muted/30 ui:border-border border-b py-4" data-testid="course-template-row">
   <div class="mx-auto w-full max-w-6xl px-4">
     <div class="mb-3 flex items-center justify-between gap-3">
       <h2 class="text-sm font-medium">{$t('course_templates.row.heading')}</h2>

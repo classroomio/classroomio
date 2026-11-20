@@ -124,13 +124,18 @@ export function computePurchasedTokenOverflow(params: {
   return Math.max(0, params.requestTokens - allowanceRemainingBefore);
 }
 
-/** Record token usage after an LLM call; drains purchased credits when usage exceeds plan allowance. */
+/**
+ * Record token usage after an LLM call; drains purchased credits when usage exceeds plan allowance.
+ * With `countsTowardBalance: false` the row is kept for internal cost tracking only and never touches the
+ * org's allowance or credits.
+ */
 export async function recordTokenUsage(
   orgId: string,
   userId: string,
   courseId: string,
   usage: TokenUsage,
-  model: string
+  model: string,
+  options: { countsTowardBalance?: boolean } = {}
 ): Promise<void> {
   const costUnits = computeCostUnits(usage.promptTokens, usage.completionTokens, model);
   const { allowance } = await getPlanAllowance(orgId);
@@ -144,7 +149,8 @@ export async function recordTokenUsage(
     costUnits,
     model,
     planAllowance: allowance,
-    since: startOfCurrentMonth()
+    since: startOfCurrentMonth(),
+    countsTowardBalance: options.countsTowardBalance
   });
 }
 

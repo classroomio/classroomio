@@ -365,6 +365,13 @@
       "when": 1794581127466,
       "tag": "0051_analytics_performance_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1794839158192,
+      "tag": "0052_onboarding_v2",
+      "breakpoints": true
     }
   ]
 }

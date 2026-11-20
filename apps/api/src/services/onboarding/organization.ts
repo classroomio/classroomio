@@ -1,0 +1,127 @@
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import type { TOrganization, TProfile } from '@cio/db/types';
+import {
+  checkSiteNameExists,
+  createOrganization,
+  createOrganizationMember,
+  createOrganizationPlan,
+  getOrganizationByProfileId,
+  getOrganizationCount
+} from '@cio/db/queries';
+import { markWelcomeEmailPending, updateProfile } from '@cio/db/queries/auth';
+
+import { env } from '@cio/core/config/env';
+import { ROLE } from '@cio/utils/constants';
+import { isUniqueConstraintViolation } from '@cio/utils/errors';
+import { PLAN } from '@cio/utils/plans';
+import { db, type TxClient } from '@cio/db/drizzle';
+import { captureOrganizationCreated } from '@api/services/product-events';
+
+export async function createOrganizationWithOwner(
+  profileId: string,
+  input: {
+    fullname?: string;
+    orgName: string;
+    siteName: string;
+  },
+  source: 'onboarding' | 'add_org' = 'onboarding',
+  withinTransaction?: (tx: TxClient, organization: TOrganization) => Promise<void>
+) {
+  // Self-hosted: block org creation when an org already exists
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    const count = await getOrganizationCount();
+    if (count > 0) {
+      throw new AppError('Self-hosted instances support only one organization', ErrorCodes.VALIDATION_ERROR, 403);
+    }
+  }
+
+  // Business Logic: Check sitename availability
+  const exists = await checkSiteNameExists(input.siteName);
+  if (exists) {
+    console.error('Site name already exists:', input.siteName);
+    throw new AppError(`Site name '${input.siteName}' already exists`, ErrorCodes.SITENAME_EXISTS, 409);
+  }
+
+  // Business Logic: Create org and member in a transaction
+  try {
+    const result = await db.transaction(async (tx) => {
+      const organization = await createOrganization(
+        {
+          name: input.orgName,
+          siteName: input.siteName
+        },
+        tx
+      );
+
+      const member = await createOrganizationMember(
+        {
+          organizationId: organization.id,
+          profileId,
+          roleId: ROLE.ADMIN,
+          verified: true
+        },
+        tx
+      );
+
+      // Self-hosted: assign Enterprise plan to the new org
+      if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+        await createOrganizationPlan(
+          {
+            orgId: organization.id,
+            planName: PLAN.ENTERPRISE as 'ENTERPRISE',
+            subscriptionId: `selfhosted-${organization.id}`,
+            triggeredBy: member.id,
+            payload: {},
+            isActive: true,
+            provider: 'selfhosted'
+          },
+          tx
+        );
+      }
+
+      if (input.fullname) {
+        await updateProfile(profileId, { fullname: input.fullname }, tx);
+      }
+
+      if (withinTransaction) {
+        await withinTransaction(tx, organization);
+      }
+
+      const organizations = await getOrganizationByProfileId(profileId, tx);
+
+      return { organization, member, organizations };
+    });
+
+    captureOrganizationCreated(profileId, result.organization, source);
+
+    return {
+      organization: result.organization,
+      member: result.member,
+      organizations: result.organizations
+    };
+  } catch (error) {
+    console.error('Error creating organization:', error);
+    if (error instanceof AppError) throw error;
+
+    if (isUniqueConstraintViolation(error)) {
+      throw new AppError(`Site name '${input.siteName}' already exists`, ErrorCodes.SITENAME_EXISTS, 409);
+    }
+    throw new AppError(error instanceof Error ? error : new Error('Unknown error'), ErrorCodes.ORG_CREATE_FAILED, 500);
+  }
+}
+
+export async function markOnboardingWelcomeEmailPending(userId: string) {
+  const organizations = await getOrganizationByProfileId(userId);
+  if (organizations.length > 0) {
+    throw new AppError(
+      'Welcome email onboarding is only available for new dashboard accounts',
+      ErrorCodes.VALIDATION_ERROR,
+      403
+    );
+  }
+
+  const updatedProfile = await markWelcomeEmailPending(userId);
+  if (!updatedProfile) {
+    throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
+  }
+}

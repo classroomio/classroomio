@@ -210,6 +210,18 @@ export type TNewOrganizationApiKey = typeof schema.organizationApiKey.$inferInse
 export type TOrganizationAutomationUsage = typeof schema.organizationAutomationUsage.$inferSelect;
 export type TNewOrganizationAutomationUsage = typeof schema.organizationAutomationUsage.$inferInsert;
 
+export type TOnboardingSession = typeof schema.onboardingSession.$inferSelect;
+export type TNewOnboardingSession = typeof schema.onboardingSession.$inferInsert;
+export type TOnboardingStarterJob = typeof schema.onboardingStarterJob.$inferSelect;
+export type TNewOnboardingStarterJob = typeof schema.onboardingStarterJob.$inferInsert;
+export type TCourseBuildJob = typeof schema.courseBuildJob.$inferSelect;
+export type TNewCourseBuildJob = typeof schema.courseBuildJob.$inferInsert;
+export type TCourseBuildSource = typeof schema.courseBuildSource.$inferSelect;
+export type TNewCourseBuildSource = typeof schema.courseBuildSource.$inferInsert;
+export type TCourseBuildPage = typeof schema.courseBuildPage.$inferSelect;
+export type TNewCourseBuildPage = typeof schema.courseBuildPage.$inferInsert;
+export type TCourseBuildCourse = typeof schema.courseBuildCourse.$inferSelect;
+export type TNewCourseBuildCourse = typeof schema.courseBuildCourse.$inferInsert;
 export type TCourseImportDraft = typeof schema.courseImportDraft.$inferSelect;
 export type TNewCourseImportDraft = typeof schema.courseImportDraft.$inferInsert;
 

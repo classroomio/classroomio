@@ -434,12 +434,13 @@
 >
   {#snippet child({ props })}
     {#if courseUrl}
-      <a href={courseUrl} {...props} class={cn('block', props.class as string)}>
+      <a href={courseUrl} {...props} data-testid="course-card" class={cn('block', props.class as string)}>
         {@render rowContent()}
       </a>
     {:else}
       <div
         {...props}
+        data-testid="course-card"
         class={cn('block', props.class as string)}
         role="button"
         tabindex="0"

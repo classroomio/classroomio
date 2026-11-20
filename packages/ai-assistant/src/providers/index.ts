@@ -23,8 +23,13 @@ const PROVIDER_API_KEY_ENV: Record<AIProvider, string> = {
  * Creates an AI SDK LanguageModel from provider configuration.
  * Normalizes OpenAI, Anthropic, and Google into a single interface for streamText().
  */
+/** The model id a provider config actually calls, falling back to the provider's default model. */
+export function getModelName(config: AIProviderConfig): string {
+  return config.model || DEFAULT_MODELS[config.provider];
+}
+
 export function createModel(config: AIProviderConfig): LanguageModel {
-  const modelName = config.model || DEFAULT_MODELS[config.provider];
+  const modelName = getModelName(config);
 
   switch (config.provider) {
     case AIProvider.OPENAI: {
@@ -64,7 +69,7 @@ export function getProviderConfigForProvider(provider: AIProvider): AIProviderCo
  * Used by routes that don't take an explicit model (status check, title generation).
  */
 export function pickAnyConfiguredProvider(): AIProviderConfig | null {
-  const order: AIProvider[] = [AIProvider.GOOGLE, AIProvider.OPENAI, AIProvider.ANTHROPIC];
+  const order: AIProvider[] = [AIProvider.GOOGLE, AIProvider.OPENAI, AIProvider.ANTHROPIC, AIProvider.MOONSHOT];
 
   for (const provider of order) {
     const config = getProviderConfigForProvider(provider);

@@ -10,7 +10,13 @@ export async function getMonthlyTokenUsage(orgId: string, since: Date): Promise<
         total: sql<number>`COALESCE(SUM(COALESCE(${schema.aiTokenUsage.costUnits}, ${schema.aiTokenUsage.promptTokens} + ${schema.aiTokenUsage.completionTokens})), 0)`
       })
       .from(schema.aiTokenUsage)
-      .where(and(eq(schema.aiTokenUsage.orgId, orgId), gte(schema.aiTokenUsage.createdAt, since.toISOString())));
+      .where(
+        and(
+          eq(schema.aiTokenUsage.orgId, orgId),
+          eq(schema.aiTokenUsage.countsTowardBalance, true),
+          gte(schema.aiTokenUsage.createdAt, since.toISOString())
+        )
+      );
 
     return Number(row?.total ?? 0);
   } catch (error) {
@@ -30,7 +36,13 @@ export async function getDailyTokenUsageHistory(
         tokens: sql<number>`SUM(COALESCE(${schema.aiTokenUsage.costUnits}, ${schema.aiTokenUsage.promptTokens} + ${schema.aiTokenUsage.completionTokens}))`
       })
       .from(schema.aiTokenUsage)
-      .where(and(eq(schema.aiTokenUsage.orgId, orgId), gte(schema.aiTokenUsage.createdAt, since.toISOString())))
+      .where(
+        and(
+          eq(schema.aiTokenUsage.orgId, orgId),
+          eq(schema.aiTokenUsage.countsTowardBalance, true),
+          gte(schema.aiTokenUsage.createdAt, since.toISOString())
+        )
+      )
       .groupBy(sql`DATE(${schema.aiTokenUsage.createdAt})`)
       .orderBy(sql`DATE(${schema.aiTokenUsage.createdAt})`);
 
@@ -66,6 +78,8 @@ export interface InsertTokenUsageParams {
   model: string;
   planAllowance: number;
   since: Date;
+  /** False records spend for internal cost tracking only: it never counts against the allowance or drains credits. */
+  countsTowardBalance?: boolean;
 }
 
 export async function insertTokenUsageAndDrainCredits(params: InsertTokenUsageParams): Promise<void> {
@@ -78,8 +92,11 @@ export async function insertTokenUsageAndDrainCredits(params: InsertTokenUsagePa
         promptTokens: params.promptTokens,
         completionTokens: params.completionTokens,
         costUnits: params.costUnits,
-        model: params.model
+        model: params.model,
+        countsTowardBalance: params.countsTowardBalance ?? true
       });
+
+      if (params.countsTowardBalance === false) return;
 
       const [usageRow] = await tx
         .select({
@@ -89,6 +106,7 @@ export async function insertTokenUsageAndDrainCredits(params: InsertTokenUsagePa
         .where(
           and(
             eq(schema.aiTokenUsage.orgId, params.orgId),
+            eq(schema.aiTokenUsage.countsTowardBalance, true),
             gte(schema.aiTokenUsage.createdAt, params.since.toISOString())
           )
         );

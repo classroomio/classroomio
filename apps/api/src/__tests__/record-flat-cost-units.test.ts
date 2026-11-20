@@ -81,4 +81,20 @@ describe('recordFlatCostUnits', () => {
       costUnits: 1_500 // (1000 + 500) x 1
     });
   });
+
+  it('passes countsTowardBalance through so internal-only spend skips the allowance', async () => {
+    await recordTokenUsage(
+      ORG_ID,
+      USER_ID,
+      COURSE_ID,
+      { promptTokens: 2_000, completionTokens: 1_000, totalTokens: 3_000 },
+      'claude-sonnet-4-6',
+      { countsTowardBalance: false }
+    );
+
+    expect(vi.mocked(insertTokenUsageAndDrainCredits).mock.calls[0][0]).toMatchObject({
+      costUnits: 33_000,
+      countsTowardBalance: false
+    });
+  });
 });

@@ -30,6 +30,7 @@ const envSchema = z.object({
   EMAIL_WORKER_CONCURRENCY: z.string().optional(),
   WEBHOOK_WORKER_CONCURRENCY: z.string().optional(),
   AGENT_COURSE_GENERATION_WORKER_CONCURRENCY: z.string().optional(),
+  ONBOARDING_STARTER_WORKER_CONCURRENCY: z.string().optional(),
   HLS_DISPATCH_CONCURRENCY: z.string().optional(),
 
   /**
@@ -49,6 +50,18 @@ const envSchema = z.object({
 
   /** Optional OpenAI key — when unset, transcribe-audio jobs no-op and OpenAI-backed agent runs fail config checks. */
   OPENAI_API_KEY: z.string().optional(),
+
+  /** Claude key for website course builds. Without it every paid course-build stage fails its job. */
+  ANTHROPIC_API_KEY: z.string().optional(),
+  /** Course-build jobs each worker queue runs at once, as `discover,read,understand,plan,write,finish,export`. */
+  COURSE_BUILD_CONCURRENCY: z.string().optional(),
+
+  /** Headless browser for course-builder pages that are empty until their scripts run. Off unless 'true'. */
+  COURSE_BUILDER_RENDERER_ENABLED: z.string().optional(),
+  /** DevTools-protocol endpoint of a hosted browser. Unset launches a local headless Chromium. */
+  COURSE_BUILDER_RENDERER_CDP_URL: z.string().optional(),
+  COURSE_BUILDER_RENDERER_CONCURRENCY: z.string().optional(),
+  COURSE_BUILDER_RENDERER_RECYCLE_AFTER: z.string().optional(),
 
   /** Supadata API key for YouTube caption fetching. Leave unset to disable YouTube transcript jobs. */
   SUPADATA_API_KEY: z.string().optional(),

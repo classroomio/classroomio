@@ -1,0 +1,39 @@
+{
+  "name": "@cio/course-builder",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.10.0",
+    "cheerio": "^1.2.0",
+    "marked": "^15.0.12",
+    "robots-parser": "^3.0.1",
+    "tldts": "^6.1.86",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "@types/node": "^24.10.1",
+    "domhandler": "^5.0.3",
+    "prettier": "^3.2.5",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.5.2",
+    "vitest": "^1.2.2"
+  }
+}

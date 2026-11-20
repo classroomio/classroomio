@@ -13,6 +13,13 @@ export const QUEUE_NAMES = {
   courseImports: 'course-imports',
   agentCourseGeneration: 'agent-course-generation',
   onboardingBootstrap: 'onboarding-bootstrap',
+  courseBuildDiscover: 'course-build-discover',
+  courseBuildRead: 'course-build-read',
+  courseBuildUnderstand: 'course-build-understand',
+  courseBuildPlan: 'course-build-plan',
+  courseBuildWrite: 'course-build-write',
+  courseBuildFinish: 'course-build-finish',
+  courseBuildExport: 'course-build-export',
   audience: 'audience',
   maintenance: 'maintenance'
 } as const;
@@ -51,6 +58,12 @@ export const JOB_NAMES = {
     deliver: 'deliver'
   },
   agentCourseGeneration: {
+    run: 'run'
+  },
+  onboardingBootstrap: {
+    runStarter: 'run-starter'
+  },
+  courseBuild: {
     run: 'run'
   },
   audience: {

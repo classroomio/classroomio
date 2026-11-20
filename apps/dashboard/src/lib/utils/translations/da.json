@@ -147,11 +147,17 @@
     },
     "site_name": {
       "min_char": "Academy-underdomænet skal indeholde 5 eller flere tegn",
-      "hyphen_rule": "Academy-underdomænet kan ikke starte eller slutte med en bindestreg"
+      "hyphen_rule": "Academy-underdomænet kan ikke starte eller slutte med en bindestreg",
+      "characters": "Akademiets subdomæne må kun indeholde bogstaver, tal og bindestreger",
+      "max_char": "Akademiets underdomæne må højst have 63 tegn",
+      "taken": "Dette underdomæne er allerede taget. Prøv et andet.",
+      "reserved": "Dette underdomæne er reserveret. Prøv et andet.",
+      "invalid": "Indtast et gyldigt underdomæne til akademiet"
     },
     "organization_name": {
       "min_char": "Organisationen skal indeholde 5 eller flere tegn",
-      "hyphen_rule": "Organisationsnavnet kan ikke starte eller slutte med en bindestreg"
+      "hyphen_rule": "Organisationsnavnet kan ikke starte eller slutte med en bindestreg",
+      "max_char": "Organisationens navn må højst have 120 tegn"
     },
     "user_profile": {
       "email": "Ugyldig e-mailadresse",
@@ -179,6 +185,9 @@
       "event_types": {
         "required": "Vælg mindst én hændelse"
       }
+    },
+    "organization": {
+      "theme_color": "Indtast en farve som hex, fx #1d4ed8"
     }
   },
   "generic": {
@@ -617,7 +626,10 @@
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
     "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
     "unlock_field": "Opgrader for at låse denne indstilling op",
-    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks."
+    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks.",
+    "context": {
+      "model": "{model} er tilgængelig i betalte planer."
+    }
   },
   "student_progress": {
     "courses": "Kurser",
@@ -3112,7 +3124,9 @@
           "documentation_url": {
             "label": "Dokumentations-URL (valgfrit)",
             "hint": "Vi læser dette websted for at basere kurset på dit rigtige produkt."
-          }
+          },
+          "feature_name": "Hvilken funktion skal kunderne tage i brug?",
+          "certification_topic": "Hvad skal folk certificeres i?"
         },
         "expert_on_x": {
           "title": "Bliv ekspert på X",
@@ -3128,6 +3142,21 @@
           "title": "Produkt 101 Kursus",
           "description": "Et grundlæggende kursus, der lærer kunderne at bruge dit produkt.",
           "form_title": "Fortæl os om dit produkt"
+        },
+        "support_product_training": {
+          "title": "Produkttræning for support",
+          "description": "Produkttræning, der hjælper dit supportteam med at løse kundespørgsmål uden at eskalere.",
+          "form_title": "Fortæl os om dit supportteam"
+        },
+        "feature_adoption": {
+          "title": "Mini-kursus i ibrugtagning af funktioner",
+          "description": "Et kort kursus, der får eksisterende kunder fra at have hørt om en funktion til at bruge den.",
+          "form_title": "Fortæl os om funktionen"
+        },
+        "compliance_certification": {
+          "title": "Compliance-certificering",
+          "description": "Et certificeringskursus med en beståelig vurdering og et downloadbart certifikat.",
+          "form_title": "Fortæl os om certificeringen"
         }
       }
     },
@@ -3208,7 +3237,8 @@
       "student_empty_description": "Der er endnu ingen kurser tilgængelige i denne organisation. Tjek venligst tilbage senere.",
       "updated_at": "Opdateret {date}",
       "lessons_count": "{count, plural, one {# lektion} other {# lektioner}}",
-      "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}"
+      "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}",
+      "sample": "Eksempel"
     },
     "course_filter": {
       "date_created_newest": "Oprettelsesdato: Nyeste først",
@@ -4850,7 +4880,382 @@
       "footer": "Open source · Selvvært eller sky",
       "headline": "Stop med at træne hver kunde {highlight}.",
       "headline_highlight": "manuelt",
-      "subtitle": "Konfigurer det én gang, massetilmeld dine kunder gennem API'en. Følg derefter deres fremskridt med analyser."
+      "subtitle": "Konfigurer det én gang, massetilmeld dine kunder gennem API'en. Følg derefter deres fremskridt med analyser.",
+      "machine_label": "En træningslinje, der flytter lektioner, quizzer og opgaver",
+      "carousel_label": "Det siger kunderne",
+      "dot_label": "Udtalelse {number}",
+      "quotes": {
+        "quickeasy": {
+          "quote": "Vi elsker det, fordi det hjælper os med at sende træningsmateriale ud til kunder, mens kunderne kan følge deres medarbejderes fremgang.",
+          "role": "Administrerende direktør"
+        },
+        "dr_ozzy": {
+          "quote": "ClassroomIO hjælper mig med at fokusere på læringsoplevelsen i stedet for at hænge fast i en kompliceret platform.",
+          "role": "Koordinator for akademiske programmer"
+        },
+        "oss_capital": {
+          "quote": "Superfed open source-platform til at afholde tech-bootcamps.",
+          "role": "Grundlægger og managing partner"
+        }
+      }
+    },
+    "v2": {
+      "common": {
+        "back": "Tilbage",
+        "continue": "Fortsæt"
+      },
+      "steps": {
+        "account": "Opret konto",
+        "business": "Din virksomhed",
+        "workspace": "Dit akademi",
+        "customise": "Tilpas",
+        "build": "Byg"
+      },
+      "account": {
+        "title": "Opret din konto",
+        "subtitle": "Start et brandet akademi til dine kunder. Gratis for dine første {count} elever, intet kort påkrævet.",
+        "google": "Fortsæt med Google",
+        "google_terms": "Ved at fortsætte accepterer du",
+        "terms_link": "Servicevilkårene",
+        "privacy_link": "Privatlivspolitikken",
+        "and": "og",
+        "fullname_label": "Fulde navn",
+        "fullname_placeholder": "Joke Silva",
+        "email_label": "Arbejds-e-mail",
+        "email_placeholder": "you@yourcompany.com",
+        "password_strength": "Adgangskodens styrke",
+        "show_password": "Vis adgangskode",
+        "hide_password": "Skjul adgangskode",
+        "terms_label": "Jeg accepterer vilkårene",
+        "submit": "Opret konto",
+        "have_account": "Har du allerede en konto?",
+        "sign_in": "Log ind",
+        "panel_footer": "Open source · Self-hosted eller cloud",
+        "errors": {
+          "fullname": "Indtast dit fulde navn (mindst 5 tegn).",
+          "email": "Indtast en gyldig arbejds-e-mailadresse.",
+          "terms": "Accepter vilkårene for at fortsætte.",
+          "generic": "Vi kunne ikke oprette din konto. Prøv igen."
+        },
+        "or": "eller",
+        "password_label": "Adgangskode",
+        "password_placeholder": "Mindst 8 tegn"
+      },
+      "business": {
+        "eyebrow": "Om din virksomhed",
+        "heading": "Fortæl os om dit team",
+        "heading_highlight": "dit team",
+        "subtitle": "Hvert svar tilføjer en blok til dit arbejdsområde. Vi bruger dem til at udkaste dine startkurser.",
+        "foothold": "Du kan ændre alt dette senere.",
+        "now": "Nu",
+        "answered": "Besvaret",
+        "optional": "Valgfrit",
+        "skip": "Spring over",
+        "save_error": "Vi kunne ikke gemme dine svar. De gemmes igen, når du ændrer noget.",
+        "counter_short": "{count} af 5",
+        "items": {
+          "outcome": "Første mål",
+          "business": "Din virksomhed",
+          "team": "Dit team",
+          "learning": "Hvordan kunder lærer i dag",
+          "source": "Hvordan hørte du om os?",
+          "academy": "Dit akademi"
+        },
+        "missing": {
+          "outcome": "Vælg et første mål.",
+          "business": "Tilføj dit website, eller beskriv hvad du tilbyder.",
+          "team": "Vælg din rolle og virksomhedens størrelse.",
+          "learning": "Vælg, hvordan kunder lærer i dag."
+        },
+        "outcomes": {
+          "onboard_customers": {
+            "label": "Onboard nye kunder",
+            "hint": "Et onboardingforløb til nye kunder"
+          },
+          "explain_product": {
+            "label": "Forklar vores produkt",
+            "hint": "Grundlæggende how-to-kurser"
+          },
+          "increase_adoption": {
+            "label": "Øg anvendelsen",
+            "hint": "Et forløb ud over go-live"
+          },
+          "cut_tickets": {
+            "label": "Skær ned på gentagne tickets",
+            "hint": "Et kursus med de oftest stillede spørgsmål"
+          }
+        },
+        "context": {
+          "website": "Website-URL",
+          "description": "Beskriv din virksomhed"
+        },
+        "website_label": "Hjemmeside",
+        "website_placeholder": "dinvirksomhed.dk",
+        "description_label": "Beskriv din virksomhed",
+        "description_placeholder": "Hvad tilbyder du, og hvem bruger det?",
+        "description_helper": "Tilføj en eller to sætninger, så vi kan udkaste relevante kurser.",
+        "no_ai_hint": "Vi starter dig med eksempelkurser, som du kan redigere.",
+        "skip_analysis": "Spring websiteanalyse over",
+        "errors": {
+          "website_invalid": "Det link ser ikke rigtigt ud. Tjek stavningen, eller beskriv din virksomhed i stedet.",
+          "website_required": "Tilføj dit website, eller beskriv din virksomhed i stedet.",
+          "description_required": "Fortæl os lidt mere: mindst 20 tegn."
+        },
+        "role_label": "Du er",
+        "size_label": "Virksomhedsstørrelse",
+        "roles": {
+          "founder": "Grundlægger eller CEO",
+          "customer_success": "Kundesucces",
+          "customer_education": "Kundeuddannelse",
+          "product": "Produkt",
+          "marketing": "Marketing eller vækst",
+          "support": "Support",
+          "operations": "Drift",
+          "other": "Noget andet"
+        },
+        "learning": {
+          "self_serve_short": "På egen hånd",
+          "live_short": "Live-sessioner",
+          "help_docs_short": "Hjælpedokumentation",
+          "no_training_short": "Ingen træning endnu"
+        },
+        "source_label": "Hvor fandt du os?",
+        "source_other_label": "Fortæl os mere",
+        "ai_provider_label": "Hvem anbefalede os?",
+        "ai_provider_other_label": "Hvilken assistent?",
+        "preview": {
+          "title": "Dit arbejdsområde indtil videre",
+          "counter": "Dit arbejdsområde, {count} af {total} blokke",
+          "stack_label": "Dine arbejdsområdeblokke",
+          "description": "Din beskrivelse",
+          "samples": "Eksempelkurser",
+          "workspace_placeholder": "Dit akademi",
+          "choose_outcome": "Vælg et første mål",
+          "choose_size": "Vælg en størrelse",
+          "choose_role": "Vælg en rolle",
+          "choose_one": "Vælg en",
+          "kind": {
+            "workspace": "Arbejdsområde",
+            "outcome": "Første mål",
+            "team": "Team",
+            "role": "Rolle",
+            "today": "I dag"
+          }
+        },
+        "skipped": "Sprunget over",
+        "save_retrying": "Kunne ikke gemme. Prøver igen.",
+        "next": "Næste",
+        "context_hint": "Bruges til at vælge og udarbejde dine startkurser.",
+        "describe_instead": "Beskriv det i stedet",
+        "source_hint": "Det hjælper et lille team med at se, hvad der virker.",
+        "other_placeholder": "Fortæl os mere",
+        "more_roles": "Mere",
+        "greeting": "Hej,",
+        "greeting_placeholder": "user.name",
+        "sizes": {
+          "solo": "Kun mig",
+          "small": "2-9 personer",
+          "medium": "10-50 personer",
+          "large": "51-200 personer",
+          "enterprise": "Over 200 personer"
+        }
+      },
+      "workspace": {
+        "title": "Opsæt dit akademi",
+        "heading": "Opsæt dit akademi",
+        "heading_highlight": "akademi",
+        "subtitle": "Fortæl os, hvem du er, og hvor dine kunder finder dig.",
+        "fullname_label": "Hvad er dit fulde navn?",
+        "fullname_hint": "Sådan vil teammedlemmer og elever se dig.",
+        "org_name_label": "Hvad hedder din organisation?",
+        "site_name_label": "Akademiets subdomæne",
+        "site_name_placeholder": "minskole",
+        "checking": "Tjekker tilgængelighed",
+        "available": "Subdomæne ledigt",
+        "save_continue": "Gem og fortsæt",
+        "errors": {
+          "fullname": "Indtast dit fulde navn (mindst 5 tegn)."
+        },
+        "panel_eyebrow": "Næsten færdig",
+        "panel_title": "Dit akademi, navngivet og live på få minutter.",
+        "panel_title_highlight": "navngivet",
+        "panel_body": "Vælg det navn og den adresse, dine kunder ser. Du kan ændre begge senere i indstillingerne.",
+        "panel_machine_label": "En træningslinje, der flytter lektioner, quizzer og opgaver",
+        "fullname_placeholder": "Joke Silva",
+        "org_name_placeholder": "fx Navnet på min skole"
+      },
+      "preparing": {
+        "title": "Forbereder dit arbejdsområde",
+        "counter": "Trin {current} af {total}",
+        "subtitle": "Bygger det første udkast til {orgName}.",
+        "subtitle_sample": "Opsætter eksempelkurser, som du kan redigere.",
+        "headings": {
+          "understanding": "Læser din virksomhed",
+          "drafting": "Udkaster dine kurser",
+          "organising": "Organiserer dine kurser",
+          "finishing": "Opsætter dit arbejdsområde"
+        },
+        "rows": {
+          "understanding": "Forstår dit produkt",
+          "drafting": "Forbereder dit kundeuddannelsesindhold",
+          "organising": "Organiserer dine startkurser",
+          "finishing": "Opsætter dit arbejdsområde"
+        },
+        "states": {
+          "done": "Færdig",
+          "now": "I gang",
+          "waiting": "Venter"
+        },
+        "checklist_label": "Fremdrift for opsætning af arbejdsområde",
+        "warning": {
+          "title": "Vi kunne ikke læse dit website",
+          "body": "Vi brugte eksempelkurser i stedet. Du kan redigere dem eller generere dem igen, når du er færdig."
+        },
+        "failed_partial": {
+          "title": "Vi kunne ikke færdiggøre udkastet til dine kurser",
+          "body": "Vi brugte eksempelkurser i stedet. Du kan redigere dem eller generere dem igen, når du er færdig."
+        },
+        "failed": {
+          "title": "Vi kunne ikke forberede dine kurser",
+          "body": "Dit arbejdsområde er sikkert. Kun startkurserne fejlede."
+        },
+        "try_again": "Prøv igen",
+        "continue_without": "Fortsæt uden dem",
+        "headings_highlight": {
+          "understanding": "virksomhed",
+          "drafting": "kurser",
+          "organising": "kurser",
+          "finishing": "arbejdsområde"
+        }
+      },
+      "customise": {
+        "title": "Tilpas dit akademi",
+        "eyebrow": "Dit akademi",
+        "heading": "Gør det til dit",
+        "heading_highlight": "dit",
+        "progress_label": "Fremdrift for onboarding",
+        "skip_to_academy": "Gå til akademiet",
+        "name_label": "Akademiets navn",
+        "colour_label": "Brandfarve",
+        "colours": {
+          "blue": "Blå",
+          "rose": "Rosa",
+          "green": "Grøn",
+          "orange": "Orange",
+          "purple": "Lilla"
+        },
+        "colour_custom": "Brugerdefineret",
+        "colour_input_label": "HEX- eller RGB-farve",
+        "colour_hint": "Styrer knapper og links på dit akademi.",
+        "colour_apply": "Anvend",
+        "colour_invalid": "Brug en HEX-værdi som #5B5FEF eller RGB som rgb(91, 95, 239).",
+        "colour_contrast": "Lav kontrast. Links på dit akademi bliver svære at læse.",
+        "colour_reset": "Brandfarve nulstillet.",
+        "reset": "Nulstil",
+        "themes_label": "Temaer",
+        "theme_free": "Gratis",
+        "theme_included": "Inkluderet",
+        "theme_premium": "Premium",
+        "plan_free": "{theme} · Gratis",
+        "plan_premium": "{theme} · Premium",
+        "upgrade": {
+          "title": "{theme} er et premiumtema",
+          "body": "Alle temaer undtagen Quartz er inkluderet i betalte planer.",
+          "preview": "Se {theme} først"
+        },
+        "subtitle": "Giv den et navn, tilføj dit logo og din farve, og vælg et tema. Du kan ændre det hele senere.",
+        "preview_label": "Forhåndsvisning",
+        "previewing_label": "Forhåndsvisning",
+        "preview_frame_label": "Dit akademi, som besøgende ser det",
+        "use_theme": "Brug dette tema",
+        "apply_theme": "Anvend tema",
+        "edit_name": "Rediger akademiets navn og logo",
+        "logo_drop": "Slip dit logo her",
+        "logo_choose": "eller klik for at vælge · PNG, JPG eller SVG",
+        "logo_not_image": "Filen er ikke et billede.",
+        "logo_added": "Logo tilføjet",
+        "logo_shown": "Vises på din portal",
+        "logo_remove": "Fjern",
+        "logo_use_detected": "Brug logoet fra dit website",
+        "colour_presets_label": "Forudindstillede brandfarver",
+        "colour_from_website": "Fra dit website",
+        "colour_custom_title": "Egen farve",
+        "colour_format_label": "Farveformat",
+        "colour_format_hex": "HEX",
+        "colour_format_rgb": "RGB",
+        "colour_picker_label": "Vælg en egen farve",
+        "colour_contrast_title": "Lav kontrast.",
+        "colour_contrast_body": "Links på dit akademi bliver svære at læse.",
+        "colour_adjusted": "Vi gjorde farven fra dit website lidt mørkere, så teksten forbliver læsbar.",
+        "theme_select": "Vælg {theme}",
+        "theme_selected": "{theme} valgt",
+        "theme_upgrade": "Opgrader for at bruge {theme}",
+        "theme_preview": "Forhåndsvis {theme}",
+        "more_actions": "Flere handlinger"
+      },
+      "starter": {
+        "button": "Startindhold",
+        "title": "Startindhold",
+        "body": "Udkastet ud fra det, du fortalte os. Omdøb eller fjern hvad som helst. Alt forbliver et udkast, indtil du udgiver.",
+        "draft_badge": "Udkast",
+        "title_required": "Tilføj en titel.",
+        "remove": "Fjern",
+        "removed": "\"{title}\" fjernet.",
+        "undo": "Fortryd",
+        "empty": "Ingen startkurser. Du kan oprette dine egne fra dashboardet.",
+        "regenerate": "Generer igen",
+        "regenerate_exhausted": "Du har brugt alle genoprettelser.",
+        "regenerate_confirm": "Dette erstatter de nuværende udkast, inklusive omdøbninger. Fortsæt?",
+        "regenerate_yes": "Erstat udkast",
+        "done": "Færdig"
+      },
+      "welcome": {
+        "title": "Velkommen til dit arbejdsområde",
+        "body_samples": "Vi har tilføjet et par eksempelkurser for at komme i gang. Du kan frit redigere, udgive eller slette dem.",
+        "body_empty": "Dit arbejdsområde er klar. Opret et kursus, når du vil.",
+        "later": "Senere",
+        "take_tour": "Tag rundvisningen"
+      },
+      "load_error": {
+        "title": "Vi kunne ikke indlæse din opsætning",
+        "body": "Tjek din forbindelse, og prøv igen. Dine svar er gemt.",
+        "retry": "Prøv igen"
+      },
+      "tour": {
+        "region": "Produkttur",
+        "counter": "{position} af {total}",
+        "next": "Næste",
+        "back": "Tilbage",
+        "done": "Færdig",
+        "skip": "Spring turen over",
+        "hint_click": "Klik for at fortsætte",
+        "steps": {
+          "courses-list": {
+            "title": "Udforsk dine kurser",
+            "body": "Her ligger dine startkurser. De forbliver kladder, indtil du udgiver dem."
+          },
+          "open-course": {
+            "title": "Åbn et kursus",
+            "body": "Åbn det første kursus for at se lektionerne og redigere dem."
+          },
+          "templates": {
+            "title": "Opret endnu et kursus",
+            "body": "Start med et tomt kursus, eller vælg en skabelon i galleriet."
+          },
+          "landing-page": {
+            "title": "Design din landingsside",
+            "body": "Vælg et tema, rediger sektionerne, og se forhåndsvisningen ændre sig, mens du skriver."
+          },
+          "audience": {
+            "title": "Inviter dine elever",
+            "body": "Tilføj elever og undervisere, og se hvem der er kommet med."
+          },
+          "academy": {
+            "title": "Se dit akademi",
+            "body": "Åbn dit akademi for at se, hvad eleverne ser."
+          }
+        }
+      }
     }
   },
   "new_course_modal": {
@@ -5351,7 +5756,9 @@
         "attach_document_to_lesson": "Tilføjelse af et dokument",
         "get_lesson_history": "Læse lektionshistorie",
         "restore_lesson_version": "Gendannelse af en tidligere version",
-        "undo_lesson_change": "Fortryder en ændring"
+        "undo_lesson_change": "Fortryder en ændring",
+        "get_workspace_context": "Læser dine brandindstillinger",
+        "update_course_certificate": "Slår certifikater til"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# tegn} other {# tegn}})",
@@ -5405,7 +5812,9 @@
         "attach_document_to_lesson": "Tilføjet dokument: {title}",
         "get_lesson_history": "Lektionshistorik er indlæst",
         "restore_lesson_version": "Gendannet en tidligere version af lektionen",
-        "undo_lesson_change": "Fortrydde en ændring"
+        "undo_lesson_change": "Fortrydde en ændring",
+        "get_workspace_context": "Arbejdsområde læst · {count} elementer",
+        "update_course_certificate": "Downloadbare certifikater slået til"
       }
     },
     "student_empty_state": "Spørg mig om noget om dette kursus - få forklaringer, quiz dig selv, eller opsummer det, du læser.",
@@ -7292,5 +7701,18 @@
     },
     "close": "Luk",
     "dismiss": "Forstået"
+  },
+  "owner_edit_bar": {
+    "label": "Vist som ejer",
+    "region_label": "Værktøjer til akademiejeren",
+    "catalog": {
+      "edit_courses": "Rediger kurser",
+      "edit_page_design": "Rediger sidedesign"
+    },
+    "course": {
+      "edit_landing_page": "Rediger landingsside",
+      "edit_lessons": "Rediger lektioner",
+      "settings": "Indstillinger"
+    }
   }
 }

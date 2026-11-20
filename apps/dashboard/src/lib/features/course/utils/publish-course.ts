@@ -37,7 +37,10 @@ export function validatePaidCourseForPublish(course: Course): { hasError: boolea
   return { hasError: false };
 }
 
-export async function publishCourse(course: Course): Promise<PublishCourseResult> {
+export async function publishCourse(
+  course: Course,
+  options: { allowSelfEnrollment?: boolean } = {}
+): Promise<PublishCourseResult> {
   if (!course?.id) {
     return { ok: false, reason: 'failed' };
   }
@@ -59,7 +62,7 @@ export async function publishCourse(course: Course): Promise<PublishCourseResult
 
   const metadataPayload = {
     ...(isObject(course.metadata) ? course.metadata : {}),
-    allowSelfEnrollment: true
+    allowSelfEnrollment: options.allowSelfEnrollment ?? true
   };
 
   const result = await courseApi.update(

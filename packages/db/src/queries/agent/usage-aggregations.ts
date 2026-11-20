@@ -31,7 +31,13 @@ export async function aggregateTokenUsageByUser(orgId: string, since: Date): Pro
       })
       .from(schema.aiTokenUsage)
       .leftJoin(schema.profile, eq(schema.profile.id, schema.aiTokenUsage.userId))
-      .where(and(eq(schema.aiTokenUsage.orgId, orgId), gte(schema.aiTokenUsage.createdAt, since.toISOString())))
+      .where(
+        and(
+          eq(schema.aiTokenUsage.orgId, orgId),
+          eq(schema.aiTokenUsage.countsTowardBalance, true),
+          gte(schema.aiTokenUsage.createdAt, since.toISOString())
+        )
+      )
       .groupBy(schema.aiTokenUsage.userId, schema.profile.fullname, schema.profile.email, schema.profile.avatarUrl)
       .orderBy(
         desc(
@@ -58,7 +64,13 @@ export async function countRequests(orgId: string, since: Date): Promise<number>
     const [row] = await db
       .select({ count: sql<number>`COUNT(*)` })
       .from(schema.aiTokenUsage)
-      .where(and(eq(schema.aiTokenUsage.orgId, orgId), gte(schema.aiTokenUsage.createdAt, since.toISOString())));
+      .where(
+        and(
+          eq(schema.aiTokenUsage.orgId, orgId),
+          eq(schema.aiTokenUsage.countsTowardBalance, true),
+          gte(schema.aiTokenUsage.createdAt, since.toISOString())
+        )
+      );
 
     return Number(row?.count ?? 0);
   } catch (error) {

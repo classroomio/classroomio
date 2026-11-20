@@ -6,3 +6,5 @@ export * from './maintenance';
 export * from './agent-course-generation';
 export * from './notifications';
 export * from './webhooks';
+export * from './onboarding-bootstrap';
+export * from './course-build';

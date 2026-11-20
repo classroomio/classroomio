@@ -23,7 +23,8 @@
     closeUpgradeModal,
     isUpgradeModalOpen,
     openUpgradeModal,
-    runUpgradeCheckoutHandoffs
+    runUpgradeCheckoutHandoffs,
+    upgradeModalContext
   } from '$lib/utils/store/upgrade-modal';
   import Confetti from './confetti/confetti.svelte';
 
@@ -137,6 +138,8 @@
     closeUpgradeModal();
   }
 
+  const context = $derived($upgradeModalContext);
+
   function handleOpenChange(newOpen: boolean) {
     if (newOpen) return;
 
@@ -195,6 +198,12 @@
         </div>
       </div>
     {:else}
+      {#if context?.kind === 'agent-model'}
+        <p class="ui:text-muted-foreground mb-5 text-sm">
+          {$t('upgrade.context.model', { model: context.modelName })}
+        </p>
+      {/if}
+
       <div class="flex flex-col items-center">
         <div class="mb-4 w-full max-w-sm px-2 sm:mb-6 sm:max-w-none sm:px-4">
           <PricingToggle
@@ -206,7 +215,7 @@
         </div>
         <EarlyAdopterCallout class="mb-4 sm:mb-6" />
         <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
-          {#each planNames as planName}
+          {#each planNames as planName (planName)}
             {@const plan = PLANS[planName]}
             {@const isPopular = planName === 'EARLY_ADOPTER'}
             <PricingCard

@@ -1,1 +1,1 @@
-export const FIELDS = ['class'] as string[];
+export const FIELDS = ['class', 'notch'] as string[];

@@ -12,6 +12,8 @@
 
 <Item.Group class="grid! w-full grid-cols-1 justify-items-center gap-4 md:grid-cols-2 xl:grid-cols-3">
   {#each courses as course (course.id)}
-    <Card {course} {...rest} onExploreClick={onCardClick ? () => onCardClick(course) : undefined} />
+    <div class="flex w-full justify-center" data-testid="course-card">
+      <Card {course} {...rest} onExploreClick={onCardClick ? () => onCardClick(course) : undefined} />
+    </div>
   {/each}
 </Item.Group>

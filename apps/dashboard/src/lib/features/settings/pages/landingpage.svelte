@@ -29,6 +29,7 @@
 
   import ThemePreviewDialog from '$features/settings/components/theme-preview-dialog.svelte';
   import { StudentHomeNotice } from '$features/settings/components';
+  import LandingPagePreviewCanvas from '$features/org/components/landing-page-preview-canvas.svelte';
 
   import {
     createDefaultLandingPageSettings,
@@ -215,8 +216,6 @@
   const customizeLocked = $derived($isFreePlan && isPaidTheme(currentTheme));
 
   const PREVIEW_RENDER_WIDTH = 1440;
-  let previewWidth = $state(0);
-  const previewScale = $derived(previewWidth > 0 ? previewWidth / PREVIEW_RENDER_WIDTH : 0.5);
 </script>
 
 <div class="w-full space-y-10 px-2 pb-12">
@@ -224,19 +223,12 @@
 
   <section>
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div
-        class="ui:border-border ui:bg-background relative aspect-[16/10] w-full overflow-hidden rounded-xl border select-none"
-        bind:clientWidth={previewWidth}
-      >
-        <div
-          class="pointer-events-none absolute top-0 left-0 origin-top-left"
-          style="width: {PREVIEW_RENDER_WIDTH}px; height: {PREVIEW_RENDER_WIDTH *
-            0.625}px; transform: scale({previewScale});"
-        >
+      <div class="relative">
+        <LandingPagePreviewCanvas canvasWidth={PREVIEW_RENDER_WIDTH}>
           {#if $currentOrg.id}
             <ThemeComponent {...previewProps} disableCourseLinks={true} />
           {/if}
-        </div>
+        </LandingPagePreviewCanvas>
         <div
           class="from-background pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t to-transparent"
         ></div>

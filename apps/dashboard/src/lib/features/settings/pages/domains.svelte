@@ -14,7 +14,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { orgApi } from '$features/org/api/org.svelte';
-  import { blockedSubdomain } from '$lib/utils/constants/app';
+  import { blockedSubdomain } from '@cio/utils/constants';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';

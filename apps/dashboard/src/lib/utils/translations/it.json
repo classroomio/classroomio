@@ -385,7 +385,382 @@
       "headline": "Smetti di formare ogni cliente {highlight}.",
       "headline_highlight": "a mano",
       "subtitle": "Configuralo una volta, iscrivi in ​​blocco i tuoi clienti tramite l'API. Quindi monitora i loro progressi con l'analisi.",
-      "footer": "Open source · Self-host o cloud"
+      "footer": "Open source · Self-host o cloud",
+      "machine_label": "Una linea di formazione che sposta lezioni, quiz e compiti",
+      "carousel_label": "Cosa dicono i clienti",
+      "dot_label": "Testimonianza {number}",
+      "quotes": {
+        "quickeasy": {
+          "quote": "Ci piace perché ci aiuta a distribuire materiale formativo ai clienti, che possono anche monitorare i progressi del proprio staff.",
+          "role": "Amministratore delegato"
+        },
+        "dr_ozzy": {
+          "quote": "ClassroomIO mi aiuta a concentrarmi sull'esperienza di apprendimento invece di perdermi in una piattaforma complicata.",
+          "role": "Coordinatore dei programmi accademici"
+        },
+        "oss_capital": {
+          "quote": "Piattaforma open source fantastica per gestire bootcamp tech.",
+          "role": "Fondatore e socio accomandatario"
+        }
+      }
+    },
+    "v2": {
+      "common": {
+        "back": "Indietro",
+        "continue": "Continua"
+      },
+      "steps": {
+        "account": "Crea account",
+        "business": "La tua azienda",
+        "workspace": "La tua accademia",
+        "customise": "Personalizza",
+        "build": "Crea"
+      },
+      "account": {
+        "title": "Crea il tuo account",
+        "subtitle": "Lancia un'accademia con il tuo marchio per i tuoi clienti. Gratis per i tuoi primi {count} studenti, senza carta.",
+        "google": "Continua con Google",
+        "google_terms": "Continuando accetti i",
+        "terms_link": "Termini di servizio",
+        "privacy_link": "Informativa sulla privacy",
+        "and": "e",
+        "fullname_label": "Nome completo",
+        "fullname_placeholder": "Joke Silva",
+        "email_label": "Email di lavoro",
+        "email_placeholder": "you@yourcompany.com",
+        "password_strength": "Sicurezza della password",
+        "show_password": "Mostra password",
+        "hide_password": "Nascondi password",
+        "terms_label": "Accetto i termini",
+        "submit": "Crea account",
+        "have_account": "Hai già un account?",
+        "sign_in": "Accedi",
+        "panel_footer": "Open source · Self-hosted o cloud",
+        "errors": {
+          "fullname": "Inserisci il tuo nome completo (almeno 5 caratteri).",
+          "email": "Inserisci un indirizzo email di lavoro valido.",
+          "terms": "Accetta i termini per continuare.",
+          "generic": "Non siamo riusciti a creare il tuo account. Riprova."
+        },
+        "or": "oppure",
+        "password_label": "Password",
+        "password_placeholder": "Almeno 8 caratteri"
+      },
+      "business": {
+        "eyebrow": "La tua azienda",
+        "heading": "Raccontaci del tuo team",
+        "heading_highlight": "tuo team",
+        "subtitle": "Ogni risposta aggiunge un blocco al tuo spazio di lavoro. Li usiamo per redigere i tuoi corsi iniziali.",
+        "foothold": "Puoi cambiare tutto questo in seguito.",
+        "now": "Ora",
+        "answered": "Risposto",
+        "optional": "Facoltativo",
+        "skip": "Salta",
+        "save_error": "Non siamo riusciti a salvare le tue risposte. Verranno salvate di nuovo quando modifichi qualcosa.",
+        "counter_short": "{count} di 5",
+        "items": {
+          "outcome": "Primo obiettivo",
+          "business": "La tua azienda",
+          "team": "Il tuo team",
+          "learning": "Come imparano oggi i clienti",
+          "source": "Come ci hai conosciuti?",
+          "academy": "La tua accademia"
+        },
+        "missing": {
+          "outcome": "Scegli un primo obiettivo.",
+          "business": "Aggiungi il tuo sito web o descrivi cosa offri.",
+          "team": "Scegli il tuo ruolo e la dimensione dell'azienda.",
+          "learning": "Scegli come imparano oggi i clienti."
+        },
+        "outcomes": {
+          "onboard_customers": {
+            "label": "Integrare nuovi clienti",
+            "hint": "Un percorso di onboarding per i nuovi clienti"
+          },
+          "explain_product": {
+            "label": "Spiegare il nostro prodotto",
+            "hint": "Corsi pratici di base"
+          },
+          "increase_adoption": {
+            "label": "Aumentare l'adozione",
+            "hint": "Un percorso oltre il go-live"
+          },
+          "cut_tickets": {
+            "label": "Ridurre i ticket ripetitivi",
+            "hint": "Un corso con le domande più frequenti"
+          }
+        },
+        "context": {
+          "website": "URL del sito web",
+          "description": "Descrivi la tua azienda"
+        },
+        "website_label": "Sito web",
+        "website_placeholder": "tuaazienda.it",
+        "description_label": "Descrivi la tua azienda",
+        "description_placeholder": "Cosa offri e chi lo usa?",
+        "description_helper": "Aggiungi una o due frasi così possiamo redigere corsi pertinenti.",
+        "no_ai_hint": "Inizieremo con corsi di esempio che puoi modificare.",
+        "skip_analysis": "Salta l'analisi del sito web",
+        "errors": {
+          "website_invalid": "Quel link non sembra corretto. Controlla l'ortografia o descrivi la tua azienda.",
+          "website_required": "Aggiungi il tuo sito web o descrivi invece la tua attività.",
+          "description_required": "Raccontaci qualcosa in più: almeno 20 caratteri."
+        },
+        "role_label": "Sei",
+        "size_label": "Dimensione aziendale",
+        "roles": {
+          "founder": "Fondatore o CEO",
+          "customer_success": "Successo del cliente",
+          "customer_education": "Formazione del cliente",
+          "product": "Prodotto",
+          "marketing": "Marketing o crescita",
+          "support": "Supporto",
+          "operations": "Operazioni",
+          "other": "Altro"
+        },
+        "learning": {
+          "self_serve_short": "Da soli",
+          "live_short": "Sessioni live",
+          "help_docs_short": "Documentazione di aiuto",
+          "no_training_short": "Ancora nessuna formazione"
+        },
+        "source_label": "Dove ci hai trovati?",
+        "source_other_label": "Dicci di più",
+        "ai_provider_label": "Chi ci ha consigliati?",
+        "ai_provider_other_label": "Quale assistente?",
+        "preview": {
+          "title": "Il tuo spazio di lavoro finora",
+          "counter": "Il tuo spazio di lavoro, {count} blocchi su {total}",
+          "stack_label": "I blocchi del tuo spazio di lavoro",
+          "description": "La tua descrizione",
+          "samples": "Corsi di esempio",
+          "workspace_placeholder": "La tua accademia",
+          "choose_outcome": "Scegli un primo obiettivo",
+          "choose_size": "Scegli una dimensione",
+          "choose_role": "Scegli un ruolo",
+          "choose_one": "Scegline uno",
+          "kind": {
+            "workspace": "Spazio di lavoro",
+            "outcome": "Primo obiettivo",
+            "team": "Team",
+            "role": "Ruolo",
+            "today": "Oggi"
+          }
+        },
+        "skipped": "Saltato",
+        "save_retrying": "Salvataggio non riuscito. Nuovo tentativo.",
+        "next": "Avanti",
+        "context_hint": "Serve a scegliere e preparare i tuoi corsi iniziali.",
+        "describe_instead": "Descrivilo invece",
+        "source_hint": "Aiuta un piccolo team a capire cosa funziona.",
+        "other_placeholder": "Raccontaci di più",
+        "more_roles": "Altro",
+        "greeting": "Ciao,",
+        "greeting_placeholder": "user.name",
+        "sizes": {
+          "solo": "Solo io",
+          "small": "2-9 persone",
+          "medium": "10-50 persone",
+          "large": "51-200 persone",
+          "enterprise": "Oltre 200 persone"
+        }
+      },
+      "workspace": {
+        "title": "Configura la tua accademia",
+        "heading": "Configura la tua accademia",
+        "heading_highlight": "accademia",
+        "subtitle": "Dicci chi sei e dove ti troveranno i tuoi clienti.",
+        "fullname_label": "Qual è il tuo nome completo?",
+        "fullname_hint": "È così che ti vedranno colleghi e studenti.",
+        "org_name_label": "Qual è il nome della tua organizzazione?",
+        "site_name_label": "Sottodominio dell'accademia",
+        "site_name_placeholder": "miascuola",
+        "checking": "Verifica della disponibilità",
+        "available": "Sottodominio disponibile",
+        "save_continue": "Salva e continua",
+        "errors": {
+          "fullname": "Inserisci il tuo nome completo (almeno 5 caratteri)."
+        },
+        "panel_eyebrow": "Quasi fatto",
+        "panel_title": "La tua accademia, con un nome e online in pochi minuti.",
+        "panel_title_highlight": "con un nome",
+        "panel_body": "Scegli il nome e l'indirizzo che vedranno i tuoi clienti. Puoi cambiarli entrambi più tardi nelle impostazioni.",
+        "panel_machine_label": "Una linea di formazione che fa avanzare lezioni, quiz e compiti",
+        "fullname_placeholder": "Joke Silva",
+        "org_name_placeholder": "es. Nome della mia scuola"
+      },
+      "preparing": {
+        "title": "Preparazione del tuo spazio di lavoro",
+        "counter": "Passo {current} di {total}",
+        "subtitle": "Creazione della prima bozza di {orgName}.",
+        "subtitle_sample": "Configurazione di corsi di esempio che puoi modificare.",
+        "headings": {
+          "understanding": "Lettura della tua azienda",
+          "drafting": "Stesura dei tuoi corsi",
+          "organising": "Organizzazione dei tuoi corsi",
+          "finishing": "Configurazione del tuo spazio di lavoro"
+        },
+        "rows": {
+          "understanding": "Comprendere il tuo prodotto",
+          "drafting": "Preparare i contenuti di formazione per i clienti",
+          "organising": "Organizzare i tuoi corsi iniziali",
+          "finishing": "Configurare il tuo spazio di lavoro"
+        },
+        "states": {
+          "done": "Fatto",
+          "now": "In corso",
+          "waiting": "In attesa"
+        },
+        "checklist_label": "Avanzamento della configurazione dello spazio di lavoro",
+        "warning": {
+          "title": "Non siamo riusciti a leggere il tuo sito web",
+          "body": "Abbiamo usato corsi di esempio. Puoi modificarli o rigenerarli al termine."
+        },
+        "failed_partial": {
+          "title": "Non siamo riusciti a completare la stesura dei tuoi corsi",
+          "body": "Abbiamo usato corsi di esempio. Puoi modificarli o rigenerarli al termine."
+        },
+        "failed": {
+          "title": "Non siamo riusciti a preparare i tuoi corsi",
+          "body": "Il tuo spazio di lavoro è al sicuro. Solo i corsi iniziali non sono riusciti."
+        },
+        "try_again": "Riprova",
+        "continue_without": "Continua senza",
+        "headings_highlight": {
+          "understanding": "azienda",
+          "drafting": "corsi",
+          "organising": "corsi",
+          "finishing": "spazio di lavoro"
+        }
+      },
+      "customise": {
+        "title": "Personalizza la tua accademia",
+        "eyebrow": "La tua accademia",
+        "heading": "Rendila tua",
+        "heading_highlight": "tua",
+        "progress_label": "Avanzamento dell'onboarding",
+        "skip_to_academy": "Vai all'accademia",
+        "name_label": "Nome dell'accademia",
+        "colour_label": "Colore del marchio",
+        "colours": {
+          "blue": "Blu",
+          "rose": "Rosa",
+          "green": "Verde",
+          "orange": "Arancione",
+          "purple": "Viola"
+        },
+        "colour_custom": "Personalizzato",
+        "colour_input_label": "Colore HEX o RGB",
+        "colour_hint": "Controlla pulsanti e link della tua accademia.",
+        "colour_apply": "Applica",
+        "colour_invalid": "Usa un valore HEX come #5B5FEF o RGB come rgb(91, 95, 239).",
+        "colour_contrast": "Contrasto basso. I link della tua accademia saranno difficili da leggere.",
+        "colour_reset": "Colore del marchio reimpostato.",
+        "reset": "Reimposta",
+        "themes_label": "Temi",
+        "theme_free": "Gratuito",
+        "theme_included": "Incluso",
+        "theme_premium": "Premium",
+        "plan_free": "{theme} · Gratuito",
+        "plan_premium": "{theme} · Premium",
+        "upgrade": {
+          "title": "{theme} è un tema premium",
+          "body": "Tutti i temi tranne Quartz sono inclusi nei piani a pagamento.",
+          "preview": "Anteprima di {theme}"
+        },
+        "subtitle": "Dalle un nome, aggiungi logo e colore e scegli un tema. Potrai cambiare tutto in seguito.",
+        "preview_label": "Anteprima",
+        "previewing_label": "Anteprima",
+        "preview_frame_label": "La tua accademia, come la vedranno i visitatori",
+        "use_theme": "Usa questo tema",
+        "apply_theme": "Applica tema",
+        "edit_name": "Modifica nome e logo dell'accademia",
+        "logo_drop": "Trascina qui il tuo logo",
+        "logo_choose": "oppure fai clic per scegliere · PNG, JPG o SVG",
+        "logo_not_image": "Quel file non è un'immagine.",
+        "logo_added": "Logo aggiunto",
+        "logo_shown": "Mostrato nel tuo portale",
+        "logo_remove": "Rimuovi",
+        "logo_use_detected": "Usa il logo del tuo sito web",
+        "colour_presets_label": "Colori del marchio predefiniti",
+        "colour_from_website": "Dal tuo sito web",
+        "colour_custom_title": "Colore personalizzato",
+        "colour_format_label": "Formato colore",
+        "colour_format_hex": "HEX",
+        "colour_format_rgb": "RGB",
+        "colour_picker_label": "Scegli un colore personalizzato",
+        "colour_contrast_title": "Contrasto basso.",
+        "colour_contrast_body": "I link della tua accademia saranno difficili da leggere.",
+        "colour_adjusted": "Abbiamo scurito leggermente il colore del tuo sito perché il testo resti leggibile.",
+        "theme_select": "Seleziona {theme}",
+        "theme_selected": "{theme} selezionato",
+        "theme_upgrade": "Passa a un piano superiore per {theme}",
+        "theme_preview": "Anteprima di {theme}",
+        "more_actions": "Altre azioni"
+      },
+      "starter": {
+        "button": "Contenuti iniziali",
+        "title": "Contenuti iniziali",
+        "body": "Redatti da ciò che ci hai raccontato. Rinomina o rimuovi ciò che vuoi. Tutto resta una bozza finché non pubblichi.",
+        "draft_badge": "Bozza",
+        "title_required": "Aggiungi un titolo.",
+        "remove": "Rimuovi",
+        "removed": "\"{title}\" rimosso.",
+        "undo": "Annulla",
+        "empty": "Nessun corso iniziale. Puoi crearne uno tuo dalla dashboard.",
+        "regenerate": "Rigenera",
+        "regenerate_exhausted": "Hai usato tutte le rigenerazioni.",
+        "regenerate_confirm": "Questo sostituisce le bozze attuali, incluse le rinomine. Continuare?",
+        "regenerate_yes": "Sostituisci le bozze",
+        "done": "Fatto"
+      },
+      "welcome": {
+        "title": "Benvenuto nel tuo spazio di lavoro",
+        "body_samples": "Abbiamo aggiunto alcuni corsi di esempio per iniziare. Sentiti libero di modificarli, pubblicarli o eliminarli.",
+        "body_empty": "Il tuo spazio di lavoro è pronto. Crea un corso quando vuoi.",
+        "later": "Più tardi",
+        "take_tour": "Fai il tour"
+      },
+      "load_error": {
+        "title": "Non siamo riusciti a caricare la configurazione",
+        "body": "Controlla la connessione e riprova. Le tue risposte sono salvate.",
+        "retry": "Riprova"
+      },
+      "tour": {
+        "region": "Tour del prodotto",
+        "counter": "{position} di {total}",
+        "next": "Avanti",
+        "back": "Indietro",
+        "done": "Fatto",
+        "skip": "Salta il tour",
+        "hint_click": "Fai clic per continuare",
+        "steps": {
+          "courses-list": {
+            "title": "Esplora i tuoi corsi",
+            "body": "Qui trovi i tuoi corsi iniziali. Restano bozze finché non li pubblichi."
+          },
+          "open-course": {
+            "title": "Apri un corso",
+            "body": "Apri il primo corso per vedere le lezioni e modificarle."
+          },
+          "templates": {
+            "title": "Crea un altro corso",
+            "body": "Parti da un corso vuoto o scegli un modello dalla galleria."
+          },
+          "landing-page": {
+            "title": "Progetta la tua landing page",
+            "body": "Scegli un tema, modifica le sezioni e guarda l'anteprima aggiornarsi mentre scrivi."
+          },
+          "audience": {
+            "title": "Invita i tuoi studenti",
+            "body": "Aggiungi studenti e tutor e scopri chi si è unito."
+          },
+          "academy": {
+            "title": "Guarda la tua accademia",
+            "body": "Apri la tua accademia per vedere cosa vedono gli studenti."
+          }
+        }
+      }
     }
   },
   "welcome_modal": {
@@ -2398,7 +2773,8 @@
         "students": "Studenti",
         "published": "Pubblicato",
         "type": "Tipo"
-      }
+      },
+      "sample": "Esempio"
     },
     "new_course_modal": {
       "heading": "Crea un corso",
@@ -2481,7 +2857,24 @@
           "documentation_url": {
             "label": "URL della documentazione (facoltativo)",
             "hint": "Leggeremo questo sito per radicare il corso nel tuo prodotto reale."
-          }
+          },
+          "feature_name": "Quale funzionalità dovrebbero adottare i clienti?",
+          "certification_topic": "Su cosa devono essere certificate le persone?"
+        },
+        "support_product_training": {
+          "title": "Formazione prodotto per il supporto",
+          "description": "Una formazione sul prodotto che aiuta il tuo team di supporto a risolvere le domande dei clienti senza escalation.",
+          "form_title": "Raccontaci del tuo team di supporto"
+        },
+        "feature_adoption": {
+          "title": "Mini-corso sull'adozione delle funzionalità",
+          "description": "Un corso breve che porta i clienti esistenti da conoscere una funzionalità a usarla davvero.",
+          "form_title": "Raccontaci la funzionalità"
+        },
+        "compliance_certification": {
+          "title": "Certificazione di conformità",
+          "description": "Un corso di certificazione con una valutazione da superare e un certificato scaricabile.",
+          "form_title": "Raccontaci la certificazione"
         }
       }
     },
@@ -4950,7 +5343,10 @@
     "enterprise_required": "Questa funzionalità richiede un piano Enterprise.",
     "public_api_required": "Esegui l'upgrade a Early Adopter o Enterprise per accedere all'API pubblica.",
     "unlock_field": "Esegui l'upgrade per sbloccare questa impostazione",
-    "webhooks_required": "Passa a Early Adopter o Enterprise per usare i webhook."
+    "webhooks_required": "Passa a Early Adopter o Enterprise per usare i webhook.",
+    "context": {
+      "model": "{model} è disponibile nei piani a pagamento."
+    }
   },
   "automation": {
     "title": "Automazione",
@@ -5646,11 +6042,17 @@
     },
     "organization_name": {
       "min_char": "L'organizzazione deve contenere 5 o più caratteri",
-      "hyphen_rule": "Il nome dell'organizzazione non può iniziare o terminare con un trattino"
+      "hyphen_rule": "Il nome dell'organizzazione non può iniziare o terminare con un trattino",
+      "max_char": "Il nome dell'organizzazione può avere al massimo 120 caratteri"
     },
     "site_name": {
       "min_char": "Il sottodominio Academy deve contenere 5 o più caratteri",
-      "hyphen_rule": "Il sottodominio Academy non può iniziare o terminare con un trattino"
+      "hyphen_rule": "Il sottodominio Academy non può iniziare o terminare con un trattino",
+      "characters": "Il sottodominio dell'accademia può contenere solo lettere, numeri e trattini",
+      "max_char": "Il sottodominio dell'accademia può avere al massimo 63 caratteri",
+      "taken": "Questo sottodominio è già in uso. Provane un altro.",
+      "reserved": "Questo sottodominio è riservato. Provane un altro.",
+      "invalid": "Inserisci un sottodominio dell'accademia valido"
     },
     "news_feed": {
       "min_char": "Il campo deve contenere 5 o più caratteri"
@@ -5770,6 +6172,9 @@
       "event_types": {
         "required": "Seleziona almeno un evento"
       }
+    },
+    "organization": {
+      "theme_color": "Inserisci un colore esadecimale, ad esempio #1d4ed8"
     }
   },
   "ai_assistant": {
@@ -5925,7 +6330,9 @@
         "attach_document_to_lesson": "Aggiunta di un documento",
         "get_lesson_history": "Lettura della cronologia delle lezioni",
         "restore_lesson_version": "Ripristino di una versione precedente",
-        "undo_lesson_change": "Annullare una modifica"
+        "undo_lesson_change": "Annullare una modifica",
+        "get_workspace_context": "Lettura delle impostazioni del marchio",
+        "update_course_certificate": "Attivazione dei certificati"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# carattere} other {# caratteri}})",
@@ -5979,7 +6386,9 @@
         "attach_document_to_lesson": "Documento aggiunto: {title}",
         "get_lesson_history": "Cronologia delle lezioni caricata",
         "restore_lesson_version": "Ripristinata una versione precedente della lezione",
-        "undo_lesson_change": "Annullato un cambiamento"
+        "undo_lesson_change": "Annullato un cambiamento",
+        "get_workspace_context": "Spazio di lavoro letto · {count} elementi",
+        "update_course_certificate": "Certificati scaricabili attivati"
       }
     },
     "mention_lesson": "Lezione",
@@ -7262,5 +7671,18 @@
     },
     "close": "Chiudi",
     "dismiss": "Capito"
+  },
+  "owner_edit_bar": {
+    "label": "Visualizzazione come proprietario",
+    "region_label": "Strumenti del proprietario dell'accademia",
+    "catalog": {
+      "edit_courses": "Modifica corsi",
+      "edit_page_design": "Modifica il design della pagina"
+    },
+    "course": {
+      "edit_landing_page": "Modifica la landing page",
+      "edit_lessons": "Modifica lezioni",
+      "settings": "Impostazioni"
+    }
   }
 }

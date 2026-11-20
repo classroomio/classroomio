@@ -71,6 +71,11 @@
 
 @source inline('ui:notch-cutout');
 
+@utility font-brand-mono {
+  font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@source inline('ui:font-brand-mono');
+
 :root {
   --spacing: var(--ui-spacing);
   --background: oklch(1 0 0);

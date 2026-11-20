@@ -17,6 +17,7 @@
   import FilterIcon from '@lucide/svelte/icons/filter';
   import { normalizeLandingPageSettings, themeRendersNavInsideHero } from '$features/org/utils/landing-page';
 
+  import { OwnerEditBar } from '@cio/ui/custom/owner-edit-bar';
   import { LandingButton, LandingThemeScope, OrgLandingPageFooter } from '@cio/ui/custom/org-landing-page';
 
   import { Checkbox } from '@cio/ui/base/checkbox';
@@ -103,6 +104,18 @@
       appInitApi
     })
   );
+
+  const editBarLinks = $derived.by(() => {
+    const ownerEditBar = data.ownerEditBar;
+    if (!ownerEditBar) return null;
+
+    const orgBase = `${ownerEditBar.adminOrigin}/org/${encodeURIComponent(ownerEditBar.siteName)}`;
+
+    return [
+      { href: `${orgBase}/courses`, label: $t('owner_edit_bar.catalog.edit_courses'), primary: true },
+      { href: `${orgBase}/landingpage/edit`, label: $t('owner_edit_bar.catalog.edit_page_design') }
+    ];
+  });
 
   const navInsideHero = $derived(themeRendersNavInsideHero(landingSettings.theme));
 
@@ -416,7 +429,7 @@
   </div>
 {/snippet}
 
-<PoweredBy />
+<PoweredBy offset={!!editBarLinks} />
 
 <LandingThemeScope theme={landingSettings.theme} class="font-sans">
   <main>
@@ -578,3 +591,11 @@
     />
   </main>
 </LandingThemeScope>
+
+{#if editBarLinks}
+  <OwnerEditBar
+    label={$t('owner_edit_bar.label')}
+    regionLabel={$t('owner_edit_bar.region_label')}
+    links={editBarLinks}
+  />
+{/if}

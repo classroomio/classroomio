@@ -1,5 +1,6 @@
 <script lang="ts">
   import CoursesPage from '$features/course/pages/courses.svelte';
+  import OnboardingWelcomeDialog from '$features/onboarding/components/onboarding-welcome-dialog.svelte';
   import TemplateRow from '$features/course/components/template-row.svelte';
   import { MachineCourseEnroll } from '@cio/ui/custom/animation';
   import { isStudentExperience } from '$lib/utils/store/app';
@@ -232,6 +233,8 @@
     <MachineCourseEnroll enrolled={$t('course_templates.empty.enrolled').toLocaleUpperCase()} />
   </div>
 {/snippet}
+
+<OnboardingWelcomeDialog hasCourses={data.courses.length > 0} />
 
 <Page.Root class="w-full gap-0">
   {#if !$isStudentExperience}

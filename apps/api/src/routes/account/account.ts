@@ -41,7 +41,8 @@ export const accountRouter = new Hono()
           user,
           profile: accountData.profile,
           organizations: accountData.organizations,
-          licenseFeatures: accountData.licenseFeatures
+          licenseFeatures: accountData.licenseFeatures,
+          onboarding: accountData.onboarding
         },
         200
       );

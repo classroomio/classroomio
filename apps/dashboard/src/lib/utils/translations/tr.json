@@ -395,7 +395,382 @@
       "footer": "Açık kaynak · Kendi kendine barındırılan veya bulut",
       "headline": "Her müşteriyi {highlight} eğitmeyi bırakın.",
       "headline_highlight": "elle",
-      "subtitle": "Bir kez kurun, müşterilerinizi API aracılığıyla toplu olarak kaydedin. Daha sonra ilerlemelerini analitiklerle takip edin."
+      "subtitle": "Bir kez kurun, müşterilerinizi API aracılığıyla toplu olarak kaydedin. Daha sonra ilerlemelerini analitiklerle takip edin.",
+      "machine_label": "Dersleri, quizleri ve ödevleri taşıyan bir eğitim hattı",
+      "carousel_label": "Müşteriler ne diyor",
+      "dot_label": "Yorum {number}",
+      "quotes": {
+        "quickeasy": {
+          "quote": "Çok seviyoruz; eğitim materyalini müşterilere ulaştırmamıza yardımcı oluyor, müşteriler de ekiplerinin ilerlemesini izleyebiliyor.",
+          "role": "Genel Müdür"
+        },
+        "dr_ozzy": {
+          "quote": "ClassroomIO, karmaşık bir platformda kaybolmak yerine öğrenme deneyimine odaklanmamı sağlıyor.",
+          "role": "Akademik Programlar Koordinatörü"
+        },
+        "oss_capital": {
+          "quote": "Teknoloji bootcamp'leri yürütmek için harika bir açık kaynak platform.",
+          "role": "Kurucu ve Yönetici Ortak"
+        }
+      }
+    },
+    "v2": {
+      "common": {
+        "back": "Geri",
+        "continue": "Devam et"
+      },
+      "steps": {
+        "account": "Hesap oluştur",
+        "business": "İşletmeniz",
+        "workspace": "Akademiniz",
+        "customise": "Özelleştir",
+        "build": "Oluştur"
+      },
+      "account": {
+        "title": "Hesabınızı oluşturun",
+        "subtitle": "Müşterileriniz için markanıza özel bir akademi başlatın. İlk {count} öğrenciniz için ücretsiz, kart gerekmez.",
+        "google": "Google ile devam edin",
+        "google_terms": "Devam ederek şunları kabul edersiniz:",
+        "terms_link": "Hizmet Şartları",
+        "privacy_link": "Gizlilik Politikası",
+        "and": "ve",
+        "fullname_label": "Ad soyad",
+        "fullname_placeholder": "Joke Silva",
+        "email_label": "İş e-postası",
+        "email_placeholder": "you@yourcompany.com",
+        "password_strength": "Parola gücü",
+        "show_password": "Parolayı göster",
+        "hide_password": "Parolayı gizle",
+        "terms_label": "Şartları kabul ediyorum",
+        "submit": "Hesap oluştur",
+        "have_account": "Zaten hesabınız var mı?",
+        "sign_in": "Giriş yap",
+        "panel_footer": "Açık kaynak · Self-hosted veya bulut",
+        "errors": {
+          "fullname": "Adınızı ve soyadınızı girin (en az 5 karakter).",
+          "email": "Geçerli bir iş e-postası girin.",
+          "terms": "Devam etmek için lütfen şartları kabul edin.",
+          "generic": "Hesabınızı oluşturamadık. Tekrar deneyin."
+        },
+        "or": "veya",
+        "password_label": "Şifre",
+        "password_placeholder": "En az 8 karakter"
+      },
+      "business": {
+        "eyebrow": "İşletmeniz hakkında",
+        "heading": "Bize ekibinizden bahsedin",
+        "heading_highlight": "ekibinizden",
+        "subtitle": "Her yanıt çalışma alanınıza bir blok ekler. Bunları başlangıç kurslarınızı taslaklamak için kullanırız.",
+        "foothold": "Bunların hepsini daha sonra değiştirebilirsiniz.",
+        "now": "Şimdi",
+        "answered": "Yanıtlandı",
+        "optional": "İsteğe bağlı",
+        "skip": "Atla",
+        "save_error": "Yanıtlarınızı kaydedemedik. Bir şeyi değiştirdiğinizde yeniden kaydedilecek.",
+        "counter_short": "5 üzerinden {count}",
+        "items": {
+          "outcome": "İlk hedef",
+          "business": "İşletmeniz",
+          "team": "Ekibiniz",
+          "learning": "Müşteriler bugün nasıl öğreniyor",
+          "source": "Bizi nasıl buldunuz?",
+          "academy": "Akademiniz"
+        },
+        "missing": {
+          "outcome": "Bir ilk hedef seçin.",
+          "business": "Web sitenizi ekleyin veya ne sunduğunuzu açıklayın.",
+          "team": "Rolünüzü ve şirket büyüklüğünü seçin.",
+          "learning": "Müşterilerin bugün nasıl öğrendiğini seçin."
+        },
+        "outcomes": {
+          "onboard_customers": {
+            "label": "Yeni müşterileri dahil edin",
+            "hint": "Yeni müşteriler için bir katılım yolu"
+          },
+          "explain_product": {
+            "label": "Ürünümüzü anlatın",
+            "hint": "Temel nasıl yapılır kursları"
+          },
+          "increase_adoption": {
+            "label": "Benimsemeyi artırın",
+            "hint": "Canlıya geçişin ötesinde bir yol"
+          },
+          "cut_tickets": {
+            "label": "Tekrarlayan talepleri azaltın",
+            "hint": "En sık sorulan sorular kursu"
+          }
+        },
+        "context": {
+          "website": "Web sitesi URL'si",
+          "description": "İşletmenizi tanımlayın"
+        },
+        "website_label": "Web sitesi",
+        "website_placeholder": "sirketiniz.com",
+        "description_label": "İşletmenizi tanımlayın",
+        "description_placeholder": "Ne sunuyorsunuz ve bunu kim kullanıyor?",
+        "description_helper": "İlgili kursları taslaklayabilmemiz için bir iki cümle ekleyin.",
+        "no_ai_hint": "Düzenleyebileceğiniz örnek kurslarla başlayacağız.",
+        "skip_analysis": "Web sitesi analizini atla",
+        "errors": {
+          "website_invalid": "Bu bağlantı doğru görünmüyor. Yazımı kontrol edin veya işletmenizi tanımlayın.",
+          "website_required": "Web sitenizi ekleyin veya işinizi açıklayın.",
+          "description_required": "Biraz daha anlatın: en az 20 karakter."
+        },
+        "role_label": "Siz",
+        "size_label": "Şirket büyüklüğü",
+        "roles": {
+          "founder": "Kurucu veya CEO",
+          "customer_success": "Müşteri Başarısı",
+          "customer_education": "Müşteri Eğitimi",
+          "product": "Ürün",
+          "marketing": "Pazarlama veya Büyüme",
+          "support": "Destek",
+          "operations": "Operasyon",
+          "other": "Başka bir şey"
+        },
+        "learning": {
+          "self_serve_short": "Kendi başlarına",
+          "live_short": "Canlı oturumlar",
+          "help_docs_short": "Yardım belgeleri",
+          "no_training_short": "Henüz eğitim yok"
+        },
+        "source_label": "Bizi nerede buldunuz?",
+        "source_other_label": "Bize daha fazla anlatın",
+        "ai_provider_label": "Bizi kim önerdi?",
+        "ai_provider_other_label": "Hangi asistan?",
+        "preview": {
+          "title": "Şimdiye kadarki çalışma alanınız",
+          "counter": "Çalışma alanınız, {total} bloktan {count} tanesi",
+          "stack_label": "Çalışma alanı bloklarınız",
+          "description": "Açıklamanız",
+          "samples": "Örnek kurslar",
+          "workspace_placeholder": "Akademiniz",
+          "choose_outcome": "Bir ilk hedef seçin",
+          "choose_size": "Bir boyut seçin",
+          "choose_role": "Bir rol seçin",
+          "choose_one": "Birini seçin",
+          "kind": {
+            "workspace": "Çalışma alanı",
+            "outcome": "İlk hedef",
+            "team": "Ekip",
+            "role": "Rol",
+            "today": "Bugün"
+          }
+        },
+        "skipped": "Atlandı",
+        "save_retrying": "Kaydedilemedi. Tekrar deneniyor.",
+        "next": "İleri",
+        "context_hint": "Başlangıç kurslarınızı seçmek ve taslaklarını oluşturmak için kullanılır.",
+        "describe_instead": "Bunun yerine açıklayın",
+        "source_hint": "Küçük bir ekibin neyin işe yaradığını görmesine yardımcı olur.",
+        "other_placeholder": "Bize daha fazla bilgi verin",
+        "more_roles": "Daha fazla",
+        "greeting": "Merhaba,",
+        "greeting_placeholder": "user.name",
+        "sizes": {
+          "solo": "Sadece ben",
+          "small": "2-9 kişi",
+          "medium": "10-50 kişi",
+          "large": "51-200 kişi",
+          "enterprise": "200+ kişi"
+        }
+      },
+      "workspace": {
+        "title": "Akademinizi kurun",
+        "heading": "Akademinizi kurun",
+        "heading_highlight": "Akademinizi",
+        "subtitle": "Kim olduğunuzu ve müşterilerinizin sizi nerede bulacağını söyleyin.",
+        "fullname_label": "Adınız ve soyadınız nedir?",
+        "fullname_hint": "Ekip arkadaşlarınız ve öğrencileriniz sizi böyle görecek.",
+        "org_name_label": "Kuruluşunuzun adı nedir?",
+        "site_name_label": "Akademi alt alan adı",
+        "site_name_placeholder": "okulum",
+        "checking": "Kullanılabilirlik kontrol ediliyor",
+        "available": "Alt alan adı kullanılabilir",
+        "save_continue": "Kaydet ve devam et",
+        "errors": {
+          "fullname": "Adınızı ve soyadınızı girin (en az 5 karakter)."
+        },
+        "panel_eyebrow": "Neredeyse hazır",
+        "panel_title": "Akademiniz, adlandırıldı ve dakikalar içinde yayında.",
+        "panel_title_highlight": "adlandırıldı",
+        "panel_body": "Müşterilerinizin göreceği adı ve adresi seçin. İkisini de daha sonra ayarlardan değiştirebilirsiniz.",
+        "panel_machine_label": "Dersleri, testleri ve ödevleri ilerleten bir eğitim hattı",
+        "fullname_placeholder": "Joke Silva",
+        "org_name_placeholder": "ör. Okulumun Adı"
+      },
+      "preparing": {
+        "title": "Çalışma alanınız hazırlanıyor",
+        "counter": "{total} adımdan {current}. adım",
+        "subtitle": "{orgName} için ilk taslak oluşturuluyor.",
+        "subtitle_sample": "Düzenleyebileceğiniz örnek kurslar kuruluyor.",
+        "headings": {
+          "understanding": "İşletmeniz okunuyor",
+          "drafting": "Kurslarınız taslaklanıyor",
+          "organising": "Kurslarınız düzenleniyor",
+          "finishing": "Çalışma alanınız kuruluyor"
+        },
+        "rows": {
+          "understanding": "Ürününüzü anlama",
+          "drafting": "Müşteri eğitimi içeriğiniz hazırlanıyor",
+          "organising": "Başlangıç kurslarınız düzenleniyor",
+          "finishing": "Çalışma alanınız kuruluyor"
+        },
+        "states": {
+          "done": "Tamamlandı",
+          "now": "Çalışıyor",
+          "waiting": "Bekliyor"
+        },
+        "checklist_label": "Çalışma alanı kurulum ilerlemesi",
+        "warning": {
+          "title": "Web sitenizi okuyamadık",
+          "body": "Bunun yerine örnek kurslar kullandık. Bunları düzenleyebilir veya bitirdikten sonra yeniden oluşturabilirsiniz."
+        },
+        "failed_partial": {
+          "title": "Kurslarınızın taslağını tamamlayamadık",
+          "body": "Bunun yerine örnek kurslar kullandık. Bunları düzenleyebilir veya bitirdikten sonra yeniden oluşturabilirsiniz."
+        },
+        "failed": {
+          "title": "Kurslarınızı hazırlayamadık",
+          "body": "Çalışma alanınız güvende. Yalnızca başlangıç kursları başarısız oldu."
+        },
+        "try_again": "Tekrar dene",
+        "continue_without": "Onlar olmadan devam et",
+        "headings_highlight": {
+          "understanding": "İşletmeniz",
+          "drafting": "Kurslarınız",
+          "organising": "Kurslarınız",
+          "finishing": "Çalışma alanınız"
+        }
+      },
+      "customise": {
+        "title": "Akademinizi özelleştirin",
+        "eyebrow": "Akademiniz",
+        "heading": "Onu kendinize ait yapın",
+        "heading_highlight": "kendinize ait",
+        "progress_label": "Katılım ilerlemesi",
+        "skip_to_academy": "Akademiye geç",
+        "name_label": "Akademi adı",
+        "colour_label": "Marka rengi",
+        "colours": {
+          "blue": "Mavi",
+          "rose": "Gül",
+          "green": "Yeşil",
+          "orange": "Turuncu",
+          "purple": "Mor"
+        },
+        "colour_custom": "Özel",
+        "colour_input_label": "HEX veya RGB rengi",
+        "colour_hint": "Akademinizdeki düğmeleri ve bağlantıları yönetir.",
+        "colour_apply": "Uygula",
+        "colour_invalid": "#5B5FEF gibi bir HEX veya rgb(91, 95, 239) gibi bir RGB değeri kullanın.",
+        "colour_contrast": "Düşük kontrast. Akademinizdeki bağlantılar zor okunur olacak.",
+        "colour_reset": "Marka rengi sıfırlandı.",
+        "reset": "Sıfırla",
+        "themes_label": "Temalar",
+        "theme_free": "Ücretsiz",
+        "theme_included": "Dahil",
+        "theme_premium": "Premium",
+        "plan_free": "{theme} · Ücretsiz",
+        "plan_premium": "{theme} · Premium",
+        "upgrade": {
+          "title": "{theme} premium bir temadır",
+          "body": "Quartz dışındaki tüm temalar ücretli planlara dahildir.",
+          "preview": "Önce {theme} temasını görün"
+        },
+        "subtitle": "Adını verin, logonuzu ve renginizi ekleyin, bir tema seçin. Tüm bunları daha sonra değiştirebilirsiniz.",
+        "preview_label": "Önizleme",
+        "previewing_label": "Önizleme",
+        "preview_frame_label": "Akademiniz, ziyaretçilerin göreceği şekilde",
+        "use_theme": "Bu temayı kullan",
+        "apply_theme": "Temayı uygula",
+        "edit_name": "Akademi adını ve logosunu düzenle",
+        "logo_drop": "Logonuzu buraya bırakın",
+        "logo_choose": "veya seçmek için tıklayın · PNG, JPG veya SVG",
+        "logo_not_image": "Bu dosya bir görsel değil.",
+        "logo_added": "Logo eklendi",
+        "logo_shown": "Portalınızda gösterilir",
+        "logo_remove": "Kaldır",
+        "logo_use_detected": "Web sitenizdeki logoyu kullan",
+        "colour_presets_label": "Hazır marka renkleri",
+        "colour_from_website": "Web sitenizden",
+        "colour_custom_title": "Özel renk",
+        "colour_format_label": "Renk biçimi",
+        "colour_format_hex": "HEX",
+        "colour_format_rgb": "RGB",
+        "colour_picker_label": "Özel bir renk seçin",
+        "colour_contrast_title": "Düşük kontrast.",
+        "colour_contrast_body": "Akademinizdeki bağlantılar zor okunur olacak.",
+        "colour_adjusted": "Metnin okunabilir kalması için web sitenizin rengini biraz koyulaştırdık.",
+        "theme_select": "{theme} seç",
+        "theme_selected": "{theme} seçildi",
+        "theme_upgrade": "{theme} için planı yükseltin",
+        "theme_preview": "{theme} önizle",
+        "more_actions": "Diğer işlemler"
+      },
+      "starter": {
+        "button": "Başlangıç içeriği",
+        "title": "Başlangıç içeriği",
+        "body": "Bize anlattıklarınızdan taslaklandı. İstediğinizi yeniden adlandırın veya kaldırın. Siz yayınlayana kadar her şey taslak kalır.",
+        "draft_badge": "Taslak",
+        "title_required": "Bir başlık ekleyin.",
+        "remove": "Kaldır",
+        "removed": "\"{title}\" kaldırıldı.",
+        "undo": "Geri al",
+        "empty": "Başlangıç kursu yok. Kendi kurslarınızı panelden oluşturabilirsiniz.",
+        "regenerate": "Yeniden oluştur",
+        "regenerate_exhausted": "Tüm yeniden oluşturmaları kullandınız.",
+        "regenerate_confirm": "Bu, yeniden adlandırmalar dahil mevcut taslakların yerini alır. Devam edilsin mi?",
+        "regenerate_yes": "Taslakları değiştir",
+        "done": "Bitti"
+      },
+      "welcome": {
+        "title": "Çalışma alanınıza hoş geldiniz",
+        "body_samples": "Başlamanız için birkaç örnek kurs ekledik. Bunları düzenlemekten, yayınlamaktan veya silmekten çekinmeyin.",
+        "body_empty": "Çalışma alanınız hazır. İstediğiniz zaman bir kurs oluşturun.",
+        "later": "Daha sonra",
+        "take_tour": "Turu başlat"
+      },
+      "load_error": {
+        "title": "Kurulumunuz yüklenemedi",
+        "body": "Bağlantınızı kontrol edip tekrar deneyin. Yanıtlarınız kaydedildi.",
+        "retry": "Tekrar dene"
+      },
+      "tour": {
+        "region": "Ürün turu",
+        "counter": "{total} adımdan {position}.",
+        "next": "İleri",
+        "back": "Geri",
+        "done": "Tamam",
+        "skip": "Turu atla",
+        "hint_click": "Devam etmek için tıklayın",
+        "steps": {
+          "courses-list": {
+            "title": "Kurslarınızı keşfedin",
+            "body": "Başlangıç kurslarınız burada. Yayınlayana kadar taslak olarak kalırlar."
+          },
+          "open-course": {
+            "title": "Bir kursu açın",
+            "body": "Dersleri görmek ve düzenlemek için ilk kursu açın."
+          },
+          "templates": {
+            "title": "Başka bir kurs oluşturun",
+            "body": "Boş bir kurstan başlayın veya galeriden bir şablon seçin."
+          },
+          "landing-page": {
+            "title": "Açılış sayfanızı tasarlayın",
+            "body": "Bir tema seçin, bölümleri düzenleyin ve yazarken önizlemenin değiştiğini görün."
+          },
+          "audience": {
+            "title": "Öğrencilerinizi davet edin",
+            "body": "Öğrenci ve eğitmen ekleyin, kimlerin katıldığını görün."
+          },
+          "academy": {
+            "title": "Akademinizi önizleyin",
+            "body": "Öğrencilerin ne gördüğünü görmek için akademinizi açın."
+          }
+        }
+      }
     }
   },
   "welcome_modal": {
@@ -2408,7 +2783,8 @@
         "students": "Students",
         "published": "Published",
         "type": "Type"
-      }
+      },
+      "sample": "Örnek"
     },
     "new_course_modal": {
       "heading": "Kurs Oluştur",
@@ -2491,7 +2867,24 @@
           "documentation_url": {
             "label": "Dokümantasyon URL'si (isteğe bağlı)",
             "hint": "Kursu gerçek ürününüze dayandırmak için bu siteyi okuyacağız."
-          }
+          },
+          "feature_name": "Müşteriler hangi özelliği benimsemeli?",
+          "certification_topic": "Kişiler hangi konuda sertifikalandırılmalı?"
+        },
+        "support_product_training": {
+          "title": "Destek Ürün Eğitimi",
+          "description": "Destek ekibinizin müşteri sorularını eskale etmeden çözmesine yardımcı olan bir ürün eğitimi.",
+          "form_title": "Bize destek ekibinizden bahsedin"
+        },
+        "feature_adoption": {
+          "title": "Özellik Benimseme Mini Kursu",
+          "description": "Mevcut müşterileri bir özelliği duymaktan onu kullanmaya taşıyan kısa bir kurs.",
+          "form_title": "Bize özellikten bahsedin"
+        },
+        "compliance_certification": {
+          "title": "Uyumluluk Sertifikasyonu",
+          "description": "Geçilebilir bir değerlendirme ve indirilebilir sertifika içeren bir sertifikasyon kursu.",
+          "form_title": "Bize sertifikasyondan bahsedin"
         }
       }
     },
@@ -4960,7 +5353,10 @@
     "enterprise_required": "Bu özellik bir Kurumsal plan gerektirir.",
     "public_api_required": "Erişim için Erken Benimseyen veya Kurumsal sürümüne yükseltin genel API.",
     "unlock_field": "Bu ayarın kilidini açmak için yükseltme",
-    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin."
+    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin.",
+    "context": {
+      "model": "{model} ücretli planlarda kullanılabilir."
+    }
   },
   "automation": {
     "title": "Automation",
@@ -5656,11 +6052,17 @@
     },
     "organization_name": {
       "min_char": "Kuruluş 5 veya daha fazla karakterden oluşmalıdır",
-      "hyphen_rule": "Kuruluş adı kısa çizgi ile başlayamaz veya bitemez"
+      "hyphen_rule": "Kuruluş adı kısa çizgi ile başlayamaz veya bitemez",
+      "max_char": "Kuruluş adı en fazla 120 karakter olabilir"
     },
     "site_name": {
       "min_char": "Academy alt alan adı 5 veya daha fazla karakter içermelidir",
-      "hyphen_rule": "Academy alt alan adı kısa çizgi ile başlayamaz veya bitemez"
+      "hyphen_rule": "Academy alt alan adı kısa çizgi ile başlayamaz veya bitemez",
+      "characters": "Akademi alt alan adı yalnızca harf, rakam ve tire içerebilir",
+      "max_char": "Akademi alt alan adı en fazla 63 karakter olabilir",
+      "taken": "Bu alt alan adı zaten alınmış. Başka bir tane deneyin.",
+      "reserved": "Bu alt alan adı ayrılmış. Başka bir tane deneyin.",
+      "invalid": "Geçerli bir akademi alt alan adı girin"
     },
     "news_feed": {
       "min_char": "Alan 5 veya daha fazla karakter içermelidir"
@@ -5780,6 +6182,9 @@
       "event_types": {
         "required": "En az bir olay seçin"
       }
+    },
+    "organization": {
+      "theme_color": "Rengi onaltılık olarak girin, örneğin #1d4ed8"
     }
   },
   "ai_assistant": {
@@ -5935,7 +6340,9 @@
         "attach_document_to_lesson": "Belge ekleme",
         "get_lesson_history": "Ders geçmişini okuma",
         "restore_lesson_version": "Daha önceki bir sürümü geri yükleme",
-        "undo_lesson_change": "Bir değişikliği geri alma"
+        "undo_lesson_change": "Bir değişikliği geri alma",
+        "get_workspace_context": "Marka ayarlarınız okunuyor",
+        "update_course_certificate": "Sertifikalar açılıyor"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
@@ -5989,7 +6396,9 @@
         "attach_document_to_lesson": "Doküman eklendi: {title}",
         "get_lesson_history": "Ders geçmişi yüklendi",
         "restore_lesson_version": "Dersin önceki bir sürümü geri yüklendi",
-        "undo_lesson_change": "Bir değişiklik geri alındı"
+        "undo_lesson_change": "Bir değişiklik geri alındı",
+        "get_workspace_context": "Çalışma alanı okundu · {count} öğe",
+        "update_course_certificate": "İndirilebilir sertifikalar açıldı"
       }
     },
     "mention_lesson": "LDers",
@@ -7272,5 +7681,18 @@
       "exercises_capped": "Alıştırma puanları ilk {limit} sonuçla sınırlıdır."
     },
     "org_page_title": "Akademi"
+  },
+  "owner_edit_bar": {
+    "label": "Sahip olarak görüntüleniyor",
+    "region_label": "Akademi sahibi araçları",
+    "catalog": {
+      "edit_courses": "Kursları düzenle",
+      "edit_page_design": "Sayfa tasarımını düzenle"
+    },
+    "course": {
+      "edit_landing_page": "Açılış sayfasını düzenle",
+      "edit_lessons": "Dersleri düzenle",
+      "settings": "Ayarlar"
+    }
   }
 }

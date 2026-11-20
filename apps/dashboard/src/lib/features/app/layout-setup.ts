@@ -4,7 +4,7 @@ import type { AccountOrg, PublicOrg } from '$features/app/types';
 import { toPublicOrg } from '$features/app/public-org';
 import type { Cookies } from '@sveltejs/kit';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { blockedSubdomain } from '$lib/utils/constants/app';
+import { blockedSubdomain } from '@cio/utils/constants';
 import { env } from '$env/dynamic/private';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { isCustomDomainHost } from '$lib/utils/functions/custom-domain';

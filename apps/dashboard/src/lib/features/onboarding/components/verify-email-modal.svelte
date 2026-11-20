@@ -226,7 +226,7 @@
         class="inline-flex items-center gap-1 font-bold text-gray-900 sm:ml-1 dark:text-gray-50"
         onclick={switchAccount}
       >
-        <LogOut class="h-4 w-4" />
+        <LogOut class="custom h-4 w-4" />
         {$t('verify_email_modal.switch_account')}
       </Button>
     </div>
