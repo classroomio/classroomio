@@ -45,6 +45,11 @@ REDIS_URL=redis://localhost:6379
 # route uses session auth, so most of the time you can leave this unset.
 # Same value must also be set as a Cloudflare secret on tenant-router for prod.
 HLS_SIGNING_SECRET=…
+
+# HTML lesson blocks. Pages are served from /usercontent/html on this API unless HTML_CONTENT_ORIGIN
+# points at a separate domain. The signing secret falls back to HLS_SIGNING_SECRET, then BETTER_AUTH_SECRET.
+HTML_CONTENT_ORIGIN=
+HTML_CONTENT_SIGNING_SECRET=
 ```
 
 `apps/dashboard/.env`:

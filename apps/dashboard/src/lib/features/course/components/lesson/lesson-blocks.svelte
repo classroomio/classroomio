@@ -32,7 +32,7 @@
   );
   const viewBlocks = $derived(lessonBlockList.blocks.map((block) => toBlockViewModel(block, locale)));
   const viewHost: BlockViewHost = { videoPlayer: lessonVideoPlayer };
-  const editHost = $derived<BlockEditHost>({ lessonId });
+  const editHost = $derived<BlockEditHost>({ courseId, lessonId });
   const showsEncodingState = $derived(isEditing || $isOrgStudent !== true);
   const emptyTitle = $derived(
     learnerView

@@ -19,6 +19,8 @@ import {
 import { formatLessonMarkdownDocument } from '@api/utils/html-to-markdown';
 import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getExerciseSectionsByExerciseId } from '@cio/db/queries/exercise/exercise-section';
+import { listBlockMedia, withBlockMedia } from '@cio/utils/validation/block';
+import { withHtmlContentUrl } from '@cio/core/services/block/block-view';
 
 /**
  * Anonymous-safe: fetch the full tree for a published public course by slug.
@@ -89,11 +91,13 @@ export async function issuePublicHlsCookieService(courseSlug: string, itemSlug: 
       throw new AppError('Public lesson not found', ErrorCodes.NOT_FOUND, 404);
     }
 
-    const lessonAssetIds = item.blocks.flatMap((block) => {
-      const video = block.type === 'video' ? (block.data as NonNullable<PublicLessonVideoPayload>) : null;
+    const lessonAssetIds = item.blocks.flatMap((block) =>
+      listBlockMedia(block.type, block.data).flatMap((item) => {
+        const video = item.media === 'video' ? (item.data as NonNullable<PublicLessonVideoPayload>) : null;
 
-      return video?.type === 'upload' && video.assetId ? [video.assetId] : [];
-    });
+        return video?.type === 'upload' && video.assetId ? [video.assetId] : [];
+      })
+    );
     const assetId = requestedAssetId ?? lessonAssetIds[0];
     if (!assetId || !lessonAssetIds.includes(assetId)) {
       throw new AppError('Lesson has no playable HLS asset', ErrorCodes.VALIDATION_ERROR, 400);
@@ -210,11 +214,21 @@ export async function getPublicCourseItemService(
       const video = await resolvePublicVideo(lesson.video, courseOrganizationId);
       const blocks = await Promise.all(
         lesson.blocks.map(async (block) => {
-          if (block.type !== 'video') return block;
+          const media = listBlockMedia(block.type, block.data);
+          if (!media.some((item) => item.media === 'video' || item.media === 'html')) return block;
 
-          const video = await resolvePublicVideo(block.data as PublicLessonVideoPayload, courseOrganizationId);
+          const resolved = await Promise.all(
+            media.map(async (item) => {
+              if (item.media === 'html') return withHtmlContentUrl(item.data);
+              if (item.media !== 'video') return item.data;
 
-          return { ...block, data: video ?? block.data };
+              const video = await resolvePublicVideo(item.data as PublicLessonVideoPayload, courseOrganizationId);
+
+              return (video ?? item.data) as Record<string, unknown>;
+            })
+          );
+
+          return { ...block, data: withBlockMedia(block.type, block.data, resolved) };
         })
       );
 

@@ -1,1 +1,1 @@
-export const FIELDS = ['open', 'choices', 'addLabel', 'testId'];
+export const FIELDS = ['open', 'choices', 'addLabel', 'aiLabel', 'aiShortcut', 'testId'];

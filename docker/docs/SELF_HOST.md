@@ -89,7 +89,11 @@ Routing and auth are handled for you. Browser dashboard calls go to the dashboar
 proxied to `PRIVATE_SERVER_URL` (default `http://api:3081`), so normal dashboard auth needs no
 cookie-domain matching between the API and dashboard: the proxy makes it first-party, and Better
 Auth sets host-only cookies. Only set `PUBLIC_SERVER_URL` and `TRUSTED_ORIGINS` if a browser or
-third-party client needs to call the API directly. CSP is read at container startup rather than
+third-party client needs to call the API directly. HTML lesson blocks are the exception: their
+pages load straight from the API in the browser at `/usercontent/html`, so point `HTML_CONTENT_ORIGIN`
+(or `PUBLIC_SERVER_URL`) at a public URL of the API, ideally a separate registrable domain, served
+over https. Compose passes the same `HTML_CONTENT_ORIGIN` to the dashboard, which adds it (or
+`PUBLIC_SERVER_URL`) to its `frame-src`, so you don't add it to `CSP_FRAME_SRC_DOMAINS`. CSP is read at container startup rather than
 baked into the image, so `ALLOWED_EXTERNAL_DOMAINS` (or the per-directive `CSP_SCRIPT_SRC_DOMAINS`,
 `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`,
 `CSP_MEDIA_SRC_DOMAINS` vars) take effect after `./classroomio.sh restart` (no image rebuild

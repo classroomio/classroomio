@@ -25,7 +25,7 @@
     onChange?: () => void;
     onRemove?: () => void;
     onThumbnailSaved?: (thumbnailUrl: string) => void;
-    onMetadataUpdated?: (metadata: Record<string, unknown>) => void;
+    onMetadataUpdated?: (metadata: Record<string, unknown>, sourceAssetId: string) => void;
   }
 
   let {

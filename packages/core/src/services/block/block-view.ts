@@ -1,5 +1,5 @@
 import type { TBlock, TBlockPlacement, TLocale } from '@cio/db/types';
-import { BLOCK_DEFINITIONS, type TBlockMediaKind, type TBlockType } from '@cio/utils/validation/block';
+import { listBlockMedia, withBlockMedia, type TBlockType } from '@cio/utils/validation/block';
 import {
   getPlacementCountsByBlockIds,
   listBlockLocales,
@@ -7,6 +7,7 @@ import {
   listLessonBlockRows,
   type LessonBlockRow
 } from '@cio/db/queries/block';
+import { signHtmlContentUrl } from '../../utils/html-content';
 import { enrichLessonMedia, type LessonDocument, type LessonVideo } from '../../utils/lesson-media';
 
 export interface LessonBlock {
@@ -90,31 +91,45 @@ export async function loadBlocksForLessons(lessonIds: string[]): Promise<Map<str
   return byLesson;
 }
 
-function blocksWithMedia(blocks: LessonBlock[], media: TBlockMediaKind): LessonBlock[] {
-  return blocks.filter((block) => BLOCK_DEFINITIONS[block.type]?.media === media);
+/**
+ * Adds a signed `url` to an HTML page item so the sandboxed content route serves it.
+ */
+export function withHtmlContentUrl(data: Record<string, unknown>): Record<string, unknown> {
+  const url = typeof data.assetId === 'string' ? signHtmlContentUrl(data.assetId) : null;
+
+  return url ? { ...data, url } : data;
 }
 
 /**
- * Applies canonical asset metadata and presigned URLs to blocks whose type plays or links media.
- * @returns blocks in the same order; other block types pass through untouched.
+ * Applies canonical asset metadata and presigned URLs to every video and document a block plays,
+ * including videos kept inside a block such as a tab, and a signed URL to every HTML page.
+ * @returns blocks in the same order; blocks without media pass through untouched.
  */
 export async function enrichBlocksMedia(blocks: LessonBlock[]): Promise<LessonBlock[]> {
-  const videoBlocks = blocksWithMedia(blocks, 'video');
-  const documentBlocks = blocksWithMedia(blocks, 'document');
-  if (videoBlocks.length === 0 && documentBlocks.length === 0) return blocks;
+  const mediaByBlock = blocks.map((block) => listBlockMedia(block.type, block.data));
+  const videos = mediaByBlock.flat().filter((item) => item.media === 'video');
+  const documents = mediaByBlock.flat().filter((item) => item.media === 'document');
+  const hasHtml = mediaByBlock.flat().some((item) => item.media === 'html');
+  if (videos.length === 0 && documents.length === 0 && !hasHtml) return blocks;
 
-  const media = await enrichLessonMedia({
-    videos: videoBlocks.map((block) => block.data as LessonVideo),
-    documents: documentBlocks.map((block) => block.data as LessonDocument)
+  const enriched = await enrichLessonMedia({
+    videos: videos.map((item) => item.data as LessonVideo),
+    documents: documents.map((item) => item.data as LessonDocument)
   });
 
-  const enrichedData = new Map<string, Record<string, unknown>>();
-  videoBlocks.forEach((block, index) => enrichedData.set(block.placementId, media.videos[index]));
-  documentBlocks.forEach((block, index) => enrichedData.set(block.placementId, media.documents[index]));
+  let nextVideo = 0;
+  let nextDocument = 0;
 
-  return blocks.map((block) => {
-    const data = enrichedData.get(block.placementId);
+  return blocks.map((block, index) => {
+    const items = mediaByBlock[index];
+    if (items.length === 0) return block;
 
-    return data ? { ...block, data } : block;
+    const signed = items.map((item) => {
+      if (item.media === 'html') return withHtmlContentUrl(item.data);
+
+      return item.media === 'video' ? enriched.videos[nextVideo++] : enriched.documents[nextDocument++];
+    }) as Record<string, unknown>[];
+
+    return { ...block, data: withBlockMedia(block.type, block.data, signed) };
   });
 }

@@ -1752,7 +1752,13 @@
             "video": "vidéo",
             "slides": "diapositives",
             "document": "documents",
-            "image": "photo"
+            "image": "photo",
+            "chart": "graphique",
+            "flashcards": "cartes mémoire",
+            "tabs": "onglets",
+            "multiple_choice": "question à choix multiple",
+            "process": "processus",
+            "html": "page HTML"
           },
           "change_kind": {
             "added": "Ajouté",
@@ -2620,6 +2626,7 @@
           },
           "blocks": {
             "add_content": "Ajouter du contenu",
+            "ask_ai_instead": "Demander plutôt à l’IA",
             "example": "Exemple",
             "change_type": "Modifier {type}",
             "edit_type": "Modifier {type}",
@@ -2630,8 +2637,8 @@
             "drag": "Faites glisser pour réorganiser",
             "drag_hint": "Faites glisser la poignée d'un bloc pour le réorganiser. Vous pouvez également utiliser les options « Monter » et « Descendre » de son menu.",
             "dismiss_hint": "Ignorer l'indice de réorganisation",
-            "empty_title": "Commencez à élaborer cette leçon",
-            "empty_description": "Ajoutez une note, une vidéo, des diapositives, un document ou une image. Vous pouvez ajouter autant de blocs que nécessaire, dans l'ordre de votre choix.",
+            "empty_title": "Que contient cette leçon ?",
+            "empty_description": "Choisissez un bloc pour commencer. Vous pourrez en ajouter d'autres à tout moment.",
             "empty_note": "Cette note est vide.",
             "scroll_rail": "Blocs de leçon",
             "save_failed": "Ce changement n'a pas pu être enregistré, le bloc a donc été restauré. {reason}",
@@ -2647,6 +2654,61 @@
               "fit_cover": "Remplir",
               "fit_contain": "Ajuster"
             },
+            "html": {
+              "dialog_title": "Ajouter du HTML",
+              "add_tab": "Ajouter",
+              "code_tab": "Coller du code",
+              "upload": "Importer un fichier HTML",
+              "upload_hint": "Ou glissez-déposez-le ici",
+              "create_with_ai": "Créer avec l'IA",
+              "describe_placeholder": "Ou décrivez votre idée...",
+              "beta": "Bêta",
+              "generate": "Générer",
+              "generating": "Génération de votre page. Cela peut prendre une minute…",
+              "remove_template": "Retirer le modèle",
+              "insert": "Insérer",
+              "frame_title": "Page HTML intégrée",
+              "interact": "Interagir",
+              "full_screen": "Plein écran",
+              "more": "Plus d'actions",
+              "change": "Remplacer le HTML",
+              "download": "Télécharger le HTML",
+              "resize_width": "Faites glisser pour modifier la largeur",
+              "resize_height": "Faites glisser pour modifier la hauteur",
+              "edit_with_ai": "Modifier avec l'IA",
+              "ai_edit_placeholder": "Décrivez la modification, par ex. Utilise un thème sombre et ajoute un bouton de réinitialisation",
+              "ai_edit_submit": "Appliquer",
+              "generate_error": "Impossible de générer la page. Veuillez réessayer.",
+              "save_error": "Impossible d'enregistrer la page. Veuillez réessayer.",
+              "too_large": "Cette page dépasse 2 Mo. Veuillez utiliser une page plus petite.",
+              "empty_file": "Ce fichier est vide.",
+              "templates": {
+                "slides": {
+                  "label": "Diapositives",
+                  "prompt": "Crée une présentation soignée sur le sujet de cette leçon, avec une diapositive de titre, 5 à 7 diapositives de contenu, une navigation au clavier et par boutons, et un compteur de diapositives."
+                },
+                "dashboard": {
+                  "label": "Tableau de bord",
+                  "prompt": "Crée un tableau de bord interactif avec des données d'exemple sur le sujet de cette leçon, avec des chiffres clés, deux graphiques dessinés en SVG et des filtres qui les mettent à jour."
+                },
+                "report": {
+                  "label": "Rapport",
+                  "prompt": "Crée un rapport d'une page clair et bien structuré sur le sujet de cette leçon, avec un résumé, les principaux résultats, un tableau comparatif et une courte conclusion."
+                },
+                "explainer": {
+                  "label": "Explication",
+                  "prompt": "Crée une explication interactive qui enseigne le sujet de cette leçon étape par étape, avec un schéma à explorer et un court quiz de compréhension."
+                },
+                "prototype": {
+                  "label": "Prototype",
+                  "prompt": "Crée un prototype d'application cliquable lié au sujet de cette leçon, avec deux ou trois écrans, un contenu d'exemple réaliste et une navigation fonctionnelle entre eux."
+                },
+                "game": {
+                  "label": "Jeu",
+                  "prompt": "Crée un jeu soigné et jouable qui aide les apprenants à s'exercer sur le sujet de cette leçon. Inclus des instructions claires, des commandes intuitives, une boucle de jeu complète, un score et un moyen de recommencer."
+                }
+              }
+            },
             "settings": {
               "title": "Paramètres de la leçon",
               "description": "Gérez cette leçon sans quitter la zone de contenu."
@@ -2659,7 +2721,7 @@
               "spacious": "Spacieux"
             },
             "ai": {
-              "title": "Rédigez une note avec l'IA",
+              "title": "Demander à l’IA d’ajouter du contenu à cette leçon",
               "prompt_label": "Rapide",
               "prompt_placeholder": "Par exemple, une brève introduction au cycle de l'eau pour les débutants."
             },
@@ -2668,10 +2730,16 @@
               "video": "Vidéo",
               "slides": "Diapositives",
               "document": "Document",
-              "image": "Image"
+              "image": "Image",
+              "chart": "Graphique",
+              "flashcards": "Cartes mémoire",
+              "tabs": "Onglets",
+              "multiple_choice": "Choix multiple",
+              "process": "Processus",
+              "html": "HTML"
             },
             "empty_preview_title": "Rien à prévisualiser pour l'instant",
-            "empty_preview_description": "Cette leçon n'a aucun contenu visible pour les élèves. Basculez vers {editLabel} pour ajouter une note, une vidéo, des diapositives, un document ou une image.",
+            "empty_preview_description": "Cette leçon n'a aucun contenu visible pour les élèves. Basculez vers {editLabel} pour en ajouter.",
             "empty_learner_title": "Cette leçon n'est pas encore prête",
             "empty_learner_description": "Votre instructeur n'a ajouté aucun contenu à cette leçon. Revenez bientôt.",
             "document": {
@@ -2683,6 +2751,134 @@
             },
             "slides": {
               "add_slide": "Ajouter une diapositive"
+            },
+            "chart": {
+              "title": "Titre du graphique",
+              "title_placeholder": "Titre du graphique",
+              "chart_type": "Type de graphique",
+              "types": {
+                "bar": "Graphique à barres",
+                "line": "Graphique linéaire",
+                "pie": "Graphique circulaire",
+                "donut": "Graphique en anneau"
+              },
+              "point_count": "{count, plural, one {# point de données} other {# points de données}}",
+              "highest": "Maximum",
+              "total": "Total",
+              "edit_data": "Modifier les données",
+              "live_hint": "Les modifications mettent à jour le graphique en direct.",
+              "label": "Libellé",
+              "value": "Valeur",
+              "label_placeholder": "Libellé",
+              "add_point": "Ajouter un point de données",
+              "remove_point": "Supprimer le point de données",
+              "new_point": "Nouveau",
+              "example": {
+                "title": "Chiffre d’affaires trimestriel",
+                "label_1": "T1",
+                "label_2": "T2",
+                "label_3": "T3",
+                "label_4": "T4"
+              }
+            },
+            "flashcards": {
+              "edit_hint": "Cliquez sur un texte de la carte pour le modifier · utilisez le bouton de retournement pour modifier les réponses",
+              "flip_hint": "Cliquez sur la carte pour la retourner",
+              "question": "Question",
+              "answer": "Réponse",
+              "question_placeholder": "Saisissez la question",
+              "answer_placeholder": "Saisissez la réponse",
+              "flip": "Retourner la carte",
+              "show_question": "Carte affichant la réponse. Appuyez sur Espace pour voir la question.",
+              "show_answer": "Carte affichant la question. Appuyez sur Espace pour voir la réponse.",
+              "previous": "Carte précédente",
+              "next": "Carte suivante",
+              "progress": "Progression du paquet",
+              "cards": "Cartes",
+              "add_card": "Ajouter une carte",
+              "remove_card": "Supprimer la carte",
+              "example": {
+                "question_1": "Qu'est-ce que la fidélisation client ?",
+                "answer_1": "La capacité d'une entreprise à garder ses clients dans le temps.",
+                "question_2": "Pourquoi la fidélisation compte-t-elle plus que l'acquisition ?",
+                "answer_2": "Garder un client existant coûte en général 5 à 7 fois moins cher que d'en gagner un nouveau.",
+                "question_3": "Comment la mesurer simplement ?",
+                "answer_3": "Comparez le nombre de clients en début de période avec celui qui reste à la fin."
+              }
+            },
+            "tabs": {
+              "tab_list": "Onglets",
+              "position": "Position des onglets",
+              "align_left": "Aligner les onglets à gauche",
+              "align_center": "Centrer les onglets",
+              "align_right": "Aligner les onglets à droite",
+              "tab_name": "Nom de l’onglet",
+              "untitled_tab": "Onglet sans titre",
+              "note_placeholder": "Écrivez une note pour cet onglet…",
+              "add_tab": "Ajouter un onglet",
+              "remove_tab": "Supprimer l’onglet",
+              "new_tab": "Nouvel onglet",
+              "add_image": "Ajouter une image",
+              "add_video": "Ajouter une vidéo",
+              "remove_image": "Supprimer l’image",
+              "remove_video": "Supprimer la vidéo",
+              "example": {
+                "name_1": "Aperçu",
+                "note_1": "Un bref aperçu de ce que couvre cette section.",
+                "name_2": "Préparation",
+                "note_2": "Ce dont les apprenants ont besoin avant de commencer.",
+                "name_3": "Avancé",
+                "note_3": "Approfondissez une fois les bases maîtrisées."
+              }
+            },
+            "multiple_choice": {
+              "edit_hint": "Cliquez sur une lettre pour marquer la bonne réponse.",
+              "learner_hint": "Choisissez une réponse.",
+              "question_placeholder": "Saisissez votre question",
+              "option_placeholder": "Saisissez une réponse",
+              "mark_correct": "Marquer comme bonne réponse",
+              "correct_badge": "Bonne réponse",
+              "add_option": "Ajouter une option",
+              "new_option": "Nouvelle option",
+              "remove_option": "Supprimer l'option",
+              "add_media": "Ajouter un média",
+              "remove_image": "Supprimer l'image",
+              "check": "Vérifier la réponse",
+              "try_again": "Réessayer",
+              "correct_feedback": "Correct, bravo !",
+              "wrong_feedback": "Pas tout à fait. La bonne réponse est mise en évidence.",
+              "example": {
+                "question": "Quelle est la capitale de l'Italie ?",
+                "correct_option": "Rome",
+                "other_option_1": "Athènes",
+                "other_option_2": "Lisbonne"
+              }
+            },
+            "process": {
+              "stepper": "Étapes",
+              "go_to_step": "Aller à l’étape {step}",
+              "untitled_step": "Étape sans titre",
+              "heading_placeholder": "Titre de l’étape",
+              "body_placeholder": "Décrivez cette étape",
+              "add_media": "Ajouter un média",
+              "image_option": "Image",
+              "remove_image": "Supprimer l’image",
+              "delete_step": "Supprimer cette étape",
+              "add_step": "Ajouter une étape",
+              "back": "Retour",
+              "next": "Suivant",
+              "start_over": "Recommencer",
+              "progress": "Progression du processus",
+              "new_step_heading": "Nouvelle étape",
+              "new_step_body": "Décrivez cette étape.",
+              "example": {
+                "heading_1": "Introduction",
+                "body_1": "L’intelligence artificielle, ou IA, est devenue l’un des domaines technologiques les plus transformateurs et qui évoluent le plus vite. Elle consiste à créer des machines intelligentes capables d’accomplir des tâches généralement associées à l’intelligence humaine, comme apprendre, résoudre des problèmes et prendre des décisions.",
+                "heading_2": "Comment ça marche",
+                "body_2": "Décrivez ce qui se passe à cette étape du processus.",
+                "heading_3": "Mise en pratique",
+                "body_3": "Montrez comment les apprenants appliquent ce qu’ils viennent de voir."
+              }
             }
           }
         },
@@ -3658,6 +3854,7 @@
       "slot_type": {
         "lesson_video": "Vidéo de cours",
         "lesson_document": "Document de cours",
+        "lesson_html": "Page HTML de la leçon",
         "unknown": "Pièce jointe"
       },
       "refresh": "Actualiser l'utilisation"
@@ -5352,6 +5549,11 @@
         "move_lesson_block": "Déplacer un bloc",
         "add_lesson_slides_block": "Ajout de diapositives",
         "add_lesson_image_block": "Ajouter une image",
+        "write_lesson_chart_block": "Enregistrement d’un graphique",
+        "write_lesson_flashcards_block": "Enregistrement de cartes mémoire",
+        "write_lesson_tabs_block": "Enregistrement d’onglets",
+        "write_lesson_multiple_choice_block": "Enregistrement d’une question à choix multiple",
+        "write_lesson_process_block": "Enregistrement d’un processus",
         "update_lesson_block_settings": "Mettre à jour les paramètres de blocage",
         "update_lesson_block_requirements": "Mise à jour des règles de complétion",
         "detach_lesson_block": "Détacher un bloc partagé",
@@ -5406,6 +5608,11 @@
         "move_lesson_block": "Déplacement d'un bloc dans {title}",
         "add_lesson_slides_block": "Diapositives ajoutées à {title}",
         "add_lesson_image_block": "Ajout d'une image à {title}",
+        "write_lesson_chart_block": "Graphique enregistré dans {title}",
+        "write_lesson_flashcards_block": "Cartes mémoire enregistrées dans {title}",
+        "write_lesson_tabs_block": "Onglets enregistrés dans {title}",
+        "write_lesson_multiple_choice_block": "Question à choix multiple enregistrée dans {title}",
+        "write_lesson_process_block": "Processus enregistré dans {title}",
         "update_lesson_block_settings": "Mise à jour d'un bloc dans {title}",
         "update_lesson_block_requirements": "Règles d'achèvement mises à jour dans {title}",
         "detach_lesson_block": "A donné à {title} sa propre copie d'un bloc partagé",
@@ -7356,7 +7563,7 @@
     "lesson_blocks": {
       "title": "Présentation des blocs de cours",
       "description": "Les leçons sont désormais construites à partir de blocs. Voyez comment cela fonctionne en 5 minutes.",
-      "coach_description": "Construisez chaque leçon à partir de blocs de notes, de vidéos, de diapositives, de documents et d'images, dans n'importe quel ordre. Sélectionnez Modifier pour l'essayer.",
+      "coach_description": "Construisez chaque leçon à partir de blocs comme des notes, des vidéos, des graphiques, des cartes mémoire et des questions à choix multiple, dans n’importe quel ordre. Sélectionnez Modifier pour l’essayer.",
       "coach_title": "🎉 Nouveau ! Les cours sont désormais flexibles."
     },
     "close": "Fermer",

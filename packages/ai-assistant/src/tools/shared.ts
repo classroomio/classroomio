@@ -14,7 +14,7 @@ export const getCourseStructureSchema = {
 
 export const getLessonContentSchema = {
   description:
-    "Get a lesson's blocks in display order. Text (note) blocks carry HTML and a blockId; video, slides, document and image blocks carry only a label. Read this before editing lesson text or to understand the writing style.",
+    "Get a lesson's blocks in display order. Text (note) blocks carry HTML and a blockId; chart, flashcards, tabs, multiple choice and process blocks carry their content as data; video, slides, document and image blocks carry only a label. Read this before editing lesson content or to understand the writing style.",
   parameters: z.object({
     courseId: z.string().describe('The course ID'),
     lessonId: z.string().describe('The lesson ID to read'),

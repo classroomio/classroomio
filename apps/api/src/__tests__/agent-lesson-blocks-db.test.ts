@@ -17,7 +17,8 @@ import {
   formatLessonBlocksForPrompt,
   listAgentLessonBlocks,
   moveAgentLessonBlock,
-  removeAgentLessonTextBlock,
+  removeAgentLessonBlock,
+  writeAgentAuthoredBlock,
   writeAgentLessonText
 } from '@cio/core/services/agent/lesson-blocks';
 import {
@@ -173,7 +174,7 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
     await expect(
       writeAgentLessonText({ lessonId, locale: 'en', content: '<p>x</p>', blockId: video.id })
     ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_INVALID_DATA });
-    await expect(removeAgentLessonTextBlock({ lessonId, blockId: video.id })).rejects.toMatchObject({
+    await expect(removeAgentLessonBlock({ lessonId, blockId: video.id })).rejects.toMatchObject({
       code: ErrorCodes.BLOCK_INVALID_DATA
     });
     expect((await getLessonBlocks(lessonId)).some((block) => block.id === video.id)).toBe(true);
@@ -186,15 +187,15 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
     await expect(
       writeAgentLessonText({ lessonId: first.lessonId, locale: 'en', content: '<p>x</p>', blockId: second.intro.id })
     ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_NOT_FOUND });
-    await expect(
-      removeAgentLessonTextBlock({ lessonId: first.lessonId, blockId: second.intro.id })
-    ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_NOT_FOUND });
+    await expect(removeAgentLessonBlock({ lessonId: first.lessonId, blockId: second.intro.id })).rejects.toMatchObject({
+      code: ErrorCodes.BLOCK_NOT_FOUND
+    });
   });
 
   it('removes a note block and keeps the rest', async () => {
     const { lessonId, intro, video, outro } = await createNoteVideoNoteLesson();
 
-    await removeAgentLessonTextBlock({ lessonId, blockId: outro.id });
+    await removeAgentLessonBlock({ lessonId, blockId: outro.id });
 
     expect((await getLessonBlocks(lessonId)).map((block) => block.id)).toEqual([intro.id, video.id]);
   });
@@ -369,6 +370,174 @@ describe.skipIf(!hasDatabase)('agent lesson blocks', () => {
       writeAgentLessonText({ lessonId, locale: 'en', content: '<p>x</p>', blockId: intro.id })
     ).rejects.toMatchObject({ code: ErrorCodes.CONFLICT });
     expect((await listAgentLessonBlocks(lessonId, 'en'))[0].sharedWithOtherLessons).toBe(1);
+  });
+
+  it('adds a multiple choice block after a given block and shows its data when reading the lesson', async () => {
+    const { lessonId, intro, video } = await createNoteVideoNoteLesson();
+    const data = {
+      question: 'Which planet is largest?',
+      options: [
+        { id: 'a', text: 'Mars' },
+        { id: 'b', text: 'Jupiter' }
+      ],
+      correctOptionId: 'b'
+    };
+
+    const written = await writeAgentAuthoredBlock({ lessonId, type: 'multiple_choice', data, afterBlockId: intro.id });
+    const blocks = await listAgentLessonBlocks(lessonId, 'en');
+
+    expect(written.created).toBe(true);
+    expect(blocks.map((block) => block.blockId).slice(0, 3)).toEqual([intro.id, written.blockId, video.id]);
+    expect(blocks[1]).toMatchObject({ type: 'multiple_choice', data, version: written.version });
+    const prompt = await formatLessonBlocksForPrompt(lessonId, 'en');
+    expect(prompt).toContain(
+      `<lesson_block blockId="${written.blockId}" type="multiple_choice" version="${written.version}">`
+    );
+    expect(prompt).toContain('"correctOptionId":"b"');
+  });
+
+  it('rejects invalid authored data and leaves the lesson unchanged', async () => {
+    const lessonId = await createLesson('agent-authored-invalid');
+    const data = { question: 'Q', options: [{ id: 'a', text: 'Only one' }], correctOptionId: 'z' };
+
+    await expect(writeAgentAuthoredBlock({ lessonId, type: 'multiple_choice', data })).rejects.toMatchObject({
+      code: ErrorCodes.BLOCK_INVALID_DATA
+    });
+    await expect(writeAgentAuthoredBlock({ lessonId, type: 'video', data: youtubeVideo })).rejects.toMatchObject({
+      code: ErrorCodes.BLOCK_INVALID_DATA
+    });
+    expect(await getLessonBlocks(lessonId)).toHaveLength(0);
+  });
+
+  it('rewrites tabs in place and keeps a video the teacher added to a tab', async () => {
+    const lessonId = await createLesson('agent-authored-tabs');
+    const tabs = await createLessonBlock(lessonId, {
+      type: 'tabs',
+      data: {
+        align: 'center',
+        tabs: [
+          { id: 'a', name: 'One', note: '', media: { kind: 'video', data: youtubeVideo } },
+          { id: 'b', name: 'Two', note: '' }
+        ]
+      }
+    });
+
+    const [read] = await listAgentLessonBlocks(lessonId, 'en');
+    expect(read.data).toEqual({
+      align: 'center',
+      tabs: [
+        { id: 'a', name: 'One', note: '', hasVideo: true },
+        { id: 'b', name: 'Two', note: '' }
+      ]
+    });
+
+    const written = await writeAgentAuthoredBlock({
+      lessonId,
+      type: 'tabs',
+      blockId: tabs.id,
+      expectedVersion: read.version,
+      data: {
+        align: 'left',
+        tabs: [
+          { id: 'a', name: 'First', note: 'Watch this' },
+          { id: 'b', name: 'Second', note: '', image: { url: 'https://example.com/b.png', alt: 'Diagram' } },
+          { id: 'c', name: 'Third', note: 'New' }
+        ]
+      }
+    });
+    const [stored] = await getLessonBlocks(lessonId);
+
+    expect(written).toEqual({ blockId: tabs.id, created: false, version: tabs.version + 1 });
+    expect(stored.data).toMatchObject({
+      align: 'left',
+      tabs: [
+        { id: 'a', name: 'First', note: 'Watch this', media: { kind: 'video', data: { link: youtubeVideo.link } } },
+        {
+          id: 'b',
+          name: 'Second',
+          media: { kind: 'image', data: { url: 'https://example.com/b.png', alt: 'Diagram' } }
+        },
+        { id: 'c', name: 'Third', note: 'New' }
+      ]
+    });
+  });
+
+  it('refuses to replace a block with data read before a newer edit', async () => {
+    const lessonId = await createLesson('agent-authored-stale');
+    const chart = await writeAgentAuthoredBlock({
+      lessonId,
+      type: 'chart',
+      data: { title: 'Sales', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+    });
+    const [readByAssistant] = await listAgentLessonBlocks(lessonId, 'en');
+    await writeAgentAuthoredBlock({
+      lessonId,
+      type: 'chart',
+      blockId: chart.blockId,
+      expectedVersion: readByAssistant.version,
+      data: { title: 'Sales', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 4 }] }
+    });
+
+    await expect(
+      writeAgentAuthoredBlock({
+        lessonId,
+        type: 'chart',
+        blockId: chart.blockId,
+        expectedVersion: readByAssistant.version,
+        data: { title: 'Revenue', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+      })
+    ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_VERSION_CONFLICT });
+    const [stored] = await getLessonBlocks(lessonId);
+    expect(stored.data).toMatchObject({ title: 'Sales', points: [{ value: 4 }] });
+  });
+
+  it('refuses an edit read before the block was shared with another lesson', async () => {
+    const lessonId = await createLesson('agent-authored-shared-later');
+    const chart = await writeAgentAuthoredBlock({
+      lessonId,
+      type: 'chart',
+      data: { title: 'Sales', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+    });
+    const otherLesson = await createLesson('agent-authored-shared-other');
+    await attachLessonBlock(otherLesson, { blockId: chart.blockId });
+    await removeAgentLessonBlock({ lessonId: otherLesson, blockId: chart.blockId });
+
+    await expect(
+      writeAgentAuthoredBlock({
+        lessonId,
+        type: 'chart',
+        blockId: chart.blockId,
+        expectedVersion: chart.version,
+        data: { title: 'Revenue', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+      })
+    ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_VERSION_CONFLICT });
+  });
+
+  it('refuses to rewrite a block of another type', async () => {
+    const { lessonId, intro } = await createNoteVideoNoteLesson();
+
+    await expect(
+      writeAgentAuthoredBlock({
+        lessonId,
+        type: 'flashcards',
+        blockId: intro.id,
+        expectedVersion: intro.version,
+        data: { cards: [{ id: 'a', question: 'Q', answer: 'A' }] }
+      })
+    ).rejects.toMatchObject({ code: ErrorCodes.BLOCK_INVALID_DATA });
+  });
+
+  it('removes an authored block but not a media block', async () => {
+    const { lessonId, intro, video, outro } = await createNoteVideoNoteLesson();
+    const chart = await writeAgentAuthoredBlock({
+      lessonId,
+      type: 'chart',
+      data: { title: 'Sales', type: 'bar', points: [{ id: 'a', label: 'Q1', value: 3 }] }
+    });
+
+    await removeAgentLessonBlock({ lessonId, blockId: chart.blockId });
+
+    expect((await getLessonBlocks(lessonId)).map((block) => block.id)).toEqual([intro.id, video.id, outro.id]);
   });
 
   it('renders block boundaries and ids for the system prompt', async () => {
