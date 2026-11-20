@@ -1618,6 +1618,7 @@
       "slot_type": {
         "lesson_video": "Lders videosu",
         "lesson_document": "Lders belgesi",
+        "lesson_html": "Ders HTML sayfası",
         "unknown": "Attachment"
       },
       "table": {
@@ -3130,6 +3131,61 @@
               "fit_cover": "Doldurmak",
               "fit_contain": "Yerleştirmek"
             },
+            "html": {
+              "dialog_title": "HTML ekle",
+              "add_tab": "Ekle",
+              "code_tab": "Kod yapıştır",
+              "upload": "HTML dosyası yükle",
+              "upload_hint": "Veya buraya sürükleyip bırak",
+              "create_with_ai": "Yapay zekâ ile oluştur",
+              "describe_placeholder": "Veya fikrini anlat...",
+              "beta": "Beta",
+              "generate": "Oluştur",
+              "generating": "Sayfan oluşturuluyor. Bu bir dakika sürebilir…",
+              "remove_template": "Şablonu kaldır",
+              "insert": "Ekle",
+              "frame_title": "Gömülü HTML sayfası",
+              "interact": "Etkileşim kur",
+              "full_screen": "Tam ekran",
+              "more": "Diğer işlemler",
+              "change": "HTML'i değiştir",
+              "download": "HTML'i indir",
+              "resize_width": "Genişliği değiştirmek için sürükle",
+              "resize_height": "Yüksekliği değiştirmek için sürükle",
+              "edit_with_ai": "Yapay zekâ ile düzenle",
+              "ai_edit_placeholder": "Neyin değişeceğini anlat, ör. Koyu tema kullan ve sıfırlama düğmesi ekle",
+              "ai_edit_submit": "Uygula",
+              "generate_error": "Sayfa oluşturulamadı. Lütfen tekrar dene.",
+              "save_error": "Sayfa kaydedilemedi. Lütfen tekrar dene.",
+              "too_large": "Bu sayfa 2 MB'tan büyük. Lütfen daha küçük bir sayfa kullan.",
+              "empty_file": "Bu dosya boş.",
+              "templates": {
+                "slides": {
+                  "label": "Slaytlar",
+                  "prompt": "Bu dersin konusu hakkında bir başlık slaytı, 5 ila 7 içerik slaytı, klavye ve düğmeyle gezinme ve slayt sayacı içeren özenli bir slayt sunumu oluştur."
+                },
+                "dashboard": {
+                  "label": "Pano",
+                  "prompt": "Bu dersin konusu için örnek verilerle, temel rakamlar, SVG ile çizilmiş iki grafik ve bunları güncelleyen filtreler içeren etkileşimli bir pano oluştur."
+                },
+                "report": {
+                  "label": "Rapor",
+                  "prompt": "Bu dersin konusu hakkında özet, temel bulgular, karşılaştırma tablosu ve kısa bir sonuç içeren, açık ve iyi yapılandırılmış tek sayfalık bir rapor oluştur."
+                },
+                "explainer": {
+                  "label": "Açıklama",
+                  "prompt": "Bu dersin konusunu adım adım öğreten, öğrencilerin keşfedebileceği bir diyagram ve kısa bir anlama testi içeren etkileşimli bir açıklama oluştur."
+                },
+                "prototype": {
+                  "label": "Prototip",
+                  "prompt": "Bu dersin konusuyla ilgili, iki veya üç ekran, gerçekçi örnek içerik ve ekranlar arasında çalışan gezinme içeren tıklanabilir bir uygulama prototipi oluştur."
+                },
+                "game": {
+                  "label": "Oyun",
+                  "prompt": "Öğrencilerin bu dersin konusunu pekiştirmesine yardımcı olan özenli, oynanabilir bir oyun oluştur. Açık talimatlar, sezgisel kontroller, eksiksiz bir oyun döngüsü, skor ve yeniden başlatma yolu ekle."
+                }
+              }
+            },
             "settings": {
               "title": "Ders ayarları",
               "description": "Bu dersi içerik tuvalinden ayrılmadan yönetin."
@@ -3156,7 +3212,8 @@
               "flashcards": "Bilgi kartları",
               "tabs": "Sekmeler",
               "multiple_choice": "Çoktan seçmeli",
-              "process": "Süreç"
+              "process": "Süreç",
+              "html": "HTML"
             },
             "empty_preview_title": "Henüz önizlenecek bir şey yok",
             "empty_preview_description": "Bu derste öğrencilerin görebileceği içerik yok. İçerik eklemek için {editLabel} moduna geçin.",
@@ -3954,7 +4011,8 @@
             "flashcards": "bilgi kartları",
             "tabs": "sekmeler",
             "multiple_choice": "çoktan seçmeli soru",
-            "process": "süreç"
+            "process": "süreç",
+            "html": "HTML sayfası"
           },
           "change_kind": {
             "added": "Eklendi",

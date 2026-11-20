@@ -1779,7 +1779,8 @@
             "flashcards": "tarjetas",
             "tabs": "pestañas",
             "multiple_choice": "pregunta de opción múltiple",
-            "process": "proceso"
+            "process": "proceso",
+            "html": "página HTML"
           },
           "change_kind": {
             "added": "Añadido",
@@ -2675,6 +2676,61 @@
               "fit_cover": "Llenar",
               "fit_contain": "Adaptar"
             },
+            "html": {
+              "dialog_title": "Añadir HTML",
+              "add_tab": "Añadir",
+              "code_tab": "Pegar código",
+              "upload": "Subir archivo HTML",
+              "upload_hint": "O arrástralo y suéltalo aquí",
+              "create_with_ai": "Crear con IA",
+              "describe_placeholder": "O describe tu idea...",
+              "beta": "Beta",
+              "generate": "Generar",
+              "generating": "Generando tu página. Esto puede tardar un minuto…",
+              "remove_template": "Quitar plantilla",
+              "insert": "Insertar",
+              "frame_title": "Página HTML incrustada",
+              "interact": "Interactuar",
+              "full_screen": "Pantalla completa",
+              "more": "Más acciones",
+              "change": "Reemplazar HTML",
+              "download": "Descargar HTML",
+              "resize_width": "Arrastra para cambiar el ancho",
+              "resize_height": "Arrastra para cambiar la altura",
+              "edit_with_ai": "Editar con IA",
+              "ai_edit_placeholder": "Describe qué cambiar, p. ej. Usa un tema oscuro y añade un botón para reiniciar",
+              "ai_edit_submit": "Aplicar",
+              "generate_error": "No se pudo generar la página. Inténtalo de nuevo.",
+              "save_error": "No se pudo guardar la página. Inténtalo de nuevo.",
+              "too_large": "Esta página supera los 2 MB. Usa una página más pequeña.",
+              "empty_file": "Este archivo está vacío.",
+              "templates": {
+                "slides": {
+                  "label": "Diapositivas",
+                  "prompt": "Crea una presentación cuidada sobre el tema de esta lección, con una diapositiva de título, de 5 a 7 diapositivas de contenido, navegación con teclado y botones, y un contador de diapositivas."
+                },
+                "dashboard": {
+                  "label": "Panel",
+                  "prompt": "Crea un panel interactivo con datos de ejemplo sobre el tema de esta lección, con cifras clave, dos gráficos dibujados en SVG y filtros que los actualicen."
+                },
+                "report": {
+                  "label": "Informe",
+                  "prompt": "Crea un informe de una página claro y bien estructurado sobre el tema de esta lección, con un resumen, hallazgos clave, una tabla comparativa y una breve conclusión."
+                },
+                "explainer": {
+                  "label": "Explicación",
+                  "prompt": "Crea una explicación interactiva que enseñe el tema de esta lección paso a paso, con un diagrama que los estudiantes puedan explorar y un breve cuestionario de comprensión."
+                },
+                "prototype": {
+                  "label": "Prototipo",
+                  "prompt": "Crea un prototipo de app en el que se pueda hacer clic, relacionado con el tema de esta lección, con dos o tres pantallas, contenido de ejemplo realista y navegación funcional entre ellas."
+                },
+                "game": {
+                  "label": "Juego",
+                  "prompt": "Crea un juego pulido y jugable que ayude a los estudiantes a practicar el tema de esta lección. Incluye instrucciones claras, controles intuitivos, un ciclo de juego completo, una puntuación y una forma de reiniciar."
+                }
+              }
+            },
             "settings": {
               "title": "Configuración de la lección",
               "description": "Gestiona esta lección sin salir del lienzo de contenido."
@@ -2701,7 +2757,8 @@
               "flashcards": "Tarjetas",
               "tabs": "Pestañas",
               "multiple_choice": "Opción múltiple",
-              "process": "Proceso"
+              "process": "Proceso",
+              "html": "HTML"
             },
             "empty_preview_title": "Aún no hay nada que previsualizar",
             "empty_preview_description": "Esta lección no tiene contenido para los estudiantes. Cambia a {editLabel} para añadirlo.",
@@ -3837,6 +3894,7 @@
       "slot_type": {
         "lesson_video": "Vídeo de la lección",
         "lesson_document": "documento de lección",
+        "lesson_html": "Página HTML de la lección",
         "unknown": "Adjunto"
       },
       "refresh": "Actualizar uso"

@@ -93,17 +93,18 @@ interface LessonAssetRefs {
   id: string;
   videos?: LessonAssetRef[] | null;
   documents?: LessonAssetRef[] | null;
+  htmlPages?: LessonAssetRef[] | null;
 }
 
-const LESSON_MEDIA_SLOTS = ['lesson_video', 'lesson_document'];
+const LESSON_MEDIA_SLOTS = ['lesson_video', 'lesson_document', 'lesson_html'];
 
 /**
- * Lists the videos and documents each lesson's blocks play, including media kept inside a block such
- * as a tab's video.
+ * Lists the videos, documents and HTML pages each lesson's blocks play, including media kept inside a
+ * block such as a tab's video.
  */
 export async function listLessonAssetRefs(lessonIds: string[], dbClient: DbOrTxClient = db) {
   const refsByLesson = new Map<string, LessonAssetRefs>(
-    lessonIds.map((lessonId) => [lessonId, { id: lessonId, videos: [], documents: [] }])
+    lessonIds.map((lessonId) => [lessonId, { id: lessonId, videos: [], documents: [], htmlPages: [] }])
   );
   const rows = await listBlockRowsForLessons(lessonIds, dbClient);
 
@@ -113,8 +114,8 @@ export async function listLessonAssetRefs(lessonIds: string[], dbClient: DbOrTxC
 
     for (const item of listBlockMedia(row.block.type, row.block.data)) {
       const assetId = typeof item.data.assetId === 'string' ? item.data.assetId : null;
-      const list = item.media === 'video' ? refs.videos : refs.documents;
-      list?.push({ assetId });
+      const lists = { video: refs.videos, document: refs.documents, html: refs.htmlPages };
+      lists[item.media]?.push({ assetId });
     }
   }
 
@@ -122,8 +123,8 @@ export async function listLessonAssetRefs(lessonIds: string[], dbClient: DbOrTxC
 }
 
 /**
- * Makes each lesson's `lesson_video` and `lesson_document` usages match the videos
- * and documents it now points at, so replaced media stops showing as in use and
+ * Makes each lesson's `lesson_video`, `lesson_document` and `lesson_html` usages match the videos,
+ * documents and HTML pages it now points at, so replaced media stops showing as in use and
  * current media shows as in use in the target org's library. References to assets
  * outside `organizationId` are skipped. No background media work is queued.
  */
@@ -144,6 +145,12 @@ export async function syncLessonAssetUsages(
       lessonId: lesson.id,
       assetId: document.assetId,
       slotType: 'lesson_document',
+      position
+    })),
+    ...(lesson.htmlPages ?? []).map((page, position) => ({
+      lessonId: lesson.id,
+      assetId: page.assetId,
+      slotType: 'lesson_html',
       position
     }))
   ]);

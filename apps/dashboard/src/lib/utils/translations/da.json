@@ -1779,7 +1779,8 @@
             "flashcards": "flashcards",
             "tabs": "faner",
             "multiple_choice": "multiple choice-spørgsmål",
-            "process": "proces"
+            "process": "proces",
+            "html": "HTML-side"
           },
           "change_kind": {
             "added": "Tilføjet",
@@ -2675,6 +2676,61 @@
               "fit_cover": "Fylde",
               "fit_contain": "Passe"
             },
+            "html": {
+              "dialog_title": "Tilføj HTML",
+              "add_tab": "Tilføj",
+              "code_tab": "Indsæt kode",
+              "upload": "Upload HTML-fil",
+              "upload_hint": "Eller træk og slip her",
+              "create_with_ai": "Opret med AI",
+              "describe_placeholder": "Eller beskriv din idé...",
+              "beta": "Beta",
+              "generate": "Generér",
+              "generating": "Din side bliver genereret. Det kan tage et minut…",
+              "remove_template": "Fjern skabelon",
+              "insert": "Indsæt",
+              "frame_title": "Indlejret HTML-side",
+              "interact": "Interager",
+              "full_screen": "Fuld skærm",
+              "more": "Flere handlinger",
+              "change": "Erstat HTML",
+              "download": "Download HTML",
+              "resize_width": "Træk for at ændre bredden",
+              "resize_height": "Træk for at ændre højden",
+              "edit_with_ai": "Redigér med AI",
+              "ai_edit_placeholder": "Beskriv hvad der skal ændres, f.eks. Brug et mørkt tema og tilføj en nulstil-knap",
+              "ai_edit_submit": "Anvend",
+              "generate_error": "Siden kunne ikke genereres. Prøv igen.",
+              "save_error": "Siden kunne ikke gemmes. Prøv igen.",
+              "too_large": "Denne side er større end 2 MB. Brug en mindre side.",
+              "empty_file": "Denne fil er tom.",
+              "templates": {
+                "slides": {
+                  "label": "Slides",
+                  "prompt": "Lav et flot diassæt om lektionens emne med et titeldias, 5 til 7 indholdsdias, navigation med tastatur og knapper samt en diastæller."
+                },
+                "dashboard": {
+                  "label": "Dashboard",
+                  "prompt": "Lav et interaktivt dashboard med eksempeldata om lektionens emne, med nøgletal, to diagrammer tegnet i SVG og filtre, der opdaterer dem."
+                },
+                "report": {
+                  "label": "Rapport",
+                  "prompt": "Lav en klar og velstruktureret rapport på én side om lektionens emne med et resumé, vigtigste fund, en sammenligningstabel og en kort konklusion."
+                },
+                "explainer": {
+                  "label": "Forklaring",
+                  "prompt": "Lav en interaktiv forklaring, der underviser i lektionens emne trin for trin, med et diagram, som eleverne kan udforske, og en kort quiz til at tjekke forståelsen."
+                },
+                "prototype": {
+                  "label": "Prototype",
+                  "prompt": "Lav en klikbar app-prototype relateret til lektionens emne med to eller tre skærme, realistisk eksempelindhold og fungerende navigation mellem dem."
+                },
+                "game": {
+                  "label": "Spil",
+                  "prompt": "Lav et flot, spilbart spil, der hjælper eleverne med at øve lektionens emne. Medtag klare instruktioner, intuitive kontroller, et komplet spilforløb, en score og en måde at starte forfra på."
+                }
+              }
+            },
             "settings": {
               "title": "Lektionsindstillinger",
               "description": "Administrer denne lektion uden at forlade indholdslærredet."
@@ -2701,7 +2757,8 @@
               "flashcards": "Flashcards",
               "tabs": "Faner",
               "multiple_choice": "Multiple choice",
-              "process": "Proces"
+              "process": "Proces",
+              "html": "HTML"
             },
             "empty_preview_title": "Intet at forhåndsvise endnu",
             "empty_preview_description": "Denne lektion har intet indhold, som eleverne kan se. Skift til {editLabel} for at tilføje noget.",
@@ -3837,6 +3894,7 @@
       "slot_type": {
         "lesson_video": "Lektion video",
         "lesson_document": "Lektionsdokument",
+        "lesson_html": "HTML-side i lektion",
         "unknown": "Vedhæftet fil"
       },
       "refresh": "Opdater brugen"

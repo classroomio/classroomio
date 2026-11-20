@@ -7,6 +7,7 @@ import {
   listLessonBlockRows,
   type LessonBlockRow
 } from '@cio/db/queries/block';
+import { signHtmlContentUrl } from '../../utils/html-content';
 import { enrichLessonMedia, type LessonDocument, type LessonVideo } from '../../utils/lesson-media';
 
 export interface LessonBlock {
@@ -91,15 +92,25 @@ export async function loadBlocksForLessons(lessonIds: string[]): Promise<Map<str
 }
 
 /**
+ * Adds a signed `url` to an HTML page item so the sandboxed content route serves it.
+ */
+export function withHtmlContentUrl(data: Record<string, unknown>): Record<string, unknown> {
+  const url = typeof data.assetId === 'string' ? signHtmlContentUrl(data.assetId) : null;
+
+  return url ? { ...data, url } : data;
+}
+
+/**
  * Applies canonical asset metadata and presigned URLs to every video and document a block plays,
- * including videos kept inside a block such as a tab.
+ * including videos kept inside a block such as a tab, and a signed URL to every HTML page.
  * @returns blocks in the same order; blocks without media pass through untouched.
  */
 export async function enrichBlocksMedia(blocks: LessonBlock[]): Promise<LessonBlock[]> {
   const mediaByBlock = blocks.map((block) => listBlockMedia(block.type, block.data));
   const videos = mediaByBlock.flat().filter((item) => item.media === 'video');
   const documents = mediaByBlock.flat().filter((item) => item.media === 'document');
-  if (videos.length === 0 && documents.length === 0) return blocks;
+  const hasHtml = mediaByBlock.flat().some((item) => item.media === 'html');
+  if (videos.length === 0 && documents.length === 0 && !hasHtml) return blocks;
 
   const enriched = await enrichLessonMedia({
     videos: videos.map((item) => item.data as LessonVideo),
@@ -113,9 +124,11 @@ export async function enrichBlocksMedia(blocks: LessonBlock[]): Promise<LessonBl
     const items = mediaByBlock[index];
     if (items.length === 0) return block;
 
-    const signed = items.map((item) =>
-      item.media === 'video' ? enriched.videos[nextVideo++] : enriched.documents[nextDocument++]
-    ) as Record<string, unknown>[];
+    const signed = items.map((item) => {
+      if (item.media === 'html') return withHtmlContentUrl(item.data);
+
+      return item.media === 'video' ? enriched.videos[nextVideo++] : enriched.documents[nextDocument++];
+    }) as Record<string, unknown>[];
 
     return { ...block, data: withBlockMedia(block.type, block.data, signed) };
   });

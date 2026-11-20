@@ -1779,7 +1779,8 @@
             "flashcards": "cartes mémoire",
             "tabs": "onglets",
             "multiple_choice": "question à choix multiple",
-            "process": "processus"
+            "process": "processus",
+            "html": "page HTML"
           },
           "change_kind": {
             "added": "Ajouté",
@@ -2675,6 +2676,61 @@
               "fit_cover": "Remplir",
               "fit_contain": "Ajuster"
             },
+            "html": {
+              "dialog_title": "Ajouter du HTML",
+              "add_tab": "Ajouter",
+              "code_tab": "Coller du code",
+              "upload": "Importer un fichier HTML",
+              "upload_hint": "Ou glissez-déposez-le ici",
+              "create_with_ai": "Créer avec l'IA",
+              "describe_placeholder": "Ou décrivez votre idée...",
+              "beta": "Bêta",
+              "generate": "Générer",
+              "generating": "Génération de votre page. Cela peut prendre une minute…",
+              "remove_template": "Retirer le modèle",
+              "insert": "Insérer",
+              "frame_title": "Page HTML intégrée",
+              "interact": "Interagir",
+              "full_screen": "Plein écran",
+              "more": "Plus d'actions",
+              "change": "Remplacer le HTML",
+              "download": "Télécharger le HTML",
+              "resize_width": "Faites glisser pour modifier la largeur",
+              "resize_height": "Faites glisser pour modifier la hauteur",
+              "edit_with_ai": "Modifier avec l'IA",
+              "ai_edit_placeholder": "Décrivez la modification, par ex. Utilise un thème sombre et ajoute un bouton de réinitialisation",
+              "ai_edit_submit": "Appliquer",
+              "generate_error": "Impossible de générer la page. Veuillez réessayer.",
+              "save_error": "Impossible d'enregistrer la page. Veuillez réessayer.",
+              "too_large": "Cette page dépasse 2 Mo. Veuillez utiliser une page plus petite.",
+              "empty_file": "Ce fichier est vide.",
+              "templates": {
+                "slides": {
+                  "label": "Diapositives",
+                  "prompt": "Crée une présentation soignée sur le sujet de cette leçon, avec une diapositive de titre, 5 à 7 diapositives de contenu, une navigation au clavier et par boutons, et un compteur de diapositives."
+                },
+                "dashboard": {
+                  "label": "Tableau de bord",
+                  "prompt": "Crée un tableau de bord interactif avec des données d'exemple sur le sujet de cette leçon, avec des chiffres clés, deux graphiques dessinés en SVG et des filtres qui les mettent à jour."
+                },
+                "report": {
+                  "label": "Rapport",
+                  "prompt": "Crée un rapport d'une page clair et bien structuré sur le sujet de cette leçon, avec un résumé, les principaux résultats, un tableau comparatif et une courte conclusion."
+                },
+                "explainer": {
+                  "label": "Explication",
+                  "prompt": "Crée une explication interactive qui enseigne le sujet de cette leçon étape par étape, avec un schéma à explorer et un court quiz de compréhension."
+                },
+                "prototype": {
+                  "label": "Prototype",
+                  "prompt": "Crée un prototype d'application cliquable lié au sujet de cette leçon, avec deux ou trois écrans, un contenu d'exemple réaliste et une navigation fonctionnelle entre eux."
+                },
+                "game": {
+                  "label": "Jeu",
+                  "prompt": "Crée un jeu soigné et jouable qui aide les apprenants à s'exercer sur le sujet de cette leçon. Inclus des instructions claires, des commandes intuitives, une boucle de jeu complète, un score et un moyen de recommencer."
+                }
+              }
+            },
             "settings": {
               "title": "Paramètres de la leçon",
               "description": "Gérez cette leçon sans quitter la zone de contenu."
@@ -2701,7 +2757,8 @@
               "flashcards": "Cartes mémoire",
               "tabs": "Onglets",
               "multiple_choice": "Choix multiple",
-              "process": "Processus"
+              "process": "Processus",
+              "html": "HTML"
             },
             "empty_preview_title": "Rien à prévisualiser pour l'instant",
             "empty_preview_description": "Cette leçon n'a aucun contenu visible pour les élèves. Basculez vers {editLabel} pour en ajouter.",
@@ -3837,6 +3894,7 @@
       "slot_type": {
         "lesson_video": "Vidéo de cours",
         "lesson_document": "Document de cours",
+        "lesson_html": "Page HTML de la leçon",
         "unknown": "Pièce jointe"
       },
       "refresh": "Actualiser l'utilisation"

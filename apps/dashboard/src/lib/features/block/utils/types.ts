@@ -12,6 +12,9 @@ import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 
 type BlocksRoute = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['blocks'];
 
+export type CreateHtmlPageRequest = BlocksRoute['html-pages']['$post'];
+export type GenerateHtmlPageRequest = BlocksRoute['html-pages']['generate']['$post'];
+
 export type BlockRecord = Extract<InferResponseType<BlocksRoute['$get']>, { success: true }>['data'][number];
 
 export type BlockOf<K extends TBlockType> = Omit<BlockRecord, 'type' | 'data'> & {
@@ -80,6 +83,7 @@ export interface BlockViewHost {
 
 /** What the editor's pickers need from the surface they run on. */
 export interface BlockEditHost {
+  courseId: string;
   lessonId: string;
 }
 
