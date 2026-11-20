@@ -4,6 +4,7 @@ export * from './registry';
 export * from './definitions/chart';
 export * from './definitions/document';
 export * from './definitions/flashcards';
+export * from './definitions/html';
 export * from './definitions/image';
 export * from './definitions/multiple-choice';
 export * from './definitions/note';

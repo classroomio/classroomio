@@ -5,6 +5,7 @@ import type { BlockAgentAuthoring, TBlockMediaItem, TBlockMediaKind } from './de
 import { chartBlock } from './definitions/chart';
 import { documentBlock } from './definitions/document';
 import { flashcardsBlock } from './definitions/flashcards';
+import { htmlBlock } from './definitions/html';
 import { imageBlock } from './definitions/image';
 import { multipleChoiceBlock } from './definitions/multiple-choice';
 import { noteBlock } from './definitions/note';
@@ -23,7 +24,8 @@ export const BLOCK_DEFINITIONS = {
   flashcards: flashcardsBlock,
   tabs: tabsBlock,
   multiple_choice: multipleChoiceBlock,
-  process: processBlock
+  process: processBlock,
+  html: htmlBlock
 } as const;
 
 export type TBlockType = keyof typeof BLOCK_DEFINITIONS;

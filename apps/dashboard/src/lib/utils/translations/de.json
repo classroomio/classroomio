@@ -1757,7 +1757,8 @@
             "flashcards": "Lernkarten",
             "tabs": "Tabs",
             "multiple_choice": "Multiple-Choice-Frage",
-            "process": "Ablauf"
+            "process": "Ablauf",
+            "html": "HTML-Seite"
           },
           "change_kind": {
             "added": "Hinzugefügt",
@@ -2643,6 +2644,61 @@
               "fit_cover": "Füllen",
               "fit_contain": "Fit"
             },
+            "html": {
+              "dialog_title": "HTML hinzufügen",
+              "add_tab": "Hinzufügen",
+              "code_tab": "Code einfügen",
+              "upload": "HTML-Datei hochladen",
+              "upload_hint": "Oder hierher ziehen und ablegen",
+              "create_with_ai": "Mit KI erstellen",
+              "describe_placeholder": "Oder beschreibe deine Idee...",
+              "beta": "Beta",
+              "generate": "Generieren",
+              "generating": "Deine Seite wird generiert. Das kann eine Minute dauern…",
+              "remove_template": "Vorlage entfernen",
+              "insert": "Einfügen",
+              "frame_title": "Eingebettete HTML-Seite",
+              "interact": "Interagieren",
+              "full_screen": "Vollbild",
+              "more": "Weitere Aktionen",
+              "change": "HTML ersetzen",
+              "download": "HTML herunterladen",
+              "resize_width": "Ziehen, um die Breite zu ändern",
+              "resize_height": "Ziehen, um die Höhe zu ändern",
+              "edit_with_ai": "Mit KI bearbeiten",
+              "ai_edit_placeholder": "Beschreibe die Änderung, z. B. Nutze ein dunkles Design und füge einen Zurücksetzen-Button hinzu",
+              "ai_edit_submit": "Anwenden",
+              "generate_error": "Die Seite konnte nicht generiert werden. Bitte versuche es erneut.",
+              "save_error": "Die Seite konnte nicht gespeichert werden. Bitte versuche es erneut.",
+              "too_large": "Diese Seite ist größer als 2 MB. Bitte verwende eine kleinere Seite.",
+              "empty_file": "Diese Datei ist leer.",
+              "templates": {
+                "slides": {
+                  "label": "Folien",
+                  "prompt": "Erstelle einen ansprechenden Foliensatz zum Thema dieser Lektion mit einer Titelfolie, 5 bis 7 Inhaltsfolien, Navigation per Tastatur und Schaltflächen sowie einem Folienzähler."
+                },
+                "dashboard": {
+                  "label": "Dashboard",
+                  "prompt": "Erstelle ein interaktives Dashboard mit Beispieldaten zum Thema dieser Lektion, mit Kennzahlen, zwei in SVG gezeichneten Diagrammen und Filtern, die sie aktualisieren."
+                },
+                "report": {
+                  "label": "Bericht",
+                  "prompt": "Erstelle einen klaren, gut gegliederten einseitigen Bericht zum Thema dieser Lektion mit Zusammenfassung, wichtigsten Erkenntnissen, einer Vergleichstabelle und einem kurzen Fazit."
+                },
+                "explainer": {
+                  "label": "Erklärung",
+                  "prompt": "Erstelle eine interaktive Erklärung, die das Thema dieser Lektion Schritt für Schritt vermittelt, mit einem Diagramm zum Erkunden und einem kurzen Verständnisquiz."
+                },
+                "prototype": {
+                  "label": "Prototyp",
+                  "prompt": "Erstelle einen klickbaren App-Prototyp zum Thema dieser Lektion mit zwei oder drei Bildschirmen, realistischen Beispielinhalten und funktionierender Navigation zwischen ihnen."
+                },
+                "game": {
+                  "label": "Spiel",
+                  "prompt": "Erstelle ein ausgefeiltes, spielbares Spiel, mit dem Lernende das Thema dieser Lektion üben. Mit klaren Anleitungen, intuitiver Steuerung, einem vollständigen Spielablauf, Punktestand und Neustartmöglichkeit."
+                }
+              }
+            },
             "settings": {
               "title": "Unterrichtseinstellungen",
               "description": "Verwalten Sie diese Lektion, ohne den Inhaltsbereich zu verlassen."
@@ -2669,7 +2725,8 @@
               "flashcards": "Lernkarten",
               "tabs": "Tabs",
               "multiple_choice": "Multiple Choice",
-              "process": "Ablauf"
+              "process": "Ablauf",
+              "html": "HTML"
             },
             "empty_preview_title": "Es gibt noch nichts zur Vorschau",
             "empty_preview_description": "Diese Lektion enthält keinen Inhalt, den die Schüler sehen können. Wechseln Sie zu {editLabel}, um Inhalte hinzuzufügen.",
@@ -3787,6 +3844,7 @@
       "slot_type": {
         "lesson_video": "Unterrichtsvideo",
         "lesson_document": "Unterrichtsdokument",
+        "lesson_html": "HTML-Seite der Lektion",
         "unknown": "Anhang"
       },
       "refresh": "Nutzung aktualisieren"

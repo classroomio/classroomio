@@ -1757,7 +1757,8 @@
             "flashcards": "flashcards",
             "tabs": "abas",
             "multiple_choice": "pergunta de múltipla escolha",
-            "process": "processo"
+            "process": "processo",
+            "html": "página HTML"
           },
           "change_kind": {
             "added": "Adicionado",
@@ -2643,6 +2644,61 @@
               "fit_cover": "Preencher",
               "fit_contain": "Ajustar"
             },
+            "html": {
+              "dialog_title": "Adicionar HTML",
+              "add_tab": "Adicionar",
+              "code_tab": "Colar código",
+              "upload": "Enviar arquivo HTML",
+              "upload_hint": "Ou arraste e solte aqui",
+              "create_with_ai": "Criar com IA",
+              "describe_placeholder": "Ou descreva sua ideia...",
+              "beta": "Beta",
+              "generate": "Gerar",
+              "generating": "Gerando sua página. Isso pode levar um minuto…",
+              "remove_template": "Remover modelo",
+              "insert": "Inserir",
+              "frame_title": "Página HTML incorporada",
+              "interact": "Interagir",
+              "full_screen": "Tela cheia",
+              "more": "Mais ações",
+              "change": "Substituir HTML",
+              "download": "Baixar HTML",
+              "resize_width": "Arraste para redimensionar a largura",
+              "resize_height": "Arraste para redimensionar a altura",
+              "edit_with_ai": "Editar com IA",
+              "ai_edit_placeholder": "Descreva o que mudar, por ex. Use um tema escuro e adicione um botão de reiniciar",
+              "ai_edit_submit": "Aplicar",
+              "generate_error": "Não foi possível gerar a página. Tente novamente.",
+              "save_error": "Não foi possível salvar a página. Tente novamente.",
+              "too_large": "Esta página tem mais de 2 MB. Use uma página menor.",
+              "empty_file": "Este arquivo está vazio.",
+              "templates": {
+                "slides": {
+                  "label": "Slides",
+                  "prompt": "Crie uma apresentação caprichada sobre o tema desta aula, com um slide de título, 5 a 7 slides de conteúdo, navegação por teclado e botões e um contador de slides."
+                },
+                "dashboard": {
+                  "label": "Painel",
+                  "prompt": "Crie um painel interativo com dados de exemplo sobre o tema desta aula, com números principais, dois gráficos desenhados em SVG e filtros que os atualizam."
+                },
+                "report": {
+                  "label": "Relatório",
+                  "prompt": "Crie um relatório de uma página claro e bem estruturado sobre o tema desta aula, com um resumo, principais descobertas, uma tabela comparativa e uma breve conclusão."
+                },
+                "explainer": {
+                  "label": "Explicação",
+                  "prompt": "Crie uma explicação interativa que ensine o tema desta aula passo a passo, com um diagrama para os alunos explorarem e um breve quiz de compreensão."
+                },
+                "prototype": {
+                  "label": "Protótipo",
+                  "prompt": "Crie um protótipo de app clicável relacionado ao tema desta aula, com duas ou três telas, conteúdo de exemplo realista e navegação funcional entre elas."
+                },
+                "game": {
+                  "label": "Jogo",
+                  "prompt": "Crie um jogo caprichado e jogável que ajude os alunos a praticar o tema desta aula. Inclua instruções claras, controles intuitivos, um ciclo de jogo completo, pontuação e uma forma de recomeçar."
+                }
+              }
+            },
             "settings": {
               "title": "Configurações da aula",
               "description": "Gerencie esta lição sem sair da tela de conteúdo."
@@ -2669,7 +2725,8 @@
               "flashcards": "Flashcards",
               "tabs": "Abas",
               "multiple_choice": "Múltipla escolha",
-              "process": "Processo"
+              "process": "Processo",
+              "html": "HTML"
             },
             "empty_preview_title": "Nada para visualizar ainda",
             "empty_preview_description": "Esta aula não tem conteúdo para os alunos. Mude para {editLabel} para adicionar.",
@@ -3787,6 +3844,7 @@
       "slot_type": {
         "lesson_video": "Vídeo da aula",
         "lesson_document": "Documento da lição",
+        "lesson_html": "Página HTML da aula",
         "unknown": "Anexo"
       },
       "refresh": "Atualizar uso"

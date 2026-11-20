@@ -1757,7 +1757,8 @@
             "flashcards": "thẻ ghi nhớ",
             "tabs": "thẻ",
             "multiple_choice": "câu hỏi trắc nghiệm",
-            "process": "quy trình"
+            "process": "quy trình",
+            "html": "trang HTML"
           },
           "change_kind": {
             "added": "Đã thêm",
@@ -2643,6 +2644,61 @@
               "fit_cover": "Đổ đầy",
               "fit_contain": "Phù hợp"
             },
+            "html": {
+              "dialog_title": "Thêm HTML",
+              "add_tab": "Thêm",
+              "code_tab": "Dán mã",
+              "upload": "Tải lên tệp HTML",
+              "upload_hint": "Hoặc kéo và thả vào đây",
+              "create_with_ai": "Tạo bằng AI",
+              "describe_placeholder": "Hoặc mô tả ý tưởng của bạn...",
+              "beta": "Beta",
+              "generate": "Tạo",
+              "generating": "Đang tạo trang của bạn. Việc này có thể mất một phút…",
+              "remove_template": "Bỏ mẫu",
+              "insert": "Chèn",
+              "frame_title": "Trang HTML được nhúng",
+              "interact": "Tương tác",
+              "full_screen": "Toàn màn hình",
+              "more": "Thao tác khác",
+              "change": "Thay HTML",
+              "download": "Tải xuống HTML",
+              "resize_width": "Kéo để đổi chiều rộng",
+              "resize_height": "Kéo để đổi chiều cao",
+              "edit_with_ai": "Chỉnh sửa bằng AI",
+              "ai_edit_placeholder": "Mô tả điều cần thay đổi, ví dụ: Dùng giao diện tối và thêm nút đặt lại",
+              "ai_edit_submit": "Áp dụng",
+              "generate_error": "Không thể tạo trang. Vui lòng thử lại.",
+              "save_error": "Không thể lưu trang. Vui lòng thử lại.",
+              "too_large": "Trang này lớn hơn 2 MB. Vui lòng dùng trang nhỏ hơn.",
+              "empty_file": "Tệp này trống.",
+              "templates": {
+                "slides": {
+                  "label": "Trang chiếu",
+                  "prompt": "Tạo một bộ trang chiếu chỉn chu về chủ đề của bài học này, gồm trang tiêu đề, 5 đến 7 trang nội dung, điều hướng bằng bàn phím và nút bấm, cùng bộ đếm trang."
+                },
+                "dashboard": {
+                  "label": "Bảng điều khiển",
+                  "prompt": "Tạo một bảng điều khiển tương tác với dữ liệu mẫu về chủ đề của bài học này, gồm các số liệu chính, hai biểu đồ vẽ bằng SVG và bộ lọc để cập nhật chúng."
+                },
+                "report": {
+                  "label": "Báo cáo",
+                  "prompt": "Tạo một báo cáo một trang rõ ràng, bố cục tốt về chủ đề của bài học này, gồm tóm tắt, các phát hiện chính, bảng so sánh và phần kết luận ngắn."
+                },
+                "explainer": {
+                  "label": "Giải thích",
+                  "prompt": "Tạo một phần giải thích tương tác dạy chủ đề của bài học này từng bước, với sơ đồ để người học khám phá và một bài kiểm tra ngắn."
+                },
+                "prototype": {
+                  "label": "Nguyên mẫu",
+                  "prompt": "Tạo một nguyên mẫu ứng dụng có thể nhấp liên quan đến chủ đề của bài học này, gồm hai hoặc ba màn hình, nội dung mẫu thực tế và điều hướng hoạt động giữa chúng."
+                },
+                "game": {
+                  "label": "Trò chơi",
+                  "prompt": "Tạo một trò chơi chỉn chu, chơi được, giúp người học luyện tập chủ đề của bài học này. Bao gồm hướng dẫn rõ ràng, điều khiển trực quan, vòng chơi hoàn chỉnh, điểm số và cách chơi lại."
+                }
+              }
+            },
             "settings": {
               "title": "Cài đặt bài học",
               "description": "Quản lý bài học này mà không cần rời khỏi khung nội dung."
@@ -2669,7 +2725,8 @@
               "flashcards": "Thẻ ghi nhớ",
               "tabs": "Thẻ",
               "multiple_choice": "Trắc nghiệm",
-              "process": "Quy trình"
+              "process": "Quy trình",
+              "html": "HTML"
             },
             "empty_preview_title": "Chưa có gì để xem trước",
             "empty_preview_description": "Bài học này chưa có nội dung cho học viên. Chuyển sang {editLabel} để thêm nội dung.",
@@ -3787,6 +3844,7 @@
       "slot_type": {
         "lesson_video": "Video bài học",
         "lesson_document": "Tài liệu bài học",
+        "lesson_html": "Trang HTML của bài học",
         "unknown": "Tệp đính kèm"
       },
       "refresh": "Làm mới mức sử dụng"

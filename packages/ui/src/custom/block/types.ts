@@ -143,3 +143,51 @@ export interface MultipleChoiceBlockLabels {
   correctFeedback: string;
   wrongFeedback: string;
 }
+
+export interface HtmlBlockSize {
+  /** Percent of the lesson column. */
+  width: number;
+  /** Pixels. */
+  height: number;
+}
+
+export interface HtmlBlockLabels {
+  frameTitle: string;
+  interact: string;
+  fullScreen: string;
+  more: string;
+  change: string;
+  download: string;
+  resizeWidth: string;
+  resizeHeight: string;
+  editWithAi: string;
+  aiPlaceholder: string;
+  aiSubmit: string;
+  generating: string;
+}
+
+export type HtmlTemplateTone = 'orange' | 'pink' | 'red' | 'yellow' | 'blue' | 'green';
+
+export interface HtmlTemplate {
+  id: string;
+  label: string;
+  prompt: string;
+  tone: HtmlTemplateTone;
+  icon: Component<{ size?: number | string; class?: string }>;
+}
+
+export interface HtmlSourceDialogLabels {
+  title: string;
+  addTab: string;
+  codeTab: string;
+  upload: string;
+  uploadHint: string;
+  createWithAi: string;
+  describePlaceholder: string;
+  beta: string;
+  generate: string;
+  generating: string;
+  removeTemplate: string;
+  codePlaceholder: string;
+  insert: string;
+}

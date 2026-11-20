@@ -2,6 +2,8 @@ import ChangeButton from './block-change-button.svelte';
 import Chart from './block-chart.svelte';
 import Document from './block-document.svelte';
 import Flashcards from './block-flashcards.svelte';
+import Html from './block-html.svelte';
+import HtmlSourceDialog from './block-html-source-dialog.svelte';
 import Image from './block-image.svelte';
 import ImageSettingsDialog from './block-image-settings-dialog.svelte';
 import InlineText from './block-inline-text.svelte';
@@ -20,6 +22,8 @@ export {
   Chart,
   Document,
   Flashcards,
+  Html,
+  HtmlSourceDialog,
   Image,
   ImageSettingsDialog,
   InlineText,
@@ -37,6 +41,8 @@ export {
   Chart as ChartBlock,
   Document as DocumentBlock,
   Flashcards as FlashcardsBlock,
+  Html as HtmlBlock,
+  HtmlSourceDialog as HtmlBlockSourceDialog,
   Image as ImageBlock,
   InlineText as BlockInlineText,
   List as BlockList,
@@ -62,6 +68,11 @@ export type {
   ChartBlockType,
   FlashcardsBlockCard,
   FlashcardsBlockLabels,
+  HtmlBlockLabels,
+  HtmlBlockSize,
+  HtmlSourceDialogLabels,
+  HtmlTemplate,
+  HtmlTemplateTone,
   ImageBlockFit,
   ImageBlockSettings,
   MultipleChoiceBlockLabels,

@@ -1603,6 +1603,7 @@
       "slot_type": {
         "lesson_video": "Lesson video",
         "lesson_document": "Lesson document",
+        "lesson_html": "Lesson HTML page",
         "unknown": "Attachment"
       },
       "table": {
@@ -3100,7 +3101,8 @@
               "flashcards": "Flashcards",
               "tabs": "Tabs",
               "multiple_choice": "Multiple Choice",
-              "process": "Process"
+              "process": "Process",
+              "html": "HTML"
             },
             "ai": {
               "title": "Ask AI to add to this lesson",
@@ -3148,6 +3150,61 @@
               "fit": "Fit",
               "fit_cover": "Fill",
               "fit_contain": "Fit"
+            },
+            "html": {
+              "dialog_title": "Add HTML",
+              "add_tab": "Add",
+              "code_tab": "Paste code",
+              "upload": "Upload HTML file",
+              "upload_hint": "Or drag and drop here",
+              "create_with_ai": "Create with AI",
+              "describe_placeholder": "Or describe your idea...",
+              "beta": "Beta",
+              "generate": "Generate",
+              "generating": "Generating your page. This can take a minute…",
+              "remove_template": "Remove template",
+              "insert": "Insert",
+              "frame_title": "Embedded HTML page",
+              "interact": "Interact",
+              "full_screen": "Full screen",
+              "more": "More actions",
+              "change": "Replace HTML",
+              "download": "Download HTML",
+              "resize_width": "Drag to resize the width",
+              "resize_height": "Drag to resize the height",
+              "edit_with_ai": "Edit with AI",
+              "ai_edit_placeholder": "Describe what to change, e.g. Use a dark theme and add a reset button",
+              "ai_edit_submit": "Apply",
+              "generate_error": "Could not generate the page. Please try again.",
+              "save_error": "Could not save the page. Please try again.",
+              "too_large": "This page is larger than 2 MB. Please use a smaller page.",
+              "empty_file": "This file is empty.",
+              "templates": {
+                "slides": {
+                  "label": "Slides",
+                  "prompt": "Create a polished slide deck about this lesson's topic, with a title slide, 5 to 7 content slides, keyboard and button navigation, and a slide counter."
+                },
+                "dashboard": {
+                  "label": "Dashboard",
+                  "prompt": "Create an interactive dashboard with sample data for this lesson's topic, with headline numbers, two charts drawn in SVG, and filters that update them."
+                },
+                "report": {
+                  "label": "Report",
+                  "prompt": "Create a clear, well-structured one-page report on this lesson's topic, with a summary, key findings, a comparison table, and a short conclusion."
+                },
+                "explainer": {
+                  "label": "Explainer",
+                  "prompt": "Create an interactive explainer that teaches this lesson's topic step by step, with a diagram learners can explore and a short check-your-understanding quiz."
+                },
+                "prototype": {
+                  "label": "Prototype",
+                  "prompt": "Create a clickable app prototype related to this lesson's topic, with two or three screens, realistic sample content, and working navigation between them."
+                },
+                "game": {
+                  "label": "Game",
+                  "prompt": "Create a polished, playable game that helps learners practise this lesson's topic. Include clear instructions, intuitive controls, a complete game loop, a score, and a way to restart."
+                }
+              }
             },
             "document": {
               "view_file": "View file",
@@ -3943,7 +4000,8 @@
             "flashcards": "flashcards",
             "tabs": "tabs",
             "multiple_choice": "multiple choice question",
-            "process": "process"
+            "process": "process",
+            "html": "HTML page"
           }
         },
         "no_section": "No section"

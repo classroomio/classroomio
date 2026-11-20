@@ -43,7 +43,7 @@ export function fromAgentImageUrl(
   return {};
 }
 
-export type TBlockMediaKind = 'video' | 'document';
+export type TBlockMediaKind = 'video' | 'document' | 'html';
 
 /** One media item a block plays or links: the block's own data, or media kept inside it, such as a tab's video. */
 export interface TBlockMediaItem {
