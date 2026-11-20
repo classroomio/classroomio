@@ -126,6 +126,22 @@ export async function createCohortWithCreatorMembership(
   }
 }
 
+export async function getCohortTitlesByIds(cohortIds: string[]): Promise<Map<string, string | null>> {
+  if (cohortIds.length === 0) return new Map();
+
+  try {
+    const rows = await db
+      .select({ id: schema.cohort.id, name: schema.cohort.name })
+      .from(schema.cohort)
+      .where(inArray(schema.cohort.id, cohortIds));
+
+    return new Map(rows.map((row) => [row.id, row.name]));
+  } catch (error) {
+    console.error('getCohortTitlesByIds error:', error);
+    throw new Error('Failed to load cohort names');
+  }
+}
+
 export async function getCohortById(cohortId: string): Promise<TCohort | null> {
   try {
     const [cohort] = await db.select().from(schema.cohort).where(eq(schema.cohort.id, cohortId)).limit(1);

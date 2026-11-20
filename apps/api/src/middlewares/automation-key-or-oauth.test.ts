@@ -20,13 +20,17 @@ vi.mock('@api/services/oauth/oauth', () => ({
 }));
 
 const grantKey = { id: 'key-1', organizationId: 'org-1', createdByProfileId: 'user-1', scopes: ['team:read'] };
+const oauthGrant = { key: grantKey, clientId: 'client-1' };
 
 function buildApp() {
-  return new Hono()
-    .use(automationKeyOrOAuthMiddleware)
-    .get('/probe', (c) =>
-      c.json({ orgId: c.get('orgId'), actorId: c.get('actorId'), scopes: c.get('automationKey')?.scopes })
-    );
+  return new Hono().use(automationKeyOrOAuthMiddleware).get('/probe', (c) =>
+    c.json({
+      orgId: c.get('orgId'),
+      actorId: c.get('actorId'),
+      scopes: c.get('automationKey')?.scopes,
+      oauthClientId: c.get('oauthClientId')
+    })
+  );
 }
 
 describe('automationKeyOrOAuthMiddleware', () => {
@@ -46,17 +50,22 @@ describe('automationKeyOrOAuthMiddleware', () => {
   });
 
   it('authenticates other bearer tokens as OAuth access tokens', async () => {
-    mocks.authenticateOAuth.mockResolvedValue(grantKey);
+    mocks.authenticateOAuth.mockResolvedValue(oauthGrant);
 
     const response = await buildApp().request('/probe', { headers: { Authorization: 'Bearer eyJhbGciOi' } });
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ orgId: 'org-1', actorId: 'user-1', scopes: ['team:read'] });
+    expect(await response.json()).toEqual({
+      orgId: 'org-1',
+      actorId: 'user-1',
+      scopes: ['team:read'],
+      oauthClientId: 'client-1'
+    });
     expect(mocks.authenticateKey).not.toHaveBeenCalled();
   });
 
   it('requires a token issued for the public API on external requests', async () => {
-    mocks.authenticateOAuth.mockResolvedValue(grantKey);
+    mocks.authenticateOAuth.mockResolvedValue(oauthGrant);
 
     await buildApp().request('/probe', { headers: { Authorization: 'Bearer eyJhbGciOi' } });
 
@@ -64,7 +73,7 @@ describe('automationKeyOrOAuthMiddleware', () => {
   });
 
   it('accepts either resource only for requests dispatched by this process', async () => {
-    mocks.authenticateOAuth.mockResolvedValue(grantKey);
+    mocks.authenticateOAuth.mockResolvedValue(oauthGrant);
     const headers = new Headers({ Authorization: 'Bearer eyJhbGciOi' });
     markInternalRequest(headers);
 
@@ -74,7 +83,7 @@ describe('automationKeyOrOAuthMiddleware', () => {
   });
 
   it('does not trust a forged internal request header', async () => {
-    mocks.authenticateOAuth.mockResolvedValue(grantKey);
+    mocks.authenticateOAuth.mockResolvedValue(oauthGrant);
 
     await buildApp().request('/probe', {
       headers: { Authorization: 'Bearer eyJhbGciOi', 'x-cio-internal-request': 'guess' }

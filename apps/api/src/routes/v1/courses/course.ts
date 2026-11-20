@@ -42,8 +42,9 @@ import { getEventSource } from '@api/utils/event-source';
 import { captureCoursePublished } from '@cio/core/services/course/course';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+import { PUBLIC_API_BEARER_SCHEME } from '@cio/utils/openapi/public-api';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
-import { ANY_KEY_RULE, ORG_TEAM_RULE, cloneForbiddenResponse, mcpRateLimitResponse } from './docs';
+import { ANY_KEY_RULE, COURSE_TEAM_RULE, ORG_TEAM_RULE, cloneForbiddenResponse, mcpRateLimitResponse } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
@@ -54,7 +55,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: "List the organization's courses; any key with the public_api:* or course:read scope may call it.",
+      description: `List the organization's courses; any key with the public_api:* or course:read scope may call it, and ${ORG_TEAM_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
@@ -70,8 +71,9 @@ export const v1CourseRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const query = c.req.valid('query');
-        const courses = await listCoursesService(orgId, query);
+        const courses = await listCoursesService(orgId, actorId, query);
 
         return c.json(
           {
@@ -93,6 +95,8 @@ export const v1CourseRouter = new Hono()
       description:
         'Create an unpublished course and add the key creator as its tutor; needs public_api:* or course:write, and an org admin or tutor key creator. The banner field says if one was applied.',
       tags: ['Courses'],
+      // Creating a course requires public_api:*, which OAuth tokens never carry.
+      security: [{ [PUBLIC_API_BEARER_SCHEME]: [] }],
       responses: {
         201: jsonResponse('Course created successfully', itemResponse(ZPublicApiCreateCourseResponse)),
         400: { description: 'Invalid request body' },
@@ -402,7 +406,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId',
     describeRoute({
-      description: `Get a course; ${ANY_KEY_RULE}.`,
+      description: `Get a course; ${COURSE_TEAM_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse('Course returned successfully', itemResponse(ZPublicApiCourseDetailResponse)),
@@ -415,8 +419,9 @@ export const v1CourseRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const course = await getCourseService(orgId, params);
+        const course = await getCourseService(orgId, actorId, params);
 
         return c.json(
           {

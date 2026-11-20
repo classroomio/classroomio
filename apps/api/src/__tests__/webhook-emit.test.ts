@@ -84,7 +84,10 @@ describe('webhook event recording cost', () => {
     await recordWebhookEvent(orgId, 'course.completed', completed);
 
     expect(mocks.orgHasActiveWebhookEndpoint).not.toHaveBeenCalled();
-    expect(mocks.listActiveEndpointsForEvent).toHaveBeenCalledWith(orgId, 'course.completed');
+    expect(mocks.listActiveEndpointsForEvent).toHaveBeenCalledWith(orgId, 'course.completed', {
+      courseId,
+      cohortId: null
+    });
   });
 
   it('reads the course organization from the cache before the database', async () => {

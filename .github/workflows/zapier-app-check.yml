@@ -1,0 +1,54 @@
+name: Zapier app check
+
+on:
+  pull_request:
+    paths:
+      - 'apps/zapier/**'
+      - 'packages/utils/src/constants/**'
+      - 'packages/utils/src/validation/webhook/**'
+      - 'packages/utils/src/validation/public-api/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/zapier-app-check.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/zapier/**'
+      - 'packages/utils/**'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.1
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared utils
+        run: pnpm --filter @cio/utils^... build && pnpm --filter @cio/utils build
+
+      - name: Typecheck, test and build
+        run: |
+          pnpm --filter @cio/zapier typecheck
+          pnpm --filter @cio/zapier test
+          pnpm --filter @cio/zapier build
+
+      - name: Validate the app definition
+        working-directory: apps/zapier
+        run: pnpm exec zapier-platform validate --without-style
+
+      - name: Build the push package
+        working-directory: apps/zapier
+        run: pnpm zapier:build
+

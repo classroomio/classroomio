@@ -5,7 +5,7 @@ The ClassroomIO documentation site, built with [Blume](https://useblume.dev) (As
 
 ## Requirements
 
-Node **>= 22.12** (see `.nvmrc`). The rest of the monorepo is still on Node 20, so switch versions
+Node **>= 24.22.1** (see `.nvmrc`), matching the rest of the monorepo, so switch versions
 before working here:
 
 ```bash

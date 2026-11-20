@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 import { WEBHOOK_EVENT_TYPES } from '@cio/utils/constants/webhook';
-import { ZWebhookEventData } from '@cio/utils/validation/webhook';
+import { WEBHOOK_EVENT_DATA_EXAMPLES, ZWebhookEventData } from '@cio/utils/validation/webhook';
 
 const docs = readFileSync(
   fileURLToPath(new URL('../../../docs/content/docs/developers/webhooks.mdx', import.meta.url)),
@@ -33,5 +33,12 @@ describe('webhook event contract', () => {
 
     expect(example, `${eventType} is missing from the event reference`).toBeDefined();
     expect(() => ZWebhookEventData[eventType].parse(example)).not.toThrow();
+  });
+
+  it.each([...WEBHOOK_EVENT_TYPES])('ships a %s example that matches its schema and the docs', (eventType) => {
+    const example = WEBHOOK_EVENT_DATA_EXAMPLES[eventType];
+
+    expect(() => ZWebhookEventData[eventType].parse(example)).not.toThrow();
+    expect(extractExample(eventType)).toEqual(example);
   });
 });

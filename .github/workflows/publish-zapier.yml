@@ -1,0 +1,49 @@
+name: Publish Zapier app
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Which Zapier integration to push to'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.1
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared utils
+        run: pnpm --filter @cio/utils^... build && pnpm --filter @cio/utils build
+
+      - name: Select integration
+        working-directory: apps/zapier
+        env:
+          ZAPIER_INTEGRATION_ID_STAGING: ${{ vars.ZAPIER_INTEGRATION_ID_STAGING }}
+          ZAPIER_INTEGRATION_ID_PRODUCTION: ${{ vars.ZAPIER_INTEGRATION_ID_PRODUCTION }}
+        run: pnpm use:${{ inputs.environment }}
+
+      - name: Push
+        working-directory: apps/zapier
+        env:
+          ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
+        run: pnpm zapier:push
+

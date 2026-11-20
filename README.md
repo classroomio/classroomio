@@ -41,7 +41,7 @@ ClassroomIO is an intelligent customer training platform that helps SaaS compani
 - **Learning Paths:** Guide learners through structured learning experiences.
 - **Embedded Learning:** Embed videos, slides, and documents directly into your courses to give learners a seamless learning experience.
 - **REST API & Webhooks:** Connect ClassroomIO to your existing systems, access learning data, and trigger workflows across your tools.
-- **Zapier Integration (Coming Soon):** Connect ClassroomIO with your favourite tools and automate workflows across your existing apps.
+- **Zapier Integration:** Connect ClassroomIO with your favourite tools and automate workflows across your existing apps.
 
   ### 3. Intelligence
 
@@ -79,7 +79,7 @@ To get a local copy up and running, please follow these simple steps.
 
 Here is what you need to be able to run ClassroomIO.com
 
-- **[Node.js](https://nodejs.org/)** (Version: >=20.19.3) — _required_
+- **[Node.js](https://nodejs.org/)** (Version: 24.22.1, see `.nvmrc`) — _required_
 - **[pnpm](https://pnpm.io/installation)** (v10) — _required_; the package scripts call `pnpm` directly, so npm/yarn are not substitutes
 - **[Docker](https://docs.docker.com/engine/install/)** — _required_; runs Postgres + Redis (no local install of those needed)
 
@@ -90,7 +90,8 @@ This repo is a monorepo that consists of these primary apps:
 1. `website`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
 2. `api`: The api service that handles PDF, video processing, Emailing and Notifications.
 3. `dashboard`: The web application that runs the learning management system hosted [here](https://app.classroomio.com).
-4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
+4. `zapier`: The Zapier integration app that connects ClassroomIO to thousands of apps through triggers and actions.
+5. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
 The repository also contains shared packages under `packages/` (for example `packages/db`, `packages/utils`, and `packages/ui`).
 
@@ -230,7 +231,7 @@ The repository also contains shared packages under `packages/` (for example `pac
 
    - **website**: `pnpm website:dev`
    - **docs**: `CHOKIDAR_USEPOLLING=true pnpm dev --filter=@cio/docs`
-     (Requires Node ≥ 22.12: `nvm use 22.12` first. The polling flag prevents
+     (Requires Node 24: `nvm use 24.22.1` first, per `.nvmrc`. The polling flag prevents
      an `EMFILE` error on macOS when other dev servers are already consuming
      file descriptors.)
 

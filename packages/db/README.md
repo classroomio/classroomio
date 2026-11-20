@@ -86,6 +86,32 @@ pnpm db:backfill-profile-email-verification -- --execute
 
 The script prints how many profiles were updated and verifies zero mismatches remain.
 
+#### db:create-org
+
+Creates an organization, makes the given email its verified admin, and attaches an active plan that is never billed. A user and profile are created first when the email is new.
+
+```bash
+pnpm --filter @cio/db db:create-org "<Org Name>" <email> [PLAN] [site-name] [--dry-run]
+```
+
+`PLAN` is `BASIC` (default), `EARLY_ADOPTER` or `ENTERPRISE`. `site-name` defaults to a slug of the organization name. `--dry-run` prints what would be created and writes nothing.
+
+Without a password the admin signs in by choosing **Forgot password** on the login page, which creates their password. To give the admin a password from the start, set `ADMIN_PASSWORD` (8–128 characters, but no more than 72 UTF-8 bytes) in the environment. It is read from the environment so it stays out of shell history and process listings, and it is refused if the user already has a password:
+
+```bash
+read -rs ADMIN_PASSWORD && export ADMIN_PASSWORD
+pnpm --filter @cio/db db:create-org "Zapier Integration Testing" integration-testing@zapier.com ENTERPRISE zapier-integration-testing --dry-run
+unset ADMIN_PASSWORD
+```
+
+#### oauth:register-client
+
+Registers the ClassroomIO Zapier app as an OAuth client with the Zapier scopes and prints its `client_id` and `client_secret` once. Store both in the Zapier integration's environment (`CLIENT_ID`, `CLIENT_SECRET`) and add the `client_id` to `OAUTH_TRUSTED_CLIENT_IDS` and `ZAPIER_OAUTH_CLIENT_ID`. Set `ZAPIER_OAUTH_REDIRECT_URIS` to the redirect URI from the Zapier developer platform (comma-separated for more than one) before running it:
+
+```bash
+ZAPIER_OAUTH_REDIRECT_URIS="https://zapier.com/dashboard/auth/oauth/return/App123CLIAPI/" pnpm --filter @cio/db oauth:register-client
+```
+
 ## Seeding
 
 The seed script populates the database with demo data for local development. It is idempotent — running it multiple times is safe; existing records are skipped.
