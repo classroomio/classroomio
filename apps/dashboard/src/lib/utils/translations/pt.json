@@ -5481,16 +5481,13 @@
     },
     "run_monitor": {
       "cancel": "Cancelar geração",
-      "dismiss": "Dispensar",
       "now_doing": "Agora",
       "input_disabled_hint": "O chat é pausado enquanto o agente termina de criar o curso. Cancele ou aguarde a conclusão.",
-      "dismiss_confirm": "Vá embora",
-      "dismiss_cancel": "Ficar aqui",
-      "dismiss_confirm_body": "Sair desta geração cancelada? O botão Retomar desaparecerá — qualquer conversa adicional começará do zero e não continuará o plano.",
       "stuck_queued": {
         "title": "O trabalhador não responde",
         "body": "A geração do curso está esperando há mais de 30 segundos sem que nenhum processo em segundo plano a tenha assumido. O processo em segundo plano pode estar parado ou reiniciando."
-      }
+      },
+      "pause": "Pausar geração"
     },
     "ask_ai": "Pergunte à IA",
     "content_input_placeholder": "Pergunte sobre este conteúdo…",
@@ -5498,7 +5495,12 @@
     "ask_ai_input_aria": "Pergunte à IA sobre este conteúdo",
     "upload_error_file_too_large": "O arquivo é muito grande. O tamanho máximo é 5 MB.",
     "upload_error_unsupported_type": "Tipo de arquivo não suportado. Faça upload de um arquivo PDF, DOCX, PPTX ou ODT.",
-    "upload_error_generic": "Falha ao carregar o documento. Por favor, tente novamente."
+    "upload_error_generic": "Falha ao carregar o documento. Por favor, tente novamente.",
+    "run_paused": "Geração do curso pausada",
+    "resume_failed": "Não foi possível continuar a geração do curso. Tente novamente.",
+    "pause_failed": "Não foi possível pausar a geração do curso. Tente novamente.",
+    "cancel_failed": "Não foi possível cancelar a geração do curso. Tente novamente.",
+    "retry_failed": "Não foi possível tentar novamente a geração do curso. Tente novamente."
   },
   "widgets": {
     "heading": "Widgets",

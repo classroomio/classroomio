@@ -12,8 +12,9 @@ import {
   getAgentRunById,
   getAgentRunStep,
   updateAgentRun,
-  upsertAgentRunStep
+  upsertAgentRunStepForWorker
 } from '@cio/db/queries/agent';
+import type { TAiAgentRunStatus } from '@cio/db/types';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
 import { getExerciseSectionsByExerciseId } from '@cio/db/queries/exercise';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
@@ -145,6 +146,12 @@ export interface BuildAgentToolsOptions {
   documentAssets?: { documentId: string; assetId: string | null; fileName: string }[];
   /** Groups every lesson edit of one chat request, so the teacher can undo it as one change. */
   changeSetId?: string;
+  /**
+   * Token for the worker execution driving this run. Pause, cancel, resume and
+   * retry clear `agent_run.workerId`, so a tool call from a superseded execution
+   * cannot keep writing to the run.
+   */
+  workerId?: string;
 }
 
 const HISTORY_EXCERPT_LENGTH = 280;
@@ -308,7 +315,10 @@ function toErrorPayload(error: unknown): { code: string; message: string; detail
   return { code: 'TOOL_ERROR', message: String(error) };
 }
 
-async function assertRunNotCanceled(runId: string): Promise<void> {
+const CONTROL_FLOW_ERROR_CODES = new Set(['AGENT_RUN_CANCELED', 'AGENT_RUN_PAUSED', 'AGENT_RUN_SUPERSEDED']);
+const DURABLE_TOOL_RUN_STATUSES: TAiAgentRunStatus[] = ['queued', 'running', 'waiting_for_input', 'failed'];
+
+async function assertRunNotCanceled(runId: string, workerId?: string): Promise<void> {
   const run = await getAgentRunById(runId);
 
   if (!run) {
@@ -318,19 +328,34 @@ async function assertRunNotCanceled(runId: string): Promise<void> {
   if (run.status === 'canceled' || run.cancelRequestedAt) {
     throw new AppError('Course generation was canceled', 'AGENT_RUN_CANCELED', 409);
   }
+
+  if (run.status === 'paused') {
+    throw new AppError('Course generation was paused', 'AGENT_RUN_PAUSED', 409);
+  }
+
+  if (workerId !== undefined && run.workerId !== workerId) {
+    throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+  }
 }
 
 async function executeCheckpointedAgentTool<TArgs, TResult>(
   toolName: string,
   params: { orgId: string; userId: string; courseId: string; args?: TArgs },
   runId: string,
-  execute: () => Promise<TResult>
+  execute: () => Promise<TResult>,
+  workerId?: string
 ): Promise<TResult> {
-  await assertRunNotCanceled(runId);
+  if (!workerId) {
+    throw new AppError('Course generation run is missing its worker execution', 'AGENT_RUN_WORKER_MISSING', 500);
+  }
+
+  await assertRunNotCanceled(runId, workerId);
 
   const inputHash = hashToolInput(toolName, params.args ?? {});
   const stepKey = `${toolName}:${inputHash.slice(0, 48)}`;
   const existingStep = await getAgentRunStep(runId, stepKey);
+  const attempt = existingStep ? existingStep.attempt + 1 : 0;
+  const stepInput = { toolName, args: (params.args ?? {}) as Record<string, unknown> };
 
   if (existingStep?.status === 'completed') {
     const checkpointResult = extractCheckpointResult(existingStep.output);
@@ -349,26 +374,38 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
 
   const now = new Date().toISOString();
 
-  await updateAgentRun({
+  const claimedRun = await updateAgentRun({
     runId,
     userId: params.userId,
     status: 'running',
     phase: 'implementing',
     currentStepKey: stepKey,
-    lockedAt: now
+    lockedAt: now,
+    expectedWorkerId: workerId,
+    expectedStatuses: DURABLE_TOOL_RUN_STATUSES
   });
 
-  await upsertAgentRunStep({
+  if (!claimedRun) {
+    throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+  }
+
+  const startedStep = await upsertAgentRunStepForWorker({
     runId,
+    userId: params.userId,
+    expectedWorkerId: workerId,
     stepKey,
     stepType: `tool:${toolName}`,
     status: 'running',
     inputHash,
-    input: { toolName, args: (params.args ?? {}) as Record<string, unknown> },
-    attempt: existingStep ? existingStep.attempt + 1 : 0,
+    input: stepInput,
+    attempt,
     startedAt: now,
     finishedAt: null
   });
+
+  if (!startedStep) {
+    throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+  }
 
   await createAgentRunEvent({
     runId,
@@ -382,19 +419,25 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
     const finishedAt = new Date().toISOString();
     const outputIds = extractOutputIds(result);
 
-    await upsertAgentRunStep({
+    const completedStep = await upsertAgentRunStepForWorker({
       runId,
+      userId: params.userId,
+      expectedWorkerId: workerId,
       stepKey,
       stepType: `tool:${toolName}`,
       status: 'completed',
       inputHash,
-      input: { toolName, args: (params.args ?? {}) as Record<string, unknown> },
+      input: stepInput,
       output: toCheckpointOutput(result),
       outputIds,
-      attempt: existingStep ? existingStep.attempt + 1 : 0,
+      attempt,
       startedAt: existingStep?.startedAt ?? now,
       finishedAt
     });
+
+    if (!completedStep) {
+      throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+    }
 
     await createAgentRunEvent({
       runId,
@@ -407,18 +450,30 @@ async function executeCheckpointedAgentTool<TArgs, TResult>(
   } catch (error) {
     const errorPayload = toErrorPayload(error);
 
-    await upsertAgentRunStep({
+    if (CONTROL_FLOW_ERROR_CODES.has(errorPayload.code)) {
+      throw error;
+    }
+
+    const failedAt = new Date().toISOString();
+
+    const failedStep = await upsertAgentRunStepForWorker({
       runId,
+      userId: params.userId,
+      expectedWorkerId: workerId,
       stepKey,
       stepType: `tool:${toolName}`,
       status: 'failed',
       inputHash,
-      input: { toolName, args: (params.args ?? {}) as Record<string, unknown> },
+      input: stepInput,
       error: errorPayload,
-      attempt: existingStep ? existingStep.attempt + 1 : 0,
+      attempt,
       startedAt: existingStep?.startedAt ?? now,
-      finishedAt: new Date().toISOString()
+      finishedAt: failedAt
     });
+
+    if (!failedStep) {
+      throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+    }
 
     await createAgentRunEvent({
       runId,
@@ -452,7 +507,7 @@ async function executeAgentToolBase<TArgs, TResult>(
   try {
     const result =
       options.runId && DURABLE_AGENT_TOOL_NAMES.has(toolName)
-        ? await executeCheckpointedAgentTool(toolName, params, options.runId, execute)
+        ? await executeCheckpointedAgentTool(toolName, params, options.runId, execute, options.workerId)
         : await execute();
 
     trackAgentEvent(AgentEvent.TOOL_COMPLETED, {

@@ -5481,16 +5481,13 @@
     },
     "run_monitor": {
       "cancel": "Hủy tạo khóa học",
-      "dismiss": "Loại bỏ",
       "now_doing": "bây giờ",
       "input_disabled_hint": "Cuộc trò chuyện bị tạm dừng trong khi nhân viên hỗ trợ hoàn tất việc xây dựng khóa học. Hủy bỏ hoặc đợi cho đến khi nó hoàn thành.",
-      "dismiss_confirm": "Bỏ đi",
-      "dismiss_cancel": "Ở lại đây",
-      "dismiss_confirm_body": "Rời khỏi lần tạo đã hủy này? Nút Tiếp tục sẽ biến mất — mọi cuộc trò chuyện tiếp theo sẽ bắt đầu lại và không tiếp tục kế hoạch.",
       "stuck_queued": {
         "title": "Công nhân không phản hồi",
         "body": "Việc tạo khóa học đã chờ hơn 30 giây mà không có tiến trình nền nào tiếp nhận. Tiến trình nền có thể đang tắt hoặc đang khởi động lại."
-      }
+      },
+      "pause": "Tạm dừng tạo khóa học"
     },
     "ask_ai": "Hỏi AI",
     "content_input_placeholder": "Hỏi về nội dung này…",
@@ -5498,7 +5495,12 @@
     "ask_ai_input_aria": "Hỏi AI về nội dung này",
     "upload_error_file_too_large": "Tệp quá lớn. Kích thước tối đa là 5 MB.",
     "upload_error_unsupported_type": "Loại tệp không được hỗ trợ. Vui lòng tải lên tệp PDF, DOCX, PPTX hoặc ODT.",
-    "upload_error_generic": "Không thể tải tài liệu lên. Vui lòng thử lại."
+    "upload_error_generic": "Không thể tải tài liệu lên. Vui lòng thử lại.",
+    "run_paused": "Đã tạm dừng tạo khóa học",
+    "resume_failed": "Không thể tiếp tục tạo khóa học. Vui lòng thử lại.",
+    "pause_failed": "Không thể tạm dừng tạo khóa học. Vui lòng thử lại.",
+    "cancel_failed": "Không thể hủy tạo khóa học. Vui lòng thử lại.",
+    "retry_failed": "Không thể thử lại việc tạo khóa học. Vui lòng thử lại."
   },
   "widgets": {
     "heading": "Widget",

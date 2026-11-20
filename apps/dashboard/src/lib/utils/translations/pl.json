@@ -5481,16 +5481,13 @@
     },
     "run_monitor": {
       "cancel": "Anuluj generowanie",
-      "dismiss": "Odrzuć",
       "now_doing": "Teraz",
       "input_disabled_hint": "Czat zostaje wstrzymany, gdy agent kończy tworzenie kursu. Anuluj lub poczekaj na zakończenie.",
-      "dismiss_confirm": "Odejdź",
-      "dismiss_cancel": "Zostań tutaj",
-      "dismiss_confirm_body": "Odejść od tego anulowanego generowania? Przycisk Wznów zniknie — każdy kolejny czat zacznie się od nowa i nie będzie kontynuował planu.",
       "stuck_queued": {
         "title": "Pracownik nie odpowiada",
         "body": "Generowanie kursu czeka dłużej niż 30 sekund i żaden proces w tle go nie podjął. Proces w tle może być wyłączony lub właśnie się restartuje."
-      }
+      },
+      "pause": "Wstrzymaj generowanie"
     },
     "ask_ai": "Zapytaj AI",
     "content_input_placeholder": "Zapytaj o tę treść…",
@@ -5498,7 +5495,12 @@
     "ask_ai_input_aria": "Zapytaj AI o tę treść",
     "upload_error_file_too_large": "Plik jest za duży. Maksymalny rozmiar to 5 MB.",
     "upload_error_unsupported_type": "Typ pliku nie jest obsługiwany. Prześlij plik PDF, DOCX, PPTX lub ODT.",
-    "upload_error_generic": "Nie udało się przesłać dokumentu. Spróbuj ponownie."
+    "upload_error_generic": "Nie udało się przesłać dokumentu. Spróbuj ponownie.",
+    "run_paused": "Generowanie kursu wstrzymane",
+    "resume_failed": "Nie udało się wznowić generowania kursu. Spróbuj ponownie.",
+    "pause_failed": "Nie udało się wstrzymać generowania kursu. Spróbuj ponownie.",
+    "cancel_failed": "Nie udało się anulować generowania kursu. Spróbuj ponownie.",
+    "retry_failed": "Nie udało się ponowić generowania kursu. Spróbuj ponownie."
   },
   "widgets": {
     "heading": "Widżety",

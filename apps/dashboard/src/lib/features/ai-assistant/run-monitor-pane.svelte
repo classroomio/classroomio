@@ -18,25 +18,29 @@
     isStopped: boolean;
     error?: string;
     canCancel: boolean;
+    canPause?: boolean;
     canRetry: boolean;
     canResume: boolean;
   }
 
-  /** Queued for longer than this with no worker pickup = surface "worker not responding". */
-  const STUCK_QUEUED_THRESHOLD_MS = 30_000;
+  /** Queued for longer than this before we bother asking BullMQ what happened. */
+  const QUEUED_PROBE_THRESHOLD_MS = 30_000;
 
   interface Props {
     state: RunMonitorState;
     courseId: string;
-    /** Underlying run status; used to enable Dismiss only on canceled runs. */
+    /** Underlying run status; drives the stuck-queued detector. */
     runStatus?: string | null;
-    /** When run is `queued`, the ISO timestamp it was enqueued. Lets us flag stuck-queued runs. */
+    /** When the run started waiting in the queue. Debounces the queue inspection. */
     queuedSince?: string | null;
     onCancel: () => void;
+    onPause?: () => void;
     onResume: () => void;
     onRetry: () => void;
-    onDismiss: () => void;
     onRetryStuck?: () => void;
+    retryStuckLoading?: boolean;
+    /** BullMQ's verdict on the queued job, read from the API. */
+    queueStalled?: boolean;
     onMentionClick: (route: string) => void;
   }
 
@@ -46,47 +50,29 @@
     runStatus = null,
     queuedSince = null,
     onCancel,
+    onPause,
     onResume,
     onRetry,
-    onDismiss,
     onRetryStuck,
+    retryStuckLoading = false,
+    queueStalled = false,
     onMentionClick
   }: Props = $props();
 
-  const isCanceled = $derived(runStatus === 'canceled');
-
-  // `now` ticks every 5s so the stuck-queued detector keeps re-evaluating even
-  // when the run row itself isn't changing (which is exactly the symptom we're
-  // trying to catch — the worker isn't moving the row past `queued`).
+  // `now` ticks every 5s so the elapsed-time check keeps re-evaluating even
+  // when the run row itself isn't changing.
   let now = $state(Date.now());
   onMount(() => {
     const id = setInterval(() => (now = Date.now()), 5_000);
     return () => clearInterval(id);
   });
 
-  const isStuckQueued = $derived.by(() => {
+  const isQueuedTooLong = $derived.by(() => {
     if (runStatus !== 'queued' || !queuedSince) return false;
     const queuedAt = Date.parse(queuedSince);
     if (!Number.isFinite(queuedAt)) return false;
-    return now - queuedAt > STUCK_QUEUED_THRESHOLD_MS;
+    return now - queuedAt > QUEUED_PROBE_THRESHOLD_MS;
   });
-
-  // Two-step Dismiss: first click reveals a confirm/cancel pair so the user
-  // can't accidentally walk away from a canceled run and lose the Resume button.
-  let isConfirmingDismiss = $state(false);
-
-  function requestDismiss() {
-    isConfirmingDismiss = true;
-  }
-
-  function confirmDismiss() {
-    isConfirmingDismiss = false;
-    onDismiss();
-  }
-
-  function cancelDismiss() {
-    isConfirmingDismiss = false;
-  }
 
   // The titleKey already covers running / completed / failed / canceled — pick
   // a matching icon so the pane state is readable at a glance without parsing
@@ -124,7 +110,7 @@
     showTitle={false}
   />
 
-  {#if isStuckQueued}
+  {#if isQueuedTooLong && queueStalled}
     <div
       class="flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300"
       role="alert"
@@ -135,7 +121,7 @@
         <p class="mt-0.5">{$t('ai_assistant.run_monitor.stuck_queued.body')}</p>
       </div>
       {#if onRetryStuck}
-        <Button size="sm" variant="outline" onclick={onRetryStuck} class="shrink-0">
+        <Button size="sm" variant="outline" onclick={onRetryStuck} loading={retryStuckLoading} class="shrink-0">
           {$t('ai_assistant.retry')}
         </Button>
       {/if}
@@ -143,6 +129,11 @@
   {/if}
 
   <div class="flex gap-2">
+    {#if runState.canPause && onPause}
+      <Button size="sm" variant="outline" onclick={onPause} class="flex-1">
+        {$t('ai_assistant.run_monitor.pause')}
+      </Button>
+    {/if}
     {#if runState.canCancel}
       <Button size="sm" variant="outline" onclick={onCancel} class="flex-1">
         {$t('ai_assistant.run_monitor.cancel')}
@@ -158,28 +149,11 @@
         {$t('ai_assistant.resume')}
       </Button>
     {/if}
-    {#if isCanceled && !isConfirmingDismiss}
-      <Button size="sm" variant="ghost" onclick={requestDismiss} class="flex-1">
-        {$t('ai_assistant.run_monitor.dismiss')}
-      </Button>
-    {/if}
   </div>
 
-  {#if isCanceled && isConfirmingDismiss}
-    <div class="ui:bg-muted/30 flex flex-col gap-2 rounded border px-3 py-2 text-xs">
-      <p class="ui:text-foreground">{$t('ai_assistant.run_monitor.dismiss_confirm_body')}</p>
-      <div class="flex gap-2">
-        <Button size="sm" variant="ghost" onclick={cancelDismiss} class="flex-1">
-          {$t('ai_assistant.run_monitor.dismiss_cancel')}
-        </Button>
-        <Button size="sm" variant="destructive" onclick={confirmDismiss} class="flex-1">
-          {$t('ai_assistant.run_monitor.dismiss_confirm')}
-        </Button>
-      </div>
-    </div>
+  {#if !runState.isStopped}
+    <p class="ui:text-muted-foreground text-[11px] leading-snug">
+      {$t('ai_assistant.run_monitor.input_disabled_hint')}
+    </p>
   {/if}
-
-  <p class="ui:text-muted-foreground text-[11px] leading-snug">
-    {$t('ai_assistant.run_monitor.input_disabled_hint')}
-  </p>
 </div>

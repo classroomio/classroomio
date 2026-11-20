@@ -5845,16 +5845,13 @@
     "run_monitor_aria": "Kurs oluşturma işlemi devam ediyor",
     "run_monitor": {
       "cancel": "Oluşturmayı iptal et",
-      "dismiss": "Kapat",
-      "dismiss_confirm": "Yürüyüş uzakta",
-      "dismiss_cancel": "Burada kal",
-      "dismiss_confirm_body": "İptal edilen bu nesilden uzaklaşacak mısınız? Devam düğmesi kaybolacak — bundan sonraki sohbetler yeni başlayacak ve plana devam edilmeyecektir.",
       "now_doing": "Now",
       "input_disabled_hint": "Ajan kursu oluşturmayı bitirirken sohbet duraklatılır. İptal edin veya tamamlanmasını bekleyin.",
       "stuck_queued": {
         "title": "Çalışan yanıt vermiyor",
         "body": "Kurs oluşturma, çalışan alınmadan 30 saniyeden fazla beklemektedir. Arka plan çalışanı kapalı olabilir veya yeniden başlatılıyor olabilir."
-      }
+      },
+      "pause": "Oluşturmayı duraklat"
     },
     "plan_view": {
       "expand": "Planı genişlet",
@@ -6010,7 +6007,12 @@
     "context_full_compacting": "Sıkıştırılıyor...",
     "context_full_new_chat": "Başlat özet içeren yeni sohbet",
     "context_full_summarizing": "Özet oluşturuluyor...",
-    "context_compacted_badge": "Sözleşme sıkıştırıldı ({count} önceki mesajlar)"
+    "context_compacted_badge": "Konuşma sıkıştırıldı ({count} önceki mesaj)",
+    "run_paused": "Kurs oluşturma duraklatıldı",
+    "resume_failed": "Kurs oluşturmaya devam edilemedi. Lütfen yeniden deneyin.",
+    "pause_failed": "Kurs oluşturma duraklatılamadı. Lütfen yeniden deneyin.",
+    "cancel_failed": "Kurs oluşturma iptal edilemedi. Lütfen yeniden deneyin.",
+    "retry_failed": "Kurs oluşturma yeniden denenemedi. Lütfen yeniden deneyin."
   },
   "side_panel": {
     "close_aria": "Paneli kapat",
