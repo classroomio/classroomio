@@ -25,7 +25,7 @@ export const PUBLIC_API_ANALYTICS_STUDENT_SORTS = ['status', 'name', 'progress',
 export type TPublicApiAnalyticsStudentSort = (typeof PUBLIC_API_ANALYTICS_STUDENT_SORTS)[number];
 
 export const ZPublicApiAnalyticsScope = z.object({
-  type: z.enum(ANALYTICS_SCOPE_TYPES).describe("'cohort', 'course' or 'org', the analytics scope to read."),
+  type: z.enum(ANALYTICS_SCOPE_TYPES).describe("'cohort', 'course', 'org' or 'path', the analytics scope to read."),
   id: z.string().uuid().describe('The scope id inside the key organization.')
 });
 export type TPublicApiAnalyticsScope = z.infer<typeof ZPublicApiAnalyticsScope>;

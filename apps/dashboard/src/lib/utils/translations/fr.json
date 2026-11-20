@@ -6791,7 +6791,8 @@
       "enrolled_students": "Étudiants inscrits",
       "target": "Cible",
       "logins": "Connexions",
-      "direct_students": "Étudiants directs"
+      "direct_students": "Étudiants directs",
+      "path_average": "Moyenne du parcours"
     },
     "notes": {
       "score_distribution": "Étudiants par tranche de score.",
@@ -6887,7 +6888,10 @@
         "completions": "aucun achèvement pour le moment",
         "enrolments": "aucune inscription pour le moment",
         "in_days": "aucun au cours des {days} derniers jours"
-      }
+      },
+      "share_of_path": "{percent} du parcours",
+      "completed_certified_path": "{percent} du parcours · {count} certifiés",
+      "completed_in_days_path": "{percent} du parcours{count, plural, =0 {} other { · +# ces {days} derniers jours}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7024,6 +7028,12 @@
       },
       "completion_by_path": {
         "title": "Taux de réussite par parcours"
+      },
+      "courses_in_path": {
+        "title": "Cours de ce parcours"
+      },
+      "overdue_path": {
+        "title": "Apprenants en retard"
       }
     },
     "measures": {
@@ -7114,7 +7124,8 @@
       "showing": {
         "cohort": "Affichage de {from}–{to} sur {total} correspondant · {count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
         "course": "Affichage de {from}–{to} sur {total} correspondant · {count, plural, one {# étudiant} other {# étudiants}} en cours",
-        "org": "Affichage de {from}–{to} sur {total} correspondant · {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
+        "org": "Affichage de {from}–{to} sur {total} correspondant · {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation",
+        "path": "Affichage de {from}–{to} sur {total} résultats · {count, plural, one {# apprenant} other {# apprenants}} dans le parcours"
       },
       "clear_filters": "{count, plural, one {Effacer # filtre} other {Supprimer # filtres}}",
       "sort": {
@@ -7167,17 +7178,20 @@
       "showing_paged": {
         "cohort": "Affichage de {from}–{to} sur {count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
         "course": "Affichage de {from}–{to} sur {count, plural, one {# étudiant} other {# étudiants}} en cours",
-        "org": "Affichage de {from}–{to} sur {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
+        "org": "Affichage de {from}–{to} sur {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation",
+        "path": "Affichage de {from}–{to} sur {count, plural, one {# apprenant} other {# apprenants}} dans le parcours"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# étudiant correspondant} other {# étudiants correspondants}} · {count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
         "course": "{total, plural, one {# étudiant correspondant} other {# étudiants correspondants}} · {count, plural, one {# étudiant} other {# étudiants}} en cours",
-        "org": "{total, plural, one {# étudiant correspondant} other {# étudiants correspondants}} · {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
+        "org": "{total, plural, one {# étudiant correspondant} other {# étudiants correspondants}} · {count, plural, one {# étudiant} other {# étudiants}} dans l'organisation",
+        "path": "{total, plural, one {# apprenant correspond} other {# apprenants correspondent}} · {count, plural, one {# apprenant} other {# apprenants}} dans le parcours"
       },
       "showing_all": {
         "cohort": "{count, plural, one {# étudiant} other {# étudiants}} dans la cohorte",
         "course": "{count, plural, one {# étudiant} other {# étudiants}} en cours",
-        "org": "{count, plural, one {# étudiant} other {# étudiants}} dans l'organisation"
+        "org": "{count, plural, one {# étudiant} other {# étudiants}} dans l'organisation",
+        "path": "{count, plural, one {# apprenant} other {# apprenants}} dans le parcours"
       },
       "failed": "Impossible de charger les étudiants",
       "cells_failed": "Impossible de charger les scores des exercices",
@@ -7194,13 +7208,15 @@
       "title": {
         "cohort": "Aucun étudiant dans cette cohorte pour le moment",
         "course": "Aucun étudiant dans ce cours pour le moment",
-        "org": "Aucun étudiant dans votre organisation pour le moment"
+        "org": "Aucun étudiant dans votre organisation pour le moment",
+        "path": "Aucun apprenant dans ce parcours d'apprentissage pour l'instant"
       },
       "description": {
         "cohort": "Les analyses se remplissent à mesure que les étudiants ouvrent des leçons et soumettent des exercices.",
         "cohort_no_courses": "Ajoutez des cours, puis invitez des étudiants. Les analyses se remplissent à mesure qu'ils ouvrent des leçons et soumettent des exercices.",
         "course": "Les analyses se remplissent à mesure que les étudiants ouvrent des leçons et soumettent des exercices.",
-        "org": "Ajoutez des étudiants à votre académie, puis inscrivez-les à des cours ou des cohortes."
+        "org": "Ajoutez des étudiants à votre académie, puis inscrivez-les à des cours ou des cohortes.",
+        "path": "Les statistiques se remplissent à mesure que les apprenants ouvrent des leçons et soumettent des exercices."
       },
       "pending": "{count, plural, one {# invitation est} other {# invitations sont}} en attente d'acceptation. Les analyses se remplissent dès que les étudiants rejoignent.",
       "invite_students": "Inviter des étudiants",
@@ -7222,7 +7238,9 @@
       "courses_org": "Affichage de {from}–{to} sur {total, plural, one {# cours} other {# cours}} dans l'organisation",
       "sections_course": "Affichage de {from}–{to} sur {total, plural, one {# section} other {# sections}} dans le cours",
       "overdue_cohort": "Affichage de {from}–{to} sur {total, plural, one {# étudiant en retard} other {# étudiants en retard}} dans la cohorte",
-      "paths_org": "Affichage de {from}–{to} sur {total, plural, one {# parcours d'apprentissage} other {# parcours d'apprentissage}} dans l'organisation"
+      "paths_org": "Affichage de {from}–{to} sur {total, plural, one {# parcours d'apprentissage} other {# parcours d'apprentissage}} dans l'organisation",
+      "courses_path": "Affichage de {from}–{to} sur {total, plural, one {# cours} other {# cours}} dans le parcours",
+      "overdue_path": "Affichage de {from}–{to} sur {total, plural, one {# apprenant en retard} other {# apprenants en retard}} dans le parcours"
     },
     "breakdown": {
       "label": "Répartition",

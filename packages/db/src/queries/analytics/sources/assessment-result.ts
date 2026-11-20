@@ -20,7 +20,7 @@ import {
 /** One row per enrollment and exercise, with attempt, grading and pass state. */
 export const assessmentResultSource: AnalyticsSourceDefinition = {
   id: 'assessment_result',
-  scopeTypes: ['cohort', 'course', 'org'],
+  scopeTypes: ['cohort', 'course', 'org', 'path'],
   build: () => sql`
     SELECT
       assessment_row.*,

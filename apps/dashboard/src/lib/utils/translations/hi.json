@@ -6791,7 +6791,8 @@
       "enrolled_students": "नामांकित छात्र",
       "target": "लक्ष्य",
       "logins": "लॉगिन",
-      "direct_students": "प्रत्यक्ष छात्र"
+      "direct_students": "प्रत्यक्ष छात्र",
+      "path_average": "पाथ औसत"
     },
     "notes": {
       "score_distribution": "प्रत्येक स्कोर वर्ग के लिए छात्र।",
@@ -6887,7 +6888,10 @@
         "completions": "अभी तक कोई पूर्णता नहीं",
         "enrolments": "अभी तक कोई नामांकन नहीं",
         "in_days": "पिछले {days} दिनों में कोई नहीं"
-      }
+      },
+      "share_of_path": "पाथ का {percent}",
+      "completed_certified_path": "पाथ का {percent} · {count} प्रमाणित",
+      "completed_in_days_path": "पाथ का {percent}{count, plural, =0 {} other { · पिछले {days} दिनों में +#}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7024,6 +7028,12 @@
       },
       "completion_by_path": {
         "title": "पाथ के अनुसार पूर्णता दर"
+      },
+      "courses_in_path": {
+        "title": "इस पाथ के कोर्स"
+      },
+      "overdue_path": {
+        "title": "विलंबित छात्र"
       }
     },
     "measures": {
@@ -7114,7 +7124,8 @@
       "showing": {
         "cohort": "{total} मिलान का {from}–{to} दिखा रहा है · समूह में {count, plural, one {# छात्र} other {# छात्र}}",
         "course": "{from}–{to} का {total} मिलान · {count, plural, one {# छात्र} other {# छात्र}} पाठ्यक्रम में दिखाया जा रहा है",
-        "org": "{total} मिलान का {from}–{to} दिखा रहा है · संगठन में {count, plural, one {# छात्र} other {# छात्र}}"
+        "org": "{total} मिलान का {from}–{to} दिखा रहा है · संगठन में {count, plural, one {# छात्र} other {# छात्र}}",
+        "path": "{total} मेल खाने वालों में से {from}–{to} दिखाए जा रहे हैं · पाथ पर {count, plural, one {# छात्र} other {# छात्र}}"
       },
       "clear_filters": "{count, plural, one {# फ़िल्टर साफ़ करें} other {# फ़िल्टर साफ़ करें}}",
       "sort": {
@@ -7167,17 +7178,20 @@
       "showing_paged": {
         "cohort": "{from}–{to} दिखा रहा है · समूह में {count, plural, one {# छात्र} other {# छात्र}}",
         "course": "{from}–{to} दिखाया जा रहा है · पाठ्यक्रम में {count, plural, one {# छात्र} other {# छात्र}}",
-        "org": "{from}–{to} दिखा रहा है · संगठन में {count, plural, one {# छात्र} other {# छात्र}}"
+        "org": "{from}–{to} दिखा रहा है · संगठन में {count, plural, one {# छात्र} other {# छात्र}}",
+        "path": "पाथ पर {count, plural, one {# छात्र} other {# छात्रों}} में से {from}–{to} दिखाए जा रहे हैं"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# छात्र} other {# छात्र}} मिलान · समूह में {count, plural, one {# छात्र} other {# छात्र}}",
         "course": "{total, plural, one {# छात्र} other {# छात्र}} मिलान · पाठ्यक्रम में {count, plural, one {# छात्र} other {# छात्र}}",
-        "org": "{total, plural, one {# छात्र} other {# छात्र}} मिलान · संगठन में {count, plural, one {# छात्र} other {# छात्र}}"
+        "org": "{total, plural, one {# छात्र} other {# छात्र}} मिलान · संगठन में {count, plural, one {# छात्र} other {# छात्र}}",
+        "path": "{total, plural, one {# छात्र} other {# छात्र}} मेल खाते हैं · पाथ पर {count, plural, one {# छात्र} other {# छात्र}}"
       },
       "showing_all": {
         "cohort": "समूह में {count, plural, one {# छात्र} other {# छात्र}}",
         "course": "पाठ्यक्रम में {count, plural, one {# छात्र} other {# छात्र}}",
-        "org": "संगठन में {count, plural, one {# छात्र} other {# छात्र}}"
+        "org": "संगठन में {count, plural, one {# छात्र} other {# छात्र}}",
+        "path": "पाथ पर {count, plural, one {# छात्र} other {# छात्र}}"
       },
       "failed": "छात्र लोड नहीं हो सके",
       "cells_failed": "अभ्यास स्कोर लोड नहीं हो सके",
@@ -7194,13 +7208,15 @@
       "title": {
         "cohort": "इस कोहोर्ट में अभी कोई छात्र नहीं है",
         "course": "इस कोर्स में अभी कोई छात्र नहीं है",
-        "org": "आपके संगठन में अभी कोई छात्र नहीं है"
+        "org": "आपके संगठन में अभी कोई छात्र नहीं है",
+        "path": "इस लर्निंग पाथ में अभी तक कोई छात्र नहीं"
       },
       "description": {
         "cohort": "जैसे ही छात्र पाठ खोलते हैं और अभ्यास जमा करते हैं, विश्लेषण भर जाते हैं।",
         "cohort_no_courses": "कोर्स जोड़ें, फिर छात्रों को आमंत्रित करें। जैसे ही वे पाठ खोलते हैं और अभ्यास जमा करते हैं, विश्लेषण भर जाते हैं।",
         "course": "जैसे ही छात्र पाठ खोलते हैं और अभ्यास जमा करते हैं, विश्लेषण भर जाते हैं।",
-        "org": "अपने अकादमी में छात्र जोड़ें, फिर उन्हें कोर्स या कोहोर्ट में नामांकित करें।"
+        "org": "अपने अकादमी में छात्र जोड़ें, फिर उन्हें कोर्स या कोहोर्ट में नामांकित करें।",
+        "path": "जैसे-जैसे छात्र पाठ खोलते हैं और अभ्यास जमा करते हैं, एनालिटिक्स भरते जाते हैं।"
       },
       "pending": "{count, plural, one {# आमंत्रण} other {# आमंत्रण}} स्वीकार होने की प्रतीक्षा में है। छात्रों के जुड़ने पर विश्लेषण भर जाएंगे।",
       "invite_students": "छात्रों को आमंत्रित करें",
@@ -7222,7 +7238,9 @@
       "courses_org": "संगठन में {total, plural, one {# कोर्स} other {# कोर्स}} में से {from}–{to} दिख रहा है",
       "sections_course": "कोर्स में {total, plural, one {# सेक्शन} other {# सेक्शन}} में से {from}–{to} दिख रहा है",
       "overdue_cohort": "कोहॉर्ट में {total, plural, one {# विलंबित छात्र} other {# विलंबित छात्रों}} में से {from}–{to} दिख रहा है",
-      "paths_org": "संगठन में {total, plural, one {# लर्निंग पाथ} other {# लर्निंग पाथ}} में से {from}–{to} दिखाए जा रहे हैं"
+      "paths_org": "संगठन में {total, plural, one {# लर्निंग पाथ} other {# लर्निंग पाथ}} में से {from}–{to} दिखाए जा रहे हैं",
+      "courses_path": "पाथ पर {total, plural, one {# कोर्स} other {# कोर्स}} में से {from}–{to} दिखाए जा रहे हैं",
+      "overdue_path": "पाथ पर {total, plural, one {# विलंबित छात्र} other {# विलंबित छात्रों}} में से {from}–{to} दिखाए जा रहे हैं"
     },
     "breakdown": {
       "label": "विवरण",

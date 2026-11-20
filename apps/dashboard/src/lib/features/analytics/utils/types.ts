@@ -86,7 +86,12 @@ export type WidgetEmptyState = {
   action: ScopeEmptyAction | null;
 };
 
-export type AnalyticsKpiContext = { courseSelected: boolean; rangeDays: number | null; hasStudents: boolean };
+export type AnalyticsKpiContext = {
+  scopeType: AnalyticsScopeType;
+  courseSelected: boolean;
+  rangeDays: number | null;
+  hasStudents: boolean;
+};
 
 export type AnalyticsWidgetContext = {
   scopeType: AnalyticsScopeType;

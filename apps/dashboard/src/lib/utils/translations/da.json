@@ -6791,7 +6791,8 @@
       "enrolled_students": "Tilmeldte elever",
       "target": "Mål",
       "logins": "Logins",
-      "direct_students": "Direkte elever"
+      "direct_students": "Direkte elever",
+      "path_average": "Gennemsnit for forløbet"
     },
     "notes": {
       "score_distribution": "Elever per scorebånd.",
@@ -6887,7 +6888,10 @@
         "completions": "endnu ingen gennemførsler",
         "enrolments": "endnu ingen tilmeldinger",
         "in_days": "ingen i de sidste {days} dage"
-      }
+      },
+      "share_of_path": "{percent} af forløbet",
+      "completed_certified_path": "{percent} af forløbet · {count} certificeret",
+      "completed_in_days_path": "{percent} af forløbet{count, plural, =0 {} other { · +# de seneste {days} dage}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7024,6 +7028,12 @@
       },
       "completion_by_path": {
         "title": "Gennemførelsesrate pr. forløb"
+      },
+      "courses_in_path": {
+        "title": "Kurser i dette forløb"
+      },
+      "overdue_path": {
+        "title": "Forsinkede studerende"
       }
     },
     "measures": {
@@ -7114,7 +7124,8 @@
       "showing": {
         "cohort": "Viser {from}–{to} af {total} matchende · {count, plural, one {# studerende} other {# elever}} i kohorte",
         "course": "Viser {from}–{to} af {total} matchende · {count, plural, one {# studerende} other {# elever}} i kursus",
-        "org": "Viser {from}–{to} af {total} matchende · {count, plural, one {# studerende} other {# elever}} i organisation"
+        "org": "Viser {from}–{to} af {total} matchende · {count, plural, one {# studerende} other {# elever}} i organisation",
+        "path": "Viser {from}–{to} af {total} matchende · {count, plural, one {# studerende} other {# studerende}} på forløbet"
       },
       "clear_filters": "{count, plural, one {Ryd # filter} other {Ryd # filtre}}",
       "sort": {
@@ -7167,17 +7178,20 @@
       "showing_paged": {
         "cohort": "Viser {from}–{to} af {count, plural, one {# studerende} other {# elever}} i kohorte",
         "course": "Viser {from}–{to} af {count, plural, one {# studerende} other {# elever}} i kursus",
-        "org": "Viser {from}–{to} af {count, plural, one {# studerende} other {# elever}} i organisation"
+        "org": "Viser {from}–{to} af {count, plural, one {# studerende} other {# elever}} i organisation",
+        "path": "Viser {from}–{to} af {count, plural, one {# studerende} other {# studerende}} på forløbet"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# studerende} other {# elever}} matchende · {count, plural, one {# studerende} other {# elever}} i kohorte",
         "course": "{total, plural, one {# studerende} other {# elever}} matchende · {count, plural, one {# studerende} other {# elever}} i kursus",
-        "org": "{total, plural, one {# studerende} other {# elever}} matchende · {count, plural, one {# studerende} other {# elever}} i organisation"
+        "org": "{total, plural, one {# studerende} other {# elever}} matchende · {count, plural, one {# studerende} other {# elever}} i organisation",
+        "path": "{total, plural, one {# studerende} other {# studerende}} matchende · {count, plural, one {# studerende} other {# studerende}} på forløbet"
       },
       "showing_all": {
         "cohort": "{count, plural, one {# studerende} other {# elever}} i kohorte",
         "course": "{count, plural, one {# studerende} other {# elever}} i kursus",
-        "org": "{count, plural, one {# studerende} other {# elever}} i organisation"
+        "org": "{count, plural, one {# studerende} other {# elever}} i organisation",
+        "path": "{count, plural, one {# studerende} other {# studerende}} på forløbet"
       },
       "failed": "Kunne ikke indlæse elever",
       "cells_failed": "Kunne ikke indlæse øvelsesresultater",
@@ -7194,13 +7208,15 @@
       "title": {
         "cohort": "Der er endnu ingen elever i denne kohorte",
         "course": "Der er endnu ingen elever på dette kursus",
-        "org": "Der er endnu ingen elever i din organisation"
+        "org": "Der er endnu ingen elever i din organisation",
+        "path": "Ingen studerende på dette læringsforløb endnu"
       },
       "description": {
         "cohort": "Analyserne udfyldes, når eleverne åbner lektioner og indsender øvelser.",
         "cohort_no_courses": "Tilføj kurser, og invitér derefter elever. Analyserne udfyldes, når de åbner lektioner og indsender øvelser.",
         "course": "Analyserne udfyldes, når eleverne åbner lektioner og indsender øvelser.",
-        "org": "Tilføj elever til din academy, og tilmeld dem derefter til kurser eller kohorter."
+        "org": "Tilføj elever til din academy, og tilmeld dem derefter til kurser eller kohorter.",
+        "path": "Analysen fyldes ud, når de studerende åbner lektioner og afleverer øvelser."
       },
       "pending": "{count, plural, one {# invitation venter} other {# invitationer venter}} på at blive accepteret. Analyserne udfyldes, når eleverne tilmelder sig.",
       "invite_students": "Invitér elever",
@@ -7222,7 +7238,9 @@
       "courses_org": "Viser {from}–{to} af {total, plural, one {# kursus} other {# kurser}} i organisationen",
       "sections_course": "Viser {from}–{to} af {total, plural, one {# sektion} other {# sektioner}} i kurset",
       "overdue_cohort": "Viser {from}–{to} af {total, plural, one {# forsinket elev} other {# forsinkede elever}} i holdet",
-      "paths_org": "Viser {from}–{to} af {total, plural, one {# læringsforløb} other {# læringsforløb}} i organisationen"
+      "paths_org": "Viser {from}–{to} af {total, plural, one {# læringsforløb} other {# læringsforløb}} i organisationen",
+      "courses_path": "Viser {from}–{to} af {total, plural, one {# kursus} other {# kurser}} på forløbet",
+      "overdue_path": "Viser {from}–{to} af {total, plural, one {# forsinket studerende} other {# forsinkede studerende}} på forløbet"
     },
     "breakdown": {
       "label": "Opdeling",

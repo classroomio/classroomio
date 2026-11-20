@@ -14,7 +14,7 @@ import {
 /** One row per enrollment, exercise and question, from the learner's best graded submission. */
 export const questionResultSource: AnalyticsSourceDefinition = {
   id: 'question_result',
-  scopeTypes: ['cohort', 'course', 'org'],
+  scopeTypes: ['cohort', 'course', 'org', 'path'],
   build: () => sql`SELECT * FROM question_row`,
   dimensions: {
     question: idDimension('question_id', 'question_title', 'question_rank'),

@@ -6781,7 +6781,8 @@
       "enrolled_students": "studenti iscritti",
       "target": "Bersaglio",
       "logins": "Accessi",
-      "direct_students": "Studenti diretti"
+      "direct_students": "Studenti diretti",
+      "path_average": "Media del percorso"
     },
     "notes": {
       "score_distribution": "Studenti per fascia di punteggio.",
@@ -6877,7 +6878,10 @@
         "completions": "nessun completamento per ora",
         "enrolments": "nessuna iscrizione per ora",
         "in_days": "nessuno negli ultimi {days} giorni"
-      }
+      },
+      "share_of_path": "{percent} del percorso",
+      "completed_certified_path": "{percent} del percorso · {count} certificati",
+      "completed_in_days_path": "{percent} del percorso{count, plural, =0 {} other { · +# negli ultimi {days} giorni}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7014,6 +7018,12 @@
       },
       "completion_by_path": {
         "title": "Tasso di completamento per percorso"
+      },
+      "courses_in_path": {
+        "title": "Corsi in questo percorso"
+      },
+      "overdue_path": {
+        "title": "Studenti in ritardo"
       }
     },
     "measures": {
@@ -7104,7 +7114,8 @@
       "showing": {
         "cohort": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nella coorte",
         "course": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nel corso",
-        "org": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
+        "org": "Visualizzazione di {from}–{to} di {total} corrispondenti · {count, plural, one {# studente} other {# studenti}} nell'organizzazione",
+        "path": "Visualizzati {from}–{to} di {total} risultati · {count, plural, one {# studente} other {# studenti}} nel percorso"
       },
       "clear_filters": "{count, plural, one {Cancella # filtro} other {Cancella # filtri}}",
       "sort": {
@@ -7157,17 +7168,20 @@
       "showing_paged": {
         "cohort": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nella coorte",
         "course": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nel corso",
-        "org": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
+        "org": "Visualizzazione di {from}–{to} di {count, plural, one {# studente} other {# studenti}} nell'organizzazione",
+        "path": "Visualizzati {from}–{to} di {count, plural, one {# studente} other {# studenti}} nel percorso"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nella coorte",
         "course": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nel corso",
-        "org": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nell'organizzazione"
+        "org": "{total, plural, one {# studente corrispondente} other {# studenti corrispondenti}} · {count, plural, one {# studente} other {# studenti}} nell'organizzazione",
+        "path": "{total, plural, one {# studente corrisponde} other {# studenti corrispondono}} · {count, plural, one {# studente} other {# studenti}} nel percorso"
       },
       "showing_all": {
         "cohort": "{count, plural, one {# studente} other {# studenti}} nella coorte",
         "course": "{count, plural, one {# studente} other {# studenti}} nel corso",
-        "org": "{count, plural, one {# studente} other {# studenti}} nell'organizzazione"
+        "org": "{count, plural, one {# studente} other {# studenti}} nell'organizzazione",
+        "path": "{count, plural, one {# studente} other {# studenti}} nel percorso"
       },
       "failed": "Impossibile caricare gli studenti",
       "cells_failed": "Impossibile caricare i punteggi degli esercizi",
@@ -7184,13 +7198,15 @@
       "title": {
         "cohort": "Nessuno studente in questa coorte per ora",
         "course": "Nessuno studente in questo corso per ora",
-        "org": "Nessuno studente nella tua organizzazione per ora"
+        "org": "Nessuno studente nella tua organizzazione per ora",
+        "path": "Ancora nessuno studente in questo percorso di apprendimento"
       },
       "description": {
         "cohort": "Le analisi si popolano man mano che gli studenti aprono le lezioni e inviano gli esercizi.",
         "cohort_no_courses": "Aggiungi corsi, poi invita gli studenti. Le analisi si popolano man mano che aprono le lezioni e inviano gli esercizi.",
         "course": "Le analisi si popolano man mano che gli studenti aprono le lezioni e inviano gli esercizi.",
-        "org": "Aggiungi studenti alla tua academy, poi iscrivili a corsi o coorti."
+        "org": "Aggiungi studenti alla tua academy, poi iscrivili a corsi o coorti.",
+        "path": "Le analisi si popolano man mano che gli studenti aprono le lezioni e inviano gli esercizi."
       },
       "pending": "{count, plural, one {# invito è in attesa di essere accettato} other {# inviti sono in attesa di essere accettati}}. Le analisi si popolano quando gli studenti si uniscono.",
       "invite_students": "Invita studenti",
@@ -7212,7 +7228,9 @@
       "courses_org": "Visualizzazione di {from}–{to} su {total, plural, one {# corso} other {# corsi}} nell'organizzazione",
       "sections_course": "Visualizzazione di {from}–{to} su {total, plural, one {# sezione} other {# sezioni}} nel corso",
       "overdue_cohort": "Visualizzazione di {from}–{to} su {total, plural, one {# studente in ritardo} other {# studenti in ritardo}} nella coorte",
-      "paths_org": "Visualizzati {from}–{to} di {total, plural, one {# percorso di apprendimento} other {# percorsi di apprendimento}} nell'organizzazione"
+      "paths_org": "Visualizzati {from}–{to} di {total, plural, one {# percorso di apprendimento} other {# percorsi di apprendimento}} nell'organizzazione",
+      "courses_path": "Visualizzati {from}–{to} di {total, plural, one {# corso} other {# corsi}} nel percorso",
+      "overdue_path": "Visualizzati {from}–{to} di {total, plural, one {# studente in ritardo} other {# studenti in ritardo}} nel percorso"
     },
     "breakdown": {
       "label": "Dettaglio",

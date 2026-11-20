@@ -7584,13 +7584,15 @@
       "title": {
         "cohort": "No students in this cohort yet",
         "course": "No students in this course yet",
-        "org": "No students in your organization yet"
+        "org": "No students in your organization yet",
+        "path": "No students on this learning path yet"
       },
       "description": {
         "cohort": "Analytics fill in as students open lessons and submit exercises.",
         "cohort_no_courses": "Add courses, then invite students. Analytics fill in as they open lessons and submit exercises.",
         "course": "Analytics fill in as students open lessons and submit exercises.",
-        "org": "Add students to your academy, then enrol them in courses or cohorts."
+        "org": "Add students to your academy, then enrol them in courses or cohorts.",
+        "path": "Analytics fill in as students open lessons and submit exercises."
       },
       "pending": "{count, plural, one {# invitation is} other {# invitations are}} waiting to be accepted. Analytics fill in once students join.",
       "invite_students": "Invite students",
@@ -7664,7 +7666,9 @@
       "courses_org": "Showing {from}–{to} of {total, plural, one {# course} other {# courses}} in organization",
       "sections_course": "Showing {from}–{to} of {total, plural, one {# section} other {# sections}} in course",
       "overdue_cohort": "Showing {from}–{to} of {total, plural, one {# overdue student} other {# overdue students}} in cohort",
-      "paths_org": "Showing {from}–{to} of {total, plural, one {# learning path} other {# learning paths}} in organization"
+      "paths_org": "Showing {from}–{to} of {total, plural, one {# learning path} other {# learning paths}} in organization",
+      "courses_path": "Showing {from}–{to} of {total, plural, one {# course} other {# courses}} on path",
+      "overdue_path": "Showing {from}–{to} of {total, plural, one {# overdue student} other {# overdue students}} on path"
     },
     "now_tag": {
       "label": "Now",
@@ -7696,7 +7700,8 @@
       "in_progress": "{name} (in progress)",
       "enrolled_students": "Enrolled students",
       "target": "Target",
-      "logins": "Logins"
+      "logins": "Logins",
+      "path_average": "Path average"
     },
     "notes": {
       "score_distribution": "Students per score band.",
@@ -7792,7 +7797,10 @@
         "completions": "no completions yet",
         "enrolments": "no enrolments yet",
         "in_days": "none in the last {days} days"
-      }
+      },
+      "share_of_path": "{percent} of the path",
+      "completed_certified_path": "{percent} of the path · {count} certified",
+      "completed_in_days_path": "{percent} of the path{count, plural, =0 {} other { · +# in the last {days} days}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7929,6 +7937,12 @@
       },
       "completion_by_path": {
         "title": "Completion rate by path"
+      },
+      "courses_in_path": {
+        "title": "Courses in this path"
+      },
+      "overdue_path": {
+        "title": "Overdue students"
       }
     },
     "measures": {
@@ -8029,22 +8043,26 @@
       "showing": {
         "cohort": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in cohort",
         "course": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in course",
-        "org": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in organization"
+        "org": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} in organization",
+        "path": "Showing {from}–{to} of {total} matching · {count, plural, one {# student} other {# students}} on path"
       },
       "showing_paged": {
         "cohort": "Showing {from}–{to} of {count, plural, one {# student} other {# students}} in cohort",
         "course": "Showing {from}–{to} of {count, plural, one {# student} other {# students}} in course",
-        "org": "Showing {from}–{to} of {count, plural, one {# student} other {# students}} in organization"
+        "org": "Showing {from}–{to} of {count, plural, one {# student} other {# students}} in organization",
+        "path": "Showing {from}–{to} of {count, plural, one {# student} other {# students}} on path"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# student} other {# students}} matching · {count, plural, one {# student} other {# students}} in cohort",
         "course": "{total, plural, one {# student} other {# students}} matching · {count, plural, one {# student} other {# students}} in course",
-        "org": "{total, plural, one {# student} other {# students}} matching · {count, plural, one {# student} other {# students}} in organization"
+        "org": "{total, plural, one {# student} other {# students}} matching · {count, plural, one {# student} other {# students}} in organization",
+        "path": "{total, plural, one {# student} other {# students}} matching · {count, plural, one {# student} other {# students}} on path"
       },
       "showing_all": {
         "cohort": "{count, plural, one {# student} other {# students}} in cohort",
         "course": "{count, plural, one {# student} other {# students}} in course",
-        "org": "{count, plural, one {# student} other {# students}} in organization"
+        "org": "{count, plural, one {# student} other {# students}} in organization",
+        "path": "{count, plural, one {# student} other {# students}} on path"
       },
       "clear_filters": "{count, plural, one {Clear # filter} other {Clear # filters}}",
       "sort": {

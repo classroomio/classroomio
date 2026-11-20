@@ -12,6 +12,8 @@ function scopeNameSql(scope: AnalyticsScopeRef): SQL {
 
   if (scope.type === 'course') return sql`(SELECT title FROM course WHERE id = ${scope.id})`;
 
+  if (scope.type === 'path') return sql`(SELECT name FROM learning_path WHERE id = ${scope.id})`;
+
   return sql`(SELECT name FROM organization WHERE id = ${scope.orgId})`;
 }
 

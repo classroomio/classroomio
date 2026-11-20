@@ -6893,7 +6893,8 @@
       "enrolled_students": "Kayıtlı öğrenciler",
       "target": "Hedef",
       "logins": "Girişler",
-      "direct_students": "Doğrudan öğrenciler"
+      "direct_students": "Doğrudan öğrenciler",
+      "path_average": "Yol ortalaması"
     },
     "notes": {
       "score_distribution": "Puan bandı başına öğrenciler.",
@@ -6989,7 +6990,10 @@
         "completions": "henüz tamamlama yok",
         "enrolments": "henüz kayıt yok",
         "in_days": "son {days} günde yok"
-      }
+      },
+      "share_of_path": "Yolun {percent} kadarı",
+      "completed_certified_path": "Yolun {percent} kadarı · {count} sertifikalı",
+      "completed_in_days_path": "Yolun {percent} kadarı{count, plural, =0 {} other { · son {days} günde +#}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7126,6 +7130,12 @@
       },
       "completion_by_path": {
         "title": "Yola göre tamamlama oranı"
+      },
+      "courses_in_path": {
+        "title": "Bu yoldaki kurslar"
+      },
+      "overdue_path": {
+        "title": "Gecikmiş öğrenciler"
       }
     },
     "measures": {
@@ -7216,7 +7226,8 @@
       "showing": {
         "cohort": "Grupta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
         "course": "Kurstaki {from}–{to} / {total} eşleşmesi gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "Kuruluşta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}"
+        "org": "Kuruluşta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "path": "{total} eşleşmeden {from}–{to} gösteriliyor · yolda {count, plural, one {# öğrenci} other {# öğrenci}}"
       },
       "clear_filters": "{count, plural, one {# filtreyi temizle} other {# filtreyi temizle}}",
       "sort": {
@@ -7269,17 +7280,20 @@
       "showing_paged": {
         "cohort": "Grupta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
         "course": "Kurstaki {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
-        "org": "Kuruluşta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor"
+        "org": "Kuruluşta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
+        "path": "Yoldaki {count, plural, one {# öğrenciden} other {# öğrenciden}} {from}–{to} gösteriliyor"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
         "course": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
+        "org": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "path": "{total, plural, one {# öğrenci} other {# öğrenci}} eşleşiyor · yolda {count, plural, one {# öğrenci} other {# öğrenci}}"
       },
       "showing_all": {
         "cohort": "Grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
         "course": "Kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "Kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
+        "org": "Kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "path": "Yolda {count, plural, one {# öğrenci} other {# öğrenci}}"
       },
       "failed": "Öğrenciler yüklenemedi",
       "cells_failed": "Alıştırma puanları yüklenemedi",
@@ -7296,13 +7310,15 @@
       "title": {
         "cohort": "Bu kohortta henüz öğrenci yok",
         "course": "Bu kursta henüz öğrenci yok",
-        "org": "Kuruluşunuzda henüz öğrenci yok"
+        "org": "Kuruluşunuzda henüz öğrenci yok",
+        "path": "Bu öğrenme yolunda henüz öğrenci yok"
       },
       "description": {
         "cohort": "Öğrenciler dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
         "cohort_no_courses": "Kurs ekleyin, ardından öğrencileri davet edin. Dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
         "course": "Öğrenciler dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
-        "org": "Akademinize öğrenci ekleyin, ardından onları kurslara veya kohortlara kaydedin."
+        "org": "Akademinize öğrenci ekleyin, ardından onları kurslara veya kohortlara kaydedin.",
+        "path": "Öğrenciler dersleri açtıkça ve alıştırma gönderdikçe analizler dolar."
       },
       "pending": "{count, plural, one {# davet} other {# davet}} kabul edilmeyi bekliyor. Öğrenciler katıldığında analizler dolar.",
       "invite_students": "Öğrencileri davet et",
@@ -7324,7 +7340,9 @@
       "courses_org": "Kuruluştaki {total} kurstan {from}–{to} arası gösteriliyor",
       "sections_course": "Kurstaki {total} bölümden {from}–{to} arası gösteriliyor",
       "overdue_cohort": "Kohorttaki {total} geciken öğrenciden {from}–{to} arası gösteriliyor",
-      "paths_org": "Kuruluştaki {total, plural, one {# öğrenme yolundan} other {# öğrenme yolundan}} {from}–{to} gösteriliyor"
+      "paths_org": "Kuruluştaki {total, plural, one {# öğrenme yolundan} other {# öğrenme yolundan}} {from}–{to} gösteriliyor",
+      "courses_path": "Yoldaki {total, plural, one {# kurstan} other {# kurstan}} {from}–{to} gösteriliyor",
+      "overdue_path": "Yoldaki {total, plural, one {# gecikmiş öğrenciden} other {# gecikmiş öğrenciden}} {from}–{to} gösteriliyor"
     },
     "breakdown": {
       "label": "Dağılım",

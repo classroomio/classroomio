@@ -14,7 +14,9 @@
   const averageLabel = $derived(
     analyticsApi.dashboard?.scope.type === 'course'
       ? $t('analytics.legend.all_students')
-      : $t('analytics.legend.cohort_average')
+      : analyticsApi.dashboard?.scope.type === 'path'
+        ? $t('analytics.legend.path_average')
+        : $t('analytics.legend.cohort_average')
   );
   const points = $derived(
     toChartPoints(result, 'exercise', $t).map((point): AnalyticsChartPoint => {

@@ -25,7 +25,7 @@ import {
  */
 export const studentSource: AnalyticsSourceDefinition = {
   id: 'student',
-  scopeTypes: ['cohort', 'course', 'org'],
+  scopeTypes: ['cohort', 'course', 'org', 'path'],
   build: () => sql`SELECT * FROM student_row`,
   dimensions: {
     student: idDimension('profile_id', 'fullname'),

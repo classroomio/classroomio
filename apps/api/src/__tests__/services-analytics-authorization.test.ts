@@ -10,6 +10,10 @@ vi.mock('@cio/db/queries/group', () => ({
 vi.mock('@cio/db/queries/tag', () => ({
   getCourseOrganizationId: vi.fn()
 }));
+vi.mock('@cio/db/queries/learning-path', () => ({
+  getLearningPathById: vi.fn(),
+  getMemberByPathAndProfile: vi.fn()
+}));
 vi.mock('@cio/db/queries/analytics', () => ({
   listAnalyticsScopeCourseIds: vi.fn().mockResolvedValue([])
 }));
@@ -17,6 +21,7 @@ vi.mock('@cio/db/queries/analytics', () => ({
 import { getCohortMemberRole, getCohortOrganizationId } from '@cio/db/queries/cohort';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { listAnalyticsScopeCourseIds } from '@cio/db/queries/analytics';
+import { getLearningPathById, getMemberByPathAndProfile } from '@cio/db/queries/learning-path';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { ROLE } from '@cio/utils/constants';
 
@@ -26,6 +31,7 @@ const ORG_A = '11111111-1111-4111-8111-111111111111';
 const ORG_B = '22222222-2222-4222-8222-222222222222';
 const COHORT_ID = '33333333-3333-4333-8333-333333333333';
 const COURSE_ID = '44444444-4444-4444-8444-444444444444';
+const PATH_ID = '88888888-8888-4888-8888-888888888888';
 
 const admin = {
   profileId: '55555555-5555-4555-8555-555555555555',
@@ -151,6 +157,56 @@ describe('resolveAuthorizedScope', () => {
         id: COURSE_ID,
         courseIds: [COURSE_ID]
       });
+    });
+  });
+
+  describe('path scope', () => {
+    const pathInOrg = (organizationId: string) =>
+      ({ id: PATH_ID, organizationId }) as Awaited<ReturnType<typeof getLearningPathById>>;
+
+    it('hides a path from another org as not found', async () => {
+      vi.mocked(getLearningPathById).mockResolvedValue(pathInOrg(ORG_B));
+
+      await expect(resolveAuthorizedScope(admin, { type: 'path', id: PATH_ID })).rejects.toMatchObject({
+        statusCode: 404
+      });
+    });
+
+    it('forbids a tutor who is not assigned to the path', async () => {
+      vi.mocked(getLearningPathById).mockResolvedValue(pathInOrg(ORG_A));
+      vi.mocked(getMemberByPathAndProfile).mockResolvedValue(null);
+
+      await expect(resolveAuthorizedScope(tutor, { type: 'path', id: PATH_ID })).rejects.toMatchObject({
+        statusCode: 403
+      });
+    });
+
+    it('forbids a student', async () => {
+      vi.mocked(getLearningPathById).mockResolvedValue(pathInOrg(ORG_A));
+
+      await expect(resolveAuthorizedScope(student, { type: 'path', id: PATH_ID })).rejects.toMatchObject({
+        statusCode: 403
+      });
+    });
+
+    it('allows an assigned tutor and returns course ids', async () => {
+      vi.mocked(getLearningPathById).mockResolvedValue(pathInOrg(ORG_A));
+      vi.mocked(getMemberByPathAndProfile).mockResolvedValue({
+        roleId: ROLE.TUTOR,
+        removedAt: null
+      } as Awaited<ReturnType<typeof getMemberByPathAndProfile>>);
+
+      const scope = await resolveAuthorizedScope(tutor, { type: 'path', id: PATH_ID });
+
+      expect(scope).toEqual({ orgId: ORG_A, type: 'path', id: PATH_ID, courseIds: [COURSE_ID] });
+    });
+
+    it('allows an org admin', async () => {
+      vi.mocked(getLearningPathById).mockResolvedValue(pathInOrg(ORG_A));
+
+      const scope = await resolveAuthorizedScope(admin, { type: 'path', id: PATH_ID });
+
+      expect(scope.type).toBe('path');
     });
   });
 });

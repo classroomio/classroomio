@@ -1,11 +1,13 @@
 import { getCohortMemberRole, getCohortOrganizationId } from '@cio/db/queries/cohort';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { listAnalyticsScopeCourseIds } from '@cio/db/queries/analytics';
+import { getLearningPathById } from '@cio/db/queries/learning-path';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { ROLE } from '@cio/utils/constants';
 import type { TAnalyticsScopeType } from '@cio/utils/constants/analytics';
 import type { TAnalyticsScope } from '@cio/utils/validation/analytics';
 
+import { assertCanManageLearningPath } from '@api/services/learning-path/learning-path';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { AuthorizedAnalyticsScope, AnalyticsActor } from './types';
 
@@ -43,10 +45,24 @@ async function assertCourseScope(actor: AnalyticsActor, courseId: string): Promi
   if (!isCourseTeam) throw scopeForbidden();
 }
 
+async function assertPathScope(actor: AnalyticsActor, pathId: string): Promise<void> {
+  const path = await getLearningPathById(pathId);
+  if (!path || path.organizationId !== actor.orgId) throw scopeNotFound();
+
+  try {
+    await assertCanManageLearningPath(path, actor.profileId, actor.orgRoles);
+  } catch (error) {
+    if (error instanceof AppError) throw scopeForbidden();
+
+    throw error;
+  }
+}
+
 const SCOPE_ASSERTIONS: Record<TAnalyticsScopeType, ScopeAssertion> = {
   org: assertOrgScope,
   cohort: assertCohortScope,
-  course: assertCourseScope
+  course: assertCourseScope,
+  path: assertPathScope
 };
 
 /**

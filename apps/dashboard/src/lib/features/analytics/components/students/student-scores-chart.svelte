@@ -18,6 +18,11 @@
       ? analyticsApi.widgetResult('scores_by_exercise')
       : null
   );
+  const averageLabel = $derived(
+    analyticsApi.dashboard?.scope.type === 'path'
+      ? $t('analytics.legend.path_average')
+      : $t('analytics.legend.cohort_average')
+  );
   const studentScores = $derived(
     new Map(result.rows.map((row) => [textCell(row, 'exercise_id') ?? '', numberCell(row, 'best_score_pct__value')]))
   );
@@ -33,5 +38,5 @@
 <LineBandChart
   {points}
   keys={{ average: 'best_score_pct__avg', overlay: 'student' }}
-  labels={{ average: $t('analytics.legend.cohort_average'), overlay: studentName }}
+  labels={{ average: averageLabel, overlay: studentName }}
 />

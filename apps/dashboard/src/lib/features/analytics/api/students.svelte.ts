@@ -303,7 +303,7 @@ class AnalyticsStudentsApi extends BaseApi {
     this.refs.lessonId = target.refs.lessonId;
 
     const isLinkedCourse = analyticsApi.dashboard?.scope.courses.some((course) => course.id === target.courseId);
-    if (target.courseId && isLinkedCourse && analyticsApi.scope?.type === 'cohort') {
+    if (target.courseId && isLinkedCourse && analyticsApi.scope?.type !== 'course') {
       await analyticsApi.selectCourse(target.courseId);
     }
 

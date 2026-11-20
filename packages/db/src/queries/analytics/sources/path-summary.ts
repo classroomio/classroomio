@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import { ROLE } from '@cio/utils/constants';
 
 import { pathCourseIsActiveSql } from '../../learning-path/learning-path-course';
+import { inactiveOrgMemberFilter } from '../scope';
 import { ACTIVE_WINDOW_DAYS } from '../../learning-path/analytics';
 import type { AnalyticsSourceDefinition } from '../types';
 import {
@@ -18,7 +19,7 @@ import {
 
 /**
  * One row per active learning path of the org. Counts follow the path analytics page: enrolled, non-removed
- * student members, and active means a lesson completion or submission in a path course in the last 14 days.
+ * student members who are still active in the org, and active means a lesson completion or submission in a path course in the last 14 days.
  */
 export const pathSummarySource: AnalyticsSourceDefinition = {
   id: 'path_summary',
@@ -71,12 +72,14 @@ export const pathSummarySource: AnalyticsSourceDefinition = {
         )::int AS active_students
       FROM learning_path_member lpm
       WHERE lpm.learning_path_id = lp.id AND lpm.removed_at IS NULL AND lpm.role_id = ${ROLE.STUDENT}
+        AND ${inactiveOrgMemberFilter(sql`lpm.profile_id`, scope.orgId)}
     ) members
     CROSS JOIN LATERAL (
       SELECT COUNT(*)::int AS certificates
       FROM learning_path_certificate_issue issue
       JOIN learning_path_member lpm ON lpm.id = issue.learning_path_member_id
       WHERE issue.learning_path_id = lp.id AND lpm.removed_at IS NULL AND lpm.role_id = ${ROLE.STUDENT}
+        AND ${inactiveOrgMemberFilter(sql`lpm.profile_id`, scope.orgId)}
     ) certificates
     WHERE lp.organization_id = ${scope.orgId} AND lp.status = 'ACTIVE'`,
   dimensions: {

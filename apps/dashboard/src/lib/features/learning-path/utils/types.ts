@@ -169,7 +169,6 @@ export type LearningPathAnalytics = GetPathAnalyticsSuccess['data'];
 export type PathAnalyticsSummary = LearningPathAnalytics['summary'];
 export type PathAnalyticsFunnelRow = LearningPathAnalytics['funnel'][number];
 export type PathAnalyticsStuckItem = LearningPathAnalytics['stuckItems'][number];
-export type PathAnalyticsStudent = LearningPathAnalytics['students'][number];
 export type PathMemberDetail = GetPathMemberDetailSuccess['data'];
 export type PathMemberDetailCourse = PathMemberDetail['courses'][number];
 export type PathInviteLink = GetPathInviteLinkSuccess['data'];

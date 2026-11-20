@@ -6791,7 +6791,8 @@
       "enrolled_students": "Estudiantes matriculados",
       "target": "Objetivo",
       "logins": "Inicios de sesión",
-      "direct_students": "Estudiantes directos"
+      "direct_students": "Estudiantes directos",
+      "path_average": "Promedio de la ruta"
     },
     "notes": {
       "score_distribution": "Estudiantes por banda de puntuación.",
@@ -6887,7 +6888,10 @@
         "completions": "aún no hay finalizaciones",
         "enrolments": "aún no hay inscripciones",
         "in_days": "ninguno en los últimos {days} días"
-      }
+      },
+      "share_of_path": "{percent} de la ruta",
+      "completed_certified_path": "{percent} de la ruta · {count} certificados",
+      "completed_in_days_path": "{percent} de la ruta{count, plural, =0 {} other { · +# en los últimos {days} días}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7024,6 +7028,12 @@
       },
       "completion_by_path": {
         "title": "Tasa de finalización por ruta"
+      },
+      "courses_in_path": {
+        "title": "Cursos en esta ruta"
+      },
+      "overdue_path": {
+        "title": "Estudiantes atrasados"
       }
     },
     "measures": {
@@ -7114,7 +7124,8 @@
       "showing": {
         "cohort": "Mostrando {from}–{to} de {total} coincidente · {count, plural, one {# estudiante} other {# estudiantes}} en cohorte",
         "course": "Mostrando {from}–{to} de {total} coincidente · {count, plural, one {# estudiante} other {# estudiantes}} en curso",
-        "org": "Mostrando {from}–{to} de {total} coincidente · {count, plural, one {# estudiante} other {# estudiantes}} en la organización"
+        "org": "Mostrando {from}–{to} de {total} coincidente · {count, plural, one {# estudiante} other {# estudiantes}} en la organización",
+        "path": "Mostrando {from}–{to} de {total} coincidencias · {count, plural, one {# estudiante} other {# estudiantes}} en la ruta"
       },
       "clear_filters": "{count, plural, one {Borrar # filtro} other {Borrar # filtros}}",
       "sort": {
@@ -7167,17 +7178,20 @@
       "showing_paged": {
         "cohort": "Mostrando {from}–{to} de {count, plural, one {# estudiante} other {# estudiantes}} en cohorte",
         "course": "Mostrando {from}–{to} de {count, plural, one {# estudiante} other {# estudiantes}} en curso",
-        "org": "Mostrando {from}–{to} de {count, plural, one {# estudiante} other {# estudiantes}} en la organización"
+        "org": "Mostrando {from}–{to} de {count, plural, one {# estudiante} other {# estudiantes}} en la organización",
+        "path": "Mostrando {from}–{to} de {count, plural, one {# estudiante} other {# estudiantes}} en la ruta"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# estudiante coincidente} other {# estudiantes coincidentes}} · {count, plural, one {# estudiante} other {# estudiantes}} en cohorte",
         "course": "{total, plural, one {# estudiante coincidente} other {# estudiantes coincidentes}} · {count, plural, one {# estudiante} other {# estudiantes}} en curso",
-        "org": "{total, plural, one {# estudiante coincidente} other {# estudiantes coincidentes}} · {count, plural, one {# estudiante} other {# estudiantes}} en la organización"
+        "org": "{total, plural, one {# estudiante coincidente} other {# estudiantes coincidentes}} · {count, plural, one {# estudiante} other {# estudiantes}} en la organización",
+        "path": "{total, plural, one {# estudiante coincide} other {# estudiantes coinciden}} · {count, plural, one {# estudiante} other {# estudiantes}} en la ruta"
       },
       "showing_all": {
         "cohort": "{count, plural, one {# estudiante} other {# estudiantes}} en cohorte",
         "course": "{count, plural, one {# estudiante} other {# estudiantes}} en curso",
-        "org": "{count, plural, one {# estudiante} other {# estudiantes}} en la organización"
+        "org": "{count, plural, one {# estudiante} other {# estudiantes}} en la organización",
+        "path": "{count, plural, one {# estudiante} other {# estudiantes}} en la ruta"
       },
       "failed": "No se pudieron cargar los estudiantes",
       "cells_failed": "No se pudieron cargar las puntuaciones de los ejercicios",
@@ -7194,13 +7208,15 @@
       "title": {
         "cohort": "Aún no hay estudiantes en esta cohorte",
         "course": "Aún no hay estudiantes en este curso",
-        "org": "Aún no hay estudiantes en tu organización"
+        "org": "Aún no hay estudiantes en tu organización",
+        "path": "Aún no hay estudiantes en esta ruta de aprendizaje"
       },
       "description": {
         "cohort": "Los análisis se completan a medida que los estudiantes abren lecciones y envían ejercicios.",
         "cohort_no_courses": "Añade cursos y luego invita a los estudiantes. Los análisis se completan a medida que abren lecciones y envían ejercicios.",
         "course": "Los análisis se completan a medida que los estudiantes abren lecciones y envían ejercicios.",
-        "org": "Añade estudiantes a tu academia y luego inscríbelos en cursos o cohortes."
+        "org": "Añade estudiantes a tu academia y luego inscríbelos en cursos o cohortes.",
+        "path": "Las analíticas se completan a medida que los estudiantes abren lecciones y envían ejercicios."
       },
       "pending": "{count, plural, one {# invitación está esperando a ser aceptada} other {# invitaciones están esperando a ser aceptadas}}. Los análisis se completan cuando los estudiantes se unan.",
       "invite_students": "Invitar estudiantes",
@@ -7222,7 +7238,9 @@
       "courses_org": "Mostrando {from}–{to} de {total, plural, one {# curso} other {# cursos}} en la organización",
       "sections_course": "Mostrando {from}–{to} de {total, plural, one {# sección} other {# secciones}} en el curso",
       "overdue_cohort": "Mostrando {from}–{to} de {total, plural, one {# estudiante atrasado} other {# estudiantes atrasados}} en la cohorte",
-      "paths_org": "Mostrando {from}–{to} de {total, plural, one {# ruta de aprendizaje} other {# rutas de aprendizaje}} en la organización"
+      "paths_org": "Mostrando {from}–{to} de {total, plural, one {# ruta de aprendizaje} other {# rutas de aprendizaje}} en la organización",
+      "courses_path": "Mostrando {from}–{to} de {total, plural, one {# curso} other {# cursos}} en la ruta",
+      "overdue_path": "Mostrando {from}–{to} de {total, plural, one {# estudiante atrasado} other {# estudiantes atrasados}} en la ruta"
     },
     "breakdown": {
       "label": "Desglose",

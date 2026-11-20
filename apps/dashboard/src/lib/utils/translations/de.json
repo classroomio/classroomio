@@ -6791,7 +6791,8 @@
       "enrolled_students": "Eingeschriebene Studierende",
       "target": "Ziel",
       "logins": "Anmeldungen",
-      "direct_students": "Direkte Studierende"
+      "direct_students": "Direkte Studierende",
+      "path_average": "Lernpfad-Durchschnitt"
     },
     "notes": {
       "score_distribution": "Studierende pro Bewertungsgruppe.",
@@ -6887,7 +6888,10 @@
         "completions": "noch keine Abschlüsse",
         "enrolments": "noch keine Anmeldungen",
         "in_days": "keine in den letzten {days} Tagen"
-      }
+      },
+      "share_of_path": "{percent} des Lernpfads",
+      "completed_certified_path": "{percent} des Lernpfads · {count} zertifiziert",
+      "completed_in_days_path": "{percent} des Lernpfads{count, plural, =0 {} other { · +# in den letzten {days} Tagen}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7024,6 +7028,12 @@
       },
       "completion_by_path": {
         "title": "Abschlussquote pro Lernpfad"
+      },
+      "courses_in_path": {
+        "title": "Kurse in diesem Lernpfad"
+      },
+      "overdue_path": {
+        "title": "Überfällige Teilnehmende"
       }
     },
     "measures": {
@@ -7114,7 +7124,8 @@
       "showing": {
         "cohort": "Angezeigt werden {from}–{to} von {total}, die mit · {count, plural, one {# Studierender} other {# Studierende}} in der Kohorte übereinstimmen",
         "course": "Angezeigt werden {from}–{to} von {total}, die mit · {count, plural, one {# Studierender} other {# Studierende}} im Kurs übereinstimmen",
-        "org": "Angezeigt werden {from}–{to} von {total}, die mit · {count, plural, one {# Studierender} other {# Studierende}} in der Organisation übereinstimmen"
+        "org": "Angezeigt werden {from}–{to} von {total}, die mit · {count, plural, one {# Studierender} other {# Studierende}} in der Organisation übereinstimmen",
+        "path": "{from}–{to} von {total} Treffern · {count, plural, one {# Teilnehmende:r} other {# Teilnehmende}} im Lernpfad"
       },
       "clear_filters": "{count, plural, one {#-Filter löschen} other {# Filter löschen}}",
       "sort": {
@@ -7167,17 +7178,20 @@
       "showing_paged": {
         "cohort": "Angezeigt werden {from}–{to} von {count, plural, one {# Studierender} other {# Studierende}} in der Kohorte",
         "course": "Angezeigt werden {from}–{to} von {count, plural, one {# Studierender} other {# Studierende}} im Kurs",
-        "org": "Angezeigt werden {from}–{to} von {count, plural, one {# Studierender} other {# Studierende}} in der Organisation"
+        "org": "Angezeigt werden {from}–{to} von {count, plural, one {# Studierender} other {# Studierende}} in der Organisation",
+        "path": "{from}–{to} von {count, plural, one {# Teilnehmende:r} other {# Teilnehmenden}} im Lernpfad"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# Studierender} other {# Studierende}}, die übereinstimmen · {count, plural, one {# Studierender} other {# Studierende}} in der Kohorte",
         "course": "{total, plural, one {# Studierender} other {# Studierende}}, die übereinstimmen · {count, plural, one {# Studierender} other {# Studierende}} im Kurs",
-        "org": "{total, plural, one {# Studierender} other {# Studierende}}, die übereinstimmen · {count, plural, one {# Studierender} other {# Studierende}} in der Organisation"
+        "org": "{total, plural, one {# Studierender} other {# Studierende}}, die übereinstimmen · {count, plural, one {# Studierender} other {# Studierende}} in der Organisation",
+        "path": "{total, plural, one {# Teilnehmende:r} other {# Teilnehmende}} gefunden · {count, plural, one {# Teilnehmende:r} other {# Teilnehmende}} im Lernpfad"
       },
       "showing_all": {
         "cohort": "{count, plural, one {# Studierender} other {# Studierende}} in der Kohorte",
         "course": "{count, plural, one {# Studierender} other {# Studierende}} im Kurs",
-        "org": "{count, plural, one {# Studierender} other {# Studierende}} in der Organisation"
+        "org": "{count, plural, one {# Studierender} other {# Studierende}} in der Organisation",
+        "path": "{count, plural, one {# Teilnehmende:r} other {# Teilnehmende}} im Lernpfad"
       },
       "failed": "Schüler konnten nicht geladen werden",
       "cells_failed": "Übungsergebnisse konnten nicht geladen werden",
@@ -7194,13 +7208,15 @@
       "title": {
         "cohort": "Noch keine Studierenden in dieser Kohorte",
         "course": "Noch keine Studierenden in diesem Kurs",
-        "org": "Noch keine Studierenden in Ihrer Organisation"
+        "org": "Noch keine Studierenden in Ihrer Organisation",
+        "path": "Noch keine Teilnehmenden in diesem Lernpfad"
       },
       "description": {
         "cohort": "Die Analysen füllen sich, sobald Studierende Lektionen öffnen und Übungen einreichen.",
         "cohort_no_courses": "Fügen Sie Kurse hinzu und laden Sie dann Studierende ein. Die Analysen füllen sich, sobald sie Lektionen öffnen und Übungen einreichen.",
         "course": "Die Analysen füllen sich, sobald Studierende Lektionen öffnen und Übungen einreichen.",
-        "org": "Fügen Sie Studierende zu Ihrer Academy hinzu und schreiben Sie sie dann in Kurse oder Kohorten ein."
+        "org": "Fügen Sie Studierende zu Ihrer Academy hinzu und schreiben Sie sie dann in Kurse oder Kohorten ein.",
+        "path": "Die Analysen füllen sich, sobald Teilnehmende Lektionen öffnen und Übungen einreichen."
       },
       "pending": "{count, plural, one {# Einladung wartet} other {# Einladungen warten}} auf die Annahme. Die Analysen füllen sich, sobald Studierende beitreten.",
       "invite_students": "Studierende einladen",
@@ -7222,7 +7238,9 @@
       "courses_org": "Zeigt {from}–{to} von {total, plural, one {# Kurs} other {# Kurse}} in der Organisation",
       "sections_course": "Zeigt {from}–{to} von {total, plural, one {# Abschnitt} other {# Abschnitte}} im Kurs",
       "overdue_cohort": "Zeigt {from}–{to} von {total, plural, one {# überfälligen Studierenden} other {# überfälligen Studierenden}} in der Kohorte",
-      "paths_org": "{from}–{to} von {total, plural, one {# Lernpfad} other {# Lernpfaden}} in der Organisation"
+      "paths_org": "{from}–{to} von {total, plural, one {# Lernpfad} other {# Lernpfaden}} in der Organisation",
+      "courses_path": "{from}–{to} von {total, plural, one {# Kurs} other {# Kursen}} im Lernpfad",
+      "overdue_path": "{from}–{to} von {total, plural, one {# überfälligen Teilnehmenden} other {# überfälligen Teilnehmenden}} im Lernpfad"
     },
     "breakdown": {
       "label": "Aufschlüsselung",

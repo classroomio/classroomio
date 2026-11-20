@@ -19,7 +19,7 @@ import {
 /** One row per enrollment, with progress, scores, completion and overdue state. */
 export const studentCourseSource: AnalyticsSourceDefinition = {
   id: 'student_course',
-  scopeTypes: ['cohort', 'course', 'org'],
+  scopeTypes: ['cohort', 'course', 'org', 'path'],
   build: () => sql`SELECT * FROM student_course_row`,
   dimensions: {
     student: idDimension('profile_id', 'fullname'),

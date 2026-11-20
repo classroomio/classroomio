@@ -6791,7 +6791,8 @@
       "enrolled_students": "Người học đã đăng ký",
       "target": "Mục tiêu",
       "logins": "Lượt đăng nhập",
-      "direct_students": "Người học trực tiếp"
+      "direct_students": "Người học trực tiếp",
+      "path_average": "Trung bình lộ trình"
     },
     "notes": {
       "score_distribution": "Người học theo thang điểm.",
@@ -6887,7 +6888,10 @@
         "completions": "chưa có lượt hoàn thành",
         "enrolments": "chưa có lượt ghi danh",
         "in_days": "không có trong {days} ngày qua"
-      }
+      },
+      "share_of_path": "{percent} lộ trình",
+      "completed_certified_path": "{percent} lộ trình · {count} đã cấp chứng chỉ",
+      "completed_in_days_path": "{percent} lộ trình{count, plural, =0 {} other { · +# trong {days} ngày qua}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7024,6 +7028,12 @@
       },
       "completion_by_path": {
         "title": "Tỷ lệ hoàn thành theo lộ trình"
+      },
+      "courses_in_path": {
+        "title": "Khóa học trong lộ trình này"
+      },
+      "overdue_path": {
+        "title": "Học viên quá hạn"
       }
     },
     "measures": {
@@ -7114,7 +7124,8 @@
       "showing": {
         "cohort": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
         "course": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong khóa học",
-        "org": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong tổ chức"
+        "org": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong tổ chức",
+        "path": "Đang hiển thị {from}–{to} trong {total} kết quả phù hợp · {count, plural, other {# học viên}} trong lộ trình"
       },
       "clear_filters": "{count, plural, one {Xóa # bộ lọc} other {Xóa # bộ lọc}}",
       "sort": {
@@ -7167,17 +7178,20 @@
       "showing_paged": {
         "cohort": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
         "course": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong khóa học",
-        "org": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong tổ chức"
+        "org": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong tổ chức",
+        "path": "Đang hiển thị {from}–{to} trong {count, plural, other {# học viên}} của lộ trình"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
         "course": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong khóa học",
-        "org": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong tổ chức"
+        "org": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong tổ chức",
+        "path": "{total, plural, other {# học viên}} phù hợp · {count, plural, other {# học viên}} trong lộ trình"
       },
       "showing_all": {
         "cohort": "{count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
         "course": "{count, plural, one {# người học} other {# người học}} trong khóa học",
-        "org": "{count, plural, one {# người học} other {# người học}} trong tổ chức"
+        "org": "{count, plural, one {# người học} other {# người học}} trong tổ chức",
+        "path": "{count, plural, other {# học viên}} trong lộ trình"
       },
       "failed": "Không thể tải học viên",
       "cells_failed": "Không thể tải điểm bài tập",
@@ -7194,13 +7208,15 @@
       "title": {
         "cohort": "Chưa có học viên trong nhóm này",
         "course": "Chưa có học viên trong khóa học này",
-        "org": "Chưa có học viên trong tổ chức của bạn"
+        "org": "Chưa có học viên trong tổ chức của bạn",
+        "path": "Chưa có học viên nào trong lộ trình học này"
       },
       "description": {
         "cohort": "Phân tích sẽ được điền khi học viên mở bài học và nộp bài tập.",
         "cohort_no_courses": "Thêm khóa học, sau đó mời học viên. Phân tích sẽ được điền khi họ mở bài học và nộp bài tập.",
         "course": "Phân tích sẽ được điền khi học viên mở bài học và nộp bài tập.",
-        "org": "Thêm học viên vào học viện của bạn, sau đó ghi danh họ vào khóa học hoặc nhóm."
+        "org": "Thêm học viên vào học viện của bạn, sau đó ghi danh họ vào khóa học hoặc nhóm.",
+        "path": "Số liệu sẽ được cập nhật khi học viên mở bài học và nộp bài tập."
       },
       "pending": "{count, plural, one {# lời mời đang} other {# lời mời đang}} chờ được chấp nhận. Phân tích sẽ được điền khi học viên tham gia.",
       "invite_students": "Mời học viên",
@@ -7222,7 +7238,9 @@
       "courses_org": "Đang hiển thị {from}–{to} trên tổng số {total} khóa học trong tổ chức",
       "sections_course": "Đang hiển thị {from}–{to} trên tổng số {total} phần trong khóa học",
       "overdue_cohort": "Đang hiển thị {from}–{to} trên tổng số {total} học viên quá hạn trong nhóm",
-      "paths_org": "Đang hiển thị {from}–{to} trong {total, plural, other {# lộ trình học}} của tổ chức"
+      "paths_org": "Đang hiển thị {from}–{to} trong {total, plural, other {# lộ trình học}} của tổ chức",
+      "courses_path": "Đang hiển thị {from}–{to} trong {total, plural, other {# khóa học}} của lộ trình",
+      "overdue_path": "Đang hiển thị {from}–{to} trong {total, plural, other {# học viên quá hạn}} của lộ trình"
     },
     "breakdown": {
       "label": "Phân tích",

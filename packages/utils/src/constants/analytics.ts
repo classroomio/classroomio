@@ -1,4 +1,4 @@
-export const ANALYTICS_SCOPE_TYPES = ['cohort', 'course', 'org'] as const;
+export const ANALYTICS_SCOPE_TYPES = ['cohort', 'course', 'org', 'path'] as const;
 
 export const ANALYTICS_SOURCES = [
   'student',

@@ -6791,7 +6791,8 @@
       "enrolled_students": "Alunos matriculados",
       "target": "Alvo",
       "logins": "Acessos",
-      "direct_students": "Alunos diretos"
+      "direct_students": "Alunos diretos",
+      "path_average": "Média da trilha"
     },
     "notes": {
       "score_distribution": "Alunos por faixa de pontuação.",
@@ -6887,7 +6888,10 @@
         "completions": "ainda sem conclusões",
         "enrolments": "ainda sem inscrições",
         "in_days": "nenhum nos últimos {days} dias"
-      }
+      },
+      "share_of_path": "{percent} da trilha",
+      "completed_certified_path": "{percent} da trilha · {count} certificados",
+      "completed_in_days_path": "{percent} da trilha{count, plural, =0 {} other { · +# nos últimos {days} dias}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7024,6 +7028,12 @@
       },
       "completion_by_path": {
         "title": "Taxa de conclusão por trilha"
+      },
+      "courses_in_path": {
+        "title": "Cursos nesta trilha"
+      },
+      "overdue_path": {
+        "title": "Alunos atrasados"
       }
     },
     "measures": {
@@ -7114,7 +7124,8 @@
       "showing": {
         "cohort": "Mostrando {from}–{to} de correspondência de {total} · {count, plural, one {# aluno} other {# alunos}} na coorte",
         "course": "Mostrando {from}–{to} de correspondência de {total} · {count, plural, one {# aluno} other {# alunos}} em curso",
-        "org": "Mostrando {from}–{to} de correspondência de {total} · {count, plural, one {# aluno} other {# alunos}} na organização"
+        "org": "Mostrando {from}–{to} de correspondência de {total} · {count, plural, one {# aluno} other {# alunos}} na organização",
+        "path": "Mostrando {from}–{to} de {total} correspondentes · {count, plural, one {# aluno} other {# alunos}} na trilha"
       },
       "clear_filters": "{count, plural, one {Limpar # filtro} other {Limpar # filtros}}",
       "sort": {
@@ -7167,17 +7178,20 @@
       "showing_paged": {
         "cohort": "Mostrando {from}–{to} de {count, plural, one {# aluno} other {# alunos}} na coorte",
         "course": "Mostrando {from}–{to} de {count, plural, one {# aluno} other {# alunos}} em curso",
-        "org": "Mostrando {from}–{to} de {count, plural, one {# aluno} other {# alunos}} na organização"
+        "org": "Mostrando {from}–{to} de {count, plural, one {# aluno} other {# alunos}} na organização",
+        "path": "Mostrando {from}–{to} de {count, plural, one {# aluno} other {# alunos}} na trilha"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# aluno correspondente} other {# alunos correspondentes}} · {count, plural, one {# aluno} other {# alunos}} na coorte",
         "course": "{total, plural, one {# aluno correspondente} other {# alunos correspondentes}} · {count, plural, one {# aluno} other {# alunos}} em curso",
-        "org": "{total, plural, one {# aluno correspondente} other {# alunos correspondentes}} · {count, plural, one {# aluno} other {# alunos}} na organização"
+        "org": "{total, plural, one {# aluno correspondente} other {# alunos correspondentes}} · {count, plural, one {# aluno} other {# alunos}} na organização",
+        "path": "{total, plural, one {# aluno corresponde} other {# alunos correspondem}} · {count, plural, one {# aluno} other {# alunos}} na trilha"
       },
       "showing_all": {
         "cohort": "{count, plural, one {# aluno} other {# alunos}} na coorte",
         "course": "{count, plural, one {# aluno} other {# alunos}} em curso",
-        "org": "{count, plural, one {# aluno} other {# alunos}} na organização"
+        "org": "{count, plural, one {# aluno} other {# alunos}} na organização",
+        "path": "{count, plural, one {# aluno} other {# alunos}} na trilha"
       },
       "failed": "Não foi possível carregar os alunos",
       "cells_failed": "Não foi possível carregar as pontuações dos exercícios",
@@ -7194,13 +7208,15 @@
       "title": {
         "cohort": "Ainda não há alunos nesta coorte",
         "course": "Ainda não há alunos neste curso",
-        "org": "Ainda não há alunos na sua organização"
+        "org": "Ainda não há alunos na sua organização",
+        "path": "Ainda não há alunos nesta trilha de aprendizagem"
       },
       "description": {
         "cohort": "As análises são preenchidas à medida que os alunos abrem lições e enviam exercícios.",
         "cohort_no_courses": "Adicione cursos e depois convide alunos. As análises são preenchidas à medida que eles abrem lições e enviam exercícios.",
         "course": "As análises são preenchidas à medida que os alunos abrem lições e enviam exercícios.",
-        "org": "Adicione alunos à sua academia e depois inscreva-os em cursos ou coortes."
+        "org": "Adicione alunos à sua academia e depois inscreva-os em cursos ou coortes.",
+        "path": "As análises são preenchidas à medida que os alunos abrem aulas e enviam exercícios."
       },
       "pending": "{count, plural, one {# convite está aguardando aceitação} other {# convites estão aguardando aceitação}}. As análises são preenchidas quando os alunos entrarem.",
       "invite_students": "Convidar alunos",
@@ -7222,7 +7238,9 @@
       "courses_org": "A mostrar {from}–{to} de {total, plural, one {# curso} other {# cursos}} na organização",
       "sections_course": "A mostrar {from}–{to} de {total, plural, one {# secção} other {# secções}} no curso",
       "overdue_cohort": "A mostrar {from}–{to} de {total, plural, one {# aluno em atraso} other {# alunos em atraso}} na turma",
-      "paths_org": "Mostrando {from}–{to} de {total, plural, one {# trilha de aprendizagem} other {# trilhas de aprendizagem}} na organização"
+      "paths_org": "Mostrando {from}–{to} de {total, plural, one {# trilha de aprendizagem} other {# trilhas de aprendizagem}} na organização",
+      "courses_path": "Mostrando {from}–{to} de {total, plural, one {# curso} other {# cursos}} na trilha",
+      "overdue_path": "Mostrando {from}–{to} de {total, plural, one {# aluno atrasado} other {# alunos atrasados}} na trilha"
     },
     "breakdown": {
       "label": "Detalhe",
