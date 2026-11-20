@@ -3197,11 +3197,21 @@
           },
           "all_exercises": {
             "heading": "All Exercise",
+            "draft_recovery": "An unsaved draft was found for this exercise. Would you like to restore it?",
             "notify": {
               "action": "Notify students",
               "sending": "Notifying students…",
               "sent": "Notified {count} students",
               "failed": "Couldn't notify students"
+            },
+            "remote_update": {
+              "merged_title": "Assistant changes merged",
+              "merged_description": "Your unsaved edits were preserved while the Assistant's changes were added.",
+              "conflict_title": "Review Assistant changes",
+              "conflict_description": "The Assistant changed {count} item(s) that you also edited. Your version is currently preserved.",
+              "keep_mine": "Keep my edits",
+              "use_assistant": "Use Assistant changes",
+              "dismiss": "Dismiss"
             },
             "questions": "Questions",
             "settings": "Settings",

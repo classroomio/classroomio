@@ -13,6 +13,8 @@
   let { hasUnsavedChanges = $bindable(false), skipPrompt = false, onAbandon, children }: Props = $props();
 
   beforeNavigate(({ cancel }) => {
+    const shouldNotifyAbandon = hasUnsavedChanges && !skipPrompt;
+
     if (!shouldAbandonChanges()) {
       cancel();
     } else {

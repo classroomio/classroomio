@@ -1,79 +1,127 @@
 import type { QuestionnaireState } from '$features/course/components/exercise/store';
 import { questionnaire } from '$features/course/components/exercise/store';
+import { get } from 'svelte/store';
+import { mergeExerciseStates } from './exercise-state-merge';
 
 const EXERCISE_DRAFT_STORAGE_PREFIX = 'classroomio:exercise-draft';
 
-/** A draft only bridges a redirect out of the app and back, so it goes stale quickly. */
-const EXERCISE_DRAFT_MAX_AGE_MS = 60 * 60 * 1000;
+const EXERCISE_DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 interface StoredExerciseDraft {
+  baseQuestionnaire: QuestionnaireState;
   savedAt: number;
   questionnaire: QuestionnaireState;
 }
 
-function getStorageKey(courseId: string, exerciseId: string) {
-  return `${EXERCISE_DRAFT_STORAGE_PREFIX}:${courseId}:${exerciseId}`;
+export interface PendingExerciseDraft {
+  baseQuestionnaire: QuestionnaireState;
+  questionnaire: QuestionnaireState;
+  savedAt: number;
 }
 
-export function clearExerciseDraft(courseId: string, exerciseId: string) {
+export interface RestoredExerciseDraft {
+  baseState: QuestionnaireState;
+  conflictCount: number;
+  remoteState: QuestionnaireState;
+}
+
+/** Drafts are local to the browser profile that wrote them, so a different account on the same device never sees them. */
+function getStorageKey(courseId: string, exerciseId: string, profileId: string) {
+  return `${EXERCISE_DRAFT_STORAGE_PREFIX}:${profileId}:${courseId}:${exerciseId}`;
+}
+
+export function clearExerciseDraft(courseId: string, exerciseId: string, profileId: string) {
+  if (!courseId || !exerciseId || !profileId) return;
+
   try {
-    localStorage.removeItem(getStorageKey(courseId, exerciseId));
+    localStorage.removeItem(getStorageKey(courseId, exerciseId, profileId));
   } catch (error) {
     console.error('clearExerciseDraft error:', error);
   }
 }
 
-/**
- * Stashes the editor state before the browser leaves the app (e.g. for plan checkout), so the
- * teacher's in-progress questions survive the round trip.
- */
-export function saveExerciseDraft(courseId: string, exerciseId: string, state: QuestionnaireState) {
-  if (!courseId || !exerciseId) return;
+export function saveExerciseDraft(
+  courseId: string,
+  exerciseId: string,
+  profileId: string,
+  state: QuestionnaireState,
+  baseQuestionnaire: QuestionnaireState
+) {
+  if (!courseId || !exerciseId || !profileId) return false;
 
-  const draft: StoredExerciseDraft = { savedAt: Date.now(), questionnaire: state };
+  const draft: StoredExerciseDraft = { baseQuestionnaire, savedAt: Date.now(), questionnaire: state };
 
   try {
-    localStorage.setItem(getStorageKey(courseId, exerciseId), JSON.stringify(draft));
+    localStorage.setItem(getStorageKey(courseId, exerciseId, profileId), JSON.stringify(draft));
+    return true;
   } catch (error) {
     console.error('saveExerciseDraft error:', error);
+    return false;
   }
 }
 
-function loadExerciseDraft(courseId: string, exerciseId: string): QuestionnaireState | null {
-  if (!courseId || !exerciseId) return null;
+function loadExerciseDraft(courseId: string, exerciseId: string, profileId: string): StoredExerciseDraft | null {
+  if (!courseId || !exerciseId || !profileId) return null;
 
   try {
-    const stored = localStorage.getItem(getStorageKey(courseId, exerciseId));
+    const stored = localStorage.getItem(getStorageKey(courseId, exerciseId, profileId));
     if (!stored) return null;
 
     const draft = JSON.parse(stored) as StoredExerciseDraft | null;
     const isExpired = Date.now() - (draft?.savedAt ?? 0) >= EXERCISE_DRAFT_MAX_AGE_MS;
 
-    if (!draft?.questionnaire || isExpired) {
-      clearExerciseDraft(courseId, exerciseId);
+    if (!draft?.baseQuestionnaire || !draft.questionnaire || isExpired) {
+      clearExerciseDraft(courseId, exerciseId, profileId);
       return null;
     }
 
-    return draft.questionnaire;
+    return draft;
   } catch (error) {
     console.error('loadExerciseDraft error:', error);
-    clearExerciseDraft(courseId, exerciseId);
+    clearExerciseDraft(courseId, exerciseId, profileId);
 
     return null;
   }
 }
 
 /**
- * Replaces freshly hydrated server data with a stashed draft, if one is waiting. Must run after
- * `hydrateExercisePageData`. Returns whether a draft was restored.
+ * Looks up a pending draft without applying it or touching the live editor state. The caller
+ * decides whether to restore or discard it (e.g. after asking the teacher to confirm), since a
+ * draft may belong to edits they meant to abandon.
  */
-export function restoreExerciseDraft(courseId: string, exerciseId: string) {
-  const draft = loadExerciseDraft(courseId, exerciseId);
+export function peekExerciseDraft(
+  courseId: string,
+  exerciseId: string,
+  profileId: string
+): PendingExerciseDraft | null {
+  const draft = loadExerciseDraft(courseId, exerciseId, profileId);
 
-  if (!draft) return false;
+  if (!draft) return null;
 
-  clearExerciseDraft(courseId, exerciseId);
-  questionnaire.set(draft);
+  return { baseQuestionnaire: draft.baseQuestionnaire, questionnaire: draft.questionnaire, savedAt: draft.savedAt };
+}
 
-  return true;
+/**
+ * Applies a previously peeked draft: three-way merges it against the exercise's current live
+ * state (the freshly hydrated server copy) and writes the result into the editor. Only call this
+ * once the teacher has agreed to restore the draft.
+ */
+export function applyExerciseDraft(
+  courseId: string,
+  exerciseId: string,
+  profileId: string
+): RestoredExerciseDraft | null {
+  const draft = loadExerciseDraft(courseId, exerciseId, profileId);
+
+  if (!draft) return null;
+
+  const remoteState = get(questionnaire);
+  const restoredState = mergeExerciseStates(draft.baseQuestionnaire, draft.questionnaire, remoteState, 'local');
+  questionnaire.set(restoredState.state);
+
+  return {
+    baseState: structuredClone(draft.baseQuestionnaire),
+    conflictCount: restoredState.conflictCount,
+    remoteState: structuredClone(remoteState)
+  } satisfies RestoredExerciseDraft;
 }

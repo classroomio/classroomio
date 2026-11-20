@@ -188,6 +188,10 @@ function aggregateToolCalls(
       const contentLength = asNumber(result?.contentLength);
       const tokens = contentLength !== null ? Math.ceil(contentLength / 4) : null;
       upsert('lesson', id, asString(result?.lessonTitle), { kind: 'content_written' }, tokens);
+    } else if (tool === 'add_youtube_video_to_lesson') {
+      const id = asString(result?.lessonId);
+      if (!id) continue;
+      upsert('lesson', id, asString(result?.lessonTitle), { kind: 'metadata_updated' }, null);
     } else if (LESSON_BLOCK_CHANGE_TOOLS.has(tool)) {
       const id = asString(result?.lessonId);
       if (!id) continue;
