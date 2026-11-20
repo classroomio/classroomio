@@ -18,6 +18,7 @@ import { ROLE } from '@cio/utils/constants';
 import type { TAudienceBulkAction } from '@cio/utils/validation/organization';
 
 import { emitOrganizationMemberUpdatedWebhookEvent, emitOrganizationMemberWebhookEvent } from '../webhook/emit';
+import { StudentCapacityError, checkStudentCapacity } from './student-capacity';
 
 /**
  * The applier, shared by the API's synchronous path and the queue worker.
@@ -278,6 +279,7 @@ export async function runQueuedAudienceBulkAction(payload: {
   let succeeded = 0;
   const failed: { memberId: number; reason: string }[] = [];
   const changedIds: number[] = [];
+  const assertSeats = (tx: DbOrTxClient, seats: number) => checkStudentCapacity(organizationId, seats, tx);
 
   for (let index = 0; index < memberIds.length; index += chunkSize) {
     const chunk = memberIds.slice(index, index + chunkSize);
@@ -287,7 +289,8 @@ export async function runQueuedAudienceBulkAction(payload: {
         organizationId,
         chunk,
         { action, reason, filterSnapshot },
-        actorProfileId
+        actorProfileId,
+        { assertSeats }
       );
 
       succeeded += outcome.succeeded;
@@ -295,7 +298,8 @@ export async function runQueuedAudienceBulkAction(payload: {
       changedIds.push(...outcome.changedIds);
     } catch (error) {
       console.error('runQueuedAudienceBulkAction chunk failed:', error);
-      const reasonCode = error instanceof AudienceBulkError ? error.code : 'CHUNK_FAILED';
+      const reasonCode =
+        error instanceof AudienceBulkError || error instanceof StudentCapacityError ? error.code : 'CHUNK_FAILED';
 
       for (const memberId of chunk) {
         failed.push({ memberId, reason: reasonCode });

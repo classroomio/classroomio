@@ -7,12 +7,13 @@ import {
 import { getStudentLimit, isPaymentBlocked } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
 import { capturePlanLimitReached } from '@cio/core/services/posthog';
-import { type DbOrTxClient, db } from '@cio/db/drizzle';
 import {
-  countActiveStudents,
-  getActiveOrganizationPlan,
-  lockOrganizationForStudentCapacity
-} from '@cio/db/queries/organization';
+  type StudentCapacityCheck,
+  StudentCapacityError,
+  checkStudentCapacity
+} from '@cio/core/services/organization/student-capacity';
+import { type DbOrTxClient, db } from '@cio/db/drizzle';
+import { countActiveStudents, getActiveOrganizationPlan } from '@cio/db/queries/organization';
 
 export { notifyStudentMilestone };
 export type { StudentMilestoneNotification };
@@ -55,48 +56,28 @@ export async function assertStudentCapacityOrThrow(
   dbClient: DbOrTxClient = db,
   options: { deferNotification?: boolean } = {}
 ): Promise<StudentMilestoneNotification | null> {
-  if (additionalStudents <= 0) return null;
-  if (env.PUBLIC_IS_SELFHOSTED === 'true') return null;
+  let check: StudentCapacityCheck | null;
 
-  await lockOrganizationForStudentCapacity(orgId, dbClient);
+  try {
+    check = await checkStudentCapacity(orgId, additionalStudents, dbClient);
+  } catch (error) {
+    if (error instanceof StudentCapacityError) {
+      throw new AppError(error.message, ErrorCodes.UPGRADE_REQUIRED, 403);
+    }
 
-  const activePlan = await getActiveOrganizationPlan(orgId, dbClient);
-
-  if (isPaymentBlocked(activePlan)) {
-    throw new AppError('This organization is not accepting new students right now', ErrorCodes.UPGRADE_REQUIRED, 403);
+    throw error;
   }
 
-  const limit = getStudentLimit(activePlan?.planName);
+  if (!check) return null;
 
-  if (!Number.isFinite(limit)) return null;
-
-  const currentCount = await countActiveStudents(orgId, dbClient);
-  const newCount = currentCount + additionalStudents;
-
-  if (newCount > limit) {
-    capturePlanLimitReached({
-      orgId,
-      limitType: 'students',
-      plan: activePlan?.planName,
-      limit,
-      current: currentCount,
-      blocked: true
-    });
-
-    throw new AppError(
-      `This organization has reached its ${limit}-student limit on the Free plan`,
-      ErrorCodes.UPGRADE_REQUIRED,
-      403
-    );
-  }
-
+  const { planName, limit, currentCount, newCount } = check;
   const notification = getCrossedStudentMilestone(orgId, currentCount, newCount, limit);
 
   if (notification?.milestone === 'reached') {
     capturePlanLimitReached({
       orgId,
       limitType: 'students',
-      plan: activePlan?.planName,
+      plan: planName,
       limit,
       current: newCount,
       blocked: false

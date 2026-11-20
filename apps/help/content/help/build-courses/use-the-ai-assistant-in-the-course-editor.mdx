@@ -56,18 +56,18 @@ Select **Implement Plan** to start building. To revise the plan instead, type in
 
 ## Follow a generation run
 
-After you implement a plan, the assistant builds the course in the background. A progress card shows the steps completed, and while the run is active the chat input is paused (**Chat is paused while the agent finishes building the course. Cancel or wait for it to complete.**). Don't reload the page while the agent is running.
+After you implement a plan, the assistant builds the course in the background. A progress card shows the steps completed, and while the run is active the chat input is paused (**Chat is paused while the agent finishes building the course. Pause, cancel, or wait for it to complete.**). Don't reload the page while the agent is running.
 
 Use the run controls below the card:
 
-- **Cancel generation** stops the run. Content already created is kept.
-- **Resume** continues a paused, canceled, or waiting run.
-- **Retry** appears after a failure.
-- **Dismiss** leaves a canceled run. You are asked to confirm with **Walk away** or **Stay here**; afterwards the Resume button is gone and further chat will not continue the plan.
+- **Pause** stops the run at its next safe point. Content already created is kept.
+- **Resume** continues a paused or waiting run. A canceled run cannot be resumed.
+- **Cancel generation** ends the run permanently. Content already created is kept, a summary of the changes is added to the conversation, and the chat input returns.
+- **Retry** appears after a failure, or when a queued run looks stuck.
 
-If a run waits more than 30 seconds without starting, you see a **Worker not responding** notice. It has no button of its own, so use **Cancel generation**. Then select **Dismiss**, and select **Walk away** to confirm. Start the request again after the run is dismissed.
+If a run waits more than 30 seconds without starting, you see a **Worker not responding** notice with a **Retry** button. Select **Retry**. If the run still does not start, cancel it and send your request again.
 
-When a run completes, or after you dismiss a canceled run, a **changes card** lists the items that were created or edited (for example **3 items changed**, with a status such as **Completed** or **Canceled**). A failed run stays in the run view until you select **Retry** and it finishes. Select an item to open that lesson or exercise. The card is a record, not an approval step: there is no accept or reject button, so review each item yourself. To undo a lesson change afterward, see [Recover drafts and use version history](/build-courses/recover-drafts-and-use-version-history).
+When a run completes or is canceled, a **changes card** lists the items that were created or edited (for example **3 items changed**, with a status such as **Completed** or **Canceled**). A failed run stays in the run view until you select **Retry** and it finishes. Select an item to open that lesson or exercise. The card is a record, not an approval step: there is no accept or reject button, so review each item yourself. To undo a lesson change afterward, see [Recover drafts and use version history](/build-courses/recover-drafts-and-use-version-history).
 
 ## Chat history and long conversations
 

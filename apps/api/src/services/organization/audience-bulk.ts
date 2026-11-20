@@ -229,7 +229,7 @@ export async function applyBulkAudienceAction(
   const filterSnapshot = data.target.mode === 'filter' ? { ...data.target.filter } : undefined;
 
   if (memberIds.length > AUDIENCE_BULK_SYNC_MAX) {
-    // The worker can't reach the plan limit, so check the whole run before queueing it.
+    // Refuse an over-limit run up front; the worker re-checks each chunk as it applies it.
     const takesSeatsBack =
       data.action !== 'archive' &&
       data.action !== 'delete' &&

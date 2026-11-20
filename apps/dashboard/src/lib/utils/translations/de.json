@@ -5570,16 +5570,13 @@
     },
     "run_monitor": {
       "cancel": "Generierung abbrechen",
-      "dismiss": "Entlassen",
       "now_doing": "Jetzt",
       "input_disabled_hint": "Der Chat wird angehalten, während der Agent mit der Erstellung des Kurses fertig ist. Brechen Sie den Vorgang ab oder warten Sie, bis der Vorgang abgeschlossen ist.",
-      "dismiss_confirm": "Geh weg",
-      "dismiss_cancel": "Hier bleiben",
-      "dismiss_confirm_body": "Diese abgebrochene Generierung verlassen? Die Schaltfläche „Fortsetzen“ wird nicht mehr angezeigt – jeder weitere Chat beginnt neu und führt den Plan nicht fort.",
       "stuck_queued": {
         "title": "Arbeiter reagiert nicht",
         "body": "Die Kursgenerierung wartet seit mehr als 30 Sekunden, ohne dass ein Hintergrundprozess sie übernommen hat. Der Hintergrundprozess ist möglicherweise ausgefallen oder wird neu gestartet."
-      }
+      },
+      "pause": "Generierung pausieren"
     },
     "ask_ai": "Fragen Sie die KI",
     "content_input_placeholder": "Fragen Sie nach diesem Inhalt…",
@@ -5587,7 +5584,12 @@
     "ask_ai_input_aria": "Fragen Sie AI nach diesem Inhalt",
     "upload_error_file_too_large": "Die Datei ist zu groß. Die maximale Größe beträgt 5 MB.",
     "upload_error_unsupported_type": "Dateityp wird nicht unterstützt. Bitte laden Sie eine PDF-, DOCX-, PPTX- oder ODT-Datei hoch.",
-    "upload_error_generic": "Das Hochladen des Dokuments ist fehlgeschlagen. Bitte versuchen Sie es erneut."
+    "upload_error_generic": "Das Hochladen des Dokuments ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "run_paused": "Kursgenerierung pausiert",
+    "resume_failed": "Die Kursgenerierung konnte nicht fortgesetzt werden. Bitte versuchen Sie es erneut.",
+    "pause_failed": "Die Kursgenerierung konnte nicht pausiert werden. Bitte versuchen Sie es erneut.",
+    "cancel_failed": "Die Kursgenerierung konnte nicht abgebrochen werden. Bitte versuchen Sie es erneut.",
+    "retry_failed": "Die Kursgenerierung konnte nicht erneut gestartet werden. Bitte versuchen Sie es erneut."
   },
   "widgets": {
     "heading": "Widgets",

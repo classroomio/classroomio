@@ -1,4 +1,4 @@
-import { and, asc, desc, eq } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull } from 'drizzle-orm';
 import * as schema from '@db/schema';
 import { db } from '@db/drizzle';
 import type {
@@ -49,6 +49,14 @@ export interface UpdateAgentRunInput {
   cancelRequestedAt?: string | null;
   startedAt?: string | null;
   finishedAt?: string | null;
+  /**
+   * Compare-and-set guard: when supplied, the update only applies while the
+   * row is still owned by this worker execution. `null` requires an unowned
+   * row.
+   */
+  expectedWorkerId?: string | null;
+  /** When supplied, the update only applies while the row is in one of these statuses. */
+  expectedStatuses?: TAiAgentRunStatus[];
 }
 
 export interface UpsertAgentRunStepInput {
@@ -168,10 +176,21 @@ export async function updateAgentRun(input: UpdateAgentRunInput): Promise<TAiAge
     if (hasInputKey(input, 'startedAt')) updateData.startedAt = input.startedAt;
     if (hasInputKey(input, 'finishedAt')) updateData.finishedAt = input.finishedAt;
 
+    const workerGuard =
+      input.expectedWorkerId === undefined
+        ? undefined
+        : input.expectedWorkerId === null
+          ? isNull(schema.aiAgentRun.workerId)
+          : eq(schema.aiAgentRun.workerId, input.expectedWorkerId);
+    const statusGuard =
+      input.expectedStatuses === undefined ? undefined : inArray(schema.aiAgentRun.status, input.expectedStatuses);
+
     const [row] = await db
       .update(schema.aiAgentRun)
       .set(updateData)
-      .where(and(eq(schema.aiAgentRun.id, input.runId), eq(schema.aiAgentRun.userId, input.userId)))
+      .where(
+        and(eq(schema.aiAgentRun.id, input.runId), eq(schema.aiAgentRun.userId, input.userId), workerGuard, statusGuard)
+      )
       .returning();
 
     return row ?? null;
@@ -201,44 +220,53 @@ export async function appendAgentRunInstruction(
   }
 }
 
+function toAgentRunStepValues(input: UpsertAgentRunStepInput, now: string): TNewAiAgentRunStep {
+  return {
+    runId: input.runId,
+    stepKey: input.stepKey,
+    stepType: input.stepType,
+    status: input.status ?? 'queued',
+    inputHash: input.inputHash ?? null,
+    input: input.input ?? null,
+    output: input.output ?? null,
+    outputIds: input.outputIds ?? [],
+    idempotencyKey: input.idempotencyKey ?? null,
+    error: input.error ?? null,
+    attempt: input.attempt ?? 0,
+    startedAt: input.startedAt ?? null,
+    finishedAt: input.finishedAt ?? null,
+    updatedAt: now
+  };
+}
+
+function toAgentRunStepUpdateSet(input: UpsertAgentRunStepInput, now: string): Partial<TNewAiAgentRunStep> {
+  return {
+    stepType: input.stepType,
+    status: input.status ?? 'queued',
+    inputHash: input.inputHash ?? null,
+    input: input.input ?? null,
+    output: input.output ?? null,
+    outputIds: input.outputIds ?? [],
+    idempotencyKey: input.idempotencyKey ?? null,
+    error: input.error ?? null,
+    attempt: input.attempt ?? 0,
+    startedAt: input.startedAt ?? null,
+    finishedAt: input.finishedAt ?? null,
+    updatedAt: now
+  };
+}
+
 export async function upsertAgentRunStep(input: UpsertAgentRunStepInput): Promise<TAiAgentRunStep> {
   try {
     const now = new Date().toISOString();
-    const values: TNewAiAgentRunStep = {
-      runId: input.runId,
-      stepKey: input.stepKey,
-      stepType: input.stepType,
-      status: input.status ?? 'queued',
-      inputHash: input.inputHash ?? null,
-      input: input.input ?? null,
-      output: input.output ?? null,
-      outputIds: input.outputIds ?? [],
-      idempotencyKey: input.idempotencyKey ?? null,
-      error: input.error ?? null,
-      attempt: input.attempt ?? 0,
-      startedAt: input.startedAt ?? null,
-      finishedAt: input.finishedAt ?? null
-    };
+    const values = toAgentRunStepValues(input, now);
 
     const [row] = await db
       .insert(schema.aiAgentRunStep)
       .values(values)
       .onConflictDoUpdate({
         target: [schema.aiAgentRunStep.runId, schema.aiAgentRunStep.stepKey],
-        set: {
-          stepType: input.stepType,
-          status: input.status ?? 'queued',
-          inputHash: input.inputHash ?? null,
-          input: input.input ?? null,
-          output: input.output ?? null,
-          outputIds: input.outputIds ?? [],
-          idempotencyKey: input.idempotencyKey ?? null,
-          error: input.error ?? null,
-          attempt: input.attempt ?? 0,
-          startedAt: input.startedAt ?? null,
-          finishedAt: input.finishedAt ?? null,
-          updatedAt: now
-        }
+        set: toAgentRunStepUpdateSet(input, now)
       })
       .returning();
 
@@ -250,6 +278,55 @@ export async function upsertAgentRunStep(input: UpsertAgentRunStepInput): Promis
   } catch (error) {
     console.error('upsertAgentRunStep error:', error);
     throw new Error('Failed to upsert agent run step');
+  }
+}
+
+/**
+ * Writes a checkpoint only while the calling execution still owns the run.
+ * Returns null when another execution has taken over, so a superseded worker
+ * cannot replace a newer checkpoint.
+ */
+export async function upsertAgentRunStepForWorker(
+  input: UpsertAgentRunStepInput & { userId: string; expectedWorkerId: string }
+): Promise<TAiAgentRunStep | null> {
+  try {
+    return await db.transaction(async (tx) => {
+      const now = new Date().toISOString();
+
+      const [ownedRun] = await tx
+        .update(schema.aiAgentRun)
+        .set({ updatedAt: now })
+        .where(
+          and(
+            eq(schema.aiAgentRun.id, input.runId),
+            eq(schema.aiAgentRun.userId, input.userId),
+            eq(schema.aiAgentRun.workerId, input.expectedWorkerId)
+          )
+        )
+        .returning({ id: schema.aiAgentRun.id });
+
+      if (!ownedRun) return null;
+
+      const values = toAgentRunStepValues(input, now);
+
+      const [row] = await tx
+        .insert(schema.aiAgentRunStep)
+        .values(values)
+        .onConflictDoUpdate({
+          target: [schema.aiAgentRunStep.runId, schema.aiAgentRunStep.stepKey],
+          set: toAgentRunStepUpdateSet(input, now)
+        })
+        .returning();
+
+      if (!row) {
+        throw new Error('Upsert returned no row');
+      }
+
+      return row;
+    });
+  } catch (error) {
+    console.error('upsertAgentRunStepForWorker error:', error);
+    throw new Error('Failed to upsert agent run step for worker');
   }
 }
 

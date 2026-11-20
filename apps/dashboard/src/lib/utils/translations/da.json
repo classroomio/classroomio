@@ -5570,16 +5570,13 @@
     },
     "run_monitor": {
       "cancel": "Annuller generering",
-      "dismiss": "Afvis",
       "now_doing": "Nu",
       "input_disabled_hint": "Chatten er sat på pause, mens agenten er færdig med at bygge kurset. Annuller eller vent på, at det er fuldført.",
-      "dismiss_confirm": "Gå væk",
-      "dismiss_cancel": "Bliv her",
-      "dismiss_confirm_body": "Vil du forlade denne annullerede generering? Knappen Fortsæt forsvinder — al yderligere chat starter forfra og fortsætter ikke planen.",
       "stuck_queued": {
         "title": "Arbejder reagerer ikke",
         "body": "Kursusgenereringen har ventet i mere end 30 sekunder uden at en baggrundsproces har overtaget. Baggrundsprocessen er muligvis nede eller genstarter."
-      }
+      },
+      "pause": "Sæt generering på pause"
     },
     "ask_ai": "Spørg AI",
     "content_input_placeholder": "Spørg om dette indhold...",
@@ -5587,7 +5584,12 @@
     "ask_ai_input_aria": "Spørg AI om dette indhold",
     "upload_error_file_too_large": "Filen er for stor. Maksimal størrelse er 5 MB.",
     "upload_error_unsupported_type": "Filtype understøttes ikke. Upload venligst en PDF-, DOCX-, PPTX- eller ODT-fil.",
-    "upload_error_generic": "Kunne ikke uploade dokument. Prøv venligst igen."
+    "upload_error_generic": "Kunne ikke uploade dokument. Prøv venligst igen.",
+    "run_paused": "Kursusgenerering sat på pause",
+    "resume_failed": "Kunne ikke genoptage kursusgenereringen. Prøv igen.",
+    "pause_failed": "Kunne ikke sætte kursusgenereringen på pause. Prøv igen.",
+    "cancel_failed": "Kunne ikke annullere kursusgenereringen. Prøv igen.",
+    "retry_failed": "Kunne ikke prøve kursusgenereringen igen. Prøv igen."
   },
   "widgets": {
     "heading": "Widgets",

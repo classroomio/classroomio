@@ -5570,16 +5570,13 @@
     },
     "run_monitor": {
       "cancel": "Annuler la génération",
-      "dismiss": "Rejeter",
       "now_doing": "Maintenant",
       "input_disabled_hint": "La conversation est suspendue pendant que l'agent termine la création du cours. Annulez ou attendez qu'il soit terminé.",
-      "dismiss_confirm": "S'éloigner",
-      "dismiss_cancel": "Rester ici",
-      "dismiss_confirm_body": "Quitter cette génération annulée ? Le bouton Reprendre disparaîtra : toute nouvelle discussion recommencera à zéro et ne poursuivra pas le plan.",
       "stuck_queued": {
         "title": "Le travailleur ne répond pas",
         "body": "La génération du cours attend depuis plus de 30 secondes sans qu’aucun processus en arrière-plan ne la prenne en charge. Le processus en arrière-plan est peut-être hors service ou en cours de redémarrage."
-      }
+      },
+      "pause": "Mettre la génération en pause"
     },
     "ask_ai": "Demandez à l'IA",
     "content_input_placeholder": "Renseignez-vous sur ce contenu…",
@@ -5587,7 +5584,12 @@
     "ask_ai_input_aria": "Interrogez AI à propos de ce contenu",
     "upload_error_file_too_large": "Le fichier est trop volumineux. La taille maximale est de 5 Mo.",
     "upload_error_unsupported_type": "Type de fichier non pris en charge. Veuillez télécharger un fichier PDF, DOCX, PPTX ou ODT.",
-    "upload_error_generic": "Échec du téléchargement du document. Veuillez réessayer."
+    "upload_error_generic": "Échec du téléchargement du document. Veuillez réessayer.",
+    "run_paused": "Génération du cours en pause",
+    "resume_failed": "Impossible de reprendre la génération du cours. Veuillez réessayer.",
+    "pause_failed": "Impossible de mettre la génération du cours en pause. Veuillez réessayer.",
+    "cancel_failed": "Impossible d'annuler la génération du cours. Veuillez réessayer.",
+    "retry_failed": "Impossible de relancer la génération du cours. Veuillez réessayer."
   },
   "widgets": {
     "heading": "Widgets",

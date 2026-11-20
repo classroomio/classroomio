@@ -3,10 +3,9 @@
 Clickable UX exploration for onboarding: sign-up, a business screen, a simulated preparation step,
 customisation, and the admin's first look at their own academy: the real landing page with a short list of next steps.
 
-It joins two drafted specs that currently overlap:
-[`prd/onboarding-ai-bootstrap/`](../../prd/onboarding-ai-bootstrap/README.md) (website → AI-drafted courses → brand)
-and [`prd/onboarding-platform-showcase/`](../../prd/onboarding-platform-showcase/README.md) (theme picker → seeded
-demo courses). Read both before reviewing; §"Where the two specs disagree" needs a product decision.
+It follows [`prd/onboarding/`](../../prd/onboarding/README.md), which merges the earlier AI bootstrap spec (website →
+AI-drafted courses → brand) and platform showcase spec (theme picker → seeded demo courses). Read it before reviewing; its
+§ "Decisions" settles the open questions, and the section below, "Where the two specs disagree", keeps the history.
 
 | File | What it is |
 | --- | --- |
@@ -154,7 +153,7 @@ Labelled on screen wherever it happens, not only here.
   list and choose the path's name. The four-phase preparation is a timer.
 - **Real AI exists but is not reused here.** `prd/ai-course-assistant` is done and `apps/api/src/services/course-import`
   exists. A frontend-only prototype cannot call them, so generation is a simulation. The real implementation should call
-  those services; `prd/onboarding-ai-bootstrap` FR-3 specifies schema-validated output.
+  those services; `prd/onboarding` specifies schema-validated output.
 - **Email verification** is advanced by a labelled prototype button. **Google sign-up** fills the form; no OAuth.
 - **Upgrade** records a plan choice. No checkout runs and no payment details are collected.
 - **Connecting a tool** opens a dialog that states it is simulated and requests nothing.
@@ -227,8 +226,8 @@ option (`maps`) so the gap is visible in code.
 
 ## Where the two specs disagree
 
-`onboarding-ai-bootstrap` FR-3: generate **exactly two** courses from the product context. `onboarding-platform-showcase`
-FR-2: seed **two curated demo courses** matched to the goal. Run both and you get four with no stated relationship.
+The earlier `onboarding-ai-bootstrap` spec (FR-3): generate **exactly two** courses from the product context. The earlier
+`onboarding-platform-showcase` spec (FR-2): seed **two curated demo courses** matched to the goal. Run both and you get four with no stated relationship.
 
 This prototype produces **four starter courses and one path**, in line with the brief's example. Three are drafted from the
 product and the goals can swap in one or two goal-matched courses (badged "Matched to your goal"). **A proposal, not a
@@ -261,7 +260,7 @@ Both PRDs are drafts; the shipped onboarding (`ONBOARDING_STEPS` in `features/on
 - Starter course content is a title and description. The real seed carries sections, lessons and markdown notes.
 - Keyword matching includes the website *string* (a domain like `lumen-analytics.io` matches "analytic"). It never loads the site.
 - "Regenerate" was removed with the review screen; changing any input on stage 3 and continuing re-runs the preparation.
-- The preparation-failure state is in `states.html` only (`prd/onboarding-platform-showcase` FR-4: five-second timeout, never
+- The preparation-failure state is in `states.html` only (`prd/onboarding`, Starter course seeding: five-second timeout, never
   strand the user).
 - Logo files are held as data URLs in `localStorage`; a large image can exceed the quota. The write is wrapped in `try/catch`.
 - Out-of-scope controls (sidebar links, Edit, Publish, Invite a teammate) raise a toast naming where the real thing lives.
