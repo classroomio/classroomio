@@ -1,7 +1,7 @@
 import { QUESTION_TYPE_KEY, type QuestionTypeKey } from '@cio/question-types';
 
 /** Hidden in the exercise editor; omitted from the marketing picker. */
-const HIDDEN_QUESTION_TYPE_KEYS = new Set<QuestionTypeKey>([QUESTION_TYPE_KEY.MATCHING, QUESTION_TYPE_KEY.HOTSPOT]);
+const HIDDEN_QUESTION_TYPE_KEYS = new Set<QuestionTypeKey>([QUESTION_TYPE_KEY.HOTSPOT]);
 
 export type QuestionTypePickerEntry = {
   key: QuestionTypeKey;
@@ -228,7 +228,7 @@ const QUESTION_TYPE_PICKER_ENTRIES: QuestionTypePickerEntry[] = [
       title:
         'Every strong course begins with a ___ of learner needs, then aligns ___ and practice activities to stated goals.',
       questionType: 'FILL_BLANK',
-      settings: { acceptedAnswers: 'analysis,content' }
+      settings: { acceptedAnswers: [['analysis', 'needs analysis'], ['content']] }
     }
   },
   {

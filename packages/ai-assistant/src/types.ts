@@ -150,6 +150,7 @@ export const ToolName = {
   UPDATE_EXERCISE_SECTION: 'update_exercise_section',
   ADD_QUESTIONS: 'add_questions',
   UPDATE_QUESTIONS: 'update_questions',
+  MAKE_QUESTION_VARIANTS: 'make_question_variants',
   UPDATE_COURSE_LANDING_PAGE: 'update_course_landing_page',
   CHECK_COURSE_GO_LIVE_READINESS: 'check_course_go_live_readiness',
   GO_LIVE_COURSE: 'go_live_course',
@@ -163,6 +164,11 @@ export const ToolName = {
   READ_LESSON: 'read_lesson',
   READ_EXERCISE: 'read_exercise',
   READ_MY_SUBMISSIONS: 'read_my_submissions',
+  READ_MY_SKILL_MASTERY: 'read_my_skill_mastery',
+  READ_CURRENT_ATTEMPT: 'read_current_attempt',
+  CHECK_MATH_STEP: 'check_math_step',
+  CHECK_MATH_ANSWER: 'check_math_answer',
+  COMPARE_MATH_EXPRESSIONS: 'compare_math_expressions',
   SEARCH_COURSE: 'search_course'
 } as const;
 

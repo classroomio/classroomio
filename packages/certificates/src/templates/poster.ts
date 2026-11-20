@@ -1,6 +1,7 @@
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
+  escapeHtmlWithMath,
   prepareCertificateRenderContext,
   renderFooterMetaBlock,
   renderSignatoryBlock,
@@ -127,7 +128,7 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
             <div class="lbl">Awarded To</div>
             <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
           </div>
-          ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+          ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtmlWithMath(description)}</div>` : ''}
         </div>
 
         <div class="footer-section">

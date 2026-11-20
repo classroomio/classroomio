@@ -292,6 +292,10 @@ export default defineConfig({
                 root: '/build-courses/choose-an-exercise-question-type'
               },
               {
+                label: 'Create math questions',
+                root: '/build-courses/create-math-questions'
+              },
+              {
                 label: 'Set answers, points, and automatic grading',
                 root: '/build-courses/set-answers-points-and-automatic-grading'
               },
@@ -843,6 +847,14 @@ export default defineConfig({
               {
                 label: 'View submissions and completion data',
                 root: '/analytics-and-reporting/view-submissions-and-completion-data'
+              },
+              {
+                label: 'Track skill mastery',
+                root: '/analytics-and-reporting/track-skill-mastery'
+              },
+              {
+                label: 'Share reports and assign practice',
+                root: '/analytics-and-reporting/share-reports-and-assign-practice'
               }
             ]
           },

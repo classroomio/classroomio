@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import { countWordBankBlanks, parseWordBankTemplate } from './word-bank-utils';
+  import { MathText } from '../../../math-text';
 
   let { question, labels }: ExerciseQuestionRendererProps = $props();
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
@@ -27,13 +28,13 @@
     <div class="ui:bg-muted/30 ui:rounded-lg ui:border ui:p-4 ui:font-mono ui:text-sm ui:leading-relaxed">
       {#each segments as segment, segmentIndex (segmentIndex)}
         {#if segment.type === 'text'}
-          <span>{segment.value}</span>
+          <span><MathText text={segment.value} /></span>
         {:else}
           {@const expected = correctAnswers[segment.index]?.trim()}
           <span
             class="ui:inline-flex ui:mx-0.5 ui:min-h-8 ui:min-w-[5rem] ui:items-center ui:justify-center ui:rounded ui:border-2 ui:border-solid ui:border-primary ui:bg-background ui:px-2 ui:py-0.5"
           >
-            {expected || label('common.not_set')}
+            <MathText text={expected || label('common.not_set')} />
           </span>
         {/if}
       {/each}

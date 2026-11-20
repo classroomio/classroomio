@@ -32,6 +32,7 @@ import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
 import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
+import { courseMathNotationRouter } from '@api/routes/course/math-notation';
 import { liveSessionReminderRouter } from '@api/routes/course/live-session-reminder';
 import { authMiddleware } from '@api/middlewares/auth';
 import { getEventSource } from '@api/utils/event-source';
@@ -76,6 +77,8 @@ import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { sectionRouter } from '@api/routes/course/section';
+import { courseSkillRouter } from '@api/routes/course/skill';
+import { coursePracticeRouter } from '@api/routes/course/practice';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
@@ -664,11 +667,14 @@ export const courseRouter = new Hono()
   .route('/:courseId/block-library', blockLibraryRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)
+  .route('/:courseId/skill', courseSkillRouter)
+  .route('/:courseId/practice', coursePracticeRouter)
   .route('/:courseId/attendance', attendanceRouter)
   .route('/:courseId/mark', markRouter)
   .route('/:courseId/newsfeed', newsfeedRouter)
   .route('/:courseId/members', membersRouter)
   .route('/:courseId/invites', invitesRouter)
   .route('/:courseId/ai-tutor', courseAiTutorRouter)
+  .route('/:courseId/math-notation', courseMathNotationRouter)
   .route('/:courseId/live-session-reminders', liveSessionReminderRouter)
   .route('/presign', presignRouter);

@@ -14,6 +14,7 @@ import {
   updateExerciseSectionSchema,
   addQuestionsSchema,
   updateQuestionsSchema,
+  makeQuestionVariantsSchema,
   updateCourseLandingPageSchema,
   checkCourseGoLiveReadinessSchema,
   goLiveCourseSchema,
@@ -26,6 +27,10 @@ import {
   readLessonSchema,
   readExerciseSchema,
   readMySubmissionsSchema,
+  readCurrentAttemptSchema,
+  checkMathStepSchema,
+  checkMathAnswerSchema,
+  compareMathExpressionsSchema,
   searchCourseSchema
 } from './student';
 
@@ -64,6 +69,7 @@ const teacherTools: ToolRegistry = {
   [ToolName.UPDATE_EXERCISE_SECTION]: updateExerciseSectionSchema,
   [ToolName.ADD_QUESTIONS]: addQuestionsSchema,
   [ToolName.UPDATE_QUESTIONS]: updateQuestionsSchema,
+  [ToolName.MAKE_QUESTION_VARIANTS]: makeQuestionVariantsSchema,
   [ToolName.UPDATE_COURSE_LANDING_PAGE]: updateCourseLandingPageSchema,
   [ToolName.CHECK_COURSE_GO_LIVE_READINESS]: checkCourseGoLiveReadinessSchema,
   [ToolName.GO_LIVE_COURSE]: goLiveCourseSchema,
@@ -77,6 +83,10 @@ const studentTools: ToolRegistry = {
   [ToolName.READ_LESSON]: readLessonSchema,
   [ToolName.READ_EXERCISE]: readExerciseSchema,
   [ToolName.READ_MY_SUBMISSIONS]: readMySubmissionsSchema,
+  [ToolName.READ_CURRENT_ATTEMPT]: readCurrentAttemptSchema,
+  [ToolName.CHECK_MATH_STEP]: checkMathStepSchema,
+  [ToolName.CHECK_MATH_ANSWER]: checkMathAnswerSchema,
+  [ToolName.COMPARE_MATH_EXPRESSIONS]: compareMathExpressionsSchema,
   [ToolName.SEARCH_COURSE]: searchCourseSchema
 };
 
@@ -113,6 +123,7 @@ export {
   updateExerciseSectionSchema,
   addQuestionsSchema,
   updateQuestionsSchema,
+  makeQuestionVariantsSchema,
   updateCourseLandingPageSchema,
   checkCourseGoLiveReadinessSchema,
   goLiveCourseSchema,
@@ -123,5 +134,9 @@ export {
   readLessonSchema,
   readExerciseSchema,
   readMySubmissionsSchema,
+  readCurrentAttemptSchema,
+  checkMathStepSchema,
+  checkMathAnswerSchema,
+  compareMathExpressionsSchema,
   searchCourseSchema
 };

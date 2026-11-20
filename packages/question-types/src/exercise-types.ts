@@ -1,5 +1,6 @@
 import type { QuestionTypeKey } from './question-type-keys';
 import type { AnswerData, VideoRecordingAnswerData } from './answer-data';
+import type { MathQuestionLabelKey } from './math-labels';
 
 export type ExerciseQuestionTypeKey = QuestionTypeKey;
 
@@ -44,6 +45,31 @@ export type ExerciseQuestionLabelKey =
   | 'question.media.zoom_out'
   | 'question.media.previous_image'
   | 'question.media.next_image'
+  | 'question.math.insert'
+  | 'question.math.type_tab'
+  | 'question.math.latex_tab'
+  | 'question.math.field_label'
+  | 'question.math.palette_label'
+  | 'question.math.structure.fraction'
+  | 'question.math.structure.mixed_number'
+  | 'question.math.structure.parentheses'
+  | 'question.math.structure.power'
+  | 'question.math.structure.subscript'
+  | 'question.math.structure.square_root'
+  | 'question.math.structure.nth_root'
+  | 'question.math.structure.absolute_value'
+  | 'question.math.structure.system'
+  | 'question.math.structure.matrix'
+  | 'question.math.structure.piecewise'
+  | 'question.math.structure.integral'
+  | 'question.math.structure.sum'
+  | 'question.math.structure.limit'
+  | 'question.math.structure.derivative'
+  | 'question.math.latex_label'
+  | 'question.math.preview_label'
+  | 'question.math.preview_empty'
+  | 'question.math.done'
+  | 'question.math.cancel'
   | 'radio.edit.helper'
   | 'radio.edit.correct_selected_tooltip'
   | 'radio.edit.mark_correct_tooltip'
@@ -88,6 +114,10 @@ export type ExerciseQuestionLabelKey =
   | 'star.take.star_sr'
   | 'star.preview.correct_label'
   | 'fill_blank.edit.accepted_answers_placeholder'
+  | 'fill_blank.edit.blank_label'
+  | 'fill_blank.edit.add_alternative'
+  | 'fill_blank.edit.add_blank'
+  | 'fill_blank.edit.helper'
   | 'fill_blank.take.placeholder'
   | 'fill_blank.preview.accepted_answers_label'
   | 'fill_blank.review.your_answer_label'
@@ -197,7 +227,7 @@ export type ExerciseQuestionLabelKey =
   | 'submission.list.unknown_student'
   | 'submission.list.no_file';
 
-export type ExerciseQuestionLabels = Partial<Record<ExerciseQuestionLabelKey, string>>;
+export type ExerciseQuestionLabels = Partial<Record<ExerciseQuestionLabelKey | MathQuestionLabelKey, string>>;
 
 export interface ExerciseQuestionOption {
   id?: number | string;
@@ -214,6 +244,8 @@ export interface ExerciseQuestionModel {
   questionType: ExerciseQuestionTypeKey;
   points?: number;
   required?: boolean;
+  /** Set on a part of a multi-part question: the id of its stem question. */
+  parentQuestionId?: number | string | null;
   options?: ExerciseQuestionOption[];
   settings?: Record<string, unknown>;
 }

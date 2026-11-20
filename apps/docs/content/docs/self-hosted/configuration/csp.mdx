@@ -84,3 +84,11 @@ The values have to be present in the **dashboard** container environment. On Com
 dashboard service after editing `.env`. `./classroomio.sh restart` recreates it and reloads the file.
 Restarting an existing container (`docker compose restart dashboard`) does not reload Compose
 environment values, so the new hosts never reach either CSP header. No image rebuild is required.
+
+## Desmos graphing calculator
+
+Exercises set to the Graphing calculator load Desmos from `https://www.desmos.com` once an
+administrator saves a Desmos API key. Cloud allows that host by default. On a self-hosted image, add it
+to `CSP_SCRIPT_SRC_DOMAINS` and `CSP_CONNECT_SRC_DOMAINS` (or to
+`ALLOWED_EXTERNAL_DOMAINS` if you use it), or the graphing calculator shows
+"The graphing calculator could not load."

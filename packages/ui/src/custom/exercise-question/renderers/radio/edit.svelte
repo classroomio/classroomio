@@ -10,7 +10,8 @@
   import CheckIcon from '@lucide/svelte/icons/check';
   import CircleIcon from '@lucide/svelte/icons/circle';
   import { Button } from '../../../../base/button';
-  import { Input } from '../../../../base/input';
+  import { MathTextInput } from '../../../math-text';
+  import { getQuestionMathEditLabels } from '../../math-edit-labels';
   import { IconButton } from '../../../icon-button';
   import OptionImage from '../option-image.svelte';
   import { fileToDataUrl, getOptionImageUrl, mergeOptionSettings, removeOptionSetting } from '../option-image-utils';
@@ -24,6 +25,7 @@
   }: ExerciseQuestionRendererProps = $props();
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
+  const mathEditLabels = $derived(getQuestionMathEditLabels(labels));
 
   let optionImageInput = $state<HTMLInputElement | null>(null);
   let optionImageTargetIndex = $state<number | null>(null);
@@ -173,12 +175,13 @@
         </IconButton>
 
         <div class="ui:min-w-0 ui:flex-1 ui:space-y-2">
-          <Input
-            class="ui:w-full"
+          <MathTextInput
             placeholder={[label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ').trim()}
+            ariaLabel={[label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ').trim()}
             value={option.label}
             {disabled}
-            oninput={(event) => updateOption(index, { label: event.currentTarget.value })}
+            labels={mathEditLabels}
+            onValueChange={(optionLabel) => updateOption(index, { label: optionLabel })}
           />
 
           <div class="ui:flex ui:flex-wrap ui:items-start ui:gap-2">

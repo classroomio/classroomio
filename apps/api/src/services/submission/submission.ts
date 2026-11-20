@@ -6,11 +6,17 @@ import type {
 } from '@cio/question-types';
 import { db } from '@cio/db/drizzle';
 import {
+  aggregateMultiPartScores,
   getVideoRecordingMaxDurationSeconds,
+  scoreAutoGradedPart,
   scoreSubmissionAnswers,
+  type MultiPartScore,
   type ScoreSubmissionResult,
   validateTextareaAnswer
 } from '@cio/question-types';
+import { clampAnswerTiming } from '@cio/question-types/answer-timing';
+import { createMathGrader } from '@cio/question-types/math-grading';
+import { getEffectiveMathNotation } from '@api/services/math/notation';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isFileTypeAllowed, normalizeAcceptedFileTypes } from '@cio/utils/file-upload';
 import type { TNewQuestionAnswer, TNewSubmission, TSubmission } from '@cio/db/types';
@@ -47,12 +53,22 @@ import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/co
 import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { canAccessCourseSubmissions, getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 
-import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
+import { formatPoints, QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
+import {
+  annotateMathAnswers,
+  attachSeeds,
+  getAnswerableQuestions,
+  instantiateScoringQuestions,
+  stampClusterOverrides,
+  resolveAnswerSeeds,
+  withoutAiReview,
+  toScoringQuestions
+} from './auto-grading';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
 import type { TEventSource } from '@cio/core/services/posthog';
@@ -383,7 +399,11 @@ export async function listExerciseSubmissionsOverview(
       canAccessCourseSubmissions(courseId, profileId)
     ]);
 
-    const mySubmission = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
+    const ownSubmissions = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
+    const mySubmission = ownSubmissions.map((submission) => ({
+      ...submission,
+      answers: submission.answers?.map(withoutAiReview)
+    }));
 
     if (!canGrade) {
       return { mySubmission, allSubmissions: [], canGrade: false };
@@ -535,6 +555,7 @@ export async function listSubmissionsForGrading(courseId: string) {
           order: q.order,
           points: q.points,
           questionTypeId: q.questionTypeId,
+          parentQuestionId: q.parentQuestionId,
           settings: q.settings ?? {},
           options: (q.options || []).map((opt: any) => ({
             id: opt.id,
@@ -566,7 +587,14 @@ export async function listSubmissionsForGrading(courseId: string) {
   }
 }
 
-type SubmissionAnswerInput = { questionId: number; optionId?: number; answer?: string };
+type SubmissionAnswerInput = {
+  questionId: number;
+  optionId?: number;
+  answer?: string;
+  seed?: string;
+  startedAt?: string;
+  answeredAt?: string;
+};
 type ExerciseQuestionRow = Awaited<ReturnType<typeof getExerciseWithRelationsOptimized>>['questions'][number];
 
 export type CreateSubmissionOptions = {
@@ -707,7 +735,8 @@ function decodeSubmissionAnswers(
       }
     }
 
-    answerByQuestionId.set(input.questionId, answerData);
+    const timing = clampAnswerTiming(input);
+    answerByQuestionId.set(input.questionId, timing ? { ...answerData, ...timing } : answerData);
   }
 
   return answerByQuestionId;
@@ -791,26 +820,39 @@ export async function createSubmissionService(
   submittedBy: string,
   answers: SubmissionAnswerInput[],
   options: CreateSubmissionOptions = {}
-): Promise<TSubmission & { answers?: any[] }> {
+): Promise<TSubmission & { answers?: any[]; partScores?: MultiPartScore[] }> {
   try {
     const [exerciseWithRelations, courseRows] = await Promise.all([
       getExerciseWithRelationsOptimized(exerciseId),
       getCourseById(courseId)
     ]);
     const course = courseRows[0];
+    const notation = await getEffectiveMathNotation(courseId);
+    const mathGrader = createMathGrader(notation);
 
-    const questionById = toQuestionModelsById(exerciseWithRelations.questions);
-    const answerByQuestionId = decodeSubmissionAnswers(questionById, answers, options);
+    const answerableQuestions = getAnswerableQuestions(exerciseWithRelations.questions);
+    const questionById = toQuestionModelsById(answerableQuestions);
+    const decodedAnswers = decodeSubmissionAnswers(questionById, answers, options);
+    const seedByQuestionId = resolveAnswerSeeds(answerableQuestions, answers, options.strict === true);
+    const dbQuestions = instantiateScoringQuestions(toScoringQuestions(answerableQuestions), seedByQuestionId);
+    const answerByQuestionId = stampClusterOverrides(
+      dbQuestions,
+      attachSeeds(annotateMathAnswers(dbQuestions, decodedAnswers, notation), seedByQuestionId)
+    );
     const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
     const wasCompleteBefore = await wasExerciseCompleteForMember(exerciseId, submittedBy);
 
     const overallStatus = resolveOverallStatusFromTypenames(
-      exerciseWithRelations.questions
+      answerableQuestions
         .map((question) => question.questionType?.typename ?? '')
         .filter((typename) => typename.length > 0)
     );
     const gradingState: SubmissionGradingState =
       overallStatus === 'manual_required' || overallStatus === 'hybrid' ? 'awaiting_manual' : 'queued';
+
+    const shouldAutoGrade = overallStatus === 'auto_graded' && answerableQuestions.length > 0;
+    const partialGrade = shouldAutoGrade ? null : scoreAutoGradedPart(dbQuestions, answerByQuestionId, mathGrader);
+    const partialPointByQuestionId = new Map(partialGrade?.scores.map((score) => [score.questionId, score.points]));
 
     const submissionData: TNewSubmission = {
       courseId,
@@ -819,12 +861,11 @@ export async function createSubmissionService(
       statusId: projectLegacyStatusId(gradingState),
       gradingState,
       overallStatus,
-      total: 0
+      total: partialGrade?.total ?? 0
     };
 
-    const shouldAutoGrade = overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
     const unansweredQuestionIds = shouldAutoGrade
-      ? exerciseWithRelations.questions
+      ? answerableQuestions
           .map((question) => question.id)
           .filter((questionId): questionId is number => questionId != null && !answerByQuestionId.has(questionId))
       : [];
@@ -843,7 +884,8 @@ export async function createSubmissionService(
         submissionId: createdSubmission.id,
         questionId,
         groupMemberId: submittedBy,
-        answerData
+        answerData,
+        point: partialPointByQuestionId.get(questionId) ?? 0
       }));
       const unansweredRows: TNewQuestionAnswer[] = unansweredQuestionIds.map((questionId) => ({
         submissionId: createdSubmission.id,
@@ -869,18 +911,11 @@ export async function createSubmissionService(
     await createVideoRecordingAssetUsages(insertedAnswers);
 
     if (shouldAutoGrade) {
-      const dbQuestions = exerciseWithRelations.questions
-        .filter((q): q is typeof q & { id: number } => q.id != null)
-        .map((q) => ({
-          id: q.id,
-          title: q.title,
-          questionTypeId: q.questionTypeId,
-          points: q.points != null ? Number(q.points) : 0,
-          settings: (q.settings as Record<string, unknown>) ?? {},
-          options: q.options ?? []
-        }));
-
-      const { scores, total }: ScoreSubmissionResult = scoreSubmissionAnswers(dbQuestions, answerByQuestionId);
+      const { scores, total }: ScoreSubmissionResult = scoreSubmissionAnswers(
+        dbQuestions,
+        answerByQuestionId,
+        mathGrader
+      );
 
       const graded = await updateSubmissionGrades(submission.id, {
         answers: scores.map((s: ScoreSubmissionResult['scores'][number]) => ({
@@ -921,7 +956,8 @@ export async function createSubmissionService(
 
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
-        return { ...submission, answers: enrichedAnswers };
+        const partScores = aggregateMultiPartScores(dbQuestions, scores);
+        return { ...submission, answers: enrichedAnswers, ...(partScores.length > 0 && { partScores }) };
       }
     }
 
@@ -1231,7 +1267,7 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
   const maxMark = (fullSubmission.exercise.questions || []).reduce((sum: number, q: any) => sum + (q.points || 0), 0);
 
   const isGraded = newStatusId === 3;
-  const score = isGraded ? `${totalMark}/${maxMark}` : undefined;
+  const score = isGraded ? `${formatPoints(totalMark)}/${formatPoints(maxMark)}` : undefined;
 
   try {
     await enqueueTransactionalEmail('submissionGraded', {

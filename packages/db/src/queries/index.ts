@@ -17,6 +17,7 @@ export * from './mark';
 export * from './newsfeed';
 export * from './submission';
 export * from './tag';
+export * from './skill';
 export * from './course-import';
 export * from './cohort';
 export * from './widget';

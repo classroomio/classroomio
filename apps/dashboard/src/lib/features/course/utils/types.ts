@@ -356,6 +356,34 @@ export type DeleteSubmissionRequest =
   (typeof classroomio.course)[':courseId']['submission'][':submissionId']['$delete'];
 export type UpdateSubmissionAnswerRequest =
   (typeof classroomio.course)[':courseId']['submission'][':submissionId']['answer']['$put'];
+export type RequestAiReviewRequest =
+  (typeof classroomio.course)[':courseId']['submission'][':submissionId']['ai-review']['$post'];
+export type RequestAiReviewSuccess = Extract<InferResponseType<RequestAiReviewRequest>, { success: true }>;
+export type AiReviewData = RequestAiReviewSuccess['data'];
+export type DecideAiReviewRequest =
+  (typeof classroomio.course)[':courseId']['submission'][':submissionId']['ai-review']['decision']['$put'];
+export type DecideAiReviewSuccess = Extract<InferResponseType<DecideAiReviewRequest>, { success: true }>;
+export type BulkAcceptAiReviewsRequest =
+  (typeof classroomio.course)[':courseId']['submission']['ai-review']['accept'][':exerciseId']['$post'];
+export type BulkAcceptAiReviewsSuccess = Extract<InferResponseType<BulkAcceptAiReviewsRequest>, { success: true }>;
+export type ExerciseResultsRequest =
+  (typeof classroomio.course)[':courseId']['submission']['results'][':exerciseId']['$get'];
+export type ExerciseResultsSuccess = Extract<InferResponseType<ExerciseResultsRequest>, { success: true }>;
+export type ExerciseResultsData = ExerciseResultsSuccess['data'];
+export type ExerciseResultsStudent = ExerciseResultsData['students'][number];
+export type ExerciseResultsCell = ExerciseResultsStudent['cells'][number];
+export type ExerciseResultsCohort = ExerciseResultsData['cohorts'][number];
+export type AnswerClustersRequest =
+  (typeof classroomio.course)[':courseId']['submission']['clusters'][':exerciseId'][':questionId']['$get'];
+export type AnswerClustersSuccess = Extract<InferResponseType<AnswerClustersRequest>, { success: true }>;
+export type AnswerClustersData = AnswerClustersSuccess['data'];
+export type AnswerClusterItem = AnswerClustersData['clusters'][number];
+export type SetClusterOverrideRequest =
+  (typeof classroomio.course)[':courseId']['submission']['clusters'][':exerciseId'][':questionId']['$put'];
+export type SetClusterOverrideSuccess = Extract<InferResponseType<SetClusterOverrideRequest>, { success: true }>;
+export type ResetClusterOverrideRequest =
+  (typeof classroomio.course)[':courseId']['submission']['clusters'][':exerciseId'][':questionId']['reset']['$post'];
+export type ResetClusterOverrideSuccess = Extract<InferResponseType<ResetClusterOverrideRequest>, { success: true }>;
 export type UpdateSubmissionGradesRequest =
   (typeof classroomio.course)[':courseId']['submission'][':submissionId']['grades']['$put'];
 

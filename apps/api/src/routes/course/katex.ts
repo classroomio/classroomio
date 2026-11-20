@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 import { Hono } from '@api/utils/hono';
-import katex from 'katex';
+import { renderLatexToMathml } from '@cio/utils/math';
 
 export const katexRouter = new Hono().get('/', async (c) => {
   try {
@@ -9,10 +9,7 @@ export const katexRouter = new Hono().get('/', async (c) => {
 
     const latexString = original.split('?')[1].replaceAll('&plus;', '+').replaceAll('&space;', '');
 
-    const html = katex.renderToString(latexString, {
-      output: 'mathml',
-      throwOnError: false
-    });
+    const html = renderLatexToMathml(latexString);
 
     return c.html(html);
   } catch (error) {

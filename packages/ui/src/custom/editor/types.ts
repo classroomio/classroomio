@@ -3,8 +3,27 @@ import type { EditorState, Transaction } from '@tiptap/pm/state';
 
 import type { EditorView } from '@tiptap/pm/view';
 import type { Snippet } from 'svelte';
+import type { MathEditLabels } from '../math-text';
 
 export type EditorToolbarPreset = 'default' | 'email';
+
+export interface MathNodeClick {
+  latex: string;
+  pos: number;
+  type: 'inline' | 'block';
+}
+
+/** A request to open the math box for a new formula at `from`–`to`. */
+export interface MathBoxRequest {
+  type: 'inline' | 'block';
+  latex: string;
+  from: number;
+  to: number;
+  /** `dollar` when opened by typing `$`; cancelling then inserts the literal dollar sign. */
+  trigger?: 'dollar';
+}
+
+export type MathNodeClickHandler = (click: MathNodeClick) => void;
 
 export interface EdraEditorProps {
   placeholder?: string | ((node: any) => string);
@@ -17,6 +36,7 @@ export interface EdraEditorProps {
   onImageUpload?: (file: File) => Promise<string>;
   onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
   emailSafe?: boolean;
+  mathLabels?: MathEditLabels;
 }
 
 export interface EditorProps {

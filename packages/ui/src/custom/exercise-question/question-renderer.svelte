@@ -13,14 +13,18 @@
     ExerciseQuestionRenderContract,
     ExerciseQuestionRendererProps
   } from '@cio/question-types';
-  import { getExerciseQuestionLabel } from '@cio/question-types';
+  import {
+    createVariantSeed,
+    getExerciseQuestionLabel,
+    getMathQuestionLabel,
+    readQuestionParameters
+  } from '@cio/question-types';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import XIcon from '@lucide/svelte/icons/x';
   import { Button } from '../../base/button';
   import { HoverableItem, MaximizeIcon } from '../moving-icons';
   import * as Dialog from '../../base/dialog';
   import * as DropdownMenu from '../../base/dropdown-menu';
-  import { Input } from '../../base/input';
   import { IconButton } from '../icon-button';
   import { MediaPlayer, getVideoMediaType, isYoutubeUrl, isVimeoUrl } from '../media-player';
   import { dedupe } from '@cio/utils';
@@ -29,6 +33,8 @@
   import { YoutubeLinkForm } from '../youtube-link-form';
   import { ImageLightbox, ZoomableHtmlContent, ZoomableImage, type LightboxImage } from '../image-lightbox';
   import { getQuestionLightboxLabels } from './lightbox-labels';
+  import { getQuestionMathEditLabels } from './math-edit-labels';
+  import { MathText, MathTextInput } from '../math-text';
   import { hasQuestionDescriptionContent, toQuestionDescriptionHtml } from './question-description';
   import QuestionSurface from './question-surface.svelte';
   import { getExerciseQuestionRenderer } from './renderer-contract';
@@ -48,6 +54,10 @@
     titleError?: string | null;
     /** Heading of the expanded description sheet in edit mode. */
     exerciseTitle?: string;
+    /** Hides the answer area, for the stem of a multi-part question that its parts answer. */
+    hideAnswer?: boolean;
+    /** Label such as (a) shown before the title of a part of a multi-part question. */
+    partLabel?: string;
   }
 
   let {
@@ -59,10 +69,47 @@
     questionNumber,
     questionNumberActive = true,
     titleError = null,
-    exerciseTitle = ''
+    exerciseTitle = '',
+    hideAnswer = false,
+    partLabel = ''
   }: Props = $props();
 
   const Renderer = $derived(getExerciseQuestionRenderer(contract.question.questionType, contract.mode));
+  const hasParameters = $derived(
+    contract.mode !== 'edit' && readQuestionParameters(contract.question.settings) !== null
+  );
+  let freshSeed = $state(createVariantSeed());
+  let hadSeededAnswer = false;
+  const variantSeed = $derived(hasParameters ? (contract.answer?.seed ?? freshSeed) : null);
+  let variantQuestion = $state<ExerciseQuestionModel | null>(null);
+
+  $effect(() => {
+    const hasSeededAnswer = Boolean(contract.answer?.seed);
+    if (hadSeededAnswer && !hasSeededAnswer) freshSeed = createVariantSeed();
+    hadSeededAnswer = hasSeededAnswer;
+  });
+
+  $effect(() => {
+    if (!hasParameters || !variantSeed) return;
+
+    const source = contract.question;
+    const seed = variantSeed;
+    let isCurrent = true;
+    void import('@cio/question-types/variants').then(({ instantiateQuestion }) => {
+      if (isCurrent) variantQuestion = instantiateQuestion(source, seed);
+    });
+
+    return () => {
+      isCurrent = false;
+    };
+  });
+
+  const displayQuestion = $derived(hasParameters ? variantQuestion : contract.question);
+
+  function handleAnswerChange(answer: AnswerData | null) {
+    onAnswerChange(answer && variantSeed ? { ...answer, seed: variantSeed } : answer);
+  }
+  const mathEditLabels = $derived(getQuestionMathEditLabels(contract.labels));
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(contract.labels, key, fallback);
 
@@ -76,7 +123,7 @@
   let lightboxIndex = $state(0);
   let lightboxImages = $state<LightboxImage[]>([]);
 
-  const questionDescription = $derived(String((contract.question.settings?.description as string | undefined) ?? ''));
+  const questionDescription = $derived(String((displayQuestion?.settings?.description as string | undefined) ?? ''));
   const hasDescription = $derived(isDescriptionEditorVisible || questionDescription.trim().length > 0);
   const questionDescriptionHtml = $derived(toQuestionDescriptionHtml(questionDescription));
   const questionImageUrls = $derived.by(() => {
@@ -308,13 +355,14 @@
       <div class="ui:flex ui:min-w-0 ui:flex-col ui:items-stretch ui:gap-2 ui:sm:flex-row ui:sm:items-end">
         <div class="ui:min-w-0 ui:flex-1 ui:space-y-1">
           <p class="ui:text-sm ui:font-medium">{label('question.edit.title_label')}</p>
-          <Input
-            class="ui:w-full"
+          <MathTextInput
             value={contract.question.title}
             placeholder={label('question.edit.title_placeholder')}
+            ariaLabel={label('question.edit.title_label')}
             disabled={contract.disabled}
-            aria-invalid={titleError ? true : undefined}
-            oninput={(event) => patchQuestion({ title: event.currentTarget.value })}
+            invalid={Boolean(titleError)}
+            labels={mathEditLabels}
+            onValueChange={(title) => patchQuestion({ title })}
           />
           {#if titleError}
             <p class="ui:text-destructive ui:text-xs">{titleError}</p>
@@ -378,6 +426,7 @@
               showDragHandle={false}
               onContentChange={(html) => patchSettings({ description: html })}
               onImageUpload={uploadQuestionImage}
+              mathLabels={mathEditLabels}
               expandable
               bind:expanded={isDescriptionExpanded}
               expandedTitle={exerciseTitle || label('question.edit.description_label')}
@@ -484,15 +533,18 @@
 
   {#if contract.mode !== 'edit'}
     <div class="ui:mb-4 ui:space-y-3">
+      {#if partLabel}
+        <p class="ui:text-muted-foreground ui:text-sm ui:font-semibold" data-testid="part-label">{partLabel}</p>
+      {/if}
       {#if questionNumber !== undefined}
         <div class="ui:flex ui:items-center ui:gap-2">
           <NumberBadge number={questionNumber} active={questionNumberActive} />
-          {#if contract.question.title.trim().length > 0}
-            <QuestionTitle title={contract.question.title} class="ui:min-w-0 ui:flex-1" />
+          {#if displayQuestion && displayQuestion.title.trim().length > 0}
+            <QuestionTitle title={displayQuestion.title} class="ui:min-w-0 ui:flex-1" />
           {/if}
         </div>
-      {:else if contract.question.title.trim().length > 0}
-        <QuestionTitle title={contract.question.title} />
+      {:else if displayQuestion && displayQuestion.title.trim().length > 0}
+        <QuestionTitle title={displayQuestion.title} />
       {/if}
 
       {#if hasQuestionDescriptionContent(questionDescriptionHtml)}
@@ -550,20 +602,33 @@
     </div>
   {/if}
 
-  <Renderer
-    question={contract.question}
-    answer={contract.answer}
-    submissions={contract.submissions}
-    maxSubmissionItems={contract.maxSubmissionItems}
-    disabled={contract.disabled}
-    labels={contract.labels}
-    platformMaxFileSizeMb={contract.platformMaxFileSizeMb}
-    onImageUpload={contract.onImageUpload}
-    onFileUpload={contract.onFileUpload}
-    onVideoRecordingUpload={contract.onVideoRecordingUpload}
-    {onAnswerChange}
-    {onQuestionChange}
-  />
+  {#if !hideAnswer && displayQuestion}
+    <Renderer
+      question={displayQuestion}
+      answer={contract.answer}
+      submissions={contract.submissions}
+      maxSubmissionItems={contract.maxSubmissionItems}
+      disabled={contract.disabled}
+      labels={contract.labels}
+      platformMaxFileSizeMb={contract.platformMaxFileSizeMb}
+      onImageUpload={contract.onImageUpload}
+      onFileUpload={contract.onFileUpload}
+      onVideoRecordingUpload={contract.onVideoRecordingUpload}
+      onAnswerChange={handleAnswerChange}
+      {onQuestionChange}
+    />
+    {#if contract.mode === 'review' && contract.answer?.clusterOverride?.feedback}
+      <div
+        class="ui:bg-muted ui:mt-3 ui:rounded-md ui:border ui:px-3 ui:py-2 ui:text-sm"
+        data-testid="cluster-feedback"
+      >
+        <p class="ui:text-muted-foreground ui:text-xs ui:font-semibold">
+          {getMathQuestionLabel(contract.labels, 'math.review.feedback')}
+        </p>
+        <MathText text={contract.answer.clusterOverride.feedback} />
+      </div>
+    {/if}
+  {/if}
 {/snippet}
 
 {#if showContainer}

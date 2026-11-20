@@ -6,9 +6,19 @@
     CHECKBOX_FIXTURE,
     FILE_UPLOAD_FIXTURE,
     FILL_BLANK_FIXTURE,
+    GRAPH_PLOT_FIXTURE,
+    GRAPH_READ_FIXTURE,
     HOTSPOT_FIXTURE,
     LINK_FIXTURE,
     MATCHING_FIXTURE,
+    MATCHING_MATH_FIXTURE,
+    MATH_EXPRESSION_FIXTURE,
+    MULTI_PART_FIXTURE,
+    NUMERIC_FRACTION_FIXTURE,
+    PARAMETERISED_MATH_FIXTURE,
+    PARAMETERISED_NUMERIC_FIXTURE,
+    WORKED_SOLUTION_RUBRIC_FIXTURE,
+    WORKED_SOLUTION_FIXTURE,
     NUMERIC_FIXTURE,
     ORDERING_FIXTURE,
     RADIO_FIXTURE,
@@ -41,6 +51,107 @@
     colorTheme: 'blue' as const
   };
 </script>
+
+<Story name="Math expression">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={MATH_EXPRESSION_FIXTURE.question}
+      answer={MATH_EXPRESSION_FIXTURE.answer}
+      wrongAnswer={MATH_EXPRESSION_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Graph plot">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={GRAPH_PLOT_FIXTURE.question}
+      answer={GRAPH_PLOT_FIXTURE.answer}
+      wrongAnswer={GRAPH_PLOT_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Graph reading">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={GRAPH_READ_FIXTURE.question}
+      answer={GRAPH_READ_FIXTURE.answer}
+      wrongAnswer={GRAPH_READ_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Worked solution">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={WORKED_SOLUTION_FIXTURE.question}
+      answer={WORKED_SOLUTION_FIXTURE.answer}
+      wrongAnswer={WORKED_SOLUTION_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Parameterised math question">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={PARAMETERISED_MATH_FIXTURE.question}
+      answer={PARAMETERISED_MATH_FIXTURE.answer}
+      wrongAnswer={PARAMETERISED_MATH_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Parameterised numeric question with choice and decimal variables">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={PARAMETERISED_NUMERIC_FIXTURE.question}
+      answer={PARAMETERISED_NUMERIC_FIXTURE.answer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Worked solution with marking rubric">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={WORKED_SOLUTION_RUBRIC_FIXTURE.question}
+      answer={WORKED_SOLUTION_RUBRIC_FIXTURE.answer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Numeric fraction">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={NUMERIC_FRACTION_FIXTURE.question}
+      answer={NUMERIC_FRACTION_FIXTURE.answer}
+      wrongAnswer={NUMERIC_FRACTION_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Matching with math">
+  {#snippet template()}
+    <QuestionTypeModes question={MATCHING_MATH_FIXTURE.question} answer={MATCHING_MATH_FIXTURE.answer} />
+  {/snippet}
+</Story>
+
+<Story name="Multi-part question">
+  {#snippet template()}
+    <ExerciseQuestion.QuestionList
+      contract={{
+        mode: 'review',
+        questions: MULTI_PART_FIXTURE,
+        answersByKey: {
+          'q-part-a': { type: 'MATH_EXPRESSION', latex: '4x+6' },
+          'q-part-b': { type: 'NUMERIC', value: 4 }
+        },
+        scoresByKey: { 'q-part-a': 2, 'q-part-b': 0 },
+        disabled: true
+      }}
+    />
+  {/snippet}
+</Story>
 
 <Story name="Checkbox">
   {#snippet template()}

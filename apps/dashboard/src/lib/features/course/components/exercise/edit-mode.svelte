@@ -6,6 +6,10 @@
   import { dndzone } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
   import { tick } from 'svelte';
+  import { courseApi } from '$features/course/api';
+  import { skillsApi } from '$features/skills/api';
+  import { QuestionSkillTags } from '$features/skills/components';
+  import type { QuestionSkillTag } from '$features/skills/utils';
 
   import {
     questionnaire,
@@ -14,6 +18,8 @@
     handleRemoveQuestion,
     handleCode,
     handleAddQuestion,
+    handleAddPart,
+    getPartsOf,
     handleRemoveSection,
     handleReorderSections,
     handleReorderQuestionsInSection,
@@ -27,6 +33,11 @@
   import { QUESTION_TYPES } from '$features/ui/question/constants';
   import { ExerciseQuestion } from '@cio/ui';
   import { Badge } from '@cio/ui/base/badge';
+  import { Button } from '@cio/ui/base/button';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import FileUpIcon from '@lucide/svelte/icons/file-up';
+  import WorksheetImportDialog from '$features/math/components/worksheet-import-dialog.svelte';
+  import { MathText } from '@cio/ui/custom/math-text';
   import * as Tooltip from '@cio/ui/base/tooltip';
 
   import OrderModal from './order-modal.svelte';
@@ -47,7 +58,12 @@
     questionTypeSupportsOptions,
     toExerciseQuestionModel
   } from './question-type-utils';
-  import { QUESTION_TYPE_KEY, resolveTrueFalseCorrectValue, syncTrueFalseOptions } from '@cio/question-types';
+  import {
+    QUESTION_TYPE_KEY,
+    getPartLabel,
+    resolveTrueFalseCorrectValue,
+    syncTrueFalseOptions
+  } from '@cio/question-types';
   import { getExerciseQuestionLabels } from './question-labels';
   import SectionEditor from './section-editor.svelte';
   import type { Question } from '$features/course/types';
@@ -83,6 +99,7 @@
     isPublicCourse ? QUESTION_TYPES.filter((type) => type.autoGradable) : QUESTION_TYPES
   );
 
+  let isWorksheetImportOpen = $state(false);
   let questionIdToDelete = $state(null);
   let sectionIdToDelete = $state<string | null>(null);
   let deleteConfirmationType = $state<'question' | 'section'>('question');
@@ -323,7 +340,10 @@
 
   function syncReorderQuestionItems() {
     reorderQuestionItemsBySectionId = Object.fromEntries(
-      activeSections.map((section) => [section.id, getQuestionsForSection($questionnaire.questions, section.id)])
+      activeSections.map((section) => [
+        section.id,
+        getQuestionsForSection($questionnaire.questions, section.id).filter((item) => !item.parentQuestionId)
+      ])
     );
   }
 
@@ -352,6 +372,18 @@
   function getRequiredQuestionCount(questions: Question[]) {
     return questions.filter((question) => toExerciseQuestionModel(question).required !== false).length;
   }
+
+  let questionSkillTags = $state<QuestionSkillTag[]>([]);
+
+  async function loadQuestionSkillTags() {
+    if (!courseApi.course?.id || !_exerciseId) return;
+
+    questionSkillTags = await skillsApi.getExerciseQuestionSkills(courseApi.course.id, _exerciseId);
+  }
+
+  $effect(() => {
+    void loadQuestionSkillTags();
+  });
 
   $effect(() => {
     if (reorderQuestions && !previousReorderQuestions) {
@@ -481,9 +513,39 @@
         {#if getQuestionErrorMsg(errors, question, 'option')}
           <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
         {/if}
+
+        {#if courseApi.course?.id}
+          <QuestionSkillTags
+            courseId={courseApi.course.id}
+            exerciseId={_exerciseId}
+            questionId={question.id}
+            title={question.title ?? ''}
+            description={question.description ?? undefined}
+            options={question.options?.map((option) => option.label).filter(Boolean)}
+            tags={questionSkillTags.filter((tag) => String(tag.questionId) === String(question.id))}
+            onSaved={loadQuestionSkillTags}
+          />
+        {/if}
       </div>
     </QuestionContainer>
   </AttentionHighlight>
+
+  {#if !question.parentQuestionId}
+    {@const parts = getPartsOf($questionnaire.questions, question.id)}
+    <div class="ui:border-border mb-6 ml-4 border-l-2 pl-4">
+      {#each parts as part, partIndex (part.id)}
+        <p class="ui:text-muted-foreground mb-2 text-sm font-semibold">{getPartLabel(partIndex)}</p>
+        {@render questionEditor(part, partIndex)}
+      {/each}
+      <Button variant="secondary" size="sm" onclick={() => handleAddPart(question.id)}>
+        <PlusIcon class="size-4" />
+        {$t('math_question.parts.add')}
+      </Button>
+      {#if parts.length === 0}
+        <p class="ui:text-muted-foreground mt-2 text-xs">{$t('math_question.parts.helper')}</p>
+      {/if}
+    </div>
+  {/if}
 {/snippet}
 
 {#snippet compactQuestionRow(question, index)}
@@ -491,7 +553,7 @@
     <span class="ui:text-muted-foreground w-6 text-sm font-medium tabular-nums">{index + 1}</span>
     <div class="min-w-0 flex-1">
       <p class="truncate text-sm font-semibold">
-        {question.title || getExerciseEditorQuestionTypeLabel(question?.questionType)}
+        <MathText text={question.title || getExerciseEditorQuestionTypeLabel(question?.questionType)} />
       </p>
       <p class="ui:text-muted-foreground text-xs">{getExerciseEditorQuestionTypeLabel(question?.questionType)}</p>
     </div>
@@ -505,10 +567,20 @@
     </div>
   {/if}
   <div class="questions px-6 pt-6">
+    {#if !reorderQuestions}
+      <div class="mb-4 flex justify-end">
+        <Button variant="outline" size="sm" onclick={() => (isWorksheetImportOpen = true)}>
+          <FileUpIcon class="size-4" />
+          {$t('math_vision.worksheet.import_button')}
+        </Button>
+      </div>
+    {/if}
     {#if hasSections($questionnaire.sections)}
       <div class="space-y-5">
         {#each activeSections as section, sectionIndex (section.id)}
-          {@const sectionQuestions = getQuestionsForSection($questionnaire.questions, section.id)}
+          {@const sectionQuestions = getQuestionsForSection($questionnaire.questions, section.id).filter(
+            (item) => !item.parentQuestionId
+          )}
           {@const reorderSectionQuestions = getReorderQuestionsForSection(section.id, sectionQuestions)}
           <SectionEditor
             exerciseSectionId={section.id}
@@ -586,13 +658,15 @@
       </div>
     {:else}
       {#each $questionnaire.questions as question, index (question.id)}
-        {#if !question.deletedAt}
+        {#if !question.deletedAt && !question.parentQuestionId}
           {@render questionEditor(question, index)}
         {/if}
       {/each}
     {/if}
   </div>
 </div>
+
+<WorksheetImportDialog bind:open={isWorksheetImportOpen} />
 
 <style>
   :global(#dnd-action-dragged-el div) {

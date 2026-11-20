@@ -8,9 +8,18 @@
   import { STATUS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import type { SubmissionIdData } from '$features/course/utils/types';
-  import type { AnswerData } from '@cio/question-types';
+  import {
+    formatPoints,
+    isAiGradingEnabled,
+    QUESTION_TYPE_IDS,
+    roundPoints,
+    type AnswerData
+  } from '@cio/question-types';
 
   import Preview from './preview.svelte';
+  import AiReviewPanel from './ai-review-panel.svelte';
+  import { aiReviewApi, courseApi } from '$features/course/api';
+  import type { AiReviewData } from '$features/course/utils/types';
   import * as Dialog from '@cio/ui/base/dialog';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { Button } from '@cio/ui/base/button';
@@ -73,6 +82,64 @@
   );
 
   let answersToDisplay = $state<Record<string, AnswerData>>({});
+  let appliedSuggestions = $state<Record<number, { points: number }>>({});
+
+  const AI_REVIEWABLE_TYPE_IDS: number[] = [QUESTION_TYPE_IDS.WORKED_SOLUTION, QUESTION_TYPE_IDS.TEXTAREA];
+  const aiQuestions = $derived(
+    sortedQuestions.filter(
+      (question) =>
+        AI_REVIEWABLE_TYPE_IDS.includes(question.questionTypeId) &&
+        isAiGradingEnabled(question.settings as Record<string, unknown>) &&
+        answersToDisplay[getAnswerKey(question)]
+    )
+  );
+
+  function getAnswerKey(question: { id: number; name?: string | null }): string {
+    return String(question.name ?? question.id);
+  }
+
+  function setLocalAiReview(question: { id: number; name?: string | null }, review: AiReviewData) {
+    const key = getAnswerKey(question);
+    const answer = data.answers?.[key];
+    if (!answer) return;
+
+    data.answers = { ...data.answers, [key]: { ...answer, aiReview: review } };
+  }
+
+  async function decide(
+    question: { id: number; name?: string | null },
+    review: AiReviewData,
+    status: 'accepted' | 'edited' | 'rejected',
+    awardedPoints?: number
+  ) {
+    const courseId = courseApi.course?.id;
+    if (!courseId) return;
+
+    const decided = await aiReviewApi.decide(courseId, data.id, { questionId: question.id, status, awardedPoints });
+    if (!decided?.decision) return;
+
+    setLocalAiReview(question, { ...review, decision: decided.decision });
+  }
+
+  function applySuggestion(question: { id: number }, points: number) {
+    data.questionAnswerByPoint = { ...data.questionAnswerByPoint, [question.id]: points };
+    appliedSuggestions = { ...appliedSuggestions, [question.id]: { points } };
+  }
+
+  async function saveGrades() {
+    for (const question of aiQuestions) {
+      const applied = appliedSuggestions[question.id];
+      const review = data.answers?.[getAnswerKey(question)]?.aiReview;
+      if (!applied || !review) continue;
+
+      const finalPoints = Number(data.questionAnswerByPoint?.[question.id]);
+      const status = finalPoints === applied.points ? 'accepted' : 'edited';
+      await decide(question, review, status, roundPoints(finalPoints - (applied.points - review.suggestedPoints)));
+    }
+
+    appliedSuggestions = {};
+    handleSave(data);
+  }
 
   $effect(() => {
     answersToDisplay = data?.answers ? (data.answers as Record<string, AnswerData>) : {};
@@ -85,7 +152,8 @@
   let total = $derived(calculateTotal(data.questionAnswerByPoint));
   function calculateTotal(grades: Record<string, string>): number {
     if (!grades) return 0;
-    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || '0'), 0);
+    const sum = Object.values(grades).reduce((acc, grade) => acc + (Number(grade) || 0), 0);
+    return roundPoints(sum);
   }
 
   function handleStatusChange(value: string) {
@@ -232,7 +300,10 @@
 <Dialog.Root
   bind:open
   onOpenChange={(isOpen) => {
-    if (!isOpen) onClose();
+    if (!isOpen) {
+      appliedSuggestions = {};
+      onClose();
+    }
   }}
 >
   <Dialog.Content class="max-h-[90vh]! w-4/5 max-w-6xl!">
@@ -257,6 +328,23 @@
             </div>
           </div>
         {:else}
+          {#if courseApi.course?.id && aiQuestions.length > 0}
+            <div class="mb-4 space-y-3" data-testid="ai-review-section">
+              {#each aiQuestions as aiQuestion (aiQuestion.id)}
+                <AiReviewPanel
+                  courseId={courseApi.course.id}
+                  submissionId={data.id}
+                  question={aiQuestion}
+                  answer={answersToDisplay[getAnswerKey(aiQuestion)]}
+                  currentPoints={Number(data.questionAnswerByPoint?.[aiQuestion.id] ?? 0)}
+                  isApplied={Boolean(appliedSuggestions[aiQuestion.id])}
+                  onApply={(points) => applySuggestion(aiQuestion, points)}
+                  onReject={(review) => decide(aiQuestion, review, 'rejected')}
+                  onReviewed={(review) => setLocalAiReview(aiQuestion, review)}
+                />
+              {/each}
+            </div>
+          {/if}
           <Preview
             questions={sortedQuestions}
             questionnaireMetaData={{
@@ -315,7 +403,7 @@
             </p>
 
             <Badge class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white">
-              {total}/{maxPoints}
+              {formatPoints(total)}/{formatPoints(maxPoints)}
             </Badge>
           </div>
           <!-- <div class="flex items-center text-sm p-3">
@@ -393,14 +481,7 @@
                 {$t('course.navItem.submissions.grading_modal.grade_with_ai')}
               </p>
             </Button>
-            <Button
-              onclick={() => {
-                handleSave(data);
-                // onClose();
-              }}
-              loading={isSaving}
-              class="w-full"
-            >
+            <Button onclick={saveGrades} loading={isSaving} class="w-full">
               {$t('course.navItem.submissions.grading_modal.submit_grades')}
             </Button>
           </div>

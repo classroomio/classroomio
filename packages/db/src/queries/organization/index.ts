@@ -1,5 +1,6 @@
 export * from './organization';
 export * from './student-home';
+export * from './math-notation';
 export * from './audience';
 export * from './member-lifecycle';
 export * from './invite';

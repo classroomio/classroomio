@@ -1,0 +1,48 @@
+---
+title: Track skill mastery
+description: Define skills and standards, tag questions with them, and see how well each student has mastered every skill.
+last_reviewed: '2026-11-16'
+---
+
+Skills let you link questions to the standards or topics they assess, such as a Common Core standard or a WAEC strand. Once questions carry skills, ClassroomIO shows how many students are still learning each skill and how each student is doing.
+
+## Create skills
+
+An organization administrator opens **Skills** under **Content** in the organization sidebar. Select **Create skill**, then enter a code, a name, and optionally a description, a framework and a parent skill. Choosing a parent builds a tree, so a standard can sit under its grade and domain. Codes are unique within the organization, and the table lists each skill with the number of questions tagged with it.
+
+To add many skills at once, open the menu next to **Create skill** and select **Import CSV**. The file needs the columns `code` and `name`; `parent_code`, `description` and `framework` are optional. Choose the file to see a preview that lists what will be created or updated and any errors, line by line. Nothing is saved until you select **Import**, and a file with errors saves nothing. A row whose code already exists updates that skill. A file can hold up to 2,000 skills.
+
+**Import CSV** also offers starter files for Common Core, WAEC/NECO Mathematics and the UK National Curriculum. They are small samples, not the full frameworks, so add the standards your school teaches before importing.
+
+## Tag questions
+
+Open an exercise's **Questions** tab. Each question has a skills row under its content. Select **Add skills**, tick the skills the question assesses, and select **Save**. The question must already be saved, so save a new exercise first. Select **Suggest with AI** to get up to five suggestions from your skills list, each with a short reason, and select **Add** next to the ones you want. Suggestions are only ever picked from skills that already exist, and nothing is tagged until you save.
+
+## Read mastery
+
+Skill mastery needs a paid plan. On the free plan, the skill summary shows an upgrade prompt instead. Creating skills and tagging questions stay free.
+
+Open an exercise's **Submissions** tab. Above the **Results grid**, the skill summary shows, for each skill tagged on the exercise, how many students are not started, learning, proficient or mastered. The **Individual** tab shows the selected student's mastery for every skill tagged in the course.
+
+Mastery for a student and a skill comes from their graded answers to questions tagged with that skill, across the course. ClassroomIO takes their 10 most recent answers and weights newer ones more, then works out the share of points earned:
+
+| Level       | What it takes                                         |
+| ----------- | ----------------------------------------------------- |
+| Not started | No graded answers yet                                 |
+| Learning    | Fewer than 3 graded answers, or a score under 60%     |
+| Proficient  | A score of at least 60% with 3 or more graded answers |
+| Mastered    | A score of at least 85% with 5 or more graded answers |
+
+## Item analysis
+
+The Academy analytics query can report on each question with the measures `question_facility` (the share of students who earned full points), `question_discrimination` (how well the question separates the top 27% of students from the bottom 27%), `common_wrong_answers` and `time_on_question`, and on skills with `skill_mastery`, `mastery_level`, `mastery_evidence` and `skill_proficient`. Time on a question is recorded while a student takes the exercise and is for reporting only; it never changes a grade.
+
+## Act on mastery
+
+Select **Assign practice to N learning** beside a skill to give practice to the students still learning it, or create a shareable progress report for a student. See [Share reports and assign practice](/analytics-and-reporting/share-reports-and-assign-practice).
+
+## Related guides
+
+- [Share reports and assign practice](/analytics-and-reporting/share-reports-and-assign-practice) — reports, practice and question analysis
+- [Create math questions](/build-courses/create-math-questions) — build questions and use the results grid
+- [View submissions and completion data](/analytics-and-reporting/view-submissions-and-completion-data) — review exercise work

@@ -6,11 +6,25 @@ import { QUESTION_TYPE_ID_TO_KEY } from './question-type-registry';
 import { supportsPartialCredit } from './question-type-capabilities';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
+import { gradeGraphAnswer } from './graph-grading';
+import { getFillBlankAnswerKey } from './answer-codecs';
+import { roundPoints } from './points';
+import { getMultiPartStemIds } from './multi-part';
+import { resolveClusterOverridePoints } from './cluster-override';
+import {
+  getWorkedSolutionPointSplit,
+  isNumericMatch,
+  readMathExpressionSettings,
+  readNumericSettings,
+  type MathGradeResult,
+  type MathGrader
+} from './math-settings';
 
 export type DbQuestionForScoring = {
   id: number;
   title?: string | null;
   questionTypeId: number;
+  parentQuestionId?: number | null;
   points: number | null;
   settings?: Record<string, unknown> | null;
   options: Array<{
@@ -63,7 +77,7 @@ export function isExerciseAutoGradable(questionTypeIds: number[]): boolean {
 
 function clampPoints(raw: number, max: number): number {
   if (!Number.isFinite(raw) || raw < 0) return 0;
-  return Math.min(Math.round(raw * 100) / 100, max);
+  return Math.min(roundPoints(raw), max);
 }
 
 function scoreRadio(
@@ -135,16 +149,53 @@ function scoreStar(
 function scoreNumeric(
   question: ExerciseQuestionModel,
   answer: Extract<AnswerData, { type: 'NUMERIC' }>,
-  maxPoints: number
+  maxPoints: number,
+  grader: MathGrader | undefined
 ): number {
-  const rawCorrect = question.settings?.correctValue;
-  const correct = typeof rawCorrect === 'number' ? rawCorrect : rawCorrect != null ? Number(rawCorrect) : NaN;
-  if (Number.isNaN(correct)) return 0;
+  const settings = readNumericSettings(question.settings);
+  if (grader) return grader.gradeNumeric(settings, answer) ? maxPoints : 0;
 
-  const rawTol = question.settings?.tolerance;
-  const tol = typeof rawTol === 'number' && Number.isFinite(rawTol) ? rawTol : rawTol != null ? Number(rawTol) : 0;
-  const diff = Math.abs(answer.value - correct);
-  return diff <= tol ? maxPoints : 0;
+  const matched = isNumericMatch(answer.value, Number(settings.correctValue), {
+    absoluteTolerance: settings.tolerance,
+    relativeTolerance: settings.relativeTolerance,
+    significantFigures: settings.significantFigures
+  });
+  return matched ? maxPoints : 0;
+}
+
+export type MathQuestionGrade = {
+  /** Points awarded automatically: the whole question for `MATH_EXPRESSION`, the answer part for `WORKED_SOLUTION`. */
+  points: number;
+  /** Points left for manual grading (the working part of a `WORKED_SOLUTION`). */
+  pendingManualPoints: number;
+  result: MathGradeResult;
+};
+
+/**
+ * Grades a `MATH_EXPRESSION` or `WORKED_SOLUTION` answer with `grader`, returning the reason and matched feedback the
+ * review view and answer clusters show. Returns null for any other question type or answer.
+ */
+export function gradeMathQuestion(
+  question: ExerciseQuestionModel,
+  answer: AnswerData | null | undefined,
+  grader: MathGrader
+): MathQuestionGrade | null {
+  const maxPoints = Math.max(0, Number(question.points ?? 0));
+  const isWorkedSolution = question.questionType === QUESTION_TYPE_KEY.WORKED_SOLUTION;
+  const isMathExpression = question.questionType === QUESTION_TYPE_KEY.MATH_EXPRESSION;
+  if (!isWorkedSolution && !isMathExpression) return null;
+  if (answer?.type !== 'MATH_EXPRESSION' && answer?.type !== 'WORKED_SOLUTION') return null;
+  if (answer.type !== question.questionType) return null;
+
+  const { answerPoints, workingPoints } = isWorkedSolution
+    ? getWorkedSolutionPointSplit(question.settings, maxPoints)
+    : { answerPoints: maxPoints, workingPoints: 0 };
+  const result: MathGradeResult = answer.latex.trim()
+    ? grader.gradeExpression(readMathExpressionSettings(question.settings), answer.latex, { title: question.title })
+    : { reason: 'invalid' };
+  const points = result.reason === 'equivalent' ? answerPoints : 0;
+
+  return { points, pendingManualPoints: workingPoints, result };
 }
 
 function scoreFillBlank(
@@ -153,23 +204,18 @@ function scoreFillBlank(
   maxPoints: number,
   partial: boolean
 ): number {
-  const raw = String(question.settings?.acceptedAnswers ?? '');
-  const expected = raw
-    .split(',')
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const studentVals = answer.values.map((v) => String(v).trim().toLowerCase());
-  if (expected.length === 0) return 0;
+  const answerKey = getFillBlankAnswerKey(question.settings?.acceptedAnswers);
+  if (answerKey.length === 0) return 0;
 
-  let correct = 0;
-  for (let i = 0; i < expected.length; i++) {
-    if (studentVals[i] === expected[i]) correct++;
-  }
+  const correct = answerKey.filter((alternatives, blankIndex) => {
+    const studentValue = normalizeText(answer.values[blankIndex]);
+    return alternatives.some((alternative) => normalizeText(alternative) === studentValue);
+  }).length;
 
   if (!partial) {
-    return correct === expected.length && studentVals.length === expected.length ? maxPoints : 0;
+    return correct === answerKey.length ? maxPoints : 0;
   }
-  return (correct / expected.length) * maxPoints;
+  return (correct / answerKey.length) * maxPoints;
 }
 
 function countWordBankTemplateBlanks(template: unknown): number {
@@ -314,10 +360,23 @@ function scoreHotspot(
   return (hits / hotspots.length) * maxPoints;
 }
 
-export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: AnswerData | null | undefined): number {
+/**
+ * Auto-graded points for one answer. Math answers (`MATH_EXPRESSION`, `WORKED_SOLUTION`, LaTeX `NUMERIC`) need the
+ * Compute Engine `grader` from `@cio/question-types/math-grading`; without it they score 0 and NUMERIC compares numbers.
+ */
+export function scoreAnswerForQuestion(
+  question: ExerciseQuestionModel,
+  answer: AnswerData | null | undefined,
+  grader?: MathGrader
+): number {
   const maxPoints = Number(question.points ?? 0);
   if (maxPoints <= 0) return 0;
   if (!answer || typeof answer !== 'object' || !('type' in answer)) return 0;
+
+  if (answer.clusterOverride && answer.type !== 'WORKED_SOLUTION') {
+    const overridePoints = resolveClusterOverridePoints(answer.clusterOverride, maxPoints);
+    if (overridePoints !== null) return overridePoints;
+  }
 
   const key = question.questionType;
   const partial = supportsPartialCredit(key);
@@ -334,7 +393,7 @@ export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: 
       return scoreTrueFalse(question, answer, maxPoints);
     case 'NUMERIC':
       if (key !== QUESTION_TYPE_KEY.NUMERIC) return 0;
-      return scoreNumeric(question, answer, maxPoints);
+      return scoreNumeric(question, answer, maxPoints, grader);
     case 'STAR':
       if (key !== QUESTION_TYPE_KEY.STAR) return 0;
       return scoreStar(question, answer, maxPoints);
@@ -353,6 +412,16 @@ export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: 
     case 'HOTSPOT':
       if (key !== QUESTION_TYPE_KEY.HOTSPOT) return 0;
       return clampPoints(scoreHotspot(question, answer, maxPoints, partial), maxPoints);
+    case 'GRAPH_PLOT':
+      if (key !== QUESTION_TYPE_KEY.GRAPH_PLOT) return 0;
+      return clampPoints((gradeGraphAnswer(question, answer)?.fraction ?? 0) * maxPoints, maxPoints);
+    case 'GRAPH_READ':
+      if (key !== QUESTION_TYPE_KEY.GRAPH_READ) return 0;
+      return clampPoints((gradeGraphAnswer(question, answer)?.fraction ?? 0) * maxPoints, maxPoints);
+    case 'MATH_EXPRESSION':
+    case 'WORKED_SOLUTION':
+      if (!grader) return 0;
+      return clampPoints(gradeMathQuestion(question, answer, grader)?.points ?? 0, maxPoints);
     default:
       return 0;
   }
@@ -363,18 +432,27 @@ export type ScoreSubmissionResult = {
   total: number;
 };
 
+export type AutoScoreSubmissionResult = ScoreSubmissionResult & {
+  /** Points still awaiting a teacher: the working part of worked solutions and every manually graded question. */
+  pendingManualPoints: number;
+};
+
 /**
  * Computes per-question scores and total for auto-graded exercises.
- * Missing answers score 0.
+ * Missing answers score 0. Pass the math `grader` so math answers are graded (see `scoreAnswerForQuestion`).
  */
 export function scoreSubmissionAnswers(
   questions: DbQuestionForScoring[],
-  answersByQuestionId: ReadonlyMap<number, AnswerData | null | undefined>
+  answersByQuestionId: ReadonlyMap<number, AnswerData | null | undefined>,
+  grader?: MathGrader
 ): ScoreSubmissionResult {
   const scores: Array<{ questionId: number; points: number }> = [];
+  const stemIds = getMultiPartStemIds(questions);
   let total = 0;
 
   for (const q of questions) {
+    if (stemIds.has(q.id)) continue;
+
     const model = dbQuestionToExerciseQuestionModel(q);
     const meta = getQuestionTypeById(q.questionTypeId);
     if (!meta?.autoGradable) {
@@ -383,10 +461,55 @@ export function scoreSubmissionAnswers(
     }
 
     const answer = answersByQuestionId.get(q.id);
-    const pts = Math.round(scoreAnswerForQuestion(model, answer ?? null));
+    const pts = roundPoints(scoreAnswerForQuestion(model, answer ?? null, grader));
     scores.push({ questionId: q.id, points: pts });
     total += pts;
   }
 
-  return { scores, total };
+  return { scores, total: roundPoints(total) };
+}
+
+/**
+ * Scores what can be graded without a teacher in a submission that may also hold manually graded questions: auto-graded
+ * questions in full and the answer part of worked solutions. Stems of multi-part questions are skipped; their parts
+ * are scored as normal questions.
+ */
+export function scoreAutoGradedPart(
+  questions: DbQuestionForScoring[],
+  answersByQuestionId: ReadonlyMap<number, AnswerData | null | undefined>,
+  grader: MathGrader
+): AutoScoreSubmissionResult {
+  const scorable = questions.filter((q) => getQuestionTypeById(q.questionTypeId)?.autoGradable === true);
+  const { scores, total } = scoreSubmissionAnswers(scorable, answersByQuestionId, grader);
+  const scoreByQuestionId = new Map(scores.map((score) => [score.questionId, score.points]));
+  const stemIds = getMultiPartStemIds(questions);
+  let autoTotal = total;
+  let pendingManualPoints = 0;
+  const allScores: Array<{ questionId: number; points: number }> = [];
+
+  for (const q of questions) {
+    if (stemIds.has(q.id)) continue;
+
+    const meta = getQuestionTypeById(q.questionTypeId);
+    const maxPoints = Math.max(0, Number(q.points ?? 0));
+    if (meta?.autoGradable) {
+      allScores.push({ questionId: q.id, points: scoreByQuestionId.get(q.id) ?? 0 });
+      continue;
+    }
+
+    const model = dbQuestionToExerciseQuestionModel(q);
+    const grade = gradeMathQuestion(model, answersByQuestionId.get(q.id), grader);
+    if (!grade) {
+      allScores.push({ questionId: q.id, points: 0 });
+      if (meta?.manualGradingRequired) pendingManualPoints += maxPoints;
+      continue;
+    }
+
+    const points = roundPoints(clampPoints(grade.points, maxPoints));
+    allScores.push({ questionId: q.id, points });
+    autoTotal += points;
+    pendingManualPoints += grade.pendingManualPoints;
+  }
+
+  return { scores: allScores, total: roundPoints(autoTotal), pendingManualPoints: roundPoints(pendingManualPoints) };
 }

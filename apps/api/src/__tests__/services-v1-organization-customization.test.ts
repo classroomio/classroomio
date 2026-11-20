@@ -126,7 +126,13 @@ describe('updatePublicApiOrganizationCustomizationService', () => {
 
     expect(updateOrg).toHaveBeenCalledWith(
       ORG_ID,
-      { customization: { ...storedCustomization, dashboard: { ...storedCustomization.dashboard, community: false } } },
+      {
+        customization: {
+          ...storedCustomization,
+          course: { ...storedCustomization.course, desmosApiKey: '' },
+          dashboard: { ...storedCustomization.dashboard, community: false }
+        }
+      },
       mocks.tx
     );
     expect(result).toEqual({
@@ -154,7 +160,7 @@ describe('updatePublicApiOrganizationCustomizationService', () => {
     await updatePublicApiOrganizationCustomizationService(ORG_ID, ACTOR_ID, { dashboard: { community: false } });
 
     const saved = vi.mocked(updateOrg).mock.calls[0][1].customization;
-    expect(saved?.course).toEqual({ grading: true, newsfeed: false });
+    expect(saved?.course).toEqual({ grading: true, newsfeed: false, desmosApiKey: '' });
     expect(saved?.dashboard.community).toBe(false);
   });
 
@@ -168,7 +174,7 @@ describe('updatePublicApiOrganizationCustomizationService', () => {
       {
         customization: {
           apps: { comments: true },
-          course: { grading: false, newsfeed: true },
+          course: { grading: false, newsfeed: true, desmosApiKey: '' },
           dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
           auth: { backgroundImage: '' }
         }

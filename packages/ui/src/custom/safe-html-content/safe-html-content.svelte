@@ -1,5 +1,6 @@
 <script lang="ts">
   import { splitHtmlAndSvg, type ContentSegment } from '../../tools/sanitize';
+  import { renderMathInHtml } from '../../tools/render-math';
   import '../editor/extensions/callout/callout.css';
 
   interface Props {
@@ -27,7 +28,7 @@
 {#key content}
   {#each segments as segment, i (i)}
     {#if segment.type === 'html'}
-      {@html segment.content}
+      {@html renderMathInHtml(segment.content)}
     {:else}
       {@const dims = svgDimensions(segment.content)}
       <iframe

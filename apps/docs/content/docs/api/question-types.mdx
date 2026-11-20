@@ -1,7 +1,7 @@
 ---
 title: Question types
 description: Question type ids, which ones need a paid plan, and the answer format for each type when you submit for a student.
-last_reviewed: '2026-11-04'
+last_reviewed: '2026-11-16'
 ---
 
 Exercises are made of questions. When you create or edit a question, its `questionTypeId` says what kind it is. When you submit an exercise for a student, each `answer` uses the format for that question's type.
@@ -16,7 +16,7 @@ Exercises are made of questions. When you create or edit a question, its `questi
 | `4` | True/false | Yes, with `settings.correctValue` (boolean) |
 | `5` | Short answer | No |
 | `6` | Numeric | Yes |
-| `7` | Fill in the blank | Yes |
+| `7` | Fill in the blank | Yes, with `settings.acceptedAnswers`: one array of accepted answers per blank, such as `[["1,000","1000"],["(2, 3)"]]` |
 | `8` | File upload | No |
 | `9` | Ordering | Yes |
 | `10` | Link | No |
@@ -24,9 +24,16 @@ Exercises are made of questions. When you create or edit a question, its `questi
 | `12` | Star rating | Yes |
 | `13` | Video recording | No |
 | `14` | Thumbs up/down | No, it is open-ended |
+| `15` | Matching | Yes, with `settings.pairs`: an array of `{ "left": "...", "right": "..." }` |
+| `17` | Math expression | Yes, by algebraic equivalence, with the settings under [Math questions](#math-questions) |
+| `18` | Worked solution | The final answer is; the working points wait for manual grading |
+| `19` | Graph plot | Yes, geometrically against `settings.expected`, with partial credit. See [Graph questions](#graph-questions) |
+| `20` | Graph reading | Yes, against `settings.answer`. See [Graph questions](#graph-questions) |
 
-- File upload, ordering, link, star rating and video recording need a paid plan. On the Basic plan they return `403` with `UPGRADE_REQUIRED`.
-- `PUBLIC` courses only accept auto-graded types.
+Id `16` (hotspot) is not offered.
+
+- Math expression, worked solution, matching, graph plot, graph reading and the numeric upgrades are free on every plan. File upload, ordering, link, star rating and video recording need a paid plan. Variants (`settings.parameters`) and AI-suggested marking (`settings.aiGrading`) also need a paid plan. On the Basic plan these return `403` with `UPGRADE_REQUIRED`.
+- `PUBLIC` courses only accept auto-graded types, so worked solutions are not available there.
 - A new question is single choice (`1`) unless you set a type.
 
 ## Answer formats
@@ -39,10 +46,146 @@ Single choice answers use `optionId`. File upload and video recording questions 
 | Short answer, paragraph | The plain text |
 | Multiple choice | `{"type":"CHECKBOX","optionIds":[30,31]}` |
 | Numeric | `{"type":"NUMERIC","value":2}` |
-| Fill in the blank | `{"type":"FILL_BLANK","answers":["Paris"]}` |
+| Fill in the blank | `{"type":"FILL_BLANK","answers":["Paris","1,000"]}`, one entry per blank in order |
 | Word bank | `{"type":"WORD_BANK","filledBlanks":["Paris"]}` |
 | Ordering | `{"type":"ORDERING","value":["first","second"]}` |
 | Link | `{"type":"LINK","links":["https://example.com"]}` |
 | Star rating | `{"type":"STAR","value":4}` |
+| Matching | `{"type":"MATCHING","value":[{"left":"2+2","right":"4"}]}` |
+| Math expression | `{"type":"MATH_EXPRESSION","latex":"2(x+1)"}` |
+| Graph plot | `{"type":"GRAPH_PLOT","elements":[{"kind":"point","x":3,"y":1},{"kind":"line","from":{"x":0,"y":0},"to":{"x":1,"y":2}}]}` |
+| Graph reading | `{"type":"GRAPH_READ","value":4}` for a value, or `{"type":"GRAPH_READ","point":{"x":2,"y":0}}` for a point |
+| Worked solution | `{"type":"WORKED_SOLUTION","latex":"4","working":{"lines":["2x=8","x=4"]}}`; drawings and photos of working can only be added in the dashboard |
 
-The JSON formats are sent as a JSON string inside `answer`.
+The JSON formats are sent as a JSON string inside `answer`. A numeric answer can also carry LaTeX, such as `{"type":"NUMERIC","value":0.75,"latex":"\frac{3}{4}"}`.
+
+## Math questions
+
+Wrap math in question titles and options in `$...$`, for example `Solve $x^2-5x+6=0$`. Math expression and worked solution questions use these `settings`:
+
+| Setting | Meaning |
+| --- | --- |
+| `acceptedAnswers` | Required. One or more answers as LaTeX. Any of them can match |
+| `compare` | `{"mode":"equivalent"}` (default) accepts any algebraically equal form, so `2(x+1)` matches `2x+2`. `{"mode":"exact_form","form":"expanded"}` also needs a form: `simplified`, `factored`, `expanded`, `lowest_terms` or `rationalised_denominator`. `{"mode":"numeric"}` takes `absoluteTolerance`, `relativeTolerance` or `significantFigures`. `{"mode":"set"}` ignores order in lists |
+| `units` | `{"unit":"m","allowConversion":true}` expects a unit and, with `allowConversion`, accepts `200 cm` for `2 m` |
+| `variables` | Letters to treat as variables, so `e` and `i` are not read as constants |
+| `wrongAnswerFeedback` | Known wrong answers with a hint: `[{"answer":"2x+1","feedback":"Distribute the 2"}]` |
+
+A worked solution also takes `answerPoints` (default half of the question's points) for the final answer and `workingInputs`, a list of `typed`, `drawing` and `photo`. The answer part is graded when the student submits; the submission then waits for grading until a teacher scores the working.
+
+A numeric question's `settings.correctValue` can be LaTeX or a fraction such as `"3/4"`, with `relativeTolerance` and `significantFigures` next to `tolerance`.
+
+Each graded math answer stores its result in `answerData.grading`, which the submission's answers return: `reason` is `equivalent`, `not_simplified`, `wrong_form`, `wrong_units`, `wrong`, `needs_review` or `invalid`, plus `matchedAnswer` and the `feedback` you set for a known wrong answer.
+
+## Graph questions
+
+Graph plot (`19`) shows an empty coordinate plane and the student plots points, lines, segments and parabolas on it. Graph reading (`20`) shows a graph you define and the student reads a value or a point off it. Both are graded automatically. Their `settings` share one `board`:
+
+| Setting | Meaning |
+| --- | --- |
+| `board` | `{"xMin":-10,"xMax":10,"yMin":-10,"yMax":10,"grid":true,"snap":1,"xLabel":"x","yLabel":"y"}`. Each minimum must be smaller than its maximum. `snap` is the grid step that placed points snap to; `0` places them freely |
+
+Graph plot also takes:
+
+| Setting | Meaning |
+| --- | --- |
+| `expected` | Required. The correct answer: `{"kind":"point","x":1,"y":2}`, `{"kind":"line","from":{...},"to":{...}}` (an infinite line through two points), `{"kind":"segment","from":{...},"to":{...}}` or `{"kind":"parabola","vertex":{...},"through":{...}}` (the vertex plus one other point on the parabola) |
+| `tools` | The tools students get: any of `point`, `line`, `segment`, `parabola`. All four by default |
+| `tolerance` | How close, in graph units, a student's element must be. Default `0.25` |
+
+A point matches within the tolerance; a segment when both ends do, in either order; a line when it passes within the tolerance of both defining points of the expected line, so any two points on it work; a parabola when its vertex is within the tolerance and its shape stays close to the expected curve across the board. A student's element is matched to at most one expected element of the same kind. Credit is the share of expected elements matched, reduced by extra elements: `matched / (expected + extra)`.
+
+Graph reading also takes:
+
+| Setting | Meaning |
+| --- | --- |
+| `curves` | Functions to draw, `[{"expression":"x^2-4","label":"f"}]`, with `expression` as LaTeX in `x` |
+| `points` | Marked points, `[{"x":2,"y":0,"label":"A"}]`. Add at least one curve or point |
+| `answer` | Required. `{"kind":"value","value":4,"tolerance":0.1}` or `{"kind":"point","x":2,"y":0,"tolerance":0.1}` |
+
+Each graded graph answer stores its result in `answerData.grading`: `reason` is `correct`, `partial`, `extra` (everything needed plus extra elements), `wrong`, `missing` or `not_set`, with `matched`, `total` and `extra` counts.
+
+## Parameterised questions
+
+A numeric, math expression or worked solution question can draw different numbers for every attempt. Variants need a paid plan; saving `settings.parameters` on Basic returns `403` with `UPGRADE_REQUIRED`. Add `settings.parameters` and write `{{name}}` placeholders in the title, the options and the answer key:
+
+```json
+{
+  "question": "A rope of {{b}} m is cut into {{a}} equal pieces. How long is each piece, in metres?",
+  "questionTypeId": 17,
+  "points": 1,
+  "settings": {
+    "acceptedAnswers": ["{{answer}}"],
+    "parameters": {
+      "variables": [
+        { "name": "a", "type": "int", "min": 2, "max": 9 },
+        { "name": "b", "type": "int", "min": 1, "max": 20 }
+      ],
+      "constraints": ["a != 0"],
+      "answerFormula": "b / a"
+    }
+  }
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `variables` | Up to 8 variables named by one letter other than `e` and `i`. `type` is `int`, `decimal` or `choice`; `min`, `max` and `step` bound the draw and `choices` lists the values of a `choice` variable |
+| `constraints` | Conditions every draw must satisfy, such as `a != 0` or `b > a`. Draws repeat (up to 200 times) until they hold |
+| `answerFormula` | The answer as an expression of the variables. `{{answer}}` stands for its exact value in any text |
+| `requireIntegerAnswer`, `requireNonzeroAnswer` | Reject draws whose answer is not a whole number, or is zero |
+
+A placeholder can also hold a formula, such as `{{a * b}}`. The Compute Engine evaluates it, and a whole-number result is written plainly, a fraction of whole numbers is written as LaTeX, and other results are written as decimals.
+
+Each attempt gets a seed. The dashboard stores it in `answerData.seed`, and the server re-derives the numbers and the answer key from it, so a client never sends a key. When you submit answers through the API for a parameterised question, send the `seed` of the variant the student saw next to `answer`. A submission without a seed for such a question is rejected, and a new attempt should use a new seed.
+
+## AI-assisted grading of working
+
+A worked solution or paragraph question can ask for an AI suggestion on the student's working. This needs a paid plan: on Basic, saving `settings.aiGrading` returns `403` with `UPGRADE_REQUIRED`. Set `settings.aiGrading` to `true` and give `settings.rubric` at least one step:
+
+```json
+{
+  "aiGrading": true,
+  "rubric": {
+    "steps": [
+      { "id": "s1", "description": "Moves 5 to the right-hand side", "points": 1 },
+      { "id": "s2", "description": "Divides both sides by 2", "points": 1 }
+    ]
+  }
+}
+```
+
+The suggestion is only a proposal. A teacher requests it in the grading popup, and it holds points per rubric step, the first wrong step, a comment and a confidence. Nothing reaches the student, and no points count, until the teacher accepts or edits it. Students never see `answerData.aiReview`. A teacher can also accept every suggestion with confidence of 0.85 or more for an exercise at once. Each request for a suggestion counts against the workspace's math AI allowance; accepting does not.
+
+## Answer-group decisions
+
+When a teacher marks a group of equal answers correct, wrong or partially correct in the results grid, the decision is saved in the question's `settings.clusterOverrides` as a list of rules. Each rule has the group's `key`, a readable `label`, an optional `verdict` (`correct`, `partial` or `wrong`), `points` for a partial verdict, optional `feedback`, and who set it (`setBy`) and when (`setAt`). Matching answers carry the same decision in `answerData.clusterOverride`, and a submission is scored from it instead of the answer key. Removing a rule and regrading restores the key's result. Rules apply to answers of auto-graded types other than `WORKED_SOLUTION`; feedback also applies to hand-graded types.
+
+## Multi-part questions
+
+A multi-part question is a stem with parts (a), (b) and so on. Each part is a normal question with its own type, answer and points, and has `parentQuestionId` set to the stem's id. The stem is not answered or graded, so give it 0 points; deleting it deletes its parts. Send `parts` on a new question to create the stem and its parts together:
+
+```json
+{
+  "question": "Expand and simplify",
+  "points": 0,
+  "parts": [
+    { "question": "$2(x+1)$", "questionTypeId": 17, "points": 2, "settings": { "acceptedAnswers": ["2x+2"] } },
+    { "question": "$3(x-1)$", "questionTypeId": 17, "points": 2, "settings": { "acceptedAnswers": ["3x-3"] } }
+  ]
+}
+```
+
+Add up the points of a stem's parts for a total per question; the submission total counts only the parts.
+
+## Calculator policy and regrading
+
+An exercise has a `calculatorPolicy` of `none` (default), `four_function`, `scientific` or `graphing`. Send it when you create or update the exercise. It is stored on the exercise and returned with it; the take view uses it to decide which calculator to offer.
+
+Changing an answer key does not change past grades. `POST /courses/{courseId}/exercises/{exerciseId}/regrade`, or the `regrade_course_exercise` MCP tool, re-scores every submission against the current key. It keeps the points a teacher gave to manually graded questions and to the working of worked solutions.
+
+## Practice exercises and answer groups
+
+`POST /courses/{courseId}/exercises/practice`, or the `create_course_practice` MCP tool, builds a short practice exercise from a skill or chosen questions and assigns it to chosen students. Questions with variables get fresh numbers. It needs a paid plan.
+
+To review answers in bulk, `GET /courses/{courseId}/exercises/{exerciseId}/questions/{questionId}/answer-clusters` (MCP: `get_exercise_answer_clusters`) groups every student's latest answer into clusters of equal answers. `PUT` the same path with a group's `key` and a `verdict` (`correct`, `partial` with `points`, or `wrong`) or `feedback` (MCP: `set_answer_cluster_decision`) to decide a group. That regrades the stored answers, and later matching answers get the same decision. `POST` to `.../answer-clusters/reset` with the `key` (MCP: `reset_answer_cluster_decision`) removes the decision.

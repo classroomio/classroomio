@@ -2,6 +2,7 @@ import type { CourseContentItem, CourseMembers } from '$features/course/utils/ty
 import type { Marks } from './types';
 import { ContentType } from '@cio/utils/constants/content';
 import type { ExportColumn, ExportDocument } from '@cio/utils/export';
+import { roundPoints } from '@cio/question-types';
 
 /** Exercise information for display in marks table (linear, no lesson grouping) */
 export interface ExerciseInfo {
@@ -39,9 +40,8 @@ export interface MarksPageData {
 export function calculateStudentTotal(studentExerciseData: StudentExerciseData): number {
   if (!studentExerciseData) return 0;
 
-  return Object.values(studentExerciseData).reduce((total: number, point) => {
-    return (total += parseInt(point as string, 10));
-  }, 0);
+  const total = Object.values(studentExerciseData).reduce((sum, point) => sum + (Number(point) || 0), 0);
+  return roundPoints(total);
 }
 
 /**
@@ -59,7 +59,7 @@ export function calculateStudentAverage(
   if (totalPossible === 0) return null;
   const totalEarned = exercises.reduce((sum, ex) => {
     const pts = studentExerciseData[ex.id];
-    return sum + (pts != null ? parseInt(pts, 10) : 0);
+    return sum + (Number(pts) || 0);
   }, 0);
   return Math.round((totalEarned / totalPossible) * 100);
 }

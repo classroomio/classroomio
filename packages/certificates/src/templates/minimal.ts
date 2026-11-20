@@ -2,6 +2,7 @@ import { CERTIFICATE_WIDTH } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
+  escapeHtmlWithMath,
   prepareCertificateRenderContext,
   renderFooterMetaBlock,
   renderSignatoryBlock,
@@ -122,7 +123,7 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
           <span class="cert-meta" style="font-size: ${fontSizes.certMeta}px;">${escapeHtml(data.certificateId)} &middot; ${escapeHtml(data.date)}</span>
         </div>
         ${subtitle ? `<div class="small" style="font-size: ${fontSizes.subtitle}px;">&mdash; ${escapeHtml(subtitle)} &mdash;</div>` : ''}
-        <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtml(data.courseName)}</div>
+        <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtmlWithMath(data.courseName)}</div>
       </div>
 
       <div class="body-area">
@@ -130,7 +131,7 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
           <div class="num">${escapeHtml(data.certificateId)}</div>
           <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
         </div>
-        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtmlWithMath(description)}</div>` : ''}
       </div>
 
       <div class="footer">

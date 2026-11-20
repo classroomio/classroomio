@@ -372,6 +372,41 @@
       "when": 1795003401943,
       "tag": "0052_token_auth_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1795003501943,
+      "tag": "0053_points_numeric",
+      "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1795003601943,
+      "tag": "0054_math_question_types",
+      "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1795003701943,
+      "tag": "0055_skills",
+      "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1795003801943,
+      "tag": "0056_exercise_assignment",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1795003901943,
+      "tag": "0057_graph_question_types",
+      "breakpoints": true
     }
   ]
 }

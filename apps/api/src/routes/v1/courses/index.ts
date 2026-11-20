@@ -7,6 +7,7 @@ import { v1CourseRouter } from './course';
 import { v1CourseExerciseQuestionsRouter } from './exercise-questions';
 import { v1CourseExerciseSectionsRouter } from './exercise-sections';
 import { v1CourseExercisesRouter } from './exercises';
+import { v1CourseQuestionSkillsRouter, v1CourseSkillMasteryRouter } from './skills';
 import { v1CourseInvitesRouter } from './invites';
 import { v1CourseLessonBlocksRouter } from './lesson-blocks';
 import { v1CourseLessonCommentsRouter } from './lesson-comments';
@@ -33,6 +34,8 @@ export const v1CoursesRouter = new Hono()
   .route('/:courseId/lessons/:lessonId/comments', v1CourseLessonCommentsRouter)
   .route('/:courseId/lessons', v1CourseLessonsRouter)
   .route('/:courseId/content', v1CourseContentRouter)
+  .route('/:courseId/exercises/:exerciseId/questions/:questionId/skills', v1CourseQuestionSkillsRouter)
+  .route('/:courseId/exercises/:exerciseId/skill-mastery', v1CourseSkillMasteryRouter)
   .route('/:courseId/exercises/:exerciseId/questions', v1CourseExerciseQuestionsRouter)
   .route('/:courseId/exercises/:exerciseId/sections', v1CourseExerciseSectionsRouter)
   .route('/:courseId/exercises', v1CourseExercisesRouter)

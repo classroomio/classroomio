@@ -1,10 +1,10 @@
 ---
 title: Add math and LaTeX
-description: Insert inline expressions and block equations in a lesson's note blocks using LaTeX.
-last_reviewed: '2026-11-08'
+description: Insert inline expressions and block equations in a lesson's note blocks by typing math, writing LaTeX, or pasting equations.
+last_reviewed: '2026-11-15'
 ---
 
-Use **Inline Expression** for math within a sentence and **Block Expression** for a standalone equation in a lesson's note block. ClassroomIO renders the LaTeX expression so students see formatted math.
+Use **Inline Expression** for math within a sentence and **Block Expression** for a standalone equation in a lesson's note block. ClassroomIO renders each expression so students see formatted math.
 
 ![Note block in Edit mode with a rendered block equation, inline math, and the math buttons in the toolbar](./images/use-math-in-editor/overview.webp)
 
@@ -20,13 +20,38 @@ Use inline math for expressions that belong in the surrounding sentence.
 
 ## Insert a block equation
 
-Use **Block Expression** in the toolbar, or type `/` and choose **Block Expression** under **Insert**. Replace the initial expression with your equation.
+Use **Block Expression** in the toolbar, or type `/` and choose **Block Expression** under **Insert**. The editor inserts a sample expression; click it to replace it with your equation.
 
-For example, `\frac{a}{b}` produces a fraction, while `a^2 + b^2 = c^2` uses superscripts. Enter LaTeX in the expression editor rather than pasting an image of an equation when students need clear, scalable math.
+For example, `\frac{a}{b}` produces a fraction, while `a^2 + b^2 = c^2` uses superscripts. Type, write or paste the math rather than pasting an image of an equation when students need clear, scalable math.
 
 ## Edit an expression
 
-Select an existing inline or block expression. Update the LaTeX in the prompt and confirm to render it again. If the result is incorrect, reopen the expression and check its braces and command spelling.
+Click an existing inline or block expression. A popover opens on the **Type** tab, where you write math directly: `x^2` becomes a superscript and `1/2` a fraction. The buttons above the field insert structures that are hard to type, such as fractions, roots, matrices, systems of equations, integrals and limits. On touch devices a math keyboard appears.
+
+To write LaTeX instead, open the **LaTeX** tab, which shows the LaTeX field and a live **Preview**. If the preview shows an error, check the braces and command spelling.
+
+## Convert a photo or drawing
+
+Inside a course, the math popover also has **Photo** and **Draw** tabs that turn an image of math into editable math.
+
+- **Photo**: upload an image, paste a screenshot with Ctrl+V or Cmd+V, drop a file, or take a picture with your phone camera. If the image holds more than one expression, drag a box around the part you want, then select **Convert**.
+- **Draw**: write the math on the canvas with a finger, stylus or mouse. The math appears under the canvas about a second after you stop writing. Select **Clear** to start again.
+
+Review the result before you use it. The original image sits beside an editable math box where you can fix anything the conversion got wrong. If ClassroomIO cannot read the result as valid math, it says so and **Insert** stays off until you correct it. Select **Insert** to put the math in your note, title or option.
+
+Each conversion is sent to an AI model and counts against your workspace's AI usage. On the free plan there is also a monthly limit of 30 conversions, shared with worksheet import. ClassroomIO keeps only the usage count, not the image.
+
+Select **Done**, press Enter, or click outside the popover to save. Select **Cancel** or press Escape to discard your changes. Saving an empty expression removes it.
+
+## Paste equations
+
+Paste math from elsewhere and it becomes editable math: LaTeX between `$…$`, `$$…$$`, `\(…\)` or `\[…\]`, equations copied from Microsoft Word, and math copied from web pages that use MathML, such as Wikipedia or sites built with KaTeX or MathJax. A pasted `$x$` becomes inline math, even though typing inline math in a note still needs double dollar signs.
+
+## Math in question titles and options
+
+Exercise question titles and answer options are one-line fields that accept math. Type an expression between single dollar signs, such as `$x^2$`, and it becomes a formula. Select the √ button at the end of the field, or click a formula, to open the same math popover, with **Type**, **LaTeX**, **Photo** and **Draw** tabs. Pasted LaTeX, MathML and Word equations also become formulas. Write `\$` for a literal dollar sign; a lone amount such as `$5` stays plain text. Students see the formatted math when they take and review the exercise.
+
+Accepted answers stay plain text, because students type their answers without dollar signs.
 
 ## Save and check the reading view
 

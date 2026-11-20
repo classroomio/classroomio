@@ -1,6 +1,8 @@
 <script lang="ts">
   import { getQuestionTypeById, QUESTION_TYPE_KEY, type QuestionTypeKey } from '@cio/question-types';
   import ArrowUpDownIcon from '@lucide/svelte/icons/arrow-up-down';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import ChartSplineIcon from '@lucide/svelte/icons/chart-spline';
   import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
   import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import Link2Icon from '@lucide/svelte/icons/link-2';
@@ -53,6 +55,10 @@
         return ThumbsUpIcon;
       case QUESTION_TYPE_KEY.VIDEO_RECORDING:
         return VideoIcon;
+      case QUESTION_TYPE_KEY.GRAPH_PLOT:
+        return ChartSplineIcon;
+      case QUESTION_TYPE_KEY.GRAPH_READ:
+        return ChartLineIcon;
       default:
         return CircleDotIcon;
     }

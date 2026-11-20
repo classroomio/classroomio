@@ -2,6 +2,7 @@
   import * as Select from '../../base/select';
   import {
     getExerciseQuestionContractKey,
+    getFillBlankAnswerKey,
     isAutoGradableQuestionTypeId,
     QUESTION_TYPE_KEY,
     scoreAnswerForQuestion,
@@ -143,7 +144,7 @@
         return answer.type === 'NUMERIC' && Number.isFinite(answer.value);
       case QUESTION_TYPE_KEY.FILL_BLANK: {
         if (answer.type !== 'FILL_BLANK') return false;
-        const blankSlots = (question.options ?? []).filter((option) => option.isCorrect !== false).length;
+        const blankSlots = getFillBlankAnswerKey(question.settings?.acceptedAnswers).length;
         if (blankSlots === 0) return false;
 
         return (
@@ -175,6 +176,10 @@
         return answer.type === 'MATCHING' && answer.pairs.length > 0;
       case QUESTION_TYPE_KEY.HOTSPOT:
         return answer.type === 'HOTSPOT' && answer.coordinates.length > 0;
+      case QUESTION_TYPE_KEY.GRAPH_PLOT:
+        return answer.type === 'GRAPH_PLOT' && answer.elements.length > 0;
+      case QUESTION_TYPE_KEY.GRAPH_READ:
+        return answer.type === 'GRAPH_READ' && (answer.value !== undefined || answer.point !== undefined);
       default:
         return false;
     }
@@ -241,18 +246,13 @@
       }
       case QUESTION_TYPE_KEY.FILL_BLANK: {
         if (answer.type !== 'FILL_BLANK') return false;
-        const accepted = (question.options ?? [])
-          .filter((option) => option.isCorrect !== false)
-          .map((option) =>
-            String(option.label ?? option.value ?? '')
-              .trim()
-              .toLowerCase()
-          );
-        if (accepted.length === 0) return null;
-        return answer.values.every((value, index) => {
-          const expected = accepted[index];
-          if (expected === undefined) return false;
-          return value.trim().toLowerCase() === expected;
+        const answerKey = getFillBlankAnswerKey(question.settings?.acceptedAnswers);
+        if (answerKey.length === 0) return null;
+        return answerKey.every((alternatives, blankIndex) => {
+          const value = String(answer.values[blankIndex] ?? '')
+            .trim()
+            .toLowerCase();
+          return alternatives.some((alternative) => alternative.toLowerCase() === value);
         });
       }
       case QUESTION_TYPE_KEY.ORDERING: {
@@ -270,6 +270,8 @@
       case QUESTION_TYPE_KEY.WORD_BANK:
       case QUESTION_TYPE_KEY.MATCHING:
       case QUESTION_TYPE_KEY.HOTSPOT:
+      case QUESTION_TYPE_KEY.GRAPH_PLOT:
+      case QUESTION_TYPE_KEY.GRAPH_READ:
         return scoreAnswerForQuestion({ ...question, points: 1 }, answer) === 1;
       default:
         return null;

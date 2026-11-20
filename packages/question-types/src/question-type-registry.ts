@@ -128,9 +128,8 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     supportsPartialCredit: false,
     manualGradingRequired: false
   },
-  // Built but not offered in the product. Kept at the END of the id sequence
-  // (append-only) so they never shift the ids of types that exist in the DB.
-  // They have no `question_type` row, so `disabled` keeps them out of pickers,
+  // Ids are append-only so they never shift the ids of types that exist in the DB.
+  // `disabled` types have no `question_type` row, which keeps them out of pickers,
   // the AI tool enum, and validation.
   {
     key: QUESTION_TYPE_KEY.MATCHING,
@@ -139,8 +138,7 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     id: 15,
     autoGradable: true,
     supportsPartialCredit: true,
-    manualGradingRequired: false,
-    disabled: true
+    manualGradingRequired: false
   },
   {
     key: QUESTION_TYPE_KEY.HOTSPOT,
@@ -151,6 +149,42 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     supportsPartialCredit: true,
     manualGradingRequired: false,
     disabled: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.MATH_EXPRESSION,
+    typename: 'MATH_EXPRESSION',
+    label: 'Math expression',
+    id: 17,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false
+  },
+  {
+    key: QUESTION_TYPE_KEY.WORKED_SOLUTION,
+    typename: 'WORKED_SOLUTION',
+    label: 'Worked solution',
+    id: 18,
+    autoGradable: false,
+    supportsPartialCredit: true,
+    manualGradingRequired: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.GRAPH_PLOT,
+    typename: 'GRAPH_PLOT',
+    label: 'Graph plot',
+    id: 19,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false
+  },
+  {
+    key: QUESTION_TYPE_KEY.GRAPH_READ,
+    typename: 'GRAPH_READ',
+    label: 'Graph reading',
+    id: 20,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false
   }
 ] as const;
 

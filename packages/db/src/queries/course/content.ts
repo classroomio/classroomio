@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm';
 import { ContentType } from '@cio/utils/constants';
 import * as schema from '@db/schema';
 import { count, db, inArray, sql as drizzleSql, type DbOrTxClient } from '@db/drizzle';
+import { getHiddenExerciseIdsForStudent } from '../exercise/assignment';
 import { getCompletedExerciseIdsForProfile, getCompletedLessonIdsForProfile } from './progression';
 
 export type CourseContentItemRow = {
@@ -241,22 +242,25 @@ export async function getCourseContentItems(
     return structure;
   }
 
-  const [completedLessonIds, completedExerciseIds] = await Promise.all([
+  const [completedLessonIds, completedExerciseIds, hiddenExerciseIds] = await Promise.all([
     getCompletedLessonIdsForProfile(courseId, profileId, dbClient),
-    getCompletedExerciseIdsForProfile(courseId, profileId, dbClient)
+    getCompletedExerciseIdsForProfile(courseId, profileId, dbClient),
+    getHiddenExerciseIdsForStudent(courseId, profileId, dbClient)
   ]);
 
-  return structure.map((item) => {
-    if (item.type === ContentType.Lesson) {
-      return { ...item, isComplete: completedLessonIds.has(item.id) };
-    }
+  return structure
+    .filter((item) => item.type !== ContentType.Exercise || !hiddenExerciseIds.has(item.id))
+    .map((item) => {
+      if (item.type === ContentType.Lesson) {
+        return { ...item, isComplete: completedLessonIds.has(item.id) };
+      }
 
-    if (item.type === ContentType.Exercise) {
-      return { ...item, isComplete: completedExerciseIds.has(item.id) };
-    }
+      if (item.type === ContentType.Exercise) {
+        return { ...item, isComplete: completedExerciseIds.has(item.id) };
+      }
 
-    return item;
-  });
+      return item;
+    });
 }
 
 /** Counts the student work (exercise submissions and lesson completions) attached to the given lessons and exercises. */

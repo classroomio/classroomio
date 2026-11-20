@@ -2,6 +2,7 @@ import { CERTIFICATE_WIDTH } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
+  escapeHtmlWithMath,
   prepareCertificateRenderContext,
   renderSealBlock,
   renderSignatoryBlock,
@@ -130,7 +131,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
             </div>
           </div>
           <div class="crest">&#10022; &#10022; &#10022;</div>
-          <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtml(data.courseName)}</div>
+          <div class="title" style="font-size: ${fontSizes.title}px;">${escapeHtmlWithMath(data.courseName)}</div>
           ${
             subtitle
               ? `<div class="title-line">
@@ -145,7 +146,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
         <div class="body-group">
           <div class="presented">presented to</div>
           <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
-          ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+          ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtmlWithMath(description)}</div>` : ''}
         </div>
 
         <div class="footer">

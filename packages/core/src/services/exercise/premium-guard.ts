@@ -1,4 +1,10 @@
-import { PREMIUM_QUESTION_TYPE_KEYS, QUESTION_TYPE_ID_TO_KEY, QUESTION_TYPE_REGISTRY } from '@cio/question-types';
+import {
+  PREMIUM_QUESTION_TYPE_KEYS,
+  QUESTION_TYPE_ID_TO_KEY,
+  QUESTION_TYPE_REGISTRY,
+  detectPaidQuestionFeatures,
+  type PaidMathFeature
+} from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
 
 /** Throws 403 UPGRADE_REQUIRED if a free-plan org uses a premium question type. */
@@ -30,4 +36,29 @@ export function assertNoPremiumQuestionTypes(
     'UPGRADE_REQUIRED',
     403
   );
+}
+
+const PAID_MATH_FEATURE_LABELS: Record<PaidMathFeature, string> = {
+  variants: 'Questions with variables',
+  ai_grading: 'AI suggestions for marking working',
+  skill_mastery: 'Skill mastery',
+  practice_assignment: 'Assigning practice',
+  desmos: 'The Desmos graphing calculator key'
+};
+
+/** Throws 403 UPGRADE_REQUIRED if a free-plan org uses a paid math feature. */
+export function assertPaidMathFeature(feature: PaidMathFeature, isOrgOnPaidPlan: boolean): void {
+  if (isOrgOnPaidPlan) return;
+
+  throw new AppError(`${PAID_MATH_FEATURE_LABELS[feature]} requires a paid plan`, 'UPGRADE_REQUIRED', 403);
+}
+
+/** Throws 403 UPGRADE_REQUIRED if a free-plan org saves questions with variables or AI grading turned on. */
+export function assertNoPaidQuestionFeatures(
+  questions: ReadonlyArray<{ settings?: unknown; parts?: ReadonlyArray<{ settings?: unknown }> | null }>,
+  isOrgOnPaidPlan: boolean
+): void {
+  if (isOrgOnPaidPlan) return;
+
+  for (const feature of detectPaidQuestionFeatures(questions)) assertPaidMathFeature(feature, false);
 }

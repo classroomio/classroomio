@@ -174,7 +174,7 @@ export const FILL_BLANK_FIXTURE: QuestionStoryFixture = {
     key: 'q-fill-blank',
     title: 'An ___ endpoint should be idempotent when using PUT. [FILL_BLANK]',
     questionType: 'FILL_BLANK',
-    settings: { acceptedAnswers: 'API,endpoint' }
+    settings: { acceptedAnswers: [['API', 'endpoint']] }
   },
   answer: { type: 'FILL_BLANK', values: ['API'] },
   wrongAnswer: { type: 'FILL_BLANK', values: ['SOAP'] }
@@ -269,8 +269,128 @@ export const MATCHING_FIXTURE: QuestionStoryFixture = {
       ]
     }
   },
-  answer: { API: 'request validation', DB: 'persistent storage' }
+  answer: {
+    type: 'MATCHING',
+    pairs: [
+      { left: 'API', right: 'request validation' },
+      { left: 'DB', right: 'persistent storage' }
+    ]
+  },
+  wrongAnswer: {
+    type: 'MATCHING',
+    pairs: [
+      { left: 'API', right: 'persistent storage' },
+      { left: 'DB', right: 'request validation' }
+    ]
+  }
 };
+
+export const MATCHING_MATH_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-matching-math',
+    key: 'q-matching-math',
+    title: 'Match each expression to its value.',
+    questionType: 'MATCHING',
+    settings: {
+      pairs: [
+        { left: '$\\frac{1}{2}+\\frac{1}{4}$', right: '$\\frac{3}{4}$' },
+        { left: '$\\sqrt{49}$', right: '$7$' }
+      ]
+    }
+  },
+  answer: {
+    type: 'MATCHING',
+    pairs: [
+      { left: '$\\frac{1}{2}+\\frac{1}{4}$', right: '$\\frac{3}{4}$' },
+      { left: '$\\sqrt{49}$', right: '$7$' }
+    ]
+  }
+};
+
+export const NUMERIC_FRACTION_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-numeric-fraction',
+    key: 'q-numeric-fraction',
+    title: 'What is $\\frac{1}{2}+\\frac{1}{4}$?',
+    questionType: 'NUMERIC',
+    settings: { correctValue: '\\frac{3}{4}', relativeTolerance: 0 }
+  },
+  answer: { type: 'NUMERIC', value: 0.75, latex: '\\frac{3}{4}' },
+  wrongAnswer: { type: 'NUMERIC', value: 0.5, latex: '\\frac{1}{2}' }
+};
+
+export const MATH_EXPRESSION_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-math',
+    key: 'q-math',
+    title: 'Expand $2(x+1)$.',
+    questionType: 'MATH_EXPRESSION',
+    settings: {
+      acceptedAnswers: ['2x+2'],
+      compare: { mode: 'equivalent' },
+      variables: ['x'],
+      wrongAnswerFeedback: []
+    }
+  },
+  answer: { type: 'MATH_EXPRESSION', latex: '2x+2' },
+  wrongAnswer: { type: 'MATH_EXPRESSION', latex: '2x+1' }
+};
+
+export const WORKED_SOLUTION_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-worked',
+    key: 'q-worked',
+    title: 'Solve $3x-4=11$ and show your working.',
+    questionType: 'WORKED_SOLUTION',
+    points: 4,
+    settings: {
+      acceptedAnswers: ['5'],
+      compare: { mode: 'equivalent' },
+      variables: ['x'],
+      wrongAnswerFeedback: [],
+      answerPoints: 2,
+      workingInputs: ['typed', 'drawing', 'photo']
+    }
+  },
+  answer: {
+    type: 'WORKED_SOLUTION',
+    latex: '5',
+    working: { lines: ['3x-4=11', '3x=15', 'x=5'], files: [] }
+  },
+  wrongAnswer: {
+    type: 'WORKED_SOLUTION',
+    latex: '4',
+    working: { lines: ['3x=11-4'], files: [] }
+  }
+};
+
+export const MULTI_PART_FIXTURE: Record<string, unknown>[] = [
+  {
+    id: 101,
+    key: 'q-stem',
+    title: 'A rectangle has length $x+3$ and width $x$.',
+    questionType: 'SHORT_ANSWER',
+    points: 0
+  },
+  {
+    id: 102,
+    key: 'q-part-a',
+    parentQuestionId: 101,
+    title: 'Write an expression for its perimeter.',
+    questionType: 'MATH_EXPRESSION',
+    points: 2,
+    settings: { acceptedAnswers: ['4x+6'], compare: { mode: 'equivalent' }, variables: ['x'], wrongAnswerFeedback: [] }
+  },
+  {
+    id: 103,
+    key: 'q-part-b',
+    parentQuestionId: 101,
+    title: 'Find $x$ when the perimeter is $26$.',
+    questionType: 'NUMERIC',
+    points: 2,
+    settings: { correctValue: 5 }
+  }
+];
 
 export const ORDERING_FIXTURE: QuestionStoryFixture = {
   question: {
@@ -304,6 +424,57 @@ export const HOTSPOT_FIXTURE: QuestionStoryFixture = {
   answer: { points: [{ x: 46, y: 68 }] }
 };
 
+export const GRAPH_PLOT_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-graph-plot',
+    key: 'q-graph-plot',
+    title: 'Plot the point $(3, 1)$ and draw the line through $(-2, -4)$ and $(2, 4)$.',
+    questionType: 'GRAPH_PLOT',
+    points: 4,
+    settings: {
+      board: { xMin: -6, xMax: 6, yMin: -6, yMax: 6, grid: true, snap: 1, xLabel: 'x', yLabel: 'y' },
+      tools: ['point', 'line'],
+      tolerance: 0.25,
+      expected: [
+        { kind: 'point', x: 3, y: 1 },
+        { kind: 'line', from: { x: -2, y: -4 }, to: { x: 2, y: 4 } }
+      ]
+    }
+  },
+  answer: {
+    type: 'GRAPH_PLOT',
+    elements: [
+      { kind: 'point', x: 3, y: 1 },
+      { kind: 'line', from: { x: -1, y: -2 }, to: { x: 1, y: 2 } }
+    ]
+  },
+  wrongAnswer: {
+    type: 'GRAPH_PLOT',
+    elements: [
+      { kind: 'point', x: 3, y: 2 },
+      { kind: 'line', from: { x: -2, y: -4 }, to: { x: 2, y: 4 } }
+    ]
+  }
+};
+
+export const GRAPH_READ_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-graph-read',
+    key: 'q-graph-read',
+    title: 'Read the positive $x$-intercept of $f(x)=x^2-4$.',
+    questionType: 'GRAPH_READ',
+    points: 2,
+    settings: {
+      board: { xMin: -6, xMax: 6, yMin: -6, yMax: 6, grid: true, snap: 1, xLabel: 'x', yLabel: 'y' },
+      curves: [{ expression: 'x^2-4', label: 'f' }],
+      points: [{ x: 2, y: 0, label: 'A' }],
+      answer: { kind: 'point', x: 2, y: 0, tolerance: 0.2 }
+    }
+  },
+  answer: { type: 'GRAPH_READ', point: { x: 2, y: 0 } },
+  wrongAnswer: { type: 'GRAPH_READ', point: { x: -2, y: 0 } }
+};
+
 export const LINK_FIXTURE: QuestionStoryFixture = {
   question: {
     id: 'q-link',
@@ -335,3 +506,84 @@ export const SECTIONED_EXERCISE_FIXTURE: ExerciseSectionStoryFixture[] = [
     questions: [SHORT_ANSWER_FIXTURE.question, ORDERING_FIXTURE.question]
   }
 ];
+
+export const PARAMETERISED_MATH_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-parameterised',
+    key: 'q-parameterised',
+    title: 'A rope of {{b}} m is cut into {{a}} equal pieces. How long is each piece, in metres?',
+    questionType: 'MATH_EXPRESSION',
+    points: 1,
+    settings: {
+      acceptedAnswers: ['{{answer}}'],
+      compare: { mode: 'equivalent' },
+      variables: [],
+      wrongAnswerFeedback: [],
+      parameters: {
+        variables: [
+          { name: 'a', type: 'int', min: 2, max: 9, step: 1 },
+          { name: 'b', type: 'int', min: 1, max: 20, step: 1 }
+        ],
+        constraints: ['a != 0'],
+        answerFormula: 'b / a'
+      }
+    }
+  },
+  answer: { type: 'MATH_EXPRESSION', latex: '\\frac{3}{2}', seed: 'story-seed' },
+  wrongAnswer: { type: 'MATH_EXPRESSION', latex: '7', seed: 'story-seed' }
+};
+
+export const PARAMETERISED_NUMERIC_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-parameterised-numeric',
+    key: 'q-parameterised-numeric',
+    title: 'A pack of {{n}} pens costs {{x}} dollars each. What is the total cost?',
+    questionType: 'NUMERIC',
+    points: 1,
+    settings: {
+      correctValue: '{{answer}}',
+      tolerance: 0.01,
+      parameters: {
+        variables: [
+          { name: 'n', type: 'choice', min: 0, max: 0, step: 1, choices: [10, 20, 50] },
+          { name: 'x', type: 'decimal', min: 0.5, max: 2, step: 0.25 }
+        ],
+        constraints: [],
+        answerFormula: 'n * x',
+        requireNonzeroAnswer: true
+      }
+    }
+  },
+  answer: { type: 'NUMERIC', value: 12.5, seed: 'story-seed' }
+};
+
+export const WORKED_SOLUTION_RUBRIC_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-worked-rubric',
+    key: 'q-worked-rubric',
+    title: 'Solve $2x+3=11$ and show your working.',
+    questionType: 'WORKED_SOLUTION',
+    points: 5,
+    settings: {
+      acceptedAnswers: ['4'],
+      compare: { mode: 'equivalent' },
+      variables: ['x'],
+      wrongAnswerFeedback: [],
+      answerPoints: 2,
+      workingInputs: ['typed', 'photo'],
+      aiGrading: true,
+      rubric: {
+        steps: [
+          { id: 'subtract', description: 'Subtracts 3 from both sides', points: 1 },
+          { id: 'divide', description: 'Divides both sides by 2', points: 1 },
+          { id: 'check', description: 'States the solution clearly', points: 1 }
+        ]
+      }
+    }
+  },
+  answer: {
+    type: 'WORKED_SOLUTION',
+    latex: '4',
+    working: { lines: ['2x+3=11', '2x=8', 'x=4'], files: [] }
+  }
+};

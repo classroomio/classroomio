@@ -22,6 +22,7 @@ import { registerComplianceTools } from './tools/compliance';
 import { registerMarketingTools } from './tools/marketing';
 import { registerLandingPageTools } from './tools/landing-page';
 import { registerOrganizationTools } from './tools/organization';
+import { registerSkillTools } from './tools/skills';
 import { registerTagTools } from './tools/tags';
 import { registerTeamTools } from './tools/team';
 import { registerMediaUploadTools } from './tools/media-upload';
@@ -72,6 +73,7 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
   registerEmailTemplateTools(server, apiClient);
   registerLandingPageTools(server, apiClient);
   registerTagTools(server, apiClient);
+  registerSkillTools(server, apiClient);
   registerDomainTools(server, apiClient);
 
   if (options.includeLocalFileTools) {

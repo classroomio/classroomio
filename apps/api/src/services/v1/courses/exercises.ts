@@ -7,7 +7,12 @@ import {
   resolveExerciseCourseId,
   updateExerciseService
 } from '@cio/core/services/exercise/exercise';
-import { assertNoPremiumQuestionTypes } from '@cio/core/services/exercise/premium-guard';
+import {
+  assertNoPaidQuestionFeatures,
+  assertNoPremiumQuestionTypes,
+  assertPaidMathFeature
+} from '@cio/core/services/exercise/premium-guard';
+import { assertAnswerKeysVerified } from '@cio/core/services/exercise/answer-key';
 import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
 import { getCourseItemRanks } from '@cio/core/services/course/outline';
 import { getCourseSectionById } from '@cio/db/queries/course';
@@ -21,6 +26,7 @@ import {
   type TPublicApiCourseExerciseNotifyParam,
   type TPublicApiCourseExerciseNotifyStatusQuery,
   type TPublicApiCourseExerciseParam,
+  type TPublicApiExerciseQuestionParam,
   type TPublicApiCourseExercisesQuery,
   type TPublicApiCourseParam,
   type TPublicApiForceQuery,
@@ -33,6 +39,12 @@ import {
   notifyCourseExerciseService
 } from '@api/services/course/notify-exercise';
 import { fetchTemplateById } from '@api/services/exercise/template';
+import { regradeExerciseSubmissions } from '@api/services/submission/regrade';
+import { getAnswerClusters, resetClusterOverride, setClusterOverride } from '@api/services/submission/results';
+import type { TClusterOverrideBody, TClusterResetBody } from '@cio/utils/validation/math';
+import { createPracticeSetService } from '@api/services/practice/practice';
+import type { TPracticeCreate } from '@cio/utils/validation/practice';
+import { expandQuestionParts } from './question-parts';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin, paginateInMemory } from '../shared';
 
@@ -53,6 +65,7 @@ function toPublicExercise(exercise: TExercise) {
     dueBy: exercise.dueBy,
     allowMultipleAttempts: exercise.allowMultipleAttempts,
     sectionDisplayMode: exercise.sectionDisplayMode,
+    calculatorPolicy: exercise.calculatorPolicy,
     completionPolicy: exercise.completionPolicy,
     passThreshold: exercise.passThreshold,
     createdAt: exercise.createdAt,
@@ -86,6 +99,7 @@ function toPublicQuestion(question: ExerciseDetailQuestion) {
     order: question.order,
     settings: question.settings ?? {},
     exerciseSectionId: question.exerciseSectionId ?? null,
+    parentQuestionId: question.parentQuestionId ?? null,
     options
   };
 }
@@ -146,10 +160,19 @@ async function assertPlacementBelongsToCourse(courseId: string, placement: { sec
   }
 }
 
-async function assertQuestionTypesAllowed(orgId: string, questionTypeIds: Array<number | undefined>) {
-  if (questionTypeIds.length === 0) return;
+async function assertQuestionTypesAllowed(
+  orgId: string,
+  questions: Array<{ questionTypeId?: number; settings?: unknown }>
+) {
+  if (questions.length === 0) return;
 
-  assertNoPremiumQuestionTypes(questionTypeIds, await isOrgOnPaidPlan(orgId));
+  const isPaid = await isOrgOnPaidPlan(orgId);
+
+  assertNoPremiumQuestionTypes(
+    questions.map((question) => question.questionTypeId),
+    isPaid
+  );
+  assertNoPaidQuestionFeatures(questions, isPaid);
 }
 
 /** Throws 404 if the update references another exercise's question, option or section, or 400 if a kept question would lose its section. */
@@ -273,13 +296,23 @@ async function assertUpdateIdsBelongToExercise(
   }
 }
 
-/** Throws 409 if the update deletes a question students have answered, unless `force` is set. */
-async function assertDeletedQuestionsUnanswered(payload: TPublicApiUpdateCourseExercise, force: boolean) {
+/** Throws 409 if the update deletes a question, or a part of a deleted stem, that students have answered, unless `force` is set. */
+async function assertDeletedQuestionsUnanswered(
+  current: ExerciseDetail,
+  payload: TPublicApiUpdateCourseExercise,
+  force: boolean
+) {
   if (force) return;
 
-  const deletedIds = (payload.questions ?? [])
-    .filter((question) => question.delete && question.id)
-    .map((question) => question.id as number);
+  const deletedStemIds = new Set(
+    (payload.questions ?? [])
+      .filter((question) => question.delete && question.id)
+      .map((question) => question.id as number)
+  );
+  const deletedPartIds = (current.questions ?? [])
+    .filter((question) => deletedStemIds.has(Number(question.parentQuestionId)))
+    .map((question) => Number(question.id));
+  const deletedIds = [...deletedStemIds, ...deletedPartIds];
   const answeredIds = await getAnsweredQuestionIds(deletedIds);
   if (answeredIds.length > 0) {
     throw new AppError(
@@ -492,7 +525,7 @@ export async function createCourseExerciseService(
 
     await assertQuestionTypesAllowed(
       orgId,
-      template.questionnaire.questions.map((question) => question.question_type.id)
+      template.questionnaire.questions.map((question) => ({ questionTypeId: question.question_type.id }))
     );
 
     const exercise = await createExerciseFromTemplate(
@@ -506,11 +539,9 @@ export async function createCourseExerciseService(
     return toPublicExerciseDetail(exercise as ExerciseDetail);
   }
 
-  const questions = payload.questions ?? [];
-  await assertQuestionTypesAllowed(
-    orgId,
-    questions.map((question) => question.questionTypeId)
-  );
+  const questions = expandQuestionParts(payload.questions ?? []);
+  assertAnswerKeysVerified(questions);
+  await assertQuestionTypesAllowed(orgId, questions);
 
   const exercise = await createExercise({
     courseId: params.courseId,
@@ -521,6 +552,7 @@ export async function createCourseExerciseService(
     order: payload.order,
     dueBy: payload.dueBy,
     slug: payload.slug,
+    calculatorPolicy: payload.calculatorPolicy,
     questions
   });
 
@@ -543,27 +575,31 @@ export async function applyCourseExerciseUpdate(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
-  payload: TPublicApiUpdateCourseExercise,
+  rawPayload: TPublicApiUpdateCourseExercise,
   options: TPublicApiForceQuery = { force: false }
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
-  await assertPlacementBelongsToCourse(params.courseId, payload);
+  await assertPlacementBelongsToCourse(params.courseId, rawPayload);
 
+  const payload = {
+    ...rawPayload,
+    questions: rawPayload.questions && expandQuestionParts(rawPayload.questions)
+  } as TPublicApiUpdateCourseExercise;
   const current = await getExercise(params.exerciseId);
   await assertUpdateIdsBelongToExercise(params.exerciseId, current, payload);
-  await assertDeletedQuestionsUnanswered(payload, options.force);
+  await assertDeletedQuestionsUnanswered(current, payload, options.force);
   assertEditedQuestionOptionsValid(current, payload);
 
   await assertQuestionTypesAllowed(
     orgId,
-    (payload.questions ?? []).filter((question) => !question.delete).map((question) => question.questionTypeId)
+    (payload.questions ?? []).filter((question) => !question.delete)
   );
 
-  const { createdQuestionIds = [], ...updated } = await updateExerciseService(
-    params.exerciseId,
-    toInternalUpdate(payload, current)
-  );
+  const internalUpdate = toInternalUpdate(payload, current);
+  assertAnswerKeysVerified((internalUpdate.questions ?? []).filter((question) => !question.deletedAt));
+
+  const { createdQuestionIds = [], ...updated } = await updateExerciseService(params.exerciseId, internalUpdate);
   const exercise = toPublicExerciseDetail(updated as ExerciseDetail);
 
   return { exercise, createdQuestionIds };
@@ -579,6 +615,69 @@ export async function updateCourseExerciseService(
   const { exercise } = await applyCourseExerciseUpdate(orgId, actorId, params, payload, options);
 
   return exercise;
+}
+
+/** Re-scores every submission of the exercise against its current answer key; teacher-awarded manual points are kept. */
+export async function regradeCourseExerciseService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseExerciseParam
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
+
+  return regradeExerciseSubmissions(params.courseId, params.exerciseId);
+}
+
+/** Groups every student's latest answer to a question into clusters of equal answers. */
+export async function getCourseExerciseAnswerClustersService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiExerciseQuestionParam
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
+
+  return getAnswerClusters(params.courseId, params.exerciseId, params.questionId);
+}
+
+/** Records a verdict or feedback for one answer cluster and regrades the question's stored answers. */
+export async function setCourseExerciseClusterDecisionService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiExerciseQuestionParam,
+  body: TClusterOverrideBody
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
+
+  return setClusterOverride({ ...params, body, actorProfileId: actorId ?? 'public-api' });
+}
+
+/** Removes the decision on one answer cluster and regrades so its answers return to what the answer key gives. */
+export async function resetCourseExerciseClusterDecisionService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiExerciseQuestionParam,
+  body: TClusterResetBody
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
+
+  return resetClusterOverride({ ...params, key: body.key });
+}
+
+/** Builds a practice exercise from a skill or chosen questions and assigns it to the chosen students. Needs a paid plan. */
+export async function createCoursePracticeService(
+  orgId: string,
+  actorId: string | null,
+  courseId: string,
+  payload: TPracticeCreate
+) {
+  await assertCourseTeamAccess(orgId, actorId, courseId);
+  assertPaidMathFeature('practice_assignment', await isOrgOnPaidPlan(orgId));
+
+  return createPracticeSetService(courseId, orgId, payload);
 }
 
 export async function deleteCourseExerciseService(

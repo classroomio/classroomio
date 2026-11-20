@@ -78,6 +78,7 @@ export function toExerciseQuestionModel(question: Question): ExerciseQuestionMod
     title: question.title || '',
     questionType: getQuestionTypeKey(question),
     points: Number(question.points || 0),
+    parentQuestionId: question.parentQuestionId ?? null,
     required,
     options,
     settings

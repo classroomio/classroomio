@@ -10,6 +10,7 @@
   import type { ChartConfig } from '../../../../base/chart/types';
   import Empty from '../../../empty/empty.svelte';
   import { BarChart3 } from '@lucide/svelte';
+  import { mathTextToPlainText } from '@cio/utils/math';
 
   const isBrowser = typeof window !== 'undefined';
 
@@ -36,9 +37,10 @@
   const chartHeightPx = $derived(Math.max(MIN_CHART_HEIGHT_PX, chartData.length * ROW_HEIGHT_PX));
 
   function truncateAxisLabel(label: string): string {
-    if (label.length <= AXIS_LABEL_MAX_LENGTH) return label;
+    const plainLabel = mathTextToPlainText(label);
+    if (plainLabel.length <= AXIS_LABEL_MAX_LENGTH) return plainLabel;
 
-    return `${label.slice(0, AXIS_LABEL_MAX_LENGTH - 1).trimEnd()}…`;
+    return `${plainLabel.slice(0, AXIS_LABEL_MAX_LENGTH - 1).trimEnd()}…`;
   }
 </script>
 

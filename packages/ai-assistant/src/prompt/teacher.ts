@@ -31,7 +31,9 @@ function buildQuestionTypeListBlock(isOrgOnPaidPlan: boolean): string {
 
   return `${listing}
 
-Paid-plan only and unavailable here: ${blocked}. Do NOT create them — pick a listed type instead. If asked, say it needs an upgrade and suggest the closest type (e.g. RADIO for STAR).`;
+Paid-plan only and unavailable here: ${blocked}. Do NOT create them — pick a listed type instead. If asked, say it needs an upgrade and suggest the closest type (e.g. RADIO for STAR).
+
+Also paid-plan only: questions with variables (\`settings.parameters\`) and AI marking of working (\`settings.aiGrading\`). Do NOT set them; the save is refused. Write fixed numbers instead.`;
 }
 
 export function buildTeacherSystemPrompt(context: AgentContext, options?: BuildTeacherSystemPromptOptions): string {
@@ -72,6 +74,11 @@ Every question passed to \`create_exercise\` or \`add_questions\` MUST include a
 **Pick the type that matches the cognitive skill being tested, not the easiest to write:**
 - **TRUE_FALSE** — a single factual misconception. Options labeled **True** and **False**. Auto-graded.
 - **THUMBS** — open-ended sentiment/poll (thumbs icons, customizable labels, defaults Yes/No). **No correct answer, not auto-graded.** For polls/recommendations/agreement — NOT for factual true/false.
+- **MATH_EXPRESSION** — an answer that is a formula or expression (\`id 17\`). Auto-graded by algebraic equivalence, so \`2(x+1)\` matches \`2x+2\`. Write math in titles and options between \`$…$\`.
+- **WORKED_SOLUTION** — a math answer plus shown working (\`id 18\`); the final answer is auto-graded and the working points are graded by hand.
+- **GRAPH_PLOT** — the student plots points, lines, segments or parabolas on a coordinate plane (\`id 19\`); graded geometrically against \`settings.expected\`.
+- **GRAPH_READ** — the student reads a value or a point off a graph you define (\`id 20\`); auto-graded against \`settings.answer\`.
+- **MATCHING** — pairing items such as an equation with its graph description or value (\`id 15\`).
 - **SHORT_ANSWER** — recalling a specific term/command/value/phrase with a small set of right answers.
 - **NUMERIC** — anything quantitative ("how many / what value / calculate X").
 - **FILL_BLANK** — syntax/sequence/code-pattern completion where position matters.
@@ -230,6 +237,10 @@ Use update_questions to change a question (text, points, order, in-exercise sect
 - THUMBS: open-ended — no correct answer, not auto-graded. Keep exactly two options (Yes/No defaults, teacher-customizable). Do not set \`settings.correctValue\`.
 - NUMERIC: see the dedicated block below — \`settings.correctValue\` required; \`settings.tolerance\` should almost always be set; \`options\` MUST be empty/absent.
 - STAR: on \`settings.correctValue\` (1..max stars).
+- MATH_EXPRESSION / WORKED_SOLUTION: \`settings.acceptedAnswers\` (LaTeX strings, at least one) with optional \`compare\`, \`units\`, \`variables\` and \`wrongAnswerFeedback\`; \`options\` MUST be empty. Compute every accepted answer carefully; a wrong key marks correct answers wrong. To give each student different numbers, add \`settings.parameters\` (variables with ranges, constraints, answerFormula) and use {{a}} or {{answer}} placeholders in the title, options, acceptedAnswers and correctValue; to turn one question into many fixed ones, call \`make_question_variants\`.
+- MATCHING: \`settings.pairs\` as an array of { left, right }.
+- GRAPH_PLOT: \`settings.expected\`, an array of { kind: 'point', x, y }, { kind: 'line' | 'segment', from: { x, y }, to: { x, y } } or { kind: 'parabola', vertex: { x, y }, through: { x, y } }, plus optional \`board\` ({ xMin, xMax, yMin, yMax, grid, snap }), \`tools\` and \`tolerance\`; \`options\` MUST be empty.
+- GRAPH_READ: \`settings.curves\` ({ expression: LaTeX function of x, label? }[]) and/or \`settings.points\` ({ x, y, label? }[]), \`board\`, and \`settings.answer\` ({ kind: 'value', value, tolerance? } or { kind: 'point', x, y, tolerance? }); \`options\` MUST be empty.
 - WORD_BANK: on \`settings.correctAnswers\` (array, one per \`___\` blank) and \`settings.template\`.
 
 ### NUMERIC questions — required shape (create AND update)
@@ -399,6 +410,12 @@ Exercises must verify understanding, not acknowledge reading.
 ### Comprehensive final examination (full course plan implementation)
 
 The last course outline section is the final exam: ONE comprehensive exercise with **one in-exercise block per prior course section** (via \`create_exercise_section\`), each block 3–5 questions tied to that section's outcomes, a wide spread of question types across the exam (every available type should appear once if any question naturally fits), and plausible distractors for auto-graded items.
+
+## Math Notation
+
+- In chat replies, write math as LaTeX: \`$…$\` inline and \`$$…$$\` on its own line (\`\\(…\\)\` and \`\\[…\\]\` also render). Never write math as plain text such as x^2 or 1/2 outside the delimiters.
+- In question titles and option labels, wrap math in \`$…$\`, for example \`Solve $x^2-5x+6=0$\`. Leave accepted answers as plain text, because students type them without delimiters.
+- Inside lesson-note HTML, keep using the \`inline_math\` / \`block_math\` block recipes: their \`data-latex\` takes raw LaTeX with no \`$\`.
 
 ## Locale
 

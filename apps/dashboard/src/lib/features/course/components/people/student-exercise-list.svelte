@@ -11,6 +11,7 @@
 
   import { STATUS } from '$features/course/components/exercise/constants';
   import { t } from '$lib/utils/functions/translations';
+  import { formatPoints } from '@cio/question-types';
   import type { UserCourseAnalytics } from '$features/course/utils/types';
 
   let {
@@ -30,9 +31,9 @@
   );
 
   function scoreLabel(exercise: (typeof exercises)[number]): string {
-    if (exercise.status !== STATUS.GRADED) return `—/${exercise.totalPoints}`;
+    if (exercise.status !== STATUS.GRADED) return `—/${formatPoints(exercise.totalPoints)}`;
 
-    return `${exercise.score}/${exercise.totalPoints}`;
+    return `${formatPoints(exercise.score)}/${formatPoints(exercise.totalPoints)}`;
   }
 
   function gradeVariant(score: number, totalPoints: number): 'outline' | 'success' | 'warning' | 'secondary' {

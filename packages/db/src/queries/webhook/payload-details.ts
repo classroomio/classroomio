@@ -1,5 +1,5 @@
 import * as schema from '@db/schema';
-import { and, count, desc, eq, lte, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, lte, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 export type TWebhookMemberDetails = {
@@ -43,6 +43,15 @@ export type TWebhookSubmissionDetails = {
   submittedAt: string | null;
   updatedAt: string | null;
   attemptNumber: number;
+  answers: Array<{
+    questionId: number;
+    parentQuestionId: number | null;
+    questionTypeId: number;
+    pointsPossible: number | null;
+    pointsEarned: number | null;
+    answerData: unknown;
+  }>;
+  skillTags: Array<{ questionId: number; skillId: string; code: string; name: string }>;
 };
 
 export type TWebhookInviteDetails = {
@@ -266,13 +275,43 @@ export async function getWebhookSubmissionDetails(
       .from(schema.submission)
       .where(and(...attemptFilters));
 
+    const answers = await client
+      .select({
+        questionId: schema.questionAnswer.questionId,
+        parentQuestionId: schema.question.parentQuestionId,
+        questionTypeId: schema.question.questionTypeId,
+        pointsPossible: schema.question.points,
+        pointsEarned: schema.questionAnswer.point,
+        answerData: schema.questionAnswer.answerData
+      })
+      .from(schema.questionAnswer)
+      .innerJoin(schema.question, eq(schema.question.id, schema.questionAnswer.questionId))
+      .where(eq(schema.questionAnswer.submissionId, submissionId))
+      .orderBy(asc(schema.question.order), asc(schema.question.id));
+    const questionIds = answers.map((answer) => answer.questionId);
+    const skillTags =
+      questionIds.length === 0
+        ? []
+        : await client
+            .select({
+              questionId: schema.questionSkill.questionId,
+              skillId: schema.skill.id,
+              code: schema.skill.code,
+              name: schema.skill.name
+            })
+            .from(schema.questionSkill)
+            .innerJoin(schema.skill, eq(schema.skill.id, schema.questionSkill.skillId))
+            .where(inArray(schema.questionSkill.questionId, questionIds));
+
     return {
       overallStatus: row.overallStatus,
       gradingState: row.gradingState,
       gradedBy: row.gradedBy,
       submittedAt: row.submittedAt,
       updatedAt: row.updatedAt,
-      attemptNumber: Math.max(1, attemptRow?.attempts ?? 1)
+      attemptNumber: Math.max(1, attemptRow?.attempts ?? 1),
+      answers,
+      skillTags
     };
   } catch (error) {
     console.error('getWebhookSubmissionDetails error:', error);

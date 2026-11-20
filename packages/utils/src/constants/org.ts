@@ -51,7 +51,7 @@ export function isFreeLandingPageTheme(theme: string): boolean {
 /** What the LMS uses for any `organization.customization` key the organization never saved. */
 export const DEFAULT_ORG_CUSTOMIZATION = {
   apps: { comments: true },
-  course: { grading: true, newsfeed: true },
+  course: { grading: true, newsfeed: true, desmosApiKey: '' },
   dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
   auth: { backgroundImage: '' }
 };

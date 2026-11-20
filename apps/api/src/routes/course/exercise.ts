@@ -46,6 +46,7 @@ import { courseMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-m
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { createSubmissionService, listExerciseSubmissionsOverview } from '@api/services/submission';
 import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
+import { assertCourseQuestionsAllowed } from '@api/services/math/premium';
 import { ContentType } from '@cio/utils/constants';
 import { zValidator } from '@hono/zod-validator';
 
@@ -173,6 +174,8 @@ export const exerciseRouter = new Hono()
           await assertMcpAutomationUsageAllowed(automationKey, 'create_course_exercise');
         }
 
+        await assertCourseQuestionsAllowed(c.req.param('courseId')!, data.questions ?? []);
+
         const exercise = await createExercise(data);
 
         if (automationKey?.type === 'mcp') {
@@ -266,6 +269,8 @@ export const exerciseRouter = new Hono()
             );
           }
         }
+
+        await assertCourseQuestionsAllowed(courseId, data.questions ?? []);
 
         const exercise = await updateExerciseService(exerciseId, data);
 

@@ -389,6 +389,59 @@ describe('webhook event enrichment', () => {
     });
   });
 
+  it('sets grading to null for a submission without math questions', async () => {
+    const enriched = await enrichWebhookEventData(
+      ids.org,
+      'course.submission.created',
+      inputs['course.submission.created']
+    );
+
+    expect(enriched.grading).toBeNull();
+  });
+
+  it('adds per-question reasons and per-skill points for a math submission', async () => {
+    mocks.getWebhookSubmissionDetails.mockResolvedValue({
+      overallStatus: 'passed',
+      gradingState: 'completed',
+      gradedBy: null,
+      submittedAt: '2026-10-13T11:58:02.000Z',
+      updatedAt: '2026-10-13T12:10:44.000Z',
+      attemptNumber: 1,
+      answers: [
+        {
+          questionId: 11,
+          parentQuestionId: null,
+          questionTypeId: 17,
+          pointsPossible: 2,
+          pointsEarned: 1.5,
+          answerData: { type: 'MATH_EXPRESSION', latex: 'x', grading: { reason: 'not_simplified' } }
+        }
+      ],
+      skillTags: [{ questionId: 11, skillId: 'skill-1', code: 'CCSS.8.EE', name: 'Equations' }]
+    });
+
+    const enriched = await enrichWebhookEventData(
+      ids.org,
+      'course.submission.status_changed',
+      inputs['course.submission.status_changed']
+    );
+
+    expect(enriched.grading).toEqual({
+      questions: [
+        {
+          questionId: 11,
+          parentQuestionId: null,
+          type: 'MATH_EXPRESSION',
+          pointsEarned: 1.5,
+          pointsPossible: 2,
+          reason: 'not_simplified'
+        }
+      ],
+      skills: [{ skillId: 'skill-1', code: 'CCSS.8.EE', name: 'Equations', pointsEarned: 1.5, pointsPossible: 2 }]
+    });
+    expect(() => ZWebhookEventData['course.submission.status_changed'].parse(enriched)).not.toThrow();
+  });
+
   it('names the reviewer who graded the submission', async () => {
     const enriched = await enrichWebhookEventData(
       ids.org,

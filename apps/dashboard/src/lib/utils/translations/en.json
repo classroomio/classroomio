@@ -1729,7 +1729,8 @@
     "cohorts": "Cohorts",
     "exit_course": "Exit this course",
     "exit_cohort": "Exit this cohort",
-    "org_analytics": "Academy"
+    "org_analytics": "Academy",
+    "skills": "Skills"
   },
   "pricing": {
     "plan_names": {
@@ -2098,6 +2099,35 @@
   "markdown_editor": {
     "write": "Write",
     "preview": "Preview"
+  },
+  "math_editor": {
+    "insert_math": "Insert math",
+    "type_tab": "Type",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Math",
+    "palette_label": "Math structures",
+    "latex_label": "LaTeX",
+    "preview_label": "Preview",
+    "preview_empty": "Type LaTeX to see a preview",
+    "done": "Done",
+    "cancel": "Cancel",
+    "structures": {
+      "fraction": "Fraction",
+      "mixed_number": "Mixed number",
+      "parentheses": "Brackets",
+      "power": "Power",
+      "subscript": "Subscript",
+      "square_root": "Square root",
+      "nth_root": "nth root",
+      "absolute_value": "Absolute value",
+      "system": "System of equations",
+      "matrix": "Matrix",
+      "piecewise": "Piecewise function",
+      "integral": "Integral",
+      "sum": "Sum",
+      "limit": "Limit",
+      "derivative": "Derivative"
+    }
   },
   "components": {
     "quiz": {
@@ -3347,7 +3377,11 @@
                 "link": "Links",
                 "word_bank": "Word bank",
                 "star": "Star rating",
-                "video_recording": "Video recording"
+                "video_recording": "Video recording",
+                "math_expression": "Math expression",
+                "worked_solution": "Worked solution",
+                "graph_plot": "Graph plot",
+                "graph_read": "Graph reading"
               }
             },
             "view_mode": {
@@ -3567,10 +3601,14 @@
               },
               "fill_blank": {
                 "edit": {
-                  "accepted_answers_placeholder": "Accepted answers (comma separated)"
+                  "accepted_answers_placeholder": "Accepted answer",
+                  "blank_label": "Blank",
+                  "add_alternative": "Add accepted answer",
+                  "add_blank": "Add blank",
+                  "helper": "Students answer the blanks in order. Each blank is correct when it matches any of its accepted answers."
                 },
                 "take": {
-                  "placeholder": "Enter answers separated by commas"
+                  "placeholder": "Your answer"
                 },
                 "preview": {
                   "accepted_answers_label": "Accepted answers"
@@ -5025,7 +5063,8 @@
     "enterprise_required": "This feature requires an Enterprise plan.",
     "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API.",
     "webhooks_required": "Upgrade to Early Adopter or Enterprise to use webhooks.",
-    "unlock_field": "Upgrade to unlock this setting"
+    "unlock_field": "Upgrade to unlock this setting",
+    "paid_math_feature": "Included in paid plans. Upgrade to use this."
   },
   "automation": {
     "title": "Automation",
@@ -7330,6 +7369,638 @@
       "permissions_count": "{count} areas",
       "revoke": "Remove access",
       "revoke_confirm": "Remove this app's access? It will stop working immediately."
+    }
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Accepted answers",
+      "accepted_answers_helper": "Type each correct answer the way a student would. Any of them is accepted.",
+      "add_answer": "Add another accepted answer",
+      "answer_placeholder": "Type the answer",
+      "compare_label": "How should answers be compared?",
+      "compare": {
+        "equivalent": "Equivalent",
+        "exact_form": "Exact form",
+        "numeric": "Numeric",
+        "set": "Set or list",
+        "equivalent_hint": "Any algebraically equal form is accepted, so 2(x+1) matches 2x+2.",
+        "exact_form_hint": "The answer must be equal and written in the form you choose.",
+        "numeric_hint": "The answer must be within the tolerance you set.",
+        "set_hint": "Order does not matter, so (1, 2) matches (2, 1)."
+      },
+      "form_label": "Required form",
+      "form": {
+        "simplified": "Simplified",
+        "factored": "Factored",
+        "expanded": "Expanded",
+        "lowest_terms": "Lowest terms",
+        "rationalised_denominator": "Rationalised denominator"
+      },
+      "absolute_tolerance_label": "Absolute tolerance",
+      "relative_tolerance_label": "Relative tolerance",
+      "significant_figures_label": "Significant figures",
+      "units_label": "Expected unit",
+      "units_placeholder": "For example m, km/h or kg",
+      "units_allow_conversion": "Accept other units of the same kind, such as 200 cm for 2 m",
+      "variables_label": "Variables",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Letters to treat as variables. Leave empty to detect them.",
+      "keyboard_label": "Keyboard",
+      "keyboard": {
+        "numeric": "Numbers only",
+        "algebra": "Algebra",
+        "calculus": "Calculus",
+        "greek": "Greek letters",
+        "sets": "Sets",
+        "full": "Everything"
+      },
+      "feedback_label": "Feedback for known wrong answers",
+      "feedback_helper": "Show a hint when a student gives a specific wrong answer.",
+      "feedback_answer_placeholder": "Wrong answer",
+      "feedback_text_placeholder": "Hint for the student",
+      "add_feedback": "Add feedback",
+      "remove": "Remove",
+      "try_label": "Try an answer",
+      "try_helper": "Check how a student answer would be marked before you publish.",
+      "try_placeholder": "Type a sample student answer",
+      "try_button": "Check",
+      "try_checking": "Checking…",
+      "try_needs_answer": "Add an accepted answer first.",
+      "allow_image_label": "Let students answer with a photo or drawing",
+      "allow_image_helper": "Adds a Photo or draw button to the answer box. Typed answers grade more reliably, so this is off by default."
+    },
+    "verdict": {
+      "equivalent": "Correct",
+      "not_simplified": "The value is right, but the answer is not simplified.",
+      "wrong_form": "The value is right, but it is not in the required form.",
+      "wrong_units": "The value is right, but the units are wrong.",
+      "wrong": "Incorrect",
+      "needs_review": "Could not be checked automatically. A teacher will review it.",
+      "invalid": "This answer could not be read as math.",
+      "matched_label": "Matched"
+    },
+    "misconception": {
+      "sign_error": "Check the signs: your answer has the right size but the opposite sign.",
+      "forgot_distribute": "It looks like a factor or minus sign was not applied to every term inside the brackets.",
+      "inverted_fraction": "Your answer looks like the reciprocal of the right one. Check which number goes on top.",
+      "forgot_flip_inequality": "Remember to reverse the inequality sign when you multiply or divide both sides by a negative number.",
+      "dropped_factor": "A factor seems to have been dropped along the way. Compare each term with the original."
+    },
+    "take": {
+      "placeholder": "Type your answer",
+      "sr_label": "Your answer"
+    },
+    "preview": {
+      "accepted_label": "Accepted answers",
+      "compare_label": "Comparison",
+      "empty": "No accepted answers yet."
+    },
+    "review": {
+      "your_answer": "Your answer",
+      "expected": "Accepted answers",
+      "result": "Result",
+      "not_graded": "Not graded yet",
+      "feedback": "Feedback"
+    },
+    "numeric": {
+      "correct_value_hint": "Fractions, mixed numbers, π and roots are accepted."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Points for the final answer",
+        "working_points_label": "Points for the working",
+        "working_points_helper": "Graded by hand. The answer part is graded automatically.",
+        "working_inputs_label": "How can students show their working?"
+      },
+      "input": {
+        "typed": "Typed lines",
+        "drawing": "Drawing",
+        "photo": "Photo"
+      },
+      "take": {
+        "answer_label": "Final answer",
+        "working_label": "Your working",
+        "line_placeholder": "Write a step",
+        "add_line": "Add a step",
+        "remove_line": "Remove step",
+        "draw_label": "Draw your working",
+        "upload_photo": "Upload a photo of your working",
+        "remove_file": "Remove",
+        "uploading": "Uploading…",
+        "upload_failed": "The upload failed. Try again.",
+        "draw_canvas": "Drawing area",
+        "draw_undo": "Undo",
+        "draw_clear": "Clear",
+        "draw_save": "Add drawing",
+        "draw_saving": "Saving…",
+        "drawing_alt": "Your drawn working",
+        "photo_alt": "Your photo of working"
+      },
+      "review": {
+        "working_label": "Working",
+        "no_working": "No working shown",
+        "answer_points": "Final answer",
+        "working_points": "Working, graded by your teacher"
+      }
+    },
+    "parts": {
+      "score": "Parts score",
+      "add": "Add part",
+      "helper": "Parts (a), (b), (c) are answered and scored separately. The question above is shown as their shared stem."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Add the pairs students must match. Use $…$ for math.",
+        "left_placeholder": "Item",
+        "right_placeholder": "Its match",
+        "add_pair": "Add pair",
+        "remove_pair": "Remove pair"
+      },
+      "take": {
+        "choose": "Choose the match for each item."
+      },
+      "review": {
+        "expected": "Correct match",
+        "not_matched": "Not matched"
+      }
+    },
+    "calculator_policy": {
+      "label": "Calculator",
+      "helper": "Choose which calculator students can open while taking this exercise.",
+      "none": "No calculator",
+      "four_function": "Four-function",
+      "scientific": "Scientific",
+      "graphing": "Graphing"
+    },
+    "calculator": {
+      "open": "Calculator",
+      "close": "Close calculator",
+      "title": "Calculator",
+      "display": "Calculator display",
+      "clear": "Clear",
+      "backspace": "Delete",
+      "equals": "Equals",
+      "degrees": "Degrees",
+      "radians": "Radians",
+      "answer": "Answer",
+      "error": "Error",
+      "graphing_loading": "Loading graphing calculator…",
+      "graphing_failed": "The graphing calculator could not load."
+    },
+    "desmos": {
+      "label": "Desmos API key",
+      "helper": "Optional. Enables the Desmos graphing calculator in exercises set to Graphing. Without a key, students get the scientific calculator instead."
+    },
+    "variables": {
+      "heading": "Variables",
+      "helper": "Give every student different numbers. Use the variable names in double curly braces in the question and the answer key.",
+      "enable": "Make this question parameterised",
+      "disable": "Remove variables",
+      "add": "Add variable",
+      "remove": "Remove variable",
+      "name_label": "Name",
+      "type_label": "Type",
+      "type": {
+        "int": "Whole number",
+        "decimal": "Decimal",
+        "choice": "Choice"
+      },
+      "min_label": "Min",
+      "max_label": "Max",
+      "step_label": "Step",
+      "choices_label": "Values",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Constraints",
+      "constraints_helper": "One condition per line, for example a != 0 or b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Answer formula",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "The answer as an expression of the variables. Write the word answer in double curly braces anywhere to show its value.",
+      "integer_answer": "The answer must be a whole number",
+      "nonzero_answer": "The answer must not be zero",
+      "use_answer": "Use the computed answer as the answer key",
+      "preview": "Preview variants",
+      "previewing": "Checking…",
+      "preview_answer": "Answer",
+      "preview_ok": "Key verified",
+      "preview_problem": "Check this variant"
+    },
+    "rubric": {
+      "heading": "Marking rubric",
+      "helper": "List the steps a complete solution shows, with the points each is worth. The AI reviewer marks working against these steps.",
+      "step_placeholder": "For example: sets up the equation correctly",
+      "points_label": "Points",
+      "add_step": "Add step",
+      "remove_step": "Remove step",
+      "total": "Total",
+      "total_mismatch": "The steps add up to a different total than the points for the working.",
+      "ai_label": "Suggest marks with AI",
+      "ai_helper": "A model reads the working against the rubric and suggests marks. Students see nothing until you accept them. Off by default."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Graph board",
+        "x_min": "Left edge (x min)",
+        "x_max": "Right edge (x max)",
+        "y_min": "Bottom edge (y min)",
+        "y_max": "Top edge (y max)",
+        "show_grid": "Show grid",
+        "snap_label": "Snap to grid step",
+        "snap_helper": "Points snap to multiples of this number. Use 0 for free placement.",
+        "x_label": "Horizontal axis label",
+        "y_label": "Vertical axis label",
+        "tolerance_label": "Tolerance",
+        "tolerance_helper": "How close, in graph units, a point or line must be to count as correct.",
+        "range_invalid": "Each minimum must be smaller than its maximum."
+      },
+      "tool": {
+        "point": "Point",
+        "line": "Line",
+        "segment": "Segment",
+        "parabola": "Parabola"
+      },
+      "plot": {
+        "tools_label": "Tools students can use",
+        "reference_heading": "Correct answer",
+        "reference_helper": "Draw the correct answer on the board. Students are graded against it.",
+        "reference_empty": "Draw at least one element as the correct answer.",
+        "preview_heading": "Student view",
+        "preview_helper": "This is the board students see. They only get the tools you chose."
+      },
+      "read": {
+        "curves_label": "Functions on the graph",
+        "curves_helper": "Type each function of x, for example x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Label (optional)",
+        "add_curve": "Add function",
+        "points_label": "Marked points",
+        "points_helper": "Points drawn on the graph for students to read from.",
+        "add_point": "Add point",
+        "point_label_placeholder": "Name (optional)",
+        "remove": "Remove",
+        "answer_label": "What do students read off the graph?",
+        "kind": {
+          "value": "A single value",
+          "point": "A point (x, y)"
+        },
+        "value_label": "Correct value",
+        "x_label": "Correct x",
+        "y_label": "Correct y",
+        "tolerance_helper": "Answers within this distance of the correct one are accepted.",
+        "answer_empty": "Enter the correct answer."
+      },
+      "take": {
+        "loading": "Loading graph…",
+        "failed": "The graph could not be loaded.",
+        "undo": "Undo",
+        "clear": "Clear",
+        "hint": {
+          "point": "Tap the graph to place a point. Drag a point to move it.",
+          "line": "Tap two places to draw a line. Drag a point to move it.",
+          "segment": "Tap the two ends of the segment. Drag a point to move it.",
+          "parabola": "Tap the vertex, then one more point on the parabola. Drag a point to move it."
+        },
+        "board_label": "Coordinate plane",
+        "read": {
+          "value_label": "Your answer",
+          "value_placeholder": "Enter a number",
+          "x_label": "x coordinate",
+          "y_label": "y coordinate"
+        }
+      },
+      "review": {
+        "student_legend": "Your graph (green is right, red is not)",
+        "expected_legend": "Correct graph (dashed)",
+        "expected_read": "Correct answer",
+        "matched": "{matched} of {total} correct"
+      },
+      "verdict": {
+        "correct": "Correct",
+        "partial": "Some elements are right.",
+        "wrong": "Incorrect",
+        "missing": "Nothing was answered.",
+        "extra": "Everything needed is there, but extra elements were added.",
+        "not_set": "This question has no answer key yet."
+      },
+      "preview": {
+        "empty": "No correct answer is set yet."
+      }
+    },
+    "upgrade": {
+      "required": "Included in paid plans. Upgrade to use this."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Photo or draw",
+      "photo_tab": "Photo",
+      "draw_tab": "Draw",
+      "upload": "Upload an image",
+      "take_photo": "Take a photo",
+      "photo_hint": "Paste a screenshot, drop an image or upload one.",
+      "crop_hint": "Drag a box around the math you want.",
+      "reset_crop": "Use the whole image",
+      "convert": "Convert",
+      "converting": "Reading the math…",
+      "draw_hint": "Write the math here with your finger, a stylus or the mouse.",
+      "clear": "Clear",
+      "original": "Original",
+      "converted": "Converted math",
+      "insert": "Insert",
+      "no_math_found": "No math was found in this image.",
+      "parse_failed": "This could not be read as valid math. Fix it below or try again.",
+      "invalid_math": "This is not valid math yet.",
+      "unsupported_file": "Use a PNG, JPEG or WebP image.",
+      "image_too_large": "This image is too large.",
+      "conversion_failed": "The conversion failed. Try again."
+    },
+    "errors": {
+      "limit_reached": "The free plan’s monthly photo and worksheet conversions are used up. Upgrade to keep converting.",
+      "token_limit": "This workspace has used up its AI allowance for the month.",
+      "not_configured": "AI is not set up for this platform."
+    },
+    "worksheet": {
+      "import_button": "Import from worksheet",
+      "title": "Import a worksheet",
+      "description": "Upload a photo or PDF of a worksheet. Each question is read as math, given a type and a proposed answer, and the answer is checked before you import.",
+      "drop_hint": "Choose a PNG, JPEG, WebP or PDF file up to 10 MB.",
+      "choose_file": "Choose a file",
+      "choose_another": "Choose another file",
+      "original": "Original",
+      "questions": "Questions found",
+      "reading": "Reading the worksheet…",
+      "verified": "Answer verified",
+      "unverified": "Needs checking",
+      "unverified_hint": "The engine could not confirm this answer. Check it, then tick the question to import it.",
+      "question_label": "Question text",
+      "option_label": "Option",
+      "answer_label": "Answer",
+      "correct_option": "Correct option",
+      "import_selected": "Import {count} questions",
+      "cancel": "Cancel",
+      "imported": "Questions imported. Review them, then save the exercise.",
+      "no_questions": "No questions were found in this file.",
+      "unsupported_file": "Use a PNG, JPEG, WebP or PDF file.",
+      "file_too_large": "This file is larger than 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Math expression",
+        "NUMERIC": "Numeric",
+        "RADIO": "Single answer"
+      }
+    }
+  },
+  "ai_review": {
+    "title": "AI suggestion",
+    "request": "Suggest marks with AI",
+    "requesting": "Reviewing…",
+    "confidence": "Confidence {confidence}%",
+    "first_wrong_step": "First step that goes wrong: {step}",
+    "rubric_changed": "The rubric changed after this suggestion was made.",
+    "suggested_points": "Suggested working points: {points} of {max}",
+    "model": "Model: {model}",
+    "student_hidden": "Students see nothing until you accept or grade this.",
+    "accept": "Accept",
+    "applied": "Added to the grade",
+    "reject": "Reject",
+    "decision": {
+      "accepted": "Accepted",
+      "edited": "Accepted with edits",
+      "rejected": "Rejected"
+    },
+    "bulk_hint": "{count} high-confidence AI suggestions are waiting for you.",
+    "bulk_accept": "Accept {count} high-confidence suggestions",
+    "bulk_accepting": "Accepting…",
+    "bulk_done": "{count} suggestions accepted"
+  },
+  "exercise_results": {
+    "tab": "Results grid",
+    "student": "Student",
+    "unknown_student": "Unknown student",
+    "total": "Total",
+    "question_short": "Q{number}",
+    "points_short": "pts",
+    "no_answer": "No answer",
+    "empty": "No students match these filters yet.",
+    "page": "Page {page} of {pages}",
+    "previous": "Previous",
+    "next": "Next",
+    "filter": {
+      "all": "All students",
+      "wrong": "Wrong answers only",
+      "awaiting": "Awaiting grading",
+      "all_cohorts": "All cohorts"
+    },
+    "state": {
+      "full": "Full marks",
+      "partial": "Partial credit",
+      "wrong": "Wrong",
+      "awaiting": "Awaiting grading",
+      "blank": "No answer"
+    },
+    "clusters": {
+      "title": "Answer groups",
+      "empty": "No answers to group yet.",
+      "count": "{count} answered this",
+      "blank": "{count} left this blank",
+      "parameterised_hint": "This question has variables, so answers are grouped separately for each student's numbers.",
+      "not_scorable": "This question type is graded by hand. You can still add feedback to a group.",
+      "grade": {
+        "full": "Full marks",
+        "partial": "Partial credit",
+        "wrong": "Wrong",
+        "mixed": "Mixed"
+      },
+      "mark_correct": "Mark correct",
+      "mark_partial": "Partial credit…",
+      "mark_wrong": "Mark wrong",
+      "add_feedback": "Add feedback",
+      "undo": "Undo decision",
+      "points_label": "Points for this group (max {max})",
+      "apply": "Apply and regrade",
+      "feedback_placeholder": "Feedback every student in this group will see",
+      "save_feedback": "Save feedback",
+      "has_feedback": "with feedback",
+      "decision_correct": "Marked correct for everyone",
+      "decision_wrong": "Marked wrong for everyone",
+      "decision_partial": "Marked {points} points for everyone",
+      "decision_feedback": "Feedback attached"
+    },
+    "snackbar": {
+      "applied": "Regraded {count} answers",
+      "undone": "Decision undone, regraded {count} answers"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Cancel",
+      "confirm_delete": "Delete skill \"{name}\"? It is removed from every question it is tagged on.",
+      "create": "Create skill",
+      "delete": "Delete",
+      "edit": "Edit",
+      "import": "Import CSV",
+      "more": "Skill actions",
+      "save": "Save"
+    },
+    "empty": {
+      "description": "Create skills one by one or import a standards framework from a CSV file.",
+      "title": "No skills yet"
+    },
+    "form": {
+      "code": "Code",
+      "create_title": "Create skill",
+      "description": "Description",
+      "edit_title": "Edit skill",
+      "framework": "Framework",
+      "name": "Name",
+      "no_parent": "No parent (top level)",
+      "parent": "Parent skill"
+    },
+    "heading": "Skills",
+    "import": {
+      "action": "Action",
+      "choose_file": "Choose a CSV file",
+      "confirm": "Import {count} skills",
+      "create": "Create",
+      "description": "Check a CSV file first. Nothing is saved until you confirm the preview. Required columns are code and name; optional columns are parent_code, description and framework.",
+      "error_line": "Line {line}: {message}",
+      "errors_heading": "{count} problems found. Fix them and choose the file again.",
+      "more_rows": "and {count} more rows",
+      "parent": "Parent",
+      "starters": {
+        "common_core": "Common Core Math (US)",
+        "heading": "Starter files",
+        "note": "Starter files are small samples, not the full framework. Add the standards your school teaches, then import the file.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} to create, {update} to update",
+      "title": "Import skills from CSV",
+      "update": "Update"
+    },
+    "mastery": {
+      "description": "Weighted by recency, from the share of points earned on questions tagged with each skill.",
+      "heading": "Skill mastery",
+      "level": {
+        "not_started": "Not started",
+        "learning": "Learning",
+        "proficient": "Proficient",
+        "mastered": "Mastered"
+      },
+      "no_data": "No student has answered questions tagged with this skill yet.",
+      "student_heading": "Skill mastery in this course"
+    },
+    "page_subtitle": "Define the skills and standards your questions build on, and see how students master them.",
+    "page_title": "Skills - ClassroomIO",
+    "picker": {
+      "accept": "Add",
+      "accepted": "Added",
+      "add": "Add skills",
+      "description": "Pick the skills this question assesses.",
+      "edit": "Edit skills",
+      "empty": "No skills found. Create skills in Skills settings first.",
+      "save_first": "Save the exercise to tag this question with skills.",
+      "suggest": "Suggest with AI",
+      "suggest_failed": "Could not get suggestions",
+      "suggestions": "Suggested skills",
+      "title": "Question skills"
+    },
+    "search_placeholder": "Search skills",
+    "snackbar": {
+      "created": "Skill created",
+      "deleted": "Skill deleted",
+      "fetch_failed": "Could not load skills",
+      "imported": "Imported {count} skills",
+      "updated": "Skill updated"
+    },
+    "table": {
+      "action": "Action",
+      "code": "Code",
+      "framework": "Framework",
+      "name": "Name",
+      "no_matches": "No skills match your search",
+      "questions": "Questions"
+    }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Assign practice to {count} learning",
+      "assign_to_cluster": "Assign practice to these {count}"
+    },
+    "default_title": "Practice: {name}",
+    "default_title_question": "Practice",
+    "dialog": {
+      "title": "Assign practice",
+      "description": "Creates a short practice exercise from fresh variants of the skill's questions and shows it only to the students you select.",
+      "name": "Exercise name",
+      "count": "Number of questions",
+      "students": "Students ({count} selected)",
+      "cancel": "Cancel",
+      "submit": "Assign practice"
+    },
+    "snackbar": {
+      "assigned": "Practice assigned to {count} students"
+    }
+  },
+  "question_analysis": {
+    "tab": "Question analysis",
+    "description": "Facility is the share of students who got the question fully right. Questions under {hard}% are flagged as too hard and over {easy}% as too easy. Discrimination below {discrimination} means the question does not separate strong and weak students.",
+    "empty": "No answers to analyse yet.",
+    "seconds": "{seconds}s",
+    "columns": {
+      "question": "Question",
+      "facility": "Facility",
+      "discrimination": "Discrimination",
+      "time": "Median time",
+      "wrong_answers": "Common wrong answers",
+      "flags": "Flags"
+    },
+    "flags": {
+      "too_hard": "Too hard",
+      "too_easy": "Too easy",
+      "poor_discrimination": "Poor discrimination"
+    }
+  },
+  "mathNotation": {
+    "title": "Math notation",
+    "org_description": "How numbers and operators are written and read in math questions. Student answers are graded with these settings.",
+    "course_description": "Override the organization's math notation for this course.",
+    "inherit": "Use organization default",
+    "decimal": {
+      "label": "Decimal separator",
+      "point": "Point (0.5)",
+      "comma": "Comma (0,5)",
+      "hint": "With a comma, students can type 0,5 and it is graded as 0.5."
+    },
+    "thousands": {
+      "label": "Thousands separator",
+      "none": "None (1000)",
+      "space": "Space (1 000)",
+      "comma": "Comma (1,000)",
+      "dot": "Dot (1.000)",
+      "hint": "Accepted in numeric answers and shown in numbers with five or more digits."
+    },
+    "multiplication": {
+      "label": "Multiplication sign",
+      "cross": "Cross (3 × 4)",
+      "dot": "Dot (3 · 4)",
+      "hint": "With a dot, × is shown as · in questions and options."
+    },
+    "unit": {
+      "label": "Unit system",
+      "metric": "Metric",
+      "imperial": "Imperial",
+      "hint": "A hint for authors and the AI assistant. It does not change grading."
+    },
+    "grade_band": {
+      "label": "Default keyboard level",
+      "primary": "Primary (numbers)",
+      "secondary": "Secondary (algebra)",
+      "advanced": "Advanced (calculus)",
+      "hint": "The keyboard students see when a question does not choose one."
+    },
+    "snackbar": {
+      "saved": "Math notation saved",
+      "error": "Could not save math notation"
     }
   }
 }

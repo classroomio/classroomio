@@ -9,6 +9,7 @@ import type {
   ExerciseRendererMode
 } from './exercise-types';
 import type { AnswerData } from './answer-data';
+import { MATH_QUESTION_LABEL_DEFAULTS, type MathQuestionLabelKey } from './math-labels';
 
 export interface ExerciseQuestionRenderContract {
   mode: ExerciseRendererMode;
@@ -29,6 +30,8 @@ export interface ExerciseQuestionListRenderContract {
   mode: ExerciseRendererMode;
   questions: ExerciseQuestionModel[];
   answersByKey?: Record<string, AnswerData>;
+  /** Points earned per question key; multi-part questions show the sum of their parts. */
+  scoresByKey?: Record<string, number>;
   submissions?: ExerciseSubmissionModel[];
   maxSubmissionItems?: number;
   disabled?: boolean;
@@ -46,6 +49,11 @@ export function getExerciseQuestionLabel(
   fallback = ''
 ): string {
   return labels?.[key] ?? fallback;
+}
+
+/** Reads a math renderer label, falling back to its English default. */
+export function getMathQuestionLabel(labels: ExerciseQuestionLabels | undefined, key: MathQuestionLabelKey): string {
+  return labels?.[key] ?? MATH_QUESTION_LABEL_DEFAULTS[key];
 }
 
 export function getExerciseQuestionContractKey(question: ExerciseQuestionModel, fallbackIndex = 0): string {

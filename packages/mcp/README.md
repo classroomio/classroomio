@@ -77,6 +77,12 @@ Current tools:
 - `create_tag_group`
 - `update_tag_group`
 - `set_course_tags`
+- `list_skills`
+- `create_skill`
+- `update_skill`
+- `import_skills`
+- `set_question_skills`
+- `get_exercise_skill_mastery`
 - `list_course_members`
 - `add_course_member`
 - `get_course_member`
@@ -238,6 +244,11 @@ Course exercise tools:
 - `add_exercise_section`
 - `update_exercise_section`
 - `delete_exercise_section`
+- `create_course_practice`
+- `get_exercise_answer_clusters`
+- `set_answer_cluster_decision`
+- `reset_answer_cluster_decision`
+- `regrade_course_exercise`
 - `notify_course_exercise`
 - `get_course_exercise_notify_status`
 - `list_exercise_templates`
@@ -261,7 +272,7 @@ These tools act as the person who created the key:
 
 `create_course_exercise` takes either `title` and `questions`, or a `templateId` from `list_exercise_templates`; with a template, only `sectionId`, `lessonId` and `order` may be sent alongside it. `create_course_exercise_from_template` was merged into it. `update_course_exercise` is a diff: send a question with its `id` to edit it, with `id` and `delete: true` to remove it, and without an `id` to add it; options work the same way. Question, option, and section ids must belong to the exercise. File upload, ordering, link, star rating, and video recording questions need a paid plan (403 `UPGRADE_REQUIRED` on Basic).
 
-For one question or exercise section, use `add_exercise_question`, `update_exercise_question` and `delete_exercise_question`, or `add_exercise_section`, `update_exercise_section` and `delete_exercise_section`. They never delete anything you leave out. `delete_exercise_question` and `update_course_exercise` fail with 409 when they would delete a question students have answered, unless `force` is true, which also deletes their answers. In `update_course_exercise`, sections follow the same diff rules as questions: sections you leave out are kept. Exercise changes apply immediately, also on published courses, and past submissions are not regraded.
+For one question or exercise section, use `add_exercise_question`, `update_exercise_question` and `delete_exercise_question`, or `add_exercise_section`, `update_exercise_section` and `delete_exercise_section`. They never delete anything you leave out. `delete_exercise_question` and `update_course_exercise` fail with 409 when they would delete a question students have answered, unless `force` is true, which also deletes their answers. In `update_course_exercise`, sections follow the same diff rules as questions: sections you leave out are kept. Exercise changes apply immediately, also on published courses, and past submissions are not regraded until you call `regrade_course_exercise`, which re-scores them against the current answer key and keeps manually awarded points. Math expression (17), worked solution (18) and matching (15) questions are accepted like the other types; `parentQuestionId` or `parts` build multi-part questions and `calculatorPolicy` sets the exercise calculator.
 
 `delete_course_exercise` and `delete_course_submission` are hard deletes. Deleting an exercise also deletes every submission for it.
 
@@ -667,6 +678,10 @@ Missing tags are created automatically. `tag_courses` uses the public API: it re
 
 The other tag tools map one-to-one to the public tag endpoints: `list_tags` (free, needs `course:read` and an org-member key creator), and `create_tag`, `update_tag`, `create_tag_group`, `update_tag_group` and `set_course_tags` (one credit each, need `course:tag:write` and an org-admin key creator). `set_course_tags` replaces a course's tags with the ids you send, so `[]` removes them all.
 
+Skill tools map to the public skills endpoints. `list_skills` and `get_exercise_skill_mastery` cost no credits, but `get_exercise_skill_mastery` needs a paid plan (403 `UPGRADE_REQUIRED` on Basic); `create_skill`, `update_skill`, `import_skills` and `set_question_skills` cost one credit each. `list_skills` needs `course:read` and an org-member key creator; `create_skill`, `update_skill` and `import_skills` need `course:tag:write` and an org-admin key creator; `set_question_skills` needs `course:exercise:write` and `get_exercise_skill_mastery` needs `course:exercise:read`, and both need a key creator who is a course tutor or admin, or an org admin. `import_skills` takes CSV text and a `dryRun` flag, and an import with any error saves nothing. `set_question_skills` replaces a question's skills, so `[]` removes them all.
+
+`create_course_practice` needs a paid plan (403 `UPGRADE_REQUIRED` on Basic) and costs one credit; it takes `courseId` plus a skill or chosen questions and the students to assign. `get_exercise_answer_clusters` is free, and `set_answer_cluster_decision` and `reset_answer_cluster_decision` cost one credit each; all three work on every plan. The get tool needs `course:exercise:read`, the set and reset tools need `course:exercise:write`, and all need a key creator who is a course tutor or admin, or an org admin.
+
 Exercise tools write directly into the course:
 
 - `list_course_exercises`
@@ -697,8 +712,13 @@ Supported `questionTypeId` values for exercise payloads:
 - `12` `STAR` - Star rating
 - `13` `VIDEO_RECORDING` - Video recording
 - `14` `THUMBS` - Thumbs up/down (open-ended poll with customizable Yes/No labels; no correct answer)
+- `15` `MATCHING` - Matching
+- `17` `MATH_EXPRESSION` - Math expression
+- `18` `WORKED_SOLUTION` - Worked solution
+- `19` `GRAPH_PLOT` - Graph plot (the student plots points, lines, segments or parabolas; graded geometrically against `settings.expected`)
+- `20` `GRAPH_READ` - Graph reading (the student reads a value or point off the graph in `settings.curves` and `settings.points`)
 
-`TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `MATCHING` and `HOTSPOT` are disabled and must not be used.
+`TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `HOTSPOT` is disabled and must not be used.
 
 ## Recommended Agent Behavior
 

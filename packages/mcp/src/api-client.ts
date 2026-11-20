@@ -3,6 +3,9 @@ import type { TAutomationCourseTagAssignment } from '@cio/utils/validation/tag';
 import type { TBlockLocaleCode } from '@cio/utils/validation/block';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import { pickTagColor } from '@cio/utils/validation/tag';
+import type { TPublicApiSkillsQuery, TSkillCreate, TSkillImport, TSkillUpdate } from '@cio/utils/validation/skill';
+import type { TPracticeCreate } from '@cio/utils/validation/practice';
+import type { TClusterOverrideBody } from '@cio/utils/validation/math';
 import { ErrorCodes } from '@cio/utils/constants';
 import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 
@@ -342,6 +345,45 @@ export class ClassroomIoApiClient {
     });
   }
 
+  async createCoursePractice(courseId: string, payload: TPracticeCreate) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/practice`, { method: 'POST', body: payload });
+  }
+
+  async getExerciseAnswerClusters(courseId: string, exerciseId: string, questionId: number) {
+    return this.request(
+      `/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}/answer-clusters`,
+      {
+        method: 'GET'
+      }
+    );
+  }
+
+  async setAnswerClusterDecision(
+    courseId: string,
+    exerciseId: string,
+    questionId: number,
+    payload: TClusterOverrideBody
+  ) {
+    return this.request(
+      `/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}/answer-clusters`,
+      {
+        method: 'PUT',
+        body: payload
+      }
+    );
+  }
+
+  async resetAnswerClusterDecision(courseId: string, exerciseId: string, questionId: number, key: string) {
+    return this.request(
+      `/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}/answer-clusters/reset`,
+      { method: 'POST', body: { key } }
+    );
+  }
+
+  async regradeCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/regrade`, { method: 'POST' });
+  }
+
   async notifyCourseExercise(courseId: string, exerciseId: string) {
     return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/notify`, { method: 'POST' });
   }
@@ -456,6 +498,35 @@ export class ClassroomIoApiClient {
     return this.request<{ tags: TCourseTag[] }>(`/public-api/v1/courses/${encodeURIComponent(courseId)}`, {
       method: 'PUT',
       body: { addTagIds }
+    });
+  }
+
+  async listSkills(query: Partial<TPublicApiSkillsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/skills${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async createSkill(payload: TSkillCreate) {
+    return this.request('/public-api/v1/skills', { method: 'POST', body: payload });
+  }
+
+  async updateSkill(skillId: string, payload: TSkillUpdate) {
+    return this.request(`/public-api/v1/skills/${encodeURIComponent(skillId)}`, { method: 'PUT', body: payload });
+  }
+
+  async importSkills(payload: TSkillImport) {
+    return this.request('/public-api/v1/skills/import', { method: 'POST', body: payload });
+  }
+
+  async setQuestionSkills(courseId: string, exerciseId: string, questionId: number, skillIds: string[]) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}/skills`, {
+      method: 'PUT',
+      body: { skillIds }
+    });
+  }
+
+  async getExerciseSkillMastery(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/skill-mastery`, {
+      method: 'GET'
     });
   }
 

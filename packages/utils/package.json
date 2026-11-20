@@ -93,6 +93,14 @@
       "types": "./dist/lms/index.d.ts",
       "default": "./dist/lms/index.js"
     },
+    "./math": {
+      "types": "./dist/math/index.d.ts",
+      "default": "./dist/math/index.js"
+    },
+    "./skills": {
+      "types": "./dist/skills/index.d.ts",
+      "default": "./dist/skills/index.js"
+    },
     "./analytics": {
       "types": "./dist/analytics/index.d.ts",
       "default": "./dist/analytics/index.js"
@@ -110,7 +118,9 @@
   },
   "dependencies": {
     "@cio/question-types": "workspace:*",
-    "@cio/tsconfig": "workspace:*"
+    "@cio/tsconfig": "workspace:*",
+    "katex": "^0.16.25",
+    "mathml-to-latex": "^1.8.0"
   },
   "devDependencies": {
     "tsc-alias": "^1.8.16",

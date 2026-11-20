@@ -21,6 +21,7 @@ export const ZPublicApiCourseExerciseResponse = z.object({
   dueBy: nullableTimestamp,
   allowMultipleAttempts: z.boolean(),
   sectionDisplayMode: z.string().nullable().describe('one_question | all_questions'),
+  calculatorPolicy: z.string().describe('none | four_function | scientific | graphing'),
   completionPolicy: z.string().describe('submitted | passed | none'),
   passThreshold: z.number().nullable(),
   createdAt: nullableTimestamp,
@@ -36,6 +37,10 @@ export const ZPublicApiExerciseQuestionResponse = z.object({
   order: z.number(),
   settings,
   exerciseSectionId: z.string().uuid().nullable(),
+  parentQuestionId: z
+    .number()
+    .nullable()
+    .describe('The stem question this question is a part of; null for ordinary questions and stems'),
   options: z.array(
     z.object({
       id: z.number(),
@@ -60,6 +65,36 @@ export const ZPublicApiExerciseSectionResponse = z.object({
 export const ZPublicApiCourseExerciseDetailResponse = ZPublicApiCourseExerciseResponse.extend({
   questions: z.array(ZPublicApiExerciseQuestionResponse),
   sections: z.array(ZPublicApiExerciseSectionResponse)
+});
+
+export const ZPublicApiRegradeExerciseResponse = z.object({
+  submissionsChecked: z.number(),
+  submissionsChanged: z.number(),
+  answersChanged: z.number().describe('Answers whose points or stored grading changed')
+});
+
+export const ZPublicApiAnswerClustersResponse = z.object({
+  questionId: z.number(),
+  points: z.number(),
+  canScore: z.boolean().describe('False for question types whose answers cannot be scored by a group decision'),
+  isParameterised: z.boolean(),
+  answered: z.number(),
+  blank: z.number(),
+  clusters: z
+    .array(z.record(z.string(), z.unknown()))
+    .describe('Groups of equal answers; each has a key, a label, a count and the students in it')
+});
+
+export const ZPublicApiClusterDecisionResponse = z.object({
+  regrade: ZPublicApiRegradeExerciseResponse,
+  clusters: ZPublicApiAnswerClustersResponse
+});
+
+export const ZPublicApiPracticeSetResponse = z.object({
+  exerciseId: z.string(),
+  title: z.string(),
+  questionCount: z.number(),
+  assignedCount: z.number().describe('Students the practice exercise is assigned to; it is hidden from everyone else')
 });
 
 export const ZPublicApiCourseExerciseNotifyResponse = z.object({

@@ -3,6 +3,7 @@
   import OptionImage from '../option-image.svelte';
   import { cn } from '../../../../tools';
   import OptionCorrectnessBadges from './option-correctness-badges.svelte';
+  import { MathText } from '../../../math-text';
 
   interface Props {
     option: { label: string; value?: string; isCorrect?: boolean };
@@ -28,7 +29,11 @@
   />
 
   <div>
-    {option.label || option.value || [label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ')}
+    <MathText
+      text={option.label ||
+        option.value ||
+        [label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ')}
+    />
     <OptionCorrectnessBadges {labels} showCorrect={option.isCorrect === true} />
   </div>
 </li>

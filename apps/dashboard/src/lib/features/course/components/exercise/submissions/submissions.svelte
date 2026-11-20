@@ -2,7 +2,10 @@
   import * as Tabs from '@cio/ui/base/tabs';
   import { Empty } from '@cio/ui/custom/empty';
   import ClipboardListIcon from '@lucide/svelte/icons/clipboard-list';
+  import { ExerciseSkillMastery } from '$features/skills/components';
+  import { QuestionAnalysis } from '$features/question-analysis/components';
   import Summary from './summary.svelte';
+  import ResultsGrid from './results-grid.svelte';
   import Individual from './individual.svelte';
   import { submissions } from './store';
   import { goto } from '$app/navigation';
@@ -14,18 +17,32 @@
   import { groupSubmissionsByStudentAndAttempt } from '$features/course/utils/exercise-progression-utils';
 
   interface Props {
+    courseId: string;
     exerciseId: string;
     submissions: SubmissionListItem[];
     enrolledStudentKeys?: string[];
   }
 
-  let { exerciseId = $bindable(''), submissions: submissionsData, enrolledStudentKeys = [] }: Props = $props();
+  let {
+    courseId,
+    exerciseId = $bindable(''),
+    submissions: submissionsData,
+    enrolledStudentKeys = []
+  }: Props = $props();
 
-  type SubmissionTab = 'summary' | 'individual';
+  type SubmissionTab = 'grid' | 'summary' | 'individual' | 'analysis';
 
   function normalizeSubmissionTab(tabParam: string | null): SubmissionTab {
     if (tabParam === 'individual') {
       return 'individual';
+    }
+
+    if (tabParam === 'analysis') {
+      return 'analysis';
+    }
+
+    if (tabParam === 'grid') {
+      return 'grid';
     }
 
     return 'summary';
@@ -91,17 +108,30 @@
 
 {#if $submissions.length > 0}
   <Tabs.Root bind:value={currentTab} class="w-full">
-    <Tabs.List class="grid w-full max-w-sm grid-cols-2">
+    <Tabs.List class="grid w-full max-w-xl grid-cols-4">
+      <Tabs.Trigger value="grid">{$t('exercise_results.tab')}</Tabs.Trigger>
       <Tabs.Trigger value="summary">
         {$t('course.navItem.lessons.exercises.all_exercises.analytics.summary.heading')}
       </Tabs.Trigger>
       <Tabs.Trigger value="individual">
         {$t('course.navItem.lessons.exercises.all_exercises.analytics.individual.heading')}
       </Tabs.Trigger>
+      <Tabs.Trigger value="analysis" data-testid="question-analysis-tab">{$t('question_analysis.tab')}</Tabs.Trigger>
     </Tabs.List>
+
+    <Tabs.Content value="grid" class="pt-2">
+      <div class="flex flex-col gap-4">
+        <ExerciseSkillMastery {courseId} {exerciseId} />
+        <ResultsGrid {courseId} {exerciseId} />
+      </div>
+    </Tabs.Content>
 
     <Tabs.Content value="summary" class="pt-2">
       <Summary isLoading={false} />
+    </Tabs.Content>
+
+    <Tabs.Content value="analysis" class="pt-2">
+      <QuestionAnalysis {courseId} {exerciseId} />
     </Tabs.Content>
 
     <Tabs.Content value="individual" class="pt-2">

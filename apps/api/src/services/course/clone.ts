@@ -26,7 +26,8 @@ import {
   getQuestionsByExerciseIds,
   stampCopiedTemplateUnits,
   syncOptionIdSequence,
-  updateExerciseSection
+  updateExerciseSection,
+  updateQuestions
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
@@ -420,6 +421,7 @@ async function cloneCourseWithClient(
             courseId: newCourse.id,
             sectionId: exercise.sectionId ? (sectionMap.get(exercise.sectionId) ?? null) : null,
             sectionDisplayMode: exercise.sectionDisplayMode,
+            calculatorPolicy: exercise.calculatorPolicy,
             order: exercise.order,
             isUnlocked: exercise.isUnlocked,
             allowMultipleAttempts: exercise.allowMultipleAttempts,
@@ -504,6 +506,14 @@ async function cloneCourseWithClient(
       questionMap.set(question.id, createdId);
     }
   });
+
+  const partLinks = oldQuestions.flatMap((question) => {
+    const id = question.id === undefined ? undefined : questionMap.get(question.id);
+    const parentId = question.parentQuestionId == null ? undefined : questionMap.get(question.parentQuestionId);
+
+    return id !== undefined && parentId !== undefined ? [{ id, data: { parentQuestionId: parentId } }] : [];
+  });
+  await updateQuestions(partLinks, tx);
 
   const optionCopies = replaceAssetIds(oldOptions, assetIds);
   const optionsToCreate = optionCopies

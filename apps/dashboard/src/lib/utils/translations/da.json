@@ -617,7 +617,8 @@
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
     "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
     "unlock_field": "Opgrader for at låse denne indstilling op",
-    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks."
+    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks.",
+    "paid_math_feature": "Inkluderet i betalte abonnementer. Opgrader for at bruge det."
   },
   "student_progress": {
     "courses": "Kurser",
@@ -1936,7 +1937,11 @@
                 "link": "Links",
                 "word_bank": "Ordbank",
                 "star": "Stjernebedømmelse",
-                "video_recording": "Videooptagelse"
+                "video_recording": "Videooptagelse",
+                "math_expression": "Matematisk udtryk",
+                "worked_solution": "Udregnet løsning",
+                "graph_plot": "Grafplot",
+                "graph_read": "Grafaflæsning"
               },
               "select_type": "Vælg type",
               "question_type_auto_gradable": "Auto",
@@ -2063,10 +2068,14 @@
                   "accepted_answers_label": "Accepterede svar"
                 },
                 "take": {
-                  "placeholder": "Indtast svar adskilt af kommaer"
+                  "placeholder": "Dit svar"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Accepterede svar (kommasepareret)"
+                  "accepted_answers_placeholder": "Accepteret svar",
+                  "blank_label": "Tomt felt",
+                  "add_alternative": "Tilføj accepteret svar",
+                  "add_blank": "Tilføj tomt felt",
+                  "helper": "Eleverne besvarer de tomme felter i rækkefølge. Et felt er korrekt, når det matcher et af dets accepterede svar."
                 },
                 "review": {
                   "your_answer_label": "Indsendt:"
@@ -3480,6 +3489,35 @@
     "write": "Skriv",
     "preview": "Forhåndsvisning"
   },
+  "math_editor": {
+    "insert_math": "Indsæt matematik",
+    "type_tab": "Skriv",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Matematik",
+    "palette_label": "Matematiske strukturer",
+    "latex_label": "LaTeX",
+    "preview_label": "Forhåndsvisning",
+    "preview_empty": "Skriv LaTeX for at se en forhåndsvisning",
+    "done": "Færdig",
+    "cancel": "Annuller",
+    "structures": {
+      "fraction": "Brøk",
+      "mixed_number": "Blandet tal",
+      "parentheses": "Parenteser",
+      "power": "Potens",
+      "subscript": "Sænket skrift",
+      "square_root": "Kvadratrod",
+      "nth_root": "n'te rod",
+      "absolute_value": "Numerisk værdi",
+      "system": "Ligningssystem",
+      "matrix": "Matrix",
+      "piecewise": "Stykvis funktion",
+      "integral": "Integral",
+      "sum": "Sum",
+      "limit": "Grænseværdi",
+      "derivative": "Afledt"
+    }
+  },
   "navigation": {
     "goto": "Gå til",
     "courses": "Kurser",
@@ -3629,7 +3667,8 @@
     "distribute": "Fordel",
     "tools": "Værktøjer",
     "marketing": "Markedsføring",
-    "org_analytics": "Akademi"
+    "org_analytics": "Akademi",
+    "skills": "Færdigheder"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -7361,5 +7400,637 @@
     },
     "close": "Luk",
     "dismiss": "Forstået"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Accepterede svar",
+      "accepted_answers_helper": "Skriv hvert korrekt svar, som en elev ville skrive det. Et hvilket som helst af dem accepteres.",
+      "add_answer": "Tilføj endnu et accepteret svar",
+      "answer_placeholder": "Skriv svaret",
+      "compare_label": "Hvordan skal svar sammenlignes?",
+      "compare": {
+        "equivalent": "Ækvivalent",
+        "exact_form": "Præcis form",
+        "numeric": "Numerisk",
+        "set": "Mængde eller liste",
+        "equivalent_hint": "Enhver algebraisk ens form accepteres, så 2(x+1) matcher 2x+2.",
+        "exact_form_hint": "Svaret skal være ens og skrevet i den form, du vælger.",
+        "numeric_hint": "Svaret skal ligge inden for den tolerance, du angiver.",
+        "set_hint": "Rækkefølgen er ligegyldig, så (1, 2) matcher (2, 1)."
+      },
+      "form_label": "Påkrævet form",
+      "form": {
+        "simplified": "Forenklet",
+        "factored": "Faktoriseret",
+        "expanded": "Udvidet",
+        "lowest_terms": "Forkortet mest muligt",
+        "rationalised_denominator": "Rationaliseret nævner"
+      },
+      "absolute_tolerance_label": "Absolut tolerance",
+      "relative_tolerance_label": "Relativ tolerance",
+      "significant_figures_label": "Betydende cifre",
+      "units_label": "Forventet enhed",
+      "units_placeholder": "For eksempel m, km/t eller kg",
+      "units_allow_conversion": "Accepter andre enheder af samme type, som 200 cm for 2 m",
+      "variables_label": "Variabler",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Bogstaver, der behandles som variabler. Lad feltet være tomt for at finde dem automatisk.",
+      "keyboard_label": "Tastatur",
+      "keyboard": {
+        "numeric": "Kun tal",
+        "algebra": "Algebra",
+        "calculus": "Analyse",
+        "greek": "Græske bogstaver",
+        "sets": "Mængder",
+        "full": "Alt"
+      },
+      "feedback_label": "Feedback til kendte forkerte svar",
+      "feedback_helper": "Viser et hint, når en elev giver et bestemt forkert svar.",
+      "feedback_answer_placeholder": "Forkert svar",
+      "feedback_text_placeholder": "Hint til eleven",
+      "add_feedback": "Tilføj feedback",
+      "remove": "Fjern",
+      "try_label": "Prøv et svar",
+      "try_helper": "Se, hvordan en elevs svar ville blive bedømt, før du udgiver.",
+      "try_placeholder": "Skriv et eksempel på et elevsvar",
+      "try_button": "Tjek",
+      "try_checking": "Tjekker…",
+      "try_needs_answer": "Tilføj først et accepteret svar.",
+      "allow_image_label": "Lad eleverne svare med et foto eller en tegning",
+      "allow_image_helper": "Tilføjer en Foto eller tegn-knap til svarfeltet. Indtastede svar bedømmes mere pålideligt, så dette er slået fra som standard."
+    },
+    "verdict": {
+      "equivalent": "Korrekt",
+      "not_simplified": "Værdien er rigtig, men svaret er ikke forenklet.",
+      "wrong_form": "Værdien er rigtig, men den har ikke den påkrævede form.",
+      "wrong_units": "Værdien er rigtig, men enhederne er forkerte.",
+      "wrong": "Forkert",
+      "needs_review": "Kunne ikke tjekkes automatisk. En lærer gennemgår det.",
+      "invalid": "Dette svar kunne ikke læses som matematik.",
+      "matched_label": "Matchede"
+    },
+    "misconception": {
+      "sign_error": "Tjek fortegnene: dit svar har den rigtige størrelse, men det modsatte fortegn.",
+      "forgot_distribute": "Det ser ud til, at en faktor eller et minus ikke er ganget ind på alle led i parentesen.",
+      "inverted_fraction": "Dit svar ligner den omvendte brøk af det rigtige svar. Tjek, hvilket tal der skal stå øverst.",
+      "forgot_flip_inequality": "Husk at vende uligheden, når du ganger eller dividerer begge sider med et negativt tal.",
+      "dropped_factor": "Det ser ud til, at en faktor er faldet ud undervejs. Sammenlign hvert led med det oprindelige."
+    },
+    "take": {
+      "placeholder": "Skriv dit svar",
+      "sr_label": "Dit svar"
+    },
+    "preview": {
+      "accepted_label": "Accepterede svar",
+      "compare_label": "Sammenligning",
+      "empty": "Ingen accepterede svar endnu."
+    },
+    "review": {
+      "your_answer": "Dit svar",
+      "expected": "Accepterede svar",
+      "result": "Resultat",
+      "not_graded": "Endnu ikke bedømt",
+      "feedback": "Feedback"
+    },
+    "numeric": {
+      "correct_value_hint": "Brøker, blandede tal, π og rødder accepteres."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Point for det endelige svar",
+        "working_points_label": "Point for udregningen",
+        "working_points_helper": "Bedømmes manuelt. Svardelen bedømmes automatisk.",
+        "working_inputs_label": "Hvordan kan eleverne vise deres udregning?"
+      },
+      "input": {
+        "typed": "Skrevne linjer",
+        "drawing": "Tegning",
+        "photo": "Foto"
+      },
+      "take": {
+        "answer_label": "Endeligt svar",
+        "working_label": "Din udregning",
+        "line_placeholder": "Skriv et trin",
+        "add_line": "Tilføj et trin",
+        "remove_line": "Fjern trin",
+        "draw_label": "Tegn din udregning",
+        "upload_photo": "Upload et foto af din udregning",
+        "remove_file": "Fjern",
+        "uploading": "Uploader…",
+        "upload_failed": "Uploadet mislykkedes. Prøv igen.",
+        "draw_canvas": "Tegneområde",
+        "draw_undo": "Fortryd",
+        "draw_clear": "Ryd",
+        "draw_save": "Tilføj tegning",
+        "draw_saving": "Gemmer…",
+        "drawing_alt": "Din tegnede udregning",
+        "photo_alt": "Dit foto af udregningen"
+      },
+      "review": {
+        "working_label": "Udregning",
+        "no_working": "Ingen udregning vist",
+        "answer_points": "Endeligt svar",
+        "working_points": "Udregning, bedømt af din lærer"
+      }
+    },
+    "parts": {
+      "score": "Point for delene",
+      "add": "Tilføj del",
+      "helper": "Delene (a), (b), (c) besvares og bedømmes hver for sig. Spørgsmålet ovenfor vises som deres fælles opgavetekst."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Tilføj de par, eleverne skal matche. Brug $…$ til matematik.",
+        "left_placeholder": "Element",
+        "right_placeholder": "Dets match",
+        "add_pair": "Tilføj par",
+        "remove_pair": "Fjern par"
+      },
+      "take": {
+        "choose": "Vælg match for hvert element."
+      },
+      "review": {
+        "expected": "Korrekt match",
+        "not_matched": "Ikke matchet"
+      }
+    },
+    "calculator_policy": {
+      "label": "Lommeregner",
+      "helper": "Vælg, hvilken lommeregner eleverne kan åbne under denne øvelse.",
+      "none": "Ingen lommeregner",
+      "four_function": "Fire regningsarter",
+      "scientific": "Videnskabelig",
+      "graphing": "Grafregner"
+    },
+    "calculator": {
+      "open": "Lommeregner",
+      "close": "Luk lommeregner",
+      "title": "Lommeregner",
+      "display": "Lommeregnerens display",
+      "clear": "Ryd",
+      "backspace": "Slet",
+      "equals": "Er lig med",
+      "degrees": "Grader",
+      "radians": "Radianer",
+      "answer": "Svar",
+      "error": "Fejl",
+      "graphing_loading": "Indlæser grafregner…",
+      "graphing_failed": "Grafregneren kunne ikke indlæses."
+    },
+    "desmos": {
+      "label": "Desmos API-nøgle",
+      "helper": "Valgfri. Aktiverer Desmos-grafregneren i øvelser sat til Graf. Uden nøgle får eleverne den videnskabelige lommeregner."
+    },
+    "variables": {
+      "heading": "Variabler",
+      "helper": "Giv hver elev forskellige tal. Brug variabelnavnene i dobbelte tuborgklammer i spørgsmålet og i svarnøglen.",
+      "enable": "Gør dette spørgsmål parametriseret",
+      "disable": "Fjern variabler",
+      "add": "Tilføj variabel",
+      "remove": "Fjern variabel",
+      "name_label": "Navn",
+      "type_label": "Type",
+      "type": {
+        "int": "Heltal",
+        "decimal": "Decimaltal",
+        "choice": "Valg"
+      },
+      "min_label": "Min",
+      "max_label": "Maks",
+      "step_label": "Trin",
+      "choices_label": "Værdier",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Begrænsninger",
+      "constraints_helper": "Én betingelse pr. linje, for eksempel a != 0 eller b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Svarformel",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "Svaret som et udtryk af variablerne. Skriv ordet answer i dobbelte tuborgklammer hvor som helst for at vise dets værdi.",
+      "integer_answer": "Svaret skal være et heltal",
+      "nonzero_answer": "Svaret må ikke være nul",
+      "use_answer": "Brug det beregnede svar som svarnøgle",
+      "preview": "Vis varianter",
+      "previewing": "Kontrollerer…",
+      "preview_answer": "Svar",
+      "preview_ok": "Nøgle bekræftet",
+      "preview_problem": "Tjek denne variant"
+    },
+    "rubric": {
+      "heading": "Bedømmelsesskema",
+      "helper": "List trinene i en fuldstændig løsning med point for hvert trin. AI bedømmer udregningen efter disse trin.",
+      "step_placeholder": "For eksempel: stiller ligningen korrekt op",
+      "points_label": "Point",
+      "add_step": "Tilføj trin",
+      "remove_step": "Fjern trin",
+      "total": "I alt",
+      "total_mismatch": "Trinene giver en anden sum end pointene for udregningen.",
+      "ai_label": "Foreslå point med AI",
+      "ai_helper": "En model læser udregningen efter skemaet og foreslår point. Eleverne ser intet, før du accepterer dem. Slået fra som standard."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Grafområde",
+        "x_min": "Venstre kant (x min)",
+        "x_max": "Højre kant (x maks)",
+        "y_min": "Nederste kant (y min)",
+        "y_max": "Øverste kant (y maks)",
+        "show_grid": "Vis gitter",
+        "snap_label": "Fastgør til gitterskridt",
+        "snap_helper": "Punkter fastgøres til multipla af dette tal. Brug 0 til fri placering.",
+        "x_label": "Navn på vandret akse",
+        "y_label": "Navn på lodret akse",
+        "tolerance_label": "Tolerance",
+        "tolerance_helper": "Hvor tæt, i grafenheder, et punkt eller en linje skal være for at tælle som rigtig.",
+        "range_invalid": "Hvert minimum skal være mindre end sit maksimum."
+      },
+      "tool": {
+        "point": "Punkt",
+        "line": "Linje",
+        "segment": "Linjestykke",
+        "parabola": "Parabel"
+      },
+      "plot": {
+        "tools_label": "Værktøjer eleverne kan bruge",
+        "reference_heading": "Rigtigt svar",
+        "reference_helper": "Tegn det rigtige svar på tavlen. Eleverne bedømmes efter det.",
+        "reference_empty": "Tegn mindst ét element som det rigtige svar.",
+        "preview_heading": "Elevvisning",
+        "preview_helper": "Det er den tavle, eleverne ser. De får kun de værktøjer, du har valgt."
+      },
+      "read": {
+        "curves_label": "Funktioner i grafen",
+        "curves_helper": "Skriv hver funktion af x, for eksempel x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Etiket (valgfrit)",
+        "add_curve": "Tilføj funktion",
+        "points_label": "Markerede punkter",
+        "points_helper": "Punkter tegnet på grafen, som eleverne kan aflæse.",
+        "add_point": "Tilføj punkt",
+        "point_label_placeholder": "Navn (valgfrit)",
+        "remove": "Fjern",
+        "answer_label": "Hvad skal eleverne aflæse på grafen?",
+        "kind": {
+          "value": "En enkelt værdi",
+          "point": "Et punkt (x, y)"
+        },
+        "value_label": "Rigtig værdi",
+        "x_label": "Rigtigt x",
+        "y_label": "Rigtigt y",
+        "tolerance_helper": "Svar inden for denne afstand fra det rigtige svar accepteres.",
+        "answer_empty": "Indtast det rigtige svar."
+      },
+      "take": {
+        "loading": "Indlæser graf…",
+        "failed": "Grafen kunne ikke indlæses.",
+        "undo": "Fortryd",
+        "clear": "Ryd",
+        "hint": {
+          "point": "Tryk på grafen for at placere et punkt. Træk i et punkt for at flytte det.",
+          "line": "Tryk to steder for at tegne en linje. Træk i et punkt for at flytte det.",
+          "segment": "Tryk på linjestykkets to endepunkter. Træk i et punkt for at flytte det.",
+          "parabola": "Tryk på toppunktet og derefter på endnu et punkt på parablen. Træk i et punkt for at flytte det."
+        },
+        "board_label": "Koordinatsystem",
+        "read": {
+          "value_label": "Dit svar",
+          "value_placeholder": "Indtast et tal",
+          "x_label": "x-koordinat",
+          "y_label": "y-koordinat"
+        }
+      },
+      "review": {
+        "student_legend": "Din graf (grøn er rigtig, rød er forkert)",
+        "expected_legend": "Rigtig graf (stiplet)",
+        "expected_read": "Rigtigt svar",
+        "matched": "{matched} af {total} rigtige"
+      },
+      "verdict": {
+        "correct": "Rigtigt",
+        "partial": "Nogle elementer er rigtige.",
+        "wrong": "Forkert",
+        "missing": "Der er ikke givet noget svar.",
+        "extra": "Alt det nødvendige er der, men der er tilføjet ekstra elementer.",
+        "not_set": "Dette spørgsmål har endnu ingen svarnøgle."
+      },
+      "preview": {
+        "empty": "Der er endnu ikke angivet et rigtigt svar."
+      }
+    },
+    "upgrade": {
+      "required": "Inkluderet i betalte abonnementer. Opgrader for at bruge det."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Foto eller tegning",
+      "photo_tab": "Foto",
+      "draw_tab": "Tegn",
+      "upload": "Upload et billede",
+      "take_photo": "Tag et billede",
+      "photo_hint": "Indsæt et skærmbillede, slip et billede eller upload et.",
+      "crop_hint": "Træk en boks rundt om den matematik, du vil bruge.",
+      "reset_crop": "Brug hele billedet",
+      "convert": "Konverter",
+      "converting": "Læser matematikken …",
+      "draw_hint": "Skriv matematikken her med fingeren, en pen eller musen.",
+      "clear": "Ryd",
+      "original": "Original",
+      "converted": "Konverteret matematik",
+      "insert": "Indsæt",
+      "no_math_found": "Der blev ikke fundet matematik i billedet.",
+      "parse_failed": "Dette kunne ikke læses som gyldig matematik. Ret det nedenfor, eller prøv igen.",
+      "invalid_math": "Dette er endnu ikke gyldig matematik.",
+      "unsupported_file": "Brug et PNG-, JPEG- eller WebP-billede.",
+      "image_too_large": "Billedet er for stort.",
+      "conversion_failed": "Konverteringen mislykkedes. Prøv igen."
+    },
+    "errors": {
+      "limit_reached": "Den gratis plans månedlige foto- og arbejdsarkskonverteringer er brugt. Opgrader for at fortsætte.",
+      "token_limit": "Dette arbejdsområde har brugt sin AI-kvote for måneden.",
+      "not_configured": "AI er ikke sat op på denne platform."
+    },
+    "worksheet": {
+      "import_button": "Importér fra arbejdsark",
+      "title": "Importér et arbejdsark",
+      "description": "Upload et foto eller en PDF af et arbejdsark. Hvert spørgsmål læses som matematik, får en type og et foreslået svar, og svaret kontrolleres, før du importerer.",
+      "drop_hint": "Vælg en PNG-, JPEG-, WebP- eller PDF-fil på op til 10 MB.",
+      "choose_file": "Vælg en fil",
+      "choose_another": "Vælg en anden fil",
+      "original": "Original",
+      "questions": "Fundne spørgsmål",
+      "reading": "Læser arbejdsarket …",
+      "verified": "Svar bekræftet",
+      "unverified": "Skal kontrolleres",
+      "unverified_hint": "Motoren kunne ikke bekræfte dette svar. Kontrollér det, og sæt kryds ved spørgsmålet for at importere det.",
+      "question_label": "Spørgsmålstekst",
+      "option_label": "Svarmulighed",
+      "answer_label": "Svar",
+      "correct_option": "Korrekt svarmulighed",
+      "import_selected": "Importér {count} spørgsmål",
+      "cancel": "Annuller",
+      "imported": "Spørgsmål importeret. Gennemgå dem, og gem derefter øvelsen.",
+      "no_questions": "Der blev ikke fundet spørgsmål i filen.",
+      "unsupported_file": "Brug en PNG-, JPEG-, WebP- eller PDF-fil.",
+      "file_too_large": "Filen er større end 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Matematisk udtryk",
+        "NUMERIC": "Numerisk",
+        "RADIO": "Enkelt svar"
+      }
+    }
+  },
+  "ai_review": {
+    "title": "AI-forslag",
+    "request": "Foreslå point med AI",
+    "requesting": "Gennemgår…",
+    "confidence": "Sikkerhed {confidence} %",
+    "first_wrong_step": "Første forkerte trin: {step}",
+    "rubric_changed": "Skemaet er ændret efter dette forslag.",
+    "suggested_points": "Foreslåede point for udregningen: {points} af {max}",
+    "model": "Model: {model}",
+    "student_hidden": "Eleverne ser intet, før du accepterer eller bedømmer dette.",
+    "accept": "Accepter",
+    "applied": "Tilføjet til karakteren",
+    "reject": "Afvis",
+    "decision": {
+      "accepted": "Accepteret",
+      "edited": "Accepteret med rettelser",
+      "rejected": "Afvist"
+    },
+    "bulk_hint": "{count} AI-forslag med høj sikkerhed venter på dig.",
+    "bulk_accept": "Accepter {count} sikre forslag",
+    "bulk_accepting": "Accepterer…",
+    "bulk_done": "{count} forslag accepteret"
+  },
+  "exercise_results": {
+    "tab": "Resultatgitter",
+    "student": "Elev",
+    "unknown_student": "Ukendt elev",
+    "total": "I alt",
+    "question_short": "S{number}",
+    "points_short": "p",
+    "no_answer": "Intet svar",
+    "empty": "Ingen elever matcher disse filtre endnu.",
+    "page": "Side {page} af {pages}",
+    "previous": "Forrige",
+    "next": "Næste",
+    "filter": {
+      "all": "Alle elever",
+      "wrong": "Kun forkerte svar",
+      "awaiting": "Afventer bedømmelse",
+      "all_cohorts": "Alle hold"
+    },
+    "state": {
+      "full": "Fuld point",
+      "partial": "Delvis point",
+      "wrong": "Forkert",
+      "awaiting": "Afventer bedømmelse",
+      "blank": "Intet svar"
+    },
+    "clusters": {
+      "title": "Svargrupper",
+      "empty": "Ingen svar at gruppere endnu.",
+      "count": "{count} svarede dette",
+      "blank": "{count} lod feltet stå tomt",
+      "parameterised_hint": "Dette spørgsmål har variabler, så svar grupperes separat for hver elevs tal.",
+      "not_scorable": "Denne spørgsmålstype bedømmes manuelt. Du kan stadig tilføje feedback til en gruppe.",
+      "grade": {
+        "full": "Fuld point",
+        "partial": "Delvis point",
+        "wrong": "Forkert",
+        "mixed": "Blandet"
+      },
+      "mark_correct": "Marker som rigtig",
+      "mark_partial": "Delvis point…",
+      "mark_wrong": "Marker som forkert",
+      "add_feedback": "Tilføj feedback",
+      "undo": "Fortryd beslutning",
+      "points_label": "Point for denne gruppe (maks. {max})",
+      "apply": "Anvend og bedøm igen",
+      "feedback_placeholder": "Feedback som alle elever i gruppen får at se",
+      "save_feedback": "Gem feedback",
+      "has_feedback": "med feedback",
+      "decision_correct": "Markeret som rigtig for alle",
+      "decision_wrong": "Markeret som forkert for alle",
+      "decision_partial": "Givet {points} point til alle",
+      "decision_feedback": "Feedback tilføjet"
+    },
+    "snackbar": {
+      "applied": "{count} svar bedømt igen",
+      "undone": "Beslutning fortrudt, {count} svar bedømt igen"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Annuller",
+      "confirm_delete": "Slet færdigheden \"{name}\"? Den fjernes fra alle spørgsmål, den er knyttet til.",
+      "create": "Opret færdighed",
+      "delete": "Slet",
+      "edit": "Rediger",
+      "import": "Importér CSV",
+      "more": "Handlinger for færdighed",
+      "save": "Gem"
+    },
+    "empty": {
+      "description": "Opret færdigheder enkeltvis eller importér en standardramme fra en CSV-fil.",
+      "title": "Ingen færdigheder endnu"
+    },
+    "form": {
+      "code": "Kode",
+      "create_title": "Opret færdighed",
+      "description": "Beskrivelse",
+      "edit_title": "Rediger færdighed",
+      "framework": "Ramme",
+      "name": "Navn",
+      "no_parent": "Ingen overordnet (øverste niveau)",
+      "parent": "Overordnet færdighed"
+    },
+    "heading": "Færdigheder",
+    "import": {
+      "action": "Handling",
+      "choose_file": "Vælg en CSV-fil",
+      "confirm": "Importér {count} færdigheder",
+      "create": "Opret",
+      "description": "Tjek først en CSV-fil. Intet gemmes, før du bekræfter forhåndsvisningen. Påkrævede kolonner er code og name; valgfrie kolonner er parent_code, description og framework.",
+      "error_line": "Linje {line}: {message}",
+      "errors_heading": "{count} problemer fundet. Ret dem, og vælg filen igen.",
+      "more_rows": "og {count} rækker mere",
+      "parent": "Overordnet",
+      "starters": {
+        "common_core": "Common Core Math (USA)",
+        "heading": "Startfiler",
+        "note": "Startfilerne er små eksempler, ikke den fulde ramme. Tilføj de standarder, din skole underviser i, og importér derefter filen.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} oprettes, {update} opdateres",
+      "title": "Importér færdigheder fra CSV",
+      "update": "Opdater"
+    },
+    "mastery": {
+      "description": "Vægtet efter aktualitet ud fra andelen af point opnået på spørgsmål mærket med hver færdighed.",
+      "heading": "Færdighedsbeherskelse",
+      "level": {
+        "not_started": "Ikke startet",
+        "learning": "Under læring",
+        "proficient": "Dygtig",
+        "mastered": "Mestret"
+      },
+      "no_data": "Ingen elever har endnu besvaret spørgsmål mærket med denne færdighed.",
+      "student_heading": "Færdighedsbeherskelse i dette kursus"
+    },
+    "page_subtitle": "Definér de færdigheder og standarder, dine spørgsmål bygger på, og se, hvordan eleverne mestrer dem.",
+    "page_title": "Færdigheder - ClassroomIO",
+    "picker": {
+      "accept": "Tilføj",
+      "accepted": "Tilføjet",
+      "add": "Tilføj færdigheder",
+      "description": "Vælg de færdigheder, dette spørgsmål vurderer.",
+      "edit": "Rediger færdigheder",
+      "empty": "Ingen færdigheder fundet. Opret først færdigheder i indstillingerne for færdigheder.",
+      "save_first": "Gem øvelsen for at knytte færdigheder til dette spørgsmål.",
+      "suggest": "Foreslå med AI",
+      "suggest_failed": "Kunne ikke hente forslag",
+      "suggestions": "Foreslåede færdigheder",
+      "title": "Spørgsmålets færdigheder"
+    },
+    "search_placeholder": "Søg efter færdigheder",
+    "snackbar": {
+      "created": "Færdighed oprettet",
+      "deleted": "Færdighed slettet",
+      "fetch_failed": "Kunne ikke indlæse færdigheder",
+      "imported": "{count} færdigheder importeret",
+      "updated": "Færdighed opdateret"
+    },
+    "table": {
+      "action": "Handling",
+      "code": "Kode",
+      "framework": "Ramme",
+      "name": "Navn",
+      "no_matches": "Ingen færdigheder matcher din søgning",
+      "questions": "Spørgsmål"
+    }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Tildel øvelse til de {count} i læring",
+      "assign_to_cluster": "Tildel øvelse til disse {count}"
+    },
+    "default_title": "Øvelse: {name}",
+    "default_title_question": "Øvelse",
+    "dialog": {
+      "title": "Tildel øvelse",
+      "description": "Opretter en kort øvelse med nye varianter af færdighedens spørgsmål og viser den kun for de valgte elever.",
+      "name": "Øvelsens navn",
+      "count": "Antal spørgsmål",
+      "students": "Elever ({count} valgt)",
+      "cancel": "Annuller",
+      "submit": "Tildel øvelse"
+    },
+    "snackbar": {
+      "assigned": "Øvelse tildelt {count} elever"
+    }
+  },
+  "question_analysis": {
+    "tab": "Spørgsmålsanalyse",
+    "description": "Sværhedsgrad er andelen af elever, der svarede helt rigtigt. Spørgsmål under {hard} % markeres som for svære og over {easy} % som for lette. Diskrimination under {discrimination} betyder, at spørgsmålet ikke adskiller stærke og svage elever.",
+    "empty": "Ingen svar at analysere endnu.",
+    "seconds": "{seconds} s",
+    "columns": {
+      "question": "Spørgsmål",
+      "facility": "Facilitet",
+      "discrimination": "Diskrimination",
+      "time": "Mediantid",
+      "wrong_answers": "Hyppige forkerte svar",
+      "flags": "Markeringer"
+    },
+    "flags": {
+      "too_hard": "For svær",
+      "too_easy": "For let",
+      "poor_discrimination": "Lav diskrimination"
+    }
+  },
+  "mathNotation": {
+    "title": "Matematisk notation",
+    "org_description": "Hvordan tal og operatorer skrives og læses i matematikspørgsmål. Elevernes svar bedømmes med disse indstillinger.",
+    "course_description": "Tilsidesæt organisationens matematiske notation for dette kursus.",
+    "inherit": "Brug organisationens standard",
+    "decimal": {
+      "label": "Decimalseparator",
+      "point": "Punktum (0.5)",
+      "comma": "Komma (0,5)",
+      "hint": "Med komma kan eleverne skrive 0,5, og det bedømmes som 0.5."
+    },
+    "thousands": {
+      "label": "Tusindtalsseparator",
+      "none": "Ingen (1000)",
+      "space": "Mellemrum (1 000)",
+      "comma": "Komma (1,000)",
+      "dot": "Punktum (1.000)",
+      "hint": "Accepteres i numeriske svar og vises i tal med fem eller flere cifre."
+    },
+    "multiplication": {
+      "label": "Multiplikationstegn",
+      "cross": "Kryds (3 × 4)",
+      "dot": "Prik (3 · 4)",
+      "hint": "Med en prik vises × som · i spørgsmål og valgmuligheder."
+    },
+    "unit": {
+      "label": "Enhedssystem",
+      "metric": "Metrisk",
+      "imperial": "Imperial",
+      "hint": "Et tip til forfattere og AI-assistenten. Det ændrer ikke bedømmelsen."
+    },
+    "grade_band": {
+      "label": "Standardtastaturniveau",
+      "primary": "Indskoling (tal)",
+      "secondary": "Udskoling (algebra)",
+      "advanced": "Avanceret (analyse)",
+      "hint": "Tastaturet eleverne ser, når et spørgsmål ikke vælger et."
+    },
+    "snackbar": {
+      "saved": "Matematisk notation gemt",
+      "error": "Matematisk notation kunne ikke gemmes"
+    }
   }
 }

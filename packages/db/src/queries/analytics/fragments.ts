@@ -1,6 +1,9 @@
 import { sql, type SQL } from 'drizzle-orm';
 
 import { QUESTION_TYPE_IDS } from '@cio/question-types';
+import { ANSWER_TIME_MAX_SECONDS } from '@cio/question-types/answer-timing';
+import { DISCRIMINATION_GROUP_SHARE } from '@cio/question-types/item-analysis';
+import { SKILL_MASTERY_CONFIG } from '@cio/question-types/skill-mastery';
 import { ROLE } from '@cio/utils/constants';
 import { ANALYTICS_THRESHOLDS } from '@cio/utils/constants/analytics';
 
@@ -801,6 +804,22 @@ function wrongAnswerSql(): SQL {
   END`;
 }
 
+const ISO_TIMESTAMP_PATTERN = '^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$';
+
+/**
+ * Seconds between the start and answer times the take view records in an answer, or NULL when either is missing or
+ * malformed. Requires the `qa` alias.
+ */
+function answerSecondsSql(): SQL {
+  return sql` CASE
+    WHEN qa.answer_data ->> 'startedAt' ~ ${ISO_TIMESTAMP_PATTERN} AND qa.answer_data ->> 'answeredAt' ~ ${ISO_TIMESTAMP_PATTERN}
+    THEN LEAST(
+      GREATEST(EXTRACT(EPOCH FROM ((qa.answer_data ->> 'answeredAt')::timestamptz - (qa.answer_data ->> 'startedAt')::timestamptz)), 0),
+      ${ANSWER_TIME_MAX_SECONDS}
+    )
+  END`;
+}
+
 /**
  * Rows for the assessment, question, lesson, login and member-growth sources. Expects the CTEs before it.
  */
@@ -835,6 +854,13 @@ function assessmentCtes(context: AnalyticsCompileContext): SQL {
     ),
     question_row AS (
       SELECT
+        qr.*,
+        CASE
+          WHEN CUME_DIST() OVER (PARTITION BY qr.question_id ORDER BY qr.total_ratio DESC) <= ${DISCRIMINATION_GROUP_SHARE}::numeric THEN 'upper'
+          WHEN CUME_DIST() OVER (PARTITION BY qr.question_id ORDER BY qr.total_ratio ASC) <= ${DISCRIMINATION_GROUP_SHARE}::numeric THEN 'lower'
+        END AS discrimination_group
+      FROM (
+      SELECT
         se.cohort_id,
         cohort.name AS cohort_name,
         se.profile_id,
@@ -847,15 +873,83 @@ function assessmentCtes(context: AnalyticsCompileContext): SQL {
         question.title AS question_title,
         COALESCE(ci.item_rank, 0) * 10000 + COALESCE(question."order", 0) AS question_rank,
         ROUND(COALESCE(qa.point, 0) * 100.0 / question.points) AS correct_pct,
-        CASE WHEN COALESCE(qa.point, 0) < question.points THEN ${wrongAnswerSql()} END AS wrong_answer
+        CASE WHEN COALESCE(qa.point, 0) < question.points THEN ${wrongAnswerSql()} END AS wrong_answer,
+        COALESCE(qa.point, 0) >= question.points AS is_correct,
+        COALESCE(qa.point, 0)::numeric / question.points::numeric AS score_ratio,
+        COALESCE(
+          (SELECT SUM(COALESCE(total_qa.point, 0)) FROM question_answer total_qa WHERE total_qa.submission_id = bs.submission_id),
+          0
+        )::numeric / NULLIF(sx.max_points, 0) AS total_ratio,
+        ${answerSecondsSql()} AS time_seconds,
+        CASE WHEN COALESCE(qa.point, 0) < question.points AND qa.answer_data IS NOT NULL
+          THEN jsonb_build_object('answer', qa.answer_data, 'points', COALESCE(qa.point, 0), 'student', profile.fullname)
+        END AS wrong_answer_json
       FROM best_submission bs
       JOIN scope_enrollment se ON se.group_member_id = bs.group_member_id
       JOIN scope_exercise sx ON sx.exercise_id = bs.exercise_id AND sx.course_id = se.course_id
       LEFT JOIN course_section question_section ON question_section.id = sx.section_id
       JOIN question ON question.exercise_id = bs.exercise_id AND question.points > 0
       LEFT JOIN question_answer qa ON qa.submission_id = bs.submission_id AND qa.question_id = question.id
+      LEFT JOIN profile ON profile.id = se.profile_id
       LEFT JOIN cohort ON cohort.id = se.cohort_id
       LEFT JOIN course_item ci ON ci.item_id = bs.exercise_id
+      ) qr
+    ),
+    skill_attempt AS (
+      SELECT
+        se.cohort_id,
+        cohort.name AS cohort_name,
+        se.profile_id,
+        profile.fullname,
+        qs.skill_id,
+        skill.code AS skill_code,
+        skill.name AS skill_name,
+        COALESCE(qa.point, 0)::numeric / question.points::numeric AS ratio,
+        ROW_NUMBER() OVER (
+          PARTITION BY se.profile_id, se.cohort_id, qs.skill_id
+          ORDER BY submission.created_at DESC, qa.id DESC
+        ) AS recency
+      FROM submission
+      JOIN scope_enrollment se ON se.group_member_id = submission.submitted_by
+      JOIN scope_exercise sx ON sx.exercise_id = submission.exercise_id AND sx.course_id = se.course_id
+      JOIN question_answer qa ON qa.submission_id = submission.id
+      JOIN question ON question.id = qa.question_id AND question.points > 0
+      JOIN question_skill qs ON qs.question_id = question.id
+      JOIN skill ON skill.id = qs.skill_id
+      JOIN profile ON profile.id = se.profile_id
+      LEFT JOIN cohort ON cohort.id = se.cohort_id
+      WHERE submission.grading_state = 'completed' AND ${inWindowSql(sql`submission.created_at`, context)}
+    ),
+    skill_score AS (
+      SELECT
+        sa.cohort_id,
+        sa.cohort_name,
+        sa.profile_id,
+        sa.fullname,
+        sa.skill_id,
+        sa.skill_code,
+        sa.skill_name,
+        COUNT(*)::int AS evidence_count,
+        ROUND(
+          SUM(sa.ratio * POWER(${SKILL_MASTERY_CONFIG.decay}::numeric, sa.recency - 1))
+            / SUM(POWER(${SKILL_MASTERY_CONFIG.decay}::numeric, sa.recency - 1)) * 100,
+          1
+        ) AS mastery_score
+      FROM skill_attempt sa
+      WHERE sa.recency <= ${SKILL_MASTERY_CONFIG.recentAttempts}
+      GROUP BY sa.cohort_id, sa.cohort_name, sa.profile_id, sa.fullname, sa.skill_id, sa.skill_code, sa.skill_name
+    ),
+    skill_row AS (
+      SELECT
+        ss.*,
+        CASE
+          WHEN ss.evidence_count < ${SKILL_MASTERY_CONFIG.minEvidence} THEN 'learning'
+          WHEN ss.mastery_score >= ${SKILL_MASTERY_CONFIG.masteredAt}::numeric
+            AND ss.evidence_count >= ${SKILL_MASTERY_CONFIG.masteredMinEvidence} THEN 'mastered'
+          WHEN ss.mastery_score >= ${SKILL_MASTERY_CONFIG.proficientAt}::numeric THEN 'proficient'
+          ELSE 'learning'
+        END AS mastery_level
+      FROM skill_score ss
     ),
     lesson_row AS (
       SELECT

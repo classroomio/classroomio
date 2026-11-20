@@ -1,5 +1,18 @@
 import type { ExerciseQuestionLabels } from '@cio/question-types';
+import { MATH_QUESTION_LABEL_DEFAULTS, type MathQuestionLabelKey } from '@cio/question-types';
 import { t } from '$lib/utils/functions/translations';
+
+function getMathLabels(): Partial<Record<MathQuestionLabelKey, string>> {
+  const labels: Partial<Record<MathQuestionLabelKey, string>> = {};
+  for (const key of Object.keys(MATH_QUESTION_LABEL_DEFAULTS) as MathQuestionLabelKey[]) {
+    labels[key] = t.get(`math_question.${key.slice('math.'.length)}`, {
+      matched: '{matched}',
+      total: '{total}'
+    });
+  }
+
+  return labels;
+}
 
 /**
  * Returns translated labels for ExerciseQuestion UI components.
@@ -10,6 +23,7 @@ import { t } from '$lib/utils/functions/translations';
  */
 export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
   return {
+    ...getMathLabels(),
     'common.option_prefix': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.common.option_prefix'
     ),
@@ -112,6 +126,31 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'question.media.next_image': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.question.media.next_image'
     ),
+    'question.math.insert': t.get('math_editor.insert_math'),
+    'question.math.type_tab': t.get('math_editor.type_tab'),
+    'question.math.latex_tab': t.get('math_editor.latex_tab'),
+    'question.math.field_label': t.get('math_editor.math_field_label'),
+    'question.math.palette_label': t.get('math_editor.palette_label'),
+    'question.math.structure.fraction': t.get('math_editor.structures.fraction'),
+    'question.math.structure.mixed_number': t.get('math_editor.structures.mixed_number'),
+    'question.math.structure.parentheses': t.get('math_editor.structures.parentheses'),
+    'question.math.structure.power': t.get('math_editor.structures.power'),
+    'question.math.structure.subscript': t.get('math_editor.structures.subscript'),
+    'question.math.structure.square_root': t.get('math_editor.structures.square_root'),
+    'question.math.structure.nth_root': t.get('math_editor.structures.nth_root'),
+    'question.math.structure.absolute_value': t.get('math_editor.structures.absolute_value'),
+    'question.math.structure.system': t.get('math_editor.structures.system'),
+    'question.math.structure.matrix': t.get('math_editor.structures.matrix'),
+    'question.math.structure.piecewise': t.get('math_editor.structures.piecewise'),
+    'question.math.structure.integral': t.get('math_editor.structures.integral'),
+    'question.math.structure.sum': t.get('math_editor.structures.sum'),
+    'question.math.structure.limit': t.get('math_editor.structures.limit'),
+    'question.math.structure.derivative': t.get('math_editor.structures.derivative'),
+    'question.math.latex_label': t.get('math_editor.latex_label'),
+    'question.math.preview_label': t.get('math_editor.preview_label'),
+    'question.math.preview_empty': t.get('math_editor.preview_empty'),
+    'question.math.done': t.get('math_editor.done'),
+    'question.math.cancel': t.get('math_editor.cancel'),
     'radio.edit.helper': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.radio.edit.helper'),
     'radio.edit.correct_selected_tooltip': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.radio.edit.correct_selected_tooltip'
@@ -233,6 +272,18 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     ),
     'fill_blank.edit.accepted_answers_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.accepted_answers_placeholder'
+    ),
+    'fill_blank.edit.blank_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.blank_label'
+    ),
+    'fill_blank.edit.add_alternative': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.add_alternative'
+    ),
+    'fill_blank.edit.add_blank': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.add_blank'
+    ),
+    'fill_blank.edit.helper': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.helper'
     ),
     'fill_blank.take.placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.take.placeholder'

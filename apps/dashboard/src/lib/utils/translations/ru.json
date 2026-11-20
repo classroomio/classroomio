@@ -617,7 +617,8 @@
     "enterprise_required": "Для этой функции требуется план Enterprise.",
     "public_api_required": "Перейдите на Early Adopter или Enterprise, чтобы получить доступ к публичному API.",
     "unlock_field": "Обновите версию, чтобы разблокировать эту настройку.",
-    "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки."
+    "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки.",
+    "paid_math_feature": "Входит в платные тарифы. Перейдите на платный тариф, чтобы использовать."
   },
   "student_progress": {
     "courses": "Курсы",
@@ -1942,7 +1943,11 @@
                 "link": "Ссылки",
                 "word_bank": "Банк слов",
                 "star": "Звездный рейтинг",
-                "video_recording": "Запись видео"
+                "video_recording": "Запись видео",
+                "math_expression": "Математическое выражение",
+                "worked_solution": "Решение с пояснениями",
+                "graph_plot": "Построение графика",
+                "graph_read": "Считывание с графика"
               },
               "select_type": "Выберите тип",
               "question_type_auto_gradable": "Авто",
@@ -2069,10 +2074,14 @@
                   "accepted_answers_label": "Принятые ответы"
                 },
                 "take": {
-                  "placeholder": "Введите ответы через запятую"
+                  "placeholder": "Ваш ответ"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Принятые ответы (через запятую)"
+                  "accepted_answers_placeholder": "Принятый ответ",
+                  "blank_label": "Пропуск",
+                  "add_alternative": "Добавить принятый ответ",
+                  "add_blank": "Добавить пропуск",
+                  "helper": "Учащиеся заполняют пропуски по порядку. Пропуск засчитывается, если ответ совпадает с любым из принятых ответов."
                 },
                 "review": {
                   "your_answer_label": "Отправлено:"
@@ -3480,6 +3489,35 @@
     "write": "Написать",
     "preview": "Предварительный просмотр"
   },
+  "math_editor": {
+    "insert_math": "Вставить формулу",
+    "type_tab": "Ввод",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Формула",
+    "palette_label": "Математические структуры",
+    "latex_label": "LaTeX",
+    "preview_label": "Предпросмотр",
+    "preview_empty": "Введите LaTeX, чтобы увидеть предпросмотр",
+    "done": "Готово",
+    "cancel": "Отмена",
+    "structures": {
+      "fraction": "Дробь",
+      "mixed_number": "Смешанное число",
+      "parentheses": "Скобки",
+      "power": "Степень",
+      "subscript": "Нижний индекс",
+      "square_root": "Квадратный корень",
+      "nth_root": "Корень n-й степени",
+      "absolute_value": "Модуль",
+      "system": "Система уравнений",
+      "matrix": "Матрица",
+      "piecewise": "Кусочная функция",
+      "integral": "Интеграл",
+      "sum": "Сумма",
+      "limit": "Предел",
+      "derivative": "Производная"
+    }
+  },
   "navigation": {
     "goto": "Перейти к",
     "courses": "Курсы",
@@ -3629,7 +3667,9 @@
     "distribute": "Распространение",
     "tools": "Инструменты",
     "marketing": "Маркетинг",
-    "org_analytics": "Академия"
+    "org_analytics": "Академия",
+    "stats": "Статистика",
+    "skills": "Навыки"
   },
   "media_manager": {
     "page_title": "Медиаменеджер — ClassroomIO",
@@ -5757,7 +5797,7 @@
       "no_results_title": "Нет виджетов, соответствующих вашим фильтрам.",
       "no_results_description": "Попробуйте другой поисковый запрос или очистите фильтры, чтобы снова увидеть все.",
       "no_results_page_title": "На этой странице ничего нет",
-      "no_results_page_description": "Эти фильтры соответствуют меньшему количеству виджетов, чем начинается на этой странице.",
+      "no_results_page_description": "Эти фильтры соответствуют меньшему количеству виджетов, чем указано на этой странице.",
       "back_to_first_page": "Вернуться на первую страницу"
     }
   },
@@ -6892,7 +6932,12 @@
         "completions": "завершений пока нет",
         "enrolments": "записей пока нет",
         "in_days": "нет за последние {days} дн."
-      }
+      },
+      "landing_views": "Посадочные просмотры",
+      "unique_visitors": "Уникальные посетители",
+      "course_page_views": "Просмотры страниц курса",
+      "enrollments": "Зачисления",
+      "range_description": "В выбранном диапазоне"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7081,12 +7126,7 @@
       "took_pass_mark": "Студенты получили оценку хотя бы за одно упражнение, получившее проходной балл.",
       "exercises_passed": "Упражнения с проходным баллом, по которым этот студент достиг оценки, из всех упражнений с проходным баллом в курсе."
     },
-    "actions": {
-      "send_reminder": "Отправить напоминание",
-      "queued": "В очереди",
-      "remind_all_overdue": "{count, plural, one {Напомнить всем # опоздавшему студенту} other {Напомнить всем # опоздавшим студентам}}",
-      "reminders_queued": "Напоминания в очереди"
-    },
+    "actions": "Действия",
     "target": {
       "set": "Установить цель",
       "edit": "Изменить цель",

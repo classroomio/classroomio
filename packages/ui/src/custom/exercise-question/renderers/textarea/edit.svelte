@@ -7,6 +7,7 @@
     type ExerciseQuestionRendererProps
   } from '@cio/question-types';
   import { NumberField } from '../../../number-field';
+  import RubricSection from '../math/rubric-section.svelte';
   import { Textarea } from '../../../../base/textarea';
 
   let { question, disabled = false, labels, onQuestionChange = () => {} }: ExerciseQuestionRendererProps = $props();
@@ -54,4 +55,12 @@
       />
     </div>
   </div>
+
+  <RubricSection
+    settings={question.settings}
+    workingPoints={Number(question.points ?? 0)}
+    {labels}
+    {disabled}
+    onPatchSettings={patchSettings}
+  />
 </div>

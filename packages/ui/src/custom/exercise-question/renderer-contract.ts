@@ -88,6 +88,27 @@ import { default as OrderingReview } from './renderers/ordering/review.svelte';
 import { default as ThumbsReview } from './renderers/thumbs/review.svelte';
 import { default as TrueFalseReview } from './renderers/true-false/review.svelte';
 import { default as StarReview } from './renderers/star/review.svelte';
+import { default as MathExpressionEdit } from './renderers/math-expression/edit.svelte';
+import { default as MathExpressionTake } from './renderers/math-expression/take.svelte';
+import { default as MathExpressionPreview } from './renderers/math-expression/preview.svelte';
+import { default as MathExpressionSubmission } from './renderers/math-expression/submission.svelte';
+import { default as MathExpressionReview } from './renderers/math-expression/review.svelte';
+import { default as WorkedSolutionEdit } from './renderers/worked-solution/edit.svelte';
+import { default as WorkedSolutionTake } from './renderers/worked-solution/take.svelte';
+import { default as WorkedSolutionPreview } from './renderers/worked-solution/preview.svelte';
+import { default as WorkedSolutionSubmission } from './renderers/worked-solution/submission.svelte';
+import { default as WorkedSolutionReview } from './renderers/worked-solution/review.svelte';
+import { default as MatchingReview } from './renderers/matching/review.svelte';
+import { default as GraphPlotEdit } from './renderers/graph-plot/edit.svelte';
+import { default as GraphPlotTake } from './renderers/graph-plot/take.svelte';
+import { default as GraphPlotPreview } from './renderers/graph-plot/preview.svelte';
+import { default as GraphPlotSubmission } from './renderers/graph-plot/submission.svelte';
+import { default as GraphPlotReview } from './renderers/graph-plot/review.svelte';
+import { default as GraphReadEdit } from './renderers/graph-read/edit.svelte';
+import { default as GraphReadTake } from './renderers/graph-read/take.svelte';
+import { default as GraphReadPreview } from './renderers/graph-read/preview.svelte';
+import { default as GraphReadSubmission } from './renderers/graph-read/submission.svelte';
+import { default as GraphReadReview } from './renderers/graph-read/review.svelte';
 
 type SharedRendererComponent = Component<ExerciseQuestionRendererProps>;
 
@@ -158,7 +179,8 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     edit: MatchingEdit,
     take: MatchingTake,
     preview: MatchingPreview,
-    submission: MatchingSubmission
+    submission: MatchingSubmission,
+    review: MatchingReview
   },
   [QUESTION_TYPE_KEY.ORDERING]: {
     edit: OrderingEdit,
@@ -199,6 +221,34 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     preview: VideoRecordingPreview,
     submission: VideoRecordingSubmission,
     review: VideoRecordingSubmission
+  },
+  [QUESTION_TYPE_KEY.MATH_EXPRESSION]: {
+    edit: MathExpressionEdit,
+    take: MathExpressionTake,
+    preview: MathExpressionPreview,
+    submission: MathExpressionSubmission,
+    review: MathExpressionReview
+  },
+  [QUESTION_TYPE_KEY.WORKED_SOLUTION]: {
+    edit: WorkedSolutionEdit,
+    take: WorkedSolutionTake,
+    preview: WorkedSolutionPreview,
+    submission: WorkedSolutionSubmission,
+    review: WorkedSolutionReview
+  },
+  [QUESTION_TYPE_KEY.GRAPH_PLOT]: {
+    edit: GraphPlotEdit,
+    take: GraphPlotTake,
+    preview: GraphPlotPreview,
+    submission: GraphPlotSubmission,
+    review: GraphPlotReview
+  },
+  [QUESTION_TYPE_KEY.GRAPH_READ]: {
+    edit: GraphReadEdit,
+    take: GraphReadTake,
+    preview: GraphReadPreview,
+    submission: GraphReadSubmission,
+    review: GraphReadReview
   }
 };
 

@@ -1,18 +1,18 @@
 import * as z from 'zod';
 
 import { QUESTION_TYPE } from '../constants';
-import { validateQuestionOptions } from '../exercise/exercise';
+import { validateQuestionOptions, ZCalculatorPolicy } from '../exercise/exercise';
 import { ZSlug } from '../shared/slug';
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
 
 /** The full type list for MCP tools; the API docs show it on the Question types guide. */
 export const PUBLIC_API_QUESTION_TYPES_NOTE =
-  'Question types: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
+  'Question types: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down, 15 matching, 17 math expression, 18 worked solution, 19 graph plot, 20 graph reading. True/false is auto-graded with settings.correctValue (boolean); fill in the blank is auto-graded with settings.acceptedAnswers, an array per blank of accepted alternatives such as [["1,000", "1000"], ["(2, 3)"]]; thumbs up/down is open-ended and not auto-graded. Matching is auto-graded with settings.pairs, an array of { left, right }. Math expression is auto-graded by algebraic equivalence with settings.acceptedAnswers (LaTeX strings, at least one), compare ({ mode: "equivalent" | "exact_form" | "numeric" | "set" }), units, variables and wrongAnswerFeedback. Worked solution takes the math expression settings plus answerPoints and workingInputs: the final answer is auto-graded and the working points wait for manual grading. Graph plot (19) is auto-graded geometrically against settings.expected, an array of { kind: "point", x, y }, { kind: "line" | "segment", from: { x, y }, to: { x, y } } or { kind: "parabola", vertex: { x, y }, through: { x, y } } (a parabola is its vertex plus one other point on it), with settings.board ({ xMin, xMax, yMin, yMax, grid, snap, xLabel, yLabel }), settings.tools (any of point, line, segment, parabola) and settings.tolerance in graph units; credit is the share of expected elements matched, reduced by extra elements. Graph reading (20) shows the graph in settings.curves (array of { expression: LaTeX function of x, label? }), settings.points (array of { x, y, label? }) and settings.board, and is auto-graded against settings.answer: { kind: "value", value, tolerance? } or { kind: "point", x, y, tolerance? }. Numeric also accepts LaTeX or fractions in settings.correctValue, with relativeTolerance and significantFigures. Math and numeric questions can be parameterised with settings.parameters (variables with ranges, constraints, answerFormula) and {{a}} or {{answer}} placeholders; a submission then sends the seed of the variant the student saw. Worked solution and paragraph questions can opt in to AI-suggested marking of working with settings.aiGrading (boolean) and settings.rubric ({ steps: [{ id, description, points }] }); a teacher must accept a suggestion before it counts. Wrap math in titles and options in $...$. A question is a part of a multi-part question when its parentQuestionId is the id of a stem question; send parts to create a stem with its parts in one call. A stem is not answered or graded itself, so give it 0 points. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic), and so do variants (settings.parameters) and settings.aiGrading. PUBLIC courses only accept auto-graded types.';
 
-const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; the Question types guide lists each type.';
+const QUESTION_TYPE_DESCRIPTION = 'Question type id: 1 to 15 or 17 to 20; the Question types guide lists each type.';
 
-/** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
+/** Question types the public API accepts; HOTSPOT (16) is disabled and excluded. */
 export const ZPublicApiQuestionTypeId = z
   .literal([
     QUESTION_TYPE.RADIO,
@@ -23,18 +23,24 @@ export const ZPublicApiQuestionTypeId = z
     QUESTION_TYPE.NUMERIC,
     QUESTION_TYPE.FILL_BLANK,
     QUESTION_TYPE.FILE_UPLOAD,
+    QUESTION_TYPE.MATCHING,
     QUESTION_TYPE.ORDERING,
     QUESTION_TYPE.LINK,
     QUESTION_TYPE.WORD_BANK,
     QUESTION_TYPE.STAR,
     QUESTION_TYPE.VIDEO_RECORDING,
-    QUESTION_TYPE.THUMBS
+    QUESTION_TYPE.THUMBS,
+    QUESTION_TYPE.MATH_EXPRESSION,
+    QUESTION_TYPE.WORKED_SOLUTION,
+    QUESTION_TYPE.GRAPH_PLOT,
+    QUESTION_TYPE.GRAPH_READ
   ])
   .describe(QUESTION_TYPE_DESCRIPTION);
 
 const MAX_QUESTIONS = 200;
 export const PUBLIC_API_MAX_QUESTION_OPTIONS = 50;
 const MAX_SECTIONS = 50;
+const MAX_QUESTION_PARTS = 26;
 
 const ZSettings = z.record(z.string(), z.unknown());
 
@@ -65,12 +71,21 @@ export const ZPublicApiCourseExercisesQuery = ZPublicApiPaginationQuery.extend({
 });
 export type TPublicApiCourseExercisesQuery = z.infer<typeof ZPublicApiCourseExercisesQuery>;
 
-export const ZPublicApiCreateExerciseQuestion = z
+const ZPublicApiParentQuestionId = z
+  .number()
+  .int()
+  .positive()
+  .nullable()
+  .optional()
+  .describe(
+    'Makes this question a part of the stem question with this id; null detaches it. The stem must not be a part itself.'
+  );
+
+const ZPublicApiQuestionPart = z
   .object({
     question: z.string().min(1),
     questionTypeId: ZPublicApiQuestionTypeId.default(QUESTION_TYPE.RADIO),
-    points: z.number().int().min(1),
-    order: z.number().int().min(0).optional(),
+    points: z.number().int().min(0),
     settings: ZSettings.optional(),
     options: z
       .array(
@@ -84,6 +99,41 @@ export const ZPublicApiCreateExerciseQuestion = z
       .optional()
   })
   .superRefine(validateQuestionOptions);
+
+const ZPublicApiQuestionParts = z
+  .array(ZPublicApiQuestionPart)
+  .min(1)
+  .max(MAX_QUESTION_PARTS)
+  .optional()
+  .describe(
+    'Creates a stem with these parts, each graded as its own question. The stem is not answered, so its type, points, settings and options are ignored.'
+  );
+
+export const ZPublicApiCreateExerciseQuestion = z
+  .object({
+    question: z.string().min(1),
+    questionTypeId: ZPublicApiQuestionTypeId.default(QUESTION_TYPE.RADIO),
+    points: z.number().int().min(0).describe('0 for the stem of a multi-part question'),
+    order: z.number().int().min(0).optional(),
+    settings: ZSettings.optional(),
+    parentQuestionId: ZPublicApiParentQuestionId,
+    parts: ZPublicApiQuestionParts,
+    options: z
+      .array(
+        z.object({
+          label: z.string().min(1),
+          isCorrect: z.boolean(),
+          settings: ZSettings.optional()
+        })
+      )
+      .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
+      .optional()
+  })
+  .superRefine((question, ctx) => {
+    if (question.parts) return;
+
+    validateQuestionOptions(question, ctx);
+  });
 export type TPublicApiCreateExerciseQuestion = z.infer<typeof ZPublicApiCreateExerciseQuestion>;
 
 export const ZPublicApiCreateCourseExercise = z
@@ -95,6 +145,9 @@ export const ZPublicApiCreateCourseExercise = z
     order: z.number().int().min(1),
     dueBy: z.string().datetime({ offset: true }).optional(),
     slug: ZSlug.optional(),
+    calculatorPolicy: ZCalculatorPolicy.optional().describe(
+      'The calculator students may use while taking the exercise: none (default), four_function, scientific or graphing'
+    ),
     questions: z.array(ZPublicApiCreateExerciseQuestion).max(MAX_QUESTIONS).optional(),
     templateId: z
       .number()
@@ -135,9 +188,11 @@ export const ZPublicApiUpdateExerciseQuestion = z
     questionTypeId: ZPublicApiQuestionTypeId.optional().describe(
       `${QUESTION_TYPE_DESCRIPTION} Defaults to 1 for a new question.`
     ),
-    points: z.number().int().min(1).optional().describe('Required for a new question'),
+    points: z.number().int().min(0).optional().describe('Required for a new question; 0 for a stem'),
     order: z.number().int().min(0).optional(),
     settings: ZSettings.optional(),
+    parentQuestionId: ZPublicApiParentQuestionId,
+    parts: ZPublicApiQuestionParts,
     options: z
       .array(
         z.object({
@@ -181,6 +236,10 @@ export const ZPublicApiUpdateExerciseQuestion = z
       }
     });
 
+    if (question.id && question.parts) {
+      ctx.addIssue({ code: 'custom', message: 'parts can only be sent for a new question', path: ['parts'] });
+    }
+
     if (question.id) return;
 
     if (question.question === undefined) {
@@ -189,6 +248,8 @@ export const ZPublicApiUpdateExerciseQuestion = z
     if (question.points === undefined) {
       ctx.addIssue({ code: 'custom', message: 'points is required for a new question', path: ['points'] });
     }
+
+    if (question.parts) return;
 
     validateQuestionOptions(
       {
@@ -260,6 +321,9 @@ export const ZPublicApiUpdateCourseExercise = z
     dueBy: z.string().datetime({ offset: true }).optional(),
     allowMultipleAttempts: z.boolean().optional(),
     slug: ZSlug.optional(),
+    calculatorPolicy: ZCalculatorPolicy.optional().describe(
+      'none | four_function | scientific | graphing; the calculator students may use while taking the exercise'
+    ),
     questions: z
       .array(ZPublicApiUpdateExerciseQuestion)
       .max(MAX_QUESTIONS)
@@ -318,9 +382,10 @@ export const ZPublicApiUpdateExerciseQuestionFields = z
     exerciseSectionId: z.string().uuid().nullable().optional(),
     question: z.string().min(1).optional(),
     questionTypeId: ZPublicApiQuestionTypeId.optional(),
-    points: z.number().int().min(1).optional(),
+    points: z.number().int().min(0).optional(),
     order: z.number().int().min(0).optional(),
     settings: ZSettings.optional(),
+    parentQuestionId: ZPublicApiParentQuestionId,
     addOptions: z.array(ZPublicApiNewQuestionOption).max(PUBLIC_API_MAX_QUESTION_OPTIONS).optional(),
     updateOptions: z
       .array(ZPublicApiQuestionOptionPatch)

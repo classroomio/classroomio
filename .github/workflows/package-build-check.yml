@@ -55,10 +55,17 @@ jobs:
       - name: Run dashboard tests
         run: pnpm --filter @cio/certificates build && pnpm --filter @cio/dashboard test
 
+      - name: Add swap for dashboard build
+        run: |
+          sudo fallocate -l 8G /mnt/extra.swap
+          sudo chmod 600 /mnt/extra.swap
+          sudo mkswap /mnt/extra.swap
+          sudo swapon /mnt/extra.swap
+
       - name: Build dashboard
         run: pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
         env:
-          NODE_OPTIONS: "--max-old-space-size=6144"
+          NODE_OPTIONS: "--max-old-space-size=10240"
 
       - name: Build API
         run: pnpm --filter @cio/api^... build && pnpm --filter @cio/api build

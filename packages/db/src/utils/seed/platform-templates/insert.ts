@@ -87,8 +87,8 @@ function questionSettings(question: LaunchQuestion) {
   }
 
   if (question.type === 'FILL_BLANK') {
-    const accepted = (question.options ?? []).filter((option) => option.correct).map((option) => option.label);
-    return { acceptedAnswers: accepted.join(', ') };
+    const alternatives = (question.options ?? []).filter((option) => option.correct).map((option) => option.label);
+    return { acceptedAnswers: [alternatives] };
   }
 
   if (question.type === 'NUMERIC') {

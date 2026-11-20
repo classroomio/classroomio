@@ -1,10 +1,11 @@
-import type { ExerciseQuestionLabels } from '@cio/question-types';
+import { MATH_QUESTION_LABEL_DEFAULTS, type ExerciseQuestionLabels } from '@cio/question-types';
 
 /**
  * English labels for QuestionTypePicker embed demos (no dashboard i18n).
  * Keep aligned with packages/storybook/src/molecules/exercise-question/question-labels.ts.
  */
 export const QUESTION_TYPE_PICKER_EXERCISE_LABELS: ExerciseQuestionLabels = {
+  ...MATH_QUESTION_LABEL_DEFAULTS,
   'common.option_prefix': 'Option',
   'common.remove': 'Remove',
   'common.add_option': 'Add option',
@@ -79,8 +80,13 @@ export const QUESTION_TYPE_PICKER_EXERCISE_LABELS: ExerciseQuestionLabels = {
   'star.take.helper': 'Select your rating.',
   'star.take.star_sr': 'Star {n} of {max}',
   'star.preview.correct_label': 'Correct answer',
-  'fill_blank.edit.accepted_answers_placeholder': 'Accepted answers (comma separated)',
-  'fill_blank.take.placeholder': 'Enter answers separated by commas',
+  'fill_blank.edit.accepted_answers_placeholder': 'Accepted answer',
+  'fill_blank.edit.blank_label': 'Blank',
+  'fill_blank.edit.add_alternative': 'Add accepted answer',
+  'fill_blank.edit.add_blank': 'Add blank',
+  'fill_blank.edit.helper':
+    'Students answer the blanks in order. Each blank is correct when it matches any of its accepted answers.',
+  'fill_blank.take.placeholder': 'Your answer',
   'fill_blank.preview.accepted_answers_label': 'Accepted answers',
   'fill_blank.review.your_answer_label': 'Submitted:',
   'word_bank.edit.template_label': 'Sentence template',

@@ -10,6 +10,7 @@
     shuffleWordBankChips,
     type WordBankChip
   } from './word-bank-utils';
+  import { MathText } from '../../../math-text';
 
   let {
     question,
@@ -155,11 +156,11 @@
 
   <div class="ui:bg-muted/30 ui:rounded-lg ui:border ui:p-4 ui:font-mono ui:text-sm ui:leading-relaxed">
     {#if blankCount === 0}
-      <span class="ui:text-muted-foreground">{template || label('common.not_set')}</span>
+      <span class="ui:text-muted-foreground"><MathText text={template || label('common.not_set')} /></span>
     {:else}
       {#each segments as segment, segmentIndex (segmentIndex)}
         {#if segment.type === 'text'}
-          <span>{segment.value}</span>
+          <span><MathText text={segment.value} /></span>
         {:else}
           {@const blankIndex = segment.index}
           {@const chipId = placementByBlank[blankIndex] ?? null}
@@ -177,7 +178,7 @@
             ondrop={(e) => onBlankDrop(e, blankIndex)}
           >
             {#if text}
-              <span in:scale={{ duration: 180, start: 0.92 }}>{text}</span>
+              <span in:scale={{ duration: 180, start: 0.92 }}><MathText {text} /></span>
             {:else}
               <span class="ui:text-muted-foreground ui:select-none">&nbsp;</span>
             {/if}
@@ -202,7 +203,7 @@
           onclick={() => onChipClick(chip)}
           ondragstart={(e) => onDragStart(e, chip.id)}
         >
-          {chip.label || '—'}
+          <MathText text={chip.label || '—'} />
         </button>
       {/each}
     </div>

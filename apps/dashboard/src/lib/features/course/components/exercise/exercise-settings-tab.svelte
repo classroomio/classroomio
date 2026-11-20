@@ -11,6 +11,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { slugifyTitle } from '@cio/utils/validation';
   import * as Select from '@cio/ui/base/select';
+  import { CALCULATOR_POLICIES, type CalculatorPolicy } from '@cio/question-types';
 
   type Props = {
     exerciseId: string;
@@ -39,12 +40,14 @@
     const allowMultipleAttempts = !!$questionnaire.allowMultipleAttempts;
     const completionPolicy = $questionnaire.completionPolicy ?? 'submitted';
     const passThreshold = $questionnaire.passThreshold ?? 100;
+    const calculatorPolicy = $questionnaire.calculatorPolicy ?? 'none';
     const slugPayload = isPublicCourse && slug ? slug : undefined;
 
     await exerciseApi.update(courseApi.course.id, exerciseId, {
       allowMultipleAttempts,
       completionPolicy,
       passThreshold,
+      calculatorPolicy,
       slug: slugPayload
     });
     saving = false;
@@ -72,6 +75,30 @@
         questionnaire.update((q) => ({ ...q, allowMultipleAttempts: checked }));
       }}
     />
+  </div>
+
+  <div class="rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+    <Label class="mb-2 block text-sm font-medium dark:text-gray-100">
+      {$t('math_question.calculator_policy.label')}
+    </Label>
+    <Select.Root
+      type="single"
+      value={$questionnaire.calculatorPolicy ?? 'none'}
+      onValueChange={(value) => {
+        const policy = CALCULATOR_POLICIES.find((candidate) => candidate === value);
+        if (policy) questionnaire.update((state) => ({ ...state, calculatorPolicy: policy }));
+      }}
+    >
+      <Select.Trigger class="w-full">
+        {$t(`math_question.calculator_policy.${$questionnaire.calculatorPolicy ?? 'none'}`)}
+      </Select.Trigger>
+      <Select.Content>
+        {#each CALCULATOR_POLICIES as policy (policy)}
+          <Select.Item value={policy}>{$t(`math_question.calculator_policy.${policy}`)}</Select.Item>
+        {/each}
+      </Select.Content>
+    </Select.Root>
+    <p class="ui:text-muted-foreground mt-3 text-sm">{$t('math_question.calculator_policy.helper')}</p>
   </div>
 
   <div class="rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">

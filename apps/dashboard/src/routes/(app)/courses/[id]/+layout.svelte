@@ -25,13 +25,18 @@
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
-  import { currentOrg, isOrgAdmin, orgs } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan, isOrgAdmin, orgs } from '$lib/utils/store/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { CourseMobileBottomNav } from '$features/course/components/mobile';
   import { getCourseProgress } from '$features/course/utils/content';
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
+  import { mathNotation, mathPlanGate, setMathImageConverter } from '@cio/ui/custom/math-text';
+  import { resolveMathNotation } from '@cio/question-types';
+  import { mathVisionApi } from '$features/math/api/math-vision.svelte';
+  import { getMathImageLabels } from '$features/math/utils/math-image-labels';
   import { ContentType } from '@cio/utils/constants/content';
   import type { CourseMember } from '$features/course/utils/types';
   import {
@@ -59,6 +64,14 @@
 
   let { children, data }: Props = $props();
   const courseId = $derived(data.courseId);
+  const mathImageLabels = $derived(getMathImageLabels($t));
+
+  setMathImageConverter({
+    get labels() {
+      return mathImageLabels;
+    },
+    convert: (image, source) => mathVisionApi.convertImage(courseId, image, source)
+  });
   const loadedCourseId = $derived(courseApi.course?.id);
   const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
@@ -66,6 +79,14 @@
   let sidebarOpen = $state(true);
   let hasLoadedSidebarOpen = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
+
+  $effect(() => {
+    mathPlanGate.set({ locked: $isFreePlan, onUpgrade: openUpgradeModal });
+  });
+
+  $effect(() => {
+    mathNotation.set(resolveMathNotation($currentOrg.settings?.math, courseApi.course?.metadata?.math));
+  });
 
   $effect(() => {
     const profileId = $profile.id;

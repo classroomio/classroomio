@@ -1,5 +1,10 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
-import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '../../utils/sanitize-html';
+import {
+  sanitizeHtml,
+  sanitizeMathText,
+  sanitizeOptionalHtml,
+  sanitizeQuestionSettings
+} from '../../utils/sanitize-html';
 import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@cio/db/types';
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
 import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
@@ -18,6 +23,7 @@ import {
   getExerciseSectionsByExerciseId,
   getExerciseWithRelationsOptimized,
   getExercisesByCourseId,
+  getHiddenExerciseIdsForStudent,
   getLMSExercises,
   getQuestionsByExerciseIds,
   lockExerciseSectionForUpdate,
@@ -38,7 +44,9 @@ import type { DbOrTxClient } from '@cio/db/drizzle';
 import {
   buildExerciseUpdateFields,
   computeExerciseDiff,
+  assertValidQuestionParents,
   createNewQuestionsWithOptions,
+  createQuestionsWithParents,
   fetchQuestionsAndOptions,
   transformQuestions,
   type QuestionWithRelations
@@ -67,12 +75,12 @@ type ExerciseWithCompletion = TExercise & {
 function sanitizeExerciseQuestions(questions: TExerciseCreate['questions'] | TExerciseUpdate['questions']) {
   return questions?.map((question) => ({
     ...question,
-    question: sanitizeHtml(question.question),
-    settings: question.settings ? sanitizeUnknownStrings(question.settings) : question.settings,
+    question: sanitizeMathText(question.question),
+    settings: question.settings ? sanitizeQuestionSettings(question.settings) : question.settings,
     options: question.options?.map((option) => ({
       ...option,
-      label: sanitizeHtml(option.label),
-      settings: option.settings ? sanitizeUnknownStrings(option.settings) : option.settings
+      label: sanitizeMathText(option.label),
+      settings: option.settings ? sanitizeQuestionSettings(option.settings) : option.settings
     }))
   }));
 }
@@ -237,6 +245,7 @@ async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
     sectionId: sanitizedData.sectionId || null,
     order: sanitizedData.order,
     dueBy: sanitizedData.dueBy || null,
+    calculatorPolicy: sanitizedData.calculatorPolicy ?? 'none',
     slug
   };
 }
@@ -283,16 +292,8 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
       const exercise = await insertExerciseRow(exerciseData, txClient);
 
       if (sanitizedData.questions && sanitizedData.questions.length > 0) {
-        const questionsData: TNewQuestion[] = sanitizedData.questions!.map((q) => ({
-          exerciseId: exercise.id,
-          title: q.question,
-          questionTypeId: q.questionTypeId || 1,
-          points: q.points ?? 1,
-          order: typeof q.order === 'number' ? q.order : undefined,
-          settings: q.settings ?? {}
-        }));
-
-        const questions = await createQuestions(questionsData, txClient);
+        assertValidQuestionParents([], sanitizedData.questions);
+        const questions = await createQuestionsWithParents(exercise.id, sanitizedData.questions, txClient);
         const hasOptions = sanitizedData.questions!.some((question) => (question.options?.length ?? 0) > 0);
 
         if (hasOptions) {
@@ -454,6 +455,11 @@ export async function updateExerciseService(
           ...q,
           options: currentOptions.filter((opt) => opt.questionId === q.id)
         }));
+
+        assertValidQuestionParents(
+          currentQuestions.filter((question): question is typeof question & { id: number } => question.id != null),
+          sanitizedData.questions
+        );
 
         // Compute diff between current DB state and incoming data
         const diff = computeExerciseDiff(currentQuestionsWithOptions, sanitizedData.questions);
@@ -930,15 +936,17 @@ export async function listExercises(
   profileId?: string
 ): Promise<ExerciseWithCompletion[]> {
   try {
-    const exercises = await getExercisesByCourseId(courseId, filters);
+    const allExercises = await getExercisesByCourseId(courseId, filters);
 
     if (!profileId) {
-      return exercises.map((exercise) => ({
+      return allExercises.map((exercise) => ({
         ...exercise,
         isComplete: false
       }));
     }
 
+    const hiddenExerciseIds = await getHiddenExerciseIdsForStudent(courseId, profileId);
+    const exercises = allExercises.filter((exercise) => !hiddenExerciseIds.has(exercise.id));
     const completedIds = await getExerciseCompletionsByProfile(
       exercises.map((exercise) => exercise.id),
       profileId
@@ -1007,7 +1015,7 @@ export async function createExerciseFromTemplate(
 
         for (const question of questions) {
           const { title, question_type, options, order, points } = question;
-          const questionSettings = sanitizeUnknownStrings(
+          const questionSettings = sanitizeQuestionSettings(
             (question as { settings?: Record<string, unknown> }).settings ?? {}
           );
 
@@ -1016,7 +1024,7 @@ export async function createExerciseFromTemplate(
             [
               {
                 exerciseId: exercise.id,
-                title: sanitizeHtml(title),
+                title: sanitizeMathText(title),
                 questionTypeId: question_type.id,
                 points: points ?? 1,
                 order: order || 0,
@@ -1035,9 +1043,9 @@ export async function createExerciseFromTemplate(
             // value column is UUID (default gen_random_uuid()); label is the display text only
             const optionsData: TNewOption[] = options.map((opt) => ({
               questionId: newQuestion.id,
-              label: sanitizeHtml(opt.label || ''),
+              label: sanitizeMathText(opt.label || ''),
               isCorrect: opt.is_correct || false,
-              settings: sanitizeUnknownStrings((opt as { settings?: Record<string, unknown> }).settings ?? {})
+              settings: sanitizeQuestionSettings((opt as { settings?: Record<string, unknown> }).settings ?? {})
             }));
 
             await createOptions(optionsData, txClient);

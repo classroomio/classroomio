@@ -40,6 +40,7 @@
   } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
+  import { MathNotationCard } from '$features/math-notation';
   import { settings } from '$features/course/utils/settings-store';
   import { getNavItemRoute } from '$features/course/utils/functions';
   import Copy from '@lucide/svelte/icons/copy';
@@ -834,6 +835,10 @@
       </Field.Field>
     </Field.Group>
   </SettingsCard>
+
+  {#if courseApi.course?.id}
+    <MathNotationCard courseId={courseApi.course.id} />
+  {/if}
 
   <AttentionHighlight
     id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES}

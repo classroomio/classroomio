@@ -184,6 +184,9 @@ export type TNewTagGroup = typeof schema.tagGroup.$inferInsert;
 export type TTag = typeof schema.tag.$inferSelect;
 export type TNewTag = typeof schema.tag.$inferInsert;
 
+export type TSkill = typeof schema.skill.$inferSelect;
+export type TNewSkill = typeof schema.skill.$inferInsert;
+
 export type TTagAssignment = typeof schema.tagAssignment.$inferSelect;
 export type TNewTagAssignment = typeof schema.tagAssignment.$inferInsert;
 export type TWidget = typeof schema.widget.$inferSelect;

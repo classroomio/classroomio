@@ -28,6 +28,7 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Organization Email Templates', label: 'Email Templates' },
       { tag: 'Organization Landing Page', label: 'Landing Page' },
       { tag: 'Tags' },
+      { tag: 'Skills' },
       { tag: 'Organization Domain', label: 'Domain' },
       { tag: 'Organization Customization', label: 'Customization' }
     ]
@@ -329,7 +330,7 @@ export default defineConfig({
           {
             label: 'Getting started',
             display: 'flat',
-            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types', '/api/analytics']
+            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types', '/api/analytics', '/api/skills']
           },
           { label: 'Reference', display: 'flat', items: [API_REFERENCE_ROUTE] },
           ...apiSidebarSections

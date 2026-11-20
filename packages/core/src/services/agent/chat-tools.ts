@@ -4,8 +4,10 @@ import { tool } from 'ai';
 import { CoursePlanSchema, getCourseTemplate } from '@cio/ai-assistant';
 import { getBlockRecipeMarkup } from '@cio/ai-assistant/tools';
 import { ADD_QUESTIONS_TOOL_DESCRIPTION, UPDATE_QUESTIONS_BINARY_TYPES_HINT } from '@cio/question-types';
+import { makeFixedVariants } from '@cio/question-types/variant-preview';
 import { AppError } from '@cio/utils/errors';
-import { assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
+import { assertNoPaidQuestionFeatures, assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
+import { assertAnswerKeysVerified } from '../exercise/answer-key';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
   createAgentRunEvent,
@@ -94,6 +96,7 @@ import {
   updateLessonBlockRequirementsParam,
   updateLessonBlockSettingsParam,
   updateLessonParam,
+  makeQuestionVariantsParam,
   updateQuestionsParam,
   updateSectionParam
 } from './agent-tool-schemas';
@@ -127,6 +130,7 @@ const DURABLE_AGENT_TOOL_NAMES = new Set([
   'update_exercise_section',
   'create_exercise_section',
   'add_questions',
+  'make_question_variants',
   'update_questions',
   'reorder_content',
   'update_course_landing_page',
@@ -1131,6 +1135,9 @@ export function buildAgentTools(
             args.questions.map((q) => q.questionTypeId),
             isOrgOnPaidPlan
           );
+          assertNoPaidQuestionFeatures(args.questions, isOrgOnPaidPlan);
+
+          assertAnswerKeysVerified(args.questions);
 
           if (args.lessonId) {
             await verifyLessonBelongsToCourse(args.lessonId, courseId);
@@ -1187,6 +1194,7 @@ export function buildAgentTools(
             isUnlocked: args.isUnlocked,
             allowMultipleAttempts: args.allowMultipleAttempts,
             completionPolicy: args.completionPolicy,
+            calculatorPolicy: args.calculatorPolicy,
             passThreshold: args.passThreshold
           });
 
@@ -1196,6 +1204,7 @@ export function buildAgentTools(
             description: updated.description ?? null,
             dueBy: updated.dueBy ?? null,
             completionPolicy: updated.completionPolicy ?? null,
+            calculatorPolicy: updated.calculatorPolicy,
             passThreshold: updated.passThreshold ?? null,
             updated: true
           };
@@ -1256,6 +1265,9 @@ export function buildAgentTools(
             args.questions.map((q) => q.questionTypeId),
             isOrgOnPaidPlan
           );
+          assertNoPaidQuestionFeatures(args.questions, isOrgOnPaidPlan);
+
+          assertAnswerKeysVerified(args.questions);
 
           await verifyExerciseBelongsToCourse(args.exerciseId, courseId);
 
@@ -1284,6 +1296,7 @@ export function buildAgentTools(
             points: q.points,
             order: q.order ?? nextOrder + i,
             settings: q.settings,
+            ...(q.parentQuestionId !== undefined ? { parentQuestionId: q.parentQuestionId } : {}),
             ...(args.exerciseSectionId !== undefined ? { exerciseSectionId: args.exerciseSectionId } : {}),
             options: q.options.map((o) => ({ label: o.label, isCorrect: o.isCorrect }))
           }));
@@ -1312,6 +1325,78 @@ export function buildAgentTools(
       }
     }),
 
+    make_question_variants: tool({
+      description:
+        'Make N separate questions from one parameterised question. The source question (an id from get_exercise_details) must define settings.parameters and {{placeholders}}; each copy is the question with different numbers filled in, its answer key computed by the Compute Engine and verified before anything is saved. The copies are added to the same exercise block and are fixed questions with no parameters.',
+      inputSchema: makeQuestionVariantsParam,
+      execute: async (args) => {
+        return executeAgentTool('make_question_variants', { orgId, userId, courseId, args }, async () => {
+          await verifyExerciseBelongsToCourse(args.exerciseId, courseId);
+
+          const existing = await getExercise(args.exerciseId);
+          const existingQuestions = existing.questions || [];
+          const source = existingQuestions.find((question) => Number(question.id) === args.questionId);
+          if (!source) {
+            throw new AppError('That question was not found on this exercise.', 'VALIDATION_ERROR', 404);
+          }
+
+          const variants = makeFixedVariants(
+            {
+              title: source.title,
+              settings: source.settings as Record<string, unknown> | null,
+              options: source.options.map((option) => ({ label: option.label ?? '', isCorrect: option.isCorrect }))
+            },
+            args.count
+          );
+          if (variants.length === 0) {
+            throw new AppError(
+              'That question has no settings.parameters. Add variables and {{placeholders}} with update_questions first.',
+              'VALIDATION_ERROR',
+              400
+            );
+          }
+
+          const newQuestions = variants.map(({ question }, index) => ({
+            question: question.title ?? '',
+            questionTypeId: source.questionTypeId,
+            points: Number(source.points),
+            order: existingQuestions.length + index,
+            settings: question.settings ?? {},
+            ...(source.exerciseSectionId ? { exerciseSectionId: source.exerciseSectionId } : {}),
+            options: (question.options ?? []).map((option) => ({
+              label: option.label ?? '',
+              isCorrect: Boolean((option as { isCorrect?: boolean }).isCorrect)
+            }))
+          }));
+
+          assertAnswerKeysVerified(newQuestions);
+
+          const allQuestions = [
+            ...existingQuestions.map((eq) => ({
+              id: Number(eq.id),
+              question: eq.title,
+              questionTypeId: eq.questionTypeId,
+              points: eq.points,
+              order: eq.order,
+              settings: eq.settings,
+              options: eq.options.map((o) => ({ id: Number(o.id), label: o.label || '', isCorrect: o.isCorrect }))
+            })),
+            ...newQuestions
+          ];
+
+          await updateExerciseService(args.exerciseId, { questions: allQuestions });
+
+          return {
+            exerciseId: args.exerciseId,
+            exerciseTitle: existing.title,
+            addedCount: newQuestions.length,
+            requestedCount: args.count,
+            totalCount: allQuestions.length
+          };
+        });
+      }
+    }),
+
     update_questions: tool({
       description: `Update existing questions in an exercise. Pass only fields you want to change; \`id\` identifies the question. Optional \`exerciseSectionId\` moves the question to another in-exercise block (use get_exercise_details section ids), or null to unassign. ${UPDATE_QUESTIONS_BINARY_TYPES_HINT} For NUMERIC, the correct answer is \`settings.correctValue\` (number) — do NOT add options to NUMERIC questions. For STAR use \`settings.correctValue\`. For WORD_BANK use \`settings.correctAnswers\` and \`settings.template\`. RADIO/CHECKBOX use \`options[].isCorrect\` (include option \`id\` to edit, omit \`id\` to add). \`settings\` is shallow-merged with existing settings. Omit \`options\` entirely to leave existing options untouched.`,
       inputSchema: updateQuestionsParam,
@@ -1321,6 +1406,7 @@ export function buildAgentTools(
             args.questions.map((q) => q.questionTypeId),
             isOrgOnPaidPlan
           );
+          assertNoPaidQuestionFeatures(args.questions, isOrgOnPaidPlan);
 
           await verifyExerciseBelongsToCourse(args.exerciseId, courseId);
 
@@ -1364,6 +1450,11 @@ export function buildAgentTools(
             })),
             args.questions,
             args.exerciseId
+          );
+
+          const verifyByQuestionId = new Map(args.questions.map((patch) => [patch.id, patch.verify]));
+          assertAnswerKeysVerified(
+            merged.map((question) => ({ ...question, verify: verifyByQuestionId.get(question.id) }))
           );
 
           await updateExerciseService(args.exerciseId, { questions: merged });

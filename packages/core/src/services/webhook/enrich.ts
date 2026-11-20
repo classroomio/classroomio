@@ -17,11 +17,11 @@ import {
   type TWebhookExerciseDetails,
   type TWebhookInviteDetails
 } from '@cio/db/queries/webhook';
+import { buildWebhookGrading } from '@cio/question-types';
 import { ROLE_LABELS } from '@cio/utils/constants';
 import type { TWebhookEventType } from '@cio/utils/constants/webhook';
 
 import { buildCertificateDownloadUrl, buildWebhookLinks } from './links';
-
 
 const EMPTY_CONTEXT: TWebhookEventContext = {
   profiles: new Map(),
@@ -335,6 +335,7 @@ function applySubmissionDetails(
   enriched.submittedAt = submittedAt;
   enriched.gradedAt = submission?.gradingState === 'completed' ? toIsoOrNull(submission.updatedAt) : null;
   enriched.isLate = submittedAt && dueBy ? new Date(submittedAt).getTime() > new Date(dueBy).getTime() : null;
+  enriched.grading = submission ? buildWebhookGrading(submission.answers ?? [], submission.skillTags ?? []) : null;
 }
 
 function applyLessonOrExerciseDetails(

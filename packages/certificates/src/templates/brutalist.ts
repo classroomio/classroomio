@@ -1,6 +1,12 @@
 import { CERTIFICATE_WIDTH } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
-import { escapeHtml, prepareCertificateRenderContext, renderSignatoryBlock, type TemplateRenderer } from './shared';
+import {
+  escapeHtml,
+  escapeHtmlWithMath,
+  prepareCertificateRenderContext,
+  renderSignatoryBlock,
+  type TemplateRenderer
+} from './shared';
 
 const FONTS = {
   display: CERTIFICATE_FONTS.archivoBlack,
@@ -134,7 +140,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
         </div>
         <div>
           <div class="k">Award</div>
-          <div class="v">${escapeHtml(data.courseName)}</div>
+          <div class="v">${escapeHtmlWithMath(data.courseName)}</div>
         </div>
         <div>
           <div class="k">Class</div>
@@ -144,7 +150,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       <div class="recipient-block">
         <div class="lbl">Awarded To</div>
         <div class="recipient" style="font-size: ${fontSizes.recipient}px;">${escapeHtml(data.recipientName)}</div>
-        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtml(description)}</div>` : ''}
+        ${description ? `<div class="description" style="font-size: ${fontSizes.description}px;">${escapeHtmlWithMath(description)}</div>` : ''}
       </div>
       <div class="stamp">Verified</div>
       <div class="footer">

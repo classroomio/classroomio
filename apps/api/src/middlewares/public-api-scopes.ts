@@ -25,7 +25,7 @@ const ANALYTICS_QUERY_PATH = new RegExp(`^(?:/public-api/v1)?/analytics/${ORG_AN
 const ANALYTICS_PATH =
   /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics|\/cohorts\/[^/]+\/analytics|\/organization\/overview|\/audience\/[^/]+\/analytics)(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
-const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
+const TAG_PATH = /^(?:\/public-api\/v1)?\/(?:tags|skills)(?:\/|$)/;
 const COURSE_ITEM_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/?$/;
 const COURSE_LIST_PATH = /^(?:\/public-api\/v1)?\/courses\/?$/;
 

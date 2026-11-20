@@ -73,6 +73,7 @@ import { assetsRouter } from '@api/routes/organization/assets';
 import { joinOrganization } from '@api/services/organization/join';
 import { markOrgPlanPastDue } from '@api/services/organization/payment-status';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
+import { organizationMathNotationRouter } from '@api/routes/organization/math-notation';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
 import { organizationStudentHomeRouter } from '@api/routes/organization/student-home';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -1058,5 +1059,6 @@ export const organizationRouter = new Hono()
   .route('/widgets', widgetsRouter)
   .route('/assets', assetsRouter)
   .route('/ai-tutor', organizationAiTutorRouter)
+  .route('/math-notation', organizationMathNotationRouter)
   .route('/student-home', organizationStudentHomeRouter)
   .route('/member/email-notifications', organizationMemberEmailNotificationsRouter);

@@ -1739,7 +1739,9 @@
     "exit_course": "Bu kurstan çık",
     "exit_cohort": "Bu gruptan çık",
     "marketing": "Pazarlama",
-    "org_analytics": "Akademi"
+    "org_analytics": "Akademi",
+    "stats": "Stats",
+    "skills": "Beceriler"
   },
   "pricing": {
     "plan_names": {
@@ -2109,6 +2111,35 @@
     "write": "Write",
     "preview": "Önizleme"
   },
+  "math_editor": {
+    "insert_math": "Matematik ekle",
+    "type_tab": "Yaz",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Matematik",
+    "palette_label": "Matematik yapıları",
+    "latex_label": "LaTeX",
+    "preview_label": "Önizleme",
+    "preview_empty": "Önizlemeyi görmek için LaTeX yazın",
+    "done": "Bitti",
+    "cancel": "İptal",
+    "structures": {
+      "fraction": "Kesir",
+      "mixed_number": "Tam sayılı kesir",
+      "parentheses": "Parantez",
+      "power": "Üs",
+      "subscript": "Alt simge",
+      "square_root": "Karekök",
+      "nth_root": "n. dereceden kök",
+      "absolute_value": "Mutlak değer",
+      "system": "Denklem sistemi",
+      "matrix": "Matris",
+      "piecewise": "Parçalı fonksiyon",
+      "integral": "İntegral",
+      "sum": "Toplam",
+      "limit": "Limit",
+      "derivative": "Türev"
+    }
+  },
   "components": {
     "quiz": {
       "title": "Sınavlar",
@@ -2397,8 +2428,8 @@
       "due_date": "Due",
       "valid_until": "Geçerlilik tarihi",
       "updated_at": "Güncellendi {date}",
-      "lessons_count": "{count, plural, one {# ders} other {# ders}}",
-      "exercises_count": "{count, plural, one {# alıştırma} other {# alıştırma}}",
+      "lessons_count": "{sayı, çoğul, bir {# lesson} diğer {# lessons}}",
+      "exercises_count": "{sayı, çoğul, bir {# exercise} diğer {# exercises}}",
       "tags_overflow_aria": "{count} daha fazla etiket",
       "list_view": {
         "title": "Title",
@@ -2631,7 +2662,7 @@
           "reply": "Yanıtla",
           "replying_to": "Replying to @{name}",
           "cancel_reply": "İptal",
-          "view_replies": "Görüntüle {count} {count, plural, =1 {yanıt} other {yanıt}}",
+          "view_replies": "Görüntüle {count} {sayı, çoğul, =1 {reply} diğer {replies}}",
           "hide_replies": "Yanıtları gizle",
           "delete": "Sil",
           "view_more": "Daha fazla yorumu görüntüle ({count})",
@@ -2642,9 +2673,9 @@
           "load_more_replies": "LDaha fazla yanıt yükle",
           "collapse_thread": "Başlığı daralt",
           "expand_thread": "Başlığı genişlet",
-          "more_replies": "{count} daha fazla {count, plural, =1 {yanıt} other {yanıt}}",
+          "more_replies": "{count} daha fazla {count, plural, =1 {reply} diğer {replies}}",
           "continue_thread": "Bu konuyu devam ettir",
-          "collapsed_summary": "{count} {count, plural, =1 {yanıt} other {yanıt}} gizli",
+          "collapsed_summary": "{count} {count, plural, =1 {reply} diğer {replies}} gizli",
           "back_to_comments": "Tüm yorumlara geri dön"
         },
         "user_avatar_alt": "Kullanıcı avatarı",
@@ -2998,7 +3029,7 @@
                 "upload_not_finished": "Yükleme tamamlanmadı. Bu videonun henüz dosyası yok, bu yüzden eklenemez.",
                 "cancel_upload": "Yüklemeyi iptal et",
                 "upload_cancelled": "Yükleme kullanıcı tarafından iptal edildi",
-                "max_files": "{count, plural, one {En fazla # dosya yükleyebilirsiniz} other {En fazla # dosya yükleyebilirsiniz}}",
+                "max_files": "{sayı, çoğul, bir {You can upload # file} diğer {You can upload # files}}",
                 "max_files_and_size": "(her biri en fazla {size})",
                 "google_drive_choose": "Google Drive'dan seçin",
                 "google_drive_opening": "Açılış seçici…",
@@ -3347,7 +3378,11 @@
                 "link": "Links",
                 "word_bank": "Kelime bankası",
                 "star": "Yıldız derecelendirmesi",
-                "video_recording": "Video kaydı"
+                "video_recording": "Video kaydı",
+                "math_expression": "Matematik ifadesi",
+                "worked_solution": "Adım adım çözüm",
+                "graph_plot": "Grafik çizme",
+                "graph_read": "Grafik okuma"
               }
             },
             "view_mode": {
@@ -3559,7 +3594,7 @@
                 },
                 "take": {
                   "helper": "Derecelendirmenizi seçin.",
-                  "star_sr": "Yıldız '{'n'}' / '{'max'}'"
+                  "star_sr": "'{'max'}''in '{'n'}'ini yıldızlayın"
                 },
                 "preview": {
                   "correct_label": "Doğru cevap"
@@ -3567,10 +3602,14 @@
               },
               "fill_blank": {
                 "edit": {
-                  "accepted_answers_placeholder": "Kabul edilen cevaplar (virgülle ayrılmış)"
+                  "accepted_answers_placeholder": "Kabul edilen cevap",
+                  "blank_label": "Boş",
+                  "add_alternative": "Kabul edilen cevap ekle",
+                  "add_blank": "Boşluk ekle",
+                  "helper": "Öğrenciler boşlukları sırayla doldurur. Bir boşluk, kabul edilen cevaplarından herhangi biriyle eşleştiğinde doğrudur."
                 },
                 "take": {
-                  "placeholder": "Cevapları virgülle ayırarak girin"
+                  "placeholder": "Cevabınız"
                 },
                 "preview": {
                   "accepted_answers_label": "Kabul edilen cevaplar"
@@ -3775,7 +3814,7 @@
           "title": "Sürüm geçmişi",
           "fetch_more_versions": "Daha fazla sürüm getir",
           "current_version": "Geçerli sürüm",
-          "edit_count": "{count, plural, one {# düzenleme} other {# düzenleme}}",
+          "edit_count": "{sayım, çoğul, bir {# edit} diğer {# edits}}",
           "today": "Bugün",
           "yesterday": "Dün",
           "kind": {
@@ -4970,7 +5009,8 @@
     "enterprise_required": "Bu özellik bir Kurumsal plan gerektirir.",
     "public_api_required": "Erişim için Erken Benimseyen veya Kurumsal sürümüne yükseltin genel API.",
     "unlock_field": "Bu ayarın kilidini açmak için yükseltme",
-    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin."
+    "webhooks_required": "Webhook'ları kullanmak için Early Adopter veya Enterprise planına geçin.",
+    "paid_math_feature": "Ücretli planlara dahildir. Kullanmak için planınızı yükseltin."
   },
   "automation": {
     "title": "Automation",
@@ -5769,16 +5809,16 @@
       }
     },
     "generic": {
-      "invalid_type": "Geçersiz tür{expected, select, undefined{} other{. Beklenen {expected}}}{received, select, undefined{} other{ (alınan {received})}}",
-      "too_big": "Değer çok büyük{maximum, select, undefined{} other{. En fazla {maximum}}}",
-      "too_small": "Değer çok küçük{minimum, select, undefined{} other{. En az {minimum}}}",
-      "invalid_format": "Geçersiz biçim{validation, select, undefined{} other{: {validation}}}",
+      "invalid_type": "Geçersiz tür{beklenen, seç, tanımsız{} diğer{. Beklenen {expected}}}{alındı, seç, tanımsız{} diğer{ (alındı {received})}}",
+      "too_big": "Değer çok büyük{maksimum, seç, tanımsız{} diğer{. Maksimum {maximum}}}",
+      "too_small": "Değer çok küçük{minimum, seçin, tanımsız{} diğer{. Minimum {minimum}}}",
+      "invalid_format": "Geçersiz biçim{doğrulama, seçme, tanımsız{} diğer{ {validation} için}}",
       "not_multiple_of": "Değer {multipleOf}",
-      "unrecognized_keys": "Tanınmayan anahtarlar içeriyor{keys, select, undefined{} other{: {keys}}}",
-      "invalid_union": "Sağlanan seçenekler için geçersiz değer{unionErrors, select, undefined{} other{. {unionErrors} seçenek başarısız oldu}}",
-      "invalid_key": "Geçersiz anahtar{key, select, undefined{} other{: {key}}}",
-      "invalid_element": "Geçersiz öğe{index, select, undefined{} other{: {index} dizininde}}",
-      "invalid_value": "Geçersiz değer{expected, select, undefined{} other{. Beklenen {expected}}}{received, select, undefined{} other{ (alınan {received})}}",
+      "unrecognized_keys": "Tanınmayan anahtarlar içerir{anahtarlar, seçme, tanımsız{} diğer{: {keys}}}",
+      "invalid_union": "Geçersiz sağlanan seçenekler için değer{unionErrors, seç, tanımsız{} diğer{. {unionErrors} seçenekleri başarısız oldu}}",
+      "invalid_key": "Geçersiz anahtar{anahtar, seç, tanımsız{} diğer{: {key}}}",
+      "invalid_element": "Geçersiz öğe{dizin, seç, tanımsız{} diğer{ {index}}} dizininde",
+      "invalid_value": "Geçersiz değer{beklenen, seç, tanımsız{} diğer{. Beklenen {expected}}}{alındı, seç, tanımsız{} diğer{ (alındı {received})}}",
       "custom": "{message}",
       "required_field": "Bu alan zorunludur",
       "invalid_field": "Geçersiz değer"
@@ -5956,12 +5996,12 @@
         "update_section": "Güncellenen bölüm: {title}",
         "create_lesson": "Oluşturulan ders: {title}",
         "update_lesson": "Güncellenen ders: {title}",
-        "update_lesson_content_fallback": "{count, plural, one {# karakter yazıldı} other {# karakter yazıldı}}",
+        "update_lesson_content_fallback": "Yazdı {count, plural, one {# character} diğer {# characters}}",
         "create_exercise": "Oluşturulan egzersiz «{title}» · {count, plural, one {# question} other {# questions}}",
         "update_exercise": "Güncellenen egzersiz: {title}",
         "update_exercise_section": "Güncellenen egzersiz bölümü: {title}",
-        "add_questions_fallback": "{count, plural, one {# soru eklendi} other {# soru eklendi}}",
-        "update_questions_fallback": "{count, plural, one {# soru güncellendi} other {# soru güncellendi}}",
+        "add_questions_fallback": "{count, plural, one {Added # question} diğer {Added # questions}}",
+        "update_questions_fallback": "{sayı, çoğul, bir {Updated # question} diğer {Updated # questions}}",
         "create_exercise_section": "Oluşturulan alıştırma bölümü: {title}",
         "get_course_structure": "Kurs yapısı yüklendi",
         "get_lesson_content": "Lders içeriği yüklendi",
@@ -6380,7 +6420,7 @@
       "open": "Şablonu aç",
       "cancel": "İptal",
       "loading": "Lşablon yükleniyor…",
-      "copying": "Kopyalanıyor {sections, plural, one {# bölüm} other {# bölüm}}, {lessons, plural, one {# ders} other {# ders}}…",
+      "copying": "Kopyalanıyor {bölümler, çoğul, bir {# section} diğer {# sections}}, {dersler, çoğul, bir {# lesson} diğer {# lessons}}…",
       "created": "Course created from {title}",
       "shows_off": "Gösterilir",
       "settings": "Ayarlar",
@@ -6392,10 +6432,10 @@
       "lesson_download": "LÖğrenciler dersleri indirebilir",
       "self_enrollment": "LÖğrenciler kendilerine katılabilir",
       "ai_tutor": "AI öğretmeni açık",
-      "compliance_retake": "{months, plural, one {Her ay} other {Her # ayda bir}} tekrar alın",
+      "compliance_retake": "Her {ayda bir tekrar alın, plural, bir {# month} diğer {# months}}",
       "compliance_mandatory": "Zorunlu",
       "counts": "{sections} bölümler · {lessons} dersler · {exercises} egzersizler",
-      "questions": "{count, plural, one {# soru} other {# soru}}"
+      "questions": "{say, çoğul, bir {# question} diğer {# questions}}"
     },
     "menu": {
       "open": "Open",
@@ -6443,16 +6483,16 @@
       "up_to_date": "Şablonla güncel.",
       "deleted": "{title} silindi. Bu kurs tüm içeriğini korur; çekilecek hiçbir şey kalmadı.",
       "deleted_unknown": "Bu şablon silindi. Bu kurs tüm içeriğini korur; çekilecek hiçbir şey kalmadı.",
-      "available_detail": "{count, plural, one {# güncelleme mevcut} other {# güncelleme mevcut}} — {list}.",
+      "available_detail": "{sayım, çoğul, bir {# update available} diğer {# updates available}} — {list}.",
       "join": "{rest} ve {last}",
-      "sections_count": "{count, plural, one {# bölüm} other {# bölüm}}",
-      "settings_count": "{count, plural, one {# ayar} other {# ayar}}",
+      "sections_count": "{sayı, çoğul, bir {# section} diğer {# sections}}",
+      "settings_count": "{sayı, çoğul, bir {# setting} diğer {# settings}}",
       "content": "İçerik",
       "settings": "Ayarlar",
       "select_all": "Tümünü seç",
       "new": "Yeni",
       "updated": "Güncellendi",
-      "locked": "{count, plural, one {# gönderim — güncellenemez} other {# gönderim — güncellenemez}}",
+      "locked": "{sayım, çoğul, bir {# submission — can't be updated} diğer {# submissions — can't be updated}}",
       "edited_locally": "Bunu tarihinde düzenlediniz {date} — çekme, değişikliklerinizin yerini alır.",
       "removed_locally": "Bunu kursunuzdan sildiniz.",
       "also_adds": "Ayrıca {kind}: {title}",
@@ -6462,8 +6502,8 @@
       "no": "No",
       "empty_value": "None",
       "custom_value": "Custom",
-      "selected": "{count, plural, one {# seçili} other {# seçili}}",
-      "pull": "{count, plural, one {# değişikliği çek} other {# değişikliği çek}}",
+      "selected": "{count, plural, bir {# selected} diğer {# selected}}",
+      "pull": "Pull {count, plural, bir {# change} diğer {# changes}}",
       "pulled": "Pulled {count, plural, one {# change} other {# changes}} from {title}",
       "kind": {
         "section": "Section",
@@ -6498,7 +6538,7 @@
         "aiTutor": "AI öğretmeni"
       },
       "section_description": "Bu kurs bir şablondan oluşturulmuştur. Değişiklikleri istediğiniz zaman çekin; hiçbir şey kendi başına değişmez.",
-      "updates_title": "{count, plural, one {# güncelleme mevcut} other {# güncelleme mevcut}}",
+      "updates_title": "{sayım, çoğul, bir {# update available} diğer {# updates available}}",
       "deleted_title": "Şablon silindi",
       "sheet_title": "Şablon güncellemeleri",
       "sheet_description": "{title}'ten, {date}'ten beri. Ne çekeceğinizi seçin; kursunuzdan hiçbir şey kaldırılmaz.",
@@ -6711,7 +6751,7 @@
     }
   },
   "analytics": {
-    "title": "Analitik",
+    "title": "Analytics",
     "updated_seconds_ago": "{count}s önce güncellendi",
     "updated_minutes_ago": "{count, plural, one {# dakika önce güncellendi} other {# dakika önce güncellendi}}",
     "retry": "Tekrar deneyin",
@@ -6872,7 +6912,12 @@
         "completions": "henüz tamamlama yok",
         "enrolments": "henüz kayıt yok",
         "in_days": "son {days} günde yok"
-      }
+      },
+      "landing_views": "Laçılış görünümleri",
+      "unique_visitors": "Benzersiz ziyaretçiler",
+      "course_page_views": "Kurs sayfası görüntülemeleri",
+      "enrollments": "Kayıtlar",
+      "range_description": "Seçili aralıkta"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7061,12 +7106,7 @@
       "took_pass_mark": "Öğrenciler geçme notu olan en az bir alıştırmaya not verdi.",
       "exercises_passed": "Kurstaki geçme notu olan tüm alıştırmalar arasında, bu öğrencinin işarete ulaştığı geçme notu olan alıştırmalar."
     },
-    "actions": {
-      "send_reminder": "Hatırlatıcı gönder",
-      "queued": "Sıraya alındı",
-      "remind_all_overdue": "Tüm {count, plural, one {#gecikmiş öğrenci} other {# gecikmiş öğrenciler}}'yu hatırlat",
-      "reminders_queued": "Hatırlatıcılar sıraya alındı"
-    },
+    "actions": "Eylemler",
     "target": {
       "set": "Hedefi belirle",
       "edit": "Hedefi düzenle",

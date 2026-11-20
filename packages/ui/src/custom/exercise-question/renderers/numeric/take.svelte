@@ -1,26 +1,35 @@
 <script lang="ts">
-  import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
-  import { NumberField } from '../../../number-field';
+  import { getMathQuestionLabel, normaliseNumberInput, type ExerciseQuestionRendererProps } from '@cio/question-types';
+  import { untrack } from 'svelte';
+  import { MathInput } from '../../../math-input';
+  import { mathNotation } from '../../../math-text';
+  import { latexToNumber } from './numeric-utils';
 
-  let {
-    question,
-    answer = null,
-    disabled = false,
-    labels,
-    onAnswerChange = () => {}
-  }: ExerciseQuestionRendererProps = $props();
+  let { answer = null, disabled = false, labels, onAnswerChange = () => {} }: ExerciseQuestionRendererProps = $props();
 
-  const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
-    getExerciseQuestionLabel(labels, key, fallback);
+  let draftLatex = $state(untrack(() => (answer?.type === 'NUMERIC' ? (answer.latex ?? String(answer.value)) : '')));
+
+  async function handleInput(nextLatex: string) {
+    draftLatex = nextLatex;
+    const normalisedLatex = normaliseNumberInput(nextLatex, $mathNotation) ?? nextLatex;
+    const value = await latexToNumber(normalisedLatex);
+    if (draftLatex !== nextLatex) return;
+
+    if (value === null) {
+      onAnswerChange(null);
+      return;
+    }
+
+    onAnswerChange({ type: 'NUMERIC', value, latex: nextLatex.trim() });
+  }
 </script>
 
-<div class="ui:space-y-2">
-  <NumberField
-    className="ui:w-full ui:max-w-[300px]"
-    value={answer?.type === 'NUMERIC' ? answer.value : null}
-    isDisabled={disabled}
-    placeholder={label('numeric.take.placeholder')}
-    allowEmpty
-    onValueChange={(next) => onAnswerChange(next === null ? null : { type: 'NUMERIC', value: next })}
-  />
-</div>
+<MathInput
+  class="ui:w-full ui:max-w-xs"
+  value={draftLatex}
+  keyboard="numeric"
+  {disabled}
+  placeholder={getMathQuestionLabel(labels, 'math.take.placeholder')}
+  ariaLabel={getMathQuestionLabel(labels, 'math.take.sr_label')}
+  onInput={(next) => handleInput(next.latex)}
+/>

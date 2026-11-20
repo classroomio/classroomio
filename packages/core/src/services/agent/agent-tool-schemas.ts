@@ -8,8 +8,10 @@ import {
 } from '@cio/ai-assistant/tools';
 import {
   ADD_QUESTIONS_TOOL_DESCRIPTION,
+  CALCULATOR_POLICIES,
   ENABLED_QUESTION_TYPE_REGISTRY,
   QUESTION_SETTINGS_SCHEMA_HINT,
+  QUESTION_VERIFY_SCHEMA_HINT,
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
 import { IMAGE_BLOCK_FITS, ZBlockLocale, ZBlockType } from '@cio/utils/validation/block';
@@ -230,6 +232,14 @@ export const getBlockRecipeParam = z.object({
   blockType: z.enum(BLOCK_RECIPE_TYPES).describe('The block type to fetch exact lesson-body markup for.')
 });
 
+const questionVerifySchema = z
+  .object({
+    expression: z.string().min(1).optional(),
+    equation: z.string().min(1).optional()
+  })
+  .optional()
+  .describe(QUESTION_VERIFY_SCHEMA_HINT);
+
 export const questionSchema = z.object({
   question: z.string().min(1),
   questionTypeId: zEnabledQuestionTypeId.describe(
@@ -238,6 +248,15 @@ export const questionSchema = z.object({
   points: z.number().min(1).default(1),
   order: z.number().int().min(0),
   settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
+  verify: questionVerifySchema,
+  parentQuestionId: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe(
+      'Only with add_questions: the id of an existing stem question, to add this question as one of its parts.'
+    ),
   options: z.array(z.object({ label: z.string().min(1), isCorrect: z.boolean() }))
 });
 
@@ -294,6 +313,12 @@ export const updateExerciseParam = z
       .optional()
       .describe(
         'Passing score percentage from 0 to 100. Use with completionPolicy "passed" when the teacher asks students to pass a threshold before progressing.'
+      ),
+    calculatorPolicy: z
+      .enum(CALCULATOR_POLICIES)
+      .optional()
+      .describe(
+        'The calculator students may use in this exercise: none, four_function, scientific or graphing. Use it for math exercises.'
       )
   })
   .refine(
@@ -307,6 +332,7 @@ export const updateExerciseParam = z
       data.isUnlocked !== undefined ||
       data.allowMultipleAttempts !== undefined ||
       data.completionPolicy !== undefined ||
+      data.calculatorPolicy !== undefined ||
       data.passThreshold !== undefined,
     {
       message: 'Provide at least one field to update'
@@ -391,6 +417,7 @@ export const updateQuestionPatchSchema = z
         'Move the question to this in-exercise block (get_exercise_details sections[].id). Use null to clear section assignment.'
       ),
     settings: updateQuestionSettingsSchema.optional(),
+    verify: questionVerifySchema,
     options: z.array(updateOptionSchema).optional()
   })
   .refine(
@@ -406,6 +433,12 @@ export const updateQuestionPatchSchema = z
       message: 'Provide at least one field to update besides id'
     }
   );
+
+export const makeQuestionVariantsParam = z.object({
+  exerciseId: z.string(),
+  questionId: z.number().int().describe('A question of this exercise whose settings.parameters define the variables.'),
+  count: z.number().int().min(2).max(10).describe('How many separate questions to create, each with different numbers.')
+});
 
 export const updateQuestionsParam = z.object({
   exerciseId: z.string(),

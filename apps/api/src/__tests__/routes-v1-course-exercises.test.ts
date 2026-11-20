@@ -135,7 +135,7 @@ describe('v1 course exercise routes', () => {
     ['neither title nor templateId', { order: 1 }],
     [
       'a disabled question type',
-      { title: 'Quiz', order: 1, questions: [{ question: 'Q', questionTypeId: 15, points: 1 }] }
+      { title: 'Quiz', order: 1, questions: [{ question: 'Q', questionTypeId: 16, points: 1 }] }
     ],
     [
       'a choice question without a correct option',

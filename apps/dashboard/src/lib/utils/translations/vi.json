@@ -617,7 +617,8 @@
     "enterprise_required": "Tính năng này yêu cầu gói Enterprise.",
     "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai.",
     "unlock_field": "Nâng cấp để mở khóa cài đặt này",
-    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook."
+    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook.",
+    "paid_math_feature": "Có trong các gói trả phí. Nâng cấp để sử dụng."
   },
   "student_progress": {
     "courses": "Khóa học",
@@ -1936,7 +1937,11 @@
                 "link": "Liên kết",
                 "word_bank": "Ngân hàng từ",
                 "star": "Xếp hạng sao",
-                "video_recording": "Quay video"
+                "video_recording": "Quay video",
+                "math_expression": "Biểu thức toán",
+                "worked_solution": "Lời giải chi tiết",
+                "graph_plot": "Vẽ đồ thị",
+                "graph_read": "Đọc đồ thị"
               },
               "select_type": "Chọn loại",
               "question_type_auto_gradable": "Tự động",
@@ -2063,10 +2068,14 @@
                   "accepted_answers_label": "Câu trả lời được chấp nhận"
                 },
                 "take": {
-                  "placeholder": "Nhập các câu trả lời cách nhau bằng dấu phẩy"
+                  "placeholder": "Câu trả lời của bạn"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Câu trả lời được chấp nhận (được phân tách bằng dấu phẩy)"
+                  "accepted_answers_placeholder": "Câu trả lời được chấp nhận",
+                  "blank_label": "Chỗ trống",
+                  "add_alternative": "Thêm câu trả lời được chấp nhận",
+                  "add_blank": "Thêm chỗ trống",
+                  "helper": "Học viên điền các chỗ trống theo thứ tự. Một chỗ trống đúng khi khớp với bất kỳ câu trả lời được chấp nhận nào của nó."
                 },
                 "review": {
                   "your_answer_label": "Đã gửi:"
@@ -3480,6 +3489,35 @@
     "write": "Viết",
     "preview": "Xem trước"
   },
+  "math_editor": {
+    "insert_math": "Chèn công thức toán",
+    "type_tab": "Nhập",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Toán học",
+    "palette_label": "Cấu trúc toán học",
+    "latex_label": "LaTeX",
+    "preview_label": "Xem trước",
+    "preview_empty": "Nhập LaTeX để xem trước",
+    "done": "Xong",
+    "cancel": "Hủy",
+    "structures": {
+      "fraction": "Phân số",
+      "mixed_number": "Hỗn số",
+      "parentheses": "Dấu ngoặc",
+      "power": "Lũy thừa",
+      "subscript": "Chỉ số dưới",
+      "square_root": "Căn bậc hai",
+      "nth_root": "Căn bậc n",
+      "absolute_value": "Giá trị tuyệt đối",
+      "system": "Hệ phương trình",
+      "matrix": "Ma trận",
+      "piecewise": "Hàm từng khúc",
+      "integral": "Tích phân",
+      "sum": "Tổng",
+      "limit": "Giới hạn",
+      "derivative": "Đạo hàm"
+    }
+  },
   "navigation": {
     "goto": "đi đến",
     "courses": "Khóa học",
@@ -3629,7 +3667,8 @@
     "distribute": "phân phối",
     "tools": "Công cụ",
     "marketing": "Tiếp thị",
-    "org_analytics": "Học viện"
+    "org_analytics": "Học viện",
+    "skills": "Kỹ năng"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -7361,5 +7400,637 @@
     },
     "close": "Đóng",
     "dismiss": "Hiểu rồi"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Câu trả lời được chấp nhận",
+      "accepted_answers_helper": "Nhập từng câu trả lời đúng như học viên sẽ nhập. Câu nào cũng được chấp nhận.",
+      "add_answer": "Thêm câu trả lời được chấp nhận khác",
+      "answer_placeholder": "Nhập câu trả lời",
+      "compare_label": "So sánh câu trả lời như thế nào?",
+      "compare": {
+        "equivalent": "Tương đương",
+        "exact_form": "Dạng chính xác",
+        "numeric": "Số",
+        "set": "Tập hợp hoặc danh sách",
+        "equivalent_hint": "Mọi dạng bằng nhau về đại số đều được chấp nhận, nên 2(x+1) khớp với 2x+2.",
+        "exact_form_hint": "Câu trả lời phải bằng nhau và viết theo dạng bạn chọn.",
+        "numeric_hint": "Câu trả lời phải nằm trong sai số bạn đặt.",
+        "set_hint": "Thứ tự không quan trọng, nên (1, 2) khớp với (2, 1)."
+      },
+      "form_label": "Dạng yêu cầu",
+      "form": {
+        "simplified": "Rút gọn",
+        "factored": "Phân tích thành nhân tử",
+        "expanded": "Khai triển",
+        "lowest_terms": "Phân số tối giản",
+        "rationalised_denominator": "Khử căn ở mẫu"
+      },
+      "absolute_tolerance_label": "Sai số tuyệt đối",
+      "relative_tolerance_label": "Sai số tương đối",
+      "significant_figures_label": "Chữ số có nghĩa",
+      "units_label": "Đơn vị mong đợi",
+      "units_placeholder": "Ví dụ m, km/h hoặc kg",
+      "units_allow_conversion": "Chấp nhận đơn vị khác cùng loại, như 200 cm cho 2 m",
+      "variables_label": "Biến",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Các chữ cái được coi là biến. Để trống để tự động phát hiện.",
+      "keyboard_label": "Bàn phím",
+      "keyboard": {
+        "numeric": "Chỉ số",
+        "algebra": "Đại số",
+        "calculus": "Giải tích",
+        "greek": "Chữ cái Hy Lạp",
+        "sets": "Tập hợp",
+        "full": "Tất cả"
+      },
+      "feedback_label": "Phản hồi cho các câu trả lời sai đã biết",
+      "feedback_helper": "Hiển thị gợi ý khi học viên đưa ra một câu trả lời sai cụ thể.",
+      "feedback_answer_placeholder": "Câu trả lời sai",
+      "feedback_text_placeholder": "Gợi ý cho học viên",
+      "add_feedback": "Thêm phản hồi",
+      "remove": "Xóa",
+      "try_label": "Thử một câu trả lời",
+      "try_helper": "Kiểm tra câu trả lời của học viên sẽ được chấm thế nào trước khi xuất bản.",
+      "try_placeholder": "Nhập một câu trả lời mẫu",
+      "try_button": "Kiểm tra",
+      "try_checking": "Đang kiểm tra…",
+      "try_needs_answer": "Hãy thêm một câu trả lời được chấp nhận trước.",
+      "allow_image_label": "Cho phép học viên trả lời bằng ảnh hoặc hình vẽ",
+      "allow_image_helper": "Thêm nút ảnh hoặc vẽ vào ô trả lời. Đáp án gõ được chấm đáng tin cậy hơn nên mặc định tắt."
+    },
+    "verdict": {
+      "equivalent": "Đúng",
+      "not_simplified": "Giá trị đúng nhưng câu trả lời chưa được rút gọn.",
+      "wrong_form": "Giá trị đúng nhưng không theo dạng yêu cầu.",
+      "wrong_units": "Giá trị đúng nhưng đơn vị sai.",
+      "wrong": "Sai",
+      "needs_review": "Không thể kiểm tra tự động. Giáo viên sẽ xem xét.",
+      "invalid": "Không thể đọc câu trả lời này như toán học.",
+      "matched_label": "Khớp"
+    },
+    "misconception": {
+      "sign_error": "Hãy kiểm tra dấu: đáp án của bạn có giá trị đúng nhưng ngược dấu.",
+      "forgot_distribute": "Có vẻ một thừa số hoặc dấu trừ chưa được áp dụng cho mọi số hạng trong ngoặc.",
+      "inverted_fraction": "Đáp án của bạn giống nghịch đảo của đáp án đúng. Hãy kiểm tra số nào nằm ở trên.",
+      "forgot_flip_inequality": "Hãy nhớ đổi chiều dấu bất đẳng thức khi nhân hoặc chia cả hai vế cho một số âm.",
+      "dropped_factor": "Có vẻ một thừa số đã bị bỏ sót trong quá trình tính. Hãy so sánh từng số hạng với bài gốc."
+    },
+    "take": {
+      "placeholder": "Nhập câu trả lời của bạn",
+      "sr_label": "Câu trả lời của bạn"
+    },
+    "preview": {
+      "accepted_label": "Câu trả lời được chấp nhận",
+      "compare_label": "So sánh",
+      "empty": "Chưa có câu trả lời được chấp nhận."
+    },
+    "review": {
+      "your_answer": "Câu trả lời của bạn",
+      "expected": "Câu trả lời được chấp nhận",
+      "result": "Kết quả",
+      "not_graded": "Chưa được chấm",
+      "feedback": "Phản hồi"
+    },
+    "numeric": {
+      "correct_value_hint": "Chấp nhận phân số, hỗn số, π và căn."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Điểm cho đáp án cuối cùng",
+        "working_points_label": "Điểm cho phần trình bày lời giải",
+        "working_points_helper": "Chấm thủ công. Phần đáp án được chấm tự động.",
+        "working_inputs_label": "Học viên có thể trình bày lời giải bằng cách nào?"
+      },
+      "input": {
+        "typed": "Các dòng gõ",
+        "drawing": "Vẽ",
+        "photo": "Ảnh"
+      },
+      "take": {
+        "answer_label": "Đáp án cuối cùng",
+        "working_label": "Lời giải của bạn",
+        "line_placeholder": "Viết một bước",
+        "add_line": "Thêm một bước",
+        "remove_line": "Xóa bước",
+        "draw_label": "Vẽ lời giải của bạn",
+        "upload_photo": "Tải lên ảnh lời giải của bạn",
+        "remove_file": "Xóa",
+        "uploading": "Đang tải lên…",
+        "upload_failed": "Tải lên thất bại. Hãy thử lại.",
+        "draw_canvas": "Vùng vẽ",
+        "draw_undo": "Hoàn tác",
+        "draw_clear": "Xóa hết",
+        "draw_save": "Thêm hình vẽ",
+        "draw_saving": "Đang lưu…",
+        "drawing_alt": "Lời giải bạn đã vẽ",
+        "photo_alt": "Ảnh lời giải của bạn"
+      },
+      "review": {
+        "working_label": "Lời giải",
+        "no_working": "Không có lời giải",
+        "answer_points": "Đáp án cuối cùng",
+        "working_points": "Lời giải, do giáo viên chấm"
+      }
+    },
+    "parts": {
+      "score": "Điểm các phần",
+      "add": "Thêm phần",
+      "helper": "Các phần (a), (b), (c) được trả lời và chấm điểm riêng. Câu hỏi bên trên là đề dùng chung."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Thêm các cặp mà học viên phải ghép. Dùng $…$ cho toán học.",
+        "left_placeholder": "Mục",
+        "right_placeholder": "Cặp ghép",
+        "add_pair": "Thêm cặp",
+        "remove_pair": "Xóa cặp"
+      },
+      "take": {
+        "choose": "Chọn cặp ghép cho từng mục."
+      },
+      "review": {
+        "expected": "Cặp ghép đúng",
+        "not_matched": "Chưa ghép"
+      }
+    },
+    "calculator_policy": {
+      "label": "Máy tính",
+      "helper": "Chọn máy tính mà học viên có thể mở khi làm bài tập này.",
+      "none": "Không có máy tính",
+      "four_function": "Bốn phép tính",
+      "scientific": "Khoa học",
+      "graphing": "Đồ thị"
+    },
+    "calculator": {
+      "open": "Máy tính",
+      "close": "Đóng máy tính",
+      "title": "Máy tính",
+      "display": "Màn hình máy tính",
+      "clear": "Xóa",
+      "backspace": "Xóa lùi",
+      "equals": "Bằng",
+      "degrees": "Độ",
+      "radians": "Radian",
+      "answer": "Đáp án",
+      "error": "Lỗi",
+      "graphing_loading": "Đang tải máy tính đồ thị…",
+      "graphing_failed": "Không thể tải máy tính đồ thị."
+    },
+    "desmos": {
+      "label": "Khóa API Desmos",
+      "helper": "Tùy chọn. Bật máy tính đồ thị Desmos trong các bài tập đặt ở chế độ Đồ thị. Không có khóa, học viên dùng máy tính khoa học."
+    },
+    "variables": {
+      "heading": "Biến",
+      "helper": "Cho mỗi học sinh những số khác nhau. Dùng tên biến trong dấu ngoặc nhọn kép ở câu hỏi và đáp án.",
+      "enable": "Tham số hóa câu hỏi này",
+      "disable": "Xóa các biến",
+      "add": "Thêm biến",
+      "remove": "Xóa biến",
+      "name_label": "Tên",
+      "type_label": "Loại",
+      "type": {
+        "int": "Số nguyên",
+        "decimal": "Số thập phân",
+        "choice": "Lựa chọn"
+      },
+      "min_label": "Tối thiểu",
+      "max_label": "Tối đa",
+      "step_label": "Bước",
+      "choices_label": "Giá trị",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Ràng buộc",
+      "constraints_helper": "Mỗi dòng một điều kiện, ví dụ a != 0 hoặc b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Công thức đáp án",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "Đáp án dưới dạng biểu thức của các biến. Viết từ answer trong dấu ngoặc nhọn kép ở bất kỳ đâu để hiển thị giá trị của nó.",
+      "integer_answer": "Đáp án phải là số nguyên",
+      "nonzero_answer": "Đáp án không được bằng không",
+      "use_answer": "Dùng đáp án đã tính làm đáp án chuẩn",
+      "preview": "Xem trước các biến thể",
+      "previewing": "Đang kiểm tra…",
+      "preview_answer": "Đáp án",
+      "preview_ok": "Đáp án đã được xác minh",
+      "preview_problem": "Hãy kiểm tra biến thể này"
+    },
+    "rubric": {
+      "heading": "Thang chấm điểm",
+      "helper": "Liệt kê các bước của một lời giải đầy đủ cùng điểm của từng bước. AI chấm bài làm theo các bước này.",
+      "step_placeholder": "Ví dụ: lập phương trình đúng",
+      "points_label": "Điểm",
+      "add_step": "Thêm bước",
+      "remove_step": "Xóa bước",
+      "total": "Tổng",
+      "total_mismatch": "Tổng các bước khác với điểm của phần bài làm.",
+      "ai_label": "Gợi ý điểm bằng AI",
+      "ai_helper": "Một mô hình đọc bài làm theo thang chấm và gợi ý điểm. Học sinh không thấy gì cho đến khi bạn chấp nhận. Mặc định tắt."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Bảng đồ thị",
+        "x_min": "Mép trái (x nhỏ nhất)",
+        "x_max": "Mép phải (x lớn nhất)",
+        "y_min": "Mép dưới (y nhỏ nhất)",
+        "y_max": "Mép trên (y lớn nhất)",
+        "show_grid": "Hiện lưới",
+        "snap_label": "Bước bắt dính lưới",
+        "snap_helper": "Các điểm bắt dính vào bội số của số này. Dùng 0 để đặt tự do.",
+        "x_label": "Nhãn trục ngang",
+        "y_label": "Nhãn trục dọc",
+        "tolerance_label": "Dung sai",
+        "tolerance_helper": "Một điểm hoặc đường thẳng phải gần đến mức nào, tính theo đơn vị đồ thị, để được tính là đúng.",
+        "range_invalid": "Mỗi giá trị nhỏ nhất phải nhỏ hơn giá trị lớn nhất của nó."
+      },
+      "tool": {
+        "point": "Điểm",
+        "line": "Đường thẳng",
+        "segment": "Đoạn thẳng",
+        "parabola": "Parabol"
+      },
+      "plot": {
+        "tools_label": "Công cụ học viên được dùng",
+        "reference_heading": "Đáp án đúng",
+        "reference_helper": "Vẽ đáp án đúng lên bảng. Học viên được chấm theo đáp án này.",
+        "reference_empty": "Vẽ ít nhất một phần tử làm đáp án đúng.",
+        "preview_heading": "Giao diện học viên",
+        "preview_helper": "Đây là bảng học viên nhìn thấy. Họ chỉ có các công cụ bạn đã chọn."
+      },
+      "read": {
+        "curves_label": "Hàm số trên đồ thị",
+        "curves_helper": "Nhập từng hàm số của x, ví dụ x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Nhãn (không bắt buộc)",
+        "add_curve": "Thêm hàm số",
+        "points_label": "Điểm đã đánh dấu",
+        "points_helper": "Các điểm vẽ trên đồ thị để học viên đọc.",
+        "add_point": "Thêm điểm",
+        "point_label_placeholder": "Tên (không bắt buộc)",
+        "remove": "Xóa",
+        "answer_label": "Học viên đọc gì từ đồ thị?",
+        "kind": {
+          "value": "Một giá trị",
+          "point": "Một điểm (x, y)"
+        },
+        "value_label": "Giá trị đúng",
+        "x_label": "x đúng",
+        "y_label": "y đúng",
+        "tolerance_helper": "Các câu trả lời trong khoảng cách này so với đáp án đúng đều được chấp nhận.",
+        "answer_empty": "Nhập đáp án đúng."
+      },
+      "take": {
+        "loading": "Đang tải đồ thị…",
+        "failed": "Không thể tải đồ thị.",
+        "undo": "Hoàn tác",
+        "clear": "Xóa hết",
+        "hint": {
+          "point": "Chạm vào đồ thị để đặt một điểm. Kéo một điểm để di chuyển.",
+          "line": "Chạm vào hai vị trí để vẽ đường thẳng. Kéo một điểm để di chuyển.",
+          "segment": "Chạm vào hai đầu của đoạn thẳng. Kéo một điểm để di chuyển.",
+          "parabola": "Chạm vào đỉnh, rồi chạm thêm một điểm trên parabol. Kéo một điểm để di chuyển."
+        },
+        "board_label": "Mặt phẳng tọa độ",
+        "read": {
+          "value_label": "Câu trả lời của bạn",
+          "value_placeholder": "Nhập một số",
+          "x_label": "Tọa độ x",
+          "y_label": "Tọa độ y"
+        }
+      },
+      "review": {
+        "student_legend": "Đồ thị của bạn (xanh lá là đúng, đỏ là sai)",
+        "expected_legend": "Đồ thị đúng (nét đứt)",
+        "expected_read": "Đáp án đúng",
+        "matched": "Đúng {matched} trên {total}"
+      },
+      "verdict": {
+        "correct": "Đúng",
+        "partial": "Một số phần tử đúng.",
+        "wrong": "Sai",
+        "missing": "Chưa trả lời gì.",
+        "extra": "Đã có đủ những gì cần thiết, nhưng có thêm các phần tử thừa.",
+        "not_set": "Câu hỏi này chưa có đáp án."
+      },
+      "preview": {
+        "empty": "Chưa đặt đáp án đúng."
+      }
+    },
+    "upgrade": {
+      "required": "Có trong các gói trả phí. Nâng cấp để sử dụng."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Ảnh hoặc vẽ",
+      "photo_tab": "Ảnh",
+      "draw_tab": "Vẽ",
+      "upload": "Tải ảnh lên",
+      "take_photo": "Chụp ảnh",
+      "photo_hint": "Dán ảnh chụp màn hình, thả ảnh vào hoặc tải ảnh lên.",
+      "crop_hint": "Kéo một khung quanh phần toán bạn muốn.",
+      "reset_crop": "Dùng toàn bộ ảnh",
+      "convert": "Chuyển đổi",
+      "converting": "Đang đọc phần toán…",
+      "draw_hint": "Viết phần toán ở đây bằng ngón tay, bút cảm ứng hoặc chuột.",
+      "clear": "Xóa",
+      "original": "Bản gốc",
+      "converted": "Toán đã chuyển đổi",
+      "insert": "Chèn",
+      "no_math_found": "Không tìm thấy phần toán nào trong ảnh này.",
+      "parse_failed": "Không đọc được đây là biểu thức toán hợp lệ. Hãy sửa bên dưới hoặc thử lại.",
+      "invalid_math": "Đây chưa phải biểu thức toán hợp lệ.",
+      "unsupported_file": "Hãy dùng ảnh PNG, JPEG hoặc WebP.",
+      "image_too_large": "Ảnh này quá lớn.",
+      "conversion_failed": "Chuyển đổi không thành công. Hãy thử lại."
+    },
+    "errors": {
+      "limit_reached": "Lượt chuyển đổi ảnh và phiếu bài tập hằng tháng của gói miễn phí đã hết. Hãy nâng cấp để tiếp tục.",
+      "token_limit": "Không gian làm việc này đã dùng hết hạn mức AI trong tháng.",
+      "not_configured": "AI chưa được thiết lập trên nền tảng này."
+    },
+    "worksheet": {
+      "import_button": "Nhập từ phiếu bài tập",
+      "title": "Nhập phiếu bài tập",
+      "description": "Tải lên ảnh hoặc PDF của phiếu bài tập. Mỗi câu hỏi được đọc dưới dạng toán, được gán loại và đáp án đề xuất, và đáp án được kiểm tra trước khi nhập.",
+      "drop_hint": "Chọn tệp PNG, JPEG, WebP hoặc PDF tối đa 10 MB.",
+      "choose_file": "Chọn tệp",
+      "choose_another": "Chọn tệp khác",
+      "original": "Bản gốc",
+      "questions": "Câu hỏi tìm thấy",
+      "reading": "Đang đọc phiếu bài tập…",
+      "verified": "Đã xác minh đáp án",
+      "unverified": "Cần kiểm tra",
+      "unverified_hint": "Công cụ không xác nhận được đáp án này. Hãy kiểm tra rồi đánh dấu câu hỏi để nhập.",
+      "question_label": "Nội dung câu hỏi",
+      "option_label": "Lựa chọn",
+      "answer_label": "Đáp án",
+      "correct_option": "Lựa chọn đúng",
+      "import_selected": "Nhập {count} câu hỏi",
+      "cancel": "Hủy",
+      "imported": "Đã nhập câu hỏi. Hãy xem lại rồi lưu bài tập.",
+      "no_questions": "Không tìm thấy câu hỏi nào trong tệp này.",
+      "unsupported_file": "Hãy dùng tệp PNG, JPEG, WebP hoặc PDF.",
+      "file_too_large": "Tệp này lớn hơn 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Biểu thức toán",
+        "NUMERIC": "Số",
+        "RADIO": "Một đáp án"
+      }
+    }
+  },
+  "ai_review": {
+    "title": "Gợi ý của AI",
+    "request": "Gợi ý điểm bằng AI",
+    "requesting": "Đang xem xét…",
+    "confidence": "Độ tin cậy {confidence}%",
+    "first_wrong_step": "Bước sai đầu tiên: {step}",
+    "rubric_changed": "Thang chấm đã thay đổi sau gợi ý này.",
+    "suggested_points": "Điểm gợi ý cho bài làm: {points}/{max}",
+    "model": "Mô hình: {model}",
+    "student_hidden": "Học sinh không thấy gì cho đến khi bạn chấp nhận hoặc chấm điểm.",
+    "accept": "Chấp nhận",
+    "applied": "Đã thêm vào điểm",
+    "reject": "Từ chối",
+    "decision": {
+      "accepted": "Đã chấp nhận",
+      "edited": "Đã chấp nhận sau khi sửa",
+      "rejected": "Đã từ chối"
+    },
+    "bulk_hint": "Có {count} gợi ý AI độ tin cậy cao đang chờ bạn.",
+    "bulk_accept": "Chấp nhận {count} gợi ý tin cậy",
+    "bulk_accepting": "Đang chấp nhận…",
+    "bulk_done": "Đã chấp nhận {count} gợi ý"
+  },
+  "exercise_results": {
+    "tab": "Bảng kết quả",
+    "student": "Học viên",
+    "unknown_student": "Học viên không rõ",
+    "total": "Tổng",
+    "question_short": "C{number}",
+    "points_short": "đ",
+    "no_answer": "Chưa trả lời",
+    "empty": "Chưa có học viên nào khớp với các bộ lọc này.",
+    "page": "Trang {page}/{pages}",
+    "previous": "Trước",
+    "next": "Sau",
+    "filter": {
+      "all": "Tất cả học viên",
+      "wrong": "Chỉ câu trả lời sai",
+      "awaiting": "Chờ chấm điểm",
+      "all_cohorts": "Tất cả nhóm"
+    },
+    "state": {
+      "full": "Điểm tối đa",
+      "partial": "Điểm một phần",
+      "wrong": "Sai",
+      "awaiting": "Chờ chấm điểm",
+      "blank": "Chưa trả lời"
+    },
+    "clusters": {
+      "title": "Nhóm câu trả lời",
+      "empty": "Chưa có câu trả lời để nhóm.",
+      "count": "{count} người trả lời như vậy",
+      "blank": "{count} người bỏ trống",
+      "parameterised_hint": "Câu hỏi này có biến, nên các câu trả lời được nhóm riêng theo số của từng học viên.",
+      "not_scorable": "Loại câu hỏi này được chấm thủ công. Bạn vẫn có thể thêm nhận xét cho một nhóm.",
+      "grade": {
+        "full": "Điểm tối đa",
+        "partial": "Điểm một phần",
+        "wrong": "Sai",
+        "mixed": "Hỗn hợp"
+      },
+      "mark_correct": "Đánh dấu đúng",
+      "mark_partial": "Điểm một phần…",
+      "mark_wrong": "Đánh dấu sai",
+      "add_feedback": "Thêm nhận xét",
+      "undo": "Hoàn tác quyết định",
+      "points_label": "Điểm cho nhóm này (tối đa {max})",
+      "apply": "Áp dụng và chấm lại",
+      "feedback_placeholder": "Nhận xét mà mọi học viên trong nhóm sẽ thấy",
+      "save_feedback": "Lưu nhận xét",
+      "has_feedback": "kèm nhận xét",
+      "decision_correct": "Đã đánh dấu đúng cho tất cả",
+      "decision_wrong": "Đã đánh dấu sai cho tất cả",
+      "decision_partial": "Đã cho {points} điểm cho tất cả",
+      "decision_feedback": "Đã đính kèm nhận xét"
+    },
+    "snackbar": {
+      "applied": "Đã chấm lại {count} câu trả lời",
+      "undone": "Đã hoàn tác, chấm lại {count} câu trả lời"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Hủy",
+      "confirm_delete": "Xóa kỹ năng \"{name}\"? Kỹ năng sẽ bị gỡ khỏi mọi câu hỏi đang gắn nó.",
+      "create": "Tạo kỹ năng",
+      "delete": "Xóa",
+      "edit": "Chỉnh sửa",
+      "import": "Nhập CSV",
+      "more": "Thao tác kỹ năng",
+      "save": "Lưu"
+    },
+    "empty": {
+      "description": "Tạo từng kỹ năng hoặc nhập khung tiêu chuẩn từ tệp CSV.",
+      "title": "Chưa có kỹ năng nào"
+    },
+    "form": {
+      "code": "Mã",
+      "create_title": "Tạo kỹ năng",
+      "description": "Mô tả",
+      "edit_title": "Chỉnh sửa kỹ năng",
+      "framework": "Khung chương trình",
+      "name": "Tên",
+      "no_parent": "Không có cấp trên (cấp cao nhất)",
+      "parent": "Kỹ năng cấp trên"
+    },
+    "heading": "Kỹ năng",
+    "import": {
+      "action": "Thao tác",
+      "choose_file": "Chọn tệp CSV",
+      "confirm": "Nhập {count} kỹ năng",
+      "create": "Tạo",
+      "description": "Hãy kiểm tra tệp CSV trước. Sẽ không có gì được lưu cho đến khi bạn xác nhận bản xem trước. Cột bắt buộc là code và name; cột tùy chọn là parent_code, description và framework.",
+      "error_line": "Dòng {line}: {message}",
+      "errors_heading": "Tìm thấy {count} vấn đề. Hãy sửa và chọn lại tệp.",
+      "more_rows": "và {count} dòng nữa",
+      "parent": "Cấp trên",
+      "starters": {
+        "common_core": "Common Core Math (Hoa Kỳ)",
+        "heading": "Tệp khởi đầu",
+        "note": "Các tệp khởi đầu chỉ là mẫu nhỏ, không phải toàn bộ khung chương trình. Hãy thêm các tiêu chuẩn mà trường bạn giảng dạy, rồi nhập tệp.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} sẽ tạo, {update} sẽ cập nhật",
+      "title": "Nhập kỹ năng từ CSV",
+      "update": "Cập nhật"
+    },
+    "mastery": {
+      "description": "Tính theo độ gần đây, dựa trên tỷ lệ điểm đạt được ở các câu hỏi gắn với từng kỹ năng.",
+      "heading": "Mức thành thạo kỹ năng",
+      "level": {
+        "not_started": "Chưa bắt đầu",
+        "learning": "Đang học",
+        "proficient": "Khá",
+        "mastered": "Thành thạo"
+      },
+      "no_data": "Chưa có học viên nào trả lời câu hỏi gắn với kỹ năng này.",
+      "student_heading": "Mức thành thạo kỹ năng trong khóa học này"
+    },
+    "page_subtitle": "Xác định các kỹ năng và tiêu chuẩn mà câu hỏi của bạn dựa vào, và xem học viên thành thạo chúng thế nào.",
+    "page_title": "Kỹ năng - ClassroomIO",
+    "picker": {
+      "accept": "Thêm",
+      "accepted": "Đã thêm",
+      "add": "Thêm kỹ năng",
+      "description": "Chọn các kỹ năng mà câu hỏi này đánh giá.",
+      "edit": "Chỉnh sửa kỹ năng",
+      "empty": "Không tìm thấy kỹ năng. Hãy tạo kỹ năng trong phần cài đặt kỹ năng trước.",
+      "save_first": "Hãy lưu bài tập để gắn kỹ năng cho câu hỏi này.",
+      "suggest": "Gợi ý bằng AI",
+      "suggest_failed": "Không thể lấy gợi ý",
+      "suggestions": "Kỹ năng được gợi ý",
+      "title": "Kỹ năng của câu hỏi"
+    },
+    "search_placeholder": "Tìm kỹ năng",
+    "snackbar": {
+      "created": "Đã tạo kỹ năng",
+      "deleted": "Đã xóa kỹ năng",
+      "fetch_failed": "Không thể tải kỹ năng",
+      "imported": "Đã nhập {count} kỹ năng",
+      "updated": "Đã cập nhật kỹ năng"
+    },
+    "table": {
+      "action": "Thao tác",
+      "code": "Mã",
+      "framework": "Khung chương trình",
+      "name": "Tên",
+      "no_matches": "Không có kỹ năng nào khớp với tìm kiếm",
+      "questions": "Câu hỏi"
+    }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Giao bài luyện tập cho {count} học sinh đang học",
+      "assign_to_cluster": "Giao bài luyện tập cho {count} học sinh này"
+    },
+    "default_title": "Luyện tập: {name}",
+    "default_title_question": "Luyện tập",
+    "dialog": {
+      "title": "Giao bài luyện tập",
+      "description": "Tạo bài luyện tập ngắn từ các biến thể mới của câu hỏi về kỹ năng và chỉ hiển thị cho các học sinh bạn chọn.",
+      "name": "Tên bài tập",
+      "count": "Số câu hỏi",
+      "students": "Học sinh (đã chọn {count})",
+      "cancel": "Hủy",
+      "submit": "Giao bài luyện tập"
+    },
+    "snackbar": {
+      "assigned": "Đã giao bài luyện tập cho {count} học sinh"
+    }
+  },
+  "question_analysis": {
+    "tab": "Phân tích câu hỏi",
+    "description": "Độ dễ là tỷ lệ học sinh trả lời đúng hoàn toàn. Câu hỏi dưới {hard}% bị đánh dấu là quá khó và trên {easy}% là quá dễ. Độ phân biệt dưới {discrimination} nghĩa là câu hỏi không phân biệt được học sinh giỏi và yếu.",
+    "empty": "Chưa có câu trả lời để phân tích.",
+    "seconds": "{seconds} giây",
+    "columns": {
+      "question": "Câu hỏi",
+      "facility": "Độ dễ",
+      "discrimination": "Độ phân biệt",
+      "time": "Thời gian trung vị",
+      "wrong_answers": "Đáp án sai thường gặp",
+      "flags": "Cảnh báo"
+    },
+    "flags": {
+      "too_hard": "Quá khó",
+      "too_easy": "Quá dễ",
+      "poor_discrimination": "Độ phân biệt thấp"
+    }
+  },
+  "mathNotation": {
+    "title": "Ký hiệu toán học",
+    "org_description": "Cách viết và đọc số và toán tử trong câu hỏi toán. Câu trả lời của học viên được chấm theo các cài đặt này.",
+    "course_description": "Ghi đè ký hiệu toán học của tổ chức cho khóa học này.",
+    "inherit": "Dùng mặc định của tổ chức",
+    "decimal": {
+      "label": "Dấu phân cách thập phân",
+      "point": "Dấu chấm (0.5)",
+      "comma": "Dấu phẩy (0,5)",
+      "hint": "Với dấu phẩy, học viên có thể nhập 0,5 và được chấm như 0.5."
+    },
+    "thousands": {
+      "label": "Dấu phân cách hàng nghìn",
+      "none": "Không (1000)",
+      "space": "Dấu cách (1 000)",
+      "comma": "Dấu phẩy (1,000)",
+      "dot": "Dấu chấm (1.000)",
+      "hint": "Được chấp nhận trong câu trả lời số và hiển thị với số có từ năm chữ số trở lên."
+    },
+    "multiplication": {
+      "label": "Dấu nhân",
+      "cross": "Dấu chéo (3 × 4)",
+      "dot": "Dấu chấm (3 · 4)",
+      "hint": "Với dấu chấm, × hiển thị thành · trong câu hỏi và lựa chọn."
+    },
+    "unit": {
+      "label": "Hệ đơn vị",
+      "metric": "Hệ mét",
+      "imperial": "Hệ Anh",
+      "hint": "Gợi ý cho tác giả và trợ lý AI. Không thay đổi cách chấm điểm."
+    },
+    "grade_band": {
+      "label": "Mức bàn phím mặc định",
+      "primary": "Tiểu học (số)",
+      "secondary": "Trung học (đại số)",
+      "advanced": "Nâng cao (giải tích)",
+      "hint": "Bàn phím học viên thấy khi câu hỏi không chọn bàn phím."
+    },
+    "snackbar": {
+      "saved": "Đã lưu ký hiệu toán học",
+      "error": "Không thể lưu ký hiệu toán học"
+    }
   }
 }

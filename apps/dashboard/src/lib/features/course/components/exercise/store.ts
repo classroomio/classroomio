@@ -1,6 +1,9 @@
-import { DEFAULT_QUESTION_TYPE, QUESTION_TEMPLATE } from '$features/ui/question/constants';
+import { DEFAULT_QUESTION_TYPE, QUESTION_TEMPLATE, QUESTION_TYPES } from '$features/ui/question/constants';
+import { QUESTION_TYPE_IDS } from '@cio/question-types';
+import type { ImportedQuestionInput } from '$features/math/utils/types';
 import type {
   AnswerData,
+  CalculatorPolicy,
   ExerciseSectionAfterBehavior,
   ExerciseSectionColorTheme,
   ExerciseSectionDisplayMode
@@ -71,6 +74,7 @@ export interface QuestionnaireState {
   allowMultipleAttempts?: boolean;
   completionPolicy?: 'submitted' | 'passed' | 'none';
   passThreshold?: number | null;
+  calculatorPolicy?: CalculatorPolicy;
   slug?: string | null;
 }
 
@@ -106,6 +110,7 @@ export const questionnaire: Writable<QuestionnaireState> = writable({
   allowMultipleAttempts: false,
   completionPolicy: 'submitted',
   passThreshold: 100,
+  calculatorPolicy: 'none',
   slug: ''
 });
 
@@ -234,6 +239,79 @@ export function handleAddQuestion(exerciseSectionId?: string | null) {
         }
       ]
     };
+  });
+
+  return nextQuestionId;
+}
+
+export function handleImportQuestions(imports: ImportedQuestionInput[], exerciseSectionId?: string | null) {
+  questionnaire.update((q) => {
+    const activeSections = q.sections.filter((section) => !section.deletedAt);
+    const nextExerciseSectionId = exerciseSectionId ?? (activeSections.length > 0 ? activeSections[0].id : null);
+    const startIndex = q.questions.length;
+
+    const imported = imports.map((item, index) => {
+      const questionType =
+        QUESTION_TYPES.find((candidate) => candidate.id === QUESTION_TYPE_IDS[item.type]) ?? DEFAULT_QUESTION_TYPE;
+      const questionId = `${startIndex + index + 1}-form`;
+
+      return {
+        ...QUESTION_TEMPLATE,
+        id: questionId,
+        name: questionId,
+        title: item.title,
+        value: '',
+        points: item.points,
+        order: startIndex + index,
+        exerciseSectionId: nextExerciseSectionId,
+        questionType,
+        questionTypeId: questionType.id,
+        settings: item.settings,
+        isDirty: true,
+        options: item.options.map((option, optionIndex) => ({
+          id: `${optionIndex + 1}-form`,
+          label: option.label,
+          value: null,
+          isCorrect: option.isCorrect
+        }))
+      };
+    });
+
+    return { ...q, questions: [...q.questions, ...imported] };
+  });
+}
+
+export function getPartsOf(questions: Question[], stemId: string | number) {
+  return questions
+    .filter((question) => !question.deletedAt && String(question.parentQuestionId ?? '') === String(stemId))
+    .sort(compareQuestionsByOrder);
+}
+
+export function handleAddPart(stemId: string | number) {
+  let nextQuestionId: string | number = '';
+
+  questionnaire.update((q) => {
+    const stem = q.questions.find((question) => question.id === stemId);
+    if (!stem) return q;
+
+    nextQuestionId = `${q.questions.length + 1}-form`;
+    const part = {
+      ...QUESTION_TEMPLATE,
+      id: nextQuestionId,
+      name: `${nextQuestionId}`,
+      value: '',
+      points: 1,
+      order: q.questions.length,
+      exerciseSectionId: stem.exerciseSectionId ?? null,
+      parentQuestionId: stem.id,
+      questionType: DEFAULT_QUESTION_TYPE,
+      questionTypeId: DEFAULT_QUESTION_TYPE.id,
+      options: [{ id: '1-form', label: '', value: null, isCorrect: false }]
+    };
+
+    const questions = q.questions.map((question) => (question.id === stem.id ? { ...question, points: 0 } : question));
+
+    return { ...q, questions: [...questions, part] };
   });
 
   return nextQuestionId;
@@ -501,7 +579,11 @@ export function handleRemoveQuestion(questionId) {
       const questionIndex = q.questions.findIndex((qItem) => qItem.id === questionId);
       if (questionIndex === -1) return q;
 
-      q.questions[questionIndex].deletedAt = new Date().toString();
+      const deletedAt = new Date().toString();
+      q.questions[questionIndex].deletedAt = deletedAt;
+      for (const question of q.questions) {
+        if (String(question.parentQuestionId ?? '') === String(questionId)) question.deletedAt = deletedAt;
+      }
 
       return q;
     });

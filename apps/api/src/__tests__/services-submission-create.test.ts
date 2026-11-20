@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('@api/services/math/notation', async () => {
+  const { DEFAULT_MATH_NOTATION } = await import('@cio/question-types');
+
+  return { getEffectiveMathNotation: vi.fn().mockResolvedValue(DEFAULT_MATH_NOTATION) };
+});
+
 const TX = { tx: true };
 
 vi.mock('@cio/db/drizzle', () => ({

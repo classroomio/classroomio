@@ -18,6 +18,9 @@ import {
   PUBLIC_API_QUESTION_TYPES_NOTE
 } from '@cio/utils/validation/public-api';
 
+import { ZPracticeCreate } from '@cio/utils/validation/practice';
+import { ZClusterOverrideBody, ZClusterResetBody } from '@cio/utils/validation/math';
+
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
@@ -57,6 +60,11 @@ export const ZUpdateExerciseSectionToolInput = ZPublicApiUpdateExerciseSectionFi
   ZPublicApiExerciseSectionParam.shape
 );
 export const ZDeleteExerciseSectionToolInput = ZPublicApiExerciseSectionParam;
+export const ZCreateCoursePracticeToolInput = ZPublicApiCourseParam.extend(ZPracticeCreate.shape);
+export const ZGetExerciseAnswerClustersToolInput = ZPublicApiExerciseQuestionParam;
+export const ZSetAnswerClusterDecisionToolInput = ZPublicApiExerciseQuestionParam.extend(ZClusterOverrideBody.shape);
+export const ZResetAnswerClusterDecisionToolInput = ZPublicApiExerciseQuestionParam.extend(ZClusterResetBody.shape);
+export const ZRegradeCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
 export const ZNotifyCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
 export const ZGetCourseExerciseNotifyStatusToolInput = ZPublicApiCourseExerciseNotifyParam.extend(
   ZPublicApiCourseExerciseNotifyStatusQuery.shape
@@ -187,6 +195,61 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
     async (args) => {
       const { courseId, exerciseId, sectionId } = ZDeleteExerciseSectionToolInput.parse(args);
       return jsonContent(await apiClient.deleteExerciseSection(courseId, exerciseId, sectionId));
+    }
+  );
+
+  server.tool(
+    'get_exercise_answer_clusters',
+    `Group every student's latest answer to a question into clusters of equal answers, with how many students gave each; ${COURSE_TEAM_RULE}. Use a group's key with set_answer_cluster_decision.`,
+    shape(ZGetExerciseAnswerClustersToolInput),
+    READ_ONLY,
+    async (args) => {
+      const { courseId, exerciseId, questionId } = ZGetExerciseAnswerClustersToolInput.parse(args);
+      return jsonContent(await apiClient.getExerciseAnswerClusters(courseId, exerciseId, questionId));
+    }
+  );
+
+  server.tool(
+    'set_answer_cluster_decision',
+    `Mark one answer group correct, partial (with points) or wrong, or add feedback, and regrade that question's stored answers; later answers matching the group get the same decision; ${COURSE_TEAM_RULE}.`,
+    shape(ZSetAnswerClusterDecisionToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, exerciseId, questionId, ...payload } = ZSetAnswerClusterDecisionToolInput.parse(args);
+      return jsonContent(await apiClient.setAnswerClusterDecision(courseId, exerciseId, questionId, payload));
+    }
+  );
+
+  server.tool(
+    'reset_answer_cluster_decision',
+    `Remove the decision on one answer group so its answers return to what the answer key gives, and regrade; ${COURSE_TEAM_RULE}.`,
+    shape(ZResetAnswerClusterDecisionToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, exerciseId, questionId, key } = ZResetAnswerClusterDecisionToolInput.parse(args);
+      return jsonContent(await apiClient.resetAnswerClusterDecision(courseId, exerciseId, questionId, key));
+    }
+  );
+
+  server.tool(
+    'create_course_practice',
+    `Build a short practice exercise from the questions behind a skill, or from chosen questions, and assign it to chosen students; questions with variables get fresh numbers. Needs a paid plan; ${COURSE_TEAM_RULE}.`,
+    shape(ZCreateCoursePracticeToolInput),
+    CREATE,
+    async (args) => {
+      const { courseId, ...payload } = ZCreateCoursePracticeToolInput.parse(args);
+      return jsonContent(await apiClient.createCoursePractice(courseId, payload));
+    }
+  );
+
+  server.tool(
+    'regrade_course_exercise',
+    `Re-score every submission of an exercise against its current answer key, for example after fixing a wrong accepted answer; ${COURSE_TEAM_RULE}. Points a teacher gave to manually graded questions and to the working of worked solutions are kept.`,
+    shape(ZRegradeCourseExerciseToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, exerciseId } = ZRegradeCourseExerciseToolInput.parse(args);
+      return jsonContent(await apiClient.regradeCourseExercise(courseId, exerciseId));
     }
   );
 

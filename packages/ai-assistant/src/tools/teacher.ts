@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import {
+  CALCULATOR_POLICIES,
   ENABLED_QUESTION_TYPE_REGISTRY,
   ENABLED_QUESTION_TYPE_ID_DESCRIPTION,
   QUESTION_OPTIONS_SCHEMA_HINT,
   QUESTION_SETTINGS_SCHEMA_HINT,
+  QUESTION_VERIFY_SCHEMA_HINT,
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
 import { CoursePlanSchema } from '../types';
@@ -14,6 +16,14 @@ import {
   LANDING_PAGE_SECTION_HTML_AGENT_HINT
 } from './landing-page-html-hint';
 import { BLOCK_RECIPE_TYPES } from './block-recipes';
+
+const questionVerifySchema = z
+  .object({
+    expression: z.string().min(1).optional(),
+    equation: z.string().min(1).optional()
+  })
+  .optional()
+  .describe(QUESTION_VERIFY_SCHEMA_HINT);
 
 const ENABLED_QUESTION_TYPE_MAX_ID = Math.max(...ENABLED_QUESTION_TYPE_REGISTRY.map((type) => type.id));
 
@@ -158,6 +168,7 @@ export const createExerciseSchema = {
           points: z.number().min(1).default(1).describe('Points for this question'),
           order: z.number().int().min(0).describe('Display order'),
           settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
+          verify: questionVerifySchema,
           options: z
             .array(
               z.object({
@@ -240,6 +251,12 @@ export const updateExerciseSchema = {
         .optional()
         .describe(
           'Passing score percentage from 0 to 100. Use with completionPolicy "passed" when the teacher asks students to pass a threshold before progressing.'
+        ),
+      calculatorPolicy: z
+        .enum(CALCULATOR_POLICIES)
+        .optional()
+        .describe(
+          'The calculator students may use in this exercise: none, four_function, scientific or graphing. Use it for math exercises.'
         )
     })
     .refine(
@@ -253,6 +270,7 @@ export const updateExerciseSchema = {
         data.isUnlocked !== undefined ||
         data.allowMultipleAttempts !== undefined ||
         data.completionPolicy !== undefined ||
+        data.calculatorPolicy !== undefined ||
         data.passThreshold !== undefined,
       {
         message: 'Provide at least one field to update'
@@ -287,6 +305,13 @@ export const addQuestionsSchema = {
         points: z.number().min(1).default(1).describe('Points for this question'),
         order: z.number().int().min(0).describe('Display order'),
         settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
+        verify: questionVerifySchema,
+        parentQuestionId: z
+          .number()
+          .int()
+          .positive()
+          .optional()
+          .describe('The id of an existing stem question, to add this question as one of its parts.'),
         options: z
           .array(
             z.object({
@@ -297,6 +322,17 @@ export const addQuestionsSchema = {
           .describe(QUESTION_OPTIONS_SCHEMA_HINT)
       })
     )
+  })
+};
+
+export const makeQuestionVariantsSchema = {
+  description:
+    'Make N separate questions from one parameterised question. The source question (an id from get_exercise_details) must define settings.parameters and {{placeholders}}; each copy has different numbers filled in, its answer key computed and verified by the Compute Engine before anything is saved.',
+  parameters: z.object({
+    courseId: z.string().describe('The course ID'),
+    exerciseId: z.string().describe('The existing exercise ID'),
+    questionId: z.number().int().describe('The parameterised question to copy'),
+    count: z.number().int().min(2).max(10).describe('How many separate questions to create')
   })
 };
 
@@ -330,6 +366,7 @@ export const updateQuestionsSchema = {
           .record(z.string(), z.unknown())
           .optional()
           .describe(`${QUESTION_SETTINGS_SCHEMA_HINT} Shallow-merged with existing settings.`),
+        verify: questionVerifySchema,
         options: z
           .array(
             z.object({

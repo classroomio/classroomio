@@ -35,7 +35,7 @@ export async function getMarksByCourseId(courseId: string, submittedBy?: string)
         courseId: schema.course.id,
         exerciseId: schema.exercise.id,
         exerciseTitle: schema.exercise.title,
-        exercisePoints: sql<number>`COALESCE(SUM(${schema.question.points})::int, 0)`.as('exercisePoints'),
+        exercisePoints: sql<number>`COALESCE(SUM(${schema.question.points})::float, 0)`.as('exercisePoints'),
         statusId: schema.submission.statusId,
         totalPointsGotten: schema.submission.total,
         groupmemberId: schema.submission.submittedBy

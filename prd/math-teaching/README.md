@@ -2,7 +2,15 @@
 
 ## Status
 
-Draft (November 12, 2026)
+In progress (updated November 16, 2026). Implemented on the math branches, not yet merged to main: Phases 0 to 3 and Phase 4 items 2 (notation and locale), 6 (graph questions), 7 (API, MCP and webhooks) and 8 (packaging).
+
+**Phase 4 decisions**
+
+- **Shipped:** notation and locale settings per organization and course (`org.settings.math`, `course.metadata.math`, no migration); the graded-submission webhook payload with a `grading` object and per-skill results (API version 2026-11-16); public API and MCP coverage including practice exercises and answer-group decisions; plan gating.
+- **Free on every plan:** math display, `MATH_EXPRESSION`, numeric upgrades, graph plot and graph reading, the results grid and answer groups.
+- **Paid plans:** variants (`settings.parameters`), AI-suggested marking (`settings.aiGrading`), skill mastery, practice assignment and the Desmos key. The server answers `403 UPGRADE_REQUIRED` on a free plan, and the dashboard shows an upgrade prompt.
+- **Intentionally cut from Phase 4:** the org-level question bank (item 1), exam mode (item 3), printable worksheets (item 4) and QTI, Moodle XML and Word import and export (item 5). They need their own design docs.
+- **`HOTSPOT` (id 16) stays disabled.** Graph plot and graph reading cover the geometry cases for now.
 
 > **UI reference:** the clickable prototype at [`prototypes/math-teaching/`](../../prototypes/math-teaching/index.html) shows math authoring (Type, Photo, Draw, Ask AI), the student quiz with per-question keypads, and the teacher results grid with answer clusters. Grading in the prototype runs the real Compute Engine; AI conversions are sample data.
 
@@ -82,9 +90,8 @@ The foundation is good, so this plan extends it instead of replacing it:
 ## Primary Users
 
 - **Math teacher / tutor**: writes questions, assigns practice, reviews results, gives feedback.
-- **Academy owner**: wants a branded programme with its own curriculum, notation, grade levels and reporting to parents.
+- **Academy owner**: wants a branded programme with its own curriculum, notation, grade levels.
 - **Student**: from primary school arithmetic to university calculus, often on a phone.
-- **Parent** (later): wants a progress report, not a dashboard.
 
 ## Goals
 
@@ -236,8 +243,7 @@ The rule for every AI feature: **the language model writes and explains, the Com
 2. **Answer clusters per question.** Group answers by normalised MathJSON so teachers see "14 students answered `x = -3`, 6 answered `x = 3`". One click on a cluster marks it correct (or partially correct) for everyone and **regrades retroactively**, or attaches feedback to all of them.
 3. **Skills and standards.** Add `skill` and `question_skill` tables (org-scoped, hierarchical, importable as CSV from Common Core, the UK National Curriculum, WAEC/NECO, IB and other syllabuses). Tag questions manually or by AI suggestion. Each student gets a mastery level per skill from their recent attempts.
 4. **Mastery and item analysis in the analytics registry.** Add `skill_mastery`, `question_facility` (share correct), `question_discrimination` (how well it separates strong and weak students), `common_wrong_answers` and `time_on_question` as registry metrics, so they work at cohort, course and org scope with no bespoke charts. Time-on-question needs `startedAt` / `answeredAt` recorded in `answer_data` by the take view.
-5. **Student and parent report.** A one-page PDF or share link per student per period: skills mastered, skills to work on, recent scores and a teacher comment, branded with the org's theme.
-6. **"Assign practice" from results.** From a weak skill or a wrong-answer cluster, generate a short practice set (parameterised variants from Phase 2) and assign it to only those students. Depends on `prd/selective-exercise-assignment`.
+5. **"Assign practice" from results.** From a weak skill or a wrong-answer cluster, generate a short practice set (parameterised variants from Phase 2) and assign it to only those students. Depends on `prd/selective-exercise-assignment`.
 
 **Done when** a teacher opens one screen after a quiz, knows who needs help and on what, and has assigned targeted practice in two clicks.
 
@@ -250,7 +256,7 @@ The rule for every AI feature: **the language model writes and explains, the Com
 5. **Imports and exports.** QTI, Moodle XML, the LaTeX `exam` class, and Word documents with equations (OMML to LaTeX), with exports in the same formats so customers are never locked in.
 6. **Graph questions.** `GRAPH_PLOT` (plot points, lines and parabolas on a coordinate plane, graded geometrically) and `GRAPH_READ` (read a value off a provided graph), with JSXGraph. Re-enable `HOTSPOT` (id 16) for geometry diagrams.
 7. **API, MCP and webhooks.** Every new type, setting and metric in the public API (`apps/api/src/routes/v1`) and MCP tools (`packages/mcp`), plus a graded-submission webhook payload with per-skill results.
-8. **Packaging.** Math display, `MATH_EXPRESSION`, numeric upgrades and the results grid on every plan, so the free plan is already the best free math LMS. Parameterised questions, AI grading, the question bank, skill mastery, Desmos and parent reports on paid plans, via `PREMIUM_QUESTION_TYPE_KEYS` and plan gates.
+8. **Packaging.** Math display, `MATH_EXPRESSION`, numeric upgrades and the results grid on every plan, so the free plan is already the best free math LMS. Parameterised questions, AI grading, the question bank, skill mastery, Desmos on paid plans, via `PREMIUM_QUESTION_TYPE_KEYS` and plan gates.
 
 ## Data Model Changes
 
@@ -279,7 +285,7 @@ gantt
   section AI
   Phase 2 verified AI and tutor   :p2, 2026-12-14, 42d
   section Results
-  Phase 3 grid, skills, reports   :p3, after p1, 35d
+  Phase 3 grid, skills    :p3, after p1, 35d
   section Platform
   Phase 4 bank, exam, imports     :p4, after p3, 60d
 ```

@@ -617,7 +617,8 @@
     "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
     "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen.",
     "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten",
-    "webhooks_required": "Upgraden Sie auf Early Adopter oder Enterprise, um Webhooks zu nutzen."
+    "webhooks_required": "Upgraden Sie auf Early Adopter oder Enterprise, um Webhooks zu nutzen.",
+    "paid_math_feature": "In den kostenpflichtigen Tarifen enthalten. Upgrade, um es zu nutzen."
   },
   "student_progress": {
     "courses": "Kurse",
@@ -1936,7 +1937,11 @@
                 "link": "Links",
                 "word_bank": "Wortbank",
                 "star": "Sternebewertung",
-                "video_recording": "Videoaufzeichnung"
+                "video_recording": "Videoaufzeichnung",
+                "math_expression": "Mathematischer Ausdruck",
+                "worked_solution": "Ausgearbeitete Lösung",
+                "graph_plot": "Diagramm zeichnen",
+                "graph_read": "Diagramm ablesen"
               },
               "select_type": "Typ auswählen",
               "question_type_auto_gradable": "Auto",
@@ -2063,10 +2068,14 @@
                   "accepted_answers_label": "Akzeptierte Antworten"
                 },
                 "take": {
-                  "placeholder": "Geben Sie die Antworten durch Kommas getrennt ein"
+                  "placeholder": "Ihre Antwort"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Akzeptierte Antworten (durch Kommas getrennt)"
+                  "accepted_answers_placeholder": "Akzeptierte Antwort",
+                  "blank_label": "Lücke",
+                  "add_alternative": "Akzeptierte Antwort hinzufügen",
+                  "add_blank": "Lücke hinzufügen",
+                  "helper": "Lernende füllen die Lücken der Reihe nach aus. Eine Lücke ist richtig, wenn sie einer ihrer akzeptierten Antworten entspricht."
                 },
                 "review": {
                   "your_answer_label": "Eingereicht:"
@@ -3480,6 +3489,35 @@
     "write": "Schreiben",
     "preview": "Vorschau"
   },
+  "math_editor": {
+    "insert_math": "Mathematik einfügen",
+    "type_tab": "Eingeben",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Mathematik",
+    "palette_label": "Mathematische Strukturen",
+    "latex_label": "LaTeX",
+    "preview_label": "Vorschau",
+    "preview_empty": "LaTeX eingeben, um eine Vorschau zu sehen",
+    "done": "Fertig",
+    "cancel": "Abbrechen",
+    "structures": {
+      "fraction": "Bruch",
+      "mixed_number": "Gemischte Zahl",
+      "parentheses": "Klammern",
+      "power": "Potenz",
+      "subscript": "Tiefgestellt",
+      "square_root": "Quadratwurzel",
+      "nth_root": "n-te Wurzel",
+      "absolute_value": "Betrag",
+      "system": "Gleichungssystem",
+      "matrix": "Matrix",
+      "piecewise": "Abschnittsweise Funktion",
+      "integral": "Integral",
+      "sum": "Summe",
+      "limit": "Grenzwert",
+      "derivative": "Ableitung"
+    }
+  },
   "navigation": {
     "goto": "Gehe zu",
     "courses": "Kurse",
@@ -3629,7 +3667,8 @@
     "distribute": "Verteilen",
     "tools": "Werkzeuge",
     "marketing": "Marketing",
-    "org_analytics": "Akademie"
+    "org_analytics": "Akademie",
+    "skills": "Fertigkeiten"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",
@@ -7361,5 +7400,637 @@
     },
     "close": "Schließen",
     "dismiss": "Verstanden"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Akzeptierte Antworten",
+      "accepted_answers_helper": "Geben Sie jede richtige Antwort so ein, wie Lernende sie eingeben würden. Jede davon wird akzeptiert.",
+      "add_answer": "Weitere akzeptierte Antwort hinzufügen",
+      "answer_placeholder": "Antwort eingeben",
+      "compare_label": "Wie sollen Antworten verglichen werden?",
+      "compare": {
+        "equivalent": "Äquivalent",
+        "exact_form": "Genaue Form",
+        "numeric": "Numerisch",
+        "set": "Menge oder Liste",
+        "equivalent_hint": "Jede algebraisch gleiche Form wird akzeptiert, also entspricht 2(x+1) dem Term 2x+2.",
+        "exact_form_hint": "Die Antwort muss gleich sein und in der gewählten Form vorliegen.",
+        "numeric_hint": "Die Antwort muss innerhalb der festgelegten Toleranz liegen.",
+        "set_hint": "Die Reihenfolge spielt keine Rolle, also entspricht (1, 2) dem Paar (2, 1)."
+      },
+      "form_label": "Erforderliche Form",
+      "form": {
+        "simplified": "Vereinfacht",
+        "factored": "Faktorisiert",
+        "expanded": "Ausmultipliziert",
+        "lowest_terms": "Vollständig gekürzt",
+        "rationalised_denominator": "Rationalisierter Nenner"
+      },
+      "absolute_tolerance_label": "Absolute Toleranz",
+      "relative_tolerance_label": "Relative Toleranz",
+      "significant_figures_label": "Signifikante Stellen",
+      "units_label": "Erwartete Einheit",
+      "units_placeholder": "Zum Beispiel m, km/h oder kg",
+      "units_allow_conversion": "Andere Einheiten derselben Art akzeptieren, etwa 200 cm für 2 m",
+      "variables_label": "Variablen",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Buchstaben, die als Variablen behandelt werden. Leer lassen, um sie zu erkennen.",
+      "keyboard_label": "Tastatur",
+      "keyboard": {
+        "numeric": "Nur Zahlen",
+        "algebra": "Algebra",
+        "calculus": "Analysis",
+        "greek": "Griechische Buchstaben",
+        "sets": "Mengen",
+        "full": "Alles"
+      },
+      "feedback_label": "Rückmeldung zu bekannten falschen Antworten",
+      "feedback_helper": "Zeigt einen Hinweis, wenn Lernende eine bestimmte falsche Antwort geben.",
+      "feedback_answer_placeholder": "Falsche Antwort",
+      "feedback_text_placeholder": "Hinweis für Lernende",
+      "add_feedback": "Rückmeldung hinzufügen",
+      "remove": "Entfernen",
+      "try_label": "Antwort ausprobieren",
+      "try_helper": "Prüfen Sie vor der Veröffentlichung, wie eine Antwort bewertet würde.",
+      "try_placeholder": "Beispielantwort eingeben",
+      "try_button": "Prüfen",
+      "try_checking": "Wird geprüft…",
+      "try_needs_answer": "Fügen Sie zuerst eine akzeptierte Antwort hinzu.",
+      "allow_image_label": "Schüler dürfen mit Foto oder Zeichnung antworten",
+      "allow_image_helper": "Fügt dem Antwortfeld eine Schaltfläche für Foto oder Zeichnung hinzu. Getippte Antworten werden zuverlässiger bewertet, daher ist dies standardmäßig aus."
+    },
+    "verdict": {
+      "equivalent": "Richtig",
+      "not_simplified": "Der Wert stimmt, aber die Antwort ist nicht vereinfacht.",
+      "wrong_form": "Der Wert stimmt, aber er hat nicht die erforderliche Form.",
+      "wrong_units": "Der Wert stimmt, aber die Einheiten sind falsch.",
+      "wrong": "Falsch",
+      "needs_review": "Konnte nicht automatisch geprüft werden. Eine Lehrkraft schaut es sich an.",
+      "invalid": "Diese Antwort konnte nicht als Mathematik gelesen werden.",
+      "matched_label": "Übereinstimmung"
+    },
+    "misconception": {
+      "sign_error": "Prüfe die Vorzeichen: Deine Antwort hat den richtigen Betrag, aber das falsche Vorzeichen.",
+      "forgot_distribute": "Es sieht so aus, als wäre ein Faktor oder ein Minuszeichen nicht auf jeden Term in der Klammer angewendet worden.",
+      "inverted_fraction": "Deine Antwort sieht aus wie der Kehrwert der richtigen. Prüfe, welche Zahl oben stehen muss.",
+      "forgot_flip_inequality": "Denke daran, das Ungleichheitszeichen umzukehren, wenn du beide Seiten mit einer negativen Zahl multiplizierst oder dividierst.",
+      "dropped_factor": "Anscheinend ging unterwegs ein Faktor verloren. Vergleiche jeden Term mit dem Original."
+    },
+    "take": {
+      "placeholder": "Antwort eingeben",
+      "sr_label": "Ihre Antwort"
+    },
+    "preview": {
+      "accepted_label": "Akzeptierte Antworten",
+      "compare_label": "Vergleich",
+      "empty": "Noch keine akzeptierten Antworten."
+    },
+    "review": {
+      "your_answer": "Ihre Antwort",
+      "expected": "Akzeptierte Antworten",
+      "result": "Ergebnis",
+      "not_graded": "Noch nicht bewertet",
+      "feedback": "Rückmeldung"
+    },
+    "numeric": {
+      "correct_value_hint": "Brüche, gemischte Zahlen, π und Wurzeln werden akzeptiert."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Punkte für die Endantwort",
+        "working_points_label": "Punkte für den Lösungsweg",
+        "working_points_helper": "Wird von Hand bewertet. Der Antwortteil wird automatisch bewertet.",
+        "working_inputs_label": "Wie können Lernende ihren Lösungsweg zeigen?"
+      },
+      "input": {
+        "typed": "Getippte Zeilen",
+        "drawing": "Zeichnung",
+        "photo": "Foto"
+      },
+      "take": {
+        "answer_label": "Endantwort",
+        "working_label": "Ihr Lösungsweg",
+        "line_placeholder": "Schreiben Sie einen Schritt",
+        "add_line": "Schritt hinzufügen",
+        "remove_line": "Schritt entfernen",
+        "draw_label": "Zeichnen Sie Ihren Lösungsweg",
+        "upload_photo": "Foto Ihres Lösungswegs hochladen",
+        "remove_file": "Entfernen",
+        "uploading": "Wird hochgeladen…",
+        "upload_failed": "Der Upload ist fehlgeschlagen. Versuchen Sie es erneut.",
+        "draw_canvas": "Zeichenfläche",
+        "draw_undo": "Rückgängig",
+        "draw_clear": "Löschen",
+        "draw_save": "Zeichnung hinzufügen",
+        "draw_saving": "Wird gespeichert…",
+        "drawing_alt": "Ihr gezeichneter Lösungsweg",
+        "photo_alt": "Ihr Foto des Lösungswegs"
+      },
+      "review": {
+        "working_label": "Lösungsweg",
+        "no_working": "Kein Lösungsweg gezeigt",
+        "answer_points": "Endantwort",
+        "working_points": "Lösungsweg, von Ihrer Lehrkraft bewertet"
+      }
+    },
+    "parts": {
+      "score": "Punkte der Teilaufgaben",
+      "add": "Teilaufgabe hinzufügen",
+      "helper": "Die Teilaufgaben (a), (b), (c) werden getrennt beantwortet und bewertet. Die Frage darüber dient als gemeinsame Aufgabenstellung."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Fügen Sie die Paare hinzu, die Lernende zuordnen müssen. Verwenden Sie $…$ für Mathematik.",
+        "left_placeholder": "Element",
+        "right_placeholder": "Passende Zuordnung",
+        "add_pair": "Paar hinzufügen",
+        "remove_pair": "Paar entfernen"
+      },
+      "take": {
+        "choose": "Wählen Sie die Zuordnung für jedes Element."
+      },
+      "review": {
+        "expected": "Richtige Zuordnung",
+        "not_matched": "Nicht zugeordnet"
+      }
+    },
+    "calculator_policy": {
+      "label": "Taschenrechner",
+      "helper": "Wählen Sie, welchen Taschenrechner Lernende in dieser Übung öffnen dürfen.",
+      "none": "Kein Taschenrechner",
+      "four_function": "Grundrechenarten",
+      "scientific": "Wissenschaftlich",
+      "graphing": "Grafikfähig"
+    },
+    "calculator": {
+      "open": "Taschenrechner",
+      "close": "Taschenrechner schließen",
+      "title": "Taschenrechner",
+      "display": "Anzeige des Taschenrechners",
+      "clear": "Löschen",
+      "backspace": "Entfernen",
+      "equals": "Ist gleich",
+      "degrees": "Grad",
+      "radians": "Bogenmaß",
+      "answer": "Antwort",
+      "error": "Fehler",
+      "graphing_loading": "Grafikrechner wird geladen…",
+      "graphing_failed": "Der Grafikrechner konnte nicht geladen werden."
+    },
+    "desmos": {
+      "label": "Desmos-API-Schlüssel",
+      "helper": "Optional. Aktiviert den Desmos-Grafikrechner in Übungen mit Grafikrechner. Ohne Schlüssel erhalten Lernende den wissenschaftlichen Taschenrechner."
+    },
+    "variables": {
+      "heading": "Variablen",
+      "helper": "Geben Sie jedem Lernenden andere Zahlen. Verwenden Sie die Variablennamen in doppelten geschweiften Klammern in der Frage und im Antwortschlüssel.",
+      "enable": "Diese Frage parametrisieren",
+      "disable": "Variablen entfernen",
+      "add": "Variable hinzufügen",
+      "remove": "Variable entfernen",
+      "name_label": "Name",
+      "type_label": "Typ",
+      "type": {
+        "int": "Ganze Zahl",
+        "decimal": "Dezimalzahl",
+        "choice": "Auswahl"
+      },
+      "min_label": "Min",
+      "max_label": "Max",
+      "step_label": "Schritt",
+      "choices_label": "Werte",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Bedingungen",
+      "constraints_helper": "Eine Bedingung pro Zeile, zum Beispiel a != 0 oder b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Antwortformel",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "Die Antwort als Ausdruck der Variablen. Schreiben Sie das Wort answer in doppelten geschweiften Klammern, um ihren Wert anzuzeigen.",
+      "integer_answer": "Die Antwort muss eine ganze Zahl sein",
+      "nonzero_answer": "Die Antwort darf nicht null sein",
+      "use_answer": "Die berechnete Antwort als Antwortschlüssel verwenden",
+      "preview": "Varianten ansehen",
+      "previewing": "Wird geprüft…",
+      "preview_answer": "Antwort",
+      "preview_ok": "Schlüssel geprüft",
+      "preview_problem": "Diese Variante prüfen"
+    },
+    "rubric": {
+      "heading": "Bewertungsraster",
+      "helper": "Listen Sie die Schritte einer vollständigen Lösung mit ihren Punkten auf. Die KI bewertet den Lösungsweg anhand dieser Schritte.",
+      "step_placeholder": "Zum Beispiel: stellt die Gleichung richtig auf",
+      "points_label": "Punkte",
+      "add_step": "Schritt hinzufügen",
+      "remove_step": "Schritt entfernen",
+      "total": "Gesamt",
+      "total_mismatch": "Die Schritte ergeben eine andere Summe als die Punkte für den Lösungsweg.",
+      "ai_label": "Punkte mit KI vorschlagen",
+      "ai_helper": "Ein Modell liest den Lösungsweg anhand des Rasters und schlägt Punkte vor. Lernende sehen erst etwas, wenn Sie es übernehmen. Standardmäßig aus."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Diagrammfläche",
+        "x_min": "Linker Rand (x min)",
+        "x_max": "Rechter Rand (x max)",
+        "y_min": "Unterer Rand (y min)",
+        "y_max": "Oberer Rand (y max)",
+        "show_grid": "Gitter anzeigen",
+        "snap_label": "Am Gitterschritt einrasten",
+        "snap_helper": "Punkte rasten an Vielfachen dieser Zahl ein. 0 bedeutet freie Platzierung.",
+        "x_label": "Beschriftung der waagerechten Achse",
+        "y_label": "Beschriftung der senkrechten Achse",
+        "tolerance_label": "Toleranz",
+        "tolerance_helper": "Wie nah, in Diagrammeinheiten, ein Punkt oder eine Linie sein muss, um als richtig zu gelten.",
+        "range_invalid": "Jedes Minimum muss kleiner als sein Maximum sein."
+      },
+      "tool": {
+        "point": "Punkt",
+        "line": "Gerade",
+        "segment": "Strecke",
+        "parabola": "Parabel"
+      },
+      "plot": {
+        "tools_label": "Werkzeuge für die Lernenden",
+        "reference_heading": "Richtige Antwort",
+        "reference_helper": "Zeichne die richtige Antwort auf die Fläche. Die Lernenden werden daran bewertet.",
+        "reference_empty": "Zeichne mindestens ein Element als richtige Antwort.",
+        "preview_heading": "Ansicht der Lernenden",
+        "preview_helper": "So sehen die Lernenden die Fläche. Sie erhalten nur die von dir gewählten Werkzeuge."
+      },
+      "read": {
+        "curves_label": "Funktionen im Diagramm",
+        "curves_helper": "Gib jede Funktion von x ein, zum Beispiel x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Beschriftung (optional)",
+        "add_curve": "Funktion hinzufügen",
+        "points_label": "Markierte Punkte",
+        "points_helper": "Im Diagramm eingezeichnete Punkte, von denen die Lernenden ablesen.",
+        "add_point": "Punkt hinzufügen",
+        "point_label_placeholder": "Name (optional)",
+        "remove": "Entfernen",
+        "answer_label": "Was lesen die Lernenden im Diagramm ab?",
+        "kind": {
+          "value": "Ein einzelner Wert",
+          "point": "Ein Punkt (x, y)"
+        },
+        "value_label": "Richtiger Wert",
+        "x_label": "Richtiges x",
+        "y_label": "Richtiges y",
+        "tolerance_helper": "Antworten innerhalb dieses Abstands zur richtigen Antwort werden akzeptiert.",
+        "answer_empty": "Gib die richtige Antwort ein."
+      },
+      "take": {
+        "loading": "Diagramm wird geladen…",
+        "failed": "Das Diagramm konnte nicht geladen werden.",
+        "undo": "Rückgängig",
+        "clear": "Leeren",
+        "hint": {
+          "point": "Tippe auf das Diagramm, um einen Punkt zu setzen. Ziehe einen Punkt, um ihn zu verschieben.",
+          "line": "Tippe auf zwei Stellen, um eine Gerade zu zeichnen. Ziehe einen Punkt, um ihn zu verschieben.",
+          "segment": "Tippe auf die beiden Enden der Strecke. Ziehe einen Punkt, um ihn zu verschieben.",
+          "parabola": "Tippe auf den Scheitelpunkt und dann auf einen weiteren Punkt der Parabel. Ziehe einen Punkt, um ihn zu verschieben."
+        },
+        "board_label": "Koordinatensystem",
+        "read": {
+          "value_label": "Deine Antwort",
+          "value_placeholder": "Zahl eingeben",
+          "x_label": "x-Koordinate",
+          "y_label": "y-Koordinate"
+        }
+      },
+      "review": {
+        "student_legend": "Dein Diagramm (grün ist richtig, rot nicht)",
+        "expected_legend": "Richtiges Diagramm (gestrichelt)",
+        "expected_read": "Richtige Antwort",
+        "matched": "{matched} von {total} richtig"
+      },
+      "verdict": {
+        "correct": "Richtig",
+        "partial": "Einige Elemente sind richtig.",
+        "wrong": "Falsch",
+        "missing": "Es wurde nichts beantwortet.",
+        "extra": "Alles Nötige ist vorhanden, aber es wurden zusätzliche Elemente hinzugefügt.",
+        "not_set": "Diese Frage hat noch keinen Antwortschlüssel."
+      },
+      "preview": {
+        "empty": "Es ist noch keine richtige Antwort festgelegt."
+      }
+    },
+    "upgrade": {
+      "required": "In den kostenpflichtigen Tarifen enthalten. Upgrade, um es zu nutzen."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Foto oder Zeichnung",
+      "photo_tab": "Foto",
+      "draw_tab": "Zeichnen",
+      "upload": "Bild hochladen",
+      "take_photo": "Foto aufnehmen",
+      "photo_hint": "Füge einen Screenshot ein, ziehe ein Bild hierher oder lade eines hoch.",
+      "crop_hint": "Ziehe einen Rahmen um die gewünschte Mathematik.",
+      "reset_crop": "Ganzes Bild verwenden",
+      "convert": "Umwandeln",
+      "converting": "Mathematik wird gelesen …",
+      "draw_hint": "Schreibe die Mathematik hier mit dem Finger, einem Stift oder der Maus.",
+      "clear": "Löschen",
+      "original": "Original",
+      "converted": "Umgewandelte Mathematik",
+      "insert": "Einfügen",
+      "no_math_found": "In diesem Bild wurde keine Mathematik gefunden.",
+      "parse_failed": "Das ließ sich nicht als gültige Mathematik lesen. Korrigiere es unten oder versuche es erneut.",
+      "invalid_math": "Das ist noch keine gültige Mathematik.",
+      "unsupported_file": "Verwende ein PNG-, JPEG- oder WebP-Bild.",
+      "image_too_large": "Dieses Bild ist zu groß.",
+      "conversion_failed": "Die Umwandlung ist fehlgeschlagen. Versuche es erneut."
+    },
+    "errors": {
+      "limit_reached": "Die monatlichen Foto- und Arbeitsblatt-Umwandlungen des kostenlosen Tarifs sind aufgebraucht. Wechsle den Tarif, um weiterzumachen.",
+      "token_limit": "Dieser Arbeitsbereich hat sein KI-Kontingent für den Monat aufgebraucht.",
+      "not_configured": "KI ist auf dieser Plattform nicht eingerichtet."
+    },
+    "worksheet": {
+      "import_button": "Aus Arbeitsblatt importieren",
+      "title": "Arbeitsblatt importieren",
+      "description": "Lade ein Foto oder PDF eines Arbeitsblatts hoch. Jede Frage wird als Mathematik gelesen, erhält einen Typ und eine vorgeschlagene Antwort, und die Antwort wird vor dem Import geprüft.",
+      "drop_hint": "Wähle eine PNG-, JPEG-, WebP- oder PDF-Datei bis 10 MB.",
+      "choose_file": "Datei auswählen",
+      "choose_another": "Andere Datei auswählen",
+      "original": "Original",
+      "questions": "Gefundene Fragen",
+      "reading": "Arbeitsblatt wird gelesen …",
+      "verified": "Antwort geprüft",
+      "unverified": "Muss geprüft werden",
+      "unverified_hint": "Die Engine konnte diese Antwort nicht bestätigen. Prüfe sie und hake die Frage dann zum Importieren an.",
+      "question_label": "Fragetext",
+      "option_label": "Option",
+      "answer_label": "Antwort",
+      "correct_option": "Richtige Option",
+      "import_selected": "{count} Fragen importieren",
+      "cancel": "Abbrechen",
+      "imported": "Fragen importiert. Prüfe sie und speichere dann die Übung.",
+      "no_questions": "In dieser Datei wurden keine Fragen gefunden.",
+      "unsupported_file": "Verwende eine PNG-, JPEG-, WebP- oder PDF-Datei.",
+      "file_too_large": "Diese Datei ist größer als 10 MB.",
+      "type": {
+        "MATH_EXPRESSION": "Mathematischer Ausdruck",
+        "NUMERIC": "Numerisch",
+        "RADIO": "Einzelne Antwort"
+      }
+    }
+  },
+  "ai_review": {
+    "title": "KI-Vorschlag",
+    "request": "Punkte mit KI vorschlagen",
+    "requesting": "Wird geprüft…",
+    "confidence": "Sicherheit {confidence} %",
+    "first_wrong_step": "Erster fehlerhafter Schritt: {step}",
+    "rubric_changed": "Das Raster wurde nach diesem Vorschlag geändert.",
+    "suggested_points": "Vorgeschlagene Punkte für den Lösungsweg: {points} von {max}",
+    "model": "Modell: {model}",
+    "student_hidden": "Lernende sehen nichts, bis Sie dies übernehmen oder bewerten.",
+    "accept": "Übernehmen",
+    "applied": "Zur Note hinzugefügt",
+    "reject": "Ablehnen",
+    "decision": {
+      "accepted": "Übernommen",
+      "edited": "Mit Änderungen übernommen",
+      "rejected": "Abgelehnt"
+    },
+    "bulk_hint": "{count} KI-Vorschläge mit hoher Sicherheit warten auf Sie.",
+    "bulk_accept": "{count} sichere Vorschläge übernehmen",
+    "bulk_accepting": "Wird übernommen…",
+    "bulk_done": "{count} Vorschläge übernommen"
+  },
+  "exercise_results": {
+    "tab": "Ergebnisraster",
+    "student": "Lernende",
+    "unknown_student": "Unbekannte Person",
+    "total": "Gesamt",
+    "question_short": "F{number}",
+    "points_short": "P.",
+    "no_answer": "Keine Antwort",
+    "empty": "Noch keine Lernenden entsprechen diesen Filtern.",
+    "page": "Seite {page} von {pages}",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "filter": {
+      "all": "Alle Lernenden",
+      "wrong": "Nur falsche Antworten",
+      "awaiting": "Wartet auf Bewertung",
+      "all_cohorts": "Alle Kohorten"
+    },
+    "state": {
+      "full": "Volle Punktzahl",
+      "partial": "Teilpunkte",
+      "wrong": "Falsch",
+      "awaiting": "Wartet auf Bewertung",
+      "blank": "Keine Antwort"
+    },
+    "clusters": {
+      "title": "Antwortgruppen",
+      "empty": "Noch keine Antworten zum Gruppieren.",
+      "count": "{count} haben so geantwortet",
+      "blank": "{count} haben nichts eingegeben",
+      "parameterised_hint": "Diese Frage hat Variablen, daher werden Antworten für die Zahlen jeder Person getrennt gruppiert.",
+      "not_scorable": "Dieser Fragetyp wird von Hand bewertet. Sie können einer Gruppe trotzdem Feedback hinzufügen.",
+      "grade": {
+        "full": "Volle Punktzahl",
+        "partial": "Teilpunkte",
+        "wrong": "Falsch",
+        "mixed": "Gemischt"
+      },
+      "mark_correct": "Als richtig markieren",
+      "mark_partial": "Teilpunkte…",
+      "mark_wrong": "Als falsch markieren",
+      "add_feedback": "Feedback hinzufügen",
+      "undo": "Entscheidung rückgängig machen",
+      "points_label": "Punkte für diese Gruppe (max. {max})",
+      "apply": "Anwenden und neu bewerten",
+      "feedback_placeholder": "Feedback, das alle Lernenden dieser Gruppe sehen",
+      "save_feedback": "Feedback speichern",
+      "has_feedback": "mit Feedback",
+      "decision_correct": "Für alle als richtig markiert",
+      "decision_wrong": "Für alle als falsch markiert",
+      "decision_partial": "Für alle mit {points} Punkten bewertet",
+      "decision_feedback": "Feedback angehängt"
+    },
+    "snackbar": {
+      "applied": "{count} Antworten neu bewertet",
+      "undone": "Entscheidung rückgängig gemacht, {count} Antworten neu bewertet"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Abbrechen",
+      "confirm_delete": "Fertigkeit „{name}“ löschen? Sie wird von allen Fragen entfernt, denen sie zugeordnet ist.",
+      "create": "Fertigkeit erstellen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "import": "CSV importieren",
+      "more": "Aktionen für Fertigkeit",
+      "save": "Speichern"
+    },
+    "empty": {
+      "description": "Erstelle Fertigkeiten einzeln oder importiere ein Standardsystem aus einer CSV-Datei.",
+      "title": "Noch keine Fertigkeiten"
+    },
+    "form": {
+      "code": "Code",
+      "create_title": "Fertigkeit erstellen",
+      "description": "Beschreibung",
+      "edit_title": "Fertigkeit bearbeiten",
+      "framework": "Rahmenwerk",
+      "name": "Name",
+      "no_parent": "Keine übergeordnete (oberste Ebene)",
+      "parent": "Übergeordnete Fertigkeit"
+    },
+    "heading": "Fertigkeiten",
+    "import": {
+      "action": "Aktion",
+      "choose_file": "CSV-Datei auswählen",
+      "confirm": "{count} Fertigkeiten importieren",
+      "create": "Erstellen",
+      "description": "Prüfe zuerst eine CSV-Datei. Nichts wird gespeichert, bevor du die Vorschau bestätigst. Pflichtspalten sind code und name; optional sind parent_code, description und framework.",
+      "error_line": "Zeile {line}: {message}",
+      "errors_heading": "{count} Probleme gefunden. Behebe sie und wähle die Datei erneut aus.",
+      "more_rows": "und {count} weitere Zeilen",
+      "parent": "Übergeordnet",
+      "starters": {
+        "common_core": "Common Core Math (USA)",
+        "heading": "Startdateien",
+        "note": "Die Startdateien sind kleine Beispiele, nicht das vollständige Rahmenwerk. Ergänze die Standards, die deine Schule unterrichtet, und importiere dann die Datei.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} werden erstellt, {update} aktualisiert",
+      "title": "Fertigkeiten aus CSV importieren",
+      "update": "Aktualisieren"
+    },
+    "mastery": {
+      "description": "Nach Aktualität gewichtet, aus dem Anteil der erreichten Punkte bei Fragen mit der jeweiligen Fertigkeit.",
+      "heading": "Fertigkeitsbeherrschung",
+      "level": {
+        "not_started": "Nicht begonnen",
+        "learning": "Lernend",
+        "proficient": "Kompetent",
+        "mastered": "Gemeistert"
+      },
+      "no_data": "Noch keine Lernenden haben Fragen mit dieser Fertigkeit beantwortet.",
+      "student_heading": "Fertigkeitsbeherrschung in diesem Kurs"
+    },
+    "page_subtitle": "Lege die Fertigkeiten und Standards fest, auf denen deine Fragen aufbauen, und sieh, wie Lernende sie meistern.",
+    "page_title": "Fertigkeiten - ClassroomIO",
+    "picker": {
+      "accept": "Hinzufügen",
+      "accepted": "Hinzugefügt",
+      "add": "Fertigkeiten hinzufügen",
+      "description": "Wähle die Fertigkeiten, die diese Frage prüft.",
+      "edit": "Fertigkeiten bearbeiten",
+      "empty": "Keine Fertigkeiten gefunden. Erstelle zuerst Fertigkeiten in den Fertigkeiten-Einstellungen.",
+      "save_first": "Speichere die Übung, um dieser Frage Fertigkeiten zuzuordnen.",
+      "suggest": "Mit KI vorschlagen",
+      "suggest_failed": "Vorschläge konnten nicht abgerufen werden",
+      "suggestions": "Vorgeschlagene Fertigkeiten",
+      "title": "Fertigkeiten der Frage"
+    },
+    "search_placeholder": "Fertigkeiten suchen",
+    "snackbar": {
+      "created": "Fertigkeit erstellt",
+      "deleted": "Fertigkeit gelöscht",
+      "fetch_failed": "Fertigkeiten konnten nicht geladen werden",
+      "imported": "{count} Fertigkeiten importiert",
+      "updated": "Fertigkeit aktualisiert"
+    },
+    "table": {
+      "action": "Aktion",
+      "code": "Code",
+      "framework": "Rahmenwerk",
+      "name": "Name",
+      "no_matches": "Keine Fertigkeiten entsprechen deiner Suche",
+      "questions": "Fragen"
+    }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Übung für die {count} Lernenden zuweisen",
+      "assign_to_cluster": "Übung diesen {count} zuweisen"
+    },
+    "default_title": "Übung: {name}",
+    "default_title_question": "Übung",
+    "dialog": {
+      "title": "Übung zuweisen",
+      "description": "Erstellt eine kurze Übung aus neuen Varianten der Fragen zur Kompetenz und zeigt sie nur den ausgewählten Lernenden.",
+      "name": "Name der Übung",
+      "count": "Anzahl der Fragen",
+      "students": "Lernende ({count} ausgewählt)",
+      "cancel": "Abbrechen",
+      "submit": "Übung zuweisen"
+    },
+    "snackbar": {
+      "assigned": "Übung {count} Lernenden zugewiesen"
+    }
+  },
+  "question_analysis": {
+    "tab": "Fragenanalyse",
+    "description": "Die Lösungsquote ist der Anteil der Lernenden, die die Frage vollständig richtig beantwortet haben. Fragen unter {hard} % gelten als zu schwer, über {easy} % als zu leicht. Eine Trennschärfe unter {discrimination} bedeutet, dass die Frage starke und schwache Lernende nicht unterscheidet.",
+    "empty": "Noch keine Antworten zur Analyse.",
+    "seconds": "{seconds} s",
+    "columns": {
+      "question": "Frage",
+      "facility": "Lösungsquote",
+      "discrimination": "Trennschärfe",
+      "time": "Mediane Zeit",
+      "wrong_answers": "Häufige falsche Antworten",
+      "flags": "Hinweise"
+    },
+    "flags": {
+      "too_hard": "Zu schwer",
+      "too_easy": "Zu leicht",
+      "poor_discrimination": "Geringe Trennschärfe"
+    }
+  },
+  "mathNotation": {
+    "title": "Mathematische Notation",
+    "org_description": "Wie Zahlen und Operatoren in Mathe-Fragen geschrieben und gelesen werden. Antworten der Lernenden werden mit diesen Einstellungen bewertet.",
+    "course_description": "Die mathematische Notation der Organisation für diesen Kurs überschreiben.",
+    "inherit": "Standard der Organisation verwenden",
+    "decimal": {
+      "label": "Dezimaltrennzeichen",
+      "point": "Punkt (0.5)",
+      "comma": "Komma (0,5)",
+      "hint": "Mit Komma können Lernende 0,5 eingeben; es wird wie 0.5 bewertet."
+    },
+    "thousands": {
+      "label": "Tausendertrennzeichen",
+      "none": "Keines (1000)",
+      "space": "Leerzeichen (1 000)",
+      "comma": "Komma (1,000)",
+      "dot": "Punkt (1.000)",
+      "hint": "Wird in numerischen Antworten akzeptiert und bei Zahlen ab fünf Ziffern angezeigt."
+    },
+    "multiplication": {
+      "label": "Multiplikationszeichen",
+      "cross": "Kreuz (3 × 4)",
+      "dot": "Punkt (3 · 4)",
+      "hint": "Mit Punkt wird × in Fragen und Optionen als · angezeigt."
+    },
+    "unit": {
+      "label": "Einheitensystem",
+      "metric": "Metrisch",
+      "imperial": "Imperial",
+      "hint": "Ein Hinweis für Autoren und den KI-Assistenten. Die Bewertung ändert sich nicht."
+    },
+    "grade_band": {
+      "label": "Standard-Tastaturstufe",
+      "primary": "Grundschule (Zahlen)",
+      "secondary": "Sekundarstufe (Algebra)",
+      "advanced": "Fortgeschritten (Analysis)",
+      "hint": "Die Tastatur, die Lernende sehen, wenn eine Frage keine wählt."
+    },
+    "snackbar": {
+      "saved": "Mathematische Notation gespeichert",
+      "error": "Mathematische Notation konnte nicht gespeichert werden"
+    }
   }
 }

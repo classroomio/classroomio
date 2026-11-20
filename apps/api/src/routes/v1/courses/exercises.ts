@@ -10,15 +10,27 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiCreateCourseExercise,
   ZPublicApiForceQuery,
+  ZPublicApiAnswerClustersResponse,
+  ZPublicApiClusterDecisionResponse,
+  ZPublicApiExerciseQuestionParam,
+  ZPublicApiPracticeSetResponse,
+  ZPublicApiRegradeExerciseResponse,
   ZPublicApiUpdateCourseExercise
 } from '@cio/utils/validation/public-api';
+import { ZPracticeCreate } from '@cio/utils/validation/practice';
+import { ZClusterOverrideBody, ZClusterResetBody } from '@cio/utils/validation/math';
 import {
+  getCourseExerciseAnswerClustersService,
+  resetCourseExerciseClusterDecisionService,
+  setCourseExerciseClusterDecisionService,
+  createCoursePracticeService,
   createCourseExerciseService,
   deleteCourseExerciseService,
   getCourseExerciseNotifyStatusService,
   getCourseExerciseService,
   listCourseExercisesService,
   notifyCourseExerciseStudentsService,
+  regradeCourseExerciseService,
   updateCourseExerciseService
 } from '@api/services/v1/courses/exercises';
 
@@ -178,6 +190,158 @@ export const v1CourseExercisesRouter = new Hono()
         return c.json({ success: true, data: exercise }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to delete course exercise');
+      }
+    }
+  )
+  .get(
+    '/:exerciseId/questions/:questionId/answer-clusters',
+    describeRoute({
+      description: `Group every student's latest answer to a question into clusters of equal answers; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        200: jsonResponse('The answer groups', itemResponse(ZPublicApiAnswerClustersResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: exerciseForbiddenResponses.read,
+        404: { description: 'Course, exercise, question or answer group not found' },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('param', ZPublicApiExerciseQuestionParam),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const result = await getCourseExerciseAnswerClustersService(orgId, actorId, c.req.valid('param'));
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to group the answers');
+      }
+    }
+  )
+  .put(
+    '/:exerciseId/questions/:questionId/answer-clusters',
+    describeRoute({
+      description: `Give one answer group a verdict (correct, partial or wrong) or feedback; this regrades the question's answers; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        200: jsonResponse('The regrade result and the updated groups', itemResponse(ZPublicApiClusterDecisionResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: exerciseForbiddenResponses.write,
+        404: { description: 'Course, exercise, question or answer group not found' },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('param', ZPublicApiExerciseQuestionParam),
+    validator('json', ZClusterOverrideBody),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const result = await setCourseExerciseClusterDecisionService(
+          orgId,
+          actorId,
+          c.req.valid('param'),
+          c.req.valid('json')
+        );
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to apply the decision to the answer group');
+      }
+    }
+  )
+  .post(
+    '/:exerciseId/questions/:questionId/answer-clusters/reset',
+    describeRoute({
+      description: `Remove the decision on one answer group so its answers return to what the answer key gives; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        200: jsonResponse('The regrade result and the updated groups', itemResponse(ZPublicApiClusterDecisionResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: exerciseForbiddenResponses.write,
+        404: { description: 'Course, exercise, question or answer group not found' },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('param', ZPublicApiExerciseQuestionParam),
+    validator('json', ZClusterResetBody),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const result = await resetCourseExerciseClusterDecisionService(
+          orgId,
+          actorId,
+          c.req.valid('param'),
+          c.req.valid('json')
+        );
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to undo the decision');
+      }
+    }
+  )
+  .post(
+    '/practice',
+    describeRoute({
+      description: `Build a practice exercise from a skill's questions or chosen questions and assign it to chosen students. Needs a paid plan; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        201: jsonResponse('The practice exercise', itemResponse(ZPublicApiPracticeSetResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: exerciseForbiddenResponses.write,
+        404: { description: 'Course, skill or questions not found' },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('json', ZPracticeCreate),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const { courseId } = c.req.valid('param');
+        const result = await createCoursePracticeService(orgId, actorId, courseId, c.req.valid('json'));
+
+        return c.json({ success: true, data: result }, 201);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to create the practice exercise');
+      }
+    }
+  )
+  .post(
+    '/:exerciseId/regrade',
+    describeRoute({
+      description: `Re-score every submission of this exercise against its current answer key; ${COURSE_TEAM_RULE}.`,
+      tags: [TAG],
+      responses: {
+        200: jsonResponse(
+          'Points awarded by a teacher for manually graded questions and for the working of a worked solution are kept',
+          itemResponse(ZPublicApiRegradeExerciseResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: exerciseForbiddenResponses.write,
+        404: { description: 'Course or exercise not found' },
+        429: mcpRateLimitResponse
+      }
+    }),
+    validator('param', ZPublicApiCourseExerciseParam),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const result = await regradeCourseExerciseService(orgId, actorId, c.req.valid('param'));
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to regrade exercise submissions');
       }
     }
   )

@@ -10,10 +10,13 @@
   import { page } from '$app/state';
   import { onMount, untrack } from 'svelte';
 
+  import { courseApi } from '$features/course/api';
+  import { Button } from '@cio/ui/base/button';
+  import { StudentSkillMastery } from '$features/skills/components';
   import { getQuestionsForSection, questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
-  import type { AnswerData } from '@cio/question-types';
+  import { formatPoints, getExerciseQuestionContractKey, type AnswerData } from '@cio/question-types';
   import { toExerciseQuestionModel } from '../question-type-utils';
   import { getExerciseQuestionLabels } from '../question-labels';
   import { getExerciseSectionDisplayTitle } from '$features/course/utils/exercise-section-utils';
@@ -165,6 +168,31 @@
     return submittedAnswer.answerData;
   }
 
+  function getReviewContract(submission: SubmissionListItem, questions: Question[]) {
+    const answersByKey: Record<string, AnswerData> = {};
+    const scoresByKey: Record<string, number> = {};
+    const questionModels = questions.map(toExerciseQuestionModel);
+
+    questions.forEach((question, index) => {
+      const questionKey = getExerciseQuestionContractKey(questionModels[index], index);
+      const answer = getStudentAnswerForQuestion(submission, question);
+      if (answer) answersByKey[questionKey] = answer;
+
+      const questionId = toNumericQuestionId(question);
+      const submitted = submission.answers?.find((item) => item.questionId === questionId);
+      scoresByKey[questionKey] = Number(submitted?.point ?? 0);
+    });
+
+    return {
+      mode: 'review' as const,
+      questions: questionModels,
+      answersByKey,
+      scoresByKey,
+      labels: questionLabels,
+      disabled: true
+    };
+  }
+
   function getSectionScore(submission: SubmissionListItem, questions: Question[]) {
     return questions.reduce((total, question) => {
       const questionId = toNumericQuestionId(question);
@@ -311,6 +339,9 @@
       {@const selectedAttemptIndex = getSelectedAttemptIndex(selectedGroup)}
       {@const selectedAttempt = selectedGroup.attempts[selectedAttemptIndex]}
       {@const selectedSubmission = selectedAttempt.submission}
+      {#if courseApi.course?.id}
+        <StudentSkillMastery courseId={courseApi.course.id} profileId={selectedGroup.studentKey} />
+      {/if}
       <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p class="font-medium">
@@ -350,7 +381,7 @@
                   -
                   {getStatusLabel(attempt.submission)}
                   -
-                  {attemptScore}/{getTotalPossiblePoints()}
+                  {formatPoints(attemptScore)}/{formatPoints(getTotalPossiblePoints())}
                   -
                   {getAttemptPassLabel(attempt.submission)}
                 </Select.Item>
@@ -363,7 +394,7 @@
       <div class="mb-4 flex flex-wrap items-center gap-2">
         <Badge variant="outline">{getStatusLabel(selectedSubmission)}</Badge>
         <Badge variant="secondary">
-          {getTotalScore(selectedSubmission)}/{getTotalPossiblePoints()}
+          {formatPoints(getTotalScore(selectedSubmission))}/{formatPoints(getTotalPossiblePoints())}
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}
         </Badge>
         <Badge variant={didAttemptCompleteExercise(selectedSubmission) ? 'success' : 'warning'}>
@@ -395,45 +426,28 @@
                 }}
               />
 
-              {#each sectionQuestions as q, i (`${q.id}-${i}`)}
-                <div class="pb-4">
-                  <ExerciseQuestion.QuestionRenderer
-                    contract={{
-                      mode: 'review',
-                      question: toExerciseQuestionModel(q),
-                      answer: getStudentAnswerForQuestion(selectedSubmission, q),
-                      labels: questionLabels,
-                      disabled: true
-                    }}
-                    questionNumber={i + 1}
-                    questionNumberActive={false}
-                  />
-                </div>
-              {/each}
+              <ExerciseQuestion.QuestionList
+                contract={getReviewContract(selectedSubmission, sectionQuestions)}
+                itemClass="pb-4"
+              />
 
               <p class="border-t pt-2 text-sm font-medium">
-                {getSectionScore(selectedSubmission, sectionQuestions)}/{getSectionMaxPoints(sectionQuestions)}
+                {formatPoints(getSectionScore(selectedSubmission, sectionQuestions))}/{formatPoints(
+                  getSectionMaxPoints(sectionQuestions)
+                )}
                 {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}
               </p>
             </section>
           {/each}
         </div>
       {:else if $questionnaire.questions}
-        {#each $questionnaire.questions as q, i (`${q.id}-${i}`)}
-          <div class="pb-4">
-            <ExerciseQuestion.QuestionRenderer
-              contract={{
-                mode: 'review',
-                question: toExerciseQuestionModel(q),
-                answer: getStudentAnswerForQuestion(selectedSubmission, q),
-                labels: questionLabels,
-                disabled: true
-              }}
-              questionNumber={i + 1}
-              questionNumberActive={false}
-            />
-          </div>
-        {/each}
+        <ExerciseQuestion.QuestionList
+          contract={getReviewContract(
+            selectedSubmission,
+            $questionnaire.questions.filter((question) => !question.deletedAt)
+          )}
+          itemClass="pb-4"
+        />
       {/if}
     {/if}
   {/if}

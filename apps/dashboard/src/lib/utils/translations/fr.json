@@ -617,7 +617,8 @@
     "enterprise_required": "Cette fonctionnalité nécessite un forfait Entreprise.",
     "public_api_required": "Passez à Early Adopter ou Enterprise pour accéder à l'API publique.",
     "unlock_field": "Mettez à niveau pour déverrouiller ce paramètre",
-    "webhooks_required": "Passez à Early Adopter ou Enterprise pour utiliser les webhooks."
+    "webhooks_required": "Passez à Early Adopter ou Enterprise pour utiliser les webhooks.",
+    "paid_math_feature": "Inclus dans les forfaits payants. Passez à un forfait supérieur pour l'utiliser."
   },
   "student_progress": {
     "courses": "Cours",
@@ -1936,7 +1937,11 @@
                 "link": "Liens",
                 "word_bank": "Banque de mots",
                 "star": "Nombre d'étoiles",
-                "video_recording": "Enregistrement vidéo"
+                "video_recording": "Enregistrement vidéo",
+                "math_expression": "Expression mathématique",
+                "worked_solution": "Solution détaillée",
+                "graph_plot": "Tracé de graphique",
+                "graph_read": "Lecture de graphique"
               },
               "select_type": "Sélectionnez le type",
               "question_type_auto_gradable": "Auto",
@@ -2063,10 +2068,14 @@
                   "accepted_answers_label": "Réponses acceptées"
                 },
                 "take": {
-                  "placeholder": "Entrez les réponses séparées par des virgules"
+                  "placeholder": "Votre réponse"
                 },
                 "edit": {
-                  "accepted_answers_placeholder": "Réponses acceptées (séparées par des virgules)"
+                  "accepted_answers_placeholder": "Réponse acceptée",
+                  "blank_label": "Blanc",
+                  "add_alternative": "Ajouter une réponse acceptée",
+                  "add_blank": "Ajouter un blanc",
+                  "helper": "Les étudiants remplissent les blancs dans l’ordre. Un blanc est correct lorsqu’il correspond à l’une de ses réponses acceptées."
                 },
                 "review": {
                   "your_answer_label": "Soumis :"
@@ -3480,6 +3489,35 @@
     "write": "Écrire",
     "preview": "Aperçu"
   },
+  "math_editor": {
+    "insert_math": "Insérer des maths",
+    "type_tab": "Saisir",
+    "latex_tab": "LaTeX",
+    "math_field_label": "Maths",
+    "palette_label": "Structures mathématiques",
+    "latex_label": "LaTeX",
+    "preview_label": "Aperçu",
+    "preview_empty": "Saisissez du LaTeX pour voir un aperçu",
+    "done": "Terminé",
+    "cancel": "Annuler",
+    "structures": {
+      "fraction": "Fraction",
+      "mixed_number": "Nombre fractionnaire",
+      "parentheses": "Parenthèses",
+      "power": "Puissance",
+      "subscript": "Indice",
+      "square_root": "Racine carrée",
+      "nth_root": "Racine n-ième",
+      "absolute_value": "Valeur absolue",
+      "system": "Système d'équations",
+      "matrix": "Matrice",
+      "piecewise": "Fonction définie par morceaux",
+      "integral": "Intégrale",
+      "sum": "Somme",
+      "limit": "Limite",
+      "derivative": "Dérivée"
+    }
+  },
   "navigation": {
     "goto": "Aller à",
     "courses": "Cours",
@@ -3629,7 +3667,8 @@
     "distribute": "Distribuer",
     "tools": "Outils",
     "marketing": "Commercialisation",
-    "org_analytics": "Académie"
+    "org_analytics": "Académie",
+    "skills": "Compétences"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -7361,5 +7400,637 @@
     },
     "close": "Fermer",
     "dismiss": "Compris"
+  },
+  "math_question": {
+    "edit": {
+      "accepted_answers_label": "Réponses acceptées",
+      "accepted_answers_helper": "Saisissez chaque bonne réponse comme le ferait un étudiant. N’importe laquelle est acceptée.",
+      "add_answer": "Ajouter une autre réponse acceptée",
+      "answer_placeholder": "Saisissez la réponse",
+      "compare_label": "Comment comparer les réponses ?",
+      "compare": {
+        "equivalent": "Équivalente",
+        "exact_form": "Forme exacte",
+        "numeric": "Numérique",
+        "set": "Ensemble ou liste",
+        "equivalent_hint": "Toute forme algébriquement égale est acceptée, donc 2(x+1) correspond à 2x+2.",
+        "exact_form_hint": "La réponse doit être égale et écrite sous la forme choisie.",
+        "numeric_hint": "La réponse doit être dans la tolérance définie.",
+        "set_hint": "L’ordre n’a pas d’importance, donc (1, 2) correspond à (2, 1)."
+      },
+      "form_label": "Forme requise",
+      "form": {
+        "simplified": "Simplifiée",
+        "factored": "Factorisée",
+        "expanded": "Développée",
+        "lowest_terms": "Fraction irréductible",
+        "rationalised_denominator": "Dénominateur rationalisé"
+      },
+      "absolute_tolerance_label": "Tolérance absolue",
+      "relative_tolerance_label": "Tolérance relative",
+      "significant_figures_label": "Chiffres significatifs",
+      "units_label": "Unité attendue",
+      "units_placeholder": "Par exemple m, km/h ou kg",
+      "units_allow_conversion": "Accepter d’autres unités de même nature, comme 200 cm pour 2 m",
+      "variables_label": "Variables",
+      "variables_placeholder": "x, y, t",
+      "variables_helper": "Lettres à traiter comme des variables. Laissez vide pour les détecter.",
+      "keyboard_label": "Clavier",
+      "keyboard": {
+        "numeric": "Nombres uniquement",
+        "algebra": "Algèbre",
+        "calculus": "Analyse",
+        "greek": "Lettres grecques",
+        "sets": "Ensembles",
+        "full": "Tout"
+      },
+      "feedback_label": "Retours pour les réponses fausses connues",
+      "feedback_helper": "Affiche un indice lorsqu’un étudiant donne une réponse fausse précise.",
+      "feedback_answer_placeholder": "Réponse fausse",
+      "feedback_text_placeholder": "Indice pour l’étudiant",
+      "add_feedback": "Ajouter un retour",
+      "remove": "Supprimer",
+      "try_label": "Essayer une réponse",
+      "try_helper": "Vérifiez comment la réponse d’un étudiant serait notée avant de publier.",
+      "try_placeholder": "Saisissez un exemple de réponse d’étudiant",
+      "try_button": "Vérifier",
+      "try_checking": "Vérification…",
+      "try_needs_answer": "Ajoutez d’abord une réponse acceptée.",
+      "allow_image_label": "Autoriser les élèves à répondre avec une photo ou un dessin",
+      "allow_image_helper": "Ajoute un bouton photo ou dessin à la zone de réponse. Les réponses saisies sont notées plus fiablement, c’est donc désactivé par défaut."
+    },
+    "verdict": {
+      "equivalent": "Correcte",
+      "not_simplified": "La valeur est juste, mais la réponse n’est pas simplifiée.",
+      "wrong_form": "La valeur est juste, mais elle n’est pas sous la forme requise.",
+      "wrong_units": "La valeur est juste, mais les unités sont incorrectes.",
+      "wrong": "Incorrecte",
+      "needs_review": "Impossible de vérifier automatiquement. Un enseignant la relira.",
+      "invalid": "Cette réponse n’a pas pu être lue comme des maths.",
+      "matched_label": "Correspond"
+    },
+    "misconception": {
+      "sign_error": "Vérifie les signes : ta réponse a la bonne valeur mais le signe opposé.",
+      "forgot_distribute": "Il semble qu'un facteur ou un signe moins n'ait pas été appliqué à chaque terme entre parenthèses.",
+      "inverted_fraction": "Ta réponse ressemble à l'inverse de la bonne. Vérifie quel nombre doit être au numérateur.",
+      "forgot_flip_inequality": "N'oublie pas d'inverser le sens de l'inégalité quand tu multiplies ou divises les deux côtés par un nombre négatif.",
+      "dropped_factor": "Un facteur semble avoir disparu en cours de route. Compare chaque terme avec l'original."
+    },
+    "take": {
+      "placeholder": "Saisissez votre réponse",
+      "sr_label": "Votre réponse"
+    },
+    "preview": {
+      "accepted_label": "Réponses acceptées",
+      "compare_label": "Comparaison",
+      "empty": "Aucune réponse acceptée pour le moment."
+    },
+    "review": {
+      "your_answer": "Votre réponse",
+      "expected": "Réponses acceptées",
+      "result": "Résultat",
+      "not_graded": "Pas encore noté",
+      "feedback": "Retour"
+    },
+    "numeric": {
+      "correct_value_hint": "Les fractions, nombres mixtes, π et racines sont acceptés."
+    },
+    "worked": {
+      "edit": {
+        "answer_points_label": "Points pour la réponse finale",
+        "working_points_label": "Points pour la démarche",
+        "working_points_helper": "Noté à la main. La partie réponse est notée automatiquement.",
+        "working_inputs_label": "Comment les étudiants peuvent-ils montrer leur démarche ?"
+      },
+      "input": {
+        "typed": "Lignes saisies",
+        "drawing": "Dessin",
+        "photo": "Photo"
+      },
+      "take": {
+        "answer_label": "Réponse finale",
+        "working_label": "Votre démarche",
+        "line_placeholder": "Écrivez une étape",
+        "add_line": "Ajouter une étape",
+        "remove_line": "Supprimer l’étape",
+        "draw_label": "Dessinez votre démarche",
+        "upload_photo": "Téléversez une photo de votre démarche",
+        "remove_file": "Supprimer",
+        "uploading": "Téléversement…",
+        "upload_failed": "Le téléversement a échoué. Réessayez.",
+        "draw_canvas": "Zone de dessin",
+        "draw_undo": "Annuler",
+        "draw_clear": "Effacer",
+        "draw_save": "Ajouter le dessin",
+        "draw_saving": "Enregistrement…",
+        "drawing_alt": "Votre démarche dessinée",
+        "photo_alt": "Votre photo de la démarche"
+      },
+      "review": {
+        "working_label": "Démarche",
+        "no_working": "Aucune démarche montrée",
+        "answer_points": "Réponse finale",
+        "working_points": "Démarche, notée par votre enseignant"
+      }
+    },
+    "parts": {
+      "score": "Score des parties",
+      "add": "Ajouter une partie",
+      "helper": "Les parties (a), (b), (c) reçoivent des réponses et des notes séparées. La question ci-dessus sert d’énoncé commun."
+    },
+    "matching": {
+      "edit": {
+        "helper": "Ajoutez les paires que les étudiants doivent associer. Utilisez $…$ pour les maths.",
+        "left_placeholder": "Élément",
+        "right_placeholder": "Son association",
+        "add_pair": "Ajouter une paire",
+        "remove_pair": "Supprimer la paire"
+      },
+      "take": {
+        "choose": "Choisissez l’association de chaque élément."
+      },
+      "review": {
+        "expected": "Association correcte",
+        "not_matched": "Non associé"
+      }
+    },
+    "calculator_policy": {
+      "label": "Calculatrice",
+      "helper": "Choisissez la calculatrice que les étudiants peuvent ouvrir pendant cet exercice.",
+      "none": "Aucune calculatrice",
+      "four_function": "Quatre opérations",
+      "scientific": "Scientifique",
+      "graphing": "Graphique"
+    },
+    "calculator": {
+      "open": "Calculatrice",
+      "close": "Fermer la calculatrice",
+      "title": "Calculatrice",
+      "display": "Affichage de la calculatrice",
+      "clear": "Effacer",
+      "backspace": "Supprimer",
+      "equals": "Égal",
+      "degrees": "Degrés",
+      "radians": "Radians",
+      "answer": "Réponse",
+      "error": "Erreur",
+      "graphing_loading": "Chargement de la calculatrice graphique…",
+      "graphing_failed": "La calculatrice graphique n’a pas pu se charger."
+    },
+    "desmos": {
+      "label": "Clé API Desmos",
+      "helper": "Facultatif. Active la calculatrice graphique Desmos dans les exercices réglés sur Graphique. Sans clé, les étudiants utilisent la calculatrice scientifique."
+    },
+    "variables": {
+      "heading": "Variables",
+      "helper": "Donnez à chaque élève des nombres différents. Utilisez les noms des variables entre doubles accolades dans la question et dans la clé de réponse.",
+      "enable": "Paramétrer cette question",
+      "disable": "Supprimer les variables",
+      "add": "Ajouter une variable",
+      "remove": "Supprimer la variable",
+      "name_label": "Nom",
+      "type_label": "Type",
+      "type": {
+        "int": "Nombre entier",
+        "decimal": "Décimal",
+        "choice": "Choix"
+      },
+      "min_label": "Min",
+      "max_label": "Max",
+      "step_label": "Pas",
+      "choices_label": "Valeurs",
+      "choices_placeholder": "2, 5, 10",
+      "constraints_label": "Contraintes",
+      "constraints_helper": "Une condition par ligne, par exemple a != 0 ou b > a.",
+      "constraints_placeholder": "a != 0",
+      "answer_formula_label": "Formule de la réponse",
+      "answer_formula_placeholder": "b / a",
+      "answer_formula_helper": "La réponse sous forme d'expression des variables. Écrivez le mot answer entre doubles accolades pour afficher sa valeur.",
+      "integer_answer": "La réponse doit être un nombre entier",
+      "nonzero_answer": "La réponse ne doit pas être nulle",
+      "use_answer": "Utiliser la réponse calculée comme clé",
+      "preview": "Aperçu des variantes",
+      "previewing": "Vérification…",
+      "preview_answer": "Réponse",
+      "preview_ok": "Clé vérifiée",
+      "preview_problem": "Vérifiez cette variante"
+    },
+    "rubric": {
+      "heading": "Barème de notation",
+      "helper": "Listez les étapes d'une solution complète avec leurs points. L'IA note la démarche selon ces étapes.",
+      "step_placeholder": "Par exemple : pose correctement l'équation",
+      "points_label": "Points",
+      "add_step": "Ajouter une étape",
+      "remove_step": "Supprimer l'étape",
+      "total": "Total",
+      "total_mismatch": "Les étapes totalisent un autre nombre que les points de la démarche.",
+      "ai_label": "Suggérer des notes avec l'IA",
+      "ai_helper": "Un modèle lit la démarche selon le barème et suggère des notes. Les élèves ne voient rien tant que vous ne les acceptez pas. Désactivé par défaut."
+    },
+    "graph": {
+      "edit": {
+        "board_heading": "Repère du graphique",
+        "x_min": "Bord gauche (x min)",
+        "x_max": "Bord droit (x max)",
+        "y_min": "Bord inférieur (y min)",
+        "y_max": "Bord supérieur (y max)",
+        "show_grid": "Afficher la grille",
+        "snap_label": "Aimanter au pas de la grille",
+        "snap_helper": "Les points s’alignent sur des multiples de ce nombre. Utilisez 0 pour un placement libre.",
+        "x_label": "Légende de l’axe horizontal",
+        "y_label": "Légende de l’axe vertical",
+        "tolerance_label": "Tolérance",
+        "tolerance_helper": "À quelle distance, en unités du graphique, un point ou une droite doit se trouver pour être jugé correct.",
+        "range_invalid": "Chaque minimum doit être inférieur à son maximum."
+      },
+      "tool": {
+        "point": "Point",
+        "line": "Droite",
+        "segment": "Segment",
+        "parabola": "Parabole"
+      },
+      "plot": {
+        "tools_label": "Outils proposés aux élèves",
+        "reference_heading": "Réponse correcte",
+        "reference_helper": "Tracez la réponse correcte sur le repère. Les élèves sont notés par rapport à elle.",
+        "reference_empty": "Tracez au moins un élément comme réponse correcte.",
+        "preview_heading": "Vue de l’élève",
+        "preview_helper": "Voici le repère que voient les élèves. Ils n’ont que les outils que vous avez choisis."
+      },
+      "read": {
+        "curves_label": "Fonctions du graphique",
+        "curves_helper": "Saisissez chaque fonction de x, par exemple x^2 - 4.",
+        "curve_placeholder": "x^2 - 4",
+        "curve_label_placeholder": "Légende (facultatif)",
+        "add_curve": "Ajouter une fonction",
+        "points_label": "Points repérés",
+        "points_helper": "Points tracés sur le graphique pour que les élèves les lisent.",
+        "add_point": "Ajouter un point",
+        "point_label_placeholder": "Nom (facultatif)",
+        "remove": "Supprimer",
+        "answer_label": "Que doivent lire les élèves sur le graphique ?",
+        "kind": {
+          "value": "Une seule valeur",
+          "point": "Un point (x, y)"
+        },
+        "value_label": "Valeur correcte",
+        "x_label": "x correct",
+        "y_label": "y correct",
+        "tolerance_helper": "Les réponses à cette distance ou moins de la bonne réponse sont acceptées.",
+        "answer_empty": "Saisissez la réponse correcte."
+      },
+      "take": {
+        "loading": "Chargement du graphique…",
+        "failed": "Le graphique n’a pas pu être chargé.",
+        "undo": "Annuler",
+        "clear": "Effacer",
+        "hint": {
+          "point": "Touchez le graphique pour placer un point. Faites glisser un point pour le déplacer.",
+          "line": "Touchez deux endroits pour tracer une droite. Faites glisser un point pour le déplacer.",
+          "segment": "Touchez les deux extrémités du segment. Faites glisser un point pour le déplacer.",
+          "parabola": "Touchez le sommet, puis un autre point de la parabole. Faites glisser un point pour le déplacer."
+        },
+        "board_label": "Plan cartésien",
+        "read": {
+          "value_label": "Votre réponse",
+          "value_placeholder": "Saisissez un nombre",
+          "x_label": "Abscisse x",
+          "y_label": "Ordonnée y"
+        }
+      },
+      "review": {
+        "student_legend": "Votre graphique (vert : juste, rouge : faux)",
+        "expected_legend": "Graphique correct (en pointillés)",
+        "expected_read": "Réponse correcte",
+        "matched": "{matched} sur {total} corrects"
+      },
+      "verdict": {
+        "correct": "Correct",
+        "partial": "Certains éléments sont justes.",
+        "wrong": "Incorrect",
+        "missing": "Aucune réponse n’a été donnée.",
+        "extra": "Tout le nécessaire est là, mais des éléments en trop ont été ajoutés.",
+        "not_set": "Cette question n’a pas encore de corrigé."
+      },
+      "preview": {
+        "empty": "Aucune réponse correcte n’est encore définie."
+      }
+    },
+    "upgrade": {
+      "required": "Inclus dans les forfaits payants. Passez à un forfait supérieur pour l'utiliser."
+    }
+  },
+  "math_vision": {
+    "image": {
+      "from_image": "Photo ou dessin",
+      "photo_tab": "Photo",
+      "draw_tab": "Dessiner",
+      "upload": "Importer une image",
+      "take_photo": "Prendre une photo",
+      "photo_hint": "Collez une capture d’écran, déposez une image ou importez-en une.",
+      "crop_hint": "Faites glisser un cadre autour des maths souhaitées.",
+      "reset_crop": "Utiliser toute l’image",
+      "convert": "Convertir",
+      "converting": "Lecture des maths…",
+      "draw_hint": "Écrivez les maths ici avec le doigt, un stylet ou la souris.",
+      "clear": "Effacer",
+      "original": "Original",
+      "converted": "Maths converties",
+      "insert": "Insérer",
+      "no_math_found": "Aucune formule n’a été trouvée dans cette image.",
+      "parse_failed": "Ce n’est pas lisible comme des maths valides. Corrigez-le ci-dessous ou réessayez.",
+      "invalid_math": "Ce n’est pas encore des maths valides.",
+      "unsupported_file": "Utilisez une image PNG, JPEG ou WebP.",
+      "image_too_large": "Cette image est trop volumineuse.",
+      "conversion_failed": "La conversion a échoué. Réessayez."
+    },
+    "errors": {
+      "limit_reached": "Les conversions mensuelles de photos et de feuilles d’exercices du forfait gratuit sont épuisées. Passez à un forfait supérieur pour continuer.",
+      "token_limit": "Cet espace de travail a épuisé son quota d’IA pour le mois.",
+      "not_configured": "L’IA n’est pas configurée sur cette plateforme."
+    },
+    "worksheet": {
+      "import_button": "Importer depuis une feuille",
+      "title": "Importer une feuille d’exercices",
+      "description": "Importez une photo ou un PDF d’une feuille. Chaque question est lue comme des maths, reçoit un type et une réponse proposée, et la réponse est vérifiée avant l’importation.",
+      "drop_hint": "Choisissez un fichier PNG, JPEG, WebP ou PDF de 10 Mo maximum.",
+      "choose_file": "Choisir un fichier",
+      "choose_another": "Choisir un autre fichier",
+      "original": "Original",
+      "questions": "Questions trouvées",
+      "reading": "Lecture de la feuille…",
+      "verified": "Réponse vérifiée",
+      "unverified": "À vérifier",
+      "unverified_hint": "Le moteur n’a pas pu confirmer cette réponse. Vérifiez-la, puis cochez la question pour l’importer.",
+      "question_label": "Texte de la question",
+      "option_label": "Option",
+      "answer_label": "Réponse",
+      "correct_option": "Option correcte",
+      "import_selected": "Importer {count} questions",
+      "cancel": "Annuler",
+      "imported": "Questions importées. Relisez-les, puis enregistrez l’exercice.",
+      "no_questions": "Aucune question n’a été trouvée dans ce fichier.",
+      "unsupported_file": "Utilisez un fichier PNG, JPEG, WebP ou PDF.",
+      "file_too_large": "Ce fichier dépasse 10 Mo.",
+      "type": {
+        "MATH_EXPRESSION": "Expression mathématique",
+        "NUMERIC": "Numérique",
+        "RADIO": "Réponse unique"
+      }
+    }
+  },
+  "ai_review": {
+    "title": "Suggestion de l'IA",
+    "request": "Suggérer des notes avec l'IA",
+    "requesting": "Analyse…",
+    "confidence": "Confiance {confidence} %",
+    "first_wrong_step": "Première étape fausse : {step}",
+    "rubric_changed": "Le barème a changé après cette suggestion.",
+    "suggested_points": "Points suggérés pour la démarche : {points} sur {max}",
+    "model": "Modèle : {model}",
+    "student_hidden": "Les élèves ne voient rien tant que vous n'acceptez ou ne notez pas.",
+    "accept": "Accepter",
+    "applied": "Ajouté à la note",
+    "reject": "Refuser",
+    "decision": {
+      "accepted": "Acceptée",
+      "edited": "Acceptée avec modifications",
+      "rejected": "Refusée"
+    },
+    "bulk_hint": "{count} suggestions de l'IA très fiables vous attendent.",
+    "bulk_accept": "Accepter {count} suggestions très fiables",
+    "bulk_accepting": "Acceptation…",
+    "bulk_done": "{count} suggestions acceptées"
+  },
+  "exercise_results": {
+    "tab": "Grille de résultats",
+    "student": "Élève",
+    "unknown_student": "Élève inconnu",
+    "total": "Total",
+    "question_short": "Q{number}",
+    "points_short": "pts",
+    "no_answer": "Aucune réponse",
+    "empty": "Aucun élève ne correspond encore à ces filtres.",
+    "page": "Page {page} sur {pages}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "filter": {
+      "all": "Tous les élèves",
+      "wrong": "Mauvaises réponses uniquement",
+      "awaiting": "En attente de correction",
+      "all_cohorts": "Toutes les cohortes"
+    },
+    "state": {
+      "full": "Note maximale",
+      "partial": "Note partielle",
+      "wrong": "Faux",
+      "awaiting": "En attente de correction",
+      "blank": "Aucune réponse"
+    },
+    "clusters": {
+      "title": "Groupes de réponses",
+      "empty": "Aucune réponse à regrouper pour l'instant.",
+      "count": "{count} ont répondu ainsi",
+      "blank": "{count} ont laissé vide",
+      "parameterised_hint": "Cette question comporte des variables : les réponses sont donc regroupées séparément selon les nombres de chaque élève.",
+      "not_scorable": "Ce type de question se corrige à la main. Vous pouvez tout de même ajouter un commentaire à un groupe.",
+      "grade": {
+        "full": "Note maximale",
+        "partial": "Note partielle",
+        "wrong": "Faux",
+        "mixed": "Mixte"
+      },
+      "mark_correct": "Marquer juste",
+      "mark_partial": "Note partielle…",
+      "mark_wrong": "Marquer faux",
+      "add_feedback": "Ajouter un commentaire",
+      "undo": "Annuler la décision",
+      "points_label": "Points pour ce groupe (max. {max})",
+      "apply": "Appliquer et recorriger",
+      "feedback_placeholder": "Commentaire que verront tous les élèves de ce groupe",
+      "save_feedback": "Enregistrer le commentaire",
+      "has_feedback": "avec commentaire",
+      "decision_correct": "Marqué juste pour tous",
+      "decision_wrong": "Marqué faux pour tous",
+      "decision_partial": "{points} points attribués à tous",
+      "decision_feedback": "Commentaire ajouté"
+    },
+    "snackbar": {
+      "applied": "{count} réponses recorrigées",
+      "undone": "Décision annulée, {count} réponses recorrigées"
+    }
+  },
+  "skills": {
+    "actions": {
+      "cancel": "Annuler",
+      "confirm_delete": "Supprimer la compétence « {name} » ? Elle sera retirée de toutes les questions auxquelles elle est associée.",
+      "create": "Créer une compétence",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "import": "Importer un CSV",
+      "more": "Actions de la compétence",
+      "save": "Enregistrer"
+    },
+    "empty": {
+      "description": "Créez des compétences une par une ou importez un référentiel depuis un fichier CSV.",
+      "title": "Aucune compétence pour l'instant"
+    },
+    "form": {
+      "code": "Code",
+      "create_title": "Créer une compétence",
+      "description": "Description",
+      "edit_title": "Modifier la compétence",
+      "framework": "Référentiel",
+      "name": "Nom",
+      "no_parent": "Aucun parent (niveau supérieur)",
+      "parent": "Compétence parente"
+    },
+    "heading": "Compétences",
+    "import": {
+      "action": "Action",
+      "choose_file": "Choisir un fichier CSV",
+      "confirm": "Importer {count} compétences",
+      "create": "Créer",
+      "description": "Vérifiez d'abord un fichier CSV. Rien n'est enregistré avant que vous confirmiez l'aperçu. Les colonnes obligatoires sont code et name ; les colonnes facultatives sont parent_code, description et framework.",
+      "error_line": "Ligne {line} : {message}",
+      "errors_heading": "{count} problèmes détectés. Corrigez-les et choisissez à nouveau le fichier.",
+      "more_rows": "et {count} lignes de plus",
+      "parent": "Parent",
+      "starters": {
+        "common_core": "Common Core Math (États-Unis)",
+        "heading": "Fichiers de départ",
+        "note": "Les fichiers de départ sont de petits échantillons, pas le référentiel complet. Ajoutez les standards enseignés dans votre école, puis importez le fichier.",
+        "uk": "UK National Curriculum Maths",
+        "waec_neco": "WAEC / NECO Mathematics"
+      },
+      "summary": "{create} à créer, {update} à mettre à jour",
+      "title": "Importer des compétences depuis un CSV",
+      "update": "Mettre à jour"
+    },
+    "mastery": {
+      "description": "Pondéré par récence, à partir de la part de points obtenus aux questions associées à chaque compétence.",
+      "heading": "Maîtrise des compétences",
+      "level": {
+        "not_started": "Non commencée",
+        "learning": "En apprentissage",
+        "proficient": "Acquise",
+        "mastered": "Maîtrisée"
+      },
+      "no_data": "Aucun apprenant n'a encore répondu à des questions associées à cette compétence.",
+      "student_heading": "Maîtrise des compétences dans ce cours"
+    },
+    "page_subtitle": "Définissez les compétences et standards sur lesquels reposent vos questions et voyez comment les apprenants les maîtrisent.",
+    "page_title": "Compétences - ClassroomIO",
+    "picker": {
+      "accept": "Ajouter",
+      "accepted": "Ajoutée",
+      "add": "Ajouter des compétences",
+      "description": "Choisissez les compétences évaluées par cette question.",
+      "edit": "Modifier les compétences",
+      "empty": "Aucune compétence trouvée. Créez d'abord des compétences dans les paramètres des compétences.",
+      "save_first": "Enregistrez l'exercice pour associer des compétences à cette question.",
+      "suggest": "Suggérer avec l'IA",
+      "suggest_failed": "Impossible d'obtenir des suggestions",
+      "suggestions": "Compétences suggérées",
+      "title": "Compétences de la question"
+    },
+    "search_placeholder": "Rechercher des compétences",
+    "snackbar": {
+      "created": "Compétence créée",
+      "deleted": "Compétence supprimée",
+      "fetch_failed": "Impossible de charger les compétences",
+      "imported": "{count} compétences importées",
+      "updated": "Compétence mise à jour"
+    },
+    "table": {
+      "action": "Action",
+      "code": "Code",
+      "framework": "Référentiel",
+      "name": "Nom",
+      "no_matches": "Aucune compétence ne correspond à votre recherche",
+      "questions": "Questions"
+    }
+  },
+  "practice": {
+    "actions": {
+      "assign_to_weak": "Attribuer un exercice aux {count} en apprentissage",
+      "assign_to_cluster": "Attribuer un exercice à ces {count}"
+    },
+    "default_title": "Entraînement : {name}",
+    "default_title_question": "Entraînement",
+    "dialog": {
+      "title": "Attribuer un entraînement",
+      "description": "Crée un court exercice d'entraînement à partir de nouvelles variantes des questions de la compétence et ne l'affiche qu'aux élèves sélectionnés.",
+      "name": "Nom de l'exercice",
+      "count": "Nombre de questions",
+      "students": "Élèves ({count} sélectionnés)",
+      "cancel": "Annuler",
+      "submit": "Attribuer l'entraînement"
+    },
+    "snackbar": {
+      "assigned": "Entraînement attribué à {count} élèves"
+    }
+  },
+  "question_analysis": {
+    "tab": "Analyse des questions",
+    "description": "La facilité est la part d'élèves ayant répondu parfaitement. Les questions sous {hard} % sont signalées comme trop difficiles et au-dessus de {easy} % comme trop faciles. Une discrimination inférieure à {discrimination} signifie que la question ne distingue pas les élèves forts des faibles.",
+    "empty": "Aucune réponse à analyser pour l'instant.",
+    "seconds": "{seconds} s",
+    "columns": {
+      "question": "Question",
+      "facility": "Facilité",
+      "discrimination": "Discrimination",
+      "time": "Temps médian",
+      "wrong_answers": "Réponses fausses fréquentes",
+      "flags": "Signalements"
+    },
+    "flags": {
+      "too_hard": "Trop difficile",
+      "too_easy": "Trop facile",
+      "poor_discrimination": "Faible discrimination"
+    }
+  },
+  "mathNotation": {
+    "title": "Notation mathématique",
+    "org_description": "Comment les nombres et les opérateurs sont écrits et lus dans les questions de maths. Les réponses des élèves sont notées avec ces réglages.",
+    "course_description": "Remplacer la notation mathématique de l'organisation pour ce cours.",
+    "inherit": "Utiliser le réglage de l'organisation",
+    "decimal": {
+      "label": "Séparateur décimal",
+      "point": "Point (0.5)",
+      "comma": "Virgule (0,5)",
+      "hint": "Avec une virgule, les élèves peuvent saisir 0,5 et la réponse est notée comme 0.5."
+    },
+    "thousands": {
+      "label": "Séparateur des milliers",
+      "none": "Aucun (1000)",
+      "space": "Espace (1 000)",
+      "comma": "Virgule (1,000)",
+      "dot": "Point (1.000)",
+      "hint": "Accepté dans les réponses numériques et affiché dans les nombres de cinq chiffres ou plus."
+    },
+    "multiplication": {
+      "label": "Signe de multiplication",
+      "cross": "Croix (3 × 4)",
+      "dot": "Point (3 · 4)",
+      "hint": "Avec un point, × s'affiche · dans les questions et les options."
+    },
+    "unit": {
+      "label": "Système d'unités",
+      "metric": "Métrique",
+      "imperial": "Impérial",
+      "hint": "Une indication pour les auteurs et l'assistant IA. Elle ne change pas la notation."
+    },
+    "grade_band": {
+      "label": "Niveau de clavier par défaut",
+      "primary": "Primaire (nombres)",
+      "secondary": "Secondaire (algèbre)",
+      "advanced": "Avancé (analyse)",
+      "hint": "Le clavier que voient les élèves quand une question n'en choisit pas."
+    },
+    "snackbar": {
+      "saved": "Notation mathématique enregistrée",
+      "error": "Impossible d'enregistrer la notation mathématique"
+    }
   }
 }

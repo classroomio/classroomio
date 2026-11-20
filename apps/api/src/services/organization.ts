@@ -1,5 +1,7 @@
 import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateAnalyticsPlan } from '@cio/core/utils/redis/analytics-cache';
+import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
+import { assertPaidMathFeature } from '@cio/core/services/exercise/premium-guard';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -818,6 +820,19 @@ async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrgan
   }
 }
 
+/** A free-plan organization cannot set a new Desmos API key; keeping or clearing the one it has stays allowed. */
+async function assertDesmosKeyEntitlement(orgId: string, data: Partial<TOrganization>) {
+  const readKey = (customization: Partial<TOrganization>['customization']) =>
+    (customization?.course as { desmosApiKey?: string } | undefined)?.desmosApiKey?.trim();
+  const desmosApiKey = readKey(data.customization);
+  if (!desmosApiKey) return;
+
+  const stored = await getOrganizationById(orgId);
+  if (readKey(stored?.customization) === desmosApiKey) return;
+
+  assertPaidMathFeature('desmos', await isOrgOnPaidPlan(orgId));
+}
+
 /** `dbClient` lets callers compose the organization write into their own transaction. */
 export async function updateOrg(
   orgId: string,
@@ -847,6 +862,7 @@ export async function updateOrg(
     }
 
     await assertAuthSettingsEntitlement(orgId, data);
+    await assertDesmosKeyEntitlement(orgId, data);
 
     let previousCustomDomainHostname: string | undefined;
 

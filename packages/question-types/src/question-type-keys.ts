@@ -14,8 +14,22 @@ export const QUESTION_TYPE_KEY = {
   WORD_BANK: 'WORD_BANK',
   STAR: 'STAR',
   VIDEO_RECORDING: 'VIDEO_RECORDING',
-  THUMBS: 'THUMBS'
+  THUMBS: 'THUMBS',
+  MATH_EXPRESSION: 'MATH_EXPRESSION',
+  WORKED_SOLUTION: 'WORKED_SOLUTION',
+  GRAPH_PLOT: 'GRAPH_PLOT',
+  GRAPH_READ: 'GRAPH_READ'
 } as const;
+
+/** True for question types whose answers can be grouped into clusters; free text, files and graphs cannot. */
+export function isClusterableQuestionType(questionType: string): boolean {
+  return (
+    questionType !== QUESTION_TYPE_KEY.TEXTAREA &&
+    questionType !== QUESTION_TYPE_KEY.FILE_UPLOAD &&
+    questionType !== QUESTION_TYPE_KEY.GRAPH_PLOT &&
+    questionType !== QUESTION_TYPE_KEY.GRAPH_READ
+  );
+}
 
 export type QuestionTypeKey = (typeof QUESTION_TYPE_KEY)[keyof typeof QUESTION_TYPE_KEY];
 
