@@ -1,7 +1,7 @@
 ---
 title: 'Customer academy launch plan: a 30-day template'
 description: 'A week-by-week template for launching a customer academy in 30 days, with a course outline you can copy and a short list of metrics to track from the first day.'
-imageUrl: 'https://classroomio.com/classroomio-opengraph-image.jpg'
+imageUrl: 'https://classroomio.com/blog/customer-academy-launch-plan.png'
 date: '2026-11-25'
 author: Rotimi Best
 avatar: /blog/best.jpg
