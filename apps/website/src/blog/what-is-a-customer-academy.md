@@ -1,7 +1,7 @@
 ---
 title: 'What is a customer academy? How to build one'
 description: 'A customer academy is a branded learning site where customers learn your product. Here is what goes in one, how it differs from docs and an LMS, and how to launch yours.'
-imageUrl: 'https://classroomio.com/classroomio-opengraph-image.jpg'
+imageUrl: 'https://classroomio.com/blog/what-is-a-customer-academy.png'
 date: '2026-11-18'
 author: Rotimi Best
 avatar: /blog/best.jpg
