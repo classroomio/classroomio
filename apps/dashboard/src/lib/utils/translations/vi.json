@@ -2656,7 +2656,6 @@
               "generate": "Tạo",
               "generating": "Đang tạo trang của bạn. Việc này có thể mất một phút…",
               "remove_template": "Bỏ mẫu",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "Chèn",
               "frame_title": "Trang HTML được nhúng",
               "interact": "Tương tác",

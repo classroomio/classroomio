@@ -2656,7 +2656,6 @@
               "generate": "Generér",
               "generating": "Din side bliver genereret. Det kan tage et minut…",
               "remove_template": "Fjern skabelon",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "Indsæt",
               "frame_title": "Indlejret HTML-side",
               "interact": "Interager",

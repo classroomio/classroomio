@@ -3132,7 +3132,6 @@
               "generate": "Oluştur",
               "generating": "Sayfan oluşturuluyor. Bu bir dakika sürebilir…",
               "remove_template": "Şablonu kaldır",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "Ekle",
               "frame_title": "Gömülü HTML sayfası",
               "interact": "Etkileşim kur",

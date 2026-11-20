@@ -2656,7 +2656,6 @@
               "generate": "Generieren",
               "generating": "Deine Seite wird generiert. Das kann eine Minute dauern…",
               "remove_template": "Vorlage entfernen",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "Einfügen",
               "frame_title": "Eingebettete HTML-Seite",
               "interact": "Interagieren",

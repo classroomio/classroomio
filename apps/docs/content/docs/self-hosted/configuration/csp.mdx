@@ -19,6 +19,7 @@ lists of domains.
 | `CSP_STYLE_SRC_DOMAINS` | Domains allowed in `style-src` |
 | `CSP_CONNECT_SRC_DOMAINS` | Domains allowed in `connect-src` |
 | `CSP_FRAME_SRC_DOMAINS` | Domains allowed in `frame-src` |
+| `HTML_CONTENT_ORIGIN` | Origin that serves HTML lesson block pages (same value as the API's). Added to `frame-src` automatically; defaults to `PUBLIC_SERVER_URL` |
 | `CSP_FONT_SRC_DOMAINS` | Domains allowed in `font-src` |
 | `CSP_MEDIA_SRC_DOMAINS` | Domains allowed in `img-src` and `media-src` |
 
@@ -38,7 +39,9 @@ Restarting an existing container does not reload Compose environment values.
 :::warning[You don't need to add the API]
 Normal dashboard traffic is proxied to the API **same-origin**, so the API host does not need to be in
 the CSP. Add external hosts only: your CDN, video provider, font host, and object-storage/media domain
-(the most common one, so browsers can load uploaded media).
+(the most common one, so browsers can load uploaded media). The one exception is HTML lesson blocks:
+the dashboard adds `HTML_CONTENT_ORIGIN` (or `PUBLIC_SERVER_URL` when unset) to `frame-src` for you, so
+you don't list it in `CSP_FRAME_SRC_DOMAINS`.
 :::
 
 :::note[Cloud defaults]

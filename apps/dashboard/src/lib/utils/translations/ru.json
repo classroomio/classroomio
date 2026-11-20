@@ -2691,7 +2691,6 @@
               "generate": "Создать",
               "generating": "Создаём вашу страницу. Это может занять минуту…",
               "remove_template": "Убрать шаблон",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "Вставить",
               "frame_title": "Встроенная HTML-страница",
               "interact": "Взаимодействовать",

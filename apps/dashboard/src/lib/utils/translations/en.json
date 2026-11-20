@@ -3163,7 +3163,6 @@
               "generate": "Generate",
               "generating": "Generating your page. This can take a minute…",
               "remove_template": "Remove template",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "Insert",
               "frame_title": "Embedded HTML page",
               "interact": "Interact",

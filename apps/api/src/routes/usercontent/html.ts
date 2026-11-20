@@ -24,7 +24,7 @@ const CONTENT_SECURITY_POLICY = [
   "connect-src 'none'",
   "form-action 'none'",
   "base-uri 'none'",
-  'frame-ancestors https: http://localhost:*'
+  'frame-ancestors https: http://localhost:* http://*.localhost:*'
 ].join('; ');
 
 const HTML_CONTENT_HEADERS = {

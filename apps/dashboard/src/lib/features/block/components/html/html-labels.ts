@@ -2,6 +2,7 @@ import type { HtmlBlockLabels, HtmlSourceDialogLabels } from '@cio/ui/custom/blo
 import { t } from '$lib/utils/functions/translations';
 
 const KEY = 'course.navItem.lessons.materials.blocks.html';
+const CODE_PLACEHOLDER = '<!doctype html>\n<html>…</html>';
 
 export function getHtmlBlockLabels(): HtmlBlockLabels {
   return {
@@ -33,7 +34,7 @@ export function getHtmlSourceDialogLabels(): HtmlSourceDialogLabels {
     generate: t.get(`${KEY}.generate`),
     generating: t.get(`${KEY}.generating`),
     removeTemplate: t.get(`${KEY}.remove_template`),
-    codePlaceholder: t.get(`${KEY}.code_placeholder`),
+    codePlaceholder: CODE_PLACEHOLDER,
     insert: t.get(`${KEY}.insert`)
   };
 }

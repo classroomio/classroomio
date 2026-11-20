@@ -2,7 +2,10 @@ import { getLessonBlockScope } from '@cio/db/queries/block';
 import { pickAnyConfiguredProvider } from '@cio/ai-assistant/providers';
 import { enforceTokenBalance, recordTokenUsage } from '@cio/core/services/agent/usage';
 import { createHtmlPage, deriveHtmlPageName, readHtmlPage } from '@cio/core/services/block/html-page';
+import { signHtmlContentUrl } from '@cio/core/utils/html-content';
 import type { THtmlPage, THtmlPageCreate, THtmlPageGenerate } from '@cio/utils/validation/block';
+
+type SignedHtmlPage = THtmlPage & { url: string | null };
 
 import { generateHtmlDocument } from '@api/services/agent/html-generation';
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -16,29 +19,38 @@ async function requireLessonOrganization(lessonId: string): Promise<string> {
   return scope.organizationId;
 }
 
+async function storeSignedHtmlPage(input: Parameters<typeof createHtmlPage>[0]): Promise<SignedHtmlPage> {
+  const page = await createHtmlPage(input);
+  const url = signHtmlContentUrl(page.assetId);
+
+  return { ...page, url };
+}
+
 /**
  * Stores an uploaded or pasted HTML page for a lesson's organization.
+ * @returns the page reference with a signed URL to show it.
  */
 export async function createLessonHtmlPage(
   lessonId: string,
   profileId: string,
   input: THtmlPageCreate
-): Promise<THtmlPage> {
+): Promise<SignedHtmlPage> {
   const organizationId = await requireLessonOrganization(lessonId);
 
-  return createHtmlPage({ organizationId, profileId, name: input.name, html: input.html });
+  return storeSignedHtmlPage({ organizationId, profileId, name: input.name, html: input.html });
 }
 
 /**
  * Generates an HTML page with AI, or rewrites the page `input.assetId` points at, and stores the result as a
  * new page. Charges the lesson's organization for the tokens used.
+ * @returns the new page reference with a signed URL to show it.
  */
 export async function generateLessonHtmlPage(
   courseId: string,
   lessonId: string,
   profileId: string,
   input: THtmlPageGenerate
-): Promise<THtmlPage> {
+): Promise<SignedHtmlPage> {
   const organizationId = await requireLessonOrganization(lessonId);
   const providerConfig = pickAnyConfiguredProvider();
   if (!providerConfig) {
@@ -57,5 +69,5 @@ export async function generateLessonHtmlPage(
 
   const name = deriveHtmlPageName(result.html, 'ai-page.html');
 
-  return createHtmlPage({ organizationId, profileId, name, html: result.html });
+  return storeSignedHtmlPage({ organizationId, profileId, name, html: result.html });
 }

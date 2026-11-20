@@ -37,10 +37,3 @@ export function getHtmlContentUrl(data: THtmlBlockData): string | null {
 export function getHtmlDownloadHref(contentUrl: string | null): string | undefined {
   return contentUrl ? `${contentUrl}&download=1` : undefined;
 }
-
-/**
- * The block data to store: the page reference and size, without the signed URL the API adds on read.
- */
-export function toStoredHtmlData(data: THtmlBlockData): THtmlBlockData {
-  return { name: data.name, assetId: data.assetId, size: data.size, width: data.width, height: data.height };
-}

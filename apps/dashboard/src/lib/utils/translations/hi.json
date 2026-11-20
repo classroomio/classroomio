@@ -2656,7 +2656,6 @@
               "generate": "बनाएँ",
               "generating": "आपका पेज बन रहा है। इसमें एक मिनट लग सकता है…",
               "remove_template": "टेम्पलेट हटाएँ",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "डालें",
               "frame_title": "एम्बेड किया गया HTML पेज",
               "interact": "इंटरैक्ट करें",

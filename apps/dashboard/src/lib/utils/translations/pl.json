@@ -2656,7 +2656,6 @@
               "generate": "Generuj",
               "generating": "Generowanie strony. To może potrwać minutę…",
               "remove_template": "Usuń szablon",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "Wstaw",
               "frame_title": "Osadzona strona HTML",
               "interact": "Interakcja",

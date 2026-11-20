@@ -2656,7 +2656,6 @@
               "generate": "Générer",
               "generating": "Génération de votre page. Cela peut prendre une minute…",
               "remove_template": "Retirer le modèle",
-              "code_placeholder": "<!doctype html>\n<html>…</html>",
               "insert": "Insérer",
               "frame_title": "Page HTML intégrée",
               "interact": "Interagir",
