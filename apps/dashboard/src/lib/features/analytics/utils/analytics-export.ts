@@ -8,13 +8,15 @@ import {
   numberCell,
   textCell,
   toDonutSegments,
-  toHealthSegments
+  toHealthSegments,
+  toPathStatusSegments
 } from './analytics-utils';
 import type {
   AnalyticsResult,
   AnalyticsRow,
   AnalyticsStructureItem,
   AnalyticsWidget,
+  DonutSegment,
   StudentExerciseCell,
   StudentExportHeaders
 } from './types';
@@ -136,6 +138,19 @@ function exportCell(value: AnalyticsRow[string] | undefined, translate: Translat
   return value ?? null;
 }
 
+function donutSegments(
+  widget: AnalyticsWidget,
+  result: AnalyticsResult,
+  dimension: string | undefined,
+  translate: Translate
+): DonutSegment[] | null {
+  if (widget.id === 'cohort_health') return toHealthSegments(result, translate);
+
+  if (widget.id === 'path_status') return toPathStatusSegments(result, translate);
+
+  return dimension ? toDonutSegments(result, dimension, translate) : null;
+}
+
 /**
  * The rows behind a widget as the chart shows them: segments for donuts, and one labelled row per result row for
  * everything else.
@@ -152,11 +167,8 @@ export function buildWidgetExportDocument(params: {
   const dimensions = widget.spec.dimensions ?? [];
 
   const isDonut = widget.viz === 'donut';
-  if (isDonut && dimensions[0]) {
-    const segments =
-      widget.id === 'cohort_health'
-        ? toHealthSegments(result, translate)
-        : toDonutSegments(result, dimensions[0], translate);
+  const segments = isDonut ? donutSegments(widget, result, dimensions[0], translate) : null;
+  if (segments) {
     const columns = [
       rowColumn('segment', translate('analytics.export.columns.segment')),
       rowColumn('students', translate('analytics.columns.students'))

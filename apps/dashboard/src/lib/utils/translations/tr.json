@@ -6909,7 +6909,9 @@
       "bucketed_total": "Her çubuk {days} gün boyunca yapılan girişleri toplar. Bir öğrenci günde bir kez sayılır.",
       "student_sheet_pick_course": "Puanlarını alıştırmaya göre grafiklendirmek için bir kursa tıklayın.",
       "direct_students_charted": "Doğrudan öğrenciler bir kohorta ait değildir; kendi çizgilerinde görünür.",
-      "courses_select": "Kontrol panelini açmak için bir kurs seçin."
+      "courses_select": "Kontrol panelini açmak için bir kurs seçin.",
+      "paths_select": "Panosunu açmak için bir öğrenme yolu seçin.",
+      "path_students": "Tüm aktif öğrenme yollarındaki öğrenci üyeleri sayar."
     },
     "buckets": {
       "progress": {
@@ -7105,6 +7107,15 @@
       },
       "cohort_empty": {
         "title": "Öğrencisi olmayan kohortlar"
+      },
+      "paths_at_a_glance": {
+        "title": "Bir bakışta öğrenme yolları"
+      },
+      "path_status": {
+        "title": "Duruma göre yol öğrencileri"
+      },
+      "completion_by_path": {
+        "title": "Yola göre tamamlama oranı"
       }
     },
     "measures": {
@@ -7126,7 +7137,9 @@
       "attendance__pooled": "Sınıfa katılım",
       "best_score_pct__avg": "Ortalama puan",
       "is_complete__rate": "Tamamlanmış",
-      "members_total__value": "Kayıtlı öğrenciler"
+      "members_total__value": "Kayıtlı öğrenciler",
+      "completion_pct__pooled": "Tamamlama oranı",
+      "students__value": "Öğrenciler"
     },
     "columns": {
       "student": "Öğrenci",
@@ -7158,7 +7171,11 @@
       "health": "Sağlık",
       "section": "Kurs bölümü",
       "exercises_taken": "Alınan egzersizler",
-      "actions": "Eylemler"
+      "actions": "Eylemler",
+      "path": "Öğrenme yolu",
+      "courses": "Kurslar",
+      "completion_rate": "Tamamlama oranı",
+      "active_14d": "Aktif (14 gün)"
     },
     "column_hints": {
       "passed_first_try": "Geçme notu olan alıştırmalarda, ilk not verilen denemelerinde geçme notuna ulaşan öğrenciler.",
@@ -7296,14 +7313,16 @@
       "courses_cohort": "Kohorttaki {total} kurstan {from}–{to} arası gösteriliyor",
       "courses_org": "Kuruluştaki {total} kurstan {from}–{to} arası gösteriliyor",
       "sections_course": "Kurstaki {total} bölümden {from}–{to} arası gösteriliyor",
-      "overdue_cohort": "Kohorttaki {total} geciken öğrenciden {from}–{to} arası gösteriliyor"
+      "overdue_cohort": "Kohorttaki {total} geciken öğrenciden {from}–{to} arası gösteriliyor",
+      "paths_org": "Kuruluştaki {total, plural, one {# öğrenme yolundan} other {# öğrenme yolundan}} {from}–{to} gösteriliyor"
     },
     "breakdown": {
       "label": "Dağılım",
       "courses": "Kurslar ({count})",
       "cohorts": "Kohortlar ({count})",
       "all_students": "Tüm öğrenciler",
-      "by_cohort": "Kohorta göre ({count})"
+      "by_cohort": "Kohorta göre ({count})",
+      "paths": "Öğrenme yolları ({count})"
     },
     "cohorts": {
       "picker": "Kohortlar: {total} içinden {selected}",
@@ -7393,7 +7412,12 @@
       "default": {
         "title": "Henüz veri yok",
         "description": "Bu kart, öğrenciler kursu kullandıkça dolar."
-      }
+      },
+      "paths_org": {
+        "title": "Henüz bir öğrenme yolunda öğrenci yok",
+        "description": "İlerlemelerini burada görmek için öğrencileri bir öğrenme yoluna ekleyin."
+      },
+      "open_paths": "Öğrenme yollarını aç"
     },
     "export": {
       "students_capped": "Öğrenci listesi ilk {limit} satırla sınırlıdır.",
@@ -7417,7 +7441,8 @@
         "status": "Durum",
         "overdue_kind": "Gecikme türü",
         "progress_bucket_25": "İlerleme",
-        "score_bucket_10": "Ortalama puan"
+        "score_bucket_10": "Ortalama puan",
+        "path": "Öğrenme yolu"
       }
     },
     "org_page_title": "Akademi",
@@ -7445,6 +7470,11 @@
       "open_in_students": "Öğrenciler sekmesinde aç",
       "kpi_label": "Öğrencileri görüntüle: {title}",
       "segment_label": "Segment"
+    },
+    "path_status": {
+      "not_started": "Başlanmadı",
+      "in_progress": "Devam ediyor",
+      "completed": "Tamamlandı"
     }
   },
   "certificate": {

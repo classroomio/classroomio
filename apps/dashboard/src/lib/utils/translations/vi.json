@@ -6807,7 +6807,9 @@
       "bucketed_total": "Mỗi thanh biểu thị tổng số lượt đăng nhập trong {days} ngày. Một người học được tính một lần mỗi ngày.",
       "student_sheet_pick_course": "Nhấp vào một khóa học để lập biểu đồ điểm số của họ theo bài tập.",
       "direct_students_charted": "Người học trực tiếp không thuộc đoàn hệ nào; họ hiển thị thành một đường riêng.",
-      "courses_select": "Chọn một khóa học để mở trang tổng quan của khóa học đó."
+      "courses_select": "Chọn một khóa học để mở trang tổng quan của khóa học đó.",
+      "paths_select": "Chọn một lộ trình học để mở bảng điều khiển của nó.",
+      "path_students": "Đếm học viên của tất cả lộ trình học đang hoạt động."
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "Đoàn hệ chưa có học viên"
+      },
+      "paths_at_a_glance": {
+        "title": "Tổng quan lộ trình học"
+      },
+      "path_status": {
+        "title": "Học viên lộ trình theo trạng thái"
+      },
+      "completion_by_path": {
+        "title": "Tỷ lệ hoàn thành theo lộ trình"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "Tham dự lớp học",
       "best_score_pct__avg": "Điểm trung bình",
       "is_complete__rate": "Hoàn thành",
-      "members_total__value": "Người học đã đăng ký"
+      "members_total__value": "Người học đã đăng ký",
+      "completion_pct__pooled": "Tỷ lệ hoàn thành",
+      "students__value": "Học viên"
     },
     "columns": {
       "student": "Người học",
@@ -7056,7 +7069,11 @@
       "health": "Sức khỏe",
       "section": "Phần khóa học",
       "exercises_taken": "Bài tập đã thực hiện",
-      "actions": "hành động"
+      "actions": "hành động",
+      "path": "Lộ trình học",
+      "courses": "Khóa học",
+      "completion_rate": "Tỷ lệ hoàn thành",
+      "active_14d": "Hoạt động (14 ngày)"
     },
     "column_hints": {
       "passed_first_try": "Những học viên đạt điểm đậu trong lần thi đầu tiên, trong các bài tập có điểm đậu.",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "Đang hiển thị {from}–{to} trên tổng số {total} khóa học trong nhóm",
       "courses_org": "Đang hiển thị {from}–{to} trên tổng số {total} khóa học trong tổ chức",
       "sections_course": "Đang hiển thị {from}–{to} trên tổng số {total} phần trong khóa học",
-      "overdue_cohort": "Đang hiển thị {from}–{to} trên tổng số {total} học viên quá hạn trong nhóm"
+      "overdue_cohort": "Đang hiển thị {from}–{to} trên tổng số {total} học viên quá hạn trong nhóm",
+      "paths_org": "Đang hiển thị {from}–{to} trong {total, plural, other {# lộ trình học}} của tổ chức"
     },
     "breakdown": {
       "label": "Phân tích",
       "courses": "Khóa học ({count})",
       "cohorts": "Đoàn hệ ({count})",
       "all_students": "Tất cả người học",
-      "by_cohort": "Theo đoàn hệ ({count})"
+      "by_cohort": "Theo đoàn hệ ({count})",
+      "paths": "Lộ trình học ({count})"
     },
     "cohorts": {
       "picker": "Đoàn hệ: {selected} trên {total}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "Chưa có dữ liệu",
         "description": "Thẻ này được lấp đầy khi người học sử dụng khóa học."
-      }
+      },
+      "paths_org": {
+        "title": "Chưa có học viên nào trong lộ trình học",
+        "description": "Thêm học viên vào một lộ trình học để xem tiến độ của họ tại đây."
+      },
+      "open_paths": "Mở lộ trình học"
     },
     "export": {
       "students_capped": "Danh sách học viên được giới hạn ở {limit} dòng đầu tiên.",
@@ -7315,7 +7339,8 @@
         "status": "Trạng thái",
         "overdue_kind": "Loại quá hạn",
         "progress_bucket_25": "Tiến độ",
-        "score_bucket_10": "Điểm trung bình"
+        "score_bucket_10": "Điểm trung bình",
+        "path": "Lộ trình học"
       }
     },
     "org_page_title": "Học viện",
@@ -7343,6 +7368,11 @@
       "open_in_students": "Mở trong tab Người học",
       "kpi_label": "Xem người học: {title}",
       "segment_label": "Phân khúc"
+    },
+    "path_status": {
+      "not_started": "Chưa bắt đầu",
+      "in_progress": "Đang học",
+      "completed": "Đã hoàn thành"
     }
   },
   "oauth": {

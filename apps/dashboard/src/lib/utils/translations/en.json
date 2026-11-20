@@ -7593,7 +7593,8 @@
       "courses": "Courses ({count})",
       "cohorts": "Cohorts ({count})",
       "all_students": "All students",
-      "by_cohort": "By cohort ({count})"
+      "by_cohort": "By cohort ({count})",
+      "paths": "Learning paths ({count})"
     },
     "cohorts": {
       "picker": "Cohorts: {selected} of {total}",
@@ -7652,7 +7653,8 @@
       "courses_cohort": "Showing {from}–{to} of {total, plural, one {# course} other {# courses}} in cohort",
       "courses_org": "Showing {from}–{to} of {total, plural, one {# course} other {# courses}} in organization",
       "sections_course": "Showing {from}–{to} of {total, plural, one {# section} other {# sections}} in course",
-      "overdue_cohort": "Showing {from}–{to} of {total, plural, one {# overdue student} other {# overdue students}} in cohort"
+      "overdue_cohort": "Showing {from}–{to} of {total, plural, one {# overdue student} other {# overdue students}} in cohort",
+      "paths_org": "Showing {from}–{to} of {total, plural, one {# learning path} other {# learning paths}} in organization"
     },
     "now_tag": {
       "label": "Now",
@@ -7710,7 +7712,9 @@
       "bucketed_total": "Each bar adds up the logins over {days} days. A student counts once per day.",
       "student_sheet_pick_course": "Click a course to chart their scores by exercise.",
       "lesson_dropoff": "The steepest fall is between {from} and {to}.",
-      "no_pass_mark": "No exercise here has a pass mark yet, so there is no pass rate. Set a pass mark on an exercise to see it."
+      "no_pass_mark": "No exercise here has a pass mark yet, so there is no pass rate. Set a pass mark on an exercise to see it.",
+      "paths_select": "Select a learning path to open its dashboard.",
+      "path_students": "Counts student members of every active learning path."
     },
     "buckets": {
       "progress": {
@@ -7906,6 +7910,15 @@
       },
       "cohort_empty": {
         "title": "Cohorts without students"
+      },
+      "paths_at_a_glance": {
+        "title": "Learning paths at a glance"
+      },
+      "path_status": {
+        "title": "Path students by status"
+      },
+      "completion_by_path": {
+        "title": "Completion rate by path"
       }
     },
     "measures": {
@@ -7927,7 +7940,9 @@
       "attendance__pooled": "Classroom attendance",
       "best_score_pct__avg": "Average score",
       "is_complete__rate": "Completed",
-      "members_total__value": "Enrolled students"
+      "members_total__value": "Enrolled students",
+      "completion_pct__pooled": "Completion rate",
+      "students__value": "Students"
     },
     "columns": {
       "student": "Student",
@@ -7959,7 +7974,11 @@
       "health": "Health",
       "section": "Course section",
       "exercises_taken": "Exercises taken",
-      "actions": "Actions"
+      "actions": "Actions",
+      "path": "Learning path",
+      "courses": "Courses",
+      "completion_rate": "Completion rate",
+      "active_14d": "Active (14 days)"
     },
     "column_hints": {
       "passed_first_try": "Students who reached the pass mark on their first graded attempt, on exercises that have a pass mark.",
@@ -8136,7 +8155,12 @@
       "default": {
         "title": "No data yet",
         "description": "This card fills in as students use the course."
-      }
+      },
+      "paths_org": {
+        "title": "No students on a learning path yet",
+        "description": "Add students to a learning path to see their progress here."
+      },
+      "open_paths": "Open learning paths"
     },
     "empty": {
       "failed": "This chart couldn't load",
@@ -8167,7 +8191,8 @@
         "status": "Status",
         "overdue_kind": "Overdue type",
         "progress_bucket_25": "Progress",
-        "score_bucket_10": "Average score"
+        "score_bucket_10": "Average score",
+        "path": "Learning path"
       }
     },
     "org_page_title": "Academy",
@@ -8195,6 +8220,11 @@
       "open_in_students": "Open in Students tab",
       "kpi_label": "View students: {title}",
       "segment_label": "Segment"
+    },
+    "path_status": {
+      "not_started": "Not started",
+      "in_progress": "In progress",
+      "completed": "Completed"
     }
   },
   "oauth": {

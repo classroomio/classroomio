@@ -6807,7 +6807,9 @@
       "bucketed_total": "प्रत्येक बार {days} दिनों के लॉगिन को जोड़ता है। एक छात्र की गिनती प्रति दिन एक बार होती है।",
       "student_sheet_pick_course": "अभ्यास के अनुसार उनके स्कोर को चार्ट करने के लिए किसी पाठ्यक्रम पर क्लिक करें।",
       "direct_students_charted": "प्रत्यक्ष छात्र किसी समूह में नहीं हैं; वे अपनी अलग पंक्ति में दिखते हैं।",
-      "courses_select": "किसी पाठ्यक्रम का डैशबोर्ड खोलने के लिए उसका चयन करें."
+      "courses_select": "किसी पाठ्यक्रम का डैशबोर्ड खोलने के लिए उसका चयन करें.",
+      "paths_select": "उसका डैशबोर्ड खोलने के लिए कोई लर्निंग पाथ चुनें।",
+      "path_students": "सभी सक्रिय लर्निंग पाथ के छात्र सदस्यों की गिनती करता है।"
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "बिना छात्रों वाले कोहोर्ट"
+      },
+      "paths_at_a_glance": {
+        "title": "लर्निंग पाथ एक नज़र में"
+      },
+      "path_status": {
+        "title": "स्थिति के अनुसार पाथ के छात्र"
+      },
+      "completion_by_path": {
+        "title": "पाथ के अनुसार पूर्णता दर"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "कक्षा में उपस्थिति",
       "best_score_pct__avg": "औसत स्कोर",
       "is_complete__rate": "पूर्ण",
-      "members_total__value": "नामांकित छात्र"
+      "members_total__value": "नामांकित छात्र",
+      "completion_pct__pooled": "पूर्णता दर",
+      "students__value": "छात्र"
     },
     "columns": {
       "student": "छात्र",
@@ -7056,7 +7069,11 @@
       "health": "स्वास्थ्य",
       "section": "पाठ्यक्रम अनुभाग",
       "exercises_taken": "लिए गए अभ्यास",
-      "actions": "कार्रवाई"
+      "actions": "कार्रवाई",
+      "path": "लर्निंग पाथ",
+      "courses": "कोर्स",
+      "completion_rate": "पूर्णता दर",
+      "active_14d": "सक्रिय (14 दिन)"
     },
     "column_hints": {
       "passed_first_try": "जिन छात्रों ने अपने पहले मूल्यांकन प्रयास में उत्तीर्ण अंक प्राप्त किए, उन अभ्यासों में जिनमें उत्तीर्ण अंक निर्धारित थे।",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "कोहॉर्ट में {total, plural, one {# कोर्स} other {# कोर्स}} में से {from}–{to} दिख रहा है",
       "courses_org": "संगठन में {total, plural, one {# कोर्स} other {# कोर्स}} में से {from}–{to} दिख रहा है",
       "sections_course": "कोर्स में {total, plural, one {# सेक्शन} other {# सेक्शन}} में से {from}–{to} दिख रहा है",
-      "overdue_cohort": "कोहॉर्ट में {total, plural, one {# विलंबित छात्र} other {# विलंबित छात्रों}} में से {from}–{to} दिख रहा है"
+      "overdue_cohort": "कोहॉर्ट में {total, plural, one {# विलंबित छात्र} other {# विलंबित छात्रों}} में से {from}–{to} दिख रहा है",
+      "paths_org": "संगठन में {total, plural, one {# लर्निंग पाथ} other {# लर्निंग पाथ}} में से {from}–{to} दिखाए जा रहे हैं"
     },
     "breakdown": {
       "label": "विवरण",
       "courses": "पाठ्यक्रम ({count})",
       "cohorts": "समूह ({count})",
       "all_students": "सभी छात्र",
-      "by_cohort": "समूह के अनुसार ({count})"
+      "by_cohort": "समूह के अनुसार ({count})",
+      "paths": "लर्निंग पाथ ({count})"
     },
     "cohorts": {
       "picker": "कोहोर्ट: {total} में से {selected}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "अभी तक कोई डेटा नहीं",
         "description": "यह कार्ड तब भरता है जब छात्र पाठ्यक्रम का उपयोग करते हैं।"
-      }
+      },
+      "paths_org": {
+        "title": "अभी तक किसी लर्निंग पाथ में कोई छात्र नहीं",
+        "description": "यहाँ उनकी प्रगति देखने के लिए छात्रों को किसी लर्निंग पाथ में जोड़ें।"
+      },
+      "open_paths": "लर्निंग पाथ खोलें"
     },
     "export": {
       "students_capped": "छात्र सूची पहली {limit} पंक्तियों तक सीमित है।",
@@ -7315,7 +7339,8 @@
         "status": "स्थिति",
         "overdue_kind": "अतिदेय का प्रकार",
         "progress_bucket_25": "प्रगति",
-        "score_bucket_10": "औसत स्कोर"
+        "score_bucket_10": "औसत स्कोर",
+        "path": "लर्निंग पाथ"
       }
     },
     "org_page_title": "अकादमी",
@@ -7343,6 +7368,11 @@
       "open_in_students": "छात्र टैब में खोलें",
       "kpi_label": "छात्र देखें: {title}",
       "segment_label": "खंड"
+    },
+    "path_status": {
+      "not_started": "शुरू नहीं हुआ",
+      "in_progress": "प्रगति में",
+      "completed": "पूर्ण"
     }
   },
   "oauth": {

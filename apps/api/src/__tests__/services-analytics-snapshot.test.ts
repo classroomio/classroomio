@@ -142,6 +142,7 @@ function dashboardOf(widgets: TAnalyticsWidget[], options: DashboardOptions = {}
       pendingCount: 2,
       cohortCount: options.cohortCount ?? 0,
       activeCohortCount: 0,
+      pathCount: 0,
       studentTarget: null,
       seatsUsed: null,
       seatsNotJoined: null,

@@ -469,6 +469,10 @@ export function widgetPaginationTarget(pageGroup: string, scopeType?: AnalyticsS
     return scopeType === 'cohort' ? 'courses_cohort' : 'courses_org';
   }
 
+  if (pageGroup.startsWith('paths')) {
+    return 'paths_org';
+  }
+
   if (pageGroup.startsWith('sections')) {
     return 'sections_course';
   }
@@ -594,6 +598,22 @@ export function toHealthSegments(result: AnalyticsResult, translate: Translate):
     const label = translate(`analytics.status.${health}`);
 
     return [{ key: health, label, value, color: STATUS_COLORS[health] }];
+  });
+}
+
+const PATH_STATUS_SEGMENTS = [
+  { key: 'not_started', measure: 'not_started_students__sum', color: ANALYTICS_COLORS.muted },
+  { key: 'in_progress', measure: 'in_progress_students__sum', color: ANALYTICS_COLORS.warning },
+  { key: 'completed', measure: 'completed_students__sum', color: ANALYTICS_COLORS.primary }
+] as const;
+
+/** Learning path students split by path status, summed over every path in the result. */
+export function toPathStatusSegments(result: AnalyticsResult, translate: Translate): DonutSegment[] {
+  return PATH_STATUS_SEGMENTS.flatMap(({ key, measure, color }) => {
+    const value = result.rows.reduce((total, row) => total + (numberCell(row, measure) ?? 0), 0);
+    if (!value) return [];
+
+    return [{ key, label: translate(`analytics.path_status.${key}`), value, color }];
   });
 }
 
@@ -1010,7 +1030,10 @@ const EMPTY_COPY_BY_WIDGET: Record<string, string> = {
   avg_score_by_cohort: 'cohorts_org',
   avg_score_by_course: 'scores',
   cohorts_in_course: 'cohorts_course',
-  cohort_details: 'cohorts_course'
+  cohort_details: 'cohorts_course',
+  paths_at_a_glance: 'paths_org',
+  path_status: 'paths_org',
+  completion_by_path: 'paths_org'
 };
 
 function chartRows(widget: AnalyticsWidget, result: AnalyticsResult): AnalyticsRow[] {
@@ -1051,6 +1074,10 @@ function emptyAction(copyKey: string, context: AnalyticsWidgetContext): ScopeEmp
 
   if (copyKey === 'cohorts_org' && context.orgSlug) {
     return { href: `/org/${context.orgSlug}/cohorts`, labelKey: 'analytics.empty_states.create_cohort' };
+  }
+
+  if (copyKey === 'paths_org' && context.orgSlug) {
+    return { href: `/org/${context.orgSlug}/paths`, labelKey: 'analytics.empty_states.open_paths' };
   }
 
   if (copyKey === 'cohorts_org_no_students' && context.orgSlug) {
@@ -1185,6 +1212,12 @@ export function widgetNotes(
   if (widget.id === 'cohorts_at_a_glance' && shown > 0) notes.push(translate('analytics.notes.cohorts_select'));
 
   if (widget.id === 'courses_at_a_glance' && shown > 0) notes.push(translate('analytics.notes.courses_select'));
+
+  if (widget.id === 'paths_at_a_glance' && shown > 0) notes.push(translate('analytics.notes.paths_select'));
+
+  if (widget.id === 'path_status' || widget.id === 'completion_by_path') {
+    notes.push(translate('analytics.notes.path_students'));
+  }
 
   if (result && isCutShort(widget, result)) {
     notes.push(translate('analytics.notes.showing_first', { shown, total: result.total }));

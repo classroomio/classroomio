@@ -6807,7 +6807,9 @@
       "bucketed_total": "Chaque barre totalise les connexions sur {days} jours. Un étudiant compte une fois par jour.",
       "student_sheet_pick_course": "Cliquez sur un cours pour afficher ses résultats par exercice sous forme de graphique.",
       "direct_students_charted": "Les étudiants directs ne font partie d'aucune cohorte ; ils apparaissent sur leur propre ligne.",
-      "courses_select": "Sélectionnez un cours pour ouvrir son tableau de bord."
+      "courses_select": "Sélectionnez un cours pour ouvrir son tableau de bord.",
+      "paths_select": "Sélectionnez un parcours d'apprentissage pour ouvrir son tableau de bord.",
+      "path_students": "Compte les apprenants de tous les parcours d'apprentissage actifs."
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "Cohortes sans étudiants"
+      },
+      "paths_at_a_glance": {
+        "title": "Aperçu des parcours d'apprentissage"
+      },
+      "path_status": {
+        "title": "Apprenants des parcours par statut"
+      },
+      "completion_by_path": {
+        "title": "Taux de réussite par parcours"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "Présence en classe",
       "best_score_pct__avg": "Score moyen",
       "is_complete__rate": "Complété",
-      "members_total__value": "Étudiants inscrits"
+      "members_total__value": "Étudiants inscrits",
+      "completion_pct__pooled": "Taux de réussite",
+      "students__value": "Apprenants"
     },
     "columns": {
       "student": "Étudiant",
@@ -7056,7 +7069,11 @@
       "health": "Santé",
       "section": "Section du cours",
       "exercises_taken": "Exercices effectués",
-      "actions": "Actions"
+      "actions": "Actions",
+      "path": "Parcours d'apprentissage",
+      "courses": "Cours",
+      "completion_rate": "Taux de réussite",
+      "active_14d": "Actifs (14 jours)"
     },
     "column_hints": {
       "passed_first_try": "Les étudiants qui ont atteint la note de passage dès leur première tentative notée, pour les exercices comportant une note de passage.",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "Affichage de {from}–{to} sur {total, plural, one {# cours} other {# cours}} dans la cohorte",
       "courses_org": "Affichage de {from}–{to} sur {total, plural, one {# cours} other {# cours}} dans l'organisation",
       "sections_course": "Affichage de {from}–{to} sur {total, plural, one {# section} other {# sections}} dans le cours",
-      "overdue_cohort": "Affichage de {from}–{to} sur {total, plural, one {# étudiant en retard} other {# étudiants en retard}} dans la cohorte"
+      "overdue_cohort": "Affichage de {from}–{to} sur {total, plural, one {# étudiant en retard} other {# étudiants en retard}} dans la cohorte",
+      "paths_org": "Affichage de {from}–{to} sur {total, plural, one {# parcours d'apprentissage} other {# parcours d'apprentissage}} dans l'organisation"
     },
     "breakdown": {
       "label": "Répartition",
       "courses": "Cours ({count})",
       "cohorts": "Cohortes ({count})",
       "all_students": "Tous les étudiants",
-      "by_cohort": "Par cohorte ({count})"
+      "by_cohort": "Par cohorte ({count})",
+      "paths": "Parcours d'apprentissage ({count})"
     },
     "cohorts": {
       "picker": "Cohortes : {selected} sur {total}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "Aucune donnée pour le moment",
         "description": "Cette carte se remplit à mesure que les étudiants utilisent le cours."
-      }
+      },
+      "paths_org": {
+        "title": "Aucun apprenant dans un parcours d'apprentissage pour l'instant",
+        "description": "Ajoutez des apprenants à un parcours d'apprentissage pour voir leur progression ici."
+      },
+      "open_paths": "Ouvrir les parcours d'apprentissage"
     },
     "export": {
       "students_capped": "La liste des étudiants est limitée aux {limit} premières lignes.",
@@ -7315,7 +7339,8 @@
         "status": "Statut",
         "overdue_kind": "Type de retard",
         "progress_bucket_25": "Progression",
-        "score_bucket_10": "Score moyen"
+        "score_bucket_10": "Score moyen",
+        "path": "Parcours d'apprentissage"
       }
     },
     "org_page_title": "Académie",
@@ -7343,6 +7368,11 @@
       "open_in_students": "Ouvrir dans l'onglet Étudiants",
       "kpi_label": "Voir les étudiants : {title}",
       "segment_label": "Segment"
+    },
+    "path_status": {
+      "not_started": "Pas commencé",
+      "in_progress": "En cours",
+      "completed": "Terminé"
     }
   },
   "oauth": {

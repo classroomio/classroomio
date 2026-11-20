@@ -6807,7 +6807,9 @@
       "bucketed_total": "Cada barra suma los inicios de sesión durante {days} días. Un estudiante cuenta una vez por día.",
       "student_sheet_pick_course": "Haz clic en un curso para representar sus puntuaciones por ejercicio.",
       "direct_students_charted": "Los estudiantes directos no están en una cohorte; aparecen como su propia línea.",
-      "courses_select": "Seleccione un curso para abrir su panel."
+      "courses_select": "Seleccione un curso para abrir su panel.",
+      "paths_select": "Selecciona una ruta de aprendizaje para abrir su panel.",
+      "path_students": "Cuenta los estudiantes de todas las rutas de aprendizaje activas."
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "Cohortes sin estudiantes"
+      },
+      "paths_at_a_glance": {
+        "title": "Rutas de aprendizaje de un vistazo"
+      },
+      "path_status": {
+        "title": "Estudiantes de rutas por estado"
+      },
+      "completion_by_path": {
+        "title": "Tasa de finalización por ruta"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "Asistencia a clase",
       "best_score_pct__avg": "Puntuación media",
       "is_complete__rate": "Terminado",
-      "members_total__value": "Estudiantes matriculados"
+      "members_total__value": "Estudiantes matriculados",
+      "completion_pct__pooled": "Tasa de finalización",
+      "students__value": "Estudiantes"
     },
     "columns": {
       "student": "Estudiante",
@@ -7056,7 +7069,11 @@
       "health": "Salud",
       "section": "Sección del curso",
       "exercises_taken": "Ejercicios realizados",
-      "actions": "Acciones"
+      "actions": "Acciones",
+      "path": "Ruta de aprendizaje",
+      "courses": "Cursos",
+      "completion_rate": "Tasa de finalización",
+      "active_14d": "Activos (14 días)"
     },
     "column_hints": {
       "passed_first_try": "Estudiantes que alcanzaron la calificación mínima para aprobar en su primer intento evaluado, en ejercicios que tienen una calificación mínima para aprobar.",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "Mostrando {from}–{to} de {total, plural, one {# curso} other {# cursos}} en la cohorte",
       "courses_org": "Mostrando {from}–{to} de {total, plural, one {# curso} other {# cursos}} en la organización",
       "sections_course": "Mostrando {from}–{to} de {total, plural, one {# sección} other {# secciones}} en el curso",
-      "overdue_cohort": "Mostrando {from}–{to} de {total, plural, one {# estudiante atrasado} other {# estudiantes atrasados}} en la cohorte"
+      "overdue_cohort": "Mostrando {from}–{to} de {total, plural, one {# estudiante atrasado} other {# estudiantes atrasados}} en la cohorte",
+      "paths_org": "Mostrando {from}–{to} de {total, plural, one {# ruta de aprendizaje} other {# rutas de aprendizaje}} en la organización"
     },
     "breakdown": {
       "label": "Desglose",
       "courses": "Cursos ({count})",
       "cohorts": "Cohortes ({count})",
       "all_students": "Todos los estudiantes",
-      "by_cohort": "Por cohorte ({count})"
+      "by_cohort": "Por cohorte ({count})",
+      "paths": "Rutas de aprendizaje ({count})"
     },
     "cohorts": {
       "picker": "Cohortes: {selected} de {total}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "Aún no hay datos",
         "description": "Esta tarjeta se completa a medida que los estudiantes usan el curso."
-      }
+      },
+      "paths_org": {
+        "title": "Aún no hay estudiantes en una ruta de aprendizaje",
+        "description": "Añade estudiantes a una ruta de aprendizaje para ver aquí su progreso."
+      },
+      "open_paths": "Abrir rutas de aprendizaje"
     },
     "export": {
       "students_capped": "La lista de estudiantes se limita a las primeras {limit} filas.",
@@ -7315,7 +7339,8 @@
         "status": "Estado",
         "overdue_kind": "Tipo de retraso",
         "progress_bucket_25": "Progreso",
-        "score_bucket_10": "Puntuación media"
+        "score_bucket_10": "Puntuación media",
+        "path": "Ruta de aprendizaje"
       }
     },
     "org_page_title": "Academia",
@@ -7343,6 +7368,11 @@
       "open_in_students": "Abrir en la pestaña Estudiantes",
       "kpi_label": "Ver estudiantes: {title}",
       "segment_label": "Segmento"
+    },
+    "path_status": {
+      "not_started": "Sin empezar",
+      "in_progress": "En curso",
+      "completed": "Completado"
     }
   },
   "oauth": {

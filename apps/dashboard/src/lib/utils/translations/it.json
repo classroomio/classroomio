@@ -6807,7 +6807,9 @@
       "bucketed_total": "Ogni barra somma gli accessi in {days} giorni. Uno studente conta una volta al giorno.",
       "student_sheet_pick_course": "Fai clic su un corso per tracciare i relativi punteggi per esercizio.",
       "direct_students_charted": "Gli studenti diretti non appartengono a una coorte; compaiono su una linea dedicata.",
-      "courses_select": "Seleziona un corso per aprire la sua dashboard."
+      "courses_select": "Seleziona un corso per aprire la sua dashboard.",
+      "paths_select": "Seleziona un percorso di apprendimento per aprirne la dashboard.",
+      "path_students": "Conta gli studenti di tutti i percorsi di apprendimento attivi."
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "Coorti senza studenti"
+      },
+      "paths_at_a_glance": {
+        "title": "Percorsi di apprendimento in sintesi"
+      },
+      "path_status": {
+        "title": "Studenti dei percorsi per stato"
+      },
+      "completion_by_path": {
+        "title": "Tasso di completamento per percorso"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "Frequenza in classe",
       "best_score_pct__avg": "Punteggio medio",
       "is_complete__rate": "Completato",
-      "members_total__value": "studenti iscritti"
+      "members_total__value": "studenti iscritti",
+      "completion_pct__pooled": "Tasso di completamento",
+      "students__value": "Studenti"
     },
     "columns": {
       "student": "Studente",
@@ -7056,7 +7069,11 @@
       "health": "Salute",
       "section": "Sezione del corso",
       "exercises_taken": "Esercizi eseguiti",
-      "actions": "Azioni"
+      "actions": "Azioni",
+      "path": "Percorso di apprendimento",
+      "courses": "Corsi",
+      "completion_rate": "Tasso di completamento",
+      "active_14d": "Attivi (14 giorni)"
     },
     "column_hints": {
       "passed_first_try": "Studenti che hanno raggiunto la sufficienza al primo tentativo negli esercizi valutati, per i quali era prevista una soglia di superamento.",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "Visualizzazione di {from}–{to} su {total, plural, one {# corso} other {# corsi}} nella coorte",
       "courses_org": "Visualizzazione di {from}–{to} su {total, plural, one {# corso} other {# corsi}} nell'organizzazione",
       "sections_course": "Visualizzazione di {from}–{to} su {total, plural, one {# sezione} other {# sezioni}} nel corso",
-      "overdue_cohort": "Visualizzazione di {from}–{to} su {total, plural, one {# studente in ritardo} other {# studenti in ritardo}} nella coorte"
+      "overdue_cohort": "Visualizzazione di {from}–{to} su {total, plural, one {# studente in ritardo} other {# studenti in ritardo}} nella coorte",
+      "paths_org": "Visualizzati {from}–{to} di {total, plural, one {# percorso di apprendimento} other {# percorsi di apprendimento}} nell'organizzazione"
     },
     "breakdown": {
       "label": "Dettaglio",
       "courses": "Corsi ({count})",
       "cohorts": "Coorti ({count})",
       "all_students": "Tutti gli studenti",
-      "by_cohort": "Per coorte ({count})"
+      "by_cohort": "Per coorte ({count})",
+      "paths": "Percorsi di apprendimento ({count})"
     },
     "cohorts": {
       "picker": "Coorti: {selected} di {total}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "Nessun dato per ora",
         "description": "Questa scheda si riempie man mano che gli studenti usano il corso."
-      }
+      },
+      "paths_org": {
+        "title": "Ancora nessuno studente in un percorso di apprendimento",
+        "description": "Aggiungi studenti a un percorso di apprendimento per vedere qui i loro progressi."
+      },
+      "open_paths": "Apri i percorsi di apprendimento"
     },
     "export": {
       "students_capped": "L'elenco degli studenti è limitato alle prime {limit} righe.",
@@ -7315,7 +7339,8 @@
         "status": "Stato",
         "overdue_kind": "Tipo di ritardo",
         "progress_bucket_25": "Progressi",
-        "score_bucket_10": "Punteggio medio"
+        "score_bucket_10": "Punteggio medio",
+        "path": "Percorso di apprendimento"
       }
     },
     "org_page_title": "Accademia",
@@ -7343,6 +7368,11 @@
       "open_in_students": "Apri nella scheda Studenti",
       "kpi_label": "Visualizza studenti: {title}",
       "segment_label": "Segmento"
+    },
+    "path_status": {
+      "not_started": "Non iniziato",
+      "in_progress": "In corso",
+      "completed": "Completato"
     }
   },
   "oauth": {

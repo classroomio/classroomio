@@ -6807,7 +6807,9 @@
       "bucketed_total": "Każdy słupek sumuje logowania z {days} dni. Kursant liczy się raz dziennie.",
       "student_sheet_pick_course": "Kliknij kurs, aby wykreślić wyniki według ćwiczeń.",
       "direct_students_charted": "Studenci bezpośredni nie należą do żadnej kohorty; pojawiają się jako osobna linia.",
-      "courses_select": "Wybierz kurs, aby otworzyć jego pulpit nawigacyjny."
+      "courses_select": "Wybierz kurs, aby otworzyć jego pulpit nawigacyjny.",
+      "paths_select": "Wybierz ścieżkę nauki, aby otworzyć jej panel.",
+      "path_students": "Liczy uczniów wszystkich aktywnych ścieżek nauki."
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "Kohorty bez studentów"
+      },
+      "paths_at_a_glance": {
+        "title": "Ścieżki nauki w skrócie"
+      },
+      "path_status": {
+        "title": "Uczniowie ścieżek według statusu"
+      },
+      "completion_by_path": {
+        "title": "Wskaźnik ukończenia według ścieżki"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "Obecność na zajęciach",
       "best_score_pct__avg": "Średnia ocena",
       "is_complete__rate": "Zakończony",
-      "members_total__value": "Zapisanych studentów"
+      "members_total__value": "Zapisanych studentów",
+      "completion_pct__pooled": "Wskaźnik ukończenia",
+      "students__value": "Uczniowie"
     },
     "columns": {
       "student": "Student",
@@ -7056,7 +7069,11 @@
       "health": "Zdrowie",
       "section": "Sekcja kursu",
       "exercises_taken": "Ćwiczenia wykonane",
-      "actions": "Akcje"
+      "actions": "Akcje",
+      "path": "Ścieżka nauki",
+      "courses": "Kursy",
+      "completion_rate": "Wskaźnik ukończenia",
+      "active_14d": "Aktywni (14 dni)"
     },
     "column_hints": {
       "passed_first_try": "Studenci, którzy zaliczyli zadanie za pierwszym podejściem, w przypadku ćwiczeń z progiem zaliczenia.",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "Wyświetlanie {from}–{to} z {total, plural, one {# kursu} few {# kursów} many {# kursów} other {# kursów}} w kohorcie",
       "courses_org": "Wyświetlanie {from}–{to} z {total, plural, one {# kursu} few {# kursów} many {# kursów} other {# kursów}} w organizacji",
       "sections_course": "Wyświetlanie {from}–{to} z {total, plural, one {# sekcji} few {# sekcji} many {# sekcji} other {# sekcji}} w kursie",
-      "overdue_cohort": "Wyświetlanie {from}–{to} z {total, plural, one {# zaległego studenta} few {# zaległych studentów} many {# zaległych studentów} other {# zaległych studentów}} w kohorcie"
+      "overdue_cohort": "Wyświetlanie {from}–{to} z {total, plural, one {# zaległego studenta} few {# zaległych studentów} many {# zaległych studentów} other {# zaległych studentów}} w kohorcie",
+      "paths_org": "Wyświetlanie {from}–{to} z {total, plural, one {# ścieżki nauki} few {# ścieżek nauki} many {# ścieżek nauki} other {# ścieżki nauki}} w organizacji"
     },
     "breakdown": {
       "label": "Podział",
       "courses": "Kursy ({count})",
       "cohorts": "Kohorty ({count})",
       "all_students": "Wszyscy studenci",
-      "by_cohort": "Według kohorty ({count})"
+      "by_cohort": "Według kohorty ({count})",
+      "paths": "Ścieżki nauki ({count})"
     },
     "cohorts": {
       "picker": "Kohorty: {selected} z {total}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "Brak danych",
         "description": "Ta karta wypełnia się, gdy studenci korzystają z kursu."
-      }
+      },
+      "paths_org": {
+        "title": "Brak uczniów na ścieżce nauki",
+        "description": "Dodaj uczniów do ścieżki nauki, aby zobaczyć tutaj ich postępy."
+      },
+      "open_paths": "Otwórz ścieżki nauki"
     },
     "export": {
       "students_capped": "Lista studentów jest ograniczona do pierwszych {limit} wierszy.",
@@ -7315,7 +7339,8 @@
         "status": "Status",
         "overdue_kind": "Rodzaj zaległości",
         "progress_bucket_25": "Postęp",
-        "score_bucket_10": "Średni wynik"
+        "score_bucket_10": "Średni wynik",
+        "path": "Ścieżka nauki"
       }
     },
     "org_page_title": "Akademia",
@@ -7343,6 +7368,11 @@
       "open_in_students": "Otwórz w karcie Studenci",
       "kpi_label": "Pokaż studentów: {title}",
       "segment_label": "Segment"
+    },
+    "path_status": {
+      "not_started": "Nie rozpoczęto",
+      "in_progress": "W toku",
+      "completed": "Ukończono"
     }
   },
   "oauth": {

@@ -73,6 +73,7 @@ const SNAPSHOT = {
     pendingCount: 0,
     cohortCount: 1,
     activeCohortCount: 1,
+    pathCount: 0,
     studentTarget: null,
     seatsUsed: null,
     seatsNotJoined: null,

@@ -6807,7 +6807,9 @@
       "bucketed_total": "Jeder Balken summiert die Anmeldungen über {days} Tage. Ein Studierender zählt einmal pro Tag.",
       "student_sheet_pick_course": "Klicken Sie auf einen Kurs, um die Ergebnisse nach Übung darzustellen.",
       "direct_students_charted": "Direkte Studierende sind in keiner Kohorte; sie erscheinen als eigene Linie.",
-      "courses_select": "Wählen Sie einen Kurs aus, um dessen Dashboard zu öffnen."
+      "courses_select": "Wählen Sie einen Kurs aus, um dessen Dashboard zu öffnen.",
+      "paths_select": "Wähle einen Lernpfad, um sein Dashboard zu öffnen.",
+      "path_students": "Zählt die Teilnehmenden aller aktiven Lernpfade."
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "Kohorten ohne Studierende"
+      },
+      "paths_at_a_glance": {
+        "title": "Lernpfade im Überblick"
+      },
+      "path_status": {
+        "title": "Lernpfad-Teilnehmende nach Status"
+      },
+      "completion_by_path": {
+        "title": "Abschlussquote pro Lernpfad"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "Anwesenheit im Unterricht",
       "best_score_pct__avg": "Durchschnittsnote",
       "is_complete__rate": "Vollendet",
-      "members_total__value": "Eingeschriebene Studierende"
+      "members_total__value": "Eingeschriebene Studierende",
+      "completion_pct__pooled": "Abschlussquote",
+      "students__value": "Teilnehmende"
     },
     "columns": {
       "student": "Studierender",
@@ -7056,7 +7069,11 @@
       "health": "Gesundheit",
       "section": "Kursabschnitt",
       "exercises_taken": "Die durchgeführten Übungen",
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "path": "Lernpfad",
+      "courses": "Kurse",
+      "completion_rate": "Abschlussquote",
+      "active_14d": "Aktiv (14 Tage)"
     },
     "column_hints": {
       "passed_first_try": "Studierende, die bei ihrem ersten bewerteten Versuch die Bestehensgrenze bei Übungen erreicht haben, die eine Bestehensgrenze haben.",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "Zeigt {from}–{to} von {total, plural, one {# Kurs} other {# Kurse}} in der Kohorte",
       "courses_org": "Zeigt {from}–{to} von {total, plural, one {# Kurs} other {# Kurse}} in der Organisation",
       "sections_course": "Zeigt {from}–{to} von {total, plural, one {# Abschnitt} other {# Abschnitte}} im Kurs",
-      "overdue_cohort": "Zeigt {from}–{to} von {total, plural, one {# überfälligen Studierenden} other {# überfälligen Studierenden}} in der Kohorte"
+      "overdue_cohort": "Zeigt {from}–{to} von {total, plural, one {# überfälligen Studierenden} other {# überfälligen Studierenden}} in der Kohorte",
+      "paths_org": "{from}–{to} von {total, plural, one {# Lernpfad} other {# Lernpfaden}} in der Organisation"
     },
     "breakdown": {
       "label": "Aufschlüsselung",
       "courses": "Kurse ({count})",
       "cohorts": "Kohorten ({count})",
       "all_students": "Alle Studierenden",
-      "by_cohort": "Nach Kohorte ({count})"
+      "by_cohort": "Nach Kohorte ({count})",
+      "paths": "Lernpfade ({count})"
     },
     "cohorts": {
       "picker": "Kohorten: {selected} von {total}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "Noch keine Daten",
         "description": "Diese Karte füllt sich, während Studierende den Kurs nutzen."
-      }
+      },
+      "paths_org": {
+        "title": "Noch keine Teilnehmenden in einem Lernpfad",
+        "description": "Füge Teilnehmende zu einem Lernpfad hinzu, um hier ihren Fortschritt zu sehen."
+      },
+      "open_paths": "Lernpfade öffnen"
     },
     "export": {
       "students_capped": "Die Studierendenliste ist auf die ersten {limit} Zeilen begrenzt.",
@@ -7315,7 +7339,8 @@
         "status": "Status",
         "overdue_kind": "Art der Überfälligkeit",
         "progress_bucket_25": "Fortschritt",
-        "score_bucket_10": "Durchschnittliche Punktzahl"
+        "score_bucket_10": "Durchschnittliche Punktzahl",
+        "path": "Lernpfad"
       }
     },
     "org_page_title": "Akademie",
@@ -7343,6 +7368,11 @@
       "open_in_students": "Im Tab „Studierende“ öffnen",
       "kpi_label": "Studierende anzeigen: {title}",
       "segment_label": "Segment"
+    },
+    "path_status": {
+      "not_started": "Nicht begonnen",
+      "in_progress": "In Bearbeitung",
+      "completed": "Abgeschlossen"
     }
   },
   "oauth": {

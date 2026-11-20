@@ -6807,7 +6807,9 @@
       "bucketed_total": "Cada barra soma os logins ao longo de {days} dias. Um aluno conta uma vez por dia.",
       "student_sheet_pick_course": "Clique em um curso para traçar suas pontuações por exercício.",
       "direct_students_charted": "Os alunos diretos não estão numa coorte; aparecem como uma linha própria.",
-      "courses_select": "Selecione um curso para abrir seu painel."
+      "courses_select": "Selecione um curso para abrir seu painel.",
+      "paths_select": "Selecione uma trilha de aprendizagem para abrir o painel dela.",
+      "path_students": "Conta os alunos de todas as trilhas de aprendizagem ativas."
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "Coortes sem alunos"
+      },
+      "paths_at_a_glance": {
+        "title": "Trilhas de aprendizagem em resumo"
+      },
+      "path_status": {
+        "title": "Alunos das trilhas por status"
+      },
+      "completion_by_path": {
+        "title": "Taxa de conclusão por trilha"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "Presença em sala de aula",
       "best_score_pct__avg": "Pontuação média",
       "is_complete__rate": "Concluído",
-      "members_total__value": "Alunos matriculados"
+      "members_total__value": "Alunos matriculados",
+      "completion_pct__pooled": "Taxa de conclusão",
+      "students__value": "Alunos"
     },
     "columns": {
       "student": "Aluno",
@@ -7056,7 +7069,11 @@
       "health": "Saúde",
       "section": "Seção do curso",
       "exercises_taken": "Exercícios realizados",
-      "actions": "Ações"
+      "actions": "Ações",
+      "path": "Trilha de aprendizagem",
+      "courses": "Cursos",
+      "completion_rate": "Taxa de conclusão",
+      "active_14d": "Ativos (14 dias)"
     },
     "column_hints": {
       "passed_first_try": "Alunos que atingiram a nota de aprovação na primeira tentativa avaliada, em exercícios que obtiveram nota de aprovação.",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "A mostrar {from}–{to} de {total, plural, one {# curso} other {# cursos}} na turma",
       "courses_org": "A mostrar {from}–{to} de {total, plural, one {# curso} other {# cursos}} na organização",
       "sections_course": "A mostrar {from}–{to} de {total, plural, one {# secção} other {# secções}} no curso",
-      "overdue_cohort": "A mostrar {from}–{to} de {total, plural, one {# aluno em atraso} other {# alunos em atraso}} na turma"
+      "overdue_cohort": "A mostrar {from}–{to} de {total, plural, one {# aluno em atraso} other {# alunos em atraso}} na turma",
+      "paths_org": "Mostrando {from}–{to} de {total, plural, one {# trilha de aprendizagem} other {# trilhas de aprendizagem}} na organização"
     },
     "breakdown": {
       "label": "Detalhe",
       "courses": "Cursos ({count})",
       "cohorts": "Coortes ({count})",
       "all_students": "Todos os alunos",
-      "by_cohort": "Por coorte ({count})"
+      "by_cohort": "Por coorte ({count})",
+      "paths": "Trilhas de aprendizagem ({count})"
     },
     "cohorts": {
       "picker": "Coortes: {selected} de {total}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "Ainda sem dados",
         "description": "Este cartão enche-se à medida que os alunos usam o curso."
-      }
+      },
+      "paths_org": {
+        "title": "Ainda não há alunos em uma trilha de aprendizagem",
+        "description": "Adicione alunos a uma trilha de aprendizagem para ver o progresso deles aqui."
+      },
+      "open_paths": "Abrir trilhas de aprendizagem"
     },
     "export": {
       "students_capped": "A lista de alunos está limitada às primeiras {limit} linhas.",
@@ -7315,7 +7339,8 @@
         "status": "Status",
         "overdue_kind": "Tipo de atraso",
         "progress_bucket_25": "Progresso",
-        "score_bucket_10": "Pontuação média"
+        "score_bucket_10": "Pontuação média",
+        "path": "Trilha de aprendizagem"
       }
     },
     "org_page_title": "Academia",
@@ -7343,6 +7368,11 @@
       "open_in_students": "Abrir na aba Alunos",
       "kpi_label": "Ver alunos: {title}",
       "segment_label": "Segmento"
+    },
+    "path_status": {
+      "not_started": "Não iniciado",
+      "in_progress": "Em andamento",
+      "completed": "Concluído"
     }
   },
   "oauth": {

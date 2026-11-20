@@ -12,6 +12,22 @@ import {
 
 const newestCohorts = cohortSummarySpec(ANALYTICS_LIMITS.cardPageSize);
 const coursePage = courseSummarySpec(ANALYTICS_LIMITS.cardPageSize, { includeCreatedAt: true });
+const pathPage: TAnalyticsWidgetInput['spec'] = {
+  source: 'path_summary',
+  dimensions: ['path'],
+  measures: [
+    { metric: 'path_public_id', agg: 'value' },
+    { metric: 'courses', agg: 'value' },
+    { metric: 'students', agg: 'value' },
+    { metric: 'avg_progress_pct', agg: 'value' },
+    { metric: 'completion_pct', agg: 'pooled' },
+    { metric: 'completed_students', agg: 'value' },
+    { metric: 'active_students', agg: 'value' },
+    { metric: 'certificates', agg: 'value' }
+  ],
+  sort: [{ field: 'path', dir: 'asc' }],
+  limit: ANALYTICS_LIMITS.cardPageSize
+};
 
 export const ORG_WIDGETS: readonly TAnalyticsWidgetInput[] = [
   {
@@ -97,6 +113,16 @@ export const ORG_WIDGETS: readonly TAnalyticsWidgetInput[] = [
     spec: coursePage
   },
   {
+    id: 'paths_at_a_glance',
+    titleKey: 'analytics.widgets.paths_at_a_glance.title',
+    viz: 'table',
+    span: 8,
+    breakdown: 'paths',
+    requires: ['paths'],
+    pageGroup: 'paths',
+    spec: pathPage
+  },
+  {
     id: 'cohorts_at_a_glance',
     titleKey: 'analytics.widgets.cohorts_at_a_glance.title',
     viz: 'table',
@@ -124,6 +150,22 @@ export const ORG_WIDGETS: readonly TAnalyticsWidgetInput[] = [
     requires: ['cohorts'],
     pageGroup: 'cohorts',
     spec: newestCohorts
+  },
+  {
+    id: 'path_status',
+    titleKey: 'analytics.widgets.path_status.title',
+    viz: 'donut',
+    span: 5,
+    breakdown: 'paths',
+    requires: ['paths'],
+    spec: {
+      source: 'path_summary',
+      measures: [
+        { metric: 'not_started_students', agg: 'sum' },
+        { metric: 'in_progress_students', agg: 'sum' },
+        { metric: 'completed_students', agg: 'sum' }
+      ]
+    }
   },
   {
     id: 'hiring_ramp',
@@ -165,6 +207,25 @@ export const ORG_WIDGETS: readonly TAnalyticsWidgetInput[] = [
     requires: ['cohorts'],
     pageGroup: 'cohorts',
     spec: newestCohorts
+  },
+  {
+    id: 'completion_by_path',
+    titleKey: 'analytics.widgets.completion_by_path.title',
+    viz: 'hbar',
+    span: 5,
+    breakdown: 'paths',
+    requires: ['paths'],
+    spec: {
+      source: 'path_summary',
+      dimensions: ['path'],
+      measures: [
+        { metric: 'completion_pct', agg: 'pooled' },
+        { metric: 'students', agg: 'value' }
+      ],
+      sort: [{ field: 'completion_pct__pooled', dir: 'desc' }],
+      filters: [{ field: 'students', op: 'gte', value: 1 }],
+      limit: ANALYTICS_LIMITS.cardPageSize
+    }
   },
   {
     id: 'courses_by_completion',

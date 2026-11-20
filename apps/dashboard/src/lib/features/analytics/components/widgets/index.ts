@@ -15,6 +15,8 @@ import HardestQuestions from './hardest-questions.svelte';
 import LessonDropoff from './lesson-dropoff.svelte';
 import NeedsAttention from './needs-attention.svelte';
 import OverdueTable from './overdue-table.svelte';
+import PathStatus from './path-status.svelte';
+import PathsGlance from './paths-glance.svelte';
 import ScoresByCohort from './scores-by-cohort.svelte';
 import ScoresByExercise from './scores-by-exercise.svelte';
 import SectionScorecard from './section-scorecard.svelte';
@@ -40,7 +42,9 @@ const WIDGET_RENDERERS: Record<string, Component<WidgetRendererProps>> = {
   cohort_health: CohortHealth,
   avg_score_by_cohort: GroupScores,
   avg_score_by_course: GroupScores,
-  hiring_ramp: StudentGrowth
+  hiring_ramp: StudentGrowth,
+  paths_at_a_glance: PathsGlance,
+  path_status: PathStatus
 };
 
 export function rendererFor(widget: AnalyticsWidget): Component<WidgetRendererProps> {

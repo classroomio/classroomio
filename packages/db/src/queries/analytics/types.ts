@@ -114,6 +114,7 @@ export type AnalyticsScopeSummary = {
   pendingCount: number;
   cohortCount: number;
   activeCohortCount: number;
+  pathCount: number;
   studentTarget: number | null;
   seatsUsed: number | null;
   seatsNotJoined: number | null;

@@ -6807,7 +6807,9 @@
       "bucketed_total": "Hver søjle opsummerer logins over {days} dage. En elev tæller én gang pr. dag.",
       "student_sheet_pick_course": "Klik på et kursus for at kortlægge deres resultater efter øvelse.",
       "direct_students_charted": "Direkte elever er ikke i en kohorte; de vises som deres egen linje.",
-      "courses_select": "Vælg et kursus for at åbne dets betjeningspanel."
+      "courses_select": "Vælg et kursus for at åbne dets betjeningspanel.",
+      "paths_select": "Vælg et læringsforløb for at åbne dets dashboard.",
+      "path_students": "Tæller studerende i alle aktive læringsforløb."
     },
     "buckets": {
       "progress": {
@@ -7003,6 +7005,15 @@
       },
       "cohort_empty": {
         "title": "Kohorter uden elever"
+      },
+      "paths_at_a_glance": {
+        "title": "Læringsforløb i overblik"
+      },
+      "path_status": {
+        "title": "Forløbsstuderende efter status"
+      },
+      "completion_by_path": {
+        "title": "Gennemførelsesrate pr. forløb"
       }
     },
     "measures": {
@@ -7024,7 +7035,9 @@
       "attendance__pooled": "Klassedeltagelse",
       "best_score_pct__avg": "Gennemsnitlig score",
       "is_complete__rate": "Afsluttet",
-      "members_total__value": "Tilmeldte elever"
+      "members_total__value": "Tilmeldte elever",
+      "completion_pct__pooled": "Gennemførelsesrate",
+      "students__value": "Studerende"
     },
     "columns": {
       "student": "Studerende",
@@ -7056,7 +7069,11 @@
       "health": "Sundhed",
       "section": "Kursusafsnit",
       "exercises_taken": "Øvelser taget",
-      "actions": "Handlinger"
+      "actions": "Handlinger",
+      "path": "Læringsforløb",
+      "courses": "Kurser",
+      "completion_rate": "Gennemførelsesrate",
+      "active_14d": "Aktive (14 dage)"
     },
     "column_hints": {
       "passed_first_try": "Elever, der har opnået bestået karakter på deres første bedømte forsøg, på øvelser, der har en bestået karakter.",
@@ -7194,14 +7211,16 @@
       "courses_cohort": "Viser {from}–{to} af {total, plural, one {# kursus} other {# kurser}} i holdet",
       "courses_org": "Viser {from}–{to} af {total, plural, one {# kursus} other {# kurser}} i organisationen",
       "sections_course": "Viser {from}–{to} af {total, plural, one {# sektion} other {# sektioner}} i kurset",
-      "overdue_cohort": "Viser {from}–{to} af {total, plural, one {# forsinket elev} other {# forsinkede elever}} i holdet"
+      "overdue_cohort": "Viser {from}–{to} af {total, plural, one {# forsinket elev} other {# forsinkede elever}} i holdet",
+      "paths_org": "Viser {from}–{to} af {total, plural, one {# læringsforløb} other {# læringsforløb}} i organisationen"
     },
     "breakdown": {
       "label": "Opdeling",
       "courses": "Kurser ({count})",
       "cohorts": "Kohorter ({count})",
       "all_students": "Alle elever",
-      "by_cohort": "Efter kohorte ({count})"
+      "by_cohort": "Efter kohorte ({count})",
+      "paths": "Læringsforløb ({count})"
     },
     "cohorts": {
       "picker": "Kohorter: {selected} af {total}",
@@ -7291,7 +7310,12 @@
       "default": {
         "title": "Ingen data endnu",
         "description": "Dette kort udfyldes, når eleverne bruger kurset."
-      }
+      },
+      "paths_org": {
+        "title": "Ingen studerende på et læringsforløb endnu",
+        "description": "Tilføj studerende til et læringsforløb for at se deres fremskridt her."
+      },
+      "open_paths": "Åbn læringsforløb"
     },
     "export": {
       "students_capped": "Elevlisten er begrænset til de første {limit} rækker.",
@@ -7315,7 +7339,8 @@
         "status": "Status",
         "overdue_kind": "Type af forsinkelse",
         "progress_bucket_25": "Fremskridt",
-        "score_bucket_10": "Gennemsnitlig score"
+        "score_bucket_10": "Gennemsnitlig score",
+        "path": "Læringsforløb"
       }
     },
     "org_page_title": "Akademi",
@@ -7343,6 +7368,11 @@
       "open_in_students": "Åbn i fanen Studerende",
       "kpi_label": "Se studerende: {title}",
       "segment_label": "Segment"
+    },
+    "path_status": {
+      "not_started": "Ikke startet",
+      "in_progress": "I gang",
+      "completed": "Gennemført"
     }
   },
   "oauth": {

@@ -12,11 +12,12 @@
   const isCourseScope = $derived(dashboard?.scope.type === 'course');
   const cohortCount = $derived(dashboard?.scope.cohortCount ?? 0);
   const courseCount = $derived(dashboard?.scope.courses.length ?? 0);
+  const pathCount = $derived(dashboard?.scope.pathCount ?? 0);
 
   const options = $derived.by((): Array<{ value: TAnalyticsBreakdownGroup; label: string }> => {
     if (available.length <= 1) return [];
 
-    return [
+    const options: Array<{ value: TAnalyticsBreakdownGroup; label: string }> = [
       {
         value: 'courses',
         label: isCourseScope
@@ -28,8 +29,11 @@
         label: isCourseScope
           ? $t('analytics.breakdown.by_cohort', { count: cohortCount })
           : $t('analytics.breakdown.cohorts', { count: cohortCount })
-      }
+      },
+      { value: 'paths', label: $t('analytics.breakdown.paths', { count: pathCount }) }
     ];
+
+    return options.filter((option) => available.includes(option.value));
   });
 </script>
 
