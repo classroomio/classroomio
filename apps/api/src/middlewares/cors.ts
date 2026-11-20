@@ -50,7 +50,14 @@ export const sessionCors = cors({
  *
  * Requests under these prefixes use `publicApiCors` and skip the Better Auth session lookup.
  */
-export const PUBLIC_CORS_PATH_PREFIXES = ['/public-api/', '/widgets/', '/.well-known/'] as const;
+export const USER_CONTENT_PATH_PREFIX = '/usercontent/';
+
+export const PUBLIC_CORS_PATH_PREFIXES = [
+  '/public-api/',
+  '/widgets/',
+  '/.well-known/',
+  USER_CONTENT_PATH_PREFIX
+] as const;
 
 export const PUBLIC_OAUTH_PATHS = [
   '/api/auth/.well-known/oauth-authorization-server',
@@ -67,6 +74,13 @@ export function isMcpPath(path: string): boolean {
 
 export function isPublicOAuthPath(path: string): boolean {
   return path.startsWith('/.well-known/') || PUBLIC_OAUTH_PATHS.some((oauthPath) => path === oauthPath);
+}
+
+/**
+ * Paths that serve user-authored pages. They carry their own security headers instead of the API's.
+ */
+export function isUserContentPath(path: string): boolean {
+  return path.startsWith(USER_CONTENT_PATH_PREFIX);
 }
 
 export function isPublicCorsPath(path: string): boolean {

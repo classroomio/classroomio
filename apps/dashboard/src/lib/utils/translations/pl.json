@@ -2670,7 +2670,8 @@
               "ai_edit_placeholder": "Opisz zmianę, np. Użyj ciemnego motywu i dodaj przycisk resetowania",
               "ai_edit_submit": "Zastosuj",
               "generate_error": "Nie udało się wygenerować strony. Spróbuj ponownie.",
-              "too_large": "Ta strona jest za duża. Strona może mieć maksymalnie 500 000 znaków.",
+              "save_error": "Nie udało się zapisać strony. Spróbuj ponownie.",
+              "too_large": "Ta strona ma ponad 2 MB. Użyj mniejszej strony.",
               "empty_file": "Ten plik jest pusty.",
               "templates": {
                 "slides": {
@@ -3844,6 +3845,7 @@
       "slot_type": {
         "lesson_video": "Film z lekcją",
         "lesson_document": "Dokument lekcji",
+        "lesson_html": "Strona HTML lekcji",
         "unknown": "Załącznik"
       },
       "refresh": "Odśwież użycie"

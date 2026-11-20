@@ -61,12 +61,14 @@
     ${Array.from({ length: 12 }, (_, index) => `<div class="card">Sample row ${index + 1}</div>`).join('')}
   </body></html>`;
 
+  const SRC = `data:text/html;charset=utf-8,${encodeURIComponent(HTML)}`;
+
   const { Story } = defineMeta({
     title: 'Blocks/HtmlBlock',
     component: HtmlBlock,
     tags: ['autodocs'],
     args: {
-      html: HTML,
+      src: SRC,
       name: 'analytics-prototype.html',
       width: 100,
       height: 420,

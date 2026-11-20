@@ -1,7 +1,6 @@
 import { generateText } from 'ai';
 import { AIProvider, type AIProviderConfig, createModel } from '@cio/ai-assistant';
 import { AGENT_MODELS } from '@cio/utils/agent-models';
-import { HTML_BLOCK_MAX_LENGTH } from '@cio/utils/validation/block';
 import { getLessonById } from '@cio/db/queries/lesson';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
@@ -18,7 +17,7 @@ const SYSTEM_PROMPT = [
   'You build one interactive HTML page that a teacher embeds inside a lesson on an online course platform.',
   'Return a single complete, self-contained HTML document that starts with <!doctype html>.',
   'Put all CSS in <style> tags and all JavaScript in <script> tags. Do not load external scripts, stylesheets, fonts or images; use inline SVG or CSS for visuals.',
-  'The page renders in a sandboxed iframe with no access to cookies, storage, the network or the parent page, so never rely on localStorage, fetch or window.parent.',
+  'The page renders in a sandboxed iframe with no access to cookies, storage, the network, form submission or the parent page, so never rely on localStorage, fetch, form posts or window.parent.',
   'Make it responsive from 320px wide, readable, accessible, and polished, with a light background unless the request asks otherwise.',
   'Use realistic sample content that fits the request and label sample data as such.',
   'Return only the HTML document, with no markdown code fences and no explanation.'
@@ -57,7 +56,7 @@ function buildPrompt(prompt: string, lessonTitle: string, currentHtml: string | 
 
 /**
  * Generates a self-contained HTML document for a lesson from a prompt, or rewrites `currentHtml` to apply it.
- * Throws AI_EMPTY_RESPONSE when the model returns nothing usable and HTML_TOO_LARGE when the page exceeds the block limit.
+ * Throws AI_EMPTY_RESPONSE when the model returns nothing usable.
  */
 export async function generateHtmlDocument(
   lessonId: string,
@@ -84,11 +83,7 @@ export async function generateHtmlDocument(
 
   const html = unwrapCodeFence(text);
   if (!html) {
-    throw new AppError('The AI returned an empty page', 'AI_EMPTY_RESPONSE', 502);
-  }
-
-  if (html.length > HTML_BLOCK_MAX_LENGTH) {
-    throw new AppError('The generated page is too large', 'HTML_TOO_LARGE', 422);
+    throw new AppError('The AI returned an empty page', ErrorCodes.AI_EMPTY_RESPONSE, 502);
   }
 
   return {

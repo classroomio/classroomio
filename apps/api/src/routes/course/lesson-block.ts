@@ -8,6 +8,8 @@ import {
   ZBlockLocale,
   ZBlockLocaleUpdate,
   ZBlockUpdate,
+  ZHtmlPageCreate,
+  ZHtmlPageGenerate,
   ZPlacementMove,
   ZPlacementUpdate
 } from '@cio/utils/validation/block';
@@ -27,6 +29,7 @@ import { ContentType } from '@cio/utils/constants';
 
 import { Hono } from '@api/utils/hono';
 import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
+import { createLessonHtmlPage, generateLessonHtmlPage } from '@api/services/lesson/html-page';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
@@ -104,6 +107,49 @@ export const lessonBlockRouter = new Hono()
         return c.json({ success: true, data: block }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to attach block');
+      }
+    }
+  )
+  .post(
+    '/html-pages',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonParam),
+    zValidator('json', ZHtmlPageCreate),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { lessonId } = c.req.valid('param');
+        const input = c.req.valid('json');
+
+        const page = await createLessonHtmlPage(lessonId, user.id, input);
+
+        return c.json({ success: true, data: page }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to store HTML page');
+      }
+    }
+  )
+  .post(
+    '/html-pages/generate',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    lessonInCourseMiddleware,
+    zValidator('param', ZLessonParam),
+    zValidator('json', ZHtmlPageGenerate),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
+        const { lessonId } = c.req.valid('param');
+        const input = c.req.valid('json');
+
+        const page = await generateLessonHtmlPage(courseId, lessonId, user.id, input);
+
+        return c.json({ success: true, data: page }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to generate HTML page');
       }
     }
   )

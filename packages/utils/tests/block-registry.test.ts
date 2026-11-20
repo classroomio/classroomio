@@ -61,7 +61,7 @@ describe('block registry', () => {
       },
       html: {
         type: 'html',
-        data: { name: 'demo.html', html: '<h1>Hi</h1>', width: 80, height: 400 }
+        data: { name: 'demo.html', assetId: ASSET_ID, size: 1200, width: 80, height: 400 }
       }
     };
 
@@ -72,22 +72,18 @@ describe('block registry', () => {
     }
   });
 
-  it('keeps an html block non-empty and its size within bounds', () => {
-    const html = (data: Record<string, unknown>) => ({
-      type: 'html',
-      data: { name: 'a.html', html: '<p>A</p>', ...data }
-    });
+  it('stores an html block as an asset reference with its size within bounds', () => {
+    const page = { name: 'a.html', assetId: ASSET_ID, size: 1200 };
+    const html = (data: Record<string, unknown>) => ({ type: 'html', data: { ...page, ...data } });
 
     expect(ZBlockCreate.safeParse(html({})).success).toBe(true);
-    expect(ZBlockCreate.safeParse(html({ html: '' })).success).toBe(false);
+    expect(ZBlockCreate.safeParse(html({ assetId: 'not-a-uuid' })).success).toBe(false);
+    expect(ZBlockCreate.safeParse(html({ size: 0 })).success).toBe(false);
     expect(ZBlockCreate.safeParse(html({ width: 29 })).success).toBe(false);
-    expect(ZBlockCreate.safeParse(html({ width: 101 })).success).toBe(false);
-    expect(ZBlockCreate.safeParse(html({ height: 159 })).success).toBe(false);
     expect(ZBlockCreate.safeParse(html({ height: 2001 })).success).toBe(false);
-    expect(toPublicBlockData('html', { name: 'a.html', html: '<p>A</p>' })).toEqual({
-      name: 'a.html',
-      html: '<p>A</p>'
-    });
+    expect(parseBlockData('html', { ...page, html: '<script></script>' })).toEqual(page);
+    expect(listBlockMedia('html', page)).toEqual([{ media: 'html', data: page }]);
+    expect(getBlockAssetId('html', page)).toBe(ASSET_ID);
   });
 
   it('requires at least one flashcard with a unique id', () => {

@@ -10,9 +10,10 @@ import type {
 } from '@cio/utils/validation/block';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 
-export type GenerateHtmlRequest = (typeof classroomio.agent)['generate-html']['$post'];
-
 type BlocksRoute = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['blocks'];
+
+export type CreateHtmlPageRequest = BlocksRoute['html-pages']['$post'];
+export type GenerateHtmlPageRequest = BlocksRoute['html-pages']['generate']['$post'];
 
 export type BlockRecord = Extract<InferResponseType<BlocksRoute['$get']>, { success: true }>['data'][number];
 

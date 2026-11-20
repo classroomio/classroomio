@@ -2670,7 +2670,8 @@
               "ai_edit_placeholder": "Mô tả điều cần thay đổi, ví dụ: Dùng giao diện tối và thêm nút đặt lại",
               "ai_edit_submit": "Áp dụng",
               "generate_error": "Không thể tạo trang. Vui lòng thử lại.",
-              "too_large": "Trang này quá lớn. Một trang có thể chứa tối đa 500.000 ký tự.",
+              "save_error": "Không thể lưu trang. Vui lòng thử lại.",
+              "too_large": "Trang này lớn hơn 2 MB. Vui lòng dùng trang nhỏ hơn.",
               "empty_file": "Tệp này trống.",
               "templates": {
                 "slides": {
@@ -3844,6 +3845,7 @@
       "slot_type": {
         "lesson_video": "Video bài học",
         "lesson_document": "Tài liệu bài học",
+        "lesson_html": "Trang HTML của bài học",
         "unknown": "Tệp đính kèm"
       },
       "refresh": "Làm mới mức sử dụng"

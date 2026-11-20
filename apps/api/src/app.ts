@@ -6,6 +6,7 @@ import {
   isMcpPath,
   isPublicCorsPath,
   isPublicOAuthPath,
+  isUserContentPath,
   mcpCors,
   publicApiCors,
   sessionCors
@@ -38,7 +39,9 @@ import { jobsRouter } from '@api/routes/jobs';
 import { licenseRouter } from '@api/routes/license';
 import { logger } from 'hono/logger';
 // ROUTES
+import { isDedicatedHtmlContentHost } from '@cio/core/utils/html-content';
 import { hlsRouter } from '@api/routes/hls';
+import { userContentRouter } from '@api/routes/usercontent';
 import { mailRouter } from '@api/routes/mail';
 import { mediaRouter } from '@api/routes/media';
 import { transcriptsRouter } from '@api/routes/transcripts';
@@ -68,9 +71,16 @@ import { upgradeRequiredEvent } from '@api/middlewares/upgrade-required-event';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 
+const apiSecureHeaders = secureHeaders({ crossOriginResourcePolicy: 'cross-origin' });
+
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
   // Middleware
+  .use('*', async (c, next) => {
+    if (isDedicatedHtmlContentHost(c.req.header('host')) && !isUserContentPath(c.req.path)) return c.notFound();
+
+    await next();
+  })
   .use('*', logger())
   .use('*', prettyJSON())
   // `Cross-Origin-Resource-Policy: same-origin` (Hono's default) blocks the
@@ -79,7 +89,7 @@ export const app = new Hono()
   // local dev / self-hosted. We're an API server — every response is
   // designed for cross-origin consumption, so the right value is
   // `cross-origin`. CORS still gates which origins can read the bytes.
-  .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
+  .use('*', (c, next) => (isUserContentPath(c.req.path) ? next() : apiSecureHeaders(c, next)))
   .use('*', async (c, next) => {
     if (isPublicOAuthPath(c.req.path)) return publicApiCors(c, next);
 
@@ -266,6 +276,7 @@ export const app = new Hono()
   .route('/course', courseRouter)
   .route('/domain', domainRouter)
   .route('/hls', hlsRouter)
+  .route('/usercontent', userContentRouter)
   .route('/transcripts', transcriptsRouter)
   .route('/mail', mailRouter)
   .route('/media', mediaRouter)

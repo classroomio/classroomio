@@ -14,7 +14,6 @@ import {
   ZAgentCreditPurchase,
   ZAgentCreditsBody,
   ZAgentGenerateCourseTitleBody,
-  ZAgentGenerateHtmlBody,
   ZAgentGenerateTextBody,
   ZAgentStatusQuery,
   ZAgentSummarizeBody,
@@ -46,7 +45,6 @@ import { parseAndStoreDocument } from '@cio/core/services/agent/document';
 import { recordCreditPurchase } from '@api/services/agent/credit-purchase';
 import { generateCourseMeta } from '@api/services/agent/title-generation';
 import { generateFieldText } from '@api/services/agent/text-generation';
-import { generateHtmlDocument } from '@api/services/agent/html-generation';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getChatConversation } from '@cio/db/queries/agent';
 import {
@@ -364,40 +362,6 @@ const agentCoreRouter = new Hono()
         return c.json({ success: true as const, data: { text } });
       } catch (error) {
         return handleError(c, error, 'Failed to generate text');
-      }
-    }
-  )
-  .post(
-    '/generate-html',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('json', ZAgentGenerateHtmlBody),
-    async (c) => {
-      try {
-        const user = c.get('user')!;
-        const orgId = c.req.header('cio-org-id')!;
-        const { prompt, html, courseId, lessonId } = c.req.valid('json');
-
-        const isTeamMember = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
-        if (!isTeamMember) {
-          throw new AppError('You must be a course team member to generate HTML', 'NOT_COURSE_TEAM_MEMBER', 403);
-        }
-
-        await verifyLessonBelongsToCourse(lessonId, courseId);
-
-        const providerConfig = pickAnyConfiguredProvider();
-        if (!providerConfig) {
-          throw new AppError('AI assistant is not configured', 'AI_NOT_CONFIGURED', 503);
-        }
-
-        await enforceTokenBalance(orgId);
-
-        const result = await generateHtmlDocument(lessonId, prompt, html, providerConfig);
-        await recordTokenUsage(orgId, user.id, courseId, result.usage, result.modelName);
-
-        return c.json({ success: true as const, data: { html: result.html } });
-      } catch (error) {
-        return handleError(c, error, 'Failed to generate HTML');
       }
     }
   )

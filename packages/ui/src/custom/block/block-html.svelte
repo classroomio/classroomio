@@ -18,14 +18,14 @@
   import type { HtmlBlockLabels, HtmlBlockSize } from './types';
 
   interface Props {
-    html: string;
+    src: string | null;
+    downloadHref?: string;
     name: string;
     width?: number;
     height?: number;
     minWidth?: number;
     minHeight?: number;
     maxHeight?: number;
-    frameSrc?: string;
     editable?: boolean;
     generating?: boolean;
     labels: HtmlBlockLabels;
@@ -35,14 +35,14 @@
   }
 
   let {
-    html,
+    src,
+    downloadHref,
     name,
     width = 100,
     height = 480,
     minWidth = 30,
     minHeight = 160,
     maxHeight = 2000,
-    frameSrc = '/html-block-frame.html',
     editable = false,
     generating = false,
     labels,
@@ -130,16 +130,6 @@
     if (size.width === width && size.height === height) return;
 
     onResize?.(size);
-  }
-
-  function downloadHtml() {
-    const fileName = name.toLowerCase().endsWith('.html') ? name : `${name || 'page'}.html`;
-    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.click();
-    URL.revokeObjectURL(url);
   }
 
   async function submitAiPrompt() {
@@ -237,10 +227,12 @@
                 {labels.change}
               </DropdownMenu.Item>
             {/if}
-            <DropdownMenu.Item onSelect={downloadHtml}>
-              <DownloadIcon size={14} />
-              {labels.download}
-            </DropdownMenu.Item>
+            {#if downloadHref}
+              <DropdownMenu.Item onSelect={() => window.open(downloadHref, '_blank', 'noopener')}>
+                <DownloadIcon size={14} />
+                {labels.download}
+              </DropdownMenu.Item>
+            {/if}
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       {/if}
@@ -255,7 +247,9 @@
     )}
     style:height="{shownHeight}px"
   >
-    <HtmlFrame {html} src={frameSrc} title={labels.frameTitle} interactive={interactive && !drag} />
+    {#if src}
+      <HtmlFrame {src} title={labels.frameTitle} interactive={interactive && !drag} />
+    {/if}
 
     {#if !interactive && !generating}
       <button
@@ -332,7 +326,9 @@
     </DialogPrimitives.Header>
     <div class="ui:border-border ui:min-h-0 ui:flex-1 ui:overflow-hidden ui:rounded-lg ui:border">
       {#if fullScreen}
-        <HtmlFrame {html} src={frameSrc} title={labels.frameTitle} interactive />
+        {#if src}
+          <HtmlFrame {src} title={labels.frameTitle} interactive />
+        {/if}
       {/if}
     </div>
   </DialogPrimitives.Content>

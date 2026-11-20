@@ -2670,7 +2670,8 @@
               "ai_edit_placeholder": "Décrivez la modification, par ex. Utilise un thème sombre et ajoute un bouton de réinitialisation",
               "ai_edit_submit": "Appliquer",
               "generate_error": "Impossible de générer la page. Veuillez réessayer.",
-              "too_large": "Cette page est trop volumineuse. Une page peut contenir jusqu'à 500 000 caractères.",
+              "save_error": "Impossible d'enregistrer la page. Veuillez réessayer.",
+              "too_large": "Cette page dépasse 2 Mo. Veuillez utiliser une page plus petite.",
               "empty_file": "Ce fichier est vide.",
               "templates": {
                 "slides": {
@@ -3844,6 +3845,7 @@
       "slot_type": {
         "lesson_video": "Vidéo de cours",
         "lesson_document": "Document de cours",
+        "lesson_html": "Page HTML de la leçon",
         "unknown": "Pièce jointe"
       },
       "refresh": "Actualiser l'utilisation"

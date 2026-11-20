@@ -2670,7 +2670,8 @@
               "ai_edit_placeholder": "Beschreibe die Änderung, z. B. Nutze ein dunkles Design und füge einen Zurücksetzen-Button hinzu",
               "ai_edit_submit": "Anwenden",
               "generate_error": "Die Seite konnte nicht generiert werden. Bitte versuche es erneut.",
-              "too_large": "Diese Seite ist zu groß. Eine Seite darf höchstens 500.000 Zeichen haben.",
+              "save_error": "Die Seite konnte nicht gespeichert werden. Bitte versuche es erneut.",
+              "too_large": "Diese Seite ist größer als 2 MB. Bitte verwende eine kleinere Seite.",
               "empty_file": "Diese Datei ist leer.",
               "templates": {
                 "slides": {
@@ -3844,6 +3845,7 @@
       "slot_type": {
         "lesson_video": "Unterrichtsvideo",
         "lesson_document": "Unterrichtsdokument",
+        "lesson_html": "HTML-Seite der Lektion",
         "unknown": "Anhang"
       },
       "refresh": "Nutzung aktualisieren"

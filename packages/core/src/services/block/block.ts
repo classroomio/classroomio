@@ -67,7 +67,8 @@ import { positionForAnchor } from './positions';
 
 const LESSON_MEDIA_SLOTS = {
   video: 'lesson_video',
-  document: 'lesson_document'
+  document: 'lesson_document',
+  html: 'lesson_html'
 } as const satisfies Record<TBlockMediaKind, string>;
 const DEFAULT_LOCALE: TLocale = 'en';
 

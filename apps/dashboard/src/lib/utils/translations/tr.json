@@ -1613,6 +1613,7 @@
       "slot_type": {
         "lesson_video": "Lders videosu",
         "lesson_document": "Lders belgesi",
+        "lesson_html": "Ders HTML sayfası",
         "unknown": "Attachment"
       },
       "table": {
@@ -3145,7 +3146,8 @@
               "ai_edit_placeholder": "Neyin değişeceğini anlat, ör. Koyu tema kullan ve sıfırlama düğmesi ekle",
               "ai_edit_submit": "Uygula",
               "generate_error": "Sayfa oluşturulamadı. Lütfen tekrar dene.",
-              "too_large": "Bu sayfa çok büyük. Bir sayfa en fazla 500.000 karakter olabilir.",
+              "save_error": "Sayfa kaydedilemedi. Lütfen tekrar dene.",
+              "too_large": "Bu sayfa 2 MB'tan büyük. Lütfen daha küçük bir sayfa kullan.",
               "empty_file": "Bu dosya boş.",
               "templates": {
                 "slides": {

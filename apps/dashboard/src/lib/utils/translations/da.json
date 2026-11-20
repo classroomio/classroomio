@@ -2670,7 +2670,8 @@
               "ai_edit_placeholder": "Beskriv hvad der skal ændres, f.eks. Brug et mørkt tema og tilføj en nulstil-knap",
               "ai_edit_submit": "Anvend",
               "generate_error": "Siden kunne ikke genereres. Prøv igen.",
-              "too_large": "Denne side er for stor. En side kan højst have 500.000 tegn.",
+              "save_error": "Siden kunne ikke gemmes. Prøv igen.",
+              "too_large": "Denne side er større end 2 MB. Brug en mindre side.",
               "empty_file": "Denne fil er tom.",
               "templates": {
                 "slides": {
@@ -3844,6 +3845,7 @@
       "slot_type": {
         "lesson_video": "Lektion video",
         "lesson_document": "Lektionsdokument",
+        "lesson_html": "HTML-side i lektion",
         "unknown": "Vedhæftet fil"
       },
       "refresh": "Opdater brugen"

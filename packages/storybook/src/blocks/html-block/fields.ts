@@ -1,1 +1,1 @@
-export const FIELDS = ['html', 'name', 'width', 'height', 'editable', 'generating'];
+export const FIELDS = ['src', 'name', 'width', 'height', 'editable', 'generating'];

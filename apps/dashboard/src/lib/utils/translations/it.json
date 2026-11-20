@@ -1603,6 +1603,7 @@
       "slot_type": {
         "lesson_video": "Video lezione",
         "lesson_document": "Documento della lezione",
+        "lesson_html": "Pagina HTML della lezione",
         "unknown": "Allegato"
       },
       "table": {
@@ -3137,7 +3138,8 @@
               "ai_edit_placeholder": "Descrivi cosa cambiare, ad es. Usa un tema scuro e aggiungi un pulsante di reset",
               "ai_edit_submit": "Applica",
               "generate_error": "Impossibile generare la pagina. Riprova.",
-              "too_large": "Questa pagina è troppo grande. Una pagina può contenere fino a 500.000 caratteri.",
+              "save_error": "Impossibile salvare la pagina. Riprova.",
+              "too_large": "Questa pagina supera i 2 MB. Usa una pagina più piccola.",
               "empty_file": "Questo file è vuoto.",
               "templates": {
                 "slides": {

@@ -20,6 +20,7 @@ import { formatLessonMarkdownDocument } from '@api/utils/html-to-markdown';
 import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getExerciseSectionsByExerciseId } from '@cio/db/queries/exercise/exercise-section';
 import { listBlockMedia, withBlockMedia } from '@cio/utils/validation/block';
+import { withHtmlContentUrl } from '@cio/core/services/block/block-view';
 
 /**
  * Anonymous-safe: fetch the full tree for a published public course by slug.
@@ -214,10 +215,11 @@ export async function getPublicCourseItemService(
       const blocks = await Promise.all(
         lesson.blocks.map(async (block) => {
           const media = listBlockMedia(block.type, block.data);
-          if (!media.some((item) => item.media === 'video')) return block;
+          if (!media.some((item) => item.media === 'video' || item.media === 'html')) return block;
 
           const resolved = await Promise.all(
             media.map(async (item) => {
+              if (item.media === 'html') return withHtmlContentUrl(item.data);
               if (item.media !== 'video') return item.data;
 
               const video = await resolvePublicVideo(item.data as PublicLessonVideoPayload, courseOrganizationId);

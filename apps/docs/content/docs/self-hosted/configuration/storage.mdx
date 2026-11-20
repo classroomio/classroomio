@@ -31,7 +31,7 @@ keep in sync. CORS allows all origins, so browser uploads work from any dashboar
 A one-shot `storage-init` container creates three buckets on first start:
 
 - `videos`: Raw and encoded HLS course videos. Private.
-- `documents`: Course lesson documents and student assignment uploads. Private.
+- `documents`: Course lesson documents, HTML block pages, and student assignment uploads. Private.
 - `media`: Avatars, course thumbnails, and landing page images. **Public-read.**
 
 Only the S3 API is published, on **port 9000**; there is no web console. To browse files, use any S3

@@ -5,7 +5,7 @@ import LightbulbIcon from '@lucide/svelte/icons/lightbulb';
 import PresentationIcon from '@lucide/svelte/icons/presentation';
 import SmartphoneIcon from '@lucide/svelte/icons/smartphone';
 import type { HtmlTemplate, HtmlTemplateTone } from '@cio/ui/custom/block';
-import { HTML_BLOCK_NAME_MAX_LENGTH } from '@cio/utils/validation/block';
+import type { THtmlBlockData } from '@cio/utils/validation/block';
 import { t } from '$lib/utils/functions/translations';
 
 const TEMPLATES: { id: string; tone: HtmlTemplateTone; icon: HtmlTemplate['icon'] }[] = [
@@ -26,16 +26,21 @@ export function getHtmlTemplates(): HtmlTemplate[] {
 }
 
 /**
- * A file name for a page: its <title> as a slug, or `fallback` when it has none.
+ * The signed URL the API adds to an HTML block when it reads the lesson; null before it has one.
  */
-export function deriveHtmlName(html: string, fallback: string): string {
-  const title = /<title[^>]*>([^<]*)<\/title>/i.exec(html)?.[1] ?? '';
-  const slug = title
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  const name = slug ? `${slug}.html` : fallback;
+export function getHtmlContentUrl(data: THtmlBlockData): string | null {
+  const url = (data as THtmlBlockData & { url?: unknown }).url;
 
-  return name.slice(0, HTML_BLOCK_NAME_MAX_LENGTH);
+  return typeof url === 'string' ? url : null;
+}
+
+export function getHtmlDownloadHref(contentUrl: string | null): string | undefined {
+  return contentUrl ? `${contentUrl}&download=1` : undefined;
+}
+
+/**
+ * The block data to store: the page reference and size, without the signed URL the API adds on read.
+ */
+export function toStoredHtmlData(data: THtmlBlockData): THtmlBlockData {
+  return { name: data.name, assetId: data.assetId, size: data.size, width: data.width, height: data.height };
 }

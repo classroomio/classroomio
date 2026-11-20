@@ -1603,6 +1603,7 @@
       "slot_type": {
         "lesson_video": "Lesson video",
         "lesson_document": "Lesson document",
+        "lesson_html": "Lesson HTML page",
         "unknown": "Attachment"
       },
       "table": {
@@ -3176,7 +3177,8 @@
               "ai_edit_placeholder": "Describe what to change, e.g. Use a dark theme and add a reset button",
               "ai_edit_submit": "Apply",
               "generate_error": "Could not generate the page. Please try again.",
-              "too_large": "This page is too large. A page can be up to 500,000 characters.",
+              "save_error": "Could not save the page. Please try again.",
+              "too_large": "This page is larger than 2 MB. Please use a smaller page.",
               "empty_file": "This file is empty.",
               "templates": {
                 "slides": {

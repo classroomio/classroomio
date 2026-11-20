@@ -2670,7 +2670,8 @@
               "ai_edit_placeholder": "Descreva o que mudar, por ex. Use um tema escuro e adicione um botão de reiniciar",
               "ai_edit_submit": "Aplicar",
               "generate_error": "Não foi possível gerar a página. Tente novamente.",
-              "too_large": "Esta página é grande demais. Uma página pode ter até 500.000 caracteres.",
+              "save_error": "Não foi possível salvar a página. Tente novamente.",
+              "too_large": "Esta página tem mais de 2 MB. Use uma página menor.",
               "empty_file": "Este arquivo está vazio.",
               "templates": {
                 "slides": {
@@ -3844,6 +3845,7 @@
       "slot_type": {
         "lesson_video": "Vídeo da aula",
         "lesson_document": "Documento da lição",
+        "lesson_html": "Página HTML da aula",
         "unknown": "Anexo"
       },
       "refresh": "Atualizar uso"
