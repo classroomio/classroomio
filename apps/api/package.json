@@ -20,8 +20,7 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "upload:openapi": "tsx scripts/upload-openapi-spec.ts",
-    "backfill:course-completion": "tsx scripts/backfill-course-completion.ts"
+    "upload:openapi": "tsx scripts/upload-openapi-spec.ts"
   },
   "repository": {
     "type": "git",

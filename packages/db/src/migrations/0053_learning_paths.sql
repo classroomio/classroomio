@@ -217,4 +217,50 @@ SET "scopes" = "scopes" || (
 )
 WHERE "type" = 'mcp'
   AND "scopes" @> '["course_import:draft:create", "course_import:draft:read", "course_import:draft:update", "course_import:draft:publish", "course:read", "course:write", "course:tag:write", "course:exercise:read", "course:exercise:write", "cohort:read", "cohort:write", "course:member:read", "course:member:write", "course:certificate:read", "course:certificate:write", "analytics:read", "media:write", "course:submission:read", "course:submission:write", "course:student:write", "audience:read", "audience:write", "team:read", "team:write", "organization:read", "organization:write", "organization:domain:write"]'::jsonb
-  AND NOT "scopes" @> '["learning_path:read", "learning_path:write"]'::jsonb;
+  AND NOT "scopes" @> '["learning_path:read", "learning_path:write"]'::jsonb;--> statement-breakpoint
+--> Record groupmember.completed_at for students who already finished all course content before
+--> completion was recorded (mainly plans without certificates). Same rule as completion evaluation:
+--> every lesson and exercise whose completion_policy is not 'none' is done, and the course has at least one.
+--> db:setup then copies certificate_earned_at over this date where a certificate was earned.
+WITH "finished" AS (
+SELECT gm."id"
+FROM "groupmember" AS gm
+JOIN "course" AS c ON c."group_id" = gm."group_id"
+CROSS JOIN LATERAL (
+  SELECT
+    (SELECT count(*) FROM "lesson" l WHERE l."course_id" = c."id" AND l."completion_policy" != 'none') AS lessons_total,
+    (SELECT count(*) FROM "lesson_completion" lc JOIN "lesson" l ON l."id" = lc."lesson_id"
+      WHERE l."course_id" = c."id" AND l."completion_policy" != 'none' AND lc."profile_id" = gm."profile_id" AND lc."is_complete") AS lessons_completed,
+    (SELECT count(*) FROM "exercise" e LEFT JOIN "lesson" l ON l."id" = e."lesson_id"
+      WHERE (e."course_id" = c."id" OR l."course_id" = c."id") AND e."completion_policy" != 'none') AS exercises_total,
+    (SELECT count(*) FROM "exercise" e LEFT JOIN "lesson" l ON l."id" = e."lesson_id"
+      WHERE (e."course_id" = c."id" OR l."course_id" = c."id") AND e."completion_policy" != 'none'
+        AND EXISTS (
+          SELECT 1 FROM "submission" cs
+          WHERE cs."exercise_id" = e."id" AND cs."submitted_by" = gm."id"
+            AND (
+              e."completion_policy" != 'passed'
+              OR (
+                cs."grading_state" = 'completed'
+                AND (
+                  SELECT CASE
+                    WHEN COALESCE(SUM(q."points"), 0) <= 0 THEN false
+                    ELSE ROUND((cs."total"::numeric / SUM(q."points")::numeric) * 100) >= COALESCE(e."pass_threshold", 100)
+                  END
+                  FROM "question" q WHERE q."exercise_id" = e."id"
+                )
+              )
+            )
+        )) AS exercises_completed
+) AS progress
+WHERE c."status" = 'ACTIVE'
+  AND gm."completed_at" IS NULL
+  AND gm."profile_id" IS NOT NULL
+  AND gm."role_id" = 3
+  AND progress.lessons_total + progress.exercises_total > 0
+  AND progress.lessons_completed + progress.exercises_completed >= progress.lessons_total + progress.exercises_total
+)
+UPDATE "groupmember"
+SET "completed_at" = now()
+FROM "finished"
+WHERE "groupmember"."id" = "finished"."id";

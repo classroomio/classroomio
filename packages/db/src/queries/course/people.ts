@@ -720,28 +720,6 @@ function earnedCertificatesMissingCompletionSql(organizationId?: string): SQL {
 }
 
 /**
- * Counts memberships {@link copyEarnedCertificatesToCompletion} would update.
- */
-export async function countEarnedCertificatesMissingCompletion(
-  options: { organizationId?: string } = {},
-  dbClient: DbOrTxClient = db
-): Promise<number> {
-  try {
-    const [row] = await dbClient.execute<{ total: number }>(sql`
-      SELECT COUNT(*)::int AS total FROM ${schema.groupmember} gm
-      WHERE ${earnedCertificatesMissingCompletionSql(options.organizationId)}
-    `);
-
-    return row?.total ?? 0;
-  } catch (error) {
-    console.error('countEarnedCertificatesMissingCompletion error:', error);
-    throw new Error(
-      `Failed to count earned certificates missing completion: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
  * Sets `completed_at` to `certificate_earned_at` wherever an earned
  * certificate is not reflected in it. Idempotent. Returns how many
  * memberships changed.
@@ -763,96 +741,6 @@ export async function copyEarnedCertificatesToCompletion(
     console.error('copyEarnedCertificatesToCompletion error:', error);
     throw new Error(
       `Failed to copy earned certificates to completion: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-export type TCourseCompletionBackfillCandidate = {
-  groupMemberId: string;
-  courseId: string;
-  profileId: string;
-};
-
-/**
- * Student memberships of active courses with no recorded completion that
- * could meet the certification rule today: the learner made some progress,
- * or the course threshold is 0. Anyone else is at 0% and cannot be eligible.
- * Optionally limited to one organization.
- */
-function courseCompletionBackfillCandidatesSql(organizationId?: string): SQL {
-  const inOrganization = organizationId ? sql`g.organization_id = ${organizationId}` : sql`true`;
-
-  return sql`
-    FROM ${schema.groupmember} gm
-    JOIN ${schema.course} c ON c.group_id = gm.group_id AND c.status = 'ACTIVE'
-    JOIN ${schema.group} g ON g.id = c.group_id
-    WHERE gm.completed_at IS NULL
-      AND gm.profile_id IS NOT NULL
-      AND gm.role_id = ${ROLE.STUDENT}
-      AND ${inOrganization}
-      AND (
-        COALESCE((c.certificate->>'threshold')::numeric, 100) <= 0
-        OR EXISTS (
-          SELECT 1
-          FROM ${schema.lessonCompletion} lc
-          JOIN ${schema.lesson} l ON l.id = lc.lesson_id
-          WHERE l.course_id = c.id AND lc.profile_id = gm.profile_id AND lc.is_complete
-        )
-        OR EXISTS (SELECT 1 FROM ${schema.submission} cs WHERE cs.submitted_by = gm.id)
-      )
-  `;
-}
-
-/**
- * Counts {@link listCourseCompletionBackfillCandidates} rows.
- */
-export async function countCourseCompletionBackfillCandidates(
-  options: { organizationId?: string } = {},
-  dbClient: DbOrTxClient = db
-): Promise<number> {
-  try {
-    const [row] = await dbClient.execute<{ total: number }>(
-      sql`SELECT COUNT(*)::int AS total ${courseCompletionBackfillCandidatesSql(options.organizationId)}`
-    );
-
-    return row?.total ?? 0;
-  } catch (error) {
-    console.error('countCourseCompletionBackfillCandidates error:', error);
-    throw new Error(
-      `Failed to count course completion backfill candidates: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
- * One keyset page of memberships whose completion may predate
- * `groupmember.completed_at`, ordered by membership id. Pass the last id of
- * the previous page as `afterGroupMemberId`.
- */
-export async function listCourseCompletionBackfillCandidates(
-  options: { organizationId?: string; afterGroupMemberId?: string; limit: number },
-  dbClient: DbOrTxClient = db
-): Promise<TCourseCompletionBackfillCandidate[]> {
-  try {
-    const afterCursor = options.afterGroupMemberId ? sql`gm.id > ${options.afterGroupMemberId}` : sql`true`;
-
-    const rows = await dbClient.execute<{ group_member_id: string; course_id: string; profile_id: string }>(sql`
-      SELECT gm.id AS group_member_id, c.id AS course_id, gm.profile_id
-      ${courseCompletionBackfillCandidatesSql(options.organizationId)}
-        AND ${afterCursor}
-      ORDER BY gm.id
-      LIMIT ${options.limit}
-    `);
-
-    return rows.map((row) => ({
-      groupMemberId: row.group_member_id,
-      courseId: row.course_id,
-      profileId: row.profile_id
-    }));
-  } catch (error) {
-    console.error('listCourseCompletionBackfillCandidates error:', error);
-    throw new Error(
-      `Failed to list course completion backfill candidates: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

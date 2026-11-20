@@ -117,26 +117,6 @@ export function buildCertificateWebhookInput(params: {
 }
 
 /**
- * Records completion for a learner who already finished all course content,
- * with no certificate, email, webhook or analytics event. For backfilling
- * completions that predate `groupmember.completed_at`. Returns true when this
- * call recorded one.
- */
-export async function backfillCourseCompletion(courseId: string, profileId: string): Promise<boolean> {
-  const [progress, courseRow] = await Promise.all([
-    getCourseProgressQuery(courseId, profileId),
-    getCourseCertificationRow(courseId)
-  ]);
-
-  if (!courseRow || progress.completedAt || !progress.groupMemberId) return false;
-
-  const evaluation = await buildCertificationEvaluation(courseId, profileId, courseRow, progress);
-  if (!evaluation.hasCompletedAllContent) return false;
-
-  return claimMemberCompleted(progress.groupMemberId, new Date().toISOString());
-}
-
-/**
  * Evaluates certification eligibility. On first completion of all content,
  * records `completedAt` on any plan. A learner eligible for the certificate
  * earns it once the org plan includes certificates, which persists

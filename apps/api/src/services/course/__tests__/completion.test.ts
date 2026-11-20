@@ -59,7 +59,7 @@ vi.mock('@cio/tracking', () => ({
   SERVER_EVENTS: { COURSE_COMPLETED: 'course_completed', CERTIFICATE_ISSUED: 'certificate_issued' }
 }));
 
-import { backfillCourseCompletion, evaluateCourseCertification } from '../completion';
+import { evaluateCourseCertification } from '../completion';
 
 const COURSE_ID = 'course-1';
 const PROFILE_ID = 'ada';
@@ -171,43 +171,5 @@ describe('evaluateCourseCertification', () => {
     await evaluateCourseCertification(COURSE_ID, PROFILE_ID);
 
     expect(trackedEvents()).toEqual([]);
-  });
-});
-
-describe('backfillCourseCompletion', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mocks.getCourseCertificationRow.mockResolvedValue(courseRow);
-    mocks.claimMemberCompleted.mockResolvedValue(true);
-  });
-
-  it('records completion for an eligible learner with no certificate, email or event', async () => {
-    mocks.getCourseProgress.mockResolvedValue(progressAt(4));
-
-    await expect(backfillCourseCompletion(COURSE_ID, PROFILE_ID)).resolves.toBe(true);
-
-    expect(mocks.claimMemberCompleted).toHaveBeenCalledWith(GROUP_MEMBER_ID, expect.any(String));
-    expect(mocks.orgHasCertificatesEnabled).not.toHaveBeenCalled();
-    expect(mocks.claimMemberCertificateEarned).not.toHaveBeenCalled();
-    expect(mocks.scheduleCertificationCompletionWork).not.toHaveBeenCalled();
-    expect(mocks.trackServerEvent).not.toHaveBeenCalled();
-  });
-
-  it('skips a learner who does not meet the rule or is already recorded', async () => {
-    mocks.getCourseProgress.mockResolvedValueOnce(progressAt(3));
-    mocks.getCourseProgress.mockResolvedValueOnce(progressAt(4, { completedAt: '2026-09-01T00:00:00Z' }));
-
-    await expect(backfillCourseCompletion(COURSE_ID, PROFILE_ID)).resolves.toBe(false);
-    await expect(backfillCourseCompletion(COURSE_ID, PROFILE_ID)).resolves.toBe(false);
-
-    expect(mocks.claimMemberCompleted).not.toHaveBeenCalled();
-  });
-
-  it('skips a course that no longer exists', async () => {
-    mocks.getCourseProgress.mockResolvedValue(progressAt(4));
-    mocks.getCourseCertificationRow.mockResolvedValue(null);
-
-    await expect(backfillCourseCompletion(COURSE_ID, PROFILE_ID)).resolves.toBe(false);
-    expect(mocks.claimMemberCompleted).not.toHaveBeenCalled();
   });
 });
