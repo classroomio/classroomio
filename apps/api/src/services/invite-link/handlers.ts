@@ -482,8 +482,11 @@ const learningPathHandler: InviteLinkHandler = {
     }
   },
 
-  redirectTo() {
-    return '/lms';
+  redirectTo(context) {
+    const learningPath = requireLearningPath(context);
+    const pathKey = learningPath.publicId ?? learningPath.id;
+
+    return context.invite.roleId === ROLE.STUDENT ? `/lms/paths/${pathKey}` : `/paths/${pathKey}`;
   }
 };
 
