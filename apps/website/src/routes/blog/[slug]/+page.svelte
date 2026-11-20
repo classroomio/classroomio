@@ -65,6 +65,28 @@
     font-weight: bold;
   }
 
+  :global(.prose table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    margin-block: 1.5rem;
+    border-collapse: collapse;
+  }
+
+  :global(.prose :is(th, td)) {
+    min-width: 8rem;
+    height: 3rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-gray-200);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  :global(.prose th) {
+    background: var(--color-gray-50);
+    font-weight: 600;
+  }
+
   :global(.prose .gallery img) {
     max-height: 300px;
     border-radius: var(--radius-xl);
