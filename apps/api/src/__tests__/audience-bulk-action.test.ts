@@ -9,7 +9,10 @@ vi.mock('@cio/db/queries/organization', () => ({
   deleteGroupMembershipsForOrgProfiles: vi.fn(),
   recordOrganizationMemberAudit: vi.fn(),
   resolveAudienceMemberIds: vi.fn(),
-  revokeActiveOrganizationInvitesByEmails: vi.fn()
+  revokeActiveOrganizationInvitesByEmails: vi.fn(),
+  lockOrganizationForStudentCapacity: vi.fn(),
+  getActiveOrganizationPlan: vi.fn(async () => null),
+  countActiveStudents: vi.fn()
 }));
 
 vi.mock('@cio/jobs', () => ({
@@ -33,14 +36,17 @@ vi.mock('@cio/db/drizzle', () => ({
 import {
   bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
+  countActiveStudents,
   countAudienceMatchesNotArchived,
   deleteGroupMembershipsForOrgProfiles,
   getAudienceMatchSample,
   getBulkAudienceMembersByIds,
+  lockOrganizationForStudentCapacity,
   recordOrganizationMemberAudit,
   resolveAudienceMemberIds,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
+import { env } from '@cio/core/config/env';
 import { enqueueAudienceBulkAction, getQueue, getQueueJobEnvelope } from '@cio/jobs';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '@api/services/organization/student-limit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -592,6 +598,34 @@ describe('runQueuedAudienceBulkAction', () => {
       { memberId: 2, reason: 'DELETE_NOT_ARCHIVED' }
     ]);
     expect(bulkDeleteOrganizationAudienceMembers).not.toHaveBeenCalled();
+  });
+
+  it('re-checks the student limit for each chunk of an unarchive and leaves an over-limit chunk unchanged', async () => {
+    env.PUBLIC_IS_SELFHOSTED = 'false';
+    vi.mocked(getBulkAudienceMembersByIds).mockImplementation(
+      async (_orgId, ids) => ids.map((id) => member(id, 'ARCHIVED')) as never
+    );
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockImplementation(async (_orgId, ids) => ids as never);
+    // Free plan, 20 seats: the first chunk fits, then a student joins before the second.
+    vi.mocked(countActiveStudents).mockResolvedValueOnce(18).mockResolvedValueOnce(19);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const outcome = await runQueuedAudienceBulkAction({
+      organizationId: ORG,
+      actorProfileId: ACTOR,
+      action: 'unarchive',
+      memberIds: [1, 2, 3, 4],
+      chunkSize: 2
+    });
+
+    expect(outcome.succeeded).toBe(2);
+    expect(outcome.failed).toEqual([
+      { memberId: 3, reason: 'UPGRADE_REQUIRED' },
+      { memberId: 4, reason: 'UPGRADE_REQUIRED' }
+    ]);
+    expect(lockOrganizationForStudentCapacity).toHaveBeenCalledTimes(2);
+    expect(bulkUpdateOrganizationMemberStatus).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(bulkUpdateOrganizationMemberStatus).mock.calls[0][1]).toEqual([1, 2]);
   });
 });
 
