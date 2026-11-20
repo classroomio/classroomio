@@ -100,6 +100,31 @@ export function organizationApiKeyHasScopes(
   return requiredScopes.every((scope) => scopeSet.has(scope));
 }
 
+/**
+ * The 403 message for a key that lacks scopes. It names the missing scopes and, when
+ * some key type includes all of them by default, which type that is, so the caller
+ * can tell a wrong key type from a wrong course.
+ */
+export function describeMissingScopes(
+  keyScopes: string[],
+  requiredScopes: readonly TOrganizationApiKeyScope[]
+): string {
+  const scopeSet = new Set(keyScopes);
+  const missing = requiredScopes.filter((scope) => !scopeSet.has(scope));
+  const message = 'Automation key is missing required scopes';
+
+  if (missing.length === 0) {
+    return message;
+  }
+
+  const keyTypes = (Object.keys(DEFAULT_SCOPES) as TOrganizationApiKeyType[]).filter((type) =>
+    missing.every((scope) => DEFAULT_SCOPES[type].includes(scope))
+  );
+  const hint = keyTypes.length > 0 ? ` (included by default in ${keyTypes.join(' and ')} keys)` : '';
+
+  return `${message}: ${missing.join(', ')}${hint}`;
+}
+
 export async function listOrganizationApiKeysService(
   organizationId: string,
   query: TListOrganizationApiKeysQuery
