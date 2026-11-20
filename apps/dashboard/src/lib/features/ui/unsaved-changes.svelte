@@ -5,11 +5,12 @@
   interface Props {
     hasUnsavedChanges?: boolean;
     skipPrompt?: boolean;
-    onAbandonChanges?: () => void;
+    /** Runs after the user confirms abandoning unsaved changes, so owners can revert drafts. */
+    onAbandon?: () => void;
     children?: import('svelte').Snippet;
   }
 
-  let { hasUnsavedChanges = $bindable(false), skipPrompt = false, onAbandonChanges, children }: Props = $props();
+  let { hasUnsavedChanges = $bindable(false), skipPrompt = false, onAbandon, children }: Props = $props();
 
   beforeNavigate(({ cancel }) => {
     const shouldNotifyAbandon = hasUnsavedChanges && !skipPrompt;
@@ -17,9 +18,8 @@
     if (!shouldAbandonChanges()) {
       cancel();
     } else {
-      if (shouldNotifyAbandon) {
-        onAbandonChanges?.();
-      }
+      if (hasUnsavedChanges) onAbandon?.();
+      // User clicked OK, reset the flag
       hasUnsavedChanges = false;
     }
   });

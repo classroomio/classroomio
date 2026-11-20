@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import { navigating, page } from '$app/state';
   import UsersIcon from '@lucide/svelte/icons/users';
   import SearchXIcon from '@lucide/svelte/icons/search-x';
@@ -9,6 +9,8 @@
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import { onDestroy } from 'svelte';
+  import { untrack } from 'svelte';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
   import { TablePagination, UpgradeBanner } from '$features/ui';
   import { currentOrg, currentOrgMaxAudience, isOrgAdmin } from '$lib/utils/store/org';
   import type {
@@ -124,7 +126,19 @@
   let deletingMemberId = $state<string | null>(null);
   let deleteCandidate = $state<OrganizationAudienceMember | null>(null);
   let deleteDialogOpen = $state(false);
-  let searchValue = $state(query.search ?? '');
+
+  const search = new DebouncedSearch({
+    initial: untrack(() => query.search ?? ''),
+    onApply: (nextSearch) => void navigateAudience({ ...query, page: 1, search: nextSearch || undefined })
+  });
+
+  afterNavigate(() => {
+    search.sync(query.search ?? '');
+  });
+
+  onDestroy(() => {
+    search.destroy();
+  });
 
   async function handleResendInvite(email: string) {
     inviteActionEmail = email;
@@ -262,33 +276,11 @@
     selectedIds.clear();
   }
 
-  $effect(() => {
-    searchValue = query.search ?? '';
-  });
-
-  $effect(() => {
-    const normalizedSearch = searchValue.trim() || undefined;
-    const currentSearch = query.search ?? undefined;
-
-    if (normalizedSearch === currentSearch) {
-      return;
-    }
-
-    const timeoutId = setTimeout(() => {
-      void navigateAudience({
-        ...query,
-        page: 1,
-        search: normalizedSearch
-      });
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  });
-
   async function refreshAudience(pageOverride = currentPage) {
     await navigateAudience({
       ...query,
-      page: pageOverride
+      page: pageOverride,
+      search: search.takePending() || undefined
     });
   }
 
@@ -312,7 +304,8 @@
 
     void navigateAudience({
       ...query,
-      page: nextPage
+      page: nextPage,
+      search: search.takePending() || undefined
     });
   }
 
@@ -320,17 +313,17 @@
     sortBy: OrganizationAudienceQuery['sortBy'],
     sortOrder: OrganizationAudienceQuery['sortOrder']
   ) {
-    void navigateAudience({ ...query, page: 1, sortBy, sortOrder });
+    void navigateAudience({ ...query, page: 1, sortBy, sortOrder, search: search.takePending() || undefined });
   }
 
   // Every filter change resets to page 1: staying on page 7 of a result set
   // that just shrank to two pages shows an empty table.
   function handleFilterChange(patch: Partial<OrganizationAudienceQuery>) {
-    void navigateAudience({ ...query, ...patch, page: 1 });
+    void navigateAudience({ ...query, ...patch, page: 1, search: search.takePending() || undefined });
   }
 
   function handleSelectView(view: OrganizationAudienceView) {
-    void navigateAudience(applyAudienceView(view, query));
+    void navigateAudience({ ...applyAudienceView(view, query), search: search.takePending() || undefined });
   }
 
   function handleClearFilters() {
@@ -553,7 +546,7 @@
 {/if}
 
 <AudienceTableToolbar
-  bind:searchValue
+  bind:searchValue={() => search.draft, (nextValue) => search.input(nextValue)}
   {query}
   {activeView}
   {activeFilterCount}

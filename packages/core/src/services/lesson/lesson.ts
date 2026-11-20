@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { sanitizeHtml } from '../../utils/sanitize-html';
 import type { TLesson, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
+import type { TBlockChangeSource } from '@cio/utils/constants/lesson-version';
 import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
 import {
   createLessonComment,
@@ -8,16 +9,16 @@ import {
   deleteLesson,
   deleteLessonComment,
   getLessonById,
+  getLessonRowById,
   getLessonCommentsAvailability,
   getLessonCommentsAvailabilityByCommentId,
   getLessonCommentsByLessonId,
   getLessonCommentsByLessonIdPaginated,
   getLessonCompletion,
-  getLessonVersionHistory,
-  type TLessonVersionCursor,
   getLessonVideoProgress,
   getLessonVideoProgressForLesson,
   getLessonsByCourseId,
+  getPaginatedLessonsByCourseId,
   updateLesson,
   updateLessonComment,
   upsertLessonCompletion,
@@ -25,12 +26,25 @@ import {
   type LessonById
 } from '@cio/db/queries/lesson';
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
-import { touchCourseUpdatedAt } from '@cio/db/queries/course';
+import { skipActiveReminderDeliveriesForLesson, touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
+import { listLessonBlockRows } from '@cio/db/queries/block';
+import type { LessonBlock } from '../block/block-view';
 import { db } from '@cio/db/drizzle';
-import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
+import {
+  applyLegacyLessonContent,
+  attachBlocksToLesson,
+  attachBlocksToLessons,
+  splitLegacyContent
+} from '../block/legacy-content';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
+import { claimItemOrder } from '../course/root-order';
+import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
+import { emitCourseWebhookEvent } from '../webhook/emit';
+import { captureCourseEvent } from '../posthog';
+
+export { getLessonHistoryService, getLessonTextHistoryService, type LessonStructureChange } from './lesson-history';
 
 /**
  * Creates a new lesson
@@ -38,7 +52,11 @@ import { resolveItemSlug } from '../course/slug';
  * @param data Lesson creation data
  * @returns Created lesson
  */
-export async function createLesson(courseId: string, data: TLessonCreate): Promise<TLesson> {
+export async function createLesson(
+  courseId: string,
+  data: TLessonCreate,
+  options: { actorProfileId?: string | null; source?: TBlockChangeSource; clientName?: string | null } = {}
+): Promise<TLesson> {
   try {
     const slug = await resolveItemSlug({
       courseId,
@@ -46,19 +64,49 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
       requestedSlug: data.slug
     });
 
+    const { note, videos, ...lessonFields } = data;
     const lessonData = {
-      ...data,
+      ...lessonFields,
       courseId,
       slug,
       isUnlocked: data.isUnlocked ?? true
     };
 
-    const [lesson] = await createLessons([lessonData]);
-    if (!lesson) {
+    const createdLesson = await db.transaction(async (tx) => {
+      const order = await claimItemOrder(courseId, { sectionId: data.sectionId }, data.order, null, tx);
+      const [inserted] = await createLessons([{ ...lessonData, order }], tx);
+      if (inserted) {
+        await applyLegacyLessonContent(
+          inserted.id,
+          { note, videos },
+          {
+            actorProfileId: options.actorProfileId,
+            source: options.source,
+            clientName: options.clientName,
+            dbClient: tx
+          }
+        );
+      }
+
+      return inserted;
+    });
+    if (!createdLesson) {
       throw new AppError('Failed to create lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
+    const lesson = await attachBlocksToLesson(createdLesson);
 
     await touchCourseUpdatedAt(courseId);
+    void invalidateAnalyticsCourseStructure(courseId);
+
+    if (data.lessonAt) {
+      await emitCourseWebhookEvent(courseId, 'lesson.session.scheduled', {
+        lessonId: lesson.id,
+        startsAt: lesson.lessonAt,
+        previousStartsAt: null,
+        callUrl: lesson.callUrl,
+        actorProfileId: options.actorProfileId ?? null
+      });
+    }
 
     return lesson;
   } catch (error) {
@@ -79,14 +127,14 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
  * @param lessonId Lesson ID
  * @returns Lesson or throws error if not found
  */
-export async function getLesson(lessonId: string): Promise<LessonById> {
+export async function getLesson(lessonId: string): Promise<LessonById & { blocks: LessonBlock[] }> {
   try {
     const lesson = await getLessonById(lessonId);
     if (!lesson) {
       throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
     }
 
-    return enrichLessonWithPresignedUrls(lesson);
+    return await attachBlocksToLesson(lesson, { enrich: true });
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -100,18 +148,35 @@ export async function getLesson(lessonId: string): Promise<LessonById> {
   }
 }
 
+function hasSessionMoved(
+  before: Pick<TLesson, 'lessonAt' | 'callUrl'>,
+  after: Pick<TLesson, 'lessonAt' | 'callUrl'>
+): boolean {
+  const beforeAt = before.lessonAt ? new Date(before.lessonAt).getTime() : null;
+  const afterAt = after.lessonAt ? new Date(after.lessonAt).getTime() : null;
+
+  return beforeAt !== afterAt || (before.callUrl ?? null) !== (after.callUrl ?? null);
+}
+
 /**
  * Updates a lesson
  * @param lessonId Lesson ID
  * @param data Partial lesson update data
  * @returns Updated lesson
  */
-export async function updateLessonService(lessonId: string, data: TLessonUpdate): Promise<TLesson> {
+export async function updateLessonService(
+  lessonId: string,
+  data: TLessonUpdate,
+  options: { actorProfileId?: string | null; source?: TBlockChangeSource; clientName?: string | null } = {}
+): Promise<TLesson> {
   try {
-    const payload: TLessonUpdate = { ...data };
+    const { patch: contentPatch, rest } = splitLegacyContent(data);
+    const payload = { ...rest };
+    const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
+    const needsExisting = payload.slug !== undefined || payload.order !== undefined || touchesSession;
+    const existing = needsExisting ? await getLessonById(lessonId) : null;
 
     if (payload.slug !== undefined) {
-      const existing = await getLessonById(lessonId);
       if (!existing) {
         throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
       }
@@ -127,13 +192,57 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
       });
     }
 
-    const updated = await updateLesson(lessonId, payload);
-    if (!updated) {
+    const sectionId = payload.sectionId === undefined ? existing?.sectionId : payload.sectionId;
+    const orderCourseId = payload.order !== undefined ? existing?.courseId : null;
+    const hasLessonFields = Object.keys(payload).length > 0;
+    const updatedRow = await db.transaction(async (tx) => {
+      if (orderCourseId) {
+        payload.order = await claimItemOrder(orderCourseId, { sectionId }, payload.order, lessonId, tx);
+      }
+
+      const row = hasLessonFields ? await updateLesson(lessonId, payload, tx) : await getLessonRowById(lessonId, tx);
+      if (row) {
+        await applyLegacyLessonContent(lessonId, contentPatch, {
+          actorProfileId: options.actorProfileId,
+          source: options.source,
+          clientName: options.clientName,
+          dbClient: tx
+        });
+      }
+
+      return row;
+    });
+    if (!updatedRow) {
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
+    const updated = await attachBlocksToLesson(updatedRow);
 
     if (updated.courseId) {
       await touchCourseUpdatedAt(updated.courseId);
+
+      const hasStructureChange =
+        payload.title !== undefined ||
+        payload.order !== undefined ||
+        payload.sectionId !== undefined ||
+        payload.isUnlocked !== undefined;
+
+      if (hasStructureChange) {
+        void invalidateAnalyticsCourseStructure(updated.courseId);
+      }
+    }
+
+    if (existing && hasSessionMoved(existing, updated)) {
+      await skipActiveReminderDeliveriesForLesson(lessonId, 'lesson_rescheduled');
+
+      if (updated.courseId) {
+        await emitCourseWebhookEvent(updated.courseId, 'lesson.session.scheduled', {
+          lessonId,
+          startsAt: updated.lessonAt,
+          previousStartsAt: existing.lessonAt,
+          callUrl: updated.callUrl,
+          actorProfileId: options.actorProfileId ?? null
+        });
+      }
     }
 
     return updated;
@@ -177,6 +286,7 @@ export async function deleteLessonService(lessonId: string): Promise<TLesson> {
 
     if (deleted.courseId) {
       await touchCourseUpdatedAt(deleted.courseId);
+      void invalidateAnalyticsCourseStructure(deleted.courseId);
     }
 
     return deleted;
@@ -202,12 +312,33 @@ export async function deleteLessonService(lessonId: string): Promise<TLesson> {
 export async function listLessons(courseId: string, sectionId?: string): Promise<TLesson[]> {
   try {
     const lessons = await getLessonsByCourseId(courseId);
+    const visibleLessons = sectionId ? lessons.filter((lesson) => lesson.sectionId === sectionId) : lessons;
 
-    if (sectionId) {
-      return lessons.filter((lesson) => lesson.sectionId === sectionId);
-    }
+    return await attachBlocksToLessons(visibleLessons);
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to list lessons',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
 
-    return lessons;
+/**
+ * Lists one page of a course's lessons, in course order
+ * @param courseId Course ID
+ * @param options Section filter and page options
+ * @returns Lessons on the page and the total count
+ */
+export async function listLessonsPaginated(
+  courseId: string,
+  options: { sectionId?: string; page: number; limit: number }
+): Promise<{ items: TLesson[]; total: number }> {
+  try {
+    const page = await getPaginatedLessonsByCourseId(courseId, options);
+    const items = await attachBlocksToLessons(page.items);
+
+    return { items, total: page.total };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list lessons',
@@ -409,7 +540,25 @@ export async function getLessonCompletionService(lessonId: string, profileId: st
  * @param isComplete Completion status
  * @returns Completion record
  */
-export async function upsertLessonCompletionService(lessonId: string, profileId: string, isComplete: boolean) {
+function captureLessonCompleted(
+  courseId: string,
+  lessonId: string,
+  profileId: string,
+  completionMethod: 'manual' | 'video_watch' | 'admin'
+) {
+  captureCourseEvent(courseId, {
+    event: 'lesson_completed',
+    distinctId: profileId,
+    properties: { lesson_id: lessonId, completion_method: completionMethod }
+  });
+}
+
+export async function upsertLessonCompletionService(
+  lessonId: string,
+  profileId: string,
+  isComplete: boolean,
+  completionMethod: 'manual' | 'admin' = 'manual'
+) {
   try {
     const lesson = await getLessonById(lessonId);
     if (!lesson) {
@@ -430,7 +579,16 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
       isComplete
     };
 
-    return await upsertLessonCompletion(completionData);
+    const previous = isComplete ? await getLessonCompletion(lessonId, profileId) : null;
+    const completion = await upsertLessonCompletion(completionData);
+
+    await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete });
+
+    if (isComplete && !previous?.isComplete) {
+      captureLessonCompleted(lesson.courseId, lessonId, profileId, completionMethod);
+    }
+
+    return completion;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -571,7 +729,14 @@ export async function updateLessonWatchProgressService(
     }
 
     const existing = await getLessonVideoProgress(lessonId, profileId, beat.assetId);
-    const threshold = lesson.videoWatchThreshold ?? 95;
+    const assetPlacements = (await listLessonBlockRows(lessonId)).filter(
+      (row) => row.block.type === 'video' && row.block.data.assetId === beat.assetId
+    );
+    const requiredPlacements = assetPlacements.filter((row) => row.placement.required);
+    const enforcedPlacements = requiredPlacements.length > 0 ? requiredPlacements : assetPlacements;
+    const lessonThreshold = lesson.videoWatchThreshold ?? 95;
+    const placementThresholds = enforcedPlacements.map((row) => row.placement.watchThreshold ?? lessonThreshold);
+    const threshold = placementThresholds.length > 0 ? Math.max(...placementThresholds) : lessonThreshold;
     const now = Date.now();
 
     if (existing?.isComplete) {
@@ -647,6 +812,12 @@ export async function updateLessonWatchProgressService(
         profileId,
         isComplete: true
       });
+      await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', {
+        lessonId,
+        profileId,
+        isComplete: true
+      });
+      captureLessonCompleted(lesson.courseId, lessonId, profileId, 'video_watch');
     }
 
     if (!aggregate) {
@@ -664,44 +835,6 @@ export async function updateLessonWatchProgressService(
 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update lesson watch progress',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-function parseLessonVersionCursor(cursor?: string): TLessonVersionCursor | undefined {
-  if (!cursor) return undefined;
-
-  const separatorIndex = cursor.lastIndexOf('|');
-  if (separatorIndex <= 0) return undefined;
-
-  const timestamp = cursor.slice(0, separatorIndex);
-  const id = Number(cursor.slice(separatorIndex + 1));
-
-  if (!timestamp || !Number.isInteger(id)) return undefined;
-
-  // The timestamp is interpolated into a Postgres timestamp comparison, so it has to be a
-  // real date here. Without this check a cursor like `garbage|5` reaches the driver and
-  // fails the query with a 500 instead of restarting at the newest page.
-  if (Number.isNaN(new Date(timestamp).getTime())) return undefined;
-
-  return { timestamp, id };
-}
-
-/**
- * Gets one keyset page of lesson version history.
- *
- * @param cursor Serialized `<iso timestamp>|<id>` from the previous page's `nextCursor`.
- *   Malformed input is treated as absent so a hand-edited URL restarts at the newest page
- *   rather than erroring.
- */
-export async function getLessonHistoryService(lessonId: string, locale: string, limit: number, cursor?: string) {
-  try {
-    return getLessonVersionHistory(lessonId, locale, limit, parseLessonVersionCursor(cursor));
-  } catch (error) {
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get lesson history',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

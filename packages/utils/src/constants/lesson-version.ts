@@ -27,3 +27,27 @@ export type TLessonVersionIntent = (typeof LESSON_VERSION_INTENT_VALUES)[number]
  */
 export const LESSON_VERSION_SESSION_IDLE_MS = 10 * 60 * 1_000;
 export const LESSON_VERSION_SESSION_MAX_MS = 60 * 60 * 1_000;
+
+/**
+ * Who made a block change, stored on history rows and lesson revisions:
+ * - `editor`    — a person in the lesson editor or another dashboard surface.
+ * - `assistant` — the AI assistant, on behalf of the teacher who ran it.
+ * - `restore`   — a version history restore or undo.
+ * - `mcp`       — an AI client connected through MCP; the client's name is stored beside it.
+ * - `api`       — an integration using the public API; its key's label is stored beside it.
+ */
+export const BLOCK_CHANGE_SOURCE_VALUES = ['editor', 'assistant', 'restore', 'mcp', 'api'] as const;
+
+export type TBlockChangeSource = (typeof BLOCK_CHANGE_SOURCE_VALUES)[number];
+
+/** Who a write is attributed to; spread into the options of block, translation and lesson writes. */
+export interface TBlockChangeAttribution {
+  source?: TBlockChangeSource;
+  clientName?: string | null;
+}
+
+/** Longest client name stored on a history row; longer names are cut. */
+export const BLOCK_CHANGE_CLIENT_NAME_MAX_LENGTH = 80;
+
+/** Days a block removed from every lesson stays restorable before the maintenance job purges it. */
+export const DELETED_BLOCK_RETENTION_DAYS = 30;

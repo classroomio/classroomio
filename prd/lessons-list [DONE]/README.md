@@ -65,7 +65,7 @@ Legend: ✅ available now, ⚠️ exists but not in list payload, ❌ missing da
 | Join link/button | Lesson | ✅ | `callUrl` in list payload | Medium | Primary CTA button | [x] |
 | Lesson content (materials) | Lesson | ✅ | `documentsCount` + `videosCount` in list payload | Medium | Icons with counts | [x] |
 | Instructor name | Lesson | ⚠️ | `lesson.teacherId` exists; needs profile join | High | Secondary label | [ ] |
-| Notes / prep checklist | Lesson | ✅ | `hasNoteContent` in list payload (derived from lesson note translations) | Medium | Note/`no-content` chip | [x] |
+| Notes / prep checklist | Lesson | ⚠️ | `hasNoteContent` is `null` in list payloads unless `includeNoteContent` is requested (used by go-live readiness only; scanning note HTML is expensive) | Medium | No chip in list (removed) | [ ] |
 
 ### Students — Self-Paced
 
@@ -80,7 +80,7 @@ Legend: ✅ available now, ⚠️ exists but not in list payload, ❌ missing da
 ### Field Contract Added to Course Content List Payload
 - `lessonAt: string | null`
 - `callUrl: string | null`
-- `hasNoteContent: boolean | null`
+- `hasNoteContent: boolean | null` (`null` unless `includeNoteContent` is set; computed only for go-live readiness)
 - `videosCount: number | null`
 - `documentsCount: number | null`
 - `questionCount: number | null`
@@ -91,7 +91,8 @@ Legend: ✅ available now, ⚠️ exists but not in list payload, ❌ missing da
 - Date rendering uses existing app formatter (`formatDate`); missing values are hidden.
 - Lock toggle is teacher/admin-only; students get read-only lock state.
 - Teacher/admin rows include schedule/join CTA for live class, resources count for lessons, question count and due date for exercises.
-- Student rows include completion state (lesson), materials count (lesson), note/no-content status (lesson), schedule/join (live), due date (self-paced), and next-step CTA.
+- Student rows include completion state (lesson), materials chips for video, document and slide (lesson), schedule/join (live), due date (self-paced), and next-step CTA.
+- The Note and No content chips were removed; `hasNoteContent` is no longer computed for list loads.
 
 ### Verification Run
 - `pnpm --filter @cio/dashboard build` ✅

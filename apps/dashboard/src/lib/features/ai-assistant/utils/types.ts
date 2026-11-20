@@ -140,6 +140,7 @@ export type AgentRunCreateRequest = typeof classroomio.agent.runs.$post;
 export type AgentRunCreateSuccess = Extract<InferResponseType<AgentRunCreateRequest>, { success: true }>;
 export type AgentRunDetail = AgentRunCreateSuccess['data'];
 export type AgentRun = AgentRunDetail['run'];
+export type AgentRunQueueHealth = NonNullable<AgentRunDetail['queueHealth']>;
 export type AgentRunStep = AgentRunDetail['steps'][number];
 export type AgentRunEvent = AgentRunDetail['events'][number];
 

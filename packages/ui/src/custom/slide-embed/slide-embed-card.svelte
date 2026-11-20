@@ -29,7 +29,7 @@
   });
 </script>
 
-<div class={cn('ui:group ui:w-full ui:max-w-full ui:min-w-0', isEditMode && 'ui:rounded-lg ui:border', className)}>
+<div class={cn('ui:group ui:w-full ui:max-w-full ui:min-w-0', isEditMode && 'ui:rounded-lg', className)}>
   <div class="ui:bg-muted ui:relative ui:aspect-video ui:w-full ui:min-w-0 ui:overflow-hidden ui:rounded-md">
     <div
       class="ui:flex ui:h-full ui:min-h-0 ui:w-full ui:flex-col ui:items-center ui:justify-center ui:gap-2 ui:px-3 ui:py-4"

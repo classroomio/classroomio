@@ -98,7 +98,7 @@
     try {
       await onAssign([...selectedProfileIds], sendEmail);
       selectedProfileIds.clear();
-      searchValue = '';
+      handleSearch('');
     } finally {
       isSubmitting = false;
     }

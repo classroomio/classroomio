@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { hostname } from 'node:os';
 
 import { convertToModelMessages, generateText, stepCountIs } from 'ai';
@@ -9,6 +10,7 @@ import {
   updateAgentRun
 } from '@cio/db/queries/agent';
 import { getCourseById } from '@cio/db/queries/course';
+import type { TAiAgentRunStatus } from '@cio/db/types';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { AgentRole, AIProvider, MAX_STEPS_PER_ROUND, getCourseTemplate, type AgentContext } from '@cio/ai-assistant';
 import { createModel, getProviderConfigForProvider } from '@cio/ai-assistant/providers';
@@ -29,6 +31,11 @@ import { sanitizeDanglingToolCalls } from './sanitize-tool-calls';
 import { listCourseSections } from '../course/section';
 
 const MAX_WORKER_ROUNDS = 24;
+/** Statuses a job may legitimately take over. Paused, canceled and completed are never claimable. */
+const CLAIMABLE_RUN_STATUSES: TAiAgentRunStatus[] = ['queued', 'running', 'waiting_for_input', 'failed'];
+const ROUND_CLAIM_STATUSES: TAiAgentRunStatus[] = ['queued', 'running', 'waiting_for_input'];
+const FAILURE_STATUSES: TAiAgentRunStatus[] = ['queued', 'running', 'waiting_for_input'];
+const RUN_LEASE_MS = 15 * 60_000;
 const CONTINUE_IMPLEMENTATION_PROMPT =
   'Continue implementing the approved course plan from the durable run checkpoint. Re-read the current course structure before creating anything that might already exist.';
 
@@ -38,8 +45,59 @@ export interface RunAgentCourseGenerationJobInput {
   workerId?: string;
 }
 
-function getWorkerId(inputWorkerId?: string): string {
-  return inputWorkerId ?? `agent-course-generation:${hostname()}:${process.pid}`;
+/**
+ * One distinct token per job execution, including BullMQ re-deliveries of the
+ * same job id. Pause, cancel and retry release `agent_run.workerId`, so a
+ * worker that no longer owns the run cannot write over the newer state.
+ */
+function getWorkerId(input: RunAgentCourseGenerationJobInput): string {
+  if (input.workerId) return input.workerId;
+
+  const jobContext = input.bullmqJobId ?? 'no-bullmq-job';
+
+  return `agent-course-generation:${hostname()}:${process.pid}:${jobContext}:${randomUUID()}`;
+}
+
+function getBullmqJobId(run: { executionCursor: Record<string, unknown> }): string | null {
+  const bullmq = run.executionCursor.bullmq;
+
+  if (!bullmq || typeof bullmq !== 'object') {
+    return null;
+  }
+
+  const jobId = (bullmq as Record<string, unknown>).jobId;
+
+  return typeof jobId === 'string' && jobId.length > 0 ? jobId : null;
+}
+
+function isRunLeaseActive(run: { workerId: string | null; lockedAt: string | null }): boolean {
+  if (!run.workerId || !run.lockedAt) return false;
+
+  const lockedAtMs = Date.parse(run.lockedAt);
+
+  if (!Number.isFinite(lockedAtMs)) return false;
+
+  return Date.now() - lockedAtMs < RUN_LEASE_MS;
+}
+
+function canClaimRun(
+  run: {
+    status: TAiAgentRunStatus;
+    workerId: string | null;
+    lockedAt: string | null;
+    executionCursor: Record<string, unknown>;
+  },
+  bullmqJobId: string | null | undefined
+): boolean {
+  if (!CLAIMABLE_RUN_STATUSES.includes(run.status)) return false;
+
+  // A run with a fresh lease belongs to a live execution. Only a redelivery of
+  // the job that owns the lease may reclaim it; every other claim must wait for
+  // the lease to expire. This prevents a paused/resumed run from being stolen
+  // by a fresh job while the paused worker is still active.
+  if (!isRunLeaseActive(run)) return true;
+
+  return Boolean(bullmqJobId && run.workerId?.includes(`:${bullmqJobId}:`));
 }
 
 function getErrorPayload(error: unknown): { code: string; message: string; details?: unknown } {
@@ -81,7 +139,10 @@ function buildRunStateMessage(input: {
   ].join('\n');
 }
 
-async function assertRunCanContinue(runId: string): Promise<NonNullable<Awaited<ReturnType<typeof getAgentRunById>>>> {
+async function assertRunCanContinue(
+  runId: string,
+  workerId?: string
+): Promise<NonNullable<Awaited<ReturnType<typeof getAgentRunById>>>> {
   const run = await getAgentRunById(runId);
 
   if (!run) {
@@ -96,15 +157,33 @@ async function assertRunCanContinue(runId: string): Promise<NonNullable<Awaited<
     throw new AppError('Course generation was canceled', 'AGENT_RUN_CANCELED', 409);
   }
 
+  if (run.status === 'paused') {
+    throw new AppError('Course generation was paused', 'AGENT_RUN_PAUSED', 409);
+  }
+
+  if (workerId !== undefined && run.workerId !== workerId) {
+    throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+  }
+
   return run;
+}
+
+async function releaseRunOwnership(runId: string, userId: string, workerId: string): Promise<void> {
+  await updateAgentRun({
+    runId,
+    userId,
+    workerId: null,
+    lockedAt: null,
+    expectedWorkerId: workerId
+  });
 }
 
 export async function runAgentCourseGenerationJob(input: RunAgentCourseGenerationJobInput): Promise<{
   runId: string;
-  status: 'completed' | 'paused' | 'canceled';
+  status: 'completed' | 'paused' | 'canceled' | 'superseded';
   rounds: number;
 }> {
-  const workerId = getWorkerId(input.workerId);
+  const workerId = getWorkerId(input);
   const initialRun = await assertRunCanContinue(input.runId);
 
   const courseOrgId = await getCourseOrganizationId(initialRun.courseId);
@@ -121,7 +200,16 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
 
   const startedAt = initialRun.startedAt ?? new Date().toISOString();
 
-  await updateAgentRun({
+  if (!canClaimRun(initialRun, input.bullmqJobId)) {
+    // The run is owned by a fresh lease from another execution. Do not complete
+    // this job as superseded: BullMQ treats a completed job as not stalled, so
+    // the stall alert stays hidden while the run remains queued with no owner.
+    // Throw a retryable error so BullMQ retries once the lease expires.
+    throw new AppError('Another worker holds the course-generation run lease', 'AGENT_RUN_LEASE_HELD', 409);
+  }
+
+  const claimedAt = new Date().toISOString();
+  const claimedRun = await updateAgentRun({
     runId: initialRun.id,
     userId: initialRun.userId,
     status: 'running',
@@ -129,9 +217,15 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
     startedAt,
     finishedAt: null,
     workerId,
-    lockedAt: new Date().toISOString(),
-    lastError: null
+    lockedAt: claimedAt,
+    lastError: null,
+    expectedStatuses: [initialRun.status],
+    expectedWorkerId: initialRun.workerId ?? null
   });
+
+  if (!claimedRun) {
+    return { runId: initialRun.id, status: 'superseded', rounds: 0 };
+  }
 
   await createAgentRunEvent({
     runId: initialRun.id,
@@ -213,15 +307,17 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
     const isOrgPaid = await isOrgOnPaidPlan(initialRun.orgId);
     const agentTools = buildAgentTools(initialRun.orgId, initialRun.userId, initialRun.courseId, visibleMessages, {
       runId: initialRun.id,
+      workerId,
       isOrgOnPaidPlan: isOrgPaid,
       documentAssets
     });
 
     for (let roundIndex = 0; roundIndex < MAX_WORKER_ROUNDS; roundIndex += 1) {
-      const latestRun = await assertRunCanContinue(initialRun.id);
+      const latestRun = await assertRunCanContinue(initialRun.id, workerId);
+      const queuedInstructions = latestRun.queuedInstructions;
 
-      if (latestRun.queuedInstructions.length > 0) {
-        const instructionText = latestRun.queuedInstructions.map((instruction) => `- ${instruction.text}`).join('\n');
+      if (queuedInstructions.length > 0) {
+        const instructionText = queuedInstructions.map((instruction) => `- ${instruction.text}`).join('\n');
 
         modelMessages.push({
           role: 'user',
@@ -229,35 +325,39 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
             { type: 'text', text: `Teacher instructions queued while this run was active:\n${instructionText}` }
           ]
         });
-
-        await updateAgentRun({
-          runId: latestRun.id,
-          userId: latestRun.userId,
-          queuedInstructions: []
-        });
-
-        await createAgentRunEvent({
-          runId: latestRun.id,
-          eventType: 'instruction.applied',
-          message: 'Queued teacher instructions applied',
-          payload: { count: latestRun.queuedInstructions.length }
-        });
       }
 
-      await updateAgentRun({
+      const roundClaimedAt = new Date().toISOString();
+      const claimedRun = await updateAgentRun({
         runId: initialRun.id,
         userId: initialRun.userId,
         status: 'running',
         phase: 'implementing',
         progressPercent: Math.min(95, Math.round((roundIndex / MAX_WORKER_ROUNDS) * 100)),
-        lockedAt: new Date().toISOString(),
+        lockedAt: roundClaimedAt,
+        ...(queuedInstructions.length > 0 ? { queuedInstructions: [] } : {}),
         executionCursor: {
           ...latestRun.executionCursor,
           modelId,
           workerRound: roundIndex,
           bullmqJobId: input.bullmqJobId ?? null
-        }
+        },
+        expectedWorkerId: workerId,
+        expectedStatuses: ROUND_CLAIM_STATUSES
       });
+
+      if (!claimedRun) {
+        throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+      }
+
+      if (queuedInstructions.length > 0) {
+        await createAgentRunEvent({
+          runId: latestRun.id,
+          eventType: 'instruction.applied',
+          message: 'Queued teacher instructions applied',
+          payload: { count: queuedInstructions.length }
+        });
+      }
 
       const result = await generateText({
         model,
@@ -297,14 +397,15 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
       });
 
       if (result.steps.length < MAX_STEPS_PER_ROUND) {
-        await updateAgentRun({
+        const completedAt = new Date().toISOString();
+        const completedRun = await updateAgentRun({
           runId: initialRun.id,
           userId: initialRun.userId,
           status: 'completed',
           phase: 'completed',
           progressPercent: 100,
           currentStepKey: null,
-          finishedAt: new Date().toISOString(),
+          finishedAt: completedAt,
           workerId: null,
           lockedAt: null,
           executionCursor: {
@@ -313,8 +414,14 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
             workerRound: roundIndex + 1,
             finishReason: result.finishReason,
             finalText: result.text.slice(0, 4_000)
-          }
+          },
+          expectedWorkerId: workerId,
+          expectedStatuses: ['running']
         });
+
+        if (!completedRun) {
+          throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+        }
 
         await createAgentRunEvent({
           runId: initialRun.id,
@@ -332,7 +439,7 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
       });
     }
 
-    await updateAgentRun({
+    const pausedRun = await updateAgentRun({
       runId: initialRun.id,
       userId: initialRun.userId,
       status: 'paused',
@@ -344,8 +451,14 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
         ...initialRun.executionCursor,
         modelId,
         pauseReason: 'max_worker_rounds_reached'
-      }
+      },
+      expectedWorkerId: workerId,
+      expectedStatuses: ['running']
     });
+
+    if (!pausedRun) {
+      throw new AppError('Another worker took over course generation', 'AGENT_RUN_SUPERSEDED', 409);
+    }
 
     await createAgentRunEvent({
       runId: initialRun.id,
@@ -358,30 +471,26 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
   } catch (error) {
     const errorPayload = getErrorPayload(error);
 
-    if (errorPayload.code === 'AGENT_RUN_CANCELED') {
-      await updateAgentRun({
-        runId: initialRun.id,
-        userId: initialRun.userId,
-        status: 'canceled',
-        phase: 'canceled',
-        currentStepKey: null,
-        workerId: null,
-        lockedAt: null,
-        finishedAt: new Date().toISOString(),
-        lastError: null
-      });
+    if (errorPayload.code === 'AGENT_RUN_PAUSED') {
+      await releaseRunOwnership(initialRun.id, initialRun.userId, workerId);
 
-      await createAgentRunEvent({
-        runId: initialRun.id,
-        eventType: 'run.canceled',
-        message: 'Run canceled before the next checkpoint',
-        payload: {}
-      });
+      return { runId: initialRun.id, status: 'paused', rounds: 0 };
+    }
+
+    if (errorPayload.code === 'AGENT_RUN_CANCELED') {
+      await releaseRunOwnership(initialRun.id, initialRun.userId, workerId);
 
       return { runId: initialRun.id, status: 'canceled', rounds: 0 };
     }
 
-    await updateAgentRun({
+    if (errorPayload.code === 'AGENT_RUN_SUPERSEDED') {
+      await releaseRunOwnership(initialRun.id, initialRun.userId, workerId);
+
+      return { runId: initialRun.id, status: 'superseded', rounds: 0 };
+    }
+
+    const failedAt = new Date().toISOString();
+    const failedRun = await updateAgentRun({
       runId: initialRun.id,
       userId: initialRun.userId,
       status: 'failed',
@@ -389,9 +498,17 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
       currentStepKey: null,
       workerId: null,
       lockedAt: null,
-      finishedAt: new Date().toISOString(),
-      lastError: errorPayload
+      finishedAt: failedAt,
+      lastError: errorPayload,
+      expectedWorkerId: workerId,
+      expectedStatuses: FAILURE_STATUSES
     });
+
+    if (!failedRun) {
+      await releaseRunOwnership(initialRun.id, initialRun.userId, workerId);
+
+      return { runId: initialRun.id, status: 'superseded', rounds: 0 };
+    }
 
     await createAgentRunEvent({
       runId: initialRun.id,

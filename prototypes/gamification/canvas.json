@@ -1,0 +1,20 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-10-14T12:00:00Z" },
+  "title": "ClassroomIO Gamification",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 1180, "title": "1 · Learner home", "expand": "fill", "is_interactive": true },
+    "Lesson.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 900, "title": "2 · Lesson complete → XP + milestone", "expand": "fill", "is_interactive": true },
+    "Achievements.dc.html": { "x": 0, "y": 1560, "w": 1280, "h": 1180, "title": "3 · Achievements & XP history", "expand": "fill", "is_interactive": true },
+    "Leaderboard.dc.html": { "x": 1360, "y": 1560, "w": 1280, "h": 960, "title": "4 · Weekly course leaderboard", "expand": "fill", "is_interactive": true },
+    "Settings.dc.html": { "x": 2720, "y": 1560, "w": 1280, "h": 1080, "title": "5 · Admin: gamification settings", "expand": "fill", "is_interactive": true }
+  },
+  "order": ["Main.dc.html", "Lesson.dc.html", "Achievements.dc.html", "Leaderboard.dc.html", "Settings.dc.html"],
+  "notes": {
+    "row1": { "x": 0, "y": -300, "text": "Phase 1 — Daily loop: learning streak, XP, milestones", "kind": "title1", "maxW": 2640 },
+    "row2": { "x": 0, "y": 1290, "text": "Phase 2 — Recognition, social & org controls", "kind": "title1", "maxW": 4000 }
+  },
+  "designSystems": []
+}

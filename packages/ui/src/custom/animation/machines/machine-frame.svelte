@@ -110,6 +110,12 @@
     stroke: none;
   }
 
+  .machine :global(.tr) {
+    fill: none;
+    stroke: var(--hl-ink);
+    stroke-width: 2.2;
+  }
+
   .machine :global(.dot) {
     fill: var(--hl-line);
     stroke: none;

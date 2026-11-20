@@ -4,6 +4,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
+  import { getCourseProgressCounts } from '$features/course/utils/functions';
   import * as Page from '@cio/ui/base/page';
 
   const todayLabel = new Intl.DateTimeFormat('en-US', {
@@ -25,10 +26,8 @@
 
   let totalLessons = $derived(
     coursesApi.enrolledCourses.reduce((acc, course) => {
-      const exercises =
-        'exerciseCount' in course && typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
-
-      return acc + (course.lessonCount || 0) + exercises;
+      const progressCounts = getCourseProgressCounts(course);
+      return acc + progressCounts.lessons + progressCounts.exercises;
     }, 0)
   );
 

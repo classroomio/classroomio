@@ -321,6 +321,12 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'file_upload.preview.max_size_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.preview.max_size_label'
     ),
+    'file_upload.review.empty': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.review.empty'
+    ),
+    'file_upload.review.unavailable': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.review.unavailable'
+    ),
     'video_recording.edit.max_duration_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.edit.max_duration_label'
     ),
@@ -521,6 +527,10 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'submission.list.responses': t.get('course.navItem.lessons.exercises.all_exercises.analytics.summary.responses'),
     'submission.list.no_responses': t.get(
       'course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'
-    )
+    ),
+    'submission.list.unknown_student': t.get(
+      'course.navItem.lessons.exercises.all_exercises.analytics.summary.unknown_student'
+    ),
+    'submission.list.no_file': t.get('course.navItem.lessons.exercises.all_exercises.analytics.summary.no_file')
   };
 }

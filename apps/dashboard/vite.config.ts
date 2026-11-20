@@ -2,10 +2,40 @@ import { defineConfig, loadEnv } from 'vite';
 
 import { sveltekit } from '@sveltejs/kit/vite';
 import mkcert from 'vite-plugin-mkcert';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const dashboardDir = path.dirname(fileURLToPath(import.meta.url));
+
+function resolveWorkspaceUtils() {
+  const utilsDist = path.resolve(dashboardDir, '../../packages/utils/dist');
+  return {
+    name: 'resolve-workspace-utils',
+    enforce: 'pre',
+    resolveId(source: string) {
+      if (source === '@cio/utils') {
+        return path.join(utilsDist, 'index.js');
+      }
+      if (source.startsWith('@cio/utils/')) {
+        const subpath = source.slice('@cio/utils/'.length);
+        const candidate = path.join(utilsDist, subpath);
+        if (fs.existsSync(candidate)) {
+          if (fs.statSync(candidate).isDirectory()) {
+            const indexFile = path.join(candidate, 'index.js');
+            if (fs.existsSync(indexFile)) return indexFile;
+          } else {
+            return candidate;
+          }
+        }
+        if (fs.existsSync(candidate + '.js')) {
+          return candidate + '.js';
+        }
+      }
+      return null;
+    }
+  };
+}
 
 function watchWorkspaceSources() {
   return {
@@ -30,7 +60,7 @@ export default ({ mode }) => {
         }
       }
     },
-    plugins: [watchWorkspaceSources(), sveltekit(), ...(useHttps ? [mkcert()] : [])],
+    plugins: [resolveWorkspaceUtils(), watchWorkspaceSources(), sveltekit(), ...(useHttps ? [mkcert()] : [])],
     server: {
       host,
       fs: {

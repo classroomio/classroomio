@@ -1,14 +1,11 @@
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, hasErrorCode, matchesError } from '$lib/utils/services/api';
 
 import type {
   Course,
-  CourseAnalytics,
   CreateCourseRequest,
   CreatePaymentRequestRequest,
   DeleteCourseRequest,
   EnrollCourseRequest,
-  GetCourseAnalyticsRequest,
-  GetCourseBySlugRequest,
   GetCertificationEvaluationRequest,
   GetCourseProgressRequest,
   GetCourseRequest,
@@ -19,7 +16,6 @@ import type { TCourseType } from '@cio/db/types';
 import { ZCourseCreate, ZCourseUpdate, type TCourseUpdate } from '@cio/utils/validation/course/course';
 import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
 import { syncProgressionAccessToCourse } from '../utils/progression-utils';
-import { capturePosthogEvent } from '$lib/utils/services/posthog';
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -55,7 +51,7 @@ interface UpdateCourseOptions {
  */
 export class CourseApi extends BaseApiWithErrors {
   course = $state<Course | null>(null);
-  courseAnalytics = $state<CourseAnalytics | null>(null);
+  inviteRestricted = $state(false);
   get publicConversionOffenders(): NonAutoGradableQuestionOffender[] {
     return publicConversionFlow.offenders;
   }
@@ -79,6 +75,34 @@ export class CourseApi extends BaseApiWithErrors {
   private isCourseDirty = $state(false);
   private inFlightCourseRequest: Promise<Course | null> | null = null;
   private inFlightCourseId = $state<string | null>(null);
+  private courseFetchSeq = 0;
+  private latestFetchSeqByCourseId = new Map<string, number>();
+
+  private isStaleFetch(courseId: string, fetchSeq: number) {
+    return this.latestFetchSeqByCourseId.get(courseId) !== fetchSeq;
+  }
+
+  private wasEditedSinceFetch(courseId: string, courseAtRequest: Course | null, snapshotAtRequest: string | null) {
+    return (
+      snapshotAtRequest !== null &&
+      courseAtRequest?.id === courseId &&
+      this.course?.id === courseId &&
+      JSON.stringify(this.course) !== snapshotAtRequest
+    );
+  }
+
+  private selectionMatchesRequest(courseId: string, courseAtRequest: Course | null) {
+    return this.course?.id === courseId || (courseAtRequest === null && this.course === null);
+  }
+
+  private async refreshStoredCourseAfterUpdate(courseId: string, changedDuringRequest: boolean) {
+    if (changedDuringRequest) return;
+
+    const profileId = get(profile)?.id;
+    if (profileId) {
+      await this.refreshCourse(courseId, profileId);
+    }
+  }
 
   /**
    * Updates a single lesson/exercise item in the local course content store.
@@ -219,6 +243,11 @@ export class CourseApi extends BaseApiWithErrors {
    * @returns The course data or null on error
    */
   async get(courseId: string) {
+    const courseAtRequest = this.course;
+    const snapshotAtRequest = courseAtRequest ? JSON.stringify(courseAtRequest) : null;
+    const fetchSeq = ++this.courseFetchSeq;
+    this.latestFetchSeqByCourseId.set(courseId, fetchSeq);
+
     await this.execute<GetCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].$get({
@@ -229,15 +258,19 @@ export class CourseApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         console.log('response', response.data);
         if (response.data) {
-          this.course = response.data;
+          const supersededFetch = this.isStaleFetch(courseId, fetchSeq);
+          const editedDuringFetch = this.wasEditedSinceFetch(courseId, courseAtRequest, snapshotAtRequest);
+          const selectionMatches = this.selectionMatchesRequest(courseId, courseAtRequest);
+
+          if (!supersededFetch && !editedDuringFetch && selectionMatches) {
+            this.course = response.data;
+          }
           this.success = true;
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch course');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch course');
       }
     });
     return this.course;
@@ -311,6 +344,8 @@ export class CourseApi extends BaseApiWithErrors {
    * @returns Success data with redirectTo, or undefined on error
    */
   async enroll(courseId: string, body: { inviteToken?: string } = {}) {
+    this.inviteRestricted = false;
+
     return this.execute<EnrollCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].enroll.$post({
@@ -323,71 +358,26 @@ export class CourseApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.invite.failed_join');
-        } else if (
-          typeof result === 'object' &&
-          result !== null &&
-          'code' in result &&
-          result.code === 'UPGRADE_REQUIRED'
-        ) {
+        if (hasErrorCode(result, ErrorCodes.UPGRADE_REQUIRED)) {
           snackbar.error(
             t.get('course.navItem.landing_page.enroll_page.student_limit_reached', {
               orgName: get(currentOrg)?.name ?? ''
             })
           );
-        } else if (
-          typeof result === 'object' &&
-          result !== null &&
-          'code' in result &&
-          result.code === ErrorCodes.VALIDATION_ERROR &&
-          'field' in result &&
-          result.field === 'certificate.deadline'
-        ) {
+        } else if (matchesError(result, { code: ErrorCodes.VALIDATION_ERROR, field: 'certificate.deadline' })) {
           snackbar.error('course.certification.deadline_invalid');
-        } else if (
-          typeof result === 'object' &&
-          result !== null &&
-          'code' in result &&
-          result.code === ErrorCodes.FORBIDDEN
-        ) {
+        } else if (hasErrorCode(result, ErrorCodes.FORBIDDEN)) {
           const message = t.get('course.navItem.landing_page.enroll_page.members_only');
 
           this.errors = { ...this.errors, general: message };
           snackbar.error(message);
-        } else if (typeof result === 'object' && result !== null && 'error' in result) {
-          snackbar.error((result as { error: string }).error);
+        } else if (hasErrorCode(result, ErrorCodes.INVITE_RESTRICTED)) {
+          this.inviteRestricted = true;
+        } else {
+          snackbar.error(result.message);
         }
       }
     });
-  }
-
-  /**
-   * Gets a course by slug (public route)
-   * @param slug Course slug
-   * @returns The course data or null on error
-   */
-  async getBySlug(slug: string) {
-    await this.execute<GetCourseBySlugRequest>({
-      requestFn: () =>
-        classroomio.course.slug?.[':slug'].$get({
-          param: { slug }
-        }),
-      logContext: 'fetching course by slug',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.course = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch course by slug');
-        }
-      }
-    });
-    return this.course;
   }
 
   /**
@@ -400,7 +390,6 @@ export class CourseApi extends BaseApiWithErrors {
     onCreated?: (courseId: string) => void
   ) {
     const org = get(currentOrg);
-    const userProfile = get(profile);
 
     // Prepare data for validation
     const data = {
@@ -428,17 +417,6 @@ export class CourseApi extends BaseApiWithErrors {
         if (response.data?.course) {
           const newCourse = response.data.course;
 
-          // Capture PostHog event
-          capturePosthogEvent('course_created', {
-            course_id: newCourse.id,
-            courseTitle: newCourse.title,
-            courseDescription: newCourse.description,
-            organization_id: org.id,
-            organization_name: org.name,
-            user_id: userProfile.id,
-            user_email: userProfile.email
-          });
-
           orgNavCountsApi.adjustCount('courses', 1);
 
           if (onCreated) {
@@ -454,18 +432,12 @@ export class CourseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to create course');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          // Field-specific error (e.g., duplicate title)
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          // General error
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -496,6 +468,10 @@ export class CourseApi extends BaseApiWithErrors {
 
     let conversionOffenders: NonAutoGradableQuestionOffender[] = [];
 
+    const courseAtRequest = this.course;
+    const snapshotAtRequest = courseAtRequest ? JSON.stringify(courseAtRequest) : null;
+    let changedDuringRequest = false;
+
     const response = await this.execute<UpdateCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].$put({
@@ -505,11 +481,12 @@ export class CourseApi extends BaseApiWithErrors {
       logContext: 'updating course',
       onSuccess: (response) => {
         if (response.data) {
-          // Update the stored course data, preserving fields not in the update response
-          // The update response may not include all fields (like group, lessons, etc.)
           if (this.course) {
-            // Merge update response with existing course data
-            Object.assign(this.course, response.data);
+            changedDuringRequest = snapshotAtRequest !== null && JSON.stringify(this.course) !== snapshotAtRequest;
+
+            if (!changedDuringRequest) {
+              Object.assign(this.course, response.data);
+            }
           } else {
             this.course = response.data as Course;
           }
@@ -534,34 +511,26 @@ export class CourseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to update course');
-          return;
-        }
-        if ('code' in result && result.code === ErrorCodes.COMPLIANCE_DEADLINE_REQUIRED) {
+        if (hasErrorCode(result, ErrorCodes.COMPLIANCE_DEADLINE_REQUIRED)) {
           this.errors['certificate.deadline'] = t.get('course.certification.deadline_required');
           snackbar.error('course.certification.deadline_required');
           return;
         }
 
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
 
     const updated = response?.data ?? null;
 
-    // Some update responses may omit related data (group/lessons/sections), so refresh the store.
     if (updated) {
-      const profileId = get(profile)?.id;
-      if (profileId) {
-        await this.refreshCourse(courseId, profileId);
-      }
+      await this.refreshStoredCourseAfterUpdate(courseId, changedDuringRequest);
     }
 
     return updated;
@@ -588,10 +557,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to delete course');
-        }
+      onError: () => {
+        snackbar.error('Failed to delete course');
       }
     });
   }
@@ -616,10 +583,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch course progress');
-        }
+      onError: () => {
+        snackbar.error('Failed to fetch course progress');
       }
     });
   }
@@ -637,37 +602,8 @@ export class CourseApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to load certification status');
-        }
-      }
-    });
-  }
-
-  /**
-   * Gets course analytics including student progress, completion rates, and grades
-   * @param courseId Course ID
-   * @returns Course analytics data or null on error
-   */
-  async getAnalytics(courseId: string) {
-    await this.execute<GetCourseAnalyticsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId']['analytics'].$get({
-          param: { courseId }
-        }),
-      logContext: 'fetching course analytics',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.courseAnalytics = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch course analytics');
-        }
+      onError: () => {
+        snackbar.error('Failed to load certification status');
       }
     });
   }
@@ -733,43 +669,6 @@ export class CourseApi extends BaseApiWithErrors {
       };
     }
 
-    // Ensure lessonTabsOrder includes all tabs (backward compatibility)
-    const metadata = data.metadata ?? undefined;
-    const lessonTabsOrder = metadata?.lessonTabsOrder;
-    if (lessonTabsOrder) {
-      const existingTabIds = lessonTabsOrder.map((tab) => tab.id);
-      const allTabs: Array<{ id: 1 | 2 | 3 | 4; name: string }> = [
-        { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
-        { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-        { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
-        { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
-      ];
-
-      allTabs.forEach((tab) => {
-        if (!existingTabIds.includes(tab.id)) {
-          lessonTabsOrder.push(tab);
-        }
-      });
-
-      /** Legacy stacked-lesson materials order [Note, Slide, Video, Documents]; migrated to Video first in view mode */
-      const legacyDefaultLessonTabIds: Array<1 | 2 | 3 | 4> = [1, 2, 3, 4];
-      const lessonMaterialsVideoFirstTabIds: Array<1 | 2 | 3 | 4> = [3, 1, 2, 4];
-
-      const isLegacyDefaultLessonMaterialsOrder =
-        lessonTabsOrder.length === legacyDefaultLessonTabIds.length &&
-        lessonTabsOrder.every((tab, index) => tab.id === legacyDefaultLessonTabIds[index]);
-
-      if (isLegacyDefaultLessonMaterialsOrder) {
-        const entriesById = new Map(lessonTabsOrder.map((tab) => [tab.id, tab]));
-
-        lessonTabsOrder.length = 0;
-        lessonMaterialsVideoFirstTabIds.forEach((id) => {
-          const entry = entriesById.get(id);
-          if (entry) lessonTabsOrder.push(entry);
-        });
-      }
-    }
-
     if (data.metadata && data.metadata.isContentGroupingEnabled === undefined) {
       data.metadata.isContentGroupingEnabled = true;
     }
@@ -818,10 +717,8 @@ export class CourseApi extends BaseApiWithErrors {
         this.success = true;
         this.errors = {};
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to send payment request');
-        }
+      onError: () => {
+        snackbar.error('Failed to send payment request');
       }
     });
   }

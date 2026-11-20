@@ -23,7 +23,7 @@
       return;
     }
 
-    saveTemplateModal.set(saveTemplateModalInitialState);
+    saveTemplateModal.set({ ...saveTemplateModalInitialState });
   }
 
   function setMode(value: string) {
@@ -117,6 +117,7 @@
           label={$t('course_templates.save.name')}
           bind:value={$saveTemplateModal.name}
           errorMessage={courseTemplateApi.errors.title}
+          onInput={() => courseTemplateApi.clearError('title')}
         />
       {/if}
 

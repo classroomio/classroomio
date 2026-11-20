@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>People · Certificates · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="verify.css?v=6" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  <style>
+  .fpanel { position: absolute; right: 0; top: calc(100% + 6px); width: 420px; max-width: calc(100vw - 32px); max-height: 70vh; overflow: auto; z-index: 60; background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: 14px 16px 16px; }
+  .fpanel[hidden] { display: none; }
+  .fhead { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 4px; }
+  .flink { background: none; border: 0; color: var(--primary); font: inherit; font-size: 13px; cursor: pointer; }
+  .fgroup { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-foreground); margin: 14px 0 8px; }
+  .fchips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fchip { border: 1px solid var(--border); background: var(--background); border-radius: var(--radius-md); padding: 7px 12px; font: inherit; font-size: 13px; cursor: pointer; color: var(--foreground); }
+  .fchip:hover { background: var(--muted); }
+  .fchip.on { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground, #fff); }
+  .fcount { margin-left: 6px; background: var(--primary); color: var(--primary-foreground, #fff); border-radius: 999px; font-size: 11px; padding: 0 6px; line-height: 16px; }
+  .sumbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .sumchip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--background); font: inherit; font-size: 13px; cursor: pointer; color: var(--foreground); }
+  .sumchip:hover { background: var(--muted); }
+  .sumchip.on { border-color: var(--foreground); background: var(--muted); }
+  .sumchip .n { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .sumchip .d { width: 8px; height: 8px; border-radius: 50%; }
+  .drawer.wide { width: min(580px, 100vw); }
+  .dnav { display: flex; align-items: center; gap: 2px; margin-right: 4px; color: var(--muted-foreground); font-size: 12px; }
+  .dnav .pos { min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
+  .dprev { position: relative; margin-bottom: 20px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); background: var(--muted); padding: 12px; }
+  .dprev .cq { box-shadow: 0 1px 8px rgb(0 0 0 / 0.12); }
+  .dprev.is-revoked .cq, .dprev.is-preview .cq { filter: grayscale(1); opacity: 0.55; }
+  .dprev.is-expired .cq { opacity: 0.8; }
+  .stamp { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-12deg); border: 4px solid var(--destructive); color: var(--destructive); font-weight: 800; letter-spacing: 0.14em; font-size: 30px; padding: 4px 18px; border-radius: 8px; background: color-mix(in oklab, var(--background) 70%, transparent); text-transform: uppercase; pointer-events: none; }
+  .dprev.is-preview .stamp { border-style: dashed; }
+  .dprev-cap { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--muted-foreground); }
+  .dprev-cap a { color: var(--primary); text-decoration: none; font-weight: 500; }
+  .tl { list-style: none; margin: 0; padding: 0; position: relative; }
+  .tl li { position: relative; padding: 0 0 16px 28px; font-size: 13.5px; }
+  .tl li::before { content: ''; position: absolute; left: 9px; top: 22px; bottom: 0; width: 1px; background: var(--border); }
+  .tl li:last-child { padding-bottom: 0; }
+  .tl li:last-child::before { display: none; }
+  .tl .dot { position: absolute; left: 0; top: 0; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: var(--muted); color: var(--muted-foreground); }
+  .tl .dot svg { width: 11px; height: 11px; stroke-width: 2.4; }
+  .tl .dot.issued, .tl .dot.reinstated { background: var(--success-soft); color: var(--success); }
+  .tl .dot.revoked { background: color-mix(in oklab, var(--destructive) 14%, transparent); color: var(--destructive); }
+  .tl .dot.edited { background: var(--muted); }
+  .tl .tt { font-weight: 500; }
+  .tl .meta { color: var(--muted-foreground); font-size: 12px; margin-top: 1px; }
+  .tl .quote { margin-top: 6px; padding: 8px 10px; background: var(--muted); border-radius: var(--radius-md); font-size: 13px; color: var(--foreground); }
+  .rv-panel { border: 1px solid color-mix(in oklab, var(--destructive) 35%, transparent); background: color-mix(in oklab, var(--destructive) 5%, transparent); border-radius: var(--radius-md); padding: 16px; margin-bottom: 18px; }
+  .rv-panel h3 { margin: 0 0 2px; font-size: 15px; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--foreground); }
+  .rv-panel > p { margin: 0 0 12px; font-size: 13px; color: var(--muted-foreground); }
+  .rchips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .rchip { border: 1px solid var(--border); background: var(--background); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; color: var(--foreground); }
+  .rchip:hover { background: var(--muted); }
+  .rchip.on { border-color: var(--destructive); background: color-mix(in oklab, var(--destructive) 10%, var(--background)); color: var(--destructive); font-weight: 500; }
+  .impact { list-style: none; margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid var(--border); font-size: 13px; display: grid; gap: 6px; }
+  .impact li { display: flex; gap: 8px; align-items: flex-start; }
+  .impact svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 3px; stroke-width: 2.2; color: var(--muted-foreground); }
+  .notify { display: flex; gap: 8px; align-items: center; font-size: 13px; margin-top: 4px; }
+  .undo { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0; pointer-events: none; z-index: 500; background: var(--foreground); color: var(--background); padding: 10px 12px 10px 16px; border-radius: var(--radius-md); font-size: 13.5px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-md); transition: all 0.2s; }
+  .undo.show { opacity: 1; transform: translateX(-50%); pointer-events: auto; }
+  .undo button { background: none; border: 0; color: inherit; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 2px 4px; }
+</style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <a class="back-link" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>All Courses</a>
+        <div class="path-id">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+          <div><div class="nm">Food Safety Level 2</div><div class="st st-active"><span class="dot"></span>Published</div></div>
+        </div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Lessons</a>
+        <a class="nav-item active" href="course-people-certificate.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>People<span class="nav-tail tnum">48</span></a>
+        <a class="nav-item" href="course-certificate-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificates</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <nav class="crumbs">
+            <a href="#">Courses</a><span class="sep">/</span>
+            <a href="#">Food Safety Level 2</a><span class="sep">/</span>
+            <span class="here">People</span>
+          </nav>
+          <div class="top-actions">
+            <a class="btn btn-ghost btn-sm" href="index.html">Prototype map</a>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1040px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">People</h1>
+              </div>
+              <button class="btn btn-primary btn-sm" id="addBtn">Add</button>
+            </div>
+
+            <div class="row-inline" style="margin-bottom: 14px; gap: 10px; justify-content: flex-end">
+              <input class="input" id="search" placeholder="Search people" style="max-width: 280px" aria-label="Search people" />
+              <div style="position: relative">
+                <button class="btn btn-outline btn-sm" id="filterBtn" aria-haspopup="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Filter<span class="fcount" id="fCount" hidden></span></button>
+                <div class="fpanel" id="filterMenu" hidden>
+                  <div class="fhead"><b>Filter people</b><button id="fClear" class="flink">Clear all</button></div>
+                  <div class="fgroup">Sort</div><div class="fchips"><button class="fchip" data-g="sort" data-v="name">Name</button><button class="fchip" data-g="sort" data-v="role">Role</button><button class="fchip" data-g="sort" data-v="progress">Progress</button><button class="fchip" data-g="sort" data-v="login">Last Login At</button><button class="fchip" data-g="sort" data-v="enrolled">Enrolled At</button><button class="fchip" data-g="sort" data-v="cert">Certificate earned</button></div>
+                  <div class="fgroup">Order</div><div class="fchips"><button class="fchip" data-g="order" data-v="asc">Asc</button><button class="fchip" data-g="order" data-v="desc">Desc</button></div>
+                  <div class="fgroup">Role</div><div class="fchips"><button class="fchip" data-g="role" data-v="all">All roles</button><button class="fchip" data-g="role" data-v="admin">Admin</button><button class="fchip" data-g="role" data-v="tutor">Tutor</button><button class="fchip" data-g="role" data-v="student">Student</button></div>
+                  <div class="fgroup">Progress</div><div class="fchips"><button class="fchip" data-g="progress" data-v="none">Not started</button><button class="fchip" data-g="progress" data-v="mid">In progress</button><button class="fchip" data-g="progress" data-v="done">Completed</button></div>
+                  <div class="fgroup">Certificate</div><div class="fchips"><button class="fchip" data-g="cert" data-v="earned">Earned</button><button class="fchip" data-g="cert" data-v="not">Not earned</button></div>
+                  <div class="fgroup">Certificate status</div><div class="fchips"><button class="fchip" data-g="cert" data-v="valid">Valid</button><button class="fchip" data-g="cert" data-v="expired">Expired</button><button class="fchip" data-g="cert" data-v="revoked">Revoked</button></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="overflow: visible">
+              <div class="thead people-cols"><span>Name</span><span class="hide-sm">Progress</span><span>Stage</span><span>Certificate</span><span class="hide-sm">Last Login At</span><span class="hide-sm">Enrolled At</span><span></span></div>
+              <div id="rows"></div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="drawer wide" id="drawer" aria-label="Certificate details">
+      <div class="drawer-head">
+        <div class="avatar" id="dAvatar">AO</div>
+        <div style="flex: 1; min-width: 0"><h2 id="dName">Ada Okafor</h2><p id="dEmail">a•••@gmail.com</p></div>
+        <div class="dnav">
+          <button class="icon-btn" id="dPrevBtn" aria-label="Previous learner" title="Previous (←)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
+          <span class="pos" id="dPos"></span>
+          <button class="icon-btn" id="dNextBtn" aria-label="Next learner" title="Next (→)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+        <button class="icon-btn" id="dClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="drawer-body" id="dBody">
+        <div id="dNote" style="margin-bottom: 16px"></div>
+
+        <div class="dprev" id="dPrev"></div>
+
+        <div class="dsec">
+          <h3>Certificate</h3>
+          <dl class="kv">
+            <dt>Status</dt><dd><span id="dBadge"></span></dd>
+            <dt>Code</dt><dd class="vc-code-row"><span class="vc-code" id="dCode"></span><button class="icon-btn" id="dCopy" aria-label="Copy code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></dd>
+            <dt>Issued</dt><dd id="dIssued"></dd>
+            <dt>Expires</dt><dd id="dExpires"></dd>
+            <dt>Public page</dt><dd><a class="text-primary" id="dPage" href="verify-valid.html" target="_blank">Open</a></dd>
+          </dl>
+        </div>
+
+        <div class="dsec" id="dRvSec" hidden>
+          <h3>Revocation</h3>
+          <dl class="kv" id="dRvKv"></dl>
+        </div>
+
+        <div class="dsec">
+          <h3>Activity</h3>
+          <ul class="tl" id="dAudit"></ul>
+        </div>
+      </div>
+      <div class="drawer-foot" id="dFoot"></div>
+    </aside>
+
+    <div class="dialog rv-dialog" id="revokeDlg" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+      <div class="dialog-head"><h2 id="rvTitle">Revoke certificate</h2><p>The reason stays private to your team.</p></div>
+      <div class="dialog-body">
+        <div class="rv-grid">
+          <div>
+            <h3 class="rv-col-h">Reason</h3>
+            <div class="rchips" id="rChips"></div>
+            <div class="field" style="margin-bottom: 10px">
+              <label class="label" for="rNote" id="rNoteLbl">Note for your team</label>
+              <textarea class="textarea" id="rNote" rows="3"></textarea>
+            </div>
+            <label class="notify"><input type="checkbox" id="rNotify" checked /> Email the learner that it was revoked</label>
+            <ul class="impact">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span>The public page and QR code show <b>Revoked</b> with today’s date. The reason is never shown.</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg><span>The learner can no longer download the PDF.</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg><span>You can reinstate it any time. The same code comes back.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-foot">
+        <button class="btn btn-outline btn-sm" id="rvCancel" type="button">Cancel</button>
+        <button class="btn btn-destructive btn-sm disabled" id="rvConfirm" type="button" disabled>Revoke certificate</button>
+      </div>
+    </div>
+    <div class="dialog sm" id="reinstateDlg" role="dialog" aria-modal="true" aria-labelledby="riTitle">
+      <div class="dialog-head"><h2 id="riTitle">Reinstate this certificate?</h2><p>It will show as valid again on the public page and the learner can download it.</p></div>
+      <div class="dialog-foot">
+        <button class="btn btn-outline btn-sm" id="riCancel">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="riConfirm">Reinstate</button>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="undo" id="undo"><span id="undoMsg"></span><button id="undoBtn">Undo</button></div>
+
+    <script src="common.js"></script>
+    <script src="states-preview.js?v=4"></script>
+    <script>
+      var $ = function (id) { return document.getElementById(id); };
+      var ME = 'Jordan Diallo';
+      var ORG = 'Acme Foods Academy', COURSE = 'Food Safety Level 2';
+      var REASONS = ['Issued by mistake', 'Assessment not passed', 'Fraud or policy violation', 'Learner request', 'Other'];
+      var people = [
+        { id: 'jo', init: 'JO', name: 'Joy Obi', email: 'j•••@gmail.com', progress: 64, stage: '5 · Handwashing and hygiene', login: 'Nov 4, 2026', enrolled: 'Oct 12, 2026', code: '', issued: '', expires: '', state: 'none', page: '', f: ['', '', ''], audit: [] },
+        { id: 'sn', init: 'SN', name: 'Sam Nwosu', email: 's•••@gmail.com', progress: 0, stage: '', login: '—', enrolled: 'Nov 1, 2026', code: '', issued: '', expires: '', state: 'none', page: '', f: ['', '', ''], audit: [] },
+        { id: 'ao', progress: 100, stage: '', login: 'Nov 3, 2026', enrolled: 'Jan 10, 2026', init: 'AO', name: 'Ada Okafor', email: 'a•••@gmail.com', code: '7KQM-4XH2', issued: 'Jan 28, 2026', expires: 'Jan 28, 2028', state: 'valid', page: 'verify-valid.html', f: ['EMP-20418', 'Lagos Central Kitchen', '2026-01-21'], audit: [{ k: 'issued', text: 'Certificate issued', who: 'Automatic, on course completion', when: 'Jan 28, 2026' }, { k: 'done', text: 'Course completed', who: 'Ada Okafor', when: 'Jan 28, 2026' }] },
+        { id: 'tb', progress: 100, stage: '', login: 'Feb 2, 2026', enrolled: 'Feb 20, 2024', init: 'TB', name: 'Tunde Bello', email: 't•••@yahoo.com', code: 'R9TD-W3FN', issued: 'Mar 5, 2024', expires: 'Mar 4, 2026', state: 'expired', page: 'verify-expired.html', f: ['EMP-11902', 'Abuja Depot', '2024-02-27'], audit: [{ k: 'issued', text: 'Certificate issued', who: 'Automatic, on course completion', when: 'Mar 5, 2024' }, { k: 'done', text: 'Course completed', who: 'Tunde Bello', when: 'Mar 5, 2024' }] },
+        { id: 'ce', progress: 100, stage: '', login: 'Oct 2, 2026', enrolled: 'May 30, 2026', init: 'CE', name: 'Chidi Eze', email: 'c•••@outlook.com', code: 'B6ZC-P8VG', issued: 'Jun 11, 2026', expires: 'Jun 11, 2028', state: 'revoked', page: 'verify-revoked.html', f: ['EMP-30077', 'Port Harcourt Plant', '2026-06-04'], rv: { reason: 'Issued by mistake', note: 'Issued before the assessment was marked.', by: 'Jordan Diallo', when: 'Oct 2, 2026', notified: true }, audit: [{ k: 'revoked', text: 'Certificate revoked', who: 'Jordan Diallo', when: 'Oct 2, 2026', note: 'Issued by mistake · Issued before the assessment was marked.' }, { k: 'issued', text: 'Certificate issued', who: 'Automatic, on course completion', when: 'Jun 11, 2026' }, { k: 'done', text: 'Course completed', who: 'Chidi Eze', when: 'Jun 11, 2026' }] },
+        { id: 'mk', progress: 100, stage: '', login: 'Nov 3, 2026', enrolled: 'Oct 20, 2026', init: 'MK', name: 'Mira Kamara', email: 'm•••@gmail.com', code: 'K4WD-9XHN', issued: 'Nov 3, 2026', expires: 'Nov 3, 2028', state: 'valid', page: 'verify-valid.html', f: ['', '', ''], audit: [{ k: 'issued', text: 'Certificate issued', who: 'Automatic, on course completion', when: 'Nov 3, 2026' }, { k: 'done', text: 'Course completed', who: 'Mira Kamara', when: 'Nov 3, 2026' }] }
+      ];
+      var current = null, reasonPick = '';
+
+      var BADGES = {
+        none: '<span class="text-muted">—</span>',
+        valid: '<span class="badge badge-success-soft">Valid</span>',
+        expired: '<span class="badge badge-warning" style="background: var(--warning-soft); color: var(--warning)">Expired</span>',
+        revoked: '<span class="badge badge-destructive-soft">Revoked</span>'
+      };
+      var ICONS = {
+        issued: '<path d="M20 6 9 17l-5-5"/>',
+        done: '<circle cx="12" cy="12" r="3"/>',
+        revoked: '<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',
+        reinstated: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/>',
+        edited: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'
+      };
+
+      var F = { sort: 'name', order: 'asc', role: 'all', progress: '', cert: '' };
+      var DEFAULT_F = JSON.stringify(F);
+      function esc(v) { return String(v).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      function setFilter(g, v) {
+        if (g === 'sort' || g === 'order' || g === 'role') F[g] = v;
+        else F[g] = F[g] === v ? '' : v;
+        renderRows();
+      }
+      function syncFilterUi() {
+        $('filterMenu').querySelectorAll('.fchip').forEach(function (x) { x.classList.toggle('on', F[x.getAttribute('data-g')] === x.getAttribute('data-v')); });
+        var n = (F.role !== 'all' ? 1 : 0) + (F.progress ? 1 : 0) + (F.cert ? 1 : 0);
+        $('fCount').hidden = !n; $('fCount').textContent = n;
+      }
+      function filterList(q) {
+        var list = people.filter(function (p) {
+          var role = p.role || 'student';
+          if (F.role !== 'all' && role !== F.role) return false;
+          if (F.progress === 'none' && p.progress !== 0) return false;
+          if (F.progress === 'mid' && !(p.progress > 0 && p.progress < 100)) return false;
+          if (F.progress === 'done' && p.progress < 100) return false;
+          if (F.cert === 'earned' && ['valid', 'expired', 'revoked'].indexOf(p.state) < 0) return false;
+          if (F.cert === 'not' && p.state !== 'none') return false;
+          if (['valid', 'expired', 'revoked'].indexOf(F.cert) > -1 && p.state !== F.cert) return false;
+          return !q || p.name.toLowerCase().indexOf(q) > -1;
+        });
+        var key = { name: function (p) { return p.name.toLowerCase(); }, role: function (p) { return p.role || 'student'; }, progress: function (p) { return p.progress; }, login: function (p) { return Date.parse(p.login) || 0; }, enrolled: function (p) { return Date.parse(p.enrolled) || 0; }, cert: function (p) { return p.state === 'none' ? 0 : 1; } }[F.sort];
+        list.sort(function (a, b) { var x = key(a), y = key(b); return (x < y ? -1 : x > y ? 1 : 0) * (F.order === 'asc' ? 1 : -1); });
+        return list;
+      }
+      function stageCell(p) {
+        if (p.progress >= 100) return '<span class="badge badge-success-soft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate earned</span>';
+        if (p.progress === 0) return '<span class="badge badge-muted">Not started</span>';
+        return '<span class="row-inline" style="gap: 8px; min-width: 0"><span class="avatar" style="width: 22px; height: 22px; font-size: 11px">' + p.stage.charAt(0) + '</span><span style="font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">' + p.stage.slice(4) + '</span></span>';
+      }
+      function renderRows() {
+        syncFilterUi();
+        var list = filterList($('search').value.trim().toLowerCase());
+        $('rows').innerHTML = list.length ? list.map(function (p) {
+          var cert = p.state === 'none' ? BADGES.none : '<button class="chip-btn" data-open="' + p.id + '" aria-label="Open certificate for ' + p.name + '">' + BADGES[p.state] + '</button>';
+          return '<div class="trow people-cols clickable" data-id="' + p.id + '" tabindex="0">' +
+            '<div class="person"><span class="avatar">' + p.init + '</span><div style="min-width:0"><div class="nm">' + p.name + '</div><div class="em">' + p.email + '</div></div></div>' +
+            '<span class="hide-sm row-inline" style="gap: 8px"><span class="progress progress-thin' + (p.progress >= 100 ? ' progress-success' : '') + '" style="max-width: 96px"><span style="width:' + p.progress + '%"></span></span><span class="tnum" style="font-size: 13px">' + p.progress + '%</span></span>' +
+            '<span>' + stageCell(p) + '</span>' +
+            '<span>' + cert + '</span>' +
+            '<span class="hide-sm text-muted tnum" style="font-size: 13px">' + p.login + '</span>' +
+            '<span class="hide-sm text-muted tnum" style="font-size: 13px">' + p.enrolled + '</span>' +
+            '<span style="position: relative"><button class="icon-btn" data-kebab="' + p.id + '" aria-label="Row actions"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>' +
+            '<div class="kmenu" hidden data-menu="' + p.id + '"><button data-view="' + p.id + '">View</button>' + (p.state === 'none' ? '' : '<button data-open="' + p.id + '">Certificate</button>') + '<button class="danger">Delete profile</button></div></span></div>';
+        }).join('') : '<div class="trow" style="color: var(--muted-foreground)">No people match.</div>';
+        $('rows').querySelectorAll('.trow.clickable').forEach(function (r) {
+          r.onclick = function (e) {
+            if (e.target.closest('button')) return;
+            window.showToast('Opens the learner page (unchanged from today)');
+          };
+        });
+        $('rows').querySelectorAll('[data-open]').forEach(function (b) {
+          b.onclick = function (e) { e.stopPropagation(); closeMenus(); openDrawer(b.getAttribute('data-open')); };
+        });
+        $('rows').querySelectorAll('[data-view]').forEach(function (b) {
+          b.onclick = function (e) { e.stopPropagation(); closeMenus(); window.showToast('Opens the learner page (unchanged from today)'); };
+        });
+        $('rows').querySelectorAll('[data-kebab]').forEach(function (b) {
+          b.onclick = function (e) {
+            e.stopPropagation();
+            var m = $('rows').querySelector('[data-menu="' + b.getAttribute('data-kebab') + '"]');
+            var wasHidden = m.hidden;
+            closeMenus();
+            m.hidden = !wasHidden;
+          };
+        });
+      }
+      function closeMenus() {
+        document.querySelectorAll('.kmenu, .fpanel').forEach(function (m) { m.hidden = true; });
+      }
+      document.addEventListener('click', function (e) { if (!e.target.closest('#filterBtn') && !e.target.closest('#filterMenu')) closeMenus(); });
+      $('filterBtn').onclick = function (e) { e.stopPropagation(); var h = $('filterMenu').hidden; closeMenus(); $('filterMenu').hidden = !h; };
+      $('filterMenu').onclick = function (e) {
+        e.stopPropagation();
+        var b = e.target.closest('.fchip');
+        if (b) setFilter(b.getAttribute('data-g'), b.getAttribute('data-v'));
+      };
+      $('fClear').onclick = function () { F = JSON.parse(DEFAULT_F); renderRows(); };
+      $('search').oninput = renderRows;
+      $('addBtn').onclick = function () { window.showToast('Opens the invite dialog (unchanged from today)'); };
+
+      function certified() { return people.filter(function (p) { return p.state !== 'none'; }); }
+
+      function renderPreview(p) {
+        var idx = people.indexOf(p) + 247;
+        var html = window.certHtml({
+          org: ORG, title: COURSE, subtitle: 'Certificate of Completion', name: p.name,
+          code: p.code || 'XXXX-XXXX', accent: '#7a1f1f', fields: [],
+          sig1: { on: true, name: ME, role: 'Head of Training' }, sig2: { on: true, name: 'Amara Nnadi', role: 'Food Safety Officer' },
+          idText: 'N° 0' + idx, year: (p.issued.split(', ')[1]) || '2026'
+        });
+        var cls = 'dprev' + (p.state === 'revoked' ? ' is-revoked' : p.state === 'expired' ? ' is-expired' : '');
+        var stamp = p.state === 'revoked' ? '<div class="stamp">Revoked</div>' : p.state === 'expired' ? '<div class="stamp" style="border-color: var(--warning); color: var(--warning)">Expired</div>' : '';
+        var cap = '<div class="dprev-cap"><span>As the learner sees it</span><span><button type="button" class="btn btn-outline btn-sm" id="dStates" style="gap:6px">Preview <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></span></div>';
+        $('dPrev').className = cls;
+        $('dPrev').innerHTML = html + stamp + cap;
+        window.drawAllQr($('dPrev'));
+        $('dStates').onclick = function (e) { e.preventDefault(); window.openStatesPreview(p.state); };
+      }
+
+      function noteFor(p) {
+        var mk = function (cls, svg, msg) { return '<div class="vc-note ' + cls + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">' + svg + '</svg><span>' + msg + '</span></div>'; };
+        if (p.state === 'revoked') return mk('danger', '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>', 'Revoked on <b>' + p.rv.when + '</b>. The public page shows “Revoked on” and the date, and the learner cannot download the PDF.');
+        if (p.state === 'expired') return mk('warn', '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>', 'Expired on <b>' + p.expires + '</b>. The public page shows it as expired. You can still revoke it.');
+        return '';
+      }
+
+      function renderDrawer() {
+        var p = current, list = certified(), at = list.indexOf(p);
+        $('dAvatar').textContent = p.init; $('dName').textContent = p.name; $('dEmail').textContent = p.email;
+        $('dPos').textContent = (at + 1) + ' of ' + list.length;
+        $('dPrevBtn').disabled = at <= 0; $('dNextBtn').disabled = at >= list.length - 1;
+        $('dBadge').innerHTML = BADGES[p.state];
+        $('dCode').textContent = p.code;
+        $('dCopy').setAttribute('data-copy', p.code);
+        $('dIssued').textContent = p.issued;
+        $('dExpires').textContent = p.expires;
+        $('dPage').href = p.page;
+        $('dNote').innerHTML = noteFor(p);
+        $('dNote').style.display = $('dNote').innerHTML ? '' : 'none';
+        renderPreview(p);
+
+        $('dRvSec').hidden = p.state !== 'revoked';
+        if (p.state === 'revoked') {
+          var r = p.rv;
+          $('dRvKv').innerHTML = '<dt>Revoked by</dt><dd>' + esc(r.by) + '</dd><dt>On</dt><dd>' + esc(r.when) + '</dd><dt>Reason</dt><dd>' + esc(r.reason) + '</dd>' + (r.note ? '<dt>Note</dt><dd style="font-weight: 400">' + esc(r.note) + '</dd>' : '') + '<dt>Learner emailed</dt><dd>' + (r.notified ? 'Yes' : 'No') + '</dd>';
+        }
+
+        $('dAudit').innerHTML = p.audit.map(function (a) {
+          return '<li><span class="dot ' + a.k + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">' + (ICONS[a.k] || ICONS.done) + '</svg></span><div class="tt">' + esc(a.text) + '</div><div class="meta">' + esc(a.who) + ' · ' + esc(a.when) + '</div>' + (a.note ? '<div class="quote">' + esc(a.note) + '</div>' : '') + '</li>';
+        }).join('');
+
+        var foot = '<button class="btn btn-outline btn-sm" id="dCloseBtn">Close</button>';
+        if (p.state === 'revoked') foot += '<button class="btn btn-secondary btn-sm" id="dReinstate">Reinstate certificate</button>';
+        else foot += '<button class="btn btn-outline btn-sm" id="dRevoke" style="color: var(--destructive)">Revoke…</button>';
+        $('dFoot').innerHTML = foot;
+        var b;
+        if ((b = $('dCloseBtn'))) b.onclick = closeAll;
+        if ((b = $('dRevoke'))) b.onclick = openRevoke;
+        if ((b = $('dReinstate'))) b.onclick = function () { $('reinstateDlg').classList.add('open'); };
+      }
+
+      function openRevoke() {
+        var p = current;
+        reasonPick = '';
+        $('rNote').value = ''; $('rNotify').checked = true;
+        $('rvTitle').textContent = 'Revoke ' + p.name + '’s certificate';
+        renderReasons();
+        $('revokeDlg').classList.add('open');
+      }
+      function closeRevoke() { $('revokeDlg').classList.remove('open'); reasonPick = ''; }
+      function longDate(d) {
+        var t = Date.parse(d);
+        return t ? new Date(t).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : d;
+      }
+      function renderReasons() {
+        $('rChips').innerHTML = REASONS.map(function (r) { return '<button type="button" class="rchip' + (r === reasonPick ? ' on' : '') + '" data-reason="' + r + '">' + r + '</button>'; }).join('');
+        $('rNoteLbl').textContent = reasonPick === 'Other' ? 'Note for your team (required)' : 'Note for your team';
+        $('rNote').placeholder = reasonPick === 'Other' ? 'Say why this is being revoked.' : 'Optional. Add context for whoever reviews this later.';
+        syncRevoke();
+      }
+      function syncRevoke() {
+        var ok = !!reasonPick && (reasonPick !== 'Other' || $('rNote').value.trim().length > 0);
+        $('rvConfirm').disabled = !ok; $('rvConfirm').classList.toggle('disabled', !ok);
+      }
+      $('rChips').onclick = function (e) {
+        var b = e.target.closest('[data-reason]');
+        if (!b) return;
+        reasonPick = b.getAttribute('data-reason');
+        renderReasons();
+        if (reasonPick === 'Other') $('rNote').focus();
+      };
+      $('rNote').oninput = syncRevoke;
+      $('rvCancel').onclick = closeRevoke;
+      $('rvConfirm').onclick = confirmRevoke;
+
+      var undoT = null, undoFn = null;
+      function showUndo(msg, fn) {
+        $('undoMsg').textContent = msg; undoFn = fn; $('undo').classList.add('show');
+        clearTimeout(undoT); undoT = setTimeout(function () { $('undo').classList.remove('show'); undoFn = null; }, 8000);
+      }
+      $('undoBtn').onclick = function () { if (undoFn) undoFn(); $('undo').classList.remove('show'); undoFn = null; clearTimeout(undoT); };
+
+      function confirmRevoke() {
+        var p = current, prev = { state: p.state, page: p.page, audit: p.audit.slice(), rv: p.rv };
+        var note = $('rNote').value.trim(), notify = $('rNotify').checked;
+        p.rv = { reason: reasonPick, note: note, by: ME, when: 'Nov 6, 2026', notified: notify };
+        p.state = 'revoked'; p.page = 'verify-revoked.html';
+        p.audit.unshift({ k: 'revoked', text: 'Certificate revoked', who: ME, when: 'Just now', note: reasonPick + (note ? ' · ' + note : '') });
+        closeRevoke();
+        renderRows(); renderDrawer();
+        showUndo('Certificate revoked' + (notify ? ' and ' + p.name.split(' ')[0] + ' was emailed' : ''), function () {
+          p.state = prev.state; p.page = prev.page; p.audit = prev.audit; p.rv = prev.rv;
+          renderRows(); if (current === p) renderDrawer();
+          window.showToast('Revoke undone');
+        });
+      }
+
+      function openDrawer(id) {
+        current = people.filter(function (p) { return p.id === id; })[0];
+        renderDrawer();
+        $('dBody').scrollTop = 0;
+        $('overlay').classList.add('open'); $('drawer').classList.add('open');
+      }
+      function step(dir) {
+        var list = certified(), at = list.indexOf(current) + dir;
+        if (at < 0 || at >= list.length) return;
+        current = list[at];
+        renderDrawer(); $('dBody').scrollTop = 0;
+      }
+      function closeAll() {
+        closeRevoke();
+        ['overlay', 'drawer', 'reinstateDlg'].forEach(function (id) { $(id).classList.remove('open'); });
+      }
+
+      $('riCancel').onclick = function () { $('reinstateDlg').classList.remove('open'); };
+      $('riConfirm').onclick = function () {
+        var p = current;
+        p.state = 'valid'; p.page = 'verify-valid.html';
+        p.audit.unshift({ k: 'reinstated', text: 'Certificate reinstated', who: ME, when: 'Just now' });
+        $('reinstateDlg').classList.remove('open'); renderRows(); renderDrawer(); window.showToast('Certificate reinstated');
+      };
+      $('dPrevBtn').onclick = function () { step(-1); };
+      $('dNextBtn').onclick = function () { step(1); };
+      $('dClose').onclick = closeAll;
+      $('overlay').onclick = closeAll;
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { if ($('revokeDlg').classList.contains('open')) closeRevoke(); else closeAll(); return; }
+        if (!$('drawer').classList.contains('open') || $('revokeDlg').classList.contains('open') || /INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || '')) return;
+        if (e.key === 'ArrowLeft') step(-1);
+        if (e.key === 'ArrowRight') step(1);
+      });
+      
+
+      var pm = /[?&]open=(\w+)/.exec(location.search);
+      renderRows();
+      if (pm) { openDrawer(pm[1]); if (/[?&]revoke=1/.test(location.search)) openRevoke(); }
+    </script>
+  </body>
+</html>

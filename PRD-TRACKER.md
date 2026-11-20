@@ -19,7 +19,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | 7 | - | `prd/selective-exercise-assignment` | todo |
 | - | - | `prd/scorm-support` | todo |
 | - | 4 | `prd/course-content-search` | todo |
-| - | 9 | `prd/onboarding-ai-bootstrap` | todo |
+| - | 9 | `prd/onboarding` | todo |
 | - | 10 | `prd/pricing-improvements` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | - | `prd/walkthrough-widget` | draft |
@@ -31,6 +31,9 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/plugin-system` | proposal |
 | - | - | `prd/scroll-to-top` | draft |
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
+| - | - | `prd/gamification` | draft (prototyped; learner XP, streaks, badges, leaderboards, admin settings) |
+| - | - | `prd/analytics-dashboards` | in progress (engine #1444, dashboards #1445, public API and MCP #1495; naming in `prd/analytics-naming`) |
+| - | - | `prd/math-teaching` | draft (math authoring, Photo and Draw to Math, math input and grading, AI, results) |
 
 ## DONE (Completed PRDs)
 

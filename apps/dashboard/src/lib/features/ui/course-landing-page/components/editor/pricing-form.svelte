@@ -8,9 +8,10 @@
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isCoursePaid } from '$lib/utils/functions/course';
-  import { parseBoundedInteger, parseBoundedNumber, toFiniteNumber } from '@cio/utils/functions';
+  import { toFiniteNumber } from '@cio/utils/functions';
 
   import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { TextEditor } from '$features/ui';
 
   interface Props {
@@ -20,9 +21,6 @@
   }
 
   let { course = $bindable(), setter, showPaymentError = $bindable(false) }: Props = $props();
-
-  let baselineCost = $state(toFiniteNumber(course?.cost) ?? 0);
-  let baselineDiscount = $state(toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0);
 
   let paymentLink = $derived(get(course, 'metadata.paymentLink', '') ?? '');
   let isPaid = $derived(isCoursePaid(course));
@@ -80,40 +78,6 @@
   function handleChange(content: string) {
     setter(content, 'metadata.reward.description');
   }
-
-  function handleCostFocus() {
-    baselineCost = cost;
-  }
-
-  function handleCostInput(e: Event & { currentTarget: HTMLInputElement }) {
-    const val = toFiniteNumber(e.currentTarget.value);
-    if (val !== undefined) setter(Math.max(0, Math.round(val)), 'cost');
-  }
-
-  function handleCostChange(e: Event & { currentTarget: HTMLInputElement }) {
-    const parsed = parseBoundedInteger(e.currentTarget.value, { min: 0 });
-    const nextVal = parsed ?? baselineCost;
-    baselineCost = nextVal;
-    e.currentTarget.value = String(nextVal);
-    setter(nextVal, 'cost');
-  }
-
-  function handleDiscountFocus() {
-    baselineDiscount = discount;
-  }
-
-  function handleDiscountInput(e: Event & { currentTarget: HTMLInputElement }) {
-    const val = toFiniteNumber(e.currentTarget.value);
-    if (val !== undefined) setter(Math.min(100, Math.max(0, val)), 'metadata.discount');
-  }
-
-  function handleDiscountChange(e: Event & { currentTarget: HTMLInputElement }) {
-    const parsed = parseBoundedNumber(e.currentTarget.value, { min: 0, max: 100 });
-    const nextVal = parsed ?? baselineDiscount;
-    baselineDiscount = nextVal;
-    e.currentTarget.value = String(nextVal);
-    setter(nextVal, 'metadata.discount');
-  }
 </script>
 
 {#if typeof course !== 'undefined'}
@@ -145,16 +109,14 @@
       </Select.Root>
     </div>
 
-    <InputField
+    <NumberField
       className="mt-5"
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.cost')}
-      type="number"
+      integer
       min={0}
       value={cost}
-      onFocus={handleCostFocus}
-      onInput={handleCostInput}
-      onChange={handleCostChange}
+      onValueChange={(next) => setter(next ?? cost, 'cost')}
     />
 
     <InputField
@@ -184,18 +146,14 @@
   </div>
 
   {#if showDiscount}
-    <InputField
+    <NumberField
       className="mt-5"
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.percent')}
-      type="number"
       min={0}
       max={100}
-      step="any"
       value={discount}
-      onFocus={handleDiscountFocus}
-      onInput={handleDiscountInput}
-      onChange={handleDiscountChange}
+      onValueChange={(next) => setter(next ?? discount, 'metadata.discount')}
       helperMessage={$t('course.navItem.landing_page.editor.pricing_form.percentage_helper')}
     />
   {/if}

@@ -233,6 +233,7 @@
                   type="text"
                   placeholder="e.g Joke Silva"
                   disabled={isOrganizationCreated}
+                  oninput={() => onboardingApi.clearError('fullname')}
                 />
                 {#if onboardingApi.errors.fullname}
                   <Field.Error>{onboardingApi.errors.fullname}</Field.Error>
@@ -247,6 +248,7 @@
                   type="text"
                   placeholder="e.g My School Name"
                   disabled={isOrganizationCreated}
+                  oninput={() => onboardingApi.clearError('orgName')}
                 />
                 {#if onboardingApi.errors.orgName}
                   <Field.Error>{onboardingApi.errors.orgName}</Field.Error>

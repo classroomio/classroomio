@@ -6,7 +6,7 @@
     type ExerciseQuestionRendererProps
   } from '@cio/question-types';
   import CircleQuestionMarkIcon from '@lucide/svelte/icons/circle-question-mark';
-  import { Input } from '../../../../base/input';
+  import { NumberField } from '../../../number-field';
   import { IconButton } from '../../../icon-button';
 
   let { question, disabled = false, labels, onQuestionChange = () => {} }: ExerciseQuestionRendererProps = $props();
@@ -24,37 +24,18 @@
 
   const maxStars = $derived(getStarRatingMaxFromSettings(question.settings));
 
-  function onCorrectValueChange(raw: string) {
-    const parsed = Number(raw);
-    if (raw.trim() === '' || Number.isNaN(parsed)) {
-      patchSettings({ correctValue: undefined });
-      return;
-    }
-
-    const clamped = Math.min(maxStars, Math.max(1, Math.floor(parsed)));
-    patchSettings({ correctValue: clamped });
+  function onMaxStarsValueChange(next: number | null) {
+    patchSettings({ maxStars: next ?? undefined });
   }
 
-  function onMaxStarsChange(raw: string) {
-    const parsed = Number(raw);
-    if (raw.trim() === '' || Number.isNaN(parsed)) {
-      patchSettings({ maxStars: undefined });
-      return;
-    }
-
-    const nextMax = Math.min(10, Math.max(1, Math.floor(parsed)));
+  function onMaxStarsCommit() {
+    const max = getStarRatingMaxFromSettings(question.settings);
     const rawCorrect = question.settings?.correctValue;
     const currentCorrect = typeof rawCorrect === 'number' ? rawCorrect : rawCorrect != null ? Number(rawCorrect) : NaN;
-    const nextCorrect = Number.isFinite(currentCorrect)
-      ? Math.min(nextMax, Math.max(1, Math.floor(currentCorrect)))
-      : undefined;
+    if (!Number.isFinite(currentCorrect)) return;
 
-    if (nextCorrect !== undefined) {
-      patchSettings({ maxStars: nextMax, correctValue: nextCorrect });
-      return;
-    }
-
-    patchSettings({ maxStars: nextMax });
+    const clamped = Math.min(max, Math.max(1, Math.floor(currentCorrect)));
+    if (clamped !== currentCorrect) patchSettings({ correctValue: clamped });
   }
 </script>
 
@@ -68,14 +49,15 @@
           <span class="ui:sr-only">{label('star.edit.correct_value_info')}</span>
         </IconButton>
       </div>
-      <Input
-        type="number"
-        min="1"
+      <NumberField
+        integer
+        min={1}
         max={maxStars}
         placeholder={label('star.edit.correct_value_placeholder')}
-        value={String((question.settings?.correctValue as number | undefined) ?? '')}
-        {disabled}
-        onchange={(event) => onCorrectValueChange(event.currentTarget.value)}
+        value={(question.settings?.correctValue as number | undefined) ?? null}
+        isDisabled={disabled}
+        allowEmpty
+        onValueChange={(next) => patchSettings({ correctValue: next ?? undefined })}
       />
     </div>
 
@@ -87,14 +69,16 @@
           <span class="ui:sr-only">{label('star.edit.max_stars_info')}</span>
         </IconButton>
       </div>
-      <Input
-        type="number"
-        min="1"
-        max="10"
+      <NumberField
+        integer
+        min={1}
+        max={10}
         placeholder={label('star.edit.max_stars_placeholder')}
-        value={String((question.settings?.maxStars as number | undefined) ?? '')}
-        {disabled}
-        onchange={(event) => onMaxStarsChange(event.currentTarget.value)}
+        value={(question.settings?.maxStars as number | undefined) ?? null}
+        isDisabled={disabled}
+        allowEmpty
+        onValueChange={onMaxStarsValueChange}
+        onCommit={onMaxStarsCommit}
       />
     </div>
   </div>

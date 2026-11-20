@@ -1,10 +1,13 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import LockIcon from '@lucide/svelte/icons/lock';
   import { cn } from '../../tools';
 
   interface Props {
     /** 1-indexed value shown when not `locked`. */
-    number: number;
+    number?: number;
+    /** Shown instead of `number`, e.g. an icon for an item that has no position number. */
+    children?: Snippet;
     /** When true, uses primary styling (e.g. active sidebar row or current question). */
     active?: boolean;
     /** Locked badges show a lock icon and muted treatment. */
@@ -12,7 +15,7 @@
     class?: string;
   }
 
-  let { number, active = false, locked = false, class: className }: Props = $props();
+  let { number, children, active = false, locked = false, class: className }: Props = $props();
 
   const badgeClass = $derived(
     cn(
@@ -30,6 +33,8 @@
 <span class={badgeClass} aria-hidden="true">
   {#if locked}
     <LockIcon class="ui:size-3.5 custom" />
+  {:else if children}
+    {@render children()}
   {:else}
     {number}
   {/if}

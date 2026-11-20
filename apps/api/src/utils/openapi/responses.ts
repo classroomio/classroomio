@@ -11,50 +11,73 @@ const PaginationSchema = {
   required: ['page', 'limit', 'total', 'totalPages']
 };
 
-export const ItemResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
-
-export const PaginatedListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } },
-    pagination: PaginationSchema
-  },
-  required: ['success', 'data', 'pagination']
-};
-
 const toResponseJsonSchema = (schema: z.ZodType) => {
   const { $schema: _dialect, ...jsonSchema } = z.toJSONSchema(schema, { io: 'output', unrepresentable: 'any' });
   return jsonSchema;
 };
 
-export const itemResponse = (schema: z.ZodType) => ({
+// Extra top-level envelope fields that sit next to `data` (e.g. the echoed `query`).
+const envelopeExtras = (extra?: z.ZodObject) => {
+  if (!extra) return { properties: {}, required: [] as string[] };
+
+  const { properties = {}, required = [] } = toResponseJsonSchema(extra) as {
+    properties?: Record<string, unknown>;
+    required?: string[];
+  };
+  return { properties, required };
+};
+
+export const itemResponse = (schema: z.ZodType, extra?: z.ZodObject) => {
+  const extras = envelopeExtras(extra);
+
+  return {
+    type: 'object' as const,
+    properties: {
+      success: { type: 'boolean' as const },
+      data: toResponseJsonSchema(schema),
+      ...extras.properties
+    },
+    required: ['success', 'data', ...extras.required]
+  };
+};
+
+export const itemWithMetaResponse = (schema: z.ZodType, meta: z.ZodType) => ({
   type: 'object' as const,
   properties: {
     success: { type: 'boolean' as const },
-    data: toResponseJsonSchema(schema)
+    data: toResponseJsonSchema(schema),
+    meta: toResponseJsonSchema(meta)
   },
-  required: ['success', 'data']
+  required: ['success', 'data', 'meta']
+});
+
+export const itemWithMetaAndPaginationResponse = (schema: z.ZodType, meta: z.ZodType) => ({
+  type: 'object' as const,
+  properties: {
+    success: { type: 'boolean' as const },
+    data: toResponseJsonSchema(schema),
+    meta: toResponseJsonSchema(meta),
+    pagination: PaginationSchema
+  },
+  required: ['success', 'data', 'meta', 'pagination']
 });
 
 export const nullableItemResponse = (schema: z.ZodType) => itemResponse(schema.nullable());
 
-export const paginatedResponse = (schema: z.ZodType) => ({
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: toResponseJsonSchema(z.array(schema)),
-    pagination: PaginationSchema
-  },
-  required: ['success', 'data', 'pagination']
-});
+export const paginatedResponse = (schema: z.ZodType, extra?: z.ZodObject) => {
+  const extras = envelopeExtras(extra);
+
+  return {
+    type: 'object' as const,
+    properties: {
+      success: { type: 'boolean' as const },
+      data: toResponseJsonSchema(z.array(schema)),
+      pagination: PaginationSchema,
+      ...extras.properties
+    },
+    required: ['success', 'data', 'pagination', ...extras.required]
+  };
+};
 
 export const jsonResponse = (description: string, schema: object) => ({
   description,

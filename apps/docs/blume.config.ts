@@ -3,19 +3,145 @@ import { defineConfig } from 'blume';
 import { extractOperations, type ApiDocument } from 'blume/openapi/model.ts';
 import { z } from 'zod';
 
+// Hand-written guides (content/docs/api) live at /api; the generated
+// reference mounts below them, since Blume always appends the full endpoint
+// index to its overview page.
 const API_ROUTE = '/api';
-const apiSpec = JSON.parse(
-  readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')
-) as ApiDocument;
-const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_ROUTE);
-const apiSidebarGroups = apiTags.map((tag) => ({
-  label: tag.name.replace(/^Public API /, ''),
-  display: 'group' as const,
-  collapsed: false,
-  items: Object.values(apiOperations)
+const API_REFERENCE_ROUTE = '/api/reference';
+const apiSpec = JSON.parse(readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')) as ApiDocument;
+const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_REFERENCE_ROUTE);
+
+interface TagPlacement {
+  tag: string;
+  label?: string;
+  flat?: boolean;
+  trailingRouteSubstrings?: string[];
+}
+
+const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
+  {
+    label: 'Organization',
+    tags: [
+      { tag: 'Organization', label: 'Overview' },
+      { tag: 'Audience' },
+      { tag: 'Team' },
+      { tag: 'Organization Email Templates', label: 'Email Templates' },
+      { tag: 'Organization Landing Page', label: 'Landing Page' },
+      { tag: 'Tags' },
+      { tag: 'Organization Domain', label: 'Domain' },
+      { tag: 'Organization Customization', label: 'Customization' }
+    ]
+  },
+  {
+    label: 'Courses',
+    tags: [
+      { tag: 'Courses', label: 'Overview' },
+      { tag: 'Course Structure', label: 'Structure' },
+      { tag: 'Course Sections', label: 'Sections' },
+      { tag: 'Course Lessons', label: 'Lessons' },
+      { tag: 'Lesson Blocks', label: 'Blocks' },
+      { tag: 'Lesson Translations', label: 'Translations' },
+      { tag: 'Lesson Comments', label: 'Comments' },
+      { tag: 'Course Content', label: 'Content' },
+      { tag: 'Course Members', label: 'Members' },
+      { tag: 'Course Invites', label: 'Invites' },
+      { tag: 'Course Exercises', label: 'Exercises' },
+      { tag: 'Exercise Questions', label: 'Questions' },
+      { tag: 'Exercise Sections', label: 'Exercise Sections' },
+      { tag: 'Exercise Templates', label: 'Templates' },
+      { tag: 'Course Submissions', label: 'Submissions' },
+      { tag: 'Course Certificates', label: 'Certificates' },
+      { tag: 'Course Templates', label: 'Course Templates' }
+    ]
+  },
+  {
+    label: 'Cohorts',
+    tags: [
+      { tag: 'Cohorts', label: 'Overview', trailingRouteSubstrings: ['cohorts-enrolled'] },
+      { tag: 'Cohort Members', label: 'Members' },
+      { tag: 'Cohort Courses', label: 'Courses' },
+      { tag: 'Cohort Invites', label: 'Invites' },
+      { tag: 'Cohort Goals', label: 'Goals' },
+      { tag: 'Cohort Newsfeed', label: 'Newsfeed' },
+      { tag: 'Cohort Newsfeed Comments', label: 'Comments' }
+    ]
+  },
+  {
+    label: 'Analytics',
+    tags: [{ tag: 'Academy' }, { tag: 'Marketing' }, { tag: 'Compliance' }]
+  },
+  { label: 'Media', tags: [{ tag: 'Public API Assets', flat: true }] }
+];
+
+const operationsOfTag = (tagName: string): string[] => {
+  const tag = apiTags.find((candidate) => candidate.name === tagName);
+  if (!tag) {
+    return [];
+  }
+
+  return Object.values(apiOperations)
     .filter((operation) => operation.tagSlug === tag.slug)
-    .map((operation) => operation.route)
-}));
+    .map((operation) => operation.route);
+};
+
+const routesOfPlacement = (placement: TagPlacement): string[] => {
+  const routes = operationsOfTag(placement.tag);
+  if (!placement.trailingRouteSubstrings) {
+    return routes;
+  }
+
+  const [trailingRoutes, mainRoutes] = routes.reduce(
+    ([trailingRoutes, mainRoutes], route) => {
+      const isTrailing = placement.trailingRouteSubstrings?.some((substring) => route.includes(substring));
+
+      return isTrailing
+        ? [[...trailingRoutes, route], mainRoutes]
+        : [trailingRoutes, [...mainRoutes, route]];
+    },
+    [[], []] as [string[], string[]]
+  );
+
+  return [...mainRoutes, ...trailingRoutes];
+};
+
+const tagGroup = (placement: TagPlacement) => {
+  const routes = routesOfPlacement(placement);
+
+  return {
+    label: placement.label ?? placement.tag,
+    display: 'group' as const,
+    collapsed: true,
+    items: routes
+  };
+};
+
+const sectionItem = (placement: TagPlacement) => {
+  if (!placement.flat) {
+    return [tagGroup(placement)];
+  }
+
+  return routesOfPlacement(placement);
+};
+
+const placedTags = new Set(API_SECTIONS.flatMap((section) => section.tags.map((placement) => placement.tag)));
+const unplacedTags = apiTags.filter((tag) => !placedTags.has(tag.name));
+if (unplacedTags.length > 0) {
+  console.warn(
+    `[docs] API tags missing from API_SECTIONS in blume.config.ts: ${unplacedTags.map((tag) => tag.name).join(', ')}`
+  );
+}
+
+// Render unplaced tags as standalone groups instead of dropping their
+// operations: a stale reused spec (fetch-openapi.mjs falls back to the last
+// fetched copy) can still carry tags this config no longer places, and the
+// docs build must not silently lose those pages from the sidebar.
+const apiSidebarSections = API_SECTIONS.map((section) => ({
+  label: section.label,
+  display: 'flat' as const,
+  items: section.tags.flatMap(sectionItem)
+}))
+  .filter((section) => section.items.length > 0)
+  .concat(unplacedTags.map((tag) => tagGroup({ tag: tag.name })));
 
 /**
  * The site is served at classroomio.com/docs, proxied to this worker by the
@@ -50,7 +176,10 @@ export default defineConfig({
     site: 'https://classroomio.com',
     base: '/docs'
   },
-  redirects: [{ from: '/', to: '/developers', status: 301 }],
+  redirects: [
+    { from: '/', to: '/developers', status: 301 },
+    { from: '/developers/mcp/tools', to: '/developers/mcp/access-and-limits', status: 301 }
+  ],
   github: {
     owner: 'classroomio',
     repo: 'classroomio',
@@ -87,7 +216,7 @@ export default defineConfig({
   },
   openapi: {
     enabled: true,
-    route: API_ROUTE,
+    route: API_REFERENCE_ROUTE,
     sources: [{ label: 'API', spec: './openapi/public-api.json' }]
   },
   navigation: {
@@ -112,7 +241,23 @@ export default defineConfig({
         label: 'Connect',
         display: 'group',
         collapsed: false,
-        items: ['/developers/mcp', '/developers/token-auth']
+        items: [
+          {
+            label: 'MCP',
+            display: 'group',
+            collapsed: false,
+            items: [
+              '/developers/mcp',
+              '/developers/mcp/setup',
+              '/developers/mcp/remote',
+              '/developers/mcp/access-and-limits',
+              '/developers/mcp/course-editing'
+            ]
+          },
+          '/developers/oauth',
+          '/developers/webhooks',
+          '/developers/token-auth'
+        ]
       },
       {
         label: 'Self-hosting',
@@ -152,7 +297,7 @@ export default defineConfig({
             label: 'Manage',
             display: 'group',
             collapsed: true,
-            items: ['/self-hosted/configuration/versions', '/self-hosted/backups']
+            items: ['/self-hosted/configuration/versions', '/self-hosted/backups', '/self-hosted/migrating-from-minio']
           },
           {
             label: 'Troubleshoot',
@@ -180,7 +325,15 @@ export default defineConfig({
       {
         label: 'API',
         root: API_ROUTE,
-        items: [API_ROUTE, ...apiSidebarGroups]
+        items: [
+          {
+            label: 'Getting started',
+            display: 'flat',
+            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types', '/api/analytics']
+          },
+          { label: 'Reference', display: 'flat', items: [API_REFERENCE_ROUTE] },
+          ...apiSidebarSections
+        ]
       }
     ]
   }

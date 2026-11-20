@@ -173,14 +173,20 @@ const ZExerciseUpdateQuestionBase = z.object({
     .optional()
 });
 
-function validateQuestionOptions(question: z.infer<typeof ZExerciseUpdateQuestionBase>, ctx: z.core.$RefinementCtx) {
+export function getQuestionOptionIssues(question: QuestionRuleInput & { questionTypeId?: number }): string[] {
+  const rules = QUESTION_VALIDATION_RULES[question.questionTypeId ?? -1] ?? [];
+
+  return rules.map((rule) => rule(question)).filter((message): message is string => Boolean(message));
+}
+
+export function validateQuestionOptions(
+  question: QuestionRuleInput & { deletedAt?: string; questionTypeId?: number },
+  ctx: z.core.$RefinementCtx
+) {
   // Skip validation for deleted questions
   if (question.deletedAt) return;
 
-  const rules = QUESTION_VALIDATION_RULES[question.questionTypeId ?? -1] ?? [];
-  for (const rule of rules) {
-    const message = rule(question);
-    if (!message) continue;
+  for (const message of getQuestionOptionIssues(question)) {
     ctx.addIssue({
       code: 'custom',
       message,
@@ -237,7 +243,7 @@ export const ZExerciseUpdate = z.object({
   questions: z.array(ZExerciseUpdateQuestion).optional(),
   sections: z.array(ZExerciseSection).optional(),
   sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
-  completionPolicy: z.enum(['submitted', 'passed']).optional(),
+  completionPolicy: z.enum(['submitted', 'passed', 'none']).optional(),
   passThreshold: z.number().int().min(0).max(100).optional()
 });
 export type TExerciseUpdate = z.infer<typeof ZExerciseUpdate>;

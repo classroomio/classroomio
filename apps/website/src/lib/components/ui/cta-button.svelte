@@ -11,6 +11,7 @@
     size?: Size;
     href?: string;
     arrow?: boolean;
+    loading?: boolean;
     class?: string;
     children?: Snippet;
   };
@@ -20,6 +21,7 @@
     size = 'md',
     href,
     arrow = false,
+    loading = false,
     class: className = '',
     children,
     ...rest
@@ -45,14 +47,38 @@
       'group/cta inline-flex cursor-pointer items-center justify-center gap-2 rounded-sm text-sm leading-tight font-medium no-underline transition-[filter,background-color]',
       sizeClass,
       VARIANT_CLASS[variant],
+      loading && 'pointer-events-none opacity-80',
       className
     )
   );
 </script>
 
-<svelte:element this={href ? 'a' : 'button'} {href} type={href ? undefined : 'button'} class={buttonClass} {...rest}>
+<svelte:element
+  this={href ? 'a' : 'button'}
+  {href}
+  type={href ? undefined : 'button'}
+  class={buttonClass}
+  aria-busy={loading || undefined}
+  aria-disabled={loading || undefined}
+  tabindex={loading ? -1 : undefined}
+  {...rest}
+>
   {@render children?.()}
-  {#if arrow}
+  {#if loading}
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      aria-hidden="true"
+      class="motion-safe:animate-spin"
+    >
+      <path d="M12 3a9 9 0 1 0 9 9" />
+    </svg>
+  {:else if arrow}
     <svg
       width="18"
       height="18"

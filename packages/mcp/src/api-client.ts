@@ -1,53 +1,114 @@
-import type {
-  TAutomationCourseTagAssignment,
-  TAutomationDraftTagAssignment,
-  TAutomationDraftTagParam
-} from '@cio/utils/validation/tag';
-import type { TCourseContentReorder, TCourseLandingPageUpdate, TCourseUpdateParam } from '@cio/utils/validation/course';
-import type {
-  TCourseImportCourseParam,
-  TCourseImportDraftCreate,
-  TCourseImportDraftCreateFromCourse,
-  TCourseImportDraftPublish,
-  TCourseImportDraftPublishToCourse,
-  TCourseImportDraftUpdate
-} from '@cio/utils/validation/course-import';
-import type {
-  TExerciseCreate,
-  TExerciseFromTemplate,
-  TExerciseGetParam,
-  TExerciseListQuery,
-  TExerciseUpdate
-} from '@cio/utils/validation/exercise';
+import { Readable } from 'node:stream';
+import type { TAutomationCourseTagAssignment } from '@cio/utils/validation/tag';
+import type { TBlockLocaleCode } from '@cio/utils/validation/block';
+import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
+import { pickTagColor } from '@cio/utils/validation/tag';
+import { ErrorCodes } from '@cio/utils/constants';
+import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 
 import type { McpServerConfig } from './config';
-import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type {
+  TPublicApiAttachLessonBlock,
+  TPublicApiCreateLessonBlock,
+  TPublicApiDuplicateLessonBlock,
+  TPublicApiMoveLessonPlacement,
+  TPublicApiSetLessonBlockLocale,
+  TPublicApiUpdateLessonBlock,
+  TPublicApiUpdateLessonPlacement,
+  TPublicApiAddExerciseQuestion,
+  TPublicApiAddExerciseSection,
+  TPublicApiUpdateExerciseQuestionFields,
+  TPublicApiUpdateExerciseSectionFields,
+  TPublicApiCourseExercisesQuery,
+  TPublicApiCoursesQuery,
+  TPublicApiCreateCourse,
+  TPublicApiCourseMarksQuery,
+  TPublicApiCourseSubmissionsQuery,
+  TPublicApiCreateCourseExercise,
+  TPublicApiExerciseTemplatesQuery,
+  TPublicApiCourseTemplatesQuery,
+  TPublicApiCreateCourseFromTemplate,
+  TPublicApiSaveCourseTemplate,
+  TPublicApiGradeCourseSubmission,
+  TPublicApiUpdateCourseExercise,
+  TPublicApiUpdateCourseSubmission,
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseMember,
   TPublicApiAddCourseToCohort,
+  TPublicApiAssignAudienceCourses,
+  TPublicApiAudienceBulkStatus,
   TPublicApiAssignStudentsToCohort,
+  TPublicApiAudienceQuery,
   TPublicApiCertificateFileFormat,
   TPublicApiCohortNewsfeedQuery,
   TPublicApiCourseInvitesQuery,
+  TPublicApiCourseLessonCommentsQuery,
+  TPublicApiCourseLessonHistoryQuery,
+  TPublicApiCourseLessonsQuery,
+  TPublicApiAnalyticsQueryRequest,
+  TPublicApiAnalyticsSnapshotQuery,
+  TPublicApiAnalyticsStudentsQuery,
+  TPublicApiCourseAnalyticsSnapshotQuery,
+  TPublicApiCourseAnalyticsStudentsQuery,
+  TPublicApiCourseMarketingQuery,
   TPublicApiCourseMemberAnalyticsQuery,
+  TPublicApiMarketingQuery,
+  TPublicApiOrganizationOverviewQuery,
   TPublicApiCourseMembersQuery,
+  TPublicApiCreateCourseLessonComment,
+  TPublicApiCreateCourseSection,
+  TPublicApiDeleteCourseContent,
+  TPublicApiLessonLocale,
+  TPublicApiReorderCourseContent,
+  TPublicApiCloneCourse,
+  TPublicApiRelatedCoursesQuery,
+  TPublicApiRemindOverdueCohortGoals,
+  TPublicApiSetFeaturedCourses,
+  TPublicApiUpdateDomain,
+  TPublicApiConnectCustomDomain,
+  TPublicApiSetCourseLessonTranslation,
+  TPublicApiUpdateCourseContentLock,
+  TPublicApiUpdateCourseLessonComment,
+  TPublicApiUpdateCourseSection,
+  TPublicApiCreateAsset,
+  TPublicApiCreateAudience,
+  TPublicApiEmailTemplateParam,
+  TPublicApiEmailTemplateQuery,
+  TPublicApiSaveEmailTemplate,
+  TPublicApiSendTestEmailTemplate,
   TPublicApiCreateCohort,
+  TPublicApiCohortMembersQuery,
+  TPublicApiCohortsQuery,
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
   TPublicApiCreateCohortNewsfeedComment,
   TPublicApiCreateCourseInvite,
+  TPublicApiCreateLesson,
   TPublicApiInviteStudentsToCohort,
   TPublicApiListCourseCertificatesQuery,
   TPublicApiPaginationQuery,
   TPublicApiSetCohortInviteLinkRevoked,
   TPublicApiSetCohortReaction,
+  TPublicApiTeamQuery,
+  TPublicApiCreateTeamInviteLink,
+  TPublicApiInviteTeamMembers,
+  TPublicApiUpdateTeamInviteLink,
+  TPublicApiUpdateAudience,
+  TPublicApiCreateTag,
+  TPublicApiCreateTagGroup,
+  TPublicApiTagsQuery,
+  TPublicApiUpdateTag,
+  TPublicApiUpdateTagGroup,
   TPublicApiUpdateCohort,
   TPublicApiUpdateCohortGoal,
   TPublicApiUpdateCohortMember,
   TPublicApiUpdateCohortNewsfeed,
   TPublicApiUpdateCourseCertificate,
-  TPublicApiUpdateCourseMember
+  TPublicApiUpdateCourseMember,
+  TPublicApiUpdateLesson,
+  TPublicApiUpdateOrganization,
+  TPublicApiUpdateOrganizationCustomization,
+  TPublicApiUpdateTeamMember
 } from '@cio/utils/validation/public-api';
 
 type ApiSuccess<T> = {
@@ -59,6 +120,7 @@ type ApiSuccess<T> = {
     total: number;
     totalPages: number;
   };
+  meta?: unknown;
 };
 
 type ApiFailure = {
@@ -79,6 +141,9 @@ type PaginatedResponse<T> = {
   };
 };
 
+type TCourseTag = { id: string; name: string; slug: string; color: string };
+type TTagGroup = { id: string; name: string; slug: string; tags: TCourseTag[] };
+
 type RequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
@@ -87,6 +152,24 @@ type RequestOptions = {
 const toPageQuerySuffix = (query: Partial<TPublicApiPaginationQuery>) => {
   const searchParams = new URLSearchParams();
   if (query.page) searchParams.set('page', String(query.page));
+  if (query.limit) searchParams.set('limit', String(query.limit));
+
+  return searchParams.toString() ? `?${searchParams.toString()}` : '';
+};
+
+const toQuerySuffix = (query: Record<string, string | number | boolean | undefined>) => {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined && value !== '') searchParams.set(key, String(value));
+  }
+
+  return searchParams.toString() ? `?${searchParams.toString()}` : '';
+};
+
+const toAnalyticsQuerySuffix = (query: { include?: string[]; days?: number; limit?: number }) => {
+  const searchParams = new URLSearchParams();
+  if (query.include?.length) searchParams.set('include', query.include.join(','));
+  if (query.days) searchParams.set('days', String(query.days));
   if (query.limit) searchParams.set('limit', String(query.limit));
 
   return searchParams.toString() ? `?${searchParams.toString()}` : '';
@@ -104,135 +187,373 @@ export class ClassroomIoApiError extends Error {
   }
 }
 
+const MAX_CLIENT_NAME_LENGTH = 80;
+
+export type ClassroomIoApiClientOptions = {
+  /** Transport for API calls; defaults to the global fetch. */
+  fetch?: typeof fetch;
+  /** Sent with every API call, after the built-in headers. */
+  headers?: Record<string, string>;
+};
+
 export class ClassroomIoApiClient {
-  constructor(private readonly config: McpServerConfig) {}
+  private readonly fetchImpl: typeof fetch;
+  private readonly extraHeaders: Record<string, string>;
+  private clientName: string | null = null;
 
-  async createCourseDraft(payload: TCourseImportDraftCreate) {
-    return this.request('/organization/course-import/drafts', {
-      method: 'POST',
-      body: payload
-    });
+  constructor(
+    private readonly config: McpServerConfig,
+    options: ClassroomIoApiClientOptions = {}
+  ) {
+    this.fetchImpl = options.fetch ?? fetch;
+    this.extraHeaders = options.headers ?? {};
   }
 
-  async createCourseDraftFromCourse(payload: TCourseImportDraftCreateFromCourse) {
-    return this.request('/organization/course-import/drafts/from-course', {
-      method: 'POST',
-      body: payload
-    });
+  /**
+   * Names the MCP client (its `clientInfo.name`) on every later API call so the server can attribute edits to it.
+   * The name is cut to a bounded length and percent-encoded so any Unicode name is a safe header value;
+   * a name that cannot be encoded is not sent.
+   */
+  setClientName(name: string) {
+    const bounded = Array.from(name).slice(0, MAX_CLIENT_NAME_LENGTH).join('');
+
+    try {
+      this.clientName = encodeURIComponent(bounded);
+    } catch {
+      this.clientName = null;
+    }
   }
 
-  async getCourseStructure(courseId: TCourseImportCourseParam['courseId']) {
-    return this.request(`/organization/course-import/courses/${courseId}/structure`, {
-      method: 'GET'
-    });
+  async createCourse(payload: TPublicApiCreateCourse) {
+    return this.request('/public-api/v1/courses', { method: 'POST', body: payload });
   }
 
-  async updateCourseLandingPage(courseId: TCourseImportCourseParam['courseId'], payload: TCourseLandingPageUpdate) {
+  async publishCourse(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/publish`, { method: 'POST' });
+  }
+
+  async unpublishCourse(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/unpublish`, { method: 'POST' });
+  }
+
+  async getCourseStructure(courseId: string) {
+    const { draft, ...rest } = await this.request<{ courseId: string; draft: unknown }>(
+      `/public-api/v1/courses/${courseId}/structure`,
+      { method: 'GET' }
+    );
+
+    return { ...rest, structure: draft };
+  }
+
+  async updateCourseLandingPage(courseId: string, payload: TCourseLandingPageUpdate) {
     return this.request(`/course/${courseId}/landing-page`, {
       method: 'PUT',
       body: payload
     });
   }
 
-  async reorderCourseContent(courseId: TCourseUpdateParam['courseId'], payload: TCourseContentReorder) {
-    return this.request(`/course/${courseId}/content/reorder`, {
+  async listOrganizationCourses(query: Partial<TPublicApiCoursesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async listCourseExercises(courseId: string, query: Partial<TPublicApiCourseExercisesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/exercises${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, { method: 'GET' });
+  }
+
+  async createCourseExercise(courseId: string, payload: TPublicApiCreateCourseExercise) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises`, { method: 'POST', body: payload });
+  }
+
+  async updateCourseExercise(
+    courseId: string,
+    exerciseId: string,
+    payload: TPublicApiUpdateCourseExercise,
+    force = false
+  ) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}${query}`, {
       method: 'PUT',
       body: payload
     });
   }
 
-  async getCourseDraft(draftId: string) {
-    return this.request(`/organization/course-import/drafts/${draftId}`, {
-      method: 'GET'
-    });
+  async deleteCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, { method: 'DELETE' });
   }
 
-  async listOrganizationCourses(query: Partial<TGetOrganizationCoursesQuery> = {}) {
-    const searchParams = new URLSearchParams();
-    if (query.tags) searchParams.set('tags', query.tags);
-
-    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/organization/courses${querySuffix}`, {
-      method: 'GET'
-    });
-  }
-
-  async listCourseExercises(courseId: string, query: TExerciseListQuery = {}) {
-    const searchParams = new URLSearchParams();
-    if (query.lessonId) searchParams.set('lessonId', query.lessonId);
-    if (query.sectionId) searchParams.set('sectionId', query.sectionId);
-
-    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/course/${courseId}/exercise${querySuffix}`, {
-      method: 'GET'
-    });
-  }
-
-  async getCourseExercise(courseId: string, exerciseId: TExerciseGetParam['exerciseId']) {
-    return this.request(`/course/${courseId}/exercise/${exerciseId}`, {
-      method: 'GET'
-    });
-  }
-
-  async createCourseExercise(courseId: string, payload: Omit<TExerciseCreate, 'courseId'>) {
-    return this.request(`/course/${courseId}/exercise`, {
-      method: 'POST',
-      body: {
-        ...payload,
-        courseId
-      }
-    });
-  }
-
-  async createCourseExerciseFromTemplate(courseId: string, payload: TExerciseFromTemplate) {
-    return this.request(`/course/${courseId}/exercise/from-template`, {
+  async addExerciseQuestion(courseId: string, exerciseId: string, payload: TPublicApiAddExerciseQuestion) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions`, {
       method: 'POST',
       body: payload
     });
   }
 
-  async updateCourseExercise(courseId: string, exerciseId: TExerciseGetParam['exerciseId'], payload: TExerciseUpdate) {
-    return this.request(`/course/${courseId}/exercise/${exerciseId}`, {
+  async updateExerciseQuestion(
+    courseId: string,
+    exerciseId: string,
+    questionId: number,
+    payload: TPublicApiUpdateExerciseQuestionFields
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async deleteExerciseQuestion(courseId: string, exerciseId: string, questionId: number, force: boolean) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}${query}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async addExerciseSection(courseId: string, exerciseId: string, payload: TPublicApiAddExerciseSection) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateExerciseSection(
+    courseId: string,
+    exerciseId: string,
+    sectionId: string,
+    payload: TPublicApiUpdateExerciseSectionFields
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections/${sectionId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async deleteExerciseSection(courseId: string, exerciseId: string, sectionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections/${sectionId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async notifyCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/notify`, { method: 'POST' });
+  }
+
+  async getCourseExerciseNotifyStatus(courseId: string, exerciseId: string, jobId: string, pollCount?: number) {
+    const path = `/public-api/v1/courses/${courseId}/exercises/${exerciseId}/notify/${encodeURIComponent(jobId)}`;
+    return this.request(`${path}${toQuerySuffix({ pollCount })}`, { method: 'GET' });
+  }
+
+  async listExerciseTemplates(query: Partial<TPublicApiExerciseTemplatesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/exercise-templates${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getExerciseTemplate(templateId: number) {
+    return this.request(`/public-api/v1/exercise-templates/${templateId}`, { method: 'GET' });
+  }
+
+  async listCourseTemplates(query: Partial<TPublicApiCourseTemplatesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/course-templates${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getCourseTemplate(templateId: string) {
+    return this.request(`/public-api/v1/course-templates/${templateId}`, { method: 'GET' });
+  }
+
+  async createCourseFromTemplate(templateId: string, payload: TPublicApiCreateCourseFromTemplate) {
+    return this.request(`/public-api/v1/course-templates/${templateId}/courses`, { method: 'POST', body: payload });
+  }
+
+  async saveCourseAsTemplate(courseId: string, payload: TPublicApiSaveCourseTemplate) {
+    return this.request(`/public-api/v1/courses/${courseId}/template`, { method: 'POST', body: payload });
+  }
+
+  async listCourseSubmissions(courseId: string, query: Partial<TPublicApiCourseSubmissionsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/submissions${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getCourseSubmission(courseId: string, submissionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, { method: 'GET' });
+  }
+
+  async gradeCourseSubmission(courseId: string, submissionId: string, payload: TPublicApiGradeCourseSubmission) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}/grades`, {
       method: 'PUT',
       body: payload
     });
   }
 
-  async updateCourseDraft(draftId: string, payload: TCourseImportDraftUpdate) {
-    return this.request(`/organization/course-import/drafts/${draftId}`, {
-      method: 'PUT',
+  async updateCourseSubmission(courseId: string, submissionId: string, payload: TPublicApiUpdateCourseSubmission) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, {
+      method: 'PATCH',
       body: payload
     });
   }
 
-  async tagCourseDraft(draftId: TAutomationDraftTagParam['draftId'], payload: TAutomationDraftTagAssignment) {
-    return this.request(`/organization/course-import/drafts/${draftId}/tags`, {
-      method: 'PUT',
-      body: payload
+  async deleteCourseSubmission(courseId: string, submissionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, { method: 'DELETE' });
+  }
+
+  async getCourseMarks(courseId: string, query: Partial<TPublicApiCourseMarksQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/marks${toQuerySuffix(query)}`, {
+      method: 'GET'
     });
   }
 
-  async publishCourseDraft(draftId: string, payload: TCourseImportDraftPublish) {
-    return this.request(`/organization/course-import/drafts/${draftId}/publish`, {
-      method: 'POST',
-      body: payload
-    });
-  }
-
-  async publishCourseDraftToExistingCourse(draftId: string, payload: TCourseImportDraftPublishToCourse) {
-    return this.request(`/organization/course-import/drafts/${draftId}/publish-existing-course`, {
-      method: 'POST',
-      body: payload
-    });
-  }
-
+  /** Matches tags by name, creating missing ones (and their group) before tagging each course. */
   async tagCourses(payload: TAutomationCourseTagAssignment) {
-    return this.request<
-      Array<{ courseId: string; tags: Array<{ id: string; name: string; slug: string; color: string }> }>
-    >('/organization/tags/courses/assign', {
+    const groupName = payload.groupName?.trim() || 'Automation';
+    const groups = await this.listAllTagGroups();
+    const tagIds = await this.ensureTagIds(groups, payload.tagNames, groupName);
+    const courseIds = [...new Set(payload.courseIds)];
+    const results: Array<{ courseId: string; tags: TCourseTag[] }> = [];
+
+    for (const courseId of courseIds) {
+      try {
+        const course =
+          payload.mode === 'merge'
+            ? await this.addCourseTags(courseId, tagIds)
+            : await this.setCourseTags(courseId, tagIds);
+
+        results.push({ courseId, tags: course.tags });
+      } catch (error) {
+        if (!(error instanceof ClassroomIoApiError)) {
+          throw error;
+        }
+
+        // Earlier courses keep their new tags, so say which ones are done before failing.
+        const tagged = results.map((result) => result.courseId);
+        const notTagged = courseIds.slice(tagged.length);
+        throw new ClassroomIoApiError(
+          `${error.message} (course ${courseId}). Tagged: [${tagged.join(', ')}]. Not tagged: [${notTagged.join(', ')}].`,
+          error.status,
+          error.code,
+          error.field
+        );
+      }
+    }
+
+    return results;
+  }
+
+  async setCourseTags(courseId: string, tagIds: string[]) {
+    return this.request<{ tags: TCourseTag[] }>(`/public-api/v1/courses/${encodeURIComponent(courseId)}`, {
       method: 'PUT',
-      body: payload
+      body: { tagIds }
     });
+  }
+
+  async addCourseTags(courseId: string, addTagIds: string[]) {
+    return this.request<{ tags: TCourseTag[] }>(`/public-api/v1/courses/${encodeURIComponent(courseId)}`, {
+      method: 'PUT',
+      body: { addTagIds }
+    });
+  }
+
+  async createTag(payload: TPublicApiCreateTag) {
+    return this.request<{ id: string }>('/public-api/v1/tags', { method: 'POST', body: payload });
+  }
+
+  async updateTag(tagId: string, payload: TPublicApiUpdateTag) {
+    return this.request(`/public-api/v1/tags/${encodeURIComponent(tagId)}`, { method: 'PUT', body: payload });
+  }
+
+  async createTagGroup(payload: TPublicApiCreateTagGroup) {
+    return this.request<{ id: string }>('/public-api/v1/tags/groups', { method: 'POST', body: payload });
+  }
+
+  async updateTagGroup(groupId: string, payload: TPublicApiUpdateTagGroup) {
+    return this.request(`/public-api/v1/tags/groups/${encodeURIComponent(groupId)}`, { method: 'PUT', body: payload });
+  }
+
+  async listTags(query: Partial<TPublicApiTagsQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page) searchParams.set('page', String(query.page));
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.courseId) searchParams.set('courseId', query.courseId);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated<TTagGroup[]>(`/public-api/v1/tags${querySuffix}`, { method: 'GET' });
+  }
+
+  private async listAllTagGroups(courseId?: string) {
+    const groups: TTagGroup[] = [];
+
+    for (let page = 1; ; page++) {
+      const result = await this.listTags({ page, limit: 100, courseId });
+      groups.push(...result.data);
+
+      if (page >= result.pagination.totalPages) return groups;
+    }
+  }
+
+  private async ensureTagIds(groups: TTagGroup[], tagNames: string[], groupName: string) {
+    // Match by name like POST /tags does; names without a-z or 0-9 all share the slug "tag".
+    const nameKey = (name: string) => name.trim().toLowerCase();
+    const tagsByName = new Map(
+      groups.flatMap((group) => group.tags.map((tag) => [nameKey(tag.name), tag.id] as const))
+    );
+    let groupId = groups.find((group) => nameKey(group.name) === nameKey(groupName))?.id;
+    const tagIds = new Set<string>();
+
+    for (const rawName of tagNames) {
+      const name = rawName.trim();
+      const existingId = tagsByName.get(nameKey(name));
+      if (existingId) {
+        tagIds.add(existingId);
+        continue;
+      }
+
+      groupId ??= await this.createOrReuse(
+        () => this.createTagGroup({ name: groupName }),
+        ErrorCodes.TAG_GROUP_ALREADY_EXISTS,
+        async () => (await this.listAllTagGroups()).find((group) => nameKey(group.name) === nameKey(groupName))?.id
+      );
+      const tagGroupId = groupId;
+      const createdId = await this.createOrReuse(
+        () => this.createTag({ name, groupId: tagGroupId, color: pickTagColor(name) }),
+        ErrorCodes.TAG_ALREADY_EXISTS,
+        async () =>
+          (await this.listAllTagGroups())
+            .flatMap((group) => group.tags)
+            .find((tag) => nameKey(tag.name) === nameKey(name))?.id
+      );
+      tagsByName.set(nameKey(name), createdId);
+      tagIds.add(createdId);
+    }
+
+    return [...tagIds];
+  }
+
+  // Another call can create the same name between our list and our create; use the one it made.
+  private async createOrReuse(
+    create: () => Promise<{ id: string }>,
+    conflictCode: string,
+    find: () => Promise<string | undefined>
+  ) {
+    try {
+      return (await create()).id;
+    } catch (error) {
+      if (!(error instanceof ClassroomIoApiError) || error.status !== 409 || error.code !== conflictCode) {
+        throw error;
+      }
+
+      const id = await find();
+      if (!id) {
+        throw error;
+      }
+
+      return id;
+    }
   }
 
   async getCourseCertificate(courseId: string) {
@@ -275,17 +596,379 @@ export class ClassroomIoApiClient {
     return { base64: bytes.toString('base64'), mimeType };
   }
 
+  // ─── Course Sections, Lessons and Content (public API) ──────────────────
+
+  async listCourseSections(courseId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/sections${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async createCourseSection(courseId: string, payload: TPublicApiCreateCourseSection) {
+    return this.request(`/public-api/v1/courses/${courseId}/sections`, { method: 'POST', body: payload });
+  }
+
+  async updateCourseSection(courseId: string, sectionId: string, payload: TPublicApiUpdateCourseSection) {
+    return this.request(`/public-api/v1/courses/${courseId}/sections/${sectionId}`, { method: 'PUT', body: payload });
+  }
+
+  async deleteCourseSection(courseId: string, sectionId: string, force = false) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/sections/${sectionId}${query}`, { method: 'DELETE' });
+  }
+
+  async listCourseLessons(courseId: string, query: Partial<TPublicApiCourseLessonsQuery> = {}) {
+    const searchParams = new URLSearchParams(toPageQuerySuffix(query).slice(1));
+    if (query.sectionId) searchParams.set('sectionId', query.sectionId);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/lessons${querySuffix}`, { method: 'GET' });
+  }
+
+  async getCourseLesson(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}`, { method: 'GET' });
+  }
+
+  async deleteCourseLesson(courseId: string, lessonId: string, force = false) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}${query}`, { method: 'DELETE' });
+  }
+
+  async listLessonBlocks(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks`, { method: 'GET' });
+  }
+
+  async createLessonBlock(courseId: string, lessonId: string, payload: TPublicApiCreateLessonBlock) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async attachLessonBlock(courseId: string, lessonId: string, payload: TPublicApiAttachLessonBlock) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/attach`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateLessonBlock(courseId: string, lessonId: string, blockId: string, payload: TPublicApiUpdateLessonBlock) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/${blockId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async setLessonBlockLocale(
+    courseId: string,
+    lessonId: string,
+    blockId: string,
+    locale: TBlockLocaleCode,
+    payload: TPublicApiSetLessonBlockLocale
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/${blockId}/locale/${locale}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async updateLessonPlacement(
+    courseId: string,
+    lessonId: string,
+    placementId: string,
+    payload: TPublicApiUpdateLessonPlacement
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/placements/${placementId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async moveLessonPlacement(
+    courseId: string,
+    lessonId: string,
+    placementId: string,
+    payload: TPublicApiMoveLessonPlacement
+  ) {
+    return this.request(
+      `/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/placements/${placementId}/move`,
+      { method: 'PUT', body: payload }
+    );
+  }
+
+  async removeLessonPlacement(courseId: string, lessonId: string, placementId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/placements/${placementId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async duplicateLessonBlock(
+    courseId: string,
+    lessonId: string,
+    blockId: string,
+    payload: TPublicApiDuplicateLessonBlock
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/blocks/${blockId}/duplicate`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async notifyCourseLessonSessionUpdate(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/notify-session-update`, {
+      method: 'POST'
+    });
+  }
+
+  async listCourseLessonTranslations(courseId: string, lessonId: string, locale?: TPublicApiLessonLocale) {
+    const querySuffix = locale ? `?locale=${locale}` : '';
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/translations${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  async setCourseLessonTranslation(
+    courseId: string,
+    lessonId: string,
+    locale: TPublicApiLessonLocale,
+    payload: TPublicApiSetCourseLessonTranslation
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/translations/${locale}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async listCourseLessonHistory(
+    courseId: string,
+    lessonId: string,
+    query: Partial<TPublicApiCourseLessonHistoryQuery>
+  ) {
+    const searchParams = new URLSearchParams();
+    if (query.locale) searchParams.set('locale', query.locale);
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.cursor) searchParams.set('cursor', query.cursor);
+
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/history?${searchParams.toString()}`, {
+      method: 'GET'
+    });
+  }
+
+  async listCourseLessonComments(
+    courseId: string,
+    lessonId: string,
+    query: Partial<TPublicApiCourseLessonCommentsQuery> = {}
+  ) {
+    const searchParams = new URLSearchParams();
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.cursor) searchParams.set('cursor', query.cursor);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  async createCourseLessonComment(courseId: string, lessonId: string, payload: TPublicApiCreateCourseLessonComment) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateCourseLessonComment(
+    courseId: string,
+    lessonId: string,
+    commentId: number,
+    payload: TPublicApiUpdateCourseLessonComment
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments/${commentId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async deleteCourseLessonComment(courseId: string, lessonId: string, commentId: number) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments/${commentId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async listRelatedCourses(courseId: string, query: Partial<TPublicApiRelatedCoursesQuery> = {}) {
+    return this.request(`/public-api/v1/courses/${courseId}/related${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async cloneCourse(courseId: string, payload: TPublicApiCloneCourse) {
+    return this.request(`/public-api/v1/courses/${courseId}/clone`, { method: 'POST', body: payload });
+  }
+
+  async setFeaturedCourses(payload: TPublicApiSetFeaturedCourses) {
+    return this.request('/public-api/v1/organization/landing-page/featured-courses', { method: 'PUT', body: payload });
+  }
+
+  async getDomain() {
+    return this.request('/public-api/v1/organization/domain', { method: 'GET' });
+  }
+
+  async updateDomain(payload: TPublicApiUpdateDomain) {
+    return this.request('/public-api/v1/organization/domain', { method: 'PATCH', body: payload });
+  }
+
+  async connectCustomDomain(payload: TPublicApiConnectCustomDomain) {
+    return this.request('/public-api/v1/organization/domain/custom', { method: 'PUT', body: payload });
+  }
+
+  async refreshCustomDomain() {
+    return this.request('/public-api/v1/organization/domain/custom/refresh', { method: 'POST' });
+  }
+
+  async removeCustomDomain() {
+    return this.request('/public-api/v1/organization/domain/custom', { method: 'DELETE' });
+  }
+
+  async reorderCourseContent(courseId: string, payload: TPublicApiReorderCourseContent) {
+    return this.request(`/public-api/v1/courses/${courseId}/content/reorder`, { method: 'PUT', body: payload });
+  }
+
+  async setCourseContentUnlocked(courseId: string, payload: TPublicApiUpdateCourseContentLock) {
+    return this.request(`/public-api/v1/courses/${courseId}/content`, { method: 'PATCH', body: payload });
+  }
+
+  async deleteCourseContent(courseId: string, payload: TPublicApiDeleteCourseContent, force = false) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/content${query}`, { method: 'DELETE', body: payload });
+  }
+
+  // ─── Audience (public API) ──────────────────────────────────────────────
+
+  async listAudienceMembers(query: Partial<TPublicApiAudienceQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined && value !== '') searchParams.set(key, String(value));
+    }
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/public-api/v1/audience${querySuffix}`, { method: 'GET' });
+  }
+
+  async addAudienceMember(payload: TPublicApiCreateAudience) {
+    return this.request('/public-api/v1/audience', { method: 'POST', body: payload });
+  }
+
+  async assignAudienceCourses(payload: TPublicApiAssignAudienceCourses) {
+    return this.request('/public-api/v1/audience/assign-courses', { method: 'POST', body: payload });
+  }
+
+  async setAudienceStatus(payload: TPublicApiAudienceBulkStatus) {
+    return this.request('/public-api/v1/audience/bulk-status', { method: 'POST', body: payload });
+  }
+
+  async getAudienceMember(memberId: number) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'GET' });
+  }
+
+  async updateAudienceMember(memberId: number, payload: TPublicApiUpdateAudience) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'PUT', body: payload });
+  }
+
+  async removeAudienceMember(memberId: number) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'DELETE' });
+  }
+
+  // ─── Team (public API) ──────────────────────────────────────────────────
+
+  async listTeamMembers(query: Partial<TPublicApiTeamQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/team${toPageQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getTeamMember(memberId: number) {
+    return this.request(`/public-api/v1/team/${memberId}`, { method: 'GET' });
+  }
+
+  async updateTeamMember(memberId: number, payload: TPublicApiUpdateTeamMember) {
+    return this.request(`/public-api/v1/team/${memberId}`, { method: 'PUT', body: payload });
+  }
+
+  async inviteTeamMembers(payload: TPublicApiInviteTeamMembers) {
+    return this.request('/public-api/v1/team/invites', { method: 'POST', body: payload });
+  }
+
+  async removeTeamMember(memberId: number) {
+    return this.request(`/public-api/v1/team/${memberId}`, { method: 'DELETE' });
+  }
+
+  async getTeamInviteLink(roleId: number) {
+    return this.request(`/public-api/v1/team/invite-link?roleId=${roleId}`, { method: 'GET' });
+  }
+
+  async createTeamInviteLink(payload: TPublicApiCreateTeamInviteLink) {
+    return this.request('/public-api/v1/team/invite-link', { method: 'POST', body: payload });
+  }
+
+  async updateTeamInviteLink(payload: TPublicApiUpdateTeamInviteLink) {
+    return this.request('/public-api/v1/team/invite-link', { method: 'PATCH', body: payload });
+  }
+
+  // ─── Organization (public API) ──────────────────────────────────────────
+
+  async getOrganization() {
+    return this.request('/public-api/v1/organization', { method: 'GET' });
+  }
+
+  async updateOrganization(payload: TPublicApiUpdateOrganization) {
+    return this.request('/public-api/v1/organization', { method: 'PATCH', body: payload });
+  }
+
+  async getOrganizationCustomization() {
+    return this.request('/public-api/v1/organization/customization', { method: 'GET' });
+  }
+
+  async updateOrganizationCustomization(payload: TPublicApiUpdateOrganizationCustomization) {
+    return this.request('/public-api/v1/organization/customization', { method: 'PATCH', body: payload });
+  }
+
+  // ─── Organization email templates (public API) ──────────────────────────
+
+  async listEmailTemplates(query: Partial<TPublicApiEmailTemplateQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/organization/email-templates${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getEmailTemplate({ emailId, locale }: TPublicApiEmailTemplateParam) {
+    return this.request(`/public-api/v1/organization/email-templates/${emailId}/${locale}`, { method: 'GET' });
+  }
+
+  async updateEmailTemplate({ emailId, locale }: TPublicApiEmailTemplateParam, payload: TPublicApiSaveEmailTemplate) {
+    return this.request(`/public-api/v1/organization/email-templates/${emailId}/${locale}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async resetEmailTemplate({ emailId, locale }: TPublicApiEmailTemplateParam) {
+    return this.request(`/public-api/v1/organization/email-templates/${emailId}/${locale}`, { method: 'DELETE' });
+  }
+
+  async sendTestEmailTemplate(
+    { emailId, locale }: TPublicApiEmailTemplateParam,
+    payload: TPublicApiSendTestEmailTemplate
+  ) {
+    return this.request(`/public-api/v1/organization/email-templates/${emailId}/${locale}/test`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
   // ─── Course Members (public API) ────────────────────────────────────────
 
   async listCourseMembers(courseId: string, query: Partial<TPublicApiCourseMembersQuery> = {}) {
-    const searchParams = new URLSearchParams();
-    if (query.page) searchParams.set('page', String(query.page));
-    if (query.limit) searchParams.set('limit', String(query.limit));
-    if (query.search) searchParams.set('search', query.search);
-    if (query.roleId) searchParams.set('roleId', String(query.roleId));
-
-    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.requestPaginated(`/public-api/v1/courses/${courseId}/members${querySuffix}`, { method: 'GET' });
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/members${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
   }
 
   async addCourseMember(courseId: string, payload: TPublicApiAddCourseMember) {
@@ -356,8 +1039,8 @@ export class ClassroomIoApiClient {
 
   // ─── Cohorts (public API) ────────────────────────────────────────────────
 
-  async listCohorts(query: Partial<TPublicApiPaginationQuery> = {}) {
-    return this.requestPaginated(`/public-api/v1/cohorts${toPageQuerySuffix(query)}`, { method: 'GET' });
+  async listCohorts(query: Partial<TPublicApiCohortsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts${toQuerySuffix(query)}`, { method: 'GET' });
   }
 
   async createCohort(payload: TPublicApiCreateCohort) {
@@ -382,8 +1065,8 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}`, { method: 'DELETE' });
   }
 
-  async listCohortMembers(cohortId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
-    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/members${toPageQuerySuffix(query)}`, {
+  async listCohortMembers(cohortId: string, query: Partial<TPublicApiCohortMembersQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/members${toQuerySuffix(query)}`, {
       method: 'GET'
     });
   }
@@ -551,13 +1234,98 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}/invite-link`, { method: 'PATCH', body: payload });
   }
 
+  async getOrgAnalytics(query: Partial<TPublicApiAnalyticsSnapshotQuery> = {}) {
+    return this.request(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async listOrgAnalyticsStudents(query: Partial<TPublicApiAnalyticsStudentsQuery> = {}) {
+    return this.requestPaginated(
+      `/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/students${toQuerySuffix(query)}`,
+      {
+        method: 'GET'
+      }
+    );
+  }
+
+  async getAnalyticsCatalog() {
+    return this.request(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`, { method: 'GET' });
+  }
+
+  async queryAnalytics(payload: TPublicApiAnalyticsQueryRequest) {
+    const json = await this.requestRaw(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`, {
+      method: 'POST',
+      body: payload
+    });
+
+    return { data: json.data, meta: json.meta, pagination: json.pagination };
+  }
+
+  async getCourseAnalytics(courseId: string, query: Partial<TPublicApiCourseAnalyticsSnapshotQuery> = {}) {
+    return this.request(`/public-api/v1/courses/${courseId}/analytics${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async listCourseAnalyticsStudents(courseId: string, query: Partial<TPublicApiCourseAnalyticsStudentsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/analytics/students${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getCohortAnalytics(cohortId: string, query: Partial<TPublicApiAnalyticsSnapshotQuery> = {}) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/analytics${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async listCohortAnalyticsStudents(cohortId: string, query: Partial<TPublicApiAnalyticsStudentsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/analytics/students${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getMarketingAnalytics(query: Partial<TPublicApiMarketingQuery> = {}) {
+    return this.requestWithMeta(`/public-api/v1/analytics/marketing${toAnalyticsQuerySuffix(query)}`);
+  }
+
+  async getCourseMarketingAnalytics(courseId: string, query: Partial<TPublicApiCourseMarketingQuery> = {}) {
+    return this.requestWithMeta(
+      `/public-api/v1/analytics/marketing/courses/${courseId}${toAnalyticsQuerySuffix(query)}`
+    );
+  }
+
+  async getComplianceAnalytics() {
+    return this.requestWithMeta(`/public-api/v1/analytics/compliance`);
+  }
+
+  async listComplianceStudents(query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/analytics/compliance/students${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getOrgOverview(query: Partial<TPublicApiOrganizationOverviewQuery> = {}) {
+    return this.requestWithMeta(`/public-api/v1/organization/overview${toAnalyticsQuerySuffix(query)}`);
+  }
+
+  async getStudentAnalytics(profileId: string) {
+    return this.request(`/public-api/v1/audience/${profileId}/analytics`, { method: 'GET' });
+  }
+
+  async remindOverdueCohortGoals(cohortId: string, payload: TPublicApiRemindOverdueCohortGoals) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/remind-overdue`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
   private send(path: string, options: RequestOptions) {
-    return fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
+    return this.fetchImpl(new URL(path, this.config.CLASSROOMIO_API_URL), {
       method: options.method,
       headers: {
         Authorization: `Bearer ${this.config.CLASSROOMIO_API_KEY}`,
         'content-type': 'application/json',
-        'user-agent': this.config.CLASSROOMIO_USER_AGENT
+        'user-agent': this.config.CLASSROOMIO_USER_AGENT,
+        ...(this.clientName ? { 'x-mcp-client-name': this.clientName } : {}),
+        ...this.extraHeaders
       },
       body: options.body ? JSON.stringify(options.body) : undefined
     });
@@ -579,6 +1347,59 @@ export class ClassroomIoApiClient {
     return json;
   }
 
+  // ─── Media and lessons (public API) ──────────────────────────────────────
+
+  async createAssetUpload(payload: TPublicApiCreateAsset) {
+    return this.request<{ assetId: string; uploadUrl: string; expiresAt: string }>('/public-api/v1/assets', {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async createLesson(courseId: string, payload: Omit<TPublicApiCreateLesson, never>) {
+    return this.request(`/public-api/v1/courses/${encodeURIComponent(courseId)}/lessons`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateLesson(courseId: string, lessonId: string, payload: Omit<TPublicApiUpdateLesson, never>) {
+    return this.request(
+      `/public-api/v1/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}`,
+      { method: 'PUT', body: payload }
+    );
+  }
+
+  /** Sends bytes straight to storage. No ClassroomIO header — the URL's signature is the auth. */
+  /**
+   * Streams a file to storage.
+   *
+   * `content-length` is set explicitly for two reasons: a stream body would
+   * otherwise be sent chunked, and the presigned URL signs that header — so the
+   * request must declare exactly the size the reservation was checked against.
+   */
+  async putToPresignedUrl(
+    presignedUrl: string,
+    body: Readable,
+    contentType: string,
+    contentLength: number
+  ): Promise<void> {
+    const response = await fetch(presignedUrl, {
+      method: 'PUT',
+      headers: {
+        'content-type': contentType,
+        'content-length': String(contentLength)
+      },
+      body: Readable.toWeb(body) as unknown as BodyInit,
+      // Required by undici to send a streaming request body.
+      duplex: 'half'
+    } as RequestInit & { duplex: 'half' });
+
+    if (!response.ok) {
+      throw new ClassroomIoApiError(`Upload to storage failed with status ${response.status}`, response.status);
+    }
+  }
+
   private async request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
     const json = await this.requestRaw<TResponse>(path, options);
     return json.data;
@@ -594,6 +1415,11 @@ export class ClassroomIoApiClient {
     }
 
     return { data: json.data, pagination: json.pagination };
+  }
+
+  private async requestWithMeta<TResponse>(path: string) {
+    const json = await this.requestRaw<TResponse>(path, { method: 'GET' });
+    return { data: json.data, meta: json.meta };
   }
 }
 

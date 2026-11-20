@@ -87,13 +87,19 @@ def title_card(project, clip):
     draw = ImageDraw.Draw(image)
     lines, head, tracking = brand.fit_lines(clip['title'], 860, 3, 64)
     pad, line_height = 36, 64
-    width = max(brand.text_width(line, head, tracking) for line in lines)
-    height = 18 + 28 + line_height * len(lines) + 4
+    speaker = clip.get('speaker')
+    speaker_font = brand.mono(18)
+    speaker_width = brand.text_width(speaker, speaker_font, 18 * 0.08) if speaker else 0
+    width = max([brand.text_width(line, head, tracking) for line in lines] + [speaker_width])
+    height = 18 + 28 + line_height * len(lines) + 4 + (44 if speaker else 0)
     draw.rectangle((80, 80, 80 + width + pad * 2, 80 + height + pad * 2), fill=brand.INK + (235,))
     eyebrow = project.series if project.series.startswith('CLASSROOMIO') else f'CLASSROOMIO · {project.series}'
     brand.draw_tracked(draw, 80 + pad, 80 + pad + 16, eyebrow, brand.mono(18), brand.SKY, 18 * 0.12)
     for number, line in enumerate(lines):
         brand.draw_tracked(draw, 80 + pad, 80 + pad + 46 + line_height * number + 50, line, head, brand.PAPER, tracking)
+    if speaker:
+        speaker_y = 80 + pad + 46 + line_height * len(lines) + 50 + 24
+        brand.draw_tracked(draw, 80 + pad, speaker_y, speaker, speaker_font, brand.SKY, 18 * 0.08)
     draw.rectangle((80, 80 + height + pad * 2, 80 + width + pad * 2, 80 + height + pad * 2 + 6), fill=brand.BLUE + (255,))
     return image
 
@@ -136,7 +142,7 @@ def compose_landscape(project, clip, info, events, sign_off, out_path):
     caption_track = captions.Captions(tokens, duration, captions.LANDSCAPE)
     total = duration + (4.5 if sign_off else 0.5)
     audio = os.path.join(project.clip_work(clip), 'audio-16x9.wav')
-    prepare.mix_audio(info['trimmed'], None, duration, total, project.audio['loudness'], audio)
+    prepare.mix_audio(info['trimmed'], None, duration, total, project.audio, audio)
     encoder = start_encoder(LANDSCAPE, fps, audio, out_path)
     canvas = None
     for index, frame in enumerate(frame_reader(info['trimmed'], LANDSCAPE, fps)):
@@ -228,7 +234,7 @@ def compose_vertical(project, clip, info, events, hook, sign_off, out_path):
     lead = 0.0 if hook is None else hook['end'] - hook['start']
     total = lead + duration + (4.5 if sign_off else 0.5)
     audio = os.path.join(project.clip_work(clip), 'audio-9x16.wav')
-    prepare.mix_audio(info['trimmed'], hook, duration, total, project.audio['loudness'], audio)
+    prepare.mix_audio(info['trimmed'], hook, duration, total, project.audio, audio)
     encoder = start_encoder(VERTICAL, fps, audio, out_path)
     if hook:
         write_hook(encoder, info, hook, framing, fps)

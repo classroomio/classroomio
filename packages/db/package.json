@@ -68,6 +68,10 @@
     "db:rewrite-media-host": "tsx src/scripts/rewrite-media-host.ts",
     "db:login-link": "tsx src/scripts/generate-login-link.ts",
     "db:seed:coursera-students": "tsx src/scripts/seed-coursera-audience-students.ts",
+    "db:seed:coursera-grading": "tsx src/scripts/seed-coursera-grading-demo.ts",
+    "db:seed:coursera-live-class": "tsx src/scripts/seed-coursera-live-class-demo.ts",
+    "db:seed:analytics-load": "tsx src/scripts/seed-analytics-load.ts",
+    "db:seed:analytics-states": "tsx src/scripts/seed-analytics-states.ts",
     "db:seed:platform-templates": "tsx src/scripts/seed-platform-templates.ts",
     "db:create-org": "tsx src/scripts/create-org-with-admin.ts",
     "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",
@@ -98,17 +102,19 @@
     "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
   },
   "dependencies": {
-    "@better-auth/sso": "^1.4.18",
+    "@better-auth/oauth-provider": "^1.7.13",
+    "@better-auth/sso": "^1.7.13",
     "@cio/email": "workspace:*",
     "@cio/jobs": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",
     "bcrypt": "6.0.0",
-    "better-auth": "^1.4.18",
+    "better-auth": "^1.7.13",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.44.7",
-    "jose": "^6.1.3",
+    "fractional-indexing": "^4.0.0",
+    "jose": "^6.2.13",
     "postgres": "^3.4.7"
   },
   "devDependencies": {

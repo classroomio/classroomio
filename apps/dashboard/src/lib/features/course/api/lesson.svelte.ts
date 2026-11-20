@@ -15,10 +15,15 @@ import type {
   GetLessonHistoryRequest,
   GetLessonLanguageRequest,
   GetLessonRequest,
+  GetLessonVideoStatusRequest,
+  LessonVideoHlsStatuses,
   Lesson,
   LessonComments,
   PromoteUngroupedSectionRequest,
   ReorderCourseSectionsRequest,
+  RestoreLessonHistoryRequest,
+  RestoreLessonToEntryRequest,
+  UndoLessonChangeSetRequest,
   UpdateCourseSectionRequest,
   UpdateLessonCommentRequest,
   UpdateLessonCompletionRequest,
@@ -57,6 +62,7 @@ import { snackbar } from '$features/ui/snackbar/store';
  */
 export class LessonApi extends BaseApiWithErrors {
   lesson = $state<Lesson | null>(null);
+  videoHlsStatuses = $state<LessonVideoHlsStatuses>({});
   sections = $state<CourseSectionWithLessons[]>([]);
   commentsByLessonId = $state<
     Record<
@@ -73,11 +79,40 @@ export class LessonApi extends BaseApiWithErrors {
   currentLocale = $state<TLocale>('en');
   isSaving = $state(false);
   isDirty = $state(false);
+  revision = 0;
   isCommenting = $state(false);
   isUpdatingComment = $state(false);
 
+  markDirty() {
+    this.isDirty = true;
+    this.revision += 1;
+  }
+
   translations = $state<Record<string, Record<TLocale, string>>>({});
   note = $state('');
+
+  /**
+   * Encoding state of this lesson's uploaded videos, keyed by asset id.
+   *
+   * Served by its own endpoint rather than read off `lesson.videos`, because
+   * the editor writes that array back on save — a status folded into it would
+   * be frozen at page load — and because polling must not refetch the lesson
+   * underneath unsaved edits.
+   */
+  async getVideoStatuses(courseId: string, lessonId: string) {
+    return this.execute<GetLessonVideoStatusRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId']['video-status'].$get({
+          param: { courseId, lessonId }
+        }),
+      logContext: 'fetching lesson video status',
+      onSuccess: (response) => {
+        if (response.data) {
+          this.videoHlsStatuses = response.data.statuses;
+        }
+      }
+    });
+  }
 
   /**
    * Gets a lesson by ID
@@ -142,16 +177,12 @@ export class LessonApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lesson_create_failed');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
+        if (result.field) {
+          this.errors[result.field] = result.message;
+          snackbar.error(result.message);
+        } else {
+          this.errors.general = result.message;
+          snackbar.error(result.message);
         }
       }
     });
@@ -170,6 +201,7 @@ export class LessonApi extends BaseApiWithErrors {
     }
 
     this.isSaving = true;
+    const revisionAtRequest = this.revision;
 
     const response = await this.execute<UpdateLessonRequest>({
       requestFn: () =>
@@ -181,21 +213,18 @@ export class LessonApi extends BaseApiWithErrors {
       onSuccess: () => {
         this.errors = {};
 
+        if (this.revision !== revisionAtRequest) return;
+
         if (this.lesson?.id === lessonId) {
           this.lesson = { ...this.lesson, ...result.data } as Lesson;
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lesson_update_failed');
-          return;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else {
-          snackbar.error('snackbar.lessons.lesson_update_failed');
-        }
+
+        snackbar.error(result.message);
       }
     });
 
@@ -224,10 +253,8 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lesson_delete_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.lesson_delete_failed');
       }
     });
   }
@@ -270,14 +297,11 @@ export class LessonApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.section_create_failed');
-          return;
+        if (result.field) {
+          this.errors[result.field] = result.message;
         }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        }
+
+        snackbar.error(result.message);
       }
     });
 
@@ -307,19 +331,13 @@ export class LessonApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.section_update_failed');
-          return;
+        if (result.field) {
+          this.errors[result.field] = result.message;
+        } else {
+          this.errors.general = result.message;
         }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-          return;
-        }
-        if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
-        }
+
+        snackbar.error(result.message);
       }
     });
   }
@@ -348,10 +366,8 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.section_update_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.section_update_failed');
       }
     });
   }
@@ -393,10 +409,8 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.sections_reorder_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.sections_reorder_failed');
       }
     });
   }
@@ -447,11 +461,9 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
+      onError: () => {
         this.commentsByLessonId[lessonId].isLoading = false;
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.comment_fetch_failed');
-        }
+        snackbar.error('snackbar.lessons.comment_fetch_failed');
       }
     });
   }
@@ -487,11 +499,9 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
+      onError: () => {
         commentState.isLoading = false;
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.load_more_comments_failed');
-        }
+        snackbar.error('snackbar.lessons.load_more_comments_failed');
       }
     });
   }
@@ -529,10 +539,8 @@ export class LessonApi extends BaseApiWithErrors {
             this.commentsByLessonId[lessonId].totalCount++;
           }
         },
-        onError: (result) => {
-          if (typeof result === 'string') {
-            snackbar.error('snackbar.lessons.comment_add_failed');
-          }
+        onError: () => {
+          snackbar.error('snackbar.lessons.comment_add_failed');
         }
       });
     } finally {
@@ -574,10 +582,8 @@ export class LessonApi extends BaseApiWithErrors {
             this.errors = {};
           }
         },
-        onError: (result) => {
-          if (typeof result === 'string') {
-            snackbar.error('snackbar.lessons.comment_update_failed');
-          }
+        onError: () => {
+          snackbar.error('snackbar.lessons.comment_update_failed');
         }
       });
     } finally {
@@ -609,10 +615,8 @@ export class LessonApi extends BaseApiWithErrors {
           this.errors = {};
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.comment_delete_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.comment_delete_failed');
       }
     });
   }
@@ -698,10 +702,8 @@ export class LessonApi extends BaseApiWithErrors {
           }
         }
       },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.completion_update_failed');
-        }
+      onError: () => {
+        snackbar.error('snackbar.lessons.completion_update_failed');
       }
     });
   }
@@ -781,7 +783,7 @@ export class LessonApi extends BaseApiWithErrors {
       ...this.lesson,
       videos: videos.filter((_v, i) => i !== videoIndex)
     };
-    this.isDirty = true;
+    this.markDirty();
   }
 
   /**
@@ -825,7 +827,7 @@ export class LessonApi extends BaseApiWithErrors {
     this.lesson = { ...this.lesson, videos };
 
     if (options.markDirty ?? true) {
-      this.isDirty = true;
+      this.markDirty();
     }
   }
 
@@ -851,7 +853,7 @@ export class LessonApi extends BaseApiWithErrors {
       ...this.lesson,
       documents: documents.filter((_d, i) => i !== documentIndex)
     };
-    this.isDirty = true;
+    this.markDirty();
   }
 
   /**
@@ -883,7 +885,7 @@ export class LessonApi extends BaseApiWithErrors {
         [field]: value as Lesson[K]
       };
     }
-    this.isDirty = true;
+    this.markDirty();
   }
 
   /**
@@ -898,6 +900,77 @@ export class LessonApi extends BaseApiWithErrors {
           query: { locale, limit: limit.toString(), ...(cursor ? { cursor } : {}) }
         }),
       logContext: 'fetching lesson history'
+    });
+  }
+
+  /**
+   * Restores one text block of a lesson to a past version. The server reads the version
+   * itself and gives this lesson its own copy first when the block is shared.
+   */
+  async restoreHistoryVersion(
+    courseId: string,
+    lessonId: string,
+    version: { blockId: string; locale: TLocale; versionId: number }
+  ) {
+    return this.execute<RestoreLessonHistoryRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId'].history.restore.$post({
+          param: { courseId, lessonId },
+          json: version
+        }),
+      logContext: 'restoring lesson version',
+      onSuccess: () => {
+        this.success = true;
+      },
+      onError: () => {
+        snackbar.error('course.navItem.lessons.version_history.restore_failed');
+      }
+    });
+  }
+
+  /**
+   * Restores the whole lesson to the moment of one history entry: block order, settings and every
+   * locale of every text block as saved then.
+   */
+  async restoreLessonToEntry(
+    courseId: string,
+    lessonId: string,
+    entry: { entryType: 'text' | 'structure'; entryId: number }
+  ) {
+    return this.execute<RestoreLessonToEntryRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId'].history['restore-lesson'].$post({
+          param: { courseId, lessonId },
+          json: entry
+        }),
+      logContext: 'restoring lesson',
+      onSuccess: () => {
+        this.success = true;
+      },
+      onError: () => {
+        snackbar.error('course.navItem.lessons.version_history.restore_lesson_failed');
+      }
+    });
+  }
+
+  /**
+   * Reverts one change set (an assistant chat request or a restore). The server refuses when
+   * something the change touched was edited since.
+   */
+  async undoChangeSet(courseId: string, lessonId: string, changeSetId: string) {
+    return this.execute<UndoLessonChangeSetRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId'].history.undo.$post({
+          param: { courseId, lessonId },
+          json: { changeSetId }
+        }),
+      logContext: 'undoing lesson change',
+      onSuccess: () => {
+        this.success = true;
+      },
+      onError: () => {
+        snackbar.error('course.navItem.lessons.version_history.undo_failed');
+      }
     });
   }
 

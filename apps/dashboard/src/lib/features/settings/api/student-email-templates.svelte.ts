@@ -1,4 +1,4 @@
-import { isEmailLocale, isStudentEmailId } from '@cio/utils/email';
+import { isEmailLocale, isStudentEmailId, STUDENT_EMAIL_CATALOG } from '@cio/utils/email';
 import type {
   EmailLocale,
   StudentEmailId,
@@ -60,7 +60,42 @@ class StudentEmailTemplatesApi {
   }
 
   hasChanges(emailId: StudentEmailId, locale: EmailLocale) {
-    return JSON.stringify(this.drafts[emailId]?.[locale]) !== JSON.stringify(this.saved[emailId]?.[locale]);
+    return (
+      JSON.stringify(this.looseCopy(emailId, locale, this.drafts[emailId]?.[locale])) !==
+      JSON.stringify(this.looseCopy(emailId, locale, this.saved[emailId]?.[locale]))
+    );
+  }
+
+  private resolvedCopy(
+    emailId: StudentEmailId,
+    locale: EmailLocale,
+    override: StudentEmailTemplateOverride | undefined
+  ) {
+    const fallback = STUDENT_EMAIL_CATALOG[locale].templates[emailId];
+
+    return {
+      subject: override?.subject ?? fallback.subject,
+      content: override?.content ?? fallback.body
+    };
+  }
+
+  private looseCopy(emailId: StudentEmailId, locale: EmailLocale, override: StudentEmailTemplateOverride | undefined) {
+    const fallback = STUDENT_EMAIL_CATALOG[locale].templates[emailId];
+    const resolved = this.resolvedCopy(emailId, locale, override);
+
+    return {
+      subject: resolved.subject || fallback.subject,
+      content: resolved.content
+    };
+  }
+
+  private storeOverride(emailId: StudentEmailId, locale: EmailLocale, next: StudentEmailTemplateOverride) {
+    const savedEntry = this.saved[emailId]?.[locale];
+    const isUnchanged =
+      JSON.stringify(this.resolvedCopy(emailId, locale, next)) ===
+      JSON.stringify(this.resolvedCopy(emailId, locale, savedEntry));
+
+    this.drafts = withOverride(this.drafts, emailId, locale, isUnchanged ? savedEntry : next);
   }
 
   isEdited(emailId: StudentEmailId) {
@@ -68,21 +103,20 @@ class StudentEmailTemplatesApi {
   }
 
   updateContent(emailId: StudentEmailId, locale: EmailLocale, content: string) {
-    this.drafts[emailId] = {
-      ...this.drafts[emailId],
-      [locale]: { ...this.drafts[emailId]?.[locale], content }
-    };
+    this.storeOverride(emailId, locale, {
+      ...this.drafts[emailId]?.[locale],
+      content
+    });
   }
 
   updateSubject(emailId: StudentEmailId, locale: EmailLocale, subject: string, defaultContent: string) {
-    this.drafts[emailId] = {
-      ...this.drafts[emailId],
-      [locale]: {
-        ...this.drafts[emailId]?.[locale],
-        content: this.drafts[emailId]?.[locale]?.content ?? defaultContent,
-        subject
-      }
+    const next: StudentEmailTemplateOverride = {
+      ...this.drafts[emailId]?.[locale],
+      content: this.drafts[emailId]?.[locale]?.content ?? defaultContent,
+      subject
     };
+
+    this.storeOverride(emailId, locale, next);
   }
 
   resetDraft(emailId: StudentEmailId, locale: EmailLocale) {
@@ -110,7 +144,7 @@ class StudentEmailTemplatesApi {
               emailId,
               locale,
               nextOverride.content,
-              nextOverride.subject === defaultSubject ? null : nextOverride.subject
+              !nextOverride.subject || nextOverride.subject === defaultSubject ? null : nextOverride.subject
             );
       if (!result || this.organizationId !== organizationId) return;
 

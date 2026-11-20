@@ -122,6 +122,10 @@ export interface OrgLandingPageHero {
   eyebrow?: string;
 }
 
+export interface OrgLandingPageFeaturedCourse {
+  enabled?: boolean;
+}
+
 export interface OrgLandingPageJson {
   theme: OrgLandingPageTheme;
   hero: OrgLandingPageHero;
@@ -130,6 +134,7 @@ export interface OrgLandingPageJson {
   embed?: OrgLandingPageEmbed;
   callout?: OrgLandingPageCallout;
   links?: OrgLandingPageLinks;
+  featuredCourse?: OrgLandingPageFeaturedCourse;
 }
 
 export interface OrgTeamMember {

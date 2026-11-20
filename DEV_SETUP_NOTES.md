@@ -16,7 +16,7 @@ fresh machine or to onboard a new contributor.
 |------|---------|-----------|-------|
 | Node.js | 20.x (`.nvmrc` = v20.19.3) | **Required** | `nvm install && nvm use` |
 | pnpm | 10.x | **Required** | The package scripts call `pnpm` directly (e.g. `build:clean` runs `pnpm run build`) — npm/yarn are not supported substitutes. `corepack enable` then `corepack prepare pnpm@latest --activate`, or `npm i -g pnpm` |
-| Docker (Desktop) | latest | **Required** | Runs Postgres + Redis (and optionally MinIO). No local install of those needed. |
+| Docker (Desktop) | latest | **Required** | Runs Postgres + Redis (and optionally the bundled SeaweedFS object storage). No local install of those needed. |
 | Git | latest | **Required** | Windows: includes Git Bash |
 | ffmpeg / ffprobe | latest | Optional | Only for media/thumbnail background jobs |
 
@@ -72,7 +72,7 @@ cp apps/api/.env apps/jobs/.env
 docker compose -f docker-compose.yaml up -d postgres redis
 ```
 (Optional — object storage for uploads:
-`docker compose -f docker-compose.yaml --profile minio up -d minio minio-init`.)
+`docker compose -f docker-compose.yaml --profile storage up -d storage storage-init`.)
 
 ### Step 4 — Set up + seed the database
 ```bash
@@ -149,7 +149,7 @@ enough — developing costs nothing.
 | Dashboard   | http://localhost:5173 | Vite dev server                  |
 | Postgres    | localhost:5432        | Docker container `cio-postgres`  |
 | Redis       | localhost:6379        | Docker container `cio-redis`     |
-| MinIO       | 9000 / console 9001   | only if started (optional)       |
+| Storage     | localhost:9000        | SeaweedFS, only if started (optional) |
 | jobs-worker | (none)                | background worker, no HTTP port  |
 
 ## 4. Demo accounts

@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCohortById } from '@cio/db/queries/cohort';
 import type { TInviteStudentsToCohort, TAssignExistingStudentsToCohort } from '@cio/utils/validation/cohort';
 import { assignAudienceToCourses, importAudienceMembers } from '@api/services/organization/audience';
+import type { TEventSource } from '@cio/core/services/posthog';
 
 /**
  * Invite students to a single cohort by email CSV.
@@ -13,7 +14,8 @@ import { assignAudienceToCourses, importAudienceMembers } from '@api/services/or
 export async function inviteStudentsToCohort(
   cohortId: string,
   data: TInviteStudentsToCohort,
-  invitedByProfileId: string
+  invitedByProfileId: string,
+  source: TEventSource = 'dashboard'
 ) {
   const cohort = await getCohortById(cohortId);
   if (!cohort) {
@@ -29,7 +31,8 @@ export async function inviteStudentsToCohort(
       allCourses: false,
       allCohorts: false
     },
-    invitedByProfileId
+    invitedByProfileId,
+    source
   );
 }
 
@@ -38,15 +41,25 @@ export async function inviteStudentsToCohort(
  * single cohort. Same scoping logic as `inviteStudentsToCohort` — restricted
  * to one cohort at a time so the caller's cohort-admin permission is enough.
  */
-export async function assignExistingStudentsToCohort(cohortId: string, data: TAssignExistingStudentsToCohort) {
+export async function assignExistingStudentsToCohort(
+  cohortId: string,
+  data: TAssignExistingStudentsToCohort,
+  source: TEventSource = 'dashboard',
+  actorProfileId: string | null = null
+) {
   const cohort = await getCohortById(cohortId);
   if (!cohort) {
     throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
   }
 
-  return assignAudienceToCourses(cohort.organizationId, {
-    profileIds: data.profileIds,
-    cohortIds: [cohortId],
-    sendEmail: data.sendEmail
-  });
+  return assignAudienceToCourses(
+    cohort.organizationId,
+    {
+      profileIds: data.profileIds,
+      cohortIds: [cohortId],
+      sendEmail: data.sendEmail
+    },
+    source,
+    actorProfileId
+  );
 }

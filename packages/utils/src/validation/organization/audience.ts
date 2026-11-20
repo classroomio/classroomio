@@ -4,7 +4,7 @@ export const AudienceSortBy = z.enum(['createdAt', 'name', 'email', 'lastLoginAt
 export const AudienceSortOrder = z.enum(['asc', 'desc']);
 
 /** Lifecycle state of the membership. Mirrors the `ORGANIZATION_MEMBER_STATUS` enum. */
-export const AudienceMemberStatus = z.enum(['ACTIVE', 'DEACTIVATED', 'ARCHIVED']);
+export const AudienceMemberStatus = z.enum(['ACTIVE', 'ARCHIVED']);
 
 /** Invite state, derived rather than stored. See `deriveAudienceMemberStatus`. */
 export const AudienceInviteStatus = z.enum(['active', 'pending', 'expired', 'revoked']);
@@ -13,6 +13,9 @@ export const AudienceEnrollment = z.enum(['enrolled', 'not_enrolled']);
 
 /** Exclusive by precedence, not three independent predicates. See `getOrganizationAudience`. */
 export const AudienceCompletion = z.enum(['not_started', 'in_progress', 'completed']);
+
+/** Whether any of the learner's course memberships in this org has earned a certificate. */
+export const AudienceCertificate = z.enum(['earned', 'not_earned']);
 
 /**
  * Staleness thresholds, not recency windows: `90d` means "not seen in 90 days".
@@ -31,6 +34,7 @@ export const ZGetAudienceQuery = z.object({
   inviteStatus: AudienceInviteStatus.optional(),
   enrollment: AudienceEnrollment.optional(),
   completion: AudienceCompletion.optional(),
+  certificate: AudienceCertificate.optional(),
   lastLoginBefore: AudienceActivityWindow.optional(),
   lastActiveBefore: AudienceActivityWindow.optional(),
   /**
@@ -51,6 +55,7 @@ export type TAudienceMemberStatus = z.infer<typeof AudienceMemberStatus>;
 export type TAudienceInviteStatus = z.infer<typeof AudienceInviteStatus>;
 export type TAudienceEnrollment = z.infer<typeof AudienceEnrollment>;
 export type TAudienceCompletion = z.infer<typeof AudienceCompletion>;
+export type TAudienceCertificate = z.infer<typeof AudienceCertificate>;
 export type TAudienceActivityWindow = z.infer<typeof AudienceActivityWindow>;
 export type TGetAudienceQuery = z.infer<typeof ZGetAudienceQuery>;
 
@@ -68,7 +73,7 @@ export const AUDIENCE_BULK_IDS_MAX = 500;
 /** Checked against the *resolved* target, so filter mode cannot slip past it. */
 export const AUDIENCE_BULK_SYNC_MAX = 1000;
 
-export const AudienceBulkAction = z.enum(['deactivate', 'reactivate', 'archive', 'unarchive', 'delete']);
+export const AudienceBulkAction = z.enum(['archive', 'unarchive', 'delete']);
 export type TAudienceBulkAction = z.infer<typeof AudienceBulkAction>;
 
 /**

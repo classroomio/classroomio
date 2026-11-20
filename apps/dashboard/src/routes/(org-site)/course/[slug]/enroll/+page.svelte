@@ -14,6 +14,7 @@
   import { authClient } from '$lib/utils/services/auth/client';
   import { appInitApi } from '$features/app/init.svelte';
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
+  import { logout } from '$lib/utils/functions/logout';
 
   let { data } = $props();
 
@@ -28,6 +29,7 @@
   const sessionReady = $derived(!$session.isPending && !$session.isRefetching);
   const sessionUser = $derived($session.data?.user ?? null);
   const isLoggedIn = $derived(sessionReady && Boolean(sessionUser));
+  const arrivedFromStudentHome = $derived(page.url.searchParams.get('from') === 'student-home');
   const isEmailVerified = $derived(Boolean($profile.isEmailVerified || sessionUser?.emailVerified));
 
   async function sendVerificationEmail() {
@@ -161,6 +163,26 @@
     }
   }
 
+  function goToInviteAuth() {
+    const redirectPath = page.url?.pathname ?? `/course/${data.course?.slug ?? ''}/enroll`;
+    const redirectSearch = data.token ? `?invite_token=${encodeURIComponent(data.token)}` : '';
+    const redirectUrl = `${redirectPath}${redirectSearch}`;
+
+    const inviteEmail = data.inviteEmail ?? '';
+    const target = data.inviteEmailExists ? '/login' : '/signup';
+    const params = new URLSearchParams({ redirect: redirectUrl });
+    if (inviteEmail) params.set('email', inviteEmail);
+
+    goto(resolve(`${target}?${params.toString()}`, {}));
+  }
+
+  async function switchAccount() {
+    loading = true;
+    await logout(false);
+    goToInviteAuth();
+    loading = false;
+  }
+
   async function handleSubmit() {
     if (!canJoinCourse) {
       snackbar.error(getBlockedMessage());
@@ -177,17 +199,7 @@
     }
 
     loading = true;
-
-    const redirectPath = page.url?.pathname ?? `/course/${data.course?.slug ?? ''}/enroll`;
-    const redirectSearch = data.token ? `?invite_token=${encodeURIComponent(data.token)}` : '';
-    const redirectUrl = `${redirectPath}${redirectSearch}`;
-
-    const inviteEmail = data.inviteEmail ?? '';
-    const target = data.inviteEmailExists ? '/login' : '/signup';
-    const params = new URLSearchParams({ redirect: redirectUrl });
-    if (inviteEmail) params.set('email', inviteEmail);
-
-    goto(resolve(`${target}?${params.toString()}`, {}));
+    goToInviteAuth();
     loading = false;
   }
 
@@ -195,6 +207,7 @@
     if (
       !sessionReady ||
       !isLoggedIn ||
+      arrivedFromStudentHome ||
       !canJoinCourse ||
       enrollmentInFlight ||
       loading ||
@@ -259,6 +272,20 @@
       >
         {$t('course.navItem.landing_page.enroll_page.back_to_course')}
       </a>
+    {:else if courseApi.inviteRestricted}
+      <p class="mt-3 text-center text-sm text-red-500">
+        {data.inviteEmail
+          ? $t('course.navItem.landing_page.enroll_page.invite_restricted_email', {
+              inviteEmail: data.inviteEmail,
+              currentEmail: sessionUser?.email ?? ''
+            })
+          : $t('course.navItem.landing_page.enroll_page.invite_restricted')}
+      </p>
+      <div class="mt-4 flex justify-center">
+        <Button type="button" variant="outline" onclick={switchAccount} {loading}>
+          {$t('course.navItem.landing_page.enroll_page.switch_account')}
+        </Button>
+      </div>
     {:else if enrollmentError}
       <p class="mt-3 text-center text-sm text-red-500">{enrollmentError}</p>
     {:else if !canJoinCourse}
@@ -266,7 +293,7 @@
     {/if}
   </div>
 
-  {#if !enrolledPendingVerification}
+  {#if !enrolledPendingVerification && !courseApi.inviteRestricted}
     <div class="my-4 flex w-full items-center justify-center">
       <Button type="submit" disabled={!canJoinCourse || joinButtonLoading} loading={joinButtonLoading}>
         {$t('course.navItem.landing_page.enroll_page.join_course')}

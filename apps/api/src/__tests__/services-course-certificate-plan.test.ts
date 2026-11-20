@@ -114,10 +114,7 @@ describe('assertCertificateChangeAllowed', () => {
       assertCertificateChangeAllowed(COURSE_ID, {
         ...storedCertificate,
         theme: undefined,
-        deadline: null,
-        threshold: 100,
-        requiredExerciseId: null,
-        exerciseMinScorePercent: null
+        deadline: null
       })
     ).resolves.toBeUndefined();
     expect(getActiveOrganizationPlan).not.toHaveBeenCalled();
@@ -125,7 +122,6 @@ describe('assertCertificateChangeAllowed', () => {
 
   it.each([
     ['isDownloadable', { isDownloadable: false }],
-    ['threshold', { threshold: 80 }],
     ['emailMessage', { emailMessage: 'Changed' }],
     ['design', { design: { ...storedCertificate.design, accentColor: '#445566' } }]
   ])('blocks a Basic org from changing %s', async (_field, change) => {

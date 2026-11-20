@@ -10,6 +10,7 @@ import {
   ZCreateCohortNewsfeed,
   ZCreateCohortNewsfeedComment,
   ZInviteStudentsToCohort,
+  ZRemindOverdueCohortGoals,
   ZUpdateCohort,
   ZUpdateCohortGoal,
   ZUpdateCohortMember,
@@ -59,6 +60,7 @@ import {
   getOrgGoalsOverview,
   listGoals,
   removeGoal,
+  sendOverdueCohortGoalRemindersNow,
   updateGoal
 } from '@api/services/cohort/goal';
 
@@ -68,7 +70,8 @@ import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { cohortMemberMiddleware } from '@api/middlewares/cohort-member';
 import { cohortTeamMemberMiddleware } from '@api/middlewares/cohort-team-member';
 import { cohortNewsfeedCommentAuthorOrTeamMiddleware } from '@api/middlewares/cohort-newsfeed-comment-author-or-team';
-import { handleError } from '@api/utils/errors';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 const ZCohortParam = z.object({ cohortId: z.string().uuid() });
@@ -82,6 +85,13 @@ const ZCommentParam = z.object({
 });
 const ZGoalParam = z.object({ cohortId: z.string().uuid(), goalId: z.string().uuid() });
 const ZOrgQuery = z.object({ organizationId: z.string().uuid() });
+
+const cohortGoalReminderRateLimit = createRateLimiter({
+  windowMs: 60_000,
+  maxRequests: 20,
+  message: 'Too many reminders. Please try again shortly.',
+  keyGenerator: (c) => `cohort_goal_remind:${c.get('user')?.id ?? 'anonymous'}`
+});
 
 export const cohortRouter = new Hono()
   // ── Enrolled Cohorts (LMS) ─── must be before /:cohortId ───────────────
@@ -124,11 +134,15 @@ export const cohortRouter = new Hono()
   .post(
     '/',
     authMiddleware,
+    orgTeamMemberMiddleware,
     zValidator('json', ZCreateCohort.extend({ organizationId: z.string().uuid() })),
     async (c) => {
       try {
         const user = c.get('user')!;
         const { organizationId, ...data } = c.req.valid('json');
+        if (organizationId !== c.req.header('cio-org-id')) {
+          throw new AppError('Organization mismatch', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+        }
         const cohort = await createCohort(organizationId, user.id, data);
         return c.json({ success: true, data: cohort }, 201);
       } catch (error) {
@@ -238,7 +252,7 @@ export const cohortRouter = new Hono()
       try {
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await addCohortMembers(cohortId, data);
+        const result = await addCohortMembers(cohortId, data, c.get('user')?.id ?? null);
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to add cohort members');
@@ -280,7 +294,7 @@ export const cohortRouter = new Hono()
     async (c) => {
       try {
         const { cohortId, memberId } = c.req.valid('param');
-        const member = await removeCohortMemberService(cohortId, memberId);
+        const member = await removeCohortMemberService(cohortId, memberId, c.get('user')?.id ?? null);
         return c.json({ success: true, data: member }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to remove cohort member');
@@ -330,7 +344,7 @@ export const cohortRouter = new Hono()
       try {
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await assignExistingStudentsToCohort(cohortId, data);
+        const result = await assignExistingStudentsToCohort(cohortId, data, 'dashboard', c.get('user')?.id ?? null);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to assign students to cohort');
@@ -820,6 +834,30 @@ export const cohortRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to evaluate cohort goals');
+      }
+    }
+  )
+
+  /**
+   * POST /cohort/:cohortId/goal-assignments/remind-overdue
+   * Email every overdue student on the cohort's active goals.
+   */
+  .post(
+    '/:cohortId/goal-assignments/remind-overdue',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    cohortGoalReminderRateLimit,
+    zValidator('param', ZCohortParam),
+    zValidator('json', ZRemindOverdueCohortGoals),
+    async (c) => {
+      try {
+        const { cohortId } = c.req.valid('param');
+        const input = c.req.valid('json');
+        const result = await sendOverdueCohortGoalRemindersNow(cohortId, input);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to send reminders');
       }
     }
   );

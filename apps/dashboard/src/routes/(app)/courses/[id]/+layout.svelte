@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { BlockLoader } from '@cio/ui/custom/block-loader';
+  import * as Block from '@cio/ui/custom/block';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
   import type { Course } from '$features/course/types';
@@ -10,6 +10,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Confetti } from '$features/ui';
   import { courseApi } from '$features/course/api';
+  import { switchToOwnerOrg } from '$features/org/utils/owner-org';
   import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
   import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
   import { aiAssistantPanelDefinition, ContentAskAiBar, AI_ASSISTANT_PANEL_ID } from '$features/ai-assistant';
@@ -24,7 +25,7 @@
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin, orgs } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { CourseMobileBottomNav } from '$features/course/components/mobile';
@@ -37,6 +38,7 @@
     COURSE_SIDEBAR_DEFAULT_WIDTH,
     COURSE_SIDEBAR_MAX_WIDTH,
     COURSE_SIDEBAR_MIN_WIDTH,
+    COURSE_SIDEBAR_OPEN_STORAGE_KEY,
     COURSE_SIDEBAR_STORAGE_KEY
   } from '$features/course/components/sidebar/constants';
 
@@ -61,6 +63,8 @@
   const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
   let hasLoadedSidebarWidth = $state(false);
+  let sidebarOpen = $state(true);
+  let hasLoadedSidebarOpen = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
 
   $effect(() => {
@@ -76,6 +80,12 @@
     void courseApi.ensureCourse(courseId, profileId);
   });
 
+  $effect(() => {
+    if (!courseId || loadedCourseId !== courseId) return;
+
+    switchToOwnerOrg(courseApi.course?.group?.organizationId, $currentOrg.id, $orgs);
+  });
+
   const isCourseReady = $derived(loadedCourseId === courseId && !!courseApi.group.id);
 
   const user: CourseMember | undefined = $derived(
@@ -83,13 +93,18 @@
   );
   const canCheck = $derived(!!$profile.id && isCourseReady);
 
+  const serverAuthorizedCourse = $derived(data.course?.id === courseId);
+
   const isPermitted = $derived.by(() => {
     if (!isCourseReady) return false;
+
     if (!canCheck) return true;
 
     if ($isOrgAdmin === null) return true;
 
-    return $isOrgAdmin || user;
+    if ($isOrgAdmin || user) return true;
+
+    return serverAuthorizedCourse;
   });
 
   const isExercisePage = $derived(!!data.exerciseId);
@@ -109,12 +124,15 @@
     )
   );
 
+  const isEditingLesson = $derived(currentPath.includes('/lessons/') && isLessonEditMode);
+
   const showContentAskAiBar = $derived(
     isCourseReady &&
       isLessonOrExercisePage &&
       IS_AI_ENABLED &&
       !($isCourseLearnerView && isContentLockedForStudent) &&
-      sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
+      sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID &&
+      !isEditingLesson
   );
 
   const courseProgress = $derived(getCourseProgress(courseApi.course));
@@ -155,11 +173,18 @@
       if (Number.isFinite(storedWidth)) {
         sidebarWidth = clampSidebarWidth(storedWidth);
       }
+
+      const storedOpen = localStorage.getItem(COURSE_SIDEBAR_OPEN_STORAGE_KEY);
+
+      if (storedOpen !== null) {
+        sidebarOpen = storedOpen !== 'false';
+      }
     } catch {
       // localStorage unavailable
     }
 
     hasLoadedSidebarWidth = true;
+    hasLoadedSidebarOpen = true;
 
     if (IS_AI_ENABLED && get(initialChatPrompt)) {
       openAiAssistant();
@@ -173,6 +198,18 @@
 
     try {
       localStorage.setItem(COURSE_SIDEBAR_STORAGE_KEY, String(Math.round(sidebarWidth)));
+    } catch {
+      // localStorage unavailable
+    }
+  });
+
+  $effect(() => {
+    if (!hasLoadedSidebarOpen) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(COURSE_SIDEBAR_OPEN_STORAGE_KEY, String(sidebarOpen));
     } catch {
       // localStorage unavailable
     }
@@ -209,6 +246,7 @@
 {/if}
 
 <Sidebar.Provider
+  bind:open={sidebarOpen}
   bind:ref={sidebarProviderElement}
   data-sveltekit-preload-data="off"
   style={`--sidebar-width: ${sidebarWidth}px; --side-panel-width: ${sidePanel.width}px;`}
@@ -229,7 +267,7 @@
 
     {#if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
-        <BlockLoader
+        <Block.Loader
           blockText={false}
           title={$t('common.loading_states.opening_course.title')}
           caption={$t('common.loading_states.opening_course.caption')}

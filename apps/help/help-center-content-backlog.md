@@ -1,8 +1,8 @@
 # Help Center content backlog
 
-This is an internal production brief for the 99 Help Center articles that currently contain only a coming-soon state. It is intentionally stored outside `content/help`, so Blume does not publish it or expose it in Help Center navigation or search.
+This is the original internal production brief for 99 Help Center articles. The articles have since replaced their coming-soon states; this file preserves their initial editorial scope rather than tracking current completion. It is stored outside `content/help`, so Blume does not publish it or expose it in Help Center navigation or search.
 
-Use each entry as a starting brief, not as verified product documentation. Before replacing a placeholder, confirm the current interface, permissions, plan requirements, defaults, side effects, and success states in the product and source code. Follow `skills/write-docs/SKILL.md` when drafting the article.
+Use each entry as a starting brief, not as verified product documentation. Before revising an article, confirm the current interface, permissions, plan requirements, defaults, side effects, and success states in the product and source code. Follow `skills/write-docs/SKILL.md` when drafting the article.
 
 Media notes:
 
@@ -322,13 +322,6 @@ Media notes:
 - **Images:** Relevant Customize LMS settings and student views of news feed and marks.
 - **Video:** No video.
 
-### `content/help/publish-and-brand/configure-polls-and-live-comments.mdx` — Configure polls and live comments
-
-- **Article type:** Settings and moderation guide.
-- **Cover:** Availability and permissions; enabling each feature; where it appears; participation and moderation behavior; notifications; disabling after activity exists; student-facing experience.
-- **Images:** Poll/comment settings and an active student-facing poll or live-comment surface.
-- **Video:** Recommended if comments update in real time; show participation and moderation continuity.
-
 ### `content/help/publish-and-brand/customize-the-sign-in-background.mdx` — Customize the sign-in background
 
 - **Article type:** Branding task guide.
@@ -394,11 +387,25 @@ Media notes:
 
 ## Analytics and reporting
 
-### `content/help/analytics-and-reporting/read-your-organization-analytics-overview.mdx` — Read your organization analytics overview
+### `content/help/analytics-and-reporting/monitor-students-across-your-organization.mdx` — Monitor students across your organization
+
+- **Article type:** Task and metric reference.
+- **Cover:** The **Analytics → Academy** page; summary cards; the **Courses (N)** and **Cohorts (N)** switch; at-risk and inactive students; the student table and drill-down; date range and plan lock; how it differs from **Analytics → Marketing** and **Analytics → Compliance**.
+- **Images:** Academy overview with safe demo data, the cohorts view, and the students table.
+- **Video:** No video.
+
+### `content/help/analytics-and-reporting/track-a-cohort-with-analytics.mdx` — Track a cohort with analytics
+
+- **Article type:** Task and metric reference.
+- **Cover:** Cohort analytics location; goal progress and overdue goals; the course picker; student drill-down; sending overdue reminders and the per-send cap; permissions.
+- **Images:** Cohort analytics overview and the students tab with safe demo data.
+- **Video:** No video.
+
+### `content/help/analytics-and-reporting/read-your-marketing-overview.mdx` — Read your marketing overview
 
 - **Article type:** Metric reference and orientation guide.
-- **Cover:** Date range and data freshness; definition of every summary metric; trend comparison behavior; filter scope; drill-down destinations; permissions; known exclusions.
-- **Images:** Full analytics overview with numbered annotations tied to metric definitions and safe demo data.
+- **Cover:** The **Analytics → Marketing** page; date range and data freshness; definition of every summary metric; trend comparison behavior; filter scope; drill-down destinations; permissions; how it differs from **Analytics → Academy**; known exclusions.
+- **Images:** Full Marketing overview with numbered annotations tied to metric definitions and safe demo data.
 - **Video:** No video.
 
 ### `content/help/analytics-and-reporting/analyze-landing-views-enrollments-and-completions.mdx` — Analyze landing views, enrollments, and completions
@@ -422,11 +429,11 @@ Media notes:
 - **Images:** Top-courses table/chart and an applied metric or date filter.
 - **Video:** No video.
 
-### `content/help/analytics-and-reporting/review-course-performance-and-learner-progress.mdx` — Review course performance and learner progress
+### `content/help/analytics-and-reporting/review-course-performance-and-student-progress.mdx` — Review course performance and student progress
 
 - **Article type:** Task and metric reference.
 - **Cover:** Course analytics location; enrollment, active-student, progress, completion, and score metrics; date/filter behavior; cohort or student drill-down; interpreting incomplete and inactive states.
-- **Images:** Course analytics overview and learner-progress table with safe demo data.
+- **Images:** Course analytics overview and student-progress table with safe demo data.
 - **Video:** No video.
 
 ### `content/help/analytics-and-reporting/view-submissions-and-completion-data.mdx` — View submissions and completion data
@@ -436,7 +443,7 @@ Media notes:
 - **Images:** Submission/completion table, filters, and one record detail.
 - **Video:** No video.
 
-### `content/help/analytics-and-reporting/view-a-learners-analytics.mdx` — View a learner’s analytics
+### `content/help/analytics-and-reporting/view-a-students-analytics.mdx` — View a student’s analytics
 
 - **Article type:** Task and reference guide.
 - **Cover:** Finding a student; organization-wide and per-course metrics; enrollment, activity, progress, marks, and completion history; date/data freshness; available actions; privacy expectations.
@@ -634,7 +641,7 @@ Media notes:
 ### `content/help/learner-guides/know-when-you-qualify-for-a-certificate.mdx` — Know when you qualify for a certificate
 
 - **Article type:** Student eligibility reference.
-- **Cover:** Course completion threshold; lesson/exercise requirements; grading dependencies; compliance-cycle timing; certificate availability state; reasons eligibility may be delayed; administrator-controlled rules.
+- **Cover:** Course completion requirements; lesson/exercise requirements; grading dependencies; compliance-cycle timing; certificate availability state; reasons eligibility may be delayed; administrator-controlled rules.
 - **Images:** Student course completion/eligibility indicator and certificate-ready state.
 - **Video:** No video.
 
@@ -732,4 +739,4 @@ Media notes:
 4. Write troubleshooting pages after their canonical task guides so diagnostics can link to stable instructions instead of repeating them.
 5. Capture media only after written procedures and exact UI labels are verified.
 
-When an article is complete, replace its coming-soon MDX, add `last_reviewed`, add contextual inbound and related-guide links, validate/build the Help Center, and check off or remove its entry here.
+For future revisions, verify current behavior against the product, update `last_reviewed`, check links and media, and validate/build the Help Center.

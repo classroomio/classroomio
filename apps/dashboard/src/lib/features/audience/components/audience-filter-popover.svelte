@@ -5,6 +5,7 @@
   import { t } from '$lib/utils/functions/translations';
   import type {
     OrganizationAudienceActivityWindow,
+    OrganizationAudienceCertificate,
     OrganizationAudienceCompletion,
     OrganizationAudienceEnrollment,
     OrganizationAudienceInviteStatus,
@@ -49,7 +50,6 @@
 
   const statusOptions = $derived<{ value: OrganizationAudienceMemberStatus; label: string }[]>([
     { value: 'ACTIVE', label: $t('audience.filter.status_active') },
-    { value: 'DEACTIVATED', label: $t('audience.filter.status_deactivated') },
     { value: 'ARCHIVED', label: $t('audience.filter.status_archived') }
   ]);
 
@@ -81,6 +81,11 @@
     { value: 'not_started', label: $t('audience.filter.not_started') },
     { value: 'in_progress', label: $t('audience.filter.in_progress') },
     { value: 'completed', label: $t('audience.filter.completed') }
+  ]);
+
+  const certificateOptions = $derived<{ value: OrganizationAudienceCertificate; label: string }[]>([
+    { value: 'earned', label: $t('audience.filter.certificate_earned') },
+    { value: 'not_earned', label: $t('audience.filter.certificate_not_earned') }
   ]);
 
   const showsRecentJoinerToggle = $derived(Boolean(query.lastLoginBefore || query.lastActiveBefore));
@@ -225,6 +230,22 @@
               size="sm"
               variant={query.completion === option.value ? 'secondary' : 'outline'}
               onclick={() => toggle('completion', option.value)}
+            >
+              {option.label}
+            </Button>
+          {/each}
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="ui:text-muted-foreground text-xs font-semibold uppercase">{$t('audience.filter.certificate')}</p>
+        <div class="flex flex-wrap gap-2">
+          {#each certificateOptions as option (option.value)}
+            <Button
+              type="button"
+              size="sm"
+              variant={query.certificate === option.value ? 'secondary' : 'outline'}
+              onclick={() => toggle('certificate', option.value)}
             >
               {option.label}
             </Button>

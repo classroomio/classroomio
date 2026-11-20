@@ -47,14 +47,16 @@ export function saveExerciseDraft(
   state: QuestionnaireState,
   baseQuestionnaire: QuestionnaireState
 ) {
-  if (!courseId || !exerciseId || !profileId) return;
+  if (!courseId || !exerciseId || !profileId) return false;
 
   const draft: StoredExerciseDraft = { baseQuestionnaire, savedAt: Date.now(), questionnaire: state };
 
   try {
     localStorage.setItem(getStorageKey(courseId, exerciseId, profileId), JSON.stringify(draft));
+    return true;
   } catch (error) {
     console.error('saveExerciseDraft error:', error);
+    return false;
   }
 }
 

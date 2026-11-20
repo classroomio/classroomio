@@ -50,6 +50,23 @@ export function parseBoundedNumber(raw: string, bounds: { min?: number; max?: nu
   return clamp(parsed, bounds);
 }
 
+/**
+ * Parses a number typed into a field without rounding or clamping.
+ * Returns undefined when the text is empty, not finite, not an integer (when required) or out of bounds.
+ */
+export function parseNumberInRange(
+  raw: string,
+  bounds: { min?: number; max?: number; integer?: boolean } = {}
+): number | undefined {
+  const parsed = toFiniteNumber(raw);
+  if (parsed === undefined) return undefined;
+  if (bounds.integer && !Number.isInteger(parsed)) return undefined;
+  if (bounds.min !== undefined && parsed < bounds.min) return undefined;
+  if (bounds.max !== undefined && parsed > bounds.max) return undefined;
+
+  return parsed;
+}
+
 const COMPACT_COUNT_UNITS = [
   { suffix: 'b', divisor: 1_000_000_000 },
   { suffix: 'm', divisor: 1_000_000 },

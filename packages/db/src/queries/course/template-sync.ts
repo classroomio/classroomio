@@ -58,18 +58,6 @@ export async function countSubmissionsByExerciseIds(exerciseIds: string[], dbCli
   }
 }
 
-export async function shiftCourseSectionOrders(courseId: string, fromOrder: number, dbClient: DbOrTxClient = db) {
-  try {
-    await dbClient
-      .update(schema.courseSection)
-      .set({ order: sql`${schema.courseSection.order} + 1` })
-      .where(and(eq(schema.courseSection.courseId, courseId), gte(schema.courseSection.order, fromOrder)));
-  } catch (error) {
-    console.error('shiftCourseSectionOrders error:', error);
-    throw new Error(`Failed to shift section order: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
-
 export async function shiftLessonOrders(
   courseId: string,
   sectionId: string | null,

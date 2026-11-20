@@ -63,6 +63,21 @@ export function getLectureNo(index, initNo = '0') {
   return index;
 }
 
+/** Content counts used for progress: track only items that count toward completion. */
+export function getCourseProgressCounts(course: {
+  lessonCount?: number | null;
+  exerciseCount?: number | null;
+  progressLessonCount?: number | null;
+  progressExerciseCount?: number | null;
+}): { lessons: number; exercises: number } {
+  const lessons =
+    typeof course.progressLessonCount === 'number' ? course.progressLessonCount : (course.lessonCount ?? 0);
+  const exercises =
+    typeof course.progressExerciseCount === 'number' ? course.progressExerciseCount : (course.exerciseCount ?? 0);
+
+  return { lessons, exercises };
+}
+
 export function calcProgressRate(progressRate?: number, totalLessons?: number): number {
   if (!progressRate || !totalLessons) {
     return 0;

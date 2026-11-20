@@ -3,7 +3,7 @@ import { getManualQuestionsFromList } from './public-conversion-utils';
 import type { Question } from '$features/course/types';
 import type { SubmissionListItem } from '$features/course/utils/types';
 
-export type ExerciseCompletionPolicy = 'submitted' | 'passed';
+export type ExerciseCompletionPolicy = 'submitted' | 'passed' | 'none';
 
 export type ExerciseAttempt = {
   attemptNumber: number;
@@ -54,7 +54,8 @@ export function shouldCompleteExerciseFromSubmission(params: {
   totalPossiblePoints: number;
   submission: SubmissionListItem & { gradingState?: string | null };
 }): boolean {
-  if ((params.completionPolicy ?? 'submitted') === 'submitted') return true;
+  const normalizedPolicy = params.completionPolicy ?? 'submitted';
+  if (normalizedPolicy === 'submitted' || normalizedPolicy === 'none') return true;
   if (params.submission.gradingState !== 'completed') return false;
   if (params.totalPossiblePoints <= 0) return false;
 

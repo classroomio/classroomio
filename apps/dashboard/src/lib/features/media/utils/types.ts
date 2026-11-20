@@ -84,3 +84,33 @@ export type RegenerateAssetThumbnailSuccess = Extract<RegenerateAssetThumbnailRe
 
 export type AssetKindFilter = 'all' | 'video' | 'document' | 'image' | 'audio' | 'other';
 export type AssetStatusFilter = 'all' | 'active' | 'archived';
+
+export type MediaUploadKind = 'video' | 'document';
+
+export type MediaUploadStatus = 'queued' | 'uploading' | 'done' | 'error';
+
+export type MediaUploadItem = {
+  id: string;
+  file: File;
+  kind: MediaUploadKind;
+  status: MediaUploadStatus;
+  progress: number;
+  errorMessage: string | null;
+};
+
+export type MediaUploadView = 'closed' | 'dialog' | 'minimized';
+
+export type MediaUploadRejectionReason = 'unsupported_type' | 'too_large' | 'too_many';
+
+export type MediaUploadRejection = {
+  file: File;
+  reason: MediaUploadRejectionReason;
+  maxBytes?: number;
+};
+
+export type MediaUploadSizeLimits = Record<MediaUploadKind, number>;
+
+export type MediaFileTransferOptions = {
+  signal: AbortSignal;
+  onProgress: (percent: number) => void;
+};

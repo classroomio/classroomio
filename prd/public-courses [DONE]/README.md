@@ -199,11 +199,11 @@ This is an intentional trade-off: public courses are marketing surfaces, so answ
 
 - Public course lesson URLs render server-side (SvelteKit SSR).
 - Each lesson page sets:
-  - `<title>` = item title + course title
-  - `<meta name="description">` = course description or first ~150 chars of the item body
-  - `<link rel="canonical">` = the public URL
-  - `og:type=article`, `og:title`, `og:description`, `og:image` (course banner)
-- Locked items still render meta tags but the body is replaced by the callout; the `<description>` falls back to the course description.
+  - `<title>` = course title
+  - `<meta name="description">` = course description
+  - `<link rel="canonical">` and `og:url` = the course URL (`/course/{slug}`)
+  - `og:type=website`, `og:title`, `og:description`, `og:image` (course banner)
+- Locked items render the same meta tags; only the body is replaced by the callout.
 - No `robots` meta restrictions beyond what the org already sets globally.
 
 ## Data Model Changes

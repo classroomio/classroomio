@@ -1,8 +1,8 @@
 export * from './audience';
 export * from './audience-import';
 export * from './organization';
+export * from './student-home';
 export * from './domain';
-export * from './quiz';
 export * from './exercise';
 export * from './invite';
 export * from './sso';
@@ -10,3 +10,4 @@ export * from './login-link';
 export * from './token-auth';
 export * from './automation-key';
 export * from './search';
+export * from './oauth';

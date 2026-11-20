@@ -36,6 +36,16 @@ export const landingPageThemes = [
   'quartz'
 ] as const satisfies OrgLandingPageTheme[];
 
+export function isLandingPageTheme(value: string | null): value is (typeof landingPageThemes)[number] {
+  if (value === null) return false;
+
+  return (landingPageThemes as readonly string[]).includes(value);
+}
+
+export function resolvePreviewTheme(queryTheme: string | null, savedTheme: OrgLandingPageTheme): OrgLandingPageTheme {
+  return isLandingPageTheme(queryTheme) ? queryTheme : savedTheme;
+}
+
 export const defaultLandingPageHero: OrgLandingPageHero = {
   heading: 'Become a Certified AI Engineer',
   subheading: 'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
@@ -556,7 +566,22 @@ function normalizeHeroEyebrow(value: unknown): string | undefined {
   return value.trim();
 }
 
+function normalizeFeaturedCourse(value: unknown): OrgLandingPageJson['featuredCourse'] {
+  if (!isRecord(value)) return undefined;
+
+  return { enabled: value.enabled !== false };
+}
+
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {
+  const settings = normalizeLandingPageSections(value);
+  if (!isRecord(value)) return settings;
+
+  const featuredCourse = normalizeFeaturedCourse(value.featuredCourse);
+
+  return featuredCourse ? { ...settings, featuredCourse } : settings;
+}
+
+function normalizeLandingPageSections(value: unknown): OrgLandingPageJson {
   const defaultSettings = createDefaultLandingPageSettings();
 
   if (!isRecord(value)) {
@@ -708,7 +733,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     const type = typeof courseRecord.type === 'string' ? courseRecord.type : undefined;
     const typeLabel =
       type && ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC'].includes(type)
-        ? t.get(`analytics.popularTypes.types.${type}`)
+        ? t.get(`marketing.popularTypes.types.${type}`)
         : undefined;
     const isPublished = typeof courseRecord.isPublished === 'boolean' ? courseRecord.isPublished : true;
 
@@ -765,14 +790,14 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
     learningPathsHeading: t.get('common.restricted_page.learning_paths_heading'),
     browseLearningPathsLabel: t.get('dashboard.view_more'),
     learningPathLabel: t.get('common.restricted_page.learning_path_label'),
-    learningPathCourseCountLabel: (count) => t.get('analytics.popularTypes.course_count', { count }),
+    learningPathCourseCountLabel: (count) => t.get('marketing.popularTypes.course_count', { count }),
     learningPathsEmptyTitle: t.get('public_courses.catalog_empty.title'),
     learningPathsEmptyDescription: t.get('public_courses.catalog_empty.description'),
     learningPathHoursLabel: (hours) => `${hours}h`,
     learningPathCertificateLabel: t.get('course.navItem.landing_page.certificate'),
     courseOutlineHeading: t.get('course.navItem.landing_page.course_content'),
     courseOutlineDescription: t.get('public_courses.subtitle'),
-    courseCountLabel: (count) => t.get('analytics.popularTypes.course_count', { count }),
+    courseCountLabel: (count) => t.get('marketing.popularTypes.course_count', { count }),
     learnersLabel: (count) => t.get('audience.learner_count', { count }),
     tracksLabel: (count) => t.get('common.restricted_page.tracks_label', { count }),
     terminalEnrollLabel: t.get('course.navItem.landing_page.pricing_section.enroll')

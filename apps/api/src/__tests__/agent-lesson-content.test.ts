@@ -28,4 +28,22 @@ describe('normalizeAgentLessonContent', () => {
 
     expect(normalized).toBe('<h3>Overview</h3><h3>Key Ideas</h3><p>Body</p>');
   });
+
+  it('expands a bare callout into the full callout markup', () => {
+    const normalized = normalizeAgentLessonContent(
+      '<p>Intro</p><div data-callout="tip"><p>Save often.</p></div>',
+      'Different Lesson Title'
+    );
+
+    expect(normalized).toBe(
+      '<p>Intro</p><div data-callout="tip" class="cio-callout"><div class="cio-callout-mark" aria-hidden="true" contenteditable="false"></div><div class="cio-callout-body"><p>Save often.</p></div></div>'
+    );
+  });
+
+  it('leaves an existing full callout unchanged', () => {
+    const callout =
+      '<div data-callout="warning" class="cio-callout"><div class="cio-callout-mark" aria-hidden="true" contenteditable="false"></div><div class="cio-callout-body"><p>Keep refunds.</p></div></div>';
+
+    expect(normalizeAgentLessonContent(callout, 'Different Lesson Title')).toBe(callout);
+  });
 });

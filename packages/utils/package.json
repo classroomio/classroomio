@@ -49,6 +49,10 @@
       "types": "./dist/validation/*/index.d.ts",
       "default": "./dist/validation/*/index.js"
     },
+    "./validation/course/*": {
+      "types": "./dist/validation/course/*.d.ts",
+      "default": "./dist/validation/course/*.js"
+    },
     "./functions": {
       "types": "./dist/functions/index.d.ts",
       "default": "./dist/functions/index.js"
@@ -65,6 +69,10 @@
       "types": "./dist/config/upload-limits.d.ts",
       "default": "./dist/config/upload-limits.js"
     },
+    "./file-upload": {
+      "types": "./dist/file-upload.d.ts",
+      "default": "./dist/file-upload.js"
+    },
     "./openapi/public-api": {
       "types": "./dist/openapi/public-api.d.ts",
       "default": "./dist/openapi/public-api.js"
@@ -80,6 +88,14 @@
     "./email": {
       "types": "./dist/email/index.d.ts",
       "default": "./dist/email/index.js"
+    },
+    "./lms": {
+      "types": "./dist/lms/index.d.ts",
+      "default": "./dist/lms/index.js"
+    },
+    "./analytics": {
+      "types": "./dist/analytics/index.d.ts",
+      "default": "./dist/analytics/index.js"
     }
   },
   "scripts": {

@@ -4,8 +4,10 @@
   import ImageIcon from '@lucide/svelte/icons/image';
 
   import { profile } from '$lib/utils/store/user';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
+  import { REQUIRED_COURSE_COMPLETION_PERCENT } from '@cio/utils/functions/course-progression';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -20,6 +22,7 @@
   let evaluation = $state<CertificationEvaluationData | null>(null);
 
   let courseId = $derived(courseApi.course?.id ?? '');
+  let canDownload = $derived(isCourseComplete && !$isFreePlan);
 
   function buildBody() {
     return {
@@ -41,7 +44,7 @@
   }
 
   const downLoadCertificate = async () => {
-    if (!isCourseComplete || !courseId) return;
+    if (!canDownload || !courseId) return;
 
     isLoading = true;
     try {
@@ -63,7 +66,7 @@
   };
 
   const downloadCertificateImage = async () => {
-    if (!isCourseComplete || !courseId) return;
+    if (!canDownload || !courseId) return;
 
     isPngLoading = true;
     try {
@@ -104,18 +107,19 @@
     loadEvaluation();
   });
 
-  let title = $derived(
-    isCourseComplete
-      ? 'course.navItem.certificates.unlocked_certificate'
-      : 'course.navItem.certificates.complete_to_download_title'
-  );
+  let title = $derived.by(() => {
+    if (!isCourseComplete) return 'course.navItem.certificates.complete_to_download_title';
+    if ($isFreePlan) return 'course.completion.modal.title';
+
+    return 'course.navItem.certificates.unlocked_certificate';
+  });
 
   let progressLines = $derived.by(() => {
     if (!evaluation) {
       return [
         t.get('course.certificates.progress_hint', {
           current: 0,
-          required: courseApi.course?.certificate?.threshold ?? 100
+          required: REQUIRED_COURSE_COMPLETION_PERCENT
         })
       ];
     }
@@ -126,7 +130,7 @@
     return [
       t.get('course.certificates.progress_hint', {
         current: evaluation.progressPercent,
-        required: evaluation.certificationThreshold
+        required: REQUIRED_COURSE_COMPLETION_PERCENT
       })
     ];
   });
@@ -135,7 +139,9 @@
 <div class="flex-1">
   <Empty title={$t(title)} icon={DownloadIcon} variant="page">
     <div class="ui:text-muted-foreground mx-auto mb-4 max-w-md space-y-2 text-center text-sm">
-      {#if isCourseComplete}
+      {#if isCourseComplete && $isFreePlan}
+        <p>{$t('course.completion.modal.subtitle_no_certificate')}</p>
+      {:else if isCourseComplete}
         <p>{$t('course.navItem.certificates.unlocked_certificate_subtitle')}</p>
       {:else}
         {#each progressLines as line (line)}
@@ -143,15 +149,17 @@
         {/each}
       {/if}
     </div>
-    <div class="flex flex-wrap items-center justify-center gap-2">
-      <Button onclick={downLoadCertificate} disabled={!isCourseComplete} loading={isLoading}>
-        <DownloadIcon size={16} />
-        {$t('course.navItem.certificates.download_certificate')}
-      </Button>
-      <Button variant="outline" onclick={downloadCertificateImage} disabled={!isCourseComplete} loading={isPngLoading}>
-        <ImageIcon size={16} />
-        {$t('course.navItem.certificates.download_image')}
-      </Button>
-    </div>
+    {#if !$isFreePlan}
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <Button onclick={downLoadCertificate} disabled={!canDownload} loading={isLoading}>
+          <DownloadIcon size={16} />
+          {$t('course.navItem.certificates.download_certificate')}
+        </Button>
+        <Button variant="outline" onclick={downloadCertificateImage} disabled={!canDownload} loading={isPngLoading}>
+          <ImageIcon size={16} />
+          {$t('course.navItem.certificates.download_image')}
+        </Button>
+      </div>
+    {/if}
   </Empty>
 </div>

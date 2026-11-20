@@ -84,6 +84,8 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/attention-highlight/` - Prop-driven focus pulse and smooth scroll wrapper to draw user attention to specific items
 - `custom/question-type-picker/` - Question type picker modal and QuestionTypeIcon glyph/icon component
 - `custom/org-landing-page/` - 11-theme org and course landing page system, including `LearnerMenu` authenticated popover
+- `custom/add-block/` - the add-content entry points for lessons (`Menu` between-block plus, `Row` empty-state/AI row, `Item` choice button)
+- `custom/block/` - lesson block container (ordering, gap menus, rail) and presentational blocks (image, document, slide, video, note)
 
 ### Question type icon (`src/custom/question-type-picker/question-type-icon.svelte`)
 
@@ -194,6 +196,65 @@ Full-screen image viewer for screenshots and other detailed images. `ZoomableIma
 <ImageLightbox images={[{ src, alt }]} {labels} bind:open />
 ```
 
+### Board frame (`src/custom/board-frame/`)
+
+`BoardFrame` wraps one image in the ClassroomIO browser board used for help screenshots: browser chrome with three dots and a URL pill, the paper-colored board, a shelf and two feet. It mirrors the geometry in `apps/help/scripts/frame-screenshot.mjs`, so a framed image looks the same whether it is composited at build time or loaded at runtime. Pass `src`, `alt`, and optionally `url` (the text in the address pill, truncated with an ellipsis). The frame scales with its container width, and the image keeps its aspect ratio uncropped. See `Molecules/BoardFrame` in Storybook.
+
+```svelte
+<BoardFrame src={coverUrl} alt={title} url="feedback.classroomio.com/updates" />
+```
+
+### Video guide (`src/custom/video-guide/`)
+
+Entry points for a short YouTube walkthrough of a feature. All three open the same dialog component, which plays the video from `youtube-nocookie.com` with autoplay. They take a YouTube `videoId` rather than a URL. Pass every label from the host app (`closeLabel` falls back to an untranslated "Close").
+
+- `VideoGuideCard`: a thumbnail card with a play button, optional `badgeLabel` and `actionLabel`, and a `description`. Use it in an empty state or under a setup guide. It is centred with `max-w-md`; pass `align="start"` to keep it at the start of its container.
+- `VideoGuideButton`: a button with a play icon and a `label`. Takes the `Button` `variant` (default `outline`) and `size`.
+- `VideoGuideDialog`: the dialog on its own, for a custom trigger. Bind `open`.
+
+`title` is the dialog title and the iframe title, and `closeLabel` is its close button. The card and the button own their dialog, and `open` is bindable on both. See `Molecules/VideoGuide` in Storybook.
+
+```svelte
+<VideoGuideCard
+  videoId="9hpGCqzypLk"
+  title={$t('video_guide.lesson_blocks.title')}
+  description={$t('video_guide.lesson_blocks.description')}
+  badgeLabel={$t('video_guide.new_badge')}
+  actionLabel={$t('video_guide.watch_video')}
+  closeLabel={$t('video_guide.close')}
+/>
+```
+
+### Coach mark (`src/custom/coach-mark/`)
+
+`CoachMark` is a small primary-colored tip with a pointer that sits under the control it introduces. Render it inside a `relative` wrapper around that control. It takes a `title`, an optional `description`, a `dismissLabel`, and an optional `actionLabel` with `onAction` and an `actionIcon` snippet. `align` (`end` by default, or `start`) picks which edge of the wrapper the tip and its pointer line up with; `class` and `arrowClass` override the position, for example at a breakpoint.
+
+Pass `storageKey` to show the tip once: it is stored in `localStorage` when the tip is dismissed, when its action runs, or when the tip is removed from the page, and the tip stays hidden afterwards. Without `storageKey` it shows on every mount. See `Molecules/CoachMark` in Storybook.
+
+```svelte
+<div class="relative">
+  <LessonModeToggle {mode} onToggle={toggleMode} />
+  <CoachMark
+    title={$t('video_guide.lesson_blocks.coach_title')}
+    description={$t('video_guide.lesson_blocks.coach_description')}
+    dismissLabel={$t('video_guide.dismiss')}
+    actionLabel={$t('video_guide.watch_video')}
+    storageKey="classroomio:lesson-blocks-coach-mark-seen"
+    onAction={() => (videoOpen = true)}
+  />
+</div>
+```
+
+### Changelog cover (`src/custom/changelog-cover/`)
+
+`ChangelogCover` is the fallback image for a changelog entry that has no cover. It draws a 1600×838 SVG in the brand style (sand background, the blue ClassroomIO mark and wordmark, a heavy Geist title with tight tracking, Geist Mono labels and a hairline) from `title`, with optional `label` (top right, default "Changelog") and `footer` (bottom left, for example a date). SVG text cannot wrap, so `layoutChangelogTitle` from `@cio/utils/functions/changelog-cover` wraps the title and steps the font size down for long ones, cutting a very long title with an ellipsis. The SVG fills its container (`preserveAspectRatio="xMidYMin slice"`, so a wide crop keeps the top row and trims from the bottom), so give the parent the aspect ratio. It inherits the page's Geist when loaded and falls back to system fonts otherwise. See `Molecules/ChangelogCover` in Storybook.
+
+```svelte
+<div class="aspect-video w-full overflow-hidden rounded-md border">
+  <ChangelogCover {title} footer="Oct 5, 2026" />
+</div>
+```
+
 ### Question type picker (`src/custom/question-type-picker/`)
 
 Marketing / demo widget: left-hand list of question types and a live **take**-mode preview using `ExerciseQuestion.QuestionRenderer`. Copy is English-only (no dashboard i18n). Also consumed by the **`@cio/embeds`** app as a CDN bundle (`apps/embeds`).
@@ -202,13 +263,58 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
 
+### Upload file card (`src/custom/upload-file-card/`)
+
+One compact row (about 52px) for a file that is uploading or has uploaded, meant to be stacked into an upload queue next to `FileDropZone`. A file-type badge (`PDF`, `CSV`, `XLSX`, `IPYNB`, `PY`, …) sits on the left, with the file name and a one-line status beside it. While the file is in flight the card fills with a gradient that sweeps to `progress` and a 2px bar tracks the same value along the bottom edge. `status` is `queued`, `uploading`, `done` or `error`: `queued` shows `labels.queued` until the queue starts the file, `uploading` shows the percentage, `done` fades the fill and shows a green check, and `error` shows `labels.failed` followed by `errorMessage` (or the file size when there is none), with a Retry button when `onRetry` is passed. `onRemove` renders an icon-only secondary button on every state except `done`, so a finished file is never deleted by accident. Copy is passed via `labels: UploadFileCardLabels`, including the `uploading(percent)` and `transferred(uploaded, total)` formatters, so the host supplies translated strings. `size` is in bytes and formatted with `formatSize` (default `formatFileSize`). `FileTypeBadge` is the primary-tinted tile with the file extension (`size="sm"` or `"md"`); use it on its own for file pickers such as the lesson document library. See `Molecules/UploadFileCard` in Storybook.
+
+```svelte
+<UploadFileCard
+  name={item.file.name}
+  size={item.file.size}
+  status={item.status}
+  progress={item.progress}
+  {labels}
+  onRemove={() => queue.remove(item.id)}
+  onRetry={() => queue.retry(item.id)}
+/>
+```
+
 ### Slide embed (`src/custom/slide-embed/`)
 
-Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
+Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe** and offers a one-click switch when the pasted embed belongs to a different platform than the selected tab; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
+
+### Lesson blocks (`src/custom/block/`, `add-block/`)
+
+The lesson block canvas is split into a reusable **container** and **block bodies**, so any host can render an ordered, draggable list of mixed content. Import via `import * as AddBlock from '@cio/ui/custom/add-block'` and `import * as Block from '@cio/ui/custom/block'` (legacy names such as `BlockList`, `ImageBlock`, `AddContentMenu` remain exported as aliases inside those namespaces).
+
+**Container**
+
+- `Block.List` hosts ordering (drag and drop via `svelte-dnd-action`), the gap `+` rows, the scroll rail and active-block tracking, the insert highlight, and the drag hint. It is generic over `T extends { id: string }` and takes `items`, `editable`, `spacingClass`, `addChoices`, `onAdd(type, index)`, `onReorder(items)`, and a `renderItem({ item, index, total, highlighted })` snippet. With no items it shows an `Empty` card illustrated with `MachineBlankLesson`; pass `emptyMachineHeading` with the translated label drawn on the machine (defaults to `LESSON`), or `emptyIcon` to show an icon instead. `emptyTitle` and `emptyDescription` show in both modes. Pass `emptyAction` for the editable empty state, and `showRail={false}` when the list is embedded in a narrow panel.
+- `Block.Shell` renders a single block's frame: optional drag handle, type label, example badge, actions dropdown (`menuItems`), and the `highlighted` ring.
+- `AddBlock.Menu` is the between-block `+` row that expands into a choices toolbar; the trigger stays hidden until the row is hovered or focused and animates a self-drawing stroke on hover (`PlusIcon` from `custom/moving-icons/`).
+- `AddBlock.Item` is one choice button: a label + optional trailing icon, with `compact`, `hideLabelOnMobile`, and `testId` props. `AddBlock.Menu` renders it compactly in the 10px gap row; `AddBlock.Row` renders it at 12px with the label hidden on mobile.
+- `AddBlock.Row` is the empty-state / toolbar row: Ask AI trigger, choice buttons, and the AI panel shell. `aiOpen` drives an animated clip-path reveal of the `aiPanel` snippet, keeps the toolbar `inert` while open, and restores focus to the trigger on close.
+
+Labels are individual props with English defaults, so the dashboard overrides them with translated copy. All blocks live in `src/custom/block/`:
+
+| Block                                         | Props worth knowing                                                                                                                                                               | Story                      |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `Block.Image` (+ `Block.ImageSettingsDialog`) | `url`, `alt`, `fit`, `editable`, `changeLabel`, `onChange`, `onSaveSettings`                                                                                                      | `Blocks/ImageBlock`        |
+| `Block.Document`                              | `file`, `editable`, `labels` (`view`, `download`), `changeLabel`, `onView`, `onDownload`, `onChange` — one file per block, shown as a single card                                 | `Blocks/DocumentBlock`     |
+| `Block.Slide`                                 | `slide`, `isExample`, `editable`, `frameTitle`, `changeLabel`, `onChange`                                                                                                         | `Blocks/SlideBlock`        |
+| `Block.Video`                                 | `title`, `thumbnailUrl`, `fallbackThumbnailUrl`, `durationLabel`, `channelLine`, `metaLine`, `changeLabel`, `onChange`, plus `actions`, `status`, `notice`, and `player` snippets | `Blocks/VideoBlock`        |
+| `Block.Note`                                  | `editable`, `contentHtml`, `empty`, `emptyLabel`, plus `editor` and `view` snippets                                                                                               | `Blocks/NoteBlock`         |
+| `Block.ChangeButton`                          | `label`, `onclick`, `disabled` — the hover "Change …" action the source blocks overlay on their media                                                                             | `Blocks/BlockChangeButton` |
+
+`Block.Video` and `Block.Note` are presentational: the host injects its own player, editor, dropdown, and math-rendering wrapper through snippets, while the block owns layout, chrome, and the example states.
+
+### Reading density (`src/custom/density-control/`)
+
+`DensityControl` pairs a compact segmented toggle with a live gap swatch, mirroring the lesson-editor prototype: picking Compact / Comfortable / Spacious updates the swatch gaps (4 / 7 / 11px) with a short transition. It takes `value`, `options` (`{ value, label }[]`, labels injected by the host so copy stays translated), `onChange`, `groupLabel`, and an optional `testIdPrefix` for per-option hooks. See `Molecules/DensityControl` in Storybook.
 
 ### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
 
-Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Both halves use `variant="secondary"`. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyChatUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title at every breakpoint, with `ShareButton` to its right. The outline rail still has the matching copy / share / chat actions. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
+Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Both halves use `variant="secondary"`. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyChatUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet (its `content` snippet replaces the default video and body with host-rendered content, which the dashboard uses for lesson blocks) so it sits beside the lesson title at every breakpoint, with `ShareButton` to its right. The outline rail still has the matching copy / share / chat actions. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
 
 ### Public course Share button (`src/custom/public-course/share-button.svelte`)
 
@@ -228,7 +334,7 @@ Pass copy via `labels: OutlineRailActionLabels`. Render through `PublicLessonVie
 
 Sticky in-page table of contents for long-form content (public lessons, exercises, docs). Pass `items: PageOutlineItem[]` (`id`, `title`, `level` 1–3). Clicking an item updates the URL hash, restores that hash on reload, and highlights the active heading via `IntersectionObserver`. Hierarchy is shown with indent (`h1` / `h2` / `h3`) along a dotted left rail; the active item uses the primary color.
 
-**Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Pin the rail to the **page** edge (a full-width flex sibling of the article column), not next to a centered content max-width. Put copy / share / chat links under the outline via `OutlineRailActions` (see **Public course outline rail actions**). Helpers: `injectHeadingIds(html)` rewrites `h1`–`h3` with unique ids and returns outline entries; `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
+**Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Pin the rail to the **page** edge (a full-width flex sibling of the article column), not next to a centered content max-width. Put copy / share / chat links under the outline via `OutlineRailActions` (see **Public course outline rail actions**). Helpers: `injectHeadingIds(html, used?)` rewrites `h1`–`h3` with unique ids and returns outline entries (pass one shared `used` set when a page renders several HTML fragments, such as lesson blocks, so ids match the outline built from the joined body); `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
 
 ### Comment tree (`src/custom/comment-tree/`)
 
@@ -248,7 +354,7 @@ Presentational parts for an arbitrarily deep comment thread. All copy is passed 
 
 ### Live session card (`src/custom/live-session-card/`)
 
-Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
+Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. When ended, a "Watch recording" button opens `recordingUrl` if one is set. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
 
 ### Action popover (`src/custom/action-popover/`)
 
@@ -301,16 +407,33 @@ Unified video player component supporting HTML5 video (direct MP4 and HLS via `h
 
 - **Native Vimeo SDK Integration**: Seamless playback with strict-origin referrer policy and unlisted privacy hash support (`?h=...`).
 - **Domain Privacy Error Recovery**: Automatically detects Vimeo `PrivacyError` events on domain-restricted videos, providing instructors with the exact host to whitelist and a live Retry button, while displaying a learner-friendly notice in learner mode.
-- **HLS Adaptive Streaming**: Plays master manifests via signed cookies or token auth with automatic rendition selection.
+- **HLS Adaptive Streaming**: Plays master manifests through hls.js with automatic rendition selection. Segments are authorized by a short-lived signed cookie that the player renews before it expires, or by the viewer's session.
 - **YouTube Embeds**: Lightweight iframe embed with responsive aspect-ratio wrappers.
 
-| Option                    | Purpose                                                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `source`                  | `VideoSource` object (`type: 'upload' \| 'hls' \| 'youtube' \| 'vimeo' \| 'generic'`, `url`, `metadata`, `tracks`) |
-| `options.isLearnerView`   | When `true`, displays learner-friendly fallback messages instead of technical configuration hints                  |
-| `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                     |
-| `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                     |
-| `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                        |
+| Option                    | Purpose                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source`                  | `VideoSource` object (`type: 'upload' \| 'hls' \| 'youtube' \| 'vimeo' \| 'generic'`, `url`, `metadata`, `tracks`)                                                                                                                                                                                                                                                              |
+| `options.isLearnerView`   | When `true`, displays learner-friendly fallback messages instead of technical configuration hints                                                                                                                                                                                                                                                                               |
+| `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                                                                                                                                                                                                                                                                                  |
+| `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                                                                                                                                                                                                                                                                                  |
+| `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                                                                                                                                                                                                                                                                                     |
+| `options.resumeAtSeconds` | Where a returning viewer left off, in seconds. Upload playback only: before the first play the player seeks there and, for HLS, loads one fragment so the frame and progress bar show the position. Ignored once playback has started                                                                                                                                           |
+| `options.onBeforeHlsLoad` | HLS only. Mints the playback cookie and returns `{ expiresInSeconds?, authExpired? }`. Called before the manifest loads, shortly before `expiresInSeconds` elapses, after a playlist or segment request is rejected as unauthorized, and on reload. If it throws, playback continues and the call is retried a few times. Return `authExpired: true` to show the sign-in prompt |
+
+### Button group toolbar variant (`src/base/button-group/`)
+
+`ButtonGroup.Root` takes a `variant`: `default` (the default) joins its buttons into one segmented control, and `toolbar` draws a floating strip of icon buttons. A toolbar group has a `bg-background` fill, a border and a small inner padding. Its buttons keep their own rounded corners, sit transparent over the fill at rest, and fill with `bg-secondary` only on hover or keyboard focus. A disabled button stays unfilled.
+
+Keep `variant="secondary"` and `size="icon-sm"` on the buttons inside a toolbar group; the group overrides their background, so the buttons still read as secondary buttons everywhere else. Wrap each button in a `Tooltip` and give it an `aria-label`, since icon buttons have no visible text.
+
+```svelte
+<ButtonGroup.Root variant="toolbar" aria-label="Widget actions">
+  <Button variant="secondary" size="icon-sm" aria-label="Expand"><Maximize2 /></Button>
+  <Button variant="secondary" size="icon-sm" aria-label="Download CSV"><Download /></Button>
+</ButtonGroup.Root>
+```
+
+See `Molecules/ButtonGroup` → `Toolbar` in Storybook.
 
 ### Combo button (`src/custom/combo-button/`)
 
@@ -340,15 +463,28 @@ See `Molecules/ComboButton` in Storybook.
 
 ### Machines (`src/custom/animation/machines/`)
 
-Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
+Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). Two more illustrate product states: `MachineBrokenTrack` (a block tips over a gap it cannot cross, and a playable runner game) for error pages, and `MachineBlankLesson` (a blank lesson page whose title starts being written) for an empty lesson. The animation is SVG SMIL, so the drawings run without JavaScript. `MachineBrokenTrack` adds an optional game that does need JavaScript; without it the animation still plays. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
 
-The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use it for ClassroomIO-branded surfaces only, not org sites.
+The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the marketing drawings is placeholder copy (brand and domain names are placeholders). `MachineBrokenTrack` draws real UI strings, so pass translated labels. Use the marketing machines for ClassroomIO-branded surfaces only, not org sites. The two state machines carry no brand text and take the accent from `--primary`, so they are safe on org sites too. `MachineBlankLesson` draws a `LESSON` caption; pass `heading` with translated text.
 
-| Prop      | Type     | Default     | Description                                              |
-| --------- | -------- | ----------- | -------------------------------------------------------- |
-| `label`   | `string` | `undefined` | Accessible description; omit to hide from assistive tech |
-| `stillAt` | `number` | `6`         | Second to freeze on under `prefers-reduced-motion`       |
-| `class`   | `string` | `undefined` | Size and placement                                       |
+| Prop                   | Type                                 | Default                  | Description                                                                                                                                                                          |
+| ---------------------- | ------------------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `label`                | `string`                             | `undefined`              | Accessible description; omit to hide from assistive tech                                                                                                                             |
+| `stillAt`              | `number`                             | `6`                      | Second to freeze on under `prefers-reduced-motion`                                                                                                                                   |
+| `class`                | `string`                             | `undefined`              | Size and placement                                                                                                                                                                   |
+| `heading`              | `string`                             | `'LESSON'`               | Caption drawn on the page (`MachineBlankLesson` only)                                                                                                                                |
+| `playable`             | `boolean`                            | `true`                   | Show the play prompt and start the game on Space, ArrowUp or a tap (`MachineBrokenTrack` only)                                                                                       |
+| `startLabel`           | `string`                             | `'PRESS SPACE TO PLAY'`  | Blinking prompt before the game starts (`MachineBrokenTrack` only)                                                                                                                   |
+| `gameOverLabel`        | `string`                             | `'GAME OVER'`            | Shown after a crash (`MachineBrokenTrack` only)                                                                                                                                      |
+| `restartLabel`         | `string`                             | `'PRESS SPACE TO RETRY'` | Shown after a crash (`MachineBrokenTrack` only)                                                                                                                                      |
+| `scoreLabel`           | `string`                             | `'SCORE'`                | Label for the live score (`MachineBrokenTrack` only)                                                                                                                                 |
+| `bestLabel`            | `string`                             | `'BEST'`                 | Label for the best score (`MachineBrokenTrack` only)                                                                                                                                 |
+| `newRecordLabel`       | `string`                             | `'NEW RECORD!'`          | Shown when a run beats the best score (`MachineBrokenTrack` only)                                                                                                                    |
+| `enterFullscreenLabel` | `string`                             | `'Full screen'`          | Accessible name of the full-screen button (`MachineBrokenTrack` only)                                                                                                                |
+| `exitFullscreenLabel`  | `string`                             | `'Exit full screen'`     | Accessible name of the full-screen button while in full screen (`MachineBrokenTrack` only)                                                                                           |
+| `muteLabel`            | `string`                             | `'Mute sound'`           | Accessible name of the sound button while sound is on (`MachineBrokenTrack` only)                                                                                                    |
+| `unmuteLabel`          | `string`                             | `'Unmute sound'`         | Accessible name of the sound button while muted (`MachineBrokenTrack` only)                                                                                                          |
+| `onstatechange`        | `(snapshot: RunnerSnapshot) => void` | `undefined`              | Called when the game's state changes with `{ status, passed, isNewRecord }`; `status` is `'idle'`, `'extending'`, `'countdown'`, `'running'` or `'over'` (`MachineBrokenTrack` only) |
 
 ```svelte
 <div class="bg-muted rounded-xl p-6">
@@ -358,35 +494,123 @@ The accent comes from `--primary` and the surface from `--muted`. Place a machin
 
 Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
 
-### Loaders (`src/custom/block-loader/`, `src/custom/compact-loader/`)
+`MachineBrokenTrack` is also a small game in the style of the Chrome offline dinosaur. It shows a blinking "PRESS SPACE TO PLAY" prompt; on the first Space, ArrowUp or tap it loads the game code on demand (a dynamic import, so error pages that never play pay nothing), the board slowly extends, a 3-2-1 countdown runs, and obstacles rise out of the far end block for the block to jump. The score is the number of obstacles cleared. The best score is stored in localStorage under `cio-track-runner-best` and a new best shows a record line. Once the game starts, two icon buttons appear in a row above the board, right-aligned: mute and, where the browser supports it, full screen (it fullscreens the enclosing `Empty` card, not the whole page); the mute choice is stored under `cio-track-runner-muted`, and if storage is blocked nothing is remembered and nothing breaks. Sound effects (jump, point, countdown, crash and record) are synthesized with the Web Audio API and loaded on first use, so no audio files are fetched. The key listener is on `window`: while idle, Space and ArrowUp anywhere on the page (outside form controls, buttons and links) start the game and suppress scrolling, but only while the illustration is visible (it is hidden on phones and short viewports); during play they jump, and after a crash Space, ArrowUp or a tap restarts. Labels default to English, so pass translated strings, or pass `playable={false}` for the plain animation. `stillAt` applies to the idle animation only; once the game starts it is ignored, and under `prefers-reduced-motion` the game still runs but the board extension is skipped.
 
-Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `BlockLoader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
+`stillAt` defaults to `3.9` for `MachineBrokenTrack` and `3` for `MachineBlankLesson`, the frames where each drawing reads best.
 
-`BlockLoader`: four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
+In an empty state, pass the machine through the `media` snippet of `Empty` (`@cio/ui/custom/empty`). With `media`, the `Empty` card grows to fit its content, and a `full-page` layout scrolls rather than clipping, leaving room for the logo when `showLogo` is set. The media is hidden on phones (below the `sm` breakpoint, or shorter than 640px), so the message and actions fit without scrolling and the game is not reachable on phones. Without `media`, the card keeps its 360px height cap. `Empty` takes three props for this: `size` (`'default'` or `'lg'`; `'lg'` makes a `page` card wider and taller), `mediaOnly` (hides the title, description and actions so the media fills the card, but only where the media is shown, so on phones and short viewports the message stays) and `overlay` (a snippet rendered over the card, which hides the card's own dashed border). `MachineRunnerBorder` is the overlay the game uses: pass it the `onstatechange` snapshot (`{ status, passed, isNewRecord }`) that `MachineBrokenTrack` emits. It redraws the dashed border as a progress meter: each obstacle cleared lights the next 1/30 of the border (a stretch of dashes) clockwise from the top-left in the accent colour, the lit dashes flow faster as the score rises, a full lap (30 obstacles) flashes the border and starts again, a crash turns the lit dashes red and scatters them, and a new record locks the whole border green with a glow. Reduced motion turns the animation off. Off a `--muted` card, set `--machine-face` to the page colour:
 
-| Prop      | Type                | Default     | Description                                                                |
-| --------- | ------------------- | ----------- | -------------------------------------------------------------------------- |
-| `title`   | `string`            | `undefined` | Heading under the stack; also the accessible name when `label` is not set  |
-| `caption` | `string`            | `undefined` | Supporting line under the title                                            |
-| `label`   | `string`            | `undefined` | Accessible name when there is no `title`                                   |
-| `blocks`  | `BlockLoaderBlock[]`| 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`   |
-| `blockText` | `boolean`         | `true`      | Show the kind and title inside each block; `false` gives plain blocks    |
-| `class`   | `string`            | `undefined` | Placement                                                                  |
+```svelte
+<Empty title={...} description={...} variant="page" layout="full-page">
+  {#snippet media()}
+    <div class="mx-auto h-52 w-full max-w-[340px]" style:--machine-face="var(--background)">
+      <MachineBrokenTrack />
+    </div>
+  {/snippet}
+</Empty>
+```
+
+### Loaders (`src/custom/block/block-loader.svelte`, `src/custom/compact-loader/`)
+
+Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `Block.Loader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
+
+`Block.Loader` ("BlockLoader"): four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
+
+| Prop        | Type                 | Default     | Description                                                               |
+| ----------- | -------------------- | ----------- | ------------------------------------------------------------------------- |
+| `title`     | `string`             | `undefined` | Heading under the stack; also the accessible name when `label` is not set |
+| `caption`   | `string`             | `undefined` | Supporting line under the title                                           |
+| `label`     | `string`             | `undefined` | Accessible name when there is no `title`                                  |
+| `blocks`    | `BlockLoaderBlock[]` | 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`  |
+| `blockText` | `boolean`            | `true`      | Show the kind and title inside each block; `false` gives plain blocks     |
+| `class`     | `string`             | `undefined` | Placement                                                                 |
 
 `CompactLoader`: three wordless blocks, so it works in any language.
 
-| Prop    | Type           | Default     | Description        |
-| ------- | -------------- | ----------- | ------------------ |
+| Prop    | Type           | Default     | Description         |
+| ------- | -------------- | ----------- | ------------------- |
 | `size`  | `'sm' \| 'md'` | `'md'`      | `sm` is 60% of `md` |
-| `label` | `string`       | `undefined` | Accessible name    |
-| `class` | `string`       | `undefined` | Placement          |
+| `label` | `string`       | `undefined` | Accessible name     |
+| `class` | `string`       | `undefined` | Placement           |
 
-The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
+The default block labels in `Block.Loader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
 
 ```svelte
-<BlockLoader title={$t('common.loading_states.opening_academy_title')} />
+<Block.Loader title={$t('common.loading_states.opening_academy_title')} />
 <CompactLoader label={$t('common.loading')} />
 ```
+
+### Number field (`src/custom/number-field/`)
+
+Number input that emits live only for valid in-range values and never rewrites text while typing. Use it for every numeric field instead of `Number(value)`.
+
+| User does                               | Text shown                                | Value emitted                       |
+| --------------------------------------- | ----------------------------------------- | ----------------------------------- |
+| types a valid in-range number           | as typed                                  | that number, on the keystroke       |
+| types an intermediate (`-`, `1.`, `1e`) | as typed                                  | nothing                             |
+| types out of range (`150` in 0–100)     | as typed                                  | nothing until blur                  |
+| blurs or presses Enter                  | normalized (`100`; `3` for `2.5` integer) | the normalized value, if it changed |
+| clears an optional field                | empty                                     | `null`, on the keystroke            |
+| clears a required field, then blurs     | the value it had when focused is restored | that value, if it changed           |
+| value changes from outside              | re-seeded                                 | —                                   |
+
+Pass `onCommit` for follow-up work that must run only on blur or Enter with the normalized value (for example re-clamping a dependent field). It fires after the value settles, even when the value itself did not change.
+
+```svelte
+<script lang="ts">
+  import { NumberField } from '@cio/ui/custom/number-field';
+
+  let points = $state<number | null>(1);
+</script>
+
+<NumberField label="Points" integer min={1} bind:value={points} />
+```
+
+### Chart legend (`src/base/chart/chart-legend.svelte`, `chart-legend-item.svelte`)
+
+Legend row for the Analytics charts. `ChartLegend` renders one `ChartLegendItem` per entry and keys each row by label plus index, so two series with the same label still render. Items truncate their label and reveal the full text in a tooltip on hover or focus.
+
+| Prop        | Type                      | Default     | Purpose                                                |
+| ----------- | ------------------------- | ----------- | ------------------------------------------------------ |
+| `items`     | `ChartLegendItem[]`       | —           | Series to list: `label`, `color`, optional `value`, `dashed` |
+| `showValue` | `boolean`                 | `true`      | Show each item's `value` in parentheses                |
+| `class`     | `string`                  | `'ui:mt-4'` | Extra classes on the row                               |
+
+`ChartLegendItem` takes a single `item` plus the same `showValue`. A `dashed` item draws a dashed swatch instead of a solid one, for reference lines such as a target or pass mark. Import it directly rather than through the `@cio/ui/base/chart` barrel when a host renders on the server (the barrel pulls in layerchart).
+
+```svelte
+<script lang="ts">
+  import ChartLegend from '@cio/ui/base/chart/chart-legend.svelte';
+</script>
+
+<ChartLegend items={[{ label: 'Graduates', color: 'var(--chart-1)', value: 128 }]} />
+```
+
+### Copy input (`src/custom/copy-input/`)
+
+Read-only `InputGroup` that shows a value with an inline Copy button. Focusing the input selects the value; the button switches to the copied label for two seconds. Use it to reveal a one-time secret, an invite link, or any value the user should copy rather than edit. The host passes translated labels.
+
+```svelte
+<script lang="ts">
+  import { CopyInput } from '@cio/ui/custom/copy-input';
+</script>
+
+<CopyInput
+  value={secret}
+  copyLabel={$t('automation.keys.reveal.copy')}
+  copiedLabel={$t('automation.keys.reveal.copied')}
+/>
+```
+
+### AI client badge (`src/custom/ai-client-badge/`)
+
+`AiClientBadge` shows which AI client or integration made a change. Pass the stored `clientName`; matching is case-insensitive and loose, and covers the names clients send as MCP `clientInfo.name` or register as an OAuth client name (`claude-ai`, `claude-code`, `codex-mcp-client`, `cursor-vscode`, `Visual Studio Code`, `gemini-cli-mcp-client`, `goose-cli`, `openai-mcp`, and so on). `resolveAiClient(name)` returns `{ kind, label, iconPath }` for logic outside the badge.
+
+- Logo and display name: Claude, Claude Code, ChatGPT, Cursor, OpenCode, GitHub Copilot, Gemini CLI, Zed, Warp, Windsurf, Amp, Cline.
+- Monogram and display name (no verifiable logo source): Codex, VS Code, Goose, Factory Droid, Devin, Kiro, Grok, Muse Code.
+- Any other name: a monogram of its first letter and the name as reported.
+
+The logos are path data in `ai-client-icons.ts` (simple-icons, CC0, plus the OpenAI mark from lobe-icons, MIT), so nothing is fetched at render time. Each mark stays the property of its brand.
 
 ### Hooks (`src/hooks/`)
 
@@ -396,6 +620,7 @@ Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelt
 
 - `is-mobile.svelte.ts` - Media query hook for mobile breakpoints
 - `use-clipboard.svelte.ts` - Clipboard copy functionality with state management
+- `field-draft.svelte.ts` - Text draft separate from stored value that re-seeds only on external change, with live `input()` and blur-time `commit()`
 
 **Usage:**
 
@@ -665,3 +890,9 @@ When adding a new component to this package, follow these steps:
 - `jsrepo.json` - jsrepo configuration for component installation
 - `svelte.config.js` - Svelte configuration
 - `tsconfig.json` - TypeScript configuration
+
+### Public course mixed outline
+
+`PublicCourseSidebarSection.standalone` renders its items directly, without a section heading or collapse control. Group consecutive root lessons and exercises into one standalone entry, interleaved with section entries in course order. Standalone rows show the item type icon in the badge instead of a number, since numbers count position within a section. Standalone entries stay visible when `collapsibleSections` is enabled.
+
+`NumberBadge` renders its `children` snippet in place of `number`, for a badge that shows an icon.

@@ -30,10 +30,11 @@ Everything else — every other user message, every tool call the model makes du
 
 ### 4. UI mode switching
 
-- `ai-course-chat.svelte:97-103` — the status sets that classify a run:
-  - `RUN_MODE_STATUSES` — `queued|running|waiting_for_input|paused|failed|canceled`. Any of these keeps the panel in "running" mode.
-  - `RUN_RESUMABLE_STATUSES` — `paused|waiting_for_input|canceled`. Controls the Resume button.
-  - `INJECTABLE_RUN_STATUSES` — `completed`. The only status that auto-injects a synthetic summary message.
+- `ai-course-chat.svelte` — the status sets that classify a run:
+  - `RUN_MODE_STATUSES` — `queued|running|waiting_for_input|paused|failed`. Any of these keeps the panel in "running" mode. `canceled` is deliberately absent: cancel is terminal, so the panel flips back to planning.
+  - `RUN_RESUMABLE_STATUSES` — `paused|waiting_for_input`. The only statuses that offer Resume. `canceled` is terminal and `resumeAgentRunState` rejects it with `409 AGENT_RUN_CANCELED`.
+  - `INJECTABLE_RUN_STATUSES` — `completed|canceled`. Both auto-inject a synthetic summary message so the teacher keeps a record of what the run created.
+  - `RUN_SETTLED_STATUSES` — `completed|failed|canceled|paused`. Any transition into one of these refetches course data.
 - `ai-course-chat.svelte:898-903` — `panelMode` derivation. Reads `aiAssistantApi.currentRun.status` and flips the bottom of the chat between `RunMonitorPane` and `ChatInput`.
 - `ai-course-chat.svelte:1320-1346` — render switch.
 
@@ -53,15 +54,18 @@ The same tool set is bound in both modes. Whether `update_lesson_content` for te
 
 ### 2. Run can stick at `queued`
 
-Run creation enqueues to BullMQ. If the worker can't pick the job up (worker crashed, Redis blip, module-resolution boot failure, schema mismatch on payload), the run sits at `queued` indefinitely. The frontend polls run status but has no "worker hasn't moved past queued in N seconds" guardrail. The user sees a stalled progress card with no error.
+Run creation enqueues to BullMQ. If the worker can't pick the job up (worker crashed, module-resolution boot failure, schema mismatch on payload), the run sits at `queued`. After 30 seconds the pane stops guessing and asks the API, which reads the job's own BullMQ state and the queue's active count: the "Worker not responding" banner appears only when the job is `missing`, `failed`, `unavailable`, or still `waiting` while the queue processes nothing. The health read has a two-second deadline, so an offline Redis reports `unavailable` instead of blocking the poll. A job that is `active`, `delayed` (BullMQ retrying it), `completed`, or `waiting` behind an active job is left alone. Its Retry button replaces the queued job with a fresh one, and the worker claim rejects duplicates so repeated presses cannot run the same course twice. Missing Redis is a separate, explicit case: the API marks the run `failed` with `AGENT_RUN_QUEUE_UNAVAILABLE` instead of leaving it queued.
 
 **Observed:** `ERR_MODULE_NOT_FOUND` from a cross-app import made the worker boot fail silently from the user's perspective. Cause was only visible in worker logs.
 
-### 3. Resume/Dismiss/chat boundary
+### 3. Pause/cancel/chat boundary
 
-Canceled run → user clicks Dismiss → `aiAssistantApi.currentRun = null` → `panelMode` flips to `planning` → chat input returns. From here the user can type anything, and the model handles it as a fresh chat turn — including content edits — without the prompt-level "this was canceled, reconcile first" hint being load-bearing.
+- **Pause** is the only reversible stop. Pausing sets `status='paused'` without releasing the current `workerId`, so an in-flight tool finishes and checkpoints before the worker exits and releases ownership. Resume re-queues the run; a live worker keeps ownership and continues, while a replacement job can claim only after the lease expires or an explicit BullMQ redelivery of the same job.
+- **Cancel** is terminal. It sets `status='canceled'`, releases `workerId`, and the pane injects a run summary and flips back to `planning` on its own — there is no Dismiss step and no Resume button, because a canceled run can never be resumed.
 
-We mitigate (3) at the prompt level only:
+The worker enforces this ownership boundary: each job execution claims the run with `expectedWorkerId`, a live lease rejects a second claim, and checkpoint result writes are fenced atomically by the same owner. A worker that was paused, canceled, or superseded while an LLM round or tool was in flight cannot overwrite the newer run state; it exits as `superseded` instead.
+
+We still mitigate the chat-after-stop boundary at the prompt level:
 
 - `chat-history.ts:TOOLS_WITH_FULL_OUTPUT` now includes `get_course_structure` and `get_exercise_details` so the model can see what was already created.
 - `teacher.ts` has the "Re-engaging a course where an approved plan exists" rule telling the model to call `get_course_structure` first.
@@ -72,7 +76,7 @@ Both are prompt-trust mitigations. Neither is enforcement.
 
 Every tool defined in `chat-tools.ts` is callable from both endpoints. The notable mutation-heavy ones:
 
-- `update_lesson_content` — writes full lesson HTML. A single call can be 5–20k tokens of output.
+- `update_lesson_content` — writes the full HTML of one text block. A single call can be 5–20k tokens of output.
 - `add_questions` / `update_questions` — can add/update arbitrary-sized question batches in one call.
 - `create_lesson`, `update_lesson`, `create_exercise`, `update_exercise`.
 - `update_course_landing_page` — full landing-page mutation, including image generation.
@@ -85,7 +89,7 @@ Reads (`get_course_structure`, `get_lesson_content`, `get_exercise_details`) are
 Three bite-sized steps that move the routing decision from prompt-land into code-land:
 
 1. **Gate heavy tools to run-mode at the API layer.** Whitelist a small set of cheap chat-mode tools; reject the rest from `/agent/chat` with a structured error that the model can read and translate into "I need to make a plan for this." This stops mode drift.
-2. **Surface run health.** If `currentRun.status === 'queued'` for >30s with no `lastHeartbeat`, render a "Worker not responding" affordance with a retry button. Stops silent stalls.
-3. **Tighten the chat-after-cancel boundary.** Either keep the canceled-run pane visible alongside the chat input (so Resume is always one click away) or disable chat input until the user explicitly Dismisses. Removes the "type continue and hope the prompt does the right thing" failure mode.
+2. ~~**Surface run health.**~~ Implemented: `RunDetail.queueHealth` reports where the run's BullMQ job actually is (`active`, `waiting`, `delayed`, `completed`, `failed`, `missing`, `unavailable`) plus the queue's active count; `RunMonitorPane` waits 30 seconds, then shows "Worker not responding" only for evidence of a stall, and Retry removes the queued job before enqueuing a fresh one so repeated presses don't stack duplicates.
+3. ~~**Tighten the chat-after-cancel boundary.**~~ Implemented: cancel is terminal, its summary is injected automatically, and the composer returns immediately — there is no window where a canceled run can be resumed.
 
 None of these unify the two modes — that's a multi-month rewrite. They just stop the LLM and the worker queue from being single points of failure for routing.

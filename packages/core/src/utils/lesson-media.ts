@@ -1,4 +1,5 @@
 import { dedupe } from '@cio/utils';
+import { getFileUploadTypeKeyForMimeType } from '@cio/utils/file-upload';
 import { enrichObjectsWithUrls, extractKeysFromObjects } from './presigned-urls';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from './s3';
 
@@ -8,8 +9,8 @@ import type { TLesson } from '@cio/db/types';
 import { queueVimeoBackfill } from '../services/assets/assets';
 
 // Extract types from schema
-type LessonVideo = NonNullable<TLesson['videos']>[number];
-type LessonDocument = NonNullable<TLesson['documents']>[number];
+export type LessonVideo = NonNullable<TLesson['videos']>[number];
+export type LessonDocument = NonNullable<TLesson['documents']>[number];
 
 function mapProviderToVideoType(provider: string): LessonVideo['type'] {
   if (provider === 'youtube') return 'youtube';
@@ -24,19 +25,7 @@ function mapAssetMimeTypeToDocumentType(mimeType: string | null, fallbackType: L
     return fallbackType;
   }
 
-  if (mimeType === 'application/pdf') {
-    return 'pdf';
-  }
-
-  if (mimeType === 'application/msword') {
-    return 'doc';
-  }
-
-  if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-    return 'docx';
-  }
-
-  return fallbackType;
+  return getFileUploadTypeKeyForMimeType(mimeType) ?? fallbackType;
 }
 
 function applyCanonicalVideoMetadata(
@@ -71,14 +60,13 @@ function applyCanonicalVideoMetadata(
       thumbnailUrl: asset.thumbnailUrl ?? video.metadata?.thumbnailUrl,
       duration: asset.durationSeconds ?? video.metadata?.duration,
       aspectRatio: asset.aspectRatio ?? video.metadata?.aspectRatio,
-      ...(assetMetadata.format === 'hls' ? { hls: true } : {}),
       ...(typeof assetMetadata.sourceWidth === 'number' ? { sourceWidth: assetMetadata.sourceWidth } : {}),
       ...(typeof assetMetadata.sourceHeight === 'number' ? { sourceHeight: assetMetadata.sourceHeight } : {}),
       ...(Array.isArray(assetMetadata.hlsRenditions) ? { hlsRenditions: assetMetadata.hlsRenditions } : {}),
       ...(typeof assetMetadata.hls1080Status === 'string' ? { hls1080Status: assetMetadata.hls1080Status } : {})
     };
 
-    return {
+    const canonical = {
       ...video,
       type: mapProviderToVideoType(asset.provider),
       key: asset.storageKey ?? video.key,
@@ -86,7 +74,27 @@ function applyCanonicalVideoMetadata(
       fileName: asset.title ?? video.fileName,
       metadata: mergedMetadata
     };
+
+    return asset.hlsManifestKey ? playFromHlsManifest(canonical, asset.hlsManifestKey) : canonical;
   });
+}
+
+/**
+ * Point a video at its HLS manifest instead of its source file.
+ *
+ * @returns the video with no `key`, so {@link enrichLessonWithPresignedUrls}
+ * leaves its link alone rather than replacing it with a signed source URL.
+ */
+function playFromHlsManifest(video: LessonVideo, manifestKey: string): LessonVideo {
+  const { key: _sourceKey, ...withoutSourceKey } = video;
+  // `hls` is carried by the metadata catchall, which the inferred type omits.
+  const metadata = { ...(video.metadata ?? {}), hls: true } as LessonVideo['metadata'];
+
+  return {
+    ...withoutSourceKey,
+    link: `/hls/${manifestKey}`.replace(/\/{2,}/g, '/'),
+    metadata
+  };
 }
 
 function applyCanonicalDocumentMetadata(
@@ -120,16 +128,16 @@ function applyCanonicalDocumentMetadata(
   });
 }
 
+export interface LessonMedia {
+  videos: LessonVideo[];
+  documents: LessonDocument[];
+}
+
 /**
- * Enriches lesson with presigned URLs for videos and documents
- * @param lesson Lesson to enrich
- * @returns Lesson with presigned URLs added
+ * Applies canonical asset metadata and presigned URLs to videos and documents.
+ * @returns new arrays in the same order and length as the inputs.
  */
-export async function enrichLessonWithPresignedUrls(lesson: LessonById): Promise<LessonById> {
-  // videos and documents are jsonb fields from the database, now properly typed
-  // Normalize them to arrays safely (handles null/undefined cases)
-  const videos = lesson.videos || [];
-  const documents = lesson.documents || [];
+export async function enrichLessonMedia({ videos, documents }: LessonMedia): Promise<LessonMedia> {
   const videoAssetIds = videos.map((video) => video.assetId).filter((assetId): assetId is string => Boolean(assetId));
   const documentAssetIds = documents
     .map((document) => document.assetId)
@@ -146,24 +154,28 @@ export async function enrichLessonWithPresignedUrls(lesson: LessonById): Promise
   const videoKeys = extractKeysFromObjects(canonicalVideos.filter((video) => video.type === 'upload'));
   const docKeys = extractKeysFromObjects(canonicalDocuments);
 
-  // If no presigned URLs are needed, return lesson with canonical metadata applied
   if (videoKeys.length === 0 && docKeys.length === 0) {
-    return {
-      ...lesson,
-      videos: canonicalVideos,
-      documents: canonicalDocuments
-    };
+    return { videos: canonicalVideos, documents: canonicalDocuments };
   }
 
-  // Generate presigned URLs in parallel
   const [videoUrls, docUrls] = await Promise.all([
     generateVideoDownloadPresignedUrls(videoKeys),
     generateDocumentDownloadPresignedUrls(docKeys)
   ]);
 
   return {
-    ...lesson,
     videos: enrichObjectsWithUrls<LessonVideo>(canonicalVideos, videoUrls),
     documents: enrichObjectsWithUrls<LessonDocument>(canonicalDocuments, docUrls)
   };
+}
+
+/**
+ * Enriches lesson with presigned URLs for videos and documents
+ * @param lesson Lesson to enrich
+ * @returns Lesson with presigned URLs added
+ */
+export async function enrichLessonWithPresignedUrls(lesson: LessonById): Promise<LessonById> {
+  const media = await enrichLessonMedia({ videos: lesson.videos || [], documents: lesson.documents || [] });
+
+  return { ...lesson, ...media };
 }

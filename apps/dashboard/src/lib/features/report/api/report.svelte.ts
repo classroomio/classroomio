@@ -1,4 +1,5 @@
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, hasErrorCode } from '$lib/utils/services/api';
+import { ErrorCodes } from '@cio/utils/constants';
 import { ZCreateContentReport, type TCreateContentReport } from '@cio/utils/validation/report';
 import type { CreateContentReportRequest } from '../utils/types';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
@@ -22,16 +23,13 @@ class ReportApi extends BaseApiWithErrors {
         this.errors = {};
       },
       onError: (response) => {
-        if (typeof response !== 'string' && 'code' in response && response.code === 'REPORT_ALREADY_SUBMITTED') {
+        if (hasErrorCode(response, ErrorCodes.REPORT_ALREADY_SUBMITTED)) {
           snackbar.error('snackbar.report.already_submitted');
           return;
         }
 
         snackbar.error('snackbar.report.error');
-
-        if (typeof response !== 'string' && 'error' in response) {
-          this.handleValidationError(response);
-        }
+        this.handleValidationError(response);
       }
     });
   }

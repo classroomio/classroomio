@@ -23,6 +23,14 @@ export const QUEUE_DEFAULTS: Record<QueueName, JobsOptions> = {
     removeOnComplete: { age: 86_400, count: 500 },
     removeOnFail: { age: 14 * 86_400 }
   },
+  [QUEUE_NAMES.mediaHls]: {
+    // One retry only: an encode is expensive, and a second failure is almost
+    // always the source rather than the machine.
+    attempts: 2,
+    backoff: { type: 'exponential', delay: 60_000 },
+    removeOnComplete: { age: 86_400, count: 500 },
+    removeOnFail: { age: 7 * 86_400 }
+  },
   [QUEUE_NAMES.youtubeCaptions]: {
     attempts: 3,
     backoff: { type: 'exponential', delay: 30_000 },

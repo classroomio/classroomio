@@ -15,7 +15,7 @@ One JSON file per editing job. Paths are relative to the file. A path that start
 | `corrections` | `{}` | Word fixes for the cleaned transcript: `{"SAS": "SaaS", "classroom": "ClassroomIO"}`. Keys match the bare word, case-sensitive first, and trailing punctuation is kept. |
 | `phrase_corrections` | brand defaults | Multi-word fixes such as `{"classroom io": "ClassroomIO", "class room": "ClassroomIO"}`. Applied before `corrections`. |
 | `drop_words` | `um uh erm hmm` | Words removed from captions only. The audio is untouched. |
-| `audio` | see below | `denoise`, `trim_pauses`, `pause_db` (−35), `pause_min` (0.4 s), `pad_before` (0.12), `pad_after` (0.08), `loudness` (−14). |
+| `audio` | see below | `denoise` (false), `master` (false), `gain_db` (0), `trim_pauses`, `pause_db` (−35), `pause_min` (0.4 s), `pad_before` (0.12), `pad_after` (0.08), `loudness` (−14, used only with `master`). |
 | `sign_off` | ClassroomIO default | `headline` (lines), `swipe` (the word that gets the sky marker), `url`, optional `blocks` (`kind`, `title`, `tone`: sand, tint or blue). `enabled: false` skips it. `file` reuses an existing sign-off: name the 16x9 file, and the 9x16 file is found by swapping the suffix. |
 | `url` | `CLASSROOMIO.COM` | Mono footer on vertical cuts. |
 | `thumbnail` | | `label` and `url` for the thumbnail's colour rows. |
@@ -31,6 +31,7 @@ One JSON file per editing job. Paths are relative to the file. A path that start
 | `file` | Instead of `start`: a pre-cut clip, located in the source by audio alignment. `trim_start` adds seconds. |
 | `start_phrase`, `end_phrase` | Instead of seconds: the first and last words of the clip as spoken. `search_from` (seconds) disambiguates repeats. |
 | `duration` | Instead of `end`. |
+| `speaker` | Optional one-line credit under the 16:9 title card headline, for example `Andrew Bedell, Strategy and Operations Intern, SensorHubb`. |
 | `title` | Headline on the 16:9 title card and the 9:16 header. A plain claim in sentence case, 4–9 words. |
 | `thumbnail` | Thumbnail headline, at most 6 words. |
 | `thumbnail_frame` | `{"time": 8.0, "top": 0.08}`: which trimmed-clip frame to use, and how far down to crop. |

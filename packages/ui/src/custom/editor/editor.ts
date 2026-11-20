@@ -8,6 +8,7 @@ import { ColorHighlighter } from './extensions/ColorHighlighter';
 import { FontSize, TextStyle, Color } from '@tiptap/extension-text-style';
 import TextAlign from '@tiptap/extension-text-align';
 import Highlight from '@tiptap/extension-highlight';
+import { Callout } from './extensions/callout/callout';
 import SearchAndReplace from './extensions/FindAndReplace';
 import { TaskItem, TaskList } from '@tiptap/extension-list';
 import { Table, TableCell, TableRow, TableHeader } from './extensions/table';
@@ -62,6 +63,7 @@ export default (
         ]
       : [
           StarterKit.configure(starterKitConfig),
+          Callout,
           Highlight.configure({
             multicolor: true
           }),

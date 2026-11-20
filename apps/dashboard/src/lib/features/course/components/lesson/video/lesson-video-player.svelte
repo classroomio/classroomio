@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { MediaPlayer } from '@cio/ui/custom/media-player';
+  import { MediaPlayer, type HlsCookieGrant } from '@cio/ui/custom/media-player';
   import { presignApi } from '$features/course/api/presign.svelte';
   import { mediaApi } from '$features/media/api';
   import { jobsApi, JobPoller, type MediaJobEnvelope } from '$features/jobs';
@@ -45,17 +45,18 @@
     return built.toString().replace(/\/\*$/, '') + '/' + rest;
   }
 
-  async function mintHlsCookie(assetId: string): Promise<{ authExpired?: boolean } | void> {
+  async function mintHlsCookie(assetId: string): Promise<HlsCookieGrant | void> {
     try {
-      await classroomio.organization.assets[':assetId'].hls.cookie.$post({
+      const response = await classroomio.organization.assets[':assetId'].hls.cookie.$post({
         param: { assetId }
       });
+      const body = await response.json();
+
+      return { expiresInSeconds: body.data.expiresInSeconds };
     } catch (error) {
-      // A 401 here means the viewer's session expired — the player should
-      // prompt a re-login rather than retry. Other failures (e.g. 503 when
-      // HLS_SIGNING_SECRET is unset locally) fall through so playback can
-      // still attempt the session-auth streaming route.
       if (isAuthError(error)) return { authExpired: true };
+
+      throw error;
     }
   }
 
@@ -305,7 +306,7 @@
 
     const latest = runs?.[0];
 
-    if (!latest) return;
+    if (!latest || (video.type !== 'youtube' && !latest.job.transcriptionPlanned)) return;
 
     if (latest.job.status === 'completed') {
       void loadTranscript();
@@ -380,20 +381,22 @@
     };
   });
 
+  let resumeAtSeconds = $state(0);
+
   async function restoreWatchProgress(): Promise<void> {
     if (!$isCourseLearnerView || !uploadAssetId) return;
 
-    const cachedAsset = assetWatchProgress;
-    if (cachedAsset?.lastPositionSeconds && cachedAsset.lastPositionSeconds > 0) {
-      pendingResumeSeconds = cachedAsset.lastPositionSeconds;
+    const cachedPositionSeconds = assetWatchProgress?.lastPositionSeconds ?? 0;
+    if (cachedPositionSeconds > 0) {
+      resumeAtSeconds = cachedPositionSeconds;
       return;
     }
 
     const progress = await lessonApi.getWatchProgress(courseId, lessonId);
     const assetProgress = progress?.assets?.find((asset) => asset.assetId === uploadAssetId);
-    if (assetProgress?.lastPositionSeconds && assetProgress.lastPositionSeconds > 0) {
-      pendingResumeSeconds = assetProgress.lastPositionSeconds;
-    }
+    if (!isMounted) return;
+
+    resumeAtSeconds = assetProgress?.lastPositionSeconds ?? 0;
   }
 
   onMount(() => {
@@ -541,6 +544,7 @@
       },
       onFirstPlay: handleFirstPlay,
       onSourceLoaded: handleSourceLoaded,
+      resumeAtSeconds,
       onBeforeHlsLoad: isHls && uploadAssetId ? () => mintHlsCookie(uploadAssetId) : undefined,
       transcriptPanelControl,
       loadingLabel: $t('course.navItem.lessons.materials.tabs.video.loading'),

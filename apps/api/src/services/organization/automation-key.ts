@@ -18,12 +18,14 @@ import {
 } from '@cio/db/queries/organization';
 import { assertOrganizationAutomationKeyCreationAllowed } from './automation-usage';
 
-const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]> = {
+/**
+ * Scopes a newly created key receives. Exported so the scope-backfill migrations
+ * can be checked against it: each one widens existing keys only when their scope
+ * list matches the default as it stood before that scope was added, so the two
+ * drifting apart silently leaves existing keys short.
+ */
+export const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]> = {
   mcp: [
-    'course_import:draft:create',
-    'course_import:draft:read',
-    'course_import:draft:update',
-    'course_import:draft:publish',
     'course:read',
     'course:write',
     'course:tag:write',
@@ -34,7 +36,19 @@ const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]
     'course:member:read',
     'course:member:write',
     'course:certificate:read',
-    'course:certificate:write'
+    'course:certificate:write',
+    'analytics:read',
+    'media:write',
+    'course:submission:read',
+    'course:submission:write',
+    'course:student:write',
+    'audience:read',
+    'audience:write',
+    'team:read',
+    'team:write',
+    'organization:read',
+    'organization:write',
+    'organization:domain:write'
   ],
   api: ['public_api:*'],
   zapier: ['public_api:*']

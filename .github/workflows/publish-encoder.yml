@@ -1,0 +1,50 @@
+name: Publish HLS encoder image
+
+# The encoder runs as a disposable Fly machine created per job, not as a
+# long-lived app, so there is no `fly deploy` release to roll forward. The
+# dispatcher boots whatever `registry.fly.io/<app>:latest` points at, so
+# republishing that tag here is the whole release step — nothing downstream
+# needs reconfiguring.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/encoder/**"
+      - ".github/workflows/publish-encoder.yml"
+  workflow_dispatch:
+    inputs:
+      label:
+        description: "Image tag to publish (defaults to latest)"
+        required: false
+        default: "latest"
+
+concurrency:
+  group: publish-encoder
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Build and push to the Fly registry
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # --build-only --push, not a deploy: the app has no services and nothing
+      # listens, so a deploy would wait on a health check that never arrives.
+      - name: Build and push
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl deploy \
+            --config apps/encoder/fly.toml \
+            --dockerfile apps/encoder/Dockerfile \
+            --build-only \
+            --push \
+            --image-label "${{ inputs.label || 'latest' }}" \
+            .

@@ -1,9 +1,11 @@
 export * from './course';
 export * from './course-template';
 export * from './template-sync';
+export * from './root-order';
 export * from './template-access';
 export * from './template-assets';
 export * from './compliance';
+export * from './exercise-results';
 export * from './content';
 export * from './progression';
 export * from './content-batch';
@@ -14,3 +16,4 @@ export * from './public-course';
 export * from './lesson-language-body';
 export * from './session';
 export * from './member-progress';
+export * from './live-session-reminder';

@@ -10,9 +10,12 @@ import * as schema from '@db/schema';
 import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
-export async function createOrganizationInvite(values: TNewOrganizationInvite): Promise<TOrganizationInvite> {
+export async function createOrganizationInvite(
+  values: TNewOrganizationInvite,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite> {
   try {
-    const [created] = await db.insert(schema.organizationInvite).values(values).returning();
+    const [created] = await dbClient.insert(schema.organizationInvite).values(values).returning();
 
     if (!created) {
       throw new Error('Failed to create organization invite');
@@ -27,13 +30,16 @@ export async function createOrganizationInvite(values: TNewOrganizationInvite): 
   }
 }
 
-export async function createOrganizationInvites(values: TNewOrganizationInvite[]): Promise<TOrganizationInvite[]> {
+export async function createOrganizationInvites(
+  values: TNewOrganizationInvite[],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInvite).values(values).returning();
+    return await dbClient.insert(schema.organizationInvite).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInvites error:', error);
     throw new Error(
@@ -116,19 +122,55 @@ export async function revokeActiveOrganizationInvitesByEmails(
   }
 }
 
+/**
+ * Updates every unaccepted invite for this email to the given role.
+ */
+export async function updateActiveOrganizationInviteRoleByEmail(
+  organizationId: string,
+  email: string,
+  roleId: number,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) {
+    return;
+  }
+
+  const updatedAt = new Date().toISOString();
+
+  try {
+    await dbClient
+      .update(schema.organizationInvite)
+      .set({
+        roleId,
+        updatedAt
+      })
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          sql`lower(${schema.organizationInvite.email}) = ${normalizedEmail}`,
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt)
+        )
+      );
+  } catch (error) {
+    console.error('updateActiveOrganizationInviteRoleByEmail error:', error);
+    throw new Error('Failed to update organization invite role');
+  }
+}
+
 export type TOrganizationInviteTokenData = {
   invite: TOrganizationInvite;
   organization: {
     id: string;
     name: string;
     siteName: string;
+    avatarUrl: string | null;
   };
 };
 
 /** List rows for the notification panel: the token data plus the org avatar. */
-export type TPendingOrgInviteListItem = Omit<TOrganizationInviteTokenData, 'organization'> & {
-  organization: TOrganizationInviteTokenData['organization'] & { avatarUrl: string | null };
-};
+export type TPendingOrgInviteListItem = TOrganizationInviteTokenData;
 
 export async function getOrganizationInviteByTokenHash(
   tokenHash: string
@@ -140,7 +182,8 @@ export async function getOrganizationInviteByTokenHash(
         organization: {
           id: schema.organization.id,
           name: schema.organization.name,
-          siteName: schema.organization.siteName
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
         }
       })
       .from(schema.organizationInvite)
@@ -334,7 +377,7 @@ export async function getActivePendingOrgInvitesForEmail(email: string): Promise
 export async function getActivePendingOrgInviteForEmail(
   organizationId: string,
   email: string
-): Promise<TOrganizationInviteTokenData | null> {
+): Promise<{ invite: TOrganizationInvite; organization: { id: string; name: string; siteName: string } } | null> {
   const normalized = email.toLowerCase().trim();
   if (!normalized) {
     return null;
@@ -411,6 +454,42 @@ export async function getLatestOrganizationInviteRowByOrgAndEmail(
     throw new Error(
       `Failed to get latest organization invite: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * The metadata of the latest invite of any status (including revoked) for each email in the organization, newest by
+ * created_at. Emails without an invite are absent from the result.
+ */
+export async function getLatestOrganizationInviteMetadataByEmails(
+  organizationId: string,
+  emails: string[],
+  dbClient: DbOrTxClient = db
+): Promise<{ email: string; metadata: unknown }[]> {
+  const normalized = [...new Set(emails.map((email) => email.toLowerCase().trim()).filter(Boolean))];
+  if (normalized.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await dbClient
+      .selectDistinctOn([schema.organizationInvite.email], {
+        email: schema.organizationInvite.email,
+        metadata: schema.organizationInvite.metadata
+      })
+      .from(schema.organizationInvite)
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          inArray(schema.organizationInvite.email, normalized)
+        )
+      )
+      .orderBy(schema.organizationInvite.email, desc(schema.organizationInvite.createdAt));
+
+    return rows.flatMap((row) => (row.email ? [{ email: row.email, metadata: row.metadata }] : []));
+  } catch (error) {
+    console.error('getLatestOrganizationInviteMetadataByEmails error:', error);
+    throw new Error('Failed to get latest organization invites');
   }
 }
 

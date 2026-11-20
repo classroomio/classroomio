@@ -14,6 +14,7 @@ import {
 import WidgetsIcon from '@cio/ui/custom/moving-icons/widgets.svelte';
 
 import type { AccountOrg } from '$features/app/types';
+import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 import BotIcon from '@lucide/svelte/icons/bot';
 import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
@@ -43,6 +44,8 @@ export interface NavItem {
   supportsDynamicSegment?: boolean; // Supports dynamic segments (like [slug])
   /** Unfiltered resource total shown on the far right of the org sidebar. */
   count?: number;
+  /** Show a "New" badge on the org sidebar. */
+  isNew?: boolean;
 }
 
 export interface NavItemConfig {
@@ -66,6 +69,8 @@ export interface NavItemConfig {
   hideFromSidebar?: boolean;
   /** When set, the org sidebar shows the matching total from org nav counts. */
   countKey?: OrgNavCountKey;
+  /** Show a "New" badge on the org sidebar. */
+  isNew?: boolean;
 }
 
 export interface NavGroup {
@@ -110,22 +115,28 @@ export const baseNavConfig: NavItemConfig[] = [
   },
   {
     group: null,
-    titleKey: 'org_navigation.stats',
-    path: '/stats',
+    titleKey: 'org_navigation.analytics',
+    path: '/analytics',
     icon: ChartColumnIcon,
     useHashUrl: true,
-    matchPattern: '^/org/[^/]+/(analytics|compliance)(/.*)?$',
+    matchPattern: '^/org/[^/]+/analytics(/.*)?$',
     items: [
       {
-        titleKey: 'org_navigation.analytics',
-        path: '/analytics',
-        matchPattern: '^/org/[^/]+/analytics(/.*)?$'
+        titleKey: 'org_navigation.org_analytics',
+        path: `/analytics/${ORG_ANALYTICS_PAGE.slug}`,
+        requiresAdmin: true,
+        matchPattern: `^/org/[^/]+/analytics/${ORG_ANALYTICS_PAGE.slug}(/.*)?$`
+      },
+      {
+        titleKey: 'org_navigation.marketing',
+        path: '/analytics/marketing',
+        matchPattern: '^/org/[^/]+/analytics/marketing(/.*)?$'
       },
       {
         titleKey: 'org_navigation.compliance',
-        path: '/compliance',
+        path: '/analytics/compliance',
         requiresAdmin: true,
-        matchPattern: '^/org/[^/]+/compliance(/.*)?$'
+        matchPattern: '^/org/[^/]+/analytics/compliance(/.*)?$'
       }
     ]
   },
@@ -207,6 +218,7 @@ export const baseNavConfig: NavItemConfig[] = [
     icon: BotIcon,
     requiresAdmin: true,
     disableWhenNotAdmin: true,
+    isNew: true,
     matchPattern: '^/org/[^/]+/(automation|mcp|api|zapier)(/.*)?$',
     nestedRoutes: [
       { path: 'mcp', titleKey: 'automation.tabs.mcp' },
@@ -328,7 +340,8 @@ export function getOrgNavigationItems(
       useHashUrl: config.useHashUrl,
       nestedRoutes: config.nestedRoutes,
       supportsDynamicSegment: config.supportsDynamicSegment,
-      isPaid: config.isPaid
+      isPaid: config.isPaid,
+      isNew: config.isNew
     };
 
     // Handle nested items (like settings sub-items)
@@ -421,7 +434,8 @@ export function getOrgNavigationGroups(
       supportsDynamicSegment: config.supportsDynamicSegment,
       isPaid: config.isPaid,
       upgrade: config.upgradeResource ? Boolean(limitsReached[config.upgradeResource]) : undefined,
-      count: config.countKey && counts ? counts[config.countKey] : undefined
+      count: config.countKey && counts ? counts[config.countKey] : undefined,
+      isNew: config.isNew
     };
 
     if (visibleSubConfigs.length > 0) {

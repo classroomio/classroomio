@@ -32,6 +32,7 @@
   import ImageUploadModal from './components/image-upload-modal.svelte';
 
   import '../editor.css';
+  import '../extensions/callout/callout.css';
   import './style.css';
   import '../onedark.css';
   import { Placeholder } from '@tiptap/extensions';
@@ -120,7 +121,7 @@
       focusEditor(editor, event);
     }
   }}
-  class={cn('edra-editor ui:h-full ui:w-full ui:cursor-auto ui:px-4 *:outline-none', className)}
+  class={cn('edra-editor ui:min-h-0 ui:w-full ui:flex-1 ui:cursor-auto ui:px-4 *:outline-none', className)}
 ></div>
 
 {#if editor && !editor.isDestroyed}

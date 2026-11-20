@@ -95,10 +95,6 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
       exerciseIds.length > 0 ? await tx`SELECT id FROM question WHERE exercise_id IN ${tx(exerciseIds)}` : [];
     const questionIds = questions.map((q) => q.id);
 
-    // Polls
-    const polls = courseIds.length > 0 ? await tx`SELECT id FROM apps_poll WHERE "courseId" IN ${tx(courseIds)}` : [];
-    const pollIds = polls.map((p) => p.id);
-
     // Community questions
     const communityQuestions = await tx`
       SELECT id FROM community_question WHERE organization_id = ${orgId}
@@ -274,13 +270,6 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
     if (communityQuestionIds.length > 0) {
       await tx`DELETE FROM community_answer WHERE question_id IN ${tx(communityQuestionIds)}`;
       await tx`DELETE FROM community_question WHERE id IN ${tx(communityQuestionIds)}`;
-    }
-
-    // Phase 7: Polls
-    if (pollIds.length > 0) {
-      await tx`DELETE FROM apps_poll_submission WHERE poll_id IN ${tx(pollIds)}`;
-      await tx`DELETE FROM apps_poll_option WHERE poll_id IN ${tx(pollIds)}`;
-      await tx`DELETE FROM apps_poll WHERE id IN ${tx(pollIds)}`;
     }
 
     // Phase 8: Newsfeed

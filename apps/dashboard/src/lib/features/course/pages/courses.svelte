@@ -25,6 +25,7 @@
   import { COURSE_SORT_OPTIONS, DEFAULT_COURSE_SORT, type CourseSortBy } from '../utils/constants';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
+  import { invalidateAll } from '$app/navigation';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
   import type { Snippet } from 'svelte';
   import { Button } from '@cio/ui/base/button';
@@ -42,6 +43,7 @@
     filterControls?: Snippet;
     onCardClick?: (course: (OrgCourses | UserEnrolledCourses)[number]) => void;
     emptyAction?: Snippet;
+    emptyMedia?: Snippet;
     hasMore?: boolean;
     isLoadingMore?: boolean;
     onLoadMore?: () => void | Promise<void>;
@@ -61,6 +63,7 @@
     filterControls,
     onCardClick,
     emptyAction,
+    emptyMedia,
     hasMore = false,
     isLoadingMore = false,
     onLoadMore,
@@ -96,15 +99,17 @@
   async function handleDeleteCourse() {
     if (!$deleteCourseModal.id) return;
 
-    $deleteCourseModal.isDeleting = true;
+    const deletedCourseId = $deleteCourseModal.id;
+    deleteCourseModal.update((modal) => ({ ...modal, isDeleting: true }));
 
-    await courseApi.delete($deleteCourseModal.id);
+    await courseApi.delete(deletedCourseId);
 
     if (courseApi.success) {
-      deleteCourseModal.set(deleteCourseModalInitialState);
+      deleteCourseModal.set({ ...deleteCourseModalInitialState });
+      await invalidateAll();
+    } else {
+      deleteCourseModal.update((modal) => ({ ...modal, isDeleting: false }));
     }
-
-    $deleteCourseModal.isDeleting = false;
   }
 </script>
 
@@ -151,7 +156,14 @@
       <CourseCardLoader />
     </section>
   {:else if !courses.length}
-    <Empty title={resolvedEmptyTitle} description={resolvedEmptyDescription} icon={LibraryBigIcon} variant="page">
+    <Empty
+      title={resolvedEmptyTitle}
+      description={resolvedEmptyDescription}
+      icon={emptyMedia ? undefined : LibraryBigIcon}
+      media={emptyMedia}
+      variant="page"
+      class={emptyMedia ? 'ui:text-center' : undefined}
+    >
       {#if emptyAction}
         {@render emptyAction()}
       {:else if !isLMS && !$isStudentExperience}

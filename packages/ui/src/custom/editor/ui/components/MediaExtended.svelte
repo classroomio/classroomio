@@ -163,15 +163,21 @@
     >
       {@render children()}
 
-      {#if node.attrs.title !== null && node.attrs.title !== undefined && node.attrs.title !== ''}
-        <input
-          type="text"
-          aria-label="Image caption"
-          value={node.attrs.title}
-          oninput={(e) => updateAttributes({ title: (e.target as HTMLInputElement).value })}
-          placeholder="Add caption..."
-          class="ui:mt-1 ui:w-full ui:bg-transparent ui:text-center ui:text-xs ui:text-muted-foreground ui:outline-none"
-        />
+      {#if node.attrs.title != null && (editor.isEditable || node.attrs.title !== '')}
+        {#if editor.isEditable}
+          <input
+            type="text"
+            aria-label="Image caption"
+            value={node.attrs.title}
+            oninput={(e) => updateAttributes({ title: (e.target as HTMLInputElement).value })}
+            placeholder="Add caption..."
+            class="ui:mt-1 ui:w-full ui:bg-transparent ui:text-center ui:text-xs ui:text-muted-foreground ui:outline-none"
+          />
+        {:else}
+          <figcaption class="ui:mt-1 ui:w-full ui:text-center ui:text-xs ui:text-muted-foreground">
+            {node.attrs.title}
+          </figcaption>
+        {/if}
       {/if}
 
       {#if editor.isEditable}

@@ -3,8 +3,10 @@ import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/or
 import { getNextStep, getPreviousStep, ONBOARDING_STEPS } from '../utils/constants';
 import { validateMetadata, validateOrgSetup, validateQuestionStep } from '../utils/validations';
 import { hasManagedOrganization } from '../utils/completeness';
+import { findOrgById } from '$features/org/utils/org-memberships';
 
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, matchesError } from '$lib/utils/services/api';
+import { ErrorCodes } from '@cio/utils/constants';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { profile } from '$lib/utils/store/user';
 import { get } from 'svelte/store';
@@ -78,40 +80,33 @@ export class OnboardingApi extends BaseApiWithErrors {
       requestFn: () => classroomio.onboarding['create-org'].$post({ json: data }),
       logContext: 'submitting organization setup',
       onSuccess: (result) => {
-        const { organizations } = result.data;
+        const { organization, organizations } = result.data;
+        const createdOrg = findOrgById(organizations, organization.id);
 
         orgs.set(organizations.map((org) => mergeAccountOrgFromServer(org)));
-        currentOrg.set(mergeAccountOrgFromServer(organizations[0]));
+        if (createdOrg) {
+          currentOrg.set(mergeAccountOrgFromServer(createdOrg));
+        }
         profile.update((current) => ({ ...current, fullname: data.fullname }));
 
         this.errors = {};
         this.step = ONBOARDING_STEPS.USE_CASES;
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
+        if (matchesError(result, { code: ErrorCodes.SITENAME_EXISTS }) || matchesError(result, { field: 'siteName' })) {
+          this.errors = { ...this.errors, siteName: result.message };
           return;
         }
 
-        if ('message' in result) {
+        if (matchesError(result, { field: 'orgName' })) {
+          this.errors = { ...this.errors, orgName: result.message };
+          return;
+        }
+
+        this.handleValidationError(result);
+
+        if (!result.field) {
           snackbar.error(result.message);
-          return;
-        }
-
-        if ('error' in result) {
-          // Specific handling for siteName / orgName
-          if (result.code === 'SITENAME_EXISTS' || result.field === 'siteName') {
-            this.errors = { ...this.errors, siteName: result.error };
-            return;
-          }
-
-          if (result.code === 'ORGNAME_EXISTS' || result.field === 'orgName') {
-            this.errors = { ...this.errors, orgName: result.error };
-            return;
-          }
-
-          // Fallback to generic
-          this.handleValidationError(result);
         }
       }
     });
@@ -142,19 +137,10 @@ export class OnboardingApi extends BaseApiWithErrors {
         window.location.href = orgPath;
       },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error(result);
-          return;
-        }
+        this.handleValidationError(result);
 
-        if ('message' in result) {
+        if (!result.field) {
           snackbar.error(result.message);
-          return;
-        }
-
-        // map api validation back to frontend fields
-        if ('error' in result) {
-          this.handleValidationError(result);
         }
       }
     });

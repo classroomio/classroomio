@@ -32,7 +32,8 @@
   import * as Field from '@cio/ui/base/field';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
-  let siteName = $derived($currentOrg.siteName);
+  let siteName = $state('');
+  let capturedSiteNameOrgId = $state<string | null>(null);
   let customDomain = $state('');
   let customCode = $state('');
   let favicon = $state<string | File | undefined>();
@@ -329,6 +330,14 @@
 
   const DOMAIN_POLL_INTERVAL_MS = 15000;
 
+  $effect(() => {
+    const organizationId = $currentOrg?.id;
+    if (!organizationId || organizationId === capturedSiteNameOrgId) return;
+
+    capturedSiteNameOrgId = organizationId;
+    siteName = $currentOrg.siteName ?? '';
+  });
+
   onMount(() => {
     if ($currentOrg.customDomain) {
       void refreshDomainApex($currentOrg.customDomain);
@@ -363,13 +372,7 @@
 
     <Field.Field>
       <Field.Label>URL</Field.Label>
-      <DomainInput
-        value={siteName ?? ''}
-        onchange={(e) => (siteName = (e.target as HTMLInputElement)?.value ?? '')}
-        placeholder="myschool"
-        prefix="https://"
-        suffix=".{TENANT_ROOT_DOMAIN}"
-      />
+      <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".{TENANT_ROOT_DOMAIN}" />
       {#if errors.siteName}
         <Field.Error>{errors.siteName}</Field.Error>
       {/if}

@@ -1,0 +1,43 @@
+---
+title: MCP overview
+description: Connect an MCP client to ClassroomIO to work with courses, students, cohorts, and organization data.
+---
+
+ClassroomIO's hosted MCP server lets an MCP client use ClassroomIO tools. Clients connect at `https://mcp.classroomio.com` and you sign in with your ClassroomIO account. The API checks the permissions you approved and your role in the workspace on every request.
+
+:::note[MCP keys]
+New MCP keys can no longer be created. Keys you already have keep working until you revoke them, and you can rotate or revoke them in **Automation → MCP**. To connect a client, sign in using the steps on this page.
+:::
+## Watch the walkthrough
+
+This video connects ClassroomIO to Claude, then asks Claude about courses and students and has it add a note to a lesson.
+
+<YouTube id="E--DUOM-ftM" title="Connect ClassroomIO to Claude" />
+
+## Get started
+
+1. [Connect your client](/developers/mcp/setup) to `https://mcp.classroomio.com`. For Claude or ChatGPT, see [Connect from Claude or ChatGPT](/developers/mcp/remote).
+2. Sign in to ClassroomIO when the client asks, choose the workspace, and approve the permissions. You must be a workspace admin.
+3. Ask the client to list your ClassroomIO courses to check the connection before making changes.
+
+You can see and remove connected apps in **Automation → MCP → Connected apps**.
+
+## What you can do
+
+- Create a course, fill it with lessons and exercises, review it in your dashboard, then publish it when it is ready. You can also copy an existing course.
+- Manage course content, exercises, submissions, certificates, members, and invitations.
+- Work with cohorts, audience and team members, email templates, and analytics (Academy, Marketing, and Compliance). Organization admins can tag courses, choose which published courses appear first on the landing page, and change the site's subdomain, favicon and custom domain.
+
+See [access and limits](/developers/mcp/access-and-limits) before connecting a client or approving changes. The MCP server does not extract content from PDFs or create course content on its own; your client prepares the content and sends it to ClassroomIO.
+
+You can also ask analytics questions about your cohorts, courses, and organization, for example: "Which students in my onboarding cohort are at risk, and who has an overdue goal?" The client queries the same numbers the **Analytics** pages show.
+
+## Choose the right course workflow
+
+Tell your connected client what you want to create or change. New courses start unpublished, so you can review them in your dashboard before asking the client to publish. Changes to a published course, such as moving a lesson, can take effect immediately. See [course prompts and expected results](/developers/mcp/course-editing).
+
+## API access
+
+A connected app can use the MCP actions only. It does not get unrestricted access to the public API. Each request must pass both the permissions you approved and your role in the workspace. See [access and limits](/developers/mcp/access-and-limits) and [API authentication](/api/authentication).
+
+Existing MCP keys (`cio_mcp_...`) follow the same rules: they work only with supported MCP actions and never grant `public_api:*` access.

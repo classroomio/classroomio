@@ -4,10 +4,43 @@ import {
   extractIframeSrc,
   isAllowedSlideEmbedSrc,
   parseSlideEmbed,
+  SLIDE_PLATFORMS,
   resolveLessonSlides
 } from '@cio/utils/functions';
 
+describe('slide embed platform detection', () => {
+  it.each(SLIDE_PLATFORMS)('detects $name from its embed code', (platform) => {
+    expect(parseSlideEmbed(platform.exampleEmbed)).toMatchObject({ ok: true, platform: platform.id });
+  });
+
+  it.each(SLIDE_PLATFORMS)('detects $name when the embed is wrapped in a responsive div', (platform) => {
+    const wrapped = `<div style="position: relative; padding-top: 56.25%;">${platform.exampleEmbed}</div><a href="https://example.com">credit</a>`;
+
+    expect(parseSlideEmbed(wrapped)).toMatchObject({ ok: true, platform: platform.id });
+  });
+});
+
 describe('slide embed parsing', () => {
+  it('parses the Canva responsive-wrapper embed and a bare Canva view link', () => {
+    const wrapped = `<div style="position: relative; padding-top: 56.25%;">
+  <iframe loading="lazy" style="position: absolute; top: 0;"
+    src="https://www.canva.com/design/DAHaaCRs1Jw/5sck/view?embed" allowfullscreen="allowfullscreen"></iframe>
+</div><a href="https://www.canva.com/design/x/view">Design</a> by Someone`;
+
+    expect(parseSlideEmbed(wrapped)).toMatchObject({ ok: true, platform: 'canva' });
+    expect(parseSlideEmbed('https://www.canva.com/design/DAHaaCRs1Jw/5sck/view')).toMatchObject({
+      ok: true,
+      platform: 'canva',
+      src: 'https://www.canva.com/design/DAHaaCRs1Jw/5sck/view?embed'
+    });
+  });
+
+  it('ignores data-src attributes when reading the iframe src', () => {
+    const raw = '<iframe data-src="https://evil.com/x" src="https://www.canva.com/design/a/b/view?embed"></iframe>';
+
+    expect(extractIframeSrc(raw)).toBe('https://www.canva.com/design/a/b/view?embed');
+  });
+
   it('extracts src from a full iframe and ignores width and height', () => {
     const raw =
       '<iframe src="https://docs.google.com/presentation/d/e/2PACX-abc/embed" width="320" height="200"></iframe>';

@@ -139,13 +139,16 @@
     repeat?: number;
     rows?: number;
     class?: string;
+    /** Per-instance tone colours; unset tones keep the component defaults. */
+    toneClasses?: Partial<Record<Tone, string>>;
   }
 
-  let { loop = true, repeat = 1, rows = BASE_ROWS, class: className }: Props = $props();
+  let { loop = true, repeat = 1, rows = BASE_ROWS, class: className, toneClasses }: Props = $props();
 
   const stackRows = $derived(Math.max(rows, BASE_ROWS));
   const groups = $derived(buildGroups(repeat, stackRows));
   const intervalMs = $derived((SEQUENCE_MS * BASE_ROWS) / (COLUMNS.length * repeat * stackRows));
+  const toneClass = $derived((tone: Tone) => toneClasses?.[tone] ?? TONE_CLASSES[tone]);
 </script>
 
 <div
@@ -159,9 +162,9 @@
           {#each column.blocks as block, level (level)}
             <span
               use:dropIn={{ dropOrder: block.dropOrder, intervalMs, loop }}
-              class="ui:notch-cutout ui:h-3.5 ui:rounded-[5px] ui:[--notch-h:4px] ui:[--notch-w:20px] ui:[--notch-x:10px] {TONE_CLASSES[
+              class="ui:notch-cutout ui:h-3.5 ui:rounded-[5px] ui:[--notch-h:4px] ui:[--notch-w:20px] ui:[--notch-x:10px] {toneClass(
                 block.tone
-              ]}"
+              )}"
             ></span>
           {/each}
         </div>

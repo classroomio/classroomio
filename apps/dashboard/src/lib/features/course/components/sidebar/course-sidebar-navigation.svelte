@@ -147,7 +147,8 @@
         show() {
           if (courseApi.course?.isTemplate) return false;
           if (isStudent) return false;
-          return true;
+
+          return courseApi.course?.canGrade === true;
         },
         icon: getNavIcon(NAV_IDS.SUBMISSIONS)
       },
@@ -376,12 +377,14 @@
 
                     <span>{item.title}</span>
 
-                    <div class="ml-auto flex items-center gap-1">
+                    <div class="ml-auto flex items-center gap-2">
                       {#if !isStudent}
                         <IconButton
-                          variant="ghost-outline"
-                          size="icon-xs"
-                          class="transition-opacity duration-150 {isHovered ? 'opacity-100' : 'opacity-0'}"
+                          variant="ghost"
+                          size="icon-2xs"
+                          class="ui:text-muted-foreground ui:hover:text-foreground transition-opacity duration-150 {isHovered
+                            ? 'opacity-100'
+                            : 'opacity-0'}"
                           aria-label={$t('course.navItem.lessons.add_content')}
                           aria-keyshortcuts="Control+Shift+N"
                           tooltip={$t('course.navItem.lessons.add_content')}
@@ -392,7 +395,7 @@
                             openAddContentModal(id);
                           }}
                         >
-                          <Plus size={8} />
+                          <Plus class="size-3.5" />
                         </IconButton>
                       {/if}
                       {#if showContentCount}
@@ -401,7 +404,8 @@
 
                       <IconButton
                         variant="ghost"
-                        size="icon-xs"
+                        size="icon-2xs"
+                        class="ui:text-muted-foreground ui:hover:text-foreground"
                         aria-expanded={isContentTreeExpanded}
                         aria-label={$t(
                           isContentTreeExpanded
@@ -412,7 +416,7 @@
                         onclick={handleContentTreeToggle}
                       >
                         <ChevronRightIcon
-                          class="transition-transform duration-200 {isContentTreeExpanded ? 'rotate-90' : ''}"
+                          class="size-3.5 transition-transform duration-200 {isContentTreeExpanded ? 'rotate-90' : ''}"
                         />
                       </IconButton>
                     </div>

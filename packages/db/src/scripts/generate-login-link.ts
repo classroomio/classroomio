@@ -16,7 +16,7 @@ function getFallbackBaseUrl(): string {
 /**
  * Login-link sessions are host-only. The consume URL must be opened on the
  * destination host, and `redirect` must be a same-host path (the plugin
- * drops anything that does not start with `/`).
+ * replaces anything else with `/`). Each link can be opened once.
  *
  * A relative path keeps the API/dashboard fallback origin. An absolute
  * http(s) URL (e.g. `https://excelly.myclassroomio.com/lms`) uses that

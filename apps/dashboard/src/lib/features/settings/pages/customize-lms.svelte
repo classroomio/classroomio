@@ -11,8 +11,18 @@
   import type { TLocale } from '@cio/db/types';
   import { LANGUAGES } from '$lib/utils/constants/translation';
 
-  import { AttentionHighlight, UploadWidget } from '$features/ui';
+  import { AttentionHighlight, UploadWidget, UnsavedChanges } from '$features/ui';
+  import { StudentHomeField } from '$features/settings/components';
   import * as Field from '@cio/ui/base/field';
+  import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+  import { toLmsAvailabilityContext } from '$features/ui/navigation/lms-navigation';
+  import { studentHomeApi } from '$features/org/api/student-home.svelte';
+  import {
+    buildStudentHomePageOptions,
+    getStudentHomeWarning,
+    toStudentHomeDestination
+  } from '$features/org/utils/student-home-utils';
+  import type { TStudentHomeDestination } from '@cio/utils/validation/organization';
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -21,10 +31,13 @@
   let { hasUnsavedChanges = $bindable(false) }: Props = $props();
 
   let widgetKey = $state('');
+  let customization = $state($state.snapshot($currentOrg.customization));
   let savedCustomizationSnapshot = $state('');
   let capturedOrgId = $state('');
+  let coursesListedOrgId = $state('');
   let languageLocale = $state<TLocale>('en');
   let languageEnforced = $state(false);
+  let studentHome = $state<TStudentHomeDestination | null>(null);
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -41,25 +54,48 @@
   }
 
   function deleteAuthBackgroundImage() {
-    $currentOrg.customization.auth.backgroundImage = '';
+    customization.auth.backgroundImage = '';
   }
 
   function captureCustomizationSnapshot() {
     savedCustomizationSnapshot = JSON.stringify({
-      customization: $currentOrg.customization,
-      language: { locale: languageLocale, enforced: languageEnforced }
+      customization,
+      language: { locale: languageLocale, enforced: languageEnforced },
+      studentHome
     });
   }
+
+  const availabilityContext = $derived({
+    ...toLmsAvailabilityContext($currentOrg),
+    customization
+  });
+  const studentHomePageOptions = $derived(buildStudentHomePageOptions((key) => t.get(key), availabilityContext));
+  const studentHomeWarning = $derived(
+    getStudentHomeWarning(studentHome, studentHomePageOptions, studentHomeApi.courses)
+  );
 
   $effect(() => {
     const organizationId = $currentOrg?.id;
     if (!organizationId || organizationId === capturedOrgId) return;
 
     capturedOrgId = organizationId;
+    customization = $state.snapshot($currentOrg.customization);
     languageLocale = $currentOrg.settings?.language?.locale ?? 'en';
     languageEnforced = $currentOrg.settings?.language?.enforced ?? false;
+    studentHome = toStudentHomeDestination($currentOrg);
     savedCustomizationSnapshot = '';
     captureCustomizationSnapshot();
+  });
+
+  $effect(() => {
+    const organizationId = $currentOrg?.id;
+    if (!organizationId || organizationId === coursesListedOrgId) return;
+
+    coursesListedOrgId = organizationId;
+    const savedHome = toStudentHomeDestination($currentOrg);
+    void studentHomeApi.listCourses({
+      includeCourseId: savedHome?.type === 'course' ? savedHome.courseId : undefined
+    });
   });
 
   $effect(() => {
@@ -67,17 +103,22 @@
 
     hasUnsavedChanges =
       JSON.stringify({
-        customization: $currentOrg.customization,
-        language: { locale: languageLocale, enforced: languageEnforced }
+        customization,
+        language: { locale: languageLocale, enforced: languageEnforced },
+        studentHome
       }) !== savedCustomizationSnapshot;
   });
 
   export async function handleSave() {
+    const savedSettings = savedCustomizationSnapshot ? JSON.parse(savedCustomizationSnapshot) : null;
+    const studentHomeChanged = JSON.stringify(studentHome) !== JSON.stringify(savedSettings?.studentHome ?? null);
+
     await orgApi.update($currentOrg.id, {
-      customization: $currentOrg.customization,
+      customization,
       settings: {
         language: { locale: languageLocale, enforced: languageEnforced }
-      }
+      },
+      ...(studentHomeChanged ? { studentHome } : {})
     });
 
     if (orgApi.success) {
@@ -90,14 +131,46 @@
     if (!savedCustomizationSnapshot) return;
 
     const savedSettings = JSON.parse(savedCustomizationSnapshot);
-    $currentOrg.customization = savedSettings.customization;
+    customization = savedSettings.customization;
     languageLocale = savedSettings.language.locale;
     languageEnforced = savedSettings.language.enforced;
+    studentHome = savedSettings.studentHome ?? null;
     hasUnsavedChanges = false;
   }
 </script>
 
+<UnsavedChanges bind:hasUnsavedChanges />
+
 <Field.Group class="w-full max-w-md! px-2">
+  <Field.Set>
+    <Field.Legend>{$t('components.settings.customize_lms.student_home.heading')}</Field.Legend>
+    <Field.Description>
+      {$t('components.settings.customize_lms.student_home.description')}
+      <a
+        class="ui:text-primary underline"
+        href="https://classroomio.com/help/publish-and-brand/student-home"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="customize-lms-student-home-learn-more"
+      >
+        {$t('components.settings.customize_lms.student_home.learn_more')}
+      </a>
+    </Field.Description>
+    <Field.Group>
+      <Field.Field>
+        <Field.Label>{$t('components.settings.customize_lms.student_home.label')}</Field.Label>
+        <StudentHomeField
+          bind:value={studentHome}
+          pageOptions={studentHomePageOptions}
+          warning={studentHomeWarning}
+          error={orgApi.errors.studentHome}
+        />
+      </Field.Field>
+    </Field.Group>
+  </Field.Set>
+
+  <Field.Separator />
+
   <AttentionHighlight id="language-settings" scrollBlock="center">
     <Field.Set>
       <Field.Legend>{$t('components.settings.customize_lms.language.title')}</Field.Legend>
@@ -131,9 +204,9 @@
     <Field.Group>
       <Field.Field orientation="horizontal">
         <Field.Label>{$t('components.settings.customize_lms.dashboard.community')}</Field.Label>
-        <Switch bind:checked={$currentOrg.customization.dashboard.community} />
+        <Switch bind:checked={customization.dashboard.community} />
         <Field.Description class="text-sm">
-          {$currentOrg.customization.dashboard.community
+          {customization.dashboard.community
             ? $t('components.settings.customize_lms.enabled')
             : $t('components.settings.customize_lms.disabled')}
         </Field.Description>
@@ -141,9 +214,9 @@
 
       <Field.Field orientation="horizontal">
         <Field.Label>{$t('components.settings.customize_lms.dashboard.exercises')}</Field.Label>
-        <Switch bind:checked={$currentOrg.customization.dashboard.exercise} />
+        <Switch bind:checked={customization.dashboard.exercise} />
         <Field.Description class="text-sm">
-          {$currentOrg.customization.dashboard.exercise
+          {customization.dashboard.exercise
             ? $t('components.settings.customize_lms.enabled')
             : $t('components.settings.customize_lms.disabled')}
         </Field.Description>
@@ -154,11 +227,11 @@
         <Button variant="outline" onclick={() => widgetControl('banner-image')}>
           {$t('components.settings.customize_lms.dashboard.banner_image_btn')}
         </Button>
-        {#if $currentOrg.customization.dashboard.bannerImage}
-          <img alt="Banner" src={$currentOrg.customization.dashboard.bannerImage} class="mt-2 w-full rounded-md" />
+        {#if customization.dashboard.bannerImage}
+          <img alt="Banner" src={customization.dashboard.bannerImage} class="mt-2 w-full rounded-md" />
         {/if}
         {#if $handleOpenWidget.open && widgetKey === 'banner-image'}
-          <UploadWidget bind:imageURL={$currentOrg.customization.dashboard.bannerImage} />
+          <UploadWidget bind:imageURL={customization.dashboard.bannerImage} />
         {/if}
       </Field.Field>
 
@@ -166,7 +239,7 @@
         <Field.Label>{$t('components.settings.customize_lms.dashboard.banner_text')}</Field.Label>
         <Input
           placeholder={$t('components.settings.customize_lms.dashboard.banner_text_placeholder')}
-          bind:value={$currentOrg.customization.dashboard.bannerText}
+          bind:value={customization.dashboard.bannerText}
         />
       </Field.Field>
     </Field.Group>
@@ -193,7 +266,7 @@
           </Button>
         </div>
         {#if $handleOpenWidget.open && widgetKey === 'auth-background'}
-          <UploadWidget bind:imageURL={$currentOrg.customization.auth.backgroundImage} />
+          <UploadWidget bind:imageURL={customization.auth.backgroundImage} />
         {/if}
       </Field.Field>
       <Field.Field>
@@ -201,8 +274,8 @@
           <img
             style="min-width:280px; min-height:200px"
             alt={$t('components.settings.customize_lms.auth_background.preview_alt')}
-            src={$currentOrg.customization.auth.backgroundImage
-              ? $currentOrg.customization.auth.backgroundImage
+            src={customization.auth.backgroundImage
+              ? customization.auth.backgroundImage
               : '/images/classroomio-course-img-template.jpg'}
             class="relative mt-2 h-[200px] w-[280px] rounded-md object-cover md:mt-0"
           />
@@ -218,9 +291,9 @@
     <Field.Group>
       <Field.Field orientation="horizontal">
         <Field.Label>{$t('components.settings.customize_lms.course.newsfeed')}</Field.Label>
-        <Switch bind:checked={$currentOrg.customization.course.newsfeed} />
+        <Switch bind:checked={customization.course.newsfeed} />
         <Field.Description class="text-gray-600">
-          {$currentOrg.customization.course.newsfeed
+          {customization.course.newsfeed
             ? $t('components.settings.customize_lms.enabled')
             : $t('components.settings.customize_lms.disabled')}
         </Field.Description>
@@ -228,9 +301,9 @@
 
       <Field.Field orientation="horizontal">
         <Field.Label>{$t('components.settings.customize_lms.course.grading')}</Field.Label>
-        <Switch bind:checked={$currentOrg.customization.course.grading} />
+        <Switch bind:checked={customization.course.grading} />
         <Field.Description class="text-gray-600">
-          {$currentOrg.customization.course.grading
+          {customization.course.grading
             ? $t('components.settings.customize_lms.enabled')
             : $t('components.settings.customize_lms.disabled')}
         </Field.Description>
@@ -244,19 +317,10 @@
     <Field.Legend>{$t('components.settings.customize_lms.apps.title')}</Field.Legend>
     <Field.Group>
       <Field.Field orientation="horizontal">
-        <Field.Label>{$t('components.settings.customize_lms.apps.poll')}</Field.Label>
-        <Switch bind:checked={$currentOrg.customization.apps.poll} />
-        <Field.Description class="text-gray-600">
-          {$currentOrg.customization.apps.poll
-            ? $t('components.settings.customize_lms.enabled')
-            : $t('components.settings.customize_lms.disabled')}
-        </Field.Description>
-      </Field.Field>
-      <Field.Field orientation="horizontal">
         <Field.Label>{$t('components.settings.customize_lms.apps.live_comment')}</Field.Label>
-        <Switch bind:checked={$currentOrg.customization.apps.comments} />
+        <Switch bind:checked={customization.apps.comments} />
         <Field.Description class="text-gray-600">
-          {$currentOrg.customization.apps.comments
+          {customization.apps.comments
             ? $t('components.settings.customize_lms.enabled')
             : $t('components.settings.customize_lms.disabled')}
         </Field.Description>

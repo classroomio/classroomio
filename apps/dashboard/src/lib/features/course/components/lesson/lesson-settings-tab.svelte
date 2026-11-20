@@ -10,6 +10,8 @@
   import * as Tooltip from '@cio/ui/base/tooltip';
   import * as Alert from '@cio/ui/base/alert';
   import InfoIcon from '@lucide/svelte/icons/info';
+  import LockIcon from '@lucide/svelte/icons/lock';
+  import UnlockIcon from '@lucide/svelte/icons/lock-open';
   import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { toast } from '@cio/ui/base/sonner';
   import { classroomio } from '$lib/utils/services/api';
@@ -17,8 +19,28 @@
   import { goAndHighlight } from '$lib/routing/go-and-highlight';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { getBrowserTimezone, instantToZonedWallClock, zonedWallClockToInstant } from '$lib/utils/functions/date';
-  import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
-  import { parseBoundedInteger } from '@cio/utils/functions';
+  import { NumberField } from '@cio/ui/custom/number-field';
+  import {
+    DEFAULT_SESSION_DURATION_MINUTES,
+    MAX_SESSION_DURATION_MINUTES,
+    MIN_SESSION_DURATION_MINUTES
+  } from '@cio/utils/functions/live-session';
+  import { ZLessonRecordingUrl } from '@cio/utils/validation/lesson';
+  import { slugifyTitle } from '@cio/utils/validation';
+  import { getVideoDisplayTitle, type LessonVideo } from './video/video-card-utils';
+  import { libraryAssetCache } from '$features/media/api/library-asset-cache.svelte';
+
+  interface Props {
+    hasUnsavedSessionChanges?: boolean;
+    videos?: LessonVideo[];
+    onVideoWatchEnforcedChange?: (index: number, checked: boolean) => void;
+  }
+
+  let {
+    hasUnsavedSessionChanges = $bindable(false),
+    videos: blockVideos,
+    onVideoWatchEnforcedChange = toggleLegacyVideoWatchEnforced
+  }: Props = $props();
 
   type LessonCompletionPolicy = 'manual' | 'video_watch' | 'none';
 
@@ -35,6 +57,9 @@
   let sessionCallUrl = $state('');
   let sessionWallClock = $state('');
   let sessionTimezone = $state(getBrowserTimezone());
+  let sessionDurationMinutes = $state<number | null>(DEFAULT_SESSION_DURATION_MINUTES);
+  let sessionRecordingUrl = $state('');
+  let recordingUrlError = $state('');
   let sessionInitializedFor = $state<string | null>(null);
   let isSavingSession = $state(false);
   let confirmOpen = $state(false);
@@ -47,6 +72,9 @@
     sessionTimezone = tz;
     sessionCallUrl = lesson.callUrl ?? '';
     sessionWallClock = instantToZonedWallClock(lesson.lessonAt, tz);
+    sessionDurationMinutes = lesson.sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+    sessionRecordingUrl = lesson.recordingUrl ?? '';
+    recordingUrlError = '';
     sessionInitializedFor = lesson.id;
   });
 
@@ -56,14 +84,45 @@
     return sessionWallClock ? zonedWallClockToInstant(sessionWallClock, sessionTimezone) : '';
   }
 
-  function sessionChanged(): boolean {
+  function scheduleChanged(): boolean {
     const currentTz = courseApi.course?.metadata?.sessionTimezone || getBrowserTimezone();
 
     return (
       sessionCallUrl.trim() !== (lessonApi.lesson?.callUrl ?? '') ||
-      computeNewInstant() !== (lessonApi.lesson?.lessonAt ?? '') ||
+      sessionWallClock !== instantToZonedWallClock(lessonApi.lesson?.lessonAt, currentTz) ||
       sessionTimezone !== currentTz
     );
+  }
+
+  function sessionDetailsChanged(): boolean {
+    const savedDuration = lessonApi.lesson?.sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+
+    return (
+      (sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES) !== savedDuration ||
+      sessionRecordingUrl.trim() !== (lessonApi.lesson?.recordingUrl ?? '')
+    );
+  }
+
+  function sessionChanged(): boolean {
+    return scheduleChanged() || sessionDetailsChanged();
+  }
+
+  function validateRecordingUrl(): boolean {
+    const recordingUrl = sessionRecordingUrl.trim();
+    recordingUrlError = '';
+    if (!recordingUrl) return true;
+
+    if (!ZLessonRecordingUrl.safeParse(recordingUrl).success) {
+      recordingUrlError = t.get('course.navItem.lessons.session.recording_url_invalid');
+      return false;
+    }
+
+    if (!sessionCallUrl.trim() || !computeNewInstant()) {
+      recordingUrlError = t.get('course.navItem.lessons.session.recording_url_needs_session');
+      return false;
+    }
+
+    return true;
   }
 
   async function persistSession() {
@@ -71,11 +130,18 @@
     const lessonId = lessonApi.lesson?.id;
     if (!courseId || !lessonId) return;
 
+    const savedDurationMinutes = lessonApi.lesson?.sessionDurationMinutes ?? null;
+    const durationMinutes = sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+    const isDurationUnchanged = durationMinutes === (savedDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES);
+    const durationToSave = isDurationUnchanged ? savedDurationMinutes : durationMinutes;
+
     isSavingSession = true;
     try {
       await lessonApi.update(courseId, lessonId, {
         callUrl: sessionCallUrl.trim() || null,
-        lessonAt: computeNewInstant() || null
+        lessonAt: computeNewInstant() || null,
+        sessionDurationMinutes: durationToSave,
+        recordingUrl: sessionRecordingUrl.trim() || null
       });
 
       const currentTz = courseApi.course?.metadata?.sessionTimezone || '';
@@ -107,9 +173,9 @@
   }
 
   async function handleSaveSession() {
-    if (!sessionChanged()) return;
+    if (!sessionChanged() || !validateRecordingUrl()) return;
 
-    if (hadPriorSession) {
+    if (hadPriorSession && scheduleChanged()) {
       confirmOpen = true;
       return;
     }
@@ -124,11 +190,28 @@
     await notifySessionUpdate();
   }
 
+  $effect(() => {
+    hasUnsavedSessionChanges = sessionChanged();
+  });
+
+  const isUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
+  const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
+
+  function handleUnlockedChange(checked: boolean) {
+    lessonApi.updateLessonState('isUnlocked', checked);
+  }
+
   const completionPolicy = $derived(lessonApi.lesson?.completionPolicy ?? 'manual');
   const courseCommentsEnabled = $derived(courseApi.course?.metadata?.commentsEnabled ?? true);
   const lessonCommentsEnabled = $derived(lessonApi.lesson?.commentsEnabled ?? true);
   const videoWatchThreshold = $derived(lessonApi.lesson?.videoWatchThreshold ?? 95);
-  const videos = $derived(lessonApi.lesson?.videos ?? []);
+  const videos = $derived(blockVideos ?? lessonApi.lesson?.videos ?? []);
+
+  $effect(() => {
+    for (const video of videos) {
+      if (video.assetId) libraryAssetCache.ensureLoaded(video.assetId);
+    }
+  });
 
   const enforceableVideos = $derived(
     videos
@@ -155,16 +238,7 @@
     lessonApi.updateLessonState('completionPolicy', value);
   }
 
-  function commitVideoWatchThreshold(event: Event & { currentTarget: HTMLInputElement }) {
-    const currentThreshold = videoWatchThreshold;
-    const nextThreshold = parseBoundedInteger(event.currentTarget.value, { min: 1, max: 100 }) ?? currentThreshold;
-    event.currentTarget.value = String(nextThreshold);
-    if (nextThreshold === currentThreshold) return;
-
-    lessonApi.updateLessonState('videoWatchThreshold', nextThreshold);
-  }
-
-  function toggleVideoWatchEnforced(index: number, checked: boolean) {
+  function toggleLegacyVideoWatchEnforced(index: number, checked: boolean) {
     const currentVideos = lessonApi.lesson?.videos;
     if (!currentVideos) return;
 
@@ -197,6 +271,45 @@
 
 <div class="p-4">
   <Field.Group class="w-full max-w-xl">
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.lessons.settings.access.title')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.lessons.settings.access.description')}</Field.Description>
+
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="lesson-unlocked"
+          checked={isUnlocked}
+          onCheckedChange={handleUnlockedChange}
+          data-testid="lesson-lock-toggle"
+        />
+        <Field.Label for="lesson-unlocked" class="gap-1.5">
+          {#if isUnlocked}
+            <UnlockIcon size={14} />
+            {$t('generic.unlocked')}
+          {:else}
+            <LockIcon size={14} />
+            {$t('generic.locked')}
+          {/if}
+        </Field.Label>
+      </Field.Field>
+
+      {#if isPublicCourse}
+        <Field.Field>
+          <InputField
+            label={$t('course.navItem.settings.slug.label')}
+            helperMessage={$t('course.navItem.settings.slug.description')}
+            value={lessonApi.lesson?.slug ?? ''}
+            placeholder={slugifyTitle(lessonApi.lesson?.title ?? '')}
+            onInput={(event) => lessonApi.updateLessonState('slug', event.currentTarget.value)}
+            errorMessage={lessonApi.errors.slug}
+            testId="lesson-settings-slug"
+          />
+        </Field.Field>
+      {/if}
+    </Field.Set>
+
+    <Field.Separator />
+
     {#if isLiveClass}
       <Field.Set>
         <Field.Legend>{$t('course.navItem.lessons.session.heading')}</Field.Legend>
@@ -240,6 +353,31 @@
           </Field.Field>
         </div>
 
+        <Field.Field>
+          <NumberField
+            integer
+            min={MIN_SESSION_DURATION_MINUTES}
+            max={MAX_SESSION_DURATION_MINUTES}
+            label={$t('course.navItem.lessons.session.duration_label')}
+            helperMessage={$t('course.navItem.lessons.session.duration_helper')}
+            bind:value={sessionDurationMinutes}
+            testId="lesson-session-duration"
+          />
+        </Field.Field>
+
+        <Field.Field>
+          <InputField
+            type="url"
+            label={$t('course.navItem.lessons.session.recording_url_label')}
+            helperMessage={$t('course.navItem.lessons.session.recording_url_helper')}
+            placeholder="https://zoom.us/rec/share/..."
+            value={sessionRecordingUrl}
+            errorMessage={recordingUrlError}
+            onInput={(e) => (sessionRecordingUrl = e.currentTarget.value)}
+            testId="lesson-session-recording-url"
+          />
+        </Field.Field>
+
         <div>
           <Button size="sm" onclick={handleSaveSession} loading={isSavingSession}>
             {$t('course.navItem.lessons.session.save')}
@@ -263,7 +401,7 @@
             <Field.Label for="lesson-completion-policy">
               {$t('course.navItem.lessons.completion_policy.label')}
             </Field.Label>
-            <Tooltip.Provider>
+            <Tooltip.Provider ignoreNonKeyboardFocus>
               <Tooltip.Root>
                 <Tooltip.Trigger aria-label={$t('course.navItem.lessons.settings.progression.option_guide_heading')}>
                   <InfoIcon size={14} class="ui:text-muted-foreground" />
@@ -324,11 +462,13 @@
 
         {#if completionPolicy === 'video_watch'}
           <Field.Field>
-            <InputField
-              type="number"
+            <NumberField
+              integer
+              min={1}
+              max={100}
               label={$t('course.navItem.lessons.completion_policy.watch_threshold')}
-              value={String(videoWatchThreshold)}
-              onChange={commitVideoWatchThreshold}
+              value={videoWatchThreshold}
+              onValueChange={(next) => lessonApi.updateLessonState('videoWatchThreshold', next ?? 95)}
             />
           </Field.Field>
 
@@ -365,10 +505,10 @@
                     <Checkbox
                       id={`watch-enforced-${video.assetId}`}
                       checked={isVideoWatchEnforced(video)}
-                      onCheckedChange={(checked) => toggleVideoWatchEnforced(index, checked === true)}
+                      onCheckedChange={(checked) => onVideoWatchEnforcedChange(index, checked === true)}
                     />
                     <Field.Label for={`watch-enforced-${video.assetId}`} class="font-normal">
-                      {getVideoTitle(video, index)}
+                      {getVideoDisplayTitle(video, index)}
                     </Field.Label>
                   </Field.Field>
                 {/each}

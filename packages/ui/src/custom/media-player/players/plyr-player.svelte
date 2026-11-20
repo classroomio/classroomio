@@ -3,7 +3,7 @@
   import 'plyr/dist/plyr.css';
   import CaptionsIcon from '@lucide/svelte/icons/captions';
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
-  import type { MediaPlayerOptions, VideoTextTrack } from '../types';
+  import type { HlsCookieGrant, MediaPlayerOptions, VideoTextTrack } from '../types';
   import { getYoutubeVideoId, isYoutubeUrl } from '../utils';
   import { PLYR_DEFAULT_CONTROLS } from './constants';
   import { Button } from '../../../base/button';
@@ -43,11 +43,20 @@
   let loadedSrc = $state<string | null>(null);
   let hlsLoadGeneration = 0;
   let hlsPlyrGeneration = 0;
+  let hlsCookieRenewalTimer: ReturnType<typeof setTimeout> | undefined;
+  let hlsAuthRecoveryAttempted = false;
+  let hlsCookieFailedAttempts = 0;
   let plyrConstructInFlight = false;
   let hasFiredFirstPlay = false;
+  let hasAppliedResumePosition = false;
+  let hlsEvents: typeof import('hls.js').Events | null = null;
   let isMounted = false;
   let youtubeInitGeneration = 0;
 
+  const HLS_COOKIE_RENEWAL_LEAD_SECONDS = 120;
+  const HLS_COOKIE_MIN_RENEWAL_DELAY_SECONDS = 30;
+  const HLS_COOKIE_RETRY_DELAY_SECONDS = 20;
+  const HLS_COOKIE_MAX_FAILED_ATTEMPTS = 4;
   const SEEK_TOLERANCE_SECONDS = 0.5;
   const SEEK_BLOCK_COOLDOWN_MS = 300;
   let seekBlockLastNotifiedAt = 0;
@@ -555,7 +564,54 @@
     }
   });
 
+  $effect(() => {
+    const resumeAtSeconds = options.resumeAtSeconds;
+    const element = videoElement;
+    const player = playerInstance;
+    const hls = hlsInstance;
+    if (!resumeAtSeconds || resumeAtSeconds <= 0 || !element || !player || isYouTube) return;
+    if (hasAppliedResumePosition || hasFiredFirstPlay) return;
+
+    hasAppliedResumePosition = true;
+    seekBeforeFirstPlay(element, resumeAtSeconds);
+
+    if (hls) {
+      bufferResumeFragment(hls, resumeAtSeconds);
+    }
+  });
+
+  function seekBeforeFirstPlay(element: HTMLVideoElement, seconds: number): void {
+    const seek = () => {
+      if (hasFiredFirstPlay) return;
+
+      element.currentTime = seconds;
+    };
+
+    if (element.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      seek();
+      return;
+    }
+
+    element.addEventListener('loadedmetadata', seek, { once: true });
+  }
+
+  /**
+   * Loads one HLS fragment at `seconds` so the element has metadata and a frame
+   * to show before the first play, then pauses loading until playback starts.
+   */
+  function bufferResumeFragment(hls: import('hls.js').default, seconds: number): void {
+    if (!hlsEvents) return;
+
+    hls.once(hlsEvents.FRAG_BUFFERED, () => {
+      if (hasFiredFirstPlay || hlsInstance !== hls) return;
+
+      hls.stopLoad();
+    });
+    hls.startLoad(seconds);
+  }
+
   function destroyHlsInstance(): void {
+    clearHlsCookieRenewal();
     if (!hlsInstance) return;
 
     try {
@@ -567,34 +623,96 @@
     }
   }
 
+  function clearHlsCookieRenewal(): void {
+    clearTimeout(hlsCookieRenewalTimer);
+    hlsCookieRenewalTimer = undefined;
+  }
+
+  function scheduleHlsCookieRenewal(delaySeconds: number, loadGeneration: number): void {
+    clearHlsCookieRenewal();
+    hlsCookieRenewalTimer = setTimeout(() => {
+      hlsCookieRenewalTimer = undefined;
+      if (loadGeneration !== hlsLoadGeneration) return;
+
+      void grantHlsCookie(loadGeneration);
+    }, delaySeconds * 1000);
+  }
+
+  /**
+   * Mints the HLS playback cookie and schedules its renewal. Returns false
+   * when the viewer must sign in again or a newer source load replaced this one.
+   */
+  async function grantHlsCookie(loadGeneration: number): Promise<boolean> {
+    if (!options.onBeforeHlsLoad) return true;
+
+    let grant: HlsCookieGrant | void;
+    try {
+      grant = await options.onBeforeHlsLoad();
+    } catch (error) {
+      // The cookie endpoint 503s where HLS_SIGNING_SECRET is unset (local dev / self-hosted); the API's session-auth streaming route still serves playback.
+      console.warn('onBeforeHlsLoad failed, continuing without cookie', error);
+      if (loadGeneration === hlsLoadGeneration && hlsCookieFailedAttempts < HLS_COOKIE_MAX_FAILED_ATTEMPTS) {
+        hlsCookieFailedAttempts += 1;
+        scheduleHlsCookieRenewal(HLS_COOKIE_RETRY_DELAY_SECONDS, loadGeneration);
+      }
+      return true;
+    }
+
+    if (loadGeneration !== hlsLoadGeneration) return false;
+
+    hlsCookieFailedAttempts = 0;
+
+    if (grant?.authExpired) {
+      clearHlsCookieRenewal();
+      videoElement?.pause();
+      playbackAuthExpired = true;
+      handlePlaybackFailure();
+      return false;
+    }
+
+    if (grant?.expiresInSeconds) {
+      const renewInSeconds = Math.max(
+        grant.expiresInSeconds - HLS_COOKIE_RENEWAL_LEAD_SECONDS,
+        HLS_COOKIE_MIN_RENEWAL_DELAY_SECONDS
+      );
+      scheduleHlsCookieRenewal(renewInSeconds, loadGeneration);
+    }
+    return true;
+  }
+
+  /**
+   * Renews the HLS cookie, then resumes loading: reloads the manifest when
+   * that request was the one rejected, otherwise restarts segment loading.
+   */
+  async function resumeAfterHlsCookieRenewal(
+    hls: import('hls.js').default,
+    loadGeneration: number,
+    manifestUrl: string,
+    manifestRejected: boolean
+  ): Promise<void> {
+    const granted = await grantHlsCookie(loadGeneration);
+    if (!granted || hlsInstance !== hls) return;
+
+    if (manifestRejected) {
+      hls.loadSource(manifestUrl);
+      return;
+    }
+
+    hls.startLoad(-1);
+  }
+
   async function loadHlsSource(element: HTMLVideoElement, manifestUrl: string, onLoaded: () => void): Promise<void> {
     const loadGeneration = ++hlsLoadGeneration;
     hlsPlyrGeneration = 0;
+    hlsAuthRecoveryAttempted = false;
+    hlsCookieFailedAttempts = 0;
     destroyHlsInstance();
     teardownPlyrInstance();
     playbackFailed = false;
     playbackAuthExpired = false;
 
-    if (options.onBeforeHlsLoad) {
-      try {
-        const result = await options.onBeforeHlsLoad();
-        if (result?.authExpired) {
-          playbackAuthExpired = true;
-          handlePlaybackFailure();
-
-          return;
-        }
-      } catch (error) {
-        // The cookie endpoint may 503 in environments where HLS_SIGNING_SECRET
-        // isn't configured (local dev / self-hosted). Playback can still
-        // succeed via the API's session-auth streaming route — so we log and
-        // proceed rather than fail.
-        console.warn('onBeforeHlsLoad failed, continuing without cookie', error);
-      }
-    }
-
-    // Bail if the source changed underneath us while awaiting the cookie.
-    if (loadGeneration !== hlsLoadGeneration || loadedSrc !== manifestUrl) {
+    const granted = await grantHlsCookie(loadGeneration);
+    if (!granted || loadGeneration !== hlsLoadGeneration || loadedSrc !== manifestUrl) {
       element.removeEventListener('loadedmetadata', onLoaded);
       return;
     }
@@ -609,6 +727,7 @@
     const HlsModule = await import('hls.js');
     const Hls = HlsModule.default;
     const FetchLoader = HlsModule.FetchLoader;
+    hlsEvents = HlsModule.Events;
 
     if (loadGeneration !== hlsLoadGeneration || loadedSrc !== manifestUrl) {
       element.removeEventListener('loadedmetadata', onLoaded);
@@ -647,12 +766,25 @@
     }, 4_000);
 
     hls.on(Hls.Events.ERROR, (_event, data) => {
-      if (data.fatal) {
-        handlePlaybackFailure();
-        if (!playerInstance) {
-          void constructPlyrForVideoElement();
-        }
+      if (!data.fatal) return;
+
+      const status = data.response?.code;
+      const isAuthFailure = data.type === Hls.ErrorTypes.NETWORK_ERROR && (status === 401 || status === 403);
+
+      if (isAuthFailure && !hlsAuthRecoveryAttempted) {
+        hlsAuthRecoveryAttempted = true;
+        const manifestRejected = data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR;
+        void resumeAfterHlsCookieRenewal(hls, loadGeneration, manifestUrl, manifestRejected);
+        return;
       }
+
+      handlePlaybackFailure();
+      if (!playerInstance) {
+        void constructPlyrForVideoElement();
+      }
+    });
+    hls.on(Hls.Events.FRAG_LOADED, () => {
+      hlsAuthRecoveryAttempted = false;
     });
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
       clearTimeout(plyrFallbackTimer);

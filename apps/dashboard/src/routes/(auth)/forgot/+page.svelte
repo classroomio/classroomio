@@ -48,6 +48,7 @@
             disabled={forgotApi.isLoading}
             autofocus
             aria-invalid={forgotApi.errors.email ? 'true' : undefined}
+            oninput={() => forgotApi.clearError('email')}
           />
           {#if forgotApi.errors.email}
             <Field.Error>{forgotApi.errors.email}</Field.Error>

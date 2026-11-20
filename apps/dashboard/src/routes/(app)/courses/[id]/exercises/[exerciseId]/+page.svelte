@@ -40,25 +40,32 @@
     return false;
   });
 
+  let draftCheckedKey = '';
+
   $effect(() => {
     const currentExerciseId = data.exerciseId;
     if (!currentExerciseId || !data.exercise || isLockedForStudent) return;
 
     const meta = get(questionnaireMetaData);
-    if (meta.exerciseId === currentExerciseId) {
-      return;
-    }
+    if (meta.exerciseId === currentExerciseId) return;
 
-    if (meta.exerciseId != null && meta.exerciseId !== currentExerciseId) {
+    if (meta.exerciseId != null) {
       reset();
     }
 
     hydrateExercisePageData(data.exercise, currentExerciseId);
+  });
 
-    // Offers to put back work stashed before an upgrade checkout redirect, or left behind by an
-    // interrupted session. The teacher must confirm: it may be an edit they meant to abandon.
-    const profileId = get(profile).id;
-    if (!profileId) return;
+  $effect(() => {
+    const currentExerciseId = data.exerciseId;
+    const profileId = $profile.id;
+    if (!currentExerciseId || !profileId || !data.exercise || isLockedForStudent) return;
+    if ($questionnaireMetaData.exerciseId !== currentExerciseId) return;
+
+    const draftKey = `${profileId}:${data.courseId}:${currentExerciseId}`;
+    if (draftCheckedKey === draftKey) return;
+
+    draftCheckedKey = draftKey;
 
     const pendingDraft = peekExerciseDraft(data.courseId, currentExerciseId, profileId);
     if (!pendingDraft) return;
@@ -76,23 +83,23 @@
     }
 
     const restoredDraft = applyExerciseDraft(data.courseId, currentExerciseId, profileId);
-    if (restoredDraft) {
-      if (restoredDraft.conflictCount > 0) {
-        exerciseRemoteUpdateNotice.set({
-          baseState: restoredDraft.baseState,
-          conflictCount: restoredDraft.conflictCount,
-          exerciseId: currentExerciseId,
-          remoteState: restoredDraft.remoteState,
-          source: 'draft',
-          type: 'conflict'
-        });
-      }
-      snackbar.success('snackbar.exercise.draft_restored');
+    if (!restoredDraft) return;
+
+    if (restoredDraft.conflictCount > 0) {
+      exerciseRemoteUpdateNotice.set({
+        baseState: restoredDraft.baseState,
+        conflictCount: restoredDraft.conflictCount,
+        exerciseId: currentExerciseId,
+        remoteState: restoredDraft.remoteState,
+        source: 'draft',
+        type: 'conflict'
+      });
     }
+    snackbar.success('snackbar.exercise.draft_restored');
   });
 </script>
 
-<Page.Root class="mx-auto flex w-full px-3 sm:w-[90%] sm:px-4 lg:max-w-5xl">
+<Page.Root class="mx-auto flex w-full gap-0! pb-0!">
   {#if $isOrgStudent && !isCourseReady}
     <div class="flex justify-center py-16">
       <Spinner />
@@ -104,6 +111,7 @@
       isFetching={false}
       submissions={data.submissions ?? []}
       mySubmissions={data.mySubmissions ?? []}
+      canGradeSubmissions={data.canGradeSubmissions ?? false}
     />
   {/if}
 </Page.Root>

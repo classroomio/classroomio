@@ -26,9 +26,8 @@ At ClassroomIO, our mission is to provide students with the best possible learni
 2. **👨‍👩‍👦 Multi-Teacher Management:** You can invite other teachers into your organization and assign them individual courses.
 3. **🤖 AI Integration:** We've got OpenAI integration for quick course creation where you can generate course content, lesson outlines, and even generate assignments right from your lesson notes.
 4. **💬 Forum:** Students can ask questions in your dedicated community and get answers from either you or other students.
-5. **🏆 Kahoot-Like Quiz:** You can create live quizzes to create more engagement in your classrooms.
-6. **💻 Dedicated Student Dashboard:** Once you create an account, you get a dedicated dashboard where your students can access all their courses, assignments, and more.
-7. **🔒 Fully open source:** You can self-hostable the whole stack on your servers.
+5. **💻 Dedicated Student Dashboard:** Once you create an account, you get a dedicated dashboard where your students can access all their courses, assignments, and more.
+6. **🔒 Fully open source:** You can self-hostable the whole stack on your servers.
 
 ### Roadmap Features
 

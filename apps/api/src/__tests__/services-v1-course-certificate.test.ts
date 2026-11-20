@@ -108,9 +108,6 @@ const effectiveStored = {
   theme: 'classique',
   design: { ...storedDesign, descriptionOverride: undefined },
   deadline: null,
-  threshold: 100,
-  requiredExerciseId: null,
-  exerciseMinScorePercent: null,
   emailMessage: 'Well done'
 };
 
@@ -225,6 +222,7 @@ describe('services/v1/courses/certificates', () => {
       expect(updateCourse).not.toHaveBeenCalled();
       expect(getPaginatedCourseMembers).not.toHaveBeenCalled();
       expect(generateCertificatePdf).not.toHaveBeenCalled();
+      expect(assertCertificatesEnabled).not.toHaveBeenCalled();
     });
   });
 
@@ -262,8 +260,7 @@ describe('services/v1/courses/certificates', () => {
   });
 
   describe('effective settings', () => {
-    const course = (certificate: Record<string, unknown> | null, extra: Record<string, unknown> = {}) =>
-      ({ type: 'SELF_PACED', compliance: null, certificate, ...extra }) as unknown as TCertificateCourse;
+    const course = (certificate: Record<string, unknown> | null) => ({ certificate }) as unknown as TCertificateCourse;
 
     it('returns the dashboard defaults when nothing is stored', () => {
       expect(toEffectiveCertificateSettings(course(null))).toEqual({
@@ -271,25 +268,9 @@ describe('services/v1/courses/certificates', () => {
         theme: DEFAULT_CERTIFICATE_DESIGN.templateId,
         design: { ...DEFAULT_CERTIFICATE_DESIGN, descriptionOverride: undefined },
         deadline: null,
-        threshold: 100,
-        requiredExerciseId: null,
-        exerciseMinScorePercent: null,
         emailMessage: null
       });
       expect(toEffectiveCertificateSettings(course({}))).toEqual(toEffectiveCertificateSettings(course(null)));
-    });
-
-    it('defaults the required exercise score to 100, or the compliance passing score', () => {
-      const withExercise = { requiredExerciseId: 'exercise-1' };
-
-      expect(toEffectiveCertificateSettings(course(withExercise)).exerciseMinScorePercent).toBe(100);
-      expect(
-        toEffectiveCertificateSettings(course(withExercise, { type: 'COMPLIANCE', compliance: { passingScore: 70 } }))
-          .exerciseMinScorePercent
-      ).toBe(70);
-      expect(
-        toEffectiveCertificateSettings(course({ ...withExercise, exerciseMinScorePercent: 55 })).exerciseMinScorePercent
-      ).toBe(55);
     });
 
     it('maps a legacy theme-only record to a full design and keeps the stored theme', () => {
@@ -328,10 +309,9 @@ describe('services/v1/courses/certificates', () => {
       expect(updateCourse).not.toHaveBeenCalled();
     });
 
-    it('does not gate reads, the issued list, or downloads on the plan', async () => {
+    it('does not gate reads or the issued list on the plan', async () => {
       await getPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params);
       await listPublicApiCourseCertificatesService(ORG_ID, ACTOR_ID, params, firstPage);
-      await downloadPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, memberParams, pdfQuery);
 
       expect(assertCertificatesEnabled).not.toHaveBeenCalled();
     });
@@ -397,7 +377,7 @@ describe('services/v1/courses/certificates', () => {
         stored = data.certificate;
         return { course: { ...storedCourse, certificate: data.certificate } } as unknown as TUpdateCourseResult;
       });
-      const payload = { threshold: 80, emailMessage: null };
+      const payload = { emailMessage: null };
 
       const first = await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, payload);
       const second = await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, payload);
@@ -478,6 +458,7 @@ describe('services/v1/courses/certificates', () => {
     it('renders the student certificate as the student would download it', async () => {
       const result = await downloadPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, memberParams, pdfQuery);
 
+      expect(assertCertificatesEnabled).toHaveBeenCalledWith(ORG_ID);
       expect(getCourseMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
       expect(assembleCertificateRender).toHaveBeenCalledWith(COURSE_ID, {
         studentName: 'Ada Lovelace',
@@ -486,6 +467,18 @@ describe('services/v1/courses/certificates', () => {
       });
       expect(generateCertificatePng).not.toHaveBeenCalled();
       expect(result).toEqual({ file: Buffer.from('pdf'), format: 'pdf', courseName: 'Intro Course' });
+    });
+
+    it('rejects downloads when the organization is on a plan without certificates', async () => {
+      vi.mocked(assertCertificatesEnabled).mockRejectedValueOnce(
+        new AppError('Certificates require a paid plan', ErrorCodes.UPGRADE_REQUIRED, 403)
+      );
+
+      await expect(
+        downloadPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, memberParams, pdfQuery)
+      ).rejects.toMatchObject({ statusCode: 403, code: ErrorCodes.UPGRADE_REQUIRED });
+      expect(getCourseMember).not.toHaveBeenCalled();
+      expect(assembleCertificateRender).not.toHaveBeenCalled();
     });
 
     it('renders a PNG when asked', async () => {

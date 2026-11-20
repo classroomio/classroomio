@@ -155,7 +155,7 @@ export const SLIDE_EMBED_FRAME_SRC_ORIGINS = [
   'https://beautiful.ai'
 ] as const;
 
-const IFRAME_SRC_PATTERN = /<iframe\b[^>]*?\bsrc\s*=\s*(?:"([^"]+)"|'([^']+)')[^>]*>/i;
+const IFRAME_SRC_PATTERN = /<iframe\b[^>]*?(?<![\w-])src\s*=\s*(?:"([^"]+)"|'([^']+)')[^>]*>/i;
 
 function decodeHtmlEntities(value: string): string {
   return value

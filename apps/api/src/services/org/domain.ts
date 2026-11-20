@@ -1,7 +1,10 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 import { env } from '@cio/core/config/env';
+import { getActiveOrganizationPlan, getOrganizationById, getOrganizations } from '@cio/db/queries/organization';
 import { isFirstPartyOrgSiteHost } from '@cio/utils/functions';
+import { PLAN } from '@cio/utils/plans';
+import { updateOrg } from '@api/services/organization';
 import { parse } from 'tldts';
 
 export type DomainSetupStatus =
@@ -53,20 +56,20 @@ function ensureApproximatedConfig() {
   ].filter(([, value]) => !value);
 
   if (missing.length > 0) {
-    throw new AppError(
-      `Missing Approximated config: ${missing.map(([key]) => key).join(', ')}`,
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    console.error(`Missing Approximated config: ${missing.map(([key]) => key).join(', ')}`);
+    throw customDomainUnavailable();
   }
 
   if (!env.APPROXIMATED_DNS_TARGET_IP && !env.APPROXIMATED_DNS_TARGET_CNAME) {
-    throw new AppError(
-      'Set APPROXIMATED_DNS_TARGET_IP and/or APPROXIMATED_DNS_TARGET_CNAME so customers know where to point their DNS.',
-      ErrorCodes.INTERNAL_ERROR,
-      500
+    console.error(
+      'Set APPROXIMATED_DNS_TARGET_IP and/or APPROXIMATED_DNS_TARGET_CNAME so customers know where to point their DNS.'
     );
+    throw customDomainUnavailable();
   }
+}
+
+function customDomainUnavailable() {
+  return new AppError('Custom domains are not set up on this instance', ErrorCodes.CUSTOM_DOMAIN_UNAVAILABLE, 409);
 }
 
 async function approximatedRequest<T>(path: string, init: RequestInit = {}): Promise<T | null> {
@@ -169,7 +172,6 @@ function getStatusMessage(status: DomainSetupStatus) {
 
 function toDomainSetupResult(hostname: string, vhost?: ApproximatedVhost | null): DomainSetupResult {
   const status = mapDomainStatus(vhost);
-  console.log('status', status);
 
   return {
     hostname,
@@ -231,7 +233,6 @@ async function createVhost(hostname: string): Promise<ApproximatedVhost> {
     throw new AppError('Approximated did not return a vhost', ErrorCodes.INTERNAL_ERROR, 500);
   }
 
-  console.log('created', created);
   return created;
 }
 
@@ -243,7 +244,6 @@ export async function connectDomain(hostname: string): Promise<DomainSetupResult
 
 export async function refreshDomain(hostname: string): Promise<DomainSetupResult> {
   const vhost = await getVhost(hostname);
-  console.log('existing', vhost);
   return toDomainSetupResult(hostname, vhost);
 }
 
@@ -262,4 +262,87 @@ export async function removeDomain(hostname: string): Promise<DomainSetupResult>
     dnsRecords: [],
     validationErrors: []
   };
+}
+
+/** Free-plan orgs cannot connect a custom domain. Self-hosted deployments always can. */
+export async function orgCanUseCustomDomain(orgId: string): Promise<boolean> {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') return true;
+
+  const activePlan = await getActiveOrganizationPlan(orgId);
+
+  return Boolean(activePlan && activePlan.planName !== PLAN.BASIC);
+}
+
+async function getStoredCustomDomain(orgId: string): Promise<string | null> {
+  const org = await getOrganizationById(orgId);
+  if (!org) {
+    throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+  }
+
+  return org.customDomain?.trim().toLowerCase() || null;
+}
+
+async function requireStoredCustomDomain(orgId: string): Promise<string> {
+  const hostname = await getStoredCustomDomain(orgId);
+  if (!hostname) {
+    throw new AppError('No custom domain is connected', ErrorCodes.CUSTOM_DOMAIN_NOT_FOUND, 404);
+  }
+
+  return hostname;
+}
+
+/**
+ * Connects a custom domain to the org, or reconnects the one it already has.
+ * Another domain must be removed first, so its vhost is not left behind.
+ */
+export async function connectOrgDomain(orgId: string, domain: string): Promise<DomainSetupResult> {
+  const hostname = normalizeCustomDomain(domain);
+  assertSupportedCustomDomain(hostname);
+
+  if (!(await orgCanUseCustomDomain(orgId))) {
+    throw new AppError('Custom domains require a paid plan', ErrorCodes.UPGRADE_REQUIRED, 403);
+  }
+
+  const current = await getStoredCustomDomain(orgId);
+  if (current && current !== hostname) {
+    throw new AppError(
+      `Remove ${current} before connecting another custom domain`,
+      ErrorCodes.CONFLICT,
+      409,
+      'hostname'
+    );
+  }
+
+  const owners = await getOrganizations({ customDomain: hostname });
+  if (owners.some((owner) => owner.id !== orgId)) {
+    throw new AppError(
+      'This domain is connected to another organization',
+      ErrorCodes.CUSTOM_DOMAIN_TAKEN,
+      409,
+      'hostname'
+    );
+  }
+
+  const result = await connectDomain(hostname);
+  await updateOrg(orgId, { customDomain: hostname, isCustomDomainVerified: result.verified });
+
+  return result;
+}
+
+/** Re-checks the org's own custom domain; a hostname from the caller is never used. */
+export async function refreshOrgDomain(orgId: string): Promise<DomainSetupResult> {
+  const hostname = await requireStoredCustomDomain(orgId);
+  const result = await refreshDomain(hostname);
+  await updateOrg(orgId, { customDomain: hostname, isCustomDomainVerified: result.verified });
+
+  return result;
+}
+
+/** Removes the org's own custom domain on any plan, so a downgraded org can still clean up. */
+export async function removeOrgDomain(orgId: string): Promise<DomainSetupResult> {
+  const hostname = await requireStoredCustomDomain(orgId);
+  const result = await removeDomain(hostname);
+  await updateOrg(orgId, { customDomain: null, isCustomDomainVerified: false });
+
+  return result;
 }

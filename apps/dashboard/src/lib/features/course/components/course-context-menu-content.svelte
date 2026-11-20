@@ -3,7 +3,12 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { copyCourseModal, deleteCourseModal, saveTemplateModal } from '$features/course/utils/store';
+  import {
+    copyCourseModal,
+    copyCourseModalInitialState,
+    deleteCourseModal,
+    saveTemplateModal
+  } from '$features/course/utils/store';
   import { isOrgAdmin, currentOrgPath } from '$lib/utils/store/org';
   import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
   import { currentOrgDomain } from '$lib/utils/store/org';
@@ -83,9 +88,7 @@
 
     const isOnOrgCoursesList = /\/org\/[^/]+\/courses\/?$/.test(page.url.pathname);
     if (isOnOrgCoursesList) {
-      $deleteCourseModal.open = true;
-      $deleteCourseModal.id = id;
-      $deleteCourseModal.title = title;
+      deleteCourseModal.set({ open: true, id, title, isDeleting: false });
       return;
     }
 
@@ -109,10 +112,7 @@
   }
 
   function handleCloneCourse() {
-    $copyCourseModal.open = true;
-    $copyCourseModal.id = id;
-    $copyCourseModal.title = title;
-    $copyCourseModal.description = description;
+    copyCourseModal.set({ ...copyCourseModalInitialState, open: true, id, title, description });
   }
 
   function handleOpenCourse() {

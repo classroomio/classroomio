@@ -1,0 +1,1285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Floating AI assistant · Prototype · ClassroomIO</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#1447e6}a:hover{color:#1c398e}
+.cio-btn:hover{background:#f5f5f5}
+.cio-hbtn{width:24px;height:24px;border-radius:6px;border:1px solid #e5e5e5;background:#fff;color:#0a0a0a;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.cio-hbtn:hover{background:#f5f5f5}
+.cio-chip:hover{background:#f5f5f5}
+.cio-nav:hover{background:#f5f5f5}
+.cio-lesson ::selection{background:#bedbff}
+.cio-hwrap{container-type:inline-size;position:relative;flex-shrink:0}
+.cio-more{display:none !important}
+@container (max-width:340px){.cio-sub{display:none}}
+@container (max-width:330px){.cio-secondary{display:none !important}.cio-more{display:flex !important}}
+.cio-morepop{position:absolute;z-index:5;right:8px;top:100%;margin-top:4px;min-width:176px;padding:4px;background:#fff;color:#0a0a0a;border:1px solid #e5e5e5;border-radius:10px;box-shadow:0 12px 32px rgba(15,23,42,.18);flex-direction:column}
+.cio-morepop button{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border:0;background:transparent;border-radius:7px;font:inherit;font-size:13px;color:inherit;cursor:pointer;text-align:left}
+.cio-morepop button:hover{background:#f5f5f5}
+[data-tip]{position:relative}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);white-space:nowrap;background:#0a0a0a;color:#fff;font:500 11px/1 Geist,ui-sans-serif,system-ui,sans-serif;padding:6px 8px;border-radius:6px;z-index:60;pointer-events:none;box-shadow:0 4px 12px rgba(15,23,42,.2)}
+[data-tip-end]:hover::after,[data-tip-end]:focus-visible::after{left:auto;right:0;transform:none}
+@keyframes cioSpin{to{transform:rotate(360deg)}}
+.cio-spin{animation:cioSpin 1s linear infinite}
+.cio-prose p{margin:0}
+.cio-row:hover{background:rgba(245,245,245,.6)}
+.cio-model:hover{background:#f5f5f5;color:#0a0a0a}
+.cio-opt:hover{background:#f5f5f5}
+.cio-send:disabled{opacity:.5;cursor:default}
+@keyframes cioPulse{0%,100%{opacity:.35}50%{opacity:1}}
+.cio-dot{animation:cioPulse 1s infinite}
+.cio-dot2{animation:cioPulse 1s .2s infinite}
+.cio-dot3{animation:cioPulse 1s .4s infinite}
+</style>
+</helmet>
+<div ref="{{setRoot}}" style="position: relative; width: 100%; height: 100vh; min-height: 620px; overflow: hidden; background: #ffffff; color: #0a0a0a; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; display: flex;">
+
+  <aside style="width: 264px; flex-shrink: 0; border-right: 1px solid #e5e5e5; background: #fafafa; display: flex; flex-direction: column; padding: 16px 12px; gap: 4px; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px;">
+      <div style="width: 32px; height: 32px; border-radius: 8px; background: #1447e6; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px;">MW</div>
+      <div style="min-width: 0; line-height: 1.3;">
+        <div style="font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Modern Web Development</div>
+        <div style="font-size: 12px; color: #737373;">Udemy Test</div>
+      </div>
+    </div>
+    <div style="font-size: 11px; font-weight: 500; color: #737373; padding: 8px 8px 4px;">Lessons</div>
+    <a href="#" class="cio-nav" style="display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 8px; color: #404040; text-decoration: none; font-size: 13px;"><span style="width: 20px; color: #a3a3a3;">1</span>Getting started with React</a>
+    <a href="#" class="cio-nav" style="display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 8px; color: #404040; text-decoration: none; font-size: 13px;"><span style="width: 20px; color: #a3a3a3;">2</span>JSX in depth</a>
+    <a href="#" style="display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 8px; color: #1447e6; background: #eff6ff; text-decoration: none; font-size: 13px; font-weight: 500;"><span style="width: 20px;">3</span>Components and props</a>
+    <a href="#" class="cio-nav" style="display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 8px; color: #404040; text-decoration: none; font-size: 13px;"><span style="width: 20px; color: #a3a3a3;">4</span>State and events</a>
+    <a href="#" class="cio-nav" style="display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 8px; color: #404040; text-decoration: none; font-size: 13px;"><span style="width: 20px; color: #a3a3a3;">5</span>Lists and keys</a>
+    <a href="#" class="cio-nav" style="display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 8px; color: #404040; text-decoration: none; font-size: 13px;"><span style="width: 20px; color: #a3a3a3;">6</span>Effects and data fetching</a>
+    <div style="font-size: 11px; font-weight: 500; color: #737373; padding: 16px 8px 4px;">Course</div>
+    <a href="#" class="cio-nav" style="padding: 8px; border-radius: 8px; color: #404040; text-decoration: none; font-size: 13px;">Exercises</a>
+    <a href="#" class="cio-nav" style="padding: 8px; border-radius: 8px; color: #404040; text-decoration: none; font-size: 13px;">People</a>
+    <a href="#" class="cio-nav" style="padding: 8px; border-radius: 8px; color: #404040; text-decoration: none; font-size: 13px;">Settings</a>
+  </aside>
+
+  <main style="{{mainStyle}}">
+    <header style="height: 56px; flex-shrink: 0; border-bottom: 1px solid #e5e5e5; display: flex; align-items: center; gap: 12px; padding: 0 24px; box-sizing: border-box;">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; white-space: nowrap;">Components and props <span style="height: 22px; padding: 0 10px; border-radius: 999px; background: #1447e6; color: #ffffff; font-size: 12px; font-weight: 500; display: inline-flex; align-items: center;">Published</span></div>
+      <div style="flex: 1;"></div>
+      <div style="position: relative; display: inline-flex; height: 36px;">
+        <button type="button" onClick="{{toggleAssistant}}" aria-label="{{assistantLabel}}" data-tip="{{assistantLabel}}" aria-pressed="{{assistantOpenAttr}}" style="{{assistantBtnStyle}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>Assistant</button>
+        <button type="button" onClick="{{popOut}}" aria-label="{{popLabel}}" data-tip="{{popLabel}}" data-tip-end="" aria-pressed="{{floatingAttr}}" style="{{popBtnStyle}}"><sc-if value="{{isFloatingMode}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10h6V4"></path><path d="m2 4 6 6"></path><path d="M21 10V7a2 2 0 0 0-2-2h-7"></path><path d="M3 14v2a2 2 0 0 0 2 2h3"></path><rect x="12" y="14" width="10" height="7" rx="1"></rect></svg></sc-if><sc-if value="{{isNotFloatingMode}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"></path><rect x="12" y="13" width="10" height="7" rx="2"></rect></svg></sc-if></button>
+        <sc-if value="{{showHint}}" hint-placeholder-val="{{true}}">
+          <div role="status" style="position: absolute; z-index: 40; top: calc(100% + 10px); right: 0; width: 244px; box-sizing: border-box; padding: 10px 10px 10px 12px; border-radius: 10px; background: #ffffff; border: 1px solid #e5e5e5; color: #404040; box-shadow: 0 6px 20px rgba(15,23,42,.08); display: flex; align-items: flex-start; gap: 8px;">
+            <div style="position: absolute; top: -5px; right: 14px; width: 9px; height: 9px; background: #ffffff; border-left: 1px solid #e5e5e5; border-top: 1px solid #e5e5e5; transform: rotate(45deg);"></div>
+            <div style="flex: 1; font-size: 12px; line-height: 17px; color: #525252;">Tip: use the pop-out icon to float the assistant while you work.</div>
+            <button type="button" onClick="{{dismissHint}}" aria-label="Dismiss tip" data-tip="Dismiss tip" data-tip-end="" style="width: 20px; height: 20px; flex-shrink: 0; border: 0; border-radius: 6px; background: transparent; color: #a3a3a3; font-size: 14px; line-height: 1; cursor: pointer;">&#215;</button>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display: flex; height: 36px; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden;"><button type="button" class="cio-btn" style="padding: 0 12px; border: 0; background: #ffffff; font: inherit; font-size: 13px; font-weight: 500; color: #0a0a0a; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>View Course Site</button><button type="button" class="cio-btn" aria-label="More" data-tip="More" style="width: 36px; border: 0; border-left: 1px solid #e5e5e5; background: #ffffff; font-size: 16px; color: #0a0a0a; cursor: pointer;">&#8942;</button></div>
+    </header>
+
+    <div style="flex: 1; overflow-y: auto; min-height: 0;">
+      <article class="cio-lesson" onMouseUp="{{onLessonMouseUp}}" onMouseDown="{{onLessonMouseDown}}" style="max-width: 720px; margin: 0 auto; padding: 40px 32px 160px; box-sizing: border-box;">
+        <div style="font-size: 12px; font-weight: 500; color: #1447e6; margin-bottom: 8px;">Lesson 3 · 12 min read</div>
+        <h1 style="margin: 0 0 12px; font-size: 32px; line-height: 1.2; font-weight: 600; letter-spacing: -0.02em;">Components and props</h1>
+        <p style="margin: 0 0 28px; color: #737373; font-size: 13px;">Select any sentence to ask the assistant about it.</p>
+
+        <sc-for list="{{blocks}}" as="block" hint-placeholder-count="5">
+          <sc-if value="{{block.isP}}" hint-placeholder-val="{{true}}">
+            <p data-pid="{{block.id}}" style="{{block.style}}">{{block.text}}</p>
+          </sc-if>
+          <sc-if value="{{block.isH2}}" hint-placeholder-val="{{false}}">
+            <h2 style="margin: 32px 0 12px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em;">{{block.text}}</h2>
+          </sc-if>
+          <sc-if value="{{block.isCode}}" hint-placeholder-val="{{false}}">
+            <pre style="margin: 0 0 20px; padding: 16px 18px; border-radius: 10px; background: #0a0a0a; color: #e5e5e5; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.7; overflow-x: auto;">{{block.text}}</pre>
+          </sc-if>
+          <sc-if value="{{block.isCallout}}" hint-placeholder-val="{{false}}">
+            <div style="{{block.style}}">
+              <div style="font-size: 12px; font-weight: 600; color: #1447e6; margin-bottom: 4px;">Key takeaway</div>
+              <div style="font-size: 15px; line-height: 1.7; color: #0a0a0a;">{{block.text}}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{block.isQuiz}}" hint-placeholder-val="{{false}}">
+            <div style="{{block.style}}">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: #1447e6; color: #ffffff; display: flex; align-items: center; justify-content: center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></div>
+                <div style="font-weight: 600; font-size: 15px;">Quick check</div>
+                <div style="font-size: 12px; color: #737373;">3 questions</div>
+              </div>
+              <sc-for list="{{block.items}}" as="item" hint-placeholder-count="3">
+                <div style="padding: 10px 0; border-top: 1px solid #dbeafe;">
+                  <div style="font-weight: 500; font-size: 14px;">{{item.q}}</div>
+                  <div style="font-size: 13px; color: #525252; margin-top: 2px;">{{item.a}}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </sc-for>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e5e5;">
+          <a href="#" style="font-size: 13px; color: #737373; text-decoration: none;">Previous: JSX in depth</a>
+          <a href="#" style="font-size: 13px; font-weight: 500; text-decoration: none;">Next: State and events</a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <sc-if value="{{showSelChip}}" hint-placeholder-val="{{false}}">
+    <button type="button" onMouseDown="{{stopEvent}}" onClick="{{askAboutSelection}}" style="{{selChipStyle}}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>
+      Ask AI
+    </button>
+  </sc-if>
+
+  <sc-if value="{{showDockZone}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; top: 12px; right: 12px; bottom: 12px; width: 380px; border: 2px dashed #1447e6; border-radius: 14px; background: rgba(20,71,230,.06); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #1447e6; font-weight: 500; pointer-events: none;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M15 3v18"></path></svg>
+      Release to dock to the side
+    </div>
+  </sc-if>
+
+
+  <section aria-label="AI Assistant" data-docked="{{dockedAttr}}" style="{{companionStyle}}">
+    <div class="cio-hwrap" style="border-bottom: 1px solid #e5e5e5; background: #ffffff;"><div style="padding: 12px 16px;"><div onPointerDown="{{startDrag}}" onDoubleClick="{{toggleDock}}" style="{{headerStyle}}">
+      <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+      <sc-if value="{{isFloating}}" hint-placeholder-val="{{true}}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color: #a3a3a3; flex-shrink: 0;"><circle cx="9" cy="6" r="1.6"></circle><circle cx="15" cy="6" r="1.6"></circle><circle cx="9" cy="12" r="1.6"></circle><circle cx="15" cy="12" r="1.6"></circle><circle cx="9" cy="18" r="1.6"></circle><circle cx="15" cy="18" r="1.6"></circle></svg>
+      </sc-if>
+      <svg class="cio-spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>
+      <div style="min-width: 0;">
+        <h3 style="margin: 0; font-size: 14px; font-weight: 600; line-height: 20px; white-space: nowrap;">AI assistant</h3>
+        <sc-if value="{{hasTitle}}" hint-placeholder-val="{{false}}"><div class="cio-sub" style="font-size: 12px; line-height: 16px; color: #737373; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">{{convTitle}}</div></sc-if>
+      </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+      <sc-if value="{{showFullActions}}" hint-placeholder-val="{{true}}">
+      <button type="button" class="cio-hbtn cio-secondary" onClick="{{newChat}}" aria-label="New chat" data-tip="New chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+      <button type="button" class="cio-hbtn cio-secondary" aria-label="Chat history" data-tip="Chat history"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg></button>
+      <button type="button" class="cio-hbtn cio-more" onClick="{{toggleMore}}" aria-label="More actions" data-tip="More actions" aria-expanded="{{moreOpenAttr}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+      </sc-if>
+      <sc-if value="{{isFloating}}" hint-placeholder-val="{{true}}">
+        <button type="button" class="cio-hbtn" onClick="{{toggleDock}}" aria-label="Expand to side panel" data-tip="Expand to side panel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></button>
+      </sc-if>
+      <button type="button" class="cio-hbtn" onClick="{{closeCompanion}}" aria-label="Close" data-tip="Close" data-tip-end=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+      </div>
+    </div>
+    <sc-if value="{{usageShown}}" hint-placeholder-val="{{true}}">
+      <div style="margin-top: 8px;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; line-height: 14px; color: #737373;"><span>{{usageLabel}} tokens</span><span>{{usagePct}}%</span></div>
+        <div style="margin-top: 2px; height: 4px; width: 100%; border-radius: 999px; background: #f5f5f5;"><div style="{{usageBarStyle}}"></div></div>
+      </div>
+    </sc-if>
+    </div>
+    <sc-if value="{{moreOpen}}" hint-placeholder-val="{{false}}">
+      <div class="cio-morepop" style="display: flex;" role="menu">
+        <button type="button" role="menuitem" onClick="{{newChatFromMenu}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>New chat</button>
+        <button type="button" role="menuitem" onClick="{{toggleMore}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg>Chat history</button>
+      </div>
+    </sc-if>
+    </div>
+
+    <div ref="{{setThread}}" style="flex: 1; overflow-y: auto; min-height: 0; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+      <sc-if value="{{isEmpty}}" hint-placeholder-val="{{true}}">
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>
+            <p style="margin: 0; font-size: 14px; line-height: 20px; color: #737373;">Ask me to help with your course content — draft lessons, generate questions, or plan a course from a document.</p>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+            <sc-for list="{{starters}}" as="starter" hint-placeholder-count="5">
+              <button type="button" class="cio-chip" onClick="{{starter.run}}" style="padding: 6px 12px; border-radius: 999px; border: 1px solid #e5e5e5; background: transparent; font: inherit; font-size: 12px; line-height: 16px; color: #737373; cursor: pointer;">{{starter.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-for list="{{messages}}" as="msg" hint-placeholder-count="0">
+        <sc-if value="{{msg.isUser}}" hint-placeholder-val="{{true}}">
+          <div style="display: flex; flex-direction: column; align-items: flex-end;">
+            <div style="max-width: 90%; min-width: 0; border-radius: 8px; padding: 8px 12px; background: #1447e6; color: #eff6ff; font-size: 14px; line-height: 20px;">
+              <sc-if value="{{msg.hasQuote}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,.15); font-size: 12px; line-height: 16px; color: rgba(255,255,255,.9);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path></svg><span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{msg.quoteShort}}</span></div>
+              </sc-if>
+              <sc-if value="{{msg.hasAttach}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,.15); font-size: 12px; line-height: 16px; color: rgba(255,255,255,.9);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{msg.attachName}}</span></div>
+              </sc-if>
+              <div>{{msg.text}}</div>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{msg.isAi}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; flex-direction: column; align-items: flex-start;">
+            <div style="max-width: 90%; min-width: 0; border-radius: 8px; padding: 8px 12px; background: #f5f5f5; font-size: 14px; line-height: 20px;">
+              <sc-if value="{{msg.isThinking}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="cio-spin" style="flex-shrink:0"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg></sc-if>
+              <sc-if value="{{msg.hasText}}" hint-placeholder-val="{{true}}"><div class="cio-prose" style="white-space: pre-line; overflow-wrap: anywhere;">{{msg.display}}</div></sc-if>
+              <sc-for list="{{msg.tools}}" as="tool" hint-placeholder-count="0">
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 8px; border-radius: 6px; background: rgba(255,255,255,.7); font-size: 12px; line-height: 16px;">
+                <sc-if value="{{tool.isDone}}" hint-placeholder-val="{{true}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"></path></svg><span>{{tool.label}}</span></sc-if>
+                <sc-if value="{{tool.isRunning}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="cio-spin" style="flex-shrink:0"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg><span>{{tool.label}}…</span></sc-if>
+              </div>
+              </sc-for>
+              <sc-if value="{{msg.showQuiz}}" hint-placeholder-val="{{false}}">
+                <div style="margin-top: 8px; border: 1px solid #e5e5e5; border-radius: 8px; background: #ffffff; overflow: hidden;">
+                  <sc-for list="{{msg.quiz}}" as="item" hint-placeholder-count="3">
+                    <div style="padding: 8px 12px; border-bottom: 1px solid #f5f5f5; font-size: 12px; line-height: 16px;"><div style="font-weight: 500;">{{item.q}}</div><div style="color: #737373; margin-top: 2px;">{{item.a}}</div></div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{msg.showPlan}}" hint-placeholder-val="{{false}}">
+                <div style="margin-top: 12px; border: 1px solid #e5e5e5; border-radius: 8px; background: #ffffff;">
+                  <div style="{{msg.planHeadStyle}}">
+                    <button type="button" onClick="{{msg.togglePlan}}" aria-label="{{msg.planToggleLabel}}" data-tip="{{msg.planToggleLabel}}" style="border: 0; background: none; padding: 0; margin-top: 2px; color: #737373; cursor: pointer; display: flex;">
+                      <sc-if value="{{msg.planOpen}}" hint-placeholder-val="{{true}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></sc-if>
+                      <sc-if value="{{msg.planClosed}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m9 18 6-6-6-6"></path></svg></sc-if>
+                    </button>
+                    <div style="min-width: 0; flex: 1;">
+                      <div style="font-size: 14px; line-height: 20px; font-weight: 600;">{{msg.planTitle}}</div>
+                      <div style="font-size: 12px; line-height: 16px; color: #737373;">{{msg.planCounts}}</div>
+                    </div>
+                  </div>
+                  <sc-if value="{{msg.planOpen}}" hint-placeholder-val="{{true}}">
+                    <div style="max-height: 300px; overflow-y: auto; padding: 8px;">
+                      <sc-for list="{{msg.planSections}}" as="section" hint-placeholder-count="3">
+                        <div style="margin-bottom: 4px;">
+                          <div style="display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 12px; line-height: 16px; font-weight: 500;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg><span>{{section.title}}</span></div>
+                          <div style="margin-left: 20px; display: flex; flex-direction: column; gap: 4px;">
+                            <sc-for list="{{section.items}}" as="item" hint-placeholder-count="2">
+                              <div style="display: flex; align-items: flex-start; gap: 6px; padding: 4px 8px; font-size: 12px; line-height: 16px;">
+                                <sc-if value="{{item.isExercise}}" hint-placeholder-val="{{false}}"><span style="margin-top: 2px; display: flex;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M12 17h.01"></path><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"></path><rect width="18" height="18" x="3" y="3" rx="2"></rect></svg></span></sc-if>
+                                <sc-if value="{{item.isLesson}}" hint-placeholder-val="{{true}}"><span style="margin-top: 2px; display: flex;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></span></sc-if>
+                                <div style="min-width: 0; flex: 1;"><div style="{{item.titleStyle}}">{{item.title}}</div><div style="color: #737373; margin-top: 2px;">{{item.desc}}</div></div>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="border-top: 1px solid #e5e5e5; padding: 8px 12px; display: flex; flex-direction: column; gap: 8px;">
+                      <p style="margin: 0; font-size: 12px; line-height: 16px; color: #737373;">Estimated cost: ~18,400 tokens (37% of remaining)</p>
+                      <button type="button" onClick="{{msg.implement}}" class="cio-send" style="{{msg.implementStyle}}">
+                        <sc-if value="{{msg.implementing}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="cio-spin" style="flex-shrink:0"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg></sc-if>Implement Plan
+                      </button>
+                      <div style="display: flex; align-items: flex-end; gap: 8px;">
+                        <div style="flex: 1; min-height: 36px; border: 1px solid #e5e5e5; border-radius: 6px; padding: 8px 12px; font-size: 14px; line-height: 20px; color: #a3a3a3; box-sizing: border-box;">Tell me what to change about the plan…</div>
+                        <div style="width: 32px; height: 32px; border-radius: 6px; background: #1447e6; opacity: .5; color: #eff6ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg></div>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{msg.showActions}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                  <sc-if value="{{msg.canReplace}}" hint-placeholder-val="{{false}}">
+                    <button type="button" onClick="{{msg.replace}}" style="height: 32px; padding: 0 12px; border-radius: 6px; border: 0; background: #1447e6; color: #eff6ff; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer;">Replace in lesson</button>
+                  </sc-if>
+                  <sc-if value="{{msg.canInsert}}" hint-placeholder-val="{{false}}">
+                    <button type="button" onClick="{{msg.insert}}" style="height: 32px; padding: 0 12px; border-radius: 6px; border: 0; background: #1447e6; color: #eff6ff; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer;">Insert below</button>
+                  </sc-if>
+                  <button type="button" class="cio-btn" onClick="{{msg.copy}}" style="height: 32px; padding: 0 12px; border-radius: 6px; border: 1px solid #e5e5e5; background: #ffffff; color: #0a0a0a; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer;">{{msg.copyLabel}}</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{msg.applied}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 8px; border-radius: 6px; background: rgba(255,255,255,.7); font-size: 12px; line-height: 16px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"></path></svg><span>{{msg.appliedLabel}}</span><button type="button" onClick="{{msg.undo}}" style="border: 0; background: none; padding: 0; margin-left: auto; color: #1447e6; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer;">Undo</button></div>
+              </sc-if>
+              <sc-if value="{{msg.showTokens}}" hint-placeholder-val="{{false}}"><div style="margin-top: 4px; display: flex; justify-content: flex-end;"><span style="font-size: 10px; line-height: 14px; color: #737373;">{{msg.tokens}} tokens</span></div></sc-if>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{msg.isProgress}}" hint-placeholder-val="{{false}}">
+          <div style="margin-top: 8px; border: 1px solid #e5e5e5; border-radius: 8px; background: #ffffff;">
+            <div style="padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid #e5e5e5;">
+              <h4 style="margin: 0; font-size: 14px; line-height: 20px; font-weight: 600;">Implementing Course Plan</h4>
+              <p style="margin: 0; font-size: 12px; line-height: 16px; color: #737373;">{{msg.progressLabel}}</p>
+              <sc-if value="{{msg.nowShown}}" hint-placeholder-val="{{true}}">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; background: rgba(245,245,245,.6); font-size: 12px; line-height: 16px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="cio-spin" style="flex-shrink:0"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg><span style="font-size: 10px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: #737373;">Now</span><span style="min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{msg.nowLabel}}</span></div>
+              </sc-if>
+            </div>
+            <div style="max-height: 300px; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 2px;">
+              <sc-for list="{{msg.steps}}" as="step" hint-placeholder-count="6">
+                <div style="{{step.rowStyle}}">
+                  <sc-if value="{{step.isDone}}" hint-placeholder-val="{{true}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+                  <sc-if value="{{step.isRunning}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="cio-spin" style="flex-shrink:0"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg></sc-if>
+                  <sc-if value="{{step.isPending}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle></svg></sc-if>
+                  <span style="{{step.labelStyle}}">{{step.label}}</span>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{msg.footerShown}}" hint-placeholder-val="{{true}}">
+              <div style="border-top: 1px solid #e5e5e5; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px;">
+                <sc-if value="{{msg.stopped}}" hint-placeholder-val="{{false}}"><p style="margin: 0; font-size: 12px; line-height: 16px; color: #737373;">Stopped. Created content has been kept.</p></sc-if>
+                <sc-if value="{{msg.canStop}}" hint-placeholder-val="{{false}}">
+                  <button type="button" class="cio-btn" onClick="{{msg.stop}}" style="height: 32px; width: 100%; border-radius: 6px; border: 1px solid #e5e5e5; background: #ffffff; color: #0a0a0a; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><rect width="18" height="18" x="3" y="3" rx="2"></rect></svg>Stop</button>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{hasChanges}}" hint-placeholder-val="{{false}}">
+      <div style="background: #ffffff; border-top: 1px solid #e5e5e5; border-radius: 8px 8px 0 0; font-size: 12px; line-height: 16px;">
+        <button type="button" class="cio-row" onClick="{{toggleChanges}}" aria-expanded="{{changesOpenAttr}}" style="width: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 0; background: transparent; font: inherit; font-size: 12px; text-align: left; cursor: pointer; border-radius: 8px 8px 0 0;">
+          <sc-if value="{{changesOpen}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></sc-if>
+          <sc-if value="{{changesClosed}}" hint-placeholder-val="{{true}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m9 18 6-6-6-6"></path></svg></sc-if>
+          <span style="font-weight: 500;">{{changesCount}} items changed</span><span style="color: #737373;">· Completed</span>
+        </button>
+        <sc-if value="{{changesOpen}}" hint-placeholder-val="{{false}}">
+          <ul style="margin: 0; padding: 0; list-style: none; max-height: 192px; overflow-y: auto;">
+            <sc-for list="{{changedItems}}" as="item" hint-placeholder-count="3">
+              <li class="cio-row" style="display: flex; align-items: center; gap: 8px; padding: 4px 12px;">
+                <sc-if value="{{item.isExercise}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M12 17h.01"></path><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"></path><rect width="18" height="18" x="3" y="3" rx="2"></rect></svg></sc-if>
+                <sc-if value="{{item.isLesson}}" hint-placeholder-val="{{true}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></sc-if>
+                <span style="min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; color: #1447e6; text-decoration: underline dotted; text-underline-offset: 2px;">{{item.title}}</span>
+                <span style="color: #737373; font-variant-numeric: tabular-nums;">{{item.tokens}}</span>
+              </li>
+            </sc-for>
+          </ul>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <div style="border-top: 1px solid #e5e5e5; padding: 12px 12px 6px; position: relative;">
+      <sc-if value="{{showRunWarning}}" hint-placeholder-val="{{false}}">
+        <div style="margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px; padding: 8px 12px; border: 1px solid #fde68a; border-radius: 4px; background: #fffbeb; color: #b45309; font-size: 12px; line-height: 16px;">
+          <span style="flex: 1; min-width: 0;">The changes will appear in the course once the agent is done. Don't reload the page.</span>
+          <button type="button" onClick="{{dismissWarning}}" aria-label="Dismiss" data-tip="Dismiss" class="cio-hbtn" style="border-color: #fcd34d; background: #fffbeb; color: #92400e;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+        </div>
+      </sc-if>
+      <sc-if value="{{hasQuote}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
+          <div style="display: flex; gap: 8px; align-items: center; padding: 8px 12px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; line-height: 16px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path></svg>
+            <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{quoteShort}}</span>
+            <button type="button" onClick="{{clearQuote}}" aria-label="Remove quote" data-tip="Remove quote" style="border: 0; background: none; padding: 2px; color: #737373; cursor: pointer; display: flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <sc-for list="{{quoteActions}}" as="action" hint-placeholder-count="4">
+              <button type="button" class="cio-chip" onClick="{{action.run}}" style="padding: 6px 12px; border-radius: 999px; border: 1px solid #e5e5e5; background: transparent; font: inherit; font-size: 12px; line-height: 16px; color: #737373; cursor: pointer; white-space: nowrap;">{{action.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{hasAttach}}" hint-placeholder-val="{{false}}">
+        <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; line-height: 16px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span style="min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{attachName}}</span>
+          <button type="button" onClick="{{removeAttach}}" aria-label="Remove document" data-tip="Remove document" style="border: 0; background: none; padding: 2px; color: #737373; cursor: pointer; display: flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+        </div>
+      </sc-if>
+      <sc-if value="{{modelOpen}}" hint-placeholder-val="{{false}}">
+        <div role="listbox" style="position: absolute; right: 20px; bottom: 56px; z-index: 6; width: 192px; padding: 4px 0; background: #ffffff; border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 10px 30px rgba(15,23,42,.14);">
+          <sc-for list="{{models}}" as="model" hint-placeholder-count="4">
+            <button type="button" role="option" class="cio-opt" onClick="{{model.pick}}" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border: 0; background: transparent; font: inherit; font-size: 12px; line-height: 16px; text-align: left; cursor: pointer;">
+              <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{model.label}}</span>
+              <span style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;"><span style="{{model.costStyle}}">{{model.cost}}</span><sc-if value="{{model.selected}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"></path></svg></sc-if></span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <div style="border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,.05); background: #ffffff;">
+        <label for="cio-ai-input" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Ask the AI assistant</label>
+        <textarea id="cio-ai-input" rows="2" value="{{draft}}" onChange="{{onDraft}}" onKeyDown="{{onDraftKey}}" disabled="{{busy}}" placeholder="Ask the AI assistant..." style="display: block; width: 100%; box-sizing: border-box; border: 0; outline: none; resize: none; background: transparent; padding: 8px 12px; font: inherit; font-size: 14px; line-height: 20px; color: #0a0a0a; max-height: 128px;"></textarea>
+        <div style="display: flex; align-items: center; gap: 4px; padding: 0 8px 8px;">
+          <button type="button" class="cio-model" onClick="{{attachFile}}" aria-label="Attach a document (PDF, DOCX, PPTX, ODT)" data-tip="Attach a document (PDF, DOCX, PPTX, ODT)" style="border: 0; background: transparent; padding: 6px; border-radius: 6px; color: #737373; cursor: pointer; display: flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
+          <div style="flex: 1;"></div>
+          <sc-if value="{{busy}}" hint-placeholder-val="{{false}}">
+            <button type="button" class="cio-btn" onClick="{{stopAll}}" aria-label="Stop" data-tip="Stop" style="width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e5e5e5; background: #ffffff; color: #0a0a0a; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><rect width="18" height="18" x="3" y="3" rx="2"></rect></svg></button>
+          </sc-if>
+          <sc-if value="{{idle}}" hint-placeholder-val="{{true}}">
+            <button type="button" class="cio-model" onClick="{{toggleModel}}" data-tip="Choose model" aria-expanded="{{modelOpenAttr}}" style="border: 0; background: transparent; padding: 4px 8px; border-radius: 6px; color: #737373; font: inherit; font-size: 12px; line-height: 16px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+              <span style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{modelLabel}}</span><span style="{{modelCostStyle}}">{{modelCost}}</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{isFloating}}" hint-placeholder-val="{{true}}">
+      <div onPointerDown="{{startResize}}" aria-hidden="true" style="position: absolute; right: 0; bottom: 0; width: 18px; height: 18px; cursor: nwse-resize; display: flex; align-items: flex-end; justify-content: flex-end; padding: 3px; box-sizing: border-box; color: #a3a3a3;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 1 1 9"></path><path d="M9 5 5 9"></path></svg></div>
+    </sc-if>
+  </section>
+
+  <sc-if value="{{showEdgeTab}}" hint-placeholder-val="{{false}}">
+    <button type="button" onClick="{{openFromEdge}}" aria-label="Open AI Assistant" data-tip="Open AI Assistant" style="{{edgeTabStyle}}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>
+      <span style="writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; font-weight: 500; letter-spacing: .02em;">AI Assistant</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+      <sc-if value="{{hasUnread}}" hint-placeholder-val="{{false}}">
+        <span style="position: absolute; top: 8px; left: 8px; width: 9px; height: 9px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 2px #1447e6;"></span>
+      </sc-if>
+    </button>
+  </sc-if>
+
+  <sc-if value="{{showAskBar}}" hint-placeholder-val="{{false}}">
+    <button type="button" onClick="{{openFromEdge}}" style="position: absolute; left: calc(50% + 132px); bottom: 24px; transform: translateX(-50%); height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #e5e5e5; background: #ffffff; box-shadow: 0 8px 24px rgba(15,23,42,.10); display: flex; align-items: center; gap: 8px; font: inherit; font-size: 13px; font-weight: 500; color: #0a0a0a; cursor: pointer;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1447e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>
+      Ask AI
+      <span style="font-size: 11px; color: #737373; border: 1px solid #e5e5e5; border-radius: 5px; padding: 1px 6px;">⌘ J</span>
+    </button>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+var PANEL_W = 368;
+var PANEL_H = 560;
+var DOCK_W = 400;
+var SIDEBAR_W = 264;
+
+var INITIAL_BLOCKS = [
+  { id: 'p1', type: 'p', text: 'Components let you split the UI into independent, reusable pieces, and think about each piece in isolation. Conceptually, they are like JavaScript functions: they accept inputs and return elements describing what should appear on the screen.' },
+  { id: 'p2', type: 'p', text: 'Those inputs are called props. A parent component passes props to its children, and the data only ever flows one way, down the tree. A component must never modify its own props.' },
+  { id: 'c1', type: 'code', text: 'function Card({ title, children }) {\n  return (\n    <section className="card">\n      <h2>{title}</h2>\n      {children}\n    </section>\n  );\n}' },
+  { id: 'p3', type: 'p', text: 'You use Card the same way you would use an HTML tag. Everything you write as an attribute arrives inside Card as a prop, so <Card title="Welcome" /> renders a heading that reads Welcome.' },
+  { id: 'h1', type: 'h2', text: 'Why props are read-only' },
+  { id: 'p4', type: 'p', text: 'If a child could change its props, the parent would no longer know what its children are showing. Keeping props read-only makes every component predictable: the same props always render the same output.' }
+];
+
+var REWRITES = {
+  p1: 'A component is a small, reusable piece of your page, like a button or a card. You build each one on its own, then snap them together. Under the hood a component is a function: you give it some inputs and it gives back what to show.',
+  p2: 'Props are the inputs you hand a component, like settings on a form. The parent fills them in and the child only reads them. Data moves in one direction: from parent to child.',
+  p3: 'Using Card feels like writing HTML. Any attribute you add, such as title="Welcome", shows up inside Card as a prop it can read.',
+  p4: 'Read-only props keep things simple: give a component the same props and you will always see the same result. That is what makes components easy to trust and reuse.'
+};
+
+var EXPLAINS = {
+  p1: 'This is the core idea of React. Instead of one big page, you describe small pieces. Each one is a function that takes data in and returns what the screen should look like for that data.',
+  p2: 'It means data only travels downward. If a child needs to change something, the parent passes it a function to call, and the parent updates its own data.',
+  p3: 'The attribute syntax is just a shortcut. <Card title="Welcome" /> calls Card with an object like { title: "Welcome" }, which is why Card can pull title out of its argument.',
+  p4: 'Predictable is the key word. If props could change from inside, you would have to read every child to know what the page shows. Read-only props mean the parent is always the source of truth.'
+};
+
+var QUIZ = [
+  { q: '1. What are props in React?', a: 'Read-only inputs a parent passes to a component.' },
+  { q: '2. Can a component change its own props?', a: 'No. Only the parent can give it new props.' },
+  { q: '3. How do you pass a title to Card?', a: '<Card title="Welcome" />' }
+];
+
+var SUMMARY = 'Components are reusable pieces of UI written as functions. Props are the read-only inputs a parent passes in, so data always flows from parent to child.';
+
+
+var PLAN = {
+  title: 'React Fundamentals',
+  sections: [
+    { title: 'Section 1: Getting started', items: [
+      { type: 'lesson', title: 'What is React?', desc: 'Why components exist and how React renders a page.' },
+      { type: 'lesson', title: 'Setting up your first app', desc: 'Create a project, run it, and edit your first component.' }
+    ] },
+    { title: 'Section 2: Components and props', items: [
+      { type: 'lesson', title: 'Composing components', desc: 'Split a page into small, reusable pieces.' },
+      { type: 'lesson', title: 'Props in depth', desc: 'Pass data down the tree and keep props read-only.' },
+      { type: 'exercise', title: 'Props practice', desc: 'Five questions that check how props flow.' }
+    ] },
+    { title: 'Section 3: State and events', items: [
+      { type: 'lesson', title: 'useState basics', desc: 'Store values that change over time.' },
+      { type: 'lesson', title: 'Handling events', desc: 'Respond to clicks and form input.' }
+    ] }
+  ]
+};
+
+var RUN_STEPS = [
+  ['Reading course structure', 'Course structure loaded', 0],
+  ['Creating section', 'Created section: Getting started', 0],
+  ['Writing lesson content', 'Created lesson: What is React?', 1],
+  ['Writing lesson content', 'Created lesson: Setting up your first app', 1],
+  ['Creating section', 'Created section: Components and props', 0],
+  ['Writing lesson content', 'Created lesson: Composing components', 1],
+  ['Writing lesson content', 'Created lesson: Props in depth', 1],
+  ['Creating exercise', 'Created exercise «Props practice» · 5 questions', 1],
+  ['Creating section', 'Created section: State and events', 0],
+  ['Writing lesson content', 'Created lesson: useState basics', 1],
+  ['Writing lesson content', 'Created lesson: Handling events', 1]
+];
+
+var CHANGED = [
+  { title: 'What is React?', type: 'lesson', tokens: '1.2k' },
+  { title: 'Setting up your first app', type: 'lesson', tokens: '980' },
+  { title: 'Composing components', type: 'lesson', tokens: '1.1k' },
+  { title: 'Props in depth', type: 'lesson', tokens: '1.4k' },
+  { title: 'Props practice', type: 'exercise', tokens: '720' },
+  { title: 'useState basics', type: 'lesson', tokens: '1.3k' },
+  { title: 'Handling events', type: 'lesson', tokens: '1.0k' }
+];
+
+var MODELS = [
+  { label: 'Gemini 3.1 Flash Lite', high: false },
+  { label: 'Kimi K2.6', high: false },
+  { label: 'GPT-5.4 Mini', high: false },
+  { label: 'Claude Sonnet 4.6', high: true }
+];
+
+var READ_LESSON = ['Reading lesson content', 'Lesson content loaded'];
+var TOOLS = {
+  free: [READ_LESSON],
+  rewrite: [READ_LESSON],
+  explain: [READ_LESSON],
+  summarize: [READ_LESSON],
+  quiz: [READ_LESSON, ['Adding questions', 'Added 3 questions']],
+  draft: [['Reading course structure', 'Course structure loaded'], ['Writing lesson content', 'Wrote 612 characters']],
+  publish: [['Checking go-live readiness', 'Ready to go live — 1 warning']],
+  plan: [['Generating course plan', 'Course plan generated']]
+};
+
+var DRAFT_TEXT = 'Here is a draft for the next lesson, “Composing components”. It builds on props by showing how a page is made from small pieces: a Card inside a List inside a Page. Each piece takes props and returns elements, so the whole screen is just components nested in components.';
+var PUBLISH_TEXT = 'Your course is nearly ready to go live. Everything required is in place. One warning: the lesson “Effects and data fetching” has no exercise yet. You can publish now or add one first.';
+var PLAN_TEXT = 'I read your document and drafted a course plan. Review it, edit any title or description, then press Implement Plan and I will build it.';
+
+function shorten(text, max) {
+  if (text.length <= max) return text;
+
+  return text.slice(0, max).trim() + '…';
+}
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      width: 1440,
+      height: 900,
+      mode: 'docked',
+      x: 1440 - PANEL_W - 32,
+      y: 72,
+      w: PANEL_W,
+      h: PANEL_H,
+      dragging: false,
+      dockHint: false,
+      moreOpen: false,
+      blocks: INITIAL_BLOCKS,
+      messages: [],
+      draft: '',
+      quote: null,
+      selChip: null,
+      focusPid: null,
+      flashId: null,
+      hasUnread: false,
+      hintOpen: true,
+      copiedId: null,
+      model: 0,
+      modelOpen: false,
+      attached: null,
+      tokens: 12480,
+      run: null,
+      changed: [],
+      changesOpen: false,
+      warnDismissed: false,
+      planOpen: true,
+      placed: false
+    };
+    this.nextId = 1;
+    this.timers = [];
+  }
+
+  componentDidMount() {
+    if (!this.root) return;
+
+    this.measure();
+    this.observer = new ResizeObserver(() => this.measure());
+    this.observer.observe(this.root);
+  }
+
+  componentWillUnmount() {
+    if (this.observer) this.observer.disconnect();
+    this.timers.forEach((timer) => clearTimeout(timer));
+    this.stopPointer();
+  }
+
+  componentDidUpdate() {
+    const changed = this.lastMessages !== this.state.messages || this.lastRun !== this.state.run;
+
+    this.lastMessages = this.state.messages;
+    this.lastRun = this.state.run;
+
+    if (this.thread && changed) this.thread.scrollTop = this.thread.scrollHeight;
+  }
+
+  measure() {
+    const rect = this.root.getBoundingClientRect();
+    const width = Math.round(rect.width);
+    const height = Math.round(rect.height);
+
+    this.setState((state) => {
+      if (!state.placed) {
+        return { width, height, x: width - PANEL_W - 32, y: 72, placed: true };
+      }
+
+      const clamped = this.clamp(state.x, state.y, state.w, state.h, width, height);
+
+      return { width, height, x: clamped.x, y: clamped.y };
+    });
+  }
+
+  clamp(x, y, w, h, width, height) {
+    const minX = 8;
+    const maxX = Math.max(minX, width - w - 8);
+    const maxY = Math.max(8, height - h - 8);
+
+    return { x: Math.min(maxX, Math.max(minX, x)), y: Math.min(maxY, Math.max(8, y)) };
+  }
+
+  later(fn, ms) {
+    const timer = setTimeout(fn, ms);
+    this.timers.push(timer);
+  }
+
+  stopPointer() {
+    if (this.onMove) window.removeEventListener('pointermove', this.onMove);
+    if (this.onUp) window.removeEventListener('pointerup', this.onUp);
+    this.onMove = null;
+    this.onUp = null;
+  }
+
+  beginPointer(event, handleMove, handleUp) {
+    this.stopPointer();
+    this.onMove = handleMove;
+    this.onUp = (upEvent) => {
+      this.stopPointer();
+      document.body.style.userSelect = '';
+      handleUp(upEvent);
+    };
+    document.body.style.userSelect = 'none';
+    window.addEventListener('pointermove', this.onMove);
+    window.addEventListener('pointerup', this.onUp);
+  }
+
+  startDrag(event) {
+    if (this.state.mode !== 'floating' || this.state.width < 760) return;
+    if (event.target.closest('button')) return;
+
+    event.preventDefault();
+    const rootRect = this.root.getBoundingClientRect();
+    const offsetX = event.clientX - rootRect.left - this.state.x;
+    const offsetY = event.clientY - rootRect.top - this.state.y;
+
+    this.setState({ dragging: true, selChip: null });
+    this.beginPointer(
+      event,
+      (moveEvent) => {
+        const next = this.clamp(
+          moveEvent.clientX - rootRect.left - offsetX,
+          moveEvent.clientY - rootRect.top - offsetY,
+          this.state.w,
+          this.state.h,
+          this.state.width,
+          this.state.height
+        );
+        const dockHint = moveEvent.clientX > rootRect.right - 56;
+
+        this.setState({ x: next.x, y: next.y, dockHint });
+      },
+      () => {
+        const shouldDock = this.state.dockHint;
+
+        this.setState({ dragging: false, dockHint: false, mode: shouldDock ? 'docked' : 'floating' });
+      }
+    );
+  }
+
+  startResize(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startW = this.state.w;
+    const startH = this.state.h;
+
+    this.setState({ dragging: true });
+    this.beginPointer(
+      event,
+      (moveEvent) => {
+        const maxW = this.state.width - this.state.x - 8;
+        const maxH = this.state.height - this.state.y - 8;
+        const w = Math.min(maxW, Math.max(300, startW + moveEvent.clientX - startX));
+        const h = Math.min(maxH, Math.max(380, startH + moveEvent.clientY - startY));
+
+        this.setState({ w, h });
+      },
+      () => this.setState({ dragging: false })
+    );
+  }
+
+  dismissHint() {
+    this.hintSeen = true;
+    this.setState({ hintOpen: false });
+  }
+
+  toggleDock() {
+    if (this.state.hintOpen) this.dismissHint();
+
+    if (this.state.mode === 'floating') {
+      this.setState({ mode: 'docked', moreOpen: false });
+
+      return;
+    }
+
+    const fitH = Math.min(this.state.h, this.state.height - 84);
+    const fitW = Math.min(this.state.w, this.state.width - 24);
+    const placed = this.clamp(this.state.width - fitW - 12, this.state.height - fitH - 12, fitW, fitH, this.state.width, this.state.height);
+
+    this.setState({ mode: 'floating', x: placed.x, y: placed.y, w: fitW, h: fitH, moreOpen: false, hasUnread: false, selChip: null });
+  }
+
+  popOut() {
+    if (this.state.hintOpen) this.dismissHint();
+
+    if (this.state.mode === 'floating') {
+      this.setState({ mode: 'closed', moreOpen: false, selChip: null });
+
+      return;
+    }
+
+    this.toggleDock();
+  }
+
+  toggleAssistant() {
+    const isOpen = this.state.mode === 'docked' || this.state.mode === 'floating';
+
+    if (isOpen) {
+      this.lastMode = this.state.mode;
+      this.setState({ mode: 'closed', selChip: null });
+
+      return;
+    }
+
+    this.setState({ mode: 'docked', hasUnread: false, hintOpen: !this.hintSeen });
+    this.hintSeen = true;
+  }
+
+  open() {
+    if (this.state.mode === 'docked' || this.state.mode === 'floating') return;
+
+    this.setState({ mode: this.lastMode || 'floating', hasUnread: false });
+  }
+
+  toggleMore() {
+    this.setState((state) => ({ moreOpen: !state.moreOpen }));
+  }
+
+  newChatFromMenu() {
+    this.newChat();
+    this.setState({ moreOpen: false });
+  }
+
+  tuck() {
+    this.lastMode = this.state.mode;
+    this.setState({ mode: 'tucked', selChip: null });
+  }
+
+  closeCompanion() {
+    this.lastMode = this.state.mode;
+    this.setState({ mode: 'closed', selChip: null });
+  }
+
+  onLessonMouseDown() {
+    if (this.state.selChip) this.setState({ selChip: null });
+  }
+
+  onLessonMouseUp() {
+    setTimeout(() => {
+      const selection = window.getSelection();
+      const text = selection ? selection.toString().trim() : '';
+
+      if (!selection || text.length < 4 || selection.rangeCount === 0) return;
+
+      const anchor = selection.anchorNode && selection.anchorNode.parentElement;
+      const paragraph = anchor && anchor.closest('[data-pid]');
+
+      if (!paragraph) return;
+
+      const range = selection.getRangeAt(0).getBoundingClientRect();
+      const rootRect = this.root.getBoundingClientRect();
+
+      this.setState({
+        selChip: {
+          text,
+          pid: paragraph.getAttribute('data-pid'),
+          x: range.left - rootRect.left + range.width / 2,
+          y: range.top - rootRect.top - 44
+        }
+      });
+    }, 0);
+  }
+
+  askAboutSelection() {
+    const chip = this.state.selChip;
+
+    if (!chip) return;
+
+    window.getSelection().removeAllRanges();
+    this.setState({ quote: { text: chip.text, pid: chip.pid }, focusPid: chip.pid, selChip: null });
+    this.open();
+  }
+
+  clearQuote() {
+    this.setState({ quote: null, focusPid: null });
+  }
+
+  newChat() {
+    this.stopAll();
+    this.setState({ messages: [], quote: null, focusPid: null, draft: '', attached: null, run: null, changed: [], modelOpen: false });
+  }
+
+  buildReply(kind, pid) {
+    if (kind === 'rewrite') return { text: REWRITES[pid] || REWRITES.p2, applyType: 'replace' };
+    if (kind === 'explain') return { text: EXPLAINS[pid] || EXPLAINS.p2, applyType: null };
+    if (kind === 'quiz') return { text: 'Here is a 3-question check you can drop in right after this part of the lesson.', applyType: 'insert', quiz: QUIZ };
+    if (kind === 'summarize') return { text: SUMMARY, applyType: 'insert' };
+    if (kind === 'draft') return { text: DRAFT_TEXT, applyType: 'insert' };
+    if (kind === 'publish') return { text: PUBLISH_TEXT, applyType: null };
+    if (kind === 'plan') return { text: PLAN_TEXT, applyType: null, plan: true };
+
+    return {
+      text: 'In this lesson, props work like HTML attributes. You pass them where you use the component, for example <Card title="Welcome" />, and Card reads them from its first argument. Want me to add an exercise that practices this?',
+      applyType: null
+    };
+  }
+
+  send(label, kind) {
+    if (this.isBusy()) return;
+
+    const quote = this.state.quote;
+    const attached = this.state.attached;
+    const pid = quote ? quote.pid : null;
+    const userId = this.nextId++;
+    const aiId = this.nextId++;
+    const replyKind = attached && kind === 'free' ? 'plan' : kind;
+    const reply = this.buildReply(replyKind, pid);
+    const userMessage = { id: userId, role: 'user', text: label, quote: quote ? quote.text : null, attach: attached };
+    const aiMessage = { id: aiId, role: 'ai', status: 'thinking', full: reply.text, shown: 0, kind: replyKind, pid, applyType: reply.applyType, quiz: reply.quiz || null, hasPlan: Boolean(reply.plan), tools: TOOLS[replyKind] || TOOLS.free, toolIdx: 0, applied: false, used: 0 };
+
+    this.setState((state) => ({ messages: state.messages.concat([userMessage, aiMessage]), quote: null, attached: null, draft: '', focusPid: pid, modelOpen: false }));
+    this.later(() => this.runTools(aiId), 650);
+  }
+
+  isBusy() {
+    const run = this.state.run;
+    const runActive = Boolean(run && !run.done && !run.stopped);
+
+    return runActive || this.state.messages.some((message) => message.role === 'ai' && message.status !== 'done');
+  }
+
+  updateMessage(id, patch) {
+    this.setState((state) => ({ messages: state.messages.map((message) => (message.id === id ? Object.assign({}, message, patch) : message)) }));
+  }
+
+  runTools(id) {
+    const message = this.state.messages.find((item) => item.id === id);
+
+    if (!message) return;
+
+    if (message.toolIdx >= message.tools.length) {
+      this.updateMessage(id, { status: 'streaming', shown: 0 });
+      this.later(() => this.stream(id), 250);
+
+      return;
+    }
+
+    this.updateMessage(id, { status: 'tools' });
+    this.later(() => {
+      this.updateMessage(id, { toolIdx: message.toolIdx + 1 });
+      this.later(() => this.runTools(id), 200);
+    }, 650);
+  }
+
+  stream(id) {
+    const message = this.state.messages.find((item) => item.id === id);
+
+    if (!message || message.status === 'done') return;
+
+    const total = message.full.split(' ').length;
+    const nextShown = message.shown + 2;
+
+    if (nextShown >= total) {
+      const used = 180 + total * 7;
+
+      this.updateMessage(id, { status: 'done', shown: total, used });
+      this.setState((state) => ({ tokens: state.tokens + used }));
+
+      if (this.state.mode === 'tucked' || this.state.mode === 'closed') this.setState({ hasUnread: true });
+
+      return;
+    }
+
+    this.updateMessage(id, { status: 'streaming', shown: nextShown });
+    this.later(() => this.stream(id), 45);
+  }
+
+  stopAll() {
+    this.timers.forEach((timer) => clearTimeout(timer));
+    this.timers = [];
+
+    this.setState((state) => ({
+      messages: state.messages.map((message) => (message.role === 'ai' && message.status !== 'done'
+        ? Object.assign({}, message, { status: 'done', shown: message.full.split(' ').length, toolIdx: message.tools.length })
+        : message)),
+      run: state.run && !state.run.done ? Object.assign({}, state.run, { stopped: true }) : state.run
+    }));
+  }
+
+  implementPlan() {
+    if (this.state.run) return;
+
+    const id = this.nextId++;
+
+    this.setState((state) => ({ run: { step: 0, done: false, stopped: false }, messages: state.messages.concat([{ id, role: 'progress' }]), warnDismissed: false }));
+    this.later(() => this.tickRun(), 700);
+  }
+
+  tickRun() {
+    const run = this.state.run;
+
+    if (!run || run.done || run.stopped) return;
+
+    const step = run.step + 1;
+
+    if (step >= RUN_STEPS.length) {
+      const id = this.nextId++;
+      const doneMessage = { id, role: 'ai', status: 'done', full: 'Done. I created 3 sections, 6 lessons and 1 exercise. Open the items below to review them.', shown: 999, kind: 'done', pid: null, applyType: null, quiz: null, hasPlan: false, tools: [], toolIdx: 0, applied: false, used: 140 };
+
+      this.setState((state) => ({ run: { step, done: true, stopped: false }, changed: CHANGED, changesOpen: true, tokens: state.tokens + 5200, messages: state.messages.concat([doneMessage]) }));
+
+      return;
+    }
+
+    this.setState({ run: { step, done: false, stopped: false } });
+    this.later(() => this.tickRun(), 700);
+  }
+
+  flash(blockId) {
+    this.setState({ flashId: blockId });
+    this.later(() => this.setState({ flashId: null }), 1600);
+  }
+
+  applyReplace(message) {
+    const before = this.state.blocks;
+    const blocks = before.map((block) => (block.id === message.pid ? Object.assign({}, block, { text: message.full }) : block));
+
+    this.setState({ blocks, focusPid: null });
+    this.updateMessage(message.id, { applied: true, appliedLabel: 'Replaced in the lesson', prevBlocks: before });
+    this.flash(message.pid);
+  }
+
+  applyInsert(message) {
+    const before = this.state.blocks;
+    const newId = 'ai' + message.id;
+    const block = message.kind === 'quiz'
+      ? { id: newId, type: 'quiz', items: message.quiz }
+      : { id: newId, type: 'callout', text: message.full };
+    const anchorIndex = message.pid ? before.findIndex((item) => item.id === message.pid) : before.length - 1;
+    const blocks = before.slice(0, anchorIndex + 1).concat([block], before.slice(anchorIndex + 1));
+
+    this.setState({ blocks, focusPid: null });
+    this.updateMessage(message.id, { applied: true, appliedLabel: message.kind === 'quiz' ? 'Quiz added to the lesson' : 'Takeaway added to the lesson', prevBlocks: before });
+    this.flash(newId);
+  }
+
+  undo(message) {
+    if (!message.prevBlocks) return;
+
+    this.setState({ blocks: message.prevBlocks });
+    this.updateMessage(message.id, { applied: false, prevBlocks: null });
+  }
+
+  copy(message) {
+    if (navigator.clipboard) navigator.clipboard.writeText(message.full).catch(() => {});
+
+    this.setState({ copiedId: message.id });
+    this.later(() => this.setState({ copiedId: null }), 1400);
+  }
+
+  sendDraft() {
+    const text = this.state.draft.trim();
+
+    if (!text) return;
+
+    this.send(text, 'free');
+  }
+
+  companionStyle() {
+    const state = this.state;
+    const base = 'position: absolute; z-index: 20; background: #ffffff; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;';
+    const motion = state.dragging ? '' : ' transition: left .32s cubic-bezier(.2,.8,.2,1), top .32s cubic-bezier(.2,.8,.2,1), width .32s cubic-bezier(.2,.8,.2,1), height .32s cubic-bezier(.2,.8,.2,1), opacity .2s, border-radius .32s, box-shadow .32s;';
+    const hidden = state.mode === 'tucked' || state.mode === 'closed';
+
+    if (state.width < 760) {
+      const top = hidden ? state.height + 20 : Math.round(state.height * 0.32);
+
+      return base + motion + ' left: 0px; top: ' + top + 'px; width: ' + state.width + 'px; height: ' + Math.round(state.height * 0.68) + 'px; border-radius: 18px 18px 0 0; border: 1px solid #e5e5e5; box-shadow: 0 -12px 40px rgba(15,23,42,.18);';
+    }
+
+    if (state.mode === 'docked') {
+      return base + motion + ' left: ' + (state.width - DOCK_W) + 'px; top: 0px; width: ' + DOCK_W + 'px; height: ' + state.height + 'px; border-radius: 0px; border-left: 1px solid #e5e5e5; box-shadow: none;';
+    }
+
+    if (hidden) {
+      return base + motion + ' left: ' + (state.width + 24) + 'px; top: ' + state.y + 'px; width: ' + state.w + 'px; height: ' + state.h + 'px; border-radius: 16px; opacity: 0; pointer-events: none; border: 1px solid #e5e5e5;';
+    }
+
+    const lift = state.dragging ? '0 32px 64px -12px rgba(20,71,230,.35), 0 0 0 2px #1447e6' : '0 24px 56px -16px rgba(15,23,42,.28), 0 2px 8px rgba(15,23,42,.08)';
+
+    return base + motion + ' left: ' + state.x + 'px; top: ' + state.y + 'px; width: ' + state.w + 'px; height: ' + state.h + 'px; border-radius: 16px; border: 1px solid #e5e5e5; box-shadow: ' + lift + ';';
+  }
+
+  renderVals() {
+    const state = this.state;
+    const isFloating = state.mode === 'floating' && state.width >= 760;
+    const isDocked = state.mode === 'docked' && state.width >= 760;
+    const isOpenNow = state.mode === 'docked' || state.mode === 'floating';
+    const hidden = state.mode === 'tucked' || state.mode === 'closed';
+
+    const blocks = state.blocks.map((block) => {
+      const isFlash = state.flashId === block.id;
+      const isFocus = state.focusPid === block.id;
+      let style = 'margin: 0 0 18px; font-size: 16px; line-height: 1.75; color: #262626; border-radius: 6px; transition: background .4s, box-shadow .4s;';
+
+      if (block.type === 'callout' || block.type === 'quiz') {
+        style = 'margin: 0 0 20px; padding: 16px 18px; border-radius: 12px; border: 1px solid #bedbff; background: #eff6ff; transition: box-shadow .4s;';
+      }
+
+      if (isFocus) style += ' background: #eff6ff; box-shadow: 0 0 0 6px #eff6ff;';
+      if (isFlash) style += ' background: #dbeafe; box-shadow: 0 0 0 6px #dbeafe;';
+
+      return {
+        id: block.id,
+        text: block.text,
+        items: block.items || [],
+        style,
+        isP: block.type === 'p',
+        isH2: block.type === 'h2',
+        isCode: block.type === 'code',
+        isCallout: block.type === 'callout',
+        isQuiz: block.type === 'quiz'
+      };
+    });
+
+    const run = state.run;
+    const runActive = Boolean(run && !run.done && !run.stopped);
+    const busy = this.isBusy();
+
+    const messages = state.messages.map((message) => {
+      if (message.role === 'progress') {
+        const total = RUN_STEPS.length;
+        const current = run ? run.step : 0;
+        const steps = RUN_STEPS.map((step, index) => {
+          const isDone = index < current;
+          const isRunning = index === current && runActive;
+          const isPending = !isDone && !isRunning;
+
+          return {
+            isDone,
+            isRunning,
+            isPending,
+            label: isDone ? step[1] : step[0],
+            rowStyle: 'display: flex; align-items: center; gap: 8px; border-radius: 4px; padding: 4px 8px; font-size: 12px; line-height: 16px;' + (step[2] ? ' margin-left: 16px;' : ''),
+            labelStyle: isPending ? 'color: #737373;' : ''
+          };
+        });
+
+        return {
+          id: message.id,
+          isUser: false,
+          isAi: false,
+          isProgress: true,
+          steps,
+          progressLabel: Math.min(current, total) + ' / ' + total + ' steps completed',
+          nowShown: runActive && current < total,
+          nowLabel: current < total ? RUN_STEPS[current][0] : '',
+          footerShown: Boolean(run && (run.stopped || runActive)),
+          stopped: Boolean(run && run.stopped),
+          canStop: runActive,
+          stop: () => this.stopAll()
+        };
+      }
+
+      const words = message.full ? message.full.split(' ') : [];
+      const isDone = message.status === 'done';
+      const isThinking = message.status === 'thinking';
+      const display = message.role === 'ai' ? (isDone ? message.full : words.slice(0, message.shown).join(' ')) : '';
+      const planOpen = state.planOpen;
+      const tools = (message.tools || []).map((tool, index) => {
+        const toolDone = index < message.toolIdx;
+        const toolRunning = index === message.toolIdx && message.status === 'tools';
+
+        return { isDone: toolDone, isRunning: toolRunning, label: toolDone ? tool[1] : tool[0], show: toolDone || toolRunning };
+      }).filter((tool) => tool.show);
+      const lessonCount = PLAN.sections.reduce((sum, section) => sum + section.items.filter((item) => item.type === 'lesson').length, 0);
+      const exerciseCount = PLAN.sections.reduce((sum, section) => sum + section.items.filter((item) => item.type === 'exercise').length, 0);
+      const implementing = Boolean(run && !run.done && !run.stopped);
+
+      return {
+        id: message.id,
+        isUser: message.role === 'user',
+        isAi: message.role === 'ai',
+        isProgress: false,
+        text: message.text,
+        hasQuote: Boolean(message.quote),
+        quoteShort: message.quote ? shorten(message.quote, 60) : '',
+        hasAttach: Boolean(message.attach),
+        attachName: message.attach || '',
+        isThinking,
+        display,
+        hasText: display.length > 0,
+        tools,
+        showQuiz: isDone && Boolean(message.quiz),
+        quiz: message.quiz || [],
+        showPlan: isDone && message.hasPlan,
+        planOpen,
+        planClosed: !planOpen,
+        planToggleLabel: planOpen ? 'Collapse plan' : 'Expand plan',
+        planTitle: PLAN.title,
+        planCounts: PLAN.sections.length + ' sections, ' + lessonCount + ' lessons, ' + exerciseCount + ' exercises',
+        planHeadStyle: 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 12px;' + (planOpen ? ' border-bottom: 1px solid #e5e5e5;' : ''),
+        planSections: PLAN.sections.map((section) => ({
+          title: section.title,
+          items: section.items.map((item) => ({ title: item.title, desc: item.desc, isExercise: item.type === 'exercise', isLesson: item.type !== 'exercise', titleStyle: 'font-weight: 500;' + (item.type === 'exercise' ? ' color: #1447e6;' : '') }))
+        })),
+        togglePlan: () => this.setState((current) => ({ planOpen: !current.planOpen })),
+        implementing: implementing,
+        implementStyle: 'height: 32px; width: 100%; border-radius: 6px; border: 0; background: #1447e6; color: #eff6ff; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;' + (run ? ' opacity: .5; pointer-events: none;' : ''),
+        implement: () => this.implementPlan(),
+        showActions: isDone && !message.applied && Boolean(message.applyType),
+        canReplace: message.applyType === 'replace',
+        canInsert: message.applyType === 'insert',
+        applied: Boolean(message.applied),
+        appliedLabel: message.appliedLabel,
+        showTokens: isDone && message.used > 0,
+        tokens: String(message.used || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+        copyLabel: state.copiedId === message.id ? 'Copied' : 'Copy',
+        replace: () => this.applyReplace(message),
+        insert: () => this.applyInsert(message),
+        undo: () => this.undo(message),
+        copy: () => this.copy(message)
+      };
+    });
+
+    const quoteActions = [
+      { label: 'Rewrite for beginners', run: () => this.send('Rewrite this for beginners', 'rewrite') },
+      { label: 'Explain this', run: () => this.send('Explain this part', 'explain') },
+      { label: 'Make a quiz', run: () => this.send('Make a short quiz about this', 'quiz') },
+      { label: 'Summarize', run: () => this.send('Summarize this as a key takeaway', 'summarize') }
+    ];
+
+    const starters = [
+      { label: 'Upload a document to create a course', run: () => { this.setState({ attached: 'Intro-to-React-syllabus.pdf' }); this.send('Upload a document to create a course', 'plan'); } },
+      { label: 'Draft a lesson', run: () => this.send('Draft a lesson', 'draft') },
+      { label: 'Generate questions from this lesson', run: () => this.send('Generate questions from this lesson', 'quiz') },
+      { label: 'Summarize this lesson', run: () => this.send('Summarize this lesson', 'summarize') },
+      { label: 'Help me publish this course', run: () => this.send('Help me publish this course', 'publish') }
+    ];
+
+    const chip = state.selChip;
+    const selChipStyle = chip
+      ? 'position: absolute; z-index: 30; left: ' + Math.round(chip.x) + 'px; top: ' + Math.round(chip.y) + 'px; transform: translateX(-50%); height: 34px; padding: 0 12px; border-radius: 999px; border: 0; background: #0a0a0a; color: #ffffff; display: flex; align-items: center; gap: 6px; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; box-shadow: 0 8px 24px rgba(15,23,42,.25);'
+      : '';
+
+    const edgeTop = Math.min(state.height - 200, Math.max(80, state.y + 40));
+    const edgeTabStyle = 'position: absolute; z-index: 25; right: 0px; top: ' + edgeTop + 'px; width: 40px; padding: 14px 0; border-radius: 12px 0 0 12px; border: 0; background: #1447e6; color: #ffffff; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; box-shadow: -6px 8px 24px rgba(20,71,230,.30);';
+
+    const reserve = isDocked ? DOCK_W : 0;
+    const mainStyle = 'flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; padding-right: ' + reserve + 'px; transition: padding-right .32s cubic-bezier(.2,.8,.2,1);';
+
+    const headerStyle = 'display: flex; align-items: center; justify-content: space-between; gap: 8px; user-select: none; cursor: ' + (isFloating ? (state.dragging ? 'grabbing' : 'grab') : 'default') + ';';
+
+    const firstUser = state.messages.find((message) => message.role === 'user');
+    const usagePctValue = Math.min(100, Math.round((state.tokens / 50000) * 100));
+    const usageColor = usagePctValue > 90 ? '#ef4444' : usagePctValue > 70 ? '#f59e0b' : '#1447e6';
+    const model = MODELS[state.model];
+    const costStyleFor = (high) => 'font-weight: 500; color: ' + (high ? '#ef4444' : '#22c55e') + ';';
+
+    return {
+      setRoot: (element) => { this.root = element; },
+      setThread: (element) => { this.thread = element; },
+      blocks,
+      messages,
+      starters,
+      quoteActions,
+      isEmpty: state.messages.length === 0,
+      busy,
+      idle: !busy,
+      hasTitle: Boolean(firstUser),
+      convTitle: firstUser ? shorten(firstUser.text, 34) : '',
+      usageShown: true,
+      usageLabel: state.tokens.toLocaleString() + ' / 50,000',
+      usagePct: usagePctValue,
+      usageBarStyle: 'height: 4px; border-radius: 999px; transition: all .3s; width: ' + usagePctValue + '%; background: ' + usageColor + ';',
+      showRunWarning: runActive && !state.warnDismissed,
+      dismissWarning: () => this.setState({ warnDismissed: true }),
+      hasAttach: Boolean(state.attached),
+      attachName: state.attached || '',
+      attachFile: () => this.setState({ attached: 'Intro-to-React-syllabus.pdf' }),
+      removeAttach: () => this.setState({ attached: null }),
+      stopAll: () => this.stopAll(),
+      modelOpen: state.modelOpen,
+      modelOpenAttr: state.modelOpen ? 'true' : 'false',
+      toggleModel: () => this.setState((current) => ({ modelOpen: !current.modelOpen })),
+      modelLabel: model.label,
+      modelCost: model.high ? '$$$' : '$',
+      modelCostStyle: costStyleFor(model.high),
+      models: MODELS.map((item, index) => ({ label: item.label, cost: item.high ? '$$$' : '$', costStyle: costStyleFor(item.high), selected: index === state.model, pick: () => this.setState({ model: index, modelOpen: false }) })),
+      hasChanges: state.changed.length > 0,
+      changesCount: state.changed.length,
+      changesOpen: state.changesOpen,
+      changesClosed: !state.changesOpen,
+      changesOpenAttr: state.changesOpen ? 'true' : 'false',
+      toggleChanges: () => this.setState((current) => ({ changesOpen: !current.changesOpen })),
+      changedItems: state.changed.map((item) => ({ title: item.title, tokens: item.tokens, isExercise: item.type === 'exercise', isLesson: item.type !== 'exercise' })),
+      hasQuote: Boolean(state.quote),
+      quoteShort: state.quote ? shorten(state.quote.text, 140) : '',
+      draft: state.draft,
+      placeholder: state.quote ? 'Ask about the quoted text…' : 'Ask about this lesson…',
+      isFloating,
+      isDocked,
+      showFullActions: !isFloating,
+      moreOpen: state.moreOpen,
+      moreOpenAttr: state.moreOpen ? 'true' : 'false',
+      toggleMore: () => this.toggleMore(),
+      newChatFromMenu: () => this.newChatFromMenu(),
+      dockedAttr: isDocked ? 'true' : 'false',
+      showSelChip: Boolean(chip),
+      selChipStyle,
+      showDockZone: state.dockHint,
+      showEdgeTab: state.mode === 'tucked',
+      showAskBar: state.mode === 'closed',
+      hasUnread: state.hasUnread,
+      edgeTabStyle,
+      mainStyle,
+      headerStyle,
+      companionStyle: this.companionStyle(),
+      startDrag: (event) => this.startDrag(event),
+      startResize: (event) => this.startResize(event),
+      toggleDock: () => this.toggleDock(),
+      tuck: () => this.tuck(),
+      closeCompanion: () => this.closeCompanion(),
+      openFromEdge: () => this.open(),
+      toggleAssistant: () => this.toggleAssistant(),
+      popOut: () => this.popOut(),
+      isFloatingMode: state.mode === 'floating',
+      isNotFloatingMode: state.mode !== 'floating',
+      dismissHint: () => this.dismissHint(),
+      showHint: isDocked && state.hintOpen,
+      assistantLabel: isOpenNow ? 'Close AI assistant' : 'Open AI assistant',
+      popLabel: state.mode === 'floating' ? 'Close floating chat' : 'Pop out chat',
+      floatingAttr: state.mode === 'floating' ? 'true' : 'false',
+      popBtnStyle: 'height: 36px; width: 36px; border: 0; border-left: 1px solid rgba(255,255,255,.35); border-radius: 0 8px 8px 0; background: ' + (state.mode === 'floating' ? '#1c398e' : '#1447e6') + '; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 0 0 ' + (isOpenNow ? '3px' : '0px') + ' rgba(20,71,230,.25);',
+      assistantOpenAttr: state.mode === 'docked' || state.mode === 'floating' ? 'true' : 'false',
+      assistantBtnStyle: 'height: 36px; padding: 0 12px; border-radius: 8px 0 0 8px; border: 0; background: #1447e6; font: inherit; font-size: 13px; font-weight: 500; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 0 ' + (isOpenNow ? '3px' : '0px') + ' rgba(20,71,230,.25);',
+      newChat: () => this.newChat(),
+      clearQuote: () => this.clearQuote(),
+      askAboutSelection: () => this.askAboutSelection(),
+      stopEvent: (event) => event.preventDefault(),
+      onLessonMouseUp: () => this.onLessonMouseUp(),
+      onLessonMouseDown: () => this.onLessonMouseDown(),
+      onDraft: (event) => this.setState({ draft: event.target.value }),
+      onDraftKey: (event) => { if (event.key === 'Enter') { event.preventDefault(); this.sendDraft(); } },
+      sendDraft: () => this.sendDraft()
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -54,9 +54,9 @@
   const resolvedBannerImage = $derived(bannerImage?.trim() ? bannerImage : DEFAULT_COURSE_BANNER_IMAGE);
 </script>
 
-<Item.Root variant="outline" class="ui:mx-auto ui:w-full ui:max-w-[320px] ui:p-3!" {onclick}>
+<Item.Root variant="outline" class="ui:w-full ui:p-3!" {onclick}>
   {#snippet child({ props })}
-    <div class={cn('ui:group ui:relative ui:block ui:w-full', className)}>
+    <div class={cn('ui:group ui:relative ui:mx-auto ui:block ui:w-full ui:max-w-[320px]', className)}>
       {@render overlay?.()}
 
       {#if href}

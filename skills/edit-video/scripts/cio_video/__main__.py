@@ -111,7 +111,7 @@ def run_qa(args):
             print(f"{row['clip']}: {row['error']}")
             continue
         flags = []
-        if row['lufs'] is None or abs(row['lufs'] - project.audio['loudness']) > 1.0:
+        if row['lufs'] is None or (project.audio['master'] and abs(row['lufs'] - project.audio['loudness']) > 1.0):
             flags.append('LOUDNESS')
         if row['words_on_speech'] < 0.9:
             flags.append('CAPTION SYNC')
@@ -145,7 +145,7 @@ def main():
     command.add_argument('--end', type=float, default=1e9)
     command.set_defaults(func=words)
 
-    command = sub.add_parser('plan', help='trim, denoise and print each clip timeline with explainer timings')
+    command = sub.add_parser('plan', help='trim and print each clip timeline with explainer timings')
     command.add_argument('project')
     command.add_argument('--clip', nargs='*')
     command.add_argument('--transcript', action='store_true', help='also print the cleaned, trimmed transcript')

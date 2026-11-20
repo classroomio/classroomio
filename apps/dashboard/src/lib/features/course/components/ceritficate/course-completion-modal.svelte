@@ -7,9 +7,7 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import { Confetti } from '$features/ui';
   import { setConfetti } from '$features/ui/confetti/store';
-  import { ContentType } from '@cio/utils/constants/content';
   import { courseCompletionModal, closeCourseCompletionModal } from '$features/course/store/course-completion-modal';
-  import { getContentRoute } from '$features/course/utils/content';
   import { formatBlockerMessage } from '$features/course/utils/certificate-utils';
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -18,7 +16,6 @@
   let activeCourseId = $state('');
   let activeStep = $state<'checking' | 'eligible' | 'not-eligible'>('checking');
   let activeEvaluation = $state<Record<string, unknown> | null>(null);
-  let activeExerciseId = $state<string | undefined>(undefined);
 
   onMount(() => {
     return courseCompletionModal.subscribe((v) => {
@@ -26,7 +23,6 @@
         activeCourseId = v.courseId;
         activeStep = v.step;
         activeEvaluation = v.evaluation as Record<string, unknown> | null;
-        activeExerciseId = v.exerciseId;
         open = true;
 
         if (v.step === 'eligible' && !v.evaluation?.certificateEarnedAt) {
@@ -50,15 +46,6 @@
     if (!activeCourseId) return;
     onOpenChange(false);
     goto(resolve(`/courses/${activeCourseId}/certificates`, {}));
-  }
-
-  function goToExercise() {
-    if (!activeCourseId || !activeExerciseId) return;
-    onOpenChange(false);
-    const path = getContentRoute(activeCourseId, { id: activeExerciseId, type: ContentType.Exercise });
-    if (path) {
-      goto(resolve(path, {}));
-    }
   }
 
   function formatSingleBlocker() {
@@ -104,9 +91,6 @@
       </div>
       <Dialog.Footer class="gap-2">
         <Button variant="outline" onclick={() => onOpenChange(false)}>{$t('course.completion.modal.later')}</Button>
-        {#if activeExerciseId}
-          <Button onclick={goToExercise}>{$t('course.completion.modal.retake_exercise')}</Button>
-        {/if}
       </Dialog.Footer>
     {/if}
   </Dialog.Content>

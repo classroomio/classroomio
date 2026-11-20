@@ -1,29 +1,13 @@
 import { ClassroomIoApiClient, ClassroomIoApiError } from './api-client';
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { getConfig } from './config';
-import { registerCohortGoalTools } from './tools/cohort-goals';
-import { registerCohortNewsfeedTools } from './tools/cohort-newsfeed';
-import { registerCohortTools } from './tools/cohorts';
-import { registerCourseCertificateTools } from './tools/course-certificates';
-import { registerCourseDraftTools } from './tools/course-drafts';
-import { registerCourseMemberTools } from './tools/course-members';
+import { createMcpServer } from './server';
 
 async function main() {
   const config = getConfig();
   const apiClient = new ClassroomIoApiClient(config);
-  const server = new McpServer({
-    name: 'classroomio-course-authoring',
-    version: '0.0.1'
-  });
-
-  registerCourseDraftTools(server, apiClient);
-  registerCohortTools(server, apiClient);
-  registerCohortNewsfeedTools(server, apiClient);
-  registerCohortGoalTools(server, apiClient);
-  registerCourseMemberTools(server, apiClient);
-  registerCourseCertificateTools(server, apiClient);
+  const server = createMcpServer(apiClient, { includeLocalFileTools: true });
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

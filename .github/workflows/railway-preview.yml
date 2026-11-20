@@ -711,7 +711,7 @@ jobs:
         if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' && inputs.seed_organization != 'none' }}
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24.22.1'
           cache: 'pnpm'
 
       - name: Install dependencies

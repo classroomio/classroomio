@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -19,6 +19,7 @@
   import TrashIcon from '@lucide/svelte/icons/trash';
   import UserIcon from '@lucide/svelte/icons/user';
   import { onDestroy, untrack } from 'svelte';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { shortenName } from '$lib/utils/functions/string';
   import { ROLE } from '@cio/utils/constants';
@@ -47,18 +48,25 @@
 
   let memberToDelete = $state<CohortPerson | null>(null);
   let isDeleteModalOpen = $state(false);
-  let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
   let peopleRows = $state<CohortPerson[]>([]);
   let peoplePagination = $state<{ page: number; limit: number; total: number; totalPages: number } | null>(null);
   let isLoadingPeople = $state(false);
   let peopleRequestId = 0;
-  let searchDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
   let loadedQueryKey: string | null = null;
 
   const query = $derived(getCohortPeopleQueryFromSearchParams(page.url.searchParams));
   const activeView = $derived(matchCohortPeopleView(query));
   const activeFilterCount = $derived(countActiveCohortPeopleFilters(query));
+
+  const search = new DebouncedSearch({
+    initial: untrack(() => query.search ?? ''),
+    onApply: (nextSearch) => void navigatePeople({ ...query, page: 1, search: nextSearch || undefined })
+  });
+
+  afterNavigate(() => {
+    search.sync(query.search ?? '');
+  });
 
   const currentUserRole = $derived.by(() => {
     const currentMember = cohortApi.members.find((member) => member.profileId === $profile.id);
@@ -125,30 +133,24 @@
     untrack(() => void loadPeople(cohortId, activeQuery));
   });
 
-  $effect(() => {
-    searchValue = query.search ?? '';
-  });
-
   onDestroy(() => {
-    if (searchDebounceTimeout) {
-      clearTimeout(searchDebounceTimeout);
-    }
+    search.destroy();
   });
 
   function handleFilterChange(patch: Partial<ListCohortPeopleQuery>) {
-    void navigatePeople({ ...query, ...patch, page: 1 });
+    void navigatePeople({ ...query, ...patch, page: 1, search: search.takePending() || undefined });
   }
 
   function handleSortChange(sortBy: ListCohortPeopleQuery['sortBy'], sortOrder: ListCohortPeopleQuery['sortOrder']) {
-    void navigatePeople({ ...query, sortBy, sortOrder, page: 1 });
+    void navigatePeople({ ...query, sortBy, sortOrder, page: 1, search: search.takePending() || undefined });
   }
 
   function handlePageChange(nextPage: number) {
-    void navigatePeople({ ...query, page: nextPage });
+    void navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
   }
 
   function handleSelectView(view: CohortPeopleView) {
-    void navigatePeople(applyCohortPeopleView(view, query));
+    void navigatePeople({ ...applyCohortPeopleView(view, query), search: search.takePending() || undefined });
   }
 
   function handleClearFilters() {
@@ -158,18 +160,6 @@
   function handleSortByHeader(sortKey: ListCohortPeopleQuery['sortBy']) {
     const sortOrder = query.sortBy === sortKey && query.sortOrder === 'asc' ? 'desc' : 'asc';
     handleSortChange(sortKey, sortOrder);
-  }
-
-  function handleSearchValueChange(value: string) {
-    searchValue = value;
-
-    if (searchDebounceTimeout) {
-      clearTimeout(searchDebounceTimeout);
-    }
-
-    searchDebounceTimeout = setTimeout(() => {
-      void navigatePeople({ ...query, page: 1, search: value.trim() || undefined });
-    }, 300);
   }
 
   function getEmail(person: CohortPerson) {
@@ -228,13 +218,17 @@
       if (nextPage === query.page) {
         await loadPeople(data.cohortId, query);
       } else {
-        await navigatePeople({ ...query, page: nextPage });
+        await navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
       }
     }
   }
 
   function openInviteModal() {
     const searchParams = new URLSearchParams(page.url.searchParams);
+    const pendingSearch = search.takePending();
+    if (pendingSearch) {
+      searchParams.set('search', pendingSearch);
+    }
     searchParams.set('add', 'true');
     void goto(resolve(`${page.url.pathname}?${searchParams.toString()}`, {}));
   }
@@ -267,8 +261,8 @@
         <div class="flex flex-col items-center justify-end gap-2 md:flex-row">
           <Search
             placeholder={$t('course.navItem.people.search')}
-            bind:value={searchValue}
-            onValueChange={handleSearchValueChange}
+            value={search.draft}
+            onValueChange={(nextValue) => search.input(nextValue)}
           />
           <PeopleFilterPopover
             {query}

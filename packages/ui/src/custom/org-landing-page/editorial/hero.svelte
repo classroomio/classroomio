@@ -9,6 +9,7 @@
   interface Props {
     hero: OrgLandingPageProps['hero'];
     courses: OrgLandingPageProps['courses'];
+    showFeaturedCourse?: boolean;
     labels?: OrgLandingPageProps['labels'];
     navigation: Snippet;
     showActions?: boolean;
@@ -16,9 +17,18 @@
     children?: Snippet;
   }
 
-  let { hero, courses = [], labels, navigation, showActions = true, compact = false, children }: Props = $props();
+  let {
+    hero,
+    courses = [],
+    showFeaturedCourse = true,
+    labels,
+    navigation,
+    showActions = true,
+    compact = false,
+    children
+  }: Props = $props();
 
-  const featured = $derived(courses[0]);
+  const featured = $derived(showFeaturedCourse ? courses[0] : undefined);
   const featuredTypeMeta = $derived(featured ? getCourseTypeLandingMeta(featured) : undefined);
   const syllabusItems = $derived(
     featured

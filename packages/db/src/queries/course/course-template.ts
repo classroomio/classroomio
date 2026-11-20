@@ -193,9 +193,17 @@ export async function stampCopiedTemplateUnits(
         .set({ sourceSyncedAt: syncedAt, updatedAt: syncedAt })
         .where(inArray(schema.lesson.id, lessonIds));
       await dbClient
-        .update(schema.lessonLanguage)
+        .update(schema.blockLocale)
         .set({ updatedAt: syncedAt })
-        .where(inArray(schema.lessonLanguage.lessonId, lessonIds));
+        .where(
+          inArray(
+            schema.blockLocale.blockId,
+            dbClient
+              .select({ blockId: schema.blockPlacement.blockId })
+              .from(schema.blockPlacement)
+              .where(inArray(schema.blockPlacement.lessonId, lessonIds))
+          )
+        );
     }
 
     if (exerciseIds.length === 0) return;

@@ -18,7 +18,7 @@ describe('getAudienceQueryFromSearchParams', () => {
   it('reads every filter off the URL', () => {
     const query = getAudienceQueryFromSearchParams(
       new URLSearchParams(
-        'status=ARCHIVED&inviteStatus=pending&enrollment=enrolled&completion=not_started&lastLoginBefore=90d&lastActiveBefore=never&sortBy=lastActiveAt&sortOrder=asc&page=3&search=ada'
+        'status=ARCHIVED&inviteStatus=pending&enrollment=enrolled&completion=not_started&certificate=earned&lastLoginBefore=90d&lastActiveBefore=never&sortBy=lastActiveAt&sortOrder=asc&page=3&search=ada'
       )
     );
 
@@ -27,6 +27,7 @@ describe('getAudienceQueryFromSearchParams', () => {
       inviteStatus: 'pending',
       enrollment: 'enrolled',
       completion: 'not_started',
+      certificate: 'earned',
       lastLoginBefore: '90d',
       lastActiveBefore: 'never',
       sortBy: 'lastActiveAt',
@@ -34,6 +35,12 @@ describe('getAudienceQueryFromSearchParams', () => {
       page: 3,
       search: 'ada'
     });
+  });
+
+  it('opens a saved link to the retired deactivated status on archived members', () => {
+    const query = getAudienceQueryFromSearchParams(new URLSearchParams('status=DEACTIVATED'));
+
+    expect(query.status).toBe('ARCHIVED');
   });
 
   it('falls back to defaults on unrecognised values rather than failing to load', () => {
@@ -124,9 +131,10 @@ describe('countActiveAudienceFilters', () => {
         ...DEFAULT_ORG_AUDIENCE_QUERY,
         status: 'ARCHIVED',
         completion: 'completed',
+        certificate: 'earned',
         lastActiveBefore: '90d'
       })
-    ).toBe(3);
+    ).toBe(4);
   });
 
   it('clears filters back to the default while keeping search', () => {

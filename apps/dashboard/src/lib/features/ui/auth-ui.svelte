@@ -20,6 +20,8 @@
     showOnlyContent?: boolean;
     isLoading?: boolean;
     showLogo?: boolean;
+    logoUrl?: string | null;
+    logoName?: string;
     hideGoogleAuth?: boolean;
     redirectPathname?: string;
     newUserCallbackPathname?: string;
@@ -33,6 +35,8 @@
     showOnlyContent = false,
     isLoading = false,
     showLogo = false,
+    logoUrl,
+    logoName,
     hideGoogleAuth = false,
     redirectPathname = '',
     newUserCallbackPathname,
@@ -75,6 +79,8 @@
   }
 
   const authBackgroundUrl = $derived($currentOrg.customization.auth?.backgroundImage?.trim() ?? '');
+  const brandName = $derived(logoName ?? $currentOrg.name);
+  const brandAvatarUrl = $derived(logoName !== undefined ? logoUrl : $currentOrg.avatarUrl);
   const showBlockFooter = $derived(page.data.isOrgSite === false);
 </script>
 
@@ -100,17 +106,13 @@
     <Card.Root class="ui:notch-cutout w-full shadow-none">
       {#if !showOnlyContent || showLogo}
         <Card.Header class="flex flex-col items-center gap-4">
-          <a
-            href={resolve(ROUTE.HOME, {})}
-            class="inline-flex"
-            aria-label={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
-          >
+          <a href={resolve(ROUTE.HOME, {})} class="inline-flex" aria-label={brandName ? brandName : 'ClassroomIO'}>
             <Avatar.Root>
               <Avatar.Image
-                src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
-                alt={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
+                src={brandAvatarUrl ? brandAvatarUrl : '/logo-192.png'}
+                alt={brandName ? brandName : 'ClassroomIO'}
               />
-              <Avatar.Fallback>{$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}</Avatar.Fallback>
+              <Avatar.Fallback>{brandName ? brandName : 'ClassroomIO'}</Avatar.Fallback>
             </Avatar.Root>
           </a>
 

@@ -11,8 +11,13 @@ import {
 
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
+import {
+  isLmsDestinationAvailable,
+  LMS_DESTINATIONS,
+  type LmsAvailabilityContext,
+  type LmsDestinationKey
+} from '@cio/utils/lms';
 import { isActive } from '$lib/utils/functions/app';
-import { isOrgOnFreePlan } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
 export interface NavItem {
@@ -46,57 +51,50 @@ export interface NavItemConfig {
   supportsDynamicSegment?: boolean;
 }
 
-// Base navigation configuration structure
-export const baseNavConfig: NavItemConfig[] = [
-  {
-    titleKey: 'lms_navigation.home',
-    path: '',
-    icon: HomeIcon,
+type LmsNavUiMeta = Pick<
+  NavItemConfig,
+  'icon' | 'matchPattern' | 'items' | 'nestedRoutes' | 'useHashUrl' | 'supportsDynamicSegment'
+>;
+
+export const LMS_DESTINATION_ICONS: Record<LmsDestinationKey, Component> = {
+  home: HomeIcon,
+  mylearning: CourseIcon,
+  certificates: CertificateIcon,
+  explore: ExploreIcon,
+  cohorts: GoalIcon,
+  exercises: ExerciseIcon,
+  community: CommunityIcon,
+  settings: SettingsIcon
+};
+
+const LMS_NAV_UI_META: Record<LmsDestinationKey, LmsNavUiMeta> = {
+  home: {
+    icon: LMS_DESTINATION_ICONS.home,
     matchPattern: '^/lms/?$'
   },
-  {
-    titleKey: 'lms_navigation.my_learning',
-    path: '/mylearning',
-    icon: CourseIcon,
+  mylearning: {
+    icon: LMS_DESTINATION_ICONS.mylearning,
     matchPattern: '^/lms/mylearning(/.*)?$'
   },
-  {
-    titleKey: 'lms_navigation.certificates',
-    path: '/certificates',
-    icon: CertificateIcon,
-    matchPattern: '^/lms/certificates(/.*)?$',
-    show: (currentOrg) =>
-      !isOrgOnFreePlan({
-        plans: currentOrg?.plans,
-        isSelfHosted: PUBLIC_IS_SELFHOSTED === 'true',
-        orgId: currentOrg?.id
-      })
+  certificates: {
+    icon: LMS_DESTINATION_ICONS.certificates,
+    matchPattern: '^/lms/certificates(/.*)?$'
   },
-  {
-    titleKey: 'lms_navigation.explore',
-    path: '/explore',
-    icon: ExploreIcon,
+  explore: {
+    icon: LMS_DESTINATION_ICONS.explore,
     matchPattern: '^/lms/explore(/.*)?$'
   },
-  {
-    titleKey: 'lms_navigation.cohorts',
-    path: '/cohorts',
-    icon: GoalIcon,
+  cohorts: {
+    icon: LMS_DESTINATION_ICONS.cohorts,
     matchPattern: '^/lms/cohorts(/.*)?$'
   },
-  {
-    titleKey: 'lms_navigation.exercise',
-    path: '/exercises',
-    icon: ExerciseIcon,
-    matchPattern: '^/lms/exercises(/.*)?$',
-    show: (currentOrg) => currentOrg?.customization?.dashboard?.exercise === true
+  exercises: {
+    icon: LMS_DESTINATION_ICONS.exercises,
+    matchPattern: '^/lms/exercises(/.*)?$'
   },
-  {
-    titleKey: 'lms_navigation.community',
-    path: '/community',
-    icon: CommunityIcon,
+  community: {
+    icon: LMS_DESTINATION_ICONS.community,
     matchPattern: '^/lms/community(/.*)?$',
-    show: (currentOrg) => currentOrg?.customization?.dashboard?.community === true,
     supportsDynamicSegment: true,
     nestedRoutes: [
       {
@@ -105,10 +103,8 @@ export const baseNavConfig: NavItemConfig[] = [
       }
     ]
   },
-  {
-    titleKey: 'lms_navigation.settings',
-    path: '/settings',
-    icon: SettingsIcon,
+  settings: {
+    icon: LMS_DESTINATION_ICONS.settings,
     useHashUrl: true,
     matchPattern: '^/lms/settings(/.*)?$',
     items: [
@@ -136,7 +132,27 @@ export const baseNavConfig: NavItemConfig[] = [
       }
     ]
   }
-];
+};
+
+/**
+ * Adapts the dashboard org row to the registry availability context.
+ */
+export function toLmsAvailabilityContext(currentOrg: AccountOrg | null): LmsAvailabilityContext {
+  return {
+    orgId: currentOrg?.id ?? null,
+    plans: currentOrg?.plans ?? null,
+    isSelfHosted: PUBLIC_IS_SELFHOSTED === 'true',
+    customization: (currentOrg?.customization as LmsAvailabilityContext['customization']) ?? null
+  };
+}
+
+// Base navigation configuration structure
+export const baseNavConfig: NavItemConfig[] = LMS_DESTINATIONS.map((destination) => ({
+  titleKey: destination.titleKey,
+  path: destination.path === '/lms' ? '' : destination.path.slice('/lms'.length),
+  ...LMS_NAV_UI_META[destination.key],
+  show: (currentOrg: AccountOrg | null) => isLmsDestinationAvailable(destination, toLmsAvailabilityContext(currentOrg))
+}));
 
 /**
  * Get LMS navigation items based on organization context

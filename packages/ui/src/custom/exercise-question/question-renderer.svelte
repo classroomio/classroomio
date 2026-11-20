@@ -314,7 +314,7 @@
             placeholder={label('question.edit.title_placeholder')}
             disabled={contract.disabled}
             aria-invalid={titleError ? true : undefined}
-            onchange={(event) => patchQuestion({ title: event.currentTarget.value })}
+            oninput={(event) => patchQuestion({ title: event.currentTarget.value })}
           />
           {#if titleError}
             <p class="ui:text-destructive ui:text-xs">{titleError}</p>

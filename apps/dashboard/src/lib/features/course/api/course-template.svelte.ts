@@ -1,4 +1,4 @@
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio, hasErrorCode, type NormalizedApiError } from '$lib/utils/services/api';
 import { ErrorCodes } from '@cio/utils/constants';
 import { ZCreateCourseFromTemplate, ZSaveCourseTemplate } from '@cio/utils/validation/course';
 import type { SyncableSettingKey } from '@cio/utils/validation/course';
@@ -200,7 +200,7 @@ export class CourseTemplateApi extends BaseApiWithErrors {
         logContext: 'saving course as template',
         onSuccess: (response) => {
           bumpTemplateUsage(1);
-          saveTemplateModal.set(saveTemplateModalInitialState);
+          saveTemplateModal.set({ ...saveTemplateModalInitialState });
           snackbar.success('course_templates.save.saved', undefined, {
             label: 'course_templates.save.view_templates',
             onClick: () => {
@@ -234,7 +234,7 @@ export class CourseTemplateApi extends BaseApiWithErrors {
           orgNavCountsApi.adjustCount('courses', -1);
           courseApi.invalidateCourse(courseId);
           await courseApi.get(courseId);
-          saveTemplateModal.set(saveTemplateModalInitialState);
+          saveTemplateModal.set({ ...saveTemplateModalInitialState });
           snackbar.success('course_templates.save.converted');
           await this.list();
           goto(resolve(`/courses/${courseId}/lessons`, {}));
@@ -341,21 +341,12 @@ export class CourseTemplateApi extends BaseApiWithErrors {
     }
   }
 
-  private reportError(result: unknown) {
-    if (typeof result === 'string') {
-      snackbar.error(result);
-      return;
-    }
-
-    if (!result || typeof result !== 'object') return;
-
-    if ('code' in result && result.code === ErrorCodes.UPGRADE_REQUIRED) {
+  private reportError(result: NormalizedApiError) {
+    if (hasErrorCode(result, ErrorCodes.UPGRADE_REQUIRED)) {
       markTemplateLimitReached();
     }
 
-    if ('error' in result && typeof result.error === 'string') {
-      snackbar.error(result.error);
-    }
+    snackbar.error(result.message);
   }
 }
 

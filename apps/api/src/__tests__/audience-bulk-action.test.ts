@@ -9,7 +9,10 @@ vi.mock('@cio/db/queries/organization', () => ({
   deleteGroupMembershipsForOrgProfiles: vi.fn(),
   recordOrganizationMemberAudit: vi.fn(),
   resolveAudienceMemberIds: vi.fn(),
-  revokeActiveOrganizationInvitesByEmails: vi.fn()
+  revokeActiveOrganizationInvitesByEmails: vi.fn(),
+  lockOrganizationForStudentCapacity: vi.fn(),
+  getActiveOrganizationPlan: vi.fn(async () => null),
+  countActiveStudents: vi.fn()
 }));
 
 vi.mock('@cio/jobs', () => ({
@@ -17,6 +20,11 @@ vi.mock('@cio/jobs', () => ({
   enqueueAudienceBulkAction: vi.fn(async () => 'job-1'),
   getQueue: vi.fn(),
   getQueueJobEnvelope: vi.fn()
+}));
+
+vi.mock('@api/services/organization/student-limit', () => ({
+  assertStudentCapacityOrThrow: vi.fn(),
+  notifyStudentMilestone: vi.fn(async () => undefined)
 }));
 
 vi.mock('@cio/db/drizzle', () => ({
@@ -28,15 +36,20 @@ vi.mock('@cio/db/drizzle', () => ({
 import {
   bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
+  countActiveStudents,
   countAudienceMatchesNotArchived,
   deleteGroupMembershipsForOrgProfiles,
   getAudienceMatchSample,
   getBulkAudienceMembersByIds,
+  lockOrganizationForStudentCapacity,
   recordOrganizationMemberAudit,
   resolveAudienceMemberIds,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
+import { env } from '@cio/core/config/env';
 import { enqueueAudienceBulkAction, getQueue, getQueueJobEnvelope } from '@cio/jobs';
+import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '@api/services/organization/student-limit';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { runQueuedAudienceBulkAction } from '@cio/core/services/organization/audience-bulk';
 import {
   applyBulkAudienceAction,
@@ -48,6 +61,7 @@ import {
 
 const ORG = 'org-1';
 const ACTOR = 'actor-1';
+const DEFER = { deferNotification: true };
 
 type Member = { id: number; profileId: string | null; email: string | null; status: string };
 
@@ -173,7 +187,7 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
 
     const result = await applyBulkAudienceAction(
       ORG,
-      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' },
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'archive' },
       ACTOR
     );
 
@@ -213,17 +227,14 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
 
     const applied = await applyBulkAudienceAction(
       ORG,
-      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' },
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'archive' },
       ACTOR
     );
     const token = applied.mode === 'completed' ? applied.undoToken! : '';
 
-    // Someone archived learner 2 during the undo window — a more deliberate
-    // decision than the one being undone, so undo must leave them alone.
-    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([
-      member(1, 'DEACTIVATED'),
-      member(2, 'ARCHIVED')
-    ] as never);
+    // Someone unarchived learner 2 during the undo window — a newer decision
+    // than the one being undone, so undo must leave them alone.
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED'), member(2, 'ACTIVE')] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
 
     const result = await undoBulkAudienceAction(ORG, token, ACTOR);
@@ -263,7 +274,7 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
 
     const applied = await applyBulkAudienceAction(
       ORG,
-      { target: { mode: 'ids', memberIds: [1] }, action: 'deactivate' },
+      { target: { mode: 'ids', memberIds: [1] }, action: 'archive' },
       ACTOR
     );
     const token = applied.mode === 'completed' ? applied.undoToken! : '';
@@ -299,6 +310,130 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
     expect(result).toEqual({ mode: 'queued', jobId: 'job-1', requested: 1001 });
     // Nothing is written on the request thread.
     expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
+  });
+});
+
+describe('applyBulkAudienceAction — plan seats', () => {
+  it('checks the student limit, in the apply transaction, for the archived members it brings back', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([
+      member(1, 'ARCHIVED'),
+      member(2, 'ACTIVE'),
+      member(3, 'ARCHIVED')
+    ] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 2, 3]);
+
+    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1, 2, 3] }, action: 'unarchive' }, ACTOR);
+
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 2, {}, DEFER);
+  });
+
+  it('changes nobody when bringing archived members back would go over the limit', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED')] as never);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(
+      new AppError('Student limit reached', ErrorCodes.UPGRADE_REQUIRED, 403)
+    );
+
+    await expect(
+      applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1] }, action: 'unarchive' }, ACTOR)
+    ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED });
+    expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
+  });
+
+  it('sends the student milestone email only after the change is saved', async () => {
+    const milestone = { orgId: ORG, milestone: 'reached', studentCount: 20, studentLimit: 20 };
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED')] as never);
+    vi.mocked(assertStudentCapacityOrThrow).mockResolvedValue(milestone as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockRejectedValueOnce(new Error('write failed'));
+
+    await expect(
+      applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1] }, action: 'unarchive' }, ACTOR)
+    ).rejects.toThrow();
+    expect(notifyStudentMilestone).not.toHaveBeenCalled();
+
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1] }, action: 'unarchive' }, ACTOR);
+
+    expect(notifyStudentMilestone).toHaveBeenCalledWith(milestone);
+    vi.mocked(assertStudentCapacityOrThrow).mockReset();
+  });
+
+  it('reports ids that are not students of the organization at apply time as NOT_FOUND', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+
+    const result = await applyBulkAudienceAction(
+      ORG,
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'archive' },
+      ACTOR
+    );
+
+    expect(result).toMatchObject({
+      mode: 'completed',
+      requested: 2,
+      succeeded: 1,
+      failed: [{ memberId: 2, reason: 'NOT_FOUND' }]
+    });
+  });
+
+  it.each([
+    ['archive', 'ACTIVE'],
+    ['unarchive', 'ACTIVE']
+  ] as const)('does not check the limit to %s a %s member', async (action, status) => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, status)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+
+    await applyBulkAudienceAction(ORG, { target: { mode: 'ids', memberIds: [1] }, action }, ACTOR);
+
+    expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+  });
+
+  it('checks the whole run before queueing an unarchive of archived members', async () => {
+    const many = Array.from({ length: 5_000 }, (_, index) => index + 1);
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(
+      new AppError('Student limit reached', ErrorCodes.UPGRADE_REQUIRED, 403)
+    );
+
+    await expect(
+      applyBulkAudienceAction(
+        ORG,
+        {
+          target: filterTarget(many, { filter: { status: 'ARCHIVED', excludeRecentJoiners: true } }),
+          action: 'unarchive'
+        },
+        ACTOR
+      )
+    ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED });
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 5_000, expect.anything(), DEFER);
+    expect(enqueueAudienceBulkAction).not.toHaveBeenCalled();
+    expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
+  });
+
+  it('checks the limit before undoing an archive, and keeps the undo available to retry', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+    const applied = await applyBulkAudienceAction(
+      ORG,
+      { target: { mode: 'ids', memberIds: [1] }, action: 'archive' },
+      ACTOR
+    );
+    const token = applied.mode === 'completed' ? applied.undoToken! : '';
+
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED')] as never);
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(
+      new AppError('Student limit reached', ErrorCodes.UPGRADE_REQUIRED, 403)
+    );
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockClear();
+
+    await expect(undoBulkAudienceAction(ORG, token, ACTOR)).rejects.toMatchObject({
+      code: ErrorCodes.UPGRADE_REQUIRED
+    });
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 1, {}, DEFER);
+    expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
+
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+    await expect(undoBulkAudienceAction(ORG, token, ACTOR)).resolves.toMatchObject({ succeeded: 1 });
+    await expect(undoBulkAudienceAction(ORG, token, ACTOR)).rejects.toMatchObject({ statusCode: 410 });
   });
 });
 
@@ -350,17 +485,13 @@ describe('applyBulkAudienceAction — the queued path', () => {
     const many = Array.from({ length: 1_500 }, (_, index) => index + 1);
     vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
 
-    await applyBulkAudienceAction(
-      ORG,
-      { target: filterTarget(many), action: 'deactivate', reason: 'Offboarding' },
-      ACTOR
-    );
+    await applyBulkAudienceAction(ORG, { target: filterTarget(many), action: 'archive', reason: 'Offboarding' }, ACTOR);
 
     expect(enqueueAudienceBulkAction).toHaveBeenCalledWith(
       expect.objectContaining({
         organizationId: ORG,
         actorProfileId: ACTOR,
-        action: 'deactivate',
+        action: 'archive',
         memberIds: many,
         reason: 'Offboarding',
         filterSnapshot: { status: 'ACTIVE', excludeRecentJoiners: true }
@@ -467,6 +598,34 @@ describe('runQueuedAudienceBulkAction', () => {
       { memberId: 2, reason: 'DELETE_NOT_ARCHIVED' }
     ]);
     expect(bulkDeleteOrganizationAudienceMembers).not.toHaveBeenCalled();
+  });
+
+  it('re-checks the student limit for each chunk of an unarchive and leaves an over-limit chunk unchanged', async () => {
+    env.PUBLIC_IS_SELFHOSTED = 'false';
+    vi.mocked(getBulkAudienceMembersByIds).mockImplementation(
+      async (_orgId, ids) => ids.map((id) => member(id, 'ARCHIVED')) as never
+    );
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockImplementation(async (_orgId, ids) => ids as never);
+    // Free plan, 20 seats: the first chunk fits, then a student joins before the second.
+    vi.mocked(countActiveStudents).mockResolvedValueOnce(18).mockResolvedValueOnce(19);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const outcome = await runQueuedAudienceBulkAction({
+      organizationId: ORG,
+      actorProfileId: ACTOR,
+      action: 'unarchive',
+      memberIds: [1, 2, 3, 4],
+      chunkSize: 2
+    });
+
+    expect(outcome.succeeded).toBe(2);
+    expect(outcome.failed).toEqual([
+      { memberId: 3, reason: 'UPGRADE_REQUIRED' },
+      { memberId: 4, reason: 'UPGRADE_REQUIRED' }
+    ]);
+    expect(lockOrganizationForStudentCapacity).toHaveBeenCalledTimes(2);
+    expect(bulkUpdateOrganizationMemberStatus).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(bulkUpdateOrganizationMemberStatus).mock.calls[0][1]).toEqual([1, 2]);
   });
 });
 

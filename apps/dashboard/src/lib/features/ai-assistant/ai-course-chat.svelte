@@ -13,6 +13,7 @@
     formatRunSummaryCounts,
     type ExerciseTitleLookup
   } from '$features/ai-assistant/utils/run-summary';
+  import { getRunQueuedSince, isRunQueueStalled } from '$features/ai-assistant/utils/run-state';
   import type { AiAssistantRunSummaryMetadata, RunChangedItem } from '$features/ai-assistant/utils/types';
   import { resolve } from '$app/paths';
   import { getCompletedToolLine, getPendingToolLine, MUTATION_TOOLS } from '$features/ai-assistant/utils/tool-labels';
@@ -84,24 +85,26 @@
   let lastSeenDurableStepCount = 0;
   /** Run ids we've already injected a synthetic summary message for in this session. */
   let lastInjectedRunSummaryId = '';
+  let isRetryingStuck = $state(false);
   /**
    * Statuses that warrant injecting a synthetic summary message into the
-   * conversation. Only `completed` is auto-injected — canceled runs are
-   * resumable, so the summary is deferred until the user explicitly
-   * dismisses the canceled run.
+   * conversation. Both settled outcomes that end the run get one, so the
+   * teacher keeps a record of what was created and the composer can reopen.
    */
-  const INJECTABLE_RUN_STATUSES = new Set(['completed']);
+  const INJECTABLE_RUN_STATUSES = new Set(['completed', 'canceled']);
   /**
-   * Statuses that keep the panel in run-mode (composer hidden). `canceled`
-   * stays here so the user can either Resume or Dismiss — only `completed`
-   * unconditionally flips back to planning.
+   * Statuses that keep the panel in run-mode (composer hidden). `canceled` is
+   * terminal: it injects its summary and flips straight back to planning, so
+   * the teacher is never invited to resume it.
    */
-  const RUN_MODE_STATUSES = new Set(['queued', 'running', 'waiting_for_input', 'paused', 'failed', 'canceled']);
+  const RUN_MODE_STATUSES = new Set(['queued', 'running', 'waiting_for_input', 'paused', 'failed']);
 
   const RUN_POLL_INTERVAL_MS = 3_000;
   const RUN_POLL_STATUSES = new Set(['queued', 'running', 'waiting_for_input']);
-  const RUN_RESUMABLE_STATUSES = new Set(['paused', 'waiting_for_input', 'canceled']);
-  const RUN_TERMINAL_STATUSES = new Set(['completed', 'failed', 'canceled', 'paused']);
+  /** Pause is the only reversible stop. `canceled` is terminal by design. */
+  const RUN_RESUMABLE_STATUSES = new Set(['paused', 'waiting_for_input']);
+  /** Statuses where the worker stops driving the run, so course data is worth refetching. */
+  const RUN_SETTLED_STATUSES = new Set(['completed', 'failed', 'canceled', 'paused']);
 
   // Read course id from the route. The chat panel is only mounted inside the
   // course content layout, so `page.params.id` is always the active course.
@@ -123,6 +126,7 @@
   let lastRunStatusSig = $state('');
   let activeConversationId: string | null = $state(null);
   let isLoadingHistory = $state(false);
+  let isPreparingPrompt = $state(false);
   let selectedModel: AgentModelId = $state(DEFAULT_PICKER_MODEL_ID);
   const paidModelIds = UI_PICKER_MODEL_IDS.filter((id) => !AGENT_MODELS[id].isFree);
 
@@ -253,14 +257,7 @@
     const updatedTitle = await aiAssistantApi.renameConversation(conversationId, title);
 
     if (!updatedTitle) {
-      const rawError = aiAssistantApi.error;
-      let message = t.get('ai_assistant.rename_chat_failed');
-
-      if (rawError && !rawError.startsWith('{')) {
-        message = rawError;
-      }
-
-      throw new Error(message);
+      throw new Error(aiAssistantApi.error ?? t.get('ai_assistant.rename_chat_failed'));
     }
   }
 
@@ -506,19 +503,25 @@
       metadata.template = templateMeta;
     }
 
-    const conversationId = await ensureActiveConversation(courseId);
-    if (!conversationId) return;
+    isPreparingPrompt = true;
 
-    if (templateForFirstMessage) {
-      pendingInitialTemplateId = null;
+    try {
+      const conversationId = await ensureActiveConversation(courseId);
+      if (!conversationId) return;
+
+      if (templateForFirstMessage) {
+        pendingInitialTemplateId = null;
+      }
+
+      inputValue = '';
+
+      chat.sendMessage({
+        text,
+        ...(Object.keys(metadata).length > 0 ? { metadata } : {})
+      });
+    } finally {
+      isPreparingPrompt = false;
     }
-
-    inputValue = '';
-
-    chat.sendMessage({
-      text,
-      ...(Object.keys(metadata).length > 0 ? { metadata } : {})
-    });
   }
 
   async function handleSubmitTemplateAnswers(payload: {
@@ -606,7 +609,7 @@
   }
 
   function isRunActive(status: string | undefined): boolean {
-    return status === 'queued' || status === 'running' || status === 'waiting_for_input';
+    return status === 'queued' || status === 'running' || status === 'waiting_for_input' || status === 'paused';
   }
 
   function getRunToolName(step: AgentRunStep): string | null {
@@ -701,6 +704,18 @@
     }
   }
 
+  async function handlePauseRun() {
+    const runId = aiAssistantApi.currentRun?.run.id;
+    if (!runId) return;
+
+    await aiAssistantApi.pauseRun(runId);
+    const runDetail = aiAssistantApi.currentRun;
+    if (runDetail) {
+      const mutationScope = getRunMutationScope(runDetail);
+      refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
+    }
+  }
+
   async function handleRetryRun() {
     const runId = aiAssistantApi.currentRun?.run.id;
     if (!runId) return;
@@ -715,38 +730,18 @@
     await aiAssistantApi.resumeRun(runId);
   }
 
-  /**
-   * Walk away from a canceled run: inject the run-summary message into the
-   * conversation (the same one we used to auto-write on cancel) and clear
-   * the local currentRun so the panel flips back to planning. The run row
-   * itself stays in the DB — user could still find it in run history.
-   */
-  async function handleDismissRun() {
-    const runDetail = aiAssistantApi.currentRun;
-    if (!runDetail || !activeConversationId) return;
-    if (runDetail.run.conversationId !== activeConversationId) return;
+  /** Re-enqueue a run that has sat in `queued` without a worker pickup. */
+  async function handleRetryStuckRun() {
+    const runId = aiAssistantApi.currentRun?.run.id;
+    if (!runId || isRetryingStuck) return;
 
-    const summaryMeta = buildRunSummaryMetadata({ runDetail, resolveExerciseTitle });
-    if (summaryMeta) {
-      const alreadyInConversation = (chat.messages as AiAssistantMessage[]).some(
-        (msg) => (msg.metadata as AiAssistantMessageMetadata | undefined)?.runSummary?.runId === summaryMeta.runId
-      );
+    isRetryingStuck = true;
 
-      if (!alreadyInConversation) {
-        const summaryMessage: AiAssistantMessage = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          parts: [{ type: 'text', text: buildRunSummaryText(summaryMeta) }],
-          metadata: { runSummary: summaryMeta } satisfies AiAssistantMessageMetadata
-        };
-
-        chat.messages = [...(chat.messages as AiAssistantMessage[]), summaryMessage];
-        lastInjectedRunSummaryId = summaryMeta.runId;
-        void aiAssistantApi.saveMessages(activeConversationId, chat.messages as AiAssistantMessage[]);
-      }
+    try {
+      await aiAssistantApi.resumeRun(runId);
+    } finally {
+      isRetryingStuck = false;
     }
-
-    aiAssistantApi.currentRun = null;
   }
 
   async function handleAskPlanChanges(message: string) {
@@ -766,6 +761,7 @@
   }
 
   const isStreaming = $derived(chat.status === 'streaming' || chat.status === 'submitted');
+  const isPreparing = $derived(isPreparingPrompt || $initialChatPrompt !== null);
   const isExhausted = $derived(tokenUsage !== null && tokenUsage.remaining <= 0);
 
   const status = $derived(aiAssistantApi.status);
@@ -924,10 +920,12 @@
           ? 'ai_assistant.run_failed'
           : run.status === 'canceled'
             ? 'ai_assistant.run_canceled'
-            : 'ai_assistant.run_running';
+            : run.status === 'paused'
+              ? 'ai_assistant.run_paused'
+              : 'ai_assistant.run_running';
 
     const waitingLine: ToolLineUi | undefined =
-      steps.length === 0 && run.status !== 'failed' && run.status !== 'canceled'
+      steps.length === 0 && run.status !== 'failed' && run.status !== 'canceled' && run.status !== 'paused'
         ? { shape: 'i18n' as const, key: 'ai_assistant.run_waiting_for_worker' }
         : undefined;
     const currentActionLine = steps.find((step) => step.status === 'in_progress')?.line ?? waitingLine;
@@ -937,12 +935,19 @@
       steps,
       currentActionLine,
       isStopped: run.status === 'failed' || run.status === 'canceled' || run.status === 'paused',
-      error: run.lastError?.message,
-      canCancel: run.status === 'queued' || run.status === 'running' || run.status === 'waiting_for_input',
+      error: run.lastError?.message || aiAssistantApi.error || undefined,
+      canCancel:
+        run.status === 'queued' ||
+        run.status === 'running' ||
+        run.status === 'waiting_for_input' ||
+        run.status === 'paused',
+      canPause: run.status === 'queued' || run.status === 'running' || run.status === 'waiting_for_input',
       canRetry: run.status === 'failed',
       canResume: RUN_RESUMABLE_STATUSES.has(run.status)
     };
   });
+
+  const durableRunQueueStalled = $derived(isRunQueueStalled(aiAssistantApi.currentRun?.queueHealth));
 
   /**
    * Decides what the bottom of the chat panel is showing: the composer
@@ -1145,7 +1150,7 @@
     const previousSig = lastRunStatusSig;
     lastRunStatusSig = nextSig;
 
-    if (previousSig.startsWith(`${run.id}:`) && RUN_TERMINAL_STATUSES.has(run.status)) {
+    if (previousSig.startsWith(`${run.id}:`) && RUN_SETTLED_STATUSES.has(run.status)) {
       const runDetail = aiAssistantApi.currentRun;
       if (!runDetail) return;
 
@@ -1279,6 +1284,7 @@
 
     const model = $initialChatModel;
     const templateFromHome = $initialChatTemplateId;
+    isPreparingPrompt = true;
     clearInitialChatPrompt();
     clearInitialChatModel();
     clearInitialChatTemplateId();
@@ -1288,6 +1294,7 @@
 
       if (model && isAgentModelId(model)) {
         if ($isFreePlan && paidModelIds.includes(model)) {
+          isPreparingPrompt = false;
           openUpgradeModal();
           return;
         }
@@ -1345,6 +1352,7 @@
   <ChatMessageList
     messages={chat.messages}
     {isStreaming}
+    {isPreparing}
     {isLoadingHistory}
     {isStudent}
     {courseId}
@@ -1365,11 +1373,14 @@
       state={durableRunState}
       {courseId}
       onCancel={handleCancelRun}
+      onPause={handlePauseRun}
       onResume={handleResumeRun}
       onRetry={handleRetryRun}
-      onDismiss={handleDismissRun}
       runStatus={aiAssistantApi.currentRun?.run.status ?? null}
-      queuedSince={aiAssistantApi.currentRun?.run.createdAt ?? null}
+      queuedSince={getRunQueuedSince(aiAssistantApi.currentRun?.run)}
+      queueStalled={durableRunQueueStalled}
+      onRetryStuck={handleRetryStuckRun}
+      retryStuckLoading={isRetryingStuck}
       onMentionClick={handleMentionClick}
     />
   {:else}

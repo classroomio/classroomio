@@ -6,6 +6,7 @@ import type {
 } from '@cio/utils/validation/public-api';
 
 import { assignExistingStudentsToCohort, inviteStudentsToCohort } from '@api/services/cohort/invite';
+import type { TEventSource } from '@cio/core/services/posthog';
 import {
   fetchInviteLinkForResource,
   getOrCreateInviteLinkForResource,
@@ -21,25 +22,27 @@ export async function invitePublicApiCohortStudentsService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCohortParam,
-  payload: TPublicApiInviteStudentsToCohort
+  payload: TPublicApiInviteStudentsToCohort,
+  source: TEventSource = 'public_api'
 ) {
   assertAutomationActor(actorId);
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return inviteStudentsToCohort(params.cohortId, payload, actorId);
+  return inviteStudentsToCohort(params.cohortId, payload, actorId, source);
 }
 
 export async function assignPublicApiCohortStudentsService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCohortParam,
-  payload: TPublicApiAssignStudentsToCohort
+  payload: TPublicApiAssignStudentsToCohort,
+  source: TEventSource = 'public_api'
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return assignExistingStudentsToCohort(params.cohortId, payload);
+  return assignExistingStudentsToCohort(params.cohortId, payload, source, actorId);
 }
 
 export async function getPublicApiCohortInviteLinkService(

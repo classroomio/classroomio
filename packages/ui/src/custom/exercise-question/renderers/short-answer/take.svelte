@@ -20,6 +20,6 @@
     value={answer?.type === 'SHORT_ANSWER' ? answer.text : String(answer ?? '')}
     {disabled}
     placeholder={label('short_answer.take.placeholder')}
-    onchange={(event) => onAnswerChange({ type: 'SHORT_ANSWER', text: event.currentTarget.value })}
+    oninput={(event) => onAnswerChange({ type: 'SHORT_ANSWER', text: event.currentTarget.value })}
   />
 </div>

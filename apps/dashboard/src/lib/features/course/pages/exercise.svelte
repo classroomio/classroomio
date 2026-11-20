@@ -4,7 +4,9 @@
   import { Button } from '@cio/ui/base/button';
   import * as ButtonGroup from '@cio/ui/base/button-group';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
+  import { Empty } from '@cio/ui/custom/empty';
   import EyeIcon from '@lucide/svelte/icons/eye';
+  import LockKeyhole from '@lucide/svelte/icons/lock-keyhole';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import { onDestroy, onMount, tick, untrack } from 'svelte';
   import { get } from 'svelte/store';
@@ -94,6 +96,7 @@
     isFetching?: boolean;
     submissions: SubmissionListItem[];
     mySubmissions?: SubmissionListItem[];
+    canGradeSubmissions?: boolean;
   }
 
   let {
@@ -101,7 +104,8 @@
     goBack = () => {},
     isFetching = false,
     submissions,
-    mySubmissions = []
+    mySubmissions = [],
+    canGradeSubmissions = false
   }: Props = $props();
 
   const showMobileBottomNav = $derived(
@@ -555,7 +559,9 @@
       const baseState = getExerciseServerState(exerciseId);
       if (!baseState) return;
 
-      saveExerciseDraft(courseId, exerciseId, profileId, $questionnaire, baseState);
+      const isDraftSaved = saveExerciseDraft(courseId, exerciseId, profileId, $questionnaire, baseState);
+      if (!isDraftSaved) return;
+
       hasUnsavedChanges = false;
     })
   );
@@ -755,7 +761,12 @@
   );
 </script>
 
-<Page.Header isSticky={!isConversionActive} class={`min-h-9 ${isConversionActive ? '' : 'ui:z-app-bar top-12!'}`}>
+<Page.Header
+  isSticky={!isConversionActive}
+  class="ui:my-0 ui:border-border ui:bg-background min-h-9 w-full border-b px-4 pt-4 pb-3 md:px-6 md:pt-5 md:pb-4 {isConversionActive
+    ? ''
+    : 'ui:top-12 ui:z-app-bar'}"
+>
   <Page.HeaderContent>
     <Page.Title class="flex flex-col gap-2">
       <span>{exerciseDisplayTitle}</span>
@@ -882,18 +893,6 @@
   </Page.Action>
 </Page.Header>
 
-{#if !$isStudentExperience}
-  <PublicConversionBanner
-    {exerciseId}
-    onJumpToQuestion={() => {
-      selectedTab = 'questions';
-      preview = false;
-      reorderQuestions = false;
-    }}
-    onSave={handleSave}
-  />
-{/if}
-
 {#if $exerciseRemoteUpdateNotice?.exerciseId === exerciseId}
   <Alert.Root variant="information" class="mx-3 mb-4 sm:mx-4">
     <InfoIcon />
@@ -928,9 +927,21 @@
   </Alert.Root>
 {/if}
 
-<Page.Body>
+<Page.Body class="w-full gap-0">
   {#snippet child()}
-    <div class="overflow-x-hidden pb-20">
+    <div class="mx-auto w-full overflow-x-hidden px-3 pt-4 pb-20 sm:w-[90%] sm:px-4 lg:max-w-5xl">
+      {#if !$isStudentExperience}
+        <PublicConversionBanner
+          {exerciseId}
+          onJumpToQuestion={() => {
+            selectedTab = 'questions';
+            preview = false;
+            reorderQuestions = false;
+          }}
+          onSave={handleSave}
+        />
+      {/if}
+
       {#if $isStudentExperience}
         {#if isExerciseAccessible}
           <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
@@ -977,7 +988,16 @@
             />
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="submissions">
-            <Submissions bind:exerciseId {submissions} {enrolledStudentKeys} />
+            {#if canGradeSubmissions}
+              <Submissions bind:exerciseId {submissions} {enrolledStudentKeys} />
+            {:else}
+              <Empty
+                title={$t('course.navItem.submissions.access.denied_title')}
+                description={$t('course.navItem.submissions.access.denied_description')}
+                icon={LockKeyhole}
+                variant="page"
+              />
+            {/if}
           </UnderlineTabs.Content>
         </UnderlineTabs.Root>
 
@@ -1115,4 +1135,4 @@
   {/snippet}
 </Page.Body>
 
-<UnsavedChanges bind:hasUnsavedChanges onAbandonChanges={discardExerciseDraft} />
+<UnsavedChanges bind:hasUnsavedChanges onAbandon={discardExerciseDraft} />

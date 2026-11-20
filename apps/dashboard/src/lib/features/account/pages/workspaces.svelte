@@ -145,7 +145,7 @@
     <Field.Group>
       <Field.Field>
         <Field.Label>{$t('account.workspaces.name_label')}</Field.Label>
-        <Input bind:value={formName} />
+        <Input bind:value={formName} oninput={() => accountApi.clearError('name')} />
         {#if accountApi.errors.name}
           <Field.Error>{accountApi.errors.name}</Field.Error>
         {/if}
@@ -153,7 +153,7 @@
 
       <Field.Field>
         <Field.Label>{$t('account.workspaces.site_name_label')}</Field.Label>
-        <Input bind:value={formSiteName} />
+        <Input bind:value={formSiteName} oninput={() => accountApi.clearError('siteName')} />
         {#if accountApi.errors.siteName}
           <Field.Error>{accountApi.errors.siteName}</Field.Error>
         {/if}

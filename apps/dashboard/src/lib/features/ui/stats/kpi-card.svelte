@@ -1,0 +1,133 @@
+<script lang="ts">
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import * as Card from '@cio/ui/base/card';
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import { cn } from '@cio/ui/tools';
+  import type { Component, Snippet } from 'svelte';
+
+  interface Props {
+    title: string;
+    value: number | string;
+    description?: string;
+    trend?: 'up' | 'down' | 'flat';
+    icon?: Component;
+    accent?: 'primary' | 'success' | 'warning' | 'danger';
+    sparkline?: number[];
+    badge?: Snippet;
+    loading?: boolean;
+    onClick?: () => void;
+    clickLabel?: string;
+    class?: string;
+  }
+
+  let {
+    title,
+    value,
+    description,
+    trend = 'flat',
+    icon: Icon,
+    accent = 'primary',
+    sparkline,
+    badge,
+    loading = false,
+    onClick,
+    clickLabel,
+    class: className
+  }: Props = $props();
+
+  const id = $props.id();
+
+  const trendClass: Record<NonNullable<Props['trend']>, string> = {
+    up: 'text-emerald-600 dark:text-emerald-400',
+    down: 'text-rose-600 dark:text-rose-400',
+    flat: 'ui:text-muted-foreground'
+  };
+
+  const accentClass: Record<NonNullable<Props['accent']>, string> = {
+    primary: 'ui:bg-primary/10 ui:text-primary',
+    success: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    danger: 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+  };
+
+  const sparklinePath = $derived.by(() => {
+    if (!sparkline || sparkline.length < 2) return '';
+    const max = Math.max(...sparkline, 1);
+    const min = Math.min(...sparkline, 0);
+    const span = max - min || 1;
+    const width = 100;
+    const height = 30;
+    return sparkline
+      .map((value, index) => {
+        const x = (index / (sparkline.length - 1)) * width;
+        const y = height - ((value - min) / span) * height;
+        return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
+      })
+      .join(' ');
+  });
+</script>
+
+<Card.Root
+  class={cn(
+    'ui:bg-card relative overflow-hidden',
+    onClick && 'ui:group ui:hover:bg-muted ui:hover:border-muted-foreground/40 transition-colors',
+    className
+  )}
+>
+  {#if onClick}
+    <button
+      type="button"
+      class="ui:focus-visible:ring-ring absolute inset-0 cursor-pointer rounded-lg focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset"
+      aria-label={clickLabel}
+      aria-describedby={description ? `${id}-value ${id}-description` : `${id}-value`}
+      data-testid="kpi-card-button"
+      onclick={onClick}
+    ></button>
+  {/if}
+  <Card.Header class="pb-2">
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <Card.Title class="ui:text-muted-foreground text-xs font-medium tracking-wide uppercase">
+          {title}
+        </Card.Title>
+        <div class="relative z-10 flex">
+          {@render badge?.()}
+        </div>
+      </div>
+      {#if Icon || onClick}
+        <div class="flex items-center gap-2">
+          {#if Icon}
+            <div class={cn('flex h-9 w-9 items-center justify-center rounded-full', accentClass[accent])}>
+              <Icon class="h-4 w-4" />
+            </div>
+          {/if}
+          {#if onClick}
+            <ArrowUpRightIcon
+              class="custom ui:text-muted-foreground ui:group-hover:text-foreground ui:group-focus-within:text-foreground size-4 shrink-0 transition-colors"
+              aria-hidden="true"
+            />
+          {/if}
+        </div>
+      {/if}
+    </div>
+  </Card.Header>
+  <Card.Content class="pt-0">
+    {#if loading}
+      <Skeleton class="h-9 w-24" />
+    {:else}
+      <p id="{id}-value" class="ui:text-foreground text-3xl font-semibold tabular-nums">{value}</p>
+    {/if}
+    {#if description}
+      {#if loading}
+        <Skeleton class="mt-2 h-3 w-32" />
+      {:else}
+        <p id="{id}-description" class={cn('mt-1 text-xs tabular-nums', trendClass[trend])}>{description}</p>
+      {/if}
+    {/if}
+    {#if sparklinePath && !loading}
+      <svg viewBox="0 0 100 30" class="mt-3 h-8 w-full" preserveAspectRatio="none" aria-hidden="true">
+        <path d={sparklinePath} fill="none" stroke="currentColor" stroke-width="1.5" class="ui:text-primary" />
+      </svg>
+    {/if}
+  </Card.Content>
+</Card.Root>

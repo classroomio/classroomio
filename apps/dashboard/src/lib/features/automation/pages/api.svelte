@@ -5,8 +5,10 @@
     getPublicApiCurlSnippet,
     getPublicApiGoSnippet,
     getPublicApiJavaScriptSnippet,
-    getPublicApiPythonSnippet
+    getPublicApiPythonSnippet,
+    PUBLIC_API_DOCS_URL
   } from '$features/automation/utils/automation-utils';
+  import KeySecretDialog from '$features/automation/components/key-secret-dialog.svelte';
   import { hasPublicApiAccess, isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -32,6 +34,7 @@
   let activeSetupTab = $state('curl');
   let generatedSecret = $state<string | null>(null);
   let isCreateKeyModalOpen = $state(false);
+  let isSecretDialogOpen = $state(false);
   let keyLabel = $state('');
 
   const canCreateKey = $derived(keyLabel.trim().length > 0 && !automationApi.isLoading);
@@ -62,6 +65,7 @@
     automationApi.clearGeneratedSecret();
     isCreateKeyModalOpen = false;
     resetCreateKeyModal();
+    isSecretDialogOpen = true;
   }
 
   async function onRevokeKey(keyId: string) {
@@ -76,6 +80,7 @@
     await automationApi.rotateKey(keyId);
     generatedSecret = automationApi.generatedSecret;
     automationApi.clearGeneratedSecret();
+    isSecretDialogOpen = generatedSecret !== null;
   }
 
   const apiKeys = $derived(automationApi.keys.filter((key) => key.type === 'api'));
@@ -111,17 +116,6 @@
       {/if}
     </div>
     <p class="ui:text-muted-foreground text-sm">{$t('automation.api.keys.description')}</p>
-
-    {#if generatedSecret}
-      <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
-        <p class="text-sm font-medium text-amber-800">{$t('automation.api.keys.secret_once')}</p>
-        <div class="mt-3">
-          <Code.Root code={generatedSecret} hideLines={true} class="text-xs break-all">
-            <Code.CopyButton />
-          </Code.Root>
-        </div>
-      </div>
-    {/if}
 
     {#if $isOrgAdmin}
       {#if apiKeys.length > 0}
@@ -270,6 +264,7 @@
         placeholder={$t('automation.api.keys.modal.name_placeholder')}
         bind:value={keyLabel}
         errorMessage={automationApi.errors.label}
+        onInput={() => automationApi.clearError('label')}
         autoFocus
       />
     </div>
@@ -284,3 +279,10 @@
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
+
+<KeySecretDialog
+  bind:open={isSecretDialogOpen}
+  title={$t('automation.api.keys.reveal_title')}
+  secret={generatedSecret}
+  docsHref={PUBLIC_API_DOCS_URL}
+/>

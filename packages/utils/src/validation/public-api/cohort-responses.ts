@@ -47,20 +47,29 @@ export const ZPublicApiCohortMemberListItemResponse = ZPublicApiCohortMemberResp
       avatarUrl: z.string().nullable(),
       email: z.string().nullable()
     })
-    .nullable()
+    .nullable(),
+  lastLoginAt: nullableTimestamp.describe('Null if no login was ever recorded')
 });
 
 export const ZPublicApiAddCohortMembersResponse = z.object({
-  added: z.array(ZPublicApiCohortMemberResponse),
-  errors: z.array(
-    z.object({
-      index: z.number().describe('Position of the failed entry in the request members array'),
-      email: z.string().nullable(),
-      profileId: z.string().nullable(),
-      code: z.string(),
-      message: z.string()
-    })
-  )
+  added: z.array(ZPublicApiCohortMemberResponse).describe('Memberships created by this request'),
+  errors: z
+    .array(
+      z.object({
+        index: z.number().describe('Position of the failed entry in the request members array'),
+        email: z.string().nullable(),
+        profileId: z.string().nullable(),
+        code: z
+          .string()
+          .describe(
+            'For example MEMBER_ALREADY_IN_COHORT for an entry that already exists, so retrying a request duplicates nothing'
+          ),
+        message: z.string()
+      })
+    )
+    .describe(
+      'Entries that failed; each entry is processed on its own. A profileId outside the organization fails the whole request (404).'
+    )
 });
 
 export const ZPublicApiCohortCourseResponse = z.object({
@@ -157,7 +166,7 @@ export const ZPublicApiCohortGoalListItemResponse = ZPublicApiCohortGoalResponse
 });
 
 export const ZPublicApiEvaluateCohortGoalsResponse = z.object({
-  evaluated: z.number()
+  evaluated: z.number().describe('Number of learner assignments evaluated')
 });
 
 export const ZPublicApiCohortGoalOverviewItemResponse = z.object({
@@ -199,21 +208,24 @@ export const ZPublicApiInviteStudentsToCohortResponse = z.object({
   enrolled: z.number(),
   emailsSent: z.number().describe('Emails queued for delivery, not confirmed delivered'),
   emailsFailed: z.number(),
-  rows: z.array(
-    z.object({
-      email: z.string(),
-      name: z.string().optional(),
-      status: z.enum([
-        'ready',
-        'already_member',
-        'invalid_email',
-        'duplicate_in_file',
-        'is_staff',
-        'over_seat_limit',
-        'missing_email'
-      ])
-    })
-  ),
+  rows: z
+    .array(
+      z.object({
+        email: z.string(),
+        name: z.string().optional(),
+        status: z.enum([
+          'ready',
+          'already_member',
+          'invalid_email',
+          'duplicate_in_file',
+          'is_staff',
+          'over_seat_limit',
+          'missing_email',
+          'invite_resent'
+        ])
+      })
+    )
+    .describe('Outcome for each CSV row'),
   assigned: z.number().optional(),
   alreadyEnrolledInCourses: z.number().optional(),
   alreadyEnrolledInCohorts: z.number().optional(),
@@ -234,4 +246,14 @@ export const ZPublicApiCohortInviteLinkResponse = z.object({
   isRevoked: z.boolean(),
   joinCount: z.number(),
   lastUsedAt: nullableTimestamp
+});
+
+export const ZPublicApiRemindOverdueCohortGoalsResponse = z.object({
+  enqueued: z.number().describe('Email reminders queued for overdue goal assignments.'),
+  skipped: z
+    .number()
+    .describe(
+      'Overdue students not emailed now: no email address or due date, already reminded today, or the enqueue failed.'
+    ),
+  truncated: z.boolean().describe('True when the reminder run hit its page budget with assignments still unread.')
 });

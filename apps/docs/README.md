@@ -38,11 +38,13 @@ Two things follow from being mounted at `/docs`:
   not rebase images, so an unprefixed path would 404.
 
 `scripts/package-assets.mjs` moves `dist/` under `build/docs/` to match the served path and writes the
-`_redirects` file (`/docs` → `/docs/home`, and the legacy `/docs/how-to-guides/*` → `/docs/*`).
+`_redirects` file (`/docs` → `/docs/developers`, plus legacy docs and guide URLs → their new pages). Exact-path rules
+are written before wildcard rules, as Cloudflare requires, and the build fails on a duplicate source.
 
 ## API reference
 
-`/docs/api` is the Scalar API reference, rendered at build time (the old `/docs/api/reference` path
-301s here). `scripts/fetch-openapi.mjs` pulls the spec from R2 and injects the bearer auth scheme via
+`/docs/api` holds the hand-written Getting started pages (`content/docs/api`). The generated reference
+lives at `/docs/api/reference`, rendered at build time; old `/docs/api/<tag>/*` endpoint URLs 301 there.
+`scripts/fetch-openapi.mjs` pulls the spec from R2 and injects the bearer auth scheme via
 `@cio/utils/openapi/public-api`. Because it is static, a new spec reaches the site only on a rebuild —
 `.github/workflows/upload-openapi-spec.yml` triggers one automatically.

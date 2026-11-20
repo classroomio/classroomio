@@ -1,7 +1,8 @@
 import { AppError } from '@cio/utils/errors';
 
-import { attachAssetService, createAssetFromUploadService, getYouTubeMetadataService } from '../assets/assets';
-import { getLesson, updateLessonService } from '../lesson/lesson';
+import { createAssetFromUploadService, getYouTubeMetadataService } from '../assets/assets';
+import { createLessonBlock } from '../block/block';
+import { getLesson } from '../lesson/lesson';
 
 interface LessonVideoEntry {
   type: 'youtube' | 'generic' | 'upload' | 'google_drive';
@@ -24,9 +25,8 @@ export interface AttachYoutubeVideoToLessonResult {
 }
 
 /**
- * Attach a YouTube video the way the dashboard embed form does. All three writes
- * matter: skipping `lesson.videos` leaves the video tab empty, because that JSON
- * column is what it renders from.
+ * Attach a YouTube video the way the dashboard embed form does: the asset, its usage
+ * record and a video block in the lesson.
  *
  * Caption prefetch is suppressed — otherwise attaching a playlist would spend one
  * provider credit per video up front. Captions are fetched when someone asks for
@@ -37,6 +37,7 @@ export async function attachYoutubeVideoToLesson(input: {
   userId: string;
   lessonId: string;
   videoUrl: string;
+  changeSetId?: string | null;
 }): Promise<AttachYoutubeVideoToLessonResult> {
   const { orgId, userId, lessonId, videoUrl } = input;
 
@@ -84,13 +85,6 @@ export async function attachYoutubeVideoToLesson(input: {
 
   const position = existingVideos.length;
 
-  await attachAssetService(orgId, asset.id, userId, {
-    targetType: 'lesson',
-    targetId: lessonId,
-    slotType: 'lesson_video',
-    position
-  });
-
   const newVideo: LessonVideoEntry = {
     type: 'youtube',
     link: metadata.sourceUrl,
@@ -99,7 +93,11 @@ export async function attachYoutubeVideoToLesson(input: {
     metadata: videoMetadata
   };
 
-  await updateLessonService(lessonId, { videos: [...existingVideos, newVideo] });
+  await createLessonBlock(
+    lessonId,
+    { type: 'video', data: newVideo },
+    { actorProfileId: userId, source: 'assistant', changeSetId: input.changeSetId ?? null }
+  );
 
   return {
     lessonId,

@@ -207,6 +207,7 @@ export async function seedCourseraDummyCourses({
           courseId: courseraDummyCourseId(courseIndex),
           sectionId,
           title: `Lesson ${lessonOrder}`,
+          slug: `section-${sectionOrder}-lesson-${lessonOrder}`,
           teacherId: enterpriseAdminUserId,
           videos: [],
           isUnlocked: true,

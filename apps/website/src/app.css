@@ -198,6 +198,10 @@ body {
   padding-left: 3rem;
 }
 
+.prose ol {
+  list-style-type: decimal;
+}
+
 .prose pre {
   max-inline-size: 100%;
   padding: 1rem;

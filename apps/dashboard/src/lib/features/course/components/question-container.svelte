@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -38,6 +38,7 @@
   // `points` is often bound to a plain store object property, which is not deeply
   // reactive — a local reactive owner keeps the zero-points warning live while typing.
   let pointsValue = $state(points);
+  let pointsFocused = $state(false);
 </script>
 
 <div
@@ -59,28 +60,23 @@
         <p class="mr-2 text-sm dark:text-white">
           {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:
         </p>
-        <InputField
+        <NumberField
           placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
-          bind:value={
-            () => pointsValue,
-            (nextValue) => {
-              const parsedValue = Number(nextValue);
-              const clampedValue =
-                nextValue === '' || nextValue == null || !Number.isFinite(parsedValue)
-                  ? nextValue // ← empty/invalid: preserve unchanged
-                  : Math.max(parsedValue, 1); // ← finite value: ALWAYS a number, min 1
-
-              pointsValue = clampedValue;
-              points = clampedValue;
-            }
-          }
-          type="number"
+          integer
           min={1}
-          step={1}
-          onChange={onPointsChange}
+          value={typeof pointsValue === 'number' ? pointsValue : null}
+          onValueChange={(next) => {
+            if (next === null) return;
+
+            pointsValue = next;
+            points = next;
+            onPointsChange();
+          }}
+          onFocus={() => (pointsFocused = true)}
+          onBlur={() => (pointsFocused = false)}
         />
 
-        {#if Number(pointsValue) === 0}
+        {#if !pointsFocused && Number(pointsValue) === 0}
           <Tooltip.Provider>
             <Tooltip.Root>
               <Tooltip.Trigger class="ml-2 shrink-0">
@@ -96,7 +92,7 @@
 
       {#if errorMsg}
         <p class="text-xs text-red-500">{errorMsg}</p>
-      {:else if pointsHint && Number(pointsValue) === 0}
+      {:else if pointsHint && !pointsFocused && Number(pointsValue) === 0}
         <p class="ui:text-muted-foreground max-w-[min(100%,12rem)] text-xs">{pointsHint}</p>
       {/if}
 

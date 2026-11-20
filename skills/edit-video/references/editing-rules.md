@@ -2,9 +2,11 @@
 
 ## Audio
 
-- **Noise removal runs before the cuts and before compression.** The chain is `arnndn` with the RNNoise `sh` model (speech in noisy rooms), then `afftdn=nf=-35`. The compressor runs afterwards; run it first and it lifts the noise back up. Denoising after the cuts produced NaN audio, which broke the AAC encoder.
+- **Keep the recording's own audio.** By default nothing touches the sound: no noise removal, no EQ, no compressor, no loudness normalisation. The speaker recorded it the way they want it, and processing it made voices sound thin and the level pump between phrases.
+- **Louder, not different.** If a recording is quiet, set `audio.gain_db` to one fixed gain for the whole project, so every clip rises by the same amount. Keep the true peak under −1.5 dBFS: the largest safe gain is `−1.5 − (source true peak)`. Never run a per-clip loudness fix afterwards.
+- **Opt in only when asked.** `audio.denoise: true` runs `arnndn` (RNNoise `sh` model) then `afftdn=nf=-35` before the cuts. `audio.master: true` runs `highpass 80 Hz → lowpass 14 kHz → compressor (−22 dB, 3:1) → loudnorm I=−14 TP=−1.5 LRA=9`. Use them for a noisy room recording, and let the person hear a sample first.
+- With `denoise` on, noise removal runs before the cuts and before compression. The chain is `arnndn` with the RNNoise `sh` model (speech in noisy rooms), then `afftdn=nf=-35`. The compressor runs afterwards; run it first and it lifts the noise back up. Denoising after the cuts produced NaN audio, which broke the AAC encoder.
 - **Measured on a multi-speaker room recording:** the noise floor dropped from −50 dB to −82 dB, the main speaker was unchanged, and teammates' quieter replies dropped 2–3 dB (mostly the noise under them). If quiet voices matter, compare a reply's level with and without the filter before shipping.
-- **Mastering:** `highpass 80 Hz → lowpass 14 kHz → compressor (−22 dB, 3:1) → loudnorm I=−14 TP=−1.5 LRA=9`. Accept −13.5 to −14.8 LUFS.
 - **Pause trimming:** silences under −35 dB lasting at least 0.4 s are cut, keeping 0.12 s before and 0.08 s after. A cut never covers a word start; it stops 0.12 s before the word. Expect 15–30% shorter clips.
 - Cut with `select`/`aselect` from a cleaned WAV. Using `split` plus `trim` branches buffers every frame and stalls.
 - The QA sync check reads the audio at every caption word start. At least 90% should be above −45 dB; softly spoken words make up the rest.

@@ -18,6 +18,8 @@ export type SlideEmbedPickerLabels = {
   embedReady: string;
   invalidEmbed: string;
   unsupportedPlatform: string;
+  platformMismatch: string;
+  previewInPlatform: string;
   platforms: Record<SlidePlatformId, SlideEmbedPlatformCopy>;
 };
 

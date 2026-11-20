@@ -62,7 +62,14 @@
   {#if isEditing}
     <div class="flex w-4/6 items-center gap-2">
       <CourseContentIcon type={ContentType.Section} size={16} />
-      <InputField className="flex-1" bind:value={section.title} errorMessage={errors?.title} />
+      <InputField
+        className="flex-1"
+        bind:value={section.title}
+        errorMessage={errors?.title}
+        onInput={() => {
+          if (errors) delete errors.title;
+        }}
+      />
     </div>
   {:else}
     <div class="flex w-4/6 items-center gap-2">

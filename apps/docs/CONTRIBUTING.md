@@ -12,7 +12,7 @@ These are the placement rules for the ClassroomIO docs. Read them before adding 
 6. **"Developer" is three jobs, one home.** Consuming the API, running the product, and contributing to the code are three sections inside Developers, not three separate tabs — see rule 1's history below for why.
 7. **Every section opens with an overview page.**
 8. **Order the sidebar the way people actually use the product.**
-9. **Cross-cutting reference is documented once.** Auth, errors, rate limits, and pagination go in the API introduction, not repeated per endpoint.
+9. **Cross-cutting reference is documented once.** Auth, errors, rate limits, and pagination go in the API tab's Getting started pages (`content/docs/api`), not repeated per endpoint.
 10. **Labels are self-explanatory and consistent** in spelling and title style.
 11. **Navigation comes from one source of truth.** A rename applied once should apply everywhere.
 
@@ -43,7 +43,7 @@ So in practice, "prefer a description" means the page's own opening line does th
 
 - **Help Center** (`apps/help`, not this app): task-oriented how-tos for academy owners and admins, grouped by job, plus the Reference/Glossary section for terminology. User-facing content only.
 - **Developers** (this app): Build with the API (Token Auth, MCP), Self-hosting (running ClassroomIO on your own infrastructure), and Contributing (local setup, contributing code, design, translations, infrastructure).
-- **API** (this app): the OpenAPI reference, generated. Don't hand-write pages here.
+- **API** (this app): a short Getting started set (introduction, authentication, rate limits, errors, pagination) in `content/docs/api`, then the OpenAPI reference at `/api/reference`, generated. Don't hand-write endpoint pages.
 
 ## Documentation types
 
@@ -55,7 +55,7 @@ Every page is one of three types:
 
 If a change doesn't cleanly fit a user guide or a feature reference, it gets a changelog line, not a page. Most PRs that touch the product surface warrant a line, not a new file.
 
-The API reference is generated from the OpenAPI spec (`upload-openapi-spec.yml` regenerates it on every push to `main`), so it sits outside this taxonomy. Never hand-write pages there.
+The API reference is generated from the OpenAPI spec (`upload-openapi-spec.yml` regenerates it on every push to `main`), so it sits outside this taxonomy. Never hand-write pages under `/api/reference`.
 
 ## Voice and style
 

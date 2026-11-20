@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
   import * as Table from '@cio/ui/base/table';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
@@ -40,12 +40,14 @@
   import { peopleApi } from '$features/course/api';
   import { deleteMemberModal } from '$features/course/components/people/store';
   import { Search } from '@cio/ui/custom/search';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
   import { onDestroy, untrack } from 'svelte';
   import {
     formatPeopleShortDate,
     getMemberAvatarUrl,
     getMemberProgressPercent,
+    getMemberRoleLabel,
     isStudentMember,
     obscureMemberEmail
   } from '$features/course/utils/people-utils';
@@ -61,13 +63,11 @@
   import PeopleViewSwitcher from '$features/course/components/people/people-view-switcher.svelte';
 
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
-  let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
   let memberRows = $state<CourseMembers>([]);
   let pagination = $state<CourseMembersPagination | null>(null);
   let isLoadingMembers = $state(false);
   let membersRequestId = 0;
-  let searchDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
   let loadedQueryKey: string | null = null;
 
   // The URL owns filters, sort and pagination, so a filtered roster is shareable
@@ -75,6 +75,11 @@
   const query = $derived(getPeopleQueryFromSearchParams(page.url.searchParams));
   const activeView = $derived(matchPeopleView(query));
   const activeFilterCount = $derived(countActivePeopleFilters(query));
+
+  const search = new DebouncedSearch({
+    initial: untrack(() => query.search ?? ''),
+    onApply: (nextSearch) => void navigatePeople({ ...query, page: 1, search: nextSearch || undefined })
+  });
 
   async function navigatePeople(nextQuery: ListPeopleQuery) {
     const searchParams = getPeopleSearchParams(nextQuery, page.url.searchParams);
@@ -125,14 +130,12 @@
     untrack(() => void loadMembers(courseId, activeQuery));
   });
 
-  $effect(() => {
-    searchValue = query.search ?? '';
+  onDestroy(() => {
+    search.destroy();
   });
 
-  onDestroy(() => {
-    if (searchDebounceTimeout) {
-      clearTimeout(searchDebounceTimeout);
-    }
+  afterNavigate(() => {
+    search.sync(query.search ?? '');
   });
 
   function refreshCurrentPage() {
@@ -140,19 +143,19 @@
   }
 
   function handleFilterChange(patch: Partial<ListPeopleQuery>) {
-    void navigatePeople({ ...query, ...patch, page: 1 });
+    void navigatePeople({ ...query, ...patch, page: 1, search: search.takePending() || undefined });
   }
 
   function handleSortChange(sortBy: ListPeopleQuery['sortBy'], sortOrder: ListPeopleQuery['sortOrder']) {
-    void navigatePeople({ ...query, sortBy, sortOrder, page: 1 });
+    void navigatePeople({ ...query, sortBy, sortOrder, page: 1, search: search.takePending() || undefined });
   }
 
   function handlePageChange(nextPage: number) {
-    void navigatePeople({ ...query, page: nextPage });
+    void navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
   }
 
   function handleSelectView(view: CoursePeopleView) {
-    void navigatePeople(applyPeopleView(view, query));
+    void navigatePeople({ ...applyPeopleView(view, query), search: search.takePending() || undefined });
   }
 
   function handleClearFilters() {
@@ -161,7 +164,7 @@
 
   // Stage is resolved in TypeScript after pagination, so it has no server sort key.
   const tableColumns: { label: string; sortKey?: ListPeopleQuery['sortBy']; wide?: boolean }[] = $derived([
-    { label: $t('course.navItem.people.learner'), sortKey: 'name' },
+    { label: $t('course.navItem.people.name'), sortKey: 'name' },
     { label: $t('course.navItem.people.progress'), sortKey: 'progress' },
     { label: $t('course.navItem.people.stage'), wide: true },
     { label: $t('course.navItem.people.last_login_at'), sortKey: 'lastLogin' },
@@ -171,18 +174,6 @@
   function handleSortByHeader(sortBy: ListPeopleQuery['sortBy']) {
     const sortOrder = query.sortBy === sortBy && query.sortOrder === 'asc' ? 'desc' : 'asc';
     handleSortChange(sortBy, sortOrder);
-  }
-
-  function handleSearchValueChange(value: string) {
-    searchValue = value;
-
-    if (searchDebounceTimeout) {
-      clearTimeout(searchDebounceTimeout);
-    }
-
-    searchDebounceTimeout = setTimeout(() => {
-      void navigatePeople({ ...query, page: 1, search: value.trim() || undefined });
-    }, 300);
   }
 
   async function deletePerson() {
@@ -197,7 +188,7 @@
       courseApi.group.tutors = courseApi.group.tutors.filter((person: CourseMember) => person.id !== member.id);
 
       const nextPage = memberRows.length === 0 && query.page > 1 ? query.page - 1 : query.page;
-      await navigatePeople({ ...query, page: nextPage });
+      await navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
     }
   }
 
@@ -269,8 +260,8 @@
   <div class="flex flex-col items-center justify-end gap-2 md:flex-row">
     <Search
       placeholder={$t('course.navItem.people.search')}
-      bind:value={searchValue}
-      onValueChange={handleSearchValueChange}
+      value={search.draft}
+      onValueChange={(nextValue) => search.input(nextValue)}
     />
     <PeopleFilterPopover
       {query}
@@ -343,6 +334,7 @@
                 onkeydown={(event) => handleRowKeydown(person, event)}
               >
                 <Table.Cell class="min-w-[220px]">
+                  {@const roleLabel = getMemberRoleLabel(person)}
                   {#if person.profile}
                     <div class="flex items-start lg:items-center">
                       <Avatar.Root class="mr-3">
@@ -358,8 +350,13 @@
                       </Avatar.Root>
                       <div class="flex flex-col items-start lg:flex-row lg:items-center">
                         <div class="mr-2">
-                          <p class="text-base font-normal dark:text-white">
-                            {person.profile.fullname}
+                          <p class="flex items-center gap-1.5 text-base font-normal dark:text-white">
+                            <span class="truncate">{person.profile.fullname}</span>
+                            {#if roleLabel}
+                              <Badge variant="secondary" class="shrink-0 px-1.5 py-0 text-[10px] leading-4 font-medium">
+                                {$t(roleLabel)}
+                              </Badge>
+                            {/if}
                           </p>
                           <p class="ui:text-primary line-clamp-1 text-xs">
                             {obscureMemberEmail(getEmail(person))}
@@ -395,6 +392,11 @@
                       <a href="mailto:{person.email}" class="text-md ui:text-primary mr-2 dark:text-white">
                         {person.email}
                       </a>
+                      {#if roleLabel}
+                        <Badge variant="secondary" class="mr-2 shrink-0 px-1.5 py-0 text-[10px] leading-4 font-medium">
+                          {$t(roleLabel)}
+                        </Badge>
+                      {/if}
                       <div class="flex items-center justify-between">
                         <RoleBasedSecurity allowedRoles={[1, 2]}>
                           <Button

@@ -16,7 +16,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 
-const COURSE_TEAM_RULE = 'The API key creator must be a course tutor/admin or an org admin, otherwise 403.';
+const COURSE_TEAM_RULE = 'the API key creator must be a course tutor/admin or an org admin';
 
 const READ_ONLY: ToolAnnotations = { readOnlyHint: true, destructiveHint: false };
 const WRITE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false };
@@ -70,7 +70,7 @@ const revokeCourseInviteShape = ZRevokeCourseInviteToolInput.shape as unknown as
 export function registerCourseMemberTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_course_members',
-    `List everyone with access to a course (students and tutors), with role and progress. Paginated. ${COURSE_TEAM_RULE}`,
+    `List everyone with access to a course, students and tutors alike, with role and progress; ${COURSE_TEAM_RULE}.`,
     listCourseMembersShape,
     READ_ONLY,
     async (args) => {
@@ -82,7 +82,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'add_course_member',
-    `Give someone access to a course, by profileId or email. Either must belong to someone already in the organization, otherwise 404. Fails with 409 if they are already a member. To onboard someone new with an invite email, use create_course_invite. ${COURSE_TEAM_RULE}`,
+    `Give someone already in the organization access to a course, by profileId or email; ${COURSE_TEAM_RULE}. Fails with 409 if they are already a member; to onboard someone new, use create_course_invite.`,
     addCourseMemberShape,
     WRITE,
     async (args) => {
@@ -94,7 +94,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'get_course_member',
-    `Get a single course member's detail. ${COURSE_TEAM_RULE}`,
+    `Get a course member's detail; ${COURSE_TEAM_RULE}.`,
     getCourseMemberShape,
     READ_ONLY,
     async (args) => {
@@ -106,7 +106,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'update_course_member',
-    `Change a course member's role or email. Send only the fields to change. ${COURSE_TEAM_RULE}`,
+    `Change a course member's role or email; ${COURSE_TEAM_RULE}.`,
     updateCourseMemberShape,
     WRITE,
     async (args) => {
@@ -122,7 +122,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'delete_course_member',
-    `Remove someone's access to a course. This is a hard delete of the course membership; the person keeps their account and organization membership. ${COURSE_TEAM_RULE}`,
+    `Permanently remove someone's access to a course, leaving their account and organization membership in place; ${COURSE_TEAM_RULE}.`,
     deleteCourseMemberShape,
     DESTRUCTIVE,
     async (args) => {
@@ -134,7 +134,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'reset_course_member_progress',
-    `Clear a student's completion progress while keeping them enrolled. This cannot be undone. Only student members can have their progress reset. ${COURSE_TEAM_RULE}`,
+    `Clear a student's completion progress while keeping them enrolled, which cannot be undone; ${COURSE_TEAM_RULE}. Works for student members only.`,
     resetCourseMemberProgressShape,
     DESTRUCTIVE,
     async (args) => {
@@ -146,7 +146,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'get_course_member_analytics',
-    `Fetch a student's progress and grade analytics for a course. Only student members have analytics. ${COURSE_TEAM_RULE}`,
+    `Get a student's progress and grade analytics for a course; ${COURSE_TEAM_RULE}. Works for student members only.`,
     getCourseMemberAnalyticsShape,
     READ_ONLY,
     async (args) => {
@@ -158,7 +158,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'list_course_invites',
-    `List invites for a course, of any status (active, revoked, expired, or used up). Paginated. ${COURSE_TEAM_RULE}`,
+    `List a course's invites of any status (active, revoked, expired or used up); ${COURSE_TEAM_RULE}.`,
     listCourseInvitesShape,
     READ_ONLY,
     async (args) => {
@@ -170,7 +170,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'create_course_invite',
-    `Invite one or more people to a course by email or CSV. Unlike add_course_member, this can onboard someone who is not yet an organization member. Requires recipientEmails or recipientCsv. Limited to 60 requests per hour per key creator per course. ${COURSE_TEAM_RULE}`,
+    `Invite one or more people to a course by email or CSV, including people not yet in the organization; ${COURSE_TEAM_RULE}. Requires recipientEmails or recipientCsv, and is limited to 60 requests per hour per key creator per course.`,
     createCourseInviteShape,
     WRITE,
     async (args) => {
@@ -182,7 +182,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'revoke_course_invite',
-    `Revoke a pending course invite. The invite link stops working and this cannot be undone. ${COURSE_TEAM_RULE}`,
+    `Revoke a pending course invite so its link stops working, which cannot be undone; ${COURSE_TEAM_RULE}.`,
     revokeCourseInviteShape,
     DESTRUCTIVE,
     async (args) => {

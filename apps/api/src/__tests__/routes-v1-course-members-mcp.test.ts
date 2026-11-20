@@ -96,7 +96,7 @@ describe('public API scopes for MCP keys', () => {
     const app = buildApp({ type: 'mcp', scopes: MCP_SCOPES });
 
     expect((await app.request('/public-api/v1/audience')).status).toBe(403);
-    expect((await app.request('/public-api/v1/courses')).status).toBe(403);
+    expect((await app.request(base)).status).toBe(403);
     expect((await app.request(`${base}/students`)).status).toBe(403);
   });
 

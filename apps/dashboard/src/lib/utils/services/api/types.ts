@@ -1,4 +1,16 @@
 import type { ZodError } from 'zod';
+import type { InferResponseType } from '@cio/api/rpc-types';
+import type { NormalizedApiError } from './errors';
+
+export type ExtractData<T> = Extract<InferResponseType<T>, { success: true }>;
+
+export interface ExecuteOptions<TrpcType> {
+  requestFn: () => Promise<Response>;
+  errorMessage?: string;
+  onSuccess?: (data: ExtractData<TrpcType>) => Promise<void> | void;
+  onError?: (error: NormalizedApiError) => Promise<void> | void;
+  logContext?: string;
+}
 
 export interface ApiClientConfig {
   baseURL?: string;

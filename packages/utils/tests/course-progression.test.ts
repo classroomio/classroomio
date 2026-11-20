@@ -184,6 +184,20 @@ describe('computeProgressionAccess', () => {
       lockReason: 'progression_blocked'
     });
   });
+
+  it('does not block progression on exercises with completion policy none', () => {
+    const navigableItems = [
+      exercise('exercise-1', 1, { isComplete: false, completionPolicy: 'none' }),
+      lesson('lesson-1', 2)
+    ];
+
+    const accessById = computeProgressionAccess({
+      navigableItems,
+      progressionMode: 'sequential'
+    });
+
+    expect(accessById.get('lesson-1')).toEqual({ accessible: true, lockReason: null });
+  });
 });
 
 describe('annotateContentItem', () => {

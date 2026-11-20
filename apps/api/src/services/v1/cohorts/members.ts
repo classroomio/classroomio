@@ -1,14 +1,15 @@
+import type { TEventSource } from '@cio/core/services/posthog';
 import type {
   TPublicApiAddCohortMembers,
   TPublicApiCohortMemberParam,
+  TPublicApiCohortMembersQuery,
   TPublicApiCohortParam,
-  TPublicApiPaginationQuery,
   TPublicApiUpdateCohortMember
 } from '@cio/utils/validation/public-api';
 
 import {
   addCohortMembersSettled,
-  listCohortMembersPage,
+  listPaginatedCohortPeople,
   removeCohortMemberService,
   updateCohortMemberService
 } from '@api/services/cohort/cohort';
@@ -16,8 +17,7 @@ import {
   assertCohortBelongsToOrganization,
   assertCohortMemberOrOrgAdmin,
   assertCohortTeamMemberOrOrgAdmin,
-  assertProfileBelongsToOrganization,
-  toPublicApiPagination
+  assertProfileBelongsToOrganization
 } from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
@@ -25,21 +25,20 @@ export async function listPublicApiCohortMembersService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCohortParam,
-  query: TPublicApiPaginationQuery
+  query: TPublicApiCohortMembersQuery
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
-  const { items, total } = await listCohortMembersPage(params.cohortId, query);
-
-  return { items, pagination: toPublicApiPagination(query.page, query.limit, total) };
+  return listPaginatedCohortPeople(params.cohortId, query);
 }
 
 export async function addPublicApiCohortMembersService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCohortParam,
-  payload: TPublicApiAddCohortMembers
+  payload: TPublicApiAddCohortMembers,
+  source: TEventSource = 'public_api'
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
@@ -47,7 +46,7 @@ export async function addPublicApiCohortMembersService(
   const profileIds = payload.members.flatMap((member) => (member.profileId ? [member.profileId] : []));
   await Promise.all(profileIds.map((profileId) => assertProfileBelongsToOrganization(orgId, profileId)));
 
-  const results = await addCohortMembersSettled(params.cohortId, payload);
+  const results = await addCohortMembersSettled(params.cohortId, payload, source, actorId);
 
   const added: unknown[] = [];
   const errors: { index: number; email: string | null; profileId: string | null; code: string; message: string }[] = [];
@@ -94,5 +93,5 @@ export async function removePublicApiCohortMemberService(
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return removeCohortMemberService(params.cohortId, params.memberId);
+  return removeCohortMemberService(params.cohortId, params.memberId, actorId);
 }

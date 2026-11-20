@@ -100,7 +100,7 @@ describe('services/v1/courses/invites', () => {
 
     await createCourseInviteService(ORG_ID, ACTOR_ID, courseParams, invitePayload);
 
-    expect(createStudentInvite).toHaveBeenCalledWith(COURSE_ID, ACTOR_ID, invitePayload);
+    expect(createStudentInvite).toHaveBeenCalledWith(COURSE_ID, ACTOR_ID, invitePayload, 'public_api');
   });
 
   it('revokeCourseInviteService requires an actor', async () => {

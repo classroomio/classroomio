@@ -15,11 +15,18 @@ export class PresignApi extends BaseApiWithErrors {
    * Gets a presigned upload URL for a document.
    * @returns { url, fileKey } on success
    */
-  async getDocumentUploadUrl(fileName: string, fileType: string, fileSize?: number) {
+  async getDocumentUploadUrl(fileName: string, fileType: string, fileSize?: number, acceptedTypes?: string[]) {
+    const normalizedAcceptedTypes = acceptedTypes != null && acceptedTypes.length > 0 ? acceptedTypes : undefined;
+
     const result = await this.execute<DocumentUploadPresignRequest>({
       requestFn: () =>
         classroomio.course.presign.document.upload.$post({
-          json: { fileName, fileType, ...(fileSize != null && fileSize > 0 ? { fileSize } : {}) }
+          json: {
+            fileName,
+            fileType,
+            ...(fileSize != null && fileSize > 0 ? { fileSize } : {}),
+            ...(normalizedAcceptedTypes ? { acceptedTypes: normalizedAcceptedTypes } : {})
+          }
         }),
       logContext: 'getting document upload URL'
     });

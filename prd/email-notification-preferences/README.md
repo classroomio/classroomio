@@ -66,6 +66,7 @@ Recipient legend: 🎓 student · 🧑‍🏫 tutor/admin · 👤 account owner.
 | `welcome` | 👤 | Account created | Account lifecycle |
 | `studentLimitReached` | 🧑‍🏫 admin | Free-plan student cap hit | Must know students are turned away |
 | `inviteTeacher` | 🧑‍🏫 | Invited to org as staff | The invite *is* the email |
+| `teamRoleChanged` | 🧑‍🏫 | Org role changed by an admin | Security-relevant access change |
 | `studentOrgInvite` | 🎓 | Invited to the org | The invite *is* the email |
 | `studentCourseInvite` | 🎓 | Invited to a course | The invite *is* the email |
 | `studentProvePayment` | 🎓 | Must send proof of payment | Required next step |

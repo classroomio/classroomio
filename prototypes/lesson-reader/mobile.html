@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mobile · Lesson reader · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--muted);
+        font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .wrap {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 48px;
+        padding: 40px 24px;
+      }
+
+      .phone {
+        width: 414px;
+        height: 868px;
+        padding: 12px;
+        border-radius: 52px;
+        background: oklch(0.18 0 0);
+        box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.35);
+        flex-shrink: 0;
+      }
+
+      .phone iframe {
+        display: block;
+        width: 390px;
+        height: 844px;
+        border: 0;
+        border-radius: 40px;
+        background: #fff;
+      }
+
+      .side {
+        width: 340px;
+        max-width: 100%;
+      }
+
+      .side h1 {
+        margin: 0 0 6px;
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .side > p {
+        margin: 0 0 20px;
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--muted-foreground);
+      }
+
+      .state {
+        display: block;
+        width: 100%;
+        margin-bottom: 8px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--background);
+        text-align: left;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+
+      .state[aria-pressed='true'] {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+      }
+
+      .state .t {
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .state .d {
+        margin-top: 2px;
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: var(--muted-foreground);
+      }
+
+      .back {
+        display: inline-block;
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--muted-foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="phone"><iframe id="frame" title="Lesson on a phone" src="lesson.html?state=returning"></iframe></div>
+      <div class="side">
+        <h1>On a phone</h1>
+        <p>The same lesson at 390px. Selection actions dock above the bottom nav instead of floating, answers open inline under their paragraph, and settings and the notebook become sheets.</p>
+        <div id="states"></div>
+        <a class="back" href="index.html">← All screens</a>
+      </div>
+    </div>
+    <script>
+      const frame = document.getElementById('frame');
+      const STATES = [
+        { t: 'Reading', d: 'Returning learner with highlights and a resume card.', src: 'lesson.html?state=returning' },
+        { t: 'Select text', d: 'Docked action bar: Ask, Explain, Define, Highlight, Note, Listen, Copy.', src: 'lesson.html?state=returning&demo=select' },
+        { t: 'Explain answered inline', d: 'The answer card opens directly under the paragraph.', src: 'lesson.html?state=returning&demo=explain' },
+        { t: 'Aa settings sheet', d: 'Theme, pen, highlighter, numbers, focus and listen.', src: 'lesson.html?state=returning&open=settings' },
+        { t: 'Notebook sheet', d: 'Highlights and questions slide up over the lesson.', src: 'lesson.html?state=returning&open=notebook' },
+        { t: 'Listening', d: 'Player docks above the bottom nav and follows the sentence.', src: 'lesson.html?state=returning&listen=1&silent' },
+        { t: 'Night + Serif', d: 'A learner-chosen theme and typeface.', src: 'lesson.html?state=returning&theme=night&face=serif' },
+        { t: 'Video lesson', d: 'Bookmark, Note and Ask sit under the player; markers stay on the scrub bar.', src: 'video-lesson.html?state=returning&silent=1' },
+        { t: 'Transcript selection', d: 'Transcript as a sheet with the docked selection bar.', src: 'video-lesson.html?state=returning&demo=select' },
+        { t: 'Video notebook', d: 'Moments in video order, tap a time to play from there.', src: 'video-lesson.html?state=returning&open=notebook&silent=1' }
+      ];
+
+      const holder = document.getElementById('states');
+      holder.innerHTML = STATES.map((state, index) => `<button class="state" data-i="${index}" aria-pressed="${index === 0}"><div class="t">${state.t}</div><div class="d">${state.d}</div></button>`).join('');
+      holder.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-i]');
+        if (!button) return;
+
+        const state = STATES[button.dataset.i];
+        holder.querySelectorAll('.state').forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
+        frame.src = `${state.src}${state.src.includes('?') ? '&' : '?'}t=${Date.now()}`;
+      });
+    </script>
+  </body>
+</html>

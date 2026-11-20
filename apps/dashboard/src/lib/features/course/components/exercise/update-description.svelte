@@ -74,7 +74,7 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
         bind:value={$questionnaire.title}
         className="mb-2"
-        onChange={() => ($questionnaire.isTitleDirty = true)}
+        onInput={() => ($questionnaire.isTitleDirty = true)}
       />
       <InputField
         label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}

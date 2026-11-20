@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Notebook · Lesson reader · ClassroomIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="reader.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .nbp {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px 120px;
+      }
+
+      .nbp-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 20px;
+      }
+
+      .nbp-stat {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 30px;
+        padding: 0 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 13px;
+        color: var(--muted-foreground);
+      }
+
+      .nbp-stat b {
+        color: var(--foreground);
+        font-weight: 600;
+      }
+
+      .nbp-review {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 0 0 24px;
+        padding: 14px 16px;
+        border: 1px solid color-mix(in oklab, var(--primary) 20%, transparent);
+        border-radius: var(--radius-lg);
+        background: color-mix(in oklab, var(--primary) 6%, var(--background));
+      }
+
+      .nbp-review .ic {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: color-mix(in oklab, var(--primary) 12%, transparent);
+        color: var(--primary);
+      }
+
+      .nbp-review .t {
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .nbp-review .d {
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+      }
+
+      .nbp-quiz {
+        margin: -12px 0 24px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        animation: rd-in 0.25s var(--ease-out);
+      }
+
+      .nbp-quiz .q {
+        margin: 0 0 10px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .nbp-quiz .opt {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        margin-bottom: 6px;
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--background);
+        font-size: 13.5px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .nbp-quiz .opt:hover {
+        border-color: color-mix(in oklab, var(--foreground) 25%, transparent);
+      }
+
+      .nbp-quiz .opt.right {
+        border-color: var(--exercise);
+        background: color-mix(in oklab, var(--exercise) 10%, var(--background));
+      }
+
+      .nbp-quiz .opt.wrong {
+        border-color: var(--destructive);
+        background: color-mix(in oklab, var(--destructive) 8%, var(--background));
+      }
+
+      .nbp-quiz .why {
+        margin: 8px 0 0;
+        font-size: 13px;
+        color: var(--muted-foreground);
+        line-height: 1.5;
+      }
+
+      .nbp-tools {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nbp-tools .rd-seg {
+        width: 340px;
+        max-width: 100%;
+      }
+
+      .nbp-colors {
+        display: flex;
+        gap: 6px;
+      }
+
+      .nbp-colors button {
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        cursor: pointer;
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--foreground) 12%, transparent);
+      }
+
+      .nbp-colors button[aria-pressed='true'] {
+        box-shadow:
+          0 0 0 2px var(--background),
+          0 0 0 4px var(--foreground);
+      }
+
+      .nbp-search {
+        flex: 1;
+        min-width: 180px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 34px;
+        padding: 0 10px;
+        border: 1px solid var(--input);
+        border-radius: var(--radius-md);
+        color: var(--muted-foreground);
+      }
+
+      .nbp-search input {
+        flex: 1;
+        min-width: 0;
+        border: 0;
+        outline: 0;
+        background: none;
+        color: var(--foreground);
+        font: inherit;
+        font-size: 13.5px;
+      }
+
+      .nbp-sec {
+        margin: 26px 0 8px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--muted-foreground);
+      }
+
+      .nbp-lesson {
+        margin-bottom: 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+
+      .nbp-lesson-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        background: var(--sidebar);
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .nbp-lesson-head svg {
+        color: var(--lesson);
+      }
+
+      .nbp-lesson-head .n {
+        font-weight: 400;
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+      }
+
+      .nbp-lesson-head a {
+        margin-left: auto;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--muted-foreground);
+        text-decoration: none;
+      }
+
+      .nbp-lesson-head a:hover {
+        color: var(--primary);
+      }
+
+      .nbp-entry {
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 8px;
+        padding: 12px 14px;
+        border-top: 1px solid var(--border);
+        font-size: 14px;
+      }
+
+      .nbp-entry:first-of-type {
+        border-top: 0;
+      }
+
+      .nbp-entry .ref {
+        padding-top: 2px;
+        font-family: 'Geist Mono', ui-monospace, monospace;
+        font-size: 12px;
+        color: var(--muted-foreground);
+        text-decoration: none;
+      }
+
+      .nbp-entry .ref:hover {
+        color: var(--primary);
+      }
+
+      .nbp-entry .meta {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+
+      .nbp-entry .nb-quote,
+      .nbp-entry .nb-question {
+        line-height: 1.55;
+      }
+
+      .nbp-entry .nb-answer {
+        -webkit-line-clamp: unset;
+        display: block;
+      }
+
+      @media (max-width: 767px) {
+        .nbp {
+          padding: 0 16px 100px;
+        }
+
+        .nbp-review {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      window.READER_CONFIG = { surface: 'course', view: 'learner', noInit: true };
+    </script>
+    <script src="lesson-data.js"></script>
+    <script src="video-data.js"></script>
+    <script src="reader.js"></script>
+    <script>
+      const lessonEntriesForPage = (() => {
+        let stored = null;
+        try {
+          stored = JSON.parse(localStorage.getItem('lr:course:returning:entries') || 'null');
+        } catch {}
+        const holder = document.createElement('div');
+        holder.innerHTML = LESSON_HTML;
+        const blocks = [];
+        [...holder.children].forEach((el) => {
+          if (el.tagName === 'UL') [...el.children].forEach((li) => blocks.push(li.textContent));
+          else blocks.push(el.textContent);
+        });
+        const source = stored || SEED_NOTEBOOK;
+        return source.map((entry) => {
+          const index = blocks.findIndex((text) => text.includes(entry.exact));
+          const answer = entry.kind === 'question' ? entry.answer || findAnswerStatic(entry) : '';
+          return { ...entry, p: index + 1, orphaned: index < 0, answer };
+        });
+      })();
+
+      function findAnswerStatic(entry) {
+        const match = AI_ANSWERS.find((answer) => answer.match.some((term) => entry.exact.toLowerCase().includes(term)));
+        return match ? match[entry.action === 'define' ? 'define' : 'explain'].text : '';
+      }
+
+      const formatTime = (seconds) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+      const transcriptLineAt = (seconds) => (TRANSCRIPT.find((segment) => seconds >= segment.start && seconds < segment.end) || TRANSCRIPT[0]).text;
+
+      const videoEntriesForPage = (() => {
+        let stored = null;
+        try {
+          stored = JSON.parse(localStorage.getItem('lr:course:returning:video-entries:upload') || 'null');
+        } catch {}
+        return (stored || [...VIDEO_SEED, ...VIDEO_TEXT_SEED])
+          .filter((entry) => !entry.orphaned)
+          .map((entry) => {
+            if (entry.source === 'text') return entry;
+
+            const kind = entry.kind === 'bookmark' || entry.kind === 'note' ? 'moment' : entry.kind;
+            const exact = entry.exact || (entry.kind === 'question' ? `Transcript around ${formatTime(entry.t)}` : transcriptLineAt(entry.t));
+            return { ...entry, kind, exact, video: true, momentKind: entry.kind };
+          })
+          .sort((a, b) => (a.source === 'text') - (b.source === 'text') || (a.t ?? 0) - (b.t ?? 0));
+      })();
+
+      const groups = [
+        ...COURSE_NOTEBOOK.slice(0, 2),
+        { lesson: LESSON.title, section: 'Working with data', current: true, entries: lessonEntriesForPage },
+        { lesson: VIDEO_LESSON.title, section: 'Working with data', video: true, entries: videoEntriesForPage },
+        ...COURSE_NOTEBOOK.slice(2)
+      ];
+
+      const view = { tab: 'all', color: null, query: '', quizOpen: false, answered: null };
+
+      document.body.innerHTML = `
+        <div class="cs-app">
+          ${renderCourseSidebar('notebook')}
+          <main class="cs-main" id="cs-main">
+            <header class="cs-head"><button class="btn-ghost-icon" aria-label="Toggle sidebar">${icon('panel')}</button><span class="vsep"></span><span class="here">Notebook</span><span class="grow"></span><a class="btn btn-sm btn-assistant" href="lesson.html?state=returning&open=assistant">${icon('sparkles')}<span class="assistant-label">Assistant</span></a></header>
+            <div class="nbp">
+              <div class="pg-head">
+                <div><h1 class="pg-title">Notebook</h1><p class="pg-sub">Everything you highlighted and asked in ${COURSE.title}. Only you can see it.</p></div>
+                <div class="pg-actions"><button class="btn btn-outline btn-sm" data-export="copy">${icon('copy')}Copy as Markdown</button><button class="btn btn-outline btn-sm" data-export="download">${icon('download')}Download</button></div>
+              </div>
+              <div id="nbp-body"></div>
+            </div>
+          </main>
+        </div>`;
+
+      function allEntries() {
+        return groups.flatMap((group) => group.entries);
+      }
+
+      function notebookPageMarkdown() {
+        const lines = [`# Notebook — ${COURSE.title}`, ''];
+        groups.forEach((group) => {
+          lines.push(`## ${group.lesson}`, '');
+          group.entries.forEach((entry) => {
+            const ref = entry.video ? `[${formatTime(entry.t)}]` : entry.orphaned ? '(passage changed)' : `¶${entry.p}`;
+            if (entry.kind === 'question') lines.push(`**${ref}** “${entry.exact}”`, `Q: ${entry.question}`, `A: ${entry.answer}`, '');
+            else lines.push(`> ${entry.exact}`, `— ${ref}${entry.note ? ` · Note: ${entry.note}` : ''}`, '');
+          });
+        });
+        return lines.join('\n');
+      }
+
+      function matches(entry) {
+        if (view.tab === 'highlights' && entry.kind !== 'highlight') return false;
+        if (view.tab === 'questions' && entry.kind !== 'question') return false;
+        if (view.tab === 'notes' && !entry.note) return false;
+        if (view.color && entry.color !== view.color) return false;
+        if (view.query) {
+          const haystack = `${entry.exact} ${entry.note || ''} ${entry.question || ''} ${entry.answer || ''}`.toLowerCase();
+          if (!haystack.includes(view.query.toLowerCase())) return false;
+        }
+        return true;
+      }
+
+      function entryHtml(entry, group) {
+        const href = group.current ? `lesson.html?state=returning#p${entry.p}` : group.video ? 'video-lesson.html?state=returning' : 'lesson.html';
+        const ref = entry.video
+          ? `<a class="ref" href="video-lesson.html?state=returning&t=${entry.t}" title="Play from ${formatTime(entry.t)}" style="color:var(--pen)">▶ ${formatTime(entry.t)}</a>`
+          : entry.orphaned
+            ? `<span class="ref">—</span>`
+            : `<a class="ref" href="${href}" title="Open at ¶${entry.p}">¶${entry.p}</a>`;
+        if (entry.kind === 'moment') {
+          return `<div class="nbp-entry">${ref}<div>
+            <div class="nb-meta"><span class="kind">${entry.momentKind === 'note' ? 'Note' : 'Bookmark'}</span><span>· video · ${esc(entry.when)}</span></div>
+            ${entry.note ? `<div class="nb-note">${icon('note')}<span>${esc(entry.note)}</span></div>` : ''}
+            <p class="nb-q-quote" style="margin-top:6px">“${esc(entry.exact)}”</p></div></div>`;
+        }
+        if (entry.kind === 'question') {
+          return `<div class="nbp-entry">${ref}<div>
+            <div class="nb-meta"><span class="kind q">${entry.action === 'ask' || entry.action === 'moment' ? 'Ask' : entry.action === 'define' ? 'Define' : 'Explain'}</span><span>· ${esc(entry.when)}</span></div>
+            <p class="nb-q-quote">“${esc(entry.exact)}”</p>
+            <p class="nb-question">${esc(entry.question)}</p>
+            <p class="nb-answer">${esc(entry.answer)}</p></div></div>`;
+        }
+        const color = HL[entry.color]?.swatch || HL.yellow.swatch;
+        return `<div class="nbp-entry">${ref}<div>
+          <p class="nb-quote"><span style="background:color-mix(in oklab, ${color} 55%, transparent)">${esc(entry.exact)}</span></p>
+          ${entry.note ? `<div class="nb-note">${icon('note')}<span>${esc(entry.note)}</span></div>` : ''}
+          ${entry.orphaned ? `<div class="nb-orphan">${icon('alert')}<span>This passage changed after you highlighted it. Your original text is kept here.</span></div>` : ''}
+          <div class="meta">Highlighted ${esc(entry.when)}</div></div></div>`;
+      }
+
+      function render() {
+        const entries = allEntries();
+        const highlights = entries.filter((entry) => entry.kind === 'highlight').length;
+        const questions = entries.filter((entry) => entry.kind === 'question').length;
+        const notes = entries.filter((entry) => entry.note).length;
+        let lastSection = '';
+        const lessons = groups
+          .map((group) => {
+            const visible = group.entries.filter(matches);
+            if (!visible.length) return '';
+            const sectionHeading = group.section !== lastSection ? `<div class="nbp-sec">${esc(group.section)}</div>` : '';
+            lastSection = group.section;
+            return `${sectionHeading}<div class="nbp-lesson"><div class="nbp-lesson-head">${icon('lesson', 15)}${esc(group.lesson)}<span class="n">· ${group.video ? 'video and notes · ' : ''}${visible.length}</span><a href="${group.current ? 'lesson.html?state=returning' : group.video ? 'video-lesson.html?state=returning' : 'lesson.html'}">Open lesson ${icon('chevronRight', 12, 'style="vertical-align:-2px"')}</a></div>${visible.map((entry) => entryHtml(entry, group)).join('')}</div>`;
+          })
+          .join('');
+
+        const quiz = view.quizOpen
+          ? `<div class="nbp-quiz">
+              <p class="q">1 of 3 · A column of prices has 12 gaps. Why does the lesson suggest the median rather than the mean to fill them?</p>
+              ${[
+                ['a', 'The median is faster to calculate on large files'],
+                ['b', 'A few very large orders would pull the mean away from a typical sale'],
+                ['c', 'pandas cannot calculate the mean of a column with NaN']
+              ]
+                .map(([key, text]) => `<button class="opt ${view.answered && key === 'b' ? 'right' : ''} ${view.answered === key && key !== 'b' ? 'wrong' : ''}" data-opt="${key}"><span class="mono" style="color:var(--muted-foreground)">${key.toUpperCase()}</span>${text}</button>`)
+                .join('')}
+              ${view.answered ? `<p class="why">${view.answered === 'b' ? 'Right.' : 'Not quite.'} From your highlight in Cleaning messy data ¶11: “the median of the column is a safer stand-in than the mean”, because extreme values drag the mean.</p>` : ''}
+            </div>`
+          : '';
+
+        document.getElementById('nbp-body').innerHTML = `
+          <div class="nbp-stats">
+            <span class="nbp-stat"><b>${highlights}</b> highlights</span>
+            <span class="nbp-stat"><b>${questions}</b> questions</span>
+            <span class="nbp-stat"><b>${notes}</b> notes</span>
+            <span class="nbp-stat"><b>${groups.length}</b> lessons</span>
+          </div>
+          <div class="nbp-review">
+            <span class="ic">${icon('sparkles')}</span>
+            <span style="flex:1;min-width:200px"><span class="t" style="display:block">Review what you saved</span><span class="d">A three-question quiz built only from your highlights and questions in this course.</span></span>
+            <button class="btn btn-primary btn-sm" data-quiz>${view.quizOpen ? 'Close quiz' : 'Quiz me'}</button>
+          </div>
+          ${quiz}
+          <div class="nbp-tools">
+            <div class="rd-seg sm">${[
+              ['all', 'All'],
+              ['highlights', 'Highlights'],
+              ['questions', 'Questions'],
+              ['notes', 'Notes']
+            ]
+              .map(([key, label]) => `<button data-tab="${key}" aria-pressed="${view.tab === key}">${label}</button>`)
+              .join('')}</div>
+            <div class="nbp-colors" aria-label="Filter by colour">${Object.entries(HL)
+              .map(([key, color]) => `<button data-color="${key}" aria-label="${color.name}" aria-pressed="${view.color === key}" style="background:${color.swatch}"></button>`)
+              .join('')}</div>
+            <label class="nbp-search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="search" placeholder="Search your notebook" value="${esc(view.query)}" data-search /></label>
+          </div>
+          ${lessons || `<div class="nb-empty"><span class="ic">${icon('notebook')}</span><span class="t">Nothing matches</span><span>Try another filter or clear the search.</span></div>`}`;
+      }
+
+      document.addEventListener('click', (event) => {
+        const tab = event.target.closest('[data-tab]');
+        if (tab) view.tab = tab.dataset.tab;
+        const color = event.target.closest('[data-color]');
+        if (color) view.color = view.color === color.dataset.color ? null : color.dataset.color;
+        if (event.target.closest('[data-quiz]')) {
+          view.quizOpen = !view.quizOpen;
+          view.answered = null;
+        }
+        const option = event.target.closest('[data-opt]');
+        if (option && !view.answered) view.answered = option.dataset.opt;
+        const exportButton = event.target.closest('[data-export]');
+        if (exportButton) {
+          const markdown = notebookPageMarkdown();
+          if (exportButton.dataset.export === 'copy') {
+            copyText(markdown);
+            toast(`Copied ${allEntries().length} items as Markdown`);
+          } else {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown' }));
+            link.download = 'data-science-notebook.md';
+            link.click();
+            toast('Downloaded data-science-notebook.md');
+          }
+          return;
+        }
+        if (tab || color || event.target.closest('[data-quiz]') || option) render();
+      });
+
+      document.addEventListener('input', (event) => {
+        if (!event.target.matches('[data-search]')) return;
+        view.query = event.target.value;
+        const caret = event.target.selectionStart;
+        render();
+        const input = document.querySelector('[data-search]');
+        input.focus();
+        input.setSelectionRange(caret, caret);
+      });
+
+      render();
+      renderProto();
+    </script>
+  </body>
+</html>

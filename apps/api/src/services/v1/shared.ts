@@ -1,4 +1,7 @@
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { getCourseSectionById } from '@cio/db/queries/course';
+import { getLessonById, type LessonById } from '@cio/db/queries/lesson';
+import type { TCourseSection } from '@cio/db/types';
 import {
   getCohortMemberByProfileId,
   getCohortMemberRole,
@@ -6,7 +9,11 @@ import {
   isCohortMember,
   isOrgAdminByCohortId
 } from '@cio/db/queries/cohort';
-import { isCourseTeamMemberOrOrgAdmin, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
+import {
+  getGroupMemberIdByCourseAndProfile,
+  isCourseTeamMemberOrOrgAdmin,
+  isUserCourseMemberOrOrgAdmin
+} from '@cio/db/queries/group';
 import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import {
   getOrganizationMemberIdByOrgAndProfile,
@@ -14,6 +21,8 @@ import {
   getOrganizationMembersByNormalizedEmails
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
+import { hasMemberProfileField, type TPublicApiMemberProfileFields } from '@cio/utils/validation/public-api';
+import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 export type TPublicApiPagination = { page: number; limit: number; total: number; totalPages: number };
@@ -38,6 +47,37 @@ export function assertAutomationActor(actorId: string | null): asserts actorId i
   if (!actorId) {
     throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
   }
+}
+
+const MEMBER_PROFILE_FIELD_KEYS = ['name', 'username', 'avatarUrl', 'locale'] as const;
+
+/** Throws 400, naming the first profile field sent, if the member has not joined yet and so has no profile. */
+export function assertMemberHasJoined(
+  profileId: string | null | undefined,
+  payload: TPublicApiMemberProfileFields
+): asserts profileId is string {
+  if (!profileId) {
+    throw new AppError(
+      'Only members who have joined have a profile to update. A pending member has no profile yet',
+      ErrorCodes.VALIDATION_ERROR,
+      400,
+      MEMBER_PROFILE_FIELD_KEYS.find((key) => payload[key] !== undefined)
+    );
+  }
+}
+
+/** The profile fields of a member update body, named as the account service names them; null when none are sent. */
+export function toProfileUpdate(payload: TPublicApiMemberProfileFields): TUpdateProfile | null {
+  if (!hasMemberProfileField(payload)) {
+    return null;
+  }
+
+  return {
+    fullname: payload.name,
+    username: payload.username,
+    avatarUrl: payload.avatarUrl,
+    locale: payload.locale
+  };
 }
 
 export async function assertCohortBelongsToOrganization(orgId: string, cohortId: string): Promise<void> {
@@ -79,14 +119,14 @@ export async function assertEmailBelongsToOrganization(orgId: string, email: str
 
 /**
  * Mirrors `orgTeamMemberMiddleware` for the key's creator: the actor must be an org admin or tutor.
- * Throws 401 without an actor and 403 otherwise.
+ * Returns the actor's role. Throws 401 without an actor and 403 otherwise.
  */
-export async function assertOrgTeamMember(orgId: string, actorId: string | null): Promise<void> {
+export async function assertOrgTeamMember(orgId: string, actorId: string | null): Promise<number> {
   assertAutomationActor(actorId);
 
   const roleId = await getOrganizationMemberRoleId(orgId, actorId);
   if (roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) {
-    return;
+    return roleId;
   }
 
   throw new AppError(
@@ -94,6 +134,36 @@ export async function assertOrgTeamMember(orgId: string, actorId: string | null)
     ErrorCodes.ORG_TEAM_NOT_AUTHORIZED,
     403
   );
+}
+
+/**
+ * Mirrors `orgMemberMiddleware` for the key's creator: the actor must hold any role in the org.
+ * Throws 401 without an actor and 403 otherwise.
+ */
+export async function assertOrgMember(orgId: string, actorId: string | null): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const roleId = await getOrganizationMemberRoleId(orgId, actorId);
+  if (roleId !== null) {
+    return;
+  }
+
+  throw new AppError('Automation actor must be an organization member', ErrorCodes.UNAUTHORIZED, 403);
+}
+
+/**
+ * Mirrors `orgAdminMiddleware` for the key's creator: the actor must be an org admin.
+ * Throws 401 without an actor and 403 otherwise.
+ */
+export async function assertOrgAdmin(orgId: string, actorId: string | null): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const roleId = await getOrganizationMemberRoleId(orgId, actorId);
+  if (roleId === ROLE.ADMIN) {
+    return;
+  }
+
+  throw new AppError('Automation actor must be an organization admin', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
 }
 
 /**
@@ -198,4 +268,52 @@ export async function assertCourseTeamMemberOrOrgAdmin(courseId: string, actorId
       403
     );
   }
+}
+
+export async function assertSectionInCourse(courseId: string, sectionId: string): Promise<TCourseSection> {
+  const section = await getCourseSectionById(sectionId);
+  if (!section || section.courseId !== courseId) {
+    throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+  }
+
+  return section;
+}
+
+export async function assertLessonInCourse(courseId: string, lessonId: string): Promise<LessonById> {
+  const lesson = await getLessonById(lessonId);
+  if (!lesson || lesson.courseId !== courseId) {
+    throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+  }
+
+  return lesson;
+}
+
+/** Edit is author-only, as in the dashboard UI; delete also allows the course team and org admins. */
+export async function assertLessonCommentAuthorOrTeam(
+  courseId: string,
+  actorId: string | null,
+  commentAuthorMemberId: string | null,
+  action: 'edit' | 'delete'
+): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const actorMemberId = await getGroupMemberIdByCourseAndProfile(courseId, actorId);
+  if (actorMemberId && actorMemberId === commentAuthorMemberId) {
+    return;
+  }
+
+  if (action === 'delete' && (await isCourseTeamMemberOrOrgAdmin(courseId, actorId))) {
+    return;
+  }
+
+  const message =
+    action === 'edit'
+      ? 'Only the comment author can edit this comment'
+      : 'Only the comment author or a course team member can delete this comment';
+  throw new AppError(message, ErrorCodes.FORBIDDEN, 403);
+}
+
+export async function assertCourseTeamAccess(orgId: string, actorId: string | null, courseId: string): Promise<void> {
+  await assertCourseBelongsToOrganization(orgId, courseId);
+  await assertCourseTeamMemberOrOrgAdmin(courseId, actorId);
 }

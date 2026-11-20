@@ -48,7 +48,7 @@ export async function assembleCertificateRender(
   };
 }
 
-function formatCertificateId(format: string | undefined, seq: string, issuedAt: Date): string {
+export function formatCertificateId(format: string | undefined, seq: string, issuedAt: Date): string {
   const year = issuedAt.getFullYear();
   const month = String(issuedAt.getMonth() + 1).padStart(2, '0');
   const tail = seq.replace(/-/g, '').slice(-4).toUpperCase() || '0001';

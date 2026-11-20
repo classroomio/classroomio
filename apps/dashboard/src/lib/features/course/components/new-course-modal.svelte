@@ -121,6 +121,7 @@
             className="w-full"
             isRequired={true}
             errorMessage={courseApi.errors.title}
+            onInput={() => courseApi.clearError('title')}
             autoComplete={false}
           />
         </div>
@@ -133,6 +134,7 @@
           className="mb-4"
           isRequired={true}
           errorMessage={courseApi.errors.description}
+          oninput={() => courseApi.clearError('description')}
           isAIEnabled={true}
           initAIPrompt="Write a 30 word description for a course titled: {$createCourseModal.title}"
         />

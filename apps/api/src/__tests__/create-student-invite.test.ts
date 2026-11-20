@@ -14,6 +14,11 @@ vi.mock('@api/services/jobs', () => ({
   enqueueTransactionalEmail: vi.fn()
 }));
 
+vi.mock('@cio/core/services/webhook/emit', () => ({
+  emitCourseWebhookEvent: vi.fn(),
+  emitCourseMemberWebhookEvent: vi.fn()
+}));
+
 import { createCourseInvite, createCourseInviteAudit } from '@cio/db/queries/course/invite';
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { enqueueTransactionalEmail } from '@api/services/jobs';

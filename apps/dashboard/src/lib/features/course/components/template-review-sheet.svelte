@@ -66,8 +66,6 @@
 
   function selectSetting(setting: CourseTemplateUpdates['settings'][number]) {
     selectedSettings.add(setting.key);
-    if (setting.requiresUnitId)
-      replaceUnitSelection(selectUnitWithParents(units, selectedUnits, setting.requiresUnitId));
   }
 
   function toggleSetting(setting: CourseTemplateUpdates['settings'][number], checked: boolean) {
@@ -80,12 +78,6 @@
     if (!checked) return;
 
     for (const setting of settings) selectSetting(setting);
-  }
-
-  function requiredUnit(setting: CourseTemplateUpdates['settings'][number]) {
-    if (!setting.requiresUnitId) return null;
-
-    return units.find((unit) => unit.id === setting.requiresUnitId) ?? null;
   }
 
   function place(unit: CourseTemplateUpdates['units'][number]) {
@@ -234,7 +226,6 @@
           {#each settings as setting (setting.key)}
             {@const templateDisplay = templateSettingDisplay(setting.key, setting.templateValue, $t)}
             {@const courseDisplay = templateSettingDisplay(setting.key, setting.courseValue, $t)}
-            {@const addedUnit = requiredUnit(setting)}
             <Label class="flex items-start gap-3 text-sm font-normal">
               <Checkbox
                 class="mt-0.5"
@@ -269,14 +260,6 @@
                     {$t('course_templates.sync.template_value', { value: templateDisplay.text })}
                     ·
                     {$t('course_templates.sync.yours_value', { value: courseDisplay.text })}
-                  </span>
-                {/if}
-                {#if addedUnit}
-                  <span class="ui:text-muted-foreground block text-xs">
-                    {$t('course_templates.sync.also_adds', {
-                      kind: $t(`course_templates.sync.kind.${addedUnit.kind}`),
-                      title: addedUnit.title
-                    })}
                   </span>
                 {/if}
               </span>

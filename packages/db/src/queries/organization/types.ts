@@ -10,6 +10,7 @@ export type OrganizationWithMemberAndPlans = TOrganization & {
   roleId?: number;
   plans: OrganizationPlan[];
   limits?: OrgUsageLimits;
+  paymentFailedAt?: string | null;
 };
 
 export type OrganizationWithPlans = TOrganization & {

@@ -20,6 +20,12 @@ export type ListLessons = ListLessonsSuccess['data'];
 // Get lesson types
 export type GetLessonRequest = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['$get'];
 export type GetLessonResponse = InferResponseType<GetLessonRequest> | null;
+export type GetLessonVideoStatusRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['video-status']['$get'];
+export type GetLessonVideoStatusSuccess = Extract<InferResponseType<GetLessonVideoStatusRequest>, { success: true }>;
+export type LessonVideoHlsStatuses = GetLessonVideoStatusSuccess['data']['statuses'];
+export type LessonVideoHlsStatus = LessonVideoHlsStatuses[string];
+
 export type GetLessonSuccess = Extract<InferResponseType<GetLessonRequest>, { success: true }>;
 export type Lesson = GetLessonSuccess['data'];
 
@@ -153,7 +159,13 @@ export type GetLessonHistoryRequest =
 export type GetLessonHistoryResponse = InferResponseType<GetLessonHistoryRequest> | null;
 export type GetLessonHistorySuccess = Extract<InferResponseType<GetLessonHistoryRequest>, { success: true }>;
 export type LessonHistory = GetLessonHistorySuccess['data'];
-export type LessonHistoryRow = LessonHistory[number];
+export type LessonHistoryRow = LessonHistory['items'][number];
+export type RestoreLessonHistoryRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['restore']['$post'];
+export type RestoreLessonToEntryRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['restore-lesson']['$post'];
+export type UndoLessonChangeSetRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['undo']['$post'];
 
 /**
  * A history row with its timestamps parsed, as the version history panel renders
@@ -162,6 +174,7 @@ export type LessonHistoryRow = LessonHistory[number];
  */
 export interface LessonVersionEntry {
   id: number;
+  entryType: LessonHistoryRow['entryType'];
   newContent: string;
   oldContent: string;
   kind: NonNullable<LessonHistoryRow['kind']>;
@@ -170,8 +183,19 @@ export interface LessonVersionEntry {
   timestamp: Date;
   editCount: number;
   authorName: string | null;
+  source: LessonHistoryRow['source'];
+  clientName: string | null;
+  changeSetId: string | null;
+  undoable: boolean;
+  changes: LessonHistoryRow['changes'];
   locale: TLocale;
   lessonId: string;
+  blockId: string | null;
+  /** 1-based position of the block among the lesson's text blocks; null for structure entries and removed blocks. */
+  blockNumber: number | null;
+  blockCount: number;
+  blockRemoved: boolean;
+  sharedWithOtherLessons: number;
 }
 
 /** Version entries bucketed into calendar days, newest day first. */
@@ -514,11 +538,6 @@ export type ResetMemberCourseProgressResponse = InferResponseType<ResetMemberCou
 export type ResetMemberCourseProgressSuccess = Extract<ResetMemberCourseProgressResponse, { success: true }>;
 export type ResetMemberCourseProgressSummary = ResetMemberCourseProgressSuccess['data'];
 
-export type GetCourseAnalyticsRequest = (typeof classroomio.course)[':courseId']['analytics']['$get'];
-export type GetCourseAnalyticsResponse = InferResponseType<GetCourseAnalyticsRequest>;
-export type GetCourseAnalyticsSuccess = Extract<GetCourseAnalyticsResponse, { success: true }>;
-export type CourseAnalytics = GetCourseAnalyticsSuccess['data'];
-
 export type GetCourseComplianceOverviewRequest = (typeof classroomio.course)[':courseId']['compliance']['$get'];
 export type GetCourseComplianceOverviewResponse = InferResponseType<GetCourseComplianceOverviewRequest>;
 export type GetCourseComplianceOverviewSuccess = Extract<GetCourseComplianceOverviewResponse, { success: true }>;
@@ -547,6 +566,8 @@ export type WaiveCourseComplianceSuccess = Extract<WaiveCourseComplianceResponse
 // Derived types from Lesson
 export type LessonVideoType = NonNullable<Lesson['videos']>[number]['type'];
 export type LessonDocument = NonNullable<Lesson['documents']>[number];
+
+export type LessonReadingDensity = 'compact' | 'comfortable' | 'spacious';
 
 // Derived types from Course metadata
 export type Tabs = NonNullable<NonNullable<Course['metadata']>['lessonTabsOrder']>[number];
@@ -635,8 +656,6 @@ export type PreviewCourseTemplateSuccess = Extract<InferResponseType<PreviewCour
 export type CourseTemplatePreviewSettings = {
   certificate: boolean;
   deadline: string | null;
-  threshold: number | null;
-  finalExercise: { title: string; score: number } | null;
   sequential: boolean;
   grading: boolean;
   commentsOff: boolean;
@@ -666,3 +685,60 @@ export type CourseTemplateUpdates = GetCourseTemplateUpdatesSuccess['data'];
 
 export type PullCourseTemplateUpdatesRequest =
   (typeof classroomio.course)[':courseId']['template-updates']['pull']['$post'];
+
+// Live session reminder types
+export type ListLiveSessionReminderDeliveriesRequest =
+  (typeof classroomio.course)[':courseId']['live-session-reminders']['deliveries']['$get'];
+export type ListLiveSessionReminderDeliveriesSuccess = Extract<
+  InferResponseType<ListLiveSessionReminderDeliveriesRequest>,
+  { success: true }
+>;
+export type LiveSessionReminderDelivery = ListLiveSessionReminderDeliveriesSuccess['data'][number];
+export type LiveSessionReminderDeliveriesPagination = ListLiveSessionReminderDeliveriesSuccess['pagination'];
+
+export type LiveSessionReminderUnit = 'days' | 'hours' | 'minutes';
+
+export type LiveSessionReminderRow = {
+  id: string;
+  amount: number;
+  unit: LiveSessionReminderUnit;
+};
+
+export type LiveSessionReminderRowError = 'amount' | 'min' | 'max' | 'duplicate';
+
+export type ReorderCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['reorder']['$put'];
+export type SidebarOutlineEntry =
+  | { id: string; kind: 'item'; order: number; item: CourseContentItem }
+  | {
+      id: string;
+      kind: 'section';
+      order: number;
+      section: Omit<CourseContentSection, 'items'>;
+      items: SidebarOutlineEntry[];
+    };
+/** A lesson or exercise as a contents-page drag zone holds it: `id` is the drag key, `contentId` the item id. */
+export type ContentDndItem = CourseContentItem & { contentId: string };
+export type SidebarDeleteTarget = { kind: 'section'; sectionId: string } | { kind: 'item'; item: CourseContentItem };
+
+export type DocumentUploadStatus = 'queued' | 'uploading' | 'done' | 'error';
+
+export type DocumentUploadItem = {
+  id: string;
+  file: File;
+  status: DocumentUploadStatus;
+  progress: number;
+  position: number;
+  errorMessage: string | null;
+};
+
+type LessonBlocksRoute = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['blocks'];
+
+export type ListLessonBlocksRequest = LessonBlocksRoute['$get'];
+export type CreateLessonBlockRequest = LessonBlocksRoute['$post'];
+export type AttachLessonBlockRequest = LessonBlocksRoute['attach']['$post'];
+export type UpdateLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['$patch'];
+export type MoveLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['move']['$put'];
+export type RemoveLessonPlacementRequest = LessonBlocksRoute['placements'][':placementId']['$delete'];
+export type UpdateLessonBlockRequest = LessonBlocksRoute[':blockId']['$patch'];
+export type UpdateLessonBlockLocaleRequest = LessonBlocksRoute[':blockId']['locale'][':locale']['$put'];
+export type DuplicateLessonBlockRequest = LessonBlocksRoute[':blockId']['duplicate']['$post'];

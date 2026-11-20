@@ -218,7 +218,6 @@
         shouldMarkComplete && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
 
       if (allComplete && courseApi.course?.id) {
-        const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
         openCourseCompletionModal(courseApi.course.id);
 
         const certRes = await courseApi.getCertificationEvaluation(courseApi.course.id);
@@ -227,8 +226,7 @@
           updateCourseCompletionModal(
             courseApi.course.id,
             hasCompletedCourse ? 'eligible' : 'not-eligible',
-            certRes.data,
-            requiredExerciseId
+            certRes.data
           );
         } else {
           closeCourseCompletionModal();
@@ -369,14 +367,15 @@
     alreadyCheckedAutoSavedData = true;
   }
 
-  async function handleFileUpload(file: File): Promise<{ fileKey: string; fileName: string; fileUrl?: string }> {
+  async function handleFileUpload(
+    file: File,
+    context: { acceptedTypes: string[] }
+  ): Promise<{ fileKey: string; fileName: string; fileUrl?: string }> {
     const uploadResult = await presignApi.getDocumentUploadUrl(
       file.name,
-      file.type as
-        | 'application/pdf'
-        | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        | 'application/msword',
-      file.size > 0 ? file.size : undefined
+      file.type,
+      file.size > 0 ? file.size : undefined,
+      context.acceptedTypes
     );
     if (!uploadResult) {
       throw new Error('Failed to get upload URL');
@@ -536,15 +535,21 @@
     }));
   }
 
-  function onSectionQuestionAnswerChange(question: Question, answerValue: AnswerData) {
+  function onSectionQuestionAnswerChange(question: Question, answerValue: AnswerData | null) {
     const questionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(question));
-    questionnaireMetaData.update((metaData) => ({
-      ...metaData,
-      answers: {
-        ...metaData.answers,
-        [questionKey]: answerValue
+    questionnaireMetaData.update((metaData) => {
+      const answers = { ...metaData.answers };
+      if (answerValue === null) {
+        delete answers[questionKey];
+      } else {
+        answers[questionKey] = answerValue;
       }
-    }));
+
+      return {
+        ...metaData,
+        answers
+      };
+    });
   }
 
   function completeAllQuestionsSection() {
@@ -571,22 +576,7 @@
 
     e.preventDefault();
 
-    let valueToUse: AnswerData | undefined = sharedCurrentAnswer as AnswerData | undefined;
-
-    if (target instanceof HTMLInputElement && sharedQuestionModel) {
-      const questionTypeKey = sharedQuestionModel.questionType;
-      const trimmed = target.value?.trim() ?? '';
-
-      if (questionTypeKey === 'SHORT_ANSWER' && trimmed) {
-        valueToUse = { type: 'SHORT_ANSWER', text: trimmed };
-        onSharedAnswerChange(valueToUse);
-      } else if (questionTypeKey === 'NUMERIC' && trimmed) {
-        const num = Number(trimmed);
-        valueToUse = !Number.isNaN(num) ? { type: 'NUMERIC', value: num } : undefined;
-
-        if (valueToUse) onSharedAnswerChange(valueToUse);
-      }
-    }
+    const valueToUse: AnswerData | undefined = sharedCurrentAnswer as AnswerData | undefined;
     if (!hasAnswerValue(valueToUse)) {
       snackbar.error($t('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
       return;

@@ -1,8 +1,18 @@
 ---
-title: 'Reconnect a domain that needs attention'
-description: 'This ClassroomIO Help Center guide is still being worked on.'
+title: Reconnect a domain that needs attention
+description: Restore a custom domain after a DNS or connection problem.
+last_reviewed: '2026-10-21'
 ---
 
-:::info[This guide is coming soon]
-Bookmark this page and check back for the complete instructions.
-:::
+A domain marked **Reconnect required** or **Error** needs attention before you rely on it for academy links.
+
+![Custom domain settings showing Reconnect required and the Reconnect domain action](./images/reconnect-a-domain-that-needs-attention/overview.webp)
+
+1. Open **Settings → Domains** and read the current status and instructions.
+2. Compare the displayed DNS records with your DNS provider and restore any missing or changed record.
+3. Choose **Reconnect** for the existing hostname, then use **Refresh** to check its status.
+4. When it shows **Verified**, open the HTTPS academy URL and test sign-in and a course link.
+
+A domain pending DNS or verification may simply need more time after a record change. Do not share the custom URL as the main academy address until it works in a browser. See [Set Up a Custom Domain](/publish-and-brand/custom-domain).
+
+For a persistent DNS, certificate, or redirect problem, follow [custom domain and SSL troubleshooting](/troubleshooting-and-reference/troubleshoot-custom-domains-and-ssl).

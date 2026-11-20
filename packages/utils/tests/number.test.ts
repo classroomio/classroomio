@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { formatCompactCount, parseBoundedInteger, parseBoundedNumber } from '../src/functions/number';
+import {
+  formatCompactCount,
+  parseBoundedInteger,
+  parseBoundedNumber,
+  parseNumberInRange
+} from '../src/functions/number';
 
 describe('formatCompactCount', () => {
   it('keeps values under 1000 exact', () => {
@@ -65,5 +70,37 @@ describe('parseBoundedNumber', () => {
     expect(parseBoundedNumber('', { min: 0, max: 100 })).toBeUndefined();
     expect(parseBoundedNumber('   ', { min: 0, max: 100 })).toBeUndefined();
     expect(parseBoundedNumber('abc', { min: 0, max: 100 })).toBeUndefined();
+  });
+});
+
+describe('parseNumberInRange', () => {
+  it('returns undefined for empty, whitespace, or invalid input', () => {
+    expect(parseNumberInRange('')).toBeUndefined();
+    expect(parseNumberInRange('   ')).toBeUndefined();
+    expect(parseNumberInRange('abc')).toBeUndefined();
+  });
+
+  it('parses valid numbers within bounds', () => {
+    expect(parseNumberInRange('50', { min: 0, max: 100 })).toBe(50);
+  });
+
+  it('returns undefined for out-of-range numbers', () => {
+    expect(parseNumberInRange('150', { min: 0, max: 100 })).toBeUndefined();
+    expect(parseNumberInRange('-1', { min: 0 })).toBeUndefined();
+  });
+
+  it('enforces integer mode', () => {
+    expect(parseNumberInRange('2.5', { integer: true })).toBeUndefined();
+    expect(parseNumberInRange('2.5')).toBe(2.5);
+  });
+
+  it('supports min-only and max-only bounds', () => {
+    expect(parseNumberInRange('5000000', { min: 0 })).toBe(5_000_000);
+    expect(parseNumberInRange('50', { max: 100 })).toBe(50);
+    expect(parseNumberInRange('150', { max: 100 })).toBeUndefined();
+  });
+
+  it('parses scientific notation', () => {
+    expect(parseNumberInRange('1e3')).toBe(1000);
   });
 });

@@ -20,7 +20,9 @@ import { generateUniqueCourseSlug } from '@cio/core/services/course/landing-page
 import { env } from '@cio/core/config/env';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { getPlanLimit } from '@cio/utils/plans';
+import { capturePlanLimitReached } from '@cio/core/services/posthog';
 import { slugifyTitle } from '@cio/utils/validation';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -33,6 +35,15 @@ async function assertTemplateCapacity(orgId: string, dbClient: DbOrTxClient = db
 
   const used = await countOrgTemplates(orgId, dbClient);
   if (used >= limit) {
+    capturePlanLimitReached({
+      orgId,
+      limitType: 'templates',
+      plan: plan?.planName,
+      limit,
+      current: used,
+      blocked: true
+    });
+
     throw new AppError(
       `Your plan includes ${limit} template${limit === 1 ? '' : 's'}`,
       ErrorCodes.UPGRADE_REQUIRED,
@@ -85,40 +96,29 @@ export async function listCourseTemplates(orgId: string) {
   };
 }
 
-function templatePreviewSettings(
-  template: {
-    type: string | null;
-    certificate: {
-      isDownloadable?: boolean;
-      deadline?: string | null;
-      threshold?: number;
-      requiredExerciseId?: string | null;
-      exerciseMinScorePercent?: number | null;
-    } | null;
-    metadata: {
-      progressionMode?: 'free' | 'sequential';
-      grading?: boolean;
-      commentsEnabled?: boolean;
-      lessonDownload?: boolean;
-      allowSelfEnrollment?: boolean | null;
-      allowNewStudent?: boolean | null;
-      aiTutor?: { enabled?: boolean };
-    } | null;
-    compliance: {
-      retakeIntervalMonths: number;
-      isMandatory?: boolean;
-    } | null;
-  },
-  exercises: { id: string; title: string }[]
-) {
+function templatePreviewSettings(template: {
+  type: string | null;
+  certificate: {
+    isDownloadable?: boolean;
+    deadline?: string | null;
+  } | null;
+  metadata: {
+    progressionMode?: CourseProgressionMode;
+    grading?: boolean;
+    commentsEnabled?: boolean;
+    lessonDownload?: boolean;
+    allowSelfEnrollment?: boolean | null;
+    allowNewStudent?: boolean | null;
+    aiTutor?: { enabled?: boolean };
+  } | null;
+  compliance: {
+    retakeIntervalMonths: number;
+    isMandatory?: boolean;
+  } | null;
+}) {
   const certificate = template.certificate ?? {};
   const metadata = template.metadata ?? {};
   const certificateOn = certificate.isDownloadable === true;
-  const requiredExerciseId = certificate.requiredExerciseId ?? null;
-  const finalExercise = requiredExerciseId
-    ? exercises.find((exercise) => exercise.id === requiredExerciseId)
-    : undefined;
-  const score = typeof certificate.exerciseMinScorePercent === 'number' ? certificate.exerciseMinScorePercent : 100;
   const compliance =
     template.type === 'COMPLIANCE' && template.compliance
       ? {
@@ -130,8 +130,6 @@ function templatePreviewSettings(
   return {
     certificate: certificateOn,
     deadline: certificate.deadline ?? null,
-    threshold: certificateOn ? (typeof certificate.threshold === 'number' ? certificate.threshold : 100) : null,
-    finalExercise: finalExercise ? { title: finalExercise.title, score } : null,
     sequential: metadata.progressionMode === 'sequential',
     grading: metadata.grading === true,
     commentsOff: metadata.commentsEnabled === false,
@@ -157,43 +155,62 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
     questionCountByExercise.set(question.exerciseId, (questionCountByExercise.get(question.exerciseId) ?? 0) + 1);
   }
 
-  const outline = sections
-    .slice()
-    .sort((left, right) => left.order - right.order)
-    .map((section) => ({
-      id: section.id,
-      title: section.title,
-      lessons: lessons
-        .filter((lesson) => lesson.sectionId === section.id)
-        .sort((left, right) => left.order - right.order)
-        .map((lesson) => ({ id: lesson.id, title: lesson.title })),
-      exercises: exercises
-        .filter((exercise) => exercise.sectionId === section.id)
-        .sort((left, right) => left.order - right.order)
-        .map((exercise) => ({
-          id: exercise.id,
-          title: exercise.title,
-          questionCount: questionCountByExercise.get(exercise.id) ?? 0
-        }))
-    }));
+  const toPreviewLesson = (lesson: (typeof lessons)[number]) => ({ id: lesson.id, title: lesson.title });
+  const toPreviewExercise = (exercise: (typeof exercises)[number]) => ({
+    id: exercise.id,
+    title: exercise.title,
+    questionCount: questionCountByExercise.get(exercise.id) ?? 0
+  });
+  const byOrder = <T extends { order: number }>(items: T[]) =>
+    items.slice().sort((left, right) => left.order - right.order);
 
-  const unsectionedLessons = lessons.filter((lesson) => !lesson.sectionId);
-  const unsectionedExercises = exercises.filter((exercise) => !exercise.sectionId);
-  if (unsectionedLessons.length > 0 || unsectionedExercises.length > 0) {
-    outline.push({
-      id: '',
-      title: null,
-      lessons: unsectionedLessons
-        .sort((left, right) => left.order - right.order)
-        .map((lesson) => ({ id: lesson.id, title: lesson.title })),
-      exercises: unsectionedExercises
-        .sort((left, right) => left.order - right.order)
-        .map((exercise) => ({
-          id: exercise.id,
-          title: exercise.title,
-          questionCount: questionCountByExercise.get(exercise.id) ?? 0
-        }))
-    });
+  type PreviewBlock = {
+    id: string;
+    title: string | null;
+    lessons: ReturnType<typeof toPreviewLesson>[];
+    exercises: ReturnType<typeof toPreviewExercise>[];
+  };
+  type PreviewRootEntry =
+    | { kind: 'section'; rank: 0; order: number; section: (typeof sections)[number] }
+    | { kind: 'lesson'; rank: 1; order: number; lesson: (typeof lessons)[number] }
+    | { kind: 'exercise'; rank: 2; order: number; exercise: (typeof exercises)[number] };
+
+  const rootEntries: PreviewRootEntry[] = [
+    ...sections.map((section) => ({ kind: 'section' as const, rank: 0 as const, order: section.order, section })),
+    ...lessons
+      .filter((lesson) => !lesson.sectionId)
+      .map((lesson) => ({ kind: 'lesson' as const, rank: 1 as const, order: lesson.order, lesson })),
+    ...exercises
+      .filter((exercise) => !exercise.sectionId)
+      .map((exercise) => ({ kind: 'exercise' as const, rank: 2 as const, order: exercise.order, exercise }))
+  ].sort((left, right) => left.order - right.order || left.rank - right.rank);
+
+  const outline: PreviewBlock[] = [];
+  let standaloneBlock: PreviewBlock | null = null;
+  for (const entry of rootEntries) {
+    if (entry.kind === 'section') {
+      const sectionId = entry.section.id;
+      const sectionLessons = byOrder(lessons.filter((lesson) => lesson.sectionId === sectionId)).map(toPreviewLesson);
+      const sectionExercises = byOrder(exercises.filter((exercise) => exercise.sectionId === sectionId)).map(
+        toPreviewExercise
+      );
+      standaloneBlock = null;
+      outline.push({ id: sectionId, title: entry.section.title, lessons: sectionLessons, exercises: sectionExercises });
+      continue;
+    }
+
+    const lessonAfterExercise = entry.kind === 'lesson' && (standaloneBlock?.exercises.length ?? 0) > 0;
+    if (!standaloneBlock || lessonAfterExercise) {
+      const firstItemId = entry.kind === 'lesson' ? entry.lesson.id : entry.exercise.id;
+      standaloneBlock = { id: `standalone-${firstItemId}`, title: null, lessons: [], exercises: [] };
+      outline.push(standaloneBlock);
+    }
+
+    if (entry.kind === 'lesson') {
+      standaloneBlock.lessons.push(toPreviewLesson(entry.lesson));
+    } else {
+      standaloneBlock.exercises.push(toPreviewExercise(entry.exercise));
+    }
   }
 
   return {
@@ -213,7 +230,7 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
       title: highlight.title,
       description: highlight.description
     })),
-    settings: templatePreviewSettings(template, exercises),
+    settings: templatePreviewSettings(template),
     outline
   };
 }

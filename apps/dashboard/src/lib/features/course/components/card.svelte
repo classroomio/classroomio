@@ -19,7 +19,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseCost } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
+  import { calcCourseProgress, calcProgressRate, getCourseProgressCounts } from '$features/course/utils/functions';
   import {
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
@@ -83,16 +83,19 @@
       return typeof c.exerciseCount === 'number' ? c.exerciseCount : 0;
     })(),
     progressRate: (() => {
-      const c = course as { exerciseCount?: number; exercisesCompleted?: number };
-      if (typeof c.exerciseCount === 'number' && typeof c.exercisesCompleted === 'number') {
+      const c = course as { exercisesCompleted?: number };
+      const progressCounts = getCourseProgressCounts(course);
+
+      if (typeof c.exercisesCompleted === 'number') {
         return calcCourseProgress({
           lessonsCompleted: 'progressRate' in course ? (course.progressRate ?? 0) : 0,
-          totalLessons: course.lessonCount ?? 0,
+          totalLessons: progressCounts.lessons,
           exercisesCompleted: c.exercisesCompleted,
-          totalExercises: c.exerciseCount
+          totalExercises: progressCounts.exercises
         });
       }
-      return calcProgressRate('progressRate' in course ? course.progressRate : 0, course.lessonCount);
+
+      return calcProgressRate('progressRate' in course ? course.progressRate : 0, progressCounts.lessons);
     })(),
     totalStudents: 'totalStudents' in course ? course.totalStudents : 0
   });

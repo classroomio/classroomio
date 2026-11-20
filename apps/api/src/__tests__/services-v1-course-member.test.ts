@@ -31,6 +31,7 @@ vi.mock('@cio/core/services/course/course', () => ({
 
 import { AppError } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
+import { ZPublicApiCourseMembersQuery } from '@cio/utils/validation/public-api';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseMember } from '@cio/db/queries/course/people';
@@ -63,7 +64,7 @@ const ACTOR_ID = 'actor-1';
 
 const courseParams = { courseId: COURSE_ID };
 const memberParams = { courseId: COURSE_ID, memberId: MEMBER_ID };
-const firstPage = { page: 1, limit: 20 };
+const firstPage = ZPublicApiCourseMembersQuery.parse({});
 
 describe('services/v1/courses/members', () => {
   beforeEach(() => {
@@ -71,7 +72,7 @@ describe('services/v1/courses/members', () => {
     vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
     vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'a@example.com', profileId: 'profile-1', roleId: ROLE.STUDENT }
+      { normalizedEmail: 'a@example.com', profileId: 'profile-1', roleId: ROLE.STUDENT, hasLapsedInvite: false }
     ]);
   });
 
@@ -91,7 +92,11 @@ describe('services/v1/courses/members', () => {
       statusCode: 403
     });
     await expect(
-      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, { roleId: ROLE.STUDENT, email: 'a@example.com' })
+      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, {
+        roleId: ROLE.STUDENT,
+        email: 'a@example.com',
+        sendEmail: true
+      })
     ).rejects.toMatchObject({ statusCode: 403 });
     await expect(deleteCourseMemberService(ORG_ID, ACTOR_ID, memberParams)).rejects.toMatchObject({
       statusCode: 403
@@ -125,39 +130,55 @@ describe('services/v1/courses/members', () => {
   });
 
   it('addCourseMemberService adds an org member by email, linked to their profile, and returns the single member', async () => {
-    const payload = { roleId: ROLE.STUDENT, email: 'a@example.com' };
+    const payload = { roleId: ROLE.STUDENT, email: 'a@example.com', sendEmail: true };
     vi.mocked(addMembers).mockResolvedValue([{ id: MEMBER_ID }] as Awaited<ReturnType<typeof addMembers>>);
 
     const result = await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
 
     expect(getOrganizationMembersByNormalizedEmails).toHaveBeenCalledWith(ORG_ID, ['a@example.com']);
-    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [{ ...payload, profileId: 'profile-1' }]);
+    expect(addMembers).toHaveBeenCalledWith(
+      COURSE_ID,
+      [{ roleId: ROLE.STUDENT, email: 'a@example.com', profileId: 'profile-1' }],
+      'public_api',
+      expect.objectContaining({ actorProfileId: ACTOR_ID }),
+      { sendEmail: true }
+    );
     expect(result).toEqual({ id: MEMBER_ID });
   });
 
   it('addCourseMemberService keeps a pending org member (no profile yet) as an email-only member', async () => {
-    const payload = { roleId: ROLE.STUDENT, email: 'pending@example.com' };
+    const payload = { roleId: ROLE.STUDENT, email: 'pending@example.com', sendEmail: true };
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'pending@example.com', profileId: null, roleId: ROLE.STUDENT }
+      { normalizedEmail: 'pending@example.com', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: false }
     ]);
     vi.mocked(addMembers).mockResolvedValue([{ id: MEMBER_ID }] as Awaited<ReturnType<typeof addMembers>>);
 
     await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
 
-    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [payload]);
+    expect(addMembers).toHaveBeenCalledWith(
+      COURSE_ID,
+      [{ roleId: ROLE.STUDENT, email: 'pending@example.com' }],
+      'public_api',
+      expect.objectContaining({ actorProfileId: ACTOR_ID }),
+      { sendEmail: true }
+    );
   });
 
   it('addCourseMemberService returns 404 when the email does not belong to this organization', async () => {
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([]);
 
     await expect(
-      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, { roleId: ROLE.STUDENT, email: 'outsider@example.com' })
+      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, {
+        roleId: ROLE.STUDENT,
+        email: 'outsider@example.com',
+        sendEmail: true
+      })
     ).rejects.toMatchObject({ statusCode: 404 });
     expect(addMembers).not.toHaveBeenCalled();
   });
 
   it('addCourseMemberService returns 404 when the profileId does not belong to this organization', async () => {
-    const payload = { roleId: ROLE.STUDENT, profileId: 'other-org-profile' };
+    const payload = { roleId: ROLE.STUDENT, profileId: 'other-org-profile', sendEmail: true };
     vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null);
 
     await expect(addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload)).rejects.toMatchObject({
@@ -171,7 +192,11 @@ describe('services/v1/courses/members', () => {
     vi.mocked(addMembers).mockRejectedValue(new AppError('Already a member of this course', 'CONFLICT', 409));
 
     await expect(
-      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, { roleId: ROLE.STUDENT, email: 'a@example.com' })
+      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, {
+        roleId: ROLE.STUDENT,
+        email: 'a@example.com',
+        sendEmail: true
+      })
     ).rejects.toMatchObject({ statusCode: 409 });
   });
 
@@ -205,7 +230,7 @@ describe('services/v1/courses/members', () => {
 
     await deleteCourseMemberService(ORG_ID, ACTOR_ID, memberParams);
 
-    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
+    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID, { actorProfileId: ACTOR_ID });
   });
 
   it('update and delete pass a 404 through for a member from another course', async () => {
@@ -220,7 +245,7 @@ describe('services/v1/courses/members', () => {
       statusCode: 404
     });
     expect(updateMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID, { roleId: ROLE.TUTOR });
-    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
+    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID, { actorProfileId: ACTOR_ID });
   });
 
   it('resetCourseMemberProgressService requires an actor', async () => {

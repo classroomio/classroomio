@@ -3,15 +3,13 @@ import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '../.
 import {
   createCourseNewsfeed,
   createCourse as createCourseQuery,
-  createCourseSections,
   deleteCourse as deleteCourseQuery,
   getCourseById,
   getCourseContentItems,
   getCourseProgress as getCourseProgressQuery,
   getCourseWithRelations,
   getOrgIdByCourseId,
-  updateCourse as updateCourseQuery,
-  updateLessonsSectionId
+  updateCourse as updateCourseQuery
 } from '@cio/db/queries/course';
 import {
   addGroupMember,
@@ -27,11 +25,11 @@ import {
   getLessonsWithCompletion,
   getProfileCourseProgress,
   getUserExercisesStats
-} from '@cio/db/queries/analytics/analytics';
+} from '@cio/db/queries/student-progress';
 import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/reset-progress';
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
-import { ContentType, ROLE } from '@cio/utils/constants';
+import { ContentType, ROLE, resolveLiveSessionReminderOffsets } from '@cio/utils/constants';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
@@ -41,10 +39,11 @@ import {
   type TCourseCreate
 } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
+import { sealBlockVersionsOnPublish } from '../block/block-version';
+import { sealLatestLessonRevisionsForCourse } from '@cio/db/queries/block';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
-import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
-import { updateExercise, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
+import { skipRemovedOffsetReminderDeliveries } from '@cio/db/queries/course/live-session-reminder';
 import { getProfileById } from '@cio/db/queries/auth';
 import {
   countActiveStudents,
@@ -52,16 +51,32 @@ import {
   getOrganizationMemberIdByOrgAndProfile,
   insertOrganizationMembersOnConflictDoNothing
 } from '@cio/db/queries/organization';
-import { getStudentLimit } from '@cio/utils/plans';
+import { getStudentLimit, isPaymentBlocked } from '@cio/utils/plans';
 import { env } from '../../config/env';
+import { invalidateAnalyticsCourseStructure } from '../../utils/redis/analytics-cache';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
+import { captureCourseEvent, captureServerEvent, type TEventSource } from '../posthog';
 import { annotateCourseContentWithProgression } from './progression';
-import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
+import { buildCourseContent, calcPercentageWithRounding, DEFAULT_CONTENT_GROUPING, type CourseContent } from './utils';
 import { getPublicConversionOffenders } from './public-course-guard';
+
+function resolvePublishChange(before: boolean | null, after: boolean | null): 'published' | 'unpublished' | null {
+  if (Boolean(before) === Boolean(after)) return null;
+
+  return after ? 'published' : 'unpublished';
+}
 
 export interface UpdateCourseResult {
   course: TCourse;
   conversionOffenders?: NonAutoGradableQuestionOffender[] | null;
+  /** True when this update took the course from unpublished to published. */
+  publishedNow: boolean;
+  publishChange?: 'published' | 'unpublished' | null;
+  /**
+   * True when the content-grouping setting changed. Callers that pass a transaction must drop the cached analytics
+   * structure after it commits; this call skips the invalidation while it does not own the transaction.
+   */
+  groupingChanged: boolean;
 }
 
 /**
@@ -73,15 +88,14 @@ async function isStudentLimitReached(orgId: string): Promise<boolean> {
   if (env.PUBLIC_IS_SELFHOSTED === 'true') return false;
 
   const activePlan = await getActiveOrganizationPlan(orgId);
+  if (isPaymentBlocked(activePlan)) return true;
+
   const limit = getStudentLimit(activePlan?.planName);
   if (!Number.isFinite(limit)) return false;
 
   const currentCount = await countActiveStudents(orgId);
   return currentCount + 1 > limit;
 }
-
-const DEFAULT_CONTENT_GROUPING = true;
-const DEFAULT_SECTION_TITLE = 'First Section [edit me]';
 
 export async function ensureProgramCourseAccess(courseId: string, profileId: string) {
   const access = await getCourseProgramAccess(courseId, profileId);
@@ -290,7 +304,8 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
  */
 export async function createCourse(
   profileId: string,
-  data: TCourseCreate
+  data: TCourseCreate & { bannerImage?: string },
+  source: TEventSource = 'dashboard'
 ): Promise<{ course: TCourse; groupId: string; memberId: string }> {
   try {
     const description = sanitizeHtml(data.description);
@@ -315,6 +330,7 @@ export async function createCourse(
           description,
           type: data.type,
           groupId: newGroup.id,
+          ...(data.bannerImage ? { bannerImage: data.bannerImage, logo: data.bannerImage } : {}),
           compliance: data.compliance ? sanitizeUnknownStrings(data.compliance) : undefined
         },
         tx
@@ -356,6 +372,18 @@ export async function createCourse(
     });
 
     await invalidateOrgStats(data.organizationId);
+
+    captureServerEvent({
+      event: 'course_created',
+      distinctId: profileId,
+      orgId: data.organizationId,
+      properties: {
+        course_id: result.course.id,
+        course_type: result.course.type,
+        is_published: !!result.course.isPublished,
+        source
+      }
+    });
 
     return result;
   } catch (error) {
@@ -462,63 +490,25 @@ export async function updateCourse(
       );
     }
 
-    if (data.certificate?.requiredExerciseId) {
-      const ok = await exerciseBelongsToCourse(data.certificate.requiredExerciseId, courseId, dbClient);
-      if (!ok) {
-        throw new AppError('Certification exercise must belong to this course', ErrorCodes.VALIDATION_ERROR, 400);
+    const courseValues = sanitizeUnknownStrings(sanitizedData);
+    const isPublishing = !currentCourse.isPublished && data.isPublished === true;
+    const writeCourse = async (client: DbOrTxClient) => {
+      const row = await updateCourseQuery(courseId, courseValues, client);
+      if (row && isPublishing) {
+        await sealBlockVersionsOnPublish(courseId, client);
+        await sealLatestLessonRevisionsForCourse(courseId, client);
       }
 
-      await updateExercise(data.certificate.requiredExerciseId, { allowMultipleAttempts: true }, dbClient);
-    }
-
-    const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData), dbClient);
+      return row;
+    };
+    const updated = isPublishing && dbClient === db ? await db.transaction(writeCourse) : await writeCourse(dbClient);
     if (!updated) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
 
-    const isContentGroupingEnabled = (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) === true;
-
-    if (isContentGroupingEnabled) {
-      const courseWithRelations = dbClient === db ? await getCourseWithRelations(courseId) : null;
-      const contentItems =
-        dbClient === db
-          ? courseWithRelations?.contentItems
-          : await getCourseContentItems(courseId, undefined, dbClient);
-
-      if (contentItems) {
-        const hasSections = contentItems.some((item) => item.type === ContentType.Section);
-        const hasUngroupedItems = contentItems.some(
-          (item) => (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === null
-        );
-
-        if (!hasSections && hasUngroupedItems) {
-          const createSectionAndMoveContent = async (transactionClient: DbOrTxClient) => {
-            const [section] = await createCourseSections(
-              [
-                {
-                  title: DEFAULT_SECTION_TITLE,
-                  order: 1,
-                  courseId
-                }
-              ],
-              transactionClient
-            );
-
-            if (!section) {
-              throw new AppError('Failed to create course section', ErrorCodes.COURSE_SECTION_NOT_FOUND, 500);
-            }
-
-            await updateLessonsSectionId(courseId, section.id, transactionClient);
-            await updateExercisesSectionId(courseId, section.id, transactionClient);
-          };
-
-          if (dbClient === db) {
-            await db.transaction((tx) => createSectionAndMoveContent(tx));
-          } else {
-            await createSectionAndMoveContent(dbClient);
-          }
-        }
-      }
+    if (data.metadata?.liveSessionReminderOffsetsMinutes !== undefined) {
+      const keptOffsets = resolveLiveSessionReminderOffsets(updated.metadata?.liveSessionReminderOffsetsMinutes);
+      await skipRemovedOffsetReminderDeliveries(courseId, keptOffsets, dbClient);
     }
 
     if (data.status !== undefined) {
@@ -526,7 +516,23 @@ export async function updateCourse(
       await invalidateOrgStats(statsOrgId);
     }
 
-    return { course: updated, conversionOffenders };
+    const groupingChanged =
+      (currentCourse.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) !==
+      (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING);
+
+    if (groupingChanged && dbClient === db) {
+      void invalidateAnalyticsCourseStructure(courseId);
+    }
+
+    const publishChange = resolvePublishChange(currentCourse.isPublished, updated.isPublished);
+
+    return {
+      course: updated,
+      conversionOffenders,
+      publishedNow: !currentCourse.isPublished && !!updated.isPublished,
+      publishChange,
+      groupingChanged
+    };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -537,6 +543,20 @@ export async function updateCourse(
       500
     );
   }
+}
+
+export function captureCoursePublished(
+  course: Pick<TCourse, 'id' | 'type' | 'cost'>,
+  profileId: string | null | undefined,
+  source: TEventSource
+): void {
+  const isPaid = Number(course.cost ?? 0) > 0;
+
+  captureCourseEvent(course.id, {
+    event: 'course_published',
+    distinctId: profileId,
+    properties: { course_type: course.type, is_paid: isPaid, source }
+  });
 }
 
 /**
@@ -590,140 +610,6 @@ export async function getCourseProgress(courseId: string, profileId: string) {
 }
 
 /**
- * Gets course analytics including student progress, completion rates, and grades
- * @param courseId Course ID
- * @returns Course analytics data
- */
-export async function getCourseAnalytics(courseId: string) {
-  try {
-    // Get course with members (no profileId needed for analytics)
-    const course = await getCourseWithRelations(courseId);
-    if (!course) {
-      throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-    }
-
-    // Get all members
-    const members = course.group?.members || [];
-
-    // Filter students and tutors
-    const students = members.filter((member) => member.roleId === ROLE.STUDENT);
-    const tutors = members.filter((member) => member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR);
-
-    // Get lessons and exercises
-    const lessons = course.contentItems.filter((item) => item.type === ContentType.Lesson);
-    const exercises = course.contentItems.filter((item) => item.type === ContentType.Exercise);
-
-    // Get student analytics
-    const studentProfileIds = students
-      .map((student) => student.profileId)
-      .filter((profileId): profileId is string => profileId !== null);
-    const lastSeenByProfileId = await getLastSeenForUserIds(studentProfileIds);
-
-    const studentAnalytics = await Promise.all(
-      students
-        .filter((student) => student.profileId !== null)
-        .map(async (student) => {
-          try {
-            const [courseProgress, userExercisesStats] = await Promise.all([
-              getCourseProgressQuery(courseId, student.profileId!),
-              getUserExercisesStats(courseId, student.profileId!)
-            ]);
-
-            if (!courseProgress) {
-              return null;
-            }
-
-            const completedExercises = userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
-            const totalExercises = userExercisesStats?.length || 0;
-
-            const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
-            const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
-            const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
-
-            const lessonsCompleted = courseProgress.lessonsCompleted || 0;
-            const totalLessons = courseProgress.lessonsCount || 0;
-            // Lessons and exercises together, matching `calcCourseProgress` in
-            // the dashboard and the audience roster. Counting lessons alone
-            // reported a learner who had submitted nothing as fully complete.
-            const progressPercentage = calcPercentageWithRounding(
-              lessonsCompleted + completedExercises,
-              totalLessons + totalExercises
-            );
-            const lastSeen = lastSeenByProfileId.get(student.profileId!) ?? undefined;
-
-            return {
-              id: student.profileId,
-              profile: {
-                fullname: student.profile?.fullname || 'Unknown',
-                email: student.profile?.email || '',
-                avatar_url: student.profile?.avatarUrl || ''
-              },
-              lessonsCompleted,
-              totalLessons,
-              exercisesSubmitted: completedExercises,
-              totalExercises,
-              averageGrade,
-              lastSeen,
-              progressPercentage
-            };
-          } catch (error) {
-            console.error('Error getting student overview:', error);
-            return null;
-          }
-        })
-    );
-
-    const validStudentAnalytics = studentAnalytics.filter(
-      (student): student is NonNullable<typeof student> => student !== null
-    );
-
-    // Calculate aggregated metrics
-    let lessonCompletionRate = 0;
-    let exerciseCompletionRate = 0;
-    let averageGrade = 0;
-
-    if (validStudentAnalytics.length > 0) {
-      lessonCompletionRate = Math.round(
-        validStudentAnalytics.reduce((sum, student) => sum + student.progressPercentage, 0) /
-          validStudentAnalytics.length
-      );
-
-      exerciseCompletionRate = Math.round(
-        validStudentAnalytics.reduce((sum, student) => {
-          const completionRate =
-            student.totalExercises > 0 ? (student.exercisesSubmitted / student.totalExercises) * 100 : 0;
-          return sum + completionRate;
-        }, 0) / validStudentAnalytics.length
-      );
-
-      averageGrade = Math.round(
-        validStudentAnalytics.reduce((sum, student) => sum + student.averageGrade, 0) / validStudentAnalytics.length
-      );
-    }
-
-    return {
-      totalTutors: tutors.length,
-      totalStudents: students.length,
-      totalLessons: lessons.length,
-      totalExercises: exercises.length,
-      lessonCompletionRate,
-      exerciseCompletionRate,
-      averageGrade,
-      students: validStudentAnalytics
-    };
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get course analytics',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
  * Gets user course analytics for a specific course
  * @param courseId Course ID
  * @param userId User ID (profile ID)
@@ -770,14 +656,16 @@ export async function getUserCourseAnalytics(
     // percents. null = "no grade yet", never 0.
     const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : null;
 
-    const completedLessons = lessons.filter((lesson) => lesson.completed);
-    const progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
-
-    const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
+    const progressExerciseStats = userExercisesStats.filter((exercise) => exercise.completionPolicy !== 'none');
+    const completedExercises = progressExerciseStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
 
     const lessonsCompleted = courseProgress.lessons_completed || 0;
     const lessonsCount = courseProgress.lessons_count || 0;
+    const progressPercentage = calcPercentageWithRounding(
+      lessonsCompleted + completedExercises,
+      lessonsCount + totalExercises
+    );
 
     let progressImpact = null;
 

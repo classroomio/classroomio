@@ -16,6 +16,23 @@ export const TAG_COLOR_OPTIONS = [
 export const ZTagColor = z.enum(TAG_COLOR_OPTIONS);
 export type TTagColor = z.infer<typeof ZTagColor>;
 
+export function slugifyTagValue(value: string): string {
+  const slug = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return slug || 'tag';
+}
+
+export function pickTagColor(name: string): TTagColor {
+  const seed = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return TAG_COLOR_OPTIONS[seed % TAG_COLOR_OPTIONS.length] as TTagColor;
+}
+
 export const ZTagGroupParam = z.object({
   groupId: z.uuid()
 });
@@ -74,19 +91,14 @@ export type TAutomationTagMode = z.infer<typeof ZAutomationTagMode>;
 export const ZAutomationTagName = z.string().trim().min(1).max(80);
 export type TAutomationTagName = z.infer<typeof ZAutomationTagName>;
 
-export const ZAutomationDraftTagParam = z.object({
-  draftId: z.string().uuid()
-});
-export type TAutomationDraftTagParam = z.infer<typeof ZAutomationDraftTagParam>;
-
-export const ZAutomationDraftTagAssignment = z.object({
+export const ZAutomationTagAssignment = z.object({
   tagNames: z.array(ZAutomationTagName).min(1).max(100),
   mode: ZAutomationTagMode,
   groupName: z.string().trim().min(1).max(80).optional()
 });
-export type TAutomationDraftTagAssignment = z.infer<typeof ZAutomationDraftTagAssignment>;
+export type TAutomationTagAssignment = z.infer<typeof ZAutomationTagAssignment>;
 
-export const ZAutomationCourseTagAssignment = ZAutomationDraftTagAssignment.extend({
+export const ZAutomationCourseTagAssignment = ZAutomationTagAssignment.extend({
   courseIds: z.array(z.string().uuid()).min(1).max(100)
 });
 export type TAutomationCourseTagAssignment = z.infer<typeof ZAutomationCourseTagAssignment>;

@@ -4,10 +4,6 @@ export const ZOrganizationApiKeyType = z.enum(['mcp', 'api', 'zapier']);
 export type TOrganizationApiKeyType = z.infer<typeof ZOrganizationApiKeyType>;
 
 export const ZOrganizationApiKeyScope = z.enum([
-  'course_import:draft:create',
-  'course_import:draft:read',
-  'course_import:draft:update',
-  'course_import:draft:publish',
   'course:read',
   'course:write',
   'course:tag:write',
@@ -19,6 +15,18 @@ export const ZOrganizationApiKeyScope = z.enum([
   'course:member:write',
   'course:certificate:read',
   'course:certificate:write',
+  'analytics:read',
+  'media:write',
+  'course:submission:read',
+  'course:submission:write',
+  'course:student:write',
+  'audience:read',
+  'audience:write',
+  'team:read',
+  'team:write',
+  'organization:read',
+  'organization:write',
+  'organization:domain:write',
   'public_api:*'
 ]);
 export type TOrganizationApiKeyScope = z.infer<typeof ZOrganizationApiKeyScope>;

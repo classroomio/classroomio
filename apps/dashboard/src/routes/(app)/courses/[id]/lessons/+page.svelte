@@ -16,6 +16,13 @@
 
   let reorder = $state(false);
 
+  $effect(() => {
+    const activeCourseId = courseApi.course?.id;
+    if (activeCourseId !== data.courseId) {
+      reorder = false;
+    }
+  });
+
   function addContent() {
     if (!data.courseId) {
       return;

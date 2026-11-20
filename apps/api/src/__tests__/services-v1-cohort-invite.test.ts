@@ -68,7 +68,8 @@ describe('v1 cohort invite service', () => {
     expect(inviteStudentsToCohort).toHaveBeenCalledWith(
       COHORT_ID,
       { recipientCsv: 'email\nnew@test.dev', sendEmail: false },
-      ACTOR_ID
+      ACTOR_ID,
+      'public_api'
     );
   });
 
@@ -78,7 +79,7 @@ describe('v1 cohort invite service', () => {
 
     await assignPublicApiCohortStudentsService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
-    expect(assignExistingStudentsToCohort).toHaveBeenCalledWith(COHORT_ID, payload);
+    expect(assignExistingStudentsToCohort).toHaveBeenCalledWith(COHORT_ID, payload, 'public_api', ACTOR_ID);
   });
 
   it('gets, creates, and revokes the invite link, recording the actor on writes', async () => {

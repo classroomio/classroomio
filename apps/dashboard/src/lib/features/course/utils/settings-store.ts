@@ -1,6 +1,9 @@
 import type { TCourseType } from '@cio/db/types';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
+
+import type { LiveSessionReminderRow } from './types';
 
 type CourseSettings = {
   bannerImage: string;
@@ -9,20 +12,17 @@ type CourseSettings = {
   grading: boolean;
   type: TCourseType;
   allowSelfEnrollment: boolean;
-  tabs: { id: number; name: string }[];
   lessonDownload: boolean;
   allowMarkdownExport: boolean;
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
-  progressionMode: 'free' | 'sequential';
+  progressionMode: CourseProgressionMode;
   commentsEnabled: boolean;
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
+  liveSessionReminders: LiveSessionReminderRow[];
   certificate: {
     deadline: string | null;
-    threshold: number;
-    requiredExerciseId: string | null;
-    exerciseMinScorePercent: number | null;
   };
 };
 
@@ -33,12 +33,6 @@ export const settings = writable<CourseSettings>({
   grading: false,
   type: 'SELF_PACED' as TCourseType,
   allowSelfEnrollment: true,
-  tabs: [
-    { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
-    { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
-    { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-    { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
-  ],
   lessonDownload: false,
   allowMarkdownExport: false,
   isPublished: false,
@@ -47,10 +41,8 @@ export const settings = writable<CourseSettings>({
   commentsEnabled: true,
   callout: null,
   welcomeEmailMessage: '',
+  liveSessionReminders: [],
   certificate: {
-    deadline: null,
-    threshold: 100,
-    requiredExerciseId: null,
-    exerciseMinScorePercent: null
+    deadline: null
   }
 });

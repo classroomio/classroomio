@@ -3,6 +3,7 @@ import './../bootstrap';
 import { Worker } from 'bullmq';
 
 import { recordDeadLetterJob } from '@cio/db/queries';
+import { recordReminderDeliveryFailure } from '@cio/db/queries/course';
 import { JOB_NAMES, QUEUE_NAMES, createRedisConnection } from '@cio/jobs';
 
 import { errorMessage } from '../utils/cancel';
@@ -24,7 +25,7 @@ const worker = new Worker(
 
     switch (job.name) {
       case JOB_NAMES.emails.send:
-        return processSendEmail(job.data);
+        return processSendEmail(job.data, job.id);
       default:
         throw new Error(`Unknown emails job: ${job.name}`);
     }
@@ -43,6 +44,7 @@ worker.on('failed', async (job, err) => {
   });
 
   const isFinalAttempt = job.attemptsMade >= (job.opts.attempts ?? 1);
+  await recordReminderFailure(job.data, job.id, errorMessage(err), isFinalAttempt);
   if (!isFinalAttempt) return;
 
   // BullMQ exhausted retries — write a dead-letter row so an operator can
@@ -59,6 +61,22 @@ worker.on('failed', async (job, err) => {
     attempts: job.attemptsMade
   });
 });
+
+async function recordReminderFailure(
+  payload: { reminderDeliveryId?: string } | undefined,
+  bullmqJobId: string | undefined,
+  lastError: string,
+  isFinalAttempt: boolean
+) {
+  const reminderDeliveryId = payload?.reminderDeliveryId;
+  if (!reminderDeliveryId || !bullmqJobId) return;
+
+  try {
+    await recordReminderDeliveryFailure({ deliveryId: reminderDeliveryId, bullmqJobId, lastError, isFinalAttempt });
+  } catch (error) {
+    log.error('email-reminder-failure-record-failed', { reminderDeliveryId, error: errorMessage(error) });
+  }
+}
 
 worker.on('ready', () => log.info('email-worker-ready', { concurrency, queue: QUEUE_NAMES.emails }));
 worker.on('error', (err) => log.error('email-worker-error', { error: errorMessage(err) }));

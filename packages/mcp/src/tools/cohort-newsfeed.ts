@@ -13,15 +13,7 @@ import {
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
-import {
-  COHORT_MEMBER_RULE,
-  COHORT_TEAM_RULE,
-  DESTRUCTIVE,
-  PAGINATED,
-  READ_ONLY,
-  WRITE,
-  jsonContent
-} from './cohort-tool-text';
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, DESTRUCTIVE, READ_ONLY, WRITE, jsonContent } from './cohort-tool-text';
 
 export const ZListCohortNewsfeedToolInput = ZPublicApiCohortNewsfeedQuery.extend({
   cohortId: ZPublicApiCohortParam.shape.cohortId
@@ -66,7 +58,7 @@ const deleteCohortNewsfeedCommentShape = ZDeleteCohortNewsfeedCommentToolInput.s
 export function registerCohortNewsfeedTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_cohort_newsfeed',
-    `List a cohort newsfeed, newest first. Cursor-paginated: pass the returned nextCursor back as cursor for the next page; limit defaults to 10, max 50. ${COHORT_MEMBER_RULE}`,
+    `List a cohort's newsfeed posts, newest first; ${COHORT_MEMBER_RULE}. Pass the returned nextCursor back as cursor for the next page.`,
     listCohortNewsfeedShape,
     READ_ONLY,
     async (args) => {
@@ -78,7 +70,7 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'create_cohort_newsfeed_post',
-    `Create a post on a cohort newsfeed, authored by the API key creator. ${COHORT_TEAM_RULE} The key creator must also be a member of the cohort to author a post.`,
+    'Create a cohort newsfeed post authored by the API key creator; the API key creator must be a cohort tutor/admin, or an org admin who is a member of the cohort.',
     createCohortNewsfeedPostShape,
     WRITE,
     async (args) => {
@@ -90,7 +82,7 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'update_cohort_newsfeed_post',
-    `Update a cohort newsfeed post's content or pinned state. Send only the fields to change. ${COHORT_TEAM_RULE}`,
+    `Update a cohort newsfeed post's content or pinned state; ${COHORT_TEAM_RULE}.`,
     updateCohortNewsfeedPostShape,
     WRITE,
     async (args) => {
@@ -106,7 +98,7 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'update_cohort_newsfeed_reaction',
-    "Set the API key creator's own reaction on a cohort newsfeed post: clap, smile, thumbsup, thumbsdown, or null to remove it. Other members' reactions are untouched, and repeating the same value is a no-op. The key creator must be a member of the cohort (being an org admin is not enough), otherwise 403.",
+    "Set or remove the API key creator's own reaction on a cohort newsfeed post; the API key creator must be a cohort member (being an org admin is not enough).",
     updateCohortNewsfeedReactionShape,
     { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     async (args) => {
@@ -118,7 +110,7 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'delete_cohort_newsfeed_post',
-    `Permanently delete a cohort newsfeed post and its comments. This is a hard delete and cannot be undone. ${COHORT_TEAM_RULE}`,
+    `Permanently delete a cohort newsfeed post and its comments; ${COHORT_TEAM_RULE}.`,
     deleteCohortNewsfeedPostShape,
     DESTRUCTIVE,
     async (args) => {
@@ -130,7 +122,7 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'list_cohort_newsfeed_comments',
-    `List the comments on a cohort newsfeed post, oldest first. ${PAGINATED} ${COHORT_MEMBER_RULE}`,
+    `List the comments on a cohort newsfeed post, oldest first; ${COHORT_MEMBER_RULE}.`,
     listCohortNewsfeedCommentsShape,
     READ_ONLY,
     async (args) => {
@@ -142,7 +134,7 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'create_cohort_newsfeed_comment',
-    'Add a comment to a cohort newsfeed post, authored by the API key creator. The key creator must be a member of the cohort (being an org admin is not enough), otherwise 403.',
+    'Add a comment authored by the API key creator to a cohort newsfeed post; the API key creator must be a cohort member (being an org admin is not enough).',
     createCohortNewsfeedCommentShape,
     WRITE,
     async (args) => {
@@ -154,7 +146,7 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'delete_cohort_newsfeed_comment',
-    'Permanently delete a comment from a cohort newsfeed post. The API key creator must be the comment author, a cohort tutor/admin, or an org admin, otherwise 403.',
+    "Permanently delete a comment from a cohort newsfeed post; the API key creator must be the comment's author, a cohort tutor/admin, or an org admin.",
     deleteCohortNewsfeedCommentShape,
     DESTRUCTIVE,
     async (args) => {

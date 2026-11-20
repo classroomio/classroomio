@@ -90,7 +90,15 @@
   <title>{$t('invite_link.join.page_title', { resourceName })}</title>
 </svelte:head>
 
-<AuthUI isLogin={false} {handleSubmit} isLoading={loading} showOnlyContent={true} showLogo={true}>
+<AuthUI
+  isLogin={false}
+  {handleSubmit}
+  isLoading={loading}
+  showOnlyContent={true}
+  showLogo={true}
+  logoName={orgName}
+  logoUrl={data.invite.organization.avatarUrl}
+>
   <div class="mt-0 w-full">
     <p class="text-center text-sm font-light dark:text-white">
       {$t('invite_link.join.invitation', { resourceName, orgName })}

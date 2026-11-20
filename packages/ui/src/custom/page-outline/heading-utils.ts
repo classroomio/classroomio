@@ -51,9 +51,12 @@ function readExistingId(attrs: string): string | null {
 /**
  * Walk h1–h3 tags in an HTML fragment, assign unique ids, and return both
  * the rewritten HTML and the outline entries in document order.
+ * @param used ids already taken on the page; share one set across fragments rendered on the same page.
  */
-export function injectHeadingIds(html: string): { html: string; items: PageOutlineItem[] } {
-  const used = new Set<string>();
+export function injectHeadingIds(
+  html: string,
+  used: Set<string> = new Set<string>()
+): { html: string; items: PageOutlineItem[] } {
   const items: PageOutlineItem[] = [];
 
   const nextHtml = html.replace(HEADING_RE, (_full, levelStr: string, rawAttrs: string | undefined, inner: string) => {

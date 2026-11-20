@@ -2,7 +2,7 @@ import * as schema from '@db/schema';
 
 import type { TProfile } from '@db/types';
 import { db, type DbOrTxClient } from '@db/drizzle';
-import { and, eq, inArray, ne } from 'drizzle-orm';
+import { and, eq, inArray, ne, sql } from 'drizzle-orm';
 
 /**
  * True when the auth user has any non-credential account (OAuth/SSO). Those providers verify email.
@@ -89,8 +89,8 @@ export async function syncProfileEmailVerificationFromAuthUser(userId: string, d
   }
 }
 
-export const getProfileById = async (id: string) => {
-  const [profile] = await db.select().from(schema.profile).where(eq(schema.profile.id, id)).limit(1);
+export const getProfileById = async (id: string, dbClient: DbOrTxClient = db) => {
+  const [profile] = await dbClient.select().from(schema.profile).where(eq(schema.profile.id, id)).limit(1);
 
   return profile;
 };
@@ -178,9 +178,46 @@ export const updateProfile = async (
   return updatedProfile;
 };
 
+/** Keeps the auth user's name and image in step with the profile, as the dashboard's `authClient.updateUser` does. */
+export const updateAuthUserProfile = async (
+  id: string,
+  data: { name?: string; image?: string },
+  dbClient: DbOrTxClient = db
+) => {
+  await dbClient.update(schema.user).set(data).where(eq(schema.user.id, id));
+};
+
 export const markUserAndProfileEmailVerified = async (userId: string, dbClient: DbOrTxClient = db) => {
   const verifiedAt = new Date().toISOString();
 
   await dbClient.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, userId));
   await dbClient.update(schema.profile).set({ isEmailVerified: true, verifiedAt }).where(eq(schema.profile.id, userId));
 };
+
+/**
+ * Sets the profile's full name only while it is blank or still the email-prefix placeholder created at signup.
+ * Returns true when the name was written.
+ */
+export async function setProfileFullnameIfUnset(
+  profileId: string,
+  fullname: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const updated = await dbClient
+      .update(schema.profile)
+      .set({ fullname })
+      .where(
+        and(
+          eq(schema.profile.id, profileId),
+          sql`(trim(${schema.profile.fullname}) = '' or lower(trim(${schema.profile.fullname})) = lower(split_part(coalesce(${schema.profile.email}, ''), '@', 1)))`
+        )
+      )
+      .returning({ id: schema.profile.id });
+
+    return updated.length > 0;
+  } catch (error) {
+    console.error('setProfileFullnameIfUnset error:', error);
+    throw new Error('Failed to set profile full name');
+  }
+}

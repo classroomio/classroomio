@@ -15,9 +15,8 @@ const READ_ONLY: ToolAnnotations = { readOnlyHint: true, destructiveHint: false 
 const WRITE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: true };
 
 const COURSE_MEMBER_RULE =
-  'The API key creator must be a member of the course (including access through a program) or an org admin, otherwise the call fails with 403.';
-const COURSE_TEAM_RULE =
-  'The API key creator must be a course tutor/admin or an org admin, otherwise the call fails with 403.';
+  'the API key creator must be a course member (directly or through a program) or an org admin';
+const COURSE_TEAM_RULE = 'the API key creator must be a course tutor/admin or an org admin';
 
 export const ZGetCourseCertificateToolInput = ZPublicApiCourseParam;
 
@@ -41,7 +40,7 @@ const downloadCourseCertificateShape = ZDownloadCourseCertificateToolInput.shape
 export function registerCourseCertificateTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'get_course_certificate',
-    `Read a course's certificate settings and design: template, accent colour, signatories, subtitle, ID format, whether learners can download it, the completion email message, and completion rules (deadline, threshold, required exercise). Returns effective values: defaults are filled in where nothing is stored, matching what the dashboard shows. ${COURSE_MEMBER_RULE}`,
+    `Get a course's certificate settings and design, with defaults filled in where nothing is stored; ${COURSE_MEMBER_RULE}.`,
     getCourseCertificateShape,
     READ_ONLY,
     async (args) => {
@@ -53,7 +52,7 @@ export function registerCourseCertificateTools(server: McpServer, apiClient: Cla
 
   server.tool(
     'update_course_certificate',
-    `Partially update a course's certificate settings and design. Only the fields you send change; omitted fields keep their current values. Send null to clear deadline, requiredExerciseId, exerciseMinScorePercent, or emailMessage. design is replaced as a whole object, so read it with get_course_certificate first and send the full design. Sending design without theme sets theme to design.templateId. deadline must be an ISO 8601 datetime with a timezone, e.g. 2026-12-31T23:59:59Z. Returns the effective settings. Certificates need a paid plan: on the Basic (free) plan this fails with 403 UPGRADE_REQUIRED. ${COURSE_TEAM_RULE}`,
+    `Partially update a course's certificate settings and design; ${COURSE_TEAM_RULE}. design is replaced whole, so read it with get_course_certificate first; on the Basic (free) plan this fails with 403 UPGRADE_REQUIRED.`,
     updateCourseCertificateShape,
     WRITE,
     async (args) => {
@@ -65,7 +64,7 @@ export function registerCourseCertificateTools(server: McpServer, apiClient: Cla
 
   server.tool(
     'list_course_certificates',
-    `List the students who earned a course's certificate, when it was earned, and when the certificate email was sent. Compliance cycle and recertification history is not included. Optional search matches name or email. Paginated: page (default 1) and limit (default 20, max 100); the result includes pagination. ${COURSE_TEAM_RULE}`,
+    `List the students who earned a course's certificate, with when they earned it and when its email was sent; ${COURSE_TEAM_RULE}. Compliance cycle and recertification history is not included.`,
     listCourseCertificatesShape,
     READ_ONLY,
     async (args) => {
@@ -77,7 +76,7 @@ export function registerCourseCertificateTools(server: McpServer, apiClient: Cla
 
   server.tool(
     'download_course_certificate',
-    `Download the certificate a student earned, rendered with the course's current design, as a PDF (format "pdf", default) or PNG image (format "png"). Get memberId from list_course_certificates. ${COURSE_TEAM_RULE}`,
+    `Download the certificate a student earned as a PDF or PNG, rendered with the course's current design; ${COURSE_TEAM_RULE}. Get memberId from list_course_certificates.`,
     downloadCourseCertificateShape,
     READ_ONLY,
     async (args) => {

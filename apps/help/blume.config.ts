@@ -91,6 +91,10 @@ export default defineConfig({
             root: '/organization-and-team/admin-dashboard'
           },
           {
+            label: "See what's new in ClassroomIO",
+            root: '/get-started/see-whats-new-in-classroomio'
+          },
+          {
             label: 'Set up your first academy',
             display: 'group',
             collapsed: true,
@@ -98,6 +102,10 @@ export default defineConfig({
               {
                 label: 'Complete your onboarding checklist',
                 root: '/get-started/onboarding'
+              },
+              {
+                label: 'Use the Setup page',
+                root: '/get-started/use-the-setup-page'
               },
               {
                 label: 'Create your first course',
@@ -158,6 +166,10 @@ export default defineConfig({
               {
                 label: 'Create a course with AI',
                 root: '/build-courses/create-a-course-with-ai'
+              },
+              {
+                label: 'Use the AI assistant in the course editor',
+                root: '/build-courses/use-the-ai-assistant-in-the-course-editor'
               },
               {
                 label: 'Create a course from a template',
@@ -251,6 +263,10 @@ export default defineConfig({
               {
                 label: 'Add documents and downloads',
                 root: '/build-courses/add-documents-and-downloads'
+              },
+              {
+                label: 'Upload files to your media library',
+                root: '/build-courses/upload-files-to-your-media-library'
               },
               {
                 label: 'Recover drafts and use version history',
@@ -470,7 +486,7 @@ export default defineConfig({
                 root: '/deliver-and-engage/change-a-live-class-time-or-join-link'
               },
               {
-                label: 'Send reminders and calendar invitations',
+                label: 'Send live class reminders and calendar invitations',
                 root: '/deliver-and-engage/send-reminders-and-calendar-invitations'
               },
               {
@@ -493,7 +509,7 @@ export default defineConfig({
                 root: '/create-and-deliver/grade-exercise'
               },
               {
-                label: 'Grade an exercise with AI',
+                label: 'Understand AI grading availability',
                 root: '/deliver-and-engage/grade-an-exercise-with-ai'
               },
               {
@@ -501,7 +517,7 @@ export default defineConfig({
                 root: '/deliver-and-engage/view-and-export-marks'
               },
               {
-                label: 'Notify learners about an exercise',
+                label: 'Notify students about an exercise',
                 root: '/deliver-and-engage/notify-learners-about-an-exercise'
               }
             ]
@@ -547,11 +563,11 @@ export default defineConfig({
                 root: '/deliver-and-engage/add-certificate-signatories'
               },
               {
-                label: 'Review certificate reports',
+                label: 'Review issued certificates',
                 root: '/deliver-and-engage/review-certificate-reports'
               },
               {
-                label: 'Help a learner download a certificate',
+                label: 'Help a student download a certificate',
                 root: '/deliver-and-engage/help-a-learner-download-a-certificate'
               }
             ]
@@ -566,7 +582,7 @@ export default defineConfig({
                 root: '/deliver-and-engage/understand-compliance-courses'
               },
               {
-                label: 'Configure recurring compliance training',
+                label: 'Understand compliance renewals',
                 root: '/deliver-and-engage/configure-recurring-compliance-training'
               },
               {
@@ -574,7 +590,7 @@ export default defineConfig({
                 root: '/deliver-and-engage/manage-active-compliance-cycles'
               },
               {
-                label: 'Review learner compliance history',
+                label: 'View your compliance history',
                 root: '/deliver-and-engage/review-learner-compliance-history'
               },
               {
@@ -620,7 +636,7 @@ export default defineConfig({
                 root: '/deliver-and-engage/override-ai-tutor-settings-for-a-course'
               },
               {
-                label: 'Use AI Tutor as a learner',
+                label: 'Use AI Tutor as a student',
                 root: '/deliver-and-engage/use-ai-tutor-as-a-learner'
               }
             ]
@@ -645,20 +661,20 @@ export default defineConfig({
             collapsed: true,
             items: [
               {
-                label: 'Choose which LMS navigation tabs learners see',
+                label: 'Choose which LMS navigation tabs students see',
                 root: '/publish-and-brand/choose-which-lms-navigation-tabs-learners-see'
               },
               {
-                label: 'Customize the learner dashboard banner',
+                label: 'Send signed-in students straight to your learning portal',
+                root: '/publish-and-brand/student-home'
+              },
+              {
+                label: 'Understand the student dashboard banner settings',
                 root: '/publish-and-brand/customize-the-learner-dashboard-banner'
               },
               {
-                label: 'Show course news feeds and grading',
+                label: 'Show course newsfeeds and grading',
                 root: '/publish-and-brand/show-course-news-feeds-and-grading'
-              },
-              {
-                label: 'Configure polls and live comments',
-                root: '/publish-and-brand/configure-polls-and-live-comments'
               },
               {
                 label: 'Customize the sign-in background',
@@ -742,7 +758,7 @@ export default defineConfig({
                 root: '/publish-and-brand/reconnect-a-domain-that-needs-attention'
               },
               {
-                label: 'Add a custom favicon or custom code',
+                label: 'Add a custom favicon',
                 root: '/publish-and-brand/add-a-custom-favicon-or-custom-code'
               },
               {
@@ -761,7 +777,7 @@ export default defineConfig({
                 root: '/publish-and-brand/create-a-course-widget'
               },
               {
-                label: 'Choose courses, layout, and design',
+                label: 'Choose widget courses, layout, and design',
                 root: '/publish-and-brand/choose-courses-layout-and-design'
               },
               {
@@ -789,13 +805,17 @@ export default defineConfig({
             root: '/analytics-and-reporting/understand-the-organization-dashboard'
           },
           {
-            label: 'Use organization analytics',
+            label: 'Monitor students across your organization',
+            root: '/analytics-and-reporting/monitor-students-across-your-organization'
+          },
+          {
+            label: 'Use Marketing',
             display: 'group',
             collapsed: true,
             items: [
               {
-                label: 'Read your organization analytics overview',
-                root: '/analytics-and-reporting/read-your-organization-analytics-overview'
+                label: 'Read your marketing overview',
+                root: '/analytics-and-reporting/read-your-marketing-overview'
               },
               {
                 label: 'Analyze landing views, enrollments, and completions',
@@ -817,8 +837,8 @@ export default defineConfig({
             collapsed: true,
             items: [
               {
-                label: 'Review course performance and learner progress',
-                root: '/analytics-and-reporting/review-course-performance-and-learner-progress'
+                label: 'Review course performance and student progress',
+                root: '/analytics-and-reporting/review-course-performance-and-student-progress'
               },
               {
                 label: 'View submissions and completion data',
@@ -827,8 +847,12 @@ export default defineConfig({
             ]
           },
           {
-            label: 'View a learner’s analytics',
-            root: '/analytics-and-reporting/view-a-learners-analytics'
+            label: 'Track a cohort with analytics',
+            root: '/analytics-and-reporting/track-a-cohort-with-analytics'
+          },
+          {
+            label: "View a student's analytics",
+            root: '/analytics-and-reporting/view-a-students-analytics'
           },
           {
             label: 'Export audiences, marks, and reports',
@@ -851,6 +875,10 @@ export default defineConfig({
           {
             label: 'Manage your notification preferences',
             root: '/account-team-security/manage-your-notification-preferences'
+          },
+          {
+            label: 'Search the dashboard and settings',
+            root: '/organization-and-team/search-the-dashboard-and-settings'
           },
           {
             label: 'Update organization settings',
@@ -964,11 +992,11 @@ export default defineConfig({
                 root: '/integrations-and-automation/understand-classroomio-mcp'
               },
               {
-                label: 'Create, rotate, and revoke MCP keys',
+                label: 'Rotate and revoke MCP keys',
                 root: '/integrations-and-automation/create-rotate-and-revoke-mcp-keys'
               },
               {
-                label: 'Connect Claude Code, Codex, Cursor, or OpenCode',
+                label: 'Connect an AI coding agent',
                 root: '/integrations-and-automation/connect-claude-code-codex-cursor-or-opencode'
               },
               {
@@ -995,6 +1023,10 @@ export default defineConfig({
                 href: 'https://classroomio.com/docs/api'
               }
             ]
+          },
+          {
+            label: 'Create and manage webhooks',
+            root: '/integrations-and-automation/create-and-manage-webhooks'
           },
           {
             label: 'Open the developer documentation',

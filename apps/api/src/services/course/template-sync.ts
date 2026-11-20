@@ -21,7 +21,7 @@ import {
   getOptionsByQuestionIds,
   getQuestionsByExerciseIds,
   listTemplateSettingSync,
-  shiftCourseSectionOrders,
+  shiftCourseRootOrders,
   shiftExerciseOrders,
   shiftLessonOrders,
   stampCopiedTemplateUnits,
@@ -36,7 +36,8 @@ import {
   lockCourseForUpdate
 } from '@db/queries';
 import { env } from '@cio/core/config/env';
-import { recordLessonLanguageVersion } from '@cio/core/services/lesson-version';
+import { pullLessonBlocksFromSource } from '@cio/core/services/block/copy';
+import { withDerivedLessonContent } from '@cio/db/queries/block/legacy';
 import { withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 import {
   applySettingChanges,
@@ -56,6 +57,7 @@ import {
 } from '@cio/utils/validation/course';
 
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { invalidateAnalyticsCourseStructure } from '@cio/core/utils/redis/analytics-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { syncLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
 
@@ -105,6 +107,78 @@ function bumpOrders<T extends { order: number }>(items: T[], fromOrder: number) 
   for (const item of items) {
     if (item.order >= fromOrder) item.order += 1;
   }
+}
+
+async function claimSectionLessonOrder(
+  templateLessons: TLesson[],
+  courseGraph: SyncGraph,
+  lesson: TLesson,
+  parentId: string,
+  courseId: string,
+  client: DbOrTxClient
+) {
+  const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
+  const placed = courseGraph.lessons.filter((sibling) => sibling.sectionId === parentId);
+  const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(placed), placed);
+  await shiftLessonOrders(courseId, parentId, order, client);
+  bumpOrders(placed, order);
+
+  return order;
+}
+
+async function claimNestedExerciseOrder(
+  templateExercises: TExercise[],
+  courseGraph: SyncGraph,
+  exercise: TExercise,
+  parent: { sectionId: string | null; lessonId: string | null },
+  courseId: string,
+  client: DbOrTxClient
+) {
+  const templateSiblings = templateExercises.filter((sibling) =>
+    exercise.sectionId
+      ? sibling.sectionId === exercise.sectionId
+      : sibling.lessonId === exercise.lessonId && !sibling.sectionId
+  );
+  const placed = courseGraph.exercises.filter((sibling) =>
+    parent.sectionId
+      ? sibling.sectionId === parent.sectionId
+      : sibling.lessonId === parent.lessonId && !sibling.sectionId
+  );
+  const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(placed), placed);
+  await shiftExerciseOrders(
+    courseId,
+    { sectionId: parent.sectionId, lessonId: parent.sectionId ? null : parent.lessonId },
+    order,
+    client
+  );
+  bumpOrders(placed, order);
+
+  return order;
+}
+
+function rootEntries(graph: SyncGraph): { id: string; sourceId: string | null; order: number }[] {
+  const rootLessons = graph.lessons.filter((lesson) => !lesson.sectionId);
+  const rootExercises = graph.exercises.filter((exercise) => !exercise.sectionId && !exercise.lessonId);
+
+  return [...graph.sections, ...rootLessons, ...rootExercises];
+}
+
+/**
+ * Picks the course order for a new top-level template entry and shifts every later top-level entry down one.
+ */
+async function claimRootOrder(
+  templateGraph: SyncGraph,
+  courseGraph: SyncGraph,
+  templateEntryId: string,
+  courseId: string,
+  client: DbOrTxClient
+) {
+  const placed = rootEntries(courseGraph);
+  const order = insertionOrder(rootEntries(templateGraph), templateEntryId, sourceOrders(placed), placed);
+  await shiftCourseRootOrders(courseId, order, client);
+  bumpOrders(placed, order);
+
+  return order;
 }
 
 async function loadGraph(courseId: string, client: DbOrTxClient): Promise<SyncGraph> {
@@ -180,15 +254,6 @@ function snapshotExercises(graph: SyncGraph): SyncExercise[] {
   });
 }
 
-function exerciseCopyMap(exercises: TExercise[]) {
-  const copies = new Map<string, string>();
-  for (const exercise of exercises) {
-    if (exercise.sourceId) copies.set(exercise.sourceId, exercise.id);
-  }
-
-  return copies;
-}
-
 async function requireLinkedCourse(courseId: string, orgId: string, client: DbOrTxClient = db) {
   const [course] = await getCourseById(courseId, client);
   if (!course || course.status === 'DELETED' || !course.templateId) {
@@ -227,15 +292,13 @@ function detectFromGraphs(course: TCourse, templateGraph: SyncGraph, courseGraph
 function settingChangesFor(
   template: TCourse,
   course: TCourse,
-  courseGraph: SyncGraph,
   syncedAtByKey: Partial<Record<SyncableSettingKey, string>>
 ) {
   return detectSettingChanges({
     template: toCarrier(template),
     course: toCarrier(course),
     courseCreatedAt: course.createdAt,
-    syncedAtByKey,
-    exerciseCopyBySourceId: exerciseCopyMap(courseGraph.exercises)
+    syncedAtByKey
   });
 }
 
@@ -268,7 +331,7 @@ export async function getCourseTemplateUpdates(courseId: string, orgId: string) 
     Record<SyncableSettingKey, string>
   >;
   const units = detectFromGraphs(course, templateGraph, courseGraph);
-  const settings = settingChangesFor(template, course, courseGraph, syncedAtByKey);
+  const settings = settingChangesFor(template, course, syncedAtByKey);
   const lastPulledAt = latestIso([
     course.createdAt,
     ...courseGraph.sections.map((section) => section.sourceSyncedAt),
@@ -389,46 +452,6 @@ async function copyExerciseBody(
   }
 }
 
-async function writeLessonLanguages(
-  templateLessonId: string,
-  courseLessonId: string,
-  templateGraph: SyncGraph,
-  templateOrgId: string | null,
-  courseOrgId: string | null,
-  userId: string,
-  syncedAt: string,
-  client: DbOrTxClient
-) {
-  const templateLanguages = templateGraph.languages.filter((language) => language.lessonId === templateLessonId);
-  const courseLanguages = await getLessonLanguagesByLessonIds([courseLessonId], client);
-
-  for (const language of templateLanguages) {
-    if (!language.locale) continue;
-
-    const remapped = await remapContentAssets(language, templateOrgId, courseOrgId, userId, client);
-    const existing = courseLanguages.find((courseLanguage) => courseLanguage.locale === language.locale);
-    const saved = existing
-      ? await updateLessonLanguage(
-          courseLessonId,
-          language.locale,
-          { content: remapped.content, updatedAt: syncedAt },
-          client
-        )
-      : await createLessonLanguage(
-          { content: remapped.content, locale: language.locale, lessonId: courseLessonId, updatedAt: syncedAt },
-          client
-        );
-
-    await recordLessonLanguageVersion({
-      lessonLanguageId: saved.id,
-      content: saved.content,
-      authorId: userId,
-      intent: 'manual',
-      dbClient: client
-    });
-  }
-}
-
 export async function pullCourseTemplateUpdates(
   courseId: string,
   orgId: string,
@@ -438,6 +461,7 @@ export async function pullCourseTemplateUpdates(
 ) {
   const pulled = await withAssetStorageRollback(() =>
     db.transaction(async (tx) => {
+      let groupingChanged = false;
       await lockCourseForUpdate(courseId, tx);
       const { course, template, templateOrgId, courseOrgId } = await requireLinkedCourse(courseId, orgId, tx);
       if (!template || template.status === 'DELETED') {
@@ -451,7 +475,7 @@ export async function pullCourseTemplateUpdates(
         Record<SyncableSettingKey, string>
       >;
       const units = detectFromGraphs(course, templateGraph, courseGraph);
-      const settings = settingChangesFor(template, course, courseGraph, syncedAtByKey);
+      const settings = settingChangesFor(template, course, syncedAtByKey);
       const selection = preparePullSelection(units, settings, requestedUnitIds, requestedSettingKeys);
       if (!selection.ok) {
         const message =
@@ -483,14 +507,7 @@ export async function pullCourseTemplateUpdates(
           continue;
         }
 
-        const order = insertionOrder(
-          templateSections,
-          section.id,
-          sourceOrders(courseGraph.sections),
-          courseGraph.sections
-        );
-        await shiftCourseSectionOrders(course.id, order, tx);
-        bumpOrders(courseGraph.sections, order);
+        const order = await claimRootOrder(templateGraph, courseGraph, section.id, course.id, tx);
         const createdSections = await createCourseSections(
           [{ title: section.title, order, courseId: course.id, sourceId: section.id, sourceSyncedAt: syncedAt }],
           tx
@@ -503,51 +520,41 @@ export async function pullCourseTemplateUpdates(
       }
 
       const templateLessons = templateGraph.lessons.slice().sort((left, right) => left.order - right.order);
+      const pulledLessons = new Map<string, (typeof courseGraph.lessons)[number]>();
       for (const lesson of templateLessons) {
         if (!selected.has(lesson.id)) continue;
 
         const existing = copyBySource(courseGraph.lessons, lesson.id);
-        const remapped = await remapContentAssets(lesson, templateOrgId, courseOrgId, userId, tx);
+        const {
+          note: _note,
+          videos: _videos,
+          documents: _documents,
+          slides: _slides,
+          lessonLanguages: _lessonLanguages,
+          ...lessonFields
+        } = lesson as typeof lesson & { lessonLanguages?: unknown };
+        const remapped = await remapContentAssets(lessonFields, templateOrgId, courseOrgId, userId, tx);
         if (existing) {
           await updateLesson(
             existing.id,
             {
-              note: remapped.note,
-              videoUrl: remapped.videoUrl,
-              slideUrl: remapped.slideUrl,
-              slides: remapped.slides,
               title: remapped.title,
               public: remapped.public,
               lessonAt: remapped.lessonAt,
               teacherId: crossOrg ? null : remapped.teacherId,
               callUrl: crossOrg ? null : remapped.callUrl,
+              sessionDurationMinutes: remapped.sessionDurationMinutes,
+              recordingUrl: crossOrg ? null : remapped.recordingUrl,
               isUnlocked: remapped.isUnlocked,
               completionPolicy: remapped.completionPolicy,
               videoWatchThreshold: remapped.videoWatchThreshold,
               commentsEnabled: remapped.commentsEnabled,
-              videos: remapped.videos,
-              documents: remapped.documents,
               slug: remapped.slug,
               updatedAt: syncedAt
             },
             tx
           );
-          await syncLessonAssetUsages(
-            [{ id: existing.id, videos: remapped.videos, documents: remapped.documents }],
-            courseOrgId,
-            userId,
-            tx
-          );
-          await writeLessonLanguages(
-            lesson.id,
-            existing.id,
-            templateGraph,
-            templateOrgId,
-            courseOrgId,
-            userId,
-            syncedAt,
-            tx
-          );
+          pulledLessons.set(lesson.id, existing);
           stamped.lessonIds.push(existing.id);
           continue;
         }
@@ -557,18 +564,12 @@ export async function pullCourseTemplateUpdates(
           throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
         }
 
-        const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
-        const placed = courseGraph.lessons.filter((sibling) => (sibling.sectionId ?? null) === parentId);
-        const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(placed), placed);
-        await shiftLessonOrders(course.id, parentId, order, tx);
-        bumpOrders(placed, order);
+        const order = parentId
+          ? await claimSectionLessonOrder(templateLessons, courseGraph, lesson, parentId, course.id, tx)
+          : await claimRootOrder(templateGraph, courseGraph, lesson.id, course.id, tx);
         const createdLessons = await createLessons(
           [
             {
-              note: remapped.note,
-              videoUrl: remapped.videoUrl,
-              slideUrl: remapped.slideUrl,
-              slides: remapped.slides,
               courseId: course.id,
               title: remapped.title,
               public: remapped.public,
@@ -576,13 +577,13 @@ export async function pullCourseTemplateUpdates(
               teacherId: crossOrg ? null : remapped.teacherId,
               isComplete: false,
               callUrl: crossOrg ? null : remapped.callUrl,
+              sessionDurationMinutes: remapped.sessionDurationMinutes,
+              recordingUrl: crossOrg ? null : remapped.recordingUrl,
               order,
               isUnlocked: remapped.isUnlocked,
               completionPolicy: remapped.completionPolicy,
               videoWatchThreshold: remapped.videoWatchThreshold,
               commentsEnabled: remapped.commentsEnabled,
-              videos: remapped.videos,
-              documents: remapped.documents,
               sectionId: parentId,
               slug: remapped.slug,
               sourceId: lesson.id,
@@ -595,18 +596,26 @@ export async function pullCourseTemplateUpdates(
         if (!created) throw new AppError('Failed to pull lesson', ErrorCodes.INTERNAL_ERROR, 500);
 
         courseGraph.lessons.push(created);
-        await syncLessonAssetUsages([created], courseOrgId, userId, tx);
-        await writeLessonLanguages(
-          lesson.id,
-          created.id,
-          templateGraph,
-          templateOrgId,
-          courseOrgId,
-          userId,
-          syncedAt,
-          tx
-        );
+        pulledLessons.set(lesson.id, created);
         stamped.lessonIds.push(created.id);
+      }
+
+      const blockOrganizationId = courseOrgId ?? templateOrgId;
+      if (blockOrganizationId && pulledLessons.size > 0) {
+        const lessonIdMap = new Map(
+          [...pulledLessons].map(([templateLessonId, lesson]) => [templateLessonId, lesson.id])
+        );
+        const courseLessonIds = courseGraph.lessons.map((lesson) => lesson.id);
+        await pullLessonBlocksFromSource({
+          lessonIdMap,
+          courseLessonIds,
+          organizationId: blockOrganizationId,
+          actorProfileId: userId,
+          transform: (value) => remapContentAssets(value, templateOrgId, courseOrgId, userId, tx),
+          dbClient: tx
+        });
+        const pulledWithContent = await withDerivedLessonContent([...pulledLessons.values()], tx);
+        await syncLessonAssetUsages(pulledWithContent, courseOrgId, userId, tx);
       }
 
       const templateExercises = templateGraph.exercises.slice().sort((left, right) => left.order - right.order);
@@ -647,26 +656,17 @@ export async function pullCourseTemplateUpdates(
           throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
         }
 
-        const templateSiblings = templateExercises.filter((sibling) =>
-          exercise.sectionId
-            ? sibling.sectionId === exercise.sectionId
-            : sibling.lessonId === exercise.lessonId && !sibling.sectionId
-        );
-        const placed = courseGraph.exercises.filter((sibling) =>
-          parentSectionId
-            ? sibling.sectionId === parentSectionId
-            : parentLessonId
-              ? sibling.lessonId === parentLessonId && !sibling.sectionId
-              : !sibling.sectionId && !sibling.lessonId
-        );
-        const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(placed), placed);
-        await shiftExerciseOrders(
-          course.id,
-          { sectionId: parentSectionId, lessonId: parentSectionId ? null : parentLessonId },
-          order,
-          tx
-        );
-        bumpOrders(placed, order);
+        const order =
+          parentSectionId || parentLessonId
+            ? await claimNestedExerciseOrder(
+                templateExercises,
+                courseGraph,
+                exercise,
+                { sectionId: parentSectionId, lessonId: parentLessonId },
+                course.id,
+                tx
+              )
+            : await claimRootOrder(templateGraph, courseGraph, exercise.id, course.id, tx);
         const createdExercises = await createExercises(
           [
             {
@@ -698,14 +698,12 @@ export async function pullCourseTemplateUpdates(
       }
 
       if (selection.settingKeys.length > 0) {
-        const patch = applySettingChanges(
-          toCarrier(course),
-          toCarrier(template),
-          selection.settingKeys,
-          exerciseCopyMap(courseGraph.exercises)
-        );
+        const patch = applySettingChanges(toCarrier(course), toCarrier(template), selection.settingKeys);
         const remappedPatch = await remapContentAssets(patch, templateOrgId, courseOrgId, userId, tx);
-        await updateCourse(course.id, remappedPatch as Partial<TCourse>, tx);
+        const updateResult = await updateCourse(course.id, remappedPatch as Partial<TCourse>, tx);
+        const beforeGrouping = course.metadata?.isContentGroupingEnabled ?? false;
+        const afterGrouping = updateResult?.metadata?.isContentGroupingEnabled ?? false;
+        groupingChanged = beforeGrouping !== afterGrouping;
         await upsertTemplateSettingSync(course.id, selection.settingKeys, syncedAt, tx);
       }
 
@@ -713,11 +711,17 @@ export async function pullCourseTemplateUpdates(
 
       return {
         unitIds: selection.unitIds,
-        settingKeys: selection.settingKeys
+        settingKeys: selection.settingKeys,
+        groupingChanged
       };
     })
   );
 
   await invalidateOrgStats(orgId);
+
+  if (pulled.groupingChanged || pulled.unitIds.length > 0) {
+    void invalidateAnalyticsCourseStructure(courseId);
+  }
+
   return pulled;
 }

@@ -51,7 +51,7 @@
 
   // Archive leads: it is reversible, it frees a seat, and it is the right answer
   // to almost every "remove them" instinct. Delete sits last and apart.
-  const actions: AudienceBulkAction[] = ['archive', 'deactivate', 'reactivate', 'unarchive'];
+  const actions: AudienceBulkAction[] = ['archive', 'unarchive'];
 
   /** Both menus load the same document; only the destination differs. */
   async function withDocument(run: (doc: ExportDocument<Row>) => Promise<void> | void, failureKey: string) {
