@@ -81,7 +81,11 @@ export const ZPublicApiAudienceBulkStatusResponse = z.object({
 export const ZPublicApiAssignAudienceCoursesResponse = z.object({
   assigned: z.number(),
   alreadyEnrolled: z.number(),
-  emailsSent: z.number()
+  emailsSent: z.number(),
+  skippedPathOnlyCourses: z
+    .array(z.string().uuid())
+    .describe('Requested courses that learners can join only through a learning path, so were not assigned'),
+  skippedPathOnlyCourseNames: z.array(z.string()).describe('Titles of skippedPathOnlyCourses, in the same order')
 });
 
 export const ZPublicApiRemoveAudienceMemberResponse = z.object({

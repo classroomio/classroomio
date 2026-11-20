@@ -1,0 +1,3 @@
+export const PATH_SIDEBAR_DEFAULT_WIDTH = 256;
+export const PATH_SIDEBAR_MIN_WIDTH = 200;
+export const PATH_SIDEBAR_MAX_WIDTH = 400;

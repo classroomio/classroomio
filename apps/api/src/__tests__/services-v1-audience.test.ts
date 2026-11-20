@@ -119,6 +119,7 @@ describe('services/v1/audience', () => {
           courseIds: undefined,
           allCourses: false,
           allCohorts: false,
+          allPaths: false,
           sendEmail: true
         },
         ACTOR_ID,
@@ -140,6 +141,7 @@ describe('services/v1/audience', () => {
           courseIds: ['course-1'],
           allCourses: false,
           allCohorts: false,
+          allPaths: false,
           sendEmail: false
         },
         ACTOR_ID,

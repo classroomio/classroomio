@@ -25,6 +25,7 @@ export type AnalyticsWidgetSelection = {
 export type AnalyticsWidgetScope = {
   type: TAnalyticsScopeType;
   cohortCount: number;
+  pathCount: number;
   courses: Array<{ id: string; isGrouped: boolean; hasPassRequired: boolean }>;
 };
 
@@ -129,12 +130,13 @@ export function missingSelection(
 
 export function availableBreakdownGroups(
   scopeType: TAnalyticsScopeType,
-  scope: Pick<AnalyticsWidgetScope, 'cohortCount'>
+  scope: Pick<AnalyticsWidgetScope, 'cohortCount' | 'pathCount'>
 ): TAnalyticsBreakdownGroup[] {
   if (scopeType !== 'course' && scopeType !== 'org') return [];
 
   const groups: TAnalyticsBreakdownGroup[] = ['courses'];
   if (scope.cohortCount > 0) groups.push('cohorts');
+  if (scopeType === 'org' && scope.pathCount > 0) groups.push('paths');
 
   return groups;
 }
@@ -176,6 +178,8 @@ export function isWidgetVisible(
   if (widget.breakdown !== 'core' && widget.breakdown !== activeBreakdownGroup(selection, available)) return false;
 
   if (widget.requires.includes('cohorts') && dashboard.scope.cohortCount <= 0) return false;
+
+  if (widget.requires.includes('paths') && dashboard.scope.pathCount <= 0) return false;
 
   const course = focusCourse(dashboard, selection);
   if (widget.requires.includes('grouping') && !course?.isGrouped) return false;

@@ -24,6 +24,7 @@
   let { orgSiteName = '', org }: Props = $props();
 
   let hasLoadedCourses = $state(false);
+  let hasLoadedLearningPaths = $state(false);
   let ThemeComponent = $state<Component | null>(null);
 
   const authAction = $derived(
@@ -46,14 +47,15 @@
   );
 
   const landingPageProps = $derived(
-    buildOrgLandingPageProps(
-      org,
-      normalizeLandingPageSettings(org.landingpage),
-      orgApi.publicCourses,
-      orgApi.hasMorePublicCourses,
+    buildOrgLandingPageProps(org, normalizeLandingPageSettings(org.landingpage), {
+      courses: orgApi.publicCourses,
+      learningPaths: orgApi.publicLearningPaths,
+      hasMoreCourses: orgApi.hasMorePublicCourses,
+      hasMoreLearningPaths: orgApi.hasMorePublicLearningPaths,
+      coursesLoaded: hasLoadedCourses,
       authAction,
-      { coursesLoaded: hasLoadedCourses, learnerAccount }
-    )
+      learnerAccount
+    })
   );
 
   onMount(async () => {
@@ -64,19 +66,26 @@
     const siteName = orgSiteName || org.siteName;
     if (!siteName) {
       hasLoadedCourses = true;
+      hasLoadedLearningPaths = true;
       return;
     }
 
     orgApi.publicCourses = [];
     orgApi.hasMorePublicCourses = false;
+    orgApi.publicLearningPaths = [];
+    orgApi.hasMorePublicLearningPaths = false;
     hasLoadedCourses = false;
+    hasLoadedLearningPaths = false;
     void orgApi.getPublicCoursesBySiteName(siteName).finally(() => {
       hasLoadedCourses = true;
+    });
+    void orgApi.getPublicLearningPathsBySiteName(siteName).finally(() => {
+      hasLoadedLearningPaths = true;
     });
   });
 </script>
 
-{#if !ThemeComponent || !hasLoadedCourses || orgApi.isFetchingOrgPublicCourses}
+{#if !ThemeComponent || !hasLoadedCourses || !hasLoadedLearningPaths || orgApi.isFetchingOrgPublicCourses || orgApi.isFetchingOrgPublicLearningPaths}
   <PageLoader />
 {:else}
   <ThemeComponent {...landingPageProps} />

@@ -6,6 +6,14 @@ import { pickTagColor } from '@cio/utils/validation/tag';
 import { ErrorCodes } from '@cio/utils/constants';
 import { ORG_ANALYTICS_PAGE } from '@cio/utils/constants/analytics-pages';
 
+import type {
+  TAddLearningPathCourse,
+  TCreateLearningPathInput,
+  TLandingPage,
+  TLearningPathCourseParam,
+  TLearningPathIdParam,
+  TReorderLearningPathCourses
+} from '@cio/utils/validation/learning-path';
 import type { McpServerConfig } from './config';
 import type {
   TPublicApiAttachLessonBlock,
@@ -1328,6 +1336,50 @@ export class ClassroomIoApiClient {
         ...this.extraHeaders
       },
       body: options.body ? JSON.stringify(options.body) : undefined
+    });
+  }
+
+  // ─── Learning paths ─────────────────────────────────────────────────────
+
+  async listOrgLearningPaths(query: { page?: number; limit?: number; search?: string } = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page !== undefined) searchParams.set('page', String(query.page));
+    if (query.limit !== undefined) searchParams.set('limit', String(query.limit));
+    if (query.search) searchParams.set('search', query.search);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/learning-path${querySuffix}`, { method: 'GET' });
+  }
+
+  async getLearningPath(pathId: TLearningPathIdParam['pathId']) {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}`, { method: 'GET' });
+  }
+
+  async createLearningPath(payload: TCreateLearningPathInput) {
+    return this.request('/learning-path', { method: 'POST', body: payload });
+  }
+
+  async addLearningPathCourses(pathId: TLearningPathIdParam['pathId'], payload: TAddLearningPathCourse) {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}/courses`, { method: 'POST', body: payload });
+  }
+
+  async updateLearningPathLandingPage(pathId: TLearningPathIdParam['pathId'], payload: { landingPage: TLandingPage }) {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}`, { method: 'PUT', body: payload });
+  }
+
+  async reorderLearningPathCourses(pathId: TLearningPathIdParam['pathId'], payload: TReorderLearningPathCourses) {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}/courses/order`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async removeLearningPathCourse(
+    pathId: TLearningPathCourseParam['pathId'],
+    courseId: TLearningPathCourseParam['courseId']
+  ) {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}/courses/${encodeURIComponent(courseId)}`, {
+      method: 'DELETE'
     });
   }
 

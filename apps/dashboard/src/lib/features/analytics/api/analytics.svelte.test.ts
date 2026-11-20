@@ -276,6 +276,7 @@ describe('analytics refresh', () => {
       pendingCount: 0,
       cohortCount: 2,
       activeCohortCount: 0,
+      pathCount: 0,
       studentTarget: null,
       courses: [{ id: 'course-1', title: 'Leadership', isGrouped: true, hasPassRequired: false }]
     },

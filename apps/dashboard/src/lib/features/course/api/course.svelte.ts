@@ -2,12 +2,14 @@ import { BaseApiWithErrors, classroomio, hasErrorCode, matchesError } from '$lib
 
 import type {
   Course,
+  CourseRedirectTarget,
   CreateCourseRequest,
   CreatePaymentRequestRequest,
   DeleteCourseRequest,
   EnrollCourseRequest,
   GetCertificationEvaluationRequest,
   GetCourseProgressRequest,
+  GetCourseRedirectRequest,
   GetCourseRequest,
   UpdateCourseData,
   UpdateCourseRequest
@@ -65,6 +67,10 @@ export class CourseApi extends BaseApiWithErrors {
     people: [],
     memberId: ''
   });
+
+  isNotFound = $state(false);
+  isForbidden = $state(false);
+  loadError = $state<string | null>(null);
 
   override reset() {
     super.reset();
@@ -247,6 +253,10 @@ export class CourseApi extends BaseApiWithErrors {
     const snapshotAtRequest = courseAtRequest ? JSON.stringify(courseAtRequest) : null;
     const fetchSeq = ++this.courseFetchSeq;
     this.latestFetchSeqByCourseId.set(courseId, fetchSeq);
+    let fetchedCourse: Course | null = null;
+    this.isNotFound = false;
+    this.isForbidden = false;
+    this.loadError = null;
 
     await this.execute<GetCourseRequest>({
       requestFn: () =>
@@ -256,23 +266,46 @@ export class CourseApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching course',
       onSuccess: (response) => {
-        console.log('response', response.data);
-        if (response.data) {
-          const supersededFetch = this.isStaleFetch(courseId, fetchSeq);
-          const editedDuringFetch = this.wasEditedSinceFetch(courseId, courseAtRequest, snapshotAtRequest);
-          const selectionMatches = this.selectionMatchesRequest(courseId, courseAtRequest);
+        if (!response.data) return;
 
-          if (!supersededFetch && !editedDuringFetch && selectionMatches) {
-            this.course = response.data;
-          }
-          this.success = true;
-          this.errors = {};
+        fetchedCourse = response.data;
+        if (this.courseFetchSeq !== fetchSeq) return;
+
+        const supersededFetch = this.isStaleFetch(courseId, fetchSeq);
+        const editedDuringFetch = this.wasEditedSinceFetch(courseId, courseAtRequest, snapshotAtRequest);
+        const selectionMatches = this.selectionMatchesRequest(courseId, courseAtRequest);
+
+        if (!supersededFetch && !editedDuringFetch && selectionMatches) {
+          this.course = response.data;
         }
+        this.success = true;
+        this.errors = {};
+        this.isNotFound = false;
+        this.isForbidden = false;
+        this.loadError = null;
       },
-      onError: () => {
+      onError: (error) => {
+        if (this.courseFetchSeq !== fetchSeq) return;
+
+        this.course = null;
+
+        if (hasErrorCode(error, ErrorCodes.UNAUTHORIZED, ErrorCodes.FORBIDDEN, ErrorCodes.ORG_TEAM_NOT_AUTHORIZED)) {
+          this.isForbidden = true;
+          return;
+        }
+
+        if (hasErrorCode(error, ErrorCodes.COURSE_NOT_FOUND)) {
+          this.isNotFound = true;
+          return;
+        }
+
+        this.loadError = error.message || 'Failed to fetch course';
         snackbar.error('Failed to fetch course');
       }
     });
+
+    if (this.courseFetchSeq !== fetchSeq) return fetchedCourse;
+
     return this.course;
   }
 
@@ -322,6 +355,10 @@ export class CourseApi extends BaseApiWithErrors {
    * Next call to `ensureCourse(courseId, profileId)` will refetch.
    */
   invalidateCourse(courseId?: string) {
+    this.isNotFound = false;
+    this.isForbidden = false;
+    this.loadError = null;
+
     if (!courseId) {
       this.isCourseDirty = true;
     } else if (this.loadedCourseId === courseId) {
@@ -616,6 +653,10 @@ export class CourseApi extends BaseApiWithErrors {
   setCourse(data: Course, profileId: string) {
     if (!data || !(Object.values(data) && Object.values(data).length)) return;
 
+    this.isNotFound = false;
+    this.isForbidden = false;
+    this.loadError = null;
+
     // Process group data
     if (data.group) {
       const copiedGroup = JSON.parse(JSON.stringify(data.group));
@@ -694,6 +735,26 @@ export class CourseApi extends BaseApiWithErrors {
 
     // Set the course data
     this.course = data;
+  }
+
+  /**
+   * Resolves where a learner should open a course (course vs path vs hub).
+   * Data-only; the LMS caller owns navigation. No UI calls this yet.
+   * @param courseId Course id to resolve.
+   * @returns Redirect target, or null when the lookup fails.
+   */
+  async resolveLearnerRedirect(courseId: string): Promise<CourseRedirectTarget | null> {
+    let target: CourseRedirectTarget | null = null;
+
+    await this.execute<GetCourseRedirectRequest>({
+      requestFn: () => classroomio.course[':courseId']['redirect'].$get({ param: { courseId } }),
+      logContext: 'resolving course redirect',
+      onSuccess: (response) => {
+        target = response.data;
+      }
+    });
+
+    return target;
   }
 
   /**

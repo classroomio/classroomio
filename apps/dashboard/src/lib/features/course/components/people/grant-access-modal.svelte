@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import * as Alert from '@cio/ui/base/alert';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
@@ -21,6 +22,7 @@
   const GRANT_ACCESS_PARAM = 'grantAccess';
 
   let courseId = $derived(courseApi.course?.id ?? '');
+  const isPathGated = $derived(Boolean(courseApi.course?.enrollOnlyInLearningPath));
   const studentEmail = $derived(new URLSearchParams(page.url.search).get(GRANT_ACCESS_PARAM)?.trim() ?? '');
   const isOpen = $derived(Boolean(studentEmail));
 
@@ -81,6 +83,14 @@
       </UpgradeBanner>
     {/if}
 
+    {#if isPathGated}
+      <Alert.Callout
+        variant="warning"
+        title={$t('course.navItem.people.invite_modal.path_only_notice_title')}
+        description={$t('course.navItem.people.invite_modal.grant_access_modal.path_only_notice')}
+      />
+    {/if}
+
     <div class="flex justify-end gap-2">
       <Button type="button" variant="outline" onclick={closeModal} disabled={isSubmitting}>
         {$t('course.navItem.people.invite_modal.grant_access_modal.cancel')}
@@ -90,7 +100,7 @@
         variant="secondary"
         onclick={handleSendInvite}
         loading={isSubmitting}
-        disabled={$isStudentLimitReached || !studentEmail}
+        disabled={$isStudentLimitReached || !studentEmail || isPathGated}
       >
         {$t('course.navItem.people.invite_modal.grant_access_modal.send_invite')}
       </Button>

@@ -5,6 +5,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import postgres from 'postgres';
 
+import { db } from '../drizzle';
+import { copyEarnedCertificatesToCompletion } from '../queries/course/people';
 import { baselineMigrationsIfNeeded } from './baseline';
 
 const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
@@ -66,6 +68,16 @@ async function runMigrations() {
   await runPnpmCommand('Migrate', ['db:migrate']);
 }
 
+/**
+ * Idempotent data backfills that must follow the migrations on every
+ * install, self-hosted included, where nobody runs scripts by hand. Each
+ * changes no rows once applied.
+ */
+async function runPostMigrationBackfills() {
+  const copiedCount = await copyEarnedCertificatesToCompletion();
+  console.log(`✓ Copied ${copiedCount} earned certificate(s) into groupmember.completed_at`);
+}
+
 async function runSeedEssential() {
   console.log('Seeding essential reference data (roles, submissions, question-types)...');
   await runPnpmCommand('Essential seed', ['seed', '--roles', '--submissions', '--question-types']);
@@ -119,6 +131,7 @@ async function dbSetup() {
       try {
         await baselineMigrationsIfNeeded(sql);
         await runMigrations();
+        await runPostMigrationBackfills();
       } finally {
         await lock`SELECT pg_advisory_unlock(${DB_SETUP_LOCK_KEY}::bigint)`;
         await lock.end();
@@ -135,6 +148,7 @@ async function dbSetup() {
     process.exit(1);
   } finally {
     await sql.end();
+    await db.$client.end();
   }
 }
 

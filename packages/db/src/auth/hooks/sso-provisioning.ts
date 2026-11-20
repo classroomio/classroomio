@@ -1,14 +1,19 @@
 import * as schema from '@db/schema';
 
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, desc, eq, gt, isNull, or, sql } from 'drizzle-orm';
 
 import { User } from 'better-auth';
 import { db } from '@db/drizzle';
-import { enrollUsersInCourseGroups } from '@db/queries/group';
-import { getOrgCourseGroups } from '@db/queries/course';
 import { markUserAndProfileEmailVerified } from '@db/queries/auth';
+import { getInviteEnrollmentHandler } from '../invite-handler';
+import { ROLE } from '@cio/utils/constants';
+import {
+  parseCohortIdsFromInviteMetadata,
+  parseCourseIdsFromInviteMetadata,
+  parsePathIdsFromInviteMetadata
+} from '@cio/utils/functions';
 
-const DEFAULT_STUDENT_ROLE_ID = 3;
+const DEFAULT_STUDENT_ROLE_ID = ROLE.STUDENT;
 
 /**
  * Ensure a user is a member of the given organization.
@@ -59,13 +64,36 @@ export async function ensureOrgMembership(
         eq(schema.organizationInvite.organizationId, orgId),
         eq(schema.organizationInvite.email, emailLower),
         eq(schema.organizationInvite.isRevoked, false),
-        isNull(schema.organizationInvite.acceptedAt)
+        isNull(schema.organizationInvite.acceptedAt),
+        or(isNull(schema.organizationInvite.expiresAt), gt(schema.organizationInvite.expiresAt, sql`NOW()`))
       )
     )
+    .orderBy(desc(schema.organizationInvite.createdAt))
     .limit(1);
 
   if (invite) {
+    const courseIds = parseCourseIdsFromInviteMetadata(invite.metadata);
+    const cohortIds = parseCohortIdsFromInviteMetadata(invite.metadata);
+    const pathIds = parsePathIdsFromInviteMetadata(invite.metadata);
+    const hasResources = courseIds.length > 0 || cohortIds.length > 0 || pathIds.length > 0;
+    const handler = getInviteEnrollmentHandler();
+
+    // Fail safe: accepting without enrolling would consume the invite and
+    // silently drop its access. Leave it pending until a handler is registered.
+    if (hasResources && !handler) {
+      console.error('ensureOrgMembership: no invite enrollment handler registered; leaving invite pending', {
+        inviteId: invite.id,
+        orgId
+      });
+      return;
+    }
+
     await db.transaction(async (tx) => {
+      // A new STUDENT row takes a seat; an audience-imported row already holds one.
+      if (!existingByEmail && invite.roleId === ROLE.STUDENT && handler) {
+        await handler.assertStudentCapacity(orgId, 1, tx);
+      }
+
       if (existingByEmail) {
         await tx
           .update(schema.organizationmember)
@@ -96,20 +124,20 @@ export async function ensureOrgMembership(
         .where(eq(schema.organizationInvite.id, invite.id));
 
       await markUserAndProfileEmailVerified(userId, tx);
-    });
 
-    const metadata = invite.metadata as Record<string, unknown> | null;
-    const courseIds = Array.isArray(metadata?.courseIds) ? (metadata.courseIds as string[]) : [];
-
-    if (courseIds.length > 0) {
-      try {
-        const courseGroups = await getOrgCourseGroups(orgId, courseIds);
-        const validGroupIds = courseGroups.map((cg) => cg.groupId).filter(Boolean) as string[];
-        await enrollUsersInCourseGroups(validGroupIds, [{ profileId: userId, email: emailLower }], invite.roleId);
-      } catch (error) {
-        console.error('ensureOrgMembership course enrollment error:', error);
+      if (hasResources && handler) {
+        await handler.enroll(tx, {
+          courseIds,
+          cohortIds,
+          pathIds,
+          organizationId: orgId,
+          profileId: userId,
+          email: emailLower,
+          roleId: invite.roleId,
+          grantedByProfileId: invite.createdByProfileId
+        });
       }
-    }
+    });
 
     console.debug('User joined org via invite:', orgId);
     return;

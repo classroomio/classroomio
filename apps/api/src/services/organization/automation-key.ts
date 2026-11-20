@@ -48,7 +48,9 @@ export const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKey
     'team:write',
     'organization:read',
     'organization:write',
-    'organization:domain:write'
+    'organization:domain:write',
+    'learning_path:read',
+    'learning_path:write'
   ],
   api: ['public_api:*'],
   zapier: ['public_api:*']

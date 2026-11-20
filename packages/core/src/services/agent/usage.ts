@@ -13,15 +13,9 @@ import type { UsageLeaderboardRow } from '@cio/db/queries/agent';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 
 import { AppError } from '@cio/utils/errors';
+import { startOfCurrentMonthUtc as startOfCurrentMonth } from '@cio/utils/functions';
+
 import { capturePlanLimitReached } from '../posthog';
-
-function startOfCurrentMonth(): Date {
-  const date = new Date();
-  date.setDate(1);
-  date.setHours(0, 0, 0, 0);
-
-  return date;
-}
 
 // ─── Plan-Based Token Allowances ─────────────────────────────────────────────
 

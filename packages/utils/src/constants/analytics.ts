@@ -1,4 +1,4 @@
-export const ANALYTICS_SCOPE_TYPES = ['cohort', 'course', 'org'] as const;
+export const ANALYTICS_SCOPE_TYPES = ['cohort', 'course', 'org', 'path'] as const;
 
 export const ANALYTICS_SOURCES = [
   'student',
@@ -11,13 +11,15 @@ export const ANALYTICS_SOURCES = [
   'overdue_item',
   'org_member',
   'cohort_summary',
-  'overdue_student'
+  'overdue_student',
+  'path_summary'
 ] as const;
 
 export const ANALYTICS_DIMENSIONS = [
   'student',
   'course',
   'cohort',
+  'path',
   'exercise',
   'section',
   'lesson',
@@ -115,7 +117,14 @@ export const ANALYTICS_METRICS = [
   'logged_in_period',
   'completed_all_in_period',
   'completed_in_window',
-  'certified_in_period'
+  'certified_in_period',
+  'path_public_id',
+  'path_created_at',
+  'courses',
+  'in_progress_students',
+  'not_started_students',
+  'active_students',
+  'completion_pct'
 ] as const;
 
 export const ANALYTICS_AGGS = [
@@ -219,9 +228,9 @@ export const ANALYTICS_LIMITS = {
 
 export const ANALYTICS_RANGES = ['all', '7d', '30d', '90d'] as const;
 
-export const ANALYTICS_WIDGET_REQUIREMENTS = ['grouping', 'pass_required', 'cohorts'] as const;
+export const ANALYTICS_WIDGET_REQUIREMENTS = ['grouping', 'pass_required', 'cohorts', 'paths'] as const;
 
-export const ANALYTICS_BREAKDOWN_GROUPS = ['core', 'courses', 'cohorts'] as const;
+export const ANALYTICS_BREAKDOWN_GROUPS = ['core', 'courses', 'cohorts', 'paths'] as const;
 
 /**
  * Days each range covers, counting today. Null is All time.

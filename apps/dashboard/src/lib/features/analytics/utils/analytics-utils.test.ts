@@ -454,13 +454,34 @@ describe('analytics-utils', () => {
       const widget = widgetOf('kpi_completed');
 
       expect(
-        formatKpi(widget, resultWith(row), mockTranslate, { courseSelected: false, rangeDays: null, hasStudents: true })
-          .description
+        formatKpi(widget, resultWith(row), mockTranslate, {
+          scopeType: 'cohort',
+          courseSelected: false,
+          rangeDays: null,
+          hasStudents: true
+        }).description
       ).toBe('analytics.kpi.completed_certified:percent=20%:count=3');
       expect(
-        formatKpi(widget, resultWith(row), mockTranslate, { courseSelected: true, rangeDays: null, hasStudents: true })
-          .description
+        formatKpi(widget, resultWith(row), mockTranslate, {
+          scopeType: 'cohort',
+          courseSelected: true,
+          rangeDays: null,
+          hasStudents: true
+        }).description
       ).toBe('analytics.kpi.share_of_cohort:percent=20%');
+    });
+
+    it('words Completed for the path on a path dashboard', () => {
+      const row = { is_completed_all__count_if: 4, rows__count: 20, certificates__sum: 3 };
+      const widget = widgetOf('kpi_completed');
+      const context = { scopeType: 'path' as const, rangeDays: null, hasStudents: true };
+
+      expect(formatKpi(widget, resultWith(row), mockTranslate, { ...context, courseSelected: false }).description).toBe(
+        'analytics.kpi.completed_certified_path:percent=20%:count=3'
+      );
+      expect(formatKpi(widget, resultWith(row), mockTranslate, { ...context, courseSelected: true }).description).toBe(
+        'analytics.kpi.share_of_path:percent=20%'
+      );
     });
 
     it('turns Overdue red from 5% of students', () => {
@@ -468,6 +489,7 @@ describe('analytics-utils', () => {
 
       expect(
         formatKpi(widget, resultWith({ is_overdue__count_if: 1, rows__count: 40 }), mockTranslate, {
+          scopeType: 'cohort',
           courseSelected: false,
           rangeDays: null,
           hasStudents: true
@@ -475,6 +497,7 @@ describe('analytics-utils', () => {
       ).toBe('flat');
       expect(
         formatKpi(widget, resultWith({ is_overdue__count_if: 2, rows__count: 40 }), mockTranslate, {
+          scopeType: 'cohort',
           courseSelected: false,
           rangeDays: null,
           hasStudents: true
@@ -485,6 +508,7 @@ describe('analytics-utils', () => {
     it('describes Pass rate with who took one and who still has to pass', () => {
       const row = { first_try_pass__pooled: 62.5, took_pass_mark__count_if: 16, has_still_to_pass__count_if: 3 };
       const display = formatKpi(widgetOf('kpi_first_try_pass'), resultWith(row), mockTranslate, {
+        scopeType: 'cohort',
         courseSelected: true,
         rangeDays: null,
         hasStudents: true
@@ -554,19 +578,19 @@ describe('analytics-utils', () => {
         widgetOf('kpi_logged_in_today'),
         resultOf([{ logged_in_today__count_if: 2, logged_in_period__count_if: 30, rows__count: 40 }]),
         mockTranslate,
-        { courseSelected: false, rangeDays: 30, hasStudents: true }
+        { scopeType: 'cohort', courseSelected: false, rangeDays: 30, hasStudents: true }
       );
       const enrolled = formatKpi(
         widgetOf('kpi_enrolled'),
         resultOf([{ rows__count: 120, enrolled_in_period__count_if: 12 }]),
         mockTranslate,
-        { courseSelected: true, rangeDays: 30, hasStudents: true }
+        { scopeType: 'cohort', courseSelected: true, rangeDays: 30, hasStudents: true }
       );
       const certificates = formatKpi(
         widgetOf('kpi_certificates'),
         resultOf([{ is_certified__count_if: 50, certified_in_period__count_if: 0, is_completed__count_if: 60 }]),
         mockTranslate,
-        { courseSelected: false, rangeDays: 7, hasStudents: true }
+        { scopeType: 'cohort', courseSelected: false, rangeDays: 7, hasStudents: true }
       );
 
       expect(logins.title).toBe('analytics.kpi.logged_in_days:days=30');
@@ -1310,6 +1334,7 @@ describe('analytics-utils', () => {
 
     it('explains a KPI with no data', () => {
       const display = formatKpi(widgetOf('kpi_avg_score'), resultOf([{ avg_score_pct__avg: null }]), mockTranslate, {
+        scopeType: 'cohort',
         courseSelected: false,
         rangeDays: null,
         hasStudents: true
@@ -1322,6 +1347,7 @@ describe('analytics-utils', () => {
         resultOf([{ avg_score_pct__avg: null }]),
         mockTranslate,
         {
+          scopeType: 'cohort',
           courseSelected: false,
           rangeDays: 7,
           hasStudents: true
@@ -1356,7 +1382,7 @@ describe('analytics-utils', () => {
         widgetOf('kpi_logged_in_today'),
         resultOf([{ logged_in_today__count_if: 0, rows__count: 0 }]),
         mockTranslate,
-        { courseSelected: false, rangeDays: null, hasStudents: false }
+        { scopeType: 'cohort', courseSelected: false, rangeDays: null, hasStudents: false }
       );
 
       expect(display).toMatchObject({ value: '0 / 0', description: 'analytics.kpi.no_data.students', trend: 'flat' });
@@ -1421,6 +1447,8 @@ describe('analytics-utils', () => {
       expect(widgetPaginationTarget('courses_chart', 'cohort')).toBe('courses_cohort');
       expect(widgetPaginationTarget('sections', 'course')).toBe('sections_course');
       expect(widgetPaginationTarget('overdue', 'cohort')).toBe('overdue_cohort');
+      expect(widgetPaginationTarget('overdue', 'path')).toBe('overdue_path');
+      expect(widgetPaginationTarget('courses', 'path')).toBe('courses_path');
       expect(widgetPaginationTarget('unknown', 'org')).toBeNull();
     });
 

@@ -11,6 +11,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { slugifyForFilename } from '@cio/utils/functions';
   import { classroomio } from '$lib/utils/services/api';
   import type { CertificationEvaluationData } from '$features/course/utils/types';
   import { normalizeCertificateIssuedAt, formatBlockerMessage } from '$features/course/utils/certificate-utils';
@@ -19,10 +20,11 @@
   let isLoading = $state(false);
   let isPngLoading = $state(false);
   let isCourseComplete = $state(false);
+  let canDownloadCertificate = $state(false);
   let evaluation = $state<CertificationEvaluationData | null>(null);
 
   let courseId = $derived(courseApi.course?.id ?? '');
-  let canDownload = $derived(isCourseComplete && !$isFreePlan);
+  let canDownload = $derived(canDownloadCertificate && !$isFreePlan);
 
   function buildBody() {
     return {
@@ -55,7 +57,7 @@
       const blobResponse = await response.blob();
       await triggerSave(
         new Blob([blobResponse], { type: 'application/pdf' }),
-        `certificate-${courseApi.course?.title ?? 'course'}.pdf`
+        `certificate-${slugifyForFilename(courseApi.course?.title ?? 'course')}.pdf`
       );
     } catch (error) {
       console.error('Error downloading', error);
@@ -77,7 +79,7 @@
       const blobResponse = await response.blob();
       await triggerSave(
         new Blob([blobResponse], { type: 'image/png' }),
-        `certificate-${courseApi.course?.title ?? 'course'}.png`
+        `certificate-${slugifyForFilename(courseApi.course?.title ?? 'course')}.png`
       );
     } catch (error) {
       console.error('Error downloading image', error);
@@ -93,8 +95,8 @@
     const res = await courseApi.getCertificationEvaluation(courseId);
     if (res?.data) {
       evaluation = res.data;
-      const hasEarned = res.data.certificateEarnedAt != null;
-      isCourseComplete = hasEarned || !!res.data.eligibleForCertificate;
+      isCourseComplete = res.data.completedAt != null;
+      canDownloadCertificate = res.data.certificateEarnedAt != null;
 
       if (res.data.isNewCompletion && courseId) {
         updateCourseCompletionModal(courseId, 'eligible', res.data);

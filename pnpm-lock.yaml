@@ -76,9 +76,6 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/certificates':
         specifier: workspace:*
         version: link:../../packages/certificates
@@ -97,6 +94,9 @@ importers:
       '@cio/question-types':
         specifier: workspace:*
         version: link:../../packages/question-types
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -318,9 +318,6 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/api':
         specifier: workspace:*
         version: link:../api
@@ -333,6 +330,9 @@ importers:
       '@cio/question-types':
         specifier: workspace:*
         version: link:../../packages/question-types
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -636,7 +636,7 @@ importers:
     dependencies:
       '@astrojs/mdx':
         specifier: 7.0.3
-        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+        version: 7.0.3(@astrojs/markdown-satteri@0.4.1)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -746,7 +746,7 @@ importers:
     dependencies:
       '@astrojs/mdx':
         specifier: 7.0.3
-        version: 7.0.3(@astrojs/markdown-satteri@0.4.1)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -799,9 +799,6 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.675.0
         version: 3.958.0
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -814,6 +811,9 @@ importers:
       '@cio/jobs':
         specifier: workspace:*
         version: link:../../packages/jobs
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -998,31 +998,6 @@ importers:
         specifier: ^5.5.2
         version: 5.9.3
 
-  packages/tracking:
-    dependencies:
-      '@cio/db':
-        specifier: workspace:*
-        version: link:../db
-      '@cio/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-      '@cio/utils':
-        specifier: workspace:*
-        version: link:../utils
-    devDependencies:
-      '@types/node':
-        specifier: ^24.10.1
-        version: 24.10.4
-      prettier:
-        specifier: ^3.2.5
-        version: 3.8.2
-      tsc-alias:
-        specifier: ^1.8.16
-        version: 1.8.16
-      typescript:
-        specifier: ^5.5.2
-        version: 5.9.3
-
   packages/certificates:
     dependencies:
       '@cio/tsconfig':
@@ -1053,12 +1028,18 @@ importers:
       '@cio/db':
         specifier: workspace:*
         version: link:../db
+      '@cio/email':
+        specifier: workspace:*
+        version: link:../email
       '@cio/jobs':
         specifier: workspace:*
         version: link:../jobs
       '@cio/question-types':
         specifier: workspace:*
         version: link:../question-types
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../tracking
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1251,6 +1232,9 @@ importers:
       '@better-auth/sso':
         specifier: ^1.7.13
         version: 1.7.13(@better-auth/core@1.7.13(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.9.1)(better-call@1.4.4(zod@4.6.1))(jose@6.2.13)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.13(f6d7b6a4eb808010a1877ce1c67eab0c))(better-call@1.4.4(zod@4.6.1))
+      '@cio/certificates':
+        specifier: workspace:*
+        version: link:../certificates
       '@cio/email':
         specifier: workspace:*
         version: link:../email
@@ -1412,7 +1396,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
       vitest:
-        specifier: ^1.2.2
+        specifier: ^1.6.1
         version: 1.6.1(@types/node@24.10.4)(jsdom@29.0.1(@noble/hashes@2.4.0))(lightningcss@1.32.0)(sass@1.97.1)
       zod:
         specifier: 4.2.1
@@ -1539,6 +1523,31 @@ importers:
       vite-plugin-mkcert:
         specifier: ^2.1.0
         version: 2.1.0(vite@7.3.0(@types/node@24.10.4)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+
+  packages/tracking:
+    dependencies:
+      '@cio/db':
+        specifier: workspace:*
+        version: link:../db
+      '@cio/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      '@types/node':
+        specifier: ^24.10.1
+        version: 24.10.4
+      prettier:
+        specifier: ^3.2.5
+        version: 3.8.2
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
+      typescript:
+        specifier: ^5.5.2
+        version: 5.9.3
 
   packages/tsconfig: {}
 
@@ -1755,6 +1764,9 @@ importers:
 
   packages/utils:
     dependencies:
+      '@cio/certificates':
+        specifier: workspace:*
+        version: link:../certificates
       '@cio/question-types':
         specifier: workspace:*
         version: link:../question-types

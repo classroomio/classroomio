@@ -18,7 +18,7 @@ import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/tracking';
 import { assertCertificatesEnabled, orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
-import { formatCertificateId } from '@api/services/course/certificate';
+import { formatCertificateId } from '@cio/utils/functions';
 import { resolveCertificateDesign } from '@api/utils/certificate';
 import type { TWebhookEventInput } from '@cio/utils/validation/webhook';
 
@@ -117,13 +117,17 @@ export function buildCertificateWebhookInput(params: {
 }
 
 /**
- * Evaluates certification eligibility. On first eligibility, persists
+ * Evaluates certification eligibility. On first completion of all content,
+ * records `completedAt` on any plan. A learner eligible for the certificate
+ * earns it once the org plan includes certificates, which persists
  * `certificateEarnedAt` and fires the completion email (non-blocking).
+ * `isNewCompletion` is true only for the call that earned the certificate.
+ * `completedAt` is the recorded course completion, null until first recorded.
  */
 export async function evaluateCourseCertification(
   courseId: string,
   profileId: string
-): Promise<CourseCompletionEvaluation & { isNewCompletion: boolean }> {
+): Promise<CourseCompletionEvaluation & { completedAt: string | null; isNewCompletion: boolean }> {
   const [progress, courseRow] = await Promise.all([
     getCourseProgressQuery(courseId, profileId),
     getCourseCertificationRow(courseId)
@@ -136,21 +140,23 @@ export async function evaluateCourseCertification(
   const evaluation = await buildCertificationEvaluation(courseId, profileId, courseRow, progress);
 
   let certificateEarnedAt = evaluation.certificateEarnedAt;
+  let completedAt = progress.completedAt;
   let isNewCompletion = false;
 
   if (!evaluation.hasCompletedAllContent || !progress.groupMemberId) {
-    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+    return { ...evaluation, certificateEarnedAt, completedAt, isNewCompletion };
   }
 
   const groupMemberId = progress.groupMemberId;
   const completionEventData = { profileId, memberId: groupMemberId };
 
-  if (!progress.completedAt) {
-    const completedAt = new Date().toISOString();
-    const didClaimCompletion = await claimMemberCompleted(groupMemberId, completedAt);
+  if (!completedAt) {
+    const claimedAt = new Date().toISOString();
+    const didClaimCompletion = await claimMemberCompleted(groupMemberId, claimedAt);
+    completedAt = claimedAt;
 
     if (didClaimCompletion) {
-      const daysToComplete = daysBetween(progress.enrolledAt, completedAt);
+      const daysToComplete = daysBetween(progress.enrolledAt, claimedAt);
 
       captureServerEvent({
         event: 'course_completed',
@@ -166,14 +172,18 @@ export async function evaluateCourseCertification(
       await invalidateOrgStats(courseRow.orgId);
 
       if (courseRow.type !== 'COMPLIANCE') {
-        await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData, completedAt });
+        await emitWebhookEvent(courseRow.orgId, 'course.completed', {
+          courseId,
+          ...completionEventData,
+          completedAt: claimedAt
+        });
       }
 
       trackServerEvent({
         eventType: SERVER_EVENTS.COURSE_COMPLETED,
         userId: profileId,
         courseId,
-        props: { path: 'standard', earnedAt: completedAt }
+        props: { path: 'standard', earnedAt: claimedAt }
       });
     }
   }
@@ -181,13 +191,13 @@ export async function evaluateCourseCertification(
   const canIssueCertificate = evaluation.eligibleForCertificate && !certificateEarnedAt;
 
   if (!canIssueCertificate) {
-    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+    return { ...evaluation, certificateEarnedAt, completedAt, isNewCompletion };
   }
 
   const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
 
   if (!certificatesEnabled) {
-    return { ...evaluation, certificateEarnedAt, isNewCompletion };
+    return { ...evaluation, certificateEarnedAt, completedAt, isNewCompletion };
   }
 
   const earnedAt = new Date().toISOString();
@@ -226,7 +236,7 @@ export async function evaluateCourseCertification(
     }
   }
 
-  return { ...evaluation, certificateEarnedAt, isNewCompletion };
+  return { ...evaluation, certificateEarnedAt, completedAt, isNewCompletion };
 }
 
 /**

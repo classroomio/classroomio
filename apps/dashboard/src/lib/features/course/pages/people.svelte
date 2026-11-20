@@ -19,9 +19,10 @@
   import { Progress } from '@cio/ui/base/progress';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { ComingSoon, RoleBasedSecurity, TablePagination, UpgradeBanner } from '$features/ui';
-  import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
-  import InvitationModal from '$features/course/components/people/invitation-modal.svelte';
+  import { TruncatedWithTooltip } from '$features/ui';
+  import InvitationModal from '$features/people/components/invitation-modal.svelte';
   import GrantAccessModal from '$features/course/components/people/grant-access-modal.svelte';
+  import PeopleSourceCell from '$features/course/components/people/people-source-cell.svelte';
   import DeleteConfirmation from '$features/course/components/people/delete-confirmation.svelte';
   import { isStudentLimitReached } from '$lib/utils/store/org';
 
@@ -62,7 +63,10 @@
   import PeopleFilterPopover from '$features/course/components/people/people-filter-popover.svelte';
   import PeopleViewSwitcher from '$features/course/components/people/people-view-switcher.svelte';
 
-  let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
+  /** Fields the delete dialog reads from the row it targets. */
+  type MemberDeleteTarget = Partial<Pick<CourseMember, 'id' | 'email' | 'profile'>>;
+
+  let member = $state<MemberDeleteTarget>({});
   let copiedEmail = $state<string | null>(null);
   let memberRows = $state<CourseMembers>([]);
   let pagination = $state<CourseMembersPagination | null>(null);
@@ -86,7 +90,11 @@
     const nextSearch = searchParams.toString();
     if (nextSearch === page.url.searchParams.toString()) return;
 
-    await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    try {
+      await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    } catch (error) {
+      console.error('Failed to update the people roster URL:', error);
+    }
   }
 
   async function loadMembers(courseId: string, activeQuery: ListPeopleQuery) {
@@ -139,7 +147,10 @@
   });
 
   function refreshCurrentPage() {
-    loadedQueryKey = null;
+    const courseId = courseApi.course?.id;
+    if (!courseId) return;
+
+    void loadMembers(courseId, query);
   }
 
   function handleFilterChange(patch: Partial<ListPeopleQuery>) {
@@ -165,6 +176,7 @@
   // Stage is resolved in TypeScript after pagination, so it has no server sort key.
   const tableColumns: { label: string; sortKey?: ListPeopleQuery['sortBy']; wide?: boolean }[] = $derived([
     { label: $t('course.navItem.people.name'), sortKey: 'name' },
+    { label: $t('course.navItem.people.source') },
     { label: $t('course.navItem.people.progress'), sortKey: 'progress' },
     { label: $t('course.navItem.people.stage'), wide: true },
     { label: $t('course.navItem.people.last_login_at'), sortKey: 'lastLogin' },
@@ -187,8 +199,12 @@
       courseApi.group.people = courseApi.group.people.filter((person: { id: string }) => person.id !== member.id);
       courseApi.group.tutors = courseApi.group.tutors.filter((person: CourseMember) => person.id !== member.id);
 
-      const nextPage = memberRows.length === 0 && query.page > 1 ? query.page - 1 : query.page;
-      await navigatePeople({ ...query, page: nextPage, search: search.takePending() || undefined });
+      if (memberRows.length === 0 && query.page > 1) {
+        await navigatePeople({ ...query, page: query.page - 1, search: search.takePending() || undefined });
+        return;
+      }
+
+      await loadMembers(courseId, query);
     }
   }
 
@@ -315,13 +331,13 @@
         <Table.Body>
           {#if isLoadingMembers && memberRows.length === 0}
             <Table.Row>
-              <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
+              <Table.Cell colspan={7} class="ui:text-muted-foreground py-8 text-center text-sm">
                 {$t('course.navItem.people.invite_modal.loading')}
               </Table.Cell>
             </Table.Row>
           {:else if memberRows.length === 0}
             <Table.Row>
-              <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
+              <Table.Cell colspan={7} class="ui:text-muted-foreground py-8 text-center text-sm">
                 {$t('course.search.empty')}
               </Table.Cell>
             </Table.Row>
@@ -422,6 +438,8 @@
                   {/if}
                 </Table.Cell>
 
+                <PeopleSourceCell member={person} />
+
                 <Table.Cell class="min-w-[140px]">
                   {#if isStudentMember(person)}
                     {@const progressPercent = getMemberProgressPercent(person) ?? 0}
@@ -454,6 +472,20 @@
                           <AwardIcon class="size-3.5 shrink-0" />
                           <TruncatedWithTooltip
                             text={$t('course.navItem.people.certificate_earned')}
+                            maxWidth="100%"
+                            class="text-emerald-700 dark:text-emerald-300"
+                          />
+                        </div>
+                      </Badge>
+                    {:else if person.stage.kind === 'completed'}
+                      <Badge
+                        variant="outline"
+                        class="max-w-[200px] border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
+                      >
+                        <div class="flex min-w-0 items-center gap-1">
+                          <CheckIcon class="size-3.5 shrink-0" />
+                          <TruncatedWithTooltip
+                            text={$t('course.navItem.people.completed')}
                             maxWidth="100%"
                             class="text-emerald-700 dark:text-emerald-300"
                           />
@@ -500,7 +532,7 @@
 
                 <Table.Cell class="min-w-[110px]">
                   <span class="ui:text-muted-foreground text-sm">
-                    {formatPeopleShortDate(person.enrolledAt ?? person.createdAt)}
+                    {formatPeopleShortDate((isStudentMember(person) && person.enrolledAt) || person.createdAt)}
                   </span>
                 </Table.Cell>
 

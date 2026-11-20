@@ -6,7 +6,7 @@ import { baseColumn, flagMetric, idDimension, rowsMetric, scopePushdownFilters }
 /** One row per learner and day in the login window, marking whether they logged in. */
 export const loginDaySource: AnalyticsSourceDefinition = {
   id: 'login_day',
-  scopeTypes: ['cohort', 'course', 'org'],
+  scopeTypes: ['cohort', 'course', 'org', 'path'],
   build: () => sql`SELECT * FROM login_day_row`,
   dimensions: {
     day: { valueType: 'date', key: baseColumn('day') },

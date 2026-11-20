@@ -22,6 +22,8 @@
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
+  import { CourseInPathNext } from '$features/learning-path/components';
   import { lessonBlockList } from '$features/course/store/lesson-blocks.svelte';
   import { createLessonBlockOwner } from '$features/course/utils/lesson-block-owner';
   import LessonBlocks from '$features/course/components/lesson/lesson-blocks.svelte';
@@ -158,6 +160,13 @@
     if (!sessionJustEnded || !$isStudentExperience) return;
 
     void lessonApi.get(courseId, lessonId);
+  });
+
+  $effect(() => {
+    if (!$profile.id || !$currentOrg.id) return;
+
+    const courseId = courseApi.course?.id;
+    if (courseId) learnerPathStore.loadPathContext(courseId, $page.params.publicId as string | undefined);
   });
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
@@ -495,6 +504,14 @@
         <div class="flex justify-center py-16">
           <Spinner />
         </div>
+      {/if}
+
+      {#if $isCourseLearnerView && learnerPathStore.pathContext && mode === MODES.view}
+        <CourseInPathNext
+          pathHref={learnerPathStore.pathContext.pathHref}
+          next={learnerPathStore.pathContext.next}
+          isPathComplete={learnerPathStore.pathContext.isPathComplete}
+        />
       {/if}
     </div>
 

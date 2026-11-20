@@ -8,7 +8,7 @@
 
   import { t } from '$lib/utils/functions/translations';
   import type { AudienceAnalytics, AudienceAnalyticsCourse } from '../utils/types';
-  import { formatLastSeen } from '../utils/audience-utils';
+  import { formatLastSeen, isAudienceCourseComplete } from '../utils/audience-utils';
 
   let {
     analytics
@@ -17,7 +17,7 @@
   } = $props();
 
   function isComplete(course: AudienceAnalyticsCourse): boolean {
-    return course.lessons_count > 0 && course.lessons_completed === course.lessons_count;
+    return isAudienceCourseComplete(course);
   }
 
   let completedCourses = $derived(analytics.courses.filter(isComplete).length);

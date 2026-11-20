@@ -139,7 +139,10 @@ export const ZPublicApiCourseResponse = z.object({
   compliance: ZCourseCompliance.nullable(),
   status: z.string().describe('ACTIVE, or DELETED once the course is deleted'),
   type: z.enum(COURSE_TYPE_VALUES).nullable(),
-  callout: ZCourseCallout.nullable()
+  callout: ZCourseCallout.nullable(),
+  enrollOnlyInLearningPath: z
+    .boolean()
+    .describe('True when learners can join the course only through a learning path that contains it')
 });
 
 export const ZPublicApiCourseListItemResponse = ZPublicApiCourseResponse.extend({

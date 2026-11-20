@@ -861,7 +861,8 @@ export default defineConfig({
           {
             label: 'Report on compliance status',
             root: '/analytics-and-reporting/report-on-compliance-status'
-          }
+          },
+          '/analytics-and-reporting/track-a-learning-path-with-analytics'
         ]
       },
       {

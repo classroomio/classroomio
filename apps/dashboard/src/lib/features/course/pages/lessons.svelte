@@ -19,6 +19,7 @@
   import { profile } from '$lib/utils/store/user';
   import { getPastLiveSessions, liveSessionClock } from '$features/course/utils/live-session-phase';
   import { getCourseContent } from '$features/course/utils/content';
+  import { getCourseRouteBase } from '$features/course/utils/functions';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
   import { flip } from 'svelte/animate';
@@ -134,15 +135,16 @@
     if (!canResolveNext || isFetching || !isNextRequested) return;
 
     hasHandledNext = true;
+    const base = getCourseRouteBase();
     const incompleteContent = getFirstIncompleteNavigableContent(courseApi.course);
     if (incompleteContent) {
       if (incompleteContent.type === ContentType.Lesson) {
-        goto(`/courses/${courseId}/lessons/${incompleteContent.id}`);
+        goto(`${base}/${courseId}/lessons/${incompleteContent.id}`);
       } else {
-        goto(`/courses/${courseId}/exercises/${incompleteContent.id}`);
+        goto(`${base}/${courseId}/exercises/${incompleteContent.id}`);
       }
     } else {
-      goto(`/courses/${courseId}/lessons`, { replaceState: true });
+      goto(`${base}/${courseId}/lessons`, { replaceState: true });
     }
   });
 </script>

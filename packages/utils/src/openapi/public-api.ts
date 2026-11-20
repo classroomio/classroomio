@@ -267,7 +267,17 @@ export const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/tags': 'Create a tag',
   'PUT /public-api/v1/tags/{tagId}': 'Update a tag',
   'POST /public-api/v1/tags/groups': 'Create a tag group',
-  'PUT /public-api/v1/tags/groups/{groupId}': 'Update a tag group'
+  'PUT /public-api/v1/tags/groups/{groupId}': 'Update a tag group',
+  'GET /public-api/v1/learning-paths': 'List learning paths',
+  'POST /public-api/v1/learning-paths': 'Create a learning path',
+  'GET /public-api/v1/learning-paths/{pathId}': 'Get a learning path',
+  'PATCH /public-api/v1/learning-paths/{pathId}': 'Update a learning path',
+  'DELETE /public-api/v1/learning-paths/{pathId}': 'Delete a learning path',
+  'POST /public-api/v1/learning-paths/{pathId}/courses': 'Add courses to a learning path',
+  'PUT /public-api/v1/learning-paths/{pathId}/courses/order': 'Reorder learning path courses',
+  'DELETE /public-api/v1/learning-paths/{pathId}/courses/{courseId}': 'Remove a course from a learning path',
+  'GET /public-api/v1/learning-paths/{pathId}/members': 'List learning path members',
+  'GET /public-api/v1/enrolled': "List the key creator's enrolled items"
 };
 
 const OPERATION_TAGS = [
@@ -340,7 +350,15 @@ const OPERATION_TAGS = [
     description:
       "The numbers on the organization's Marketing page: traffic, countries, funnel, course types and top courses."
   },
-  { name: 'Compliance', description: "The numbers on the organization's Compliance page." }
+  { name: 'Compliance', description: "The numbers on the organization's Compliance page." },
+  {
+    name: 'Learning Paths',
+    description: "Package courses into ordered learning paths, manage their courses, and list a path's members."
+  },
+  {
+    name: 'Enrolled',
+    description: "Read the API key creator's own enrolled courses and learning paths."
+  }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {

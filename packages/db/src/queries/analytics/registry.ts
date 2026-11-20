@@ -13,6 +13,7 @@ import { studentCourseSource } from './sources/student-course';
 import { lessonProgressSource } from './sources/lesson-progress';
 import { loginDaySource } from './sources/login-day';
 import { orgMemberSource } from './sources/org-member';
+import { pathSummarySource } from './sources/path-summary';
 import { overdueItemSource } from './sources/overdue-item';
 import { overdueStudentSource } from './sources/overdue-student';
 import { questionResultSource } from './sources/question-result';
@@ -29,7 +30,8 @@ export const ANALYTICS_REGISTRY: Record<TAnalyticsSource, AnalyticsSourceDefinit
   overdue_item: overdueItemSource,
   org_member: orgMemberSource,
   cohort_summary: cohortSummarySource,
-  overdue_student: overdueStudentSource
+  overdue_student: overdueStudentSource,
+  path_summary: pathSummarySource
 };
 
 export type AnalyticsRegistryMetricDescription = {

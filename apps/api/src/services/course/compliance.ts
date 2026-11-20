@@ -30,6 +30,7 @@ import { getUserCourseRole } from '@cio/db/queries/group/group';
 import { getCourseCertificationRow } from '@cio/db/queries/course/course';
 import { emitCourseWebhookEvent, emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import type { TWebhookComplianceTrigger } from '@cio/utils/constants/webhook';
+import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { orgHasCertificatesEnabled } from './certificate-plan';
 import { buildCertificateWebhookInput, evaluateCourseCertification } from './completion';
 
@@ -48,6 +49,28 @@ function ensureFutureOrPresentIsoDate(dateIso: string, field: string) {
   const date = new Date(dateIso);
   if (Number.isNaN(date.getTime())) {
     throw new AppError('Invalid date provided', ErrorCodes.VALIDATION_ERROR, 400, field);
+  }
+}
+
+/**
+ * Refreshes learning-path caches after compliance latest-cycle statuses
+ * change. A course counts as done on a path by its recorded completion, so
+ * waivers, resets, extensions, expiries and reminder-scan flips must sync the
+ * same way learner events do. Request handlers call it fire-and-forget (the
+ * writes already committed); cron callers await it.
+ */
+async function syncLearningPathsForComplianceProfiles(courseId: string, profileIds: string[]): Promise<void> {
+  if (profileIds.length === 0) {
+    return;
+  }
+
+  const outcomes = await Promise.allSettled(
+    profileIds.map((profileId) => syncCourseProgressInLearningPaths(courseId, profileId))
+  );
+
+  const failed = outcomes.filter((outcome) => outcome.status === 'rejected').length;
+  if (failed > 0) {
+    console.error('Failed to sync learning path progress after a compliance change:', { courseId, failed });
   }
 }
 
@@ -399,7 +422,7 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(
 export async function syncComplianceProgressFromSubmission(
   courseId: string,
   groupMemberId: string,
-  exerciseId: string
+  exerciseId: string | null = null
 ) {
   const [course] = await getCourseById(courseId);
 
@@ -459,7 +482,9 @@ export async function syncComplianceProgressFromSubmission(
 
   const completedAt = new Date().toISOString();
   const validUntil = addMonths(completedAt, course.compliance?.retakeIntervalMonths ?? 0);
-  const completionSnapshot = await getComplianceExerciseSnapshot(exerciseId, groupMemberId);
+  const completionSnapshot = exerciseId
+    ? await getComplianceExerciseSnapshot(exerciseId, groupMemberId)
+    : { score: latestRecord.score, attempts: latestRecord.attempts };
 
   const certificateIssue = await db.transaction(async (tx) => {
     await updateCourseCompletionRecord(
@@ -650,6 +675,9 @@ export async function resetCourseCompliance(
   for (const change of statusChanges) {
     await emitComplianceStatusChanged(...change);
   }
+  void syncLearningPathsForComplianceProfiles(courseId, profileIds).catch((syncError) => {
+    console.error('Failed to sync learning path progress after a compliance reset:', syncError);
+  });
 
   return {
     createdCount,
@@ -729,6 +757,9 @@ export async function extendCourseCompliance(
   for (const change of statusChanges) {
     await emitComplianceStatusChanged(...change);
   }
+  void syncLearningPathsForComplianceProfiles(courseId, profileIds).catch((syncError) => {
+    console.error('Failed to sync learning path progress after a compliance extension:', syncError);
+  });
 
   return {
     createdCount,
@@ -753,6 +784,7 @@ export async function waiveCourseCompliance(courseId: string, actorProfileId: st
 
   let updatedCount = 0;
   let skippedCount = 0;
+  const waivedProfileIds: string[] = [];
   const waivedRecords: TCourseCompletionRecord[] = [];
 
   await db.transaction(async (tx) => {
@@ -781,6 +813,7 @@ export async function waiveCourseCompliance(courseId: string, actorProfileId: st
         tx
       );
       updatedCount += 1;
+      waivedProfileIds.push(profileId);
     }
   });
 
@@ -801,6 +834,9 @@ export async function waiveCourseCompliance(courseId: string, actorProfileId: st
       actorProfileId
     });
   }
+  void syncLearningPathsForComplianceProfiles(courseId, waivedProfileIds).catch((syncError) => {
+    console.error('Failed to sync learning path progress after a compliance waiver:', syncError);
+  });
 
   return {
     updatedCount,
@@ -817,6 +853,7 @@ export async function runComplianceExpiryCheck() {
   let processedCount = 0;
   let createdCycleCount = 0;
   let skippedCount = 0;
+  const expiredByCourseId = new Map<string, string[]>();
   const newCycles: Array<Parameters<typeof emitComplianceStatusChanged>> = [];
 
   for (const record of records) {
@@ -866,6 +903,16 @@ export async function runComplianceExpiryCheck() {
         skippedCount += 1;
       }
     });
+
+    // Expiry opens a fresh cycle, so a previously compliant course stops
+    // counting as done on its paths until the learner completes the renewal.
+    const expiredProfiles = expiredByCourseId.get(record.courseId) ?? [];
+    expiredProfiles.push(record.profileId);
+    expiredByCourseId.set(record.courseId, expiredProfiles);
+  }
+
+  for (const [courseId, profileIds] of expiredByCourseId) {
+    await syncLearningPathsForComplianceProfiles(courseId, profileIds);
   }
 
   for (const change of newCycles) {

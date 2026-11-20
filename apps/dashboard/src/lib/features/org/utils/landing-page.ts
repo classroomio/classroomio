@@ -11,7 +11,7 @@ import type {
   OrgLandingPageNavItem,
   OrgLandingPageTheme
 } from '$lib/utils/types/org';
-import type { OrgPublicCourses } from './types';
+import type { OrgPublicCourses, OrgPublicLearningPaths } from './types';
 import type { OrgLandingPageProps, LandingPageThemeBundle } from '@cio/ui/custom/org-landing-page/types';
 import { resolveLandingPageLinkIcon } from '@cio/ui/custom/org-landing-page/landing-page-link-icons';
 import {
@@ -704,6 +704,50 @@ function normalizeLandingPageSections(value: unknown): OrgLandingPageJson {
   };
 }
 
+/** Reads a string field from an untyped record, returning undefined for other types. */
+function readRecordString(record: Record<string, unknown>, key: string): string | undefined {
+  const value = record[key];
+  return typeof value === 'string' ? value : undefined;
+}
+
+/** Reads a numeric field from an untyped record, returning undefined for other types. */
+function readRecordNumber(record: Record<string, unknown>, key: string): number | undefined {
+  const value = record[key];
+  return typeof value === 'number' ? value : undefined;
+}
+
+/**
+ * Maps legacy course metadata discount fields to the landing-page shape.
+ * Returns undefined when there is no metadata to read.
+ */
+function mapLandingPageDiscount(
+  metadataRecord: Record<string, unknown> | undefined
+): { discount?: number; showDiscount?: boolean } | undefined {
+  if (!metadataRecord) {
+    return undefined;
+  }
+
+  return {
+    discount: typeof metadataRecord.discount === 'number' ? metadataRecord.discount : undefined,
+    showDiscount: typeof metadataRecord.showDiscount === 'boolean' ? metadataRecord.showDiscount : undefined
+  };
+}
+
+/**
+ * Resolves whether a landing-page item is paid: explicit `paymentEnabled` wins,
+ * otherwise any positive cost counts as paid.
+ */
+function resolveLandingPagePaid(
+  cost: number | undefined,
+  metadataRecord: Record<string, unknown> | undefined
+): boolean {
+  if (typeof metadataRecord?.paymentEnabled === 'boolean') {
+    return metadataRecord.paymentEnabled;
+  }
+
+  return typeof cost === 'number' && cost > 0;
+}
+
 export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses): OrgLandingPageProps['courses'] {
   return courses.map((course) => {
     const courseRecord = course as Record<string, unknown>;
@@ -711,26 +755,23 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     const tags = Array.isArray(courseRecord.tags)
       ? (courseRecord.tags as OrgLandingPageProps['courses'][number]['tags'])
       : undefined;
-    const courseSlug = typeof courseRecord.slug === 'string' && courseRecord.slug.length > 0 ? courseRecord.slug : '';
-    const courseCost = typeof courseRecord.cost === 'number' ? courseRecord.cost : undefined;
-    const courseIsPaid =
-      typeof metadataRecord?.paymentEnabled === 'boolean'
-        ? metadataRecord.paymentEnabled
-        : typeof courseCost === 'number' && courseCost > 0;
-    const courseCurrency = typeof courseRecord.currency === 'string' ? courseRecord.currency : undefined;
-    const lessonCount = typeof courseRecord.lessonCount === 'number' ? courseRecord.lessonCount : undefined;
-    const exerciseCount = typeof courseRecord.exerciseCount === 'number' ? courseRecord.exerciseCount : undefined;
-    const totalStudents = typeof courseRecord.totalStudents === 'number' ? courseRecord.totalStudents : undefined;
-    const image = typeof courseRecord.image === 'string' ? courseRecord.image : undefined;
+    const courseSlug = readRecordString(courseRecord, 'slug') ?? '';
+    const courseCost = readRecordNumber(courseRecord, 'cost');
+    const courseIsPaid = resolveLandingPagePaid(courseCost, metadataRecord);
+    const courseCurrency = readRecordString(courseRecord, 'currency');
+    const lessonCount = readRecordNumber(courseRecord, 'lessonCount');
+    const exerciseCount = readRecordNumber(courseRecord, 'exerciseCount');
+    const totalStudents = readRecordNumber(courseRecord, 'totalStudents');
+    const image = readRecordString(courseRecord, 'image');
     const bannerImage = resolveCourseBannerImage({
-      bannerImage: typeof courseRecord.bannerImage === 'string' ? courseRecord.bannerImage : null,
-      logo: typeof courseRecord.logo === 'string' ? courseRecord.logo : null
+      bannerImage: readRecordString(courseRecord, 'bannerImage') ?? null,
+      logo: readRecordString(courseRecord, 'logo') ?? null
     });
-    const price = typeof courseRecord.price === 'string' ? courseRecord.price : undefined;
-    const duration = typeof courseRecord.duration === 'string' ? courseRecord.duration : undefined;
-    const level = typeof courseRecord.level === 'string' ? courseRecord.level : undefined;
-    const description = typeof courseRecord.description === 'string' ? courseRecord.description : '';
-    const type = typeof courseRecord.type === 'string' ? courseRecord.type : undefined;
+    const price = readRecordString(courseRecord, 'price');
+    const duration = readRecordString(courseRecord, 'duration');
+    const level = readRecordString(courseRecord, 'level');
+    const description = readRecordString(courseRecord, 'description') ?? '';
+    const type = readRecordString(courseRecord, 'type');
     const typeLabel =
       type && ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC'].includes(type)
         ? t.get(`marketing.popularTypes.types.${type}`)
@@ -739,9 +780,9 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
 
     return {
       id: course.id,
-      slug: typeof courseRecord.slug === 'string' ? courseRecord.slug : undefined,
+      slug: readRecordString(courseRecord, 'slug'),
       bannerImage,
-      title: typeof courseRecord.title === 'string' ? courseRecord.title : '',
+      title: readRecordString(courseRecord, 'title') ?? '',
       description,
       type,
       typeLabel,
@@ -751,18 +792,50 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       lessonCount,
       exerciseCount,
       totalStudents,
-      metadata: metadataRecord
-        ? {
-            discount: typeof metadataRecord.discount === 'number' ? metadataRecord.discount : undefined,
-            showDiscount: typeof metadataRecord.showDiscount === 'boolean' ? metadataRecord.showDiscount : undefined
-          }
-        : undefined,
+      metadata: mapLandingPageDiscount(metadataRecord),
       tags,
       image,
       link: courseSlug ? `/course/${courseSlug}` : undefined,
       price: courseIsPaid ? price : undefined,
       duration,
       level
+    };
+  });
+}
+
+/**
+ * Maps public learning paths to the landing-page card shape, tolerating
+ * untyped API fields and deriving paid state from cost/metadata.
+ */
+export function mapPublicLearningPathsToLandingPagePaths(
+  paths: OrgPublicLearningPaths
+): NonNullable<OrgLandingPageProps['learningPaths']> {
+  return paths.map((path) => {
+    const pathRecord = path as Record<string, unknown>;
+    const metadataRecord = isRecord(pathRecord.metadata) ? pathRecord.metadata : undefined;
+    const pathSlug = readRecordString(pathRecord, 'slug') ?? '';
+    const pathCost = readRecordNumber(pathRecord, 'cost');
+    const pathIsPaid = resolveLandingPagePaid(pathCost, metadataRecord);
+    const pathCurrency = readRecordString(pathRecord, 'currency');
+    const courseCount = readRecordNumber(pathRecord, 'courseCount');
+    const coverImage = readRecordString(pathRecord, 'coverImage') ?? readRecordString(pathRecord, 'logo');
+    const description = readRecordString(pathRecord, 'description') ?? '';
+    const price = readRecordString(pathRecord, 'price');
+
+    return {
+      id: path.id,
+      slug: readRecordString(pathRecord, 'slug'),
+      logo: coverImage ?? null,
+      title: readRecordString(pathRecord, 'name') ?? readRecordString(pathRecord, 'title') ?? '',
+      description,
+      isPublished: typeof pathRecord.isPublished === 'boolean' ? pathRecord.isPublished : true,
+      cost: pathIsPaid ? pathCost : 0,
+      currency: pathCurrency,
+      courseCount,
+      metadata: mapLandingPageDiscount(metadataRecord),
+      image: coverImage,
+      link: pathSlug ? `/learning-paths/${pathSlug}` : undefined,
+      price: pathIsPaid ? price : undefined
     };
   });
 }
@@ -793,7 +866,6 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
     learningPathCourseCountLabel: (count) => t.get('marketing.popularTypes.course_count', { count }),
     learningPathsEmptyTitle: t.get('public_courses.catalog_empty.title'),
     learningPathsEmptyDescription: t.get('public_courses.catalog_empty.description'),
-    learningPathHoursLabel: (hours) => `${hours}h`,
     learningPathCertificateLabel: t.get('course.navItem.landing_page.certificate'),
     courseOutlineHeading: t.get('course.navItem.landing_page.course_content'),
     courseOutlineDescription: t.get('public_courses.subtitle'),
@@ -804,14 +876,30 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
   };
 }
 
+export interface BuildOrgLandingPagePropsInput {
+  courses?: OrgPublicCourses;
+  learningPaths?: OrgPublicLearningPaths;
+  hasMoreCourses?: boolean;
+  hasMoreLearningPaths?: boolean;
+  coursesLoaded?: boolean;
+  authAction?: OrgLandingPageProps['authAction'];
+  learnerAccount?: OrgLandingPageProps['learnerAccount'];
+}
+
 export function buildOrgLandingPageProps(
   org: AccountOrg | PublicOrg,
   landingpage: unknown,
-  courses: OrgPublicCourses,
-  hasMoreCourses = false,
-  authAction?: OrgLandingPageProps['authAction'],
-  options?: { coursesLoaded?: boolean; learnerAccount?: OrgLandingPageProps['learnerAccount'] }
+  input: BuildOrgLandingPagePropsInput = {}
 ): OrgLandingPageProps {
+  const {
+    courses = [],
+    learningPaths = [],
+    hasMoreCourses = false,
+    hasMoreLearningPaths = false,
+    coursesLoaded = true,
+    authAction,
+    learnerAccount
+  } = input;
   const normalizedLandingPage = normalizeLandingPageSettings(landingpage);
   const configuredPrimaryAction = normalizedLandingPage.hero.primaryAction;
   const primaryAction =
@@ -823,7 +911,7 @@ export function buildOrgLandingPageProps(
     orgName: org.name,
     logoUrl: org.avatarUrl || undefined,
     authAction,
-    learnerAccount: options?.learnerAccount,
+    learnerAccount,
     ...normalizedLandingPage,
     hero: {
       ...normalizedLandingPage.hero,
@@ -831,7 +919,9 @@ export function buildOrgLandingPageProps(
     },
     courses: mapPublicCoursesToLandingPageCourses(courses),
     hasMoreCourses,
-    coursesLoaded: options?.coursesLoaded ?? true,
+    coursesLoaded,
+    learningPaths: mapPublicLearningPathsToLandingPagePaths(learningPaths),
+    hasMoreLearningPaths,
     labels: buildOrgLandingPageLabels()
   };
 }
@@ -867,6 +957,11 @@ export async function importThemeComponent(theme: LandingPageThemeKey) {
 export async function importCourseLandingPageTheme(theme: LandingPageThemeKey) {
   const mod = await importThemeBundle(theme);
   return { default: mod.course };
+}
+
+export async function importLearningPathLandingPageTheme(theme: LandingPageThemeKey) {
+  const mod = await importThemeBundle(theme);
+  return { default: mod.learningPath };
 }
 
 const NAV_SNIPPET_THEMES: ReadonlySet<LandingPageThemeKey> = new Set([

@@ -12,6 +12,7 @@
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>{$t('explore.heading')}</Page.Title>
+      <Page.Subtitle>{$t('explore.subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
   </Page.Header>
   <Page.Body>

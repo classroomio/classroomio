@@ -10,6 +10,8 @@ import { getLesson } from '@cio/core/services/lesson/lesson';
 import { getLessonNoteHtml } from '@cio/core/services/block/block-text';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
+import { getLearnerPathSummaries } from '@cio/db/queries/learning-path/journey';
+import { summarizeJourney } from '@api/services/learning-path/journey';
 import { getCourseOutlineSummary } from '@cio/core/services/course/outline';
 import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
 import { AppError } from '@api/utils/errors';
@@ -132,6 +134,9 @@ const readMySubmissionsParam = z.object({
 const searchCourseParam = z.object({
   query: z.string().min(1).max(200),
   limit: z.number().int().min(1).max(20).default(8)
+});
+const listStudentLearningPathsParam = z.object({
+  limit: z.number().int().min(1).max(20).optional().default(5)
 });
 
 /** Builds the read-only student tools scoped to one course and learner. */
@@ -293,6 +298,43 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
           const merged = [...lessonsResult, ...exercisesResult].slice(0, limit);
 
           return { query: args.query, results: merged };
+        });
+      }
+    }),
+
+    get_student_learning_paths: tool({
+      description:
+        'List the learner\u2019s active learning path enrollments in this organization, with each path\u2019s ordered courses, completion percentage, and the current unlocked course. Use this when the learner asks about their broader curriculum journey beyond the current course.',
+      inputSchema: listStudentLearningPathsParam,
+      execute: async (args) => {
+        return executeStudentTool('get_student_learning_paths', { orgId, userId, courseId, args }, async () => {
+          const limit = args.limit ?? 5;
+          const summaries = await getLearnerPathSummaries({ orgId, profileId: userId, limit });
+
+          const paths = summaries.map((summary) => {
+            const courseProgress = summary.courses.map((course) => ({
+              courseId: course.courseId,
+              title: course.title,
+              order: course.order,
+              isComplete: course.isComplete
+            }));
+            const journey = summarizeJourney(courseProgress);
+
+            return {
+              pathId: summary.pathId,
+              publicId: summary.publicId,
+              name: summary.name,
+              status: summary.memberStatus,
+              progressPercent: journey.progressPercent,
+              completedCourseCount: journey.completedCourses,
+              totalCourses: journey.totalCourses,
+              courses: courseProgress,
+              currentCourseId: journey.currentCourseId,
+              currentCourseTitle: journey.currentCourseTitle
+            };
+          });
+
+          return { paths };
         });
       }
     })

@@ -29,6 +29,13 @@ export const MCP_TOOL_CREDIT_COST = {
   tag_courses: 1,
   create_course_exercise: 1,
   update_course_exercise: 1,
+  list_org_learning_paths: 0,
+  get_learning_path: 0,
+  create_learning_path: 1,
+  update_learning_path_landing_page: 1,
+  add_learning_path_courses: 1,
+  reorder_learning_path_courses: 1,
+  remove_learning_path_course: 1,
   create_course_exercise_from_template: 1,
   delete_course_exercise: 1,
   add_exercise_question: 1,
@@ -310,7 +317,9 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_organization' ||
     toolName === 'list_tags' ||
     toolName === 'get_domain' ||
-    toolName === 'get_organization_customization'
+    toolName === 'get_organization_customization' ||
+    toolName === 'list_org_learning_paths' ||
+    toolName === 'get_learning_path'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

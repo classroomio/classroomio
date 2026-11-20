@@ -8,9 +8,11 @@
   import { Confetti } from '$features/ui';
   import { setConfetti } from '$features/ui/confetti/store';
   import { courseCompletionModal, closeCourseCompletionModal } from '$features/course/store/course-completion-modal';
+  import { getNavItemRoute } from '$features/course/utils/functions';
   import { formatBlockerMessage } from '$features/course/utils/certificate-utils';
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
 
   let open = $state(false);
   let activeCourseId = $state('');
@@ -45,7 +47,22 @@
   function goToCertificate() {
     if (!activeCourseId) return;
     onOpenChange(false);
-    goto(resolve(`/courses/${activeCourseId}/certificates`, {}));
+    goto(resolve(getNavItemRoute(activeCourseId, 'certificates'), {}));
+  }
+
+  // Inside a path the goal is the next course, not the course certificate.
+  // The path context belongs to the course being completed; anything else
+  // (stale, another course) falls back to the certificate action.
+  const pathNext = $derived(
+    learnerPathStore.pathContext && learnerPathStore.pathContext.courseId === activeCourseId
+      ? learnerPathStore.pathContext.next
+      : null
+  );
+
+  function goToNextCourse() {
+    if (!pathNext) return;
+    onOpenChange(false);
+    goto(resolve(pathNext.href, {}));
   }
 
   function formatSingleBlocker() {
@@ -78,7 +95,9 @@
       </Dialog.Header>
       <Dialog.Footer class="gap-2">
         <Button variant="outline" onclick={() => onOpenChange(false)}>{$t('course.completion.modal.later')}</Button>
-        {#if !$isFreePlan}
+        {#if pathNext}
+          <Button onclick={goToNextCourse}>{$t('learningPath.ribbon.go_to_next_course')}</Button>
+        {:else if !$isFreePlan}
           <Button onclick={goToCertificate}>{$t('course.completion.modal.view_certificate')}</Button>
         {/if}
       </Dialog.Footer>

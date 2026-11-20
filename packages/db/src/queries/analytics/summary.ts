@@ -12,6 +12,8 @@ function scopeNameSql(scope: AnalyticsScopeRef): SQL {
 
   if (scope.type === 'course') return sql`(SELECT title FROM course WHERE id = ${scope.id})`;
 
+  if (scope.type === 'path') return sql`(SELECT name FROM learning_path WHERE id = ${scope.id})`;
+
   return sql`(SELECT name FROM organization WHERE id = ${scope.orgId})`;
 }
 
@@ -76,6 +78,13 @@ function activeCohortCountSql(scope: AnalyticsScopeRef): SQL {
   return sql`(SELECT COUNT(*) FROM cohort WHERE organization_id = ${scope.orgId} AND status = 'ACTIVE')`;
 }
 
+/** Active learning paths of the org; zero outside org scope. */
+function pathCountSql(scope: AnalyticsScopeRef): SQL {
+  if (scope.type !== 'org') return sql`0`;
+
+  return sql`(SELECT COUNT(*) FROM learning_path WHERE organization_id = ${scope.orgId} AND status = 'ACTIVE')`;
+}
+
 /** The org's stored student target; null outside org scope. */
 function studentTargetSql(scope: AnalyticsScopeRef): SQL {
   if (scope.type !== 'org') return sql`NULL::int`;
@@ -101,6 +110,7 @@ export async function getAnalyticsScopeSummary(
         ${pendingCountSql(scope)}::int AS pending_count,
         ${cohortCountSql(scope)}::int AS cohort_count,
         ${activeCohortCountSql(scope)}::int AS active_cohort_count,
+        ${pathCountSql(scope)}::int AS path_count,
         ${studentTargetSql(scope)} AS student_target,
         COALESCE((
           SELECT json_agg(json_build_object(
@@ -124,6 +134,7 @@ export async function getAnalyticsScopeSummary(
       pending_count: number;
       cohort_count: number;
       active_cohort_count: number;
+      path_count: number;
       student_target: number | null;
       courses: AnalyticsScopeCourse[];
     }>;
@@ -135,6 +146,7 @@ export async function getAnalyticsScopeSummary(
       pendingCount: row?.pending_count ?? 0,
       cohortCount: row?.cohort_count ?? 0,
       activeCohortCount: row?.active_cohort_count ?? 0,
+      pathCount: row?.path_count ?? 0,
       studentTarget: row?.student_target ?? null,
       seatsUsed: seats.used,
       seatsNotJoined: seats.notJoined,

@@ -9,6 +9,7 @@ import type {
   OrgCoursesPagination,
   OrgCoursesQuery,
   RecommendedCourses,
+  RecommendedCoursesPagination,
   RecommendedCoursesQuery,
   UserEnrolledCourses
 } from '$features/course/types';
@@ -24,9 +25,7 @@ export class CoursesApi extends BaseApiWithErrors {
   enrolledCourses = $state<UserEnrolledCourses>([]);
   recommendedCourses = $state<RecommendedCourses>([]);
   private recommendedRequestId = 0;
-  recommendedCoursesPagination = $state<{ page: number; limit: number; total: number; totalPages: number } | null>(
-    null
-  );
+  recommendedCoursesPagination = $state<RecommendedCoursesPagination | null>(null);
   private activeOrgCoursesRequestController: AbortController | null = null;
 
   cancelOrgCoursesRequest() {
@@ -45,7 +44,8 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches org courses for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getOrgCourses(tagSlugs: string[] = []) {
+  async getOrgCourses(options: { tagSlugs?: string[] } = {}) {
+    const { tagSlugs = [] } = options;
     const allCourses: OrgCourses = [];
     let page = 1;
     let totalPages = 1;
@@ -129,9 +129,9 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches user enrolled courses for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getEnrolledCourses() {
+  async getEnrolledCourses(options: { nonPathOnly?: boolean } = {}) {
     return this.execute<GetUserEnrolledCoursesRequest>({
-      requestFn: () => classroomio.organization.courses.enrolled.$get({}),
+      requestFn: () => classroomio.organization.courses.enrolled.$get({ query: options }),
       logContext: 'fetching enrolled courses',
       onSuccess: (response) => {
         if (response.data) {
@@ -168,7 +168,7 @@ export class CoursesApi extends BaseApiWithErrors {
           this.recommendedCourses = response.data;
         }
         if ('pagination' in response && response.pagination) {
-          this.recommendedCoursesPagination = response.pagination as typeof this.recommendedCoursesPagination;
+          this.recommendedCoursesPagination = response.pagination;
         }
         this.errors = {};
       },

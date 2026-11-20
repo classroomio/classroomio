@@ -106,6 +106,7 @@ export const ZPublicApiAnalyticsScopeResponse = z.object({
   pendingCount: z.number(),
   cohortCount: z.number(),
   activeCohortCount: z.number(),
+  pathCount: z.number().describe('Active learning paths in the organization. Org scope only; 0 otherwise.'),
   studentTarget: z.number().nullable(),
   seatsUsed: z
     .number()

@@ -8,7 +8,7 @@ Open **Analytics → Academy** in your organization sidebar to see how students 
 
 The live indicator dot next to the page title shows when figures were last updated. If your plan has a student limit, seat usage appears alongside the student growth chart.
 
-Use the **Courses (N)** and **Cohorts (N)** switch under the summary cards to switch between course figures and cohort figures. The page opens on **Courses**. If your organization has no cohorts, the switch is hidden and only the course figures appear. The summary cards, **Needs attention**, the growth and login charts, and **Courses by completion** stay in both views.
+Use the **Courses (N)**, **Cohorts (N)** and **Learning paths (N)** switch under the summary cards to switch between course, cohort and learning path figures. The page opens on **Courses**. **Cohorts** appears only when your organization has a cohort, and **Learning paths** only when it has a learning path; with neither, the switch is hidden and only the course figures appear. The summary cards, **Needs attention**, the growth and login charts, and **Courses by completion** stay in every view.
 
 ![Organization Academy page on Courses with summary cards and Courses at a glance](./images/monitor-students-across-your-organization/overview.webp)
 
@@ -47,7 +47,7 @@ Use the range picker beside **Refresh** to choose **All time**, **Last 7 days**,
 A range changes what students _did_ in that window. Where students _stand_ is always as of now.
 
 - **Follow the range:** **Logged in** (the title becomes **Logged in, last N days**), **Average progress**, **Completions**, **Certificates issued**, **Enrolled students vs target**, and **Students logged in per day**.
-- **Stay current:** **Needs attention**, **Courses at a glance**, **Students by status**, **Average score, by course**, **Courses by completion**, **Cohorts at a glance**, **Students by cohort health**, and **Average score, by cohort**.
+- **Stay current:** **Needs attention**, **Courses at a glance**, **Students by status**, **Average score, by course**, **Courses by completion**, **Cohorts at a glance**, **Students by cohort health**, **Average score, by cohort**, **Learning paths at a glance**, **Path students by status**, and **Completion rate by path**.
 
 Cards that stay current carry a **Now** tag. Its tooltip explains that the range does not change that card. Your range choice carries over when you move between analytics pages, and resets on a full reload.
 
@@ -81,6 +81,16 @@ The **Health** column rates each cohort from the same row, checking these rules 
 **Average score, by cohort** shows the cohorts on the current page, newest first, with each cohort's average score. A student's score is the best graded attempt on each exercise they have taken. A cohort with no students shows **No students yet** instead of a bar; a cohort with students but no graded attempts shows **No graded attempts**.
 
 ![Cohorts at a glance table outlined, with health pills, and the students by cohort health card below](./images/monitor-students-across-your-organization/cohorts.webp)
+
+## Compare your learning paths
+
+Select **Learning paths (N)** under the summary cards to see these figures. They count the students of each learning path that hasn't been deleted, published or not, leave out people you deactivated in your organization, and match the path's own **Analytics** page.
+
+**Learning paths at a glance** lists your learning paths, five per page, in name order. Each row shows the path's name, its **Courses**, its **Students**, a progress bar for **Avg progress**, the **Completion rate** (students who finished the path), **Active (14 days)** (students who completed a lesson or submitted an exercise in one of its courses in the last 14 days), and the path **Certificates** issued. A path with no students yet shows **No students yet** under **Avg progress** and **–** for the rates. Select a path's name to open that path's own **Analytics** page. When there are more than five paths, the pager reads **Showing 1–5 of N learning paths in organization**.
+
+**Path students by status** adds up the students of every learning path who have **Not started**, are **In progress**, or have **Completed** their path, and shows the total in the centre. A student on two paths counts once on each.
+
+**Completion rate by path** ranks up to five learning paths that have students by the share of their students who completed the path.
 
 ## See why students need attention
 
@@ -134,6 +144,7 @@ The live indicator dot shows when the figures were last updated. Select **Refres
 ## Related guides
 
 - [Track a cohort with analytics](/analytics-and-reporting/track-a-cohort-with-analytics) — open one cohort's students, overdue work, and reminders
+- [Track a learning path with analytics](/analytics-and-reporting/track-a-learning-path-with-analytics) — open one learning path's students, funnel, and stuck points
 - [Review course performance and student progress](/analytics-and-reporting/review-course-performance-and-student-progress) — inspect a single course
 - [Read your marketing overview](/analytics-and-reporting/read-your-marketing-overview) — landing page traffic and enrollments on **Marketing**
 - [Roles and Permissions](/organization-and-team/roles-and-permissions) — who can open each analytics page

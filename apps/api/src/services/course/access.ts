@@ -2,23 +2,34 @@ import { ContentType, ROLE } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
 import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
-import { getCourseProgramAccess, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { getCourseMemberAccess, getCourseProgramAccess } from '@cio/db/queries/group';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCachedCourseContentItemsForStudentAccessCheck } from '@api/utils/redis/course-content-cache';
+import { assertCourseNotLockedForStudent } from '@api/services/learning-path';
 
 const DEFAULT_CONTENT_GROUPING = true;
 
 /**
- * Whether a profile can open a course: group member, org admin, or a member of
- * a program that includes it. Backfills program members into the course group,
- * and throws when that backfill is blocked.
+ * Whether a profile can open a course: course team member, org admin, a
+ * learner with a live enrollment grant, or a member of a program that
+ * includes it. Backfills program members into the course group, and throws
+ * when that backfill is blocked or when a learning path still locks the
+ * course for the learner.
  */
 export async function canProfileOpenCourse(courseId: string, profileId: string): Promise<boolean> {
-  if (await isUserCourseMemberOrOrgAdmin(courseId, profileId)) {
+  const { hasLiveGrant, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, profileId);
+
+  if (isTeamMemberOrAdmin) {
     return true;
   }
 
-  return Boolean(await ensureProgramCourseAccess(courseId, profileId));
+  if (!hasLiveGrant && !(await ensureProgramCourseAccess(courseId, profileId))) {
+    return false;
+  }
+
+  await assertCourseNotLockedForStudent(courseId, profileId);
+
+  return true;
 }
 
 /**
@@ -26,7 +37,9 @@ export async function canProfileOpenCourse(courseId: string, profileId: string):
  * throws on the student limit.
  */
 export async function canProfileReachCourse(courseId: string, profileId: string): Promise<boolean> {
-  if (await isUserCourseMemberOrOrgAdmin(courseId, profileId)) {
+  const { hasLiveGrant, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, profileId);
+
+  if (hasLiveGrant || isTeamMemberOrAdmin) {
     return true;
   }
 
@@ -63,6 +76,8 @@ export async function assertEnrolledStudentContentAccess(params: {
   contentId: string;
   type: ContentType.Lesson | ContentType.Exercise;
 }): Promise<void> {
+  await assertCourseNotLockedForStudent(params.courseId, params.profileId);
+
   const [courseRow, progress, contentItems] = await Promise.all([
     getCourseById(params.courseId),
     getCourseProgress(params.courseId, params.profileId),

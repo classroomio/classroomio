@@ -28,6 +28,7 @@ type TestDashboard = {
     pendingCount: number;
     cohortCount: number;
     activeCohortCount: number;
+    pathCount: number;
     studentTarget: number | null;
     courses: TestCourse[];
   };
@@ -88,6 +89,7 @@ function dashboardOf(
       pendingCount: 0,
       cohortCount: 2,
       activeCohortCount: 1,
+      pathCount: 0,
       studentTarget: null,
       courses: [
         { id: 'c1', title: 'Course 1', isGrouped: false, hasPassRequired: false },
@@ -159,16 +161,24 @@ describe('analytics widgets', () => {
       pendingCount: 0,
       cohortCount,
       activeCohortCount: cohortCount,
+      pathCount: 0,
       studentTarget: null,
       courses: []
     });
 
     it('offers courses always and cohorts only when the scope has cohorts', () => {
-      expect(availableBreakdownGroups('cohort', { cohortCount: 2 })).toEqual([]);
-      expect(availableBreakdownGroups('course', { cohortCount: 0 })).toEqual(['courses']);
-      expect(availableBreakdownGroups('course', { cohortCount: 2 })).toEqual(['courses', 'cohorts']);
-      expect(availableBreakdownGroups('org', { cohortCount: 0 })).toEqual(['courses']);
-      expect(availableBreakdownGroups('org', { cohortCount: 2 })).toEqual(['courses', 'cohorts']);
+      expect(availableBreakdownGroups('cohort', { cohortCount: 2, pathCount: 0 })).toEqual([]);
+      expect(availableBreakdownGroups('course', { cohortCount: 0, pathCount: 0 })).toEqual(['courses']);
+      expect(availableBreakdownGroups('course', { cohortCount: 2, pathCount: 0 })).toEqual(['courses', 'cohorts']);
+      expect(availableBreakdownGroups('org', { cohortCount: 0, pathCount: 0 })).toEqual(['courses']);
+      expect(availableBreakdownGroups('org', { cohortCount: 0, pathCount: 3 })).toEqual(['courses', 'paths']);
+      expect(availableBreakdownGroups('org', { cohortCount: 2, pathCount: 3 })).toEqual([
+        'courses',
+        'cohorts',
+        'paths'
+      ]);
+      expect(availableBreakdownGroups('course', { cohortCount: 2, pathCount: 3 })).toEqual(['courses', 'cohorts']);
+      expect(availableBreakdownGroups('org', { cohortCount: 2, pathCount: 0 })).toEqual(['courses', 'cohorts']);
     });
 
     it('defaults course scope to cohorts when it has them, and org scope to courses', () => {

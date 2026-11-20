@@ -1,16 +1,24 @@
 <script lang="ts">
-  import { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from '../../base/button';
+  import {
+    Button,
+    type AnchorElementProps,
+    type ButtonElementProps,
+    type ButtonVariant,
+    type ButtonSize
+  } from '../../base/button';
   import { Tooltip, Provider, Trigger, Content } from '../../base/tooltip';
   import { KbdGroup, Kbd } from '../../base/kbd';
 
-  interface Props extends Omit<ButtonProps, 'variant' | 'size'> {
+  type BaseButtonProps = Omit<AnchorElementProps, 'variant' | 'size'> | Omit<ButtonElementProps, 'variant' | 'size'>;
+
+  type Props = BaseButtonProps & {
     tooltip?: string;
     tooltipSide?: 'top' | 'bottom' | 'left' | 'right';
     tooltipClass?: string;
     shortcut?: string[];
     variant?: ButtonVariant;
     size?: Extract<ButtonSize, 'icon' | 'icon-2xs' | 'icon-xs' | 'icon-sm' | 'icon-lg'>;
-  }
+  };
 
   let {
     tooltip,

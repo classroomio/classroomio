@@ -21,6 +21,7 @@ import { registerEmailTemplateTools } from './tools/email-templates';
 import { registerComplianceTools } from './tools/compliance';
 import { registerMarketingTools } from './tools/marketing';
 import { registerLandingPageTools } from './tools/landing-page';
+import { registerLearningPathTools } from './tools/learning-paths';
 import { registerOrganizationTools } from './tools/organization';
 import { registerTagTools } from './tools/tags';
 import { registerTeamTools } from './tools/team';
@@ -63,6 +64,7 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
   registerCourseExerciseTools(server, apiClient);
   registerCourseSubmissionTools(server, apiClient);
   registerCourseTemplateTools(server, apiClient);
+  registerLearningPathTools(server, apiClient);
   registerAnalyticsTools(server, apiClient);
   registerMarketingTools(server, apiClient);
   registerComplianceTools(server, apiClient);

@@ -6,7 +6,7 @@ import { flagMetric, idDimension, rowsMetric, scopePushdownFilters } from './hel
 /** One row per enrollment and lesson, with completion state. */
 export const lessonProgressSource: AnalyticsSourceDefinition = {
   id: 'lesson_progress',
-  scopeTypes: ['cohort', 'course'],
+  scopeTypes: ['cohort', 'course', 'path'],
   build: () => sql`SELECT * FROM lesson_row`,
   dimensions: {
     lesson: idDimension('lesson_id', 'lesson_title', 'lesson_rank'),

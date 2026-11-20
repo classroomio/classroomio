@@ -144,8 +144,13 @@
   const learnerAccount = $derived(getPreviewOrgLandingLearnerAccount($profile, $currentOrg));
 
   const previewProps = $derived.by(() =>
-    buildOrgLandingPageProps($currentOrg, normalized, orgApi.publicCourses, orgApi.hasMorePublicCourses, authAction, {
+    buildOrgLandingPageProps($currentOrg, normalized, {
+      courses: orgApi.publicCourses,
+      learningPaths: orgApi.publicLearningPaths,
+      hasMoreCourses: orgApi.hasMorePublicCourses,
+      hasMoreLearningPaths: orgApi.hasMorePublicLearningPaths,
       coursesLoaded,
+      authAction,
       learnerAccount
     })
   );
@@ -154,6 +159,7 @@
     if (!previewSiteName) return;
 
     void orgApi.refreshPublicCourses(previewSiteName);
+    void orgApi.refreshPublicLearningPaths(previewSiteName);
   });
 
   const ThemeComponent = $derived(landingPageThemeComponents[currentTheme] ?? landingPageThemeComponents.minimal);

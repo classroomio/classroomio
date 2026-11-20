@@ -35,8 +35,8 @@
 
   const rowClass = $derived(
     cn(
-      'group ui:inline-flex ui:w-full ui:items-center ui:hover:bg-muted ui:rounded-md ui:p-2 ui:text-left',
-      disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+      'group ui:inline-flex ui:w-full ui:items-center ui:rounded-md ui:p-2 ui:text-left',
+      disabled ? 'cursor-not-allowed' : 'cursor-pointer ui:hover:bg-muted',
       className
     )
   );
@@ -80,7 +80,7 @@
       <div class="ui:w-2/4" onclick={(e) => e.stopPropagation()}>
         <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" onChange={onchange} />
       </div>
-    {:else}
+    {:else if label}
       <span class="ui:ml-2 ui:dark:text-white ui:text-sm">{label}</span>
     {/if}
 
@@ -98,7 +98,9 @@
 {:else}
   <label class={rowClass}>
     <Checkbox {name} {value} {disabled} bind:checked data-testid={testId} />
-    <span class="ui:ml-2 ui:dark:text-white ui:text-sm">{label}</span>
+    {#if label}
+      <span class="ui:ml-2 ui:dark:text-white ui:text-sm">{label}</span>
+    {/if}
 
     {@render children?.()}
   </label>

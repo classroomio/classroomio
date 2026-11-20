@@ -26,7 +26,8 @@ import {
   readLessonSchema,
   readExerciseSchema,
   readMySubmissionsSchema,
-  searchCourseSchema
+  searchCourseSchema,
+  getStudentLearningPathsSchema
 } from './student';
 
 export {
@@ -77,7 +78,8 @@ const studentTools: ToolRegistry = {
   [ToolName.READ_LESSON]: readLessonSchema,
   [ToolName.READ_EXERCISE]: readExerciseSchema,
   [ToolName.READ_MY_SUBMISSIONS]: readMySubmissionsSchema,
-  [ToolName.SEARCH_COURSE]: searchCourseSchema
+  [ToolName.SEARCH_COURSE]: searchCourseSchema,
+  [ToolName.GET_STUDENT_LEARNING_PATHS]: getStudentLearningPathsSchema
 };
 
 /**
@@ -120,6 +122,7 @@ export {
   askTemplateQuestionsSchema,
   fetchDocumentationUrlSchema,
   listCourseOutlineSchema,
+  getStudentLearningPathsSchema,
   readLessonSchema,
   readExerciseSchema,
   readMySubmissionsSchema,

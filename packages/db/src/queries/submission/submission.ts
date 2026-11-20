@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TNewQuestionAnswer, TNewSubmission, TQuestionAnswer, TSubmission } from '@db/types';
-import { and, count, db, desc, eq, inArray, sql, type DbOrTxClient } from '@db/drizzle';
+import { and, count, db, desc, eq, inArray, isNotNull, sql, type DbOrTxClient } from '@db/drizzle';
 
 /**
  * Gets a submission by ID
@@ -46,7 +46,8 @@ export async function hasSubmission(
 }
 
 /**
- * Gets submissions by course ID with full related data (answers, profile, etc.)
+ * Gets submissions by course ID with full related data (answers, profile, etc.).
+ * Skips work left by removed learners, whose `submitted_by` was set to null.
  * @param courseId Course ID
  * @param exerciseId Optional exercise ID filter
  * @param submittedBy Optional group member ID filter
@@ -55,7 +56,7 @@ export async function hasSubmission(
 export async function getSubmissionsByCourseIdWithDetails(courseId: string, exerciseId?: string, submittedBy?: string) {
   try {
     // Build conditions
-    const conditions = [eq(schema.submission.courseId, courseId)];
+    const conditions = [eq(schema.submission.courseId, courseId), isNotNull(schema.submission.submittedBy)];
 
     if (exerciseId) {
       conditions.push(eq(schema.submission.exerciseId, exerciseId));
@@ -113,7 +114,8 @@ export async function getSubmissionsByCourseIdWithDetails(courseId: string, exer
 }
 
 /**
- * Gets submissions for grading with all related data
+ * Gets submissions for grading with all related data.
+ * Skips work left by removed learners, whose `submitted_by` was set to null.
  * @param courseId Course ID
  * @returns Array of submissions with exercise, lesson, groupmember, profile, questions, and answers
  */
@@ -190,7 +192,7 @@ export async function getSubmissionsForGrading(courseId: string) {
       .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
       .leftJoin(schema.groupmember, eq(schema.submission.submittedBy, schema.groupmember.id))
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
-      .where(eq(schema.submission.courseId, courseId));
+      .where(and(eq(schema.submission.courseId, courseId), isNotNull(schema.submission.submittedBy)));
 
     // Get all question answers for these submissions
     const submissionIds = submissions.map((s) => s.submission.id);

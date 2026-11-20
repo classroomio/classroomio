@@ -21,6 +21,7 @@ import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { toPeopleRequestQuery } from '$features/course/utils/people-utils';
 
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
+import { t } from '$lib/utils/functions/translations';
 import { snackbar } from '$features/ui/snackbar/store';
 
 /**
@@ -76,7 +77,7 @@ export class PeopleApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (response.data) {
           const count = Array.isArray(response.data) ? response.data.length : 1;
-          snackbar.success(`${count} member${count > 1 ? 's' : ''} added successfully`);
+          snackbar.success(t.get('course.navItem.people.invite_modal.members_added', { count }));
           this.success = true;
           this.errors = {};
         }

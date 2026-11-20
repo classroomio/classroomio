@@ -37,6 +37,17 @@ import type { TInviteLinkWithContext } from '@cio/db/queries/invite-link';
 
 const COURSE_ID = 'course-1';
 const COHORT_ID = 'cohort-1';
+const learningPathFixture = {
+  id: 'path-1',
+  name: 'Sales Excellence',
+  description: null,
+  coverImage: null,
+  slug: 'sales-excellence',
+  publicId: 'Ab3dE6gH',
+  status: 'ACTIVE',
+  isPublished: true,
+  welcomeEmailMessage: null
+};
 
 function buildContext(overrides: Partial<TInviteLinkWithContext>, roleId: number = ROLE.STUDENT) {
   return {
@@ -52,6 +63,7 @@ function buildContext(overrides: Partial<TInviteLinkWithContext>, roleId: number
     },
     course: null,
     cohort: null,
+    learningPath: null,
     ...overrides
   } as unknown as TInviteLinkWithContext;
 }
@@ -65,7 +77,9 @@ describe('invite link redirects', () => {
         description: null,
         slug: 'soc2',
         status: 'ACTIVE',
-        isPublished: true
+        isPublished: true,
+        enrollOnlyInLearningPath: false,
+        welcomeEmailMessage: null
       }
     });
 
@@ -80,7 +94,9 @@ describe('invite link redirects', () => {
         description: null,
         slug: 'soc2',
         status: 'ACTIVE',
-        isPublished: false
+        isPublished: false,
+        enrollOnlyInLearningPath: false,
+        welcomeEmailMessage: null
       }
     });
 
@@ -96,7 +112,9 @@ describe('invite link redirects', () => {
           description: null,
           slug: 'soc2',
           status: 'ACTIVE',
-          isPublished: false
+          isPublished: false,
+          enrollOnlyInLearningPath: false,
+          welcomeEmailMessage: null
         }
       },
       ROLE.TUTOR
@@ -120,5 +138,17 @@ describe('invite link redirects', () => {
     );
 
     expect(getInviteLinkHandler('COHORT').redirectTo(context)).toBe(`/cohorts/${COHORT_ID}/newsfeed`);
+  });
+
+  it('opens a learning path link on the student path page for students', () => {
+    const context = buildContext({ learningPath: learningPathFixture });
+
+    expect(getInviteLinkHandler('LEARNING_PATH').redirectTo(context)).toBe('/lms/paths/Ab3dE6gH');
+  });
+
+  it('opens a learning path link on the path admin page for other roles', () => {
+    const context = buildContext({ learningPath: learningPathFixture }, ROLE.TUTOR);
+
+    expect(getInviteLinkHandler('LEARNING_PATH').redirectTo(context)).toBe('/paths/Ab3dE6gH');
   });
 });

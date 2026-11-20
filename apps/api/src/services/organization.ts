@@ -5,6 +5,8 @@ import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from 
 import type {
   TCourseReorder,
   TGetAudienceQuery,
+  TGetEarnedCertificates,
+  TGetEnrolled,
   TGetOrganizationCoursesQuery,
   TOrganizationCourseSort,
   TStudentHomeDestination
@@ -20,6 +22,7 @@ import {
   createOrganizationPlan,
   deleteOrganizationAudienceMember,
   deleteOrganizationMember,
+  getActiveOrganizationMemberIdByOrgAndProfile,
   getActiveOrganizationPlan,
   getFirstOrganizationWithPlans,
   getLatestOrgInvitesByEmails,
@@ -56,6 +59,9 @@ import {
 import { countCohortsByOrgForProfile } from '@cio/db/queries/cohort';
 import { countAssetsByOrg } from '@cio/db/queries/assets';
 import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
+import { countLearningPathsByOrg, listPublicLearningPaths } from '@cio/db/queries/learning-path';
+import { getEnrolled } from '@cio/db/queries/enrolled';
+import { getEarnedCertificates } from '@cio/db/queries/certificates';
 import { getAccountPrimary } from '@cio/db/queries/account';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/student-progress';
 
@@ -66,14 +72,33 @@ import { isFreeLandingPageTheme, ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
 import { assertStudentHomeDestination } from './organization/student-home';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
+import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
 
 export { updateTeamMemberRole } from './organization/team-role';
 
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
 const ORG_COURSES_PAGE_SIZE = 6;
+
+const PUBLIC_ORG_LANDING_PAGE_LEARNING_PATH_LIMIT = 4;
+const ORG_LEARNING_PATHS_PAGE_SIZE = 6;
+
+/**
+ * Resolves an org id from its public siteName.
+ */
+async function resolveOrgIdBySiteNameOrThrow(siteName: string): Promise<string> {
+  const orgResult = await getOrgIdBySiteName(siteName);
+  const org = orgResult[0];
+
+  if (!org) {
+    throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
+  }
+
+  return org.id;
+}
 
 /**
  * Creates a new organization with the current user as owner
@@ -266,6 +291,7 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
       throw new AppError('Audience member not found', ErrorCodes.ORG_AUDIENCE_REMOVE_FAILED, 404);
     }
 
+    void invalidateOrgStats(orgId).catch(() => {});
     await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 
     if (deleted.email && removedByProfileId) {
@@ -313,12 +339,7 @@ export async function getPublicCourses(
   pagination?: { page?: number; limit?: number }
 ) {
   try {
-    const orgResult = await getOrgIdBySiteName(siteName);
-    const org = orgResult[0];
-
-    if (!org) {
-      throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
-    }
+    const orgId = await resolveOrgIdBySiteNameOrThrow(siteName);
 
     const isPaginated = pagination !== undefined;
     const limit = isPaginated ? (pagination.limit ?? ORG_COURSES_PAGE_SIZE) : PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT;
@@ -327,7 +348,7 @@ export async function getPublicCourses(
 
     let filteredCourseIds: string[] | undefined = undefined;
     if (tagSlugs && tagSlugs.length > 0) {
-      filteredCourseIds = await getCourseIdsByTagSlugs(org.id, tagSlugs);
+      filteredCourseIds = await getCourseIdsByTagSlugs(orgId, tagSlugs);
       if (filteredCourseIds.length === 0) {
         return {
           courses: [],
@@ -357,7 +378,7 @@ export async function getPublicCourses(
       offset
     );
     const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
-      org.id,
+      orgId,
       courses.map((course) => course.id)
     );
 
@@ -376,6 +397,48 @@ export async function getPublicCourses(
     if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch public courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets public learning paths for an organization (landing page)
+ * @param siteName - The organization siteName
+ * @param search - Optional text search on name/description
+ * @param pagination - Optional page/limit; omitted means the landing-page slice
+ * @returns Published learning paths with course counts
+ */
+export async function getPublicLearningPaths(
+  siteName: string,
+  search?: string,
+  pagination?: { page?: number; limit?: number }
+) {
+  try {
+    const orgId = await resolveOrgIdBySiteNameOrThrow(siteName);
+
+    const isPaginated = pagination !== undefined;
+    const limit = isPaginated
+      ? (pagination.limit ?? ORG_LEARNING_PATHS_PAGE_SIZE)
+      : PUBLIC_ORG_LANDING_PAGE_LEARNING_PATH_LIMIT;
+    const page = isPaginated ? (pagination.page ?? 1) : 1;
+
+    const result = await listPublicLearningPaths(orgId, { page, limit, search });
+    const offset = (result.pagination.page - 1) * result.pagination.limit;
+
+    return {
+      learningPaths: result.data,
+      hasMoreLearningPaths: offset + result.data.length < result.pagination.total,
+      total: result.pagination.total,
+      page: result.pagination.page,
+      limit: result.pagination.limit,
+      totalPages: result.pagination.totalPages
+    };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch public learning paths',
       ErrorCodes.COURSES_FETCH_FAILED,
       500
     );
@@ -536,14 +599,15 @@ export async function getOrganizationCourses(
 export async function getOrganizationNavCounts(orgId: string, userId: string, userRole: number) {
   try {
     const courseProfileId = userRole === ROLE.ADMIN ? undefined : userId;
-    const [courses, cohorts, media, tags] = await Promise.all([
+    const [courses, cohorts, media, tags, learningPaths] = await Promise.all([
       countOrgCourses({ orgId, profileId: courseProfileId }),
       countCohortsByOrgForProfile(orgId, userId),
       countAssetsByOrg(orgId),
-      countTagsByOrg(orgId)
+      countTagsByOrg(orgId),
+      countLearningPathsByOrg(orgId, { tutorProfileId: courseProfileId })
     ]);
 
-    return { courses, cohorts, media, tags };
+    return { courses, cohorts, media, tags, learningPaths };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -559,16 +623,77 @@ export async function getOrganizationNavCounts(orgId: string, userId: string, us
  *
  * @param orgId - The organization ID
  * @param userId - User ID for filtering
+ * @param options.nonPathOnly - Only courses with a live non-path grant that are not enroll-only in a learning path
  * @returns Array of enrolled courses
  */
-export async function getUserEnrolledCourses(orgId: string, userId: string) {
+export async function getUserEnrolledCourses(orgId: string, userId: string, options?: { nonPathOnly?: boolean }) {
   try {
-    return getEnrolledCourses({ orgId, profileId: userId });
+    return await getEnrolledCourses({ orgId, profileId: userId, nonPathOnly: options?.nonPathOnly });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch enrolled courses',
       ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets one page of the user's courses and learning paths in an organization,
+ * most recently active first. Courses inside a path the user is in are
+ * summed into that path's row instead of listed on their own.
+ *
+ * @param orgId - The organization ID
+ * @param userId - Student's profile ID
+ * @param query - Page, limit, status, kind and title search
+ * @returns Page of `{ kind, data }` rows, the filtered total and counts
+ */
+export async function getUserEnrolled(orgId: string, userId: string, query: TGetEnrolled) {
+  try {
+    return await getEnrolled({ orgId, profileId: userId, ...query });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch enrolled',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets one page of every completed course and learning path in an
+ * organization, most recently completed first. The list is intentionally
+ * wider than the endpoint name: it returns all completed work, not only
+ * issued certificates, using the completion that certificate issuance
+ * records. A lapsed compliance certificate stays listed with `isExpired`.
+ * Each `{ kind, data }` row carries `certificateAvailable`, saying whether
+ * the download guards would allow it right now. Throws 403 once the
+ * caller's org membership is deactivated: the session's cached org roles
+ * can still admit them for up to an hour, and `orgMemberMiddleware` refuses
+ * them the same way after that.
+ *
+ * @param orgId - The organization ID
+ * @param userId - Student's profile ID
+ * @param query - Page, limit and title search
+ * @returns Page of `{ kind, data }` rows and the filtered total
+ */
+export async function getUserEarnedCertificates(orgId: string, userId: string, query: TGetEarnedCertificates) {
+  try {
+    const [activeOrgMemberId, certificatesEnabled] = await Promise.all([
+      getActiveOrganizationMemberIdByOrgAndProfile(orgId, userId),
+      orgHasCertificatesEnabled(orgId)
+    ]);
+
+    if (!activeOrgMemberId) throw new AppError('UNAUTHORIZED', ErrorCodes.UNAUTHORIZED, 403);
+
+    return await getEarnedCertificates({ orgId, profileId: userId, certificatesEnabled, ...query });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch certificates',
+      ErrorCodes.CERTIFICATES_FETCH_FAILED,
       500
     );
   }
@@ -591,7 +716,7 @@ export async function getRecommendedCourses(
   order?: 'asc' | 'desc'
 ) {
   try {
-    return getExploreCourses({ orgId, profileId: userId, limit, page, sortKey: sort, order });
+    return await getExploreCourses({ orgId, profileId: userId, limit, page, sortKey: sort, order });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -609,7 +734,7 @@ export async function getRecommendedCourses(
  */
 export async function getCoursesByOrgId(orgId: string) {
   try {
-    return getCoursesById(orgId);
+    return await getCoursesById(orgId);
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch courses',

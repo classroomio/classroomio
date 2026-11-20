@@ -65,6 +65,7 @@
     {#if kpiWidgets.length > 0}
       <AnalyticsKpiRow
         widgets={kpiWidgets}
+        scopeType={context.scopeType}
         courseSelected={context.courseSelected}
         hasStudents={context.studentCount > 0}
       />

@@ -25,7 +25,20 @@ import { setInternalDispatch } from '@api/utils/internal-dispatch';
 import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
-import { auth } from '@cio/db/auth';
+import { auth, setInviteEnrollmentHandler } from '@cio/db/auth';
+import { enrollOrganizationInviteUserCore } from '@cio/core/services/organization/invite-enrollment';
+import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
+
+setInviteEnrollmentHandler({
+  enroll: (tx, params) =>
+    enrollOrganizationInviteUserCore(tx, {
+      ...params,
+      assertCapacity: assertStudentCapacityOrThrow,
+      ensureCompliance: ensureComplianceEnrollmentRecordsForProfiles
+    }),
+  assertStudentCapacity: assertStudentCapacityOrThrow
+});
 import { communityRouter } from '@api/routes/community';
 import { courseRouter } from '@api/routes/course';
 import { dashRouter } from '@api/routes/dash';
@@ -56,6 +69,7 @@ import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
 import { prettyJSON } from 'hono/pretty-json';
 import { cohortRouter } from '@api/routes/cohort';
+import { learningPathRouter } from '@api/routes/learning-path';
 import { analyticsRouter } from '@api/routes/analytics';
 import { publicCourseRouter, orgSiteOgRouter } from '@api/routes/org-site';
 import { publicWidgetsRouter } from '@api/routes/widgets';
@@ -283,6 +297,7 @@ export const app = new Hono()
   .route('/org-site/course', publicCourseRouter)
   .route('/org-site/og', orgSiteOgRouter)
   .route('/cohort', cohortRouter)
+  .route('/learning-path', learningPathRouter)
   .route('/analytics', analyticsRouter)
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)

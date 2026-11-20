@@ -502,7 +502,7 @@ describe('analytics presets', () => {
 
         expect(widget.courseMode).not.toBe('single');
         for (const requirement of widget.requires) {
-          expect(requirement, widget.id).toBe('cohorts');
+          expect(['cohorts', 'paths'], widget.id).toContain(requirement);
         }
         for (const placeholder of Object.values(ANALYTICS_PLACEHOLDERS)) {
           expect(specJson).not.toContain(placeholder);

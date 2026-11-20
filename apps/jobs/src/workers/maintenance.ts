@@ -6,6 +6,10 @@ import { runTrackingRollupDaily, runTrackingRollupRecent } from '@cio/tracking';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { sendInstanceTelemetry } from '@cio/core/services/instance-telemetry';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
+import {
+  reconcileLearningPathProgress,
+  syncLearningPathMembersProgress
+} from '@cio/core/services/learning-path/progress-sync';
 import { pruneDeadLetterJobsOlderThan, reapStuckHlsEncodes, reapStuckMediaJobs } from '@cio/db/queries';
 import { deleteExpiredWebhookEvents, listWebhookIdsWithDueDeliveries } from '@cio/db/queries/webhook';
 import {
@@ -24,6 +28,8 @@ import {
   ZCourseRoleReconcilePayload,
   ZDeadLetterCleanupPayload,
   ZEarlyAdopterClaimReminderPayload,
+  ZLearningPathProgressReconcilePayload,
+  ZLearningPathProgressSyncPayload,
   ZLessonVersionRetentionPayload,
   ZMediaJobReapPayload,
   ZMemberActivityReconcilePayload,
@@ -148,6 +154,20 @@ const worker = new Worker(
       return { updated };
     }
 
+    if (job.name === JOB_NAMES.maintenance.learningPathProgressSync) {
+      const data = ZLearningPathProgressSyncPayload.parse(job.data ?? {});
+      const result = await syncLearningPathMembersProgress(data);
+      log.info('learning-path-progress-sync-done', { pathId: data.pathId, ...result });
+      return result;
+    }
+
+    if (job.name === JOB_NAMES.maintenance.learningPathProgressReconcile) {
+      const data = ZLearningPathProgressReconcilePayload.parse(job.data ?? {});
+      const result = await reconcileLearningPathProgress(data);
+      log.info('learning-path-progress-reconcile-done', { ...data, ...result });
+      return result;
+    }
+
     if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {
       const data = ZAnalyticsDailyRollupPayload.parse(job.data ?? {});
       const results =
@@ -246,6 +266,16 @@ async function registerSchedulers(): Promise<void> {
     log.info('analytics-rollup-scheduler-registered', {
       name: JOB_NAMES.maintenance.analyticsDailyRollup,
       pattern: ANALYTICS_ROLLUP_CRON_PATTERN
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'learning-path-progress-reconcile-scheduler',
+      { every: 86_400_000 },
+      { name: JOB_NAMES.maintenance.learningPathProgressReconcile, data: {} }
+    );
+    log.info('learning-path-progress-reconcile-scheduler-registered', {
+      name: JOB_NAMES.maintenance.learningPathProgressReconcile,
+      everyMs: 86_400_000
     });
 
     await maintenanceQueue.upsertJobScheduler(

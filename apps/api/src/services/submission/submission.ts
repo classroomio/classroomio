@@ -54,6 +54,7 @@ import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
+import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureExerciseSubmitted } from '@api/services/product-events';
@@ -61,24 +62,61 @@ import { captureExerciseSubmitted } from '@api/services/product-events';
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
 type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
 
+/**
+ * Evaluates certification when the member has completed the exercise, then
+ * re-derives the member's learning-path progress. Pass
+ * `{ recordActivity: false }` when a teacher, not the learner, caused the change.
+ */
 async function triggerCertificationIfExerciseComplete(
   courseId: string,
   exerciseId: string,
-  groupMemberId: string
+  groupMemberId: string,
+  syncOptions?: { recordActivity: boolean }
 ): Promise<void> {
   try {
     const profile = await getProfileByGroupMemberId(groupMemberId);
     if (!profile?.id) return;
 
     const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
-    if (!isComplete) return;
 
-    void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
-      console.error('Failed to evaluate course certification after exercise submission:', certError);
-    });
+    if (isComplete) {
+      // Record completion before syncing paths: a course counts as done on a path
+      // by its recorded completion, so the sync must see the write above.
+      try {
+        await evaluateCourseCertification(courseId, profile.id);
+      } catch (certError) {
+        console.error('Failed to evaluate course certification after exercise submission:', certError);
+      }
+    }
+
+    try {
+      await syncCourseProgressInLearningPaths(courseId, profile.id, undefined, syncOptions);
+    } catch (syncError) {
+      console.error('Failed to sync learning path progress after exercise submission:', syncError);
+    }
   } catch (lookupError) {
     console.error('Failed to check course certification after exercise submission:', lookupError);
   }
+}
+
+/**
+ * Deleting a submission can reopen a course without a learner action, so
+ * re-derive the learning-path cache without recording learner activity.
+ * Evaluates certification first, since a course counts as done on a path by
+ * its recorded completion. Fire-and-forget: the deletion is already saved.
+ */
+function syncLearningPathsAfterSubmissionChange(courseId: string, groupMemberId: string): void {
+  void (async () => {
+    const profile = await getProfileByGroupMemberId(groupMemberId);
+    if (!profile?.id) return;
+
+    await evaluateCourseCertification(courseId, profile.id).catch((certError) => {
+      console.error('Failed to evaluate course certification after a submission change:', certError);
+    });
+    await syncCourseProgressInLearningPaths(courseId, profile.id, undefined, { recordActivity: false });
+  })().catch((syncError) => {
+    console.error('Failed to sync learning path progress after a submission change:', syncError);
+  });
 }
 
 const LEGACY_BOARD_STATUS_LABELS: Record<number, string> = {
@@ -1009,7 +1047,9 @@ export async function updateSubmissionService(
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
-      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy);
+      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy, {
+        recordActivity: false
+      });
     }
 
     if (statusChanged || gradingStateChanged) {
@@ -1131,7 +1171,9 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy, updated.exerciseId);
-      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy);
+      await triggerCertificationIfExerciseComplete(updated.courseId, updated.exerciseId, updated.submittedBy, {
+        recordActivity: false
+      });
     }
 
     if (statusChanged || currentGradingState !== targetGradingState) {
@@ -1176,6 +1218,10 @@ export async function deleteSubmissionService(submissionId: string, courseId: st
     const deleted = await deleteSubmission(submissionId);
     if (!deleted) {
       throw new AppError('Failed to delete submission', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    if (deleted.courseId && deleted.submittedBy) {
+      syncLearningPathsAfterSubmissionChange(deleted.courseId, deleted.submittedBy);
     }
 
     return deleted;

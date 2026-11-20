@@ -12,6 +12,7 @@ type CourseSettings = {
   grading: boolean;
   type: TCourseType;
   allowSelfEnrollment: boolean;
+  enrollOnlyInLearningPath: boolean;
   lessonDownload: boolean;
   allowMarkdownExport: boolean;
   isPublished: boolean;
@@ -33,6 +34,7 @@ export const settings = writable<CourseSettings>({
   grading: false,
   type: 'SELF_PACED' as TCourseType,
   allowSelfEnrollment: true,
+  enrollOnlyInLearningPath: false,
   lessonDownload: false,
   allowMarkdownExport: false,
   isPublished: false,

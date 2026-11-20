@@ -8,6 +8,7 @@ import {
 } from '@cio/utils/validation/course/people';
 import { ROLE } from '@cio/utils/constants';
 import type { CoursePeopleView, ListPeopleQuery } from '$features/course/utils/types';
+import { PEOPLE_SOURCE_PARAM, readPeopleSourceParam, writePeopleSourceParam } from './people-source-utils';
 
 const SORT_BY_VALUES: ListPeopleQuery['sortBy'][] = [
   'name',
@@ -42,7 +43,8 @@ const OWNED_PARAMS = [
   'membership',
   'enrolledWithin',
   'lastLoginBefore',
-  'certificateEarned'
+  'certificateEarned',
+  PEOPLE_SOURCE_PARAM
 ] as const;
 
 const readEnum = <T extends string>(value: string | null, allowed: T[]): T | undefined =>
@@ -66,7 +68,8 @@ export function getPeopleQueryFromSearchParams(searchParams: URLSearchParams): L
     membership: readEnum(searchParams.get('membership'), MEMBERSHIP_VALUES),
     enrolledWithin: readEnum(searchParams.get('enrolledWithin'), ENROLLED_WINDOW_VALUES),
     lastLoginBefore: readEnum(searchParams.get('lastLoginBefore'), ACTIVITY_WINDOW_VALUES),
-    certificateEarned: certificateEarned === 'true' ? true : certificateEarned === 'false' ? false : undefined
+    certificateEarned: certificateEarned === 'true' ? true : certificateEarned === 'false' ? false : undefined,
+    source: readPeopleSourceParam(searchParams)
   };
 }
 
@@ -94,6 +97,7 @@ export function getPeopleSearchParams(
   if (query.enrolledWithin) searchParams.set('enrolledWithin', query.enrolledWithin);
   if (query.lastLoginBefore) searchParams.set('lastLoginBefore', query.lastLoginBefore);
   if (query.certificateEarned !== undefined) searchParams.set('certificateEarned', String(query.certificateEarned));
+  writePeopleSourceParam(searchParams, query.source);
 
   return searchParams;
 }
@@ -115,7 +119,8 @@ const VIEW_MATCHED_KEYS = [
   'enrolledWithin',
   'lastLoginBefore',
   'certificateEarned',
-  'roleId'
+  'roleId',
+  'source'
 ] as const;
 
 export function applyPeopleView(

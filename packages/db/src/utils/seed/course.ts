@@ -10,6 +10,8 @@ interface SeedCourse {
   selectedGroupIds?: string[];
 }
 
+export const EARLY_ADOPTER_COURSE_ID = '9bd496cc-c494-4a7e-e12c-6baeef246f8b';
+
 export async function seedCourses({
   mvcGroupId,
   reactGroupId,
@@ -23,7 +25,7 @@ export async function seedCourses({
   const mvcCourseId = '98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e';
   const reactCourseId = '16e3bc8d-5d1b-4708-988e-93abae288ccf';
   const pandasCourseId = 'f0a85d18-aff4-412f-b8e6-3b34ef098dce';
-  const earlyAdopterCourseId = '9bd496cc-c494-4a7e-e12c-6baeef246f8b';
+  const earlyAdopterCourseId = EARLY_ADOPTER_COURSE_ID;
 
   const coursesToInsert: TNewCourse[] = [
     {

@@ -3,7 +3,15 @@ import type { CourseMember, ListPeopleQuery, ListPeopleRequestQuery } from '$fea
 import { ROLE } from '@cio/utils/constants';
 import { ROLE_LABEL } from '$lib/utils/constants/roles';
 
-export type CourseMemberStage = NonNullable<CourseMember['stage']>;
+/**
+ * The member shape that carries progress fields (progress percent, stage,
+ * last login and enrollment date). Only student rows with an account hold
+ * meaningful values there, whatever the API sends for other roles, so
+ * consumers must narrow with `isStudentMember` before reading them.
+ */
+export type CourseMemberStage = NonNullable<Extract<CourseMember, { stage: unknown }>['stage']>;
+
+type CourseMemberWithProgress = Extract<CourseMember, { progressPercent: number }> & { stage?: CourseMemberStage };
 
 export const DEFAULT_PEOPLE_PAGE_SIZE = 20;
 
@@ -23,7 +31,8 @@ export function toPeopleRequestQuery(query: ListPeopleQuery): ListPeopleRequestQ
     membership: query.membership,
     enrolledWithin: query.enrolledWithin,
     lastLoginBefore: query.lastLoginBefore,
-    certificateEarned: query.certificateEarned === undefined ? undefined : String(query.certificateEarned)
+    certificateEarned: query.certificateEarned === undefined ? undefined : String(query.certificateEarned),
+    source: query.source
   } as ListPeopleRequestQuery;
 }
 
@@ -36,7 +45,8 @@ export function formatPeopleShortDate(value: string | null | undefined): string 
   return date.format('MMM D, YYYY');
 }
 
-export function isStudentMember(member: CourseMember): boolean {
+/** Narrows to a student with an account, the only member whose progress fields are meaningful. */
+export function isStudentMember(member: CourseMember): member is CourseMemberWithProgress {
   return member.roleId === ROLE.STUDENT && !!member.profileId;
 }
 

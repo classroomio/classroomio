@@ -15,7 +15,7 @@ import {
 /** One row per learner and overdue goal, compliance cycle or exercise. */
 export const overdueItemSource: AnalyticsSourceDefinition = {
   id: 'overdue_item',
-  scopeTypes: ['cohort', 'course', 'org'],
+  scopeTypes: ['cohort', 'course', 'org', 'path'],
   build: () => sql`SELECT * FROM overdue_row`,
   dimensions: {
     item: { valueType: 'text', key: baseColumn('item_key') },

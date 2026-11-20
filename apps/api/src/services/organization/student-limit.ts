@@ -1,6 +1,9 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import {
+  getCrossedStudentMilestone,
+  notifyStudentMilestone,
+  type StudentMilestoneNotification
+} from '@cio/core/services/organization/student-milestone';
 import { getStudentLimit, isPaymentBlocked } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
 import { capturePlanLimitReached } from '@cio/core/services/posthog';
@@ -10,55 +13,10 @@ import {
   checkStudentCapacity
 } from '@cio/core/services/organization/student-capacity';
 import { type DbOrTxClient, db } from '@cio/db/drizzle';
-import {
-  countActiveStudents,
-  getActiveOrganizationPlan,
-  getOrganizationAdminEmails,
-  getOrganizationById,
-  updateOrganization
-} from '@cio/db/queries/organization';
+import { countActiveStudents, getActiveOrganizationPlan } from '@cio/db/queries/organization';
 
-type StudentMilestone = 'half' | 'reached';
-
-export type StudentMilestoneNotification = {
-  orgId: string;
-  milestone: StudentMilestone;
-  studentCount: number;
-  studentLimit: number;
-};
-
-/**
- * Emails org admins once when the org crosses a student-count milestone (50%
- * of the limit, or the limit itself). The "already notified" state is persisted
- * on `organization.settings` so each milestone fires at most once, ever — no
- * repeat emails on every subsequent blocked attempt.
- */
-export async function notifyStudentMilestone(notification: StudentMilestoneNotification): Promise<void> {
-  const { orgId, milestone, studentCount, studentLimit } = notification;
-  const org = await getOrganizationById(orgId);
-  if (!org) return;
-
-  const notified = org.settings?.studentLimitNotified ?? {};
-  if (notified[milestone]) return;
-
-  const admins = await getOrganizationAdminEmails(orgId);
-  if (admins.length) {
-    const upgradeUrl = `${getDashboardBaseUrl()}/org/${org.siteName}?upgrade=true`;
-    const template = milestone === 'reached' ? 'studentLimitReached' : 'studentLimitApproaching';
-
-    await enqueueTransactionalEmail(template, {
-      to: admins.map((admin) => admin.email),
-      fields: { orgName: org.name, studentCount, studentLimit, upgradeUrl },
-      idempotencyKey: `student-limit-${milestone}:${orgId}`
-    });
-  }
-
-  // Reaching the limit implies the halfway mark was passed too, so a bulk jump
-  // straight past 50% never fires the halfway email afterwards.
-  const updatedNotified = milestone === 'reached' ? { half: true, reached: true } : { ...notified, half: true };
-
-  await updateOrganization(orgId, { settings: { ...org.settings, studentLimitNotified: updatedNotified } });
-}
+export { notifyStudentMilestone };
+export type { StudentMilestoneNotification };
 
 /**
  * How many more students the org can take, or `Infinity` when unlimited.
@@ -113,11 +71,9 @@ export async function assertStudentCapacityOrThrow(
   if (!check) return null;
 
   const { planName, limit, currentCount, newCount } = check;
-  const halfway = Math.ceil(limit / 2);
-  const crossedReached = currentCount < limit && newCount >= limit;
-  const crossedHalf = currentCount < halfway && newCount >= halfway;
+  const notification = getCrossedStudentMilestone(orgId, currentCount, newCount, limit);
 
-  if (crossedReached) {
+  if (notification?.milestone === 'reached') {
     capturePlanLimitReached({
       orgId,
       limitType: 'students',
@@ -128,18 +84,11 @@ export async function assertStudentCapacityOrThrow(
     });
   }
 
-  if (crossedReached || crossedHalf) {
-    const milestone: StudentMilestone = crossedReached ? 'reached' : 'half';
-    const notification = { orgId, milestone, studentCount: newCount, studentLimit: limit };
-
-    if (!options.deferNotification) {
-      notifyStudentMilestone(notification).catch((error) => {
-        console.error('notifyStudentMilestone error:', error);
-      });
-    }
-
-    return notification;
+  if (notification && !options.deferNotification) {
+    notifyStudentMilestone(notification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
   }
 
-  return null;
+  return notification;
 }

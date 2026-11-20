@@ -1,3 +1,5 @@
+import { getCourseRouteBase } from '$features/course/utils/functions';
+
 type MentionType = 'lesson' | 'exercise' | 'section' | 'landingpage';
 
 /**
@@ -29,12 +31,14 @@ function getLandingPageEditorRoute(courseId: string): string {
   return `/courses/${courseId}/landingpage`;
 }
 
-function getMentionRoute(courseId: string, type: MentionType, id: string) {
+function getMentionRoute(courseId: string, type: MentionType, id: string, base?: string) {
   if (type === 'landingpage') return getLandingPageEditorRoute(courseId);
-  if (type === 'exercise') return `/courses/${courseId}/exercises/${id}`;
-  if (type === 'section') return `/courses/${courseId}/lessons#section-${id}`;
 
-  return `/courses/${courseId}/lessons/${id}`;
+  const root = `${base ?? getCourseRouteBase()}/${courseId}`;
+  if (type === 'exercise') return `${root}/exercises/${id}`;
+  if (type === 'section') return `${root}/lessons#section-${id}`;
+
+  return `${root}/lessons/${id}`;
 }
 
 function escapeHtml(value: string): string {
@@ -54,7 +58,7 @@ function buildMentionLink(route: string, label: string, title: string) {
  * Replace AI lesson, exercise, section, and landing-page mentions with in-app links.
  * Handles both raw mention syntax and markdown-generated anchor tags.
  */
-export function renderMentions(html: string, courseId: string): string {
+export function renderMentions(html: string, courseId: string, base?: string): string {
   const landingHtmlRoutes = html.replace(
     HTML_LINK_LANDINGPAGE_MENTION_REGEX,
     (match, _quote: string, label: string) => {
@@ -70,7 +74,7 @@ export function renderMentions(html: string, courseId: string): string {
 
       if (!mentionType) return match;
 
-      const route = getMentionRoute(courseId, mentionType, id);
+      const route = getMentionRoute(courseId, mentionType, id, base);
       return buildMentionLink(route, label, `${mentionType}: ${id}`);
     }
   );

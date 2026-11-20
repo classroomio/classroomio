@@ -316,6 +316,12 @@ export function widgetTitle(
   return cleanWidgetTitle(rawTitle);
 }
 
+const SCOPE_PEOPLE_HREF: Record<Exclude<AnalyticsScopeSummary['type'], 'org'>, (scopeId: string) => string> = {
+  cohort: (scopeId) => `/cohorts/${scopeId}/people`,
+  course: (scopeId) => `/courses/${scopeId}/people`,
+  path: (scopeId) => `/paths/${scopeId}/people`
+};
+
 /**
  * The empty state for a dashboard whose scope has no students: what is missing, and the pages that fix it.
  */
@@ -332,7 +338,7 @@ export function scopeEmptyState(summary: AnalyticsScopeSummary, orgSlug: string 
     return { titleKey, descriptionKey, actions: addStudents ? [addStudents] : [] };
   }
 
-  const peopleHref = summary.type === 'cohort' ? `/cohorts/${summary.id}/people` : `/courses/${summary.id}/people`;
+  const peopleHref = SCOPE_PEOPLE_HREF[summary.type](summary.id);
   const invite = { href: peopleHref, labelKey: 'analytics.scope_empty.invite_students' };
   if (summary.type === 'cohort' && summary.courses.length === 0) {
     const addCourses = { href: `/cohorts/${summary.id}/courses`, labelKey: 'analytics.scope_empty.add_courses' };
@@ -432,7 +438,10 @@ export function studentFooterLabel(
   },
   translate: Translate
 ): string | null {
-  const scope = input.scopeType === 'course' || input.scopeType === 'org' ? input.scopeType : 'cohort';
+  const scope =
+    input.scopeType === 'course' || input.scopeType === 'org' || input.scopeType === 'path'
+      ? input.scopeType
+      : 'cohort';
   const isFiltered = input.total < input.count;
 
   if (input.pageCount > 1) {
@@ -466,7 +475,13 @@ export function widgetPaginationTarget(pageGroup: string, scopeType?: AnalyticsS
   }
 
   if (pageGroup.startsWith('courses')) {
-    return scopeType === 'cohort' ? 'courses_cohort' : 'courses_org';
+    if (scopeType === 'cohort') return 'courses_cohort';
+
+    return scopeType === 'path' ? 'courses_path' : 'courses_org';
+  }
+
+  if (pageGroup.startsWith('paths')) {
+    return 'paths_org';
   }
 
   if (pageGroup.startsWith('sections')) {
@@ -474,7 +489,7 @@ export function widgetPaginationTarget(pageGroup: string, scopeType?: AnalyticsS
   }
 
   if (pageGroup.startsWith('overdue')) {
-    return 'overdue_cohort';
+    return scopeType === 'path' ? 'overdue_path' : 'overdue_cohort';
   }
 
   return null;
@@ -594,6 +609,22 @@ export function toHealthSegments(result: AnalyticsResult, translate: Translate):
     const label = translate(`analytics.status.${health}`);
 
     return [{ key: health, label, value, color: STATUS_COLORS[health] }];
+  });
+}
+
+const PATH_STATUS_SEGMENTS = [
+  { key: 'not_started', measure: 'not_started_students__sum', color: ANALYTICS_COLORS.muted },
+  { key: 'in_progress', measure: 'in_progress_students__sum', color: ANALYTICS_COLORS.warning },
+  { key: 'completed', measure: 'completed_students__sum', color: ANALYTICS_COLORS.primary }
+] as const;
+
+/** Learning path students split by path status, summed over every path in the result. */
+export function toPathStatusSegments(result: AnalyticsResult, translate: Translate): DonutSegment[] {
+  return PATH_STATUS_SEGMENTS.flatMap(({ key, measure, color }) => {
+    const value = result.rows.reduce((total, row) => total + (numberCell(row, measure) ?? 0), 0);
+    if (!value) return [];
+
+    return [{ key, label: translate(`analytics.path_status.${key}`), value, color }];
   });
 }
 
@@ -1010,7 +1041,10 @@ const EMPTY_COPY_BY_WIDGET: Record<string, string> = {
   avg_score_by_cohort: 'cohorts_org',
   avg_score_by_course: 'scores',
   cohorts_in_course: 'cohorts_course',
-  cohort_details: 'cohorts_course'
+  cohort_details: 'cohorts_course',
+  paths_at_a_glance: 'paths_org',
+  path_status: 'paths_org',
+  completion_by_path: 'paths_org'
 };
 
 function chartRows(widget: AnalyticsWidget, result: AnalyticsResult): AnalyticsRow[] {
@@ -1051,6 +1085,10 @@ function emptyAction(copyKey: string, context: AnalyticsWidgetContext): ScopeEmp
 
   if (copyKey === 'cohorts_org' && context.orgSlug) {
     return { href: `/org/${context.orgSlug}/cohorts`, labelKey: 'analytics.empty_states.create_cohort' };
+  }
+
+  if (copyKey === 'paths_org' && context.orgSlug) {
+    return { href: `/org/${context.orgSlug}/paths`, labelKey: 'analytics.empty_states.open_paths' };
   }
 
   if (copyKey === 'cohorts_org_no_students' && context.orgSlug) {
@@ -1176,7 +1214,7 @@ export function widgetNotes(
     notes.push(translate('analytics.notes.needs_attention'));
   }
 
-  if (widget.id === 'logins_per_day' && context.scopeType === 'cohort') {
+  if (widget.id === 'logins_per_day' && (context.scopeType === 'cohort' || context.scopeType === 'path')) {
     notes.push(translate('analytics.notes.logins_per_day'));
   }
 
@@ -1185,6 +1223,12 @@ export function widgetNotes(
   if (widget.id === 'cohorts_at_a_glance' && shown > 0) notes.push(translate('analytics.notes.cohorts_select'));
 
   if (widget.id === 'courses_at_a_glance' && shown > 0) notes.push(translate('analytics.notes.courses_select'));
+
+  if (widget.id === 'paths_at_a_glance' && shown > 0) notes.push(translate('analytics.notes.paths_select'));
+
+  if (widget.id === 'path_status' || widget.id === 'completion_by_path') {
+    notes.push(translate('analytics.notes.path_students'));
+  }
 
   if (result && isCutShort(widget, result)) {
     notes.push(translate('analytics.notes.showing_first', { shown, total: result.total }));
@@ -1495,6 +1539,12 @@ export function parseStudentUrlFilters(params: URLSearchParams): StudentUrlFilte
 
 export const STUDENTS_TABLE_ANCHOR = 'analytics-students';
 
+const SCOPE_ANALYTICS_HREF: Record<Exclude<AnalyticsScopeRef['type'], 'org'>, (scopeId: string) => string> = {
+  cohort: (scopeId) => `/cohorts/${scopeId}/analytics`,
+  course: (scopeId) => `/courses/${scopeId}/analytics`,
+  path: (scopeId) => `/paths/${scopeId}/analytics`
+};
+
 /**
  * Where "Open in Students tab" goes: the students table of the cohort or course page with the drill-down filters
  * in the query string. Null when the scope has no students table or the table cannot express the drill-down.
@@ -1508,9 +1558,9 @@ export function studentsTabTarget(
   const target = studentUrlFiltersFromSpec(drilldown.filters);
   if (!target) return null;
 
-  const courseId = scope.type === 'cohort' ? target.courseId : null;
+  const courseId = scope.type === 'course' ? null : target.courseId;
   const params = studentUrlSearchParams({ ...target, courseId });
-  const path = scope.type === 'cohort' ? `/cohorts/${scope.id}/analytics` : `/courses/${scope.id}/analytics`;
+  const path = SCOPE_ANALYTICS_HREF[scope.type](scope.id);
   const query = params.size > 0 ? `?${params}` : '';
 
   return { ...target, courseId, href: `${path}${query}#${STUDENTS_TABLE_ANCHOR}` };
@@ -1799,6 +1849,15 @@ function progressKpi(
   return { value: formatPercent(average), ...delta };
 }
 
+/**
+ * Swaps cohort wording for path wording on a path dashboard, which reuses the cohort widgets.
+ */
+function audienceKey(cohortKey: string, scopeType: AnalyticsScopeType): string {
+  if (scopeType !== 'path') return cohortKey;
+
+  return cohortKey.replace(/_cohort$/, '') + '_path';
+}
+
 function completedDescription(
   percent: string,
   certified: number,
@@ -1807,12 +1866,17 @@ function completedDescription(
   context: AnalyticsKpiContext
 ): string {
   if (context.rangeDays !== null) {
-    return translate('analytics.kpi.completed_in_days', { percent, count: completedInPeriod, days: context.rangeDays });
+    return translate(audienceKey('analytics.kpi.completed_in_days', context.scopeType), {
+      percent,
+      count: completedInPeriod,
+      days: context.rangeDays
+    });
   }
 
-  if (context.courseSelected) return translate('analytics.kpi.share_of_cohort', { percent });
+  if (context.courseSelected)
+    return translate(audienceKey('analytics.kpi.share_of_cohort', context.scopeType), { percent });
 
-  return translate('analytics.kpi.completed_certified', { percent, count: certified });
+  return translate(audienceKey('analytics.kpi.completed_certified', context.scopeType), { percent, count: certified });
 }
 
 const KPI_FORMATTERS: Record<string, KpiFormatter> = {
@@ -1822,7 +1886,7 @@ const KPI_FORMATTERS: Record<string, KpiFormatter> = {
     const total = numberCell(row, 'rows__count');
     const value = `${formatCount(active)} / ${formatCount(total)}`;
     const percent = formatPercent(percentOf(active, total));
-    const description = translate('analytics.kpi.share_of_cohort', { percent });
+    const description = translate(audienceKey('analytics.kpi.share_of_cohort', context.scopeType), { percent });
     const title = loggedInTitle(context.rangeDays, translate);
 
     return { title, value, description, trend: 'flat' };

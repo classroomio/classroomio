@@ -21,7 +21,9 @@ export const ANALYTICS_SOURCE_DESCRIPTIONS: Record<TAnalyticsSource, string> = {
     'One row per learner who has at least one overdue item, with the courses involved, progress and overdue count.',
   org_member: 'One row per period bucket, with how many students joined in it and the running total.',
   cohort_summary:
-    'One row per cohort in the scope, with member counts, average progress and score, and cumulative pass rates.'
+    'One row per cohort in the scope, with member counts, average progress and score, and cumulative pass rates.',
+  path_summary:
+    'One row per learning path in the organization, with course and student counts, average path progress, learner status counts, recent activity and certificates.'
 };
 
 /** What each metric measures. */
@@ -52,7 +54,8 @@ export const ANALYTICS_METRIC_DESCRIPTIONS: Record<TAnalyticsMetric, string> = {
   is_completed: 'Whether the learner completed every required item of the enrolled course.',
   is_completed_all: 'Whether the learner completed every course of the scope they are enrolled in.',
   is_certified: 'Whether a valid certificate exists for the course enrollment.',
-  certificates: 'The number of the courses in the scope the learner holds a valid certificate for.',
+  certificates:
+    'The number of the courses in the scope the learner holds a valid certificate for, or the path certificates issued to a learning path students.',
   courses_total: 'Number of courses the learner is enrolled in within the scope.',
   courses_completed: 'Number of those course enrollments the learner has completed.',
   days_to_finish: 'Days between enrollment and completion, set only after the enrollment completes.',
@@ -104,17 +107,26 @@ export const ANALYTICS_METRIC_DESCRIPTIONS: Record<TAnalyticsMetric, string> = {
   item_titles: 'The titles of the overdue items for that learner, comma separated.',
   course_progress_pct: 'Progress across the courses the learner overdue items belong to.',
   has_goal: 'Whether at least one of the overdue items is a goal.',
-  students: 'How many students the cohort currently has.',
+  students: 'How many students the cohort or learning path currently has.',
   pending_invites: 'How many pending member invites the cohort has.',
-  avg_progress_pct: 'Average course progress across the cohort students.',
+  avg_progress_pct: 'Average progress across the students of the cohort or learning path.',
   overdue_students: 'How many cohort students have an overdue item.',
   at_risk_students: 'How many cohort students have the at_risk status.',
-  completed_students: 'How many cohort students completed every course they are enrolled in.',
+  completed_students:
+    'How many cohort students completed every course they are enrolled in, or how many learning path students completed the path.',
   cohort_created_at: 'When the cohort was created.',
   course_created_at: 'When the course was created.',
   completed_all_in_period: 'Whether the learner completed all their scope courses inside the selected range.',
   completed_in_window: 'Whether the learner completed this course inside the selected range.',
-  certified_in_period: 'Whether the learner earned a certificate for this course inside the selected range.'
+  certified_in_period: 'Whether the learner earned a certificate for this course inside the selected range.',
+  path_public_id: 'The short public id of the learning path, used in its dashboard URL.',
+  path_created_at: 'When the learning path was created.',
+  courses: 'How many active courses the learning path contains.',
+  in_progress_students: 'How many learning path students have started but not completed the path.',
+  not_started_students: 'How many learning path students have not started the path yet.',
+  active_students:
+    'How many learning path students completed a lesson or submitted an exercise in a path course in the last 14 days.',
+  completion_pct: 'Share of the learning path students who completed the path.'
 };
 
 /** What each dimension groups by. */
@@ -122,6 +134,7 @@ export const ANALYTICS_DIMENSION_DESCRIPTIONS: Record<TAnalyticsDimension, strin
   student: 'Groups rows by learner.',
   course: 'Groups rows by course.',
   cohort: 'Groups rows by cohort.',
+  path: 'Groups rows by learning path.',
   exercise: 'Groups rows by exercise.',
   section: 'Groups rows by course section.',
   lesson: 'Groups rows by lesson.',
@@ -227,5 +240,10 @@ export const ANALYTICS_WIDGET_DESCRIPTIONS: Record<string, string> = {
   avg_score_by_cohort: 'Ranks the newest cohorts by their average score.',
   courses_by_completion: 'Ranks courses by their completion rate.',
   scores_by_exercise_by_cohort:
-    'Charts the average exercise score per cohort in the selected course, one line per cohort.'
+    'Charts the average exercise score per cohort in the selected course, one line per cohort.',
+  paths_at_a_glance:
+    'Lists learning paths with courses, students, average progress, completion rate, recently active students and certificates, paged in name order.',
+  path_status:
+    'Counts learning path students who have not started, are in progress or completed their path, across every path.',
+  completion_by_path: 'Ranks learning paths by the share of their students who completed the path.'
 };

@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { ErrorCodes, handleError } from '@api/utils/errors';
 import { canProfileOpenCourse } from '@api/services/course/access';
 
 /**
@@ -10,19 +10,21 @@ import { canProfileOpenCourse } from '@api/services/course/access';
  */
 export const courseMemberMiddleware = async (c: Context, next: Next) => {
   try {
-    const user = c.get('user');
+    const user = c.get('user') as { id: string } | undefined;
+
     if (!user) {
       return c.json(
         {
           success: false,
           error: 'Unauthorized',
-          code: 'UNAUTHORIZED'
+          code: ErrorCodes.UNAUTHORIZED
         },
         401
       );
     }
 
     const courseId = c.req.param('courseId') || c.req.query('courseId');
+
     if (!courseId) {
       return c.json(
         {
@@ -48,14 +50,6 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       403
     );
   } catch (error) {
-    console.error('Error in courseMemberMiddleware:', error);
-    return c.json(
-      {
-        success: false,
-        error: 'Failed to verify course membership',
-        code: 'COURSE_MEMBER_CHECK_FAILED'
-      },
-      500
-    );
+    return handleError(c, error, 'Failed to verify course membership', 'COURSE_MEMBER_CHECK_FAILED');
   }
 };

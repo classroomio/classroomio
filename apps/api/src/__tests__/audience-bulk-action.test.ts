@@ -7,6 +7,9 @@ vi.mock('@cio/db/queries/organization', () => ({
   bulkUpdateOrganizationMemberStatus: vi.fn(),
   bulkDeleteOrganizationAudienceMembers: vi.fn(),
   deleteGroupMembershipsForOrgProfiles: vi.fn(),
+  deleteCohortMembershipsForOrgProfiles: vi.fn(),
+  deleteProgramMembershipsForOrgProfiles: vi.fn(),
+  softRemoveLearningPathMembershipsForOrgProfiles: vi.fn(),
   recordOrganizationMemberAudit: vi.fn(),
   resolveAudienceMemberIds: vi.fn(),
   revokeActiveOrganizationInvitesByEmails: vi.fn(),
@@ -17,6 +20,7 @@ vi.mock('@cio/db/queries/organization', () => ({
 
 vi.mock('@cio/jobs', () => ({
   QUEUE_NAMES: { audience: 'audience' },
+  JOB_NAMES: { audience: { bulkAction: 'bulk-action', pathBulkEnroll: 'path-bulk-enroll' } },
   enqueueAudienceBulkAction: vi.fn(async () => 'job-1'),
   getQueue: vi.fn(),
   getQueueJobEnvelope: vi.fn()
@@ -635,7 +639,9 @@ describe('getBulkAudienceActionStatus', () => {
   }
 
   it('returns the envelope for a job enqueued by this organization', async () => {
-    vi.mocked(getQueue).mockReturnValue(queueHolding({ id: 'job-1', data: { organizationId: ORG } }));
+    vi.mocked(getQueue).mockReturnValue(
+      queueHolding({ id: 'job-1', name: 'bulk-action', data: { organizationId: ORG } })
+    );
     vi.mocked(getQueueJobEnvelope).mockResolvedValue({
       job: { id: 'job-1', status: 'running' },
       events: [],
@@ -660,5 +666,14 @@ describe('getBulkAudienceActionStatus', () => {
     vi.mocked(getQueue).mockReturnValue(queueHolding(undefined));
 
     await expect(getBulkAudienceActionStatus(ORG, 'job-1')).rejects.toMatchObject({ statusCode: 404 });
+  });
+
+  it('404s for a job of another type in the same queue', async () => {
+    vi.mocked(getQueue).mockReturnValue(
+      queueHolding({ id: 'job-1', name: 'path-bulk-enroll', data: { organizationId: ORG } })
+    );
+
+    await expect(getBulkAudienceActionStatus(ORG, 'job-1')).rejects.toMatchObject({ statusCode: 404 });
+    expect(getQueueJobEnvelope).not.toHaveBeenCalled();
   });
 });

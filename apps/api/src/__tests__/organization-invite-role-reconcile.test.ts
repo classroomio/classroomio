@@ -56,11 +56,22 @@ vi.mock('@cio/db/queries/cohort', () => ({
   getCourseIdsByCohortIds: vi.fn(),
   getExistingCohortMembers: vi.fn()
 }));
-vi.mock('@cio/core/config/dashboard-url', () => ({ getAppBaseUrl: vi.fn(() => 'https://app.test') }));
+vi.mock('@cio/db/queries/learning-path', () => ({
+  getOrgLearningPathsByIds: vi.fn()
+}));
+vi.mock('@api/services/learning-path/member-management', () => ({
+  enrollProfileInLearningPath: vi.fn()
+}));
+vi.mock('@cio/core/config/dashboard-url', () => ({
+  getAppBaseUrl: vi.fn(() => 'https://app.test'),
+  buildTeamInviteLink: vi.fn((token: string) => `https://app.test/invite/${encodeURIComponent(token)}`),
+  buildOrgInviteLink: vi.fn((token: string) => `https://app.test/invite/${encodeURIComponent(token)}`)
+}));
 vi.mock('@api/services/organization/student-limit', () => ({ assertStudentCapacityOrThrow: vi.fn() }));
 vi.mock('@api/utils/org', () => ({
   parseCourseIdsFromInviteMetadata: vi.fn(() => []),
   parseCohortIdsFromInviteMetadata: vi.fn(() => []),
+  parsePathIdsFromInviteMetadata: vi.fn(() => []),
   parseFullnameFromInviteMetadata: vi.fn((metadata: { fullname?: string } | undefined) => metadata?.fullname)
 }));
 // Mocked to sidestep Vite's nested-subpath resolution quirk on `@cio/*` exports.

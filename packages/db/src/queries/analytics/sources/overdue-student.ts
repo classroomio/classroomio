@@ -16,7 +16,7 @@ import {
 /** One row per learner with overdue items, with course titles and progress. */
 export const overdueStudentSource: AnalyticsSourceDefinition = {
   id: 'overdue_student',
-  scopeTypes: ['cohort', 'course'],
+  scopeTypes: ['cohort', 'course', 'path'],
   build: () => sql`SELECT * FROM overdue_student_row`,
   dimensions: {
     student: idDimension('profile_id', 'fullname')

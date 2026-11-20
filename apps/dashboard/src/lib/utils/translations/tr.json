@@ -279,19 +279,9 @@
     }
   },
   "onboarding": {
-    "expanding": "Başka bir platformda, burayı genişletiyor",
-    "employees": "Çalışanlarımı eğitiyorum",
-    "customers": "Müşterilerim için kurslar oluştur",
-    "explore": "Sadece keşfetmek için burada",
-    "articles": "Makaleler",
-    "search": "Arama motoru",
-    "social": "Sosyal medya",
-    "friends": "Arkadaşlar ve aile",
     "fullname": "Tam Ad",
     "name": "Kuruluşun Adı",
     "organisation_sitename": "Akademi alt alan adı",
-    "what_brings": "Sizi buraya getiren nedir",
-    "how": "Bizi nasıl duydunuz?",
     "back": "Back",
     "continue": "Devam et",
     "step_of": "{total} adımının {current}. adımı",
@@ -429,7 +419,8 @@
           "widgets": "Widget'lar",
           "tags": "Etiketler",
           "students": "Öğrenciler",
-          "settings": "Ayarlar"
+          "settings": "Ayarlar",
+          "learning_paths": "Öğrenme yolları"
         },
         "result_types": {
           "page": "Page"
@@ -483,6 +474,29 @@
       "all": "Tüm zamanlar",
       "label": "Zaman aralığı",
       "locked": "Bu aralığın kilidini açmak için yükseltin"
+    },
+    "add": "Ekle",
+    "remove": "Kaldır",
+    "close": "Kapat",
+    "edit": "Düzenle",
+    "coming_soon": "Yakında",
+    "back_to_my_learning": "Öğrenmelerime geri dön",
+    "pricing": {
+      "enable_paid": "Ücretli Yap",
+      "yes": "Evet",
+      "no": "Hayır",
+      "currency": "Para birimi",
+      "cost": "Fiyat",
+      "payment_link": "Ödeme Bağlantısı",
+      "payment_required": "Ücretli etkinleştirildiğinde ödeme bağlantısı gereklidir",
+      "payment_invalid_url": "Lütfen geçerli bir URL girin",
+      "discount": "İndirim",
+      "show_discount": "İndirimi göster",
+      "discount_percentage": "İndirim yüzdesi",
+      "reward": "Ödül / Hediye",
+      "reward_help": "Öğrencilere tamamlama karşılığında bir teşvik sunun",
+      "reward_description": "Ödül açıklaması",
+      "placeholder_reward": "örn. birebir mentorluk oturumu, hediye ürün veya özel topluluk erişimi"
     }
   },
   "compliance": {
@@ -984,7 +998,8 @@
       "preview_tabs": {
         "label": "Önizleme sayfası",
         "home": "Ana Sayfa",
-        "course": "Course"
+        "course": "Course",
+        "learning_path": "Öğrenme Yolu"
       },
       "editor": {
         "save": "Kaydet",
@@ -1739,7 +1754,8 @@
     "exit_course": "Bu kurstan çık",
     "exit_cohort": "Bu gruptan çık",
     "marketing": "Pazarlama",
-    "org_analytics": "Akademi"
+    "org_analytics": "Akademi",
+    "learning_paths": "Öğrenme Yolları"
   },
   "pricing": {
     "plan_names": {
@@ -2279,7 +2295,6 @@
     "upcoming_sessions_heading": "LCanlı Oturumlar",
     "pick_up_where_you_left_off": "Nereden alın kaldınız",
     "get_your_certificate": "Sertifikanızı alın",
-    "course_awaits_you": "{title} sizi bekliyor",
     "learning_awaits_you": "Sonraki kursunuz sizi bekliyor",
     "my_certificate": "Sertifikam",
     "lms_today_progress": "Öğreniminiz boyunca %{progress} kazanırsınız - her adım önemlidir.",
@@ -2325,7 +2340,24 @@
     "login_activity_title": "Öğrenci Giriş Etkinliği",
     "login_activity_description": "Haftanın en aktif günleri (son 90 gün)",
     "login_activity_no_data": "Henüz giriş etkinliği yok",
-    "login_activity_logins": "girişler"
+    "login_activity_logins": "girişler",
+    "completed": "Tamamlandı",
+    "completed_of": "{completed} / {total}",
+    "continue_course": "Kursa Devam Et",
+    "course_position": "Kurs {course} / {total}",
+    "enrolled": "Kayıtlı",
+    "explore_courses_hours": "{count} kurs · {hours}sa",
+    "explore_lessons_count": "{count} ders",
+    "explore_something_new": "Yeni Bir Şey Keşfedin",
+    "exercise_status_in_progress": "Devam Ediyor",
+    "exercise_status_overdue": "Gecikmiş",
+    "exercise_status_not_submitted": "Gönderilmedi",
+    "lessons_done": "{total} dersten {completed} tanesi tamamlandı",
+    "no_exercises": "Yaklaşan alıştırma yok",
+    "no_exercises_description": "Göndermeniz gereken alıştırmalar burada görünecek.",
+    "no_recommendations": "Henüz öneri yok",
+    "no_recommendations_description": "Bir sonraki kursunuzu veya öğrenme yolunuzu bulmak için kataloğu keşfedin.",
+    "upcoming_exercises": "Yaklaşan Alıştırmalar"
   },
   "ai": {
     "help_me": "Yazmama yardım et",
@@ -2434,8 +2466,10 @@
       },
       "error": {
         "failed_to_clone": "Kurs kopyalanamadı"
-      }
-    }
+      },
+      "title_copy_format": "{title} (Kopya)"
+    },
+    "pricing_free": "Ücretsiz"
   },
   "course": {
     "creator": {
@@ -2532,7 +2566,8 @@
         "label": "Kurs içeriğinde gezinme",
         "previous": "Önceki",
         "next": "Sonraki"
-      }
+      },
+      "back_to_path": "Yola geri dön"
     },
     "search": {
       "placeholder": "Ders veya alıştırmalarda ara",
@@ -4056,7 +4091,8 @@
             "title": "Öğrenciye erişim izni ver",
             "description": "{email}'in bu kursa erişmesine izin ver. Kuruluşunuza katılmaları ve bu kursa kaydolmaları için onlara bir davet e-postası göndereceğiz.",
             "cancel": "İptal",
-            "send_invite": "Davet gönder"
+            "send_invite": "Davet gönder",
+            "path_only_notice": "Bu kursa yalnızca bir öğrenme yolu üzerinden kayıt yapılabildiği için doğrudan erişim verilemez. Bunun yerine kursu içeren öğrenme yolunu atayın — veya kurs ayarlarında 'Yalnızca Öğrenme Yolunda kayıt' seçeneğini kapatın."
           },
           "invite_new_students_title": "Yeni öğrencileri davet edin",
           "invite_new_students_description": "Kuruluşunuza yeni kişileri davet edin ve onları bu kursa önceden atayın. Bir hesap oluşturacaklar, daveti kabul edecekler ve erişim elde edecekler.",
@@ -4094,7 +4130,10 @@
           "snackbar_failed_load_audit": "Davet denetimi yüklenemedi",
           "snackbar_metadata_copied": "Davet meta veriler kopyalandı",
           "snackbar_email_invites_success": "{count} davet(ler)i oluşturuldu. {sent} gönderildi, {failed} başarısız oldu. {duplicates} kopyalar atlandı.",
-          "select_at_least_one_student": "En az bir mevcut öğrenciyi seçin"
+          "select_at_least_one_student": "En az bir mevcut öğrenciyi seçin",
+          "members_added": "{count, plural, one {# üye başarıyla eklendi} other {# üye başarıyla eklendi}}",
+          "path_only_notice_title": "Öğrenciler bir öğrenme yolu üzerinden katılır",
+          "path_only_notice_description": "Bu kursa yalnızca bir öğrenme yolu üzerinden kayıt yapılabildiği için buraya öğrenci davet edilemez. Aşağıdan yine de eğitmen davet edebilirsiniz. Öğrencilere erişim vermek için kursu içeren öğrenme yolunu atayın — veya kurs ayarlarında 'Yalnızca Öğrenme Yolunda kayıt' seçeneğini kapatın."
         },
         "delete_confirmation": {
           "title": "Sil",
@@ -4186,7 +4225,13 @@
           "never_logged_in": "Hiç giriş yapmadı",
           "awaiting_certificate": "Sertifika bekliyor",
           "custom": "Özel filtreler"
-        }
+        },
+        "source": "Kaynak",
+        "source_filter_all": "Tüm kaynaklar",
+        "source_filter_direct": "Doğrudan",
+        "source_learning_path": "Öğrenme Yolu",
+        "source_cohort": "Grup",
+        "completed": "Tamamlandı"
       },
       "certificates": {
         "title": "Sertifikalar",
@@ -4272,7 +4317,12 @@
           "field_template": "Template",
           "field_accent": "Accent",
           "field_signatories": "İmzacılar",
-          "customize_design": "Tasarımı özelleştirin"
+          "customize_design": "Tasarımı özelleştirin",
+          "signatory_one": "1. imzacı",
+          "signatory_two": "2. imzacı",
+          "signatory_name": "İmzacı adı",
+          "signatory_role": "İmzacı unvanı",
+          "signature_image": "İmza görseli"
         }
       },
       "landing_page": {
@@ -4650,13 +4700,20 @@
             "window_passed": "Planlandığında hatırlatma zamanı zaten geçmişti.",
             "unenrolled": "Öğrenci artık kayıtlı değil."
           }
-        }
+        },
+        "enroll_only_in_learning_path": "Yalnızca Öğrenme Yolunda kayıt",
+        "enroll_only_in_learning_path_desc": "Açıkken öğrenciler bu kursa yalnızca bir öğrenme yolu üzerinden kaydolabilir. Mevcut kayıtlar korunur."
       }
     },
     "not_permitted": {
       "header": "İzin Yok",
       "body": "Maalesef bu kursa erişiminiz yok.",
       "button": "Eve gidin"
+    },
+    "not_found": {
+      "header": "Kurs bulunamadı",
+      "body": "Aradığınız kurs mevcut değil veya silinmiş olabilir.",
+      "button": "Ana sayfaya git"
     }
   },
   "community": {
@@ -4806,7 +4863,14 @@
         "is_staff": "Personel, öğrenci değil",
         "over_seat_limit": "Koltuk kalmadı",
         "missing_email": "E-posta yok"
-      }
+      },
+      "select_paths_placeholder": "Öğrenme yollarını seçin...",
+      "path_access": "Öğrenme Yolu Erişimi",
+      "no_paths": "Öğrenme yolu ataması yok",
+      "all_paths": "Tüm öğrenme yolları",
+      "select_paths": "Belirli öğrenme yollarını seçin",
+      "skipped_path_only_title": "Yalnızca yola özel {count} kurs atlandı",
+      "skipped_path_only_description": "{names}. Bu kurslara yalnızca bir öğrenme yolu üzerinden kayıt yapılabilir. Kursu içeren öğrenme yolunu atayın (bu, yoldaki diğer kurslara da erişim verir) veya kurs ayarlarında 'Yalnızca Öğrenme Yolunda kayıt' seçeneğini kapatın."
     },
     "assign": {
       "title": "Kurslara Ata",
@@ -4818,7 +4882,9 @@
       "cancel": "İptal",
       "snackbar_success": "Atanan {assigned} kullanıcıları ({alreadyEnrolled}'in zaten erişimi vardı, {emailsSent} e-posta gönderildi)",
       "snackbar_no_courses": "Lütfen en az bir kurs seçin",
-      "snackbar_failed": "Ders atanamadı"
+      "snackbar_failed": "Ders atanamadı",
+      "snackbar_partial": "{assigned} kullanıcı atandı ({alreadyEnrolled} kişinin zaten erişimi vardı, {emailsSent} e-posta gönderildi). Yalnızca yola özel kurslar atlandı: {names} — kursu içeren öğrenme yolunu atayın veya kurs ayarlarında 'Yalnızca Öğrenme Yolunda kayıt' seçeneğini kapatın.",
+      "path_only_badge": "Yalnızca yol"
     },
     "invite": {
       "row_actions_aria": "İşlemleri aç",
@@ -4916,7 +4982,8 @@
       "queued_lost": "Bu koşunun izini kaybettik. Mevcut durumu görmek için yeniden yükleyin."
     },
     "certificate_earned": "{count} sertifika kazanıldı",
-    "certificates_earned": "{count} sertifika kazanıldı"
+    "certificates_earned": "{count} sertifika kazanıldı",
+    "path_only_badge": "Yalnızca yol"
   },
   "student_progress": {
     "courses": "Courses",
@@ -5203,7 +5270,9 @@
     "explore": "Keşfet",
     "help": "Help",
     "settings": "Ayarlar",
-    "cohorts": "Kohortlar"
+    "cohorts": "Kohortlar",
+    "learning_paths": "Öğrenme Yolları",
+    "my_courses": "Kurslarım"
   },
   "lms": {
     "view_landing_page": "Ana Sayfa"
@@ -5229,7 +5298,10 @@
     "empty_description": "İlk sertifikanızı kazanmak için bir kursu tamamlayın. Kazanılan sertifikalarınız burada görünecek.",
     "no_results_title": "Sertifika bulunamadı",
     "no_results_description": "Farklı bir arama terimi deneyin.",
-    "go_to_my_learning": "Öğrenimlerime Git"
+    "go_to_my_learning": "Öğrenimlerime Git",
+    "load_error_title": "Sertifikalarınız yüklenemedi",
+    "load_error_description": "Sertifikalarınız yüklenirken bir sorun oluştu.",
+    "retry": "Tekrar dene"
   },
   "exercises": {
     "heading": "Alıştırmalar",
@@ -5237,12 +5309,49 @@
     "submitted": "Gönderildi",
     "in_progress": "Not Verme Progress",
     "graded": "Graded",
-    "lesson": "LDers"
+    "total": "Toplam",
+    "completed": "Tamamlandı",
+    "overdue": "Gecikmiş",
+    "empty": "Henüz alıştırma yok.",
+    "table": {
+      "assignment": "Ödev",
+      "course": "Kurs",
+      "status": "Durum",
+      "due_date": "Son Tarih",
+      "submission": "Gönderim",
+      "grade": "Not"
+    },
+    "submission_states": {
+      "not_submitted": "Gönderilmedi",
+      "awaiting_grade": "Not bekleniyor",
+      "submitted": "Gönderildi"
+    },
+    "actions": {
+      "view": "Görüntüle",
+      "continue": "Devam et",
+      "start": "Başla"
+    }
   },
   "explore": {
     "heading": "Kurslarımızı keşfedin",
-    "empty_heading": "Kurs mevcut değil",
-    "empty_description": "Şu anda yayınlanmış kurs mevcut değil"
+    "subtitle": "Platformdan daha fazla değer elde etmenize yardımcı olmak için tasarlanmış öğrenme deneyimlerini keşfedin.",
+    "search_placeholder": "Öğrenme yollarında ve kurslarda ara…",
+    "content_type": "İçerik türü",
+    "content_type_all": "Tümü",
+    "section_paths": "Öğrenme Yolları",
+    "section_courses": "Kurslar",
+    "view_learning_path": "Öğrenme Yolunu Görüntüle",
+    "paths_empty_title": "Yol bulunamadı",
+    "paths_empty_description": "Farklı bir arama deneyin veya filtrelerinizi temizleyin.",
+    "courses_empty_title": "Aramanızla eşleşen kurs yok",
+    "courses_empty_description": "Farklı bir arama terimi deneyin.",
+    "courses_browse_empty_title": "Henüz kurs yok",
+    "courses_browse_empty_description": "Bu kuruluşta oluşturulan kurslar burada görünecek.",
+    "paths_browse_empty_title": "Henüz öğrenme yolu yok",
+    "paths_browse_empty_description": "Bu kuruluşta oluşturulan öğrenme yolları burada görünecek.",
+    "paths_all_enrolled_title": "Tüm yollara kayıtlısınız",
+    "paths_all_enrolled_description": "Yayınlanmış her öğrenme yoluna katıldınız. Öğrenmeye Öğrenmelerim'den devam edin.",
+    "paths_all_enrolled_action": "Öğrenmelerime git"
   },
   "snackbar": {
     "success": "Başarı",
@@ -6147,7 +6256,11 @@
       "empty_description": "Bu gruba kurs ekleyin.",
       "empty_student_description": "Bu grupta henüz yayınlanmış kurs yok.",
       "published_access_callout_title": "Öğrenci erişimi",
-      "published_access_callout_description": "Öğrenciler yalnızca yayınlanan kurslara erişebilir. Kurslar, yayınlanmamış durumdayken ekibiniz için bu grupta yer alabilir, ancak siz onları yayınlayana kadar öğrencilerden gizli kalır."
+      "published_access_callout_description": "Öğrenciler yalnızca yayınlanan kurslara erişebilir. Kurslar, yayınlanmamış durumdayken ekibiniz için bu grupta yer alabilir, ancak siz onları yayınlayana kadar öğrencilerden gizli kalır.",
+      "add_count": "{count} {count, plural, =1 {Kurs} other {Kurs}} Ekle",
+      "adding": "Kurslar ekleniyor…",
+      "load_failed": "Kurslar yüklenemedi.",
+      "retry": "Tekrar dene"
     },
     "people": {
       "invite": "Invite",
@@ -6279,12 +6392,14 @@
       "disabled": "Bu davet bağlantısı devre dışı bırakıldı.",
       "closed": "Bu artık yeni kabul edilmiyor üyeler.",
       "succeeded": "Katıldınız",
-      "failed": "Katılamadınız. Lütfen tekrar deneyin."
+      "failed": "Katılamadınız. Lütfen tekrar deneyin.",
+      "learning_path_button": "Öğrenme yoluna katıl"
     },
     "snackbar": {
       "enabled": "Davet bağlantısı etkin",
       "disabled": "Davet bağlantısı devre dışı"
-    }
+    },
+    "learning_path_description": "Bu bağlantıya sahip herkes bu öğrenme yoluna ve içindeki tüm kurslara katılabilir. E-postaları tek tek girmek yerine bunu paylaşın."
   },
   "notifications": {
     "title": "Bildirimler",
@@ -6778,7 +6893,8 @@
       "enrolled_students": "Kayıtlı öğrenciler",
       "target": "Hedef",
       "logins": "Girişler",
-      "direct_students": "Doğrudan öğrenciler"
+      "direct_students": "Doğrudan öğrenciler",
+      "path_average": "Yol ortalaması"
     },
     "notes": {
       "score_distribution": "Puan bandı başına öğrenciler.",
@@ -6804,7 +6920,9 @@
       "bucketed_total": "Her çubuk {days} gün boyunca yapılan girişleri toplar. Bir öğrenci günde bir kez sayılır.",
       "student_sheet_pick_course": "Puanlarını alıştırmaya göre grafiklendirmek için bir kursa tıklayın.",
       "direct_students_charted": "Doğrudan öğrenciler bir kohorta ait değildir; kendi çizgilerinde görünür.",
-      "courses_select": "Kontrol panelini açmak için bir kurs seçin."
+      "courses_select": "Kontrol panelini açmak için bir kurs seçin.",
+      "paths_select": "Panosunu açmak için bir öğrenme yolu seçin.",
+      "path_students": "Tüm aktif öğrenme yollarındaki öğrenci üyeleri sayar."
     },
     "buckets": {
       "progress": {
@@ -6872,7 +6990,10 @@
         "completions": "henüz tamamlama yok",
         "enrolments": "henüz kayıt yok",
         "in_days": "son {days} günde yok"
-      }
+      },
+      "share_of_path": "Yolun {percent} kadarı",
+      "completed_certified_path": "Yolun {percent} kadarı · {count} sertifikalı",
+      "completed_in_days_path": "Yolun {percent} kadarı{count, plural, =0 {} other { · son {days} günde +#}}"
     },
     "widgets": {
       "kpi_logged_in_today": {
@@ -7000,6 +7121,21 @@
       },
       "cohort_empty": {
         "title": "Öğrencisi olmayan kohortlar"
+      },
+      "paths_at_a_glance": {
+        "title": "Bir bakışta öğrenme yolları"
+      },
+      "path_status": {
+        "title": "Duruma göre yol öğrencileri"
+      },
+      "completion_by_path": {
+        "title": "Yola göre tamamlama oranı"
+      },
+      "courses_in_path": {
+        "title": "Bu yoldaki kurslar"
+      },
+      "overdue_path": {
+        "title": "Gecikmiş öğrenciler"
       }
     },
     "measures": {
@@ -7021,7 +7157,9 @@
       "attendance__pooled": "Sınıfa katılım",
       "best_score_pct__avg": "Ortalama puan",
       "is_complete__rate": "Tamamlanmış",
-      "members_total__value": "Kayıtlı öğrenciler"
+      "members_total__value": "Kayıtlı öğrenciler",
+      "completion_pct__pooled": "Tamamlama oranı",
+      "students__value": "Öğrenciler"
     },
     "columns": {
       "student": "Öğrenci",
@@ -7053,7 +7191,11 @@
       "health": "Sağlık",
       "section": "Kurs bölümü",
       "exercises_taken": "Alınan egzersizler",
-      "actions": "Eylemler"
+      "actions": "Eylemler",
+      "path": "Öğrenme yolu",
+      "courses": "Kurslar",
+      "completion_rate": "Tamamlama oranı",
+      "active_14d": "Aktif (14 gün)"
     },
     "column_hints": {
       "passed_first_try": "Geçme notu olan alıştırmalarda, ilk not verilen denemelerinde geçme notuna ulaşan öğrenciler.",
@@ -7084,7 +7226,8 @@
       "showing": {
         "cohort": "Grupta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
         "course": "Kurstaki {from}–{to} / {total} eşleşmesi gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "Kuruluşta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}"
+        "org": "Kuruluşta {from}–{to} eşleşen {total} gösteriliyor · {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "path": "{total} eşleşmeden {from}–{to} gösteriliyor · yolda {count, plural, one {# öğrenci} other {# öğrenci}}"
       },
       "clear_filters": "{count, plural, one {# filtreyi temizle} other {# filtreyi temizle}}",
       "sort": {
@@ -7137,17 +7280,20 @@
       "showing_paged": {
         "cohort": "Grupta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
         "course": "Kurstaki {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
-        "org": "Kuruluşta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor"
+        "org": "Kuruluşta {from}–{to} / {count, plural, one {# öğrenci} other {# öğrenci}} gösteriliyor",
+        "path": "Yoldaki {count, plural, one {# öğrenciden} other {# öğrenciden}} {from}–{to} gösteriliyor"
       },
       "showing_filtered": {
         "cohort": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
         "course": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
+        "org": "{total, plural, one {# eşleşen öğrenci} other {# eşleşen öğrenci}} · kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "path": "{total, plural, one {# öğrenci} other {# öğrenci}} eşleşiyor · yolda {count, plural, one {# öğrenci} other {# öğrenci}}"
       },
       "showing_all": {
         "cohort": "Grupta {count, plural, one {# öğrenci} other {# öğrenci}}",
         "course": "Kursta {count, plural, one {# öğrenci} other {# öğrenci}}",
-        "org": "Kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}"
+        "org": "Kuruluşta {count, plural, one {# öğrenci} other {# öğrenci}}",
+        "path": "Yolda {count, plural, one {# öğrenci} other {# öğrenci}}"
       },
       "failed": "Öğrenciler yüklenemedi",
       "cells_failed": "Alıştırma puanları yüklenemedi",
@@ -7164,13 +7310,15 @@
       "title": {
         "cohort": "Bu kohortta henüz öğrenci yok",
         "course": "Bu kursta henüz öğrenci yok",
-        "org": "Kuruluşunuzda henüz öğrenci yok"
+        "org": "Kuruluşunuzda henüz öğrenci yok",
+        "path": "Bu öğrenme yolunda henüz öğrenci yok"
       },
       "description": {
         "cohort": "Öğrenciler dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
         "cohort_no_courses": "Kurs ekleyin, ardından öğrencileri davet edin. Dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
         "course": "Öğrenciler dersleri açıp alıştırmaları gönderdikçe analizler dolar.",
-        "org": "Akademinize öğrenci ekleyin, ardından onları kurslara veya kohortlara kaydedin."
+        "org": "Akademinize öğrenci ekleyin, ardından onları kurslara veya kohortlara kaydedin.",
+        "path": "Öğrenciler dersleri açtıkça ve alıştırma gönderdikçe analizler dolar."
       },
       "pending": "{count, plural, one {# davet} other {# davet}} kabul edilmeyi bekliyor. Öğrenciler katıldığında analizler dolar.",
       "invite_students": "Öğrencileri davet et",
@@ -7191,14 +7339,18 @@
       "courses_cohort": "Kohorttaki {total} kurstan {from}–{to} arası gösteriliyor",
       "courses_org": "Kuruluştaki {total} kurstan {from}–{to} arası gösteriliyor",
       "sections_course": "Kurstaki {total} bölümden {from}–{to} arası gösteriliyor",
-      "overdue_cohort": "Kohorttaki {total} geciken öğrenciden {from}–{to} arası gösteriliyor"
+      "overdue_cohort": "Kohorttaki {total} geciken öğrenciden {from}–{to} arası gösteriliyor",
+      "paths_org": "Kuruluştaki {total, plural, one {# öğrenme yolundan} other {# öğrenme yolundan}} {from}–{to} gösteriliyor",
+      "courses_path": "Yoldaki {total, plural, one {# kurstan} other {# kurstan}} {from}–{to} gösteriliyor",
+      "overdue_path": "Yoldaki {total, plural, one {# gecikmiş öğrenciden} other {# gecikmiş öğrenciden}} {from}–{to} gösteriliyor"
     },
     "breakdown": {
       "label": "Dağılım",
       "courses": "Kurslar ({count})",
       "cohorts": "Kohortlar ({count})",
       "all_students": "Tüm öğrenciler",
-      "by_cohort": "Kohorta göre ({count})"
+      "by_cohort": "Kohorta göre ({count})",
+      "paths": "Öğrenme yolları ({count})"
     },
     "cohorts": {
       "picker": "Kohortlar: {total} içinden {selected}",
@@ -7288,7 +7440,12 @@
       "default": {
         "title": "Henüz veri yok",
         "description": "Bu kart, öğrenciler kursu kullandıkça dolar."
-      }
+      },
+      "paths_org": {
+        "title": "Henüz bir öğrenme yolunda öğrenci yok",
+        "description": "İlerlemelerini burada görmek için öğrencileri bir öğrenme yoluna ekleyin."
+      },
+      "open_paths": "Öğrenme yollarını aç"
     },
     "export": {
       "students_capped": "Öğrenci listesi ilk {limit} satırla sınırlıdır.",
@@ -7312,7 +7469,8 @@
         "status": "Durum",
         "overdue_kind": "Gecikme türü",
         "progress_bucket_25": "İlerleme",
-        "score_bucket_10": "Ortalama puan"
+        "score_bucket_10": "Ortalama puan",
+        "path": "Öğrenme yolu"
       }
     },
     "org_page_title": "Akademi",
@@ -7340,6 +7498,847 @@
       "open_in_students": "Öğrenciler sekmesinde aç",
       "kpi_label": "Öğrencileri görüntüle: {title}",
       "segment_label": "Segment"
+    },
+    "path_status": {
+      "not_started": "Başlanmadı",
+      "in_progress": "Devam ediyor",
+      "completed": "Tamamlandı"
+    }
+  },
+  "certificate": {
+    "tab_design": "Tasarım",
+    "tab_settings": "Ayarlar",
+    "allow": "Öğrencilerin sertifikayı indirmesine izin ver",
+    "email_message_label": "E-posta Mesajı",
+    "email_message_placeholder": "örn. İlerlemenizle gurur duyuyoruz — öğrenmeye devam edin!",
+    "rules": "Kurallar",
+    "editor": {
+      "title": "Sertifika tasarımı",
+      "back": "Geri",
+      "unsaved": "Kaydedilmemiş değişiklikler",
+      "free_plan": "Pro'da kullanılabilir",
+      "discard": "Vazgeç",
+      "save": "Kaydet",
+      "saved": "Sertifika tasarımı kaydedildi.",
+      "save_failed": "Sertifika tasarımı kaydedilemedi. Formu kontrol edip tekrar deneyin.",
+      "signature_upload_in_progress": "Kaydetmeden önce imza yüklemesinin bitmesini bekleyin.",
+      "sections": "Düzenleyici bölümleri",
+      "preview": "Sertifika önizlemesi",
+      "panel_templates": "Şablonlar",
+      "panel_templates_subtitle": "Sertifikanız için bir şablon seçin.",
+      "panel_content": "İçerik",
+      "panel_content_subtitle": "Alt başlıkları, açıklamaları ve imzacıları yapılandırın.",
+      "panel_colors": "Renkler",
+      "panel_colors_subtitle": "Vurgu rengini özelleştirin.",
+      "panel_export": "Dışa aktar",
+      "panel_export_subtitle": "Mevcut tasarımı teslim edileceği şekilde önizleyin.",
+      "section_header": "Başlık metni",
+      "section_signatories": "İmzacılar",
+      "section_reference": "Referans",
+      "subtitle": "Alt başlık",
+      "subtitle_placeholder": "En Yüksek Takdirle Verilmiştir",
+      "description_override": "Açıklamayı geçersiz kıl",
+      "description_override_placeholder": "Varsayılan olarak açıklama kullanılır.",
+      "description_override_hint": "Boş bırakırsanız kaydederken açıklama kullanılır.",
+      "signatory_one_name": "1. imzacı adı",
+      "signatory_one_role": "1. imzacı unvanı",
+      "signatory_two_name": "2. imzacı adı",
+      "signatory_two_role": "2. imzacı unvanı",
+      "signatory_one_toggle": "1. imzacıyı göster",
+      "signatory_two_toggle": "2. imzacıyı göster",
+      "signature_upload": "İmza görseli",
+      "signature_upload_hint": "Bir imza görseli yükleyin (isteğe bağlı)",
+      "signature_dont_crop": "Kırpma",
+      "id_format": "Sertifika kimliği biçimi",
+      "id_format_hint": "Son dört hane için '{'seq'}', düzenleme yılı için '{'year'}', ay için '{'month'}' kullanın.",
+      "accent_hint": "Vurgu rengi alıcı çizgisinde, damgalarda ve şablonun başlık vurgusunda görünür.",
+      "templates_hint": "Şablonlar, indirilen PDF ve PNG için kullanılan aynı oluşturucuyla işlenir.",
+      "download_pdf": "PDF indir",
+      "download_png": "PNG indir",
+      "print": "Yazdır",
+      "export_hint": "Son tasarımı önizleyebilmeniz için dışa aktarımlarda alıcı olarak adınız kullanılır.",
+      "preview_failed": "Sertifika önizlemesi oluşturulamadı",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Başarı Sertifikası",
+      "sample_description": "Üstün başarı ve zanaata gösterilen örnek bağlılık takdirle karşılanmıştır.",
+      "sample_org": "Kraliyet Sanat Akademisi",
+      "summary_title": "Etkin tasarım",
+      "summary_subtitle": "Sertifikanın verildiğinde nasıl görüneceğinin özeti.",
+      "field_template": "Şablon",
+      "field_accent": "Vurgu",
+      "field_signatories": "İmzacılar",
+      "customize_design": "Tasarımı özelleştir",
+      "signatory_one": "1. imzacı",
+      "signatory_two": "2. imzacı",
+      "signatory_name": "İmzacı adı",
+      "signatory_role": "İmzacı unvanı",
+      "signature_image": "İmza görseli"
+    }
+  },
+  "public_learning_paths": {
+    "heading": "Öğrenme Yolları",
+    "subtitle": "Tek kayıtla, sıralı kurslardan ve sonunda bir sertifikadan oluşan rehberli çok kurslu programlar.",
+    "search_placeholder": "Öğrenme yollarında ara...",
+    "clear_search": "Aramayı temizle",
+    "label": "Öğrenme Yolu",
+    "certificate_label": "Sertifika",
+    "free_label": "Ücretsiz",
+    "course_count_label": "{count} kurs",
+    "enrolled_label": "{count} kayıtlı",
+    "navigation_failed": "Sayfa yüklenemedi. Lütfen tekrar deneyin.",
+    "empty": {
+      "title": "Öğrenme yolu bulunamadı",
+      "description": "Aramanızı temizlemeyi deneyin veya daha sonra tekrar bakın."
+    },
+    "detail": {
+      "about_heading": "Neler öğreneceksiniz",
+      "about_lead": "Uygulamalı, proje odaklı beceriler — her kurs, sizin oluşturduğunuz bir şeyle biter.",
+      "skills_heading": "Kazanacağınız beceriler",
+      "series_heading": "Kurs serisi",
+      "series_eyebrow": "Seri · sırayla alın",
+      "series_lead": "Her kurs, bir öncekinin ders ve alıştırmalarını bitirdiğinizde açılır.",
+      "rating_label": "5 üzerinden {rating} puan",
+      "certificate_heading": "Sertifika",
+      "certificate_issuer": "Veren kurum",
+      "certificate_validity": "Geçerlilik",
+      "instructors_heading": "Eğitmenler",
+      "instructors_lead": "Bu yoldaki kursların arkasındaki eğitmenler.",
+      "reviews_heading": "Yorumlar",
+      "reviews_lead": "Yolu tamamlayan kişilerden.",
+      "faq_heading": "Sık sorulan sorular",
+      "pricing_heading": "Kayıt",
+      "pricing_eyebrow": "Kayıt",
+      "enroll_path": "Bu yola kaydol",
+      "locked_label": "Kilitli",
+      "unlocked_label": "Kilidi açık",
+      "enroll_free": "Ücretsiz kaydol",
+      "enroll_label": "{currency} {cost} karşılığında kaydol",
+      "view_all": "Tüm öğrenme yollarını görüntüle",
+      "taught_by_two": "Eğitmenler: {first} ve {second}",
+      "taught_by_many": "Eğitmenler: {names} + {count} kişi daha",
+      "features_courses_line": "Tüm {courseCount} kurs, sırayla açılır",
+      "features_content_line": "{lessons} ders · {exercises} alıştırma",
+      "features_certificate_line": "Tamamlayınca yol sertifikası",
+      "features_milestone_line": "Doğrulanmış yol aşaması tamamlama",
+      "features_access_line": "Ömür boyu erişim, kendi hızınızda öğrenin",
+      "save_vs_individual": "Tek tek kurslara göre {amount} tasarruf edin",
+      "stat_courses": "seride kurs",
+      "stat_enrolled": "kayıtlı",
+      "stat_certificate": "Sertifika",
+      "stat_on_completion": "tamamlayınca",
+      "stat_reviews": "{count} yorum",
+      "full_path": "Tüm yol",
+      "save_percent": "%{percent} tasarruf edin",
+      "social_proof": "{students} kişi zaten kayıtlı · {reviews} yorumdan {rating} ★",
+      "enroll_with_cost": "Kaydol · {cost}",
+      "series_heading_count": "Bu yolda {count} kurs",
+      "series_course": "Kurs {index}",
+      "series_lessons": "{count} ders",
+      "series_outcomes_heading": "Neler öğreneceksiniz",
+      "show_outline": "Ders taslağını göster",
+      "hide_outline": "Ders taslağını gizle",
+      "preview_badge": "Önizleme",
+      "unavailable": "Bu öğrenme yoluna şu anda kayıt yapılamıyor.",
+      "back_to_path": "Öğrenme yoluna dön"
+    }
+  },
+  "learningPath": {
+    "badge": {
+      "learning_path": "Öğrenme Yolu",
+      "course": "Kurs"
+    },
+    "progress": {
+      "label": "İlerleme"
+    },
+    "ribbon": {
+      "part_of": "şunun parçasıdır:",
+      "view_path": "Yolu görüntüle",
+      "path_label": "Öğrenme Yolu",
+      "course_n_of_total": "Kurs {position} / {total}",
+      "next_in_path": "YOLUNUZDAKİ SIRADAKİ",
+      "next_course_position": "Kurs {position}",
+      "unlocks_after_finish": "Bu kursu bitirdiğinizde açılır — {lessons} ders ve {exercises} alıştırma kaldı.",
+      "locked": "Kilitli",
+      "go_to_course": "Kursa git",
+      "go_to_next_course": "Sonraki kursa git",
+      "path_complete": "Yol tamamlandı — tüm kurslar bitti. Harika iş!"
+    },
+    "status": {
+      "draft": "Taslak",
+      "active": "Etkin",
+      "archived": "Arşivlendi"
+    },
+    "hero": {
+      "currently_learning": "Şu An Öğreniyorsunuz",
+      "continue_learning": "Öğrenmeye devam et",
+      "start_learning": "Öğrenmeye başla",
+      "up_next": "Sırada",
+      "view_path": "Yolu görüntüle",
+      "courses_completed": "kurs tamamlandı"
+    },
+    "card": {
+      "course": "kurs",
+      "courses": "kurs",
+      "lesson": "ders",
+      "lessons": "ders",
+      "exercise": "alıştırma",
+      "exercises": "alıştırma",
+      "of": "/",
+      "view_certificate": "Sertifikayı Görüntüle",
+      "certificate_earned": "Sertifika kazanıldı",
+      "badge": "Öğrenme Yolu",
+      "actions_menu_aria": "Yol işlemleri",
+      "updated_at": "Güncellendi: {date}",
+      "published": "Yayında",
+      "unpublished": "Yayında değil"
+    },
+    "course": {
+      "part_of": "Parçası:",
+      "continue_course": "Kursa Devam Et",
+      "review_course": "Kursu Gözden Geçir",
+      "completed_label": "Tamamlandı",
+      "view_course": "Kursu Görüntüle",
+      "view_more": "Daha fazla göster",
+      "explore_more_title": "Daha Fazla Kurs Keşfedin",
+      "explore_more_tagline": "Şu anda aldıklarınıza göre seçilmiş birkaç kurs.",
+      "type_self_paced": "Kendi hızında",
+      "type_live_class": "Canlı ders",
+      "type_compliance": "Uyumluluk",
+      "type_public": "Herkese açık"
+    },
+    "row": {
+      "completed": "Tamamlandı"
+    },
+    "toolbar": {
+      "search": "Ara",
+      "filters": "Filtreler",
+      "clear_all": "Tümünü temizle",
+      "status": "Durum",
+      "all": "Tümü",
+      "difficulty": "Zorluk",
+      "difficulty_any": "Herhangi",
+      "difficulty_beginner": "Başlangıç",
+      "difficulty_intermediate": "Orta",
+      "difficulty_advanced": "İleri",
+      "grid_view": "Izgara görünümü",
+      "list_view": "Liste görünümü",
+      "results": "sonuç"
+    },
+    "enrollment": {
+      "not_started": "Başlanmadı",
+      "in_progress": "Devam ediyor",
+      "completed": "Tamamlandı",
+      "locked": "Kilitli",
+      "lessons_label": "ders"
+    },
+    "explore": {
+      "title": "Daha fazla yol keşfedin",
+      "tagline": "Sizi daha ileri götürmek için hazırlanmış programlar.",
+      "view_path": "Öğrenme yolunu görüntüle",
+      "view_more": "Daha fazla göster"
+    },
+    "empty": {
+      "title": "Henüz öğrenme yolu yok",
+      "description": "Kayıtlı olduğunuz yapılandırılmış programlar burada görünecek. Sırayla öğrenmeye başlamak için katalogdan bir yola kaydolun.",
+      "back_to_paths": "Öğrenme yollarına dön",
+      "path_not_found_title": "Yol bulunamadı",
+      "path_not_found_description": "Bu öğrenme yolu yayından kaldırılmış veya silinmiş olabilir.",
+      "library_no_results_title": "Filtrelerinizle eşleşen bir şey yok",
+      "library_no_results_description": "Farklı bir filtre deneyin veya her şeyi görmek için filtreleri temizleyin.",
+      "library_empty_title": "Henüz burada bir şey yok",
+      "library_empty_description": "Aldığınız kurslar ve katıldığınız yollar burada görünecek."
+    },
+    "my_learning": {
+      "heading": "Öğrenmelerim",
+      "subtitle": "Üzerinde çalıştığınız yolları ve kursları takip edin.",
+      "heading_learning_paths": "Öğrenme Yolları",
+      "heading_courses": "Kurslarım",
+      "courses_subtitle": "Başladığınız her kurs, nerede olursa olsun.",
+      "paths_title": "Öğrenme Yolları",
+      "courses_title": "Kurslar",
+      "course_paths_title": "Kurs yolları",
+      "course_paths_description": "Bir öğrenme yolunun parçası olan kurslar hangi yola ait olduklarını gösterir.",
+      "currently_learning": "Şu An Öğreniyorsunuz"
+    },
+    "detail": {
+      "course_heading": "Yol kursları",
+      "courses_complete": "kurs tamamlandı",
+      "all_courses_complete": "Tüm kurslar tamamlandı",
+      "sequential": "Sonrakinin kilidini açmak için her kursu sırayla tamamlayın.",
+      "unlock_hint": "Her kurs, bir öncekindeki tüm ders ve alıştırmaları bitirdikten sonra açılır.",
+      "unlocks_after": "Şundan sonra açılır:",
+      "lessons": "ders",
+      "exercises": "alıştırma",
+      "review": "Gözden geçir",
+      "enroll": "Kaydol",
+      "hours": "~{count} saat",
+      "certificate_on_completion": "Tüm kursları tamamladığınızda sertifika kazanın.",
+      "certificate_hint": "Sertifikanızın kilidini açıp indirmek için {count} kursun tamamını bitirin.",
+      "certificate_earned": "Sertifika kazanıldı",
+      "view_certificate": "Sertifikayı görüntüle"
+    },
+    "admin": {
+      "heading": "Öğrenme Yolları",
+      "subtitle": "Kurslarınızı, öğrencilerin sırayla tamamladığı rehberli yolculuklar halinde gruplayın.",
+      "active_paths": "Etkin yollar",
+      "enrolled_learners": "Kayıtlı öğrenciler",
+      "completions": "Tamamlamalar",
+      "completion_rate": "Tamamlama oranı",
+      "completion": "Tamamlama",
+      "learners": "öğrenci",
+      "updated": "Güncellendi",
+      "search": "Yollarda ara…",
+      "filter_all": "Tümü",
+      "create_path": "Yol oluştur",
+      "create_course": "Yeni kurs",
+      "manage": "Yönet",
+      "continue_setup": "Kuruluma devam et",
+      "new_path_name": "Yeni öğrenme yolu",
+      "untitled_path": "Adsız yol"
+    },
+    "courses_builder": {
+      "heading": "Kurslar",
+      "subtitle": "Kurs ekleyin ve öğrencilerin ilerleyeceği sırayı ayarlamak için sürükleyin.",
+      "count": "Bu yolda {count} kurs",
+      "add_course": "Kurs ekle",
+      "add_course_picker_label": "Eklenecek bir kurs seçin",
+      "no_courses_available": "Başka kurs yok",
+      "empty": "Henüz kurs yok — başlamak için bir tane ekleyin.",
+      "drag_hint": "Yeniden sıralamak için sürükleyin",
+      "sequential_label": "Kursları sırayla aç",
+      "sequential_description": "Her kurs, öğrenci bir öncekinin ders ve alıştırmalarını tamamlayana kadar kilitli kalır.",
+      "course_lessons": "ders",
+      "course_exercises": "alıştırma",
+      "move_up": "Yukarı taşı",
+      "move_down": "Aşağı taşı",
+      "remove_course": "Yoldan kaldır"
+    },
+    "people": {
+      "title": "Kişiler",
+      "subtitle": "Bu yola {count} {count, plural, =1 {öğrenci} other {öğrenci}} kayıtlı",
+      "info_title": "Yola kayıt hakkında",
+      "info_banner": "Bu yola bir öğrenci eklemek, onu otomatik olarak tüm {count} {count, plural, =1 {kursa} other {kursa}} kaydeder. Öğrenciyi kaldırmak, bu yolun verdiği kurs erişimini sonlandırır ancak ilerlemesini korur.",
+      "search_placeholder": "Ada veya e-postaya göre ara…",
+      "filter": {
+        "all": "Tüm ilerleme",
+        "not_started": "Başlanmadı",
+        "in_progress": "Devam ediyor",
+        "completed": "Tamamlandı"
+      },
+      "table": {
+        "learner": "Öğrenci",
+        "progress": "Yol ilerlemesi",
+        "current_course": "Mevcut kurs",
+        "enrolled": "Kayıt",
+        "actions": "İşlemler"
+      },
+      "badge": {
+        "certificate_earned": "Sertifika kazanıldı",
+        "not_started": "Başlanmadı"
+      },
+      "remove": {
+        "title": "Öğrenciyi kaldır",
+        "title_non_student": "Üyeyi kaldır",
+        "confirm": "{name} adlı kişiyi bu öğrenme yolundan kaldırmak istediğinizden emin misiniz? Kurs erişimini ve ilerlemesini koruyacaktır.",
+        "confirm_non_student": "{name} adlı kişiyi bu öğrenme yolundan kaldırmak istediğinizden emin misiniz? Bu yolu yönetme erişimini kaybedecektir.",
+        "cancel": "İptal",
+        "yes": "Kaldır"
+      },
+      "change_role_to_tutor": "Eğitmen yap",
+      "change_role_to_student": "Öğrenci yap",
+      "empty": "Henüz kayıtlı öğrenci yok. Başlamak için öğrenci ekleyin.",
+      "no_results": "Aramanızla eşleşen öğrenci yok.",
+      "invite": {
+        "title": "Yola öğrenci ekle",
+        "bulk_title": "E-posta ile davet et",
+        "bulk_description": "E-posta adreslerini virgülle veya yeni satırlarla ayırarak girin.",
+        "bulk_submit": "Öğrenci ekle"
+      },
+      "add": "Ekle",
+      "last_login_at": "Son giriş",
+      "you": "Siz",
+      "view": "Görüntüle",
+      "delete_profile": "Kaldır",
+      "invite_modal": {
+        "loading": "Ekleniyor…",
+        "student_limit_reached": "Öğrenci sınırınıza ulaştınız. Daha fazla öğrenci eklemek için planınızı yükseltin.",
+        "invite": "Eğitmenleri Davet Et",
+        "invite_students": "Öğrenci Ekle",
+        "finish": "Bitir",
+        "bulk_enroll_queued": "{count} üye arka planda kaydediliyor…",
+        "bulk_enroll_success": "{enrolled} üye kaydedildi ({invited} davet edildi)",
+        "bulk_enroll_partial": "{enrolled} üye kaydedildi ({invited} davet edildi, {failed} başarısız)",
+        "bulk_enroll_failed": "Arka plan kaydı başarısız oldu",
+        "bulk_enroll_lost": "Arka plan kaydının takibi kaybedildi",
+        "bulk_enroll_backgrounded": "Kayıt hâlâ arka planda çalışıyor. Sonuçları görmek için Kişiler'i yenileyin."
+      }
+    },
+    "analytics": {
+      "title": "Analizler",
+      "subtitle": "Öğrencilerin yolda nasıl ilerlediği.",
+      "stat": {
+        "learners": "Öğrenciler",
+        "active": "Etkin öğrenciler",
+        "active_desc": "son 14 günde çalıştı",
+        "completion_rate": "Tamamlama oranı",
+        "completion_desc": "{total} kişiden {completed} tanesi bitirdi",
+        "avg_time": "Ort. bitirme süresi",
+        "avg_time_desc": "tamamlamalar genelinde",
+        "enrolled_desc": "bu ay +{count}",
+        "pending_line": "{count} {count, plural, =1 {bekleyen davet} other {bekleyen davet}}",
+        "team_desc": "{count, plural, one {yol ekibinde # eğitmen} other {yol ekibinde # eğitmen}}",
+        "avg_time_weeks": "{value} hf",
+        "avg_time_days": "{value} gün"
+      },
+      "funnel": {
+        "title": "Kurs hunisi",
+        "subtitle": "Kaç öğrencinin her kursa ulaştığı ve tamamladığı, sırayla.",
+        "completed": "tamamlandı",
+        "in_progress": "devam ediyor",
+        "drop": "{count} {count, plural, =1 {öğrenci} other {öğrenci}} Kurs {n} sonrasında bıraktı",
+        "biggest_drop": "en büyük bırakma",
+        "certificates": "{count} {count, plural, =1 {sertifika} other {sertifika}} verildi"
+      },
+      "stuck": {
+        "title": "Öğrencilerin takıldığı yerler",
+        "subtitle": "Şu anda en çok öğrenciyi engelleyen ders ve alıştırmalar.",
+        "badge": "{count} takıldı",
+        "lesson_desc": "{count} {count, plural, =1 {öğrenci} other {öğrenci}} bu derste durdu.",
+        "exercise_desc": "{count} {count, plural, =1 {öğrenci} other {öğrenci}} bu alıştırmayı 2 haftadan uzun süredir yapıyor.",
+        "empty": "Şu anda takılan öğrenci yok. Harika ilerleme!",
+        "empty_desc": "Öğrenciler takıldığında burada görünecekler.",
+        "lesson_prefix": "Ders:",
+        "exercise_prefix": "Alıştırma:",
+        "showing": "{total} öğeden {start} - {end} arası gösteriliyor",
+        "table": {
+          "item": "Öğe",
+          "course": "Kurs"
+        }
+      },
+      "students": {
+        "subtitle": "Öğrenci bazında yol ilerlemesi, mevcut kurs ve kayıt tarihi.",
+        "courses_completed": "Tamamlanan Kurslar",
+        "title": "Öğrenci İlerlemesine Genel Bakış"
+      },
+      "member": {
+        "courses_title": "Kurslar",
+        "remove": "Yoldan kaldır",
+        "status": {
+          "not_started": "Başlanmadı",
+          "in_progress": "Devam ediyor",
+          "completed": "Tamamlandı",
+          "locked": "Kilitli"
+        },
+        "export": "CSV Dışa Aktar",
+        "progress_label": "Yol ilerlemesi"
+      },
+      "empty": "Henüz veri yok. Öğrenci kaydedin, burada görünmeye başlayacaklar.",
+      "empty_desc": "Bu yola öğrenci kaydedin, ilerlemeleri burada görünecek.",
+      "export": {
+        "status": "Durum"
+      }
+    },
+    "landing_editor": {
+      "heading": "Açılış sayfası",
+      "subtitle": "Ziyaretçilerin /path/{slug} adresindeki herkese açık yol sayfasında ne gördüğünü kontrol edin.",
+      "headline": "Başlık",
+      "subheadline": "Alt başlık",
+      "visitor_access": "Ziyaretçilerin görebilecekleri",
+      "access_teaser": "Yalnızca tanıtım",
+      "access_teaser_description": "Yol açıklaması, kurs başlıkları ve fiyat — ders ayrıntısı yok.",
+      "access_syllabus": "Tam müfredat",
+      "access_syllabus_description": "Ziyaretçiler her kursu ve ders taslağını görür, ancak içeriği görmez.",
+      "access_preview": "Müfredat + önizleme dersleri",
+      "access_preview_description": "Tam taslağın yanı sıra önizleme olarak işaretlenen dersler ücretsiz açılabilir.",
+      "show_instructors": "Eğitmenleri göster",
+      "show_testimonials": "Referansları göster",
+      "show_faqs": "SSS'yi göster",
+      "preview_public_page": "Herkese açık sayfayı önizle"
+    },
+    "certificate": {
+      "title": "Sertifikalar",
+      "awarded_count": "{count, plural, =0 {Henüz sertifika verilmedi} =1 {Şimdiye kadar 1 sertifika verildi} other {Şimdiye kadar # sertifika verildi}}",
+      "allow": "Öğrencilerin sertifikayı indirmesine izin ver",
+      "email_message_label": "E-posta Mesajı",
+      "email_message_placeholder": "örn. Öğrenme yolunu tamamladığınız için tebrikler!",
+      "editor": {
+        "title": "Sertifika tasarımı"
+      }
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "general": {
+        "legend": "Yol Ayrıntıları",
+        "desc": "Bu öğrenme yolu hakkında temel bilgiler.",
+        "name_label": "Yol başlığı",
+        "name_placeholder": "Yol başlığını buraya yazın",
+        "name_required": "Yol adı gereklidir",
+        "description_label": "Yol Açıklaması",
+        "description_placeholder": "Yol açıklamanızı buraya yazın",
+        "description_required": "Açıklama gereklidir",
+        "link": "Yol Bağlantısı",
+        "slug_taken": "Bu bağlantı başka bir öğrenme yolu tarafından kullanılıyor.",
+        "generate_link": "Yeni bağlantı oluştur",
+        "open_link": "Bağlantıyı yeni sekmede aç",
+        "copy_link": "Bağlantıyı kopyala",
+        "setup_landing_for_link": "Yol bağlantısını almak için açılış sayfasını ayarlayın"
+      },
+      "cover_image": {
+        "legend": "Kapak Görseli",
+        "desc": "Eklerseniz en az 280 x 200 olmalıdır.",
+        "replace": "Değiştir",
+        "reset": "Sıfırla",
+        "alt": "Yol kapağı"
+      },
+      "welcome_email": {
+        "legend": "Karşılama e-postası",
+        "desc": "Öğrencilerin kayıttan sonra aldığı e-postayı özelleştirin. Kişisel bir not, talimatlar veya canlı oturum bağlantısı ekleyin.",
+        "placeholder": "Öğrencilerin kaydolduklarında alacağı karşılama mesajını yazın…"
+      },
+      "progression": {
+        "legend": "Öğrenci ilerlemesi",
+        "desc": "Öğrencilerin tüm kurslara erişip erişemeyeceğini veya sırayla tamamlaması gerekip gerekmediğini belirleyin.",
+        "free": "Serbest — tüm kurslar erişilebilir",
+        "sequential": "Sıralı — sonrakinin kilidini açmak için önceki kursları tamamlayın"
+      },
+      "self_enrollment": {
+        "legend": "Öğrenciler kendilerini kaydedebilir",
+        "access": "Kapalıyken öğrenciler yalnızca davet bağlantısıyla veya {people} bölümünden eklenerek katılabilir.",
+        "access_people": "Kişiler",
+        "enabled": "Etkin",
+        "disabled": "Devre dışı"
+      },
+      "publishing": {
+        "legend": "Yolu Yayınla",
+        "desc": "Yolunuzun açılış sayfanızda görünüp görünmeyeceğini belirler",
+        "published": "Yayında",
+        "unpublished": "Yayında değil"
+      },
+      "danger": {
+        "legend": "Yolu Sil",
+        "desc": "Bu yolu silin, bu işlem geri alınamaz. Kurslar, kayıtlar ve öğrenci ilerlemesi silinmez.",
+        "delete_button": "Yolu Sil",
+        "delete_title": "Öğrenme Yolunu Sil",
+        "delete_description": "\"{name}\" yolunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+      }
+    },
+    "legacy": {
+      "title": "Öğrenme Yolları",
+      "subtitle": "Kayıtlı olduğunuz yapılandırılmış programlar."
+    },
+    "listing": {
+      "title": "Öğrenme Yolları",
+      "subtitle": "Öğrencilere birden çok kurs boyunca rehberlik eden yapılandırılmış öğrenme deneyimleri oluşturun ve yönetin.",
+      "create_path": "Öğrenme Yolu Oluştur",
+      "load_error_title": "Öğrenme yolları yüklenemedi",
+      "load_more": "Daha fazla yükle",
+      "toolbar": {
+        "search_placeholder": "Öğrenme yollarında ara…",
+        "grid_view": "Izgara görünümü",
+        "list_view": "Liste görünümü"
+      },
+      "filters": {
+        "title": "Filtreler",
+        "clear_all": "Tümünü temizle",
+        "group_status": "Durum",
+        "group_enrollment": "Kayıt",
+        "group_completion": "Tamamlama oranı",
+        "all": "Tümü",
+        "published": "Yayında",
+        "unpublished": "Yayında değil",
+        "no_learners": "Henüz öğrenci yok",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Düşük (%25'in altı)",
+        "medium": "Orta (%25–75)",
+        "high": "Yüksek (%75+)",
+        "sort_date_created": "Oluşturulma Tarihi",
+        "sort_last_updated_at": "Son Güncellenme",
+        "sort_published": "Yayında",
+        "sort_courses": "Kurslar"
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {kurs} other {kurs}}",
+        "learners_count": "{count} {count, plural, =1 {öğrenci} other {öğrenci}}"
+      },
+      "empty": {
+        "title": "İlk Öğrenme Yolunuzu oluşturun",
+        "description": "Birden çok kursu, aşama takibi, kilitleme ve isteğe bağlı tamamlama sertifikasıyla sıralı bir diziye dönüştürün. Ekle düğmesine tıklayarak başlayın.",
+        "create_path": "Öğrenme Yolu Oluştur",
+        "no_matches_title": "Etkin filtrelerinizle eşleşen öğrenme yolu yok",
+        "no_matches_description": "Filtrelerinizi temizlemeyi veya arama sorgunuzu değiştirmeyi deneyin."
+      }
+    },
+    "hub": {
+      "placeholder_title": "Öğrenme yolu önizlemesi",
+      "placeholder_description": "Tam öğrenme deneyimi LMS'de bulunur. Bu yola devam etmek için Öğrenmelerim'i açın."
+    },
+    "not_permitted": {
+      "header": "İzin Yok",
+      "body": "Maalesef bu öğrenme yoluna erişiminiz yok.",
+      "button": "Ana sayfaya git"
+    },
+    "builder": {
+      "title": "Kurslar",
+      "subtitle": "Kurs ekleyin ve öğrencilerin ilerleyeceği sırayı ayarlamak için sürükleyin.",
+      "empty_title": "Bu öğrenme yolunda henüz kurs yok",
+      "empty_description": "Öğrencilere yapılandırılmış bir sıra boyunca rehberlik etmek için kurs ekleyin. Ekle düğmesine tıklayarak başlayın.",
+      "unlock_rule_title": "Kursları sırayla aç",
+      "unlock_rule_desc": "Her kurs, öğrenci bir öncekinin ders ve alıştırmalarını tamamlayana kadar kilitli kalır. Herhangi bir sıraya izin vermek için kapatın.",
+      "drag_hint": "Yeniden sıralamak için sürükleyin",
+      "lessons_count": "{count} {count, plural, =1 {ders} other {ders}}",
+      "exercises_count": "{count} {count, plural, =1 {alıştırma} other {alıştırma}}",
+      "open_course": "Kursu aç",
+      "remove_course": "Yoldan kaldır",
+      "add_course_button": "Kurs Ekle",
+      "start_reorder": "Yeniden sırala",
+      "end_reorder": "Sıralamayı Bitir"
+    },
+    "setup": {
+      "title": "Yolunuzu kurun",
+      "subtitle": "{name} yolunu öğrencilerinize sunmak için şu adımları tamamlayın.",
+      "summary": "Bir yol, kursları sıralanıp fiyatlandırıldıktan ve yayınlandıktan sonra yayına girer.",
+      "progress": "{total} adımdan {completed} tanesi tamamlandı",
+      "done": "Tamamlandı",
+      "launch_title": "Yayına girmeye {count} {count, plural, =1 {adım} other {adım}} kaldı",
+      "launch_desc": "Kursları sıralayın, fiyat belirleyin, açılış sayfasını cilalayın ve yayınlayın.",
+      "activate_now": "Şimdi yayınla",
+      "step_name_title": "Yolunuza ad verin ve tanımlayın",
+      "step_name_desc": "Yola net, sonuç odaklı bir ad ve kısa bir özet verin.",
+      "step_name_action": "Ayrıntıları düzenle",
+      "step_courses_title": "Kurs ekleyin",
+      "step_courses_desc": "Bu öğrenme yolunu oluşturan kursları seçin.",
+      "step_courses_action": "Kurs ekle",
+      "step_order_title": "Kurs sırasını belirleyin",
+      "step_order_desc": "Kursları öğrencilerin tamamlaması gereken sıraya sürükleyin.",
+      "step_order_action": "Sırayı belirle",
+      "reorder_action": "Yeniden sırala",
+      "step_price_title": "Fiyatınızı belirleyin",
+      "step_price_desc": "Yolu paket olarak fiyatlandırın — öğrenciler tek tek kurslara göre tasarrufu görür.",
+      "step_price_action": "Fiyat belirle",
+      "step_landing_title": "Açılış sayfanızı özelleştirin",
+      "step_landing_desc": "Herkese açık yol sayfasında hedefler, beceriler, eğitmenler, yorumlar ve SSS.",
+      "step_landing_action": "Özelleştir",
+      "step_publish_title": "Yolu Yayınlayın",
+      "step_publish_desc": "Yolun açılış sayfanızda ve LMS'de görünmesi için yayınlayın.",
+      "step_publish_action": "Yayınla"
+    },
+    "view_path_site": {
+      "unpublished_title": "Öğrenme yolunuzu yayınlayın",
+      "unpublished_description": "Siteyi görmeden önce bu öğrenme yolunu yayınlamalısınız",
+      "cancel": "İptal",
+      "publish_path": "Yolu Yayınla"
+    },
+    "workspace": {
+      "finish_setup": "Kurulumu bitir · %{percent}",
+      "view_path_site": "Yol sitesini görüntüle",
+      "copy_path_url": "Yol URL'sini kopyala",
+      "preview_missing_slug": "Önizlemeden önce bir yol kısa adı oluşturup kaydedin.",
+      "url_copied": "Öğrenme yolu URL'si panoya kopyalandı",
+      "publish_path": "Yolu Yayınla",
+      "published": "Öğrenme Yolu yayınlandı",
+      "publish_failed": "Öğrenme yolu yayınlanamadı",
+      "not_found_title": "Öğrenme yolu bulunamadı",
+      "not_found_description": "Aradığınız öğrenme yolu mevcut değil veya silinmiş.",
+      "load_failed_title": "Bu öğrenme yolu yüklenemedi",
+      "load_failed_description": "Bağlantınızı kontrol edip tekrar deneyin.",
+      "back_to_paths": "Öğrenme yollarına dön",
+      "loading_title": "Öğrenme yolu yükleniyor…",
+      "loading_description": "Öğrenme yolu verileriniz yüklenirken lütfen bekleyin.",
+      "tabs": {
+        "setup": "Kurulum",
+        "courses": "Kurslar",
+        "people": "Kişiler",
+        "analytics": "Analizler",
+        "landing": "Açılış Sayfası",
+        "certificate": "Sertifikalar",
+        "settings": "Ayarlar"
+      },
+      "coming_soon": {
+        "title": "{tab} — Yakında",
+        "description": "Bu çalışma alanı sekmesi Aşama 3'te kullanıma sunulacak. Kurs yönetimi ve kurulum bu sürümde tamamen işlevseldir."
+      }
+    },
+    "context_menu": {
+      "open": "Aç",
+      "share": "Paylaş",
+      "invite": "Davet et",
+      "delete": "Sil",
+      "view_as_student": "Öğrenci olarak görüntüle"
+    },
+    "modals": {
+      "create": {
+        "title": "Öğrenme Yolu Oluştur",
+        "name_label": "Yol adı",
+        "name_placeholder": "örn. Fullstack Web Geliştirme",
+        "desc_label": "Açıklama",
+        "desc_placeholder": "Öğrencilerin neler başaracağına dair kısa bir özet...",
+        "cancel": "İptal",
+        "submit": "Öğrenme Yolu Oluştur",
+        "failed": "Öğrenme yolu oluşturulamadı"
+      },
+      "add_courses": {
+        "title": "Yola Kurs Ekle",
+        "search_placeholder": "Kurslarda ara…",
+        "select_courses": "Kursları seçin",
+        "pagination_status": "Sayfa {page} / {totalPages}",
+        "no_courses": "Eklenebilecek kurs yok.",
+        "no_matches": "Aramanızla eşleşen kurs yok.",
+        "load_failed": "Kurslar yüklenemedi.",
+        "public_course_disabled": "Herkese açık kurslar bir öğrenme yoluna eklenemez",
+        "retry": "Tekrar dene",
+        "cancel": "İptal",
+        "submit": "{count} {count, plural, =1 {Kurs} other {Kurs}} Ekle",
+        "submitting": "Kurslar ekleniyor…"
+      }
+    },
+    "snackbar": {
+      "setup_open_failed": "Kurulum açılamadı. Tekrar deneyin.",
+      "created": "Öğrenme yolu oluşturuldu",
+      "updated": "Öğrenme yolu güncellendi",
+      "deleted": "Öğrenme yolu silindi",
+      "reordered": "Kurs sırası güncellendi",
+      "course_added": "Kurs eklendi",
+      "courses_added": "Kurslar eklendi",
+      "course_removed": "Kurs kaldırıldı",
+      "members_add_partial": "{added} eklendi, {invited} davet edildi, {notAdded} eklenemedi",
+      "member_removed": "Öğrenci yoldan kaldırıldı",
+      "member_role_updated": "Üye rolü güncellendi",
+      "tutor_removed": "Eğitmen yoldan kaldırıldı",
+      "certificate_saved": "Sertifika ayarları kaydedildi",
+      "landing_saved": "Açılış sayfası güncellendi",
+      "landing_save_failed": "Açılış sayfası kaydedilemedi",
+      "link_generated": "Davet bağlantısı oluşturuldu ve panoya kopyalandı",
+      "settings_saved": "Öğrenme yolu ayarları güncellendi",
+      "delete_failed": "Öğrenme yolu silinemedi"
+    },
+    "landing": {
+      "page_builder": "Sayfa Oluşturucu",
+      "display_section": "Bölümü göster",
+      "header": {
+        "title_placeholder": "örn. Fullstack Web Geliştirme",
+        "description_placeholder": "Öğrencilerin neleri başaracağına dair kapsamlı bir genel bakış...",
+        "title": "Üst Bilgi",
+        "title_label": "Başlık",
+        "description_label": "Açıklama"
+      },
+      "hero": {
+        "title": "Ana Bölüm",
+        "headline": "Başlık",
+        "headline_placeholder": "örn. Kıdemli Fullstack Mühendisi Olun",
+        "subheadline": "Alt başlık",
+        "subheadline_placeholder": "örn. Proje tabanlı öğrenmeyle modern frontend, backend ve dağıtımda ustalaşın."
+      },
+      "access": {
+        "title": "Ziyaretçi erişimi",
+        "description": "Kayıtlı olmayan ziyaretçilerin herkese açık yol sayfasında ne kadar içerik keşfedebileceğini belirler.",
+        "teaser_title": "Tanıtım",
+        "teaser_desc": "Yalnızca kurs başlıklarını ve genel kazanımları göster.",
+        "syllabus_title": "Müfredat (önerilen)",
+        "syllabus_desc": "Ders başlıkları ve kilit göstergeleriyle tam kurs müfredatını göster.",
+        "preview_title": "Önizleme",
+        "preview_desc": "Ziyaretçilerin kaydolmadan her kursun ilk dersini önizlemesine izin ver."
+      },
+      "skills": {
+        "title": "Kazanacağınız beceriler",
+        "help": "Eklemek için Enter'a basın. Bunlar açılış sayfanızda etiket olarak görünür.",
+        "placeholder": "örn. TypeScript, Docker, PostgreSQL"
+      },
+      "instructors": {
+        "title": "Eğitmenler",
+        "role_placeholder": "örn. Baş Eğitmen · Frontend",
+        "default_role": "Kurs Eğitmeni",
+        "untitled": "Adsız eğitmen",
+        "add": "Eğitmen ekle",
+        "no_tutors_found": "Eğitmen bulunamadı",
+        "min_one_required": "En az bir eğitmen gereklidir",
+        "remove": "Eğitmeni kaldır",
+        "auto_populated_note": "Eğitmenler, bu yola dahil edilen kurslardan otomatik olarak toplanır.",
+        "courses_note": "{count, plural, =0 {Henüz kurs eklenmedi} =1 {Bu yoldaki 1 kurstan alındı} other {Bu yoldaki tüm # kurstan alındı}}",
+        "upload": "Eğitmen Logosu",
+        "name": "Eğitmen adı",
+        "name_placeholder": "Şirket adınız",
+        "role": "Eğitmen Rolü",
+        "about": "Eğitmen Hakkında",
+        "about_placeholder": "Eğitmen hakkında kısa bir özgeçmiş",
+        "total": "Kurs sayısı"
+      },
+      "testimonials": {
+        "title": "Referanslar",
+        "untitled": "Adsız referans",
+        "name": "Ad",
+        "role": "Rol / Unvan",
+        "quote": "Alıntı",
+        "add": "Referans ekle"
+      },
+      "reviews": {
+        "title": "Yorumlar",
+        "untitled": "Adsız yorum",
+        "name_placeholder": "Ayşe Yılmaz",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "Profil görseli URL'si",
+        "rating_placeholder": "İsteğe bağlı (1-5)",
+        "clear_rating": "Puanı temizle",
+        "description_placeholder": "Bu öğrenme yolu bana tam olarak ihtiyacım olan becerileri ve özgüveni kazandırdı.",
+        "add_reviews": "Yorum Ekle",
+        "fullname": "Ad Soyad",
+        "description": "Açıklama",
+        "rating": "Puan"
+      },
+      "faqs": {
+        "title": "SSS",
+        "untitled": "Adsız SSS",
+        "question": "Soru",
+        "question_placeholder": "Bu yolu tamamlamak için ne gerekir?",
+        "answer": "Cevap",
+        "answer_placeholder": "Her kurstaki tüm ders ve alıştırmaları tamamlamanız gerekir.",
+        "add": "SSS ekle"
+      },
+      "preview": "Önizleme",
+      "save": "Kaydet",
+      "requirement": {
+        "title": "Gereksinim"
+      },
+      "description": {
+        "title": "Açıklama"
+      },
+      "goals": {
+        "title": "Hedefler"
+      },
+      "certificate": {
+        "title": "Sertifika",
+        "upload_template": "Sertifika şablonu"
+      },
+      "pricing": {
+        "title": "Fiyatlandırma",
+        "enable_paid": "Ücretli Yap",
+        "currency": "Para birimi",
+        "cost": "Ücret",
+        "payment": "Ödeme Bağlantısı",
+        "payment_required": "Ödeme bağlantısı gereklidir",
+        "payment_invalid_url": "Lütfen geçerli bir URL girin",
+        "payment_helper": "Stripe, Lemon Squeezy veya herhangi bir ödeme bağlantısı",
+        "discount": "İndirim",
+        "no": "Hayır",
+        "yes": "Evet",
+        "percent": "İndirim Yüzdesi",
+        "percentage_helper": "Yüzde olarak %",
+        "gift_on_completion": "Tamamlamada Hediye",
+        "gift": "Hediye Hakkında"
+      }
+    },
+    "courses": {
+      "lessons": "Dersler",
+      "exercises": "Alıştırmalar"
+    },
+    "view_as_student": {
+      "title": "Bu işlem sizi Öğrenci LMS'sine yönlendirecek.",
+      "description": "Bir öğrencinin bu öğrenme yoluna kaydolduğunda göreceği şeyi görmek üzeresiniz",
+      "copy_link": "Bağlantıyı kopyala",
+      "go_to_lms": "LMS'ye git"
+    },
+    "preview": {
+      "courses_heading": "Bu yoldaki kurslar"
     }
   }
 }

@@ -34,7 +34,8 @@ import {
   upsertLessonCompletionService
 } from '@api/services/lesson';
 import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
-import { evaluateCourseCertification } from '@api/services/course/completion';
+import { recordCourseCompletionFromProgress } from '@api/services/course/progress-completion';
+import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ContentType } from '@cio/utils/constants';
 
 import { Hono } from '@api/utils/hono';
@@ -300,9 +301,20 @@ export const lessonRouter = new Hono()
         const completion = await upsertLessonCompletionService(lessonId, user.id, isComplete);
 
         if (isComplete) {
-          void evaluateCourseCertification(courseId, user.id).catch((certError) => {
+          // Record completion before syncing paths: a course counts as done
+          // on a path by its recorded completion, so the sync must see the
+          // write above.
+          try {
+            await recordCourseCompletionFromProgress(courseId, user.id);
+          } catch (certError) {
             console.error('Failed to evaluate course certification after lesson completion:', certError);
-          });
+          }
+        }
+
+        try {
+          await syncCourseProgressInLearningPaths(courseId, user.id);
+        } catch (syncError) {
+          console.error('Failed to sync learning path progress after lesson completion:', syncError);
         }
 
         return c.json({ success: true, data: completion }, 200);
@@ -360,9 +372,20 @@ export const lessonRouter = new Hono()
         const watchProgress = await updateLessonWatchProgressService(lessonId, user.id, beat);
 
         if (watchProgress.didJustComplete) {
-          void evaluateCourseCertification(courseId, user.id).catch((certError) => {
+          // Record completion before syncing paths: a course counts as done
+          // on a path by its recorded completion, so the sync must see the
+          // write above. Same ordering as the lesson toggle.
+          try {
+            await recordCourseCompletionFromProgress(courseId, user.id);
+          } catch (certError) {
             console.error('Failed to evaluate course certification after video watch:', certError);
-          });
+          }
+
+          try {
+            await syncCourseProgressInLearningPaths(courseId, user.id);
+          } catch (syncError) {
+            console.error('Failed to sync learning path progress after video watch:', syncError);
+          }
         }
 
         return c.json({ success: true, data: watchProgress }, 200);

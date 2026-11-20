@@ -10,7 +10,20 @@ vi.mock('@cio/db/queries/course/people', () => ({
   addCourseMember: vi.fn(),
   deleteCourseMember: vi.fn(),
   updateCourseMember: vi.fn(),
-  getCourseTeachers: vi.fn()
+  getCourseTeachers: vi.fn(),
+  getCourseGroupId: vi.fn().mockResolvedValue(null)
+}));
+
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run({})) }
+}));
+
+vi.mock('@api/services/course/path-gate', () => ({
+  assertCourseAllowsDirectStudentAdd: vi.fn().mockResolvedValue(undefined)
+}));
+
+vi.mock('@api/services/course/enrollment-grants', () => ({
+  recordDirectCourseGrant: vi.fn().mockResolvedValue(undefined)
 }));
 
 vi.mock('@cio/db/queries/course', () => ({

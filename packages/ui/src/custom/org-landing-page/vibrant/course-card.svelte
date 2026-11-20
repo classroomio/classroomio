@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
+  import { safeHref } from '../safe-href';
   import { getCourseTypeLandingMeta } from '../landing-page-utils';
 
   interface Props {
@@ -12,10 +13,9 @@
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
 
-  const href = $derived.by(() => {
-    if (disableCourseLinks) return undefined;
-    return course.link || (course.slug ? `/course/${course.slug}` : undefined);
-  });
+  const rawHref = $derived(course.link || (course.slug ? `/course/${course.slug}` : undefined));
+
+  const href = $derived(disableCourseLinks ? undefined : rawHref ? safeHref(rawHref) : undefined);
 
   function formatCost(cost?: number, currency = 'USD'): string {
     if (!cost) return labels?.freeLabel ?? 'Free';

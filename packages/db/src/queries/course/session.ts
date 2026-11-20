@@ -157,6 +157,11 @@ export type CourseUpcomingSession = {
   sessionTimezone: string | null;
 };
 
+/** A lesson that is an upcoming live session: it has a call link and starts after `now`. */
+export function isUpcomingSessionLessonSql(now: string) {
+  return and(isNotNull(schema.lesson.callUrl), isNotNull(schema.lesson.lessonAt), gt(schema.lesson.lessonAt, now));
+}
+
 /**
  * The next live session (earliest lesson with a `callUrl` that starts in the future) for each of the given course
  * ids. With `includeRunning`, a session that has started but not yet ended also counts.

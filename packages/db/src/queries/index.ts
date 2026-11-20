@@ -1,6 +1,7 @@
 export * from './organization';
 export * from './account';
 export * from './query-errors';
+export * from './backfill';
 export * from './auth';
 export * from './attendance';
 export * from './audience';
@@ -27,3 +28,6 @@ export * from './youtube-caption';
 export * from './report';
 export * from './instance';
 export * from './webhook';
+export * from './learning-path';
+export * from './enrolled';
+export * from './certificates';

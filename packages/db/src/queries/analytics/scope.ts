@@ -30,6 +30,15 @@ function scopeTypeCourseFilter(scope: AnalyticsScopeRef): SQL {
 
   if (scope.type === 'course') return sql`AND co.id = ${scope.id}`;
 
+  if (scope.type === 'path') {
+    return sql`AND co.id IN (
+      SELECT lpc.course_id
+      FROM learning_path_course lpc
+      JOIN learning_path lp ON lp.id = lpc.learning_path_id
+      WHERE lpc.learning_path_id = ${scope.id} AND lpc.removed_at IS NULL AND lp.organization_id = ${scope.orgId}
+    )`;
+  }
+
   return sql``;
 }
 
@@ -89,7 +98,25 @@ function cohortScopeStudentSql(context: AnalyticsCompileContext): SQL {
       ${cohortFilter}`;
 }
 
-/** Enrollments of the cohort scope, each paired with its cohort id. */
+/** Student members of the learning path scope, excluding inactive org members. */
+function pathScopeStudentSql(context: AnalyticsCompileContext): SQL {
+  const { scope, pushdown } = context;
+  const studentFilter = pushdown.studentIds?.length
+    ? sql`AND lpm.profile_id IN (${uuidList(pushdown.studentIds)})`
+    : sql``;
+
+  return sql`
+    SELECT DISTINCT lpm.profile_id, NULL::uuid AS cohort_id
+    FROM learning_path_member lpm
+    JOIN learning_path lp ON lp.id = lpm.learning_path_id AND lp.organization_id = ${scope.orgId}
+    WHERE lpm.learning_path_id = ${scope.id}
+      AND lpm.role_id = ${ROLE.STUDENT}
+      AND lpm.removed_at IS NULL
+      AND ${inactiveOrgMemberFilter(sql`lpm.profile_id`, scope.orgId)}
+      ${studentFilter}`;
+}
+
+/** Enrollments of a cohort or learning path scope, each paired with its cohort id. */
 function cohortScopeEnrollmentSql(): SQL {
   return sql`
     SELECT
@@ -182,10 +209,13 @@ function orderedItemsSql(items: readonly AnalyticsOrderedItem[]): SQL {
 export function scopeCtes(context: AnalyticsCompileContext): SQL {
   const courseItem = orderedItemsSql(context.orderedItems);
 
-  if (context.scope.type === 'cohort') {
+  if (context.scope.type === 'cohort' || context.scope.type === 'path') {
+    const scopeStudent =
+      context.scope.type === 'cohort' ? cohortScopeStudentSql(context) : pathScopeStudentSql(context);
+
     return sql`
       scope_course AS (${scopeCourseSql(context)}),
-      scope_student AS (${cohortScopeStudentSql(context)}),
+      scope_student AS (${scopeStudent}),
       scope_enrollment AS (${cohortScopeEnrollmentSql()}),
       scope_member AS (
         SELECT DISTINCT group_member_id, profile_id, course_id, course_title, course_created_at, enrolled_at, completed_at, certificate_earned_at

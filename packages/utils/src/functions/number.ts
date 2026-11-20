@@ -19,6 +19,21 @@ export function toFiniteNumber(value: unknown): number | undefined {
 }
 
 /**
+ * Normalizes free-typed numeric input to a whole number clamped to [min, max].
+ * Non-numeric input falls back to min so empty or invalid text cannot reach
+ * the payload.
+ */
+export function normalizeIntegerInput(value: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): number {
+  const parsed = toFiniteNumber(value);
+
+  if (parsed === undefined) {
+    return min;
+  }
+
+  return Math.max(min, Math.min(max, Math.round(parsed)));
+}
+
+/**
  * Clamps a number to optional minimum and maximum bounds.
  */
 function clamp(value: number, bounds: { min?: number; max?: number }): number {

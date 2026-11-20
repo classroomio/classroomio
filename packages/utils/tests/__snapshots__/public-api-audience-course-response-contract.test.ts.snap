@@ -14,11 +14,29 @@ exports[`public API audience and course response contract > ZPublicApiAssignAudi
     "emailsSent": {
       "type": "number",
     },
+    "skippedPathOnlyCourseNames": {
+      "description": "Titles of skippedPathOnlyCourses, in the same order",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "skippedPathOnlyCourses": {
+      "description": "Requested courses that learners can join only through a learning path, so were not assigned",
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "type": "array",
+    },
   },
   "required": [
     "assigned",
     "alreadyEnrolled",
     "emailsSent",
+    "skippedPathOnlyCourses",
+    "skippedPathOnlyCourseNames",
   ],
   "type": "object",
 }
@@ -1207,6 +1225,10 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
         },
       ],
     },
+    "enrollOnlyInLearningPath": {
+      "description": "True when learners can join the course only through a learning path that contains it",
+      "type": "boolean",
+    },
     "group": {
       "anyOf": [
         {
@@ -1862,6 +1884,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "status",
     "type",
     "callout",
+    "enrollOnlyInLearningPath",
     "tags",
     "group",
     "attendance",
@@ -2119,6 +2142,10 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
           "type": "null",
         },
       ],
+    },
+    "enrollOnlyInLearningPath": {
+      "description": "True when learners can join the course only through a learning path that contains it",
+      "type": "boolean",
     },
     "exerciseCount": {
       "type": "number",
@@ -2522,6 +2549,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
     "status",
     "type",
     "callout",
+    "enrollOnlyInLearningPath",
     "lessonCount",
     "totalStudents",
     "exerciseCount",
@@ -2778,6 +2806,10 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
           "type": "null",
         },
       ],
+    },
+    "enrollOnlyInLearningPath": {
+      "description": "True when learners can join the course only through a learning path that contains it",
+      "type": "boolean",
     },
     "groupId": {
       "anyOf": [
@@ -3143,6 +3175,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
     "status",
     "type",
     "callout",
+    "enrollOnlyInLearningPath",
   ],
   "type": "object",
 }
@@ -4371,6 +4404,10 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
             },
           ],
         },
+        "enrollOnlyInLearningPath": {
+          "description": "True when learners can join the course only through a learning path that contains it",
+          "type": "boolean",
+        },
         "groupId": {
           "anyOf": [
             {
@@ -4735,6 +4772,7 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
         "status",
         "type",
         "callout",
+        "enrollOnlyInLearningPath",
       ],
       "type": "object",
     },

@@ -127,16 +127,21 @@ export async function downloadPublicApiCourseCertificateService(
   await getActiveCourse(params.courseId);
 
   const member = await getCourseMember(params.courseId, params.memberId);
-  if (!member || member.roleId !== ROLE.STUDENT || !member.certificateEarnedAt) {
+  if (!member || member.roleId !== ROLE.STUDENT || !member.certificateEarnedAt || !member.profileId) {
     throw new AppError('Certificate not found', ErrorCodes.NOT_FOUND, 404);
   }
 
   const issuedAt = new Date(member.certificateEarnedAt).toISOString();
-  const renderInput = await assembleCertificateRender(params.courseId, {
-    studentName: member.profile?.fullname || 'Recipient',
-    studentId: member.profileId ?? undefined,
-    issuedAt
-  });
+  const renderInput = await assembleCertificateRender(
+    params.courseId,
+    {
+      studentName: member.profile?.fullname || 'Recipient',
+      studentId: member.profileId,
+      issuedAt
+    },
+    undefined,
+    member.profileId
+  );
 
   const file =
     query.format === 'png' ? await generateCertificatePng(renderInput) : await generateCertificatePdf(renderInput);

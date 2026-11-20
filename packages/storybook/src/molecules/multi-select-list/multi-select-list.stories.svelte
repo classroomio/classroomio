@@ -21,6 +21,17 @@
     { id: 'b', label: 'Core concepts' },
     { id: 'c', label: 'Practice set' }
   ];
+
+  const disabledItems = [
+    {
+      id: 'public',
+      label: 'Public course',
+      description: 'Available on the public course catalog.',
+      disabled: true,
+      disabledTooltip: "Public courses can't be added to a learning path"
+    },
+    { id: 'self-paced', label: 'Self-paced course' }
+  ];
 </script>
 
 <script lang="ts">
@@ -44,6 +55,21 @@
         namePrefix="story-ms"
       />
       <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {[...selected].join(', ') || 'none'}</p>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Disabled Item">
+  {#snippet template()}
+    <div class="w-full max-w-md">
+      <MultiSelectList
+        heading="Select courses"
+        emptyMessage="No items to show."
+        items={disabledItems}
+        isSelected={(id) => selected.has(id)}
+        onToggle={toggle}
+        namePrefix="story-ms-disabled"
+      />
     </div>
   {/snippet}
 </Story>

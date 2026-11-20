@@ -112,7 +112,9 @@
   }
 
   function handleCloneCourse() {
-    copyCourseModal.set({ ...copyCourseModalInitialState, open: true, id, title, description });
+    const copyTitle = $t('courses.copy_course.title_copy_format', { title });
+
+    copyCourseModal.set({ ...copyCourseModalInitialState, open: true, id, title: copyTitle, description });
   }
 
   function handleOpenCourse() {
@@ -180,7 +182,7 @@
         {$t('course_templates.menu.create_course')}
       </DropdownMenu.Item>
     {/if}
-    {#if !isTemplate}
+    {#if !isTemplate && $isOrgAdmin}
       <DropdownMenu.Item onclick={handleCloneCourse}>
         {$t('courses.course_card.context_menu.clone')}
       </DropdownMenu.Item>
@@ -198,7 +200,8 @@
         {$t('courses.course_card.context_menu.invite')}
       </DropdownMenu.Item>
     {/if}
-    {#if !isTemplate || $isOrgAdmin}
+
+    {#if $isOrgAdmin}
       <DropdownMenu.Separator />
       <DropdownMenu.Item class="text-red-600" onclick={handleDeleteCourse}>
         {$t('courses.course_card.context_menu.delete')}

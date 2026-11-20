@@ -4,6 +4,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { ROLES } from '$lib/utils/constants/roles';
   import type { ListPeopleQuery } from '$features/course/utils/types';
+  import { getPeopleSourceFilterGroup } from '$features/course/utils/people-source-utils';
   import type { TCoursePeopleActivityWindow, TCoursePeopleEnrolledWindow } from '@cio/utils/validation/course/people';
 
   interface FilterOption {
@@ -93,7 +94,8 @@
     {
       label: $t('course.navItem.people.filter.joined_within'),
       options: enrolledWindows.map((window) => ({ label: window.label, patch: { enrolledWithin: window.value } }))
-    }
+    },
+    getPeopleSourceFilterGroup($t)
   ]);
 
   function isSelected(option: FilterOption) {

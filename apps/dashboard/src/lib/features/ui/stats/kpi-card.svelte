@@ -9,6 +9,10 @@
     title: string;
     value: number | string;
     description?: string;
+    /** Optional second description line rendered directly beneath description. */
+    descriptionSecondary?: string;
+    /** Optional third description line rendered beneath the secondary line. */
+    descriptionTertiary?: string;
     trend?: 'up' | 'down' | 'flat';
     icon?: Component;
     accent?: 'primary' | 'success' | 'warning' | 'danger';
@@ -24,6 +28,8 @@
     title,
     value,
     description,
+    descriptionSecondary,
+    descriptionTertiary,
     trend = 'flat',
     icon: Icon,
     accent = 'primary',
@@ -117,12 +123,20 @@
     {:else}
       <p id="{id}-value" class="ui:text-foreground text-3xl font-semibold tabular-nums">{value}</p>
     {/if}
-    {#if description}
-      {#if loading}
-        <Skeleton class="mt-2 h-3 w-32" />
-      {:else}
-        <p id="{id}-description" class={cn('mt-1 text-xs tabular-nums', trendClass[trend])}>{description}</p>
-      {/if}
+    {#if loading && (description || descriptionSecondary || descriptionTertiary)}
+      <Skeleton class="mt-2 h-3 w-32" />
+    {:else if description || descriptionSecondary || descriptionTertiary}
+      <div class="mt-1 space-y-0.5">
+        {#if description}
+          <p id="{id}-description" class={cn('text-xs tabular-nums', trendClass[trend])}>{description}</p>
+        {/if}
+        {#if descriptionSecondary}
+          <p class="ui:text-muted-foreground text-xs">{descriptionSecondary}</p>
+        {/if}
+        {#if descriptionTertiary}
+          <p class="ui:text-muted-foreground text-xs">{descriptionTertiary}</p>
+        {/if}
+      </div>
     {/if}
     {#if sparklinePath && !loading}
       <svg viewBox="0 0 100 30" class="mt-3 h-8 w-full" preserveAspectRatio="none" aria-hidden="true">

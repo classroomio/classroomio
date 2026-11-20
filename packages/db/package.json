@@ -99,11 +99,14 @@
     "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts",
     "db:migrate-course-logo-to-banner-image": "tsx src/scripts/migrate-course-logo-to-banner-image.ts",
     "db:remove-landing-contact": "tsx src/scripts/remove-landing-page-contact-nav.ts",
-    "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
+    "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts",
+    "db:backfill-course-enrollment-grants": "tsx src/scripts/backfill-course-enrollment-grants.ts",
+    "db:backfill-mcp-key-learning-path-scopes": "tsx src/scripts/backfill-mcp-key-learning-path-scopes.ts"
   },
   "dependencies": {
     "@better-auth/oauth-provider": "^1.7.13",
     "@better-auth/sso": "^1.7.13",
+    "@cio/certificates": "workspace:*",
     "@cio/email": "workspace:*",
     "@cio/jobs": "workspace:*",
     "@cio/question-types": "workspace:*",

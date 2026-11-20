@@ -5,16 +5,13 @@
   import * as Page from '@cio/ui/base/page';
   import * as Alert from '@cio/ui/base/alert';
   import { Search } from '@cio/ui/custom/search';
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { CourseCard } from '$features/course/components';
-  import { DeleteModal } from '$features/ui';
+  import { DeleteModal, ViewToggle } from '$features/ui';
   import CoursePublishBadge from '$features/course/components/course-publish-badge.svelte';
   import { courseMetaDeta } from '$features/course/utils/store';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import GridIcon from '@lucide/svelte/icons/grid-2x2';
-  import ListIcon from '@lucide/svelte/icons/list';
   import Plus from '@lucide/svelte/icons/plus';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import { t } from '$lib/utils/functions/translations';
@@ -94,7 +91,7 @@
 <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-5xl">
   <Page.Header>
     <Page.HeaderContent class="min-w-0 flex-1">
-      <Page.Title>{$t('cohorts.sidebar.courses') || 'Courses'}</Page.Title>
+      <Page.Title>{$t('cohorts.sidebar.courses')}</Page.Title>
       {#if !$isStudentExperience}
         <Alert.Callout
           variant="information"
@@ -108,7 +105,7 @@
       <Page.Action>
         <Button onclick={() => (showAddCourseModal = true)}>
           <Plus size={16} />
-          {$t('cohorts.courses.add') || 'Add Course'}
+          {$t('cohorts.courses.add')}
         </Button>
       </Page.Action>
     {/if}
@@ -118,32 +115,24 @@
       <Page.BodyHeader align="right" class="p-0!">
         <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
 
-        {#if $courseMetaDeta.view === 'list'}
-          <IconButton onclick={() => setViewPreference('grid')}>
-            <GridIcon size={16} />
-          </IconButton>
-        {:else}
-          <IconButton onclick={() => setViewPreference('list')}>
-            <ListIcon size={16} />
-          </IconButton>
-        {/if}
+        <ViewToggle view={$courseMetaDeta.view} onChange={setViewPreference} />
       </Page.BodyHeader>
 
       {#if filteredCourses.length === 0}
         <Empty
-          title={$t('cohorts.courses.empty_title') || 'No courses yet'}
+          title={$t('cohorts.courses.empty_title')}
           description={searchValue.trim()
-            ? $t('cohorts.courses.no_matching_cohort_courses') || 'No cohort courses match your search.'
+            ? $t('cohorts.courses.no_matching_cohort_courses')
             : $isStudentExperience
-              ? $t('cohorts.courses.empty_student_description') || 'There are no published courses in this cohort yet.'
-              : $t('cohorts.courses.empty_description') || 'Add courses to this cohort.'}
+              ? $t('cohorts.courses.empty_student_description')
+              : $t('cohorts.courses.empty_description')}
           icon={BookOpenIcon}
           variant="page"
         >
           {#if !searchValue.trim() && !$isStudentExperience}
             <Button onclick={() => (showAddCourseModal = true)}>
               <Plus size={16} />
-              {$t('cohorts.courses.add') || 'Add Course'}
+              {$t('cohorts.courses.add')}
             </Button>
           {/if}
         </Empty>

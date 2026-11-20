@@ -60,6 +60,10 @@ const SCOPE_BACKFILLS = [
   {
     tag: '0045_mcp_key_domain_scope',
     added: ['organization:domain:write']
+  },
+  {
+    tag: '0053_learning_paths',
+    added: ['learning_path:read', 'learning_path:write']
   }
 ];
 

@@ -33,11 +33,12 @@
 
   import { NAV_IDS } from './constants';
   import { complianceApi, courseApi } from '$features/course/api';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { currentOrg, isFreePlan, isStudentLimitReached, currentOrgPath } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
-  import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
+  import { getNavItemRoute, getLessonsRoute, getPathPublicIdFromPath } from '$features/course/utils/functions';
   import { useSidebar } from '@cio/ui/base/sidebar';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
@@ -52,6 +53,7 @@
   let { path, id, isStudent = false }: Props = $props();
 
   const coursesListPath = $derived($isStudentExperience ? '/lms/mylearning' : `${$currentOrgPath}/courses`);
+  const mirrorPublicId = $derived(getPathPublicIdFromPath(path));
 
   const currentPath = $derived(path || page.url.pathname);
   const lessonsRoute = $derived(getLessonsRoute(id));
@@ -120,8 +122,8 @@
       {
         id: NAV_IDS.ANALYTICS,
         title: $t('course.navItems.nav_analytics'),
-        url: getNavItemRoute(id, 'analytics'),
-        isActive: currentPath === getNavItemRoute(id, 'analytics'),
+        url: getNavItemRoute(id, 'analytics', '/courses'),
+        isActive: currentPath === getNavItemRoute(id, 'analytics', '/courses'),
         show() {
           if (courseApi.course?.isTemplate) return false;
           return !isStudent;
@@ -142,8 +144,8 @@
       {
         id: NAV_IDS.SUBMISSIONS,
         title: $t('course.navItems.nav_submissions'),
-        url: getNavItemRoute(id, 'submissions'),
-        isActive: currentPath === getNavItemRoute(id, 'submissions'),
+        url: getNavItemRoute(id, 'submissions', '/courses'),
+        isActive: currentPath === getNavItemRoute(id, 'submissions', '/courses'),
         show() {
           if (courseApi.course?.isTemplate) return false;
           if (isStudent) return false;
@@ -176,8 +178,8 @@
       {
         id: NAV_IDS.LANDING_PAGE,
         title: $t('course.navItems.nav_landing_page'),
-        url: getNavItemRoute(id, 'landingpage'),
-        isActive: currentPath === getNavItemRoute(id, 'landingpage'),
+        url: getNavItemRoute(id, 'landingpage', '/courses'),
+        isActive: currentPath === getNavItemRoute(id, 'landingpage', '/courses'),
         show() {
           return !isStudent;
         },
@@ -186,8 +188,8 @@
       {
         id: NAV_IDS.PEOPLE,
         title: $t('course.navItems.nav_people'),
-        url: getNavItemRoute(id, 'people'),
-        isActive: currentPath === getNavItemRoute(id, 'people'),
+        url: getNavItemRoute(id, 'people', '/courses'),
+        isActive: currentPath === getNavItemRoute(id, 'people', '/courses'),
         show() {
           if (courseApi.course?.isTemplate) return false;
           return !isStudent;
@@ -197,8 +199,8 @@
       {
         id: NAV_IDS.AI_ASSISTANT,
         title: $t('course.navItems.nav_ai_tutor'),
-        url: getNavItemRoute(id, 'ai-tutor'),
-        isActive: currentPath === getNavItemRoute(id, 'ai-tutor'),
+        url: getNavItemRoute(id, 'ai-tutor', '/courses'),
+        isActive: currentPath === getNavItemRoute(id, 'ai-tutor', '/courses'),
         show() {
           return !isStudent && IS_AI_ENABLED;
         },
@@ -207,8 +209,8 @@
       {
         id: NAV_IDS.SETTINGS,
         title: $t('course.navItems.nav_settings'),
-        url: getNavItemRoute(id, 'settings'),
-        isActive: currentPath === getNavItemRoute(id, 'settings'),
+        url: getNavItemRoute(id, 'settings', '/courses'),
+        isActive: currentPath === getNavItemRoute(id, 'settings', '/courses'),
         show() {
           return !isStudent;
         },
@@ -323,7 +325,16 @@
 </script>
 
 <Sidebar.Group class="pt-0!">
-  <BackButton href={resolve(coursesListPath, {})} label={$t('org_navigation.exit_course')} class="px-2! py-2!" />
+  <BackButton
+    href={resolve(
+      mirrorPublicId ? `/lms/paths/${mirrorPublicId}` : (learnerPathStore.pathContext?.pathHref ?? coursesListPath),
+      {}
+    )}
+    label={mirrorPublicId || learnerPathStore.pathContext
+      ? $t('course.sidebar.back_to_path')
+      : $t('org_navigation.exit_course')}
+    class="px-2! py-2!"
+  />
 
   {#if showComplianceBanner}
     <div

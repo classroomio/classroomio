@@ -1,3 +1,4 @@
+import type { TCertificateDownloadRequest } from '@cio/utils/validation/course';
 import {
   ZCertificateDownloadRequest,
   ZCourseClone,
@@ -34,6 +35,7 @@ import { attendanceRouter } from '@api/routes/course/attendance';
 import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
 import { liveSessionReminderRouter } from '@api/routes/course/live-session-reminder';
 import { authMiddleware } from '@api/middlewares/auth';
+import { resolveCourseRedirect } from '@api/services/course/redirect';
 import { getEventSource } from '@api/utils/event-source';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
@@ -55,9 +57,12 @@ import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { enrollInCourse } from '@api/services/course/invite';
 import { exerciseRouter } from '@api/routes/course/exercise';
 import { extractClientIp } from '@api/utils/redis/key-generators';
-import { generateCertificatePdf, generateCertificatePng, slugifyForFilename } from '@api/utils/certificate';
-import { assembleCertificateRender, assembleOwnerPreviewRender } from '@api/services/course/certificate';
-import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { generateCertificatePdf, generateCertificatePng, sendCertificateFile } from '@api/utils/certificate';
+import {
+  assembleCertificateRender,
+  assembleOwnerPreviewRender,
+  assertCertificatePreviewAllowed
+} from '@api/services/course/certificate';
 import { generateCoursePdf } from '@api/utils/course';
 import { getCourseById, getCourseOrganizationId } from '@db/queries';
 import { ROLE } from '@cio/utils/constants';
@@ -83,23 +88,16 @@ import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { updateCourseWithTags } from '@api/services/course/update-course';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 
-async function loadCertificateInput(
-  courseId: string,
-  userId: string,
-  body: import('@cio/utils/validation/course').TCertificateDownloadRequest
-) {
+async function loadCertificateInput(courseId: string, userId: string, body: TCertificateDownloadRequest) {
   if (body.previewMode) {
-    const isTeam = await isCourseTeamMemberOrOrgAdmin(courseId, userId);
-    if (!isTeam) {
-      throw new AppError('Only course team members can preview certificate designs', ErrorCodes.UNAUTHORIZED, 403);
-    }
+    await assertCertificatePreviewAllowed(courseId, userId);
 
     return assembleOwnerPreviewRender(courseId, userId, body);
   }
 
   await assertCertificateDownloadAllowed(courseId, userId);
 
-  return assembleCertificateRender(courseId, body);
+  return assembleCertificateRender(courseId, body, undefined, userId);
 }
 
 const enrollRateLimit = createRateLimiter({
@@ -355,6 +353,7 @@ export const courseRouter = new Hono()
 
         if (tagIds !== undefined) {
           const orgId = c.req.header('cio-org-id');
+
           if (!orgId) {
             return c.json(
               {
@@ -489,6 +488,28 @@ export const courseRouter = new Hono()
     }
   )
   /**
+   * GET /course/:courseId/redirect
+   * Data-only redirect decision for learning-path URL routing.
+   * The LMS branch owns navigation; this only answers course vs path vs hub.
+   */
+  .get('/:courseId/redirect', authMiddleware, zValidator('param', ZCourseProgressParam), async (c) => {
+    try {
+      const { courseId } = c.req.valid('param');
+      const user = c.get('user')!;
+      const target = await resolveCourseRedirect(courseId, user.id);
+
+      return c.json(
+        {
+          success: true,
+          data: target
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to resolve course redirect');
+    }
+  })
+  /**
    * GET /course/:courseId/certification-evaluation
    * Full certification eligibility for the current user (blockers for UI).
    */
@@ -530,20 +551,7 @@ export const courseRouter = new Hono()
         const input = await loadCertificateInput(courseId, user.id, body);
         const buffer = await generateCertificatePdf(input);
 
-        c.header('Content-Type', 'application/pdf');
-        c.header(
-          'Content-Disposition',
-          `attachment; filename="certificate-${slugifyForFilename(input.data.courseName)}.pdf"`
-        );
-
-        return c.body(
-          new ReadableStream({
-            start(controller) {
-              controller.enqueue(buffer);
-              controller.close();
-            }
-          })
-        );
+        return sendCertificateFile(c, buffer, input.data.courseName, 'pdf');
       } catch (error) {
         return handleError(c, error, 'Failed to download certificate');
       }
@@ -564,20 +572,7 @@ export const courseRouter = new Hono()
         const input = await loadCertificateInput(courseId, user.id, body);
         const buffer = await generateCertificatePng(input);
 
-        c.header('Content-Type', 'image/png');
-        c.header(
-          'Content-Disposition',
-          `attachment; filename="certificate-${slugifyForFilename(input.data.courseName)}.png"`
-        );
-
-        return c.body(
-          new ReadableStream({
-            start(controller) {
-              controller.enqueue(buffer);
-              controller.close();
-            }
-          })
-        );
+        return sendCertificateFile(c, buffer, input.data.courseName, 'png');
       } catch (error) {
         return handleError(c, error, 'Failed to download certificate image');
       }
@@ -590,20 +585,24 @@ export const courseRouter = new Hono()
     zValidator('param', ZCourseDownloadParam),
     zValidator('json', ZCourseDownloadContent),
     async (c) => {
-      const validatedData = c.req.valid('json');
+      try {
+        c.req.valid('param');
+        const validatedData = c.req.valid('json');
+        const pdfBuffer = await generateCoursePdf(validatedData);
 
-      const pdfBuffer = await generateCoursePdf(validatedData);
+        c.header('Content-Type', 'application/pdf');
 
-      c.header('Content-Type', 'application/pdf');
-
-      return c.body(
-        new ReadableStream({
-          start(controller) {
-            controller.enqueue(pdfBuffer);
-            controller.close();
-          }
-        })
-      );
+        return c.body(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(pdfBuffer);
+              controller.close();
+            }
+          })
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to download course content');
+      }
     }
   )
   .post(

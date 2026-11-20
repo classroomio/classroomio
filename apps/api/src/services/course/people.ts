@@ -1,13 +1,16 @@
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { isUniqueConstraintViolation } from '@cio/utils/errors';
 import {
   addCourseMember,
   deleteCourseMember,
+  getCourseGroupId,
   getCourseMember,
   getPaginatedCourseMembers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
+import { getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
@@ -26,14 +29,58 @@ import { getCourseProgress } from '@cio/db/queries/course/course';
 import { getWebhookLastActiveAt } from '@cio/db/queries/webhook';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
+import { revokeGrantsForGroupmember } from '@cio/db/queries/learning-path';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { recordDirectCourseGrant } from './enrollment-grants';
+import { assertCourseAllowsDirectStudentAdd } from './path-gate';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureLearnersEnrolled } from '@api/services/product-events';
+
+/**
+ * Returns the existing membership row when the profile is already in the
+ * course group, so re-adds stay idempotent instead of violating the
+ * `unique_entries` constraint. Email-only entries (no profileId) skip the
+ * check and follow the insert path. Returns the row without its joined
+ * profile/grant fields so the shape matches a freshly created member.
+ */
+async function getExistingCourseMember(
+  courseId: string,
+  courseGroupId: string | null,
+  profileId: string | undefined,
+  tx: DbOrTxClient
+): Promise<TGroupmember | null> {
+  if (!profileId || !courseGroupId) {
+    return null;
+  }
+
+  const existingId = await getGroupMemberIdByGroupAndProfile(courseGroupId, profileId, tx);
+
+  if (!existingId) {
+    return null;
+  }
+
+  const existing = await getCourseMember(courseId, existingId);
+
+  if (!existing) {
+    return null;
+  }
+
+  const {
+    profile: _profile,
+    enrollmentSource: _source,
+    enrollmentSourcePathPublicId: _sourcePathId,
+    enrollmentSourceCohortId: _sourceCohortId,
+    ...member
+  } = existing;
+
+  return member;
+}
 
 /**
  * Attaches only `stage` to a page of members.
@@ -92,6 +139,47 @@ export async function listPaginatedCourseMembers(courseId: string, query: Pagina
       500
     );
   }
+}
+
+/**
+ * Finds the profile's membership row or creates it, repairing the direct
+ * student grant on either path so re-adds stay idempotent instead of
+ * violating the `unique_entries` constraint.
+ * @param courseId Course ID
+ * @param courseGroupId Course group ID (null skips the existing-member lookup)
+ * @param memberData Member data (profileId, roleId, email, name)
+ * @param tx Transaction client owning the membership write and grant repair
+ * @returns The member row and whether it was newly created
+ */
+async function findOrCreateCourseMemberWithGrant(
+  courseId: string,
+  courseGroupId: string | null,
+  memberData: TAddCourseMembers[number],
+  tx: DbOrTxClient
+): Promise<{ member: TGroupmember; isNewMember: boolean }> {
+  const existingMember = await getExistingCourseMember(courseId, courseGroupId, memberData.profileId, tx);
+
+  if (existingMember) {
+    if (memberData.roleId === ROLE.STUDENT) {
+      const grantInput = {
+        groupmemberId: existingMember.id,
+        courseId,
+        profileId: existingMember.profileId
+      };
+      await recordDirectCourseGrant(grantInput, { source: 'ADMIN_ADD' }, tx);
+    }
+
+    return { member: existingMember, isNewMember: false };
+  }
+
+  const createdMember = await addCourseMember(courseId, memberData, tx);
+
+  if (memberData.roleId === ROLE.STUDENT) {
+    const grantInput = { groupmemberId: createdMember.id, courseId, profileId: createdMember.profileId };
+    await recordDirectCourseGrant(grantInput, { source: 'ADMIN_ADD' }, tx);
+  }
+
+  return { member: createdMember, isNewMember: true };
 }
 
 export type TMemberWebhookContext = { source?: TWebhookMemberSource; actorProfileId?: string | null };
@@ -200,6 +288,10 @@ export async function addMembers(
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);
     }
 
+    if (members.some((member) => member.roleId === ROLE.STUDENT)) {
+      await assertCourseAllowsDirectStudentAdd(courseId);
+    }
+
     const courseName = courseOrgData.courseTitle || '';
     const orgName = courseOrgData.orgName || 'ClassroomIO';
     const orgSiteName = courseOrgData.orgSiteName || '';
@@ -210,12 +302,26 @@ export async function addMembers(
     });
 
     // Add members sequentially so partial failures still invalidate stats for successful inserts.
-    const addedMembers = [];
+    // Already-enrolled profiles are skipped (grant repaired) so re-adding
+    // from the invite modal can never violate `unique_entries`. The response
+    // carries only newly created rows so counts stay truthful.
+    const processed: Array<{ input: TAddCourseMembers[number]; member: TGroupmember; isNew: boolean }> = [];
+    const addedMembers: TGroupmember[] = [];
     let addedStudentMember = false;
+    const courseGroupId = await getCourseGroupId(courseId);
 
     try {
       for (const member of members) {
-        const addedMember = await addCourseMember(courseId, member);
+        const { member: addedMember, isNewMember } = await db.transaction(async (tx) => {
+          return findOrCreateCourseMemberWithGrant(courseId, courseGroupId, member, tx);
+        });
+
+        processed.push({ input: member, member: addedMember, isNew: isNewMember });
+
+        if (!isNewMember) {
+          continue;
+        }
+
         addedMembers.push(addedMember);
         await emitCourseMemberAddedWebhookEvent(courseId, addedMember, {
           source: context.source ?? buildMemberSource('admin'),
@@ -254,7 +360,9 @@ export async function addMembers(
     const inviteLink = `${baseUrl}/org/${orgSiteName}/courses`;
 
     const emailPromises: Promise<unknown>[] = [];
-    const addedStudents = members.filter((member) => member.roleId === ROLE.STUDENT);
+    const addedStudents = processed
+      .filter((entry) => entry.isNew && entry.input.roleId === ROLE.STUDENT)
+      .map((entry) => entry.input);
     const welcomeIcs = addedStudents.length > 0 ? await getWelcomeSessionIcs(courseId) : undefined;
 
     for (const student of addedStudents) {
@@ -267,11 +375,14 @@ export async function addMembers(
       );
     }
 
-    addedMembers.forEach((member, index) => {
-      const memberData = members[index];
-      const roleId = memberData.roleId;
-      const email = memberData.email;
-      const name = memberData.name;
+    for (const entry of processed) {
+      if (!entry.isNew) {
+        continue;
+      }
+
+      const roleId = entry.input.roleId;
+      const email = entry.input.email;
+      const name = entry.input.name;
 
       if ((roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) && email && name) {
         emailPromises.push(
@@ -293,7 +404,7 @@ export async function addMembers(
           })
         );
       }
-    });
+    }
 
     if (emailPromises.length > 0) {
       try {
@@ -326,22 +437,59 @@ export async function addMembers(
  * @param data Partial member data to update
  * @returns Updated member
  */
-export async function updateMember(courseId: string, memberId: string, data: Partial<TGroupmember>) {
+export async function updateMember(
+  courseId: string,
+  memberId: string,
+  data: Partial<TGroupmember>,
+  actorProfileId?: string
+) {
   try {
     const existingMember = await getCourseMember(courseId, memberId);
     if (!existingMember) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
 
-    const updated = await updateCourseMember(courseId, memberId, data);
-    if (!updated) {
-      throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
-    }
-
     const previousRoleId = existingMember.roleId;
     const nextRoleId = data.roleId ?? previousRoleId;
-    const studentRoleChanged =
-      data.roleId !== undefined && (previousRoleId === ROLE.STUDENT || nextRoleId === ROLE.STUDENT);
+    const becameStudent = data.roleId !== undefined && previousRoleId !== ROLE.STUDENT && nextRoleId === ROLE.STUDENT;
+    const leftStudent = data.roleId !== undefined && previousRoleId === ROLE.STUDENT && nextRoleId !== ROLE.STUDENT;
+    const studentRoleChanged = becameStudent || leftStudent;
+
+    const updated = await db.transaction(async (tx) => {
+      // Only applies while the role is still the one the grant decision was
+      // based on; a concurrent change surfaces as 409 instead of a stale grant.
+      const expectedRoleId = data.roleId !== undefined ? previousRoleId : undefined;
+      const next = await updateCourseMember(courseId, memberId, data, tx, expectedRoleId);
+
+      if (!next) {
+        const current = await getCourseMember(courseId, memberId, tx);
+
+        if (!current) {
+          throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
+        }
+
+        throw new AppError(
+          "This member's role changed while you were editing. Refresh and try again.",
+          ErrorCodes.CONFLICT,
+          409
+        );
+      }
+
+      if (becameStudent) {
+        await assertCourseAllowsDirectStudentAdd(courseId, tx);
+        await recordDirectCourseGrant(
+          { groupmemberId: next.id, courseId, profileId: next.profileId },
+          { source: 'ADMIN_ADD', grantedByProfileId: actorProfileId },
+          tx
+        );
+      }
+
+      if (leftStudent) {
+        await revokeGrantsForGroupmember(next.id, tx);
+      }
+
+      return next;
+    });
 
     if (studentRoleChanged) {
       const statsOrgId = await getOrgIdByCourseId(courseId);
@@ -377,7 +525,22 @@ export async function deleteMember(
 ) {
   try {
     const progressBeforeRemoval = await readProgressAtRemoval(courseId, memberId);
-    const deleted = await deleteCourseMember(courseId, memberId);
+    const deleted = await db.transaction(async (tx) => {
+      const existing = await getCourseMember(courseId, memberId, tx);
+
+      if (!existing) {
+        return null;
+      }
+
+      // Defensive only: deleting the membership cascades to its grants via
+      // ON DELETE CASCADE. Revoke first so a missing cascade still cannot
+      // leave a live grant behind.
+      await revokeGrantsForGroupmember(existing.id, tx);
+      const removed = await deleteCourseMember(courseId, memberId, tx);
+
+      return removed;
+    });
+
     if (!deleted) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
@@ -452,6 +615,13 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
     );
 
     await Promise.all([...lessonResetEvents, ...exerciseResetEvents]);
+
+    // A teacher's reset is not learner activity, so it must not move "last activity".
+    void syncCourseProgressInLearningPaths(courseId, member.profileId, undefined, { recordActivity: false }).catch(
+      (syncError) => {
+        console.error('Failed to sync learning path progress after resetting course progress:', syncError);
+      }
+    );
 
     return summary;
   } catch (error) {

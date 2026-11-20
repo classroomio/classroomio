@@ -163,7 +163,8 @@ export const ToolName = {
   READ_LESSON: 'read_lesson',
   READ_EXERCISE: 'read_exercise',
   READ_MY_SUBMISSIONS: 'read_my_submissions',
-  SEARCH_COURSE: 'search_course'
+  SEARCH_COURSE: 'search_course',
+  GET_STUDENT_LEARNING_PATHS: 'get_student_learning_paths'
 } as const;
 
 export type ToolName = (typeof ToolName)[keyof typeof ToolName];

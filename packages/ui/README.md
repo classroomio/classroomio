@@ -461,6 +461,71 @@ Each item owns its own handler, so the component carries no behaviour: the consu
 
 See `Molecules/ComboButton` in Storybook.
 
+### Course card (`src/custom/course-card/`)
+
+Presentational course card used across the dashboard (LMS, explore, admin, certificate, and org landing surfaces). Import as `import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE, type CourseCardLabels } from '@cio/ui'` (or from `@cio/ui/custom/course-card`).
+
+The card is **labels-driven and presentational**: all copy is passed in via `labels: CourseCardLabels` from the host, so dashboard wrappers supply translated strings. The surface is derived from the boolean flags in priority order: `isCertificateView` → `isAdmin` → `isExplore` → `isOnLandingPage` → `isLMS` → admin default. Each surface selects which data rows render (progress bar, completed badge, earned-on date, publish + student count, compliance status) and the default CTA label (`manage`, `viewCertificate`, `learnMore`, `reviewCourse`/`continueCourse`, `learnMore`). `ctaLabel` overrides the derived label.
+
+| Prop                                                                        | Description                                                                                |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `href`                                                                      | Course link; omitted when the card is explore-clickable                                    |
+| `title`                                                                     | Course title                                                                               |
+| `description`                                                               | Truncated course description                                                               |
+| `coverImage`                                                                | Banner image; falls back to `coverGradient` background                                     |
+| `coverGradient`                                                             | CSS gradient behind the banner (default green brand gradient)                              |
+| `typeBadge`                                                                 | `{ label, icon, iconClass }` pill rendered next to the course badge                        |
+| `visibilityBadge`                                                           | Extra pill (e.g. "Public") rendered next to the course badge                               |
+| `lessonCount`                                                               | Renders the lesson count row when provided                                                 |
+| `exerciseCount`                                                             | Renders the exercise count row when provided                                               |
+| `progressPercent`                                                           | Progress value 0–100; only shown on LMS surfaces                                           |
+| `status`                                                                    | Enrollment state; `COMPLETED` flips the CTA to "Review course" and shows a done badge      |
+| `totalStudents`                                                             | Enrolled-student count; only shown on admin surfaces                                       |
+| `isPublished`                                                               | Publish/unpublished badge; only shown on admin surfaces (`labels.published`/`unpublished`) |
+| `certificateEarnedAt`                                                       | ISO date shown as "Earned on" on certificate surfaces                                      |
+| `certificateAvailable`                                                      | Certificate surface: shows the "View certificate" CTA only when `true` (default `false`)   |
+| `compliance`                                                                | `CourseCardCompliance` (`statusLabel`, `statusVariant`, `dateLabel`, `dateValue`)          |
+| `partOfPath`                                                                | `{ name, href }` link rendered as "Part of: {name}"                                        |
+| `isLMS` / `isExplore` / `isAdmin` / `isCertificateView` / `isOnLandingPage` | Surface flags                                                                              |
+| `ctaLabel`                                                                  | Overrides the surface-derived CTA label                                                    |
+| `onExploreClick`                                                            | When set on the explore surface, the whole card (and CTA) becomes a button that fires it   |
+| `overlay`                                                                   | Optional snippet rendered inside the cover (e.g. an admin dropdown)                        |
+| `tags`                                                                      | Optional snippet rendered below the description (e.g. tag overflow)                        |
+| `labels`                                                                    | `CourseCardLabels` object with all UI copy                                                 |
+
+The old snippet/pill-driven card is preserved as `CourseCardLegacy` (used by the classic org-landing theme); new code should use `CourseCard`.
+
+See `Molecules/CourseCard` in Storybook.
+
+### Learning path card (`src/custom/learning-path-card/`)
+
+Presentational card, badge, and progress bar for learning paths. Import as `import { LearningPathCard, LearningPathBadge, LearningPathProgress, type LearningPathCardLabels } from '@cio/ui'` (or from `@cio/ui/custom/learning-path-card`).
+
+`LearningPathCard` is labels-driven like the course card. The surface is derived from the same flag priority (`isCertificateView` → `isAdmin` → `isExplore` → `isOnLandingPage` → `isLMS` → admin default). The LMS surface shows progress, and is `done` when `certificateEarned` or `coursesCompleted === courseCount` with `courseCount > 0`. On the certificate surface, and on a `done` LMS card, the certificate badge and "View certificate" CTA show only when `certificateEarned`; without it there is no CTA; admin surfaces show a status badge (`status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED'`) and a "Continue setup"/"Manage" CTA. `ctaLabel` overrides the derived label.
+
+| Prop                                                                        | Description                                                 |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `href`                                                                      | Path link                                                   |
+| `name`                                                                      | Path name                                                   |
+| `description`                                                               | Truncated path description                                  |
+| `coverGradient` / `coverImage`                                              | Banner background / image                                   |
+| `courseCount`                                                               | Number of courses in the path                               |
+| `totalHours`                                                                | Estimated duration                                          |
+| `progressPercent`                                                           | Overall progress 0–100                                      |
+| `coursesCompleted`                                                          | Courses completed so far                                    |
+| `certificateEarned`                                                         | A certificate exists: badge and "View certificate" CTA      |
+| `certificateEarnedAt`                                                       | ISO date shown as "Earned on" on certificate surfaces       |
+| `status`                                                                    | Admin status (`DRAFT` \| `ACTIVE` \| `ARCHIVED`)            |
+| `isLMS` / `isExplore` / `isAdmin` / `isCertificateView` / `isOnLandingPage` | Surface flags                                               |
+| `onExploreClick`                                                            | Fires when the whole card is clicked on the explore surface |
+| `ctaLabel`                                                                  | Overrides the surface-derived CTA label                     |
+| `overlay`                                                                   | Optional admin menu snippet rendered over the cover         |
+| `footer`                                                                    | Optional extra row below the action row                     |
+| `labels`                                                                    | `LearningPathCardLabels` object with all UI copy            |
+
+`LearningPathBadge` renders the small "Learning Path"/"Course" pill used on covers and rows (the `label` comes from the host; `onCover` switches to the translucent on-banner style). `LearningPathProgress` is a thin progress bar you can reuse in rows and heroes.
+
+See `Molecules/LearningPathCard` in Storybook.
 ### Machines (`src/custom/animation/machines/`)
 
 Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). Two more illustrate product states: `MachineBrokenTrack` (a block tips over a gap it cannot cross, and a playable runner game) for error pages, and `MachineBlankLesson` (a blank lesson page whose title starts being written) for an empty lesson. The animation is SVG SMIL, so the drawings run without JavaScript. `MachineBrokenTrack` adds an optional game that does need JavaScript; without it the animation still plays. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.

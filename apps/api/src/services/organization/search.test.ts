@@ -6,6 +6,7 @@ const queryMocks = vi.hoisted(() => ({
   searchOrgAudience: vi.fn(),
   searchOrgCohorts: vi.fn(),
   searchOrgCourses: vi.fn(),
+  searchOrgLearningPaths: vi.fn(),
   searchOrgTagsAndGroups: vi.fn(),
   searchOrgWidgets: vi.fn()
 }));
@@ -19,6 +20,7 @@ describe('searchOrganization', () => {
     vi.clearAllMocks();
     queryMocks.searchOrgCourses.mockResolvedValue([]);
     queryMocks.searchOrgCohorts.mockResolvedValue([]);
+    queryMocks.searchOrgLearningPaths.mockResolvedValue([]);
     queryMocks.searchOrgWidgets.mockResolvedValue([]);
     queryMocks.searchOrgTagsAndGroups.mockResolvedValue([]);
     queryMocks.searchOrgAudience.mockResolvedValue([{ memberId: 1 }]);

@@ -32,6 +32,7 @@ export type GetRecommendedCoursesRequest = typeof classroomio.organization.cours
 export type RecommendedCoursesResponse = InferResponseType<GetRecommendedCoursesRequest> | null;
 export type RecommendedCoursesSuccess = Extract<InferResponseType<GetRecommendedCoursesRequest>, { success: true }>;
 export type RecommendedCourses = RecommendedCoursesSuccess['data'];
+export type RecommendedCoursesPagination = RecommendedCoursesSuccess['pagination'];
 export type GetRecommendedCoursesRequestQuery = NonNullable<InferRequestType<GetRecommendedCoursesRequest>['query']>;
 export type RecommendedCoursesQuery = {
   limit?: number;

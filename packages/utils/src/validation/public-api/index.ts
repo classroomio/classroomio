@@ -53,3 +53,6 @@ export * from './team';
 export * from './team-responses';
 export * from './tag';
 export * from './tag-responses';
+export * from './enrolled';
+export * from './learning-path';
+export * from './learning-path-responses';

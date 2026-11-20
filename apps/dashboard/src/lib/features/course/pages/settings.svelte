@@ -284,6 +284,7 @@
         type: $settings.type,
         bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
+        enrollOnlyInLearningPath: $settings.enrollOnlyInLearningPath,
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
@@ -373,6 +374,7 @@
         allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
         isPublished: !!course.isPublished,
         allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
+        enrollOnlyInLearningPath: !!course.enrollOnlyInLearningPath,
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
@@ -1109,6 +1111,30 @@
               checked={$settings.allowSelfEnrollment}
               onCheckedChange={(checked) => {
                 $settings.allowSelfEnrollment = checked;
+                hasUnsavedChanges = true;
+              }}
+            />
+          </Field.Field>
+        </Field.Set>
+
+        <SettingsSeparator />
+
+        <Field.Set id="enroll-only-in-learning-path" class="scroll-mt-24">
+          <Field.Field orientation="horizontal">
+            <Field.Content>
+              <Field.Label for="requires-learning-path">
+                <a href="#enroll-only-in-learning-path" class="hover:underline">
+                  {$t('course.navItem.settings.enroll_only_in_learning_path')}
+                </a>
+              </Field.Label>
+              <Field.Description>{$t('course.navItem.settings.enroll_only_in_learning_path_desc')}</Field.Description>
+            </Field.Content>
+            <Switch
+              id="requires-learning-path"
+              data-testid="course-settings-requires-learning-path"
+              checked={$settings.enrollOnlyInLearningPath}
+              onCheckedChange={(checked) => {
+                $settings.enrollOnlyInLearningPath = checked;
                 hasUnsavedChanges = true;
               }}
             />

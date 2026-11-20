@@ -74,7 +74,13 @@ describe('v1 cohort invite service', () => {
   });
 
   it('assigns existing students; profiles outside the org are left to the audience service to skip', async () => {
-    vi.mocked(assignExistingStudentsToCohort).mockResolvedValue({ assigned: 1, alreadyEnrolled: 0, emailsSent: 1 });
+    vi.mocked(assignExistingStudentsToCohort).mockResolvedValue({
+      assigned: 1,
+      alreadyEnrolled: 0,
+      emailsSent: 1,
+      skippedPathOnlyCourses: [],
+      skippedPathOnlyCourseNames: []
+    });
     const payload = { profileIds: ['11111111-1111-4111-8111-111111111111'], sendEmail: true };
 
     await assignPublicApiCohortStudentsService(ORG_ID, ACTOR_ID, cohortParams, payload);

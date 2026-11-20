@@ -433,6 +433,7 @@ export type TCourseInviteAcceptBundle = {
     status: string;
     isPublished: boolean;
     metadata: Record<string, unknown> | null;
+    enrollOnlyInLearningPath: boolean;
     groupId: string;
   };
   organization: {
@@ -460,6 +461,7 @@ export async function selectCourseInviteAcceptBundleByTokenHash(
           status: schema.course.status,
           isPublished: schema.course.isPublished,
           metadata: schema.course.metadata,
+          enrollOnlyInLearningPath: schema.course.enrollOnlyInLearningPath,
           groupId: schema.group.id
         },
         organization: {

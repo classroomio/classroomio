@@ -14,7 +14,7 @@ import {
 /** One row per enrollment and section, with score, video and attendance results. */
 export const sectionActivitySource: AnalyticsSourceDefinition = {
   id: 'section_activity',
-  scopeTypes: ['cohort', 'course'],
+  scopeTypes: ['cohort', 'course', 'path'],
   build: () => sql`SELECT * FROM section_row`,
   dimensions: {
     section: idDimension('section_id', 'section_title', 'section_rank'),

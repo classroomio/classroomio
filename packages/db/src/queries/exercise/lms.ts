@@ -6,6 +6,7 @@ export interface LMSExerciseQueryResult {
   id: string;
   title: string;
   updated_at: string;
+  due_by: string;
   questions: {
     points: number;
   }[];
@@ -75,6 +76,7 @@ export async function getLMSExercises(profileId: string, orgId: string): Promise
         id: schema.exercise.id,
         title: schema.exercise.title,
         updatedAt: schema.exercise.updatedAt,
+        dueBy: schema.exercise.dueBy,
         lessonId: schema.exercise.lessonId,
         lessonTitle: schema.lesson.title,
         lessonOrder: schema.lesson.order,
@@ -131,6 +133,7 @@ export async function getLMSExercises(profileId: string, orgId: string): Promise
         id: exercise.id,
         title: exercise.title,
         updated_at: exercise.updatedAt || '',
+        due_by: exercise.dueBy || '',
         questions: exerciseQuestions.map((q) => ({ points: q.points || 0 })),
         submission:
           exerciseSubmissions.length > 0
