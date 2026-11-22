@@ -26,9 +26,16 @@ export async function assertCertificatesEnabled(orgId: string): Promise<void> {
   }
 }
 
+function toPlanGatedSettings(course: Pick<TCourse, 'certificate'>): string {
+  const { isDownloadable, design, deadline, emailMessage } = toEffectiveCertificateSettings(course);
+
+  return JSON.stringify({ isDownloadable, design, deadline, emailMessage });
+}
+
 /**
  * For course updates that carry `certificate`. Dashboard forms send the stored settings back on every save, so only
- * a change to the effective settings needs the plan.
+ * a change to the effective settings needs the plan. The legacy `theme` string is compared through the resolved
+ * design template, so a default theme the dashboard fills in is not a change.
  */
 export async function assertCertificateChangeAllowed(
   courseId: string,
@@ -39,9 +46,9 @@ export async function assertCertificateChangeAllowed(
   const [course] = await getCourseById(courseId);
   if (!course) return;
 
-  const current = toEffectiveCertificateSettings(course);
-  const next = toEffectiveCertificateSettings({ ...course, certificate });
-  if (JSON.stringify(current) === JSON.stringify(next)) return;
+  const current = toPlanGatedSettings(course);
+  const next = toPlanGatedSettings({ ...course, certificate });
+  if (current === next) return;
 
   const orgId = await getCourseOrganizationId(courseId);
   if (!orgId) {
