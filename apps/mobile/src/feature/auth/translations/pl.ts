@@ -43,5 +43,31 @@ export const pl: TranslatedMessages<typeof en> = {
   resetEmailFailed: 'Nie udało się wysłać wiadomości do resetowania hasła. Spróbuj ponownie.',
   invalidEmail: 'Wpisz prawidłowy adres e-mail.',
   invalidCredentials: 'Adres e-mail lub hasło są nieprawidłowe.',
-  emailNotVerified: 'Zweryfikuj adres e-mail przed zalogowaniem. Link jest w Twojej skrzynce odbiorczej.'
+  emailNotVerified: 'Zweryfikuj adres e-mail przed zalogowaniem. Link jest w Twojej skrzynce odbiorczej.',
+  nameLabel: 'Imię i nazwisko',
+  namePlaceholder: 'Twoje imię',
+  newPasswordPlaceholder: 'Utwórz hasło',
+  passwordHint: {
+    one: 'Co najmniej {count} znak.',
+    few: 'Co najmniej {count} znaki.',
+    many: 'Co najmniej {count} znaków.',
+    other: 'Co najmniej {count} znaku.'
+  },
+  passwordTooShort: {
+    one: 'Użyj co najmniej {count} znaku.',
+    few: 'Użyj co najmniej {count} znaków.',
+    many: 'Użyj co najmniej {count} znaków.',
+    other: 'Użyj co najmniej {count} znaku.'
+  },
+  createAccount: 'Utwórz konto',
+  signUpFailed: 'Nie udało się utworzyć konta. Spróbuj ponownie.',
+  accountExists: 'Konto z tym adresem e-mail już istnieje. Zaloguj się.',
+  haveInviteLink: 'Masz link z zaproszeniem?',
+  joinAction: 'Dołącz',
+  joinTitle: 'Dołącz przez link z zaproszeniem',
+  joinDescription: 'Wklej link z zaproszeniem otrzymany e-mailem lub od zespołu kursu.',
+  inviteLinkLabel: 'Link z zaproszeniem',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Na następnym ekranie możesz utworzyć konto.',
+  inviteLinkInvalid: 'To nie jest link z zaproszeniem do ClassroomIO. Skopiuj cały link i spróbuj ponownie.'
 };

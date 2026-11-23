@@ -9,6 +9,7 @@ import { Hono } from '@api/utils/hono';
 import { ZUpdateProfile } from '@cio/utils/validation/account';
 import { accountWorkspacesRouter } from '@api/routes/account/workspaces';
 import { accountTeachingRouter } from '@api/routes/account/teaching';
+import { accountTeachingInsightsRouter } from '@api/routes/account/teaching-insights';
 import { accountComplianceRouter } from '@api/routes/account/compliance';
 import { accountCertificatesRouter } from '@api/routes/account/certificates';
 import { accountNotificationsRouter } from '@api/routes/account/notifications';
@@ -17,6 +18,7 @@ import { accountDeviceTokensRouter } from '@api/routes/account/device-tokens';
 import { accountHomeDigestRouter } from '@api/routes/account/home-digest';
 import { accountCheckInRouter } from '@api/routes/account/check-in';
 import { accountCohortsRouter } from '@api/routes/account/cohorts';
+import { accountLearnerRouter } from '@api/routes/account/learner';
 import { authMiddleware } from '@api/middlewares/auth';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { extractClientIp } from '@api/utils/redis/key-generators';
@@ -37,6 +39,7 @@ const pendingInvitesRateLimit = createRateLimiter({
 export const accountRouter = new Hono()
   .route('/', accountWorkspacesRouter)
   .route('/', accountTeachingRouter)
+  .route('/', accountTeachingInsightsRouter)
   .route('/', accountComplianceRouter)
   .route('/', accountCertificatesRouter)
   .route('/', accountNotificationsRouter)
@@ -45,6 +48,7 @@ export const accountRouter = new Hono()
   .route('/', accountHomeDigestRouter)
   .route('/', accountCheckInRouter)
   .route('/', accountCohortsRouter)
+  .route('/', accountLearnerRouter)
   .get('/', authMiddleware, async (c) => {
     const user = c.get('user')!;
 

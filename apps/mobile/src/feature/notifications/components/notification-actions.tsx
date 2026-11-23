@@ -24,7 +24,7 @@ import {
   useMarkNotificationRead,
   useMarkNotificationUnread
 } from '@/feature/notifications/api/notifications';
-import { hrefForDeepLink } from '@/feature/notifications/helpers/deep-link';
+import { canOpenDeepLink } from '@/feature/notifications/helpers/deep-link';
 import { notificationCopy } from '@/feature/notifications/helpers/notification-display';
 import { openNotificationTarget } from '@/feature/notifications/helpers/open-notification';
 import { notificationsCatalog } from '@/feature/notifications/translations/catalog';
@@ -71,10 +71,10 @@ export function NotificationActions({ children }: { children: ReactNode }) {
 
   const value: NotificationActionsValue = {
     offline,
-    canOpen: (item) => hrefForDeepLink(item.deepLink) !== null,
+    canOpen: (item) => canOpenDeepLink(item.deepLink),
     open: (item) => {
       if (!item.readAt && !offline) markRead.mutate(item.id);
-      if (!hrefForDeepLink(item.deepLink)) return;
+      if (!canOpenDeepLink(item.deepLink)) return;
 
       openNotificationTarget({ deepLink: item.deepLink, memberOrgIds: organizations.map((org) => org.id) });
     },

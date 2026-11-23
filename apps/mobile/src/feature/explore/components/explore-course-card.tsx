@@ -8,26 +8,28 @@ import { tapHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { CourseBanner } from '@/feature/course/components/course-banner';
 import { courseTypeKey } from '@/feature/course/constants/course-type';
+import { durationLabel, levelLabel } from '@/feature/course/helpers/course-facts';
 import { courseCatalog } from '@/feature/course/translations/catalog';
 import type { ExploreCourseSummary } from '@/feature/explore/types/explore';
+import { useLocale } from '@/feature/i18n/helpers/use-locale';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 
 /** A catalogue course in the Explore grid: its artwork, then title, type and lesson count. Opens the course landing. */
 export function ExploreCourseCard({ course }: { course: ExploreCourseSummary }) {
   const t = useTranslations(courseCatalog);
   const { colors } = useTheme();
+  const locale = useLocale();
   const typeKey = courseTypeKey(course.type);
-  const meta = [typeKey ? t(typeKey) : null, t('lessonCount', { count: course.lessonCount })]
+  const meta = [
+    typeKey ? t(typeKey) : null,
+    levelLabel(course.level, t),
+    durationLabel(course.durationMinutes, t, locale) ?? t('lessonCount', { count: course.lessonCount })
+  ]
     .filter(Boolean)
     .join(' · ');
 
   return (
-    <Link
-      href={{ pathname: '/learn/explore/[courseId]', params: { courseId: course.id } }}
-      push
-      asChild
-      onPress={tapHaptic}
-    >
+    <Link href={{ pathname: '/explore/[courseId]', params: { courseId: course.id } }} push asChild onPress={tapHaptic}>
       <PressableScale accessibilityRole="button" accessibilityLabel={`${course.title}, ${meta}`} scaleTo={0.96}>
         <View style={styles.card}>
           <View style={[styles.artwork, { backgroundColor: colors.muted, borderColor: colors.border }]}>

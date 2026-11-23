@@ -53,5 +53,11 @@ export const de: TranslatedMessages<typeof en> = {
   statCompletedEmpty: 'Sie haben noch keinen Kurs abgeschlossen.',
   statCertificatesEmpty: 'Sie haben noch kein Zertifikat erhalten.',
   statCourseCount: { one: '{count} Kurs', other: '{count} Kurse' },
-  statEarnedOn: 'Erhalten am {date}'
+  statEarnedOn: 'Erhalten am {date}',
+  signUpInviteTitle: 'Konto erstellen',
+  signUpInviteOrganization:
+    'Du wurdest zu einer Organisation auf ClassroomIO eingeladen. Erstelle ein Konto, um anzunehmen.',
+  signUpInviteLink: 'Erstelle ein Konto, um der Organisation beizutreten, die diesen Link geteilt hat.',
+  signUpInviteResource: 'Erstelle ein Konto, um dem Kurs oder der Gruppe beizutreten, die mit dir geteilt wurde.',
+  haveAccount: 'Du hast schon ein Konto?'
 };

@@ -3,14 +3,8 @@ import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
 import type { en } from './en';
 
 export const vi: TranslatedMessages<typeof en> = {
-  screenTitle: 'Khám phá',
-  entryTitle: 'Khám phá khóa học',
-  entryDescription: 'Các khóa học bạn có thể đăng ký',
-  searchCourses: 'Tìm khóa học',
   emptyTitle: 'Không có khóa học khác',
   emptyDescription: 'Tổ chức của bạn không có khóa học nào khác dành cho bạn.',
-  searchNoResultsTitle: 'Không có khóa học phù hợp',
-  searchNoResultsDescription: 'Không có tiêu đề khóa học nào chứa “{query}”.',
   loadError: 'Không tải được các khóa học',
   courseLoadError: 'Không tải được khóa học này',
   about: 'Giới thiệu khóa học',
@@ -25,5 +19,8 @@ export const vi: TranslatedMessages<typeof en> = {
   enrollUnavailable: 'Không thể đăng ký khóa học này trong ứng dụng.',
   paidNotAvailable: 'Không thể đăng ký khóa học này trong ứng dụng.',
   inviteOnly: 'Tổ chức của bạn sẽ đăng ký học viên vào khóa học này.',
-  originalPrice: 'Giá gốc {price}'
+  originalPrice: 'Giá gốc {price}',
+  pathsTitle: 'Lộ trình học',
+  coursesTitle: 'Khóa học',
+  searchCatalog: 'Tìm lộ trình và khóa học'
 };

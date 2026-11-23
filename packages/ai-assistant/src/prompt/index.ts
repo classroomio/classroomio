@@ -1,6 +1,8 @@
 import { AgentRole, type AgentContext } from '../types';
 import { buildTeacherSystemPrompt, buildTeacherContextMessage } from './teacher';
 import { buildStudentSystemPrompt, buildStudentContextMessage } from './student';
+
+export { buildLearnerAssistantSystemPrompt } from './student';
 import type { CourseTemplate } from '../templates';
 import type { AiTutorSettings } from '../tutor-config';
 

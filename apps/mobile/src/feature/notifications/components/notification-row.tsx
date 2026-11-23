@@ -92,7 +92,7 @@ function NotificationRowMenu({ item }: { item: NotificationItem }) {
         <NotificationRowContent item={item} />
       </Link.Trigger>
       <Link.Menu>
-        <Link.MenuAction icon="arrow.up.forward" hidden={!href} onPress={() => actions.open(item)}>
+        <Link.MenuAction icon="arrow.up.forward" hidden={!actions.canOpen(item)} onPress={() => actions.open(item)}>
           {common('open')}
         </Link.MenuAction>
         <Link.MenuAction

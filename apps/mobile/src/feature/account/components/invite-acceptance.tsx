@@ -1,5 +1,6 @@
 import { EnvelopeOpenIcon } from 'phosphor-react-native/src/icons/EnvelopeOpen';
 import { router } from 'expo-router';
+import { useEffect, useEffectEvent, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -28,7 +29,14 @@ function leave() {
   else router.replace('/home');
 }
 
-export function InviteAcceptance({ kind, token }: { kind: InviteKind; token: string }) {
+type InviteAcceptanceProps = {
+  kind: InviteKind;
+  token: string;
+  /** Accept without waiting for a tap, for a person who just signed up or signed in to accept this invite. */
+  autoAccept?: boolean;
+};
+
+export function InviteAcceptance({ kind, token, autoAccept = false }: InviteAcceptanceProps) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const t = useTranslations(accountCatalog);
@@ -45,6 +53,16 @@ export function InviteAcceptance({ kind, token }: { kind: InviteKind; token: str
       },
       onError: () => errorHaptic()
     });
+
+  const autoAccepted = useRef(false);
+  const acceptOnOpen = useEffectEvent(accept);
+
+  useEffect(() => {
+    if (!autoAccept || autoAccepted.current) return;
+
+    autoAccepted.current = true;
+    acceptOnOpen();
+  }, [autoAccept]);
 
   return (
     <View

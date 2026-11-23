@@ -894,7 +894,7 @@ async function seedLiveSessionAttendance(
     for (const [sectionIndex, section] of demoCourse.sections.entries()) {
       for (const [lessonIndex, demoLesson] of section.lessons.entries()) {
         const live = demoLesson.live;
-        if (!live || live.startsInMinutes + live.durationMinutes > 0) continue;
+        if (!live || live.skipAttendance || live.startsInMinutes + live.durationMinutes > 0) continue;
 
         const lessonId = demoLessonId(demoCourse, sectionIndex, lessonIndex);
         for (const attendee of attendees) {

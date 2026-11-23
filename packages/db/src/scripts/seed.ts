@@ -9,9 +9,14 @@ import { seedDemoCohorts } from '@db/utils/seed/demoCohorts';
 import { seedDemoCommunity } from '@db/utils/seed/demoCommunity';
 import { seedDemoCourses } from '@db/utils/seed/demoCourses';
 import { seedDemoEnrollments } from '@db/utils/seed/demoEnrollments';
+import { seedDemoGoals } from '@db/utils/seed/demoGoals';
+import { seedDemoLearningPaths } from '@db/utils/seed/demoLearningPaths';
+import { seedDemoLiveClasses } from '@db/utils/seed/demoLiveClasses';
 import { seedDemoNewsfeed } from '@db/utils/seed/demoNewsfeed';
 import { seedDemoNotifications } from '@db/utils/seed/demoNotifications';
 import { type DemoAccounts, seedDemoPeople } from '@db/utils/seed/demoPeople';
+import { seedDemoProgression } from '@db/utils/seed/demoProgression';
+import { seedDemoTeaching } from '@db/utils/seed/demoTeaching';
 import { seedExercise } from '@db/utils/seed/exercise';
 import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedGroup } from '@db/utils/seed/group';
@@ -21,7 +26,11 @@ import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedNewsfeedThreads } from '@db/utils/seed/newsfeedThreads';
 import { seedOrganization } from '@db/utils/seed/organization';
 import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
-import { seedEarlyAdopterOrganizationPlan, seedEnterpriseOrganizationPlan } from '@db/utils/seed/organizationPlan';
+import {
+  seedEarlyAdopterOrganizationPlan,
+  seedEnterpriseOrganizationPlan,
+  seedUdemyOrganizationPlan
+} from '@db/utils/seed/organizationPlan';
 import { seedProfile } from '@db/utils/seed/profile';
 import { seedQuestionTypes } from '@db/utils/seed/questionType';
 import { seedQuestions } from '@db/utils/seed/question';
@@ -89,6 +98,11 @@ const orderedSeeds = [
   'newsfeed-threads',
   'launch-templates',
   'demo-enrollments',
+  'demo-progression',
+  'demo-learning-paths',
+  'demo-live-classes',
+  'demo-teaching',
+  'demo-goals',
   'demo-community',
   'demo-newsfeed',
   'demo-cohorts',
@@ -120,6 +134,11 @@ const DEMO_CONTENT_SEEDS: SeedName[] = [
   'demo-people',
   'demo-courses',
   'demo-enrollments',
+  'demo-progression',
+  'demo-learning-paths',
+  'demo-live-classes',
+  'demo-teaching',
+  'demo-goals',
   'demo-community',
   'demo-newsfeed',
   'demo-cohorts',
@@ -133,6 +152,7 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
     groupIds: [MVC_GROUP_ID, REACT_GROUP_ID, PANDAS_GROUP_ID],
     seedNames: [
       ...COMMON_ORGANIZATION_SEEDS,
+      'organization-plan',
       'groups',
       'group-members',
       'courses',
@@ -245,7 +265,7 @@ Flags:
   --accounts                  Seed accounts
   --organizations             Seed organizations
   --organization-members      Seed organization members
-  --organization-plan         Seed enterprise + early adopter plans
+  --organization-plan         Seed the udemy-test, enterprise and early adopter plans
   --groups                    Seed groups
   --group-members             Seed group members
   --courses                  Seed courses
@@ -263,10 +283,15 @@ Flags:
   --demo-people              Seed the demo learner and tutor pool
   --demo-courses             Seed the demo course catalog (lessons, content, exercises)
   --demo-enrollments         Seed demo enrolments, progress, submissions, certificates and attendance
+  --demo-progression         Make UX Design sequential with a watch-to-complete video (udemy-test)
+  --demo-learning-paths      Seed demo learning paths and their members (udemy-test)
+  --demo-live-classes        Seed live class registrations (udemy-test)
+  --demo-teaching            Seed tutor@test.com's course teams and learner activity (udemy-test)
+  --demo-goals               Seed student@test.com's streak and weekly goal (udemy-test)
   --demo-community           Seed demo community questions and answers
   --demo-newsfeed            Seed demo course newsfeed posts and threads
   --demo-cohorts             Seed demo cohorts with goals and posts (udemy-test)
-  --demo-notifications       Seed demo notifications for student@test.com
+  --demo-notifications       Seed demo notifications for student, tutor and admin (udemy-test)
   --help, -h                  Show this help message
 
 Examples:
@@ -329,6 +354,11 @@ const seedFunctions = {
     });
   },
   'organization-plan': async () => {
+    if (!selectedOrganization || selectedOrganization === 'udemy-test') {
+      console.log('📝 Seeding udemy-test organization plan...');
+      await seedUdemyOrganizationPlan({ testOrgId: TEST_ORG_ID });
+    }
+
     if (!selectedOrganization || selectedOrganization === 'coursera-test') {
       console.log('📝 Seeding enterprise organization plan...');
       await seedEnterpriseOrganizationPlan({ enterpriseOrgId: ENTERPRISE_ORG_ID });
@@ -466,6 +496,41 @@ const seedFunctions = {
   'demo-enrollments': async () => {
     console.log('📝 Seeding demo enrolments and progress...');
     await seedDemoEnrollments({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-progression': async () => {
+    console.log('📝 Seeding demo course progression...');
+    await seedDemoProgression({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-learning-paths': async () => {
+    console.log('📝 Seeding demo learning paths...');
+    await seedDemoLearningPaths({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-live-classes': async () => {
+    console.log('📝 Seeding demo live class registrations...');
+    await seedDemoLiveClasses({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-teaching': async () => {
+    console.log('📝 Seeding demo teaching activity...');
+    await seedDemoTeaching({
+      accounts: DEMO_ACCOUNTS,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
+  'demo-goals': async () => {
+    console.log('📝 Seeding demo goals...');
+    await seedDemoGoals({
       accounts: DEMO_ACCOUNTS,
       selectedOrganizationId: selectedOrganizationConfig?.organizationId
     });

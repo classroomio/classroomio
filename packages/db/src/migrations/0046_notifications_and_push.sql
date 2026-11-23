@@ -27,6 +27,7 @@ CREATE TABLE "notification" (
 	"entity_id" varchar(64) NOT NULL,
 	"course_id" uuid,
 	"actor_profile_id" uuid,
+	"item_count" integer,
 	"dedupe_key" varchar(255),
 	"read_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -150,3 +151,129 @@ DO $$ BEGIN
 EXCEPTION
 	WHEN duplicate_object THEN null;
 END $$;
+
+--> statement-breakpoint
+CREATE TYPE "public"."LEARNING_PATH_STATUS" AS ENUM('ACTIVE', 'DRAFT', 'ARCHIVED');
+--> statement-breakpoint
+CREATE TABLE "learner_goal" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"profile_id" uuid NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"weekly_lesson_target" integer DEFAULT 3 NOT NULL,
+	"timezone" varchar(64),
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "learner_goal_profile_organization_key" UNIQUE("profile_id","organization_id")
+);
+--> statement-breakpoint
+CREATE TABLE "learner_nudge" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"course_id" uuid NOT NULL,
+	"learner_profile_id" uuid NOT NULL,
+	"nudged_by_profile_id" uuid,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "learning_path" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"name" varchar NOT NULL,
+	"slug" varchar NOT NULL,
+	"description" text,
+	"cover_image" text,
+	"status" "LEARNING_PATH_STATUS" DEFAULT 'DRAFT' NOT NULL,
+	"cost" bigint DEFAULT 0 NOT NULL,
+	"currency" varchar DEFAULT 'USD' NOT NULL,
+	"show_savings" boolean DEFAULT true NOT NULL,
+	"sequential_unlock" boolean DEFAULT true NOT NULL,
+	"self_enrollment" boolean DEFAULT true NOT NULL,
+	"auto_enroll" boolean DEFAULT true NOT NULL,
+	"certificate_enabled" boolean DEFAULT true NOT NULL,
+	"certificate_title" text,
+	"certificate_issuer" text,
+	"landing_page" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"created_by_profile_id" uuid,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "learning_path_organization_id_slug_unique" UNIQUE("organization_id","slug")
+);
+--> statement-breakpoint
+CREATE TABLE "learning_path_course" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"path_id" uuid NOT NULL,
+	"course_id" uuid NOT NULL,
+	"order" integer NOT NULL,
+	"added_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "learning_path_course_path_id_course_id_unique" UNIQUE("path_id","course_id"),
+	CONSTRAINT "learning_path_course_path_id_order_unique" UNIQUE("path_id","order")
+);
+--> statement-breakpoint
+CREATE TABLE "learning_path_member" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"path_id" uuid NOT NULL,
+	"profile_id" uuid NOT NULL,
+	"role_id" integer NOT NULL,
+	"enrolled_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"completed_at" timestamp with time zone,
+	"certificate_issued_at" timestamp with time zone,
+	"certificate_id" varchar,
+	CONSTRAINT "learning_path_member_path_id_profile_id_unique" UNIQUE("path_id","profile_id")
+);
+--> statement-breakpoint
+CREATE TABLE "lesson_session_registration" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"lesson_id" uuid NOT NULL,
+	"profile_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "lesson_session_registration_lesson_profile_key" UNIQUE("lesson_id","profile_id")
+);
+--> statement-breakpoint
+ALTER TABLE "learner_goal" ADD CONSTRAINT "learner_goal_profile_id_profile_id_fk" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learner_goal" ADD CONSTRAINT "learner_goal_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learner_nudge" ADD CONSTRAINT "learner_nudge_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learner_nudge" ADD CONSTRAINT "learner_nudge_course_id_course_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."course"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learner_nudge" ADD CONSTRAINT "learner_nudge_learner_profile_id_profile_id_fk" FOREIGN KEY ("learner_profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learner_nudge" ADD CONSTRAINT "learner_nudge_nudged_by_profile_id_profile_id_fk" FOREIGN KEY ("nudged_by_profile_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learning_path" ADD CONSTRAINT "learning_path_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learning_path" ADD CONSTRAINT "learning_path_created_by_profile_id_fkey" FOREIGN KEY ("created_by_profile_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learning_path_course" ADD CONSTRAINT "learning_path_course_path_id_fkey" FOREIGN KEY ("path_id") REFERENCES "public"."learning_path"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learning_path_course" ADD CONSTRAINT "learning_path_course_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "public"."course"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learning_path_member" ADD CONSTRAINT "learning_path_member_path_id_fkey" FOREIGN KEY ("path_id") REFERENCES "public"."learning_path"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learning_path_member" ADD CONSTRAINT "learning_path_member_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "learning_path_member" ADD CONSTRAINT "learning_path_member_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "public"."role"("id") ON DELETE no action ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "lesson_session_registration" ADD CONSTRAINT "lesson_session_registration_lesson_id_lesson_id_fk" FOREIGN KEY ("lesson_id") REFERENCES "public"."lesson"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+ALTER TABLE "lesson_session_registration" ADD CONSTRAINT "lesson_session_registration_profile_id_profile_id_fk" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+CREATE INDEX "idx_learner_goal_organization" ON "learner_goal" USING btree ("organization_id");
+--> statement-breakpoint
+CREATE INDEX "idx_learner_nudge_course_learner_created" ON "learner_nudge" USING btree ("course_id","learner_profile_id","created_at");
+--> statement-breakpoint
+CREATE INDEX "idx_learner_nudge_organization" ON "learner_nudge" USING btree ("organization_id");
+--> statement-breakpoint
+CREATE INDEX "idx_learning_path_organization_id" ON "learning_path" USING btree ("organization_id");
+--> statement-breakpoint
+CREATE INDEX "idx_learning_path_course_path_id" ON "learning_path_course" USING btree ("path_id");
+--> statement-breakpoint
+CREATE INDEX "idx_learning_path_course_course_id" ON "learning_path_course" USING btree ("course_id");
+--> statement-breakpoint
+CREATE INDEX "idx_learning_path_member_path_id" ON "learning_path_member" USING btree ("path_id");
+--> statement-breakpoint
+CREATE INDEX "idx_learning_path_member_profile_id" ON "learning_path_member" USING btree ("profile_id");
+--> statement-breakpoint
+CREATE INDEX "idx_lesson_session_registration_profile" ON "lesson_session_registration" USING btree ("profile_id");
+

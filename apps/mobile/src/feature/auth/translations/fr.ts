@@ -44,5 +44,21 @@ export const fr: TranslatedMessages<typeof en> = {
   invalidEmail: 'Saisissez une adresse e-mail valide.',
   invalidCredentials: 'L’e-mail ou le mot de passe est incorrect.',
   emailNotVerified:
-    'Confirmez votre adresse e-mail avant de vous connecter. Le lien se trouve dans votre boîte de réception.'
+    'Confirmez votre adresse e-mail avant de vous connecter. Le lien se trouve dans votre boîte de réception.',
+  nameLabel: 'Nom complet',
+  namePlaceholder: 'Votre nom',
+  newPasswordPlaceholder: 'Créez un mot de passe',
+  passwordHint: { one: 'Au moins {count} caractère.', other: 'Au moins {count} caractères.' },
+  passwordTooShort: { one: 'Utilisez au moins {count} caractère.', other: 'Utilisez au moins {count} caractères.' },
+  createAccount: 'Créer un compte',
+  signUpFailed: 'Nous n’avons pas pu créer votre compte. Réessayez.',
+  accountExists: 'Un compte existe déjà avec cette adresse e-mail. Connectez-vous plutôt.',
+  haveInviteLink: 'Vous avez un lien d’invitation ?',
+  joinAction: 'Rejoindre',
+  joinTitle: 'Rejoindre avec un lien d’invitation',
+  joinDescription: 'Collez le lien d’invitation reçu par e-mail ou de l’équipe du cours.',
+  inviteLinkLabel: 'Lien d’invitation',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Vous pourrez créer un compte à l’écran suivant.',
+  inviteLinkInvalid: 'Ce n’est pas un lien d’invitation ClassroomIO. Copiez le lien en entier et réessayez.'
 };

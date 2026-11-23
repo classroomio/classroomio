@@ -3,14 +3,8 @@ import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
 import type { en } from './en';
 
 export const da: TranslatedMessages<typeof en> = {
-  screenTitle: 'Udforsk',
-  entryTitle: 'Udforsk kurser',
-  entryDescription: 'Kurser, du kan tilmelde dig',
-  searchCourses: 'Søg i kurser',
   emptyTitle: 'Ingen andre kurser',
   emptyDescription: 'Din organisation har ikke andre kurser åbne for dig.',
-  searchNoResultsTitle: 'Ingen matchende kurser',
-  searchNoResultsDescription: 'Ingen kursustitel indeholder “{query}”.',
   loadError: 'Kurserne blev ikke indlæst',
   courseLoadError: 'Kurset blev ikke indlæst',
   about: 'Om kurset',
@@ -25,5 +19,8 @@ export const da: TranslatedMessages<typeof en> = {
   enrollUnavailable: 'Kurset kan ikke tilmeldes i appen.',
   paidNotAvailable: 'Kurset kan ikke tilmeldes i appen.',
   inviteOnly: 'Din organisation tilmelder deltagere til dette kursus.',
-  originalPrice: 'Oprindelig pris {price}'
+  originalPrice: 'Oprindelig pris {price}',
+  pathsTitle: 'Læringsforløb',
+  coursesTitle: 'Kurser',
+  searchCatalog: 'Søg i forløb og kurser'
 };

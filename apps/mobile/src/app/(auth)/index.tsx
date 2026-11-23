@@ -58,6 +58,17 @@ export default function SignInScreen() {
 
       <View style={styles.spacer} />
 
+      <Link href="/join" asChild>
+        <Pressable accessibilityRole="link" hitSlop={HIT_SLOP} style={styles.serverRow}>
+          <Text variant="caption" tone="muted">
+            {t('haveInviteLink')}
+          </Text>
+          <Text variant="captionStrong" tone="primary">
+            {t('joinAction')}
+          </Text>
+        </Pressable>
+      </Link>
+
       <Link href="/server" asChild>
         <Pressable accessibilityRole="button" hitSlop={HIT_SLOP} style={styles.serverRow}>
           <Icon icon={HardDrivesIcon} size={15} tone="muted" />

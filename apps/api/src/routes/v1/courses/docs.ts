@@ -79,6 +79,10 @@ export const forbiddenResponse = {
   description: `The key lacks the public_api:* or course:member:read/write scope, or the automation actor is not a course tutor/admin or org admin. ${ROLE_CHECKED_NOTE}`
 };
 
+export const inviteForbiddenResponse = {
+  description: `${forbiddenResponse.description} Also returned with code UPGRADE_REQUIRED when the people invited by email who are not yet members of the organization need more student seats than the plan has left.`
+};
+
 export const CertificateSettingsResponse = itemResponse(ZPublicApiCertificateSettingsResponse);
 
 export const IssuedCertificatesResponse = paginatedResponse(ZPublicApiIssuedCertificateListItemResponse);

@@ -14,8 +14,9 @@ import {
   upsertOrganizationMemberEmailNotifications
 } from '@cio/db/queries/notifications/organizationmember-email-notifications';
 import {
-  NOTIFICATION_CATEGORIES,
   NOTIFICATION_CATEGORY_CONFIG,
+  notificationCategoriesForRole,
+  type TNotificationAudienceRole,
   type TNotificationCategory
 } from '@cio/utils/constants/notifications';
 import type { PersonalEmailNotificationSettings } from '@cio/utils/notifications';
@@ -32,11 +33,16 @@ function isKnownTimezone(timezone: string) {
 }
 
 /**
- * Per-category push, in-app and email switches plus quiet hours. Push, in-app and quiet hours belong to the
- * profile. Email reads and writes the member's existing per-organization email toggles, so the web settings and
- * the app share one source; `email` is null when the category sends no email or the organization turned it off.
+ * Per-category push, in-app and email switches plus quiet hours, for the categories that apply to the viewer's org
+ * role. Push, in-app and quiet hours belong to the profile. Email reads and writes the member's existing
+ * per-organization email toggles, so the web settings and the app share one source; `email` is null when the
+ * category sends no email or the organization turned it off.
  */
-export async function getNotificationPreferences(profileId: string, organizationId: string) {
+export async function getNotificationPreferences(
+  profileId: string,
+  organizationId: string,
+  role: TNotificationAudienceRole
+) {
   const [preferences, quietHoursRows, emailToggles, orgEmailSettings] = await Promise.all([
     listNotificationPreferences([profileId]),
     listQuietHours([profileId]),
@@ -46,7 +52,7 @@ export async function getNotificationPreferences(profileId: string, organization
   const preferenceByCategory = new Map(preferences.map((row) => [row.category, row]));
   const quietHours = quietHoursRows[0];
 
-  const categories = NOTIFICATION_CATEGORIES.map((category) => {
+  const categories = notificationCategoriesForRole(role).map((category) => {
     const config = NOTIFICATION_CATEGORY_CONFIG[category];
     const preference = preferenceByCategory.get(category);
     const emailToggle = config.emailToggle;
@@ -73,6 +79,7 @@ export async function getNotificationPreferences(profileId: string, organization
 export async function updateNotificationPreferences(
   profileId: string,
   organizationId: string,
+  role: TNotificationAudienceRole,
   update: TNotificationPreferencesUpdate
 ) {
   if (update.quietHours && !isKnownTimezone(update.quietHours.timezone)) {
@@ -125,5 +132,5 @@ export async function updateNotificationPreferences(
     }
   }
 
-  return getNotificationPreferences(profileId, organizationId);
+  return getNotificationPreferences(profileId, organizationId, role);
 }

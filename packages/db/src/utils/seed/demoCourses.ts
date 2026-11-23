@@ -9,7 +9,8 @@ import {
   inArray,
   lesson,
   lessonLanguage,
-  question
+  question,
+  sql
 } from '@db/drizzle';
 import { createOptions, createQuestions } from '@db/queries/exercise/exercise';
 import type {
@@ -22,6 +23,7 @@ import type {
   TNewOption,
   TNewQuestion
 } from '@db/types';
+import type { TCourseLevel } from '@cio/utils/constants/course-level';
 import { ROLE } from '@cio/utils/constants/roles';
 import { QUESTION_TYPE } from '@cio/utils/validation/constants';
 
@@ -46,6 +48,27 @@ import { buildPeopleDirectory, DEMO_TUTORS, type DemoAccounts } from './demoPeop
 
 export const DEMO_CATALOG: DemoCourse[] = [...UDEMY_COURSES, ...COURSERA_COURSES, ...SKILLSHARE_COURSES];
 
+/** Teacher-set level and length. Courses left out show the length of their lesson videos instead. */
+const COURSE_FACTS: Record<string, { level: TCourseLevel; durationMinutes: number }> = {
+  mvc: { level: 'beginner', durationMinutes: 95 },
+  react: { level: 'intermediate', durationMinutes: 140 },
+  pandas: { level: 'beginner', durationMinutes: 180 },
+  'python-engineering': { level: 'intermediate', durationMinutes: 260 },
+  pytest: { level: 'intermediate', durationMinutes: 150 },
+  docker: { level: 'intermediate', durationMinutes: 170 },
+  'machine-learning': { level: 'advanced', durationMinutes: 320 },
+  'ux-design': { level: 'beginner', durationMinutes: 155 },
+  'product-management': { level: 'intermediate', durationMinutes: 420 },
+  'leading-teams': { level: 'advanced', durationMinutes: 255 },
+  'security-awareness': { level: 'beginner', durationMinutes: 40 },
+  gdpr: { level: 'beginner', durationMinutes: 35 },
+  'code-of-conduct': { level: 'beginner', durationMinutes: 25 },
+  'incident-response': { level: 'advanced', durationMinutes: 120 },
+  'secure-coding': { level: 'intermediate', durationMinutes: 190 },
+  'product-fundamentals': { level: 'beginner', durationMinutes: 110 },
+  'brand-design': { level: 'intermediate', durationMinutes: 75 }
+};
+
 const MANUAL_TYPES = new Set(['TEXTAREA', 'SHORT_ANSWER', 'LINK', 'FILE_UPLOAD']);
 
 export function demoOrgId(accounts: DemoAccounts, org: DemoOrgKey) {
@@ -62,8 +85,10 @@ export function selectDemoCatalog(accounts: DemoAccounts, selectedOrganizationId
 }
 
 export function demoQuestionPoints(demoQuestion: DemoQuestion) {
-  if (!('points' in demoQuestion)) return 0;
-  if (demoQuestion.points !== undefined) return demoQuestion.points;
+  if (demoQuestion.type === 'STAR' || demoQuestion.type === 'THUMBS') return 0;
+
+  const explicitPoints = 'points' in demoQuestion ? demoQuestion.points : undefined;
+  if (explicitPoints !== undefined) return explicitPoints;
 
   return MANUAL_TYPES.has(demoQuestion.type) ? 20 : 10;
 }
@@ -119,12 +144,14 @@ function lessonVideos(demoLesson: DemoLesson) {
 
   const isYoutube = /youtube\.com|youtu\.be/.test(demoLesson.video.link);
 
+  const duration = demoLesson.video.durationSeconds;
+
   return [
     {
       type: isYoutube ? ('youtube' as const) : ('generic' as const),
       link: demoLesson.video.link,
       fileName: demoLesson.video.title,
-      metadata: { title: demoLesson.video.title }
+      metadata: { title: demoLesson.video.title, ...(duration ? { duration } : {}) }
     }
   ];
 }
@@ -251,6 +278,16 @@ export async function seedDemoCourses({
 
   if (coursesToInsert.length > 0) {
     await db.insert(course).values(coursesToInsert);
+  }
+
+  for (const demoCourse of catalog) {
+    const facts = COURSE_FACTS[demoCourse.key];
+    if (!facts) continue;
+
+    await db
+      .update(course)
+      .set({ metadata: sql`${course.metadata} || ${JSON.stringify(facts)}::jsonb` })
+      .where(eq(course.id, demoCourseId(demoCourse)));
   }
 
   const staff = catalog.flatMap((demoCourse) => {

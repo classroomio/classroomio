@@ -1,3 +1,4 @@
+import type { TCourseDurationBucket, TCourseLevel } from '@cio/utils/constants/course-level';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useAuth } from '@/feature/auth/components/auth-provider';
@@ -13,23 +14,34 @@ const PAGE_SIZE = 20;
 
 type ExplorePages = { pages: ExploreCoursesPage[]; pageParams: number[] };
 
-/** The organization's catalogue of courses the learner is not enrolled in, a page at a time. */
-export function useExploreCoursesQuery() {
+export type ExploreCourseQueryFilters = { search?: string; level?: TCourseLevel; duration?: TCourseDurationBucket };
+
+/** The organization's catalogue of courses the learner is not enrolled in, a page at a time, filtered on the server. */
+export function useExploreCoursesQuery(filters: ExploreCourseQueryFilters = {}) {
   const api = useApi();
   const { userId } = useAuth();
   const orgId = useActiveOrgId();
-  const queryKey = exploreCoursesQueryKey(userId, orgId);
+  const filtered = Boolean(filters.search || filters.level || filters.duration);
+  const queryKey = filtered
+    ? [...exploreCoursesQueryKey(userId, orgId), filters]
+    : exploreCoursesQueryKey(userId, orgId);
 
   return useInfiniteQuery({
     queryKey,
     queryFn: async ({ pageParam }) => {
       const response = await request(
         api.organization.courses.recommended.$get({
-          query: { limit: String(PAGE_SIZE), page: String(pageParam) }
+          query: {
+            limit: String(PAGE_SIZE),
+            page: String(pageParam),
+            ...(filters.search ? { search: filters.search } : {}),
+            ...(filters.level ? { level: filters.level } : {}),
+            ...(filters.duration ? { duration: filters.duration } : {})
+          }
         })
       );
       const page: ExploreCoursesPage = { data: response.data, pagination: response.pagination };
-      if (pageParam === 1) writeQuerySnapshot(queryKey, page);
+      if (pageParam === 1 && !filtered) writeQuerySnapshot(queryKey, page);
 
       return page;
     },
@@ -37,12 +49,15 @@ export function useExploreCoursesQuery() {
     getNextPageParam: (lastPage) =>
       lastPage.pagination.page < lastPage.pagination.totalPages ? lastPage.pagination.page + 1 : undefined,
     initialData: () => {
+      if (filtered) return undefined;
+
       const firstPage = readQuerySnapshot<ExploreCoursesPage>(queryKey);
 
       return firstPage ? { pages: [firstPage], pageParams: [1] } : undefined;
     },
     initialDataUpdatedAt: 0,
-    enabled: Boolean(userId && orgId)
+    enabled: Boolean(userId && orgId),
+    placeholderData: (previous) => previous
   });
 }
 

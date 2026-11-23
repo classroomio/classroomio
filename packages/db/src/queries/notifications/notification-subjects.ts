@@ -17,12 +17,20 @@ export type NotificationSubject = {
   requiredCount: number | null;
 };
 
-type SubjectRef = Pick<TNotification, 'id' | 'entityType' | 'entityId' | 'courseId' | 'actorProfileId'>;
+type SubjectRef = Pick<TNotification, 'id' | 'entityType' | 'entityId' | 'courseId' | 'actorProfileId'> &
+  Partial<Pick<TNotification, 'itemCount'>>;
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function idsOf(refs: SubjectRef[], entityType: SubjectRef['entityType']) {
   return [...new Set(refs.filter((ref) => ref.entityType === entityType).map((ref) => ref.entityId))];
+}
+
+/** `exercise.due_by` has no time zone and holds UTC wall time. */
+function exerciseDueAt(dueBy: string | null | undefined): string | null {
+  if (!dueBy) return null;
+
+  return /[zZ]|[+-]\d{2}(:?\d{2})?$/.test(dueBy) ? dueBy : `${dueBy.replace(' ', 'T')}Z`;
 }
 
 function uuidsOnly(ids: Array<string | null>) {
@@ -43,11 +51,27 @@ export async function loadNotificationSubjects(refs: SubjectRef[]): Promise<Map<
     const exerciseIds = uuidsOnly(idsOf(refs, 'exercise'));
     const recordIds = uuidsOnly(idsOf(refs, 'compliance_record'));
     const assignmentIds = uuidsOnly(idsOf(refs, 'cohort_goal_assignment'));
+    const learnerGoalIds = uuidsOnly(idsOf(refs, 'learner_goal'));
+    const submissionIds = uuidsOnly(idsOf(refs, 'submission'));
+    const organizationIds = uuidsOnly(idsOf(refs, 'organization'));
+    const webhookIds = uuidsOnly(idsOf(refs, 'webhook'));
     const questionIds = idsOf(refs, 'community_question')
       .map(Number)
       .filter((id) => Number.isSafeInteger(id));
 
-    const [courses, actors, lessons, exercises, records, assignments, questions] = await Promise.all([
+    const [
+      courses,
+      actors,
+      lessons,
+      exercises,
+      records,
+      assignments,
+      questions,
+      submissions,
+      organizations,
+      webhooks,
+      learnerGoals
+    ] = await Promise.all([
       courseIds.length
         ? db
             .select({
@@ -73,7 +97,7 @@ export async function loadNotificationSubjects(refs: SubjectRef[]): Promise<Map<
         : [],
       exerciseIds.length
         ? db
-            .select({ id: schema.exercise.id, title: schema.exercise.title })
+            .select({ id: schema.exercise.id, title: schema.exercise.title, dueBy: schema.exercise.dueBy })
             .from(schema.exercise)
             .where(inArray(schema.exercise.id, exerciseIds))
         : [],
@@ -105,6 +129,40 @@ export async function loadNotificationSubjects(refs: SubjectRef[]): Promise<Map<
             })
             .from(schema.communityQuestion)
             .where(inArray(schema.communityQuestion.id, questionIds))
+        : [],
+      submissionIds.length
+        ? db
+            .select({ id: schema.submission.id, exerciseTitle: schema.exercise.title })
+            .from(schema.submission)
+            .innerJoin(schema.exercise, eq(schema.exercise.id, schema.submission.exerciseId))
+            .where(inArray(schema.submission.id, submissionIds))
+        : [],
+      organizationIds.length
+        ? db
+            .select({
+              id: schema.organization.id,
+              name: schema.organization.name,
+              siteName: schema.organization.siteName
+            })
+            .from(schema.organization)
+            .where(inArray(schema.organization.id, organizationIds))
+        : [],
+      webhookIds.length
+        ? db
+            .select({
+              id: schema.webhookEndpoint.id,
+              name: schema.webhookEndpoint.name,
+              siteName: schema.organization.siteName
+            })
+            .from(schema.webhookEndpoint)
+            .innerJoin(schema.organization, eq(schema.organization.id, schema.webhookEndpoint.organizationId))
+            .where(inArray(schema.webhookEndpoint.id, webhookIds))
+        : [],
+      learnerGoalIds.length
+        ? db
+            .select({ id: schema.learnerGoal.id, weeklyLessonTarget: schema.learnerGoal.weeklyLessonTarget })
+            .from(schema.learnerGoal)
+            .where(inArray(schema.learnerGoal.id, learnerGoalIds))
         : []
     ]);
 
@@ -115,6 +173,10 @@ export async function loadNotificationSubjects(refs: SubjectRef[]): Promise<Map<
     const recordById = new Map(records.map((row) => [row.id, row]));
     const assignmentById = new Map(assignments.map((row) => [row.id, row]));
     const questionById = new Map(questions.map((row) => [String(row.id), row]));
+    const learnerGoalById = new Map(learnerGoals.map((row) => [row.id, row]));
+    const submissionById = new Map(submissions.map((row) => [row.id, row]));
+    const organizationById = new Map(organizations.map((row) => [row.id, row]));
+    const webhookById = new Map(webhooks.map((row) => [row.id, row]));
 
     return new Map(
       refs.map((ref) => {
@@ -125,18 +187,30 @@ export async function loadNotificationSubjects(refs: SubjectRef[]): Promise<Map<
         const record = ref.entityType === 'compliance_record' ? recordById.get(ref.entityId) : undefined;
         const assignment = ref.entityType === 'cohort_goal_assignment' ? assignmentById.get(ref.entityId) : undefined;
         const question = ref.entityType === 'community_question' ? questionById.get(ref.entityId) : undefined;
+        const learnerGoal = ref.entityType === 'learner_goal' ? learnerGoalById.get(ref.entityId) : undefined;
+        const submission = ref.entityType === 'submission' ? submissionById.get(ref.entityId) : undefined;
+        const organization = ref.entityType === 'organization' ? organizationById.get(ref.entityId) : undefined;
+        const webhook = ref.entityType === 'webhook' ? webhookById.get(ref.entityId) : undefined;
 
         const subject: NotificationSubject = {
           courseTitle: course?.title ?? null,
           courseImage: course?.bannerImage || course?.logo || null,
           actorName: actor?.fullname || null,
           actorAvatarUrl: actor?.avatarUrl ?? null,
-          subjectTitle: lesson?.title ?? exercise?.title ?? question?.title ?? assignment?.title ?? null,
-          subjectSlug: question?.slug ?? null,
-          dueAt: record?.dueDate ?? assignment?.dueDate ?? null,
+          subjectTitle:
+            lesson?.title ??
+            exercise?.title ??
+            question?.title ??
+            assignment?.title ??
+            submission?.exerciseTitle ??
+            organization?.name ??
+            webhook?.name ??
+            null,
+          subjectSlug: question?.slug ?? organization?.siteName ?? webhook?.siteName ?? null,
+          dueAt: record?.dueDate ?? assignment?.dueDate ?? exerciseDueAt(exercise?.dueBy) ?? null,
           startsAt: lesson?.lessonAt ?? null,
           completedCount: assignment?.completedCount ?? null,
-          requiredCount: assignment?.requiredCount ?? null
+          requiredCount: assignment?.requiredCount ?? learnerGoal?.weeklyLessonTarget ?? ref.itemCount ?? null
         };
 
         return [ref.id, subject];

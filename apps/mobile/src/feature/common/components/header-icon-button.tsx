@@ -10,9 +10,16 @@ type HeaderIconButtonProps = {
   accessibilityLabel: string;
   onPress: () => void;
   disabled?: boolean;
+  weight?: 'regular' | 'fill';
 };
 
-export function HeaderIconButton({ icon, accessibilityLabel, onPress, disabled = false }: HeaderIconButtonProps) {
+export function HeaderIconButton({
+  icon,
+  accessibilityLabel,
+  onPress,
+  disabled = false,
+  weight = 'regular'
+}: HeaderIconButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -26,7 +33,7 @@ export function HeaderIconButton({ icon, accessibilityLabel, onPress, disabled =
       }}
       style={({ pressed }) => [styles.button, pressed && styles.pressed, disabled && styles.disabled]}
     >
-      <Icon icon={icon} size={22} tone="primary" />
+      <Icon icon={icon} size={22} tone="primary" weight={weight} />
     </Pressable>
   );
 }

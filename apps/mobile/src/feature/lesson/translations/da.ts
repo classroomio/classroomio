@@ -43,10 +43,7 @@ export const da: TranslatedMessages<typeof en> = {
   completedSyncPendingLabel: 'Lektion gennemført, synkroniseres, når du er online igen',
   completed: 'Gennemført',
   syncsWhenBackOnline: 'Synkroniseres, når du er online igen',
-  markNotComplete: 'Markér som ikke gennemført',
   watchToComplete: 'Se {percent} af videoen for at gennemføre lektionen',
-  completeAndContinue: 'Gennemfør og fortsæt',
-  markComplete: 'Markér som gennemført',
   previous: 'Forrige',
   next: 'Næste',
   inThisSection: 'I dette afsnit',
@@ -115,5 +112,13 @@ export const da: TranslatedMessages<typeof en> = {
   tutorDisabledTitle: 'AI-tutoren er slået fra',
   tutorDisabledDescription: 'Din organisation har ikke slået AI-tutoren til for dette kursus.',
   tutorNotConfiguredTitle: 'AI-tutoren er ikke tilgængelig',
-  tutorNotConfiguredDescription: 'Der er ingen AI-udbyder konfigureret på denne server.'
+  tutorNotConfiguredDescription: 'Der er ingen AI-udbyder konfigureret på denne server.',
+  completesAtEnd: 'Gennemføres, når du når slutningen',
+  reload: 'Genindlæs',
+  resumedFrom: 'Fortsat fra {time}',
+  videoQuality: 'Videokvalitet',
+  videoQualityValue: 'Videokvalitet, {quality}',
+  sessionExpiredTitle: 'Din session er udløbet',
+  sessionExpiredDescription: 'Log ind igen for at se videoen.',
+  signInAgain: 'Log ind igen'
 };

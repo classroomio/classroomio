@@ -197,7 +197,7 @@ function TutorConversation({
   );
 }
 
-function TutorBubble({ message, pending }: { message: TutorMessage; pending: boolean }) {
+export function TutorBubble({ message, pending }: { message: TutorMessage; pending: boolean }) {
   const { colors } = useTheme();
   const t = useTranslations(lessonCatalog);
   const mine = message.role === 'user';
@@ -227,7 +227,7 @@ function TutorBubble({ message, pending }: { message: TutorMessage; pending: boo
   );
 }
 
-function KeyboardSpacer() {
+export function KeyboardSpacer() {
   const insets = useWindowInsets();
   const { height } = useReanimatedKeyboardAnimation();
   const animatedStyle = useAnimatedStyle(() => ({ height: Math.max(0, Math.abs(height.get()) - insets.bottom) }));

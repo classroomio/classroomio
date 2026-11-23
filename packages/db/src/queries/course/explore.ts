@@ -4,6 +4,7 @@ import { and, eq, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 import { resolveCourseBannerImage } from '@cio/utils/functions';
+import { courseTutorNameSql, courseVideoSecondsSql } from './course-facts';
 
 export type ExploreCourseDetailRow = {
   course: typeof schema.course.$inferSelect;
@@ -16,6 +17,8 @@ export type ExploreCourseDetailRow = {
   };
   lessonCount: number;
   exerciseCount: number;
+  videoSeconds: number;
+  tutorName: string | null;
   groupMemberId: string | null;
 };
 
@@ -48,6 +51,8 @@ export async function getExploreCourseDetail(params: {
           LEFT JOIN ${schema.lesson} AS el ON el.id = ex.lesson_id
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
         )`,
+        videoSeconds: courseVideoSecondsSql(schema.course.id),
+        tutorName: courseTutorNameSql(schema.course.groupId),
         groupMemberId: schema.groupmember.id
       })
       .from(schema.course)
@@ -75,6 +80,7 @@ export async function getExploreCourseDetail(params: {
       course: { ...row.course, bannerImage: resolveCourseBannerImage(row.course) },
       lessonCount: Number(row.lessonCount),
       exerciseCount: Number(row.exerciseCount),
+      videoSeconds: Number(row.videoSeconds),
       groupMemberId: row.groupMemberId ?? null
     };
   } catch (error) {

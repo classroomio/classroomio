@@ -18,6 +18,7 @@ export default function AuthLayout() {
       <Stack.Screen name="server" options={sheetOptions} />
       <Stack.Screen name="sso" options={sheetOptions} />
       <Stack.Screen name="forgot-password" options={sheetOptions} />
+      <Stack.Screen name="join" options={sheetOptions} />
     </Stack>
   );
 }

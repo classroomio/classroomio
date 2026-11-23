@@ -12,7 +12,12 @@ type NativeVideoContextValue = {
   captions: CaptionChoice;
   setCaptions: (choice: CaptionChoice) => void;
   subtitleTracks: SubtitleTrack[];
-  onRetry?: () => void;
+  /** Playing a downloaded file, so streaming quality does not apply. */
+  local: boolean;
+  /** Where playback resumed, in seconds, until the chip saying so is dismissed. */
+  resumedFrom: number | null;
+  clearResumed: () => void;
+  onRetry: () => void;
 };
 
 export const NativeVideoContext = createContext<NativeVideoContextValue | null>(null);

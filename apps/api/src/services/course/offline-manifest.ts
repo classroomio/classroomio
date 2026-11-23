@@ -1,3 +1,4 @@
+import { getCoursePathLock } from '@api/services/learning-path/progress';
 import { ContentType } from '@cio/utils/constants/content';
 import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 import { lessonHtmlImageUrls, offlineImageKey, offlineMediaKey } from '@cio/utils/functions/offline-media';
@@ -246,6 +247,15 @@ function assetIdsOf(lessons: StoredLesson[]) {
  * payloads match `GET /course/:courseId/lesson/:lessonId`; media links are short-lived and must be fetched promptly.
  */
 export async function getCourseOfflineManifest(courseId: string, profileId: string, lessonId?: string) {
+  const pathLock = await getCoursePathLock(courseId, profileId);
+  if (pathLock) {
+    throw new AppError(
+      `Finish ${pathLock.blockingCourseTitle} to unlock this course`,
+      ErrorCodes.LEARNING_PATH_COURSE_LOCKED,
+      403
+    );
+  }
+
   const course = await getCourse(courseId, undefined, profileId);
   const items = flattenNavigableItems(course.content);
   const lessonItems = items.filter((item) => item.type === ContentType.Lesson && (!lessonId || item.id === lessonId));

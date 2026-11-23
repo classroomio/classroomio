@@ -7,11 +7,8 @@ export const pl: TranslatedMessages<typeof en> = {
   noCoursesTitle: 'Brak kursów do prowadzenia',
   noCoursesDescription:
     'Nie jesteś tutorem żadnego kursu w tej organizacji. Administrator może dodać Cię do zespołu kursu w panelu internetowym.',
-  queueLoadErrorInline: 'Nie udało się wczytać kolejki ocen. {error}',
   queueLoadError: 'Nie udało się wczytać kolejki ocen',
-  waitingLongest: 'Czekają najdłużej',
   seeAll: 'Pokaż wszystkie ({count})',
-  yourCourses: 'Twoje kursy',
   queueHeader: {
     one: '{count} praca, od najstarszej.',
     few: '{count} prace, od najstarszej.',
@@ -39,31 +36,6 @@ export const pl: TranslatedMessages<typeof en> = {
   allGradedTitle: 'Wszystkie prace są ocenione',
   allGradedDescription: 'Żadna praca w Twoich kursach nie czeka na ocenę.',
   allGradedCourseDescription: 'Żadna praca w kursie {course} nie czeka na ocenę.',
-  summaryCourses: {
-    one: 'w {count} kursie',
-    few: 'w {count} kursach',
-    many: 'w {count} kursach',
-    other: 'w {count} kursu'
-  },
-  summaryLate: {
-    one: '{count} przesłana po terminie',
-    few: '{count} przesłane po terminie',
-    many: '{count} przesłanych po terminie',
-    other: '{count} przesłanej po terminie'
-  },
-  summaryLabel: {
-    one: 'Praca do oceny',
-    few: 'Prace do oceny',
-    many: 'Prac do oceny',
-    other: 'Pracy do oceny'
-  },
-  summaryA11y: {
-    one: '{count} praca do oceny, {details}',
-    few: '{count} prace do oceny, {details}',
-    many: '{count} prac do oceny, {details}',
-    other: '{count} pracy do oceny, {details}'
-  },
-  startGrading: 'Zacznij oceniać',
   waitingDays: {
     one: 'Czeka od {count} dnia',
     few: 'Czeka od {count} dni',
@@ -192,19 +164,6 @@ export const pl: TranslatedMessages<typeof en> = {
   noPostsTitle: 'Brak wpisów',
   noPostsDescription: 'Twoje ogłoszenia trafiają do wszystkich uczestników kursu.',
   loadOlderPosts: 'Wczytaj starsze wpisy',
-  snapshotEnrolled: {
-    one: '{count} zapisany',
-    few: '{count} zapisanych',
-    many: '{count} zapisanych',
-    other: '{count} zapisanego'
-  },
-  snapshotCompleted: '{percent} ukończono',
-  snapshotOverdue: {
-    one: '{count} po terminie',
-    few: '{count} po terminie',
-    many: '{count} po terminie',
-    other: '{count} po terminie'
-  },
   toGradeCount: {
     one: '{count} do oceny',
     few: '{count} do oceny',

@@ -269,6 +269,12 @@ export type TNewWebhookEvent = typeof schema.webhookEvent.$inferInsert;
 export type TWebhookDelivery = typeof schema.webhookDelivery.$inferSelect;
 export type TNewWebhookDelivery = typeof schema.webhookDelivery.$inferInsert;
 
+export type TLearningPath = typeof schema.learningPath.$inferSelect;
+export type TNewLearningPath = typeof schema.learningPath.$inferInsert;
+export type TLearningPathCourse = typeof schema.learningPathCourse.$inferSelect;
+export type TLearningPathMember = typeof schema.learningPathMember.$inferSelect;
+export type TLearningPathStatus = (typeof schema.learningPathStatus.enumValues)[number];
+
 export type TNotification = typeof schema.notification.$inferSelect;
 export type TNewNotification = typeof schema.notification.$inferInsert;
 export type TNotificationPreference = typeof schema.notificationPreference.$inferSelect;
@@ -277,5 +283,8 @@ export type TProfileQuietHours = typeof schema.profileQuietHours.$inferSelect;
 export type TNewProfileQuietHours = typeof schema.profileQuietHours.$inferInsert;
 export type TDeviceToken = typeof schema.deviceToken.$inferSelect;
 export type TNewDeviceToken = typeof schema.deviceToken.$inferInsert;
+export type TLearnerNudge = typeof schema.learnerNudge.$inferSelect;
 export type TCommunityQuestionSubscription = typeof schema.communityQuestionSubscription.$inferSelect;
+export type TLearnerGoal = typeof schema.learnerGoal.$inferSelect;
+export type TLessonSessionRegistration = typeof schema.lessonSessionRegistration.$inferSelect;
 export type TLessonCheckInCode = typeof schema.lessonCheckInCode.$inferSelect;

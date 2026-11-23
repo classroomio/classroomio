@@ -1,6 +1,7 @@
 import { useEventListener } from 'expo';
 import type { VideoPlayer } from 'expo-video';
 import { useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
 
 import { successHaptic } from '@/feature/common/helpers/haptics';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
@@ -25,8 +26,8 @@ type WatchEnforcementOptions = {
 
 /**
  * Applies the lesson's `video_watch` completion policy to a native player the way the web player does:
- * normal speed only, no skipping past the furthest point watched, and a progress heartbeat every 15 seconds,
- * on pause and at the end. The API decides completion from those heartbeats; offline they wait in the sync queue.
+ * normal speed only, no skipping past the furthest point watched, paused when the app leaves the foreground, and a
+ * progress heartbeat every 15 seconds, on pause and at the end. The API decides completion from those heartbeats; offline they wait in the sync queue.
  */
 export function useWatchEnforcement(
   player: VideoPlayer,
@@ -102,6 +103,16 @@ export function useWatchEnforcement(
     flush(false);
   });
 
+  useEffect(() => {
+    if (!enforced) return;
+
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'background' && player.playing) player.pause();
+    });
+
+    return () => subscription.remove();
+  }, [enforced, player]);
+
   useEventListener(player, 'playbackRateChange', ({ playbackRate }) => {
     if (enforced && playbackRate !== 1) player.playbackRate = 1;
   });
@@ -119,5 +130,9 @@ export function useWatchEnforcement(
     flush(true);
   });
 
-  return { enforced, watchedPercent: asset?.watchedPercent ?? null };
+  return {
+    enforced,
+    watchedPercent: asset?.watchedPercent ?? null,
+    resumeAt: enforced && asset && asset.lastPositionSeconds > 0 ? asset.lastPositionSeconds : null
+  };
 }

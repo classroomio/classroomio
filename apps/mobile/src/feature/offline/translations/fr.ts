@@ -32,5 +32,8 @@ export const fr: TranslatedMessages<typeof en> = {
   retry: 'Réessayer',
   syncTitle: 'Synchronisation',
   syncNow: 'Synchroniser',
-  signInToSave: 'Reconnectez-vous pour enregistrer votre progression.'
+  signInToSave: 'Reconnectez-vous pour enregistrer votre progression.',
+  staffOfflineTitle: 'Vous êtes hors ligne',
+  staffOfflineDescription:
+    'La notation, les présences et les données des apprenants nécessitent une connexion. L’application se rouvre dès que vous êtes en ligne.'
 };

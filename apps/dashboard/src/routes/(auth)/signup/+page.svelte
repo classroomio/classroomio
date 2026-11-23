@@ -3,7 +3,7 @@
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
-  import { PASSWORD_MIN_LENGTH } from '@cio/utils/validation/auth/password';
+  import { PASSWORD_MIN_LENGTH } from '@cio/utils/constants/password';
   import { page } from '$app/state';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';

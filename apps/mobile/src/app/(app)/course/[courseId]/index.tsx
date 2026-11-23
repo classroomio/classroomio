@@ -1,6 +1,7 @@
 import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
 import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
 import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
+import { LockSimpleIcon } from 'phosphor-react-native/src/icons/LockSimple';
 import { MedalIcon } from 'phosphor-react-native/src/icons/Medal';
 import { MegaphoneIcon } from 'phosphor-react-native/src/icons/Megaphone';
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -10,6 +11,7 @@ import { useCallback, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Banner, BannerContent, BannerDescription, BannerIcon, BannerTitle } from '@/feature/common/components/banner';
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import {
   Empty,
@@ -30,6 +32,7 @@ import { CourseActionBar } from '@/feature/course/components/course-action-bar';
 import { CourseComplianceBanner } from '@/feature/course/components/course-compliance-banner';
 import { CourseContentRow } from '@/feature/course/components/course-content-row';
 import { CourseDetailSkeleton } from '@/feature/course/components/course-detail-skeleton';
+import { CourseFacts } from '@/feature/course/components/course-facts';
 import {
   CourseHeaderBackdrop,
   CourseHero,
@@ -42,6 +45,7 @@ import { CourseLink, CourseLinks } from '@/feature/course/components/course-link
 import { OutlineList, OutlineSection, OutlineSectionHeader } from '@/feature/course/components/course-outline';
 import { CourseSummary, CourseSummaryProgress } from '@/feature/course/components/course-summary';
 import { courseTypeKey } from '@/feature/course/constants/course-type';
+import { retakeDueDays } from '@/feature/course/helpers/compliance-retake';
 import { itemState } from '@/feature/course/helpers/course-content';
 import { formatDay } from '@/feature/course/helpers/format-date';
 import { openContentItem } from '@/feature/course/helpers/open-content';
@@ -185,7 +189,25 @@ export default function CourseDetailScreen() {
   const firstItem = outline.items[0] ?? null;
   const certificateEarnedAt = enrollment?.certificateEarnedAt ?? null;
 
-  const primaryAction = resume ? (
+  const pathLock = data.pathLock ?? null;
+  const retakeDays = data.type === 'COMPLIANCE' && enrollment ? retakeDueDays(enrollment) : null;
+  const description = data.description || data.metadata?.description || null;
+
+  const primaryAction = pathLock ? (
+    <Button
+      size="lg"
+      variant="outline"
+      onPress={() => router.push({ pathname: '/course/[courseId]', params: { courseId: pathLock.blockingCourseId } })}
+    >
+      <ButtonIcon icon={LockSimpleIcon} />
+      <ButtonText>{t('openBlockingCourse', { course: pathLock.blockingCourseTitle })}</ButtonText>
+    </Button>
+  ) : retakeDays !== null && firstItem ? (
+    <Button size="lg" onPress={() => openContentItem(courseId, resume ?? firstItem)}>
+      <ButtonIcon icon={ArrowCounterClockwiseIcon} />
+      <ButtonText>{t('retakeCourse')}</ButtonText>
+    </Button>
+  ) : resume ? (
     <Button size="lg" onPress={() => openContentItem(courseId, resume)}>
       <ButtonText>{outline.completed > 0 ? common('continue') : t('startCourse')}</ButtonText>
       <ButtonIcon icon={ArrowRightIcon} />
@@ -199,6 +221,19 @@ export default function CourseDetailScreen() {
 
   return heroScreen(
     <>
+      {pathLock ? (
+        <Banner
+          tone="warning"
+          accessibilityLabel={`${t('pathLockedTitle', { course: pathLock.blockingCourseTitle })}. ${t('pathLockedDescription', { path: pathLock.pathName })}`}
+        >
+          <BannerIcon icon={LockSimpleIcon} />
+          <BannerContent>
+            <BannerTitle>{t('pathLockedTitle', { course: pathLock.blockingCourseTitle })}</BannerTitle>
+            <BannerDescription>{t('pathLockedDescription', { path: pathLock.pathName })}</BannerDescription>
+          </BannerContent>
+        </Banner>
+      ) : null}
+
       {data.type === 'COMPLIANCE' && enrollment ? <CourseComplianceBanner course={enrollment} /> : null}
 
       <CourseSummary>
@@ -210,6 +245,14 @@ export default function CourseDetailScreen() {
         />
         <CourseDownloadStatus courseId={courseId} />
       </CourseSummary>
+
+      <CourseFacts
+        description={description}
+        level={data.facts?.level ?? null}
+        durationMinutes={data.facts?.durationMinutes ?? null}
+        lessonCount={outline.lessonCount}
+        instructorName={data.facts?.instructorName ?? null}
+      />
 
       <CourseLinks>
         <CourseLink

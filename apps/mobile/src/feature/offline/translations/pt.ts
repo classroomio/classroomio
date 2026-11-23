@@ -32,5 +32,8 @@ export const pt: TranslatedMessages<typeof en> = {
   retry: 'Tentar novamente',
   syncTitle: 'Sincronização',
   syncNow: 'Sincronizar agora',
-  signInToSave: 'Entre novamente para salvar seu progresso.'
+  signInToSave: 'Entre novamente para salvar seu progresso.',
+  staffOfflineTitle: 'Você está off-line',
+  staffOfflineDescription:
+    'Correção, presença e dados de alunos precisam de conexão. O app abre novamente quando você voltar a ficar on-line.'
 };

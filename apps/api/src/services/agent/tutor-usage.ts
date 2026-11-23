@@ -15,7 +15,7 @@ import {
 } from '@cio/db/queries/agent';
 
 import { AppError } from '@api/utils/errors';
-import { getEffectiveAiTutorSettings } from './tutor-config';
+import { getEffectiveAiTutorSettings, getResolvedOrgAiTutorSettings } from './tutor-config';
 import { enforceTokenBalance } from '@cio/core/services/agent/usage';
 
 export const STUDENT_TUTOR_CAP = STUDENT_TUTOR_MONTHLY_CAP;
@@ -81,6 +81,29 @@ export async function enforceStudentTutorPolicy(
 ): Promise<TutorPolicyResult> {
   const settings = await getEffectiveAiTutorSettings(orgId, courseId);
 
+  return enforceTutorPolicyWithSettings(orgId, courseId, userId, settings);
+}
+
+/**
+ * The same checks for the learner's organization-wide assistant, which follows the workspace AI tutor settings and
+ * counts toward the same monthly allowance. `courseId` is the course its usage is recorded against.
+ */
+export async function enforceLearnerAssistantPolicy(
+  orgId: string,
+  courseId: string,
+  userId: string
+): Promise<TutorPolicyResult> {
+  const settings = await getResolvedOrgAiTutorSettings(orgId);
+
+  return enforceTutorPolicyWithSettings(orgId, courseId, userId, settings);
+}
+
+async function enforceTutorPolicyWithSettings(
+  orgId: string,
+  courseId: string,
+  userId: string,
+  settings: AiTutorSettings
+): Promise<TutorPolicyResult> {
   if (!settings.enabled) {
     await recordCapEvent({ orgId, userId, courseId, eventType: 'tutor_disabled' });
     throw new AppError('AI tutor is disabled for this workspace', 'AI_TUTOR_DISABLED', 403);

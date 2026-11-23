@@ -59,5 +59,10 @@ export const ru: TranslatedMessages<typeof en> = {
   statCompletedEmpty: 'Вы ещё не завершили ни одного курса.',
   statCertificatesEmpty: 'Вы ещё не получили ни одного сертификата.',
   statCourseCount: { one: '{count} курс', few: '{count} курса', many: '{count} курсов', other: '{count} курса' },
-  statEarnedOn: 'Получен {date}'
+  statEarnedOn: 'Получен {date}',
+  signUpInviteTitle: 'Создайте аккаунт',
+  signUpInviteOrganization: 'Вас пригласили в организацию в ClassroomIO. Создайте аккаунт, чтобы принять приглашение.',
+  signUpInviteLink: 'Создайте аккаунт, чтобы присоединиться к организации, которая поделилась этой ссылкой.',
+  signUpInviteResource: 'Создайте аккаунт, чтобы присоединиться к курсу или группе, которыми с вами поделились.',
+  haveAccount: 'Уже есть аккаунт?'
 };

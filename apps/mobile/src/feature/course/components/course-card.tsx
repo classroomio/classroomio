@@ -17,7 +17,13 @@ import { CourseZoomLink } from './course-zoom-link';
 export const COURSE_CARD_WIDTH = 216;
 
 /** A shelf item for horizontal rows: the course artwork with its progress along the bottom, then title and status. */
-export function CourseCard({ course }: { course: EnrolledCourse }) {
+export function CourseCard({
+  course,
+  status
+}: {
+  course: EnrolledCourse;
+  status?: { label: string; urgent: boolean };
+}) {
   const t = useTranslations(courseCatalog);
   const format = useFormatters();
   const { colors } = useTheme();
@@ -30,7 +36,11 @@ export function CourseCard({ course }: { course: EnrolledCourse }) {
 
   return (
     <CourseZoomLink courseId={course.id}>
-      <PressableScale accessibilityRole="button" accessibilityLabel={`${course.title}, ${meta}`} scaleTo={0.96}>
+      <PressableScale
+        accessibilityRole="button"
+        accessibilityLabel={[course.title, status?.label, meta].filter(Boolean).join(', ')}
+        scaleTo={0.96}
+      >
         <View style={styles.card}>
           <View style={[styles.artwork, { backgroundColor: colors.muted, borderColor: colors.border }]}>
             <CourseBanner
@@ -48,6 +58,11 @@ export function CourseCard({ course }: { course: EnrolledCourse }) {
             <Text variant="subheading" numberOfLines={2}>
               {course.title}
             </Text>
+            {status ? (
+              <Text variant="captionStrong" tone={status.urgent ? 'danger' : 'warning'} numberOfLines={1}>
+                {status.label}
+              </Text>
+            ) : null}
             <Text variant="caption" tone="muted" numberOfLines={1}>
               {meta}
             </Text>

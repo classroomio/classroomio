@@ -42,5 +42,21 @@ export const tr: TranslatedMessages<typeof en> = {
   resetEmailFailed: 'Sıfırlama e-postası gönderilemedi. Tekrar deneyin.',
   invalidEmail: 'Geçerli bir e-posta adresi girin.',
   invalidCredentials: 'E-posta adresi veya şifre yanlış.',
-  emailNotVerified: 'Giriş yapmadan önce e-posta adresinizi doğrulayın. Bağlantı gelen kutunuzda.'
+  emailNotVerified: 'Giriş yapmadan önce e-posta adresinizi doğrulayın. Bağlantı gelen kutunuzda.',
+  nameLabel: 'Ad soyad',
+  namePlaceholder: 'Adınız',
+  newPasswordPlaceholder: 'Bir şifre oluşturun',
+  passwordHint: { one: 'En az {count} karakter.', other: 'En az {count} karakter.' },
+  passwordTooShort: { one: 'En az {count} karakter kullanın.', other: 'En az {count} karakter kullanın.' },
+  createAccount: 'Hesap oluştur',
+  signUpFailed: 'Hesabınızı oluşturamadık. Tekrar deneyin.',
+  accountExists: 'Bu e-postayla zaten bir hesap var. Bunun yerine giriş yapın.',
+  haveInviteLink: 'Davet bağlantınız mı var?',
+  joinAction: 'Katıl',
+  joinTitle: 'Davet bağlantısıyla katıl',
+  joinDescription: 'E-postayla veya kurs ekibinizden aldığınız davet bağlantısını yapıştırın.',
+  inviteLinkLabel: 'Davet bağlantısı',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Sonraki ekranda hesap oluşturabilirsiniz.',
+  inviteLinkInvalid: 'Bu bir ClassroomIO davet bağlantısı değil. Bağlantının tamamını kopyalayıp tekrar deneyin.'
 };

@@ -5,6 +5,17 @@ import type { LessonVideo, LessonVideoSource } from '@/feature/lesson/types/less
 
 const HLS_LINK = /^\/?hls\/([^/]+)\//;
 
+const GOOGLE_DRIVE_HOST = /^https?:\/\/(?:drive|docs)\.google\.com\//i;
+
+/** The embeddable preview URL for a Google Drive file link in any of its share formats, or null when it has no file id. */
+export function googleDrivePreviewUrl(link: string) {
+  if (!GOOGLE_DRIVE_HOST.test(link)) return null;
+
+  const fileId = link.match(/\/file\/d\/([\w-]+)/)?.[1] ?? link.match(/[?&]id=([\w-]+)/)?.[1];
+
+  return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
+}
+
 function metadataOf(video: LessonVideo) {
   return (video.metadata ?? {}) as { hls?: boolean; svid?: string; title?: string; thumbnailUrl?: string };
 }
@@ -39,13 +50,14 @@ export function lessonVideoSource(
     return { kind: 'embed', provider: 'vimeo', title, link: video.link, uri: formatVimeoEmbedUrl(video.link) };
   }
 
-  if (video.type === 'google_drive') {
+  const drivePreview = googleDrivePreviewUrl(video.link);
+  if (video.type === 'google_drive' || drivePreview) {
     return {
       kind: 'embed',
       provider: 'google_drive',
       title,
       link: video.link,
-      uri: video.link.replace(/\/view(\?.*)?$/, '/preview')
+      uri: drivePreview ?? video.link.replace(/\/view(\?.*)?$/, '/preview')
     };
   }
 

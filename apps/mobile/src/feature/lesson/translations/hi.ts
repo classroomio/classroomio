@@ -43,10 +43,7 @@ export const hi: TranslatedMessages<typeof en> = {
   completedSyncPendingLabel: 'पाठ पूरा हुआ, आपके दोबारा ऑनलाइन होने पर सिंक होगा',
   completed: 'पूरा हुआ',
   syncsWhenBackOnline: 'आपके दोबारा ऑनलाइन होने पर सिंक होगा',
-  markNotComplete: 'अधूरा मार्क करें',
   watchToComplete: 'यह पाठ पूरा करने के लिए वीडियो का {percent} देखें',
-  completeAndContinue: 'पूरा करें और आगे बढ़ें',
-  markComplete: 'पूरा मार्क करें',
   previous: 'पिछला',
   next: 'अगला',
   inThisSection: 'इस सेक्शन में',
@@ -115,5 +112,13 @@ export const hi: TranslatedMessages<typeof en> = {
   tutorDisabledTitle: 'AI ट्यूटर बंद है',
   tutorDisabledDescription: 'आपके संगठन ने इस कोर्स के लिए AI ट्यूटर चालू नहीं किया है।',
   tutorNotConfiguredTitle: 'AI ट्यूटर उपलब्ध नहीं है',
-  tutorNotConfiguredDescription: 'इस सर्वर पर कोई AI प्रदाता कॉन्फ़िगर नहीं है।'
+  tutorNotConfiguredDescription: 'इस सर्वर पर कोई AI प्रदाता कॉन्फ़िगर नहीं है।',
+  completesAtEnd: 'अंत तक पहुंचने पर पूरा होता है',
+  reload: 'फिर से लोड करें',
+  resumedFrom: '{time} से जारी',
+  videoQuality: 'वीडियो क्वालिटी',
+  videoQualityValue: 'वीडियो क्वालिटी, {quality}',
+  sessionExpiredTitle: 'आपका सेशन समाप्त हो गया है',
+  sessionExpiredDescription: 'यह वीडियो देखने के लिए फिर से साइन इन करें।',
+  signInAgain: 'फिर से साइन इन करें'
 };

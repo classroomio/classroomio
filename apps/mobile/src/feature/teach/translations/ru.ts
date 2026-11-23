@@ -7,11 +7,8 @@ export const ru: TranslatedMessages<typeof en> = {
   noCoursesTitle: 'Нет курсов для преподавания',
   noCoursesDescription:
     'Вы не преподаёте ни на одном курсе в этой организации. Администратор может добавить вас в команду курса в веб-панели.',
-  queueLoadErrorInline: 'Не удалось загрузить очередь проверки. {error}',
   queueLoadError: 'Не удалось загрузить очередь проверки',
-  waitingLongest: 'Ждут дольше всех',
   seeAll: 'Показать все ({count})',
-  yourCourses: 'Ваши курсы',
   queueHeader: {
     one: '{count} работа, сначала самые старые.',
     few: '{count} работы, сначала самые старые.',
@@ -39,31 +36,6 @@ export const ru: TranslatedMessages<typeof en> = {
   allGradedTitle: 'Все работы проверены',
   allGradedDescription: 'В ваших курсах нет работ, ожидающих оценки.',
   allGradedCourseDescription: 'В курсе {course} нет работ, ожидающих оценки.',
-  summaryCourses: {
-    one: 'в {count} курсе',
-    few: 'в {count} курсах',
-    many: 'в {count} курсах',
-    other: 'в {count} курса'
-  },
-  summaryLate: {
-    one: '{count} сдана с опозданием',
-    few: '{count} сданы с опозданием',
-    many: '{count} сданы с опозданием',
-    other: '{count} сданы с опозданием'
-  },
-  summaryLabel: {
-    one: 'Работа на проверку',
-    few: 'Работы на проверку',
-    many: 'Работ на проверку',
-    other: 'Работы на проверку'
-  },
-  summaryA11y: {
-    one: '{count} работа на проверку, {details}',
-    few: '{count} работы на проверку, {details}',
-    many: '{count} работ на проверку, {details}',
-    other: '{count} работы на проверку, {details}'
-  },
-  startGrading: 'Начать проверку',
   waitingDays: {
     one: 'Ждёт {count} день',
     few: 'Ждёт {count} дня',
@@ -192,9 +164,6 @@ export const ru: TranslatedMessages<typeof en> = {
   noPostsTitle: 'Публикаций пока нет',
   noPostsDescription: 'Ваши объявления получают все участники курса.',
   loadOlderPosts: 'Загрузить более ранние публикации',
-  snapshotEnrolled: { other: 'записано: {count}' },
-  snapshotCompleted: 'завершено: {percent}',
-  snapshotOverdue: { other: 'просрочено: {count}' },
   toGradeCount: {
     one: '{count} на проверку',
     few: '{count} на проверку',

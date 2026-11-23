@@ -44,10 +44,7 @@ export const de: TranslatedMessages<typeof en> = {
   completedSyncPendingLabel: 'Lektion abgeschlossen, wird synchronisiert, sobald Sie wieder online sind',
   completed: 'Abgeschlossen',
   syncsWhenBackOnline: 'Wird synchronisiert, sobald Sie wieder online sind',
-  markNotComplete: 'Als nicht abgeschlossen markieren',
   watchToComplete: 'Sehen Sie sich {percent} des Videos an, um diese Lektion abzuschließen',
-  completeAndContinue: 'Abschließen und weiter',
-  markComplete: 'Als abgeschlossen markieren',
   previous: 'Zurück',
   next: 'Weiter',
   inThisSection: 'In diesem Abschnitt',
@@ -118,5 +115,13 @@ export const de: TranslatedMessages<typeof en> = {
   tutorDisabledTitle: 'Der KI-Tutor ist deaktiviert',
   tutorDisabledDescription: 'Ihre Organisation hat den KI-Tutor für diesen Kurs nicht aktiviert.',
   tutorNotConfiguredTitle: 'Der KI-Tutor ist nicht verfügbar',
-  tutorNotConfiguredDescription: 'Auf diesem Server ist kein KI-Anbieter eingerichtet.'
+  tutorNotConfiguredDescription: 'Auf diesem Server ist kein KI-Anbieter eingerichtet.',
+  completesAtEnd: 'Wird abgeschlossen, wenn Sie das Ende erreichen',
+  reload: 'Neu laden',
+  resumedFrom: 'Fortgesetzt bei {time}',
+  videoQuality: 'Videoqualität',
+  videoQualityValue: 'Videoqualität, {quality}',
+  sessionExpiredTitle: 'Ihre Sitzung ist abgelaufen',
+  sessionExpiredDescription: 'Melden Sie sich erneut an, um das Video anzusehen.',
+  signInAgain: 'Erneut anmelden'
 };

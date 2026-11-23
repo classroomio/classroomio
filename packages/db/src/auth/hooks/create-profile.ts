@@ -61,11 +61,10 @@ export const createProfileHook = async (user: User, _request?: Request) => {
 
   const verifiedAt = isEmailVerified ? new Date().toISOString() : undefined;
 
-  // Extract username from email (part before @)
   const emailMatch = user.email?.match(/^([^@]+)@/);
   const emailPrefix = emailMatch ? emailMatch[1] : 'user';
   const username = `${emailPrefix}${new Date().getTime()}`;
-  const fullname = emailPrefix;
+  const fullname = user.name?.trim() || emailPrefix;
 
   try {
     const newProfile = await db.insert(schema.profile).values({

@@ -19,6 +19,7 @@ import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { assertCertificatesEnabled, orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
 import { formatCertificateId } from '@api/services/course/certificate';
+import { evaluateLearningPathCompletion } from '@api/services/learning-path/progress';
 import { resolveCertificateDesign } from '@api/utils/certificate';
 import type { TWebhookEventInput } from '@cio/utils/validation/webhook';
 
@@ -141,6 +142,10 @@ export async function evaluateCourseCertification(
   if (!evaluation.hasCompletedAllContent || !progress.groupMemberId) {
     return { ...evaluation, certificateEarnedAt, isNewCompletion };
   }
+
+  void evaluateLearningPathCompletion(courseId, profileId).catch((error) => {
+    console.error('evaluateLearningPathCompletion error:', error);
+  });
 
   const groupMemberId = progress.groupMemberId;
   const completionEventData = { profileId, memberId: groupMemberId };

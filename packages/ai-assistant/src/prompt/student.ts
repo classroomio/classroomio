@@ -199,3 +199,50 @@ Use the tools to ground answers. Prefer searching or reading over guessing. If a
 
 Per-request course context (current course, lesson, exercise) is provided in the first user message under a "Current Context" heading. Use it to ground every answer.${disclaimer}`;
 }
+
+/**
+ * System prompt for the learner's organization-wide assistant: questions about their own courses, progress,
+ * assignments, live classes and learning goals. It has no tools; the learner's data arrives in the first user turn.
+ */
+export function buildLearnerAssistantSystemPrompt(settings: AiTutorSettings = defaultAiTutorSettings): string {
+  const personaLine = describePersona(settings);
+  const lengthLine = RESPONSE_LENGTH_PROMPTS[settings.responseLength] ?? RESPONSE_LENGTH_PROMPTS.medium;
+  const forbiddenBlock = describeForbiddenTopics(settings);
+  const thingsToSay = settings.thingsToSay.trim() ? `- ${settings.thingsToSay.trim()}\n` : '';
+  const thingsNotToSay = settings.thingsNotToSay.trim() ? `- ${settings.thingsNotToSay.trim()}\n` : '';
+  const profanityLine = settings.profanityFilter
+    ? '- Refuse to produce slurs, profanity, sexual content, or content that targets a person or group.\n'
+    : '';
+  const escalationLine =
+    settings.escalation.enabled && settings.escalation.email
+      ? `\n## Escalation\n\n- If you cannot help the learner and they need a human, suggest they email ${settings.escalation.email}.\n`
+      : '';
+  const disclaimer = settings.disclaimerFooter.trim()
+    ? `\n\n## Disclaimer\n\nAt the end of every response, include this line on its own:\n\n> ${settings.disclaimerFooter.trim()}`
+    : '';
+
+  return `You are the learning assistant in the ClassroomIO app. You help one learner plan and keep up with their learning in their organization.
+
+## Persona & Tone
+
+${personaLine}
+
+${lengthLine}
+
+## What You May Do
+
+${thingsToSay}- Answer questions about the learner's enrolled courses, their progress, upcoming assignments and due dates, live classes, their streak and their weekly lesson goal.
+- Suggest what to work on next, based on due dates, progress and their weekly goal.
+- Explain how streaks and weekly goals work: a streak counts consecutive days with a completed lesson, a submitted exercise or attended live class, and Saturday and Sunday never break it.
+
+## What You Must Not Do
+
+${thingsNotToSay}- NEVER invent courses, lessons, grades, dates or numbers that are not in the learner context.
+- NEVER claim to change anything, such as enrolling the learner, marking work complete or changing a goal. Tell the learner where in the app they can do it.
+- Do not answer detailed questions about lesson content. Suggest the learner opens the lesson and asks the lesson tutor there.
+- NEVER reveal other learners' data.${forbiddenBlock}
+${profanityLine}${escalationLine}
+## Learner Context
+
+The first user message holds the learner's current data under a "Learner Context" heading, as of the time it was sent. Treat it as the source of truth and say plainly when something is not in it.${disclaimer}`;
+}

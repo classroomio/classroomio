@@ -8,7 +8,6 @@ import { lessonCatalog } from '@/feature/lesson/translations/catalog';
 import {
   LessonActionNote,
   LessonActionRow,
-  LessonCompleteButton,
   LessonCompletedStatus,
   LessonNextButton,
   LessonWatchProgress
@@ -21,14 +20,11 @@ type LessonBottomBarProps = {
   watchedPercent: number | null;
   next: CourseContentItem | null;
   nextLockReason: string | null;
-  pending: boolean;
   syncPending: boolean;
-  onComplete: () => void;
-  onUndo: () => void;
   onNext: (item: CourseContentItem) => void;
 };
 
-/** The pinned bar for this lesson's completion policy, composed from the lesson action bar parts. */
+/** The pinned bar for this lesson's completion policy. Lessons complete on their own, so it never asks for a tap. */
 export function LessonBottomBar({
   policy,
   complete,
@@ -36,10 +32,7 @@ export function LessonBottomBar({
   watchedPercent,
   next,
   nextLockReason,
-  pending,
   syncPending,
-  onComplete,
-  onUndo,
   onNext
 }: LessonBottomBarProps) {
   const t = useTranslations(lessonCatalog);
@@ -55,10 +48,7 @@ export function LessonBottomBar({
           <LessonCompletedStatus
             animate={!completeOnOpen}
             syncPending={syncPending}
-            undoable={policy === 'manual' && !syncPending}
-            pending={pending}
             detail={next ? (nextLockReason ?? next.title) : t('completedLabel')}
-            onUndo={onUndo}
           />
           {nextButton}
         </LessonActionRow>
@@ -69,7 +59,10 @@ export function LessonBottomBar({
   if (policy === 'manual') {
     return (
       <CourseActionBar>
-        <LessonCompleteButton hasNext={Boolean(next)} pending={pending} onComplete={onComplete} />
+        <LessonActionRow>
+          <LessonActionNote>{t('completesAtEnd')}</LessonActionNote>
+          {nextButton}
+        </LessonActionRow>
       </CourseActionBar>
     );
   }

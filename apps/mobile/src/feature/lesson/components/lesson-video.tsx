@@ -1,15 +1,17 @@
 import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
+import { SignInIcon } from 'phosphor-react-native/src/icons/SignIn';
 import { VideoCameraSlashIcon } from 'phosphor-react-native/src/icons/VideoCameraSlash';
 import { WifiSlashIcon } from 'phosphor-react-native/src/icons/WifiSlash';
 import type { VideoPlayer } from 'expo-video';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { useAuth } from '@/feature/auth/components/auth-provider';
+import { ApiError } from '@/feature/common/api/request';
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Icon } from '@/feature/common/components/icon';
 import { Skeleton } from '@/feature/common/components/skeleton';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, SPACING } from '@/feature/common/constants/layout';
-import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { useHlsPlaybackUrlQuery } from '@/feature/lesson/api/media';
@@ -54,6 +56,7 @@ export function LessonVideo({
       <NativeVideo
         key={localUri}
         uri={localUri}
+        local
         contentType="auto"
         title={source.title}
         artist={courseTitle}
@@ -141,7 +144,11 @@ function HlsVideo({
 
   if (playback.isPending) return <Skeleton height={(width * 9) / 16} radius={0} />;
 
-  if (!playback.data) return <VideoUnavailable onRetry={() => playback.refetch()} />;
+  if (!playback.data) {
+    const expired = playback.error instanceof ApiError && playback.error.status === 401;
+
+    return expired ? <SessionExpired /> : <VideoUnavailable onRetry={() => playback.refetch()} />;
+  }
 
   return (
     <NativeVideo
@@ -164,7 +171,6 @@ function HlsVideo({
 function VideoUnavailable({ onRetry }: { onRetry: () => void }) {
   const { colors } = useTheme();
   const t = useTranslations(lessonCatalog);
-  const common = useTranslations(commonCatalog);
 
   return (
     <View style={[styles.unavailable, { backgroundColor: colors.muted }]}>
@@ -175,7 +181,26 @@ function VideoUnavailable({ onRetry }: { onRetry: () => void }) {
       </Text>
       <Button size="sm" variant="outline" onPress={onRetry}>
         <ButtonIcon icon={ArrowCounterClockwiseIcon} />
-        <ButtonText>{common('retry')}</ButtonText>
+        <ButtonText>{t('reload')}</ButtonText>
+      </Button>
+    </View>
+  );
+}
+
+function SessionExpired() {
+  const { colors } = useTheme();
+  const t = useTranslations(lessonCatalog);
+  const { signOut } = useAuth();
+
+  return (
+    <View style={[styles.unavailable, { backgroundColor: colors.muted }]}>
+      <Icon icon={SignInIcon} size={24} tone="muted" />
+      <Text variant="captionStrong">{t('sessionExpiredTitle')}</Text>
+      <Text variant="caption" tone="muted" style={styles.centerText}>
+        {t('sessionExpiredDescription')}
+      </Text>
+      <Button size="sm" variant="outline" onPress={() => void signOut()}>
+        <ButtonText>{t('signInAgain')}</ButtonText>
       </Button>
     </View>
   );

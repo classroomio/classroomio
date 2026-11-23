@@ -223,3 +223,22 @@ export async function deleteNotificationForProfile(params: {
     throw new Error('Failed to delete notification');
   }
 }
+
+/** The dedupe keys, among `dedupeKeys`, that already have a notification for the given profiles. */
+export async function listExistingDedupeKeys(profileIds: string[], dedupeKeys: string[]): Promise<Set<string>> {
+  if (profileIds.length === 0 || dedupeKeys.length === 0) return new Set();
+
+  try {
+    const rows = await db
+      .select({ dedupeKey: schema.notification.dedupeKey })
+      .from(schema.notification)
+      .where(
+        and(inArray(schema.notification.profileId, profileIds), inArray(schema.notification.dedupeKey, dedupeKeys))
+      );
+
+    return new Set(rows.flatMap((row) => (row.dedupeKey ? [row.dedupeKey] : [])));
+  } catch (error) {
+    console.error('listExistingDedupeKeys error:', error);
+    throw new Error('Failed to read notification keys');
+  }
+}

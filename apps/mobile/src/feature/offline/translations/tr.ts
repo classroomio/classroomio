@@ -29,5 +29,8 @@ export const tr: TranslatedMessages<typeof en> = {
   retry: 'Yeniden dene',
   syncTitle: 'Eşitleme',
   syncNow: 'Şimdi eşitle',
-  signInToSave: 'İlerlemenizi kaydetmek için yeniden oturum açın.'
+  signInToSave: 'İlerlemenizi kaydetmek için yeniden oturum açın.',
+  staffOfflineTitle: 'Çevrimdışısınız',
+  staffOfflineDescription:
+    'Notlandırma, yoklama ve öğrenci verileri bağlantı gerektirir. Yeniden çevrimiçi olduğunuzda uygulama tekrar açılır.'
 };

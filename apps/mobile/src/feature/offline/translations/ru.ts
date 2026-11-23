@@ -43,5 +43,8 @@ export const ru: TranslatedMessages<typeof en> = {
   retry: 'Повторить',
   syncTitle: 'Синхронизация',
   syncNow: 'Синхронизировать',
-  signInToSave: 'Войдите снова, чтобы сохранить прогресс.'
+  signInToSave: 'Войдите снова, чтобы сохранить прогресс.',
+  staffOfflineTitle: 'Нет подключения',
+  staffOfflineDescription:
+    'Для проверки работ, посещаемости и данных учащихся нужна сеть. Приложение откроется снова, когда подключение появится.'
 };

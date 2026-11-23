@@ -28,6 +28,8 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
+  import { COURSE_LEVELS, MAX_COURSE_DURATION_MINUTES, type TCourseLevel } from '@cio/utils/constants/course-level';
   import { Input } from '@cio/ui/base/input';
   import * as Field from '@cio/ui/base/field';
   import {
@@ -70,6 +72,8 @@
   }
 
   let { hasUnsavedChanges = $bindable(false) }: Props = $props();
+
+  const LEVEL_NOT_SET = 'none';
 
   let isLoading = $state(false);
   let isGeneratingLink = $state(false);
@@ -277,6 +281,8 @@
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
         commentsEnabled: $settings.commentsEnabled,
+        level: $settings.level,
+        durationMinutes: $settings.durationMinutes,
         welcomeEmailMessage: $settings.welcomeEmailMessage?.trim() ? $settings.welcomeEmailMessage : null
       } as NonNullable<Course['metadata']>;
 
@@ -379,6 +385,8 @@
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
+        level: course.metadata?.level ?? null,
+        durationMinutes: course.metadata?.durationMinutes ?? null,
         callout: normalizeCallout(course.callout),
         welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
         liveSessionReminders: resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes).map(
@@ -648,6 +656,51 @@
           onchange={() => {
             errors.description = undefined;
             delete courseApi.errors.description;
+            hasUnsavedChanges = true;
+          }}
+        />
+      </div>
+
+      <Field.Field id="course-level" class="scroll-mt-24">
+        <Field.Label>{$t('course.navItem.settings.level_label')}</Field.Label>
+        <Select.Root
+          type="single"
+          value={$settings.level ?? LEVEL_NOT_SET}
+          onValueChange={(value) => {
+            $settings.level = value && value !== LEVEL_NOT_SET ? (value as TCourseLevel) : null;
+            hasUnsavedChanges = true;
+          }}
+        >
+          <Select.Trigger class="w-full">
+            {$t(`course.navItem.settings.level_${$settings.level ?? 'none'}`)}
+          </Select.Trigger>
+          <Select.Content>
+            <Select.Group>
+              <Select.Item value={LEVEL_NOT_SET} label={$t('course.navItem.settings.level_none')}>
+                {$t('course.navItem.settings.level_none')}
+              </Select.Item>
+              {#each COURSE_LEVELS as level (level)}
+                <Select.Item value={level} label={$t(`course.navItem.settings.level_${level}`)}>
+                  {$t(`course.navItem.settings.level_${level}`)}
+                </Select.Item>
+              {/each}
+            </Select.Group>
+          </Select.Content>
+        </Select.Root>
+        <Field.Description>{$t('course.navItem.settings.level_helper')}</Field.Description>
+      </Field.Field>
+
+      <div id="course-duration" class="scroll-mt-24">
+        <NumberField
+          label={$t('course.navItem.settings.duration_label')}
+          helperMessage={$t('course.navItem.settings.duration_helper')}
+          integer
+          allowEmpty
+          min={1}
+          max={MAX_COURSE_DURATION_MINUTES}
+          value={$settings.durationMinutes}
+          onValueChange={(next) => {
+            $settings.durationMinutes = next;
             hasUnsavedChanges = true;
           }}
         />

@@ -32,5 +32,7 @@ export const da: TranslatedMessages<typeof en> = {
   retry: 'Prøv igen',
   syncTitle: 'Synkronisering',
   syncNow: 'Synkroniser nu',
-  signInToSave: 'Log ind igen for at gemme dine fremskridt.'
+  signInToSave: 'Log ind igen for at gemme dine fremskridt.',
+  staffOfflineTitle: 'Du er offline',
+  staffOfflineDescription: 'Bedømmelse, fremmøde og elevdata kræver forbindelse. Appen åbner igen, når du er online.'
 };

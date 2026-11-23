@@ -1,7 +1,8 @@
 import isNumber from 'lodash/isNumber';
 import { t } from '$lib/utils/functions/translations';
 import { validateEmail } from './validateEmail';
-import { PASSWORD_MIN_LENGTH, ZPassword, ZPasswordFields } from '@cio/utils/validation/auth/password';
+import { PASSWORD_MIN_LENGTH } from '@cio/utils/constants/password';
+import { ZPassword, ZPasswordFields } from '@cio/utils/validation/auth/password';
 import z from 'zod';
 
 function getOrgNameValidation() {

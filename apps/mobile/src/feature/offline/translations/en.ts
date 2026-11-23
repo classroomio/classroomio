@@ -22,5 +22,8 @@ export const en = {
   retry: 'Retry',
   syncTitle: 'Sync',
   syncNow: 'Sync now',
-  signInToSave: 'Sign in again to save your progress.'
+  signInToSave: 'Sign in again to save your progress.',
+  staffOfflineTitle: 'You are offline',
+  staffOfflineDescription:
+    'Grading, attendance and learner data need a connection. The app opens again when you are back online.'
 };

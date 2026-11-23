@@ -35,6 +35,7 @@ import { getWelcomeSessionIcs } from './session-invite';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureLearnersEnrolled } from '@api/services/product-events';
 import { notifyCourseEnrollment } from '@cio/core/services/notification/course-events';
+import { notifyTutorAdded } from '@cio/core/services/notification/staff-events';
 
 /**
  * Attaches only `stage` to a page of members.
@@ -242,6 +243,14 @@ export async function addMembers(
     if (studentProfileIds.length > 0) {
       await ensureComplianceEnrollmentRecordsForProfiles([courseId], studentProfileIds);
       void notifyCourseEnrollment({ courseId, profileIds: studentProfileIds, actorProfileId: context.actorProfileId });
+    }
+
+    const teamProfileIds = members
+      .filter((member) => (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR) && member.profileId)
+      .map((member) => member.profileId!);
+
+    if (teamProfileIds.length > 0) {
+      void notifyTutorAdded({ courseId, profileIds: teamProfileIds, actorProfileId: context.actorProfileId });
     }
 
     if (!sendEmail) {

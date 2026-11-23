@@ -3,14 +3,8 @@ import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
 import type { en } from './en';
 
 export const de: TranslatedMessages<typeof en> = {
-  screenTitle: 'Entdecken',
-  entryTitle: 'Kurse entdecken',
-  entryDescription: 'Kurse, in die Sie sich einschreiben können',
-  searchCourses: 'Kurse suchen',
   emptyTitle: 'Keine weiteren Kurse',
   emptyDescription: 'Ihre Organisation bietet Ihnen keine weiteren Kurse an.',
-  searchNoResultsTitle: 'Keine passenden Kurse',
-  searchNoResultsDescription: 'Kein Kurstitel enthält „{query}“.',
   loadError: 'Die Kurse wurden nicht geladen',
   courseLoadError: 'Dieser Kurs wurde nicht geladen',
   about: 'Über diesen Kurs',
@@ -26,5 +20,8 @@ export const de: TranslatedMessages<typeof en> = {
   enrollUnavailable: 'Für diesen Kurs ist keine Einschreibung in der App möglich.',
   paidNotAvailable: 'Für diesen Kurs ist keine Einschreibung in der App möglich.',
   inviteOnly: 'Ihre Organisation schreibt Lernende in diesen Kurs ein.',
-  originalPrice: 'Ursprünglicher Preis {price}'
+  originalPrice: 'Ursprünglicher Preis {price}',
+  pathsTitle: 'Lernpfade',
+  coursesTitle: 'Kurse',
+  searchCatalog: 'Lernpfade und Kurse durchsuchen'
 };

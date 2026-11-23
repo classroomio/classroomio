@@ -43,5 +43,31 @@ export const ru: TranslatedMessages<typeof en> = {
   resetEmailFailed: 'Не удалось отправить письмо для сброса пароля. Попробуйте ещё раз.',
   invalidEmail: 'Введите действительный адрес эл. почты.',
   invalidCredentials: 'Неверный адрес эл. почты или пароль.',
-  emailNotVerified: 'Подтвердите адрес эл. почты перед входом. Ссылка пришла вам на почту.'
+  emailNotVerified: 'Подтвердите адрес эл. почты перед входом. Ссылка пришла вам на почту.',
+  nameLabel: 'Полное имя',
+  namePlaceholder: 'Ваше имя',
+  newPasswordPlaceholder: 'Придумайте пароль',
+  passwordHint: {
+    one: 'Не менее {count} символа.',
+    few: 'Не менее {count} символов.',
+    many: 'Не менее {count} символов.',
+    other: 'Не менее {count} символа.'
+  },
+  passwordTooShort: {
+    one: 'Используйте не менее {count} символа.',
+    few: 'Используйте не менее {count} символов.',
+    many: 'Используйте не менее {count} символов.',
+    other: 'Используйте не менее {count} символа.'
+  },
+  createAccount: 'Создать аккаунт',
+  signUpFailed: 'Не удалось создать аккаунт. Попробуйте ещё раз.',
+  accountExists: 'Аккаунт с этим адресом уже существует. Войдите в него.',
+  haveInviteLink: 'Есть ссылка-приглашение?',
+  joinAction: 'Присоединиться',
+  joinTitle: 'Присоединиться по ссылке-приглашению',
+  joinDescription: 'Вставьте ссылку-приглашение из письма или от команды курса.',
+  inviteLinkLabel: 'Ссылка-приглашение',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'На следующем экране можно создать аккаунт.',
+  inviteLinkInvalid: 'Это не ссылка-приглашение ClassroomIO. Скопируйте ссылку целиком и попробуйте снова.'
 };

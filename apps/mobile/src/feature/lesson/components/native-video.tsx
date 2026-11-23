@@ -2,7 +2,7 @@ import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/Arrow
 import { VideoCameraSlashIcon } from 'phosphor-react-native/src/icons/VideoCameraSlash';
 import { useEvent } from 'expo';
 import { VideoView, useVideoPlayer, type VideoSource, type VideoPlayer } from 'expo-video';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useEffectEvent, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
@@ -10,17 +10,18 @@ import { Icon } from '@/feature/common/components/icon';
 import { Spinner } from '@/feature/common/components/spinner';
 import { Text } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
-import { commonCatalog } from '@/feature/common/translations/catalog';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { VIDEO_COLORS } from '@/feature/lesson/constants/playback';
 import { enterLandscape, restorePortrait } from '@/feature/lesson/helpers/fullscreen-orientation';
+import { useResumePosition } from '@/feature/lesson/helpers/use-resume-position';
 import { useWatchEnforcement } from '@/feature/lesson/helpers/use-watch-enforcement';
 import { lessonCatalog } from '@/feature/lesson/translations/catalog';
 import type { LessonWatchProgress, TranscriptSegment } from '@/feature/lesson/types/lesson';
 import { maxResolutionOf, useVideoQuality } from '@/feature/settings/helpers/video-quality-store';
 
 import { NativeVideoContext, useNativeVideo, type CaptionChoice } from './native-video-context';
+import { ResumeChip } from './resume-chip';
 import { VideoCaptions } from './video-captions';
 import { VideoControls } from './video-controls';
 import { VideoFullscreen } from './video-fullscreen';
@@ -43,6 +44,8 @@ type NativeVideoProps = {
   /** Reports the player so the transcript sheet can follow and seek it. */
   onPlayerChange?: (player: VideoPlayer | null) => void;
   onRetry?: () => void;
+  /** A downloaded file on the device; streaming quality does not apply to it. */
+  local?: boolean;
   children: ReactNode;
 };
 
@@ -56,6 +59,7 @@ export function NativeVideo({
   watch,
   onPlayerChange,
   onRetry,
+  local = false,
   children
 }: NativeVideoProps) {
   const source: VideoSource = { uri, contentType, metadata: { title, artist, artwork: poster ?? undefined } };
@@ -66,7 +70,8 @@ export function NativeVideo({
     instance.showNowPlayingNotification = true;
     instance.maxResolution = maxResolutionOf(videoQuality);
   });
-  const { enforced } = useWatchEnforcement(player, watch);
+  const { enforced, resumeAt } = useWatchEnforcement(player, watch);
+  const resume = useResumePosition(player, `${watch.lessonId}:${watch.assetId ?? uri}`, resumeAt);
   const [captions, setCaptions] = useState<CaptionChoice>({ kind: 'off' });
   const { availableSubtitleTracks } = useEvent(player, 'availableSubtitleTracksChange', {
     availableSubtitleTracks: player.availableSubtitleTracks
@@ -76,11 +81,13 @@ export function NativeVideo({
     player.maxResolution = maxResolutionOf(videoQuality);
   }, [player, videoQuality]);
 
-  useEffect(() => {
-    onPlayerChange?.(player);
+  const reportPlayer = useEffectEvent((next: VideoPlayer | null) => onPlayerChange?.(next));
 
-    return () => onPlayerChange?.(null);
-  }, [player, onPlayerChange]);
+  useEffect(() => {
+    reportPlayer(player);
+
+    return () => reportPlayer(null);
+  }, [player]);
 
   const chooseCaptions = (choice: CaptionChoice) => {
     player.subtitleTrack = choice.kind === 'track' ? choice.track : null;
@@ -96,7 +103,10 @@ export function NativeVideo({
         captions,
         setCaptions: chooseCaptions,
         subtitleTracks: availableSubtitleTracks,
-        onRetry
+        local,
+        resumedFrom: resume.resumedFrom,
+        clearResumed: resume.clearResumed,
+        onRetry: onRetry ?? (() => void player.replaceAsync(source))
       }}
     >
       <View style={styles.root}>{children}</View>
@@ -108,7 +118,6 @@ export function NativeVideoSurface() {
   const { colors } = useTheme();
   const { player, enforced, onRetry } = useNativeVideo();
   const t = useTranslations(lessonCatalog);
-  const common = useTranslations(commonCatalog);
   const { status } = useEvent(player, 'statusChange', { status: player.status });
   const [fullscreen, setFullscreen] = useState(false);
 
@@ -131,7 +140,7 @@ export function NativeVideoSurface() {
           contentFit="contain"
           allowsPictureInPicture
           allowsVideoFrameAnalysis={false}
-          startsPictureInPictureAutomatically
+          startsPictureInPictureAutomatically={!enforced}
           requiresLinearPlayback={enforced}
           style={StyleSheet.absoluteFill}
         />
@@ -154,13 +163,14 @@ export function NativeVideoSurface() {
           {onRetry ? (
             <Button size="sm" variant="outline" onPress={onRetry}>
               <ButtonIcon icon={ArrowCounterClockwiseIcon} />
-              <ButtonText>{common('retry')}</ButtonText>
+              <ButtonText>{t('reload')}</ButtonText>
             </Button>
           ) : null}
         </View>
       ) : (
         <VideoControls onFullscreen={() => void enterFullscreen()} />
       )}
+      {status === 'readyToPlay' ? <ResumeChip /> : null}
       {fullscreen ? <VideoFullscreen onExit={exitFullscreen} /> : null}
     </View>
   );

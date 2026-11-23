@@ -3,14 +3,8 @@ import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
 import type { en } from './en';
 
 export const it: TranslatedMessages<typeof en> = {
-  screenTitle: 'Esplora',
-  entryTitle: 'Esplora i corsi',
-  entryDescription: 'Corsi a cui puoi iscriverti',
-  searchCourses: 'Cerca corsi',
   emptyTitle: 'Nessun altro corso',
   emptyDescription: 'La tua organizzazione non ha altri corsi disponibili per te.',
-  searchNoResultsTitle: 'Nessun corso corrispondente',
-  searchNoResultsDescription: 'Nessun titolo di corso contiene “{query}”.',
   loadError: 'Impossibile caricare i corsi',
   courseLoadError: 'Impossibile caricare questo corso',
   about: 'Informazioni sul corso',
@@ -25,5 +19,8 @@ export const it: TranslatedMessages<typeof en> = {
   enrollUnavailable: 'Non è possibile iscriversi a questo corso dall’app.',
   paidNotAvailable: 'Non è possibile iscriversi a questo corso dall’app.',
   inviteOnly: 'La tua organizzazione iscrive gli studenti a questo corso.',
-  originalPrice: 'Prezzo originale {price}'
+  originalPrice: 'Prezzo originale {price}',
+  pathsTitle: 'Percorsi di apprendimento',
+  coursesTitle: 'Corsi',
+  searchCatalog: 'Cerca percorsi e corsi'
 };

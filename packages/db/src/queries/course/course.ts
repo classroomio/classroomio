@@ -21,6 +21,14 @@ import { getCourseContentItems, type CourseContentItemRow } from './content';
 import { isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
 import { resolveCourseBannerImage } from '@cio/utils/functions';
+import { resolveCourseFacts, type CourseFacts } from '@cio/utils/functions/course-facts';
+import {
+  courseDurationFilterSql,
+  courseLevelFilterSql,
+  courseTutorNameSql,
+  courseVideoSecondsSql
+} from './course-facts';
+import type { TCourseDurationBucket, TCourseLevel } from '@cio/utils/constants/course-level';
 
 /**
  * `bannerImage` is the canonical course image and `logo` the deprecated column
@@ -54,7 +62,8 @@ export interface TAdminCourse extends TBaseCourse {
  * Used for student dashboard and enrolled courses views
  * progressRate = lessons completed, exercisesCompleted = exercises submitted
  */
-export interface TStudentCourse extends TBaseCourse {
+export interface TStudentCourse extends TBaseCourse, CourseFacts {
+  completedAt: string | null;
   progressRate: number;
   exercisesCompleted: number;
   certificateEarnedAt: string | null;
@@ -1174,6 +1183,9 @@ export const getEnrolledCourses = async ({
           )}
         )`.as('exercises_completed'),
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
+        memberCompletedAt: schema.groupmember.completedAt,
+        videoSeconds: courseVideoSecondsSql(schema.course.id).as('video_seconds'),
+        tutorName: courseTutorNameSql(schema.course.groupId).as('tutor_name'),
         complianceStatus: schema.courseCompletionRecord.status,
         complianceCycleNumber: schema.courseCompletionRecord.cycleNumber,
         complianceDueDate: schema.courseCompletionRecord.dueDate,
@@ -1227,6 +1239,8 @@ export const getEnrolledCourses = async ({
 
     return result.map((row) => ({
       ...withResolvedCourseBannerImage(row.course),
+      ...resolveCourseFacts(row.course.metadata, Number(row.videoSeconds), row.tutorName),
+      completedAt: row.memberCompletedAt ?? null,
       lessonCount: Number(row.lessonCount),
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
@@ -1251,10 +1265,15 @@ interface GetExploreCoursesOptions {
   page?: number;
   sortKey?: OrgCourseSortKey;
   order?: OrgCourseSortOrder;
+  search?: string;
+  level?: TCourseLevel;
+  duration?: TCourseDurationBucket;
 }
 
+export interface TExploreCourse extends TBaseCourse, CourseFacts {}
+
 export interface GetExploreCoursesResult {
-  data: TBaseCourse[];
+  data: TExploreCourse[];
   total: number;
 }
 
@@ -1273,10 +1292,19 @@ export const getExploreCourses = async ({
   limit,
   page = 1,
   sortKey,
-  order
+  order,
+  search,
+  level,
+  duration
 }: GetExploreCoursesOptions): Promise<GetExploreCoursesResult> => {
   try {
+    const searchValue = search ? `%${search}%` : null;
     const whereCondition = and(
+      searchValue
+        ? or(ilike(schema.course.title, searchValue), ilike(schema.course.description, searchValue))
+        : undefined,
+      level ? courseLevelFilterSql(level) : undefined,
+      duration ? courseDurationFilterSql(duration) : undefined,
       eq(schema.group.organizationId, orgId),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
@@ -1296,7 +1324,9 @@ export const getExploreCourses = async ({
         FROM ${schema.exercise} as ex
         LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
         WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
-      )`.as('exercise_count')
+      )`.as('exercise_count'),
+      videoSeconds: courseVideoSecondsSql(schema.course.id).as('video_seconds'),
+      tutorName: courseTutorNameSql(schema.course.groupId).as('tutor_name')
     };
 
     const baseSelect = db
@@ -1330,6 +1360,7 @@ export const getExploreCourses = async ({
     return {
       data: rows.map((row) => ({
         ...withResolvedCourseBannerImage(row.course),
+        ...resolveCourseFacts(row.course.metadata, Number(row.videoSeconds), row.tutorName),
         lessonCount: Number(row.lessonCount),
         exerciseCount: Number(row.exerciseCount)
       })),

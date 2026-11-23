@@ -45,5 +45,21 @@ export const de: TranslatedMessages<typeof en> = {
   invalidEmail: 'Geben Sie eine gültige E-Mail-Adresse ein.',
   invalidCredentials: 'Die E-Mail-Adresse oder das Passwort ist falsch.',
   emailNotVerified:
-    'Bestätigen Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden. Den Link finden Sie in Ihrem Posteingang.'
+    'Bestätigen Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden. Den Link finden Sie in Ihrem Posteingang.',
+  nameLabel: 'Vollständiger Name',
+  namePlaceholder: 'Dein Name',
+  newPasswordPlaceholder: 'Passwort festlegen',
+  passwordHint: { one: 'Mindestens {count} Zeichen.', other: 'Mindestens {count} Zeichen.' },
+  passwordTooShort: { one: 'Verwende mindestens {count} Zeichen.', other: 'Verwende mindestens {count} Zeichen.' },
+  createAccount: 'Konto erstellen',
+  signUpFailed: 'Wir konnten dein Konto nicht erstellen. Versuche es erneut.',
+  accountExists: 'Für diese E-Mail gibt es bereits ein Konto. Melde dich stattdessen an.',
+  haveInviteLink: 'Hast du einen Einladungslink?',
+  joinAction: 'Beitreten',
+  joinTitle: 'Mit Einladungslink beitreten',
+  joinDescription: 'Füge den Einladungslink ein, den du per E-Mail oder von deinem Kursteam bekommen hast.',
+  inviteLinkLabel: 'Einladungslink',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Auf dem nächsten Bildschirm kannst du ein Konto erstellen.',
+  inviteLinkInvalid: 'Das ist kein ClassroomIO-Einladungslink. Kopiere den ganzen Link und versuche es erneut.'
 };

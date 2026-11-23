@@ -174,6 +174,10 @@ export default defineConfig({
               {
                 label: 'Duplicate or import a course',
                 root: '/build-courses/duplicate-or-import-a-course'
+              },
+              {
+                label: 'Create a learning path',
+                root: '/build-courses/create-a-learning-path'
               }
             ]
           },
@@ -1053,6 +1057,10 @@ export default defineConfig({
               {
                 label: 'View your cohorts and goals',
                 root: '/learner-guides/view-your-cohorts-and-goals'
+              },
+              {
+                label: 'Track your streak and weekly goal',
+                root: '/learner-guides/track-your-streak-and-weekly-goal'
               }
             ]
           },

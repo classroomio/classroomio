@@ -32,5 +32,8 @@ export const de: TranslatedMessages<typeof en> = {
   retry: 'Wiederholen',
   syncTitle: 'Synchronisierung',
   syncNow: 'Jetzt synchronisieren',
-  signInToSave: 'Melden Sie sich erneut an, um Ihren Fortschritt zu speichern.'
+  signInToSave: 'Melden Sie sich erneut an, um Ihren Fortschritt zu speichern.',
+  staffOfflineTitle: 'Sie sind offline',
+  staffOfflineDescription:
+    'Bewertung, Anwesenheit und Lernendendaten brauchen eine Verbindung. Die App öffnet sich wieder, sobald Sie online sind.'
 };

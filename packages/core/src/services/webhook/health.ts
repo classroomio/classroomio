@@ -7,6 +7,7 @@ import {
 } from '@cio/utils/constants/webhook';
 
 import { getAppBaseUrl } from '../../config/dashboard-url';
+import { notifyWebhookHealth } from '../notification/staff-events';
 
 function toDestinationHost(url: string): string {
   try {
@@ -17,7 +18,7 @@ function toDestinationHost(url: string): string {
 }
 
 /**
- * Emails the org's admins when an endpoint becomes "Failing" or is auto-disabled. Never throws:
+ * Notifies and emails the org's admins when an endpoint becomes "Failing" or is auto-disabled. Never throws:
  * a failed notification must not fail the delivery that triggered it.
  */
 export async function notifyWebhookHealthChange(
@@ -33,6 +34,8 @@ export async function notifyWebhookHealthChange(
     const organization = await getOrganizationById(endpoint.organizationId);
 
     if (!organization) return;
+
+    await notifyWebhookHealth({ organizationId: endpoint.organizationId, webhookId, transition, deliveryId });
 
     const admins = await getOrganizationAdminEmails(endpoint.organizationId);
     const webhooksUrl = `${getAppBaseUrl()}/org/${organization.siteName}/automation/webhooks`;

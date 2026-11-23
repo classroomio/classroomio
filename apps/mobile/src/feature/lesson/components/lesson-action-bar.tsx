@@ -3,14 +3,14 @@ import { CheckIcon } from 'phosphor-react-native/src/icons/Check';
 import { CloudArrowUpIcon } from 'phosphor-react-native/src/icons/CloudArrowUp';
 import { LockIcon } from 'phosphor-react-native/src/icons/Lock';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { Keyframe } from 'react-native-reanimated';
 
-import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@/feature/common/components/button';
+import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Icon } from '@/feature/common/components/icon';
 import { Progress } from '@/feature/common/components/progress';
 import { Text } from '@/feature/common/components/text';
-import { HIT_SLOP, RADII, SPACING } from '@/feature/common/constants/layout';
+import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { EASE_OUT } from '@/feature/common/constants/motion';
 import { tapHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
@@ -40,68 +40,22 @@ export function LessonActionNote({ children }: { children: string }) {
   );
 }
 
-export function LessonCompleteButton({
-  hasNext,
-  pending,
-  onComplete
-}: {
-  hasNext: boolean;
-  pending: boolean;
-  onComplete: () => void;
-}) {
-  const t = useTranslations(lessonCatalog);
-
-  return (
-    <Button size="lg" disabled={pending} onPress={onComplete}>
-      {pending ? (
-        <ButtonSpinner />
-      ) : (
-        <>
-          <ButtonIcon icon={CheckIcon} />
-          <ButtonText>{hasNext ? t('completeAndContinue') : t('markComplete')}</ButtonText>
-        </>
-      )}
-    </Button>
-  );
-}
-
 type LessonCompletedStatusProps = {
   /** Plays the check's entrance; only when the lesson was completed during this visit. */
   animate: boolean;
   /** Completed on this device and waiting to reach the server. */
   syncPending: boolean;
-  undoable: boolean;
-  pending: boolean;
   detail: string;
-  onUndo: () => void;
 };
 
-/** The completed check, which undoes completion when tapped, with a line of detail beside it. */
-export function LessonCompletedStatus({
-  animate,
-  syncPending,
-  undoable,
-  pending,
-  detail,
-  onUndo
-}: LessonCompletedStatusProps) {
+/** The completed check with a line of detail beside it. */
+export function LessonCompletedStatus({ animate, syncPending, detail }: LessonCompletedStatusProps) {
   const t = useTranslations(lessonCatalog);
   const { colors } = useTheme();
 
   return (
     <>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={syncPending ? t('completedSyncPendingLabel') : t('completedLabel')}
-        accessibilityHint={undoable ? t('markNotComplete') : undefined}
-        accessibilityState={{ checked: true, disabled: !undoable || pending }}
-        disabled={!undoable || pending}
-        hitSlop={HIT_SLOP}
-        onPress={() => {
-          tapHaptic();
-          onUndo();
-        }}
-      >
+      <View accessible accessibilityLabel={syncPending ? t('completedSyncPendingLabel') : t('completedLabel')}>
         <Animated.View
           entering={animate ? COMPLETED_ENTER : undefined}
           style={[styles.mark, { backgroundColor: syncPending ? colors.muted : colors.success }]}
@@ -114,7 +68,7 @@ export function LessonCompletedStatus({
             weight="bold"
           />
         </Animated.View>
-      </Pressable>
+      </View>
       <View style={styles.copy}>
         <Text variant="label" tone="success" numberOfLines={1}>
           {t('completed')}

@@ -18,8 +18,14 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { CourseBanner } from './course-banner';
 import { CourseZoomLink } from './course-zoom-link';
 
+type ContinueLearningCardProps = {
+  course: EnrolledCourse;
+  /** The course has not been started, so the card offers to start it rather than continue. */
+  starting?: boolean;
+};
+
 /** The course the learner is most likely to resume: its artwork full-bleed, with the title and progress set over it. */
-export function ContinueLearningCard({ course }: { course: EnrolledCourse }) {
+export function ContinueLearningCard({ course, starting = false }: ContinueLearningCardProps) {
   const t = useTranslations(courseCatalog);
   const common = useTranslations(commonCatalog);
   const format = useFormatters();
@@ -32,7 +38,7 @@ export function ContinueLearningCard({ course }: { course: EnrolledCourse }) {
     <CourseZoomLink courseId={course.id}>
       <PressableScale
         accessibilityRole="button"
-        accessibilityLabel={`${common('continue')}, ${course.title}, ${percent}`}
+        accessibilityLabel={`${starting ? t('startTitle') : common('continue')}, ${course.title}, ${percent}`}
         scaleTo={0.98}
       >
         <View style={[styles.card, { backgroundColor: colors.muted }]}>

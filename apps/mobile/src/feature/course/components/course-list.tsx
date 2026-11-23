@@ -102,12 +102,13 @@ function CourseListSeparator() {
 type CourseListProps = {
   courses: EnrolledCourse[];
   header?: ReactElement;
+  footer?: ReactElement;
   empty?: ReactElement;
   onRefresh: RefreshHandler;
 };
 
 /** The learner's courses as a list of artwork rows. Long-press a row for a preview and Open, Download and Copy link. */
-export function CourseList({ courses, header, empty, onRefresh }: CourseListProps) {
+export function CourseList({ courses, header, footer, empty, onRefresh }: CourseListProps) {
   const t = useTranslations(courseCatalog);
   const common = useTranslations(commonCatalog);
   const { colors } = useTheme();
@@ -141,6 +142,7 @@ export function CourseList({ courses, header, empty, onRefresh }: CourseListProp
         renderItem={({ item }) => <CourseListRow course={item} actions={actions} />}
         ItemSeparatorComponent={CourseListSeparator}
         ListHeaderComponent={header}
+        ListFooterComponent={footer}
         ListEmptyComponent={empty}
         contentInsetAdjustmentBehavior="automatic"
         keyboardDismissMode="on-drag"

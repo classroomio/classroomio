@@ -43,10 +43,7 @@ export const vi: TranslatedMessages<typeof en> = {
   completedSyncPendingLabel: 'Đã hoàn thành bài học, sẽ đồng bộ khi bạn có mạng trở lại',
   completed: 'Đã hoàn thành',
   syncsWhenBackOnline: 'Sẽ đồng bộ khi bạn có mạng trở lại',
-  markNotComplete: 'Đánh dấu chưa hoàn thành',
   watchToComplete: 'Xem {percent} video để hoàn thành bài học này',
-  completeAndContinue: 'Hoàn thành và tiếp tục',
-  markComplete: 'Đánh dấu hoàn thành',
   previous: 'Trước',
   next: 'Tiếp',
   inThisSection: 'Trong phần này',
@@ -112,5 +109,13 @@ export const vi: TranslatedMessages<typeof en> = {
   tutorDisabledTitle: 'Gia sư AI đang tắt',
   tutorDisabledDescription: 'Tổ chức của bạn chưa bật gia sư AI cho khóa học này.',
   tutorNotConfiguredTitle: 'Gia sư AI không khả dụng',
-  tutorNotConfiguredDescription: 'Máy chủ này chưa cấu hình nhà cung cấp AI.'
+  tutorNotConfiguredDescription: 'Máy chủ này chưa cấu hình nhà cung cấp AI.',
+  completesAtEnd: 'Hoàn thành khi bạn đến cuối bài',
+  reload: 'Tải lại',
+  resumedFrom: 'Tiếp tục từ {time}',
+  videoQuality: 'Chất lượng video',
+  videoQualityValue: 'Chất lượng video, {quality}',
+  sessionExpiredTitle: 'Phiên đăng nhập đã hết hạn',
+  sessionExpiredDescription: 'Đăng nhập lại để xem video này.',
+  signInAgain: 'Đăng nhập lại'
 };

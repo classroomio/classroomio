@@ -32,5 +32,8 @@ export const hi: TranslatedMessages<typeof en> = {
   retry: 'फिर कोशिश करें',
   syncTitle: 'सिंक',
   syncNow: 'अभी सिंक करें',
-  signInToSave: 'अपनी प्रगति सहेजने के लिए फिर से साइन इन करें।'
+  signInToSave: 'अपनी प्रगति सहेजने के लिए फिर से साइन इन करें।',
+  staffOfflineTitle: 'आप ऑफ़लाइन हैं',
+  staffOfflineDescription:
+    'ग्रेडिंग, उपस्थिति और शिक्षार्थी डेटा के लिए कनेक्शन चाहिए। ऑनलाइन होने पर ऐप फिर से खुलता है।'
 };

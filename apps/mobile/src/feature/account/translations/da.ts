@@ -49,5 +49,10 @@ export const da: TranslatedMessages<typeof en> = {
   statCompletedEmpty: 'Du har ikke gennemført et kursus endnu.',
   statCertificatesEmpty: 'Du har ikke fået et certifikat endnu.',
   statCourseCount: { one: '{count} kursus', other: '{count} kurser' },
-  statEarnedOn: 'Opnået {date}'
+  statEarnedOn: 'Opnået {date}',
+  signUpInviteTitle: 'Opret din konto',
+  signUpInviteOrganization: 'Du er inviteret til en organisation på ClassroomIO. Opret en konto for at acceptere.',
+  signUpInviteLink: 'Opret en konto for at blive medlem af organisationen, der delte dette link.',
+  signUpInviteResource: 'Opret en konto for at deltage i kurset eller gruppen, der blev delt med dig.',
+  haveAccount: 'Har du allerede en konto?'
 };

@@ -32,5 +32,8 @@ export const es: TranslatedMessages<typeof en> = {
   retry: 'Reintentar',
   syncTitle: 'Sincronización',
   syncNow: 'Sincronizar ahora',
-  signInToSave: 'Vuelve a iniciar sesión para guardar tu progreso.'
+  signInToSave: 'Vuelve a iniciar sesión para guardar tu progreso.',
+  staffOfflineTitle: 'No tienes conexión',
+  staffOfflineDescription:
+    'La calificación, la asistencia y los datos de estudiantes necesitan conexión. La app se abre de nuevo cuando vuelvas a tener conexión.'
 };

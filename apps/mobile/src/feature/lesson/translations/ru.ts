@@ -43,10 +43,7 @@ export const ru: TranslatedMessages<typeof en> = {
   completedSyncPendingLabel: 'Урок завершён, синхронизируется, когда вы снова будете в сети',
   completed: 'Завершено',
   syncsWhenBackOnline: 'Синхронизируется, когда вы снова будете в сети',
-  markNotComplete: 'Отметить как незавершённый',
   watchToComplete: 'Посмотрите {percent} видео, чтобы завершить урок',
-  completeAndContinue: 'Завершить и продолжить',
-  markComplete: 'Отметить как завершённый',
   previous: 'Назад',
   next: 'Далее',
   inThisSection: 'В этом разделе',
@@ -117,5 +114,13 @@ export const ru: TranslatedMessages<typeof en> = {
   tutorDisabledTitle: 'ИИ-репетитор отключён',
   tutorDisabledDescription: 'Ваша организация не включила ИИ-репетитора для этого курса.',
   tutorNotConfiguredTitle: 'ИИ-репетитор недоступен',
-  tutorNotConfiguredDescription: 'На этом сервере не настроен поставщик ИИ.'
+  tutorNotConfiguredDescription: 'На этом сервере не настроен поставщик ИИ.',
+  completesAtEnd: 'Засчитывается, когда вы дойдёте до конца',
+  reload: 'Перезагрузить',
+  resumedFrom: 'Продолжено с {time}',
+  videoQuality: 'Качество видео',
+  videoQualityValue: 'Качество видео, {quality}',
+  sessionExpiredTitle: 'Сеанс истёк',
+  sessionExpiredDescription: 'Войдите снова, чтобы посмотреть видео.',
+  signInAgain: 'Войти снова'
 };

@@ -38,5 +38,21 @@ export const en = {
   resetEmailFailed: 'We could not send the reset email. Try again.',
   invalidEmail: 'Enter a valid email address.',
   invalidCredentials: 'The email or password is incorrect.',
-  emailNotVerified: 'Verify your email address before signing in. The link is in your inbox.'
+  emailNotVerified: 'Verify your email address before signing in. The link is in your inbox.',
+  nameLabel: 'Full name',
+  namePlaceholder: 'Your name',
+  newPasswordPlaceholder: 'Create a password',
+  passwordHint: { one: 'At least {count} character.', other: 'At least {count} characters.' },
+  passwordTooShort: { one: 'Use at least {count} character.', other: 'Use at least {count} characters.' },
+  createAccount: 'Create account',
+  signUpFailed: 'We could not create your account. Try again.',
+  accountExists: 'An account with this email already exists. Sign in instead.',
+  haveInviteLink: 'Have an invite link?',
+  joinAction: 'Join',
+  joinTitle: 'Join with an invite link',
+  joinDescription: 'Paste the invite link you received by email or from your course team.',
+  inviteLinkLabel: 'Invite link',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'You can create an account on the next screen.',
+  inviteLinkInvalid: 'This is not a ClassroomIO invite link. Copy the whole link and try again.'
 };

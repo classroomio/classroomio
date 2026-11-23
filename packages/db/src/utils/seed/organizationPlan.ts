@@ -53,3 +53,25 @@ export async function seedEarlyAdopterOrganizationPlan({ earlyAdopterOrgId }: { 
   });
   console.log('   ✓ Inserted early adopter organization plan');
 }
+
+/** Gives udemy-test room above its seeded student count so invites from the demo work. */
+export async function seedUdemyOrganizationPlan({ testOrgId }: { testOrgId: string }) {
+  const existing = await db
+    .select()
+    .from(organizationPlan)
+    .where(and(eq(organizationPlan.orgId, testOrgId), eq(organizationPlan.isActive, true)));
+
+  if (existing.length > 0) {
+    console.log('   ✓ udemy-test organization plan already exists, skipping');
+    return;
+  }
+
+  await db.insert(organizationPlan).values({
+    orgId: testOrgId,
+    planName: 'EARLY_ADOPTER',
+    isActive: true,
+    subscriptionId: 'seed-udemy-test-early-adopter',
+    provider: 'seed'
+  });
+  console.log('   ✓ Inserted udemy-test organization plan');
+}

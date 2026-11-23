@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
 import { getPaymentBlockDate } from '@cio/utils/plans';
+import { notifyPaymentFailed } from '@cio/core/services/notification/staff-events';
 import {
   getOrganizationAdminEmails,
   getOrganizationById,
@@ -21,6 +22,11 @@ async function notifyAdminsOfPaymentFailure(plan: TOrganizationPlan): Promise<vo
   if (!org) {
     return;
   }
+
+  await notifyPaymentFailed({
+    organizationId: plan.orgId,
+    failureKey: `${plan.subscriptionId}:${plan.paymentFailedAt}`
+  });
 
   const admins = await getOrganizationAdminEmails(plan.orgId);
 

@@ -43,5 +43,21 @@ export const it: TranslatedMessages<typeof en> = {
   resetEmailFailed: "Impossibile inviare l'email di reimpostazione. Riprova.",
   invalidEmail: 'Inserisci un indirizzo email valido.',
   invalidCredentials: 'L’email o la password non sono corrette.',
-  emailNotVerified: 'Verifica il tuo indirizzo email prima di accedere. Il link è nella tua casella di posta.'
+  emailNotVerified: 'Verifica il tuo indirizzo email prima di accedere. Il link è nella tua casella di posta.',
+  nameLabel: 'Nome completo',
+  namePlaceholder: 'Il tuo nome',
+  newPasswordPlaceholder: 'Crea una password',
+  passwordHint: { one: 'Almeno {count} carattere.', other: 'Almeno {count} caratteri.' },
+  passwordTooShort: { one: 'Usa almeno {count} carattere.', other: 'Usa almeno {count} caratteri.' },
+  createAccount: 'Crea account',
+  signUpFailed: 'Non siamo riusciti a creare il tuo account. Riprova.',
+  accountExists: 'Esiste già un account con questa email. Accedi invece.',
+  haveInviteLink: 'Hai un link di invito?',
+  joinAction: 'Partecipa',
+  joinTitle: 'Partecipa con un link di invito',
+  joinDescription: 'Incolla il link di invito ricevuto via email o dal team del corso.',
+  inviteLinkLabel: 'Link di invito',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Nella schermata successiva puoi creare un account.',
+  inviteLinkInvalid: 'Questo non è un link di invito ClassroomIO. Copia il link completo e riprova.'
 };

@@ -9,12 +9,23 @@ type AuthClientError = { message?: string; code?: string; error?: unknown; statu
 const KNOWN_CODES: Record<string, keyof typeof en> = {
   INVALID_EMAIL: 'invalidEmail',
   INVALID_EMAIL_OR_PASSWORD: 'invalidCredentials',
-  EMAIL_NOT_VERIFIED: 'emailNotVerified'
+  EMAIL_NOT_VERIFIED: 'emailNotVerified',
+  USER_ALREADY_EXISTS: 'accountExists',
+  USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL: 'accountExists'
 };
+
+const EMAIL_FIELD_CODES = new Set(['INVALID_EMAIL', 'USER_ALREADY_EXISTS', 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL']);
+
+const PASSWORD_FIELD_CODES = new Set(['PASSWORD_TOO_SHORT', 'PASSWORD_TOO_LONG']);
 
 /** True when Better Auth rejected the email address itself, so the message belongs on the email field. */
 export function isEmailFieldError(error: AuthClientError) {
-  return error.code === 'INVALID_EMAIL';
+  return Boolean(error.code && EMAIL_FIELD_CODES.has(error.code));
+}
+
+/** True when Better Auth rejected the password's length, so the message belongs on the password field. */
+export function isPasswordFieldError(error: AuthClientError) {
+  return Boolean(error.code && PASSWORD_FIELD_CODES.has(error.code));
 }
 
 /** Better Auth errors carry `message` and `code`; ClassroomIO's auth guards answer with `{ error }` instead. */

@@ -43,5 +43,21 @@ export const da: TranslatedMessages<typeof en> = {
   resetEmailFailed: 'Vi kunne ikke sende nulstillingsmailen. Prøv igen.',
   invalidEmail: 'Indtast en gyldig e-mailadresse.',
   invalidCredentials: 'E-mailen eller adgangskoden er forkert.',
-  emailNotVerified: 'Bekræft din e-mailadresse, før du logger ind. Linket er i din indbakke.'
+  emailNotVerified: 'Bekræft din e-mailadresse, før du logger ind. Linket er i din indbakke.',
+  nameLabel: 'Fulde navn',
+  namePlaceholder: 'Dit navn',
+  newPasswordPlaceholder: 'Opret en adgangskode',
+  passwordHint: { one: 'Mindst {count} tegn.', other: 'Mindst {count} tegn.' },
+  passwordTooShort: { one: 'Brug mindst {count} tegn.', other: 'Brug mindst {count} tegn.' },
+  createAccount: 'Opret konto',
+  signUpFailed: 'Vi kunne ikke oprette din konto. Prøv igen.',
+  accountExists: 'Der findes allerede en konto med denne e-mail. Log ind i stedet.',
+  haveInviteLink: 'Har du et invitationslink?',
+  joinAction: 'Deltag',
+  joinTitle: 'Deltag med et invitationslink',
+  joinDescription: 'Indsæt det invitationslink, du har fået på e-mail eller fra dit kursusteam.',
+  inviteLinkLabel: 'Invitationslink',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Du kan oprette en konto på næste skærm.',
+  inviteLinkInvalid: 'Dette er ikke et ClassroomIO-invitationslink. Kopiér hele linket, og prøv igen.'
 };

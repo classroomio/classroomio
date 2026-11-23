@@ -39,10 +39,7 @@ export const en = {
   completedSyncPendingLabel: 'Lesson completed, syncs when you are back online',
   completed: 'Completed',
   syncsWhenBackOnline: 'Syncs when you are back online',
-  markNotComplete: 'Mark as not complete',
   watchToComplete: 'Watch {percent} of the video to complete this lesson',
-  completeAndContinue: 'Complete and continue',
-  markComplete: 'Mark complete',
   previous: 'Previous',
   next: 'Next',
   inThisSection: 'In this section',
@@ -111,5 +108,13 @@ export const en = {
   tutorDisabledTitle: 'The AI tutor is off',
   tutorDisabledDescription: 'Your organization has not turned on the AI tutor for this course.',
   tutorNotConfiguredTitle: 'The AI tutor is not available',
-  tutorNotConfiguredDescription: 'This server has no AI provider configured.'
+  tutorNotConfiguredDescription: 'This server has no AI provider configured.',
+  completesAtEnd: 'Completes when you reach the end',
+  reload: 'Reload',
+  resumedFrom: 'Resumed from {time}',
+  videoQuality: 'Video quality',
+  videoQualityValue: 'Video quality, {quality}',
+  sessionExpiredTitle: 'Your session has expired',
+  sessionExpiredDescription: 'Sign in again to watch this video.',
+  signInAgain: 'Sign in again'
 };

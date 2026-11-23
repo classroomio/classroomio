@@ -1,4 +1,5 @@
 import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { getPathLocksForProfile } from '@api/services/learning-path/learner';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -7,6 +8,7 @@ import type {
   TGetOrganizationCoursesQuery,
   TOrganizationCourseSort
 } from '@cio/utils/validation/organization';
+import type { TGetRecommendedCourses } from '@cio/utils/validation/course';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
@@ -558,7 +560,12 @@ export async function getOrganizationNavCounts(orgId: string, userId: string, us
  */
 export async function getUserEnrolledCourses(orgId: string, userId: string) {
   try {
-    return getEnrolledCourses({ orgId, profileId: userId });
+    const [courses, pathLocks] = await Promise.all([
+      getEnrolledCourses({ orgId, profileId: userId }),
+      getPathLocksForProfile(orgId, userId)
+    ]);
+
+    return courses.map((course) => ({ ...course, pathLock: pathLocks.get(course.id) ?? null }));
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -583,10 +590,11 @@ export async function getRecommendedCourses(
   limit?: number,
   page?: number,
   sort?: TOrganizationCourseSort,
-  order?: 'asc' | 'desc'
+  order?: 'asc' | 'desc',
+  filters: Pick<TGetRecommendedCourses, 'search' | 'level' | 'duration'> = {}
 ) {
   try {
-    return getExploreCourses({ orgId, profileId: userId, limit, page, sortKey: sort, order });
+    return await getExploreCourses({ orgId, profileId: userId, limit, page, sortKey: sort, order, ...filters });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

@@ -7,11 +7,8 @@ export const hi: TranslatedMessages<typeof en> = {
   noCoursesTitle: 'पढ़ाने के लिए कोई कोर्स नहीं',
   noCoursesDescription:
     'आप इस संगठन के किसी भी कोर्स में ट्यूटर नहीं हैं। एडमिन वेब डैशबोर्ड से आपको किसी कोर्स टीम में जोड़ सकते हैं।',
-  queueLoadErrorInline: 'ग्रेडिंग सूची लोड नहीं हुई। {error}',
   queueLoadError: 'ग्रेडिंग सूची लोड नहीं हुई',
-  waitingLongest: 'सबसे लंबे समय से इंतज़ार में',
   seeAll: 'सभी {count} देखें',
-  yourCourses: 'आपके कोर्स',
   queueHeader: { one: '{count} सबमिशन, सबसे पुराना पहले।', other: '{count} सबमिशन, सबसे पुराने पहले।' },
   oldestWaitedDays: {
     one: 'सबसे पुराना सबमिशन {count} दिन से इंतज़ार में है।',
@@ -28,14 +25,6 @@ export const hi: TranslatedMessages<typeof en> = {
   allGradedTitle: 'सभी सबमिशन ग्रेड हो चुके हैं',
   allGradedDescription: 'आपके कोर्स में कोई भी सबमिशन स्कोर का इंतज़ार नहीं कर रहा है।',
   allGradedCourseDescription: '{course} में कोई भी सबमिशन स्कोर का इंतज़ार नहीं कर रहा है।',
-  summaryCourses: { one: '{count} कोर्स में', other: '{count} कोर्स में' },
-  summaryLate: { one: '{count} देर से सबमिट हुआ', other: '{count} देर से सबमिट हुए' },
-  summaryLabel: { one: 'ग्रेड करने के लिए सबमिशन', other: 'ग्रेड करने के लिए सबमिशन' },
-  summaryA11y: {
-    one: 'ग्रेड करने के लिए {count} सबमिशन, {details}',
-    other: 'ग्रेड करने के लिए {count} सबमिशन, {details}'
-  },
-  startGrading: 'ग्रेडिंग शुरू करें',
   waitingDays: { one: '{count} दिन से इंतज़ार में', other: '{count} दिन से इंतज़ार में' },
   waitingHours: { one: '{count} घंटे से इंतज़ार में', other: '{count} घंटे से इंतज़ार में' },
   waitingMinutes: { one: '{count} मिनट से इंतज़ार में', other: '{count} मिनट से इंतज़ार में' },
@@ -142,9 +131,6 @@ export const hi: TranslatedMessages<typeof en> = {
   noPostsTitle: 'अभी कोई पोस्ट नहीं',
   noPostsDescription: 'आपकी घोषणाएं कोर्स के हर शिक्षार्थी तक जाती हैं।',
   loadOlderPosts: 'पुरानी पोस्ट लोड करें',
-  snapshotEnrolled: { one: '{count} नामांकित', other: '{count} नामांकित' },
-  snapshotCompleted: '{percent} पूरा',
-  snapshotOverdue: { one: '{count} समय-सीमा पार', other: '{count} समय-सीमा पार' },
   toGradeCount: { one: '{count} ग्रेड करना है', other: '{count} ग्रेड करने हैं' },
   learnerFallback: 'शिक्षार्थी',
   lessonsProgress: { one: '{count} में से {completed} पाठ', other: '{count} में से {completed} पाठ' },

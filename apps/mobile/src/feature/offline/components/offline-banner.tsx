@@ -14,6 +14,7 @@ import { useTheme } from '@/feature/common/helpers/use-theme';
 import type { Translator } from '@/feature/i18n/helpers/translate';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { useUnsyncedCount } from '@/feature/offline/helpers/sync-queue';
+import { useActiveOrg } from '@/feature/org/helpers/use-active-org';
 import { offlineCatalog } from '@/feature/offline/translations/catalog';
 import type { en } from '@/feature/offline/translations/en';
 
@@ -37,10 +38,13 @@ export function OfflineBanner() {
   const segments = useSegments() as string[];
   const unsynced = useUnsyncedCount();
   const { colors, elevation } = useTheme();
+  const { role } = useActiveOrg();
 
   useEffect(() => {
     if (offline) AccessibilityInfo.announceForAccessibility(t('youAreOffline'));
   }, [offline, t]);
+
+  if (segments.includes('(tabs)') && (segments.includes('learning') || role !== 'student')) return null;
 
   const bottom = insets.bottom + (segments.includes('(tabs)') ? TAB_BAR_CLEARANCE : 0) + SPACING.xs;
 

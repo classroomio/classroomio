@@ -207,11 +207,107 @@ export function renderNotificationCopy(
 
       return { title: due ? t('cohortGoalTitle', { goal, due }) : goal, body: progress };
     }
-    case 'live_session_reminder': {
+    case 'live_session_reminder':
+    case 'live_class_starting': {
       const session = input.subjectTitle || t('liveSessionFallback');
       const start = describeStart(input.startsAt, now, language);
 
       return { title: start ? t('liveSessionTitle', { session, start }) : session, body: input.courseTitle };
     }
+    case 'assignment_new':
+      return {
+        title: course ? t('assignmentNewTitle', { course }) : t('assignmentNewTitleNoCourse'),
+        body: input.subjectTitle
+      };
+    case 'assignment_due_soon': {
+      const exercise = input.subjectTitle || t('assignmentFallback');
+
+      return { title: due ? t('assignmentDueTitle', { exercise, due }) : exercise, body: input.courseTitle };
+    }
+    case 'course_recommended':
+      return {
+        title: course ? t('courseRecommendedTitle', { course }) : t('courseRecommendedTitleNoCourse'),
+        body: t('courseRecommendedBody')
+      };
+    case 'streak_at_risk':
+      return { title: t('streakAtRiskTitle'), body: t('streakAtRiskBody') };
+    case 'weekly_goal_reached':
+      return {
+        title: t('weeklyGoalTitle'),
+        body: input.requiredCount ? t('weeklyGoalBody', { count: input.requiredCount }) : null
+      };
+    case 'learner_nudged':
+      return {
+        title: t('nudgeTitle', { actor }),
+        body: course ? t('nudgeBody', { course }) : t('nudgeBodyNoCourse')
+      };
+    case 'submission_received':
+      return {
+        title: input.subjectTitle
+          ? t('submissionReceivedTitle', { actor, exercise: input.subjectTitle })
+          : t('submissionReceivedTitleNoExercise', { actor }),
+        body: input.courseTitle
+      };
+    case 'live_session_host_reminder': {
+      const session = input.subjectTitle || t('liveSessionFallback');
+      const start = describeStart(input.startsAt, now, language);
+
+      return {
+        title: start ? t('liveSessionTitle', { session, start }) : session,
+        body: course ? t('hostSessionBody', { course }) : t('hostSessionBodyNoCourse')
+      };
+    }
+    case 'learner_needs_nudge':
+      return {
+        title:
+          input.requiredCount && input.requiredCount > 1
+            ? t('needsNudgeGroupTitle', { count: input.requiredCount })
+            : t('needsNudgeTitle', { actor }),
+        body: input.courseTitle
+      };
+    case 'attendance_reminder':
+      return {
+        title: t('attendanceReminderTitle', { session: input.subjectTitle || t('liveSessionFallback') }),
+        body: input.courseTitle
+      };
+    case 'student_joined':
+      return {
+        title: course ? t('studentJoinedTitle', { actor, course }) : t('studentJoinedTitleNoCourse', { actor }),
+        body: null
+      };
+    case 'tutor_added':
+      return {
+        title: course ? t('tutorAddedTitle', { course }) : t('tutorAddedTitleNoCourse'),
+        body: input.actorName ? t('courseEnrolledBody', { actor: input.actorName }) : null
+      };
+    case 'student_limit_approaching':
+      return {
+        title: input.subjectTitle
+          ? t('studentLimitApproachingTitle', { org: input.subjectTitle })
+          : t('studentLimitApproachingTitleNoOrg'),
+        body: t('studentLimitBody')
+      };
+    case 'student_limit_reached':
+      return {
+        title: input.subjectTitle
+          ? t('studentLimitReachedTitle', { org: input.subjectTitle })
+          : t('studentLimitReachedTitleNoOrg'),
+        body: t('studentLimitBody')
+      };
+    case 'payment_failed':
+      return {
+        title: input.subjectTitle ? t('paymentFailedTitle', { org: input.subjectTitle }) : t('paymentFailedTitleNoOrg'),
+        body: t('paymentFailedBody')
+      };
+    case 'webhook_failing':
+      return {
+        title: t('webhookFailingTitle', { webhook: input.subjectTitle || t('webhookFallback') }),
+        body: t('webhookFailingBody')
+      };
+    case 'webhook_disabled':
+      return {
+        title: t('webhookDisabledTitle', { webhook: input.subjectTitle || t('webhookFallback') }),
+        body: t('webhookDisabledBody')
+      };
   }
 }

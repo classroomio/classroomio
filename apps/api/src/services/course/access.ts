@@ -3,6 +3,7 @@ import { assertStudentCanAccessContent } from '@cio/core/services/course/progres
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertCourseNotPathLocked } from '@api/services/learning-path/progress';
 
 const DEFAULT_CONTENT_GROUPING = true;
 
@@ -46,6 +47,8 @@ export async function assertEnrolledStudentContentAccess(params: {
   if (progress.roleId === ROLE.STUDENT && !course.isPublished) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
+
+  await assertCourseNotPathLocked({ courseId: params.courseId, profileId: params.profileId, roleId: progress.roleId });
 
   const isContentGroupingEnabled = course.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
   const progressionMode = course.metadata?.progressionMode ?? 'free';

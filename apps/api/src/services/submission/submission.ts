@@ -22,6 +22,7 @@ import type {
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { notifyExerciseGraded } from '@cio/core/services/notification/course-events';
+import { notifySubmissionReceived } from '@cio/core/services/notification/staff-events';
 import {
   createSubmission,
   deleteSubmission,
@@ -929,6 +930,7 @@ export async function createSubmissionService(
     void sendExerciseSubmissionUpdateEmail(courseId, exerciseId, submittedBy).catch((emailError) => {
       console.error('Failed to send exercise submission update email:', emailError);
     });
+    void notifySubmissionReceived({ submissionId: submission.id, courseId, submittedByGroupMemberId: submittedBy });
 
     await syncComplianceProgressFromSubmission(courseId, submittedBy, exerciseId);
     await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);

@@ -51,6 +51,7 @@ import { courseMemberOrGraderMiddleware } from '@api/middlewares/course-grader';
 import { canAccessCourseSubmissions } from '@cio/db/queries/group';
 import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { getCoursePathLock } from '@api/services/learning-path/progress';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { enrollInCourse } from '@api/services/course/invite';
 import { exerciseRouter } from '@api/routes/course/exercise';
@@ -82,6 +83,8 @@ import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
 import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
+import { notifyCourseRecommended } from '@cio/core/services/notification/learner-events';
+import { getLearnerCourseFacts } from '@api/services/course/course-facts';
 import { updateCourseWithTags } from '@api/services/course/update-course';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 
@@ -280,12 +283,16 @@ export const courseRouter = new Hono()
           throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
         }
 
-        const canGrade = await canAccessCourseSubmissions(courseId, user.id);
+        const [canGrade, pathLock, facts] = await Promise.all([
+          canAccessCourseSubmissions(courseId, user.id),
+          getCoursePathLock(courseId, user.id),
+          getLearnerCourseFacts(courseId, course.metadata)
+        ]);
 
         return c.json(
           {
             success: true,
-            data: { ...course, canGrade }
+            data: { ...course, canGrade, pathLock, facts }
           },
           200
         );
@@ -384,6 +391,7 @@ export const courseRouter = new Hono()
 
           if (result.publishedNow) {
             captureCoursePublished(result.course, user.id, getEventSource(c));
+            void notifyCourseRecommended({ courseId, actorProfileId: user.id });
           }
 
           return c.json(
@@ -409,6 +417,7 @@ export const courseRouter = new Hono()
 
         if (publishedNow) {
           captureCoursePublished(result, c.get('user')!.id, getEventSource(c));
+          void notifyCourseRecommended({ courseId, actorProfileId: userId });
         }
 
         await emitCoursePublishWebhookEvent(courseId, publishChange, userId);

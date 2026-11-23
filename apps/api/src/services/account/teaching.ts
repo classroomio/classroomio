@@ -20,6 +20,7 @@ import { canAccessCourseSubmissions } from '@cio/db/queries/group';
 import { getCourseComplianceOverview } from '@api/services/course/compliance';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
+import { getCourseProgressAverages } from '@cio/db/queries/teaching/learner-progress';
 import { getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 
 type GradingState = ReturnType<typeof resolveSubmissionGradingState>;
@@ -200,16 +201,18 @@ async function countOverdueLearners(courseId: string) {
 }
 
 /**
- * The courses in the organization the profile teaches, each with enrollment, recorded completions, ungraded
- * submissions and, for compliance courses, learners past their due date (non-compliant or in a grace period).
+ * The courses in the organization the profile teaches (every course for an org admin), each with its published state,
+ * enrollment, recorded completions, average learner progress, ungraded submissions and, for compliance courses,
+ * learners past their due date (non-compliant or in a grace period).
  */
 export async function listTeachingCourses(orgId: string, profileId: string, isOrgAdmin: boolean) {
   try {
     const courses = await getGradableCoursesInOrg(orgId, profileId, isOrgAdmin);
     const courseIds = courses.map((course) => course.id);
-    const [studentCounts, ungraded] = await Promise.all([
+    const [studentCounts, ungraded, progressAverages] = await Promise.all([
       getCourseStudentCounts(courseIds),
-      getUngradedSubmissionsForCourses(courseIds)
+      getUngradedSubmissionsForCourses(courseIds),
+      getCourseProgressAverages(courseIds)
     ]);
 
     const countsByCourseId = new Map(studentCounts.map((row) => [row.courseId, row]));
@@ -235,9 +238,12 @@ export async function listTeachingCourses(orgId: string, profileId: string, isOr
         type: course.type,
         bannerImage: course.bannerImage,
         logo: course.logo,
+        isPublished: course.isPublished === true,
+        updatedAt: course.updatedAt,
         enrolled,
         completed,
         completionRate: enrolled > 0 ? Math.round((completed / enrolled) * 100) : 0,
+        averageProgress: progressAverages.get(course.id)?.averageProgress ?? 0,
         overdue: overdueCounts[index] ?? null,
         toGrade: ungradedByCourseId.get(course.id) ?? 0
       };

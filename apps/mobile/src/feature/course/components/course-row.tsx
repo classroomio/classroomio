@@ -8,6 +8,7 @@ import { RADII, SPACING } from '@/feature/common/constants/layout';
 import { tapHaptic } from '@/feature/common/helpers/haptics';
 import { useTheme } from '@/feature/common/helpers/use-theme';
 import { courseTypeKey } from '@/feature/course/constants/course-type';
+import { retakeDueDays, retakeLabel } from '@/feature/course/helpers/compliance-retake';
 import { learningStatusOf, progressPercentOf } from '@/feature/course/helpers/learning-status';
 import { courseCatalog } from '@/feature/course/translations/catalog';
 import type { EnrolledCourse, LearningStatus } from '@/feature/course/types/course';
@@ -42,6 +43,8 @@ export function CourseRow({
   const typeKey = courseTypeKey(course.type);
   const type = typeKey ? t(typeKey) : null;
   const downloaded = useCourseAvailableOffline(course.id);
+  const retakeDays = course.type === 'COMPLIANCE' ? retakeDueDays(course) : null;
+  const retake = retakeDays === null ? null : retakeLabel(retakeDays, t);
   const statusLabel =
     status === 'completed'
       ? t('completed')
@@ -52,7 +55,7 @@ export function CourseRow({
   return (
     <PressableScale
       accessibilityRole="button"
-      accessibilityLabel={[course.title, type, lessons, statusLabel, downloaded ? t('downloaded') : null]
+      accessibilityLabel={[course.title, retake, type, lessons, statusLabel, downloaded ? t('downloaded') : null]
         .filter(Boolean)
         .join(', ')}
       scaleTo={0.985}
@@ -75,6 +78,11 @@ export function CourseRow({
         <Text variant="subheading" numberOfLines={2}>
           {course.title}
         </Text>
+        {retake && retakeDays !== null ? (
+          <Text variant="captionStrong" tone={retakeDays < 0 ? 'danger' : 'warning'} numberOfLines={1}>
+            {retake}
+          </Text>
+        ) : null}
         <Text variant="caption" tone="muted" numberOfLines={1}>
           {[type, lessons, downloaded ? t('downloaded') : null].filter(Boolean).join(' · ')}
         </Text>

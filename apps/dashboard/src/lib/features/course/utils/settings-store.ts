@@ -1,5 +1,6 @@
 import type { TCourseType } from '@cio/db/types';
 import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
+import type { TCourseLevel } from '@cio/utils/constants/course-level';
 import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
 
@@ -19,6 +20,8 @@ type CourseSettings = {
   isContentGroupingEnabled: boolean;
   progressionMode: CourseProgressionMode;
   commentsEnabled: boolean;
+  level: TCourseLevel | null;
+  durationMinutes: number | null;
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
   liveSessionReminders: LiveSessionReminderRow[];
@@ -46,6 +49,8 @@ export const settings = writable<CourseSettings>({
   isContentGroupingEnabled: true,
   progressionMode: 'free',
   commentsEnabled: true,
+  level: null,
+  durationMinutes: null,
   callout: null,
   welcomeEmailMessage: '',
   liveSessionReminders: [],

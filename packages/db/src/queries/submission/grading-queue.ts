@@ -11,6 +11,8 @@ export type GradableCourse = {
   type: string | null;
   bannerImage: string | null;
   logo: string | null;
+  isPublished: boolean | null;
+  updatedAt: string | null;
 };
 
 /**
@@ -55,7 +57,9 @@ export async function getGradableCoursesInOrg(
         title: schema.course.title,
         type: schema.course.type,
         bannerImage: schema.course.bannerImage,
-        logo: schema.course.logo
+        logo: schema.course.logo,
+        isPublished: schema.course.isPublished,
+        updatedAt: schema.course.updatedAt
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))

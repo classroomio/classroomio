@@ -15,6 +15,7 @@ function notification(overrides: Partial<TNotification> = {}): TNotification {
     entityId: 'exercise-1',
     courseId: 'course-1',
     actorProfileId: null,
+    itemCount: null,
     dedupeKey: null,
     readAt: null,
     createdAt: now.toISOString(),

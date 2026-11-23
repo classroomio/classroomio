@@ -1,7 +1,7 @@
 import { ArrowLeftIcon } from 'phosphor-react-native/src/icons/ArrowLeft';
 import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
 import { ContentType } from '@cio/utils/constants/content';
-import { createContext, use, type ReactNode } from 'react';
+import { createContext, use, useRef, type ReactNode } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { GestureDetector, useManualGesture, usePanGesture, type PanGesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -37,6 +37,7 @@ const MIN_COMMIT_DISTANCE = 32;
 const COMMIT_FRACTION = 0.4;
 const ARM_FRACTION = 0.28;
 const HINT_SIZE = 40;
+const END_TOLERANCE = 48;
 
 function project(velocity: number) {
   'worklet';
@@ -63,6 +64,8 @@ type LessonPagerProps = {
   onRefresh: RefreshHandler;
   /** Pinned below the scroll view, above the home indicator. */
   footer?: ReactNode;
+  /** Called once the end of the content has been on screen, whether by scrolling or because it fits without scrolling. */
+  onReachEnd?: () => void;
   children: ReactNode;
 };
 
@@ -70,7 +73,7 @@ type LessonPagerProps = {
  * The lesson reader: a scroll view with a reading-progress bar under the header, where a horizontal swipe on the
  * content moves to the previous or next course item. Media inside `LessonSwipeExclusion` keeps its own gestures.
  */
-export function LessonPager({ previous, next, onNavigate, onRefresh, footer, children }: LessonPagerProps) {
+export function LessonPager({ previous, next, onNavigate, onRefresh, footer, onReachEnd, children }: LessonPagerProps) {
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const x = useSharedValue(0);
@@ -79,6 +82,18 @@ export function LessonPager({ previous, next, onNavigate, onRefresh, footer, chi
   const ignored = useSharedValue(false);
   const progress = useSharedValue(0);
   const scrolled = useSharedValue(0);
+  const reachedEnd = useSharedValue(false);
+  const viewport = useRef({ layout: 0, content: 0 });
+
+  const reportEnd = () => onReachEnd?.();
+
+  const checkFits = () => {
+    const { layout, content } = viewport.current;
+    if (layout > 0 && content > 0 && content - layout <= END_TOLERANCE && !reachedEnd.get()) {
+      reachedEnd.set(true);
+      reportEnd();
+    }
+  };
   const canPrevious = Boolean(previous && isAccessible(previous));
   const canNext = Boolean(next && isAccessible(next));
 
@@ -159,6 +174,10 @@ export function LessonPager({ previous, next, onNavigate, onRefresh, footer, chi
     progress.set(range > 48 ? Math.min(1, Math.max(0, offset / range)) : 0);
     const shown = offset > 4 && range > 48 ? 1 : 0;
     if (scrolled.get() !== shown) scrolled.set(shown);
+    if (!reachedEnd.get() && offset >= range - END_TOLERANCE) {
+      reachedEnd.set(true);
+      scheduleOnRN(reportEnd);
+    }
   });
 
   const contentStyle = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
@@ -174,6 +193,14 @@ export function LessonPager({ previous, next, onNavigate, onRefresh, footer, chi
         keyboardDismissMode="on-drag"
         scrollEventThrottle={16}
         onScroll={onScroll}
+        onLayout={(event) => {
+          viewport.current.layout = event.nativeEvent.layout.height;
+          checkFits();
+        }}
+        onContentSizeChange={(_width, height) => {
+          viewport.current.content = height;
+          checkFits();
+        }}
         refreshControl={<PullRefreshControl onRefresh={onRefresh} />}
         style={{ backgroundColor: colors.background }}
         contentContainerStyle={styles.scrollContent}

@@ -90,53 +90,6 @@ export const ru: TranslatedMessages<typeof en> = {
     other: 'Все {count} требования выполнены.'
   },
   summaryNone: 'Ваша организация не назначила вам обязательного обучения.',
-  alertOverdueTitle: {
-    one: '{count} требование просрочено',
-    few: '{count} требования просрочены',
-    many: '{count} требований просрочено',
-    other: '{count} требования просрочено'
-  },
-  alertInGracePeriodTitle: {
-    one: '{count} требование в льготном периоде',
-    few: '{count} требования в льготном периоде',
-    many: '{count} требований в льготном периоде',
-    other: '{count} требования в льготном периоде'
-  },
-  alertDueSoonTitle: {
-    one: 'Скоро срок: {count} требование',
-    few: 'Скоро срок: {count} требования',
-    many: 'Скоро срок: {count} требований',
-    other: 'Скоро срок: {count} требования'
-  },
-  alertWasDue: {
-    one: 'Срок по курсу «{course}» истёк {count} день назад.',
-    few: 'Срок по курсу «{course}» истёк {count} дня назад.',
-    many: 'Срок по курсу «{course}» истёк {count} дней назад.',
-    other: 'Срок по курсу «{course}» истёк {count} дня назад.'
-  },
-  alertGraceLeft: {
-    one: 'До конца льготного периода {count} день.',
-    few: 'До конца льготного периода {count} дня.',
-    many: 'До конца льготного периода {count} дней.',
-    other: 'До конца льготного периода {count} дня.'
-  },
-  alertDueToday: 'Срок по курсу «{course}» — сегодня.',
-  alertDueInDays: {
-    one: 'Срок по курсу «{course}» — через {count} день.',
-    few: 'Срок по курсу «{course}» — через {count} дня.',
-    many: 'Срок по курсу «{course}» — через {count} дней.',
-    other: 'Срок по курсу «{course}» — через {count} дня.'
-  },
-  alertDueSoon: 'Срок по курсу «{course}» скоро наступит.',
-  alertExpiresToday: 'Срок действия по курсу «{course}» истекает сегодня.',
-  alertExpiresInDays: {
-    one: 'Срок действия по курсу «{course}» истекает через {count} день.',
-    few: 'Срок действия по курсу «{course}» истекает через {count} дня.',
-    many: 'Срок действия по курсу «{course}» истекает через {count} дней.',
-    other: 'Срок действия по курсу «{course}» истекает через {count} дня.'
-  },
-  alertExpiresSoon: 'Срок действия по курсу «{course}» скоро истекает.',
-  alertHint: 'Открывает раздел соответствия',
   loadError: 'Не удалось загрузить статус соответствия',
   emptyTitle: 'Нет обязательных требований',
   sectionNeedsAttention: 'Требует внимания',

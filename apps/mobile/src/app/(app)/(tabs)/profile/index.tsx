@@ -71,7 +71,8 @@ export default function ProfileScreen() {
   const account = useAccountQuery();
   const courses = useEnrolledCoursesQuery();
   const activeOrgId = useActiveOrgId();
-  const { org } = useActiveOrg();
+  const { org, role } = useActiveOrg();
+  const student = role === 'student';
   const { signOut } = useAuth();
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -151,29 +152,31 @@ export default function ProfileScreen() {
         />
 
         <View style={styles.sections}>
-          <ProfileStats>
-            <ProfileStat
-              icon={PlayCircleIcon}
-              tone="primary"
-              label={t('statInProgress')}
-              value={stats?.inProgress}
-              onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'in-progress' } })}
-            />
-            <ProfileStat
-              icon={CheckCircleIcon}
-              tone="success"
-              label={t('statCompleted')}
-              value={stats?.completed}
-              onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'completed' } })}
-            />
-            <ProfileStat
-              icon={MedalIcon}
-              tone="warning"
-              label={t('statCertificates')}
-              value={stats?.certificates}
-              onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'certificates' } })}
-            />
-          </ProfileStats>
+          {student ? (
+            <ProfileStats>
+              <ProfileStat
+                icon={PlayCircleIcon}
+                tone="primary"
+                label={t('statInProgress')}
+                value={stats?.inProgress}
+                onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'in-progress' } })}
+              />
+              <ProfileStat
+                icon={CheckCircleIcon}
+                tone="success"
+                label={t('statCompleted')}
+                value={stats?.completed}
+                onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'completed' } })}
+              />
+              <ProfileStat
+                icon={MedalIcon}
+                tone="warning"
+                label={t('statCertificates')}
+                value={stats?.certificates}
+                onPress={() => router.push({ pathname: '/profile/learning', params: { kind: 'certificates' } })}
+              />
+            </ProfileStats>
+          ) : null}
 
           {organizations.length > 1 && (
             <ScreenSection>
@@ -191,38 +194,40 @@ export default function ProfileScreen() {
             </ScreenSection>
           )}
 
-          <ItemGroup>
-            <Item onPress={() => router.push('/certificates')}>
-              <ItemMedia>
-                <IconTile icon={MedalIcon} />
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle>{t('certificates')}</ItemTitle>
-                <ItemDescription>
-                  {stats ? t('certificatesEarned', { count: stats.certificates }) : t('certificatesDescription')}
-                </ItemDescription>
-              </ItemContent>
-              <ItemActions>
-                <ItemChevron />
-              </ItemActions>
-            </Item>
-            <Item onPress={() => router.push('/profile/downloads')}>
-              <ItemMedia>
-                <IconTile icon={DownloadSimpleIcon} />
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle>{t('downloads')}</ItemTitle>
-                <ItemDescription>
-                  {downloadedBytes > 0
-                    ? t('downloadsOnDevice', { size: formatBytes(downloadedBytes, format.locale) })
-                    : t('downloadsDescription')}
-                </ItemDescription>
-              </ItemContent>
-              <ItemActions>
-                <ItemChevron />
-              </ItemActions>
-            </Item>
-          </ItemGroup>
+          {student ? (
+            <ItemGroup>
+              <Item onPress={() => router.push('/certificates')}>
+                <ItemMedia>
+                  <IconTile icon={MedalIcon} />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>{t('certificates')}</ItemTitle>
+                  <ItemDescription>
+                    {stats ? t('certificatesEarned', { count: stats.certificates }) : t('certificatesDescription')}
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                  <ItemChevron />
+                </ItemActions>
+              </Item>
+              <Item onPress={() => router.push('/profile/downloads')}>
+                <ItemMedia>
+                  <IconTile icon={DownloadSimpleIcon} />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>{t('downloads')}</ItemTitle>
+                  <ItemDescription>
+                    {downloadedBytes > 0
+                      ? t('downloadsOnDevice', { size: formatBytes(downloadedBytes, format.locale) })
+                      : t('downloadsDescription')}
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                  <ItemChevron />
+                </ItemActions>
+              </Item>
+            </ItemGroup>
+          ) : null}
 
           <ItemGroup>
             <Item onPress={() => router.push('/notifications/preferences')}>

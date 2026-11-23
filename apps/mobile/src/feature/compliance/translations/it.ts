@@ -47,27 +47,6 @@ export const it: TranslatedMessages<typeof en> = {
   summaryCompliantOne: 'Il tuo requisito è in regola.',
   summaryCompliantAll: { other: 'Tutti i {count} requisiti sono in regola.' },
   summaryNone: 'La tua organizzazione non ti ha assegnato alcuna formazione obbligatoria.',
-  alertOverdueTitle: { one: '{count} requisito in ritardo', other: '{count} requisiti in ritardo' },
-  alertInGracePeriodTitle: {
-    one: '{count} requisito in periodo di tolleranza',
-    other: '{count} requisiti in periodo di tolleranza'
-  },
-  alertDueSoonTitle: { one: '{count} requisito con scadenza vicina', other: '{count} requisiti con scadenza vicina' },
-  alertWasDue: {
-    one: 'La scadenza di {course} era {count} giorno fa.',
-    other: 'La scadenza di {course} era {count} giorni fa.'
-  },
-  alertGraceLeft: { one: 'Resta {count} giorno di tolleranza.', other: 'Restano {count} giorni di tolleranza.' },
-  alertDueToday: '{course} va completato oggi.',
-  alertDueInDays: {
-    one: '{course} va completato entro {count} giorno.',
-    other: '{course} va completato entro {count} giorni.'
-  },
-  alertDueSoon: '{course} va completato a breve.',
-  alertExpiresToday: '{course} scade oggi.',
-  alertExpiresInDays: { one: '{course} scade tra {count} giorno.', other: '{course} scade tra {count} giorni.' },
-  alertExpiresSoon: '{course} scade a breve.',
-  alertHint: 'Apre la conformità',
   loadError: 'Il tuo stato di conformità non è stato caricato',
   emptyTitle: 'Nessun requisito di conformità',
   sectionNeedsAttention: 'Richiede attenzione',

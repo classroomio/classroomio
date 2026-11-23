@@ -29,6 +29,7 @@ import {
   updateQuestions
 } from '@cio/db/queries/exercise';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
+import { notifyAssignmentAvailable } from '../notification/learner-events';
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { guardNonAutoGradableQuestionsForCourseType } from '../course/public-course-guard';
@@ -502,6 +503,10 @@ export async function updateExerciseService(
     const courseId = existing?.courseId;
     if (courseId) {
       await touchCourseUpdatedAt(courseId);
+    }
+
+    if (courseId && existing?.isUnlocked === false && sanitizedData.isUnlocked === true) {
+      void notifyAssignmentAvailable({ exerciseId, courseId });
     }
 
     return { ...result, createdQuestionIds };

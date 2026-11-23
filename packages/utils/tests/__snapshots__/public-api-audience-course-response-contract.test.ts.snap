@@ -3213,6 +3213,18 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "discount": {
                   "type": "number",
                 },
+                "durationMinutes": {
+                  "anyOf": [
+                    {
+                      "maximum": 100000,
+                      "minimum": 1,
+                      "type": "integer",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
                 "goals": {
                   "type": "string",
                 },
@@ -3287,6 +3299,21 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                     "type": "object",
                   },
                   "type": "array",
+                },
+                "level": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "beginner",
+                        "intermediate",
+                        "advanced",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
                 },
                 "liveSessionReminderOffsetsMinutes": {
                   "items": {

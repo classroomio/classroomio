@@ -28,7 +28,7 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 | `200` / `201` | The request worked |
 | `400` | The request body or query is invalid |
 | `401` | The API key is missing, invalid, or revoked |
-| `403` | The key can't call this endpoint, or your plan doesn't include API access |
+| `403` | The key can't call this endpoint, your plan doesn't include API access, or a plan limit blocks the action (for example `UPGRADE_REQUIRED` when an invite needs more student seats than are left) |
 | `404` | The resource doesn't exist, or belongs to another organization |
 | `409` | The request conflicts with the resource's current state |
 | `429` | Too many requests. See [Rate limits](/api/rate-limits) |

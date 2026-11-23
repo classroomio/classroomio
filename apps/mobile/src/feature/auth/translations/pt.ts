@@ -42,5 +42,21 @@ export const pt: TranslatedMessages<typeof en> = {
   resetEmailFailed: 'Não foi possível enviar o e-mail de redefinição. Tente novamente.',
   invalidEmail: 'Digite um e-mail válido.',
   invalidCredentials: 'O e-mail ou a senha estão incorretos.',
-  emailNotVerified: 'Confirme seu e-mail antes de entrar. O link está na sua caixa de entrada.'
+  emailNotVerified: 'Confirme seu e-mail antes de entrar. O link está na sua caixa de entrada.',
+  nameLabel: 'Nome completo',
+  namePlaceholder: 'Seu nome',
+  newPasswordPlaceholder: 'Crie uma senha',
+  passwordHint: { one: 'Pelo menos {count} caractere.', other: 'Pelo menos {count} caracteres.' },
+  passwordTooShort: { one: 'Use pelo menos {count} caractere.', other: 'Use pelo menos {count} caracteres.' },
+  createAccount: 'Criar conta',
+  signUpFailed: 'Não foi possível criar sua conta. Tente novamente.',
+  accountExists: 'Já existe uma conta com este e-mail. Entre nela.',
+  haveInviteLink: 'Tem um link de convite?',
+  joinAction: 'Entrar',
+  joinTitle: 'Entrar com um link de convite',
+  joinDescription: 'Cole o link de convite que você recebeu por e-mail ou da equipe do curso.',
+  inviteLinkLabel: 'Link de convite',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Você pode criar uma conta na próxima tela.',
+  inviteLinkInvalid: 'Este não é um link de convite do ClassroomIO. Copie o link inteiro e tente de novo.'
 };

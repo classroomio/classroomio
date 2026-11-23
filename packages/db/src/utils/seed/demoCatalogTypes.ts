@@ -47,7 +47,7 @@ export type DemoLesson = {
   blocks: DemoLessonBlock[];
   documents?: DemoDocument[];
   /** Minutes from seed time; negative means the session already started. */
-  live?: { startsInMinutes: number; durationMinutes: number; recording?: DemoVideo };
+  live?: { startsInMinutes: number; durationMinutes: number; recording?: DemoVideo; skipAttendance?: boolean };
   locked?: boolean;
 };
 

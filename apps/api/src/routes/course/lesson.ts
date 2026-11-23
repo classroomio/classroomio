@@ -378,8 +378,16 @@ export const lessonRouter = new Hono()
     zValidator('query', ZLessonHistoryQuery),
     async (c) => {
       try {
-        const { lessonId } = c.req.valid('param');
+        const { courseId, lessonId } = c.req.valid('param');
         const { locale, limit, cursor } = c.req.valid('query');
+        const user = c.get('user')!;
+        await assertEnrolledStudentContentAccess({
+          courseId,
+          profileId: user.id,
+          contentId: lessonId,
+          type: ContentType.Lesson
+        });
+
         const history = await getLessonHistoryService(lessonId, locale, limit, cursor);
 
         return c.json(

@@ -4,12 +4,15 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getStudentLimit, isPaymentBlocked } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
 import { capturePlanLimitReached } from '@cio/core/services/posthog';
+import { notifyStudentLimitMilestone } from '@cio/core/services/notification/staff-events';
 import { type DbOrTxClient, db } from '@cio/db/drizzle';
+import { getProfilesByEmails } from '@cio/db/queries/auth';
 import {
   countActiveStudents,
   getActiveOrganizationPlan,
   getOrganizationAdminEmails,
   getOrganizationById,
+  getOrgMembersByProfileIds,
   lockOrganizationForStudentCapacity,
   updateOrganization
 } from '@cio/db/queries/organization';
@@ -24,7 +27,7 @@ export type StudentMilestoneNotification = {
 };
 
 /**
- * Emails org admins once when the org crosses a student-count milestone (50%
+ * Notifies and emails org admins once when the org crosses a student-count milestone (50%
  * of the limit, or the limit itself). The "already notified" state is persisted
  * on `organization.settings` so each milestone fires at most once, ever — no
  * repeat emails on every subsequent blocked attempt.
@@ -36,6 +39,8 @@ export async function notifyStudentMilestone(notification: StudentMilestoneNotif
 
   const notified = org.settings?.studentLimitNotified ?? {};
   if (notified[milestone]) return;
+
+  await notifyStudentLimitMilestone({ organizationId: orgId, milestone });
 
   const admins = await getOrganizationAdminEmails(orgId);
   if (admins.length) {
@@ -54,6 +59,31 @@ export async function notifyStudentMilestone(notification: StudentMilestoneNotif
   const updatedNotified = milestone === 'reached' ? { half: true, reached: true } : { ...notified, half: true };
 
   await updateOrganization(orgId, { settings: { ...org.settings, studentLimitNotified: updatedNotified } });
+}
+
+export type StudentCapacity = {
+  used: number;
+  limit: number | null;
+  remaining: number | null;
+  reached: boolean;
+};
+
+/**
+ * Active students against the plan's student limit. `limit` and `remaining` are null when unlimited (self-hosted or
+ * an unlimited plan). `reached` is also true while a failed payment blocks new students.
+ */
+export async function getStudentCapacity(orgId: string): Promise<StudentCapacity> {
+  const used = await countActiveStudents(orgId);
+
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') return { used, limit: null, remaining: null, reached: false };
+
+  const activePlan = await getActiveOrganizationPlan(orgId);
+  const limit = getStudentLimit(activePlan?.planName);
+  const finiteLimit = Number.isFinite(limit) ? limit : null;
+  const remaining = finiteLimit === null ? null : Math.max(0, finiteLimit - used);
+  const reached = isPaymentBlocked(activePlan) || remaining === 0;
+
+  return { used, limit: finiteLimit, remaining, reached };
 }
 
 /**
@@ -77,6 +107,23 @@ export async function getRemainingStudentSeats(orgId: string, dbClient: DbOrTxCl
   const currentCount = await countActiveStudents(orgId, dbClient);
 
   return Math.max(0, limit - currentCount);
+}
+
+/** How many of `emails` would take a new student seat: everyone who is not already a member of the organization. */
+export async function countEmailsNeedingStudentSeats(orgId: string, emails: string[]): Promise<number> {
+  if (emails.length === 0) return 0;
+
+  const profiles = await getProfilesByEmails(emails);
+  const members = await getOrgMembersByProfileIds(
+    orgId,
+    profiles.map((profile) => profile.id)
+  );
+  const memberProfileIds = new Set(members.map((member) => member.profileId));
+  const memberEmails = new Set(
+    profiles.filter((profile) => memberProfileIds.has(profile.id)).map((profile) => profile.email?.toLowerCase())
+  );
+
+  return emails.filter((email) => !memberEmails.has(email.toLowerCase())).length;
 }
 
 /**

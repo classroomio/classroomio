@@ -9,11 +9,15 @@ import { errorMessage } from '../utils/cancel';
 import { env } from '../config/env';
 import { log } from '../utils/logger';
 import {
+  processLearnerAttentionScan,
   processNotifyCourseExercise,
   processNotifyCourseSessionUpdate,
-  processSessionReminderScan
+  processSessionReminderScan,
+  processStaffSessionScan
 } from '../processors/notifications';
 import { processCheckPushReceipts, processSendPush } from '../processors/notifications/send-push';
+import { processLearnerReminderScan } from '../processors/notifications/learner-reminder-scan';
+import { LEARNER_ATTENTION_SCAN_INTERVAL_MS } from '../processors/notifications/staff-scan-plan';
 
 const concurrency = Number.parseInt(env.EMAIL_WORKER_CONCURRENCY ?? '5', 10) || 5;
 const connection = createRedisConnection();
@@ -38,6 +42,12 @@ const worker = new Worker(
         return processSendPush(job.data);
       case JOB_NAMES.notifications.checkPushReceipts:
         return processCheckPushReceipts(job.data);
+      case JOB_NAMES.notifications.learnerReminderScan:
+        return processLearnerReminderScan();
+      case JOB_NAMES.notifications.staffSessionScan:
+        return processStaffSessionScan();
+      case JOB_NAMES.notifications.learnerAttentionScan:
+        return processLearnerAttentionScan();
       default:
         throw new Error(`Unknown notifications job: ${job.name}`);
     }
@@ -45,8 +55,9 @@ const worker = new Worker(
   { connection, concurrency }
 );
 
-// Repeatable scheduler: run the session-reminder scan every 15 minutes.
 const SESSION_REMINDER_SCAN_INTERVAL_MS = 15 * 60 * 1_000;
+const LEARNER_REMINDER_SCAN_INTERVAL_MS = 5 * 60 * 1_000;
+const STAFF_SESSION_SCAN_INTERVAL_MS = 15 * 60 * 1_000;
 const schedulerConnection = createRedisConnection();
 const notificationsQueue = new Queue(QUEUE_NAMES.notifications, { connection: schedulerConnection });
 
@@ -60,6 +71,36 @@ async function registerSchedulers(): Promise<void> {
     log.info('session-reminder-scan-scheduler-registered', { everyMs: SESSION_REMINDER_SCAN_INTERVAL_MS });
   } catch (err) {
     log.error('session-reminder-scan-scheduler-register-failed', { error: errorMessage(err) });
+  }
+
+  try {
+    await notificationsQueue.upsertJobScheduler(
+      'learner-reminder-scan-scheduler',
+      { every: LEARNER_REMINDER_SCAN_INTERVAL_MS },
+      { name: JOB_NAMES.notifications.learnerReminderScan, data: {} }
+    );
+    log.info('learner-reminder-scan-scheduler-registered', { everyMs: LEARNER_REMINDER_SCAN_INTERVAL_MS });
+  } catch (err) {
+    log.error('learner-reminder-scan-scheduler-register-failed', { error: errorMessage(err) });
+  }
+
+  try {
+    await notificationsQueue.upsertJobScheduler(
+      'staff-session-scan-scheduler',
+      { every: STAFF_SESSION_SCAN_INTERVAL_MS },
+      { name: JOB_NAMES.notifications.staffSessionScan, data: {} }
+    );
+    await notificationsQueue.upsertJobScheduler(
+      'learner-attention-scan-scheduler',
+      { every: LEARNER_ATTENTION_SCAN_INTERVAL_MS },
+      { name: JOB_NAMES.notifications.learnerAttentionScan, data: {} }
+    );
+    log.info('staff-scan-schedulers-registered', {
+      staffSessionEveryMs: STAFF_SESSION_SCAN_INTERVAL_MS,
+      learnerAttentionEveryMs: LEARNER_ATTENTION_SCAN_INTERVAL_MS
+    });
+  } catch (err) {
+    log.error('staff-scan-schedulers-register-failed', { error: errorMessage(err) });
   }
 }
 

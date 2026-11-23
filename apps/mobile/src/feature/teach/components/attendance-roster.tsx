@@ -166,7 +166,7 @@ export function AttendanceCheckInItem() {
 
   const open = () =>
     router.push({
-      pathname: '/teach/course/[courseId]/check-in',
+      pathname: '/courses/[courseId]/check-in',
       params: { courseId: course.id, lessonId: session.id }
     });
 

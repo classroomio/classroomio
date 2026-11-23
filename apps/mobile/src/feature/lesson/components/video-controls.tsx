@@ -2,6 +2,7 @@ import { ArrowClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowClockwi
 import { ArrowCounterClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowCounterClockwise';
 import { CornersInIcon } from 'phosphor-react-native/src/icons/CornersIn';
 import { CornersOutIcon } from 'phosphor-react-native/src/icons/CornersOut';
+import { HighDefinitionIcon } from 'phosphor-react-native/src/icons/HighDefinition';
 import { PauseIcon } from 'phosphor-react-native/src/icons/Pause';
 import { PlayIcon } from 'phosphor-react-native/src/icons/Play';
 import { SubtitlesIcon } from 'phosphor-react-native/src/icons/Subtitles';
@@ -37,6 +38,9 @@ import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { PLAYBACK_RATES, SKIP_SECONDS, VIDEO_COLORS } from '@/feature/lesson/constants/playback';
 import { formatTimestamp } from '@/feature/lesson/helpers/transcript';
 import { lessonCatalog } from '@/feature/lesson/translations/catalog';
+import { VIDEO_QUALITY_OPTIONS } from '@/feature/settings/constants/settings';
+import { setVideoQuality, useVideoQuality } from '@/feature/settings/helpers/video-quality-store';
+import { settingsCatalog } from '@/feature/settings/translations/catalog';
 
 import { useNativeVideo } from './native-video-context';
 import { VideoScrubber } from './video-scrubber';
@@ -211,6 +215,7 @@ export function VideoControls({ fullscreen = false, onFullscreen }: VideoControl
                 style={styles.airPlay}
               />
               <SpeedControl onOpen={keepVisible} />
+              <QualityControl onOpen={keepVisible} />
               <CaptionsControl onOpen={keepVisible} />
               <ControlButton
                 icon={fullscreen ? CornersInIcon : CornersOutIcon}
@@ -317,6 +322,45 @@ function SkipNudge({ direction }: { direction: 1 | -1 }) {
           : t('skippedForward', { seconds: SKIP_SECONDS })}
       </Text>
     </Animated.View>
+  );
+}
+
+/** Streaming quality for every video; hidden for a downloaded file, which plays at the quality it was saved in. */
+function QualityControl({ onOpen }: { onOpen: () => void }) {
+  const { local } = useNativeVideo();
+  const quality = useVideoQuality();
+  const sheet = useRef<SheetRef>(null);
+  const t = useTranslations(lessonCatalog);
+  const ts = useTranslations(settingsCatalog);
+  if (local) return null;
+
+  const current = VIDEO_QUALITY_OPTIONS.find((option) => option.value === quality) ?? VIDEO_QUALITY_OPTIONS[0];
+
+  return (
+    <>
+      <ControlButton
+        icon={HighDefinitionIcon}
+        size="compact"
+        label={t('videoQualityValue', { quality: current ? ts(current.labelKey) : '' })}
+        onPress={() => {
+          onOpen();
+          sheet.current?.present();
+        }}
+      />
+      <OptionSheet ref={sheet}>
+        <OptionSheetTitle>{t('videoQuality')}</OptionSheetTitle>
+        {VIDEO_QUALITY_OPTIONS.map((option) => (
+          <OptionSheetItem
+            key={option.value}
+            selected={option.value === quality}
+            onSelect={() => setVideoQuality(option.value)}
+          >
+            {ts(option.labelKey)}
+          </OptionSheetItem>
+        ))}
+        <OptionSheetCancel />
+      </OptionSheet>
+    </>
   );
 }
 

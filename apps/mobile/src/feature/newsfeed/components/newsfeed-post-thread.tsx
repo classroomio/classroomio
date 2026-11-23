@@ -294,6 +294,7 @@ export function NewsfeedPostThread({ courseId, postId }: { courseId: string; pos
 
       {postData ? (
         <FlashList
+          contentInsetAdjustmentBehavior="automatic"
           ref={listRef}
           data={rows}
           keyExtractor={(row) => row.key}

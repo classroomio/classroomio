@@ -43,5 +43,8 @@ export const pl: TranslatedMessages<typeof en> = {
   retry: 'Ponów',
   syncTitle: 'Synchronizacja',
   syncNow: 'Synchronizuj teraz',
-  signInToSave: 'Zaloguj się ponownie, aby zapisać postępy.'
+  signInToSave: 'Zaloguj się ponownie, aby zapisać postępy.',
+  staffOfflineTitle: 'Jesteś offline',
+  staffOfflineDescription:
+    'Ocenianie, obecność i dane uczniów wymagają połączenia. Aplikacja otworzy się ponownie, gdy wrócisz do sieci.'
 };

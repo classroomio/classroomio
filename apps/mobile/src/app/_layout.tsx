@@ -15,6 +15,7 @@ import { useMemo } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
+import { PendingInviteRedirect } from '@/feature/account/components/pending-invite-redirect';
 import { AuthProvider, useAuth } from '@/feature/auth/components/auth-provider';
 import { BiometricLock } from '@/feature/biometric/components/biometric-lock';
 import { AnimatedSplash } from '@/feature/brand/components/animated-splash';
@@ -131,6 +132,7 @@ function RootNavigator({ ready }: { ready: boolean }) {
       <OfflineSupport />
       <BiometricLock />
       <NotificationsBootstrap />
+      <PendingInviteRedirect />
     </NavigationThemeProvider>
   );
 }

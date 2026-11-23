@@ -1,12 +1,6 @@
 export const en = {
-  screenTitle: 'Explore',
-  entryTitle: 'Explore courses',
-  entryDescription: 'Courses you can enroll in',
-  searchCourses: 'Search courses',
   emptyTitle: 'No other courses',
   emptyDescription: 'Your organization has no other courses open to you.',
-  searchNoResultsTitle: 'No matching courses',
-  searchNoResultsDescription: 'No course title contains “{query}”.',
   loadError: 'Courses did not load',
   courseLoadError: 'This course did not load',
   about: 'About this course',
@@ -21,5 +15,8 @@ export const en = {
   enrollUnavailable: 'This course is not open for enrollment in the app.',
   paidNotAvailable: 'This course is not available to enroll in the app.',
   inviteOnly: 'Your organization enrolls learners in this course.',
-  originalPrice: 'Original price {price}'
+  originalPrice: 'Original price {price}',
+  pathsTitle: 'Learning paths',
+  coursesTitle: 'Courses',
+  searchCatalog: 'Search paths and courses'
 };

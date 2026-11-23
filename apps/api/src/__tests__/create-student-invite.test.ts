@@ -14,6 +14,13 @@ vi.mock('@api/services/jobs', () => ({
   enqueueTransactionalEmail: vi.fn()
 }));
 
+vi.mock('@api/services/organization/student-limit', () => ({
+  assertStudentCapacityOrThrow: vi.fn(),
+  countEmailsNeedingStudentSeats: vi.fn(),
+  getRemainingStudentSeats: vi.fn(),
+  notifyStudentMilestone: vi.fn()
+}));
+
 vi.mock('@cio/core/services/webhook/emit', () => ({
   emitCourseWebhookEvent: vi.fn(),
   emitCourseMemberWebhookEvent: vi.fn()
@@ -23,6 +30,7 @@ import { createCourseInvite, createCourseInviteAudit } from '@cio/db/queries/cou
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { createStudentInvite } from '@api/services/course/invite';
+import { countEmailsNeedingStudentSeats, getRemainingStudentSeats } from '@api/services/organization/student-limit';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const ACTOR_ID = 'actor-1';
@@ -55,6 +63,45 @@ describe('createStudentInvite (course invite onboarding)', () => {
     });
     vi.mocked(createCourseInviteAudit).mockResolvedValue(undefined as never);
     vi.mocked(enqueueTransactionalEmail).mockResolvedValue(undefined as never);
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(Number.POSITIVE_INFINITY);
+  });
+
+  it('refuses an email invite when the new people would need more seats than are left', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(1);
+    vi.mocked(countEmailsNeedingStudentSeats).mockResolvedValue(2);
+
+    await expect(
+      createStudentInvite(COURSE_ID, ACTOR_ID, { ...baseInvite, recipientEmails: ['a@example.com', 'b@example.com'] })
+    ).rejects.toMatchObject({ code: 'UPGRADE_REQUIRED', statusCode: 403 });
+    expect(countEmailsNeedingStudentSeats).toHaveBeenCalledWith('org-1', ['a@example.com', 'b@example.com']);
+    expect(createCourseInvite).not.toHaveBeenCalled();
+  });
+
+  it('invites people already in the organization when no seats are left', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(0);
+    vi.mocked(countEmailsNeedingStudentSeats).mockResolvedValue(0);
+
+    const result = await createStudentInvite(COURSE_ID, ACTOR_ID, {
+      ...baseInvite,
+      recipientEmails: ['member@example.com']
+    });
+
+    expect(result.invites).toHaveLength(1);
+  });
+
+  it('creates an invite link when no seats are left, since accepting it checks the limit', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(0);
+
+    await createStudentInvite(COURSE_ID, ACTOR_ID, baseInvite);
+
+    expect(createCourseInvite).toHaveBeenCalledTimes(1);
+    expect(countEmailsNeedingStudentSeats).not.toHaveBeenCalled();
+  });
+
+  it('skips the seat count when the plan has no student limit', async () => {
+    await createStudentInvite(COURSE_ID, ACTOR_ID, { ...baseInvite, recipientEmails: ['new@example.com'] });
+
+    expect(countEmailsNeedingStudentSeats).not.toHaveBeenCalled();
   });
 
   it('invites an email with no account yet, bound to that email, without looking anyone up', async () => {

@@ -43,5 +43,21 @@ export const es: TranslatedMessages<typeof en> = {
   resetEmailFailed: 'No pudimos enviar el correo para restablecer la contraseña. Inténtalo de nuevo.',
   invalidEmail: 'Introduce un correo electrónico válido.',
   invalidCredentials: 'El correo electrónico o la contraseña no son correctos.',
-  emailNotVerified: 'Verifica tu correo electrónico antes de iniciar sesión. El enlace está en tu bandeja de entrada.'
+  emailNotVerified: 'Verifica tu correo electrónico antes de iniciar sesión. El enlace está en tu bandeja de entrada.',
+  nameLabel: 'Nombre completo',
+  namePlaceholder: 'Tu nombre',
+  newPasswordPlaceholder: 'Crea una contraseña',
+  passwordHint: { one: 'Al menos {count} carácter.', other: 'Al menos {count} caracteres.' },
+  passwordTooShort: { one: 'Usa al menos {count} carácter.', other: 'Usa al menos {count} caracteres.' },
+  createAccount: 'Crear cuenta',
+  signUpFailed: 'No pudimos crear tu cuenta. Inténtalo de nuevo.',
+  accountExists: 'Ya existe una cuenta con este correo. Inicia sesión.',
+  haveInviteLink: '¿Tienes un enlace de invitación?',
+  joinAction: 'Unirme',
+  joinTitle: 'Unirse con un enlace de invitación',
+  joinDescription: 'Pega el enlace de invitación que recibiste por correo o de tu equipo del curso.',
+  inviteLinkLabel: 'Enlace de invitación',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Puedes crear una cuenta en la siguiente pantalla.',
+  inviteLinkInvalid: 'Este no es un enlace de invitación de ClassroomIO. Copia el enlace completo e inténtalo de nuevo.'
 };

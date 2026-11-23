@@ -14,6 +14,7 @@ import { emitCoursePublishWebhookEvent } from '../webhook/emit';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
 import { sealLessonVersionsOnPublish } from '../lesson-version';
 import { db } from '@cio/db/drizzle';
+import { notifyCourseRecommended } from '../notification/learner-events';
 import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 export type CourseGoLiveIssue = {
@@ -292,7 +293,11 @@ export async function publishCourseWhenReady(courseId: string, profileId: string
   const slug = await ensureCourseSlug(courseId, course.title);
 
   // Publishing seals the snapshot students were served, so both writes share one transaction.
-  const { course: publishedCourse, publishedNow, publishChange } = await db.transaction(async (tx) => {
+  const {
+    course: publishedCourse,
+    publishedNow,
+    publishChange
+  } = await db.transaction(async (tx) => {
     const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
     await sealLessonVersionsOnPublish(courseId, tx);
 
@@ -301,6 +306,7 @@ export async function publishCourseWhenReady(courseId: string, profileId: string
 
   if (publishedNow) {
     captureCoursePublished(publishedCourse, profileId ?? undefined, 'agent');
+    void notifyCourseRecommended({ courseId, actorProfileId: profileId ?? null });
   }
 
   await emitCoursePublishWebhookEvent(courseId, publishChange, profileId);

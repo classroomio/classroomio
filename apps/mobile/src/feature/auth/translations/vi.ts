@@ -42,5 +42,21 @@ export const vi: TranslatedMessages<typeof en> = {
   resetEmailFailed: 'Không thể gửi email đặt lại. Hãy thử lại.',
   invalidEmail: 'Nhập địa chỉ email hợp lệ.',
   invalidCredentials: 'Email hoặc mật khẩu không đúng.',
-  emailNotVerified: 'Hãy xác minh địa chỉ email trước khi đăng nhập. Liên kết có trong hộp thư đến của bạn.'
+  emailNotVerified: 'Hãy xác minh địa chỉ email trước khi đăng nhập. Liên kết có trong hộp thư đến của bạn.',
+  nameLabel: 'Họ và tên',
+  namePlaceholder: 'Tên của bạn',
+  newPasswordPlaceholder: 'Tạo mật khẩu',
+  passwordHint: { other: 'Ít nhất {count} ký tự.' },
+  passwordTooShort: { other: 'Hãy dùng ít nhất {count} ký tự.' },
+  createAccount: 'Tạo tài khoản',
+  signUpFailed: 'Không thể tạo tài khoản của bạn. Hãy thử lại.',
+  accountExists: 'Đã có tài khoản dùng email này. Hãy đăng nhập.',
+  haveInviteLink: 'Bạn có liên kết mời?',
+  joinAction: 'Tham gia',
+  joinTitle: 'Tham gia bằng liên kết mời',
+  joinDescription: 'Dán liên kết mời bạn nhận qua email hoặc từ nhóm khóa học.',
+  inviteLinkLabel: 'Liên kết mời',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'Bạn có thể tạo tài khoản ở màn hình tiếp theo.',
+  inviteLinkInvalid: 'Đây không phải liên kết mời của ClassroomIO. Hãy sao chép toàn bộ liên kết và thử lại.'
 };

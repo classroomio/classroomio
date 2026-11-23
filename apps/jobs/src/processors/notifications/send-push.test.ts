@@ -75,6 +75,7 @@ const notificationRow = {
   entityId: 'feed-1',
   courseId: 'course-1',
   actorProfileId: null,
+  itemCount: null,
   dedupeKey: null,
   readAt: null,
   createdAt: '2026-10-31T12:00:00.000Z'

@@ -1036,6 +1036,25 @@ export const UDEMY_COURSES: DemoCourse[] = [
                 ]
               }
             ]
+          },
+          {
+            title: 'Live Clinic: Debugging Slow Docker Builds',
+            live: { startsInMinutes: 3 * DAY_MINUTES + 120, durationMinutes: 60 },
+            intro:
+              'Bring a Dockerfile that builds slowly or produces a large image. We will profile a few builds together and fix them live.',
+            blocks: [
+              {
+                heading: 'Before the session',
+                bullets: [
+                  'Run `docker build` with `--progress=plain` and save the output.',
+                  'Note the final image size from `docker images`.'
+                ]
+              },
+              {
+                heading: 'What we will cover',
+                bullets: ['Layer caching order.', 'Multi-stage builds.', 'Choosing a smaller base image.']
+              }
+            ]
           }
         ]
       }
@@ -1517,9 +1536,10 @@ export const UDEMY_COURSES: DemoCourse[] = [
           {
             title: 'Customer Interviews That Reveal Real Problems',
             live: {
-              startsInMinutes: -2 * DAY_MINUTES,
+              startsInMinutes: -5 * 60,
               durationMinutes: 75,
-              recording: VIDEOS.fastProductDevelopment
+              recording: VIDEOS.fastProductDevelopment,
+              skipAttendance: true
             },
             intro:
               'Customers are good at describing their past behaviour and bad at predicting their future. This session practises interviews that focus on what people actually did.',
@@ -1683,7 +1703,7 @@ export const UDEMY_COURSES: DemoCourse[] = [
           {
             title: 'From Engineer to Manager',
             video: VIDEOS.techManagement,
-            live: { startsInMinutes: 2 * DAY_MINUTES + 30, durationMinutes: 60 },
+            live: { startsInMinutes: 8, durationMinutes: 60 },
             intro:
               'The skills that made you a strong engineer are not the ones that make you a good manager. Watch the talk before the session; we will discuss what surprised you.',
             blocks: [
@@ -2097,6 +2117,26 @@ export const UDEMY_COURSES: DemoCourse[] = [
                 bullets: [
                   'Write down decisions and owners within the hour.',
                   'Cancel the next one if it is no longer needed.'
+                ]
+              }
+            ]
+          },
+          {
+            title: 'Live Workshop: Planning Your Week',
+            live: { startsInMinutes: 2 * DAY_MINUTES + 240, durationMinutes: 45 },
+            intro:
+              'A short working session. We will each plan next week with the methods from this course and compare notes at the end.',
+            blocks: [
+              {
+                heading: 'Bring',
+                bullets: ['Your calendar for next week.', 'Your current task list.']
+              },
+              {
+                heading: 'We will',
+                bullets: [
+                  'Block time for your two most important outcomes.',
+                  'Batch shallow work into one slot a day.',
+                  'Decide what you will not do.'
                 ]
               }
             ]

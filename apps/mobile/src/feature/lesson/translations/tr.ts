@@ -42,10 +42,7 @@ export const tr: TranslatedMessages<typeof en> = {
   completedSyncPendingLabel: 'Ders tamamlandı, yeniden çevrimiçi olduğunuzda eşitlenir',
   completed: 'Tamamlandı',
   syncsWhenBackOnline: 'Yeniden çevrimiçi olduğunuzda eşitlenir',
-  markNotComplete: 'Tamamlanmadı olarak işaretle',
   watchToComplete: 'Bu dersi tamamlamak için videonun {percent} kadarını izleyin',
-  completeAndContinue: 'Tamamla ve devam et',
-  markComplete: 'Tamamlandı olarak işaretle',
   previous: 'Önceki',
   next: 'Sonraki',
   inThisSection: 'Bu bölümde',
@@ -113,5 +110,13 @@ export const tr: TranslatedMessages<typeof en> = {
   tutorDisabledTitle: 'Yapay zeka eğitmeni kapalı',
   tutorDisabledDescription: 'Kuruluşunuz bu kurs için yapay zeka eğitmenini açmadı.',
   tutorNotConfiguredTitle: 'Yapay zeka eğitmeni kullanılamıyor',
-  tutorNotConfiguredDescription: 'Bu sunucuda yapılandırılmış bir yapay zeka sağlayıcısı yok.'
+  tutorNotConfiguredDescription: 'Bu sunucuda yapılandırılmış bir yapay zeka sağlayıcısı yok.',
+  completesAtEnd: 'Sona ulaştığınızda tamamlanır',
+  reload: 'Yeniden yükle',
+  resumedFrom: '{time} itibarıyla devam ediliyor',
+  videoQuality: 'Video kalitesi',
+  videoQualityValue: 'Video kalitesi, {quality}',
+  sessionExpiredTitle: 'Oturumunuzun süresi doldu',
+  sessionExpiredDescription: 'Bu videoyu izlemek için yeniden oturum açın.',
+  signInAgain: 'Yeniden oturum aç'
 };

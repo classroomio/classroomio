@@ -135,7 +135,7 @@ pnpm seed --organizations --organization-members --organization-plan
 | `--accounts`             | User accounts                                                       |
 | `--organizations`        | Demo organizations                                                  |
 | `--organization-members` | Org membership records                                              |
-| `--organization-plan`    | Organization plan records (enterprise + early adopter)              |
+| `--organization-plan`    | Organization plan records (udemy-test, enterprise and early adopter) |
 | `--groups`               | Course groups                                                       |
 | `--group-members`        | Group membership records                                            |
 | `--courses`              | Demo courses                                                        |
@@ -147,17 +147,23 @@ pnpm seed --organizations --organization-members --organization-plan
 | `--demo-people`          | Demo learners and tutors, with their org memberships                |
 | `--demo-courses`         | Demo course catalog with lessons, videos and exercises              |
 | `--demo-enrollments`     | Demo enrolments, progress, submissions, certificates and attendance |
+| `--demo-progression`     | UX Design as a sequential course with a watch-to-complete video     |
+| `--demo-learning-paths`  | Demo learning paths and their members (udemy-test)                  |
+| `--demo-live-classes`    | Live class registrations (udemy-test)                               |
+| `--demo-teaching`        | `tutor@test.com`'s course teams, drafts and learner activity        |
+| `--demo-goals`           | `student@test.com`'s streak and weekly lesson goal                  |
 | `--demo-community`       | Demo community questions and answers                                |
 | `--demo-newsfeed`        | Demo course newsfeed posts and comments                             |
 | `--demo-cohorts`         | Demo cohorts with goals and posts (udemy-test)                      |
-| `--demo-notifications`   | Demo notifications for `student@test.com`                           |
+| `--demo-notifications`   | Demo notifications for the udemy-test student, tutor and admin      |
 
 ### Demo accounts
 
 | Email                            | Password | Role    | Plan          |
 | -------------------------------- | -------- | ------- | ------------- |
-| `admin@test.com`                 | `123456` | Admin   | Basic (free)  |
-| `student@test.com`               | `123456` | Student | Basic (free)  |
+| `admin@test.com`                 | `123456` | Admin   | Early Adopter |
+| `tutor@test.com`                 | `123456` | Tutor   | Early Adopter |
+| `student@test.com`               | `123456` | Student | Early Adopter |
 | `enterprise@test.com`            | `123456` | Admin   | Enterprise    |
 | `enterprise-student@test.com`    | `123456` | Student | Enterprise    |
 | `early-adopter@test.com`         | `123456` | Admin   | Early Adopter |

@@ -89,53 +89,6 @@ export const pl: TranslatedMessages<typeof en> = {
     other: 'Wszystkie {count} wymagania są spełnione.'
   },
   summaryNone: 'Twoja organizacja nie przypisała Ci żadnych obowiązkowych szkoleń.',
-  alertOverdueTitle: {
-    one: '{count} wymaganie po terminie',
-    few: '{count} wymagania po terminie',
-    many: '{count} wymagań po terminie',
-    other: '{count} wymagania po terminie'
-  },
-  alertInGracePeriodTitle: {
-    one: '{count} wymaganie w okresie karencji',
-    few: '{count} wymagania w okresie karencji',
-    many: '{count} wymagań w okresie karencji',
-    other: '{count} wymagania w okresie karencji'
-  },
-  alertDueSoonTitle: {
-    one: '{count} wymaganie z bliskim terminem',
-    few: '{count} wymagania z bliskim terminem',
-    many: '{count} wymagań z bliskim terminem',
-    other: '{count} wymagania z bliskim terminem'
-  },
-  alertWasDue: {
-    one: 'Termin dla kursu {course} minął {count} dzień temu.',
-    few: 'Termin dla kursu {course} minął {count} dni temu.',
-    many: 'Termin dla kursu {course} minął {count} dni temu.',
-    other: 'Termin dla kursu {course} minął {count} dnia temu.'
-  },
-  alertGraceLeft: {
-    one: 'Pozostał {count} dzień karencji.',
-    few: 'Pozostały {count} dni karencji.',
-    many: 'Pozostało {count} dni karencji.',
-    other: 'Pozostało {count} dnia karencji.'
-  },
-  alertDueToday: 'Termin dla kursu {course} mija dziś.',
-  alertDueInDays: {
-    one: 'Termin dla kursu {course} mija za {count} dzień.',
-    few: 'Termin dla kursu {course} mija za {count} dni.',
-    many: 'Termin dla kursu {course} mija za {count} dni.',
-    other: 'Termin dla kursu {course} mija za {count} dnia.'
-  },
-  alertDueSoon: 'Termin dla kursu {course} wkrótce mija.',
-  alertExpiresToday: 'Ważność kursu {course} wygasa dziś.',
-  alertExpiresInDays: {
-    one: 'Ważność kursu {course} wygasa za {count} dzień.',
-    few: 'Ważność kursu {course} wygasa za {count} dni.',
-    many: 'Ważność kursu {course} wygasa za {count} dni.',
-    other: 'Ważność kursu {course} wygasa za {count} dnia.'
-  },
-  alertExpiresSoon: 'Ważność kursu {course} wkrótce wygasa.',
-  alertHint: 'Otwiera zgodność',
   loadError: 'Nie udało się wczytać statusu zgodności',
   emptyTitle: 'Brak wymagań dotyczących zgodności',
   sectionNeedsAttention: 'Wymaga uwagi',

@@ -47,7 +47,8 @@ function person(index: number, key: string, fullname: string, headline: string):
 export const DEMO_TUTORS: DemoPerson[] = [
   person(101, 'nkechi.eze', 'Nkechi Eze', 'Data scientist and instructor'),
   person(102, 'tom.hargreaves', 'Tom Hargreaves', 'Engineering director and leadership coach'),
-  person(103, 'camille.laurent', 'Camille Laurent', 'Product designer and brand strategist')
+  person(103, 'camille.laurent', 'Camille Laurent', 'Product designer and brand strategist'),
+  { ...person(104, 'tutor', 'Grace Adebayo', 'Senior instructor for web and Python'), email: 'tutor@test.com' }
 ];
 
 export const DEMO_LEARNERS: DemoPerson[] = [

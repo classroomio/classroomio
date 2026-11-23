@@ -1,0 +1,22 @@
+export const en = {
+  title: 'Ask AI',
+  description: 'About your courses and goals',
+  emptyTitle: 'Ask about your learning',
+  emptyDescription: 'Ask about your courses, what is due next, or how to reach your weekly goal.',
+  placeholder: 'Ask a question',
+  inputLabel: 'Question for the assistant',
+  send: 'Send',
+  stop: 'Stop answering',
+  stopped: 'The answer stopped. Ask again to continue.',
+  requestFailed: 'The assistant did not answer',
+  capReachedTitle: 'No questions left this month',
+  capReachedDescription: 'Your organization sets how many questions each learner can ask.',
+  poolExhaustedTitle: 'The assistant is unavailable',
+  poolExhaustedDescription: 'Your organization has used its AI allowance for this month.',
+  disabledTitle: 'The assistant is turned off',
+  disabledDescription: 'Your organization has not turned on the AI tutor.',
+  notConfiguredTitle: 'The assistant is unavailable',
+  notConfiguredDescription: 'This server has no AI provider set up.',
+  noCoursesTitle: 'Join a course first',
+  noCoursesDescription: 'The assistant answers questions about the courses you are enrolled in.'
+};

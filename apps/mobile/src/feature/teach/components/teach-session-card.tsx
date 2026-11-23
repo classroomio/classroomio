@@ -59,7 +59,7 @@ export function TeachSessionCard({ courseId }: { courseId: string }) {
           variant={live ? 'primary' : 'outline'}
           style={styles.action}
           onPress={() =>
-            router.push({ pathname: '/teach/course/[courseId]/check-in', params: { courseId, lessonId: session.id } })
+            router.push({ pathname: '/courses/[courseId]/check-in', params: { courseId, lessonId: session.id } })
           }
         >
           <ButtonIcon icon={QrCodeIcon} />
@@ -69,7 +69,7 @@ export function TeachSessionCard({ courseId }: { courseId: string }) {
           variant="outline"
           style={styles.action}
           onPress={() =>
-            router.push({ pathname: '/teach/course/[courseId]/attendance', params: { courseId, lessonId: session.id } })
+            router.push({ pathname: '/courses/[courseId]/attendance', params: { courseId, lessonId: session.id } })
           }
         >
           <ButtonIcon icon={CalendarCheckIcon} />

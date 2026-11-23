@@ -23,5 +23,7 @@ export const vi: TranslatedMessages<typeof en> = {
   retry: 'Thử lại',
   syncTitle: 'Đồng bộ',
   syncNow: 'Đồng bộ ngay',
-  signInToSave: 'Hãy đăng nhập lại để lưu tiến độ của bạn.'
+  signInToSave: 'Hãy đăng nhập lại để lưu tiến độ của bạn.',
+  staffOfflineTitle: 'Bạn đang ngoại tuyến',
+  staffOfflineDescription: 'Chấm bài, điểm danh và dữ liệu học viên cần có mạng. Ứng dụng sẽ mở lại khi bạn có kết nối.'
 };

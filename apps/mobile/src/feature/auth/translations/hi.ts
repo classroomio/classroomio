@@ -43,5 +43,24 @@ export const hi: TranslatedMessages<typeof en> = {
   resetEmailFailed: 'हम रीसेट ईमेल नहीं भेज सके। फिर से कोशिश करें।',
   invalidEmail: 'मान्य ईमेल पता दर्ज करें।',
   invalidCredentials: 'ईमेल या पासवर्ड गलत है।',
-  emailNotVerified: 'साइन इन करने से पहले अपना ईमेल पता सत्यापित करें। लिंक आपके इनबॉक्स में है।'
+  emailNotVerified: 'साइन इन करने से पहले अपना ईमेल पता सत्यापित करें। लिंक आपके इनबॉक्स में है।',
+  nameLabel: 'पूरा नाम',
+  namePlaceholder: 'आपका नाम',
+  newPasswordPlaceholder: 'पासवर्ड बनाएं',
+  passwordHint: { one: 'कम से कम {count} अक्षर।', other: 'कम से कम {count} अक्षर।' },
+  passwordTooShort: {
+    one: 'कम से कम {count} अक्षर का पासवर्ड रखें।',
+    other: 'कम से कम {count} अक्षर का पासवर्ड रखें।'
+  },
+  createAccount: 'खाता बनाएं',
+  signUpFailed: 'हम आपका खाता नहीं बना सके। फिर से कोशिश करें।',
+  accountExists: 'इस ईमेल से पहले से एक खाता है। इसके बजाय साइन इन करें।',
+  haveInviteLink: 'क्या आपके पास आमंत्रण लिंक है?',
+  joinAction: 'जुड़ें',
+  joinTitle: 'आमंत्रण लिंक से जुड़ें',
+  joinDescription: 'ईमेल से या अपनी कोर्स टीम से मिला आमंत्रण लिंक पेस्ट करें।',
+  inviteLinkLabel: 'आमंत्रण लिंक',
+  inviteLinkPlaceholder: 'https://…/invite/…',
+  inviteLinkHint: 'अगली स्क्रीन पर आप खाता बना सकते हैं।',
+  inviteLinkInvalid: 'यह ClassroomIO आमंत्रण लिंक नहीं है। पूरा लिंक कॉपी करके फिर से कोशिश करें।'
 };

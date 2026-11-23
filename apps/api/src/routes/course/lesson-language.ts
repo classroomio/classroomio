@@ -16,7 +16,9 @@ import type { TLocale } from '@db/types';
 import { b64EnvelopeRewrite } from '@api/middlewares/b64-envelope';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
 import { handleError } from '@api/utils/errors';
+import { ContentType } from '@cio/utils/constants';
 import { zValidator } from '@hono/zod-validator';
 
 export const lessonLanguageRouter = new Hono()
@@ -28,7 +30,15 @@ export const lessonLanguageRouter = new Hono()
    */
   .get('/', authMiddleware, courseMemberMiddleware, zValidator('param', ZLessonLanguageGetParam), async (c) => {
     try {
-      const { lessonId } = c.req.valid('param');
+      const { courseId, lessonId } = c.req.valid('param');
+      const user = c.get('user')!;
+      await assertEnrolledStudentContentAccess({
+        courseId,
+        profileId: user.id,
+        contentId: lessonId,
+        type: ContentType.Lesson
+      });
+
       const languages = await listLessonLanguages(lessonId);
 
       return c.json(
@@ -54,7 +64,15 @@ export const lessonLanguageRouter = new Hono()
     zValidator('param', ZLessonLanguageGetByLocaleParam),
     async (c) => {
       try {
-        const { lessonId, locale } = c.req.valid('param');
+        const { courseId, lessonId, locale } = c.req.valid('param');
+        const user = c.get('user')!;
+        await assertEnrolledStudentContentAccess({
+          courseId,
+          profileId: user.id,
+          contentId: lessonId,
+          type: ContentType.Lesson
+        });
+
         const language = await getLessonLanguage(lessonId, locale as TLocale);
 
         if (!language) {

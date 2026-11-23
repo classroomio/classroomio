@@ -120,6 +120,15 @@ const config: ExpoConfig = {
     ],
     ['expo-audio', { microphonePermission: MICROPHONE_REASON }],
     ['expo-notifications', { color: '#0233BD' }],
+    [
+      'expo-calendar',
+      {
+        writeOnlyAccess: true,
+        calendarPermission: false,
+        remindersPermission: false,
+        writeOnlyCalendarPermission: 'ClassroomIO adds the live classes you choose to your calendar.'
+      }
+    ],
     'expo-sqlite',
     'expo-localization'
   ],

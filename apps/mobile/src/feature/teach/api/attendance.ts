@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { request } from '@/feature/common/api/request';
 import { useApi } from '@/feature/common/components/api-provider';
+import { staffKeys } from '@/feature/staff/api/staff-keys';
 import type { AttendanceStatus, TeachCourse, TeachCourseAttendance } from '@/feature/teach/types/teach';
 
 import { teachKeys, useTeachScope } from './teach-scope';
@@ -49,6 +50,7 @@ export function useSaveAttendanceMutation() {
       queryClient.setQueryData<TeachCourse>(teachKeys.course(userId, orgId, courseId), (course) =>
         course ? { ...course, attendance: mergeAttendance(course.attendance, saved) } : course
       );
+      void queryClient.invalidateQueries({ queryKey: staffKeys.sessions(userId, orgId) });
     }
   });
 }

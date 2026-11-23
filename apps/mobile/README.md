@@ -51,10 +51,11 @@ The iOS and Android app for ClassroomIO, built with Expo. It talks to the same A
 
 6. **Sign in** with a demo account. The password for all of them is `123456`.
 
-   | Account            | Role                      |
-   | ------------------ | ------------------------- |
-   | `student@test.com` | Student                   |
-   | `admin@test.com`   | Admin, with the Teach tab |
+   | Account            | Role                                                   |
+   | ------------------ | ------------------------------------------------------ |
+   | `student@test.com` | Student                                                |
+   | `tutor@test.com`   | Tutor, with the Courses, Learners and Submissions tabs |
+   | `admin@test.com`   | Admin, with the People and Courses tabs                |
 
 ## Run on a real iPhone
 

@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getExploreCourseDetail } from '@cio/db/queries/course/explore';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
+import { resolveCourseFacts } from '@cio/utils/functions/course-facts';
 import { isCoursePaid } from '@cio/utils/validation/course';
 
 function discountedPrice(cost: number, discountPercent: number, showDiscount: boolean) {
@@ -35,6 +36,7 @@ export async function getExploreCourse(orgId: string, profileId: string, courseI
   const price = requiresPayment ? discountedPrice(cost, discountPercent, showDiscount) : 0;
   const baseUrl = getDashboardBaseUrl(organization);
   const landingUrl = course.slug ? `${baseUrl}/course/${course.slug}` : null;
+  const facts = resolveCourseFacts(course.metadata, row.videoSeconds, row.tutorName);
 
   return {
     id: course.id,
@@ -48,6 +50,9 @@ export async function getExploreCourse(orgId: string, profileId: string, courseI
     type: course.type,
     lessonCount: row.lessonCount,
     exerciseCount: row.exerciseCount,
+    level: facts.level,
+    durationMinutes: facts.durationMinutes,
+    instructorName: facts.instructorName,
     currency: course.currency,
     cost,
     price,

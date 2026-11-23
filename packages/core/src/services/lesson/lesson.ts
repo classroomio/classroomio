@@ -35,6 +35,7 @@ import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
 import { emitCourseWebhookEvent } from '../webhook/emit';
 import { notifyLessonPublished } from '../notification/course-events';
+import { notifyWeeklyGoalProgress } from '../notification/learner-events';
 import { captureCourseEvent } from '../posthog';
 
 /**
@@ -544,6 +545,7 @@ export async function upsertLessonCompletionService(
 
     if (isComplete && !previous?.isComplete) {
       captureLessonCompleted(lesson.courseId, lessonId, profileId, completionMethod);
+      void notifyWeeklyGoalProgress({ courseId: lesson.courseId, profileId });
     }
 
     return completion;
@@ -769,6 +771,7 @@ export async function updateLessonWatchProgressService(
         isComplete: true
       });
       captureLessonCompleted(lesson.courseId, lessonId, profileId, 'video_watch');
+      void notifyWeeklyGoalProgress({ courseId: lesson.courseId, profileId });
     }
 
     if (!aggregate) {

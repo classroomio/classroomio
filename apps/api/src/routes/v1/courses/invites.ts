@@ -19,7 +19,7 @@ import { getEventSource } from '@api/utils/event-source';
 import { describeRoute, validator } from 'hono-openapi';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { COURSE_TEAM_RULE, forbiddenResponse, mcpRateLimitResponse } from './docs';
+import { COURSE_TEAM_RULE, forbiddenResponse, inviteForbiddenResponse, mcpRateLimitResponse } from './docs';
 import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin } from '@api/services/v1/shared';
 import type { Context, Next } from 'hono';
 
@@ -97,7 +97,7 @@ export const v1CourseInvitesRouter = new Hono()
         201: jsonResponse('Course invite created successfully', itemResponse(ZPublicApiCreateCourseInviteResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: forbiddenResponse,
+        403: inviteForbiddenResponse,
         404: { description: 'Course not found' },
         429: {
           description:

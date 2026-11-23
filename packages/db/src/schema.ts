@@ -36,6 +36,8 @@ import {
   type TNotificationType
 } from '@cio/utils/constants/notifications';
 import { ATTENDANCE_STATUS_VALUES } from '@cio/utils/constants/attendance';
+import type { TCourseLevel } from '@cio/utils/constants/course-level';
+import { DEFAULT_WEEKLY_LESSON_TARGET } from '@cio/utils/constants/learner-goals';
 import {
   LIVE_SESSION_REMINDER_STATUS_VALUES,
   type TLiveSessionReminderSkipReason
@@ -928,6 +930,10 @@ export const course = pgTable(
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
       progressionMode?: CourseProgressionMode;
+      /** Teacher-set difficulty shown to learners and used by catalog filters. */
+      level?: TCourseLevel | null;
+      /** Teacher-set length in minutes; when missing, learners see the sum of known lesson video durations. */
+      durationMinutes?: number | null;
       /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
       commentsEnabled?: boolean;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
@@ -1849,6 +1855,53 @@ export const lessonCompletion = pgTable(
       name: 'lesson_completion_profile_id_fkey'
     }),
     unique('unique_lesson_profile').on(table.lessonId, table.profileId)
+  ]
+);
+
+/** A learner's weekly lesson goal and the time zone their streak days are counted in, per organization. */
+export const learnerGoal = pgTable(
+  'learner_goal',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    weeklyLessonTarget: integer('weekly_lesson_target').default(DEFAULT_WEEKLY_LESSON_TARGET).notNull(),
+    timezone: varchar('timezone', { length: 64 }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('learner_goal_profile_organization_key').on(table.profileId, table.organizationId),
+    index('idx_learner_goal_organization').on(table.organizationId)
+  ]
+);
+
+/** A learner's registration for a scheduled live class (a lesson with a start time and call link). */
+export const lessonSessionRegistration = pgTable(
+  'lesson_session_registration',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    lessonId: uuid('lesson_id')
+      .notNull()
+      .references(() => lesson.id, { onDelete: 'cascade' }),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('lesson_session_registration_lesson_profile_key').on(table.lessonId, table.profileId),
+    index('idx_lesson_session_registration_profile').on(table.profileId)
   ]
 );
 
@@ -3784,6 +3837,133 @@ export const cohortGoalAssignment = pgTable(
   ]
 );
 
+// ─── Learning paths ──────────────────────────────────────────────────────────
+
+export const learningPathStatus = pgEnum('LEARNING_PATH_STATUS', ['ACTIVE', 'DRAFT', 'ARCHIVED']);
+
+export type TLearningPathLandingPage = {
+  headline?: string;
+  subheadline?: string;
+  visitorAccess?: 'teaser' | 'syllabus' | 'preview';
+  outcomes?: string[];
+  skills?: string[];
+  showInstructors?: boolean;
+  testimonials?: { name: string; role?: string; quote: string }[];
+  showTestimonials?: boolean;
+  faqs?: { question: string; answer: string }[];
+  showFaqs?: boolean;
+};
+
+export const learningPath = pgTable(
+  'learning_path',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    name: varchar().notNull(),
+    slug: varchar().notNull(),
+    description: text(),
+    coverImage: text('cover_image'),
+    status: learningPathStatus().default('DRAFT').notNull(),
+    cost: bigint({ mode: 'number' }).default(0).notNull(),
+    currency: varchar().default('USD').notNull(),
+    showSavings: boolean('show_savings').default(true).notNull(),
+    sequentialUnlock: boolean('sequential_unlock').default(true).notNull(),
+    selfEnrollment: boolean('self_enrollment').default(true).notNull(),
+    autoEnroll: boolean('auto_enroll').default(true).notNull(),
+    certificateEnabled: boolean('certificate_enabled').default(true).notNull(),
+    certificateTitle: text('certificate_title'),
+    certificateIssuer: text('certificate_issuer'),
+    landingPage: jsonb('landing_page').default({}).notNull().$type<TLearningPathLandingPage>(),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'learning_path_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'learning_path_created_by_profile_id_fkey'
+    }).onDelete('set null'),
+    unique('learning_path_organization_id_slug_unique').on(table.organizationId, table.slug),
+    index('idx_learning_path_organization_id').on(table.organizationId)
+  ]
+);
+
+export const learningPathCourse = pgTable(
+  'learning_path_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    pathId: uuid('path_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    order: integer().notNull(),
+    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.pathId],
+      foreignColumns: [learningPath.id],
+      name: 'learning_path_course_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'learning_path_course_course_id_fkey'
+    }).onDelete('cascade'),
+    unique('learning_path_course_path_id_course_id_unique').on(table.pathId, table.courseId),
+    unique('learning_path_course_path_id_order_unique').on(table.pathId, table.order),
+    index('idx_learning_path_course_path_id').on(table.pathId),
+    index('idx_learning_path_course_course_id').on(table.courseId)
+  ]
+);
+
+export const learningPathMember = pgTable(
+  'learning_path_member',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    pathId: uuid('path_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    roleId: integer('role_id').notNull(),
+    enrolledAt: timestamp('enrolled_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    certificateIssuedAt: timestamp('certificate_issued_at', { withTimezone: true, mode: 'string' }),
+    certificateId: varchar('certificate_id')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.pathId],
+      foreignColumns: [learningPath.id],
+      name: 'learning_path_member_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'learning_path_member_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'learning_path_member_role_id_fkey'
+    }),
+    unique('learning_path_member_path_id_profile_id_unique').on(table.pathId, table.profileId),
+    index('idx_learning_path_member_path_id').on(table.pathId),
+    index('idx_learning_path_member_profile_id').on(table.profileId)
+  ]
+);
+
 // ─── AI Token Usage ──────────────────────────────────────────────────────────
 
 export const aiTokenUsage = pgTable(
@@ -4667,6 +4847,8 @@ export const notification = pgTable(
     entityId: varchar('entity_id', { length: 64 }).notNull(),
     courseId: uuid('course_id').references(() => course.id, { onDelete: 'cascade' }),
     actorProfileId: uuid('actor_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    /** How many items a grouped notification covers, such as learners who need a nudge. */
+    itemCount: integer('item_count'),
     dedupeKey: varchar('dedupe_key', { length: 255 }),
     readAt: timestamp('read_at', { withTimezone: true, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
@@ -4732,6 +4914,32 @@ export const deviceToken = pgTable(
     unique('device_token_token_key').on(table.token),
     index('idx_device_token_profile').on(table.profileId),
     index('idx_device_token_profile_disabled').on(table.profileId, table.disabledAt)
+  ]
+);
+
+/** One row per reminder a tutor sends a learner; the latest row per course and learner enforces the send limit. */
+export const learnerNudge = pgTable(
+  'learner_nudge',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    learnerProfileId: uuid('learner_profile_id')
+      .notNull()
+      .references(() => profile.id, { onDelete: 'cascade' }),
+    nudgedByProfileId: uuid('nudged_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_learner_nudge_course_learner_created').on(table.courseId, table.learnerProfileId, table.createdAt),
+    index('idx_learner_nudge_organization').on(table.organizationId)
   ]
 );
 

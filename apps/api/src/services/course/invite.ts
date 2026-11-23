@@ -47,13 +47,19 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
-import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
+import {
+  assertStudentCapacityOrThrow,
+  countEmailsNeedingStudentSeats,
+  getRemainingStudentSeats,
+  notifyStudentMilestone
+} from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
 import { getWelcomeSessionIcs } from './session-invite';
 import { db } from '@cio/db/drizzle';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureLearnerInvited, captureLearnersEnrolled } from '@api/services/product-events';
+import { notifyStudentJoined } from '@cio/core/services/notification/staff-events';
 
 /**
  * Minimal org-url bundle threaded through invite/email paths so every URL
@@ -417,6 +423,8 @@ async function sendStudentJoinEmails(input: {
   studentEmail: string;
   welcomeEmailMessage?: string | null;
 }) {
+  void notifyStudentJoined({ courseId: input.courseId, studentProfileId: input.studentId });
+
   try {
     const loginUrl = getDashboardBaseUrl(input.org);
     const ics = await getWelcomeSessionIcs(input.courseId);
@@ -551,6 +559,23 @@ async function createEmailInviteAndSend(input: {
 }
 
 /**
+ * Throws `UPGRADE_REQUIRED` (403), as the other student-limit checks do, when the people invited by email would
+ * need more new student seats than the organization has left. People already in the organization need no seat.
+ * Invite links are not checked here: accepting one enforces the limit.
+ */
+async function assertEmailInviteSeats(orgId: string, emails: string[]): Promise<void> {
+  if (emails.length === 0) return;
+
+  const remainingSeats = await getRemainingStudentSeats(orgId);
+  if (!Number.isFinite(remainingSeats)) return;
+
+  const seatsNeeded = await countEmailsNeedingStudentSeats(orgId, emails);
+  if (seatsNeeded > remainingSeats) {
+    throw new AppError('This organization has reached its student limit', ErrorCodes.UPGRADE_REQUIRED, 403);
+  }
+}
+
+/**
  * Creates secure student invite tokens for a course.
  * Supports both single-link and direct-email invite creation flows.
  */
@@ -583,6 +608,8 @@ export async function createStudentInvite(
       'recipientEmails'
     );
   }
+
+  await assertEmailInviteSeats(courseOrgData.orgId, recipients.valid);
 
   const courseTitle = course[0].title;
   const courseSlug = course[0].slug ?? (await ensureCourseSlug(course[0].id, courseTitle));

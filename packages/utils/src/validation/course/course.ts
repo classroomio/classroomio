@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { COURSE_DURATION_BUCKETS, COURSE_LEVELS, MAX_COURSE_DURATION_MINUTES } from '../../constants/course-level';
 import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
@@ -12,7 +13,10 @@ export const ZGetRecommendedCourses = z.object({
   limit: z.string().transform(Number).pipe(z.number().min(1).max(50)).optional(),
   page: z.string().transform(Number).pipe(z.number().min(1)).optional(),
   sort: ZOrganizationCourseSort.optional(),
-  order: z.enum(['asc', 'desc']).optional()
+  order: z.enum(['asc', 'desc']).optional(),
+  search: z.string().trim().max(120).optional(),
+  level: z.enum(COURSE_LEVELS).optional(),
+  duration: z.enum(COURSE_DURATION_BUCKETS).optional()
 });
 export type TGetRecommendedCourses = z.infer<typeof ZGetRecommendedCourses>;
 
@@ -426,7 +430,9 @@ const ZCourseMetadataFields = z.object({
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
   progressionMode: z.enum(COURSE_PROGRESSION_MODES).optional(),
-  commentsEnabled: z.boolean().optional()
+  commentsEnabled: z.boolean().optional(),
+  level: z.enum(COURSE_LEVELS).nullish(),
+  durationMinutes: z.number().int().min(1).max(MAX_COURSE_DURATION_MINUTES).nullish()
 });
 
 // Course metadata schema matching the database structure

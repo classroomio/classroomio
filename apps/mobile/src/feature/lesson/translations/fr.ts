@@ -44,10 +44,7 @@ export const fr: TranslatedMessages<typeof en> = {
   completedSyncPendingLabel: 'Leçon terminée, synchronisée à votre retour en ligne',
   completed: 'Terminé',
   syncsWhenBackOnline: 'Synchronisé à votre retour en ligne',
-  markNotComplete: 'Marquer comme non terminée',
   watchToComplete: 'Regardez {percent} de la vidéo pour terminer cette leçon',
-  completeAndContinue: 'Terminer et continuer',
-  markComplete: 'Marquer comme terminée',
   previous: 'Précédent',
   next: 'Suivant',
   inThisSection: 'Dans cette section',
@@ -116,5 +113,13 @@ export const fr: TranslatedMessages<typeof en> = {
   tutorDisabledTitle: 'Le tuteur IA est désactivé',
   tutorDisabledDescription: 'Votre organisation n’a pas activé le tuteur IA pour ce cours.',
   tutorNotConfiguredTitle: 'Le tuteur IA n’est pas disponible',
-  tutorNotConfiguredDescription: 'Aucun fournisseur d’IA n’est configuré sur ce serveur.'
+  tutorNotConfiguredDescription: 'Aucun fournisseur d’IA n’est configuré sur ce serveur.',
+  completesAtEnd: 'Terminée quand vous arrivez à la fin',
+  reload: 'Recharger',
+  resumedFrom: 'Reprise à {time}',
+  videoQuality: 'Qualité vidéo',
+  videoQualityValue: 'Qualité vidéo, {quality}',
+  sessionExpiredTitle: 'Votre session a expiré',
+  sessionExpiredDescription: 'Reconnectez-vous pour regarder cette vidéo.',
+  signInAgain: 'Se reconnecter'
 };

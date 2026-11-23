@@ -3,6 +3,7 @@ import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import { ZNotifyCourseExercisePayload, enqueueEmailSend } from '@cio/jobs';
 import { ROLE } from '@cio/utils/constants';
 import { getStudentEmailDeliveryLocale } from '@cio/core/services/email/localization';
+import { notifyAssignmentAvailable } from '@cio/core/services/notification/learner-events';
 
 import { log } from '../../utils/logger';
 
@@ -18,6 +19,10 @@ interface NotifyResult {
  */
 export async function processNotifyCourseExercise(rawPayload: unknown, jobId: string): Promise<NotifyResult> {
   const payload = ZNotifyCourseExercisePayload.parse(rawPayload);
+
+  if (payload.exerciseId) {
+    await notifyAssignmentAvailable({ exerciseId: payload.exerciseId, courseId: payload.courseId });
+  }
 
   const members = await getCourseMembers(payload.courseId);
   const recipients = members

@@ -44,24 +44,6 @@ export const es: TranslatedMessages<typeof en> = {
   summaryCompliantOne: 'Tu requisito está al día.',
   summaryCompliantAll: { other: 'Los {count} requisitos están al día.' },
   summaryNone: 'Tu organización no te ha asignado ninguna formación obligatoria.',
-  alertOverdueTitle: { one: '{count} requisito vencido', other: '{count} requisitos vencidos' },
-  alertInGracePeriodTitle: {
-    one: '{count} requisito en periodo de gracia',
-    other: '{count} requisitos en periodo de gracia'
-  },
-  alertDueSoonTitle: { one: '{count} requisito vence pronto', other: '{count} requisitos vencen pronto' },
-  alertWasDue: { one: '{course} venció hace {count} día.', other: '{course} venció hace {count} días.' },
-  alertGraceLeft: {
-    one: 'Queda {count} día de periodo de gracia.',
-    other: 'Quedan {count} días de periodo de gracia.'
-  },
-  alertDueToday: '{course} vence hoy.',
-  alertDueInDays: { one: '{course} vence en {count} día.', other: '{course} vence en {count} días.' },
-  alertDueSoon: '{course} vence pronto.',
-  alertExpiresToday: '{course} caduca hoy.',
-  alertExpiresInDays: { one: '{course} caduca en {count} día.', other: '{course} caduca en {count} días.' },
-  alertExpiresSoon: '{course} caduca pronto.',
-  alertHint: 'Abre cumplimiento',
   loadError: 'Tu estado de cumplimiento no se cargó',
   emptyTitle: 'No hay requisitos de cumplimiento',
   sectionNeedsAttention: 'Requiere atención',

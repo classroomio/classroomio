@@ -39,6 +39,7 @@ import { captureCoursePublished } from '@cio/core/services/course/course';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
+import { notifyCourseRecommended } from '@cio/core/services/notification/learner-events';
 import { ANY_KEY_RULE, ORG_TEAM_RULE, cloneForbiddenResponse, mcpRateLimitResponse } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
@@ -412,6 +413,7 @@ export const v1CourseRouter = new Hono()
 
         if (publishedNow) {
           captureCoursePublished(course, actorId, getEventSource(c));
+          void notifyCourseRecommended({ courseId: course.id, actorProfileId: actorId });
         }
 
         return c.json(

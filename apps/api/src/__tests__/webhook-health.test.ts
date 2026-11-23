@@ -8,7 +8,8 @@ const mocks = vi.hoisted(() => ({
   getWebhookEndpointById: vi.fn(),
   getOrganizationById: vi.fn(),
   getOrganizationAdminEmails: vi.fn(),
-  enqueueEmailSend: vi.fn()
+  enqueueEmailSend: vi.fn(),
+  notifyWebhookHealth: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/webhook', () => ({ getWebhookEndpointById: mocks.getWebhookEndpointById }));
@@ -17,6 +18,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationAdminEmails: mocks.getOrganizationAdminEmails
 }));
 vi.mock('@cio/jobs', () => ({ enqueueEmailSend: mocks.enqueueEmailSend }));
+vi.mock('@cio/core/services/notification/staff-events', () => ({ notifyWebhookHealth: mocks.notifyWebhookHealth }));
 
 import { notifyWebhookHealthChange } from '@cio/core/services/webhook/health';
 
@@ -51,6 +53,12 @@ describe('notifyWebhookHealthChange', () => {
     expect(payload.fields.disableAfter).toBe(100);
     expect(payload.fields.webhooksUrl).toContain('/org/acme/automation/webhooks');
     expect(options.idempotencyKey).toBe('webhookFailing:delivery-1:a@acme.test');
+    expect(mocks.notifyWebhookHealth).toHaveBeenCalledWith({
+      organizationId: 'org-1',
+      webhookId: 'webhook-1',
+      transition: 'degraded',
+      deliveryId: 'delivery-1'
+    });
   });
 
   it('sends the disabled email when the endpoint is auto-disabled', async () => {
@@ -66,6 +74,7 @@ describe('notifyWebhookHealthChange', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await expect(notifyWebhookHealthChange('webhook-1', 'degraded', 'delivery-3')).resolves.toBeUndefined();
+    expect(mocks.notifyWebhookHealth).toHaveBeenCalledTimes(1);
 
     consoleError.mockRestore();
   });

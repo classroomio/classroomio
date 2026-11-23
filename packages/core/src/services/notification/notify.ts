@@ -13,6 +13,8 @@ export type NotifyInput = {
   entityId: string;
   courseId?: string | null;
   actorProfileId?: string | null;
+  /** How many items a grouped notification covers. */
+  itemCount?: number | null;
   /** Makes the notification idempotent per recipient: a repeat call with the same key writes and pushes nothing. */
   dedupeKey?: string;
 };
@@ -45,6 +47,7 @@ export async function notify(input: NotifyInput): Promise<NotifyResult> {
       entityId: input.entityId,
       courseId: input.courseId ?? null,
       actorProfileId: input.actorProfileId ?? null,
+      itemCount: input.itemCount ?? null,
       dedupeKey: input.dedupeKey ?? null
     }));
 

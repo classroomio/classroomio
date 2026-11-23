@@ -1,4 +1,4 @@
-export type DemoVideo = { link: string; title: string };
+export type DemoVideo = { link: string; title: string; durationSeconds?: number };
 
 export type DemoDocument = { name: string; link: string; type: string; size: number };
 
@@ -37,7 +37,8 @@ export const VIDEOS = {
   },
   physicsOfMarketing: {
     link: 'https://archive.org/download/DanCobley_2010G/DanCobley_2010G.mp4',
-    title: 'What physics taught me about marketing'
+    title: 'What physics taught me about marketing',
+    durationSeconds: 389
   },
   feedbackThatHelps: {
     link: 'https://archive.org/download/BillGates_2013S/BillGates_2013S.mp4',
@@ -57,7 +58,8 @@ export const VIDEOS = {
   },
   timeManagement: {
     link: 'https://archive.org/download/GabrielRobins_TimeManagement_byRandyPausch/TimeManagementbyRandyPausch_512kb.mp4',
-    title: 'Time management with Randy Pausch'
+    title: 'Time management with Randy Pausch',
+    durationSeconds: 4560
   },
   transformMarketing: {
     link: 'https://archive.org/download/InboundMarketing-2TransformYourMarketingSethGodinIMS08714/InboundMarketing-2TransformYourMarketingSethGodinIMS08714_512kb.mp4',
@@ -173,7 +175,8 @@ export const VIDEOS = {
   },
   remoteTeaching: {
     link: 'https://archive.org/download/Europython_2020_2A85jfJW/2020_07_24_Python_Emergency_Remote_Teaching.mp4',
-    title: 'Lessons from emergency remote teaching'
+    title: 'Lessons from emergency remote teaching',
+    durationSeconds: 1740
   }
 } satisfies Record<string, DemoVideo>;
 

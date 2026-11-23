@@ -49,5 +49,10 @@ export const vi: TranslatedMessages<typeof en> = {
   statCompletedEmpty: 'Bạn chưa hoàn thành khóa học nào.',
   statCertificatesEmpty: 'Bạn chưa nhận được chứng chỉ nào.',
   statCourseCount: { one: '{count} khóa học', other: '{count} khóa học' },
-  statEarnedOn: 'Nhận ngày {date}'
+  statEarnedOn: 'Nhận ngày {date}',
+  signUpInviteTitle: 'Tạo tài khoản',
+  signUpInviteOrganization: 'Bạn được mời tham gia một tổ chức trên ClassroomIO. Hãy tạo tài khoản để chấp nhận.',
+  signUpInviteLink: 'Tạo tài khoản để tham gia tổ chức đã chia sẻ liên kết này.',
+  signUpInviteResource: 'Tạo tài khoản để tham gia khóa học hoặc nhóm được chia sẻ với bạn.',
+  haveAccount: 'Bạn đã có tài khoản?'
 };

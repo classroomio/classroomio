@@ -47,7 +47,10 @@ export const JOB_NAMES = {
     sessionReminderScan: 'session-reminder-scan',
     notifyCourseSessionUpdate: 'notify-course-session-update',
     sendPush: 'send-push',
-    checkPushReceipts: 'check-push-receipts'
+    checkPushReceipts: 'check-push-receipts',
+    learnerReminderScan: 'learner-reminder-scan',
+    staffSessionScan: 'staff-session-scan',
+    learnerAttentionScan: 'learner-attention-scan'
   },
   webhooks: {
     deliver: 'deliver'

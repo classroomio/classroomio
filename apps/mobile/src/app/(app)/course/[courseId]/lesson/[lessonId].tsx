@@ -2,17 +2,20 @@ import { ScrollIcon } from 'phosphor-react-native/src/icons/Scroll';
 import { SparkleIcon } from 'phosphor-react-native/src/icons/Sparkle';
 import { offlineMediaKey } from '@cio/utils/functions/offline-media';
 import { Stack, useLocalSearchParams } from 'expo-router';
+import { useEventListener } from 'expo';
 import type { VideoPlayer } from 'expo-video';
-import { useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import type { SheetRef } from '@/feature/common/components/bottom-sheet';
 import { OfflineNotice } from '@/feature/common/components/offline-notice';
+import { Progress } from '@/feature/common/components/progress';
 import { ScreenScrollView, ScreenSection, ScreenSectionHeader } from '@/feature/common/components/screen';
 import { Button, ButtonIcon, ButtonText } from '@/feature/common/components/button';
 import { Text } from '@/feature/common/components/text';
 import { GUTTER, SPACING } from '@/feature/common/constants/layout';
 import { errorMessage } from '@/feature/common/helpers/error-message';
+import { successHaptic } from '@/feature/common/helpers/haptics';
 import { useIsOffline } from '@/feature/common/helpers/network-status';
 import { lessonKindLabel, lockReasonOf } from '@/feature/course/helpers/content-copy';
 import { isAccessible } from '@/feature/course/helpers/course-content';
@@ -51,6 +54,10 @@ import { isNetworkError } from '@/feature/offline/helpers/network-error';
 import { useCompletionPending } from '@/feature/offline/helpers/sync-queue';
 import { useQueueLessonCompletion } from '@/feature/offline/helpers/use-offline-progress';
 import { showToast } from '@/feature/toast/helpers/toast-store';
+import { useActiveOrg } from '@/feature/org/helpers/use-active-org';
+
+/** Minimum time on a lesson before reaching its end marks it complete. */
+const MIN_DWELL_MS = 8000;
 
 export default function LessonScreen() {
   const { courseId, lessonId, from } = useLocalSearchParams<{ courseId: string; lessonId: string; from?: string }>();
@@ -64,9 +71,15 @@ export default function LessonScreen() {
   const [moment, setMoment] = useState<
     Omit<LessonCompleteMomentProps, 'onFinish'> & { advance: (() => void) | null }
   >();
+  const [reachedEnd, setReachedEnd] = useState(false);
+  const [videoPlayers, setVideoPlayers] = useState<Record<number, VideoPlayer>>({});
+  const [endedVideos, setEndedVideos] = useState<ReadonlySet<number>>(new Set());
+  const [dwelled, setDwelled] = useState(false);
+  const autoCompleted = useRef(false);
   const lesson = view.lesson.data;
   const title = lesson?.title ?? view.item?.title ?? t('lessonFallbackTitle');
   const offline = useIsOffline();
+  const { role } = useActiveOrg();
   const local = useOfflineLesson(courseId, lessonId);
   const content = useOfflineLessonHtml(lessonId, view.body?.html ?? null, local.files);
   const completionPending = useCompletionPending(lessonId);
@@ -76,6 +89,23 @@ export default function LessonScreen() {
     lessonTitle: title,
     courseTitle: view.course.data?.title
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDwelled(true), MIN_DWELL_MS);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const nativeVideoIndexes = view.videos.flatMap(({ source }, index) => (source.kind === 'embed' ? [] : [index]));
+  const videosEnded = nativeVideoIndexes.every((index) => endedVideos.has(index));
+  const alreadyComplete = Boolean(view.item?.isComplete || lesson?.watchProgress?.isComplete || completionPending);
+  const finished = reachedEnd && dwelled && videosEnded;
+  const shouldAutoComplete =
+    role === 'student' &&
+    lesson?.completionPolicy === 'manual' &&
+    !alreadyComplete &&
+    finished &&
+    !completion.isPending;
 
   const header = (
     <Stack.Screen
@@ -155,7 +185,7 @@ export default function LessonScreen() {
     });
   };
 
-  const setComplete = (isComplete: boolean) => {
+  const setComplete = (isComplete: boolean, auto = false) => {
     if (isComplete && offline) {
       void completeOnDevice();
       return;
@@ -164,6 +194,11 @@ export default function LessonScreen() {
     completion.mutate(isComplete, {
       onSuccess: () => {
         if (!isComplete) return;
+
+        if (auto) {
+          successHaptic();
+          return;
+        }
 
         setMoment({
           description: next ? t('nextItem', { title: next.title }) : null,
@@ -198,6 +233,7 @@ export default function LessonScreen() {
         next={next}
         onNavigate={openItem}
         onRefresh={() => view.lesson.refetch()}
+        onReachEnd={() => setReachedEnd(true)}
         footer={
           <LessonBottomBar
             policy={lesson.completionPolicy}
@@ -206,10 +242,7 @@ export default function LessonScreen() {
             watchedPercent={lesson.watchProgress?.watchedPercent ?? null}
             next={next}
             nextLockReason={next && !isAccessible(next) ? lockReasonOf(next, items, courseT) : null}
-            pending={completion.isPending}
             syncPending={completionPending && !view.item?.isComplete}
-            onComplete={() => setComplete(true)}
-            onUndo={() => setComplete(false)}
             onNext={(target) => openItem(target, 'next')}
           />
         }
@@ -234,10 +267,26 @@ export default function LessonScreen() {
                   offline={offline}
                   watchProgress={lesson.watchProgress}
                   segments={index === 0 ? view.transcript?.segments : undefined}
-                  onPlayerChange={index === 0 ? setPlayer : undefined}
+                  onPlayerChange={(next) => {
+                    if (index === 0) setPlayer(next);
+                    setVideoPlayers((current) => {
+                      const { [index]: _previous, ...rest } = current;
+
+                      return next ? { ...rest, [index]: next } : rest;
+                    });
+                  }}
                 />
               </LessonSwipeExclusion>
             ))}
+          </View>
+        ) : null}
+
+        {view.outline && view.outline.items.length > 0 ? (
+          <View style={styles.progress}>
+            <Text variant="caption" tone="muted">
+              {courseT('completedOfTotal', { completed: view.outline.completed, total: view.outline.items.length })}
+            </Text>
+            <Progress value={view.outline.percent} />
           </View>
         ) : null}
 
@@ -248,6 +297,24 @@ export default function LessonScreen() {
           recordingUrl={lesson.recordingUrl}
           offline={offline}
         />
+
+        {Object.entries(videoPlayers).map(([index, videoPlayer]) => (
+          <PlayToEndListener
+            key={index}
+            player={videoPlayer}
+            onEnd={() => setEndedVideos((current) => new Set(current).add(Number(index)))}
+          />
+        ))}
+        {shouldAutoComplete ? (
+          <AutoComplete
+            onComplete={() => {
+              if (autoCompleted.current) return;
+
+              autoCompleted.current = true;
+              setComplete(true, true);
+            }}
+          />
+        ) : null}
 
         <View style={styles.heading}>
           <Text variant="title" accessibilityRole="header">
@@ -366,8 +433,25 @@ export default function LessonScreen() {
   );
 }
 
+function PlayToEndListener({ player, onEnd }: { player: VideoPlayer; onEnd: () => void }) {
+  useEventListener(player, 'playToEnd', onEnd);
+
+  return null;
+}
+
+function AutoComplete({ onComplete }: { onComplete: () => void }) {
+  const complete = useEffectEvent(onComplete);
+
+  useEffect(() => {
+    complete();
+  }, []);
+
+  return null;
+}
+
 const styles = StyleSheet.create({
   media: { marginHorizontal: -GUTTER, marginTop: -SPACING.xs, gap: SPACING.md },
   heading: { gap: SPACING.xxs },
+  progress: { gap: SPACING.xs },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs, marginTop: SPACING.sm }
 });

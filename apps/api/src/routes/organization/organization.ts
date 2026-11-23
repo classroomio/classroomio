@@ -100,6 +100,7 @@ import { orgMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-member-
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { quizRouter } from '@api/routes/organization/quiz';
 import { searchRouter } from '@api/routes/organization/search';
+import { organizationInsightsRouter } from '@api/routes/organization/insights';
 import { tagsRouter } from '@api/routes/organization/tags';
 import { widgetsRouter } from '@api/routes/organization/widgets';
 import { zValidator } from '@hono/zod-validator';
@@ -624,10 +625,14 @@ export const organizationRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const { limit, page = 1, sort, order } = c.req.valid('query');
+        const { limit, page = 1, sort, order, search, level, duration } = c.req.valid('query');
 
         const orgId = c.req.header('cio-org-id')!;
-        const { data, total } = await getRecommendedCourses(orgId, user.id, limit, page, sort, order);
+        const { data, total } = await getRecommendedCourses(orgId, user.id, limit, page, sort, order, {
+          search,
+          level,
+          duration
+        });
 
         const resolvedLimit = limit ?? total;
         const totalPages = resolvedLimit > 0 ? Math.ceil(total / resolvedLimit) : 1;
@@ -1079,6 +1084,7 @@ export const organizationRouter = new Hono()
   .route('/email-templates', studentEmailTemplatesRouter)
   .route('/course-import', courseImportRouter)
   .route('/search', searchRouter)
+  .route('/insights', organizationInsightsRouter)
   .route('/tags', tagsRouter)
   .route('/widgets', widgetsRouter)
   .route('/assets', assetsRouter)

@@ -45,5 +45,10 @@ export const en = {
   statCompletedEmpty: 'You have not completed a course yet.',
   statCertificatesEmpty: 'You have not earned a certificate yet.',
   statCourseCount: { one: '{count} course', other: '{count} courses' },
-  statEarnedOn: 'Earned {date}'
+  statEarnedOn: 'Earned {date}',
+  signUpInviteTitle: 'Create your account',
+  signUpInviteOrganization: 'You were invited to join an organization on ClassroomIO. Create an account to accept.',
+  signUpInviteLink: 'Create an account to join the organization that shared this link.',
+  signUpInviteResource: 'Create an account to join the course or group that was shared with you.',
+  haveAccount: 'Already have an account?'
 };

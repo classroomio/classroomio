@@ -3,14 +3,8 @@ import type { TranslatedMessages } from '@/feature/i18n/types/i18n';
 import type { en } from './en';
 
 export const ru: TranslatedMessages<typeof en> = {
-  screenTitle: 'Обзор',
-  entryTitle: 'Обзор курсов',
-  entryDescription: 'Курсы, на которые можно записаться',
-  searchCourses: 'Поиск курсов',
   emptyTitle: 'Других курсов нет',
   emptyDescription: 'Ваша организация не открыла для вас другие курсы.',
-  searchNoResultsTitle: 'Подходящих курсов нет',
-  searchNoResultsDescription: 'Ни одно название курса не содержит «{query}».',
   loadError: 'Не удалось загрузить курсы',
   courseLoadError: 'Не удалось загрузить курс',
   about: 'О курсе',
@@ -25,5 +19,8 @@ export const ru: TranslatedMessages<typeof en> = {
   enrollUnavailable: 'На этот курс нельзя записаться в приложении.',
   paidNotAvailable: 'На этот курс нельзя записаться в приложении.',
   inviteOnly: 'Ваша организация сама записывает слушателей на этот курс.',
-  originalPrice: 'Исходная цена {price}'
+  originalPrice: 'Исходная цена {price}',
+  pathsTitle: 'Учебные треки',
+  coursesTitle: 'Курсы',
+  searchCatalog: 'Поиск треков и курсов'
 };

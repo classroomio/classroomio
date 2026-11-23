@@ -28,3 +28,8 @@ export function courseToResume(courses: EnrolledCourse[]) {
       null
     );
 }
+
+/** The first enrolled course not started yet, offered on Home when nothing is in progress. */
+export function courseToStart(courses: EnrolledCourse[]) {
+  return courses.find((course) => learningStatusOf(course) === 'not-started') ?? null;
+}

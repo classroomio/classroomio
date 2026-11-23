@@ -7,11 +7,8 @@ export const fr: TranslatedMessages<typeof en> = {
   noCoursesTitle: 'Aucun cours à animer',
   noCoursesDescription:
     'Vous n’êtes tuteur d’aucun cours dans cette organisation. Un administrateur peut vous ajouter à l’équipe d’un cours depuis le tableau de bord web.',
-  queueLoadErrorInline: 'La file de notation n’a pas pu être chargée. {error}',
   queueLoadError: 'La file de notation n’a pas pu être chargée',
-  waitingLongest: 'En attente depuis le plus longtemps',
   seeAll: 'Tout voir ({count})',
-  yourCourses: 'Vos cours',
   queueHeader: {
     one: '{count} soumission, de la plus ancienne à la plus récente.',
     other: '{count} soumissions, de la plus ancienne à la plus récente.'
@@ -31,11 +28,6 @@ export const fr: TranslatedMessages<typeof en> = {
   allGradedTitle: 'Toutes les soumissions sont notées',
   allGradedDescription: 'Aucune soumission de vos cours n’attend de note.',
   allGradedCourseDescription: 'Aucune soumission de {course} n’attend de note.',
-  summaryCourses: { one: 'dans {count} cours', other: 'dans {count} cours' },
-  summaryLate: { one: '{count} rendue en retard', other: '{count} rendues en retard' },
-  summaryLabel: { one: 'Soumission à noter', other: 'Soumissions à noter' },
-  summaryA11y: { one: '{count} soumission à noter, {details}', other: '{count} soumissions à noter, {details}' },
-  startGrading: 'Commencer la notation',
   waitingDays: { one: 'En attente depuis {count} jour', other: 'En attente depuis {count} jours' },
   waitingHours: { one: 'En attente depuis {count} heure', other: 'En attente depuis {count} heures' },
   waitingMinutes: { one: 'En attente depuis {count} minute', other: 'En attente depuis {count} minutes' },
@@ -143,9 +135,6 @@ export const fr: TranslatedMessages<typeof en> = {
   noPostsTitle: 'Aucune publication pour l’instant',
   noPostsDescription: 'Vos annonces sont envoyées à tous les apprenants du cours.',
   loadOlderPosts: 'Charger les publications précédentes',
-  snapshotEnrolled: { one: '{count} inscrit', other: '{count} inscrits' },
-  snapshotCompleted: '{percent} terminé',
-  snapshotOverdue: { one: '{count} en retard', other: '{count} en retard' },
   toGradeCount: { one: '{count} à noter', other: '{count} à noter' },
   learnerFallback: 'Apprenant',
   lessonsProgress: { one: '{completed} leçon sur {count}', other: '{completed} leçons sur {count}' },

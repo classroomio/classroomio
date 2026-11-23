@@ -47,27 +47,6 @@ export const pt: TranslatedMessages<typeof en> = {
   summaryCompliantOne: 'Seu requisito está em dia.',
   summaryCompliantAll: { other: 'Todos os {count} requisitos estão em dia.' },
   summaryNone: 'Sua organização não atribuiu nenhum treinamento obrigatório a você.',
-  alertOverdueTitle: { one: '{count} requisito atrasado', other: '{count} requisitos atrasados' },
-  alertInGracePeriodTitle: {
-    one: '{count} requisito em período de carência',
-    other: '{count} requisitos em período de carência'
-  },
-  alertDueSoonTitle: { one: '{count} requisito com prazo próximo', other: '{count} requisitos com prazo próximo' },
-  alertWasDue: {
-    one: 'O prazo de {course} terminou há {count} dia.',
-    other: 'O prazo de {course} terminou há {count} dias.'
-  },
-  alertGraceLeft: { one: 'Resta {count} dia de carência.', other: 'Restam {count} dias de carência.' },
-  alertDueToday: 'O prazo de {course} termina hoje.',
-  alertDueInDays: {
-    one: 'O prazo de {course} termina em {count} dia.',
-    other: 'O prazo de {course} termina em {count} dias.'
-  },
-  alertDueSoon: 'O prazo de {course} está próximo.',
-  alertExpiresToday: '{course} expira hoje.',
-  alertExpiresInDays: { one: '{course} expira em {count} dia.', other: '{course} expira em {count} dias.' },
-  alertExpiresSoon: '{course} expira em breve.',
-  alertHint: 'Abre a conformidade',
   loadError: 'Seu status de conformidade não foi carregado',
   emptyTitle: 'Nenhum requisito de conformidade',
   sectionNeedsAttention: 'Requer atenção',

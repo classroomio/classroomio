@@ -5,9 +5,12 @@ export const TAB_ICON_SIZE = 28;
 export const TAB_GLYPHS = {
   house: 58050,
   'book-open': 57574,
-  'shield-check': 58380,
-  'chalkboard-teacher': 58880,
-  'chats-circle': 57726,
+  compass: 57800,
+  target: 58492,
+  'users-three': 59022,
+  books: 59224,
+  student: 59198,
+  tray: 58538,
   'user-circle': 58564
 } as const;
 

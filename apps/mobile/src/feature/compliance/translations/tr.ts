@@ -44,30 +44,6 @@ export const tr: TranslatedMessages<typeof en> = {
   summaryCompliantOne: 'Gereksiniminiz karşılanmış durumda.',
   summaryCompliantAll: { other: '{count} gereksinimin tümü karşılanmış durumda.' },
   summaryNone: 'Kuruluşunuz size zorunlu eğitim atamadı.',
-  alertOverdueTitle: { one: '{count} gereksinim gecikmiş', other: '{count} gereksinim gecikmiş' },
-  alertInGracePeriodTitle: { one: '{count} gereksinim ek sürede', other: '{count} gereksinim ek sürede' },
-  alertDueSoonTitle: {
-    one: '{count} gereksinimin son tarihi yaklaşıyor',
-    other: '{count} gereksinimin son tarihi yaklaşıyor'
-  },
-  alertWasDue: {
-    one: '{course} için son tarih {count} gün önceydi.',
-    other: '{course} için son tarih {count} gün önceydi.'
-  },
-  alertGraceLeft: { one: '{count} gün ek süre kaldı.', other: '{count} gün ek süre kaldı.' },
-  alertDueToday: '{course} için son tarih bugün.',
-  alertDueInDays: {
-    one: '{course} için son tarih {count} gün sonra.',
-    other: '{course} için son tarih {count} gün sonra.'
-  },
-  alertDueSoon: '{course} için son tarih yaklaşıyor.',
-  alertExpiresToday: '{course} geçerliliği bugün sona eriyor.',
-  alertExpiresInDays: {
-    one: '{course} geçerliliği {count} gün sonra sona eriyor.',
-    other: '{course} geçerliliği {count} gün sonra sona eriyor.'
-  },
-  alertExpiresSoon: '{course} geçerliliği yakında sona eriyor.',
-  alertHint: 'Uyumluluğu açar',
   loadError: 'Uyumluluk durumunuz yüklenemedi',
   emptyTitle: 'Uyumluluk gereksinimi yok',
   sectionNeedsAttention: 'İlgilenmeniz gerekenler',
