@@ -114,7 +114,7 @@ const config: ExpoConfig = {
       'expo-image-picker',
       {
         photosPermission:
-          'ClassroomIO opens the photos you choose to attach to an exercise answer or a community post.',
+          'ClassroomIO opens the photos you choose to attach to an exercise answer or use as a course image.',
         cameraPermission: CAMERA_REASON
       }
     ],
@@ -124,7 +124,8 @@ const config: ExpoConfig = {
       'expo-calendar',
       {
         writeOnlyAccess: true,
-        calendarPermission: false,
+        calendarPermission:
+          'ClassroomIO adds the live classes you choose to your calendar. It does not read your events.',
         remindersPermission: false,
         writeOnlyCalendarPermission: 'ClassroomIO adds the live classes you choose to your calendar.'
       }
