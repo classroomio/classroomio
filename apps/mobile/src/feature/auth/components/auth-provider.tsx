@@ -24,8 +24,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const session = client.useSession();
 
   const signOut = async () => {
-    await unregisterPushToken();
-    await clearOfflineData(session.data?.user.id ?? null);
+    const userId = session.data?.user.id ?? null;
+    const cleanups = await Promise.allSettled([unregisterPushToken(), clearOfflineData(userId)]);
+    for (const cleanup of cleanups) {
+      if (cleanup.status === 'rejected') console.error('signOut cleanup error:', cleanup.reason);
+    }
+
     await client.signOut();
     clearActiveOrg();
     queryClient.clear();

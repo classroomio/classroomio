@@ -13,17 +13,18 @@ export function GoogleSignInButton() {
   const t = useTranslations(authCatalog);
   const [pending, setPending] = useState(false);
 
+  const showFailure = (description: string) =>
+    showToast({ tone: 'danger', title: t('googleSignInFailedTitle'), description });
+
   const signIn = async () => {
     setPending(true);
-    const result = await client.signIn.social({ provider: 'google', callbackURL: '/', errorCallbackURL: '/' });
-    setPending(false);
-
-    if (result.error) {
-      showToast({
-        tone: 'danger',
-        title: t('googleSignInFailedTitle'),
-        description: authErrorMessage(result.error, t('googleSignInFailedDescription'))
-      });
+    try {
+      const result = await client.signIn.social({ provider: 'google', callbackURL: '/', errorCallbackURL: '/' });
+      if (result.error) showFailure(authErrorMessage(result.error, t('googleSignInFailedDescription')));
+    } catch {
+      showFailure(t('googleSignInFailedDescription'));
+    } finally {
+      setPending(false);
     }
   };
 

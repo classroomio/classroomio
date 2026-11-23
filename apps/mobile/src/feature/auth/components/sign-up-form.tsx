@@ -63,20 +63,22 @@ export function SignUpForm() {
     setError(null);
     setEmailError(null);
 
-    if (await sso.check(trimmedEmail)) {
-      setSubmitting(false);
-      return;
-    }
+    try {
+      if (await sso.check(trimmedEmail)) return;
 
-    const result = await client.signUp.email({ name: trimmedName, email: trimmedEmail, password });
-    setSubmitting(false);
-
-    if (result.error) {
+      const result = await client.signUp.email({ name: trimmedName, email: trimmedEmail, password });
+      if (result.error) {
+        errorHaptic();
+        const message = authErrorMessage(result.error, t('signUpFailed'));
+        if (isEmailFieldError(result.error)) setEmailError(message);
+        else if (isPasswordFieldError(result.error)) setPasswordError(message);
+        else setError(message);
+      }
+    } catch {
       errorHaptic();
-      const message = authErrorMessage(result.error, t('signUpFailed'));
-      if (isEmailFieldError(result.error)) setEmailError(message);
-      else if (isPasswordFieldError(result.error)) setPasswordError(message);
-      else setError(message);
+      setError(t('signUpFailed'));
+    } finally {
+      setSubmitting(false);
     }
   };
 

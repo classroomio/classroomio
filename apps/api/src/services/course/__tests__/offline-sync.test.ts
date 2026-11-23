@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
-import type { TSyncIntent } from '@cio/utils/validation/course';
+import type { TPlaybackPositionIntent, TSyncIntent } from '@cio/utils/validation/course';
 import type { IdempotencyClaim, IdempotencyStore } from '@api/utils/redis/idempotency';
 
 const mocks = vi.hoisted(() => ({
@@ -9,8 +9,9 @@ const mocks = vi.hoisted(() => ({
   getCompletion: vi.fn(),
   upsertCompletion: vi.fn(),
   updateWatch: vi.fn(),
-  videoProgress: vi.fn(),
-  offlineIssue: vi.fn()
+  offlineIssue: vi.fn(),
+  watchCursor: vi.fn(),
+  advanceCursor: vi.fn()
 }));
 
 vi.mock('@api/services/course/access', () => ({ assertEnrolledStudentContentAccess: mocks.assertAccess }));
@@ -21,10 +22,13 @@ vi.mock('@cio/core/services/lesson/lesson', () => ({
   updateLessonWatchProgressService: mocks.updateWatch
 }));
 vi.mock('@api/utils/redis/idempotency', () => ({ createRedisIdempotencyStore: vi.fn() }));
-vi.mock('@cio/db/queries/lesson/video-progress', () => ({ getLessonVideoProgress: mocks.videoProgress }));
-vi.mock('@api/utils/redis/offline-issue', () => ({ readOfflineIssue: mocks.offlineIssue }));
+vi.mock('@api/utils/redis/offline-issue', () => ({
+  readOfflineIssue: mocks.offlineIssue,
+  readOfflineWatchCursor: mocks.watchCursor,
+  advanceOfflineWatchCursor: mocks.advanceCursor
+}));
 
-import { groupSyncIntents, syncCourseIntents } from '../offline-sync';
+import { groupSyncIntents, offlineWatchAllowance, syncCourseIntents } from '../offline-sync';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const PROFILE_ID = '22222222-2222-4222-8222-222222222222';
@@ -62,7 +66,13 @@ function complete(key: string, lessonId = LESSON_A): TSyncIntent {
   return { key, type: 'lesson.complete', lessonId, recordedAt: '2026-10-01T10:00:00.000Z' };
 }
 
-function beat(key: string, positionSeconds: number, playedDeltaSeconds: number, assetId = 'asset-1'): TSyncIntent {
+function beat(
+  key: string,
+  positionSeconds: number,
+  playedDeltaSeconds: number,
+  assetId = 'asset-1',
+  recordedAt = '2026-10-01T10:00:00.000Z'
+): TPlaybackPositionIntent {
   return {
     key,
     type: 'playback.position',
@@ -71,7 +81,7 @@ function beat(key: string, positionSeconds: number, playedDeltaSeconds: number, 
     positionSeconds,
     playedDeltaSeconds,
     durationSeconds: 600,
-    recordedAt: '2026-10-01T10:00:00.000Z'
+    recordedAt
   };
 }
 
@@ -82,8 +92,9 @@ beforeEach(() => {
   mocks.getCompletion.mockResolvedValue(null);
   mocks.upsertCompletion.mockResolvedValue({ isComplete: true });
   mocks.updateWatch.mockResolvedValue({ isComplete: false, didJustComplete: false });
-  mocks.videoProgress.mockResolvedValue({ updatedAt: '2026-10-01T09:00:00.000Z' });
   mocks.offlineIssue.mockResolvedValue(null);
+  mocks.watchCursor.mockResolvedValue(null);
+  mocks.advanceCursor.mockResolvedValue(undefined);
 });
 
 describe('syncCourseIntents idempotency', () => {
@@ -121,12 +132,17 @@ describe('syncCourseIntents idempotency', () => {
 
     expect(result.results.map((entry) => entry.status)).toEqual(['duplicate', 'applied']);
     expect(mocks.updateWatch).toHaveBeenCalledTimes(1);
-    expect(mocks.updateWatch).toHaveBeenCalledWith(LESSON_B, PROFILE_ID, {
-      assetId: 'asset-1',
-      positionSeconds: 30,
-      playedDeltaSeconds: 15,
-      durationSeconds: 600
-    });
+    expect(mocks.updateWatch).toHaveBeenCalledWith(
+      LESSON_B,
+      PROFILE_ID,
+      {
+        assetId: 'asset-1',
+        positionSeconds: 30,
+        playedDeltaSeconds: 15,
+        durationSeconds: 600
+      },
+      expect.objectContaining({ allowedDeltaSeconds: expect.any(Number) })
+    );
   });
 
   it('asks the client to retry a key another request is applying', async () => {
@@ -213,12 +229,17 @@ describe('syncCourseIntents server rules', () => {
     );
 
     expect(mocks.updateWatch).toHaveBeenCalledTimes(1);
-    expect(mocks.updateWatch).toHaveBeenCalledWith(LESSON_B, PROFILE_ID, {
-      assetId: 'asset-1',
-      positionSeconds: 44,
-      playedDeltaSeconds: 44,
-      durationSeconds: 600
-    });
+    expect(mocks.updateWatch).toHaveBeenCalledWith(
+      LESSON_B,
+      PROFILE_ID,
+      {
+        assetId: 'asset-1',
+        positionSeconds: 44,
+        playedDeltaSeconds: 44,
+        durationSeconds: 600
+      },
+      expect.objectContaining({ allowedDeltaSeconds: expect.any(Number) })
+    );
   });
 
   it('rejects every beat of a session the watch rules refuse', async () => {
@@ -248,33 +269,80 @@ describe('syncCourseIntents server rules', () => {
   });
 });
 
-describe('syncCourseIntents first offline watch', () => {
-  function session(count: number, prefix: string) {
+describe('offline watch allowance', () => {
+  const NOW = Date.parse('2026-10-01T12:00:00.000Z');
+  const BEAT_SECONDS = 15;
+
+  function session(count: number, prefix: string, startMs: number) {
     return Array.from({ length: count }, (_, index) =>
-      beat(`${prefix}-${String(index).padStart(4, '0')}`, (index + 1) * 100, 100)
+      beat(
+        `${prefix}-${String(index).padStart(4, '0')}`,
+        (index + 1) * BEAT_SECONDS,
+        BEAT_SECONDS,
+        'asset-1',
+        new Date(startMs + index * BEAT_SECONDS * 1000).toISOString()
+      )
     );
   }
 
-  it('holds a first watch with no download record to the two-minute first-beat limit', async () => {
-    mocks.videoProgress.mockResolvedValue(null);
+  function playedOf(intents: TPlaybackPositionIntent[]) {
+    return intents.reduce((total, intent) => total + intent.playedDeltaSeconds, 0);
+  }
 
-    const short = await syncCourseIntents(COURSE_ID, PROFILE_ID, session(1, 'short'), memoryStore());
-    const long = await syncCourseIntents(COURSE_ID, PROFILE_ID, session(2, 'long'), memoryStore());
+  it('covers a session watched at the heartbeat rate', () => {
+    const intents = session(40, 'rate', NOW - 60 * 60 * 1000);
 
-    expect(short.results[0]?.status).toBe('applied');
-    expect(long.results.map((entry) => entry.status)).toEqual(['rejected', 'rejected']);
-    expect(mocks.updateWatch).toHaveBeenCalledTimes(1);
+    expect(offlineWatchAllowance(intents, NOW - 2 * 60 * 60 * 1000, NOW)).toBeGreaterThanOrEqual(playedOf(intents));
   });
 
-  it('allows a first watch as long as the time since the lesson was downloaded', async () => {
-    mocks.videoProgress.mockResolvedValue(null);
-    mocks.offlineIssue.mockResolvedValue(Date.now() - 10 * 60 * 1000);
+  it('refuses beats that claim more time than passed between them', () => {
+    const recordedAt = new Date(NOW - 60 * 1000).toISOString();
+    const intents = Array.from({ length: 10 }, (_, index) =>
+      beat(`burst-${index}000`, index * 100, 100, 'asset-1', recordedAt)
+    );
 
-    const fits = await syncCourseIntents(COURSE_ID, PROFILE_ID, session(5, 'fits'), memoryStore());
-    const tooMuch = await syncCourseIntents(COURSE_ID, PROFILE_ID, session(10, 'over'), memoryStore());
+    expect(offlineWatchAllowance(intents, null, NOW)).toBeLessThan(playedOf(intents));
+  });
 
-    expect(fits.results.every((entry) => entry.status === 'applied')).toBe(true);
-    expect(tooMuch.results.every((entry) => entry.status === 'rejected')).toBe(true);
+  it('does not count time recorded before the lesson was downloaded', () => {
+    const issuedAt = NOW - 5 * 60 * 1000;
+    const intents = session(40, 'early', NOW - 60 * 60 * 1000);
+
+    expect(offlineWatchAllowance(intents, issuedAt, NOW)).toBeLessThan(playedOf(intents));
+  });
+
+  it('does not credit time that an earlier sync request already claimed', () => {
+    const intents = session(40, 'again', NOW - 60 * 60 * 1000);
+    const creditedUntil = Date.parse(intents.at(-1)!.recordedAt);
+
+    expect(offlineWatchAllowance(intents, creditedUntil, NOW)).toBe(0);
+  });
+
+  it('keeps the allowance for a session split across sync requests', async () => {
+    const store = memoryStore();
+    const issuedAt = NOW - 3 * 60 * 60 * 1000;
+    const beats = session(200, 'split', NOW - 2 * 60 * 60 * 1000);
+    mocks.offlineIssue.mockResolvedValue(issuedAt);
+    vi.useFakeTimers({ now: NOW, toFake: ['Date'] });
+
+    try {
+      let creditedUntil: number | null = null;
+      mocks.watchCursor.mockImplementation(async () => creditedUntil);
+      mocks.advanceCursor.mockImplementation(async (_profile, _lesson, _asset, recordedAt: number) => {
+        creditedUntil = recordedAt;
+      });
+
+      const first = await syncCourseIntents(COURSE_ID, PROFILE_ID, beats.slice(0, 100), store);
+      const second = await syncCourseIntents(COURSE_ID, PROFILE_ID, beats.slice(100), store);
+
+      expect([...first.results, ...second.results].every((entry) => entry.status === 'applied')).toBe(true);
+      expect(mocks.updateWatch).toHaveBeenCalledTimes(2);
+      for (const [, , update, options] of mocks.updateWatch.mock.calls) {
+        expect(options.allowedDeltaSeconds).toBeGreaterThanOrEqual(update.playedDeltaSeconds);
+      }
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

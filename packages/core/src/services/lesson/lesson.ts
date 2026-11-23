@@ -664,10 +664,19 @@ export async function getLessonWatchProgressService(
   }
 }
 
+type WatchProgressOptions = {
+  /**
+   * Watch time this beat may claim, for beats replayed from an offline session. It replaces the bound from wall-clock
+   * time since the last saved progress, which says nothing about when offline beats were watched.
+   */
+  allowedDeltaSeconds?: number;
+};
+
 export async function updateLessonWatchProgressService(
   lessonId: string,
   profileId: string,
-  beat: TUpdateLessonWatchProgress
+  beat: TUpdateLessonWatchProgress,
+  options: WatchProgressOptions = {}
 ): Promise<LessonWatchProgressResult> {
   try {
     const lesson = await getLessonById(lessonId);
@@ -717,7 +726,11 @@ export async function updateLessonWatchProgressService(
 
     const positionSeconds = Math.floor(beat.positionSeconds);
 
-    if (existing?.updatedAt) {
+    if (options.allowedDeltaSeconds !== undefined) {
+      if (beat.playedDeltaSeconds > options.allowedDeltaSeconds) {
+        throw new AppError('Invalid watch progress update', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    } else if (existing?.updatedAt) {
       const elapsedSeconds = (now - new Date(existing.updatedAt).getTime()) / 1000;
       const maxAllowedDelta = Math.max(5, elapsedSeconds * WATCH_PROGRESS_WALL_CLOCK_TOLERANCE);
 

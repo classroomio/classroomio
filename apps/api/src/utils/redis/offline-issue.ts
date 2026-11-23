@@ -32,3 +32,42 @@ export async function readOfflineIssue(profileId: string, lessonId: string): Pro
     return null;
   }
 }
+
+const cursorKeyOf = (profileId: string, lessonId: string, assetId: string) =>
+  `offline-watch-cursor:${profileId}:${lessonId}:${assetId}`;
+
+/** When the latest offline watch time already credited for this video was recorded, or null when none or unknown. */
+export async function readOfflineWatchCursor(
+  profileId: string,
+  lessonId: string,
+  assetId: string
+): Promise<number | null> {
+  if (!env.REDIS_URL) return null;
+
+  try {
+    const value = await redis.get(cursorKeyOf(profileId, lessonId, assetId));
+
+    return value ? Number(value) : null;
+  } catch (error) {
+    logRedisUnavailableOnce('Redis GET offline-watch-cursor failed', error);
+    return null;
+  }
+}
+
+/** Moves the credited-until time forward so a later sync request cannot claim the same watch time again. */
+export async function advanceOfflineWatchCursor(
+  profileId: string,
+  lessonId: string,
+  assetId: string,
+  recordedAt: number
+): Promise<void> {
+  if (!env.REDIS_URL) return;
+
+  const key = cursorKeyOf(profileId, lessonId, assetId);
+  try {
+    const current = Number((await redis.get(key)) ?? 0);
+    if (recordedAt > current) await redis.set(key, String(recordedAt), { EX: TTL_SECONDS });
+  } catch (error) {
+    logRedisUnavailableOnce('Redis SET offline-watch-cursor failed', error);
+  }
+}

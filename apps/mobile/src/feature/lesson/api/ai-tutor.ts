@@ -58,10 +58,11 @@ export function useSendTutorMessage() {
       }))
     });
     const orgId = getActiveOrgId();
+    const cookie = await client.getCookie();
     const headers: Record<string, string> = {
       'content-type': CIO_ENVELOPE_CONTENT_TYPE,
       accept: 'text/event-stream',
-      cookie: await client.getCookie()
+      cookie
     };
     if (orgId) headers['cio-org-id'] = orgId;
 

@@ -40,7 +40,8 @@ vi.mock('@cio/db/queries/notifications/notification-subjects', () => ({
   loadNotificationSubjects: vi.fn(async () => new Map())
 }));
 vi.mock('@cio/db/queries/notifications/notification-recipients', () => ({
-  listProfileLocales: vi.fn(async () => new Map())
+  listProfileLocales: vi.fn(async () => new Map()),
+  listActiveOrganizationMembershipKeys: vi.fn()
 }));
 vi.mock('@cio/core/services/notification/push-config', () => ({
   isPushConfigured: vi.fn(() => true),
@@ -50,7 +51,12 @@ vi.mock('@cio/jobs', async () => {
   const { z } = await import('zod');
 
   return {
-    ZSendPushPayload: z.object({ notificationIds: z.array(z.string()), deferred: z.boolean().optional() }),
+    ZSendPushPayload: z.object({
+      notificationIds: z.array(z.string()),
+      deferred: z.boolean().optional(),
+      deliveries: z.array(z.object({ notificationId: z.string(), token: z.string() })).optional(),
+      attempt: z.number().optional()
+    }),
     ZCheckPushReceiptsPayload: z.object({ receipts: z.array(z.object({ receiptId: z.string(), token: z.string() })) }),
     enqueueSendPush: vi.fn(),
     enqueueCheckPushReceipts: vi.fn()
@@ -60,9 +66,12 @@ vi.mock('../../utils/logger', () => ({ log: { info: vi.fn(), error: vi.fn() } })
 
 import { disableDeviceTokens, listActiveDeviceTokens } from '@cio/db/queries/notifications/device-token';
 import { getNotificationsByIds } from '@cio/db/queries/notifications/notification';
-import { listProfileLocales } from '@cio/db/queries/notifications/notification-recipients';
+import {
+  listActiveOrganizationMembershipKeys,
+  listProfileLocales
+} from '@cio/db/queries/notifications/notification-recipients';
 import { loadNotificationSubjects } from '@cio/db/queries/notifications/notification-subjects';
-import { enqueueCheckPushReceipts } from '@cio/jobs';
+import { enqueueCheckPushReceipts, enqueueSendPush } from '@cio/jobs';
 
 import { processCheckPushReceipts, processSendPush, unregisteredTokens } from './send-push';
 
@@ -101,6 +110,7 @@ describe('processSendPush', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getNotificationsByIds).mockResolvedValue([notificationRow] as never);
+    vi.mocked(listActiveOrganizationMembershipKeys).mockResolvedValue(new Set(['org-1:student-a']));
   });
 
   it('disables unregistered and malformed tokens and schedules a receipt check for the rest', async () => {
@@ -168,6 +178,66 @@ describe('processSendPush', () => {
     expect(sendPushNotificationsAsync.mock.calls[0]![0]).toEqual([
       expect.objectContaining({ title: 'New post in your course' })
     ]);
+  });
+
+  it('does not send to a recipient who has left the organization since the notification was created', async () => {
+    vi.mocked(listActiveOrganizationMembershipKeys).mockResolvedValue(new Set());
+    vi.mocked(listActiveDeviceTokens).mockResolvedValue([tokenRow('ExponentPushToken[ok]')] as never);
+
+    const result = await processSendPush({ notificationIds: [notificationRow.id], deferred: true });
+
+    expect(listActiveOrganizationMembershipKeys).toHaveBeenCalledWith([
+      { organizationId: 'org-1', profileId: 'student-a' }
+    ]);
+    expect(loadNotificationSubjects).toHaveBeenCalledWith([]);
+    expect(sendPushNotificationsAsync).not.toHaveBeenCalled();
+    expect(result).toMatchObject({ sent: 0, skipped: 1 });
+  });
+
+  it('re-queues only the pushes whose chunk failed, with backoff', async () => {
+    vi.mocked(listActiveDeviceTokens).mockResolvedValue([tokenRow('ExponentPushToken[ok]')] as never);
+    sendPushNotificationsAsync.mockRejectedValueOnce(new Error('Expo unavailable'));
+
+    await processSendPush({ notificationIds: [notificationRow.id] });
+
+    expect(enqueueSendPush).toHaveBeenCalledWith(
+      {
+        notificationIds: [notificationRow.id],
+        deliveries: [{ notificationId: notificationRow.id, token: 'ExponentPushToken[ok]' }],
+        attempt: 2,
+        deferred: undefined
+      },
+      { delay: 30_000 }
+    );
+    expect(enqueueCheckPushReceipts).not.toHaveBeenCalled();
+  });
+
+  it('sends a retry only to the deliveries it names', async () => {
+    vi.mocked(listActiveDeviceTokens).mockResolvedValue([
+      tokenRow('ExponentPushToken[done]'),
+      tokenRow('ExponentPushToken[retry]')
+    ] as never);
+    sendPushNotificationsAsync.mockResolvedValue([{ status: 'ok', id: 'receipt-2' }]);
+
+    await processSendPush({
+      notificationIds: [notificationRow.id],
+      deliveries: [{ notificationId: notificationRow.id, token: 'ExponentPushToken[retry]' }],
+      attempt: 2
+    });
+
+    expect(sendPushNotificationsAsync.mock.calls[0]![0]).toEqual([
+      expect.objectContaining({ to: 'ExponentPushToken[retry]' })
+    ]);
+    expect(enqueueSendPush).not.toHaveBeenCalled();
+  });
+
+  it('stops retrying after the last attempt', async () => {
+    vi.mocked(listActiveDeviceTokens).mockResolvedValue([tokenRow('ExponentPushToken[ok]')] as never);
+    sendPushNotificationsAsync.mockRejectedValueOnce(new Error('Expo unavailable'));
+
+    await processSendPush({ notificationIds: [notificationRow.id], attempt: 3 });
+
+    expect(enqueueSendPush).not.toHaveBeenCalled();
   });
 });
 

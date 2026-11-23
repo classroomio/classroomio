@@ -75,9 +75,13 @@ function InviteScreen() {
   const copyLink = async () => {
     if (!link.data) return;
 
-    await Clipboard.setStringAsync(link.data.inviteLink);
-    successHaptic();
-    showToast({ tone: 'success', title: t('linkCopied') });
+    try {
+      await Clipboard.setStringAsync(link.data.inviteLink);
+      successHaptic();
+      showToast({ tone: 'success', title: t('linkCopied') });
+    } catch (error) {
+      showToast({ tone: 'danger', title: errorMessage(error) });
+    }
   };
 
   const shareLink = () => {

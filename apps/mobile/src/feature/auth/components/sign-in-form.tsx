@@ -48,19 +48,21 @@ export function SignInForm() {
     setError(null);
     setEmailError(null);
 
-    if (await sso.check(trimmedEmail)) {
-      setSubmitting(false);
-      return;
-    }
+    try {
+      if (await sso.check(trimmedEmail)) return;
 
-    const result = await client.signIn.email({ email: trimmedEmail, password });
-    setSubmitting(false);
-
-    if (result.error) {
+      const result = await client.signIn.email({ email: trimmedEmail, password });
+      if (result.error) {
+        errorHaptic();
+        const message = authErrorMessage(result.error, t('signInFailed'));
+        if (isEmailFieldError(result.error)) setEmailError(message);
+        else setError(message);
+      }
+    } catch {
       errorHaptic();
-      const message = authErrorMessage(result.error, t('signInFailed'));
-      if (isEmailFieldError(result.error)) setEmailError(message);
-      else setError(message);
+      setError(t('signInFailed'));
+    } finally {
+      setSubmitting(false);
     }
   };
 

@@ -54,6 +54,7 @@ import { useScrollThreshold } from '@/feature/course/helpers/use-scroll-threshol
 import { useDownloadedBytes } from '@/feature/downloads/helpers/download-store';
 import { formatBytes } from '@/feature/downloads/helpers/format-bytes';
 import { useFormatters } from '@/feature/i18n/helpers/use-formatters';
+import { errorMessage } from '@/feature/common/helpers/error-message';
 import { useTranslations } from '@/feature/i18n/helpers/use-translations';
 import { OrgList } from '@/feature/org/components/org-list';
 import { ROLE_NAME_KEYS } from '@/feature/org/constants/roles';
@@ -62,6 +63,7 @@ import { useActiveOrg } from '@/feature/org/helpers/use-active-org';
 import { orgCatalog } from '@/feature/org/translations/catalog';
 import { installedAppVersion } from '@/feature/settings/helpers/app-version';
 import { settingsCatalog } from '@/feature/settings/translations/catalog';
+import { showToast } from '@/feature/toast/helpers/toast-store';
 
 const TAB_BAR_CLEARANCE = 72;
 
@@ -107,7 +109,12 @@ export default function ProfileScreen() {
 
   const confirmSignOut = async () => {
     setSigningOut(true);
-    await signOut();
+    try {
+      await signOut();
+    } catch (error) {
+      setSigningOut(false);
+      showToast({ tone: 'danger', title: errorMessage(error) });
+    }
   };
 
   return (

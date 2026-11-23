@@ -41,8 +41,13 @@ export default function ServerScreen() {
   };
 
   const useCloud = async () => {
-    await setServerUrl(null);
-    router.back();
+    setError(null);
+    try {
+      await setServerUrl(null);
+      router.back();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t('unusable'));
+    }
   };
 
   return (

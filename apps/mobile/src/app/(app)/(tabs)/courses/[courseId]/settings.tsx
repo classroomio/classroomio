@@ -129,12 +129,18 @@ function SettingsForm({ course }: { course: TeachCourse }) {
   }, [leaving]);
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images',
-      quality: 0.85,
-      allowsEditing: true,
-      aspect: [16, 9]
-    });
+    let result: ImagePicker.ImagePickerResult;
+    try {
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'images',
+        quality: 0.85,
+        allowsEditing: true,
+        aspect: [16, 9]
+      });
+    } catch (error) {
+      showToast({ tone: 'danger', title: t('imageUploadFailed'), description: errorMessage(error) });
+      return;
+    }
     const asset = result.canceled ? null : result.assets[0];
     if (!asset) return;
 

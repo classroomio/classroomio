@@ -15,6 +15,7 @@ import { Text } from '@/feature/common/components/text';
 import { SPACING } from '@/feature/common/constants/layout';
 import { useApi } from '@/feature/common/components/api-provider';
 import { showToast } from '@/feature/toast/helpers/toast-store';
+import { errorMessage } from '@/feature/common/helpers/error-message';
 import { uploadExerciseFile, type LocalMedia } from '@/feature/exercise/api/media-upload';
 import { useExerciseSession, useQuestionAnswer } from '@/feature/exercise/components/exercise-session';
 import {
@@ -78,16 +79,26 @@ export function FileUploadQuestion({ question }: { question: ExerciseQuestion })
     });
   };
 
+  const showPickerError = (error: unknown) => showToast({ tone: 'danger', title: errorMessage(error) });
+
   const pickDocument = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: acceptedTypes.length > 0 ? acceptedTypes : '*/*',
-      copyToCacheDirectory: true
-    });
+    let result: DocumentPicker.DocumentPickerResult;
+    try {
+      result = await DocumentPicker.getDocumentAsync({
+        type: acceptedTypes.length > 0 ? acceptedTypes : '*/*',
+        copyToCacheDirectory: true
+      });
+    } catch (error) {
+      showPickerError(error);
+      return;
+    }
     const asset = result.canceled ? null : result.assets[0];
     if (asset) begin({ uri: asset.uri, name: asset.name, mimeType: asset.mimeType, size: asset.size });
   };
 
-  const pickImage = async (source: 'library' | 'camera') => {
+  const pickImage = (source: 'library' | 'camera') => void choosePhoto(source).catch(showPickerError);
+
+  const choosePhoto = async (source: 'library' | 'camera') => {
     if (source === 'camera') {
       const permission = await ImagePicker.requestCameraPermissionsAsync();
       if (!permission.granted) {

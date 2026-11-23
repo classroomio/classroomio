@@ -40,11 +40,12 @@ export async function authenticateWithBiometrics({
   promptMessage,
   cancelLabel
 }: BiometricPrompt): Promise<{ success: boolean; failure: BiometricFailure | null }> {
-  const result = await LocalAuthentication.authenticateAsync({
-    promptMessage,
-    cancelLabel,
-    disableDeviceFallback: false
-  });
+  let result: LocalAuthentication.LocalAuthenticationResult;
+  try {
+    result = await LocalAuthentication.authenticateAsync({ promptMessage, cancelLabel, disableDeviceFallback: false });
+  } catch {
+    return { success: false, failure: 'notRecognized' };
+  }
 
   if (result.success) return { success: true, failure: null };
   if (SILENT_FAILURES.has(result.error)) return { success: false, failure: null };

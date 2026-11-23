@@ -203,7 +203,7 @@ export default function CourseDetailScreen() {
       <ButtonText>{t('openBlockingCourse', { course: pathLock.blockingCourseTitle })}</ButtonText>
     </Button>
   ) : retakeDays !== null && firstItem ? (
-    <Button size="lg" onPress={() => openContentItem(courseId, resume ?? firstItem)}>
+    <Button size="lg" disabled={offline} onPress={() => openContentItem(courseId, resume ?? firstItem)}>
       <ButtonIcon icon={ArrowCounterClockwiseIcon} />
       <ButtonText>{t('retakeCourse')}</ButtonText>
     </Button>

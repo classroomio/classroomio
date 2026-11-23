@@ -7,10 +7,9 @@ import {
   updateLessonWatchProgressService,
   upsertLessonCompletionService
 } from '@cio/core/services/lesson/lesson';
-import { getLessonVideoProgress } from '@cio/db/queries/lesson/video-progress';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { createRedisIdempotencyStore, type IdempotencyStore } from '@api/utils/redis/idempotency';
-import { readOfflineIssue } from '@api/utils/redis/offline-issue';
+import { advanceOfflineWatchCursor, readOfflineIssue, readOfflineWatchCursor } from '@api/utils/redis/offline-issue';
 
 // Mirrors the watch-progress service: the route's per-beat cap and its wall-clock tolerance.
 const FIRST_BEAT_MAX_SECONDS = 120;
@@ -117,26 +116,45 @@ function isPermanent(error: unknown) {
 }
 
 /**
- * The watch-progress service bounds each beat by the time since the learner's last saved progress, but a first beat has
- * no saved progress to measure from. Online that first beat is capped at two minutes; offline, the time since the lesson
- * was first downloaded is the bound, since nothing could be watched offline before that.
+ * Watch time an offline session may claim, judged by when its beats were recorded rather than when they reach the
+ * server, so a session split across several sync requests keeps the time it was watched over. The allowance is the
+ * recorded span from `since` to the latest beat, which never extends past now. `since` is the later of the lesson's
+ * download and the time already credited, so the same stretch of time cannot be claimed twice. Without a known start,
+ * the span runs from the first beat, which may also claim up to the per-beat cap.
  */
-async function assertFirstWatchPlausible(
-  profileId: string,
-  lessonId: string,
-  assetId: string,
-  playedDeltaSeconds: number
-) {
-  const existing = await getLessonVideoProgress(lessonId, profileId, assetId);
-  if (existing) return;
+export function offlineWatchAllowance(intents: TPlaybackPositionIntent[], since: number | null, now: number): number {
+  const recordedTimes = intents.map((intent) => Date.parse(intent.recordedAt)).filter(Number.isFinite);
+  if (recordedTimes.length === 0) return 0;
 
-  const issuedAt = await readOfflineIssue(profileId, lessonId);
-  const limit = issuedAt
-    ? Math.max(FIRST_BEAT_MAX_SECONDS, ((Date.now() - issuedAt) / 1000) * WALL_CLOCK_TOLERANCE)
-    : FIRST_BEAT_MAX_SECONDS;
-  if (playedDeltaSeconds > limit) {
-    throw new AppError('Invalid watch progress update', ErrorCodes.VALIDATION_ERROR, 400);
+  const latest = Math.min(now, Math.max(...recordedTimes));
+  if (since !== null) return Math.max(0, ((latest - since) / 1000) * WALL_CLOCK_TOLERANCE);
+
+  const earliest = Math.min(...recordedTimes);
+
+  return Math.max(0, ((latest - earliest) / 1000) * WALL_CLOCK_TOLERANCE) + FIRST_BEAT_MAX_SECONDS;
+}
+
+/** The recorded time of a session's latest beat, never later than now. */
+function latestRecordedAt(intents: TPlaybackPositionIntent[], now: number): number | null {
+  const recordedTimes = intents.map((intent) => Date.parse(intent.recordedAt)).filter(Number.isFinite);
+
+  return recordedTimes.length === 0 ? null : Math.min(now, Math.max(...recordedTimes));
+}
+
+async function claimUnit(
+  unit: SyncUnit,
+  store: IdempotencyStore,
+  results: Map<string, SyncIntentResult>
+): Promise<SyncUnit> {
+  if (unit.type === 'lesson.complete') {
+    const intents = await claimIntents(unit.intents, store, results);
+
+    return { ...unit, intents };
   }
+
+  const intents = await claimIntents(unit.intents, store, results);
+
+  return { ...unit, intents };
 }
 
 async function applyUnit(courseId: string, profileId: string, unit: SyncUnit): Promise<UnitOutcome> {
@@ -158,14 +176,28 @@ async function applyUnit(courseId: string, profileId: string, unit: SyncUnit): P
 
   const latest = unit.intents.at(-1)!;
   const playedDeltaSeconds = unit.intents.reduce((total, intent) => total + intent.playedDeltaSeconds, 0);
-  await assertFirstWatchPlausible(profileId, unit.lessonId, unit.assetId, playedDeltaSeconds);
+  const now = Date.now();
+  const issuedAt = await readOfflineIssue(profileId, unit.lessonId);
+  const creditedUntil = await readOfflineWatchCursor(profileId, unit.lessonId, unit.assetId);
+  const since = issuedAt === null && creditedUntil === null ? null : Math.max(issuedAt ?? 0, creditedUntil ?? 0);
+  const allowedDeltaSeconds = offlineWatchAllowance(unit.intents, since, now);
 
-  const progress = await updateLessonWatchProgressService(unit.lessonId, profileId, {
-    assetId: unit.assetId,
-    positionSeconds: latest.positionSeconds,
-    playedDeltaSeconds,
-    durationSeconds: latest.durationSeconds
-  });
+  const progress = await updateLessonWatchProgressService(
+    unit.lessonId,
+    profileId,
+    {
+      assetId: unit.assetId,
+      positionSeconds: latest.positionSeconds,
+      playedDeltaSeconds,
+      durationSeconds: latest.durationSeconds
+    },
+    { allowedDeltaSeconds }
+  );
+
+  const recordedUntil = latestRecordedAt(unit.intents, now);
+  if (recordedUntil !== null) {
+    await advanceOfflineWatchCursor(profileId, unit.lessonId, unit.assetId, recordedUntil);
+  }
 
   return { status: 'applied', completed: progress.didJustComplete || progress.isComplete };
 }
@@ -186,10 +218,7 @@ export async function syncCourseIntents(
   let completedAny = false;
 
   for (const unit of groupSyncIntents(intents)) {
-    const claimedUnit: SyncUnit =
-      unit.type === 'lesson.complete'
-        ? { ...unit, intents: await claimIntents(unit.intents, store, results) }
-        : { ...unit, intents: await claimIntents(unit.intents, store, results) };
+    const claimedUnit = await claimUnit(unit, store, results);
     const claimed: TSyncIntent[] = claimedUnit.intents;
     if (claimed.length === 0) continue;
 

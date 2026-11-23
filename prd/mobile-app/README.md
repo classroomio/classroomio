@@ -2,7 +2,24 @@
 
 ## Status
 
-- Draft (prototyped, ready for product review)
+- Approved. The approved scope is the Mobile App Product Specification, which replaces this draft's scope where they differ. The sections below are updated to match it.
+- Being built in [#1468](https://github.com/classroomio/classroomio/pull/1468).
+- The prototypes predate the approved scope and still show the old Learn, Compliance, Community and Teach tabs. For navigation and scope, this document wins. For visual details, the prototypes still apply.
+
+## Approved scope by role
+
+| Role | Tabs |
+| --- | --- |
+| Student | Home · My learning · Explore · Goals · Profile |
+| Tutor | Home · Courses · Learners · Submissions · Profile |
+| Admin | Home · People · Courses · Profile |
+
+- **Student:** pick up where you left off, current learning and live class carousels, a daily streak greeting, Ask AI, learning paths, courses and assignments with search and filters, learning history, Explore with live classes, Goals (streak, weekly lesson goal, milestones), course and lesson screens, compliance retakes, and sign-up from an invite.
+- **Tutor:** key numbers, upcoming sessions and attendance, recent activity, course performance and settings, course people and invites, learners with a Needs a nudge filter and Nudge, and submissions (upcoming, review, history, grading).
+- **Admin:** organization health and draft courses, people filtered by role, and course performance and settings.
+- **Not in the app:** course authoring, community and discussion boards, cohorts, billing and plans, landing pages, organization settings and integrations, deep analytics and bulk import, and join requests.
+- **Scoped out of V1 but built:** offline mode and the student Profile tab.
+- **Proposed, not committed:** ongoing calendar sync, home screen widgets, a lock-screen countdown for live classes, actions on push notifications, and a grading widget. Picture-in-picture, playback speed, deep links from notifications and the streak reminder are built because other sections of the specification require them.
 
 ## Prototypes — the UX source of truth
 
@@ -44,8 +61,8 @@ Ship a native iOS and Android app that makes ClassroomIO usable by the people co
 
 These were locked from the mobile brainstorm that preceded this PRD. Items marked **(product call)** were decided without an explicit answer and are the ones to veto first.
 
-1. **One role-aware app, not two.** A single binary serves learners and tutors; the tab bar and course screens change by role. Canvas ships separate Student/Teacher apps, but ClassroomIO's tutor surface is far smaller (grade, attend, announce, moderate) and its orgs are smaller, so two store listings would be overhead without benefit. **(product call)**
-2. **Learner scope ships first.** Tutor mode is a later release behind the same binary, not a v1 requirement.
+1. **One role-aware app, not two.** A single binary serves students, tutors and admins; the tab bar and course screens change by role. Canvas ships separate Student/Teacher apps, but ClassroomIO's tutor surface is far smaller (grade, attend, announce, moderate) and its orgs are smaller, so two store listings would be overhead without benefit. **(product call)**
+2. **All three roles ship in v1.** The approved scope gives students, tutors and admins their own tabs in the first release.
 3. **Authoring stays on the web.** No course/lesson/exercise creation, media manager, AI course builder, analytics configuration, billing, SSO setup, domains, or API keys on mobile. Admin-only surfaces are intentionally absent.
 4. **Expo + React Native**, as a new `apps/mobile` workspace package. It shares `@cio/utils` validation and the Hono RPC types from `@cio/api/rpc-types`, so request/response shapes stay type-checked against the real API.
 5. **No new BFF.** Mobile calls the existing API. Where mobile needs something the web does not (a home digest, a device token, a token-authenticated HLS URL), we add narrow endpoints to the existing routers rather than forking business logic.
@@ -54,8 +71,8 @@ These were locked from the mobile brainstorm that preceded this PRD. Items marke
 8. **Org context is explicit.** There are no subdomains on mobile, so the user picks an organization after sign-in and the app sends `cio-org-id` on every request, matching how the API authorizes today (`apps/api/src/middlewares/org-team-member.ts`).
 9. **No purchasing in the app, in any storefront.** No course checkout, no plan upgrade, no AI token packs. Selling digital content in-app would trigger Apple's Guideline 3.1.1 in-app-purchase requirement outside the US storefront; ClassroomIO's B2B model (training is assigned, not bought by the learner) means we can sidestep IAP entirely. Paid self-serve enrollment stays on the web.
 10. **Push notifications are a hard dependency on `prd/notification-system`.** That PRD builds the `notification` table and the `notify()` service; mobile adds a **push transport** (device token registry + Expo Push delivery) and a per-category preference screen on top of it. Mobile must not build a parallel notification system.
-11. **Offline v1 is read-only content plus a queued write for completion.** Download lessons, video, audio, PDFs, and transcripts; mark-complete events queue locally and sync on reconnect. **Offline exercises and submissions are v2** — quiz integrity, grading, and conflict resolution need their own design (this is where Canvas and Blackboard also draw the line).
-12. **Compliance is the differentiating home surface.** The app opens on what is due, overdue, expiring, or awaiting a retake, and the certificate wallet is a first-class tab-reachable screen — not a page buried under settings.
+11. **Offline v1 is read-only content plus a queued write for completion.** Download lessons, video, audio, PDFs, and transcripts; completions and video watch progress queue locally and sync on reconnect. **Offline exercises and submissions are v2** — quiz integrity, grading, and conflict resolution need their own design (this is where Canvas and Blackboard also draw the line).
+12. **Compliance has no tab of its own.** Courses due for a retake lead the current learning carousel on Home and show a "Retake due in N days" status on Home and in My learning. The course screen shows when the certification expires, or how long it has been overdue, and a Retake course button. The certificate wallet is reached from Profile.
 13. **Branding is dynamic, white-label is later.** v1 themes the app with the org's name, logo, and primary color at runtime (multi-org accounts re-theme on switch). Dedicated per-customer App Store listings are an enterprise follow-up, as Thinkific and TalentLMS both sell them.
 14. **The app is cloud-first but self-host compatible.** The sign-in screen accepts a custom server URL so self-hosted deployments can point the same binary at their own API; single-org self-hosted installs skip the org picker.
 
@@ -91,7 +108,7 @@ These were locked from the mobile brainstorm that preceded this PRD. Items marke
 3. A learner receives a push notification for an assignment, a deadline, a renewal, a grade, or a reply, and taps straight into the relevant screen.
 4. A learner downloads a course, completes the lesson content on a plane, and sees their progress sync automatically on reconnect.
 5. A learner can always answer "am I compliant, what expires next, where is my certificate" in two taps.
-6. A tutor clears a grading queue, takes attendance, posts an announcement, and moderates a thread from a phone.
+6. A tutor clears a grading queue, takes attendance, and nudges stalled learners from a phone. An admin checks organization health, people and course performance.
 7. The web dashboard, self-hosted deployments, and existing API behavior are unchanged (zero regression).
 
 ## Non-Goals (v1)
@@ -101,7 +118,10 @@ These were locked from the mobile brainstorm that preceded this PRD. Items marke
 - **Any purchase flow** (see Decision 9) — no course checkout, plan upgrade, or AI token packs.
 - **Offline exercises, quizzes, and submissions** (v2) — offline is read-only content plus queued completion.
 - Live-class video conferencing inside the app (join links open the existing external provider).
-- Direct messaging between users (ClassroomIO has no DM system today; community Q&A covers discussion).
+- Direct messaging between users (ClassroomIO has no DM system today).
+- Community and discussion boards, and cohorts. Both stay on the web.
+- Join requests and approvals. People join by invite.
+- Deep analytics and bulk import.
 - SCORM playback (`prd/scorm-support` is todo; not shipped on web either).
 - Per-customer white-label App Store listings (enterprise follow-up, Decision 13).
 - Tablet-optimized layouts, watch apps, widgets, offline video for public/unenrolled catalog courses.
@@ -110,7 +130,7 @@ These were locked from the mobile brainstorm that preceded this PRD. Items marke
 
 ## Functional Requirements
 
-**Information architecture.** Five tabs, role-aware: learners get **Home · Learn · Compliance · Community · Profile**; ADMIN and TUTOR get **Teach** in place of Compliance. Notifications live behind the bell in the nav bar, and Certificates and Downloads are reached from Compliance and Profile.
+**Information architecture.** Tabs depend on the role in the active organization (see Approved scope by role). Notifications live behind the bell on Home, and Certificates and Downloads are reached from Profile.
 
 ### 1. Onboarding and authentication — `auth.html`
 
@@ -123,23 +143,18 @@ These were locked from the mobile brainstorm that preceded this PRD. Items marke
 
 ### 2. Home — `home.html`
 
-The attention surface. Ordered by urgency, not by recency:
+- **Pick up where you left off:** the in-progress course with the most progress. When nothing is in progress, **Start learning** offers the first course not started.
+- **Current learning:** a carousel of learning paths and courses in progress, with See all. Compliance courses due for a retake come first, with a "Retake due in N days" status.
+- **Upcoming live classes:** a carousel with date, time, host, and Register, Add to calendar or Join now.
+- **Streak welcome:** on the first open of the day with a streak, a full-screen greeting offers to resume or explore.
+- **Ask AI:** a floating button that opens a chat about the learner's courses and goals.
+- States: no courses yet, and offline (only the My learning tab is shown).
 
-1. **Compliance alert band** — only when something is overdue or inside its grace period; red for overdue, amber for due soon; tapping opens Compliance.
-2. **Continue learning** — the single most recent in-progress lesson with a thumbnail, course name, position ("Lesson 4 of 12"), and a progress bar.
-3. **Due soon** — deadline-ordered list of exercises and required courses with relative dates ("Due in 2 days").
-4. **Newly assigned** — courses assigned since the last open, with an enroll/start affordance.
-5. **Cohort announcements** — latest newsfeed items from the learner's cohorts and courses.
-6. **Recent feedback** — graded submissions with score and tutor comment preview.
+### 3. My learning and Explore — `learn.html`, `course.html`
 
-States: fully-caught-up empty state ("Nothing due — you're all caught up"), first-run empty state (no enrollments), and offline state (cached digest with an "Offline — last updated 2h ago" chip).
-
-### 3. Learn — `learn.html`, `course.html`
-
-- **My Learning**: segmented control for In progress / Not started / Completed; rows carry a progress ring, course type chip (Compliance / Cohort / Self-paced), and a download indicator.
-- **Explore**: the org's public catalog, enroll-in-place for free/assigned courses; no paid checkout (Decision 9).
-- **Cohorts**: cohort cards with goal progress and deadline.
-- **Course detail** (`course.html`): header with progress, then the section/lesson outline. Every lesson row shows its state — complete, current, locked (with the reason: "Complete Lesson 3 first"), or downloaded. Compliance courses show a deadline banner. Tabs: Content, Newsfeed, Community, Certificate, and — for compliance courses — Compliance.
+- **My learning:** Learning paths, Courses and Assignments segments, a search bar, and a filter sheet for status, level and duration. Learning history lists completed paths and courses once there is one. Compliance courses stay in the main list with their retake status.
+- **Explore:** learning paths and courses the learner has not started, upcoming live classes with Register and Add to calendar, and search with filters for content type, level and duration. Paths whose courses are all free and open to self-enrollment can be joined in place; there is no paid checkout (Decision 9).
+- **Course detail** (`course.html`): description, level, duration, lesson count, instructor, progress, and the section/lesson outline. Every lesson row shows its state: complete, current, locked with the reason, or downloaded. Compliance courses show their compliance status. When a retake is due within 30 days or overdue, a Retake course button replaces Continue.
 - Locked content is enforced by the API, not just hidden (`apps/dashboard/src/lib/features/course/utils/content-lock-utils.ts` is the web equivalent).
 
 ### 4. Lesson player — `lesson.html`
@@ -148,7 +163,7 @@ States: fully-caught-up empty state ("Nothing due — you're all caught up"), fi
 - **Text, slides, and documents** rendered natively; multilingual lessons respect the learner's chosen language (`lesson-language.ts`).
 - **Transcript** in a bottom sheet, tap-to-seek where timestamps exist.
 - **AI Lesson Tutor** in a bottom sheet, scoped to the current lesson, showing the fair-use cap state when exhausted (`prd/ai-tutor-fair-use`).
-- **Mark complete** advances to the next item; when offline the action is queued and the row shows a "will sync" indicator.
+- **Completion is automatic:** a lesson is marked complete when the learner has spent a few seconds on it, reached the end, and played every uploaded video to the end. There is no button to tap. Offline, the completion is queued and syncs on reconnect.
 - States: online, downloaded/offline, locked, video-unavailable-offline, and tutor-cap-reached.
 
 ### 5. Exercises — `exercise.html`
@@ -161,11 +176,9 @@ States: fully-caught-up empty state ("Nothing due — you're all caught up"), fi
 
 ### 6. Compliance — `compliance.html`
 
-- Status header: Compliant / Due soon / Overdue / In grace, with the count of requirements behind it.
-- Per-requirement rows: course, status, deadline or renewal date, grace-period note, waiver note where one applies, and last completion date.
-- Renewal countdown for certifications approaching expiry.
-- A "Proof" action jumping to the matching certificate.
-- States: all-clear, overdue, in-grace, waived, and no-requirements.
+- No Compliance tab. Retake status appears on Home, in My learning and on the course screen (Decision 12).
+- The Retake course button is disabled offline.
+- Compliance retake reminders arrive as notifications on each reminder day the course sets (by default 30, 7 and 1 days before), and again when overdue.
 
 ### 7. Certificates — `certificates.html`
 
@@ -176,16 +189,15 @@ States: fully-caught-up empty state ("Nothing due — you're all caught up"), fi
 
 ### 8. Community — `community.html`
 
-- Org and course Q&A: ask, answer, upvote, and follow threads; course and cohort newsfeed posts with comments.
-- A "For you" filter for mentions, replies, and followed threads.
-- Compose supports text and image attachments.
-- Author-or-team edit/delete rules mirror the API guards (`apps/api/src/routes/community/middlewares/`).
-- States: populated, empty, offline (read cached, compose disabled with an explanatory chip).
+Not in the app. Community and discussion boards stay on the web.
 
 ### 9. Notifications — `notifications.html`
 
 - **Center**: grouped Today / Earlier, unread dots, deep-link on tap, mark-all-read.
-- **Categories** (each independently toggleable, push and in-app): new assignment, deadline reminder, overdue, renewal due, new lesson/newsfeed post, exercise graded, community mention or reply, certificate issued, cohort goal approaching.
+- **Student notifications:** live class starting soon (an hour before and at the start), exercise graded, new assignment, retake due, course recommended, streak at risk (weekday evenings), weekly goal reached, assignment due soon (a day before), a nudge from a tutor, course enrolled, new lesson or post, replies, certificate issued, and cohort goal due.
+- **Tutor notifications:** new submission to grade, live session reminder (an hour before), learner needs a nudge (failed a quiz twice or inactive for several days), attendance reminder after a session, new student joined, and added to a course.
+- **Admin notifications:** student limit approaching, student limit reached, payment failed, webhook failing, and webhook disabled. These open the web dashboard.
+- Each category can be turned off for push and in-app separately, except Overdue, which stays on.
 - **Preferences**: per-category switches plus quiet hours; changes write through to the same preference store the web uses (`prd/email-notification-preferences`).
 - The first launch asks for the OS notification permission with an explanatory pre-prompt, not a cold system dialog.
 
@@ -205,16 +217,31 @@ States: fully-caught-up empty state ("Nothing due — you're all caught up"), fi
 - App settings: language, theme (system/light/dark), video quality, biometric lock toggle.
 - Account: change password (web link), sign out, delete account (web link).
 
-### 12. Tutor mode — `tutor-grading.html`, `tutor-attendance.html`, `tutor-course.html`
+### 12. Tutor and admin — `tutor-grading.html`, `tutor-attendance.html`, `tutor-course.html`
 
-Visible only when `orgRoles[activeOrg]` is ADMIN or TUTOR. Staff get **Teach** in place of the learner Compliance tab; their own compliance stays reachable from the Home alert band and Profile.
+Tutors and admins have no offline mode; every action needs a connection.
 
-- **Grading queue**: submissions awaiting grading across courses, oldest first, with course/exercise/learner and waiting time. Review shows the learner's answers (including video/file submissions), the rubric, score entry, written or recorded feedback, and approve / request-resubmission.
-- **Attendance**: roster for a live-class session with present/absent/late toggles, bulk actions, and a code or QR check-in.
-- **Course snapshot**: enrollment, completion rate, overdue count; post an announcement; moderate community/newsfeed posts (hide, delete, mark answered).
-- Explicitly absent: authoring, settings, people management beyond invite, analytics configuration.
+- **Tutor Home:** key numbers (active learners, average completion, items to review, average quiz score), upcoming sessions with registered counts and attendance (present, absent, late, Mark all present or absent, and code or QR check-in), recent activity, and the notifications bell.
+- **Courses:** every course with its Published or Draft status and performance. Inside a course: open any lesson as a student sees it, people with progress, invite by email or link (not available at the student limit), remove a student after confirmation, and course settings (title, description, image, published status, access, certificate, level and duration), announcements, and moderating course posts.
+- **Learners:** each learner's course and progress, a Needs a nudge filter for learners who have stalled, and Nudge.
+- **Submissions:** upcoming submissions, the review queue, grading with score and feedback, and history.
+- **Admin Home:** organization health (active learners, completion rate, recent activity) and draft courses waiting.
+- **Admin People:** everyone in the organization, filtered by Students, Tutors or Admins.
+- **Admin Courses:** course overview, performance and course settings.
+- Explicitly absent: authoring, organization settings, billing and analytics configuration.
 
-### 13. Cross-cutting requirements
+### 13. Goals
+
+- **Daily streak:** the current streak, the best streak and the last seven days, counted in the learner's time zone. Weekends never break a streak.
+- **Weekly lesson goal:** lessons completed since Monday against a target the learner can raise or lower.
+- **Milestones:** streaks of 3, 7, 14, 30, 60 and 100 days, shown as achieved or with the days still to go.
+
+### 14. Learning paths
+
+- Admins create and manage learning paths on the web: courses in order, people and settings.
+- On mobile, learners see their paths in My learning and can join open paths from Explore. When a path unlocks courses in order, a course stays locked until the learner finishes every lesson and exercise in the course before it.
+
+### 15. Cross-cutting requirements
 
 - **Accessibility**: full screen-reader labels, Dynamic Type, minimum 44 pt touch targets, and no color-only status encoding (every status carries an icon and text). Canvas advertises VPAT 2.2 conformance; we should not ship below that bar.
 - **Localization**: the app reads the same translation catalog the dashboard uses (`apps/dashboard/src/lib/utils/translations/`), covering the 10+ supported languages; no hardcoded strings.
@@ -292,7 +319,9 @@ notify(...)                                # existing service (notification-syst
             tokens = active device_token rows for profileId
             skip if preference.push = false for category
             skip / defer if inside quiet hours
+            skip if the recipient is no longer an active member of the org
             chunk ≤100 → Expo Push API (expo-server-sdk)
+            on a refused chunk → re-queue only its pushes (30 s, then 60 s; 3 attempts)
             on DeviceNotRegistered → set device_token.disabledAt
 ```
 
@@ -324,7 +353,7 @@ All additions follow the repo layering (validation → queries → services → 
 | GET | `/account/notification-preferences` | auth | Category matrix + quiet hours |
 | PUT | `/account/notification-preferences` | auth | Update |
 | GET | `/course/:courseId/offline-manifest` | course member | Everything needed to download a course in one call: lessons, media URLs, sizes, checksums |
-| POST | `/course/:courseId/sync` | course member | Batch-replay queued completion intents idempotently |
+| POST | `/course/:courseId/sync` | course member | Batch-replay queued completion and watch-progress intents idempotently |
 | GET | `/hls/:assetId/playback-token` | auth + asset org | Token-authenticated playback (above) |
 | GET | `/account/grading-queue` | org team member | Tutor: submissions awaiting grading across courses |
 
@@ -364,20 +393,20 @@ pnpm format:check
 10. **Tutor mode.** Grading queue, attendance, announcements, moderation.
 11. **Store readiness.** Accessibility audit, App Store / Play listings, privacy nutrition labels, data-safety form, beta via TestFlight and Play internal testing.
 
-Releases: 3–6 = Release 1 (learner core), 7–9 = Release 2 (push, offline, engagement), 10 = Release 3 (tutor), then white-label and microlearning.
+Releases: 3–6 = Release 1 (learner core), 7–9 = Release 2 (push, offline, engagement), 10 = Release 3 (tutor), then white-label and microlearning. This was the draft plan; the approved scope builds all three roles together in #1468.
 
 ## Acceptance Criteria
 
 1. A learner can sign in with email/password, Google, and enterprise SSO; multi-org accounts choose an org and every request carries `cio-org-id`.
 2. A self-hosted user can point the app at a custom API base URL and sign in; the single-org install skips the org picker.
-3. Home shows compliance alerts, continue-learning, due-soon, newly-assigned, announcements, and feedback in one request, and renders a cached version offline with an explicit staleness chip.
+3. Home shows the course to pick up or start, current learning with retakes first, upcoming live classes, the streak greeting and Ask AI.
 4. A learner can complete an entire course on a phone — lessons, video, all 16 exercise question types, and certificate issuance — with progress matching the web dashboard exactly.
 5. Video plays via HLS with captions, background audio, lock-screen controls, and PiP; the playback token authorizes a native player, and the existing cookie and session paths still work on web (regression check).
 6. Push notifications arrive for every category in §9, respect per-category preferences and quiet hours, and deep-link to the right screen; disabling a category stops both push and in-app for that category.
 7. A learner downloads a course, airplane-mode completes its lesson content, and every completion appears on the web dashboard after reconnect, with no duplicates on retry.
-8. Exercises, AI tutor, and community compose show explicit "connection required" states offline rather than failing silently.
+8. Offline, the student sees only My learning and their downloaded courses, with an offline banner; exercises and the AI tutor are not available.
 9. Compliance status, renewal dates, grace periods, and waivers match the web compliance view for the same learner.
-10. A tutor sees the Teach tab only with ADMIN or TUTOR in the active org, and can grade a submission, take attendance, post an announcement, and moderate a post.
+10. Students, tutors and admins each see only their own tabs. A tutor can grade a submission, take attendance, nudge a learner, invite and remove students, and change course settings. An admin can see organization health, people by role, and course performance.
 11. A student-role user has no path to authoring, org settings, billing, or admin data anywhere in the app; the API rejects such calls independently of the UI.
 12. No purchase, upgrade, or checkout affordance exists anywhere in the app on any storefront.
 13. Accessibility: screen-reader labels on all interactive elements, Dynamic Type honored, 44 pt minimum targets, no color-only status.

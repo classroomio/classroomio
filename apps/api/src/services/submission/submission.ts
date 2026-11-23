@@ -350,9 +350,13 @@ export async function listSubmissionsByExercise(
   try {
     const submissions = await getSubmissionsByCourseIdWithDetails(courseId, exerciseId, submittedBy);
     const enriched = await Promise.all(
-      submissions.map(async (s) =>
-        s.answers?.length ? { ...s, answers: await enrichFileUploadAnswersArray(s.answers) } : s
-      )
+      submissions.map(async (submission) => {
+        if (!submission.answers?.length) return submission;
+
+        const answers = await enrichFileUploadAnswersArray(submission.answers);
+
+        return { ...submission, answers };
+      })
     );
     enriched.sort((a, b) => new Date(a.createdAt ?? 0).getTime() - new Date(b.createdAt ?? 0).getTime());
     return enriched;

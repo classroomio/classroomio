@@ -23,10 +23,11 @@ export function useSendAssistantMessage() {
 
   return async ({ messages, signal, onEvent }: SendAssistantMessageOptions) => {
     const orgId = getActiveOrgId();
+    const cookie = await client.getCookie();
     const headers: Record<string, string> = {
       'content-type': 'application/json',
       accept: 'text/event-stream',
-      cookie: await client.getCookie()
+      cookie
     };
     if (orgId) headers['cio-org-id'] = orgId;
 

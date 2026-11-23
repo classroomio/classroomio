@@ -27,6 +27,39 @@ export async function filterActiveOrganizationMembers(organizationId: string, pr
   }
 }
 
+/** `organizationId:profileId` keys, among the given pairs, whose membership in that organization is still active. */
+export async function listActiveOrganizationMembershipKeys(
+  memberships: Array<{ organizationId: string; profileId: string }>
+): Promise<Set<string>> {
+  if (memberships.length === 0) return new Set();
+
+  const organizationIds = [...new Set(memberships.map((membership) => membership.organizationId))];
+  const profileIds = [...new Set(memberships.map((membership) => membership.profileId))];
+
+  try {
+    const rows = await db
+      .select({
+        organizationId: schema.organizationmember.organizationId,
+        profileId: schema.organizationmember.profileId
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          inArray(schema.organizationmember.organizationId, organizationIds),
+          inArray(schema.organizationmember.profileId, profileIds),
+          eq(schema.organizationmember.status, 'ACTIVE')
+        )
+      );
+
+    return new Set(
+      rows.flatMap((row) => (row.organizationId && row.profileId ? [`${row.organizationId}:${row.profileId}`] : []))
+    );
+  } catch (error) {
+    console.error('listActiveOrganizationMembershipKeys error:', error);
+    throw new Error('Failed to list active organization memberships');
+  }
+}
+
 /** The course, its organization, and the profile ids of its enrolled students. */
 export async function getCourseStudentAudience(courseId: string): Promise<{
   organizationId: string;

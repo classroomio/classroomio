@@ -48,13 +48,11 @@ export function usePushRegistration() {
       const token = await expoPushToken(projectId);
       if (cancelled || !token) return;
 
-      await registerDeviceToken(api, {
-        token,
-        platform: Platform.OS === 'android' ? 'android' : 'ios',
-        appVersion: appVersionOf(),
-        deviceName: Device.deviceName ?? Device.modelName ?? undefined,
-        locale: deviceLocale()
-      });
+      const platform = Platform.OS === 'android' ? 'android' : 'ios';
+      const appVersion = appVersionOf();
+      const deviceName = Device.deviceName ?? Device.modelName ?? undefined;
+      const locale = deviceLocale();
+      await registerDeviceToken(api, { token, platform, appVersion, deviceName, locale });
       setRegisteredPushToken(token, async () => {
         await unregisterDeviceToken(api, token);
       });

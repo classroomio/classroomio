@@ -213,11 +213,10 @@ export async function processLearnerReminderScan(now: Date = new Date()): Promis
     }
   };
 
-  const result = {
-    liveClass: await run('live-class', sendLiveClassReminders),
-    assignmentDue: await run('assignment-due', sendAssignmentDueReminders),
-    streakRisk: await run('streak-risk', sendStreakRiskReminders)
-  };
+  const liveClass = await run('live-class', sendLiveClassReminders);
+  const assignmentDue = await run('assignment-due', sendAssignmentDueReminders);
+  const streakRisk = await run('streak-risk', sendStreakRiskReminders);
+  const result = { liveClass, assignmentDue, streakRisk };
 
   log.info('learner-reminder-scan-complete', result);
 

@@ -56,7 +56,14 @@ export type TNotifyCourseSessionUpdatePayload = z.infer<typeof ZNotifyCourseSess
  */
 export const ZSendPushPayload = z.object({
   notificationIds: z.array(z.uuid()).min(1),
-  deferred: z.boolean().optional()
+  deferred: z.boolean().optional(),
+  /** Limits a retry to the notification and device pairs whose send failed, so delivered pushes are not repeated. */
+  deliveries: z
+    .array(z.object({ notificationId: z.uuid(), token: z.string().min(1) }))
+    .min(1)
+    .optional(),
+  /** Which send attempt this is, counting the first as 1. */
+  attempt: z.int().min(1).optional()
 });
 export type TSendPushPayload = z.infer<typeof ZSendPushPayload>;
 
