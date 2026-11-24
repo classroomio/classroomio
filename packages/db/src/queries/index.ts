@@ -18,6 +18,8 @@ export * from './newsfeed';
 export * from './submission';
 export * from './tag';
 export * from './course-import';
+export * from './onboarding';
+export * from './course-build';
 export * from './cohort';
 export * from './widget';
 export * from './jobs';

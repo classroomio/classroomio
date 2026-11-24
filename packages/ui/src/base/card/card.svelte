@@ -5,9 +5,10 @@
   let {
     ref = $bindable(null),
     class: className,
+    notch = false,
     children,
     ...restProps
-  }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
+  }: WithElementRef<HTMLAttributes<HTMLDivElement>> & { notch?: boolean } = $props();
 </script>
 
 <div
@@ -15,6 +16,7 @@
   data-slot="card"
   class={cn(
     'ui:bg-card ui:text-card-foreground ui:flex ui:flex-col ui:gap-6 ui:rounded-lg ui:border ui:py-6',
+    notch && 'ui:notch-cutout ui:pt-9',
     className
   )}
   {...restProps}

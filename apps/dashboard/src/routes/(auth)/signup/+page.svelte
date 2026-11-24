@@ -22,7 +22,7 @@
   import { authSsoStore, ensureSsoInfoLoaded } from '$features/auth/utils/auth-sso-store';
   import { orgApi } from '$features/org/api/org.svelte';
   import { getPostJoinRedirect } from '$features/org/utils/org-join-redirect';
-  import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
+  import { onboardingFlowApi } from '$features/onboarding/api/onboarding-flow.svelte';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
   import { isOrgChooserAvailable, ORG_CHOOSER_PATH } from '$features/app/utils/post-auth-destination';
   import { buildLoginInsteadHref, isExistingAccountError } from '$features/auth/utils/auth-errors';
@@ -166,7 +166,7 @@
             if (!$globalStore.isOrgSite) {
               let welcomeEmailPending = false;
               for (let attempt = 0; attempt < 3 && !welcomeEmailPending; attempt++) {
-                welcomeEmailPending = await onboardingApi.markWelcomeEmailPending();
+                welcomeEmailPending = await onboardingFlowApi.markWelcomeEmailPending();
                 if (!welcomeEmailPending) {
                   await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
                 }

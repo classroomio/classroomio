@@ -32,8 +32,29 @@ export const blockedSubdomain = [
   'teacher',
   'teachers',
   'tech',
-  'training'
+  'training',
+  'www',
+  'mail',
+  'api',
+  'admin'
 ];
+
+export const LANDING_PAGE_THEMES = [
+  'minimal',
+  'bold',
+  'classic',
+  'saas',
+  'tech',
+  'studio',
+  'corporate',
+  'terminal',
+  'editorial',
+  'vibrant',
+  'quartz'
+] as const;
+export type TLandingPageTheme = (typeof LANDING_PAGE_THEMES)[number];
+
+export const DEFAULT_LANDING_PAGE_THEME: TLandingPageTheme = 'quartz';
 
 /**
  * Landing page themes available on the free plan.
@@ -55,3 +76,19 @@ export const DEFAULT_ORG_CUSTOMIZATION = {
   dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
   auth: { backgroundImage: '' }
 };
+
+export const ORG_THEME_NAMES: readonly string[] = [
+  'default',
+  'blue',
+  'green',
+  'amber',
+  'rose',
+  'purple',
+  'orange',
+  'teal',
+  'mono',
+  'scaled',
+  'red',
+  'yellow',
+  'violet'
+];

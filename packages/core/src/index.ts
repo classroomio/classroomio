@@ -11,3 +11,5 @@ export {
   runAgentCourseGenerationJob,
   type RunAgentCourseGenerationJobInput
 } from './services/agent/course-generation-runner';
+
+export { runStarterJob } from './services/onboarding/run-starter-job';

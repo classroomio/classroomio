@@ -71,6 +71,35 @@
       value: 'ondemand'
     }
   ];
+
+  const outcomeOptions = [
+    {
+      id: 'onboard-customers',
+      title: 'Onboard new customers',
+      description: 'A new customer onboarding path',
+      value: 'onboard-customers'
+    },
+    {
+      id: 'explain-product',
+      title: 'Explain our product',
+      description: 'Core how-to courses',
+      value: 'explain-product'
+    },
+    {
+      id: 'increase-adoption',
+      title: 'Increase adoption',
+      description: 'A path past go-live',
+      value: 'increase-adoption'
+    },
+    {
+      id: 'cut-tickets',
+      title: 'Cut repetitive tickets',
+      description: 'A most-asked-questions course',
+      value: 'cut-tickets'
+    }
+  ];
+
+  let outcome = $state('explain-product');
 </script>
 
 <Story name="Course Type Selector (Group)">
@@ -127,6 +156,19 @@
         class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
       />
       <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {deliveryMethod}</p>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Numbered tiles (Group, tile variant)">
+  {#snippet template()}
+    <div class="w-full max-w-xl">
+      <Field.Description class="mb-4 block">
+        <code>variant="tile"</code> renders notched, numbered cards with no visible radio. The selected card fills the brand
+        colour.
+      </Field.Description>
+      <RadioOptionCardGroup options={outcomeOptions} bind:value={outcome} variant="tile" />
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {outcome}</p>
     </div>
   {/snippet}
 </Story>

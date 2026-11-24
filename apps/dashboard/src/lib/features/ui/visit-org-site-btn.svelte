@@ -19,6 +19,7 @@
     forceSubdomain?: boolean;
     pathname?: string;
     icon?: Component;
+    testId?: string;
   }
 
   let {
@@ -28,7 +29,8 @@
     variant = 'default',
     forceSubdomain = false,
     pathname,
-    icon: Icon = SquareArrowOutUpRight
+    icon: Icon = SquareArrowOutUpRight,
+    testId
   }: Props = $props();
 
   let href = $derived.by(() => {
@@ -55,7 +57,7 @@
   });
 </script>
 
-<Button {href} target="_blank" {variant} class={`&_span:hidden! md:&_span:block ml-2 ${className}`.trim()}>
+<Button {href} {testId} target="_blank" {variant} class={`&_span:hidden! md:&_span:block ml-2 ${className}`.trim()}>
   {#if !$isMobile}
     <span>
       {#if isLMS}

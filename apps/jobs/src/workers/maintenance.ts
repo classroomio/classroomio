@@ -6,7 +6,12 @@ import { runTrackingRollupDaily, runTrackingRollupRecent } from '@cio/tracking';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { sendInstanceTelemetry } from '@cio/core/services/instance-telemetry';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
-import { pruneDeadLetterJobsOlderThan, reapStuckHlsEncodes, reapStuckMediaJobs } from '@cio/db/queries';
+import {
+  pruneDeadLetterJobsOlderThan,
+  reapStalledCourseBuildJobs,
+  reapStuckHlsEncodes,
+  reapStuckMediaJobs
+} from '@cio/db/queries';
 import { deleteExpiredWebhookEvents, listWebhookIdsWithDueDeliveries } from '@cio/db/queries/webhook';
 import {
   listEarlyAdopterClaimsDueForReminder,
@@ -115,6 +120,21 @@ const worker = new Worker(
       return { reaped: reaped.length, strandedEncodes: strandedEncodes.length };
     }
 
+    if (job.name === JOB_NAMES.maintenance.courseBuildReap) {
+      const cutoffIso = new Date(Date.now() - COURSE_BUILD_STALE_MINUTES * 60 * 1_000).toISOString();
+      const stalled = await reapStalledCourseBuildJobs(cutoffIso);
+
+      if (stalled.length > 0) {
+        log.warn('course-build-reap-done', {
+          reaped: stalled.length,
+          cutoffIso,
+          jobs: stalled.map((row) => ({ id: row.id, stage: row.stage }))
+        });
+      }
+
+      return { reaped: stalled.length };
+    }
+
     if (job.name === JOB_NAMES.maintenance.assetStorageCleanup) {
       const data = ZAssetStorageCleanupPayload.parse(job.data ?? {});
       await purgeAssetStorage(data);
@@ -219,6 +239,11 @@ const worker = new Worker(
  * boot. Without this, stuck `media_job` rows would never get cleaned up.
  */
 const MEDIA_JOB_REAP_INTERVAL_MS = 5 * 60 * 1_000;
+/**
+ * A course build writes its job, its sources or its courses every few seconds while it works, so a window this wide
+ * never catches a build that is merely slow, and it closes one that a dead worker left behind.
+ */
+const COURSE_BUILD_STALE_MINUTES = 20;
 const INSTANCE_TELEMETRY_INTERVAL_MS = 7 * 86_400_000;
 const ANALYTICS_ROLLUP_CRON_PATTERN = '0 */2 * * *';
 // BullMQ requires a dedicated connection per Worker; give the Queue its own
@@ -235,6 +260,16 @@ async function registerSchedulers(): Promise<void> {
     );
     log.info('maintenance-scheduler-registered', {
       name: JOB_NAMES.maintenance.mediaJobReap,
+      everyMs: MEDIA_JOB_REAP_INTERVAL_MS
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'course-build-reap-scheduler',
+      { every: MEDIA_JOB_REAP_INTERVAL_MS },
+      { name: JOB_NAMES.maintenance.courseBuildReap, data: {} }
+    );
+    log.info('maintenance-scheduler-registered', {
+      name: JOB_NAMES.maintenance.courseBuildReap,
       everyMs: MEDIA_JOB_REAP_INTERVAL_MS
     });
 

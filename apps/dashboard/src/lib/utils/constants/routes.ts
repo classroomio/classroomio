@@ -3,6 +3,9 @@ export const ROUTE = {
   DASHBOARD: '/dashboard',
   LMS_HOME: '/home',
   ONBOARDING: '/onboarding',
+  ONBOARDING_BUSINESS: '/onboarding/business',
+  ONBOARDING_PREPARING: '/onboarding/preparing',
+  ONBOARDING_CUSTOMISE: '/onboarding/customise',
   COURSES: '/courses',
   PAGES: '/pages',
   COURSE: '/course',
@@ -52,7 +55,7 @@ export const ROUTES_TO_HIDE_NAV = [
   `^/course/.*/enroll$`,
   `^${ROUTE.FORGOT}$`,
   `^${ROUTE.RESET}$`,
-  `^${ROUTE.ONBOARDING}$`,
+  `^${ROUTE.ONBOARDING}(/.*)?$`,
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
   `^${ROUTE.OAUTH}/.*`
 ];

@@ -76,9 +76,6 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/certificates':
         specifier: workspace:*
         version: link:../../packages/certificates
@@ -97,6 +94,9 @@ importers:
       '@cio/question-types':
         specifier: workspace:*
         version: link:../../packages/question-types
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -318,9 +318,6 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/api':
         specifier: workspace:*
         version: link:../api
@@ -333,6 +330,9 @@ importers:
       '@cio/question-types':
         specifier: workspace:*
         version: link:../../packages/question-types
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -636,7 +636,7 @@ importers:
     dependencies:
       '@astrojs/mdx':
         specifier: 7.0.3
-        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+        version: 7.0.3(@astrojs/markdown-satteri@0.4.1)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -746,7 +746,7 @@ importers:
     dependencies:
       '@astrojs/mdx':
         specifier: 7.0.3
-        version: 7.0.3(@astrojs/markdown-satteri@0.4.1)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -761,7 +761,7 @@ importers:
         version: 7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
       blume:
         specifier: 1.6.3
-        version: 1.6.3(a12b353f19541c2a4fd68e6d430aec23)
+        version: 1.6.3(2ce7c5b310d22c3049e7e054fac42a7f)
       mermaid:
         specifier: ^11.16.0
         version: 11.16.0
@@ -799,12 +799,12 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.675.0
         version: 3.958.0
-      '@cio/tracking':
-        specifier: workspace:*
-        version: link:../../packages/tracking
       '@cio/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@cio/course-builder':
+        specifier: workspace:*
+        version: link:../../packages/course-builder
       '@cio/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -814,6 +814,9 @@ importers:
       '@cio/jobs':
         specifier: workspace:*
         version: link:../../packages/jobs
+      '@cio/tracking':
+        specifier: workspace:*
+        version: link:../../packages/tracking
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -829,6 +832,9 @@ importers:
       openai:
         specifier: ^6.36.0
         version: 6.36.0(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))(zod@4.2.1)
+      playwright-core:
+        specifier: 1.57.0
+        version: 1.57.0
     devDependencies:
       '@types/node':
         specifier: ^24.10.1
@@ -1029,31 +1035,6 @@ importers:
         specifier: ^5.5.2
         version: 5.9.3
 
-  packages/tracking:
-    dependencies:
-      '@cio/db':
-        specifier: workspace:*
-        version: link:../db
-      '@cio/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-      '@cio/utils':
-        specifier: workspace:*
-        version: link:../utils
-    devDependencies:
-      '@types/node':
-        specifier: ^24.10.1
-        version: 24.10.4
-      prettier:
-        specifier: ^3.2.5
-        version: 3.8.2
-      tsc-alias:
-        specifier: ^1.8.16
-        version: 1.8.16
-      typescript:
-        specifier: ^5.5.2
-        version: 5.9.3
-
   packages/certificates:
     dependencies:
       '@cio/tsconfig':
@@ -1081,6 +1062,9 @@ importers:
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../ai-assistant
+      '@cio/course-builder':
+        specifier: workspace:*
+        version: link:../course-builder
       '@cio/db':
         specifier: workspace:*
         version: link:../db
@@ -1273,6 +1257,49 @@ importers:
       vitest:
         specifier: ^2.1.4
         version: 2.1.9(@types/node@24.10.4)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.32.0)(sass@1.97.1)
+
+  packages/course-builder:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^1.10.0
+        version: 1.10.0(zod@4.2.1)
+      cheerio:
+        specifier: ^1.2.0
+        version: 1.2.0
+      marked:
+        specifier: ^15.0.12
+        version: 15.0.12
+      robots-parser:
+        specifier: ^3.0.1
+        version: 3.0.1
+      tldts:
+        specifier: ^6.1.86
+        version: 6.1.86
+      zod:
+        specifier: 4.2.1
+        version: 4.2.1
+    devDependencies:
+      '@cio/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/node':
+        specifier: ^24.10.1
+        version: 24.10.4
+      domhandler:
+        specifier: ^5.0.3
+        version: 5.0.3
+      prettier:
+        specifier: ^3.2.5
+        version: 3.6.2
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
+      typescript:
+        specifier: ^5.5.2
+        version: 5.9.3
+      vitest:
+        specifier: ^1.2.2
+        version: 1.6.1(@types/node@24.10.4)(jsdom@29.0.1(@noble/hashes@2.4.0))(lightningcss@1.32.0)(sass@1.97.1)
 
   packages/db:
     dependencies:
@@ -1570,6 +1597,31 @@ importers:
       vite-plugin-mkcert:
         specifier: ^2.1.0
         version: 2.1.0(vite@7.3.0(@types/node@24.10.4)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+
+  packages/tracking:
+    dependencies:
+      '@cio/db':
+        specifier: workspace:*
+        version: link:../db
+      '@cio/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      '@types/node':
+        specifier: ^24.10.1
+        version: 24.10.4
+      prettier:
+        specifier: ^3.2.5
+        version: 3.8.2
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
+      typescript:
+        specifier: ^5.5.2
+        version: 5.9.3
 
   packages/tsconfig: {}
 
@@ -1904,6 +1956,15 @@ packages:
 
   '@antfu/install-pkg@2.0.1':
     resolution: {integrity: sha512-iCKVQcIC0e3oDxEfs3SHQGW+ovhBMZmS1TE+bTk50rVyMCBmCfClv7Qi3HQKlumYwvjb/iIMeWCW2i67q6kFfQ==}
+
+  '@anthropic-ai/sdk@1.10.0':
+    resolution: {integrity: sha512-j4uVct5p3aGIz/BU4K8VU5vt2A6AueHTvx2gfF3xr4mVpwH9IJMWEAUKNwSwdZSJOHQq1Za2tv5huYc5v02D0w==}
+    hasBin: true
+    peerDependencies:
+      zod: 4.2.1
+    peerDependenciesMeta:
+      zod:
+        optional: true
 
   '@asamuzakjp/css-color@3.2.0':
     resolution: {integrity: sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw==}
@@ -17082,18 +17143,11 @@ packages:
   tldts-core@6.1.86:
     resolution: {integrity: sha512-Je6p7pkk+KMzMv2XXKmAE3McmolOQFdxkKw0R8EYNr7sELW46JqnNeTX8ybPiQgvg1ymCoF8LXs5fzFaZvJPTA==}
 
-  tldts-core@7.0.27:
-    resolution: {integrity: sha512-YQ7uPjgWUibIK6DW5lrKujGwUKhLevU4hcGbP5O6TcIUb+oTjJYJVWPS4nZsIHrEEEG6myk/oqAJUEQmpZrHsg==}
-
   tldts-core@7.4.19:
     resolution: {integrity: sha512-goNXV6Ho9TIOfpJZanTd6CKG5DyYgYAL+k+22T0SLh8l6+KHIfBUPFuePuSZv05UttIaaLmI9tb7TmGIdK5AkQ==}
 
   tldts@6.1.86:
     resolution: {integrity: sha512-WMi/OQ2axVTf/ykqCQgXiIct+mSQDFdH2fkwhPwgEwvJ1kSzZRiinb0zF2Xb8u4+OqPChmyI6MEu4EezNJz+FQ==}
-    hasBin: true
-
-  tldts@7.0.27:
-    resolution: {integrity: sha512-I4FZcVFcqCRuT0ph6dCDpPuO4Xgzvh+spkcTr1gK7peIvxWauoloVO0vuy1FQnijT63ss6AsHB6+OIM4aXHbPg==}
     hasBin: true
 
   tldts@7.4.19:
@@ -18665,6 +18719,14 @@ snapshots:
       package-manager-detector: 1.8.0
       tinyexec: 1.2.4
 
+  '@anthropic-ai/sdk@1.10.0(zod@4.2.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      json-schema-to-ts: 3.1.1
+      standardwebhooks: 1.0.0
+    optionalDependencies:
+      zod: 4.2.1
+
   '@asamuzakjp/css-color@3.2.0':
     dependencies:
       '@csstools/css-calc': 2.1.4(@csstools/css-parser-algorithms@3.0.5(@csstools/css-tokenizer@3.0.4))(@csstools/css-tokenizer@3.0.4)
@@ -18838,7 +18900,7 @@ snapshots:
     dependencies:
       '@astrojs/compiler': 2.13.1
       '@astrojs/yaml2ts': 0.2.4
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
       '@volar/kit': 2.4.28(typescript@6.0.3)
       '@volar/language-core': 2.4.28
       '@volar/language-server': 2.4.28
@@ -19021,7 +19083,7 @@ snapshots:
   '@astrojs/vercel@11.0.10(@aws-sdk/credential-provider-web-identity@3.958.0)(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))(encoding@0.1.13)(react@19.3.0)(rollup@4.54.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
     dependencies:
       '@astrojs/internal-helpers': 0.11.0
-      '@vercel/analytics': 2.0.1(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(react@19.3.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))
+      '@vercel/analytics': 2.0.1(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(react@19.3.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@5.9.3))
       '@vercel/functions': 3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       '@vercel/nft': 1.10.2(encoding@0.1.13)(rollup@4.54.0)
       '@vercel/routing-utils': 6.5.0
@@ -22942,7 +23004,7 @@ snapshots:
   '@jridgewell/trace-mapping@0.3.9':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
 
   '@jsep-plugin/assignment@1.3.0(jsep@1.4.0)':
     dependencies:
@@ -27568,7 +27630,7 @@ snapshots:
 
   '@typescript/vfs@1.6.4(typescript@5.9.3)':
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -27599,7 +27661,7 @@ snapshots:
       '@sveltejs/kit': 2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       react: 19.3.0
       svelte: 5.56.9(@typescript-eslint/types@8.50.1)
-      vue: 3.5.26(typescript@6.0.3)
+      vue: 3.5.26(typescript@5.9.3)
 
   '@vercel/cli-config@0.2.0':
     dependencies:
@@ -28960,7 +29022,7 @@ snapshots:
       '@astrojs/mdx': 8.0.1(@astrojs/markdown-satteri@0.4.1)(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@astrojs/node': 11.1.5(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@astrojs/react': 6.0.5(@types/node@24.10.4)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
-      '@astrojs/vercel': 11.0.10(@aws-sdk/credential-provider-web-identity@3.958.0)(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))(encoding@0.1.13)(react@19.3.0)(rollup@4.54.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+      '@astrojs/vercel': 11.0.10(@aws-sdk/credential-provider-web-identity@3.958.0)(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))(encoding@0.1.13)(react@19.3.0)(rollup@4.54.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@5.9.3))(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       '@asyncapi/converter': 2.0.2(encoding@0.1.13)
       '@clack/prompts': 1.7.0
       '@iconify-json/lucide': 1.2.131
@@ -28977,7 +29039,7 @@ snapshots:
       '@tailwindcss/typography': 0.5.20(tailwindcss@4.3.3)
       '@tailwindcss/vite': 4.3.3(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@types/mdast': 4.0.4
-      '@vercel/analytics': 2.0.1(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(react@19.3.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))
+      '@vercel/analytics': 2.0.1(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(react@19.3.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@5.9.3))
       ai: 7.0.97(zod@4.6.1)
       astro: 7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
       babel-plugin-react-compiler: 1.0.0
@@ -29345,7 +29407,6 @@ snapshots:
       domelementtype: 2.3.0
       domhandler: 5.0.3
       domutils: 3.2.2
-    optional: true
 
   cheerio@1.2.0:
     dependencies:
@@ -29360,7 +29421,6 @@ snapshots:
       parse5-parser-stream: 7.1.2
       undici: 7.29.1
       whatwg-mimetype: 4.0.0
-    optional: true
 
   chokidar@3.6.0:
     dependencies:
@@ -30461,7 +30521,6 @@ snapshots:
     dependencies:
       iconv-lite: 0.6.3
       whatwg-encoding: 3.1.1
-    optional: true
 
   encoding@0.1.13:
     dependencies:
@@ -31087,7 +31146,7 @@ snapshots:
 
   esrap@1.2.2:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
       '@types/estree': 1.0.8
 
   esrap@1.4.9:
@@ -32713,7 +32772,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.1
-      undici: 7.24.8
+      undici: 7.29.1
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -33194,7 +33253,7 @@ snapshots:
 
   magic-string@0.30.21:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
 
   magic-string@1.3.1:
     dependencies:
@@ -34726,12 +34785,10 @@ snapshots:
     dependencies:
       domhandler: 5.0.3
       parse5: 7.3.0
-    optional: true
 
   parse5-parser-stream@7.1.2:
     dependencies:
       parse5: 7.3.0
-    optional: true
 
   parse5@5.1.1: {}
 
@@ -36361,7 +36418,7 @@ snapshots:
 
   sorcery@0.11.1:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
       buffer-crc32: 1.0.0
       minimist: 1.2.8
       sander: 0.5.1
@@ -37090,17 +37147,11 @@ snapshots:
 
   tldts-core@6.1.86: {}
 
-  tldts-core@7.0.27: {}
-
   tldts-core@7.4.19: {}
 
   tldts@6.1.86:
     dependencies:
       tldts-core: 6.1.86
-
-  tldts@7.0.27:
-    dependencies:
-      tldts-core: 7.0.27
 
   tldts@7.4.19:
     dependencies:
@@ -37139,7 +37190,7 @@ snapshots:
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.0.27
+      tldts: 7.4.19
 
   tr46@0.0.3: {}
 

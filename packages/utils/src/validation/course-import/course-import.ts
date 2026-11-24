@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { COURSE_IMPORT_REFERENCE_TYPES, COURSE_IMPORT_SOURCE_TYPES } from '../../constants/course-import';
 import { ZComplianceSettings, ZCourseMetadata } from '../course/course';
 import { ZCourseType } from '../course/course-type';
 import { ZExerciseQuestionTypeId } from '../exercise/exercise';
@@ -19,7 +20,7 @@ export const ZCourseImportWarning = z.object({
 export type TCourseImportWarning = z.infer<typeof ZCourseImportWarning>;
 
 export const ZCourseImportSourceReference = z.object({
-  type: z.enum(['prompt', 'pdf', 'course']),
+  type: z.enum(COURSE_IMPORT_REFERENCE_TYPES),
   label: z.string().min(1),
   pageStart: z.number().int().min(1).optional(),
   pageEnd: z.number().int().min(1).optional()
@@ -323,7 +324,7 @@ export const ZCourseImportDraftPayload = z
 export type TCourseImportDraftPayload = z.infer<typeof ZCourseImportDraftPayload>;
 
 export const ZCourseImportDraftCreate = z.object({
-  sourceType: z.enum(['prompt', 'pdf', 'course']),
+  sourceType: z.enum(COURSE_IMPORT_SOURCE_TYPES),
   idempotencyKey: z.string().min(1).optional(),
   summary: z.record(z.string(), z.unknown()).optional(),
   sourceArtifacts: z.array(z.record(z.string(), z.unknown())).optional(),

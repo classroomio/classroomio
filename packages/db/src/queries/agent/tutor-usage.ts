@@ -179,6 +179,7 @@ export async function getLearnerLeaderboard(
       .where(
         and(
           eq(schema.aiTokenUsage.orgId, orgId),
+          eq(schema.aiTokenUsage.countsTowardBalance, true),
           gte(schema.aiTokenUsage.createdAt, options.periodStart.toISOString()),
           options.periodEnd ? lte(schema.aiTokenUsage.createdAt, options.periodEnd.toISOString()) : undefined
         )
@@ -302,6 +303,7 @@ export async function getLearnerDailyUsage(orgId: string, userId: string, since:
       .where(
         and(
           eq(schema.aiTokenUsage.orgId, orgId),
+          eq(schema.aiTokenUsage.countsTowardBalance, true),
           eq(schema.aiTokenUsage.userId, userId),
           gte(schema.aiTokenUsage.createdAt, since.toISOString())
         )
@@ -345,6 +347,7 @@ export async function getLearnerCourseBreakdown(
       .where(
         and(
           eq(schema.aiTokenUsage.orgId, orgId),
+          eq(schema.aiTokenUsage.countsTowardBalance, true),
           eq(schema.aiTokenUsage.userId, userId),
           gte(schema.aiTokenUsage.createdAt, since.toISOString())
         )

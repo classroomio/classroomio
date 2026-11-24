@@ -1,36 +1,21 @@
 import {
   ONBOARDING_AI_PROVIDERS,
   ONBOARDING_COMPANY_SIZES,
+  ONBOARDING_CONTEXT_MODES,
   ONBOARDING_JOB_ROLES,
+  ONBOARDING_JOB_ROLE_OPTIONS,
   ONBOARDING_LEARNING_METHODS,
   ONBOARDING_SOURCES,
-  ONBOARDING_USE_CASES
+  ONBOARDING_USE_CASES,
+  type TOnboardingContextMode,
+  type TOnboardingFirstOutcome
 } from '@cio/utils/validation/onboarding';
-
-export const ONBOARDING_STEPS = {
-  ORG_SETUP: 'org-setup',
-  USE_CASES: 'use-cases',
-  LEARNING_METHODS: 'learning-methods',
-  COMPANY_SIZE: 'company-size',
-  JOB_ROLE: 'job-role',
-  SOURCE: 'source'
-} as const;
-
-export type OnboardingStepValue = (typeof ONBOARDING_STEPS)[keyof typeof ONBOARDING_STEPS];
-
-export const QUESTION_STEPS = [
-  ONBOARDING_STEPS.USE_CASES,
-  ONBOARDING_STEPS.LEARNING_METHODS,
-  ONBOARDING_STEPS.COMPANY_SIZE,
-  ONBOARDING_STEPS.JOB_ROLE,
-  ONBOARDING_STEPS.SOURCE
-] as const;
-
-export const ONBOARDING_STEP_ORDER: OnboardingStepValue[] = [ONBOARDING_STEPS.ORG_SETUP, ...QUESTION_STEPS];
+import { ONBOARDING_STEP_IDS, type TOnboardingScreen, type TOnboardingStepId } from '@cio/utils/constants/onboarding';
+import { ROUTE } from '$lib/utils/constants/routes';
 
 export const OTHER_VALUE = 'other';
-export const TESTIMONIALS_WIDGET_ID = 'd25263b3-f71c-4d2a-bb4f-4c627c2257af';
 export const AI_SOURCE_VALUE = 'ai';
+export const TESTIMONIALS_WIDGET_ID = 'd25263b3-f71c-4d2a-bb4f-4c627c2257af';
 
 const USE_CASE_LABELS: Record<(typeof ONBOARDING_USE_CASES)[number], string> = {
   'customer-training': 'onboarding.use_cases.customer_training',
@@ -67,6 +52,12 @@ const COMPANY_SIZE_DESCRIPTIONS: Record<(typeof ONBOARDING_COMPANY_SIZES)[number
 
 const JOB_ROLE_LABELS: Record<(typeof ONBOARDING_JOB_ROLES)[number], string> = {
   founder: 'onboarding.job_roles.founder',
+  'customer-success': 'onboarding.v2.business.roles.customer_success',
+  'customer-education': 'onboarding.v2.business.roles.customer_education',
+  product: 'onboarding.v2.business.roles.product',
+  marketing: 'onboarding.v2.business.roles.marketing',
+  support: 'onboarding.v2.business.roles.support',
+  operations: 'onboarding.v2.business.roles.operations',
   'product-ops': 'onboarding.job_roles.product_ops',
   'cs-education': 'onboarding.job_roles.cs_education',
   developer: 'onboarding.job_roles.developer',
@@ -108,55 +99,81 @@ export const JOB_ROLES = ONBOARDING_JOB_ROLES.map((value) => ({ value, label: JO
 export const SOURCES = ONBOARDING_SOURCES.map((value) => ({ value, label: SOURCE_LABELS[value] }));
 export const AI_PROVIDERS = ONBOARDING_AI_PROVIDERS.map((value) => ({ value, label: AI_PROVIDER_LABELS[value] }));
 
-export const QUESTION_STEP_LABELS: Record<(typeof QUESTION_STEPS)[number], string> = {
-  [ONBOARDING_STEPS.USE_CASES]: 'onboarding.step_labels.use_cases',
-  [ONBOARDING_STEPS.LEARNING_METHODS]: 'onboarding.step_labels.learning_methods',
-  [ONBOARDING_STEPS.COMPANY_SIZE]: 'onboarding.step_labels.company_size',
-  [ONBOARDING_STEPS.JOB_ROLE]: 'onboarding.step_labels.job_role',
-  [ONBOARDING_STEPS.SOURCE]: 'onboarding.step_labels.source'
+export const ONBOARDING_SCREEN_ROUTES: Record<TOnboardingScreen, string> = {
+  business: ROUTE.ONBOARDING_BUSINESS,
+  preparing: ROUTE.ONBOARDING_PREPARING,
+  customise: ROUTE.ONBOARDING_CUSTOMISE,
+  complete: ROUTE.ONBOARDING
 };
 
-export const QUESTION_STEP_CONTENT: Record<(typeof QUESTION_STEPS)[number], { title: string; subtitle: string }> = {
-  [ONBOARDING_STEPS.USE_CASES]: {
-    title: 'onboarding.use_cases.label',
-    subtitle: 'onboarding.use_cases.subtitle'
+export const ONBOARDING_STEP_LABELS: Record<TOnboardingStepId, string> = {
+  business: 'onboarding.v2.steps.business',
+  customise: 'onboarding.v2.steps.customise'
+};
+
+export const ONBOARDING_FIRST_OUTCOME_OPTIONS: Array<{
+  value: TOnboardingFirstOutcome;
+  label: string;
+  hint: string;
+}> = [
+  {
+    value: 'onboard-customers',
+    label: 'onboarding.v2.business.outcomes.onboard_customers.label',
+    hint: 'onboarding.v2.business.outcomes.onboard_customers.hint'
   },
-  [ONBOARDING_STEPS.LEARNING_METHODS]: {
-    title: 'onboarding.learning_methods.label',
-    subtitle: 'onboarding.learning_methods.subtitle'
+  {
+    value: 'explain-product',
+    label: 'onboarding.v2.business.outcomes.explain_product.label',
+    hint: 'onboarding.v2.business.outcomes.explain_product.hint'
   },
-  [ONBOARDING_STEPS.COMPANY_SIZE]: {
-    title: 'onboarding.company_sizes.label',
-    subtitle: 'onboarding.company_sizes.subtitle'
+  {
+    value: 'increase-adoption',
+    label: 'onboarding.v2.business.outcomes.increase_adoption.label',
+    hint: 'onboarding.v2.business.outcomes.increase_adoption.hint'
   },
-  [ONBOARDING_STEPS.JOB_ROLE]: {
-    title: 'onboarding.job_roles.label',
-    subtitle: 'onboarding.job_roles.subtitle'
-  },
-  [ONBOARDING_STEPS.SOURCE]: {
-    title: 'onboarding.sources.label',
-    subtitle: 'onboarding.sources.subtitle'
+  {
+    value: 'cut-tickets',
+    label: 'onboarding.v2.business.outcomes.cut_tickets.label',
+    hint: 'onboarding.v2.business.outcomes.cut_tickets.hint'
   }
+];
+
+export const ONBOARDING_CONTEXT_MODE_OPTIONS: Array<{ value: TOnboardingContextMode; label: string }> = [
+  { value: 'website', label: 'onboarding.v2.business.context.website' },
+  { value: 'description', label: 'onboarding.v2.business.context.description' }
+];
+
+export const ONBOARDING_JOB_ROLE_OPTION_LABELS: Record<(typeof ONBOARDING_JOB_ROLE_OPTIONS)[number], string> = {
+  founder: 'onboarding.v2.business.roles.founder',
+  'customer-success': 'onboarding.v2.business.roles.customer_success',
+  'customer-education': 'onboarding.v2.business.roles.customer_education',
+  product: 'onboarding.v2.business.roles.product',
+  marketing: 'onboarding.v2.business.roles.marketing',
+  support: 'onboarding.v2.business.roles.support',
+  operations: 'onboarding.v2.business.roles.operations',
+  other: 'onboarding.v2.business.roles.other'
 };
 
-export const QUESTION_STEP_FIELDS: Record<(typeof QUESTION_STEPS)[number], string[]> = {
-  [ONBOARDING_STEPS.USE_CASES]: ['useCases', 'useCaseOther'],
-  [ONBOARDING_STEPS.LEARNING_METHODS]: ['learningMethod', 'learningMethodOther'],
-  [ONBOARDING_STEPS.COMPANY_SIZE]: ['companySize'],
-  [ONBOARDING_STEPS.JOB_ROLE]: ['jobRole', 'jobRoleOther'],
-  [ONBOARDING_STEPS.SOURCE]: ['source', 'sourceOther', 'aiProvider', 'aiProviderOther']
+export const ONBOARDING_PRIMARY_JOB_ROLES = ONBOARDING_JOB_ROLE_OPTIONS.filter((role) => role !== 'other');
+
+export const ONBOARDING_CONTEXT_MODES_LIST = ONBOARDING_CONTEXT_MODES;
+
+export const ONBOARDING_ADVANCE_DELAY_MS = 300;
+export const ONBOARDING_DRAFT_SAVE_DEBOUNCE_MS = 400;
+export const ONBOARDING_DRAFT_FLUSH_DEBOUNCE_MS = 1000;
+export const ONBOARDING_TITLE_SAVE_DEBOUNCE_MS = 600;
+
+export const ONBOARDING_FIRST_OUTCOME_TEMPLATE: Record<TOnboardingFirstOutcome, string> = {
+  'onboard-customers': 'product_onboarding',
+  'explain-product': 'support_product_training',
+  'increase-adoption': 'feature_adoption',
+  'cut-tickets': 'support_product_training'
 };
 
-export function getQuestionIndex(step: OnboardingStepValue): number {
-  return QUESTION_STEPS.indexOf(step as (typeof QUESTION_STEPS)[number]) + 1;
+export function getOnboardingStepIndex(stepId: TOnboardingStepId): number {
+  return ONBOARDING_STEP_IDS.indexOf(stepId) + 1;
 }
 
-export function getNextStep(step: OnboardingStepValue): OnboardingStepValue {
-  const index = ONBOARDING_STEP_ORDER.indexOf(step);
-  return ONBOARDING_STEP_ORDER[Math.min(index + 1, ONBOARDING_STEP_ORDER.length - 1)];
-}
-
-export function getPreviousStep(step: OnboardingStepValue): OnboardingStepValue {
-  const index = ONBOARDING_STEP_ORDER.indexOf(step);
-  return ONBOARDING_STEP_ORDER[Math.max(index - 1, 0)];
+export function getOnboardingTotalSteps(): number {
+  return ONBOARDING_STEP_IDS.length;
 }

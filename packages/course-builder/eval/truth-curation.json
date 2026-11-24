@@ -1,0 +1,1487 @@
+{
+  "hubspot.com": {
+    "keepSources": [
+      "https://knowledge.hubspot.com/",
+      "https://developers.hubspot.com/",
+      "https://academy.hubspot.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://knowledge.hubspot.com/",
+        "kind": "help-center",
+        "root": "https://knowledge.hubspot.com/"
+      },
+      {
+        "url": "https://developers.hubspot.com/",
+        "kind": "docs",
+        "root": "https://developers.hubspot.com/"
+      },
+      {
+        "url": "https://academy.hubspot.com/",
+        "kind": "academy",
+        "root": "https://academy.hubspot.com/"
+      }
+    ]
+  },
+  "zapier.com": {
+    "keepSources": ["https://help.zapier.com/", "https://docs.zapier.com/", "https://learn.zapier.com/"]
+  },
+  "cloudflare.com": {
+    "keepSources": [
+      "https://developers.cloudflare.com/",
+      "https://learn.cloudflare.com/",
+      "https://support.cloudflare.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://developers.cloudflare.com/",
+        "kind": "docs",
+        "root": "https://developers.cloudflare.com/"
+      },
+      {
+        "url": "https://learn.cloudflare.com/",
+        "kind": "academy",
+        "root": "https://learn.cloudflare.com/"
+      },
+      {
+        "url": "https://support.cloudflare.com/",
+        "kind": "help-center",
+        "root": "https://support.cloudflare.com/"
+      }
+    ]
+  },
+  "snyk.io": {
+    "keepSources": ["https://docs.snyk.io/", "https://learn.snyk.io/"]
+  },
+  "vanta.com": {
+    "keepSources": ["https://help.vanta.com/", "https://developer.vanta.com/"]
+  },
+  "workday.com": {
+    "keepSources": ["https://docs.workday.com/"],
+    "addSources": [
+      {
+        "url": "https://docs.workday.com/",
+        "kind": "docs",
+        "root": "https://docs.workday.com/"
+      }
+    ]
+  },
+  "gusto.com": {
+    "keepSources": ["https://help.gusto.com/", "https://docs.gusto.com/"],
+    "addSources": [
+      {
+        "url": "https://help.gusto.com/",
+        "kind": "help-center",
+        "root": "https://help.gusto.com/"
+      },
+      {
+        "url": "https://docs.gusto.com/",
+        "kind": "docs",
+        "root": "https://docs.gusto.com/"
+      }
+    ]
+  },
+  "stripe.com": {
+    "keepSources": ["https://docs.stripe.com/", "https://support.stripe.com/"]
+  },
+  "1password.com": {
+    "keepSources": ["https://support.1password.com/", "https://www.1password.dev/"],
+    "addSources": [
+      {
+        "url": "https://developer.1password.com/",
+        "kind": "docs",
+        "root": "https://www.1password.dev/"
+      }
+    ]
+  },
+  "gitlab.com": {
+    "keepSources": ["https://docs.gitlab.com/", "https://university.gitlab.com/", "https://support.gitlab.com/"],
+    "addSources": [
+      {
+        "url": "https://docs.gitlab.com/",
+        "kind": "docs",
+        "root": "https://docs.gitlab.com/"
+      },
+      {
+        "url": "https://support.gitlab.com/",
+        "kind": "help-center",
+        "root": "https://support.gitlab.com/"
+      }
+    ]
+  },
+  "datadoghq.com": {
+    "keepSources": ["https://docs.datadoghq.com/"]
+  },
+  "freshworks.com": {
+    "keepSources": [
+      "https://support.freshworks.com/",
+      "https://developers.freshworks.com/docs",
+      "https://university.freshworks.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://support.freshworks.com/",
+        "kind": "help-center",
+        "root": "https://support.freshworks.com/"
+      },
+      {
+        "url": "https://developers.freshworks.com/docs",
+        "kind": "docs",
+        "root": "https://developers.freshworks.com/docs"
+      },
+      {
+        "url": "https://university.freshworks.com/",
+        "kind": "academy",
+        "root": "https://university.freshworks.com/"
+      }
+    ],
+    "nullSources": ["https://developers.freshworks.com/docs"],
+    "nullReasons": {
+      "https://developers.freshworks.com/docs": "Freshworks developer docs publish no page inventory (robots sitemap lists only landing pages)"
+    }
+  },
+  "airtable.com": {
+    "keepSources": [
+      "https://support.airtable.com/",
+      "https://airtable.com/developers",
+      "https://academy.airtable.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://support.airtable.com/",
+        "kind": "help-center",
+        "root": "https://support.airtable.com/"
+      },
+      {
+        "url": "https://airtable.com/developers/web/api/introduction",
+        "kind": "docs",
+        "root": "https://airtable.com/developers"
+      },
+      {
+        "url": "https://academy.airtable.com/",
+        "kind": "academy",
+        "root": "https://academy.airtable.com/"
+      }
+    ]
+  },
+  "tableau.com": {
+    "keepSources": ["https://help.tableau.com/"],
+    "addSources": [
+      {
+        "url": "https://help.tableau.com/",
+        "kind": "help-center",
+        "root": "https://help.tableau.com/"
+      }
+    ]
+  },
+  "klaviyo.com": {
+    "keepSources": ["https://help.klaviyo.com/", "https://developers.klaviyo.com/", "https://academy.klaviyo.com/"],
+    "addSources": [
+      {
+        "url": "https://help.klaviyo.com/",
+        "kind": "help-center",
+        "root": "https://help.klaviyo.com/"
+      },
+      {
+        "url": "https://developers.klaviyo.com/",
+        "kind": "docs",
+        "root": "https://developers.klaviyo.com/"
+      },
+      {
+        "url": "https://academy.klaviyo.com/",
+        "kind": "academy",
+        "root": "https://academy.klaviyo.com/"
+      }
+    ]
+  },
+  "github.com": {
+    "keepSources": ["https://docs.github.com/"],
+    "inventoryOverrides": {
+      "https://docs.github.com/": {
+        "url": "https://docs.github.com/api/pagelist/en/free-pro-team@latest",
+        "format": "paths",
+        "prefix": "https://docs.github.com"
+      }
+    },
+    "addSources": [
+      {
+        "url": "https://docs.github.com/",
+        "kind": "docs",
+        "root": "https://docs.github.com/"
+      }
+    ]
+  },
+  "bamboohr.com": {
+    "keepSources": ["https://help.bamboohr.com/", "https://developers.bamboohr.com/"],
+    "addSources": [
+      {
+        "url": "https://help.bamboohr.com/",
+        "kind": "help-center",
+        "root": "https://help.bamboohr.com/"
+      },
+      {
+        "url": "https://developers.bamboohr.com/",
+        "kind": "docs",
+        "root": "https://developers.bamboohr.com/"
+      }
+    ]
+  },
+  "shopify.com": {
+    "keepSources": ["https://shopify.dev/docs", "https://help.shopify.com/"],
+    "addSources": [
+      {
+        "url": "https://shopify.dev/docs",
+        "kind": "docs",
+        "root": "https://shopify.dev/docs"
+      },
+      {
+        "url": "https://help.shopify.com/",
+        "kind": "help-center",
+        "root": "https://help.shopify.com/"
+      }
+    ]
+  },
+  "databricks.com": {
+    "keepSources": ["https://docs.databricks.com/", "https://kb.databricks.com/"]
+  },
+  "snowflake.com": {
+    "keepSources": ["https://docs.snowflake.com/", "https://learn.snowflake.com/"],
+    "addSources": [
+      {
+        "url": "https://docs.snowflake.com/",
+        "kind": "docs",
+        "root": "https://docs.snowflake.com/"
+      },
+      {
+        "url": "https://learn.snowflake.com/",
+        "kind": "academy",
+        "root": "https://learn.snowflake.com/"
+      }
+    ]
+  },
+  "servicenow.com": {
+    "keepSources": [
+      "https://www.servicenow.com/docs",
+      "https://developer.servicenow.com/",
+      "https://support.servicenow.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://www.servicenow.com/docs/",
+        "kind": "docs",
+        "root": "https://www.servicenow.com/docs"
+      },
+      {
+        "url": "https://developer.servicenow.com/",
+        "kind": "docs",
+        "root": "https://developer.servicenow.com/"
+      },
+      {
+        "url": "https://support.servicenow.com/",
+        "kind": "help-center",
+        "root": "https://support.servicenow.com/"
+      }
+    ]
+  },
+  "salesforce.com": {
+    "keepSources": [
+      "https://help.salesforce.com/",
+      "https://developer.salesforce.com/docs",
+      "https://trailhead.salesforce.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://help.salesforce.com/",
+        "kind": "help-center",
+        "root": "https://help.salesforce.com/"
+      },
+      {
+        "url": "https://developer.salesforce.com/docs",
+        "kind": "docs",
+        "root": "https://developer.salesforce.com/docs"
+      },
+      {
+        "url": "https://trailhead.salesforce.com/",
+        "kind": "academy",
+        "root": "https://trailhead.salesforce.com/"
+      }
+    ],
+    "pageExclude": [
+      "trailhead\\.salesforce\\.com/users/",
+      "trailhead\\.salesforce\\.com/login",
+      "trailhead\\.salesforce\\.com/trailblazer-community"
+    ],
+    "inventoryOverrides": {
+      "https://trailhead.salesforce.com/": {
+        "url": "https://trailhead.salesforce.com/content_sitemap.xml",
+        "format": "urls"
+      }
+    },
+    "nullSources": ["https://help.salesforce.com/"],
+    "nullReasons": {
+      "https://help.salesforce.com/": "Salesforce Help publishes sitemap indexes whose page sitemaps are empty and requires a session for article pages"
+    }
+  },
+  "circleci.com": {
+    "keepSources": ["https://circleci.com/docs", "https://support.circleci.com/"]
+  },
+  "atlassian.com": {
+    "keepSources": ["https://support.atlassian.com/", "https://developer.atlassian.com/"],
+    "addSources": [
+      {
+        "url": "https://developer.atlassian.com/",
+        "kind": "docs",
+        "root": "https://developer.atlassian.com/"
+      }
+    ]
+  },
+  "avalara.com": {
+    "keepSources": ["https://developer.avalara.com/", "https://knowledge.avalara.com/"],
+    "addSources": [
+      {
+        "url": "https://developer.avalara.com/",
+        "kind": "docs",
+        "root": "https://developer.avalara.com/"
+      },
+      {
+        "url": "https://knowledge.avalara.com/",
+        "kind": "help-center",
+        "root": "https://knowledge.avalara.com/"
+      }
+    ]
+  },
+  "asana.com": {
+    "keepSources": ["https://academy.asana.com/", "https://developers.asana.com/", "https://help.asana.com/"],
+    "addSources": [
+      {
+        "url": "https://academy.asana.com/",
+        "kind": "academy",
+        "root": "https://academy.asana.com/"
+      },
+      {
+        "url": "https://developers.asana.com/",
+        "kind": "docs",
+        "root": "https://developers.asana.com/"
+      },
+      {
+        "url": "https://help.asana.com/",
+        "kind": "help-center",
+        "root": "https://help.asana.com/"
+      }
+    ]
+  },
+  "zendesk.com": {
+    "keepSources": ["https://support.zendesk.com/", "https://developer.zendesk.com/", "https://academy.zendesk.com/"],
+    "addSources": [
+      {
+        "url": "https://support.zendesk.com/",
+        "kind": "help-center",
+        "root": "https://support.zendesk.com/"
+      },
+      {
+        "url": "https://developer.zendesk.com/",
+        "kind": "docs",
+        "root": "https://developer.zendesk.com/"
+      },
+      {
+        "url": "https://academy.zendesk.com/",
+        "kind": "academy",
+        "root": "https://academy.zendesk.com/"
+      }
+    ]
+  },
+  "mongodb.com": {
+    "keepSources": ["https://www.mongodb.com/docs", "https://learn.mongodb.com/"],
+    "addSources": [
+      {
+        "url": "https://www.mongodb.com/docs",
+        "kind": "docs",
+        "root": "https://www.mongodb.com/docs"
+      },
+      {
+        "url": "https://learn.mongodb.com/",
+        "kind": "academy",
+        "root": "https://learn.mongodb.com/"
+      }
+    ]
+  },
+  "xero.com": {
+    "keepSources": ["https://developer.xero.com/", "https://central.xero.com/"],
+    "addSources": [
+      {
+        "url": "https://central.xero.com/",
+        "kind": "help-center",
+        "root": "https://central.xero.com/"
+      }
+    ]
+  },
+  "mixpanel.com": {
+    "keepSources": ["https://docs.mixpanel.com/", "https://university.mixpanel.com/"],
+    "addSources": [
+      {
+        "url": "https://docs.mixpanel.com/",
+        "kind": "docs",
+        "root": "https://docs.mixpanel.com/"
+      },
+      {
+        "url": "https://university.mixpanel.com/",
+        "kind": "academy",
+        "root": "https://university.mixpanel.com/"
+      }
+    ]
+  },
+  "drata.com": {
+    "keepSources": ["https://help.drata.com/", "https://developers.drata.com/"],
+    "addSources": [
+      {
+        "url": "https://help.drata.com/",
+        "kind": "help-center",
+        "root": "https://help.drata.com/"
+      },
+      {
+        "url": "https://developers.drata.com/",
+        "kind": "docs",
+        "root": "https://developers.drata.com/"
+      }
+    ]
+  },
+  "pagerduty.com": {
+    "keepSources": ["https://docs.pagerduty.com/"],
+    "addSources": [
+      {
+        "url": "https://docs.pagerduty.com/",
+        "kind": "docs",
+        "root": "https://docs.pagerduty.com/"
+      }
+    ]
+  },
+  "intercom.com": {
+    "keepSources": [
+      "https://www.intercom.com/help",
+      "https://developers.intercom.com/",
+      "https://academy.fin.ai/",
+      "https://www.intercom.com/learning-center"
+    ],
+    "addSources": [
+      {
+        "url": "https://www.intercom.com/help",
+        "kind": "help-center",
+        "root": "https://www.intercom.com/help"
+      },
+      {
+        "url": "https://developers.intercom.com/",
+        "kind": "docs",
+        "root": "https://developers.intercom.com/"
+      },
+      {
+        "url": "https://academy.fin.ai/",
+        "kind": "academy",
+        "root": "https://academy.fin.ai/"
+      },
+      {
+        "url": "https://www.intercom.com/learning-center",
+        "kind": "academy",
+        "root": "https://www.intercom.com/learning-center"
+      }
+    ]
+  },
+  "sap.com": {
+    "keepSources": ["https://help.sap.com/", "https://developers.sap.com/", "https://learning.sap.com/"],
+    "addSources": [
+      {
+        "url": "https://help.sap.com/",
+        "kind": "docs",
+        "root": "https://help.sap.com/"
+      },
+      {
+        "url": "https://developers.sap.com/",
+        "kind": "docs",
+        "root": "https://developers.sap.com/"
+      },
+      {
+        "url": "https://learning.sap.com/",
+        "kind": "academy",
+        "root": "https://learning.sap.com/"
+      }
+    ]
+  },
+  "braze.com": {
+    "keepSources": ["https://www.braze.com/docs"],
+    "addSources": [
+      {
+        "url": "https://www.braze.com/docs",
+        "kind": "docs",
+        "root": "https://www.braze.com/docs"
+      }
+    ]
+  },
+  "twilio.com": {
+    "keepSources": ["https://help.twilio.com/", "https://www.twilio.com/docs"],
+    "addSources": [
+      {
+        "url": "https://help.twilio.com/",
+        "kind": "help-center",
+        "root": "https://help.twilio.com/"
+      },
+      {
+        "url": "https://www.twilio.com/docs",
+        "kind": "docs",
+        "root": "https://www.twilio.com/docs"
+      }
+    ]
+  },
+  "okta.com": {
+    "keepSources": ["https://help.okta.com/", "https://developer.okta.com/"],
+    "addSources": [
+      {
+        "url": "https://help.okta.com/",
+        "kind": "help-center",
+        "root": "https://help.okta.com/"
+      },
+      {
+        "url": "https://developer.okta.com/",
+        "kind": "docs",
+        "root": "https://developer.okta.com/"
+      }
+    ]
+  },
+  "monday.com": {
+    "keepSources": ["https://support.monday.com/", "https://developer.monday.com/"],
+    "addSources": [
+      {
+        "url": "https://support.monday.com/",
+        "kind": "help-center",
+        "root": "https://support.monday.com/"
+      },
+      {
+        "url": "https://developer.monday.com/",
+        "kind": "docs",
+        "root": "https://developer.monday.com/"
+      }
+    ]
+  },
+  "procore.com": {
+    "keepSources": ["https://support.procore.com/", "https://developers.procore.com/", "https://learn.procore.com/"],
+    "addSources": [
+      {
+        "url": "https://support.procore.com/",
+        "kind": "help-center",
+        "root": "https://support.procore.com/"
+      },
+      {
+        "url": "https://developers.procore.com/",
+        "kind": "docs",
+        "root": "https://developers.procore.com/"
+      },
+      {
+        "url": "https://learn.procore.com/",
+        "kind": "academy",
+        "root": "https://learn.procore.com/"
+      }
+    ],
+    "nullSources": ["https://learn.procore.com/"],
+    "nullReasons": {
+      "https://learn.procore.com/": "Procore Learn publishes no page inventory and its course pages are script shells"
+    }
+  },
+  "rippling.com": {
+    "keepSources": ["https://developer.rippling.com/", "https://help.rippling.com/"],
+    "addSources": [
+      {
+        "url": "https://help.rippling.com/",
+        "kind": "help-center",
+        "root": "https://help.rippling.com/"
+      }
+    ],
+    "nullSources": ["https://help.rippling.com/"],
+    "nullReasons": {
+      "https://help.rippling.com/": "Rippling help is a script shell; its sitemap lists only 13 topic landings, not articles"
+    }
+  },
+  "limblecmms.com": {
+    "keepSources": ["https://help.limblecmms.com/", "https://apidocs.limblecmms.com/"],
+    "addSources": [
+      {
+        "url": "https://apidocs.limblecmms.com/",
+        "kind": "docs",
+        "root": "https://apidocs.limblecmms.com/"
+      }
+    ],
+    "nullSources": ["https://apidocs.limblecmms.com/"],
+    "nullReasons": {
+      "https://apidocs.limblecmms.com/": "Single-page Postman Documenter app (content loaded from a collection via script); no sitemap or robots.txt, so there is no page inventory to count."
+    },
+    "evidence": {
+      "https://help.limblecmms.com/": "Kept: Intercom help centre titled 'Limble CMMS Help Center' with 212 product articles in its sitemap (e.g. work-request approval, asset snap, API keys); help.limble.com serves the same Intercom centre under the new brand domain.",
+      "https://apidocs.limblecmms.com/": "Added: linked from the limble.com homepage; public 'Limble API V2' reference (auth, assets, tasks, parts, webhooks) on Postman Documenter.",
+      "https://limble.com/resources/guides-reports": "Dropped: marketing 'Guides & Reports' landing page (industry ebooks/reports), one page, not product how-to content.",
+      "https://community.limble.com/": "Rejection confirmed: community forum."
+    }
+  },
+  "cority.com": {
+    "keepSources": ["https://uc.cority.com/s/"],
+    "addSources": [
+      {
+        "url": "https://uc.cority.com/s/",
+        "kind": "help-center",
+        "root": "https://uc.cority.com/s/"
+      }
+    ],
+    "nullSources": ["https://uc.cority.com/s/"],
+    "nullReasons": {
+      "https://uc.cority.com/s/": "Login-only Salesforce Experience Cloud portal: every path including /s/sitemap.xml redirects to /UCLogin."
+    },
+    "evidence": {
+      "https://uc.cority.com/s/": "Added: the Cority User Community linked from the cority.com header; Cority's own user guide says it holds the knowledge base (FAQs, known issues) and documentation (user guides, system guides, release notes, training videos), but all of it sits behind sign-in.",
+      "https://www.cority.com/faq": "Dropped: a single marketing-site 'FAQs About EHS+ Software' sales FAQ, not product help.",
+      "https://uc.cority.com/UCLogin": "Replaced by the portal root https://uc.cority.com/s/ (this URL is only its login page).",
+      "https://www.cority.com/corityone/customer-experience/": "Not a source: marketing page describing support and Cority101 training services; no lessons."
+    }
+  },
+  "gomotive.com": {
+    "keepSources": ["https://helpcenter.gomotive.com/", "https://developer.gomotive.com/"],
+    "addSources": [],
+    "evidence": {
+      "https://helpcenter.gomotive.com/": "Kept with the collector's sitemap count (1411): Zendesk help centre linked from the gomotive.com footer; articles live under /hc/en-us/articles. Pages sit behind a Cloudflare 'Just a moment...' challenge, but the public sitemap supplied the count, so it is not nulled.",
+      "https://developer.gomotive.com/": "Kept: readme.io 'Motive Public API' docs and reference (299 pages), linked from the homepage.",
+      "https://gomotive.com/guides": "Dropped: SEO content marketing about the industry (e.g. 'what is a fleet vehicle', 'ELD requirements', 'what is GPS tracking'), not instructions for the Motive product.",
+      "https://learn.gomotive.com/": "Dropped: 'Spotlight' marketing hub for ebooks, reports, webinars and case studies; one page in its sitemap and no product lessons."
+    }
+  },
+  "buildium.com": {
+    "keepSources": [
+      "https://help.buildium.com/hc/s/",
+      "https://developer.buildium.com/",
+      "https://academy.buildium.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://help.buildium.com/hc/s/",
+        "kind": "help-center",
+        "root": "https://help.buildium.com/hc/s/"
+      },
+      {
+        "url": "https://academy.buildium.com/",
+        "kind": "academy",
+        "root": "https://academy.buildium.com/"
+      }
+    ],
+    "nullSources": ["https://academy.buildium.com/", "https://developer.buildium.com/"],
+    "nullReasons": {
+      "https://academy.buildium.com/": "Login-only: the page says 'Redirecting you to the login screen' and forwards to signin.managebuilding.com (sso=lms).",
+      "https://developer.buildium.com/": "A single ~11 MB Redoc page with in-page # anchors; sitemap.xml and openapi.json return 403, so there are no separate pages to count."
+    },
+    "evidence": {
+      "https://help.buildium.com/hc/s/": "Added: 'BuildiumHelpCenter' Salesforce knowledge base, the Knowledgebase target of the Help Hub; robots.txt points to /hc/s/sitemap.xml, whose topicarticle sitemap lists 746 /hc/s/article/ URLs (e.g. 'How do I add a new tenant to an existing lease').",
+      "https://academy.buildium.com/": "Added: Buildium Academy LMS ('over 200 video lessons'), linked from the Help Hub; it requires a Buildium login.",
+      "https://developer.buildium.com/": "Kept: public 'Open API, powered by Buildium' reference covering getting started, API keys, sandbox, webhooks and every endpoint.",
+      "https://www.buildium.com/help-hub": "Dropped: a single marketing-site hub page that only links out to help.buildium.com, academy.buildium.com and webinars; the real help-centre root was added instead.",
+      "https://www.buildium.com/support": "Dropped: mixes support-team bio pages (/support/team/*) with Academy course description pages (/support/academy/*) that hold only a blurb and chapter outline, while the lessons themselves are on the login-only academy.buildium.com.",
+      "https://learn.buildium.com/": "Dropped: marketing landing pages (compare-lp, demo-home, hoa-software, affiliates), not product how-to content."
+    }
+  },
+  "uplight.com": {
+    "keepSources": ["https://docs.uplight.com/", "https://uplightinc.atlassian.net/"],
+    "addSources": [],
+    "nullSources": ["https://docs.uplight.com/", "https://uplightinc.atlassian.net/"],
+    "nullReasons": {
+      "https://docs.uplight.com/": "Login-gated ReadMe portal: anonymous visitors see only a placeholder landing page (/docs and /reference redirect to it), and there is no sitemap or llms.txt.",
+      "https://uplightinc.atlassian.net/": "Login-only Jira Service Management customer portal (support.uplight.com redirects to its login); no public pages to count."
+    },
+    "evidence": {
+      "https://docs.uplight.com/": "Kept (null): 'Uplight Documentation Portal' on readme.io, offering product guides, an API reference and FAQs to signed-in clients.",
+      "https://uplightinc.atlassian.net/": "Kept (null): Uplight's own customer support portal (support.uplight.com). Unsure whether it holds knowledge articles or is only for tickets, because nothing is visible without login.",
+      "https://uplight.com/community": "Rejection confirmed: community page."
+    }
+  },
+  "buildertrend.com": {
+    "keepSources": [
+      "https://buildertrend.com/help-article/",
+      "https://learn.buildertrend.net/",
+      "https://developer.buildertrend.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://buildertrend.com/help-articles",
+        "kind": "help-center",
+        "root": "https://buildertrend.com/help-article/"
+      },
+      {
+        "url": "https://learn.buildertrend.net/",
+        "kind": "academy",
+        "root": "https://learn.buildertrend.net/"
+      },
+      {
+        "url": "https://developer.buildertrend.com/",
+        "kind": "docs",
+        "root": "https://developer.buildertrend.com/"
+      }
+    ],
+    "nullSources": ["https://learn.buildertrend.net/", "https://developer.buildertrend.com/"],
+    "nullReasons": {
+      "https://learn.buildertrend.net/": "Login-only LMS: the root redirects to a buildertrend.net OAuth login, and there is no sitemap.",
+      "https://developer.buildertrend.com/": "Script-only SPA: the HTML is an empty app shell and /sitemap.xml returns the same shell; only an llms.txt summary and an OpenAPI spec link are readable."
+    },
+    "evidence": {
+      "https://buildertrend.com/help-article/": "Added: the real help-article root; /help-article-sitemap.xml lists 173 articles (e.g. 'Daily Logs on Mobile', 'Bills overview') across 15 categories. The detected /help-articles is only the category index above them.",
+      "https://buildertrend.com/help-articles": "Dropped in favour of https://buildertrend.com/help-article/; the detected root counted 1 page because the articles use the singular path.",
+      "https://learn.buildertrend.net/": "Added: Buildertrend Learning Academy (self-paced courses and live trainings, '7,000+ certifications'), linked from /buildertrend-learning-academy/.",
+      "https://developer.buildertrend.com/": "Added: 'Buildertrend Developers' API portal; its llms.txt describes the Buildertrend REST API (jobs, tasks, leads, OAuth). The API is in early access.",
+      "https://buildertrend.com/support": "Dropped: a marketing page about onboarding and support service tiers, with no how-to content.",
+      "https://buildertrend.com/events/buildertrend-university": "Dropped: an event page for registering for in-person training; no lessons.",
+      "https://buildertrend.com/buildertrend-learning-academy": "Rejection confirmed: marketing page for the academy; the academy itself was added as learn.buildertrend.net.",
+      "https://community.buildertrend.com/private/login": "Rejection confirmed: community forum."
+    }
+  },
+  "mastercontrol.com": {
+    "keepSources": [
+      "https://knowledge.mastercontrol.com/",
+      "https://learn.mastercontrol.com/",
+      "https://labs.mastercontrol.com/insights-help/"
+    ],
+    "addSources": [
+      {
+        "url": "https://labs.mastercontrol.com/insights-help/",
+        "kind": "docs",
+        "root": "https://labs.mastercontrol.com/insights-help/"
+      }
+    ],
+    "nullSources": ["https://knowledge.mastercontrol.com/", "https://labs.mastercontrol.com/insights-help/"],
+    "nullReasons": {
+      "https://knowledge.mastercontrol.com/": "Login-only ServiceNow 'Knowledge Portal' (/kb shows a login page) whose robots.txt disallows everything.",
+      "https://labs.mastercontrol.com/insights-help/": "MadCap Flare help that is rendered by script: there is no sitemap and the table of contents lives in Data/*.js files, so there is no plain page inventory."
+    },
+    "evidence": {
+      "https://knowledge.mastercontrol.com/": "Kept (null): MasterControl's knowledge base portal, which needs a login.",
+      "https://learn.mastercontrol.com/": "Kept (null), unsure: linked as 'Login' in the mastercontrol.com nav. It appears to be the MasterControl learning portal, but we could not see it.",
+      "https://labs.mastercontrol.com/insights-help/": "Added: public MasterControl Insights online help (e.g. 'Educational Resources' page, HelpSystem.xml default Content/Insights_Home.htm). It covers one product module and was built in 2022.",
+      "https://support.mastercontrol.com/": "Dropped: the 'Customer Service Portal - Support Center' ServiceNow ticketing login (footer 'Customer Support'); the knowledge content is in the separate knowledge.mastercontrol.com. Unsure: it may also expose knowledge-base search after login.",
+      "https://www.mastercontrol.com/docs": "Rejection confirmed: 404."
+    }
+  },
+  "powerfactors.com": {
+    "keepSources": ["https://support.powerfactors.com/", "https://learn.powerfactors.com/"],
+    "addSources": [
+      {
+        "url": "https://learn.powerfactors.com/",
+        "kind": "academy",
+        "root": "https://learn.powerfactors.com/"
+      }
+    ],
+    "nullSources": ["https://learn.powerfactors.com/"],
+    "nullReasons": {
+      "https://learn.powerfactors.com/": "Login-only LMS: the root redirects to login.powerfactors.app (Auth0); robots.txt disallows /learners/sign_in and there is no sitemap."
+    },
+    "evidence": {
+      "https://support.powerfactors.com/": "Kept with the collector's count (34): Freshdesk support portal whose public solution articles cover Drive, Greenbyte and Unity products (e.g. 'Single sign-on with Drive', 'Unity AI Insight documentation'). Most folders are login-gated, so the public set is small.",
+      "https://learn.powerfactors.com/": "Added: Power Factors' learning portal, behind Power Factors SSO (its robots.txt matches a hosted LMS).",
+      "https://community.powerfactors.com/private/login": "Rejection confirmed: community, login-only."
+    }
+  },
+  "housecallpro.com": {
+    "keepSources": ["https://help.housecallpro.com/", "https://docs.housecallpro.com/"],
+    "addSources": [],
+    "nullSources": ["https://docs.housecallpro.com/"],
+    "nullReasons": {
+      "https://docs.housecallpro.com/": "Stoplight-hosted SPA: the page is a script shell and there is no sitemap or llms.txt, so there is no page inventory."
+    },
+    "evidence": {
+      "https://help.housecallpro.com/": "Kept: Intercom 'Housecall Pro Help Center' with 673 articles, linked from the homepage.",
+      "https://docs.housecallpro.com/": "Kept (null): 'Housecall Pro | Stoplight' public API docs; the help centre's API overview article points developers here.",
+      "https://tradeacademy.com/": "Dropped: Housecall Pro-sponsored trade-careers site (scholarships, employer listings, job-description blog), not about using Housecall Pro.",
+      "https://www.housecallpro.com/resources/ebooks": "Rejection confirmed: industry ebooks."
+    }
+  },
+  "ideagen.com": {
+    "keepSources": [
+      "https://help.ideagen.com/hc/en-gb",
+      "https://ehs.help.ideagen.com/hc/en-gb",
+      "https://pleasereview.help.ideagen.com/hc/en-gb",
+      "https://inphase.help.ideagen.com/hc/en-gb",
+      "https://devonway.help.ideagen.com/hc/en-gb",
+      "https://coruson.help.ideagen.com/hc/en-gb",
+      "https://auditanalytics.help.ideagen.com/hc/en-gb",
+      "https://mazlan.help.ideagen.com/hc/en-gb",
+      "https://workrite.help.ideagen.com/hc/en-gb"
+    ],
+    "addSources": [
+      {
+        "url": "https://help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://help.ideagen.com/hc/en-gb"
+      },
+      {
+        "url": "https://ehs.help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://ehs.help.ideagen.com/hc/en-gb"
+      },
+      {
+        "url": "https://pleasereview.help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://pleasereview.help.ideagen.com/hc/en-gb"
+      },
+      {
+        "url": "https://inphase.help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://inphase.help.ideagen.com/hc/en-gb"
+      },
+      {
+        "url": "https://devonway.help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://devonway.help.ideagen.com/hc/en-gb"
+      },
+      {
+        "url": "https://coruson.help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://coruson.help.ideagen.com/hc/en-gb"
+      },
+      {
+        "url": "https://auditanalytics.help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://auditanalytics.help.ideagen.com/hc/en-gb"
+      },
+      {
+        "url": "https://mazlan.help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://mazlan.help.ideagen.com/hc/en-gb"
+      },
+      {
+        "url": "https://workrite.help.ideagen.com/hc/en-gb",
+        "kind": "help-center",
+        "root": "https://workrite.help.ideagen.com/hc/en-gb"
+      }
+    ],
+    "evidence": {
+      "https://help.ideagen.com/hc/en-gb": "Added: the main 'Ideagen Help' Zendesk (help.ideagen.com/hc redirects here); articles include 'Getting started with Ideagen Luminate', SSO/MFA setup and Mazlan release notes.",
+      "https://ehs.help.ideagen.com/hc/en-gb": "Added: per-product Zendesk brand help centre for Ideagen EHS, found by probing <product>.help.ideagen.com.",
+      "https://pleasereview.help.ideagen.com/hc/en-gb": "Added: per-product help centre for Ideagen PleaseReview.",
+      "https://inphase.help.ideagen.com/hc/en-gb": "Added: per-product help centre for Ideagen InPhase, surfaced by web search (e.g. 'Building user knowledge').",
+      "https://devonway.help.ideagen.com/hc/en-gb": "Added: per-product help centre for Ideagen DevonWay, surfaced by web search (e.g. 'Learning about self-paced trainings').",
+      "https://coruson.help.ideagen.com/hc/en-gb": "Added: per-product help centre for Ideagen Coruson.",
+      "https://auditanalytics.help.ideagen.com/hc/en-gb": "Added: per-product help centre for Ideagen Audit Analytics.",
+      "https://mazlan.help.ideagen.com/hc/en-gb": "Added: per-product help centre for Ideagen Mazlan.",
+      "https://workrite.help.ideagen.com/hc/en-gb": "Added: per-product help centre for Ideagen WorkRite.",
+      "https://www.ideagen.com/solutions/quality/training-management": "Dropped: marketing product page for Ideagen's training-management software, not help content.",
+      "https://www.ideagen.com/solutions/quality/workplace-training": "Dropped: a single marketing product page.",
+      "https://academy.help.ideagen.com/": "Not added: its 101 articles are about using the Ideagen Academy LMS itself (access, enrolment), not Ideagen's products. Borderline.",
+      "https://customers.ideagen.com/": "Not a source: it now 301-redirects to community.ideagen.com.",
+      "https://community.ideagen.com/": "Rejection confirmed: Ideagen Luminate community forum.",
+      "https://ideagenstudy.efrontlearning.com/": "Not added: Luminate Skills e-learning, found only through search, login-only and for Success Plan customers; could be added as a null academy if wanted."
+    }
+  },
+  "samsara.com": {
+    "keepSources": [
+      "https://academy.samsara.com/",
+      "https://kb.samsara.com/hc/en-us",
+      "https://developers.samsara.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://kb.samsara.com/hc/en-us",
+        "kind": "help-center",
+        "root": "https://kb.samsara.com/hc/en-us"
+      },
+      {
+        "url": "https://developers.samsara.com/",
+        "kind": "docs",
+        "root": "https://developers.samsara.com/"
+      }
+    ],
+    "evidence": {
+      "https://kb.samsara.com/hc/en-us": "Added: Samsara's Zendesk help centre (the real landing of the detected help-center); pages return a bot challenge, but the public sitemap https://kb.samsara.com/hc/sitemap.xml lists 365 en-us articles (439 en-us URLs incl. sections/categories), so it can be counted.",
+      "https://www.samsara.com/": "Dropped: the whole marketing site; its 2503-page count came from www.samsara.com/sitemap.xml (blog, marketing) not from the help centre.",
+      "https://developers.samsara.com/": "Added: Samsara developer docs (ReadMe, guides + API reference); no sitemap.xml but a public llms.txt with ~544 doc links.",
+      "https://academy.samsara.com/": "Kept: Samsara Academy LMS with a public sitemap of 223 URLs (catalog, learning paths).",
+      "https://www.samsara.com/products/workforce-management/connected-training": "Dropped: product marketing page for the Connected Training feature, not product-learning content.",
+      "https://www.samsara.com/resources/guides": "Dropped: industry content marketing (GPS tracking, telematics guides), not how to use Samsara.",
+      "https://www.samsara.com/support/developers": "Dropped: single marketing landing page; replaced by the actual docs host developers.samsara.com."
+    }
+  },
+  "workiz.com": {
+    "keepSources": ["https://help.workiz.com/", "https://developer.workiz.com/"],
+    "addSources": [
+      {
+        "url": "https://developer.workiz.com/",
+        "kind": "docs",
+        "root": "https://developer.workiz.com/"
+      }
+    ],
+    "nullSources": ["https://developer.workiz.com/"],
+    "nullReasons": {
+      "https://developer.workiz.com/": "Script-only React app with no sitemap or crawlable links; the spec is only at https://developer.workiz.com/api.json."
+    },
+    "evidence": {
+      "https://help.workiz.com/": "Kept with its sitemap count (661): Workiz Zendesk help centre (/hc/en-us), bot-challenged but public sitemap https://help.workiz.com/hc/sitemap.xml.",
+      "https://developer.workiz.com/": "Added: 'Workiz API Documentation', linked from the Workiz homepage and /developers page.",
+      "https://www.workiz.com/developers": "Dropped: marketing landing page for the API/integrations; real docs are on developer.workiz.com.",
+      "https://www.workiz.com/faq": "Dropped: sales FAQ on the marketing site ('What is Workiz?')."
+    }
+  },
+  "fieldedge.com": {
+    "keepSources": ["https://training.fieldedge.com/"],
+    "addSources": [],
+    "nullSources": ["https://training.fieldedge.com/"],
+    "nullReasons": {
+      "https://training.fieldedge.com/": "LearnWorlds academy currently shows only a 'Coming Soon' placeholder with sign-in; its 7 sitemap pages are placeholder pages, not lessons."
+    },
+    "evidence": {
+      "https://training.fieldedge.com/": "Kept: FieldEdge's own LMS ('FieldEdge Navigator', LearnWorlds), linked from the homepage, but no public courses yet.",
+      "https://fieldedge.com/member-training": "Dropped: marketing page selling workshops/onsite training to members, no lessons.",
+      "https://fieldedge.com/academy": "Rejected (404).",
+      "help/support/docs/kb.fieldedge.com": "No such hosts resolve; fieldedge.zendesk.com has no robots/sitemap (404). No public help centre found; Capterra mentions a knowledge base, likely in-app only."
+    }
+  },
+  "arcadia.com": {
+    "keepSources": ["https://docs.arcadia.com/"],
+    "addSources": [],
+    "evidence": {
+      "https://docs.arcadia.com/": "Kept: Arcadia product + API documentation (ReadMe; llms.txt lists ~193 pages incl. Dashboard Quick Start, API Quick Start)."
+    }
+  },
+  "fiixsoftware.com": {
+    "keepSources": ["https://helpdesk.fiixsoftware.com/hc"],
+    "addSources": [],
+    "evidence": {
+      "https://helpdesk.fiixsoftware.com/hc": "Kept with its sitemap count (1124): Fiix Zendesk help centre linked from the homepage (landing /hc/en-us); pages are bot-challenged.",
+      "https://fiixsoftware.com/training-and-implementation": "Dropped: marketing page for paid training/implementation packages.",
+      "https://fiixsoftware.com/support-videos": "Left rejected: single page linking ~150 YouTube how-to videos; product-relevant but no readable text pages.",
+      "https://fiixlabs.github.io/api-documentation/": "Not added: script-only 'API Reference' page not linked from fiixsoftware.com; ownership not confirmed."
+    }
+  },
+  "project44.com": {
+    "keepSources": ["https://support.project44.com/hc/en-us", "https://developers.project44.com/"],
+    "addSources": [
+      {
+        "url": "https://support.project44.com/hc/en-us",
+        "kind": "help-center",
+        "root": "https://support.project44.com/hc/en-us"
+      },
+      {
+        "url": "https://developers.project44.com/",
+        "kind": "docs",
+        "root": "https://developers.project44.com/"
+      }
+    ],
+    "evidence": {
+      "https://support.project44.com/hc/en-us": "Added: project44 Customer Knowledge Base (Zendesk, linked as 'Open knowledge base' from /help-center and via support.p-44.com); bot-challenged, but public sitemap https://support.project44.com/hc/sitemap.xml lists 444 en-us articles.",
+      "https://developers.project44.com/": "Added: project44 Developer Portal (Redocly) with shipper/carrier guides and API reference; no sitemap or llms.txt, so count by link crawl.",
+      "https://www.project44.com/carriers/faqs": "Dropped: single marketing FAQ page for carriers.",
+      "https://www.project44.com/help-center": "Dropped: marketing hub page linking to the real knowledge base.",
+      "https://www.project44.com/company/customer-knowledge-base": "Dropped: marketing page that only points to the Zendesk knowledge base.",
+      "https://help.project44.com/": "Dropped: Freshdesk ticket portal not linked from project44.com; JS-only, exposes only 'Announcements' and no articles; the canonical KB is support.project44.com."
+    }
+  },
+  "measurabl.com": {
+    "keepSources": ["https://support.measurabl.com/", "https://api.measurabl.com/api-docs"],
+    "addSources": [
+      {
+        "url": "https://api.measurabl.com/api-docs",
+        "kind": "docs",
+        "root": "https://api.measurabl.com/api-docs"
+      }
+    ],
+    "nullSources": ["https://api.measurabl.com/api-docs"],
+    "nullReasons": {
+      "https://api.measurabl.com/api-docs": "Swagger UI single-page API reference rendered by script; no page inventory."
+    },
+    "evidence": {
+      "https://support.measurabl.com/": "Kept with its sitemap count (225): Measurabl Zendesk help centre linked from the homepage; bot-challenged, public sitemap lists 190 en-us articles.",
+      "https://api.measurabl.com/api-docs": "Added: Measurabl Core API reference ('Measurabl API'), referenced from the help centre's 'Measurabl API 101' article.",
+      "https://learn.measurabl.com/": "Left rejected: HubSpot marketing landing pages (e.g. GRESB results), redirects to the homepage."
+    }
+  },
+  "appfolio.com": {
+    "keepSources": ["https://help.appfolio.com/", "https://knowledge.appfolio.com/", "https://training.appfolio.com/"],
+    "addSources": [
+      {
+        "url": "https://training.appfolio.com/",
+        "kind": "academy",
+        "root": "https://training.appfolio.com/"
+      }
+    ],
+    "nullSources": ["https://help.appfolio.com/"],
+    "nullReasons": {
+      "https://help.appfolio.com/": "Salesforce help community that redirects every page, including /s/sitemap.xml, to AppFolio SSO login."
+    },
+    "evidence": {
+      "https://help.appfolio.com/": "Kept: AppFolio's login-only help centre.",
+      "https://knowledge.appfolio.com/": "Kept: public AppFolio Knowledge Base (Intercom) but it holds only ~2 articles; one states the full KB lives inside the AppFolio account.",
+      "https://training.appfolio.com/": "Added: the 'Academy' link in the knowledge.appfolio.com header.",
+      "https://www.appfolio.com/": "Dropped: whole marketing site (support.appfolio.com redirects to a 404 page; the 619 count is the marketing sitemap).",
+      "https://learn.appfolio.com/": "Dropped: script-only page that redirects to appfolio.com/page-not-found.",
+      "https://developer.appfolio.com/": "Not added: script-only 'Developer Space' app with no public content visible; likely partner-only."
+    }
+  },
+  "assent.com": {
+    "keepSources": [
+      "https://assentcompliance.my.site.com/SupplierCustomerPortal/s/",
+      "https://assentu.assent.com/learn"
+    ],
+    "addSources": [
+      {
+        "url": "https://assentcompliance.my.site.com/SupplierCustomerPortal/s/",
+        "kind": "help-center",
+        "root": "https://assentcompliance.my.site.com/SupplierCustomerPortal/s/"
+      },
+      {
+        "url": "https://assentu.assent.com/learn",
+        "kind": "academy",
+        "root": "https://assentu.assent.com/learn"
+      }
+    ],
+    "nullSources": [
+      "https://assentcompliance.my.site.com/SupplierCustomerPortal/s/",
+      "https://assentu.assent.com/learn"
+    ],
+    "nullReasons": {
+      "https://assentcompliance.my.site.com/SupplierCustomerPortal/s/": "Salesforce Experience Cloud portal rendered by script, with robots.txt 'Disallow: /' and the Help Center button pointing to its login page.",
+      "https://assentu.assent.com/learn": "Assent University LMS is a script-only app ('Loading') whose credentials are emailed to customers; no public page inventory."
+    },
+    "evidence": {
+      "https://assentcompliance.my.site.com/SupplierCustomerPortal/s/": "Added: target of 'Launch Help Center' on www.assent.com/customer-support; the old Zendesk help.assentcompliance.com now redirects to a marketing page.",
+      "https://assentu.assent.com/learn": "Added: Assent University (linked from /training-courses as learningportal.assentu.assentcompliance.com), courses on using the Assent platform.",
+      "https://www.assent.com/resources/knowledge-center/": "Left rejected: regulatory content marketing (REACH, RoHS, TSCA articles), not product how-to.",
+      "help/support/docs/developer.assent.com": "No such hosts resolve."
+    }
+  },
+  "sweep.net": {
+    "keepSources": ["https://help.sweep.net/"],
+    "addSources": [
+      {
+        "url": "https://help.sweep.net/",
+        "kind": "help-center",
+        "root": "https://help.sweep.net/"
+      }
+    ],
+    "evidence": {
+      "https://help.sweep.net/": "Added: Sweep's own help centre (docs.sweep.net redirects here).",
+      "https://www.sweep.net/guides": "Dropped: industry content marketing (CSRD, Scope 3, SB 253, decarbonization guides).",
+      "https://www.sweep.net/solutions-guides": "Dropped: two gated marketing 'Get the guide' downloads.",
+      "developers/api": "No public Sweep developer portal found; third-party profiles say API access is given through customer engagements."
+    },
+    "nullSources": ["https://help.sweep.net/"],
+    "nullReasons": {
+      "https://help.sweep.net/": "'Sweep Help Center' is login-only ('You need to be logged into Sweep'); every path, including robots.txt and sitemap.xml, returns 403."
+    }
+  },
+  "eptura.com": {
+    "keepSources": ["https://knowledge.eptura.com/"],
+    "addSources": [],
+    "evidence": {
+      "https://knowledge.eptura.com/": "Kept: Eptura Knowledge Center (MindTouch) with product manuals for Archibus, Condeco and other Eptura products; 10,770 sitemap URLs.",
+      "https://eptura.com/support": "Dropped: marketing tech-support page plus a customer FAQ (2 pages) that links out to the customer hub; not product instruction.",
+      "https://eptura.com/resource-type/guide": "Dropped: marketing 'Guides' resource listing (industry content), not how-to-use-the-product material.",
+      "https://customer.eptura.com/s/knowledge-center": "Rejected: Salesforce customer hub entry point for support cases; the public product knowledge lives on knowledge.eptura.com.",
+      "https://developer.eptura.com/": "Rejected: developer./developers./academy./learn./docs.eptura.com do not resolve."
+    }
+  },
+  "rakenapp.com": {
+    "keepSources": ["https://help.rakenapp.com/"],
+    "addSources": [],
+    "evidence": {
+      "https://help.rakenapp.com/": "Kept: Raken Help Center (Intercom, all 233 pages under /en), linked from the homepage.",
+      "https://developer.rakenapp.com/": "Rejected: returns an AWS API Gateway 403 JSON 'Forbidden'; it is the API endpoint, not a docs site. rakenapp.com/integrations/api-mcp is a marketing page.",
+      "https://learn.rakenapp.com/": "Rejected: learn./university./training./academy./docs.rakenapp.com do not resolve."
+    }
+  },
+  "mrpeasy.com": {
+    "keepSources": ["https://www.mrpeasy.com/resources/user-manual", "https://mrpeasy.readme.io/reference"],
+    "addSources": [
+      {
+        "url": "https://mrpeasy.readme.io/reference/mrpeasy-api",
+        "kind": "docs",
+        "root": "https://mrpeasy.readme.io/reference"
+      }
+    ],
+    "evidence": {
+      "https://www.mrpeasy.com/resources/user-manual": "Kept: MRPeasy user manual (187 pages), the product's full how-to documentation.",
+      "https://mrpeasy.readme.io/reference": "Added: MRPeasy API docs on readme.io (api.mrpeasy.com redirects here; linked from the user manual); ~133 reference links and an llms.txt, no sitemap.",
+      "https://www.mrpeasy.com/resources/get-started": "Rejection confirmed: onboarding/sales page, not documentation.",
+      "https://www.mrpeasy.com/demo-videos/": "Rejected: marketing demo videos page."
+    }
+  },
+  "fishbowlinventory.com": {
+    "keepSources": [
+      "https://help.fishbowlinventory.com/advanced/s/",
+      "https://help.fishbowlinventory.com/advanced/s/apidocs/",
+      "https://help.fishbowlonline.com/s/"
+    ],
+    "addSources": [
+      {
+        "url": "https://help.fishbowlinventory.com/advanced/s/",
+        "kind": "help-center",
+        "root": "https://help.fishbowlinventory.com/advanced/s/"
+      },
+      {
+        "url": "https://help.fishbowlinventory.com/advanced/s/apidocs/introduction.html",
+        "kind": "docs",
+        "root": "https://help.fishbowlinventory.com/advanced/s/apidocs/"
+      },
+      {
+        "url": "https://help.fishbowlonline.com/s/",
+        "kind": "help-center",
+        "root": "https://help.fishbowlonline.com/s/"
+      }
+    ],
+    "nullSources": ["https://help.fishbowlinventory.com/advanced/s/"],
+    "nullReasons": {
+      "https://help.fishbowlinventory.com/advanced/s/": "Salesforce Experience (Aura) site rendered by script; its sitemap lists only 14 view pages and 1 article, so it gives no usable article inventory."
+    },
+    "evidence": {
+      "https://www.fishbowlinventory.com/guides": "Dropped: marketing guides (e.g. 'demand whiplash', AI questions for operations leaders), industry content not product instruction.",
+      "https://help.fishbowlinventory.com/advanced/s/": "Added: Fishbowl Advanced help centre (fishbowlinventory.com/support and fishbowlhelp.com redirect into help.fishbowlinventory.com); public, but script-rendered.",
+      "https://help.fishbowlinventory.com/advanced/s/apidocs/": "Added: static Fishbowl Advanced REST API documentation, ~20 linked HTML pages (parts, sales orders, inventory, etc.).",
+      "https://help.fishbowlonline.com/s/": "Added: Fishbowl Drive help centre (listed in help.fishbowlinventory.com robots.txt); sitemap lists 30 public articles such as Drive-Getting-Started.",
+      "https://help.fishbowlinventory.com/s/": "Not used as the root: the hub's sitemap lists only the homepage; product content is under /advanced/s/."
+    }
+  },
+  "upkeep.com": {
+    "keepSources": [
+      "https://upkeep.teachable.com/",
+      "https://help.onupkeep.com/en/",
+      "https://developers.onupkeep.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://help.onupkeep.com/en/",
+        "kind": "help-center",
+        "root": "https://help.onupkeep.com/en/"
+      },
+      {
+        "url": "https://developers.onupkeep.com/",
+        "kind": "docs",
+        "root": "https://developers.onupkeep.com/"
+      }
+    ],
+    "evidence": {
+      "https://upkeep.teachable.com/": "Kept: UpKeep University on Teachable (also served as learn.onupkeep.com, which upkeep.com links to); public course catalogue.",
+      "https://help.onupkeep.com/en/": "Added: UpKeep Help Center (Intercom), linked from upkeep.com/resources/support; sitemap lists 356 /en articles.",
+      "https://developers.onupkeep.com/": "Added: UpKeep API Reference, a single long readable page (~950 KB, 238 anchors).",
+      "https://upkeep.com/product/learn/": "Rejected: marketing page for UpKeep's LMS product."
+    }
+  },
+  "ecoonline.com": {
+    "keepSources": ["https://ecoonline-global.my.site.com/s/"],
+    "addSources": [
+      {
+        "url": "https://help.ecoonline.com/",
+        "kind": "help-center",
+        "root": "https://ecoonline-global.my.site.com/s/"
+      }
+    ],
+    "evidence": {
+      "https://www.ecoonline.com/safety-learning-management-system": "Dropped: marketing page for EcoOnline's safety LMS product, not training on how to use EcoOnline.",
+      "https://www.ecoonline.com/whitepapers": "Dropped: EHS/ESG whitepapers, industry content marketing.",
+      "https://ecoonline-global.my.site.com/s/": "Added: EcoOnline help centre (help.ecoonline.com redirects here; linked from /contact-support). Topic-article sitemaps list 2,640 article URLs, 1,503 of them en_US. Note: article bodies render through Salesforce Aura JS and are not in the raw HTML.",
+      "https://insights.ecoonline.com/customers/product-release-hub/": "Rejected: release-announcement hub on the marketing site."
+    }
+  },
+  "getmaintainx.com": {
+    "keepSources": [
+      "https://help.getmaintainx.com/",
+      "https://academy.getmaintainx.com/",
+      "https://api.getmaintainx.com/v1/docs"
+    ],
+    "addSources": [
+      {
+        "url": "https://api.getmaintainx.com/v1/docs",
+        "kind": "docs",
+        "root": "https://api.getmaintainx.com/v1/docs"
+      }
+    ],
+    "nullSources": ["https://academy.getmaintainx.com/", "https://api.getmaintainx.com/v1/docs"],
+    "nullReasons": {
+      "https://academy.getmaintainx.com/": "WorkRamp-hosted academy rendered entirely by script (no sitemap, sitemap.xml returns 406), so it has no readable page inventory.",
+      "https://api.getmaintainx.com/v1/docs": "A single Redoc page rendered client-side from openapi.json; it has no page inventory."
+    },
+    "evidence": {
+      "https://help.getmaintainx.com/": "Kept: MaintainX Help Center (472 sitemap pages); docs.getmaintainx.com redirects here.",
+      "https://academy.getmaintainx.com/": "Kept: MaintainX Academy training hub (redirects to /pages/training-hub), linked from the homepage.",
+      "https://api.getmaintainx.com/v1/docs": "Added: MaintainX REST API v1 docs (maintainx.dev redirects to /latest/docs, which resolves here).",
+      "https://www.getmaintainx.com/education": "Dropped: marketing page selling CMMS to educators.",
+      "https://www.getmaintainx.com/learning-center": "Rejected: SEO learning-centre articles about maintenance and asset management, not product instruction."
+    }
+  },
+  "connecteam.com": {
+    "keepSources": [
+      "https://help.connecteam.com/",
+      "https://academy.connecteam.com/",
+      "https://developer.connecteam.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://developer.connecteam.com/docs/introduction-1",
+        "kind": "docs",
+        "root": "https://developer.connecteam.com/"
+      }
+    ],
+    "evidence": {
+      "https://help.connecteam.com/": "Kept: Connecteam Help Center (862 en pages).",
+      "https://academy.connecteam.com/": "Kept: Connecteam Academy with product courses ('Learn the Basics', 'Adding your team', 'Scheduling your first week').",
+      "https://developer.connecteam.com/": "Added: Connecteam API docs on readme.io, linked from connecteam.com/help-center; no sitemap but llms.txt lists ~320 docs/reference pages.",
+      "https://connecteam.com/help-center": "Dropped: one-page hub that only links to help.connecteam.com, the academy and the developer docs.",
+      "https://connecteam.com/employee-communication-app/knowledge-center": "Dropped: marketing page for Connecteam's knowledge-base feature.",
+      "https://connecteam.com/employee-communication-app/help-desk": "Dropped: marketing page for Connecteam's help-desk feature.",
+      "https://connecteam.com/employee-training-software": "Dropped: marketing page for Connecteam's training feature."
+    }
+  },
+  "katanamrp.com": {
+    "keepSources": ["https://support.katanamrp.com/", "https://developer.katanamrp.com/"],
+    "addSources": [],
+    "evidence": {
+      "https://support.katanamrp.com/": "Kept: Katana help centre (Intercom, 1,013 /en pages).",
+      "https://developer.katanamrp.com/": "Kept: Katana API docs on readme.io (/docs and /reference).",
+      "https://katanamrp.com/academy": "Dropped: single curated page whose links all point to support.katanamrp.com articles, so it adds no content of its own.",
+      "https://katanamrp.com/training-videos": "Dropped: single page of recorded live-training and Kickstart webinar videos with no text lessons; treated as a webinar page."
+    }
+  },
+  "kissflow.com": {
+    "keepSources": [
+      "https://help.kissflow.com/",
+      "https://academy.kissflow.com/",
+      "https://community.kissflow.com/category/documentation-section",
+      "https://developers.kissflow.com/",
+      "https://api.kissflow.com/"
+    ],
+    "addSources": [
+      {
+        "url": "https://helpdocs.kissflow.com/",
+        "kind": "help-center",
+        "root": "https://community.kissflow.com/category/documentation-section"
+      },
+      {
+        "url": "https://developers.kissflow.com/",
+        "kind": "docs",
+        "root": "https://developers.kissflow.com/"
+      },
+      {
+        "url": "https://api.kissflow.com/",
+        "kind": "docs",
+        "root": "https://api.kissflow.com/"
+      }
+    ],
+    "nullSources": ["https://api.kissflow.com/"],
+    "nullReasons": {
+      "https://api.kissflow.com/": "A Postman Documenter page rendered by script, with no sitemap and no readable page index."
+    },
+    "evidence": {
+      "https://help.kissflow.com/": "Kept: KiSSFLOW Help Center (Intercom, 275 pages); older branding, but public product help.",
+      "https://academy.kissflow.com/": "Kept: Kissflow Academy (course/collection pages). A 'Just a moment...' bot challenge blocks it, but the collector already has 35 pages from its sitemap, so it is not nulled.",
+      "https://community.kissflow.com/category/documentation-section": "Added: official Help Documentation (helpdocs.kissflow.com redirects here; linked from kissflow.com/support). About 100 category links lead to /t/ articles. No sitemap (404); it is readable by link crawl.",
+      "https://developers.kissflow.com/": "Added: Kissflow Developers (Lowcode SDK docs), linked from kissflow.com/support; sitemap-index lists 42 pages.",
+      "https://api.kissflow.com/": "Added: Kissflow API Documentation, linked from kissflow.com/support.",
+      "https://kissflow.com/faq": "Dropped: 516 SEO FAQ pages about low-code and workflow topics (e.g. 'best citizen development platform'), not product how-to.",
+      "https://kissflow.com/support": "Dropped: one-page support hub that links to the real sources.",
+      "https://learn.kissflow.com/": "Dropped: a Kissflow platform tenant app shell (shows KISSFLOW_ERROR loading text), not a learning site."
+    }
+  },
+  "persefoni.com": {
+    "keepSources": ["https://support.persefoni.com/hc/en-us", "https://docs.persefoni.com/"],
+    "addSources": [
+      {
+        "url": "https://support.persefoni.com/hc/en-us",
+        "kind": "help-center",
+        "root": "https://support.persefoni.com/hc/en-us"
+      },
+      {
+        "url": "https://docs.persefoni.com/",
+        "kind": "docs",
+        "root": "https://docs.persefoni.com/"
+      }
+    ],
+    "nullSources": ["https://support.persefoni.com/hc/en-us", "https://docs.persefoni.com/"],
+    "nullReasons": {
+      "https://support.persefoni.com/hc/en-us": "Zendesk help centre is restricted: /hc/sitemap.xml redirects to /hc/restricted and the help-centre API returns 401, so no public inventory exists.",
+      "https://docs.persefoni.com/": "Docs host immediately redirects to a SAML login on persefoni.us.auth0.com, so its content and page count are not publicly readable."
+    },
+    "evidence": {
+      "https://support.persefoni.com/hc/en-us": "Added: Zendesk-served host (x-zendesk-processed-host-header: support.persefoni.com) that redirects to /hc/en-us; restricted to signed-in customers.",
+      "https://help.persefoni.com/": "Not added separately: a second Zendesk host mapping with the identical robots.txt and the same restricted sitemap; most likely an alias of the support host, cannot verify it is a distinct help centre.",
+      "https://docs.persefoni.com/": "Added: Persefoni's own docs host, gated by SSO; this replaces the collector's auth0 login URL.",
+      "https://persefoni.us.auth0.com/": "Dropped: identity-provider login page, never a source.",
+      "https://www.persefoni.com/insights/persefoni-academy": "Dropped: one marketing page listing industry courses (California climate disclosure, Carbon Accounting Essentials, Decarbonization 101, Scope 3 101) that teach carbon accounting, not the Persefoni product."
+    }
+  },
+  "simprogroup.com": {
+    "keepSources": ["https://helpguide.simprogroup.com/articles/", "https://developer.simprogroup.com/"],
+    "addSources": [
+      {
+        "url": "https://helpguide.simprogroup.com/home/en-au/",
+        "kind": "help-center",
+        "root": "https://helpguide.simprogroup.com/articles/"
+      },
+      {
+        "url": "https://developer.simprogroup.com/",
+        "kind": "docs",
+        "root": "https://developer.simprogroup.com/"
+      }
+    ],
+    "evidence": {
+      "https://helpguide.simprogroup.com/articles/": "Added: open ClickHelp portal titled 'Simpro Help Guide'; robots.txt points to /sitemaps/sitemap.xml whose help-guide publication lists 869 article URLs (plus 2 video-library pages). Article URLs are hash-bang (/articles/#!help-guide/...), but /articles/?_escaped_fragment_=help-guide/getting-started returns server-rendered article text ('An introduction to Simpro Premium').",
+      "https://developer.simprogroup.com/": "Added: linked from the Simpro Help Guide homepage; a non-challenged fallback response is titled 'Simpro Developer Center'. Main pages return a Cloudflare challenge.",
+      "https://www.simprogroup.com/": "Marketing homepage and every help./support./docs./academy./learn. subdomain on simprogroup.com redirect to it and return a Cloudflare 403 challenge; not bypassed.",
+      "https://helpdesk.simprogroup.com/": "Not added: the Help Guide presents it as the support-ticket desk, not an article site; it is also behind a Cloudflare challenge."
+    }
+  },
+  "onfleet.com": {
+    "keepSources": ["https://docs.onfleet.com/", "https://intercom.help/onfleet-4f83d83093ac/en/"],
+    "addSources": [
+      {
+        "url": "https://intercom.help/onfleet-4f83d83093ac/en/",
+        "kind": "help-center",
+        "root": "https://intercom.help/onfleet-4f83d83093ac/en/"
+      }
+    ],
+    "evidence": {
+      "https://docs.onfleet.com/": "Kept: 'Onfleet API' developer documentation (275 pages by link crawl), linked from onfleet.com/support.",
+      "https://intercom.help/onfleet-4f83d83093ac/en/": "Added: open Intercom help centre titled 'Home | Onfleet Help Center', linked from onfleet.com/support. There is no sitemap (404), but collection pages are server-rendered: 6 top collections link to 36 sub-collections and at least 198 articles.",
+      "https://onfleet.com/support": "Dropped: a single marketing 'Support Page - We are Here to Help!' that only links out to the Intercom help centre and the API docs.",
+      "https://support.onfleet.com/": "Not added: TLS handshake fails, so the host is not serving content."
+    }
+  },
+  "enverus.com": {
+    "keepSources": ["https://support.enverus.com/s/", "https://learn.enverus.com/"],
+    "addSources": [
+      {
+        "url": "https://support.enverus.com/s/",
+        "kind": "help-center",
+        "root": "https://support.enverus.com/s/"
+      }
+    ],
+    "nullSources": ["https://support.enverus.com/s/"],
+    "nullReasons": {
+      "https://support.enverus.com/s/": "Salesforce Experience Cloud support site redirects every visitor to /s/login, so no public page inventory exists."
+    },
+    "evidence": {
+      "https://support.enverus.com/": "Root narrowed to /s/, the Salesforce community path; it is login-only (script redirect to /s/login?startURL=/s/). Kept as a login-gated help centre.",
+      "https://support.enverus.com/s/": "Kept, null: the login-gated Enverus customer support site.",
+      "https://learn.enverus.com/": "Kept: 'Enverus Education' LMS whose sitemap lists 307 URLs, including product courses such as 'Introducing Prism's Cross-Section Builder' and 'Canada Enhancements Prism H1 2025'. The pages need JavaScript to render, but the sitemap count stands.",
+      "https://www.enverus.com/": "Marketing homepage returns 403 Forbidden; not bypassed."
+    }
+  },
+  "facilio.com": {
+    "keepSources": ["https://facilio.com/help", "https://facilio.com/developers/"],
+    "addSources": [
+      {
+        "url": "https://facilio.com/developers/",
+        "kind": "docs",
+        "root": "https://facilio.com/developers/"
+      }
+    ],
+    "evidence": {
+      "https://facilio.com/help": "Kept: 'Facilio Docs' user, admin and procurement guides (366 pages by link crawl); help.facilio.com redirects here.",
+      "https://facilio.com/developers/": "Added: 'Facilio Developers' Docusaurus site (API reference, FOQL, script reference, SDK, connected apps), linked from /help; its sitemap lists 106 URLs.",
+      "https://facilio.com/learn": "Dropped: a 'Facility Management Knowledge Hub' of industry content marketing ('what-is-work-order', 'what-is-visual-inspection', author and tag pages), not product instructions."
+    }
+  },
+  "greenlight.guru": {
+    "keepSources": ["https://ggacademy.greenlight.guru/app"],
+    "addSources": [
+      {
+        "url": "https://ggacademy.greenlight.guru/",
+        "kind": "academy",
+        "root": "https://ggacademy.greenlight.guru/app"
+      }
+    ],
+    "evidence": {
+      "https://ggacademy.greenlight.guru/app": "Added: Northpass 'Greenlight Guru Academy', linked from greenlight.guru/academy ('educates users on the Greenlight Guru platform'). The public catalog at /app/catalog lists 45 product courses (e.g. 'Design Controls in Greenlight Guru Quality', 'CAPA Management in Greenlight Guru Quality'), and their overview pages are open. No sitemap; lessons need free sign-up.",
+      "https://www.greenlight.guru/medical-device-resources/ebooks-and-guides": "Dropped: an industry eBooks and guides index (content marketing).",
+      "https://www.greenlight.guru/training-management-software": "Dropped: a product marketing page for their training-management module, not training on the product.",
+      "https://www.greenlight.guru/faq": "Dropped: a sales FAQ page on the marketing site.",
+      "support./help./docs./academy./learn.greenlight.guru": "None of these hosts resolves (no DNS); no separate public help centre found. app.greenlight.guru is only a sign-in page."
+    }
+  },
+  "fleetio.com": {
+    "keepSources": [
+      "https://help.fleetio.com/en_US",
+      "https://academy.fleetio.com/",
+      "https://developer.fleetio.com/docs"
+    ],
+    "addSources": [
+      {
+        "url": "https://help.fleetio.com/en_US",
+        "kind": "help-center",
+        "root": "https://help.fleetio.com/en_US"
+      },
+      {
+        "url": "https://developer.fleetio.com/",
+        "kind": "docs",
+        "root": "https://developer.fleetio.com/docs"
+      }
+    ],
+    "nullSources": ["https://academy.fleetio.com/"],
+    "nullReasons": {
+      "https://academy.fleetio.com/": "WorkRamp customer academy renders only through JavaScript and has no sitemap (404), so there is no readable page inventory."
+    },
+    "evidence": {
+      "https://help.fleetio.com/": "Replaced by the narrower https://help.fleetio.com/en_US: of the 594 sitemap URLs, 453 are en_US, 88 es_MX and 52 fr_CA.",
+      "https://help.fleetio.com/en_US": "Kept as the narrowed root: open 'Fleetio Support' knowledge base with 453 English articles in its sitemap.",
+      "https://academy.fleetio.com/": "Kept, null: 'Fleetio Customer Academy' on WorkRamp (redirects to /pages/home); script-only, with no sitemap.",
+      "https://developer.fleetio.com/docs": "Added: 'Fleetio Developer Portal', whose sitemap lists 1,779 /docs URLs (about 1,700 API reference pages plus guides and overview). The root excludes the portal's blog.",
+      "https://www.fleetio.com/training": "Dropped: a single marketing-site page behind a bot challenge that the collector only saw in the sitemap. Fleetio's real training lives on academy.fleetio.com.",
+      "https://www.fleetio.com/faq": "Dropped: a sales FAQ page on the marketing site, behind a bot challenge.",
+      "https://www.fleetio.com/resources/white-papers/fleet-managers-manual": "Rejection stands: an industry white paper."
+    }
+  },
+  "jobber.com": {
+    "keepSources": ["https://help.getjobber.com/", "https://developer.getjobber.com/docs"],
+    "addSources": [
+      {
+        "url": "https://help.getjobber.com/",
+        "kind": "help-center",
+        "root": "https://help.getjobber.com/"
+      },
+      {
+        "url": "https://developer.getjobber.com/docs",
+        "kind": "docs",
+        "root": "https://developer.getjobber.com/docs"
+      }
+    ],
+    "evidence": {
+      "https://help.getjobber.com/": "Added: jobber.com and help.jobber.com redirect to Jobber's real domain getjobber.com / help.getjobber.com. Its readable robots.txt declares a sitemap and a /pagefind/ search index, showing a static article site. Behind a challenge, so not bypassed.",
+      "https://developer.getjobber.com/docs": "Added: a non-challenged 404 response from developer.getjobber.com renders the docs site's nav ('Docs', 'Changelog'); /docs itself is behind the challenge.",
+      "https://www.getjobber.com/academy/": "Not added (unverified): behind a challenge. Jobber Academy is understood to be free business courses for home-service owners (industry education), not product training.",
+      "https://www.getjobber.com/": "Marketing site returns a Cloudflare 403 challenge; not bypassed."
+    }
+  },
+  "watershed.com": {
+    "keepSources": [],
+    "addSources": [],
+    "evidence": {
+      "https://watershed.com/guides": "Dropped: 18 industry guides (CA SB253/SB261, ESRS, Scope 3, state of corporate sustainability). This is content marketing, not instructions for the Watershed product.",
+      "https://watershed.com/sitemap-main.xml": "The full marketing sitemap holds only events, customers, guides, platform, solutions, product-tours (demos) and legal sections; there is no help or docs section.",
+      "help./support./docs./developer(s)./academy.watershed.com": "No DNS; watershed.com/docs and /academy return 404.",
+      "https://learn.watershed.com/": "Unverified, not added: the host exists but CloudFront returns 403 'Request blocked' for /, robots.txt and sitemap.xml, so its content and ownership purpose cannot be confirmed.",
+      "https://dashboard.watershedclimate.com/learn": "Unverified, not added: an in-app Next.js route with empty page props. Any learning content there appears to sit inside the customer app.",
+      "https://watershed.com/community": "Rejection stands: community page."
+    }
+  },
+  "intelex.com": {
+    "keepSources": ["https://support.intelex.com/csm", "https://developers.intelex.com/"],
+    "addSources": [
+      {
+        "url": "https://support.intelex.com/csm",
+        "kind": "help-center",
+        "root": "https://support.intelex.com/csm"
+      },
+      {
+        "url": "https://developers.intelex.com/",
+        "kind": "docs",
+        "root": "https://developers.intelex.com/"
+      }
+    ],
+    "nullSources": ["https://support.intelex.com/csm"],
+    "nullReasons": {
+      "https://support.intelex.com/csm": "ServiceNow customer-support portal titled 'Login - Customer Support' renders only through script behind a login, with no sitemap."
+    },
+    "evidence": {
+      "https://support.intelex.com/": "Root narrowed to /csm, where it redirects; kept as a login-gated help centre (null).",
+      "https://support.intelex.com/csm": "Kept, null: Intelex customer support portal (ServiceNow CSM), login required.",
+      "https://developers.intelex.com/": "Added: open 'Intelex API Reference', a single long Slate page on GitHub Pages (36 h1/h2 sections, no sitemap). Count it as one page.",
+      "https://www.intelex.com/support": "Dropped: a single marketing page, 'Intelex's Approach to Customer Support'.",
+      "https://www.intelex.com/products/applications/training-management-software": "Dropped: a product marketing page for their EHS training-management module.",
+      "https://www.intelex.com/intelex-course-catalog-learning-paths-guide": "Not added: a gated marketing download page for a course-catalog guide, with no public lessons.",
+      "https://www.intelex.com/community": "Rejection stands: community page."
+    }
+  }
+}

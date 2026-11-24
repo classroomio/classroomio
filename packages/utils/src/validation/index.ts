@@ -8,6 +8,7 @@ export * from './block';
 export * from './assets';
 export * from './course';
 export * from './course-import';
+export * from './course-build';
 export * from './exercise';
 export * from './lesson';
 export * from './mail';

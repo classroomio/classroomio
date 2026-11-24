@@ -10,6 +10,13 @@ import { QUEUE_NAMES, type QueueName } from './names';
  * - Light/internal work (emails, notifications, outbox): faster retry,
  *   short retention.
  */
+const COURSE_BUILD_STAGE_DEFAULTS: JobsOptions = {
+  attempts: 2,
+  backoff: { type: 'exponential', delay: 60_000 },
+  removeOnComplete: { age: 7 * 86_400, count: 1_000 },
+  removeOnFail: { age: 14 * 86_400 }
+};
+
 export const QUEUE_DEFAULTS: Record<QueueName, JobsOptions> = {
   [QUEUE_NAMES.media]: {
     attempts: 3,
@@ -68,11 +75,18 @@ export const QUEUE_DEFAULTS: Record<QueueName, JobsOptions> = {
     removeOnFail: { age: 14 * 86_400 }
   },
   [QUEUE_NAMES.onboardingBootstrap]: {
-    attempts: 3,
-    backoff: { type: 'exponential', delay: 30_000 },
+    attempts: 1,
     removeOnComplete: { age: 7 * 86_400, count: 500 },
     removeOnFail: { age: 14 * 86_400 }
   },
+  // Course build stages: one retry. A paid stage that is retried spends again, within the build's budget.
+  [QUEUE_NAMES.courseBuildDiscover]: COURSE_BUILD_STAGE_DEFAULTS,
+  [QUEUE_NAMES.courseBuildRead]: COURSE_BUILD_STAGE_DEFAULTS,
+  [QUEUE_NAMES.courseBuildUnderstand]: COURSE_BUILD_STAGE_DEFAULTS,
+  [QUEUE_NAMES.courseBuildPlan]: COURSE_BUILD_STAGE_DEFAULTS,
+  [QUEUE_NAMES.courseBuildWrite]: COURSE_BUILD_STAGE_DEFAULTS,
+  [QUEUE_NAMES.courseBuildFinish]: COURSE_BUILD_STAGE_DEFAULTS,
+  [QUEUE_NAMES.courseBuildExport]: { ...COURSE_BUILD_STAGE_DEFAULTS, attempts: 3 },
   [QUEUE_NAMES.audience]: {
     // One attempt: the writes are idempotent per member, but a blind retry of a
     // partially-applied chunk would double the audit rows.

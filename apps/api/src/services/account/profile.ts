@@ -24,6 +24,8 @@ import { ROLE } from '@cio/utils/constants';
 import type { TProfile } from '@cio/db/types';
 import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { countOrgTemplates } from '@cio/db/queries/course';
+import { getOnboardingSession } from '@cio/db/queries';
+import type { TOnboardingPhase } from '@cio/utils/constants/onboarding';
 import { env } from '@cio/core/config/env';
 import { getLicenseStatus } from '@cio/core/services/license';
 
@@ -48,6 +50,7 @@ export type GetAccountDataResult = {
   profile: TProfile;
   organizations: OrganizationWithMemberAndPlans[];
   licenseFeatures: string[];
+  onboarding: { phase: TOnboardingPhase; tourStatus: 'pending' | 'active' | 'dismissed' | 'completed' } | null;
 };
 
 /**
@@ -123,10 +126,16 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
     );
   }
 
+  const onboardingSession = await getOnboardingSession(userId);
+  const onboarding = onboardingSession
+    ? { phase: onboardingSession.phase, tourStatus: onboardingSession.tour.status ?? ('pending' as const) }
+    : null;
+
   return {
     profile,
     organizations: organizations.map(hideBillingIdsFromNonStaff),
-    licenseFeatures: isSelfHosted ? licenseStatus.features : []
+    licenseFeatures: isSelfHosted ? licenseStatus.features : [],
+    onboarding
   };
 }
 

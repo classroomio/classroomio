@@ -53,7 +53,7 @@
         <Dialog.Title>{$t('early_adopter_claim.success.title')}</Dialog.Title>
       </Dialog.Header>
       <div class="flex w-full flex-col items-center justify-center gap-4 px-1 text-center">
-        <RocketIcon class="my-3 size-6" color="var(--primary)" />
+        <RocketIcon class="custom my-3 size-6" color="var(--primary)" />
         <p class="text-lg">{$t('pricing.modal.thanks')}</p>
         <p class="mb-4">{$t('early_adopter_claim.success.body')}</p>
         <Button class="w-full sm:w-auto" onclick={closeModal}>{$t('early_adopter_claim.success.continue')}</Button>

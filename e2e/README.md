@@ -46,6 +46,10 @@ Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{
 | `course-settings-people-link` | Self-enrollment description link to the course People page |
 | `customize-lms-student-home` | Customize LMS student-home combobox trigger |
 | `lesson-video-edit` | **Edit** item in a lesson video block's options menu |
+| `courses-list` | Courses page list container (grid and list views); onboarding tour step 1 |
+| `course-card` | Course card (grid) or row (list); onboarding tour takes the first |
+| `course-template-row` | Courses page template row |
+| `visit-org-site` | App header **Open academy** button |
 | `media-upload` | Media page **Upload files** button |
 | `media-upload-menu` | Media page upload-options menu (**Add a video link**) |
 | `media-upload-dialog` | Media upload dialog |
@@ -57,6 +61,13 @@ Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{
 | `media-upload-tray-toggle` | Show or hide the files in the minimized uploader |
 | `media-upload-tray-maximize` | Reopen the upload dialog from the minimized uploader |
 | `media-upload-tray-close` | Dismiss the minimized uploader once nothing is uploading |
+
+### Owner edit bar (public academy)
+
+| ID | Element |
+| --- | --- |
+| `academy-edit-bar` | Owner edit bar on the public catalog and course landing page (rendered only for an org admin or tutor of that org) |
+| `academy-edit-bar-link` | Each action link in the owner edit bar (first is the primary action) |
 
 ## Helpers
 

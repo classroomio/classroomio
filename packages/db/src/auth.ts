@@ -54,6 +54,7 @@ const authInstance = betterAuth({
   user: {
     changeEmail: {
       enabled: true,
+      updateEmailWithoutVerification: true,
       sendChangeEmailConfirmation
     }
   },

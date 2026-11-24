@@ -15,6 +15,7 @@
   import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
   import SettingsSidebar from '$features/ui/sidebar/settings-sidebar.svelte';
   import { AddOrgModal } from '$features/org';
+  import OnboardingProductTour from '$features/onboarding/components/onboarding-product-tour.svelte';
 
   let { data, children } = $props();
   let paymentBannerHeight = $state(0);
@@ -101,6 +102,7 @@
         <Skeleton class="h-[50vh] w-full rounded-xl" />
       {:else}
         {@render children?.()}
+        <OnboardingProductTour />
       {/if}
     </div>
   </Sidebar.Inset>

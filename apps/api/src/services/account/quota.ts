@@ -52,7 +52,13 @@ export async function getAccountUsage(primaryOrgId: string): Promise<AccountUsag
         tokens: sql<number>`COALESCE(SUM(COALESCE(${schema.aiTokenUsage.costUnits}, ${schema.aiTokenUsage.promptTokens} + ${schema.aiTokenUsage.completionTokens})), 0)`
       })
       .from(schema.aiTokenUsage)
-      .where(and(inArray(schema.aiTokenUsage.orgId, orgIds), gte(schema.aiTokenUsage.createdAt, since)))
+      .where(
+        and(
+          inArray(schema.aiTokenUsage.orgId, orgIds),
+          eq(schema.aiTokenUsage.countsTowardBalance, true),
+          gte(schema.aiTokenUsage.createdAt, since)
+        )
+      )
       .groupBy(schema.aiTokenUsage.orgId)
   ]);
 

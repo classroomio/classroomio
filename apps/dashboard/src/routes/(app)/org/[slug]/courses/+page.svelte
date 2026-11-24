@@ -1,5 +1,6 @@
 <script lang="ts">
   import CoursesPage from '$features/course/pages/courses.svelte';
+  import OnboardingWelcomeDialog from '$features/onboarding/components/onboarding-welcome-dialog.svelte';
   import TemplateRow from '$features/course/components/template-row.svelte';
   import { MachineEmptyCourses } from '@cio/ui/custom/animation';
   import { isStudentExperience } from '$lib/utils/store/app';
@@ -29,6 +30,8 @@
   import { onMount } from 'svelte';
   import * as Page from '@cio/ui/base/page';
   import { coursesApi } from '$features/course/api/courses.svelte';
+  import { BuildingCoursesCard } from '$features/course-build';
+  import { isOrgAdmin } from '$lib/utils/store/org';
 
   let { data } = $props();
 
@@ -233,11 +236,16 @@
   </div>
 {/snippet}
 
+<OnboardingWelcomeDialog hasCourses={data.courses.length > 0} />
+
 <Page.Root class="w-full gap-0">
   {#if !$isStudentExperience}
     <TemplateRow />
   {/if}
   <div class="mx-auto w-full max-w-6xl px-4 pt-3">
+    {#if $isOrgAdmin && !$isStudentExperience}
+      <BuildingCoursesCard />
+    {/if}
     <Page.Body>
       {#snippet child()}
         <CoursesPage

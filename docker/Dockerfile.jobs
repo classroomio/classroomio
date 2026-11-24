@@ -25,6 +25,12 @@ COPY . .
 
 RUN pnpm install --offline --frozen-lockfile --ignore-scripts \
     --store-dir /pnpm/store --filter @cio/jobs-worker...
+# Headless Chromium for the course builder's page renderer. It adds a few hundred MB; build with
+# INSTALL_CHROMIUM=false when COURSE_BUILDER_RENDERER_CDP_URL points at a hosted browser.
+ARG INSTALL_CHROMIUM=true
+RUN if [ "$INSTALL_CHROMIUM" = "true" ]; then \
+      cd apps/jobs && node node_modules/playwright-core/cli.js install --with-deps chromium-headless-shell; \
+    fi
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 # Build the worker and all its workspace deps in topological order.
 RUN pnpm -r --filter @cio/jobs-worker... build

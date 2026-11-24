@@ -47,6 +47,7 @@ vi.mock('@api/services/organization/invite', () => inviteMocks);
 vi.mock('@api/services/exercise', () => ({}));
 vi.mock('@api/routes/organization/assets', () => ({ assetsRouter: new Hono() }));
 vi.mock('@api/routes/organization/ai-tutor', () => ({ organizationAiTutorRouter: new Hono() }));
+vi.mock('@api/routes/organization/course-build', () => ({ organizationCourseBuildRouter: new Hono() }));
 vi.mock('@api/routes/organization/automation', () => ({ automationRouter: new Hono() }));
 vi.mock('@api/routes/organization/member-email-notifications', () => ({
   organizationMemberEmailNotificationsRouter: new Hono()

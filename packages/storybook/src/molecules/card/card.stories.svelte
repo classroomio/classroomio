@@ -121,3 +121,17 @@
     </Card.Root>
   {/snippet}
 </Story>
+
+<Story name="With Notch">
+  {#snippet template()}
+    <Card.Root class="w-full max-w-sm" notch>
+      <Card.Header>
+        <Card.Title>Your workspace</Card.Title>
+        <Card.Description>The notch cuts a tab out of the top edge.</Card.Description>
+      </Card.Header>
+      <Card.Content>
+        <p>Card content goes here.</p>
+      </Card.Content>
+    </Card.Root>
+  {/snippet}
+</Story>

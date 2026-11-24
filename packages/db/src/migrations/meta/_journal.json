@@ -379,6 +379,13 @@
       "when": 1795015813395,
       "tag": "0053_webhook_subscriptions",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1795015813396,
+      "tag": "0054_onboarding_v2",
+      "breakpoints": true
     }
   ]
 }

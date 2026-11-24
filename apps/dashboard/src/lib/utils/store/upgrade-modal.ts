@@ -15,6 +15,11 @@ export const UPGRADE_CONFIRMATION_PARAM = 'confirmation';
  */
 export const isUpgradeModalOpen = writable(false);
 
+/** What the user was trying to use when the modal opened, so the prompt can name it. */
+export type UpgradeModalContext = { kind: 'agent-model'; modelName: string };
+
+export const upgradeModalContext = writable<UpgradeModalContext | null>(null);
+
 type UpgradeCheckoutHandoff = () => void;
 
 const checkoutHandoffs = new Set<UpgradeCheckoutHandoff>();
@@ -38,7 +43,8 @@ export function runUpgradeCheckoutHandoffs() {
 }
 
 /** Opens the in-app upgrade modal. Safe to use directly as an event handler. */
-export function openUpgradeModal() {
+export function openUpgradeModal(context?: UpgradeModalContext) {
+  upgradeModalContext.set(context ?? null);
   isUpgradeModalOpen.set(true);
 }
 
@@ -63,6 +69,7 @@ export function openUpgradeModalOver(paramsToRemove: string[]) {
 
 export function closeUpgradeModal() {
   isUpgradeModalOpen.set(false);
+  upgradeModalContext.set(null);
 }
 
 /**

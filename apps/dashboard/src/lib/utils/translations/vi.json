@@ -149,11 +149,17 @@
     },
     "site_name": {
       "min_char": "Tên miền phụ của Học viện phải chứa 5 ký tự trở lên",
-      "hyphen_rule": "Tên miền phụ của Học viện không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+      "hyphen_rule": "Tên miền phụ của Học viện không thể bắt đầu hoặc kết thúc bằng dấu gạch nối",
+      "characters": "Tên miền phụ của học viện chỉ có thể chứa chữ cái, số và dấu gạch nối",
+      "max_char": "Tên miền phụ của học viện không được vượt quá 63 ký tự",
+      "taken": "Tên miền phụ này đã được dùng. Hãy thử tên khác.",
+      "reserved": "Tên miền phụ này được bảo lưu. Hãy thử tên khác.",
+      "invalid": "Nhập tên miền phụ học viện hợp lệ"
     },
     "organization_name": {
       "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
-      "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+      "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối",
+      "max_char": "Tên tổ chức không được vượt quá 120 ký tự"
     },
     "user_profile": {
       "email": "Địa chỉ email không hợp lệ",
@@ -181,6 +187,9 @@
       "event_types": {
         "required": "Chọn ít nhất một sự kiện"
       }
+    },
+    "organization": {
+      "theme_color": "Nhập màu dạng hex, ví dụ #1d4ed8"
     }
   },
   "generic": {
@@ -626,7 +635,10 @@
     "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai.",
     "unlock_field": "Nâng cấp để mở khóa cài đặt này",
     "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook.",
-    "zapier_required": "Zapier yêu cầu gói Early Adopter hoặc Enterprise."
+    "zapier_required": "Zapier yêu cầu gói Early Adopter hoặc Enterprise.",
+    "context": {
+      "model": "{model} có trong các gói trả phí."
+    }
   },
   "student_progress": {
     "courses": "Khóa học",
@@ -3131,7 +3143,9 @@
           "documentation_url": {
             "label": "URL tài liệu (tùy chọn)",
             "hint": "Chúng tôi sẽ đọc trang web này để xây dựng khóa học về sản phẩm thực của bạn."
-          }
+          },
+          "feature_name": "Khách hàng nên áp dụng tính năng nào?",
+          "certification_topic": "Mọi người phải được chứng nhận về nội dung gì?"
         },
         "expert_on_x": {
           "title": "Trở thành chuyên gia về X",
@@ -3147,6 +3161,21 @@
           "title": "Khóa học sản phẩm 101",
           "description": "Một khóa học cơ bản hướng dẫn khách hàng cách sử dụng sản phẩm của bạn.",
           "form_title": "Hãy cho chúng tôi biết về sản phẩm của bạn"
+        },
+        "support_product_training": {
+          "title": "Đào tạo sản phẩm cho hỗ trợ",
+          "description": "Một khóa đào tạo sản phẩm giúp đội ngũ hỗ trợ giải đáp câu hỏi của khách hàng mà không cần chuyển tuyến.",
+          "form_title": "Hãy cho chúng tôi biết về đội ngũ hỗ trợ của bạn"
+        },
+        "feature_adoption": {
+          "title": "Khóa học ngắn về áp dụng tính năng",
+          "description": "Một khóa học ngắn đưa khách hàng hiện có từ việc biết đến một tính năng sang sử dụng nó.",
+          "form_title": "Hãy cho chúng tôi biết về tính năng"
+        },
+        "compliance_certification": {
+          "title": "Chứng nhận tuân thủ",
+          "description": "Một khóa học chứng nhận với bài đánh giá cần đạt và chứng chỉ có thể tải xuống.",
+          "form_title": "Hãy cho chúng tôi biết về chứng nhận"
         }
       }
     },
@@ -3227,7 +3256,8 @@
       "student_empty_description": "Hiện chưa có khóa học nào trong tổ chức này. Vui lòng kiểm tra lại sau.",
       "updated_at": "Đã cập nhật {date}",
       "lessons_count": "{count, plural, other {# bài học}}",
-      "exercises_count": "{count, plural, other {# bài tập}}"
+      "exercises_count": "{count, plural, other {# bài tập}}",
+      "sample": "Mẫu"
     },
     "course_filter": {
       "date_created_newest": "Ngày tạo: Mới nhất trước",
@@ -4869,7 +4899,382 @@
       "footer": "Nguồn mở · Tự lưu trữ hoặc đám mây",
       "headline": "Hãy ngừng đào tạo mọi khách hàng {highlight}.",
       "headline_highlight": "bằng tay",
-      "subtitle": "Thiết lập một lần, đăng ký hàng loạt khách hàng của bạn thông qua API. Sau đó theo dõi tiến trình của họ bằng phân tích."
+      "subtitle": "Thiết lập một lần, đăng ký hàng loạt khách hàng của bạn thông qua API. Sau đó theo dõi tiến trình của họ bằng phân tích.",
+      "machine_label": "Một dây chuyền đào tạo di chuyển bài học, bài kiểm tra và bài tập",
+      "carousel_label": "Khách hàng nói gì",
+      "dot_label": "Lời chứng thực {number}",
+      "quotes": {
+        "quickeasy": {
+          "quote": "Chúng tôi thích nó vì nó giúp gửi tài liệu đào tạo đến khách hàng, đồng thời khách hàng có thể theo dõi tiến độ của nhân viên.",
+          "role": "Giám đốc điều hành"
+        },
+        "dr_ozzy": {
+          "quote": "ClassroomIO giúp tôi tập trung vào trải nghiệm học tập thay vì bị cuốn vào một nền tảng phức tạp.",
+          "role": "Điều phối viên chương trình học thuật"
+        },
+        "oss_capital": {
+          "quote": "Nền tảng mã nguồn mở tuyệt vời để tổ chức các bootcamp công nghệ.",
+          "role": "Nhà sáng lập và Thành viên điều hành"
+        }
+      }
+    },
+    "v2": {
+      "common": {
+        "back": "Quay lại",
+        "continue": "Tiếp tục"
+      },
+      "steps": {
+        "account": "Tạo tài khoản",
+        "business": "Doanh nghiệp của bạn",
+        "workspace": "Học viện của bạn",
+        "customise": "Tùy chỉnh",
+        "build": "Tạo"
+      },
+      "account": {
+        "title": "Tạo tài khoản của bạn",
+        "subtitle": "Khởi chạy học viện mang thương hiệu của bạn cho khách hàng. Miễn phí cho {count} học viên đầu tiên, không cần thẻ.",
+        "google": "Tiếp tục với Google",
+        "google_terms": "Bằng cách tiếp tục, bạn đồng ý với",
+        "terms_link": "Điều khoản dịch vụ",
+        "privacy_link": "Chính sách quyền riêng tư",
+        "and": "và",
+        "fullname_label": "Họ và tên",
+        "fullname_placeholder": "Joke Silva",
+        "email_label": "Email công việc",
+        "email_placeholder": "you@yourcompany.com",
+        "password_strength": "Độ mạnh mật khẩu",
+        "show_password": "Hiện mật khẩu",
+        "hide_password": "Ẩn mật khẩu",
+        "terms_label": "Tôi đồng ý với các điều khoản",
+        "submit": "Tạo tài khoản",
+        "have_account": "Đã có tài khoản?",
+        "sign_in": "Đăng nhập",
+        "panel_footer": "Mã nguồn mở · Tự lưu trữ hoặc đám mây",
+        "errors": {
+          "fullname": "Nhập họ và tên của bạn (ít nhất 5 ký tự).",
+          "email": "Nhập địa chỉ email công việc hợp lệ.",
+          "terms": "Vui lòng chấp nhận các điều khoản để tiếp tục.",
+          "generic": "Chúng tôi không thể tạo tài khoản của bạn. Hãy thử lại."
+        },
+        "or": "hoặc",
+        "password_label": "Mật khẩu",
+        "password_placeholder": "Ít nhất 8 ký tự"
+      },
+      "business": {
+        "eyebrow": "Về doanh nghiệp của bạn",
+        "heading": "Cho chúng tôi biết về nhóm của bạn",
+        "heading_highlight": "nhóm của bạn",
+        "subtitle": "Mỗi câu trả lời thêm một khối vào không gian làm việc của bạn. Chúng tôi dùng chúng để soạn các khóa học khởi đầu.",
+        "foothold": "Bạn có thể thay đổi tất cả những điều này sau.",
+        "now": "Bây giờ",
+        "answered": "Đã trả lời",
+        "optional": "Tùy chọn",
+        "skip": "Bỏ qua",
+        "save_error": "Chúng tôi không thể lưu câu trả lời của bạn. Chúng sẽ được lưu lại khi bạn thay đổi điều gì đó.",
+        "counter_short": "{count} / 5",
+        "items": {
+          "outcome": "Mục tiêu đầu tiên",
+          "business": "Doanh nghiệp của bạn",
+          "team": "Nhóm của bạn",
+          "learning": "Khách hàng học như thế nào hiện nay",
+          "source": "Bạn biết đến chúng tôi từ đâu?",
+          "academy": "Học viện của bạn"
+        },
+        "missing": {
+          "outcome": "Chọn một mục tiêu đầu tiên.",
+          "business": "Thêm trang web của bạn hoặc mô tả những gì bạn cung cấp.",
+          "team": "Chọn vai trò và quy mô công ty của bạn.",
+          "learning": "Chọn cách khách hàng học hiện nay."
+        },
+        "outcomes": {
+          "onboard_customers": {
+            "label": "Tiếp nhận khách hàng mới",
+            "hint": "Lộ trình tiếp nhận khách hàng mới"
+          },
+          "explain_product": {
+            "label": "Giải thích sản phẩm của chúng tôi",
+            "hint": "Các khóa học hướng dẫn cơ bản"
+          },
+          "increase_adoption": {
+            "label": "Tăng mức độ sử dụng",
+            "hint": "Lộ trình sau khi ra mắt"
+          },
+          "cut_tickets": {
+            "label": "Giảm yêu cầu lặp lại",
+            "hint": "Khóa học với các câu hỏi thường gặp"
+          }
+        },
+        "context": {
+          "website": "URL trang web",
+          "description": "Mô tả doanh nghiệp của bạn"
+        },
+        "website_label": "Trang web",
+        "website_placeholder": "congtycuaban.vn",
+        "description_label": "Mô tả doanh nghiệp của bạn",
+        "description_placeholder": "Bạn cung cấp gì và ai sử dụng?",
+        "description_helper": "Thêm một hoặc hai câu để chúng tôi có thể soạn các khóa học phù hợp.",
+        "no_ai_hint": "Chúng tôi sẽ bắt đầu với các khóa học mẫu mà bạn có thể chỉnh sửa.",
+        "skip_analysis": "Bỏ qua phân tích trang web",
+        "errors": {
+          "website_invalid": "Liên kết đó có vẻ không đúng. Kiểm tra chính tả, hoặc mô tả doanh nghiệp của bạn.",
+          "website_required": "Thêm trang web của bạn hoặc mô tả doanh nghiệp của bạn.",
+          "description_required": "Cho chúng tôi biết thêm một chút: ít nhất 20 ký tự."
+        },
+        "role_label": "Bạn là",
+        "size_label": "Quy mô công ty",
+        "roles": {
+          "founder": "Nhà sáng lập hoặc CEO",
+          "customer_success": "Thành công khách hàng",
+          "customer_education": "Giáo dục khách hàng",
+          "product": "Sản phẩm",
+          "marketing": "Marketing hoặc Tăng trưởng",
+          "support": "Hỗ trợ",
+          "operations": "Vận hành",
+          "other": "Điều khác"
+        },
+        "learning": {
+          "self_serve_short": "Tự tìm hiểu",
+          "live_short": "Buổi học trực tiếp",
+          "help_docs_short": "Tài liệu trợ giúp",
+          "no_training_short": "Chưa có đào tạo"
+        },
+        "source_label": "Bạn tìm thấy chúng tôi ở đâu?",
+        "source_other_label": "Cho chúng tôi biết thêm",
+        "ai_provider_label": "Ai đã giới thiệu chúng tôi?",
+        "ai_provider_other_label": "Trợ lý nào?",
+        "preview": {
+          "title": "Không gian làm việc của bạn đến nay",
+          "counter": "Không gian làm việc của bạn, {count} / {total} khối",
+          "stack_label": "Các khối không gian làm việc của bạn",
+          "description": "Mô tả của bạn",
+          "samples": "Khóa học mẫu",
+          "workspace_placeholder": "Học viện của bạn",
+          "choose_outcome": "Chọn một mục tiêu đầu tiên",
+          "choose_size": "Chọn quy mô",
+          "choose_role": "Chọn vai trò",
+          "choose_one": "Chọn một",
+          "kind": {
+            "workspace": "Không gian làm việc",
+            "outcome": "Mục tiêu đầu tiên",
+            "team": "Nhóm",
+            "role": "Vai trò",
+            "today": "Hôm nay"
+          }
+        },
+        "skipped": "Đã bỏ qua",
+        "save_retrying": "Không thể lưu. Đang thử lại.",
+        "next": "Tiếp",
+        "context_hint": "Được dùng để chọn và soạn các khóa học khởi đầu của bạn.",
+        "describe_instead": "Mô tả thay thế",
+        "source_hint": "Giúp một nhóm nhỏ biết điều gì hiệu quả.",
+        "other_placeholder": "Cho chúng tôi biết thêm",
+        "more_roles": "Thêm",
+        "greeting": "Xin chào,",
+        "greeting_placeholder": "user.name",
+        "sizes": {
+          "solo": "Chỉ mình tôi",
+          "small": "2-9 người",
+          "medium": "10-50 người",
+          "large": "51-200 người",
+          "enterprise": "Trên 200 người"
+        }
+      },
+      "workspace": {
+        "title": "Thiết lập học viện của bạn",
+        "heading": "Thiết lập học viện của bạn",
+        "heading_highlight": "học viện",
+        "subtitle": "Cho chúng tôi biết bạn là ai và khách hàng sẽ tìm thấy bạn ở đâu.",
+        "fullname_label": "Họ và tên của bạn là gì?",
+        "fullname_hint": "Đây là cách đồng nghiệp và học viên sẽ thấy bạn.",
+        "org_name_label": "Tên tổ chức của bạn là gì?",
+        "site_name_label": "Tên miền phụ của học viện",
+        "site_name_placeholder": "truongcuatoi",
+        "checking": "Đang kiểm tra tính khả dụng",
+        "available": "Tên miền phụ khả dụng",
+        "save_continue": "Lưu và tiếp tục",
+        "errors": {
+          "fullname": "Nhập họ và tên của bạn (ít nhất 5 ký tự)."
+        },
+        "panel_eyebrow": "Sắp xong",
+        "panel_title": "Học viện của bạn, được đặt tên và hoạt động trong vài phút.",
+        "panel_title_highlight": "được đặt tên",
+        "panel_body": "Chọn tên và địa chỉ mà khách hàng của bạn sẽ thấy. Bạn có thể thay đổi cả hai sau trong phần cài đặt.",
+        "panel_machine_label": "Một dây chuyền đào tạo đưa bài học, bài kiểm tra và bài tập tiến lên",
+        "fullname_placeholder": "Joke Silva",
+        "org_name_placeholder": "ví dụ: Tên trường của tôi"
+      },
+      "preparing": {
+        "title": "Đang chuẩn bị không gian làm việc của bạn",
+        "counter": "Bước {current} / {total}",
+        "subtitle": "Đang tạo bản nháp đầu tiên của {orgName}.",
+        "subtitle_sample": "Đang thiết lập các khóa học mẫu mà bạn có thể chỉnh sửa.",
+        "headings": {
+          "understanding": "Đang đọc hiểu doanh nghiệp của bạn",
+          "drafting": "Đang soạn các khóa học của bạn",
+          "organising": "Đang sắp xếp các khóa học của bạn",
+          "finishing": "Đang thiết lập không gian làm việc của bạn"
+        },
+        "rows": {
+          "understanding": "Hiểu sản phẩm của bạn",
+          "drafting": "Chuẩn bị nội dung giáo dục khách hàng của bạn",
+          "organising": "Sắp xếp các khóa học khởi đầu của bạn",
+          "finishing": "Thiết lập không gian làm việc của bạn"
+        },
+        "states": {
+          "done": "Xong",
+          "now": "Đang chạy",
+          "waiting": "Đang chờ"
+        },
+        "checklist_label": "Tiến độ thiết lập không gian làm việc",
+        "warning": {
+          "title": "Chúng tôi không thể đọc trang web của bạn",
+          "body": "Chúng tôi đã dùng các khóa học mẫu thay thế. Bạn có thể chỉnh sửa hoặc tạo lại sau khi hoàn tất."
+        },
+        "failed_partial": {
+          "title": "Chúng tôi không thể hoàn tất việc soạn khóa học của bạn",
+          "body": "Chúng tôi đã dùng các khóa học mẫu thay thế. Bạn có thể chỉnh sửa hoặc tạo lại sau khi hoàn tất."
+        },
+        "failed": {
+          "title": "Chúng tôi không thể chuẩn bị khóa học của bạn",
+          "body": "Không gian làm việc của bạn vẫn an toàn. Chỉ các khóa học khởi đầu bị lỗi."
+        },
+        "try_again": "Thử lại",
+        "continue_without": "Tiếp tục mà không có chúng",
+        "headings_highlight": {
+          "understanding": "doanh nghiệp",
+          "drafting": "khóa học",
+          "organising": "khóa học",
+          "finishing": "không gian làm việc"
+        }
+      },
+      "customise": {
+        "title": "Tùy chỉnh học viện của bạn",
+        "eyebrow": "Học viện của bạn",
+        "heading": "Biến nó thành của bạn",
+        "heading_highlight": "của bạn",
+        "progress_label": "Tiến độ tiếp nhận",
+        "skip_to_academy": "Chuyển đến học viện",
+        "name_label": "Tên học viện",
+        "colour_label": "Màu thương hiệu",
+        "colours": {
+          "blue": "Xanh dương",
+          "rose": "Hồng",
+          "green": "Xanh lá",
+          "orange": "Cam",
+          "purple": "Tím"
+        },
+        "colour_custom": "Tùy chỉnh",
+        "colour_input_label": "Màu HEX hoặc RGB",
+        "colour_hint": "Điều khiển nút và liên kết trên học viện của bạn.",
+        "colour_apply": "Áp dụng",
+        "colour_invalid": "Dùng giá trị HEX như #5B5FEF hoặc RGB như rgb(91, 95, 239).",
+        "colour_contrast": "Độ tương phản thấp. Các liên kết trên học viện của bạn sẽ khó đọc.",
+        "colour_reset": "Đã đặt lại màu thương hiệu.",
+        "reset": "Đặt lại",
+        "themes_label": "Chủ đề",
+        "theme_free": "Miễn phí",
+        "theme_included": "Đã bao gồm",
+        "theme_premium": "Cao cấp",
+        "plan_free": "{theme} · Miễn phí",
+        "plan_premium": "{theme} · Cao cấp",
+        "upgrade": {
+          "title": "{theme} là chủ đề cao cấp",
+          "body": "Mọi chủ đề trừ Quartz đều có trong các gói trả phí.",
+          "preview": "Xem {theme} trước"
+        },
+        "subtitle": "Đặt tên, thêm logo và màu sắc, rồi chọn chủ đề. Bạn có thể thay đổi tất cả sau này.",
+        "preview_label": "Xem trước",
+        "previewing_label": "Xem trước",
+        "preview_frame_label": "Học viện của bạn, như khách truy cập sẽ thấy",
+        "use_theme": "Dùng chủ đề này",
+        "apply_theme": "Áp dụng chủ đề",
+        "edit_name": "Sửa tên và logo học viện",
+        "logo_drop": "Thả logo của bạn vào đây",
+        "logo_choose": "hoặc nhấp để chọn · PNG, JPG hoặc SVG",
+        "logo_not_image": "Tệp đó không phải là hình ảnh.",
+        "logo_added": "Đã thêm logo",
+        "logo_shown": "Hiển thị trên cổng thông tin của bạn",
+        "logo_remove": "Xóa",
+        "logo_use_detected": "Dùng logo từ trang web của bạn",
+        "colour_presets_label": "Màu thương hiệu có sẵn",
+        "colour_from_website": "Từ trang web của bạn",
+        "colour_custom_title": "Màu tùy chỉnh",
+        "colour_format_label": "Định dạng màu",
+        "colour_format_hex": "HEX",
+        "colour_format_rgb": "RGB",
+        "colour_picker_label": "Chọn màu tùy chỉnh",
+        "colour_contrast_title": "Độ tương phản thấp.",
+        "colour_contrast_body": "Các liên kết trong học viện của bạn sẽ khó đọc.",
+        "colour_adjusted": "Chúng tôi đã làm màu từ trang web của bạn tối đi một chút để chữ vẫn dễ đọc.",
+        "theme_select": "Chọn {theme}",
+        "theme_selected": "Đã chọn {theme}",
+        "theme_upgrade": "Nâng cấp để dùng {theme}",
+        "theme_preview": "Xem trước {theme}",
+        "more_actions": "Thao tác khác"
+      },
+      "starter": {
+        "button": "Nội dung khởi đầu",
+        "title": "Nội dung khởi đầu",
+        "body": "Được soạn từ những gì bạn đã cho chúng tôi biết. Đổi tên hoặc xóa bất cứ thứ gì. Mọi thứ vẫn là bản nháp cho đến khi bạn xuất bản.",
+        "draft_badge": "Bản nháp",
+        "title_required": "Thêm tiêu đề.",
+        "remove": "Xóa",
+        "removed": "Đã xóa \"{title}\".",
+        "undo": "Hoàn tác",
+        "empty": "Không có khóa học khởi đầu. Bạn có thể tạo khóa học của riêng mình từ bảng điều khiển.",
+        "regenerate": "Tạo lại",
+        "regenerate_exhausted": "Bạn đã dùng hết số lần tạo lại.",
+        "regenerate_confirm": "Thao tác này thay thế các bản nháp hiện tại, bao gồm cả tên đã đổi. Tiếp tục?",
+        "regenerate_yes": "Thay thế bản nháp",
+        "done": "Xong"
+      },
+      "welcome": {
+        "title": "Chào mừng đến không gian làm việc của bạn",
+        "body_samples": "Chúng tôi đã thêm vài khóa học mẫu để bạn bắt đầu. Bạn có thể thoải mái chỉnh sửa, xuất bản hoặc xóa chúng.",
+        "body_empty": "Không gian làm việc của bạn đã sẵn sàng. Tạo khóa học bất cứ khi nào bạn muốn.",
+        "later": "Để sau",
+        "take_tour": "Tham quan"
+      },
+      "load_error": {
+        "title": "Không thể tải thiết lập của bạn",
+        "body": "Kiểm tra kết nối và thử lại. Câu trả lời của bạn đã được lưu.",
+        "retry": "Thử lại"
+      },
+      "tour": {
+        "region": "Hướng dẫn sản phẩm",
+        "counter": "{position} trên {total}",
+        "next": "Tiếp",
+        "back": "Quay lại",
+        "done": "Xong",
+        "skip": "Bỏ qua hướng dẫn",
+        "hint_click": "Nhấp để tiếp tục",
+        "steps": {
+          "courses-list": {
+            "title": "Khám phá các khóa học của bạn",
+            "body": "Các khóa học khởi đầu của bạn ở đây. Chúng vẫn là bản nháp cho đến khi bạn xuất bản."
+          },
+          "open-course": {
+            "title": "Mở một khóa học",
+            "body": "Mở khóa học đầu tiên để xem và sửa các bài học."
+          },
+          "templates": {
+            "title": "Tạo khóa học khác",
+            "body": "Bắt đầu với khóa học trống hoặc chọn mẫu từ thư viện."
+          },
+          "landing-page": {
+            "title": "Thiết kế trang đích của bạn",
+            "body": "Chọn chủ đề, sửa các phần và xem bản xem trước thay đổi khi bạn nhập."
+          },
+          "audience": {
+            "title": "Mời học viên của bạn",
+            "body": "Thêm học viên và giảng viên, và xem ai đã tham gia."
+          },
+          "academy": {
+            "title": "Xem trước học viện của bạn",
+            "body": "Mở học viện của bạn để xem những gì học viên thấy."
+          }
+        }
+      }
     }
   },
   "new_course_modal": {
@@ -5998,7 +6403,9 @@
         "attach_document_to_lesson": "Thêm tài liệu",
         "get_lesson_history": "Đọc lịch sử bài học",
         "restore_lesson_version": "Khôi phục phiên bản cũ hơn",
-        "undo_lesson_change": "Hoàn tác một thay đổi"
+        "undo_lesson_change": "Hoàn tác một thay đổi",
+        "get_workspace_context": "Đang đọc cài đặt thương hiệu của bạn",
+        "update_course_certificate": "Đang bật chứng chỉ"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# ký tự} other {# ký tự}})",
@@ -6052,7 +6459,9 @@
         "attach_document_to_lesson": "Tài liệu đã thêm: {title}",
         "get_lesson_history": "Đã tải lịch sử bài học",
         "restore_lesson_version": "Đã khôi phục phiên bản trước của bài học",
-        "undo_lesson_change": "Đã hoàn tác thay đổi"
+        "undo_lesson_change": "Đã hoàn tác thay đổi",
+        "get_workspace_context": "Đã đọc không gian làm việc · {count} mục",
+        "update_course_certificate": "Đã bật chứng chỉ có thể tải xuống"
       }
     },
     "student_empty_state": "Hãy hỏi tôi bất cứ điều gì về khóa học này - nhận lời giải thích, tự kiểm tra hoặc tóm tắt những gì bạn đang đọc.",
@@ -8010,5 +8419,18 @@
     },
     "close": "Đóng",
     "dismiss": "Hiểu rồi"
+  },
+  "owner_edit_bar": {
+    "label": "Đang xem với tư cách chủ sở hữu",
+    "region_label": "Công cụ chủ sở hữu học viện",
+    "catalog": {
+      "edit_courses": "Sửa khóa học",
+      "edit_page_design": "Sửa thiết kế trang"
+    },
+    "course": {
+      "edit_landing_page": "Sửa trang đích",
+      "edit_lessons": "Sửa bài học",
+      "settings": "Cài đặt"
+    }
   }
 }

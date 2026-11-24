@@ -18,6 +18,8 @@
     orgSlug?: string | null;
     /** Sidebar: utm_source override (default distinguishes LMS attribution). */
     sidebarUtmSource?: string;
+    /** Floating: lift above the owner edit bar below the md breakpoint. */
+    offset?: boolean;
   };
 
   let {
@@ -26,7 +28,8 @@
     showOnlyLogo = false,
     courseSlug = null,
     orgSlug = null,
-    sidebarUtmSource = 'lms-sidebar'
+    sidebarUtmSource = 'lms-sidebar',
+    offset = false
   }: Props = $props();
 
   const attributionOrgSlug = $derived(orgSlug ?? $currentOrg.siteName ?? null);
@@ -47,7 +50,7 @@
   <a
     href={`https://classroomio.com?utm_source=${$currentOrg.siteName}.${TENANT_ROOT_DOMAIN}`}
     target="_blank"
-    class={cn('group fixed right-9 bottom-14 z-50 hover:no-underline', className)}
+    class={cn('group fixed right-9 bottom-14 z-50 hover:no-underline', offset && 'max-md:bottom-28', className)}
   >
     <span
       class={cn(

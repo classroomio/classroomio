@@ -148,7 +148,7 @@
   </Page.BodyHeader>
 </div>
 
-<div class="mx-auto mt-4 w-full flex-1">
+<div class="mx-auto mt-4 w-full flex-1" data-testid="courses-list">
   {#if isLoading}
     <section class={`${isLoading || courses ? 'cards-container' : ''} `}>
       <CourseCardLoader />

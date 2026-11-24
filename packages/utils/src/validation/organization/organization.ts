@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 
-import { ROLE, blockedSubdomain } from '@cio/utils/constants';
+import { ORG_THEME_NAMES, ROLE, blockedSubdomain } from '@cio/utils/constants';
 import { ZCourseType } from '../course/course-type';
 import { containsDisallowedHrefs } from '../shared';
 import { ZStudentHomeDestination } from './student-home';
@@ -174,7 +174,12 @@ export const ZUpdateOrganization = z.object({
     .optional(),
   avatarUrl: z.url().optional(),
   favicon: z.union([z.url(), z.null()]).optional(),
-  theme: z.string().optional(),
+  theme: z
+    .string()
+    .refine((val) => ORG_THEME_NAMES.includes(val) || /^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(val), {
+      message: 'Theme must be a named theme or a #rrggbb or #rrggbbaa colour'
+    })
+    .optional(),
   landingpage: z
     .record(z.string(), z.unknown())
     .optional()

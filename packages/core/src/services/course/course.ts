@@ -304,7 +304,7 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
  */
 export async function createCourse(
   profileId: string,
-  data: TCourseCreate & { bannerImage?: string },
+  data: TCourseCreate & { bannerImage?: string; seedKey?: string },
   source: TEventSource = 'dashboard'
 ): Promise<{ course: TCourse; groupId: string; memberId: string }> {
   try {
@@ -331,6 +331,7 @@ export async function createCourse(
           type: data.type,
           groupId: newGroup.id,
           ...(data.bannerImage ? { bannerImage: data.bannerImage, logo: data.bannerImage } : {}),
+          ...(data.seedKey ? { seedKey: data.seedKey } : {}),
           compliance: data.compliance ? sanitizeUnknownStrings(data.compliance) : undefined
         },
         tx
