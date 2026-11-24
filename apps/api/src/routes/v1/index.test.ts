@@ -32,7 +32,10 @@ vi.mock('@api/middlewares/rate-limiter', () => ({
       }
     },
   createRateLimiter:
-    (options: { keyGenerator: (context: Context) => string }) => async (context: Context, next: Next) => {
+    (options: { keyGenerator: (context: Context) => string; skip?: (context: Context) => boolean }) =>
+    async (context: Context, next: Next) => {
+      if (options.skip?.(context)) return next();
+
       const key = options.keyGenerator(context);
       const result = await mocks.isAllowed(key);
 
@@ -55,10 +58,22 @@ vi.mock('@api/routes/v1/audience', () => ({
   v1AudienceRouter: new Hono().get('/', (c) => c.json({ success: true }))
 }));
 
-vi.mock('@api/routes/v1/courses', () => ({
-  v1CoursesRouter: new Hono().get('/', (c) => c.json({ success: true }))
-}));
+vi.mock('@api/routes/v1/courses', async () => {
+  const { v1CourseEnrollmentsRouter } = await import('@api/routes/v1/courses/enrollments');
+  return {
+    v1CoursesRouter: new Hono()
+      .get('/', (c) => c.json({ success: true }))
+      .route('/:courseId/enrollments', v1CourseEnrollmentsRouter)
+  };
+});
 
+import { generateSpecs } from 'hono-openapi';
+import {
+  enrichPublicApiOpenApiSpec,
+  OAUTH_API_SCOPES,
+  PUBLIC_API_BEARER_SCHEME,
+  PUBLIC_API_OAUTH_SCHEME
+} from '@cio/utils/openapi/public-api';
 import { v1Router } from './index';
 
 const CLIENT_IP = '203.0.113.10';
@@ -217,5 +232,79 @@ describe('public API rate limiting', () => {
     expect(responseStatuses.filter((status) => status === 429)).toHaveLength(1);
     expect(mocks.authenticate).toHaveBeenCalledTimes(PUBLIC_API_FAILED_AUTH_MAX_REQUESTS);
     expect(mocks.releaseFailure).not.toHaveBeenCalled();
+  });
+});
+
+describe('v1 OpenAPI specification', () => {
+  it('documents automation and enrollment routes with their tags, summaries and OAuth2 security scheme', async () => {
+    const app = new Hono().route('/public-api/v1', v1Router);
+    const spec = enrichPublicApiOpenApiSpec((await generateSpecs(app)) as never) as {
+      paths: Record<string, Record<string, { summary?: string; tags?: string[]; security?: unknown[] }>>;
+      tags: Array<{ name: string; description?: string }>;
+      components: {
+        securitySchemes: Record<string, { type: string; flows?: { authorizationCode: Record<string, unknown> } }>;
+      };
+      security: unknown[];
+    };
+
+    const me = spec.paths['/public-api/v1/me'];
+    const subscriptions = spec.paths['/public-api/v1/webhooks/subscriptions'];
+    const subscriptionItem = spec.paths['/public-api/v1/webhooks/subscriptions/{subscriptionId}'];
+    const samples = spec.paths['/public-api/v1/webhooks/samples'];
+    const enrollments = spec.paths['/public-api/v1/courses/{courseId}/enrollments'];
+
+    expect(me.get).toMatchObject({
+      summary: 'Get the current connection',
+      tags: ['Connection']
+    });
+
+    expect(subscriptions.post).toMatchObject({
+      summary: 'Create a webhook subscription',
+      tags: ['Webhook Subscriptions']
+    });
+
+    expect(subscriptionItem.delete).toMatchObject({
+      summary: 'Delete a webhook subscription',
+      tags: ['Webhook Subscriptions']
+    });
+
+    expect(samples.get).toMatchObject({
+      summary: 'List sample events',
+      tags: ['Webhook Subscriptions']
+    });
+
+    expect(enrollments.post).toMatchObject({
+      summary: 'Enroll a student by email',
+      tags: ['Course Members']
+    });
+
+    const tagNames = spec.tags.map((tag) => tag.name);
+    expect(tagNames).toContain('Connection');
+    expect(tagNames).toContain('Webhook Subscriptions');
+
+    const oauthScheme = spec.components.securitySchemes[PUBLIC_API_OAUTH_SCHEME];
+    expect(oauthScheme).toMatchObject({
+      type: 'oauth2',
+      flows: {
+        authorizationCode: {
+          authorizationUrl: 'https://app.classroomio.com/api/auth/oauth2/authorize',
+          tokenUrl: 'https://app.classroomio.com/api/auth/oauth2/token'
+        }
+      }
+    });
+
+    const flow = oauthScheme.flows?.authorizationCode;
+    const scopes = flow?.scopes as Record<string, string>;
+    for (const scope of OAUTH_API_SCOPES) {
+      expect(typeof scopes[scope]).toBe('string');
+    }
+    expect(scopes['public_api:*']).toBeUndefined();
+
+    expect(spec.security).toEqual([{ [PUBLIC_API_BEARER_SCHEME]: [] }, { [PUBLIC_API_OAUTH_SCHEME]: [] }]);
+    expect(me.get.security).toEqual([{ [PUBLIC_API_BEARER_SCHEME]: [] }, { [PUBLIC_API_OAUTH_SCHEME]: [] }]);
+    expect(subscriptions.post.security).toEqual([
+      { [PUBLIC_API_BEARER_SCHEME]: [] },
+      { [PUBLIC_API_OAUTH_SCHEME]: [] }
+    ]);
   });
 });

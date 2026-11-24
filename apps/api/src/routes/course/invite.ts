@@ -20,21 +20,15 @@ import {
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
-import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { createCourseInviteRateLimit } from '@api/middlewares/course-invite-rate-limit';
 import { extractClientIp } from '@api/utils/redis/key-generators';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
-/** Capped per actor: invite creation mints tokens and fans out emails. */
-const createInviteRateLimit = createRateLimiter({
-  windowMs: 60 * 60 * 1000,
-  maxRequests: 60,
-  message: 'Too many invite creation attempts. Please try again later.',
-  keyGenerator: (c) => {
-    const user = c.get('user');
-    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
-    return `course_invite_create:${actor}:${c.req.param('courseId')}`;
-  }
+const createInviteRateLimit = createCourseInviteRateLimit((c) => {
+  const userId = c.get('user')?.id;
+
+  return userId ? { userId } : { ip: extractClientIp(c) };
 });
 
 export const invitesRouter = new Hono()

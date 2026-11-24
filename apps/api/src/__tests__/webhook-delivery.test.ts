@@ -18,6 +18,7 @@ import {
   WEBHOOK_MAX_ATTEMPTS,
   WEBHOOK_REQUEST_TIMEOUT_MS,
   WEBHOOK_RESPONSE_BODY_LIMIT,
+  WEBHOOK_RETENTION_DAYS,
   WEBHOOK_RETRY_DELAYS_MS
 } from '@cio/utils/constants/webhook';
 
@@ -47,6 +48,9 @@ function buildEndpoint(path: string): TWebhookEndpoint {
     lastDeliveryAt: null,
     createdByProfileId: null,
     updatedByProfileId: null,
+    oauthConsentId: null,
+    filterCourseId: null,
+    filterCohortId: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -163,6 +167,16 @@ describe('attemptWebhookDelivery', () => {
     expect(result.errorMessage).toBe('Endpoint responded with HTTP 500');
     expect(result.nextAttemptAt!.getTime() - before).toBeGreaterThanOrEqual(WEBHOOK_RETRY_DELAYS_MS[0] - 50);
     expect(result.nextAttemptAt!.getTime() - before).toBeLessThan(WEBHOOK_RETRY_DELAYS_MS[0] + 2_000);
+  });
+
+  it('retries for about 2.6 hours across five retries', () => {
+    expect(WEBHOOK_MAX_ATTEMPTS).toBe(6);
+    expect(WEBHOOK_RETRY_DELAYS_MS).toEqual([10_000, 60_000, 300_000, 1_800_000, 7_200_000]);
+
+    const totalRetryMs = WEBHOOK_RETRY_DELAYS_MS.reduce((sum, delay) => sum + delay, 0);
+
+    expect(totalRetryMs).toBeGreaterThan(2.5 * 60 * 60 * 1000);
+    expect(WEBHOOK_RETENTION_DAYS * 24 * 60 * 60 * 1000).toBeGreaterThan(totalRetryMs);
   });
 
   it('gives up after the final attempt', async () => {

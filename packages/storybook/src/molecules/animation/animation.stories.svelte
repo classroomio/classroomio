@@ -24,6 +24,7 @@
     MachineSpectrum,
     MachineTrackRunner,
     MachineTrainingLine,
+    MachineZapierNoZaps,
     MagicCard,
     Meteors,
     ShimmerButton,
@@ -408,6 +409,17 @@
       <MachineBlankLesson
         label="An empty lesson page where a cursor starts writing the title"
         heading="LEÇON"
+        class="h-64"
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineZapierNoZaps">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineZapierNoZaps
+        label="A switchboard where a cable plugs Zapier into Slack, HubSpot and email in turn while events travel out from ClassroomIO and replies travel back"
         class="h-64"
       />
     </div>

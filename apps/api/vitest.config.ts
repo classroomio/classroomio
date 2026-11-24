@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
@@ -21,6 +21,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // These need a real Postgres; run them with `test:db` and TEST_DATABASE_URL.
+    exclude: [...configDefaults.exclude, '**/__tests__/db/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

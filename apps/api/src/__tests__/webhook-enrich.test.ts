@@ -60,7 +60,8 @@ const memberSource = {
   inviteLinkId: null,
   cohortId: null,
   programId: null,
-  apiKeyId: null
+  apiKeyId: null,
+  oauthClientId: null
 };
 
 const certificate = {

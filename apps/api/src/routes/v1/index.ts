@@ -17,9 +17,11 @@ import { v1CourseTemplatesRouter } from './course-templates';
 import { v1CoursesRouter } from './courses';
 import { v1MediaRouter } from './media';
 import { v1ExerciseTemplatesRouter } from './exercise-templates';
+import { v1MeRouter } from './me';
 import { v1OrganizationRouter } from './organization';
 import { v1TeamRouter } from './team';
 import { v1TagsRouter } from './tags';
+import { v1WebhooksRouter } from './webhooks';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -51,4 +53,6 @@ export const v1Router = new Hono()
   .route('/cohorts', v1CohortsRouter)
   .route('/assets', v1MediaRouter)
   .route('/exercise-templates', v1ExerciseTemplatesRouter)
-  .route('/tags', v1TagsRouter);
+  .route('/tags', v1TagsRouter)
+  .route('/me', v1MeRouter)
+  .route('/webhooks', v1WebhooksRouter);

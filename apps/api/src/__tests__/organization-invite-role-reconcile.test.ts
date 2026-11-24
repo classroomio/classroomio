@@ -390,7 +390,13 @@ describe('team invitations for existing members', () => {
     vi.clearAllMocks();
     vi.mocked(getOrganizationById).mockResolvedValue({ id: ORG_ID, name: 'Acme', siteName: 'acme' } as never);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'student@example.com', profileId: 'student-1', roleId: ROLE.STUDENT, hasLapsedInvite: false }
+      {
+        normalizedEmail: 'student@example.com',
+        profileId: 'student-1',
+        roleId: ROLE.STUDENT,
+        status: 'ACTIVE',
+        hasLapsedInvite: false
+      }
     ]);
     vi.mocked(revokeActiveOrganizationInvitesByEmails).mockResolvedValue([]);
     vi.mocked(createOrganizationInvite).mockResolvedValue({ id: 'new-role-invite' } as never);
@@ -444,8 +450,20 @@ describe('team invitations for existing members', () => {
 
   it('requires confirmation again when another student is discovered', async () => {
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'student@example.com', profileId: 'student-1', roleId: ROLE.STUDENT, hasLapsedInvite: false },
-      { normalizedEmail: 'new@example.com', profileId: 'student-2', roleId: ROLE.STUDENT, hasLapsedInvite: false }
+      {
+        normalizedEmail: 'student@example.com',
+        profileId: 'student-1',
+        roleId: ROLE.STUDENT,
+        status: 'ACTIVE',
+        hasLapsedInvite: false
+      },
+      {
+        normalizedEmail: 'new@example.com',
+        profileId: 'student-2',
+        roleId: ROLE.STUDENT,
+        status: 'ACTIVE',
+        hasLapsedInvite: false
+      }
     ]);
 
     const result = await inviteTeamMembers(ORG_ID, ['student@example.com', 'new@example.com'], ROLE.TUTOR, USER.id, [
@@ -461,7 +479,7 @@ describe('team invitations for existing members', () => {
     'reports an existing team role %s instead of pretending to send',
     async (roleId) => {
       vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-        { normalizedEmail: 'staff@example.com', profileId: 'staff-1', roleId, hasLapsedInvite: false }
+        { normalizedEmail: 'staff@example.com', profileId: 'staff-1', roleId, status: 'ACTIVE', hasLapsedInvite: false }
       ]);
 
       const result = await inviteTeamMembers(ORG_ID, ['staff@example.com', 'new@example.com'], ROLE.ADMIN, USER.id);
