@@ -42,6 +42,7 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
 1. **Collect inputs.** You need the source recording and a transcript with word timings. A YouTube auto-caption VTT is best (`yt-dlp --write-auto-subs --sub-format vtt --skip-download <url>`). SRT or `[[seconds, "word"], …]` JSON also work; SRT words are spread across each cue, so they land less precisely. Ask the user where the files are. Never assume a path.
 2. **Look before you cut.**
    - Grab a few frames from the source to learn the framing: talking head or screen, and where the speaker sits.
+   - For a screen demo, check frames across every clip window, not just the start. Recorder exports (Cap, Screen Studio) can bake in zooms, a floating or large camera, or a 608 px wide mobile screen, any of which hides the thing being demoed. When they do, rebuild the source from the recorder's raw screen and camera tracks instead of cutting the export (see `references/recorder-sources.md`).
    - Read the transcript with `cio-video words project.json --start 0 --end 300`.
    - Pick windows that stand alone: one idea, a strong first line, a full-sentence ending.
 3. **Write `project.json`** next to the source. Start from `templates/project.example.json` (talking head) or `templates/project.screen.example.json` (screen recording). `references/project-file.md` lists every field.
@@ -50,7 +51,7 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
    - Tie each visual to the phrase that introduces it.
    - For news, verify the claim with web search, capture the real article with `cio-video screenshot`, crop it, and credit it on screen.
    - Ask the user for anything the web won't give you, such as banners or logged-in pages.
-   - The hook is a 2–5 s line from the same clip.
+   - Leave `hook` out unless the user asks for one. A line lifted from the middle of a clip and played first reads as a non sequitur; the user rejected them on 2026-11-17. When asked for, it is a 2–5 s line from the same clip.
 6. **Preview one clip** with `cio-video render project.json --clip 01 --out preview/`, then build its QA sheet. Show the user before rendering the rest: hooks, visual choices and split versus full are taste calls.
 7. **Render everything.** Run `cio-video render project.json --jobs 3`, then `captions`, `thumbnails` and `guide`. Write the copy in each clip's `posts`, following `docs/content.md`.
 8. **QA.** Run `cio-video qa project.json`. Every row must read `ok`: at least 90% of words landing on speech. Then look at every contact sheet in `<work>/qa/`:
@@ -63,11 +64,18 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
    - facts and sources
    - visuals that are illustrative rather than real
 
+## Where the output goes
+
+- **Marketing cuts** go in `~/Videos/marketing/<slug>/`, one folder per topic (for example `404-game`, `claude-connector`). The clips sit at the top of the folder, and the project file, transcript and caches sit in `project/`. This covers any short or social clip made to promote a feature, even when it is cut from a changelog recording or links to the changelog.
+- **Changelog videos** go in `company/changelogs/<number>-<range>/video/`. Only the changelog itself belongs there: the full walkthrough, its per-feature YouTube videos and the intro that the `write-changelog` skill publishes.
+- Once a marketing topic has been posted, its folder is renamed with a `[posted] ` prefix (`[posted] claude-connector`). A folder without the prefix is still waiting to be posted.
+- When it is unclear which kind a job is, ask before rendering.
+
 ## Ask the user, don't assume
 
-- Where the source and transcript are, and where the output should go.
+- Where the source and transcript are, and where the output should go (see above).
 - News and third-party pages: real credited screenshots, or brand cards that quote the headline.
-- Which formats get the hook (the default is 9:16 only).
+- Whether they want a hook at all (default: no hook).
 - The sign-off headline and the series eyebrow (`INSIGHTS`, `PRODUCT TOUR`, `CHANGELOG`, …).
 - Anything said on camera about customers, numbers or other companies that will be published.
 

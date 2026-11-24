@@ -162,7 +162,9 @@ def clip_words(words, clip):
     last = raw[-1][0]
     following = [t for t, _ in words if t > last + 0.01]
     next_start = following[0] if following else last + 1.0
-    cut_end = min(next_start, last + 1.0) + 0.25
+    cut_end = min(next_start - 0.05, last + 1.25)
+    if clip.get('hard_end') is not None:
+        cut_end = min(cut_end, clip['hard_end'])
 
     drop = {core(word) for word in clip.get('drop_words', [])}
     tokens = [(t, w) for t, w in raw if core(w) not in drop]
