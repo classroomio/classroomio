@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Courses - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="cohorts.css" />
+    <script src="cohorts.js"></script>
+    <style>
+      .list-head { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+      .list-head h2 { font-size: 15px; font-weight: 500; margin: 0 auto 0 0; }
+      .band { background: var(--sidebar); border-bottom: 1px solid var(--border); }
+      .band-inner { width: min(1040px, 100% - 48px); margin: 0 auto; padding: 18px 0 22px; }
+      .band-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 500; }
+      .tpl-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+      .tpl { font-size: 13px; }
+      .tpl .th { aspect-ratio: 16 / 10; border: 1px solid var(--border); border-radius: var(--radius-md); background-size: cover; background-position: center; margin-bottom: 6px; }
+      .tpl .th.blank { background: var(--card); display: grid; place-items: center; color: var(--muted-foreground); }
+      .tpl .s { color: var(--muted-foreground); font-size: 12px; }
+      @media (max-width: 860px) { .tpl-row { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-org-sidebar></div>
+      <div class="main">
+        <div data-app-header="Courses"></div>
+        <section class="band">
+          <div class="band-inner">
+            <div class="band-head">Create a new course <a class="btn btn-ghost btn-sm" href="#">Template gallery <span data-icon="chevUpDown"></span></a></div>
+            <div class="tpl-row">
+              <div class="tpl"><div class="th blank"><span data-icon="plus"></span></div>Blank course<div class="s">Start from scratch</div></div>
+              <div class="tpl"><div class="th" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=70&auto=format&fit=crop')"></div>Customer Onboarding Academy<div class="s">by ClassroomIO</div></div>
+              <div class="tpl"><div class="th" style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=70&auto=format&fit=crop')"></div>Product Training: Power User Path<div class="s">by ClassroomIO</div></div>
+              <div class="tpl"><div class="th" style="background-image:url('https://images.unsplash.com/photo-1516414447565-b14be0adf13e?w=400&q=70&auto=format&fit=crop')"></div>Customer Education 101<div class="s">by ClassroomIO · Free course</div></div>
+              <div class="tpl"><div class="th" style="background-image:url('https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&q=70&auto=format&fit=crop')"></div>Annual Security &amp; Privacy Awareness<div class="s">by ClassroomIO</div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" style="padding-top: 22px">
+          <div class="alert alert-information" id="suggest" data-state-view="before" style="margin-bottom: 18px">
+            <span data-icon="merge"></span>
+            <div class="alert-title">7 courses look like copies of Data Analysis</div>
+            <div class="alert-description">Merge them into one course with a cohort per copy. Students keep their progress, grades and certificates, and you can undo the merge for 30 days.</div>
+            <div class="alert-actions"><a class="btn btn-primary btn-sm" href="merge.html" data-testid="course-merge-start">Review and merge</a><button class="btn btn-ghost btn-sm" id="dismiss">Dismiss</button></div>
+          </div>
+          <div class="alert alert-default" data-state-view="after" style="margin-bottom: 18px">
+            <span data-icon="check"></span>
+            <div class="alert-title">Data Analysis now runs 7 cohorts</div>
+            <div class="alert-description">6 copies were merged on Nov 16. You can undo until Dec 16, 2026 from <a href="course.html?page=settings#merge-history">Settings → Merge history</a>.</div>
+          </div>
+
+          <div class="list-head">
+            <h2>Your courses</h2>
+            <div class="searchbox"><span data-icon="search"></span>Find Course</div>
+            <button class="btn btn-outline btn-sm"><span data-icon="filter"></span>Filter</button>
+            <a class="btn btn-outline btn-sm" href="merge.html"><span data-icon="merge"></span>Merge courses</a>
+            <button class="icon-btn" aria-label="Toggle view"><span data-icon="grid"></span></button>
+          </div>
+          <div class="cgrid" id="grid"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">State</span>
+      <button data-state="before">Before merge (7 copies)</button>
+      <button data-state="after">After merge</button>
+      <button data-state="undone">Merge undone</button>
+      <button id="open-dup">Duplicate a cohort course</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const OTHER_COURSES = [
+        { id: 'react', title: 'Modern Web Development with React', type: 'Self paced', lessons: 7, exercises: 3, students: 128, image: 'photo-1619410283995-43d9134e7656' },
+        { id: 'mvc', title: 'Getting started with MVC', type: 'Self paced', lessons: 3, exercises: 3, students: 0, image: 'photo-1542831371-29b0f74f9713' },
+        { id: 'pandas', title: 'Data Science with Python and Pandas', type: 'Self paced', lessons: 3, exercises: 3, students: 64, image: 'photo-1460925895917-afdab827c52f' }
+      ];
+
+      function typeBadge(type) {
+        const icon = type === 'Live class' ? '<span class="sdot" style="background:#ef4444"></span>' : ICONS.user;
+        return `<span class="badge badge-secondary">${icon}${type}</span>`;
+      }
+
+      function card(course, { href = '#', menu = '', note = '' } = {}) {
+        return `<div class="ccard">
+          <div class="banner" style="background-image:url('${unsplash(course.image)}')">${typeBadge(course.type)}</div>
+          ${menu ? `<button class="icon-btn kebab" data-menu="m-${course.id}" aria-label="Course actions">${ICONS.more}</button><div class="menu" data-menu-for="m-${course.id}" hidden>${menu}</div>` : ''}
+          <a class="body" href="${href}"><div class="title">${course.title}</div>${note ? `<div class="desc">${note}</div>` : ''}</a>
+          <div class="foot"><span class="badge badge-success-soft">Published</span><span class="r">${course.lessons} lessons &amp; ${course.exercises} exercises<br />${course.students} students</span></div>
+        </div>`;
+      }
+
+      const baseMenu = (id, extra) => `<button class="menu-item">${ICONS.ext}View course site</button><div class="menu-sep"></div><button class="menu-item" data-dup="${id}">${ICONS.copy}Duplicate</button>${extra}<button class="menu-item">${ICONS.share}Share</button><button class="menu-item">${ICONS.invite}Invite</button><div class="menu-sep"></div><button class="menu-item" style="color:var(--destructive)">${ICONS.trash}Delete</button>`;
+
+      function renderGrid(state) {
+        const grid = document.getElementById('grid');
+        if (state === 'after') {
+          const merged = { id: 'da', title: COURSE.title, type: 'Live class', lessons: LESSON_COUNT, exercises: EXERCISE_COUNT, students: TOTAL_STUDENTS, image: 'photo-1551288049-bebda4e38f71' };
+          grid.innerHTML =
+            card(merged, { href: 'course.html?page=people', note: `${COHORTS.length} cohorts · ${TOTAL_STUDENTS} students`, menu: baseMenu('da', '') }) +
+            OTHER_COURSES.map((course) => card(course, { menu: baseMenu(course.id, '') })).join('');
+        } else {
+          const copies = COPIES.map((copy) =>
+            card({ ...copy, type: 'Live class' }, { href: '#', menu: baseMenu(copy.id, `<a class="menu-item" href="merge.html?from=${copy.id}">${ICONS.merge}Merge with other copies…</a>`) })
+          ).join('');
+          grid.innerHTML = copies + OTHER_COURSES.map((course) => card(course, { menu: baseMenu(course.id, '') })).join('');
+        }
+        bindMenus(grid);
+        grid.querySelectorAll('[data-dup]').forEach((button) => button.addEventListener('click', () => openDuplicate(button.dataset.dup)));
+      }
+
+      /** Duplicate on a course linked to a cohort offers a cohort first (PRD §9). */
+      function openDuplicate(courseId) {
+        const linked = courseId === 'da' || COPIES.some((copy) => copy.id === courseId && copy.cohort);
+        if (!linked) {
+          toast('Course duplicated · lineage recorded, exercise due dates kept');
+          return;
+        }
+
+        openDialog(
+          `<div class="dialog-head"><h2 class="dialog-title">Running this course again?</h2><p class="dialog-desc">${COURSE.title} is linked to ${COHORTS.length} cohorts. A new cohort reuses the same content, so edits reach every batch.</p></div>
+          <div class="dialog-body">
+            <label class="optrow"><input type="radio" class="radio" name="dup" value="cohort" checked /><div><div style="font-weight:500">Run a new cohort <span class="badge badge-primary-soft" style="margin-left:4px">Recommended</span></div><div class="d">Same course, new group of students with its own schedule, submissions and newsfeed.</div></div></label>
+            <label class="optrow"><input type="radio" class="radio" name="dup" value="copy" /><div><div style="font-weight:500">Duplicate anyway</div><div class="d">A separate course with its own copy of every lesson and exercise. Later edits won’t sync.</div></div></label>
+          </div>
+          <div class="dialog-foot"><button class="btn btn-outline btn-sm" data-close>Cancel</button><button class="btn btn-primary btn-sm" id="dup-go">Continue</button></div>`,
+          {
+            onMount(root, close) {
+              root.querySelector('#dup-go').addEventListener('click', () => {
+                const choice = root.querySelector('input[name="dup"]:checked').value;
+                close();
+                if (choice === 'cohort') openRunCohortDialog();
+                else toast(`Duplicated as “${COURSE.title} (copy)” · lineage recorded, due dates kept`);
+              });
+            }
+          }
+        );
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        mountOrgShell('Courses');
+        finishMount();
+        document.addEventListener('statechange', (event) => {
+          renderGrid(event.detail === 'after' ? 'after' : 'before');
+          if (event.detail === 'undone') toast('Merge undone · 7 courses restored with their students and activity');
+          document.getElementById('suggest').classList.toggle('shown', event.detail === 'before');
+        });
+        bindStatePicker('before');
+        document.getElementById('dismiss').addEventListener('click', () => document.getElementById('suggest').classList.remove('shown'));
+        document.getElementById('open-dup').addEventListener('click', () => openDuplicate('da'));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Course Cohorts · Prototype map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="cohorts.css" />
+    <script src="cohorts.js"></script>
+    <style>
+      .map { width: min(860px, 100% - 32px); margin: 0 auto; padding: 56px 0 80px; }
+      .row { display: flex; gap: 14px; align-items: baseline; padding: 13px 4px; border-bottom: 1px solid var(--border); color: inherit; }
+      .row:hover b { text-decoration: underline; }
+      .row b { font-weight: 500; font-size: 14.5px; min-width: 230px; }
+      .row span { color: var(--muted-foreground); font-size: 13.5px; line-height: 1.5; }
+      h2 { font-size: 12px; font-weight: 500; color: var(--muted-foreground); margin: 34px 0 4px; }
+      .flow { font-size: 13.5px; color: var(--muted-foreground); line-height: 2; }
+      .flow a { color: var(--foreground); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+      .flow a:hover { text-decoration-color: currentColor; }
+      .pillrow { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+  </head>
+  <body>
+    <div class="map">
+      <div class="pillrow"><span class="pill">Prototype · UX source of truth</span><button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button></div>
+      <h1 class="page-title" style="font-size: 30px; margin-top: 16px">Course cohorts</h1>
+      <p class="page-sub" style="max-width: 660px; line-height: 1.6">
+        Run one course for many batches. Each batch is an existing <b>cohort</b>; the course keeps one copy of its content while each cohort gets its own students, submissions, grades, attendance, newsfeed and schedule. Customers who duplicated a course per batch get a reversible <b>Merge courses</b> flow. Spec: <code>prd/course-cohorts/README.md</code>. Every screen has a state bar in the bottom-left.
+      </p>
+
+      <h2>Journeys</h2>
+      <div class="flow">
+        <b style="color:var(--foreground);font-weight:500">Merge copies:</b> <a href="courses.html">Courses banner</a> → <a href="merge.html">1 Choose</a> → <a href="merge.html?step=2">2 Review (click any chip)</a> → <a href="merge.html?step=3">3 Cohorts</a> → <a href="merge.html?step=4">4 Confirm</a> → merging animation → result → <a href="course.html?page=people">open course</a><br />
+        <b style="color:var(--foreground);font-weight:500">Teach many cohorts:</b> <a href="course.html?page=people">People</a> → cohort filter in the header → <a href="course.html?page=submissions&cohortId=c6">Submissions</a> · <a href="course.html?page=marks&cohortId=c6">Marks</a> · <a href="course.html?page=attendance">Attendance</a> · <a href="course.html?page=analytics">Analytics</a> · <a href="course.html?page=newsfeed">News Feed</a> (the filter follows you)<br />
+        <b style="color:var(--foreground);font-weight:500">Per-cohort schedule:</b> <a href="lesson.html?item=l33&settings=1">Live lesson → Lesson settings → Schedule by cohort</a> → click a cohort (Course · Custom · None) · <a href="lesson.html?item=e4&settings=1">Exercise due dates</a><br />
+        <b style="color:var(--foreground);font-weight:500">Run a new cohort:</b> <a href="courses.html?state=after">Course ⋯ → Duplicate</a> → “Run a new cohort” → copy schedule, shift 14 days → <a href="cohort.html?state=created">new cohort’s Courses</a><br />
+        <b style="color:var(--foreground);font-weight:500">Undo:</b> <a href="course.html?page=settings#merge-history">Settings → Merge history</a> → Undo preview → <a href="merge.html?undo=1">split animation</a> → <a href="courses.html?state=undone">copies restored</a><br />
+        <b style="color:var(--foreground);font-weight:500">Students:</b> <a href="student.html?page=content">Cohort 6 student</a> (own dates, drip locks, posts) · <a href="student.html?page=content&persona=retake">retake student</a> with the Previous enrollment switch
+      </div>
+
+      <h2>Admin & instructor screens</h2>
+      <a class="row" href="courses.html"><b>Courses page</b><span>Copy-detection Alert (“7 courses look like copies of Data Analysis”), Merge courses toolbar button, “Merge with other copies…” in the card ⋯ menu. After-merge and undone states. Duplicate on a cohort course asks “Run a new cohort” first.</span></a>
+      <a class="row" href="merge.html"><b>Merge wizard</b><span>Onboarding Stepper moved to @cio/ui. 1 Choose courses + recommended primary with reason · 2 Review grid (Same · Schedule · Differs · Missing · Only here), side-by-side diff Sheet, fuzzy-match confirm, “due dates set by duplication” · 3 Cohorts with roster sync and the blocking conflict state · 4 Confirm in plain language.</span></a>
+      <a class="row" href="merge.html?step=4"><b>Merging → result</b><span>Course cards fly into the primary and stack while the job’s real steps tick off; respects reduced motion. Result card + undo-until callout.</span></a>
+      <a class="row" href="course.html?page=people"><b>Course · People</b><span>Cohort Combobox in the course header: All cohorts · Direct · each cohort with status dot and count. Cohort column in All view, Retake badge, archived/inactive warning, Add people asks which cohort.</span></a>
+      <a class="row" href="course.html?page=submissions"><b>Course · Submissions / Marks</b><span>Same pages, filtered by the chosen cohort. All view adds the cohort label.</span></a>
+      <a class="row" href="course.html?page=attendance"><b>Course · Attendance</b><span>All view is a per-cohort summary (attendance is taken per cohort); a cohort shows its own session dates.</span></a>
+      <a class="row" href="course.html?page=analytics"><b>Course · Analytics</b><span>“Cohorts taking this course” table in All view; click a row to filter. Cohort view shows completion by week.</span></a>
+      <a class="row" href="course.html?page=newsfeed"><b>Course · News Feed</b><span>Posts carry their audience. New post picks Everyone, Direct or one cohort (defaults to the filter).</span></a>
+      <a class="row" href="lesson.html?item=l33&settings=1"><b>Lesson settings · Schedule by cohort</b><span>Live session defaults, then one row per cohort. Each field is Course (inherit), Custom (set) or None (cleared), via ToggleGroup.</span></a>
+      <a class="row" href="course.html?page=settings#merge-history"><b>Course settings · Merge history</b><span>Undo merge with a preview of what comes back and where post-merge activity goes.</span></a>
+      <a class="row" href="cohort.html"><b>Cohort · Courses</b><span>Linking a course asks when it runs and whether to copy another cohort’s schedule, shifted by the gap between start dates.</span></a>
+
+      <h2>Student screens</h2>
+      <a class="row" href="student.html?page=content"><b>Course content</b><span>No cohort picker. Their live-session dates, drip locks (“Unlocks Nov 21”) and due dates.</span></a>
+      <a class="row" href="student.html?item=l43"><b>Live lesson</b><span>Their cohort’s date and call link; recording when the session has passed.</span></a>
+      <a class="row" href="student.html?page=newsfeed"><b>News Feed</b><span>Their cohort’s posts plus posts to everyone.</span></a>
+      <a class="row" href="student.html?page=content&persona=retake"><b>Retake</b><span>Enrolled in Cohort 4 and Cohort 7: a Previous enrollment switch in the header.</span></a>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', finishMount);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live session: SQL joins - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="cohorts.css" />
+    <script src="cohorts.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar></div>
+      <div class="main">
+        <div data-course-header></div>
+        <div class="lhead">
+          <h1 id="item-title"></h1>
+          <span class="grow"></span>
+          <button class="icon-btn" id="open-settings" aria-label="Lesson settings" data-testid="lesson-settings"><span data-icon="settings"></span></button>
+          <button class="icon-btn" aria-label="History"><span data-icon="history"></span></button>
+          <button class="icon-btn" aria-label="Refresh"><span data-icon="refresh"></span></button>
+          <div class="seg-toggle" style="border:1px solid var(--border)"><button class="on"><span data-icon="eye"></span>Preview</button><button><span data-icon="pencil"></span>Edit</button></div>
+        </div>
+        <main class="page narrow" id="canvas" style="padding-top: 24px"></main>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Item</span>
+      <a href="lesson.html?item=l33">Live lesson</a>
+      <a href="lesson.html?item=e4">Exercise</a>
+      <a href="lesson.html?item=l32">Plain lesson</a>
+      <button id="sb-open">Open settings</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const ITEM = findItem(params.get('item') || 'l33');
+      const IS_EXERCISE = ITEM.kind === 'exercise';
+      const IS_LIVE = ITEM.kind === 'live';
+      const SHOWCASE = Boolean(OVERRIDES[ITEM.id]);
+      const FIELDS = IS_EXERCISE
+        ? [
+            { key: 'dueBy', label: 'Due date', type: 'datetime-local', icon: 'calendar' },
+            { key: 'locked', label: 'Access', type: 'lock', icon: 'lock' }
+          ]
+        : [
+            { key: 'lessonAt', label: 'Date & time', type: 'datetime-local', icon: 'calendar' },
+            { key: 'callUrl', label: 'Call link', type: 'text', icon: 'link' },
+            { key: 'recordingUrl', label: 'Recording', type: 'text', icon: 'video' },
+            { key: 'locked', label: 'Access', type: 'lock', icon: 'lock' }
+          ];
+
+      if (!SHOWCASE && (IS_LIVE || IS_EXERCISE)) {
+        const base = generatedDate(ITEM, cohortById('c4'));
+        BASE_SCHEDULE[ITEM.id] = IS_EXERCISE ? { dueBy: `${isoDate(base)}T23:59`, locked: false } : { lessonAt: `${isoDate(base)}T18:00`, callUrl: 'meet.google.com/da-live', recordingUrl: '', locked: false };
+        OVERRIDES[ITEM.id] = Object.fromEntries(
+          COHORTS.map((cohort) => {
+            const date = generatedDate(ITEM, cohort);
+            return [cohort.id, IS_EXERCISE ? { dueBy: ['set', `${isoDate(date)}T23:59`] } : { lessonAt: ['set', `${isoDate(date)}T18:00`] }];
+          }).concat([['direct', {}]])
+        );
+      }
+
+      function valueText(field, resolved) {
+        if (field.type === 'lock') {
+          if (resolved.value) {
+            const unlockAt = resolved.unlockAt?.value;
+            return unlockAt ? `Locked until ${fmtDateTime(unlockAt)}` : 'Locked';
+          }
+          return 'Open';
+        }
+        if (resolved.value === null || resolved.value === '') return field.key === 'recordingUrl' ? 'No recording' : field.key === 'dueBy' ? 'No due date' : 'Not set';
+        return field.type === 'datetime-local' ? fmtDateTime(resolved.value) : resolved.value;
+      }
+
+      function resolveAll(cohortId) {
+        return Object.fromEntries(
+          FIELDS.map((field) => {
+            const resolved = resolveField(ITEM.id, cohortId, field.key);
+            if (field.type === 'lock') resolved.unlockAt = resolveField(ITEM.id, cohortId, 'unlockAt');
+            return [field.key, resolved];
+          })
+        );
+      }
+
+      function renderCanvas() {
+        document.getElementById('item-title').textContent = ITEM.title;
+        const canvas = document.getElementById('canvas');
+        if (IS_EXERCISE) {
+          const due = resolveField(ITEM.id, 'c4', 'dueBy');
+          canvas.innerHTML = `<div class="alert alert-default" style="margin-bottom:18px">${ICONS.calendar}<div class="alert-title">Due dates are set per cohort</div><div class="alert-description">Course default: ${fmtDateTime(BASE_SCHEDULE[ITEM.id].dueBy)}. ${COHORTS.filter((cohort) => OVERRIDES[ITEM.id][cohort.id]?.dueBy).length} cohorts use their own date. <button class="btn-link" data-open-settings>Schedule by cohort</button></div></div>
+            <div class="note-block"><h2 style="margin-top:0">Build a dashboard</h2><p>Use the sales dataset from Week 3. Publish a Looker Studio dashboard with at least three charts and one filter, then paste the link below.</p></div>
+            <div class="scard" style="margin-top:12px"><div class="frow" style="font-size:13.5px"><span class="badge badge-outline">Question 1</span><span class="grow">Paste the link to your published dashboard</span><span class="muted">20 points</span></div></div>`;
+        } else if (IS_LIVE) {
+          const base = BASE_SCHEDULE[ITEM.id];
+          const date = new Date(base.lessonAt);
+          canvas.innerHTML = `<div class="live-card"><div class="cal"><b>${MONTHS[date.getMonth()].toUpperCase()}</b><span>${date.getDate()}</span></div><div class="grow"><div style="font-weight:500">${fmtDateTime(base.lessonAt)} · ${base.duration || 60} min</div><div class="muted" style="font-size:13px">${base.callUrl} · Course default. Each cohort sees its own date and link.</div></div><button class="btn btn-outline btn-sm" data-open-settings>${ICONS.calendar}Schedule by cohort</button></div>
+            <div class="note-block"><h2>Before the session</h2><p>Finish <b>Joins without tears</b> and bring one query that didn’t return what you expected. We’ll debug them together and cover LEFT vs INNER joins, duplicate rows and how to spot a fan-out.</p><h2>Meeting details</h2><p>Cameras optional. The session is recorded and posted on this page within a day.</p></div>`;
+        } else {
+          canvas.innerHTML = `<div class="note-block"><h2 style="margin-top:0">${ITEM.title}</h2><p>This lesson has no schedule, so every cohort sees it the same way. Lock it from <b>Lesson settings → Access</b>, or set a lock per cohort when the lesson is part of a drip schedule.</p></div>`;
+        }
+        canvas.querySelectorAll('[data-open-settings]').forEach((button) => button.addEventListener('click', openSettings));
+      }
+
+      function scheduleRows() {
+        const cohorts = [...COHORTS].reverse().concat([DIRECT]);
+        return cohorts
+          .map((cohort) => {
+            const resolved = resolveAll(cohort.id);
+            const custom = FIELDS.some((field) => resolved[field.key].state !== 'inherit');
+            const vals = FIELDS.map((field) => {
+              const state = resolved[field.key].state;
+              return `<span class="${state === 'set' ? 'set' : state === 'cleared' ? 'clr' : ''}">${ICONS[field.type === 'lock' && !resolved[field.key].value ? 'unlock' : field.icon]}${state === 'cleared' ? valueText(field, { value: null }) : valueText(field, resolved[field.key])}</span>`;
+            }).join('');
+            return `<div class="sched-row" data-cohort="${cohort.id}"><div class="nm"><span class="sdot ${cohort.status}"></span>${cohort.name}<span class="muted" style="font-weight:400;font-size:12px">${cohort.students}</span></div>${custom ? '<span class="badge badge-primary-soft">Custom</span>' : '<span class="badge badge-muted">Same as course</span>'}<div class="vals">${vals}</div></div>`;
+          })
+          .join('');
+      }
+
+      let closeSheet = null;
+      function openSettings() {
+        const base = BASE_SCHEDULE[ITEM.id] || {};
+        const scheduleSection = IS_LIVE || IS_EXERCISE;
+        const baseFields = IS_EXERCISE
+          ? `<div class="field"><label class="label">Due date</label><input class="input" type="datetime-local" value="${base.dueBy}" /></div>`
+          : `<div class="grid2 field"><div><label class="label">Date & time</label><input class="input" type="datetime-local" value="${base.lessonAt}" /></div><div><label class="label">Duration</label><select class="select"><option>${base.duration || 60} minutes</option><option>90 minutes</option></select></div></div><div class="field"><label class="label">Call link</label><input class="input" value="${base.callUrl}" /></div><div class="field"><label class="label">Recording</label><input class="input" value="${base.recordingUrl}" placeholder="Paste a recording link after the session" /></div>`;
+        closeSheet = openSheet(
+          `<div class="sheet-head frow"><div class="grow"><h2 class="dialog-title">${IS_EXERCISE ? 'Exercise' : 'Lesson'} settings</h2><p class="dialog-desc">Manage this ${IS_EXERCISE ? 'exercise' : 'lesson'} without leaving the content canvas.</p></div><button class="icon-btn" data-close aria-label="Close">${ICONS.x}</button></div>
+          <div class="sheet-body">
+            <div class="ls-sec" style="padding-top:4px"><select class="select" style="width:auto">${'<option>English</option>'}</select></div>
+            ${scheduleSection ? `<div class="ls-sec"><h4>${IS_EXERCISE ? 'Due date' : 'Live session'}</h4><p class="sd">The course default. Cohorts without their own value use it.</p>${baseFields}</div>
+            <div class="ls-sec" id="sched"><div class="frow" style="margin-bottom:2px"><h4 class="grow">Schedule by cohort</h4><span class="muted" style="font-size:12px">${COHORTS.length} cohorts + Direct</span></div><p class="sd">Each cohort can set its own ${IS_EXERCISE ? 'due date and lock' : 'date, call link, recording and lock'}. Content stays the same for everyone.</p><div id="sched-rows">${scheduleRows()}</div></div>` : ''}
+            <div class="ls-sec"><h4>Access</h4><p class="sd">Students can’t open a locked ${IS_EXERCISE ? 'exercise' : 'lesson'} until you unlock it.${scheduleSection ? ' Cohorts can override this above.' : ''}</p><label class="frow" style="font-size:14px"><span class="switch"><input type="checkbox" /><span class="track"></span><span class="knob"></span></span>${ICONS.lock}Locked</label></div>
+            <div class="ls-sec"><h4>Progression</h4><p class="sd">Choose how students complete this ${IS_EXERCISE ? 'exercise' : 'lesson'} and move through the course.</p><select class="select" style="max-width:280px"><option>Manual</option></select></div>
+            <div class="ls-sec"><h4>Lesson comments</h4><p class="sd">Students see comments from their own cohort. Staff see every cohort’s comments.</p><label class="frow" style="font-size:14px"><span class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></span>Comments enabled</label></div>
+          </div>`,
+          {
+            width: 480,
+            onMount(sheet) {
+              bindRows(sheet);
+            }
+          }
+        );
+      }
+
+      function bindRows(sheet) {
+        sheet.querySelectorAll('.sched-row').forEach((row) => row.addEventListener('click', () => openCohortSchedule(row.dataset.cohort, sheet)));
+      }
+
+      /** Per-cohort editor: each field is Course (inherit) · Custom (set) · None (cleared). */
+      function openCohortSchedule(cohortId, sheet) {
+        const cohort = cohortById(cohortId);
+        const draft = JSON.parse(JSON.stringify(OVERRIDES[ITEM.id][cohortId] || {}));
+        const rowFor = (field) => {
+          const current = draft[field.key]?.[0] || 'inherit';
+          const baseValue = BASE_SCHEDULE[ITEM.id]?.[field.key];
+          const baseText = field.type === 'lock' ? (baseValue ? 'Locked' : 'Open') : field.type === 'datetime-local' ? fmtDateTime(baseValue) || 'Not set' : baseValue || 'Not set';
+          let control = '';
+          if (current === 'set' && field.type === 'lock') {
+            const unlockAt = draft.unlockAt?.[1] || '';
+            control = `<div class="frow" style="grid-column:2;gap:12px;flex-wrap:wrap"><label class="frow" style="font-size:13.5px"><span class="switch"><input type="checkbox" data-lock ${draft.locked[1] ? 'checked' : ''} /><span class="track"></span><span class="knob"></span></span>Locked</label><label class="frow muted" style="font-size:12.5px">Unlock on <input class="input" type="datetime-local" data-unlock value="${unlockAt}" style="width:auto;padding:4px 8px" /></label></div>`;
+          } else if (current === 'set') {
+            control = `<input class="input" data-input="${field.key}" type="${field.type}" value="${draft[field.key][1] || ''}" />`;
+          } else if (current === 'cleared') {
+            control = `<div class="base" style="color:var(--foreground)">${field.key === 'recordingUrl' ? 'No recording for this cohort' : field.key === 'dueBy' ? 'No due date for this cohort' : field.key === 'callUrl' ? 'No call link for this cohort' : 'Not scheduled for this cohort'}</div>`;
+          }
+          const noneAllowed = field.type !== 'lock';
+          return `<div class="fld-row" data-field="${field.key}"><span class="l">${field.label}</span><div class="tgroup" role="group">${['inherit', 'set', ...(noneAllowed ? ['cleared'] : [])].map((state) => `<button data-state="${state}" class="${current === state ? 'on' : ''}">${{ inherit: 'Course', set: 'Custom', cleared: 'None' }[state]}</button>`).join('')}</div>${control}<span class="base">Course: ${baseText}</span></div>`;
+        };
+        openDialog(
+          `<div class="dialog-head"><h2 class="dialog-title"><span class="sdot ${cohort.status}" style="margin-right:6px"></span>${cohort.name}</h2><p class="dialog-desc">${ITEM.title}${cohort.id === 'direct' ? ' · Direct students follow the course schedule unless you set one.' : ` · ${cohortRange(cohort)}`}</p></div>
+          <div class="dialog-body" style="padding-top:4px"><div id="fld-list">${FIELDS.map(rowFor).join('')}</div></div>
+          <div class="dialog-foot"><button class="btn btn-secondary btn-sm" id="reset-all" style="margin-right:auto">Use course schedule</button><button class="btn btn-outline btn-sm" data-close>Cancel</button><button class="btn btn-primary btn-sm" id="save-cohort">Save</button></div>`,
+          {
+            wide: true,
+            onMount(root, close) {
+              const list = root.querySelector('#fld-list');
+              const sync = () => {
+                list.innerHTML = FIELDS.map(rowFor).join('');
+                bind();
+              };
+              const bind = () => {
+                list.querySelectorAll('.fld-row').forEach((row) => {
+                  const field = FIELDS.find((candidate) => candidate.key === row.dataset.field);
+                  row.querySelectorAll('[data-state]').forEach((button) =>
+                    button.addEventListener('click', () => {
+                      const state = button.dataset.state;
+                      if (state === 'inherit') {
+                        delete draft[field.key];
+                        if (field.type === 'lock') delete draft.unlockAt;
+                      } else if (state === 'cleared') draft[field.key] = ['cleared'];
+                      else draft[field.key] = ['set', field.type === 'lock' ? true : BASE_SCHEDULE[ITEM.id]?.[field.key] || ''];
+                      sync();
+                    })
+                  );
+                  row.querySelector('[data-input]')?.addEventListener('input', (event) => (draft[field.key] = ['set', event.target.value]));
+                  row.querySelector('[data-lock]')?.addEventListener('change', (event) => (draft.locked = ['set', event.target.checked]));
+                  row.querySelector('[data-unlock]')?.addEventListener('input', (event) => (draft.unlockAt = event.target.value ? ['set', event.target.value] : undefined));
+                });
+              };
+              bind();
+              root.querySelector('#reset-all').addEventListener('click', () => {
+                Object.keys(draft).forEach((key) => delete draft[key]);
+                sync();
+              });
+              root.querySelector('#save-cohort').addEventListener('click', () => {
+                OVERRIDES[ITEM.id][cohortId] = draft;
+                close();
+                sheet.querySelector('#sched-rows').innerHTML = scheduleRows();
+                bindRows(sheet);
+                toast(`${cohort.name} schedule saved`);
+              });
+            }
+          }
+        );
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        mountCourseShell({ active: 'Content', label: 'Content', treeOpen: true, activeItemId: ITEM.id });
+        finishMount();
+        renderCanvas();
+        document.getElementById('open-settings').addEventListener('click', openSettings);
+        document.getElementById('sb-open').addEventListener('click', openSettings);
+        document.querySelectorAll('.state-bar a').forEach((link) => link.getAttribute('href').includes(`item=${ITEM.id}`) && (link.style.cssText = 'background:#fff;color:#0a0a0a'));
+        if (params.get('settings') === '1') openSettings();
+      });
+    </script>
+  </body>
+</html>

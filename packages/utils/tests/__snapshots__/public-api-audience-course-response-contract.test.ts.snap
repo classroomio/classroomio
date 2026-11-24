@@ -1475,6 +1475,19 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
       "description": "Deprecated; use bannerImage",
       "type": "string",
     },
+    "mergedIntoCourseId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Reserved for course merging; currently always null",
+    },
     "metadata": {
       "additionalProperties": {},
       "properties": {
@@ -1759,6 +1772,19 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
         },
       ],
     },
+    "sourceCourseId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Reserved for course lineage; currently always null",
+    },
     "status": {
       "description": "ACTIVE, or DELETED once the course is deleted",
       "type": "string",
@@ -1847,6 +1873,8 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "groupId",
     "isTemplate",
     "templateId",
+    "sourceCourseId",
+    "mergedIntoCourseId",
     "publicForAll",
     "seedKey",
     "logo",
@@ -2160,6 +2188,19 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
       "description": "Deprecated; use bannerImage",
       "type": "string",
     },
+    "mergedIntoCourseId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Reserved for course merging; currently always null",
+    },
     "metadata": {
       "additionalProperties": {},
       "properties": {
@@ -2419,6 +2460,19 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
         },
       ],
     },
+    "sourceCourseId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Reserved for course lineage; currently always null",
+    },
     "status": {
       "description": "ACTIVE, or DELETED once the course is deleted",
       "type": "string",
@@ -2507,6 +2561,8 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
     "groupId",
     "isTemplate",
     "templateId",
+    "sourceCourseId",
+    "mergedIntoCourseId",
     "publicForAll",
     "seedKey",
     "logo",
@@ -2813,6 +2869,19 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
       "description": "Deprecated; use bannerImage",
       "type": "string",
     },
+    "mergedIntoCourseId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Reserved for course merging; currently always null",
+    },
     "metadata": {
       "additionalProperties": {},
       "properties": {
@@ -3072,6 +3141,19 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
         },
       ],
     },
+    "sourceCourseId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Reserved for course lineage; currently always null",
+    },
     "status": {
       "description": "ACTIVE, or DELETED once the course is deleted",
       "type": "string",
@@ -3128,6 +3210,8 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
     "groupId",
     "isTemplate",
     "templateId",
+    "sourceCourseId",
+    "mergedIntoCourseId",
     "publicForAll",
     "seedKey",
     "logo",
@@ -4405,6 +4489,19 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
           "description": "Deprecated; use bannerImage",
           "type": "string",
         },
+        "mergedIntoCourseId": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+          "description": "Reserved for course merging; currently always null",
+        },
         "metadata": {
           "additionalProperties": {},
           "properties": {
@@ -4664,6 +4761,19 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
             },
           ],
         },
+        "sourceCourseId": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+          "description": "Reserved for course lineage; currently always null",
+        },
         "status": {
           "description": "ACTIVE, or DELETED once the course is deleted",
           "type": "string",
@@ -4720,6 +4830,8 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
         "groupId",
         "isTemplate",
         "templateId",
+        "sourceCourseId",
+        "mergedIntoCourseId",
         "publicForAll",
         "seedKey",
         "logo",

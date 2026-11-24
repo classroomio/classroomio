@@ -24,6 +24,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
+import type { TCourseMergeStatus } from '@cio/utils/constants/course-merge';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
 import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { EMAIL_LOCALES } from '@cio/utils/email';
@@ -861,6 +862,12 @@ export const course = pgTable(
     groupId: uuid('group_id'),
     isTemplate: boolean('is_template').default(false).notNull(),
     templateId: uuid('template_id').references((): AnyPgColumn => course.id, { onDelete: 'set null' }),
+    /** The course this one was duplicated from. Used to suggest merges. */
+    sourceCourseId: uuid('source_course_id').references((): AnyPgColumn => course.id, { onDelete: 'set null' }),
+    /** Set while `status` is MERGED; the copy's slug redirects to this course. */
+    mergedIntoCourseId: uuid('merged_into_course_id').references((): AnyPgColumn => course.id, {
+      onDelete: 'set null'
+    }),
     publicForAll: boolean('public_for_all').default(false).notNull(),
     seedKey: varchar('seed_key'),
     logo: text().default('').notNull(),
@@ -999,6 +1006,12 @@ export const course = pgTable(
     index('course_template_id_idx')
       .on(table.templateId)
       .where(sql`${table.templateId} is not null`),
+    index('course_source_course_id_idx')
+      .on(table.sourceCourseId)
+      .where(sql`${table.sourceCourseId} is not null`),
+    index('course_merged_into_course_id_idx')
+      .on(table.mergedIntoCourseId)
+      .where(sql`${table.mergedIntoCourseId} is not null`),
     uniqueIndex('course_seed_key_unique')
       .on(table.seedKey)
       .where(sql`${table.seedKey} is not null`)
@@ -1029,6 +1042,85 @@ export const courseTemplateSettingSync = pgTable(
     syncedAt: timestamp('synced_at', { withTimezone: true, mode: 'string' }).notNull()
   },
   (table) => [primaryKey({ columns: [table.courseId, table.settingKey] })]
+);
+
+/** One run of "Merge courses": copies folded into a primary course, undoable until `undoUntil`. */
+export const courseMerge = pgTable(
+  'course_merge',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    primaryCourseId: uuid('primary_course_id').notNull(),
+    copyCourseIds: uuid('copy_course_ids').array().notNull(),
+    /** Match map and per-item actions confirmed in the wizard. */
+    plan: jsonb().notNull().$type<Record<string, unknown>>(),
+    status: varchar().default('PENDING').notNull().$type<TCourseMergeStatus>(),
+    lastError: text('last_error'),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    undoUntil: timestamp('undo_until', { withTimezone: true, mode: 'string' }),
+    revertedAt: timestamp('reverted_at', { withTimezone: true, mode: 'string' }),
+    revertedByProfileId: uuid('reverted_by_profile_id')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'course_merge_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.primaryCourseId],
+      foreignColumns: [course.id],
+      name: 'course_merge_primary_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_merge_created_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.revertedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_merge_reverted_by_profile_id_fkey'
+    }),
+    index('idx_course_merge_organization_id').on(table.organizationId),
+    index('idx_course_merge_primary_course_id').on(table.primaryCourseId),
+    index('idx_course_merge_copy_course_ids').using('gin', table.copyCourseIds)
+  ]
+);
+
+/** Change log of a merge: every column it rewrote, so undo can restore `oldValue`. */
+export const courseMergeChange = pgTable(
+  'course_merge_change',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'course_merge_change_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    mergeId: uuid('merge_id').notNull(),
+    tableName: varchar('table_name').notNull(),
+    rowId: text('row_id').notNull(),
+    columnName: varchar('column_name').notNull(),
+    oldValue: jsonb('old_value'),
+    newValue: jsonb('new_value'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.mergeId],
+      foreignColumns: [courseMerge.id],
+      name: 'course_merge_change_merge_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_course_merge_change_merge_id').on(table.mergeId),
+    index('idx_course_merge_change_table_row').on(table.tableName, table.rowId)
+  ]
 );
 
 export const courseCompletionRecord = pgTable(
@@ -1078,7 +1170,7 @@ export const courseCompletionRecord = pgTable(
       foreignColumns: [profile.id],
       name: 'course_completion_record_waived_by_fkey'
     }).onDelete('set null'),
-    unique('course_completion_record_course_profile_cycle_key').on(table.courseId, table.profileId, table.cycleNumber),
+    unique('course_completion_record_group_member_cycle_key').on(table.groupMemberId, table.cycleNumber),
     index('idx_course_completion_record_course_id').on(table.courseId),
     index('idx_course_completion_record_profile_id').on(table.profileId),
     index('idx_course_completion_record_status').on(table.status),
@@ -1542,6 +1634,8 @@ export const courseInvite = pgTable(
       .primaryKey()
       .notNull(),
     courseId: uuid('course_id').notNull(),
+    /** Set when the invite was created from a cohort's view: it enrolls into that link's group and roster. */
+    cohortCourseId: uuid('cohort_course_id'),
     // Reserved for future invite-role expansion (defaults to student invites)
     roleId: bigint('role_id', { mode: 'number' })
       .default(sql`'3'`)
@@ -1586,6 +1680,11 @@ export const courseInvite = pgTable(
       foreignColumns: [role.id],
       name: 'course_invite_role_id_fkey'
     }),
+    foreignKey({
+      columns: [table.cohortCourseId],
+      foreignColumns: [cohortCourse.id],
+      name: 'course_invite_cohort_course_id_fkey'
+    }).onDelete('cascade'),
     unique('course_invite_token_hash_key').on(table.tokenHash),
     index('idx_course_invite_course_id').on(table.courseId),
     index('idx_course_invite_expires_at').on(table.expiresAt),
@@ -1800,6 +1899,8 @@ export const lessonVideoProgress = pgTable(
       .notNull(),
     lessonId: uuid('lesson_id').notNull(),
     profileId: uuid('profile_id').notNull(),
+    /** Enrollment this progress belongs to. Null only for legacy rows whose student was removed. */
+    groupMemberId: uuid('group_member_id'),
     assetId: text('asset_id').notNull(),
     durationSeconds: integer('duration_seconds'),
     watchedSeconds: integer('watched_seconds').default(0).notNull(),
@@ -1821,7 +1922,20 @@ export const lessonVideoProgress = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_video_progress_profile_id_fkey'
     }),
-    unique('lesson_video_progress_lesson_profile_asset_unique').on(table.lessonId, table.profileId, table.assetId)
+    foreignKey({
+      columns: [table.groupMemberId],
+      foreignColumns: [groupmember.id],
+      name: 'lesson_video_progress_group_member_id_fkey'
+    }).onDelete('cascade'),
+    uniqueIndex('lesson_video_progress_lesson_member_asset_unique')
+      .on(table.lessonId, table.groupMemberId, table.assetId)
+      .where(sql`${table.groupMemberId} is not null`),
+    uniqueIndex('lesson_video_progress_lesson_profile_asset_no_member_unique')
+      .on(table.lessonId, table.profileId, table.assetId)
+      .where(sql`${table.groupMemberId} is null`),
+    index('idx_lesson_video_progress_group_member_id')
+      .on(table.groupMemberId)
+      .where(sql`${table.groupMemberId} is not null`)
   ]
 );
 
@@ -1839,6 +1953,8 @@ export const lessonCompletion = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     lessonId: uuid('lesson_id'),
     profileId: uuid('profile_id'),
+    /** Enrollment this completion belongs to. Null only for legacy rows whose student was removed. */
+    groupMemberId: uuid('group_member_id'),
     isComplete: boolean('is_complete').default(false),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
@@ -1853,8 +1969,21 @@ export const lessonCompletion = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_completion_profile_id_fkey'
     }),
-    unique('unique_lesson_profile').on(table.lessonId, table.profileId),
-    index('idx_lesson_completion_profile_id_lesson_id').on(table.profileId, table.lessonId)
+    foreignKey({
+      columns: [table.groupMemberId],
+      foreignColumns: [groupmember.id],
+      name: 'lesson_completion_group_member_id_fkey'
+    }).onDelete('cascade'),
+    uniqueIndex('lesson_completion_lesson_member_unique')
+      .on(table.lessonId, table.groupMemberId)
+      .where(sql`${table.groupMemberId} is not null`),
+    uniqueIndex('lesson_completion_lesson_profile_no_member_unique')
+      .on(table.lessonId, table.profileId)
+      .where(sql`${table.groupMemberId} is null`),
+    index('idx_lesson_completion_profile_id_lesson_id').on(table.profileId, table.lessonId),
+    index('idx_lesson_completion_group_member_id')
+      .on(table.groupMemberId)
+      .where(sql`${table.groupMemberId} is not null`)
   ]
 );
 
@@ -1949,6 +2078,8 @@ export const courseNewsfeed = pgTable(
     content: text(),
     id: uuid().defaultRandom().primaryKey().notNull(),
     courseId: uuid('course_id'),
+    /** Audience: one enrollment group (a cohort link or the course's Direct group). Null = every learner. */
+    groupId: uuid('group_id'),
     reaction: jsonb()
       .default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] })
       .$type<{ clap: string[]; smile: string[]; thumbsup: string[]; thumbsdown: string[] }>(),
@@ -1964,7 +2095,13 @@ export const courseNewsfeed = pgTable(
       columns: [table.courseId],
       foreignColumns: [course.id],
       name: 'course_newsfeed_course_id_fkey'
-    })
+    }),
+    foreignKey({
+      columns: [table.groupId],
+      foreignColumns: [group.id],
+      name: 'course_newsfeed_group_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_course_newsfeed_course_id_group_id').on(table.courseId, table.groupId)
   ]
 );
 
@@ -3786,7 +3923,13 @@ export const cohortCourse = pgTable(
       .notNull(),
     cohortId: uuid('cohort_id').notNull(),
     courseId: uuid('course_id').notNull(),
-    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    /** Enrollment group for this cohort's learners on this course. `course.group_id` holds the Direct learners. */
+    groupId: uuid('group_id'),
+    /** Students enrolled through this link can open the course from this time. Null = no lower bound. */
+    startsAt: timestamp('starts_at', { withTimezone: true, mode: 'string' }),
+    /** Students enrolled through this link lose access after this time. Null = no upper bound. */
+    endsAt: timestamp('ends_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -3799,9 +3942,95 @@ export const cohortCourse = pgTable(
       foreignColumns: [course.id],
       name: 'cohort_course_course_id_fkey'
     }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.groupId],
+      foreignColumns: [group.id],
+      name: 'cohort_course_group_id_fkey'
+    }),
     unique('cohort_course_cohort_id_course_id_unique').on(table.cohortId, table.courseId),
+    uniqueIndex('cohort_course_group_id_unique')
+      .on(table.groupId)
+      .where(sql`${table.groupId} is not null`),
     index('idx_cohort_course_cohort_id').on(table.cohortId),
-    index('idx_cohort_course_course_id').on(table.courseId)
+    index('idx_cohort_course_course_id').on(table.courseId),
+    check(
+      'cohort_course_window_order',
+      sql`${table.startsAt} is null or ${table.endsAt} is null or ${table.startsAt} < ${table.endsAt}`
+    )
+  ]
+);
+
+export const COHORT_COURSE_OVERRIDE_FIELDS = [
+  'lessonAt',
+  'callUrl',
+  'recordingUrl',
+  'sessionDurationMinutes',
+  'dueBy',
+  'isUnlocked',
+  'unlockAt'
+] as const;
+
+export type TCohortCourseOverrideField = (typeof COHORT_COURSE_OVERRIDE_FIELDS)[number];
+
+/**
+ * Per-cohort schedule for one lesson or exercise. Each field resolves as: listed in `clearedFields` → null;
+ * else the override value when not null; else the base value on `lesson` / `exercise`.
+ */
+export const cohortCourseItemOverride = pgTable(
+  'cohort_course_item_override',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    cohortCourseId: uuid('cohort_course_id').notNull(),
+    lessonId: uuid('lesson_id'),
+    exerciseId: uuid('exercise_id'),
+    lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }),
+    callUrl: text('call_url'),
+    recordingUrl: text('recording_url'),
+    sessionDurationMinutes: integer('session_duration_minutes'),
+    dueBy: timestamp('due_by', { withTimezone: true, mode: 'string' }),
+    isUnlocked: boolean('is_unlocked'),
+    /** Override-only: lesson and exercise have no base column for a scheduled unlock. */
+    unlockAt: timestamp('unlock_at', { withTimezone: true, mode: 'string' }),
+    clearedFields: text('cleared_fields')
+      .array()
+      .default(sql`'{}'::text[]`)
+      .notNull()
+      .$type<TCohortCourseOverrideField[]>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.cohortCourseId],
+      foreignColumns: [cohortCourse.id],
+      name: 'cohort_course_item_override_cohort_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'cohort_course_item_override_lesson_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.exerciseId],
+      foreignColumns: [exercise.id],
+      name: 'cohort_course_item_override_exercise_id_fkey'
+    }).onDelete('cascade'),
+    check('cohort_course_item_override_one_target', sql`(${table.lessonId} is null) <> (${table.exerciseId} is null)`),
+    uniqueIndex('cohort_course_item_override_link_lesson_unique')
+      .on(table.cohortCourseId, table.lessonId)
+      .where(sql`${table.lessonId} is not null`),
+    uniqueIndex('cohort_course_item_override_link_exercise_unique')
+      .on(table.cohortCourseId, table.exerciseId)
+      .where(sql`${table.exerciseId} is not null`),
+    index('idx_cohort_course_item_override_lesson_id')
+      .on(table.lessonId)
+      .where(sql`${table.lessonId} is not null`),
+    index('idx_cohort_course_item_override_exercise_id')
+      .on(table.exerciseId)
+      .where(sql`${table.exerciseId} is not null`)
   ]
 );
 
@@ -4785,6 +5014,8 @@ export const liveSessionReminderDelivery = pgTable(
     courseId: uuid('course_id').notNull(),
     lessonId: uuid('lesson_id').notNull(),
     profileId: uuid('profile_id').notNull(),
+    /** Enrollment the reminder is for; a student in two cohorts of one course gets one reminder per cohort. */
+    groupMemberId: uuid('group_member_id'),
     offsetMinutes: integer('offset_minutes').notNull(),
     lessonAt: timestamp('lesson_at', { withTimezone: true, mode: 'string' }).notNull(),
     status: liveSessionReminderStatus().default('pending').notNull(),
@@ -4819,11 +5050,17 @@ export const liveSessionReminderDelivery = pgTable(
       foreignColumns: [profile.id],
       name: 'live_session_reminder_delivery_profile_id_fkey'
     }).onDelete('cascade'),
-    uniqueIndex('live_session_reminder_delivery_lesson_profile_offset_unique').on(
-      table.lessonId,
-      table.profileId,
-      table.offsetMinutes
-    ),
+    foreignKey({
+      columns: [table.groupMemberId],
+      foreignColumns: [groupmember.id],
+      name: 'live_session_reminder_delivery_group_member_id_fkey'
+    }).onDelete('cascade'),
+    uniqueIndex('live_session_reminder_delivery_lesson_member_offset_unique')
+      .on(table.lessonId, table.groupMemberId, table.offsetMinutes)
+      .where(sql`${table.groupMemberId} is not null`),
+    uniqueIndex('live_session_reminder_delivery_lesson_profile_offset_no_member_unique')
+      .on(table.lessonId, table.profileId, table.offsetMinutes)
+      .where(sql`${table.groupMemberId} is null`),
     index('idx_live_session_reminder_delivery_organization_id').on(table.organizationId),
     index('idx_live_session_reminder_delivery_course_lesson_at').on(table.courseId, table.lessonAt),
     index('idx_live_session_reminder_delivery_profile_id').on(table.profileId),

@@ -66,7 +66,7 @@ Content comparison, matched by section and lesson title and fingerprinted by not
 | Lesson completion | Unique `(lesson_id, profile_id)` | Add `group_member_id`, unique `(lesson_id, group_member_id)` |
 | Video progress | Unique `(lesson_id, profile_id, asset_id)` | Add `group_member_id`, unique per group member and asset |
 | Completion records / certificates | Unique `(course_id, profile_id, cycle_number)` | Unique `(group_member_id, cycle_number)` |
-| Course newsfeed | `course_id` only | Add `group_id` (null = all cohorts) |
+| Course newsfeed | `course_id` only | Add `group_id` (null = every learner on the course) |
 | Course invites | `course_invite.course_id` | Add `cohort_course_id` |
 | Live lesson schedule | Columns on `lesson` | Per-cohort override table |
 | Exercise due date / lock | Columns on `exercise` | Per-cohort override table |
@@ -132,7 +132,7 @@ Shared content keeps its base values. A cohort link can override:
 - Stored as a nullable column per field plus `cleared_fields text[]` on the override row. Resolution: the field is in `cleared_fields` → null; else the override value if it is not null; else the base value. A plain `override ?? base` is not enough because it cannot express Cleared.
 - Applied in the read path for students and in the cohort-filtered staff view.
 - **Shift schedule:** when linking a course to a new cohort, staff can copy another cohort's overrides and shift every date by N days (default: the difference between the two links' `starts_at`).
-- Live-session reminders (`live_session_reminder_delivery`) are sent per cohort link, using the resolved `lesson_at`. Its unique key `(lesson, profile, offset)` gains the group member, so a student in two cohorts of one course gets both reminders.
+- Live-session reminders (`live_session_reminder_delivery`) are sent per cohort link, using the resolved `lesson_at`. Its unique key becomes `(lesson, group member, offset)`, with `(lesson, profile, offset)` kept for rows without a group member, so a student in two cohorts of one course gets both reminders.
 
 ### 5. Read paths that must filter by group
 
@@ -317,12 +317,13 @@ export const cohortCourseItemOverride = pgTable(
     isUnlocked: boolean('is_unlocked'),
     unlockAt: timestamp('unlock_at', { withTimezone: true, mode: 'string' }), // no base column on lesson/exercise
     clearedFields: text('cleared_fields').array().notNull().default(sql`'{}'`), // fields resolved to null instead of the base value
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [
-    check('override_one_target', sql`(lesson_id is null) <> (exercise_id is null)`),
-    uniqueIndex('override_link_lesson').on(table.cohortCourseId, table.lessonId).where(sql`lesson_id is not null`),
-    uniqueIndex('override_link_exercise').on(table.cohortCourseId, table.exerciseId).where(sql`exercise_id is not null`)
+    check('cohort_course_item_override_one_target', sql`(lesson_id is null) <> (exercise_id is null)`),
+    uniqueIndex('cohort_course_item_override_link_lesson_unique').on(table.cohortCourseId, table.lessonId).where(sql`lesson_id is not null`),
+    uniqueIndex('cohort_course_item_override_link_exercise_unique').on(table.cohortCourseId, table.exerciseId).where(sql`exercise_id is not null`)
   ]
 );
 
@@ -331,6 +332,9 @@ groupMemberId: uuid('group_member_id'), // FK groupmember.id, cascade
 
 // course_newsfeed: add
 groupId: uuid('group_id'), // null = every learner on the course
+
+// live_session_reminder_delivery: add
+groupMemberId: uuid('group_member_id'), // FK groupmember.id, cascade
 
 // course_invite: add
 cohortCourseId: uuid('cohort_course_id'),
@@ -346,22 +350,25 @@ export const courseMerge = pgTable('course_merge', {
   primaryCourseId: uuid('primary_course_id').notNull(),
   copyCourseIds: uuid('copy_course_ids').array().notNull(),
   plan: jsonb().notNull(), // match map and actions confirmed in the wizard
-  status: varchar().notNull(), // PENDING | RUNNING | COMPLETED | FAILED | REVERTING | REVERTED | FINALIZED
+  status: varchar().default('PENDING').notNull(), // PENDING | RUNNING | COMPLETED | FAILED | REVERTING | REVERTED | FINALIZED
+  lastError: text('last_error'),
   createdByProfileId: uuid('created_by_profile_id').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
   completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
   undoUntil: timestamp('undo_until', { withTimezone: true, mode: 'string' }),
-  revertedAt: timestamp('reverted_at', { withTimezone: true, mode: 'string' })
+  revertedAt: timestamp('reverted_at', { withTimezone: true, mode: 'string' }),
+  revertedByProfileId: uuid('reverted_by_profile_id')
 });
 
 export const courseMergeChange = pgTable('course_merge_change', {
-  id: bigserial({ mode: 'number' }).primaryKey(),
+  id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
   mergeId: uuid('merge_id').notNull(), // FK course_merge.id, cascade
   tableName: varchar('table_name').notNull(),
   rowId: text('row_id').notNull(),
   columnName: varchar('column_name').notNull(),
   oldValue: jsonb('old_value'),
-  newValue: jsonb('new_value')
+  newValue: jsonb('new_value'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
 });
 ```
 
@@ -376,9 +383,10 @@ export const courseMergeChange = pgTable('course_merge_change', {
    - Staff (ADMIN, TUTOR) stay in `course.group_id` and are also inserted into each link group with their cohort role (on conflict do nothing).
    - The cohort filter labels each link group with its cohort's name and `course.group_id` as "Direct".
    - Course access, cohort status and the cohort window then apply to cohort learners as FR2 describes, because they no longer hold a Direct enrollment.
-3. Backfill `lesson_completion.group_member_id` and `lesson_video_progress.group_member_id` from the profile's groupmember for that course, whether it is in `course.group_id` or a `cohort_course.group_id`. For a student enrolled in two link groups, use the row moved in step 2 (the earliest link's). Rows with no groupmember (6 completions in production, from removed students) stay null.
+3. Backfill `lesson_completion.group_member_id` and `lesson_video_progress.group_member_id` from the profile's groupmember for that course, whether it is in `course.group_id` or a `cohort_course.group_id`. For a student enrolled in two link groups, use the row moved in step 2 (the earliest link's). Rows with no groupmember (6 completions in production, from removed students) stay null. Backfill pending `live_session_reminder_delivery` rows the same way, so a reminder queued before the cutover is not sent twice.
 4. Replace unique `(lesson_id, profile_id)` on `lesson_completion` with unique `(lesson_id, group_member_id)` where `group_member_id is not null`, keeping `(lesson_id, profile_id)` unique where it is null. Same for video progress with `asset_id`.
-5. Replace `course_completion_record_course_profile_cycle_key` with unique `(group_member_id, cycle_number)`.
+5. Same for `live_session_reminder_delivery` with `offset_minutes`: unique `(lesson_id, group_member_id, offset_minutes)` where `group_member_id is not null`, keeping `(lesson_id, profile_id, offset_minutes)` unique where it is null.
+6. Replace `course_completion_record_course_profile_cycle_key` with unique `(group_member_id, cycle_number)`.
 
 Check the journal `when` against `main` before merging (see CLAUDE.md, Database migrations).
 
@@ -426,7 +434,7 @@ Existing course list endpoints (people, marks, submissions, attendance, analytic
 
 ## Implementation Order
 
-1. **Schema and backfill.** Migration, backfills, unique-key changes. No behavior change.
+1. **Schema and backfill.** Migration, backfills, unique-key changes, and the lesson-completion and live-session-reminder upserts moved to the new keys. No behavior change.
 2. **Enrollment groups.** Link groups, cohort enroll and remove, access check, `resolveCourseEnrollment`.
 3. **Read paths.** Group filters across the 28 files, API v1 and MCP `cohortId` params.
 4. **Cohort filter UI** on course pages.

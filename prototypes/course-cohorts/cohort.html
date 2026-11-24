@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cohort - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="cohorts.css" />
+    <script src="cohorts.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar cside">
+        <a class="exit" href="#"><span data-icon="arrowLeft"></span>Exit cohort</a>
+        <a class="nav-item" href="#"><span data-icon="newsfeed"></span>Newsfeed</a>
+        <a class="nav-item active" href="cohort.html"><span data-icon="content"></span>Courses</a>
+        <a class="nav-item" href="#"><span data-icon="users"></span>People</a>
+        <a class="nav-item" href="#"><span data-icon="analytics"></span>Analytics</a>
+        <a class="nav-item" href="#"><span data-icon="settings"></span>Settings</a>
+      </aside>
+      <div class="main">
+        <header class="chead"><button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button><span class="vsep"></span><span class="here" id="cohort-name"></span><span class="grow"></span><button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button></header>
+        <main class="page">
+          <div class="ph">
+            <div class="grow">
+              <h1 class="page-title">Courses</h1>
+              <div class="alert alert-information" style="margin-top: 12px"><span data-icon="info"></span><div class="alert-title">Student access</div><div class="alert-description">Students only have access to published courses. Courses can be in this cohort for your team while still unpublished, but they remain hidden from students until you publish them.</div></div>
+            </div>
+            <button class="btn btn-primary btn-sm" id="add-course"><span data-icon="plus"></span>Add Course</button>
+          </div>
+          <div class="pbar"><span class="grow"></span><div class="searchbox"><span data-icon="search"></span>Search courses</div><button class="icon-btn" aria-label="List view"><span data-icon="grid"></span></button></div>
+          <div class="cgrid" id="grid"></div>
+        </main>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">State</span>
+      <button data-state="existing">Cohort 6 (running)</button>
+      <button data-state="created">New Cohort 8 (from “Run a new cohort”)</button>
+      <button id="sb-add">Add course dialog</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const LINKS = {
+        existing: { name: 'Cohort 6 · Oct 24', starts: '2026-10-24', ends: '2027-01-02', links: [{ title: COURSE.title, range: 'Oct 24 – Jan 2', schedule: 'Own schedule · 12 dates set', students: 19 }] },
+        created: { name: 'Cohort 8 · Nov 22', starts: '2026-11-22', ends: '2027-01-31', links: [{ title: COURSE.title, range: 'Nov 22 – Jan 31', schedule: 'Copied from Cohort 7 · shifted 14 days', students: 0 }] }
+      };
+      let current = 'existing';
+
+      function renderGrid() {
+        const cohort = LINKS[current];
+        document.getElementById('cohort-name').textContent = cohort.name;
+        document.getElementById('grid').innerHTML = cohort.links
+          .map(
+            (link) => `<div class="ccard"><div class="banner" style="background-image:url('${unsplash('photo-1551288049-bebda4e38f71')}')"><span class="badge badge-secondary"><span class="sdot" style="background:#ef4444"></span>Live class</span></div><button class="icon-btn kebab" aria-label="Remove course" style="opacity:1">${ICONS.trash}</button>
+              <a class="body" href="course.html?page=people${current === 'existing' ? '&cohortId=c6' : ''}"><div class="title">${link.title}</div><div class="desc frow" style="gap:6px;margin-top:6px">${ICONS.calendar.replace('<svg', '<svg style="width:13px;height:13px"')}${link.range}</div><div class="desc">${link.schedule}</div></a>
+              <div class="foot"><span class="badge badge-success-soft">Published</span><span class="r">${link.students} students in this cohort</span></div></div>`
+          )
+          .join('');
+      }
+
+      function openAddCourse() {
+        const cohort = LINKS[current];
+        const courses = [
+          { id: 'da', title: COURSE.title, desc: `Linked to ${COHORTS.length} cohorts`, linked: true, disabled: true, source: 'Cohort 5 · Oct 10', shift: 14 },
+          { id: 'react', title: 'Modern Web Development with React', desc: 'No cohorts yet' },
+          { id: 'pandas', title: 'Data Science with Python and Pandas', desc: 'Linked to Python Bootcamp · Sep 12', linked: true, source: 'Python Bootcamp · Sep 12', shift: 42 },
+          { id: 'mvc', title: 'Getting started with MVC', desc: 'Unpublished' }
+        ];
+        const picked = new Set();
+        let step = 1;
+        openDialog('<div id="ac"></div>', {
+          onMount(root, close) {
+            const host = root.querySelector('#ac');
+            const draw = () => {
+              if (step === 1) {
+                host.innerHTML = `<div class="dialog-head"><h2 class="dialog-title">Add Course to Cohort</h2></div>
+                  <div class="dialog-body"><div class="cmd-input" style="border:1px solid var(--input);border-radius:var(--radius-md);margin-bottom:10px">${ICONS.search}<input placeholder="Search courses" /></div><p style="font-size:13.5px;font-weight:500;margin:0 0 6px">Select course(s) ${picked.size ? `<span class="muted" style="font-size:12px">${picked.size} selected</span>` : ''}</p>
+                  ${courses.map((course) => `<label class="frow" style="padding:8px 4px;font-size:13.5px;${course.disabled ? 'opacity:.5' : ''}"><input type="checkbox" class="cbx" data-pick="${course.id}" ${picked.has(course.id) ? 'checked' : ''} ${course.disabled ? 'disabled' : ''} /><span class="grow">${course.title}<span class="muted" style="display:block;font-size:12px">${course.disabled ? 'Already in this cohort' : course.desc}</span></span></label>`).join('')}</div>
+                  <div class="dialog-foot"><button class="btn btn-outline btn-sm" data-close>Cancel</button><button class="btn btn-primary btn-sm" data-next ${picked.size ? '' : 'disabled'}>Next</button></div>`;
+              } else {
+                const rows = courses
+                  .filter((course) => picked.has(course.id))
+                  .map((course) => {
+                    const copyOptions = course.linked ? `<option value="shift">Copy from ${course.source}, shifted ${course.shift} days</option>` : '';
+                    return `<div class="scard" style="padding:14px 16px;margin-bottom:10px"><div style="font-weight:500;font-size:14px;margin-bottom:10px">${course.title}</div>
+                      <div class="grid2 field"><div><label class="label">Runs from</label><input class="input" type="date" value="${cohort.starts}" /></div><div><label class="label">Until</label><input class="input" type="date" value="${cohort.ends}" /></div></div>
+                      <div class="field"><label class="label">Schedule</label><select class="select">${copyOptions}<option value="course">Use the course schedule</option></select><p class="hint">${course.linked ? 'Copies live-session dates, links, locks and due dates, shifted by the gap between start dates. Edit any of them later.' : 'Live sessions and due dates use the course’s values until you set them for this cohort.'}</p></div></div>`;
+                  })
+                  .join('');
+                host.innerHTML = `<div class="dialog-head"><h2 class="dialog-title">When does it run?</h2><p class="dialog-desc">Students in ${cohort.name} can open each course between these dates. Staff always have access.</p></div><div class="dialog-body">${rows}</div>
+                  <div class="dialog-foot"><button class="btn btn-secondary btn-sm" data-back style="margin-right:auto">Back</button><button class="btn btn-outline btn-sm" data-close>Cancel</button><button class="btn btn-primary btn-sm" data-add>Add ${picked.size > 1 ? `${picked.size} courses` : 'course'}</button></div>`;
+              }
+              host.querySelectorAll('[data-close]').forEach((button) => button.addEventListener('click', close));
+              host.querySelectorAll('[data-pick]').forEach((box) =>
+                box.addEventListener('change', () => {
+                  box.checked ? picked.add(box.dataset.pick) : picked.delete(box.dataset.pick);
+                  draw();
+                })
+              );
+              host.querySelector('[data-next]')?.addEventListener('click', () => ((step = 2), draw()));
+              host.querySelector('[data-back]')?.addEventListener('click', () => ((step = 1), draw()));
+              host.querySelector('[data-add]')?.addEventListener('click', () => {
+                close();
+                toast(`${picked.size > 1 ? `${picked.size} courses` : 'Course'} added to ${cohort.name} · cohort members enrolled`);
+              });
+            };
+            draw();
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        finishMount();
+        document.addEventListener('statechange', (event) => {
+          current = event.detail;
+          renderGrid();
+          if (current === 'created') toast('Cohort 8 · Nov 22 created · 18 dates copied from Cohort 7, shifted 14 days');
+        });
+        bindStatePicker('existing');
+        document.getElementById('add-course').addEventListener('click', openAddCourse);
+        document.getElementById('sb-add').addEventListener('click', openAddCourse);
+      });
+    </script>
+  </body>
+</html>

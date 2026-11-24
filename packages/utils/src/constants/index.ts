@@ -1,6 +1,7 @@
 export * from './roles';
 export * from './org';
 export * from './content';
+export * from './course-merge';
 export * from './course-type';
 export * from './domains';
 export * from './embeds';

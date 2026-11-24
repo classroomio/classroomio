@@ -76,7 +76,10 @@ export const ZPublicApiCohortCourseResponse = z.object({
   id: z.string().uuid(),
   cohortId: z.string().uuid(),
   courseId: z.string().uuid(),
-  addedAt: timestamp
+  addedAt: timestamp,
+  groupId: z.string().uuid().nullable().describe('Reserved for per-cohort enrollment groups; currently always null'),
+  startsAt: nullableTimestamp.describe('Reserved for the cohort access window; currently always null'),
+  endsAt: nullableTimestamp.describe('Reserved for the cohort access window; currently always null')
 });
 
 export const ZPublicApiCohortCourseListItemResponse = ZPublicApiCohortCourseResponse.extend({

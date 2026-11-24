@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Merge courses - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="cohorts.css" />
+    <script src="cohorts.js"></script>
+    <style>
+      .page { padding-bottom: 0; }
+      .summary-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 13px; }
+      .summary-bar .chip { cursor: pointer; }
+      .summary-bar .chip.dim { opacity: 0.35; }
+      .confirm-list { margin: 0; padding: 0; list-style: none; font-size: 14px; }
+      .confirm-list li { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+      .confirm-list li:last-child { border-bottom: none; }
+      .confirm-list li svg { color: var(--muted-foreground); margin-top: 3px; }
+      .result { text-align: center; }
+      .result .ccard { width: 280px; margin: 0 auto 18px; text-align: left; }
+      .mcard .banner { height: 86px; }
+      .mcard .body { padding: 9px 11px; }
+      .mcard .title { font-size: 12.5px; }
+      .mcard .foot { padding: 7px 11px; font-size: 11px; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-org-sidebar></div>
+      <div class="main">
+        <div data-app-header="Courses / Merge courses"></div>
+        <main class="page" id="wizard"></main>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Jump to</span>
+      <button data-jump="1">1 Choose</button>
+      <button data-jump="2">2 Review</button>
+      <button data-jump="3">3 Cohorts</button>
+      <button data-jump="4">4 Confirm</button>
+      <button data-jump="merging">Merging</button>
+      <button data-jump="result">Result</button>
+      <button data-jump="conflict">Cohort conflict</button>
+      <a href="merge.html?undo=1">Undo animation</a>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const STEPS = ['Choose courses', 'Review content', 'Cohorts', 'Confirm'];
+      const state = {
+        step: 1,
+        selected: new Set(COPIES.map((copy) => copy.id)),
+        primary: 'k7',
+        conflict: false,
+        lockGained: true,
+        rosterSync: Object.fromEntries(COPIES.map((copy) => [copy.id, true])),
+        cohortFor: Object.fromEntries(COPIES.map((copy) => [copy.id, copy.cohort || 'new:Cohort 1 · Jul 12'])),
+        decisions: {},
+        filter: null,
+        name: COURSE.title,
+        post: false,
+        understood: false
+      };
+      if (params.get('from')) state.selected = new Set(COPIES.map((copy) => copy.id));
+
+      const copyById = (id) => COPIES.find((copy) => copy.id === id);
+      const copyCols = () => COPIES.filter((copy) => state.selected.has(copy.id) && copy.id !== state.primary);
+      const shortTitle = (copy) => copy.title.replace('Data Analysis - ', '');
+      const CLASS_LABEL = { same: 'Same', schedule: 'Schedule', differs: 'Differs', missing: 'Missing', only: 'Only here' };
+      const ONLY_IN_COPY = [{ section: 1, id: 'x-k2', copy: 'k2', title: 'Bonus: Excel shortcuts', kind: 'lesson' }];
+      const FUZZY = { 'k1:l12': 'How analyst think', 'k5:e3': 'SQL Quiz (v2)' };
+
+      /** Cell class for a primary item in a copy column (PRD §10.4). */
+      function classify(item, copy) {
+        if (copy.missingWeek4 && ['l41', 'l42', 'l43', 'e4'].includes(item.id)) return 'missing';
+        if (copy.rebuilt && ['e2', 'e3'].includes(item.id)) return 'differs';
+        if (item.kind === 'live' || item.kind === 'exercise') return 'schedule';
+        return 'same';
+      }
+
+      function counts() {
+        const tally = { same: 0, schedule: 0, differs: 0, missing: 0, only: 0 };
+        copyCols().forEach((copy) => {
+          ALL_ITEMS.forEach((item) => (tally[classify(item, copy)] += 1));
+          ONLY_IN_COPY.filter((only) => only.copy === copy.id).forEach(() => (tally.only += 1));
+        });
+        return tally;
+      }
+
+      function stepper() {
+        const current = typeof state.step === 'number' ? state.step : 4;
+        return `<div class="ob-stepper" style="margin-bottom:22px"><div class="lbls"><span>Step ${current} of 4</span><span>${STEPS[current - 1]}</span></div><div class="bars">${STEPS.map((_, index) => `<i class="${index < current ? 'on' : ''}"></i>`).join('')}</div></div>`;
+      }
+
+      function footer({ back = true, next = 'Continue', disabled = false, info = '' } = {}) {
+        return `<div class="wiz-foot"><span class="info">${info}</span>${back ? '<button class="btn btn-secondary btn-sm" data-back>Back</button>' : ''}<a class="btn btn-outline btn-sm" href="courses.html">Cancel</a><button class="btn btn-primary btn-sm" data-next ${disabled ? 'disabled' : ''} ${state.step === 4 ? 'data-testid="course-merge-submit"' : ''}>${next}</button></div>`;
+      }
+
+      /* ---------- step 1 */
+      function stepChoose() {
+        const rows = COPIES.map((copy) => {
+          const isPrimary = state.primary === copy.id;
+          const checked = state.selected.has(copy.id);
+          const cohort = copy.cohort ? cohortCell(copy.cohort) : '<span class="badge badge-warning-soft">No cohort</span>';
+          return `<tr><td style="width:36px"><input type="checkbox" class="cbx" data-sel="${copy.id}" ${checked ? 'checked' : ''} ${isPrimary ? 'disabled' : ''} aria-label="Include" /></td>
+            <td><div style="font-weight:500">${copy.title}${copy.id === 'k7' ? ' <span class="badge badge-primary-soft" style="margin-left:4px">Recommended</span>' : ''}</div>${copy.id === 'k7' ? `<div class="muted" style="font-size:12px">Most complete (${copy.lessons} lessons, ${copy.exercises} exercises), edited most recently (${copy.edited})</div>` : copy.missingWeek4 ? '<div class="muted" style="font-size:12px">Missing Week 4</div>' : ''}</td>
+            <td class="num">${copy.students}</td><td class="num">${copy.lessons}</td><td class="num">${copy.exercises}</td><td class="mut">${copy.created}</td><td>${cohort}</td>
+            <td class="center"><input type="radio" class="radio" name="primary" value="${copy.id}" ${isPrimary ? 'checked' : ''} ${checked ? '' : 'disabled'} aria-label="Primary" /></td></tr>`;
+        }).join('');
+        const selectedCount = state.selected.size;
+        return `${stepper()}<div class="ph"><div class="grow"><h1 class="page-title">Merge courses</h1><p>Fold copies of one course into a single course with one cohort per copy. Students keep their progress, grades and certificates.</p></div><button class="btn btn-outline btn-sm" id="add-course">${ICONS.plus}Add course</button></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th></th><th>Course</th><th class="num">Students</th><th class="num">Lessons</th><th class="num">Exercises</th><th>Created</th><th>Cohort</th><th class="center">Primary</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <p class="hint" style="margin-top:10px">The primary course keeps its link, settings and content. The others become cohorts of it and are archived.</p>
+          ${footer({ back: false, disabled: selectedCount < 2, info: `${selectedCount} courses selected · ${COPIES.filter((copy) => state.selected.has(copy.id)).reduce((sum, copy) => sum + copy.students, 0)} students` })}`;
+      }
+
+      /* ---------- step 2 */
+      function stepReview() {
+        const cols = copyCols();
+        const tally = counts();
+        const primary = copyById(state.primary);
+        const head = `<th>${primary.title} <span class="badge badge-primary-soft" style="margin-left:4px">Primary</span></th>${cols.map((copy) => `<th>${shortTitle(copy)}<div class="muted" style="font-weight:400">${copy.cohort ? cohortById(copy.cohort).name.split(' · ')[0] : 'No cohort'}</div></th>`).join('')}`;
+        const body = CONTENT.map((section, sectionIndex) => {
+          const itemRows = section.items
+            .map((item) => {
+              const cells = cols
+                .map((copy) => {
+                  const kind = classify(item, copy);
+                  if (state.filter && state.filter !== kind) return '<td class="c"></td>';
+                  const fuzzy = FUZZY[`${copy.id}:${item.id}`];
+                  return `<td class="c"><button class="chip ${kind}" data-cell="${copy.id}:${item.id}" title="${fuzzy ? `Matched by similar title: “${fuzzy}”` : ''}">${CLASS_LABEL[kind]}${fuzzy ? ' ≈' : ''}</button></td>`;
+                })
+                .join('');
+              return `<tr><td><span class="itm ${item.kind === 'exercise' ? 'ex' : ''}">${ICONS[item.kind === 'exercise' ? 'exercise' : item.kind === 'live' ? 'live' : 'lesson']}${item.title}</span></td>${cells}</tr>`;
+            })
+            .join('');
+          const onlyRows = ONLY_IN_COPY.filter((only) => only.section === sectionIndex && cols.some((copy) => copy.id === only.copy) && (!state.filter || state.filter === 'only'))
+            .map((only) => `<tr><td><span class="itm muted">${ICONS.lesson}<i>${only.title}</i></span></td>${cols.map((copy) => (copy.id === only.copy ? `<td class="c"><button class="chip only" data-cell="${copy.id}:${only.id}">Only here</button></td>` : '<td class="c"></td>')).join('')}</tr>`)
+            .join('');
+          return `<tr class="secrow"><td colspan="${cols.length + 1}">${section.title}</td></tr>${itemRows}${onlyRows}`;
+        }).join('');
+        const summary = Object.entries(tally)
+          .map(([kind, count]) => `<button class="chip ${kind} ${state.filter && state.filter !== kind ? 'dim' : ''}" data-filter="${kind}">${CLASS_LABEL[kind]} · ${count}</button>`)
+          .join('');
+        return `${stepper()}<div class="ph"><div class="grow"><h1 class="page-title">Review content</h1><p>Every copy is matched to ${primary.title}. Click a cell to compare and choose what happens.</p></div></div>
+          <div class="summary-bar">${summary}${state.filter ? '<button class="btn btn-ghost btn-sm" data-filter="">Show all</button>' : ''}<span class="grow"></span><span class="muted" style="font-size:12px">≈ matched by similar title</span></div>
+          <div class="alert alert-warning" style="margin-bottom:12px">${ICONS.alert}<div class="alert-title">Due dates set by duplication</div><div class="alert-description">25 exercises in 4 copies are due at the moment they were copied. Their cohorts get no due date instead, so nobody is marked overdue. Set real dates per cohort after the merge.</div></div>
+          <div class="rgrid-wrap"><table class="rgrid"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>
+          ${footer({ info: `${tally.differs} items differ · primary content wins, copies keep theirs in the archive` })}`;
+      }
+
+      function openCell(key) {
+        const [copyId, itemId] = key.split(':');
+        const copy = copyById(copyId);
+        const only = ONLY_IN_COPY.find((candidate) => candidate.id === itemId);
+        const item = only || findItem(itemId);
+        const kind = only ? 'only' : classify(item, copy);
+        const cohort = copy.cohort ? cohortById(copy.cohort) : { name: 'Cohort 1 · Jul 12', starts: '2026-07-12' };
+        const fuzzy = FUZZY[key];
+        let compare = '';
+        let actions = '';
+        if (kind === 'same') {
+          compare = `<div class="alert alert-default">${ICONS.check}<div class="alert-title">Identical content</div><div class="alert-description">Blocks and assets match. ${copy.students} students’ progress on this lesson moves to the primary lesson.</div></div>`;
+        } else if (kind === 'schedule') {
+          const isExercise = item.kind === 'exercise';
+          const primaryDate = generatedDate(item, cohortById('c7'));
+          const copyDate = generatedDate(item, cohort);
+          const stamped = isExercise && ['k4', 'k3', 'k2', 'k5'].includes(copy.id);
+          const rows = isExercise
+            ? `<tr><td>Due date</td><td>${fmtDate(primaryDate)}, 11:59 PM</td><td>${stamped ? `${copy.created} <span class="badge badge-warning-soft">set by duplication</span>` : `${fmtDate(copyDate)}, 11:59 PM`}</td><td>${stamped ? 'No due date' : 'Custom'}</td></tr>`
+            : `<tr><td>Date & time</td><td>${fmtDate(primaryDate)}, 6:00 PM</td><td>${fmtDate(copyDate)}, 6:00 PM</td><td>Custom</td></tr><tr><td>Call link</td><td>meet.google.com/da-live</td><td>${copy.id === 'k5' ? 'zoom.us/j/884 2210 7731' : 'meet.google.com/da-live'}</td><td>${copy.id === 'k5' ? 'Custom' : 'Course'}</td></tr><tr><td>Recording</td><td>—</td><td>${copyDate < TODAY ? 'youtu.be/…' : '—'}</td><td>${copyDate < TODAY ? 'Custom' : 'Course'}</td></tr>`;
+          compare = `<p class="muted" style="font-size:13px;margin:0 0 10px">Only schedule fields differ. The copy’s values become ${cohort.name}’s schedule for this item.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Field</th><th>Primary</th><th>This copy</th><th>${cohort.name.split(' · ')[0]} gets</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        } else if (kind === 'differs') {
+          compare = `<div class="diff"><div class="col"><h5>Primary · 10 questions · 50 pts</h5><div class="q">1. Which clause filters rows?</div><div class="q">2. What does LEFT JOIN keep?</div><div class="q">3. Count orders per customer</div><div class="q add">4. Spot the fan-out</div><div class="q add">5. Fix the duplicate rows</div><div class="q muted">+ 5 more</div></div><div class="col"><h5>${shortTitle(copy)} · 8 questions · 40 pts</h5><div class="q">1. Which clause filters rows?</div><div class="q">2. What does LEFT JOIN keep?</div><div class="q">3. Count orders per customer</div><div class="q del">4. Rename a column</div><div class="q muted">+ 4 more</div></div></div>
+            <div class="alert alert-default" style="margin-top:12px">${ICONS.info}<div class="alert-description">${copy.students} submissions keep their totals and grades. Answers to the 1 question with no match stay viewable from grading.</div></div>`;
+          actions = `<label class="optrow"><input type="radio" class="radio" name="act" checked /><div>Use the primary version<div class="d">The copy’s version stays in the archived course.</div></div></label>`;
+        } else if (kind === 'missing') {
+          compare = `<p style="font-size:13.5px;margin:0 0 12px">${shortTitle(copy)} never had <b>${item.title}</b>. After the merge, ${cohort.name} gains it.</p>`;
+          actions = `<label class="optrow"><input type="radio" class="radio" name="act" data-lock="0" ${state.lockGained ? '' : 'checked'} /><div>Add it, open<div class="d">Students see it right away.</div></div></label><label class="optrow"><input type="radio" class="radio" name="act" data-lock="1" ${state.lockGained ? 'checked' : ''} /><div>Add it, locked for ${cohort.name}<div class="d">Unlock it later from the lesson’s Schedule by cohort.</div></div></label>`;
+        } else {
+          compare = `<p style="font-size:13.5px;margin:0 0 12px"><b>${item.title}</b> exists only in ${shortTitle(copy)}. No student has opened it.</p>`;
+          actions = `<label class="optrow"><input type="radio" class="radio" name="act" checked /><div>Leave it in the archived copy<div class="d">Default when there is no learner activity.</div></div></label><label class="optrow"><input type="radio" class="radio" name="act" /><div>Add it to ${state.name}<div class="d">Every cohort gets it, in Week 2.</div></div></label>`;
+        }
+        const fuzzyNote = fuzzy ? `<div class="alert alert-warning" style="margin-bottom:12px">${ICONS.alert}<div class="alert-title">Matched by similar title</div><div class="alert-description">“${fuzzy}” in the copy was matched to “${item.title}”.</div><div class="alert-actions"><label class="frow" style="font-size:13px"><input type="checkbox" class="cbx" checked />This is the same item</label></div></div>` : '';
+        openSheet(
+          `<div class="sheet-head frow"><div class="grow"><span class="chip ${kind}" style="cursor:default">${CLASS_LABEL[kind]}</span><h2 class="dialog-title" style="margin-top:8px">${item.title}</h2><p class="dialog-desc">${copy.title} → ${copyById(state.primary).title}</p></div><button class="icon-btn" data-close aria-label="Close">${ICONS.x}</button></div>
+          <div class="sheet-body" style="padding:4px 20px 20px">${fuzzyNote}${compare}${actions ? `<div class="sec-label" style="font-size:13px">What happens</div>${actions}` : ''}</div>
+          <div class="sheet-foot"><span class="grow"></span><button class="btn btn-outline btn-sm" data-close>Cancel</button><button class="btn btn-primary btn-sm" data-close id="cell-save">Done</button></div>`,
+          {
+            width: 560,
+            onMount(sheet) {
+              sheet.querySelectorAll('[data-lock]').forEach((radio) => radio.addEventListener('change', () => (state.lockGained = radio.dataset.lock === '1')));
+            }
+          }
+        );
+      }
+
+      /* ---------- step 3 */
+      function stepCohorts() {
+        const rows = COPIES.filter((copy) => state.selected.has(copy.id))
+          .map((copy) => {
+            const isPrimary = copy.id === state.primary;
+            const value = state.cohortFor[copy.id];
+            const conflictRow = state.conflict && copy.id === 'k4';
+            const options = COHORTS.map((cohort) => `<option value="${cohort.id}" ${value === cohort.id ? 'selected' : ''}>${cohort.name}</option>`).join('');
+            const select = copy.cohort
+              ? `<select class="select" style="width:auto;min-width:190px;${conflictRow ? 'border-color:var(--destructive)' : ''}" ${isPrimary ? 'disabled' : ''}>${conflictRow ? `<option selected>Cohort 5 · Oct 10</option>` : options}</select>`
+              : `<select class="select" style="width:auto;min-width:190px"><option selected>+ Create “Cohort 1 · Jul 12”</option>${options}</select>`;
+            const start = copy.cohort ? fmtDay(toDate(cohortById(copy.cohort).starts)) : 'Jul 12';
+            return `<tr><td><div style="font-weight:500">${shortTitle(copy)}</div>${isPrimary ? '<div class="muted" style="font-size:12px">Primary · stays as is</div>' : ''}</td><td>${select}${conflictRow ? '<div style="font-size:12px;color:var(--destructive);margin-top:4px">Also linked to 10th October</div>' : ''}</td><td class="num">${copy.students}${copy.direct ? `<div class="muted" style="font-size:12px">${copy.direct} stay Direct</div>` : ''}</td><td><input class="input" type="date" value="${isoDate(toDate(copy.cohort ? cohortById(copy.cohort).starts : '2026-07-12'))}" style="width:auto;padding:5px 8px" /></td><td><label class="frow" style="font-size:13px;white-space:nowrap"><span class="switch"><input type="checkbox" data-roster="${copy.id}" ${state.rosterSync[copy.id] ? 'checked' : ''} ${copy.rosterAdds ? '' : 'disabled'} /><span class="track"></span><span class="knob"></span></span>${copy.rosterAdds ? `Adds ${copy.rosterAdds}` : '<span class="muted">In sync</span>'}</label></td></tr>`;
+          })
+          .join('');
+        const conflict = state.conflict
+          ? `<div class="alert alert-destructive" style="margin-bottom:14px">${ICONS.alert}<div class="alert-title">Cohort 5 · Oct 10 is linked to two of these courses</div><div class="alert-description">26th September and 10th October both link to Cohort 5. A cohort links to a course once, so both can’t become Cohort 5. Unlink it from one course on the <a href="cohort.html">cohort’s Courses page</a>, or deselect a copy, then come back.</div><div class="alert-actions"><button class="btn btn-outline btn-sm" id="recheck">${ICONS.refresh}Check again</button></div></div>`
+          : '';
+        return `${stepper()}<div class="ph"><div class="grow"><h1 class="page-title">Cohorts</h1><p>Each copy becomes a cohort of ${state.name}. Its students, submissions and attendance move with it.</p></div></div>${conflict}
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Copy</th><th>Becomes cohort</th><th class="num">Students moving</th><th>Cohort starts</th><th>Roster sync</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <p class="hint" style="margin-top:10px">Roster sync adds course students who are missing from their cohort’s roster. It never removes anyone. 3 students took the course twice; they keep both enrollments.</p>
+          ${footer({ disabled: state.conflict, info: state.conflict ? 'Resolve the conflict to continue' : '' })}`;
+      }
+
+      /* ---------- step 4 */
+      function stepConfirm() {
+        const copies = copyCols();
+        const items = [
+          ['layers', `<b>${state.selected.size} courses become one:</b> ${state.name}`],
+          ['users', `<b>126 enrollments</b> move into ${COHORTS.length} cohorts, with 3 Direct students on the primary`],
+          ['exercise', '<b>217 submissions, 1,347 answers and 899 lesson completions</b> move with their students'],
+          ['plus', `<b>Cohort 2 and Cohort 3 gain Week 4</b> (3 lessons, 1 project), ${state.lockGained ? 'locked until you open it' : 'open right away'}`],
+          ['calendar', '<b>Live session dates, links and recordings</b> from each copy become that cohort’s schedule'],
+          ['alert', '<b>25 due dates set by duplication</b> are dropped; those cohorts have no due date until you set one'],
+          ['history', `<b>${copies.length} copies are archived.</b> Their links redirect to ${state.name}`],
+          ['undo', '<b>Undo until Dec 16, 2026</b> from Settings → Merge history']
+        ];
+        return `${stepper()}<div class="ph"><div class="grow"><h1 class="page-title">Confirm</h1><p>Nothing changes until you merge. Involved courses are read-only while it runs.</p></div></div>
+          <div class="scard"><div class="field" style="max-width:420px"><label class="label">Course name after the merge</label><input class="input" id="new-name" value="${state.name}" /><p class="hint">The primary’s title without its batch suffix.</p></div></div>
+          <div class="scard"><h3>What happens</h3><ul class="confirm-list" style="margin-top:6px">${items.map(([icon, text]) => `<li>${ICONS[icon]}<span>${text}</span></li>`).join('')}</ul></div>
+          <div class="scard"><label class="frow" style="font-size:14px;align-items:flex-start;gap:10px"><span class="switch" style="margin-top:2px"><input type="checkbox" id="post" ${state.post ? 'checked' : ''} /><span class="track"></span><span class="knob"></span></span><span><b style="font-weight:500">Post an update to each cohort</b><br /><span class="muted" style="font-size:13px">Tells students the course name changed. No email is sent.</span></span></label></div>
+          <label class="frow" style="font-size:14px;margin-top:4px"><input type="checkbox" class="cbx" id="understood" ${state.understood ? 'checked' : ''} />I’ve reviewed the content and cohorts</label>
+          ${footer({ next: 'Merge courses', disabled: !state.understood })}`;
+      }
+
+      /* ---------- merging animation */
+      const CHECKLIST = [
+        ['Matching content', '119 items matched'],
+        ['Moving enrollments', '126 students'],
+        ['Moving submissions and answers', '217 · 1,347'],
+        ['Saving cohort schedules', '84 overrides'],
+        ['Archiving copies', '6 courses']
+      ];
+      const UNDO_CHECKLIST = [
+        ['Restoring copies', '6 courses'],
+        ['Moving cohorts and enrollments back', '108 students'],
+        ['Restoring submissions and answers', '186 · 1,154'],
+        ['Moving post-merge activity', '125 records'],
+        ['Removing merge schedules', '84 overrides']
+      ];
+
+      function miniCard(copy, extra = '') {
+        return `<div class="ccard mcard ${extra}" data-mc="${copy.id}"><div class="banner" style="background-image:url('${unsplash(copy.image, 320)}')"><span class="badge badge-secondary"><span class="sdot" style="background:#ef4444"></span>Live class</span></div><div class="body"><div class="title">${copy.title}</div></div><div class="foot"><span>${copy.students} students</span><span>${copy.cohort ? cohortById(copy.cohort).name.split(' · ')[0] : 'No cohort'}</span></div></div>`;
+      }
+
+      function runAnimation({ undo = false } = {}) {
+        const host = document.getElementById('wizard');
+        const list = undo ? UNDO_CHECKLIST : CHECKLIST;
+        const ordered = [copyById(state.primary), ...copyCols()];
+        host.innerHTML = `<div class="ph" style="margin-top:20px"><div class="grow" style="text-align:center"><h1 class="page-title">${undo ? 'Undoing merge…' : 'Merging courses…'}</h1><p>${undo ? 'Restoring 6 courses as they were on Nov 16.' : `Folding ${ordered.length} courses into ${state.name}.`} You can leave this page; we’ll notify you when it’s done.</p></div></div>
+          <div class="merge-stage" id="stage">${ordered.map((copy, index) => miniCard(copy, index === 0 ? 'primary' : '')).join('')}</div>
+          <ul class="checklist" id="cl">${list.map(([label]) => `<li><span class="ic">${ICONS.check}</span>${label}<span class="ct"></span></li>`).join('')}</ul>`;
+        const cards = [...host.querySelectorAll('.mcard')];
+        const spread = (card, index) => {
+          const offset = index - (cards.length - 1) / 2;
+          card.style.transform = `translate(${offset * 128}px, ${Math.abs(offset) * 14}px) rotate(${offset * 3}deg) scale(0.86)`;
+          card.style.zIndex = String(10 - Math.abs(Math.round(offset)));
+        };
+        const stack = (card, index) => {
+          card.style.transform = `translate(${index * 3}px, ${index * -3}px) scale(${index === 0 ? 1 : 0.98})`;
+          card.style.zIndex = String(index === 0 ? 20 : 10 - index);
+        };
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        cards.forEach(undo ? stack : spread);
+        if (undo) cards.forEach((card, index) => index && (card.style.opacity = '0'));
+        requestAnimationFrame(() =>
+          setTimeout(() => {
+            if (reduced) return;
+            cards.forEach((card, index) => {
+              card.style.transitionDelay = `${index * 90}ms`;
+              if (undo) {
+                card.style.opacity = '1';
+                spread(card, index);
+              } else stack(card, index);
+            });
+          }, 500)
+        );
+        const items = [...host.querySelectorAll('#cl li')];
+        items.forEach((item, index) => {
+          setTimeout(() => item.classList.add('run'), 600 + index * 900);
+          setTimeout(() => {
+            item.classList.remove('run');
+            item.classList.add('done');
+            item.querySelector('.ct').textContent = list[index][1];
+          }, 1400 + index * 900);
+        });
+        setTimeout(() => (undo ? showUndone() : go('result')), 1700 + items.length * 900);
+      }
+
+      function showResult() {
+        const merged = { id: 'da', title: state.name, image: 'photo-1551288049-bebda4e38f71' };
+        document.getElementById('wizard').innerHTML = `<div class="result" style="padding-top:36px">
+          <div style="width:44px;height:44px;border-radius:99px;background:var(--success);color:#fff;display:grid;place-items:center;margin:0 auto 14px">${ICONS.check}</div>
+          <h1 class="page-title">${state.name} now runs ${COHORTS.length} cohorts</h1><p class="muted" style="margin:6px 0 22px">Every student kept their progress, grades and certificates.</p>
+          <div class="ccard"><div class="banner" style="background-image:url('${unsplash(merged.image)}')"><span class="badge badge-secondary"><span class="sdot" style="background:#ef4444"></span>Live class</span></div><div class="body"><div class="title">${state.name}</div><div class="desc">${COHORTS.length} cohorts · ${TOTAL_STUDENTS} students</div></div><div class="foot"><span class="badge badge-success-soft">Published</span><span class="r">${LESSON_COUNT} lessons &amp; ${EXERCISE_COUNT} exercises</span></div></div>
+          <div class="frow" style="justify-content:center;margin-bottom:22px"><a class="btn btn-outline btn-sm" href="courses.html?state=after">Back to courses</a><a class="btn btn-primary btn-sm" href="course.html?page=people">Open course</a></div>
+          <div class="alert alert-information" style="max-width:560px;margin:0 auto;text-align:left">${ICONS.info}<div class="alert-description">You can undo this merge until <b>Dec 16, 2026</b> from <a href="course.html?page=settings#merge-history">Settings → Merge history</a>.</div></div>
+          <div class="alert alert-warning" style="max-width:560px;margin:10px auto 0;text-align:left">${ICONS.calendar}<div class="alert-description">25 exercises have no due date for their cohort. <a href="lesson.html?item=e4&settings=1">Set dates per cohort</a></div></div>
+        </div>`;
+      }
+
+      function showUndone() {
+        document.getElementById('wizard').innerHTML = `<div class="result" style="padding-top:36px"><h1 class="page-title">6 courses restored</h1><p class="muted" style="margin:6px 0 22px">Each copy is back with its cohort, students and activity. Week 4 was added to the 23rd August and 05th September copies to keep 12 lesson completions.</p><div class="cgrid" style="text-align:left;max-width:760px;margin:0 auto 22px">${copyCols().map((copy) => miniCard(copy).replace('mcard', '')).join('')}</div><a class="btn btn-primary btn-sm" href="courses.html?state=undone">Back to courses</a></div>`;
+      }
+
+      /* ---------- routing */
+      function go(step) {
+        if (step === 'conflict') {
+          state.conflict = true;
+          step = 3;
+        }
+        state.step = step;
+        document.querySelectorAll('.state-bar [data-jump]').forEach((button) => button.classList.toggle('on', button.dataset.jump === String(step) || (state.conflict && button.dataset.jump === 'conflict' && step === 3)));
+        if (step === 'merging') return runAnimation();
+        if (step === 'result') return showResult();
+
+        const host = document.getElementById('wizard');
+        host.innerHTML = { 1: stepChoose, 2: stepReview, 3: stepCohorts, 4: stepConfirm }[step]();
+        window.scrollTo(0, 0);
+        bindStep(host);
+      }
+
+      function bindStep(host) {
+        host.querySelector('[data-back]')?.addEventListener('click', () => go(state.step - 1));
+        host.querySelector('[data-next]')?.addEventListener('click', () => go(state.step === 4 ? 'merging' : state.step + 1));
+        host.querySelectorAll('[data-sel]').forEach((box) =>
+          box.addEventListener('change', () => {
+            box.checked ? state.selected.add(box.dataset.sel) : state.selected.delete(box.dataset.sel);
+            go(1);
+          })
+        );
+        host.querySelectorAll('input[name="primary"]').forEach((radio) => radio.addEventListener('change', () => ((state.primary = radio.value), go(1))));
+        host.querySelector('#add-course')?.addEventListener('click', () =>
+          openDialog(
+            `<div class="dialog-head"><h2 class="dialog-title">Add a course</h2><p class="dialog-desc">Only courses in this organization that aren’t templates.</p></div><div class="dialog-body"><div class="cmd-input" style="border:1px solid var(--input);border-radius:var(--radius-md)">${ICONS.search}<input placeholder="Search courses" /></div><div style="margin-top:8px">${['Modern Web Development with React', 'Getting started with MVC', 'Data Science with Python and Pandas'].map((title) => `<label class="frow" style="padding:8px 4px;font-size:13.5px"><input type="checkbox" class="cbx" />${title}<span class="grow"></span><span class="muted" style="font-size:12px">0% lessons match</span></label>`).join('')}</div></div><div class="dialog-foot"><button class="btn btn-outline btn-sm" data-close>Cancel</button><button class="btn btn-primary btn-sm" data-close>Add</button></div>`
+          )
+        );
+        host.querySelectorAll('[data-cell]').forEach((chip) => chip.addEventListener('click', () => openCell(chip.dataset.cell)));
+        host.querySelectorAll('[data-filter]').forEach((chip) =>
+          chip.addEventListener('click', () => {
+            state.filter = chip.dataset.filter && state.filter !== chip.dataset.filter ? chip.dataset.filter : null;
+            go(2);
+          })
+        );
+        host.querySelectorAll('[data-roster]').forEach((box) => box.addEventListener('change', () => (state.rosterSync[box.dataset.roster] = box.checked)));
+        host.querySelector('#recheck')?.addEventListener('click', () => {
+          state.conflict = false;
+          go(3);
+          toast('Cohort 5 unlinked from 26th September · plan checked again');
+        });
+        host.querySelector('#new-name')?.addEventListener('input', (event) => (state.name = event.target.value || COURSE.title));
+        host.querySelector('#post')?.addEventListener('change', (event) => (state.post = event.target.checked));
+        host.querySelector('#understood')?.addEventListener('change', (event) => {
+          state.understood = event.target.checked;
+          host.querySelector('[data-next]').disabled = !state.understood;
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        mountOrgShell('Courses');
+        finishMount();
+        document.querySelectorAll('.state-bar [data-jump]').forEach((button) =>
+          button.addEventListener('click', () => {
+            state.conflict = false;
+            if (button.dataset.jump === '4') state.understood = true;
+            go(['merging', 'result', 'conflict'].includes(button.dataset.jump) ? button.dataset.jump : Number(button.dataset.jump));
+          })
+        );
+        if (params.get('undo')) {
+          state.step = 'merging';
+          runAnimation({ undo: true });
+          return;
+        }
+
+        go(Number(params.get('step')) || 1);
+      });
+    </script>
+  </body>
+</html>

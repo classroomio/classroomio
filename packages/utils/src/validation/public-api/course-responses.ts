@@ -125,6 +125,8 @@ export const ZPublicApiCourseResponse = z.object({
   groupId: z.string().uuid().nullable(),
   isTemplate: z.boolean(),
   templateId: z.string().uuid().nullable(),
+  sourceCourseId: z.string().uuid().nullable().describe('Reserved for course lineage; currently always null'),
+  mergedIntoCourseId: z.string().uuid().nullable().describe('Reserved for course merging; currently always null'),
   publicForAll: z.boolean(),
   seedKey: z.string().nullable(),
   logo: z.string().describe('Deprecated; use bannerImage'),

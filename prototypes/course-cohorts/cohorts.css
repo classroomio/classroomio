@@ -1,0 +1,1290 @@
+/*
+ * cohorts.css — course-cohorts prototype pieces on top of app-theme.css + proto.css.
+ * Each block names the @cio/ui (shadcn-svelte) component it stands in for.
+ */
+
+body {
+  background: var(--background);
+}
+.app {
+  grid-template-columns: 248px 1fr;
+}
+.dark .alert-warning {
+  border-color: #78350f;
+  background: #451a03;
+  color: #fef3c7;
+}
+.alert-warning {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #78350f;
+}
+.alert-destructive {
+  border-color: color-mix(in oklab, var(--destructive) 40%, transparent);
+  color: var(--destructive);
+  background: var(--card);
+}
+.alert .alert-actions {
+  grid-column: 2;
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  padding: 0;
+  height: auto;
+  box-shadow: none;
+}
+.btn-link:hover {
+  text-decoration: underline;
+}
+.badge-destructive-soft {
+  background: color-mix(in oklab, var(--destructive) 12%, transparent);
+  color: var(--destructive);
+  border-color: transparent;
+}
+.badge-warning-soft {
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-color: transparent;
+}
+.dark .badge-warning-soft {
+  color: oklch(0.83 0.16 84);
+}
+
+/* ---------- course sidebar (features/course/components/sidebar) ---------- */
+.cside {
+  padding: 10px 8px;
+  overflow: auto;
+}
+.cside .clogo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 6px 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.cside .clogo .mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #1d4ed8, #60a5fa);
+  flex-shrink: 0;
+}
+.cside .clogo span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cside .exit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--primary);
+}
+.cside .exit svg {
+  width: 14px;
+  height: 14px;
+}
+.cside .nav-item {
+  padding: 6px 8px;
+  font-size: 13.5px;
+}
+.cside .nav-item.active {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+.cside .nav-item.active svg {
+  color: var(--primary);
+}
+.cside .counts {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+.cside .counts span {
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 4px;
+  color: var(--muted-foreground);
+}
+.ctree {
+  padding: 0 0 4px 12px;
+}
+.ctree .sec {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 8px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.ctree .sec .n {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.ctree a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 8px 4px 20px;
+  font-size: 12.5px;
+  border-radius: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ctree a span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ctree a svg {
+  width: 13px;
+  height: 13px;
+  color: #3b82f6;
+}
+.ctree a.ex svg {
+  color: var(--success);
+}
+.ctree a:hover {
+  background: var(--sidebar-accent);
+}
+.ctree a.on {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+.cside .powered {
+  margin-top: auto;
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  padding: 10px 8px 0;
+}
+
+/* ---------- course header (course-header.svelte) ---------- */
+.chead {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+.vsep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+}
+.chead .here {
+  font-size: 14px;
+  font-weight: 500;
+}
+.badge-published {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: transparent;
+}
+.btn-assistant {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.bgroup {
+  display: inline-flex;
+}
+.bgroup > .btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.bgroup > .btn + .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: none;
+  padding: 0 8px;
+}
+
+/* ---------- Combobox (shadcn-svelte: Popover + Command) — cohort filter ---------- */
+.combo {
+  position: relative;
+}
+.combo-trigger {
+  gap: 8px;
+  max-width: 260px;
+  justify-content: space-between;
+}
+.combo-trigger .nm {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.combo-trigger .ct {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.combo-trigger > svg:last-child {
+  color: var(--muted-foreground);
+  width: 14px;
+  height: 14px;
+}
+.combo-pop {
+  position: absolute;
+  top: 38px;
+  left: 0;
+  z-index: 70;
+  width: 300px;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  animation: pop 0.14s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: top left;
+  overflow: hidden;
+}
+.combo-pop.right {
+  left: auto;
+  right: 0;
+  transform-origin: top right;
+}
+.cmd-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+.cmd-input svg {
+  color: var(--muted-foreground);
+  width: 14px;
+  height: 14px;
+}
+.cmd-input input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--foreground);
+  flex: 1;
+}
+.cmd-list {
+  padding: 4px;
+  max-height: 340px;
+  overflow: auto;
+}
+.cmd-group {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  padding: 6px 8px 3px;
+}
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  color: inherit;
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.cmd-item:hover,
+.cmd-item.kb {
+  background: var(--accent);
+}
+.cmd-item .sub {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+}
+.cmd-item .ct {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.cmd-item .ck {
+  width: 14px;
+  height: 14px;
+  visibility: hidden;
+}
+.cmd-item.on .ck {
+  visibility: visible;
+}
+.cmd-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px -4px;
+}
+.cmd-empty {
+  padding: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.sdot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  flex-shrink: 0;
+  display: inline-block;
+  background: var(--muted-foreground);
+}
+.sdot.active {
+  background: var(--success);
+}
+.sdot.inactive {
+  background: var(--warning);
+}
+.sdot.archived {
+  background: color-mix(in oklab, var(--muted-foreground) 55%, transparent);
+}
+.sdot.direct {
+  background: transparent;
+  border: 1.5px solid var(--muted-foreground);
+}
+
+/* ---------- Page (@cio/ui base/page) ---------- */
+.page {
+  width: min(1040px, 100% - 48px);
+  margin: 0 auto;
+  padding: 28px 0 110px;
+}
+.page.narrow {
+  width: min(880px, 100% - 48px);
+}
+.ph {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.ph .page-title {
+  margin: 0;
+}
+.ph .grow p {
+  margin: 4px 0 0;
+  color: var(--muted-foreground);
+  font-size: 13.5px;
+}
+.pbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.searchbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  width: 200px;
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  background: var(--background);
+  box-shadow: var(--shadow-2xs);
+}
+.searchbox svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- Table (@cio/ui base/table) ---------- */
+.tbl-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--card);
+}
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.tbl th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  background: color-mix(in oklab, var(--muted) 60%, transparent);
+}
+.tbl td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.tbl tr:last-child td {
+  border-bottom: none;
+}
+.tbl tbody tr:hover {
+  background: color-mix(in oklab, var(--accent) 60%, transparent);
+}
+.tbl .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.tbl .center {
+  text-align: center;
+}
+.tbl .mut {
+  color: var(--muted-foreground);
+}
+.person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.person .pic {
+  width: 28px;
+  height: 28px;
+  border-radius: 99px;
+  background: var(--secondary);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--secondary-foreground);
+  flex-shrink: 0;
+}
+.person .em {
+  font-size: 12px;
+  color: var(--primary);
+}
+.cohort-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.mini-prog {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+.mini-prog .progress {
+  height: 6px;
+  max-width: 90px;
+}
+.tfoot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  padding: 10px 2px;
+}
+
+/* ---------- Empty (@cio/ui custom/empty) ---------- */
+.empty {
+  text-align: center;
+  padding: 48px 20px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+.empty .ic {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+  color: var(--muted-foreground);
+}
+.empty h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+.empty p {
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  margin: 6px auto 16px;
+  max-width: 400px;
+  line-height: 1.55;
+}
+
+/* ---------- Kanban (submissions page) ---------- */
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.kcol {
+  background: color-mix(in oklab, var(--muted) 70%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  min-height: 420px;
+}
+.kcol h4 {
+  margin: 2px 2px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.kcol h4 .n {
+  font-size: 11px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0 6px;
+}
+.kcard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-2xs);
+}
+.kcard .ex {
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 13.5px;
+  margin-top: 6px;
+}
+.kcard .when {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* ---------- Stat cards (analytics) ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.stat {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  background: var(--card);
+}
+.stat .k {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+}
+.stat .v {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.stat .d {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.sec-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 22px 0 10px;
+}
+
+/* ---------- News feed ---------- */
+.post {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: var(--card);
+}
+.post .top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.post .top .t {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.post p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.post .foot {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+}
+
+/* ---------- ToggleGroup (shadcn-svelte toggle-group, outline) — Inherit · Set · Clear ---------- */
+.tgroup {
+  display: inline-flex;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-2xs);
+}
+.tgroup button {
+  border: none;
+  background: var(--background);
+  font: inherit;
+  font-size: 12.5px;
+  padding: 4px 10px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.tgroup button + button {
+  border-left: 1px solid var(--input);
+}
+.tgroup button.on {
+  background: var(--accent);
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+/* ---------- onboarding Stepper → @cio/ui/custom/stepper ---------- */
+.ob-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ob-stepper .lbls {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.ob-stepper .lbls span:first-child {
+  color: var(--muted-foreground);
+}
+.ob-stepper .lbls span:last-child {
+  color: var(--primary);
+}
+.ob-stepper .bars {
+  display: flex;
+  gap: 6px;
+}
+.ob-stepper .bars i {
+  height: 4px;
+  flex: 1;
+  border-radius: 99px;
+  background: var(--muted);
+  transition: background 0.3s;
+}
+.ob-stepper .bars i.on {
+  background: var(--primary);
+}
+
+/* ---------- merge wizard ---------- */
+.wiz-foot {
+  position: sticky;
+  bottom: 0;
+  background: color-mix(in oklab, var(--background) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-top: 1px solid var(--border);
+  padding: 12px 0;
+  margin-top: 24px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.wiz-foot .info {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin-right: auto;
+}
+.radio {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  margin: 0;
+}
+.cbx {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  margin: 0;
+}
+
+/* review grid: primary tree × copy columns */
+.rgrid-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: auto;
+  max-height: 560px;
+  background: var(--card);
+}
+.rgrid {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  min-width: 100%;
+}
+.rgrid th,
+.rgrid td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.rgrid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--card);
+  font-weight: 500;
+  font-size: 12px;
+  text-align: center;
+  vertical-align: bottom;
+  line-height: 1.3;
+}
+.rgrid thead th:first-child {
+  text-align: left;
+  left: 0;
+  z-index: 3;
+}
+.rgrid td:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--card);
+  z-index: 1;
+  min-width: 280px;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rgrid tr.secrow td {
+  background: color-mix(in oklab, var(--muted) 70%, var(--card));
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.rgrid td.c {
+  text-align: center;
+}
+.rgrid .itm {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.rgrid .itm svg {
+  width: 13px;
+  height: 13px;
+  color: #3b82f6;
+}
+.rgrid .itm.ex svg {
+  color: var(--success);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border-radius: 99px;
+  padding: 1px 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 18px;
+}
+.chip:hover {
+  outline: 2px solid color-mix(in oklab, var(--ring) 45%, transparent);
+}
+.chip.same {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+.chip.schedule {
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+.dark .chip.schedule {
+  color: oklch(0.8 0.1 264);
+}
+.chip.differs {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.chip.missing {
+  background: color-mix(in oklab, var(--destructive) 10%, transparent);
+  color: var(--destructive);
+}
+.chip.only {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--foreground);
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.legend .chip {
+  cursor: default;
+}
+.legend .chip:hover {
+  outline: none;
+}
+
+/* diff sheet */
+.diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.diff .col {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 13px;
+}
+.diff .col h5 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+.diff .q {
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+}
+.diff .q:first-of-type {
+  border-top: none;
+}
+.diff .q.add {
+  background: color-mix(in oklab, var(--success) 10%, transparent);
+  margin: 0 -12px;
+  padding: 6px 12px;
+}
+.diff .q.del {
+  background: color-mix(in oklab, var(--destructive) 8%, transparent);
+  margin: 0 -12px;
+  padding: 6px 12px;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--destructive) 50%, transparent);
+}
+.optrow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 13.5px;
+}
+.optrow:has(input:checked) {
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 5%, transparent);
+}
+.optrow .d {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
+
+/* course card (features/course/components/card.svelte) */
+.ccard {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+.ccard .banner {
+  position: relative;
+  height: 120px;
+  border-radius: calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px) 0 0;
+  background-size: cover;
+  background-position: center;
+}
+.ccard .banner .badge {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+}
+.ccard .body {
+  padding: 12px 14px;
+  flex: 1;
+}
+.ccard .title {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.ccard .desc {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+.ccard .foot {
+  border-top: 1px solid var(--border);
+  padding: 9px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  gap: 8px;
+}
+.ccard .foot .r {
+  text-align: right;
+  line-height: 1.5;
+}
+.ccard .kebab {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.ccard:hover .kebab,
+.ccard.force .kebab {
+  opacity: 1;
+}
+.ccard .menu {
+  top: 46px;
+  right: 10px;
+}
+.cgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* merge animation */
+.merge-stage {
+  position: relative;
+  height: 300px;
+  display: grid;
+  place-items: center;
+  margin: 10px 0 18px;
+}
+.mcard {
+  position: absolute;
+  width: 230px;
+  transition:
+    transform 0.9s cubic-bezier(0.65, 0, 0.35, 1),
+    opacity 0.5s ease;
+  will-change: transform;
+}
+.mcard.primary {
+  z-index: 10;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+.mcard .badge-stack {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.checklist {
+  max-width: 460px;
+  margin: 0 auto;
+}
+.checklist li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  transition: color 0.2s;
+}
+.checklist li .ic {
+  width: 18px;
+  height: 18px;
+  border-radius: 99px;
+  border: 1.5px solid var(--border);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.checklist li .ic svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 3;
+  opacity: 0;
+}
+.checklist li.run {
+  color: var(--foreground);
+}
+.checklist li.run .ic {
+  border-color: var(--primary);
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+.checklist li.done {
+  color: var(--foreground);
+}
+.checklist li.done .ic {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+.checklist li.done .ic svg {
+  opacity: 1;
+}
+.checklist li .ct {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mcard {
+    transition: none;
+  }
+  .checklist li.run .ic {
+    animation: none;
+  }
+}
+
+/* settings section card */
+.scard {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  background: var(--card);
+  margin-bottom: 18px;
+}
+.scard h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+.scard .sd {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin: 0 0 14px;
+}
+.kv {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px 16px;
+  font-size: 13.5px;
+}
+.kv dt {
+  color: var(--muted-foreground);
+}
+.kv dd {
+  margin: 0;
+}
+
+/* lesson settings sheet sections */
+.ls-sec {
+  padding: 16px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.ls-sec:last-child {
+  border-bottom: none;
+}
+.ls-sec h4 {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.ls-sec .sd {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sched-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 10px;
+  align-items: center;
+  padding: 10px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: var(--card);
+}
+.sched-row:hover {
+  border-color: color-mix(in oklab, var(--ring) 70%, transparent);
+}
+.sched-row .nm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.sched-row .vals {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+}
+.sched-row .vals span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.sched-row .vals svg {
+  width: 12px;
+  height: 12px;
+}
+.sched-row .vals .set {
+  color: var(--foreground);
+}
+.sched-row .vals .clr {
+  text-decoration: line-through;
+}
+.fld-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.fld-row:last-child {
+  border-bottom: none;
+}
+.fld-row .l {
+  font-size: 13px;
+  font-weight: 500;
+}
+.fld-row .base {
+  grid-column: 2;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.fld-row .input {
+  grid-column: 2;
+}
+
+/* lesson canvas */
+.lhead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.lhead h1 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.live-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: var(--card);
+}
+.live-card .cal {
+  width: 52px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.live-card .cal b {
+  display: block;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  padding: 2px 0;
+}
+.live-card .cal span {
+  display: block;
+  font-size: 20px;
+  padding: 2px 0 4px;
+}
+.note-block {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.note-block h2 {
+  font-size: 19px;
+  font-weight: 600;
+  margin: 24px 0 8px;
+}
+.prev-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .app > .sidebar {
+    display: none;
+  }
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .kanban {
+    grid-template-columns: 1fr;
+  }
+  .page {
+    width: calc(100% - 32px);
+  }
+  .grid2,
+  .diff {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sheet-scrim + .sheet ~ .scrim,
+.scrim {
+  z-index: 260;
+}
+.fld-row .tgroup {
+  justify-self: start;
+}

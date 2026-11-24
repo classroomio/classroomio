@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Analysis - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="cohorts.css" />
+    <script src="cohorts.js"></script>
+    <style>
+      .srow { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+      .srow:last-child { border-bottom: none; }
+      .srow.locked { color: var(--muted-foreground); }
+      .srow .meta { margin-left: auto; font-size: 12px; color: var(--muted-foreground); display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+      .srow .meta svg { width: 12px; height: 12px; }
+      .tick { width: 18px; height: 18px; border-radius: 99px; border: 1.5px solid var(--border); display: grid; place-items: center; flex-shrink: 0; }
+      .tick.on { background: var(--success); border-color: var(--success); color: #fff; }
+      .tick svg { width: 11px; height: 11px; stroke-width: 3; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar></div>
+      <div class="main">
+        <div data-course-header></div>
+        <main class="page narrow" id="page"></main>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Student</span>
+      <a href="student.html?page=content" id="p-one">Cohort 6 student</a>
+      <a href="student.html?page=content&persona=retake" id="p-retake">Retake (Cohort 4 → 7)</a>
+      <span class="lbl">Open</span>
+      <a href="#" data-go="newsfeed">News Feed</a>
+      <a href="#" data-go="content">Content</a>
+      <a href="#" data-go="l43">Live lesson</a>
+      <a href="#" data-go="e4">Exercise</a>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const IS_RETAKE = params.get('persona') === 'retake';
+      const PREVIOUS = IS_RETAKE && params.get('enrollment') === 'previous';
+      const ME = { name: IS_RETAKE ? 'Tunde Adeyemi' : 'Amara Okafor', cohortId: IS_RETAKE ? (PREVIOUS ? 'c4' : 'c7') : 'c6' };
+      const MY_COHORT = cohortById(ME.cohortId);
+      const PAGE = params.get('item') ? 'item' : params.get('page') || 'content';
+      const personaQuery = IS_RETAKE ? `&persona=retake${PREVIOUS ? '&enrollment=previous' : ''}` : '';
+
+      /** Student read path: resolved schedule for the viewer's own enrollment. */
+      function myDate(item) {
+        if (OVERRIDES[item.id]) {
+          const field = item.kind === 'exercise' ? 'dueBy' : 'lessonAt';
+          const resolved = resolveField(item.id, ME.cohortId, field);
+          return resolved.value ? new Date(resolved.value) : null;
+        }
+        const base = generatedDate(item, MY_COHORT);
+        return new Date(`${isoDate(base)}T${item.kind === 'exercise' ? '23:59' : '18:00'}`);
+      }
+
+      function myLock(item) {
+        if (OVERRIDES[item.id]) {
+          const locked = resolveField(item.id, ME.cohortId, 'locked').value;
+          const unlockAt = resolveField(item.id, ME.cohortId, 'unlockAt').value;
+          return locked ? (unlockAt ? new Date(unlockAt) : 'locked') : null;
+        }
+        const section = CONTENT.findIndex((candidate) => candidate.items.includes(item));
+        const unlock = addDays(toDate(MY_COHORT.starts), section * 7 - 2);
+        return unlock > TODAY ? unlock : null;
+      }
+
+      function isDone(item) {
+        const section = CONTENT.findIndex((candidate) => candidate.items.includes(item));
+        return section < weeksIn(MY_COHORT) && !myLock(item);
+      }
+
+      function renderContent() {
+        const done = ALL_ITEMS.filter(isDone).length;
+        const sections = CONTENT.map((section, index) => {
+          const rows = section.items
+            .map((item) => {
+              const lock = myLock(item);
+              const date = item.kind === 'lesson' ? null : myDate(item);
+              const meta = lock
+                ? `${ICONS.lock}${lock === 'locked' ? 'Locked' : `Unlocks ${fmtDay(lock)}`}`
+                : item.kind === 'live' && date
+                  ? `${ICONS.calendar}${fmtDateTime(date)}`
+                  : item.kind === 'exercise'
+                    ? date
+                      ? `${ICONS.clock}Due ${fmtDay(date)}`
+                      : 'No due date'
+                    : '';
+              return `<a class="srow ${lock ? 'locked' : ''}" href="${lock ? '#' : `student.html?item=${item.id}${personaQuery}`}"><span class="tick ${isDone(item) ? 'on' : ''}">${isDone(item) ? ICONS.check : ''}</span>${ICONS[item.kind === 'exercise' ? 'exercise' : item.kind === 'live' ? 'live' : 'lesson'].replace('<svg', `<svg style="color:${lock ? 'var(--muted-foreground)' : item.kind === 'exercise' ? 'var(--success)' : '#3b82f6'}"`)}<span>${item.title}</span><span class="meta">${meta}</span></a>`;
+            })
+            .join('');
+          return `<div class="sec-label" style="margin-top:${index ? 18 : 0}px">${section.title}</div><div class="tbl-wrap">${rows}</div>`;
+        }).join('');
+        return `${previousBanner()}<div class="ph"><div class="grow"><h1 class="page-title">${COURSE.title}</h1><p>${done} of ${ALL_ITEMS.length} completed</p></div></div><div class="progress" style="max-width:none;margin:-8px 0 22px"><span style="width:${Math.round((done / ALL_ITEMS.length) * 100)}%"></span></div>${sections}`;
+      }
+
+      function renderNewsfeed() {
+        const posts = POSTS.filter((post) => post.audience === 'all' || post.audience === ME.cohortId);
+        return `${previousBanner()}<div class="ph"><div class="grow"><h1 class="page-title">News Feed</h1></div></div>${posts
+          .map((post) => `<div class="post"><div class="top"><span class="avatar" style="width:28px;height:28px;font-size:11px">${post.author.split(' ').map((part) => part[0]).join('')}</span><div class="grow"><div style="font-size:13.5px;font-weight:500">${post.author}</div><div class="t">${post.when}</div></div></div><p>${post.body}</p><div class="foot"><span class="frow" style="gap:5px">${ICONS.heart}${post.likes}</span><span class="frow" style="gap:5px">${ICONS.message}${post.comments}</span></div></div>`)
+          .join('')}`;
+      }
+
+      function renderItem() {
+        const item = findItem(params.get('item'));
+        const date = item.kind === 'lesson' ? null : myDate(item);
+        let top = '';
+        if (item.kind === 'live') {
+          const past = date && date < TODAY;
+          const recording = OVERRIDES[item.id] ? resolveField(item.id, ME.cohortId, 'recordingUrl').value : past ? 'youtu.be/da-recording' : null;
+          const call = OVERRIDES[item.id] ? resolveField(item.id, ME.cohortId, 'callUrl').value : 'meet.google.com/da-live';
+          const sameDay = date && date.toDateString() === TODAY.toDateString();
+          top = `<div class="live-card" style="margin-bottom:22px"><div class="cal"><b>${MONTHS[date.getMonth()].toUpperCase()}</b><span>${date.getDate()}</span></div><div class="grow"><div style="font-weight:500">${fmtDateTime(date)} · 60 min</div><div class="muted" style="font-size:13px">${past ? (recording ? 'This session has ended. The recording is ready.' : 'This session has ended. No recording was shared.') : sameDay ? 'Today · the link opens 10 minutes before' : call}</div></div>${past ? (recording ? `<button class="btn btn-outline btn-sm">${ICONS.video}Watch recording</button>` : '') : `<button class="btn btn-primary btn-sm">${ICONS.live}Join call</button>`}</div>`;
+        } else if (item.kind === 'exercise') {
+          top = `<div class="alert alert-default" style="margin-bottom:18px">${ICONS.clock}<div class="alert-title">${date ? `Due ${fmtDateTime(date)}` : 'No due date'}</div><div class="alert-description">${item.questions} question${item.questions === 1 ? '' : 's'} · submit when you’re ready.</div></div>`;
+        }
+        const comments = [
+          ['Zara Fernandez', 'Is the SQL dataset the same one from Week 3?'],
+          ['Kemi Adebayo', 'Yes — same tables, just filtered to 2025.']
+        ];
+        return `${previousBanner()}<h1 class="page-title" style="margin-bottom:16px">${item.title}</h1>${top}
+          <div class="note-block"><p>${item.kind === 'exercise' ? 'Use the sales dataset from Week 3. Publish a Looker Studio dashboard with at least three charts and one filter, then paste the link below.' : 'Bring one dashboard you built this week. We’ll review layout, chart choice and how quickly someone can answer a question from it.'}</p></div>
+          <div class="sec-label" style="margin-top:28px">Comments (${comments.length})</div>
+          ${comments.map(([who, text]) => `<div class="post" style="padding:10px 14px"><div class="top" style="margin-bottom:4px"><span class="avatar" style="width:24px;height:24px;font-size:10px">${who.split(' ').map((part) => part[0]).join('')}</span><b style="font-weight:500;font-size:13px">${who}</b></div><p style="font-size:13.5px">${text}</p></div>`).join('')}
+          <p class="hint">You see comments from ${MY_COHORT.name.split(' · ')[0]} only.</p>`;
+      }
+
+      function previousBanner() {
+        if (!PREVIOUS) return '';
+        return `<div class="alert alert-default" style="margin-bottom:18px">${ICONS.history}<div class="alert-title">You’re viewing your previous enrollment</div><div class="alert-description">${MY_COHORT.name.split(' · ')[0]} · ${cohortRange(MY_COHORT)}. Your progress and grades from then are here. <a href="${location.pathname}?${new URLSearchParams({ ...Object.fromEntries(params), enrollment: 'current' })}">Back to your current enrollment</a></div></div>`;
+      }
+
+      function enrollmentSwitch() {
+        if (!IS_RETAKE) return '';
+        return `<div class="combo" id="enr"><button class="btn btn-outline btn-sm combo-trigger">${ICONS.history}<span class="nm">${PREVIOUS ? 'Previous enrollment' : 'Current enrollment'}</span>${ICONS.chevUpDown}</button><div class="combo-pop right" hidden style="width:280px"><div class="cmd-list"><button class="cmd-item ${PREVIOUS ? '' : 'on'}" data-enr="current">${ICONS.check.replace('<svg', '<svg class="ck"')}<span>Current<span class="sub">Cohort 7 · Nov 8 – Jan 16</span></span></button><button class="cmd-item ${PREVIOUS ? 'on' : ''}" data-enr="previous">${ICONS.check.replace('<svg', '<svg class="ck"')}<span>Previous enrollment<span class="sub">Cohort 4 · Sep 26 – Dec 5</span></span></button></div></div></div>`;
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const label = PAGE === 'newsfeed' ? 'News Feed' : 'Content';
+        mountCourseShell({ active: label, label, student: true, treeOpen: PAGE !== 'newsfeed', activeItemId: params.get('item'), headerExtra: enrollmentSwitch() });
+        document.querySelectorAll('.ctree a').forEach((link) => {
+          const item = findItem(new URL(link.href).searchParams.get('item'));
+          if (item && myLock(item)) {
+            link.style.opacity = '0.55';
+            link.href = '#';
+          }
+          link.href = link.href.replace('&persona=retake', personaQuery ? personaQuery : '');
+        });
+        document.querySelectorAll('.cside .nav-item').forEach((link) => (link.href = link.href.replace('&persona=retake', personaQuery)));
+        finishMount();
+        document.getElementById('page').innerHTML = { content: renderContent, newsfeed: renderNewsfeed, item: renderItem }[PAGE]();
+
+        const switcher = document.getElementById('enr');
+        if (switcher) {
+          const pop = switcher.querySelector('.combo-pop');
+          switcher.querySelector('.combo-trigger').addEventListener('click', (event) => {
+            event.stopPropagation();
+            pop.hidden = !pop.hidden;
+          });
+          document.addEventListener('click', () => (pop.hidden = true));
+          switcher.querySelectorAll('[data-enr]').forEach((item) =>
+            item.addEventListener('click', () => {
+              setParam('enrollment', item.dataset.enr === 'previous' ? 'previous' : null);
+              location.reload();
+            })
+          );
+        }
+
+        document.getElementById(IS_RETAKE ? 'p-retake' : 'p-one').style.cssText = 'background:#fff;color:#0a0a0a';
+        document.querySelectorAll('[data-go]').forEach((link) => {
+          const target = link.dataset.go;
+          link.href = ['newsfeed', 'content'].includes(target) ? `student.html?page=${target}${personaQuery}` : `student.html?item=${target}${personaQuery}`;
+        });
+      });
+    </script>
+  </body>
+</html>
