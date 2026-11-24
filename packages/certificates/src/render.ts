@@ -18,7 +18,7 @@ import { renderClassique } from './templates/classique';
 import { renderMinimal } from './templates/minimal';
 import { renderNoir } from './templates/noir';
 import { renderPoster } from './templates/poster';
-import { BASE_STYLES, FONTS_LINK_HREF, type TemplateRenderer } from './templates/shared';
+import { BASE_STYLES, EDITABLE_STYLES, FONTS_LINK_HREF, type TemplateRenderer } from './templates/shared';
 
 const RENDERERS: Record<CertificateTemplateId, TemplateRenderer> = {
   classique: renderClassique,
@@ -153,5 +153,7 @@ ${wrappedBody}
 export function renderCertificateDocument(design: CertificateDesign, data: CertificateRenderData): string {
   const { html, styles } = renderCertificate(design, data);
 
-  return html.replace('</head>', `<style>${styles}</style></head>`);
+  const previewStyles = styles + '\n' + EDITABLE_STYLES;
+
+  return html.replace('</head>', `<style>${previewStyles}</style></head>`);
 }
