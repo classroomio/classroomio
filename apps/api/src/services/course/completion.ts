@@ -307,7 +307,7 @@ export async function assertCertificateDownloadAllowed(courseId: string, profile
     throw new AppError('This certificate was revoked', ErrorCodes.VALIDATION_ERROR, 403);
   }
 
-  if (courseRow.type !== 'COMPLIANCE' && evaluation.certificateEarnedAt) {
+  if (evaluation.certificateEarnedAt) {
     try {
       const expiresAt = computeStandardCertificateExpiresAt(
         evaluation.certificateEarnedAt,

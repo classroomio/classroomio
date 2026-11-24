@@ -138,21 +138,20 @@ export async function downloadPublicApiCourseCertificateService(
 
   const issuedAt = new Date(member.certificateEarnedAt).toISOString();
   const [courseRow] = await getCourseById(params.courseId);
-  if (courseRow?.certificate) {
-    const existing = await getLatestCertificateByCourseProfile(params.courseId, member.profileId!);
-    if (!existing || !existing.verifyCode) {
-      const expiresAt = computeStandardCertificateExpiresAt(
-        issuedAt,
-        courseRow.certificate as { expiresAfterMonths?: number | null } | null
-      );
-      await ensureCertificateIssue({
-        courseId: params.courseId,
-        profileId: member.profileId!,
-        issuedAt,
-        expiresAt,
-        courseCompletionRecordId: null
-      });
-    }
+  const existing = await getLatestCertificateByCourseProfile(params.courseId, member.profileId!);
+  if (!existing || !existing.verifyCode) {
+    const expiresAt = computeStandardCertificateExpiresAt(
+      issuedAt,
+      (courseRow?.certificate as { expiresAfterMonths?: number | null } | null) ?? null
+    );
+    await ensureCertificateIssue({
+      courseId: params.courseId,
+      profileId: member.profileId!,
+      cycleNumber: existing?.cycleNumber ?? 1,
+      issuedAt,
+      expiresAt,
+      courseCompletionRecordId: null
+    });
   }
 
   const renderInput = await assembleCertificateRender(

@@ -1,7 +1,7 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
-import { safeServerApi } from '$lib/utils/services/api/server';
+import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 import { normalizeVerifyCode } from '@cio/utils/certificate/verify-code';
 
 type VerifyRequest = (typeof classroomio)['org-site']['verify'][':code']['$get'];
@@ -36,7 +36,12 @@ export const load = async (event) => {
     const result = await safeServerApi<VerifySuccess>(() =>
       classroomio['org-site'].verify[':code'].$get(
         { param: { code: normalized } },
-        visitorIp ? { headers: { 'x-visitor-ip': visitorIp } } : undefined
+        {
+          headers: {
+            ...getApiKeyHeaders().headers,
+            ...(visitorIp ? { 'x-visitor-ip': visitorIp } : {})
+          }
+        }
       )
     );
     if (result.ok) {
