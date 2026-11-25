@@ -67,7 +67,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/',
     describeRoute({
       description:
-        'Create a cohort newsfeed post authored by the key creator; the key creator must be a cohort tutor/admin, or an org admin who is a member of the cohort.',
+        'Create a cohort newsfeed post authored by the key creator; the key creator must be a cohort tutor/admin or an org admin. An org admin who has not joined the cohort is added to it as an admin.',
       tags: ['Cohort Newsfeed'],
       responses: {
         201: jsonResponse('Newsfeed post created successfully', FeedResponse),
@@ -75,7 +75,7 @@ export const v1CohortNewsfeedRouter = new Hono()
         401: errorResponses.unauthorized,
         403: {
           description:
-            'Missing the cohort:read/write scope, or the key creator is not a cohort tutor/admin or an org admin in the cohort'
+            'Missing the cohort:read/write scope, or the key creator is neither a cohort tutor/admin nor an org admin'
         },
         404: { description: 'Cohort not found' }
       }

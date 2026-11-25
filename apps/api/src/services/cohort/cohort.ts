@@ -38,8 +38,10 @@ import {
   getCohortsByOrgForProfile,
   getCoursesByCohort,
   getCohortMemberRole,
+  insertCohortMemberIfAbsent,
   isCohortCourse,
   isCohortMember,
+  isOrgAdminByCohortId,
   listCohortEnrollmentMembers,
   removeCourseFromCohort,
   removeCohortMember,
@@ -743,16 +745,38 @@ export async function listCohortNewsfeed(cohortId: string, options: { cursor?: s
   }
 }
 
+/**
+ * The cohort member row that authors content for `profileId`. An org admin who has not
+ * joined the cohort yet is added to it as an admin, mirroring how course feeds treat them.
+ */
+async function ensureCohortAuthorMemberId(cohortId: string, profileId: string): Promise<string> {
+  const existingMember = await getCohortMemberByProfileId(cohortId, profileId);
+  if (existingMember) {
+    return existingMember.id;
+  }
+
+  const isOrgAdmin = await isOrgAdminByCohortId(cohortId, profileId);
+  if (!isOrgAdmin) {
+    throw new AppError('User is not a member of this cohort', ErrorCodes.COHORT_FORBIDDEN, 403);
+  }
+
+  await insertCohortMemberIfAbsent({ cohortId, profileId, roleId: ROLE.ADMIN });
+
+  const addedMember = await getCohortMemberByProfileId(cohortId, profileId);
+  if (!addedMember) {
+    throw new AppError('Failed to add you to this cohort', ErrorCodes.INTERNAL_ERROR, 500);
+  }
+
+  return addedMember.id;
+}
+
 export async function createCohortNewsfeedService(cohortId: string, profileId: string, data: TCreateCohortNewsfeed) {
   try {
-    const member = await getCohortMemberByProfileId(cohortId, profileId);
-    if (!member) {
-      throw new AppError('User is not a member of this cohort', ErrorCodes.COHORT_FORBIDDEN, 403);
-    }
+    const authorMemberId = await ensureCohortAuthorMemberId(cohortId, profileId);
 
     return createCohortNewsfeedQuery({
       cohortId,
-      authorId: member.id,
+      authorId: authorMemberId,
       content: data.content,
       isPinned: data.isPinned ?? false
     });
