@@ -5,10 +5,14 @@ const mocks = vi.hoisted(() => ({
   authenticateOAuth: vi.fn()
 }));
 
-vi.mock('@api/services/organization/automation-key', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@api/services/organization/automation-key')>()),
-  authenticateOrganizationApiKeyService: mocks.authenticateKey
-}));
+vi.mock('@api/services/organization/automation-key', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@api/services/organization/automation-key')>();
+
+  return {
+    ...original,
+    authenticateOrganizationApiKeyService: mocks.authenticateKey
+  };
+});
 vi.mock('@api/services/oauth/oauth', () => ({
   authenticateOAuthAccessTokenService: mocks.authenticateOAuth
 }));
