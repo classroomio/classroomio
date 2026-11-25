@@ -152,7 +152,8 @@ export const v1CourseExercisesRouter = new Hono()
           actorId,
           c.req.valid('param'),
           c.req.valid('json'),
-          c.req.valid('query')
+          c.req.valid('query'),
+          getEventSource(c)
         );
 
         return c.json({ success: true, data: exercise }, 200);

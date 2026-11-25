@@ -131,7 +131,8 @@ function groupQuestionsBySections(
 async function syncExerciseSections(
   exerciseId: string,
   sections: NonNullable<TExerciseUpdate['sections']>,
-  txClient: DbOrTxClient
+  txClient: DbOrTxClient,
+  createdVia: TCreatedVia
 ) {
   const currentSections = await getExerciseSectionsByExerciseId(exerciseId, txClient);
   const currentSectionIds = new Set(currentSections.map((section) => section.id));
@@ -161,7 +162,8 @@ async function syncExerciseSections(
       description: section.description ?? null,
       order: section.order,
       colorTheme: section.colorTheme,
-      afterBehavior: section.afterBehavior
+      afterBehavior: section.afterBehavior,
+      createdVia
     }));
 
   if (sectionsToCreate.length > 0) {
@@ -396,11 +398,13 @@ export async function getExercise(
  * Only updates what has changed by querying the current state first and computing a diff.
  * @param exerciseId Exercise ID
  * @param data Partial exercise update data
+ * @param createdVia Channel stamped on any exercise section this update adds
  * @returns Updated exercise, with the ids of the questions this update created
  */
 export async function updateExerciseService(
   exerciseId: string,
-  data: TExerciseUpdate
+  data: TExerciseUpdate,
+  createdVia: TCreatedVia = 'dashboard'
 ): Promise<TExercise & { createdQuestionIds: number[] }> {
   try {
     const sanitizedData = sanitizeExercisePayload(data);
@@ -441,7 +445,7 @@ export async function updateExerciseService(
       }
 
       if (sanitizedData.sections !== undefined) {
-        await syncExerciseSections(exerciseId, sanitizedData.sections, txClient);
+        await syncExerciseSections(exerciseId, sanitizedData.sections, txClient, createdVia);
       }
 
       // Process questions - only update what changed

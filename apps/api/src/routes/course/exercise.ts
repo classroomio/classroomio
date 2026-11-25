@@ -275,7 +275,7 @@ export const exerciseRouter = new Hono()
           }
         }
 
-        const exercise = await updateExerciseService(exerciseId, data);
+        const exercise = await updateExerciseService(exerciseId, data, getEventSource(c));
 
         if (automationKey?.type === 'mcp') {
           await recordMcpAutomationUsage(automationKey, 'update_course_exercise', { courseId, exerciseId });

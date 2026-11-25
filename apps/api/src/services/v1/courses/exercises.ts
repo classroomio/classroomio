@@ -550,7 +550,8 @@ export async function applyCourseExerciseUpdate(
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
   payload: TPublicApiUpdateCourseExercise,
-  options: TPublicApiForceQuery = { force: false }
+  options: TPublicApiForceQuery = { force: false },
+  createdVia: TCreatedVia = 'public_api'
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
@@ -568,7 +569,8 @@ export async function applyCourseExerciseUpdate(
 
   const { createdQuestionIds = [], ...updated } = await updateExerciseService(
     params.exerciseId,
-    toInternalUpdate(payload, current)
+    toInternalUpdate(payload, current),
+    createdVia
   );
   const exercise = toPublicExerciseDetail(updated as ExerciseDetail);
 
@@ -580,9 +582,10 @@ export async function updateCourseExerciseService(
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
   payload: TPublicApiUpdateCourseExercise,
-  options: TPublicApiForceQuery = { force: false }
+  options: TPublicApiForceQuery = { force: false },
+  createdVia: TCreatedVia = 'public_api'
 ) {
-  const { exercise } = await applyCourseExerciseUpdate(orgId, actorId, params, payload, options);
+  const { exercise } = await applyCourseExerciseUpdate(orgId, actorId, params, payload, options, createdVia);
 
   return exercise;
 }

@@ -1188,18 +1188,22 @@ export function buildAgentTools(
             await verifySectionBelongsToCourse(args.sectionId, courseId);
           }
 
-          const updated = await updateExerciseService(args.exerciseId, {
-            title: args.title,
-            description: args.description,
-            lessonId: args.lessonId,
-            sectionId: args.sectionId,
-            order: args.order,
-            dueBy: args.dueBy,
-            isUnlocked: args.isUnlocked,
-            allowMultipleAttempts: args.allowMultipleAttempts,
-            completionPolicy: args.completionPolicy,
-            passThreshold: args.passThreshold
-          });
+          const updated = await updateExerciseService(
+            args.exerciseId,
+            {
+              title: args.title,
+              description: args.description,
+              lessonId: args.lessonId,
+              sectionId: args.sectionId,
+              order: args.order,
+              dueBy: args.dueBy,
+              isUnlocked: args.isUnlocked,
+              allowMultipleAttempts: args.allowMultipleAttempts,
+              completionPolicy: args.completionPolicy,
+              passThreshold: args.passThreshold
+            },
+            'agent'
+          );
 
           return {
             id: updated.id,
@@ -1316,7 +1320,7 @@ export function buildAgentTools(
             ...newQuestions
           ];
 
-          await updateExerciseService(args.exerciseId, { questions: allQuestions });
+          await updateExerciseService(args.exerciseId, { questions: allQuestions }, 'agent');
           return {
             exerciseId: args.exerciseId,
             exerciseTitle: existingExercise.title,

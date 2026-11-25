@@ -83,7 +83,7 @@ export async function createPublicApiLessonService(
 
   const videos = payload.videos?.length ? await resolveLessonVideos(orgId, actorId, payload.videos) : undefined;
 
-  const lesson = await createLesson(
+  const { createdVia: _internalCreatedVia, ...lesson } = await createLesson(
     params.courseId,
     {
       title: payload.title,
@@ -117,7 +117,7 @@ export async function updatePublicApiLessonService(
 
   const videos = payload.videos ? await resolveLessonVideos(orgId, actorId, payload.videos) : undefined;
 
-  const lesson = await updateLessonService(
+  const { createdVia: _internalCreatedVia, ...lesson } = await updateLessonService(
     params.lessonId,
     {
       title: payload.title,
