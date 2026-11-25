@@ -17,7 +17,7 @@ permissions:
   actions: write
   contents: none
   issues: write
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   cla:
@@ -122,15 +122,6 @@ jobs:
               return;
             }
 
-            if (!pullRequestLabels.has(signatureRequiredLabel)) {
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pullRequest.number,
-                labels: [signatureRequiredLabel],
-              });
-            }
-
             const commentBody = `${commentMarker}
             Thanks for contributing to ClassroomIO, @${pullRequest.user.login}! Because this is a first-time or external contribution, please sign the [ClassroomIO Contributor License Agreement](https://forms.gle/XsXdfGcgJpWtNuzs7) before it can be merged.
 
@@ -159,6 +150,15 @@ jobs:
                 repo: context.repo.repo,
                 issue_number: pullRequest.number,
                 body: commentBody,
+              });
+            }
+
+            if (!pullRequestLabels.has(signatureRequiredLabel)) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequest.number,
+                labels: [signatureRequiredLabel],
               });
             }
 
