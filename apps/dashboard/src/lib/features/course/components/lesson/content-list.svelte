@@ -328,7 +328,7 @@
     {@const isLockPending = Boolean(lockPendingItemKeys[getItemLockKey(item)])}
     {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
     <div
-      class="relative m-auto mb-4 flex max-w-xl items-start rounded-md border border-gray-200 px-3 py-2 transition dark:bg-neutral-800 {reorder
+      class="group/card relative m-auto mb-4 flex max-w-xl items-start rounded-md border border-gray-200 px-3 py-2 transition dark:bg-neutral-800 {reorder
         ? 'border-primary-300 bg-primary-50/40 cursor-grab shadow-sm active:cursor-grabbing'
         : ''}"
     >

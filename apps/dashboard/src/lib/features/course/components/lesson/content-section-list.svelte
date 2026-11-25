@@ -594,7 +594,7 @@
           {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
 
           <div
-            class="mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md border px-3 py-1 transition"
+            class="group/card mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md border px-3 py-1 transition"
             style={reorder ? 'border: 2px #1d4ed8 solid; border-style: dashed; cursor: grab;' : ''}
             animate:flip={{ duration: flipDurationMs }}
           >

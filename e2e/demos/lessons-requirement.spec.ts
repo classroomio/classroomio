@@ -31,6 +31,8 @@ test('teacher marks course content as required or optional', async ({ page }) =>
   await markers.first().hover();
   await page.waitForTimeout(1200);
 
+  await markers.nth(1).hover();
+  await page.waitForTimeout(800);
   await toggles.nth(1).click();
   await expect(markers).toHaveCount(2);
   await page.waitForTimeout(1000);

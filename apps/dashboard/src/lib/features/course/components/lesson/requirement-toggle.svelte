@@ -29,7 +29,10 @@
           {...props}
           variant="secondary"
           size="icon-sm"
-          class={cn('h-8 w-8', required ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400')}
+          class={cn(
+            'h-8 w-8 opacity-0 transition-opacity group-focus-within/card:opacity-100 group-hover/card:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100',
+            required ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'
+          )}
           aria-label={actionLabel}
           aria-pressed={required}
           {disabled}
