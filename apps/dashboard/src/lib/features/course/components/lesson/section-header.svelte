@@ -29,6 +29,8 @@
     showDelete?: boolean;
     errors?: Record<string, string>;
     lockLabel?: string;
+    requirementLabel?: string;
+    onToggleRequirement?: () => void;
     onEdit: () => void;
     onSave: () => void;
     onCancel: () => void;
@@ -47,6 +49,8 @@
     showDelete = true,
     errors = {},
     lockLabel,
+    requirementLabel,
+    onToggleRequirement,
     onEdit,
     onSave,
     onCancel,
@@ -94,6 +98,8 @@
           {isSaving}
           lockLabel={lockLabel || ''}
           showLock={Boolean(lockLabel && onToggleLock)}
+          {requirementLabel}
+          {onToggleRequirement}
           {showDelete}
           {onEdit}
           {onSave}

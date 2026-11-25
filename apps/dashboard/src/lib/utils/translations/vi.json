@@ -363,7 +363,9 @@
         "content_grouping_enabled": "Đã bật nhóm nội dung",
         "content_grouping_disabled": "Đã tắt nhóm nội dung",
         "link_generated": "Liên kết khóa học được cập nhật thành công",
-        "converted_to_public": "Khóa học được chuyển đổi thành công sang Công khai"
+        "converted_to_public": "Khóa học được chuyển đổi thành công sang Công khai",
+        "all_content_required": "Đã đánh dấu toàn bộ nội dung là bắt buộc",
+        "all_content_optional": "Đã đánh dấu toàn bộ nội dung là tùy chọn"
       },
       "info": {
         "conversion_blocked": "Vui lòng sửa các câu hỏi bên dưới để hoàn tất chuyển đổi sang chế độ Công khai."
@@ -2842,6 +2844,22 @@
           "mode_edit": "Biên tập",
           "mode_preview": "Xem trước",
           "mode_shortcut": "Chuyển đổi chế độ"
+        },
+        "requirement": {
+          "required": "Bắt buộc",
+          "optional": "Tùy chọn",
+          "make_required": "Đặt là bắt buộc",
+          "make_optional": "Đặt là tùy chọn",
+          "make_all_required": "Đặt tất cả là bắt buộc",
+          "make_all_optional": "Đặt tất cả là tùy chọn",
+          "make_section_required": "Đặt phần là bắt buộc",
+          "make_section_optional": "Đặt phần là tùy chọn",
+          "count_required": "{count} bắt buộc",
+          "count_optional": "{count} tùy chọn",
+          "progress_label": "Mục bắt buộc đã hoàn thành",
+          "progress_value": "{done} trên {total}",
+          "progress_remaining": "Còn {count} mục bắt buộc. Các mục tùy chọn không được tính vào việc hoàn thành.",
+          "progress_done": "Bạn đã hoàn thành mọi mục bắt buộc."
         }
       },
       "news_feed": {

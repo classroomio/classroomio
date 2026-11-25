@@ -363,7 +363,9 @@
         "content_grouping_enabled": "Regroupement de contenu activé",
         "content_grouping_disabled": "Regroupement de contenu désactivé",
         "link_generated": "Lien du cours mis à jour avec succès",
-        "converted_to_public": "Cours converti avec succès en public"
+        "converted_to_public": "Cours converti avec succès en public",
+        "all_content_required": "Tout le contenu est marqué comme obligatoire",
+        "all_content_optional": "Tout le contenu est marqué comme facultatif"
       },
       "info": {
         "conversion_blocked": "Corrigez les questions ci-dessous pour terminer la conversion en public."
@@ -2842,6 +2844,22 @@
           "mode_edit": "Modifier",
           "mode_preview": "Aperçu",
           "mode_shortcut": "Changer de mode"
+        },
+        "requirement": {
+          "required": "Obligatoire",
+          "optional": "Facultatif",
+          "make_required": "Rendre obligatoire",
+          "make_optional": "Rendre facultatif",
+          "make_all_required": "Tout rendre obligatoire",
+          "make_all_optional": "Tout rendre facultatif",
+          "make_section_required": "Rendre la section obligatoire",
+          "make_section_optional": "Rendre la section facultative",
+          "count_required": "{count} obligatoires",
+          "count_optional": "{count} facultatifs",
+          "progress_label": "Éléments obligatoires terminés",
+          "progress_value": "{done} sur {total}",
+          "progress_remaining": "Il reste {count} éléments obligatoires. Les éléments facultatifs ne comptent pas pour la complétion.",
+          "progress_done": "Vous avez terminé tout ce qui est obligatoire."
         }
       },
       "news_feed": {

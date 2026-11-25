@@ -31,6 +31,13 @@
   import { ContentType } from '@cio/utils/constants/content';
   import ContentRow from './content-row.svelte';
   import ContentActions from './content-actions.svelte';
+  import RequirementToggle from './requirement-toggle.svelte';
+  import {
+    contentRequirements,
+    setContentRequirements,
+    toggleContentRequirement
+  } from '$features/course/utils/content-requirement-store';
+  import { hasOptionalItem, isContentRequired } from '$features/course/utils/content-requirement-utils';
   import SectionHeader from './section-header.svelte';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
@@ -512,6 +519,13 @@
         ? `${$t('course.navItem.lessons.add_lesson.lock')} ${$t('course.navItem.lessons.add_lesson.all')}`
         : `${$t('course.navItem.lessons.add_lesson.unlock')} ${$t('course.navItem.lessons.add_lesson.all')}`
       : undefined}
+    {@const sectionTargets = section.items.map((item) => ({ type: item.type, id: item.contentId }))}
+    {@const sectionMakeRequired = hasOptionalItem(sectionTargets, $contentRequirements)}
+    {@const sectionRequirementLabel = hasSectionItems
+      ? sectionMakeRequired
+        ? $t('course.navItem.lessons.requirement.make_section_required')
+        : $t('course.navItem.lessons.requirement.make_section_optional')
+      : undefined}
     <div
       id={isUngrouped ? undefined : `section-${section.id}`}
       class="ui:border-border m-auto mb-3 max-w-xl scroll-mt-24 rounded-md border transition dark:bg-neutral-800"
@@ -527,6 +541,10 @@
         disabled={Boolean($contentEditingStore && $contentEditingStore !== section.id)}
         {errors}
         lockLabel={isUngrouped ? undefined : sectionLockLabel}
+        requirementLabel={sectionRequirementLabel}
+        onToggleRequirement={hasSectionItems
+          ? () => setContentRequirements(sectionTargets, sectionMakeRequired)
+          : undefined}
         onEdit={() => onEdit({ sectionId: section.id, sectionTitle: section.title! })}
         onSave={() => onSave({ sectionId: section.id })}
         onCancel={() => {
@@ -561,6 +579,7 @@
         {#each section.items as item (item.id)}
           {@const isEditingItem = $contentEditingStore === item.contentId}
           {@const itemLocked = isLockedForStudent(item)}
+          {@const itemRequired = isContentRequired($contentRequirements, { type: item.type, id: item.contentId })}
           {@const itemLockLabel = item.isUnlocked
             ? $t('course.navItem.lessons.add_lesson.lock')
             : $t('course.navItem.lessons.add_lesson.unlock')}
@@ -575,7 +594,9 @@
           {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
 
           <div
-            class="mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md border px-3 py-1 transition"
+            class="mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md border px-3 py-1 transition {itemRequired
+              ? ''
+              : 'border-dashed'}"
             style={reorder ? 'border: 2px #1d4ed8 solid; border-style: dashed; cursor: grab;' : ''}
             animate:flip={{ duration: flipDurationMs }}
           >
@@ -584,6 +605,7 @@
                 {item}
                 bind:title={item.title}
                 isLocked={itemLocked}
+                requirement={isStudentView ? (itemRequired ? 'required' : 'optional') : undefined}
                 linkDisabled={reorder}
                 href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
                 isEditing={isEditingItem}
@@ -638,6 +660,7 @@
                 {item}
                 bind:title={item.title}
                 isLocked={itemLocked}
+                requirement={isStudentView ? (itemRequired ? 'required' : 'optional') : undefined}
                 linkDisabled={reorder}
                 href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
                 isEditing={isEditingItem}
@@ -676,6 +699,11 @@
                   {/if}
                 </span>
               {:else}
+                <RequirementToggle
+                  required={itemRequired}
+                  disabled={actionDisabled || isEditingItem}
+                  onToggle={() => toggleContentRequirement({ type: item.type, id: item.contentId })}
+                />
                 <Button
                   size="icon-sm"
                   variant="outline"

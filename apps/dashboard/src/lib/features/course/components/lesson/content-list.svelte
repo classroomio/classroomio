@@ -24,6 +24,9 @@
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import ContentRow from './content-row.svelte';
   import ContentActions from './content-actions.svelte';
+  import RequirementToggle from './requirement-toggle.svelte';
+  import { contentRequirements, toggleContentRequirement } from '$features/course/utils/content-requirement-store';
+  import { isContentRequired } from '$features/course/utils/content-requirement-utils';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
 
@@ -311,6 +314,7 @@
   {#each contentItems as item (item.id)}
     {@const isEditingItem = $contentEditingStore === item.contentId}
     {@const itemLocked = isLockedForStudent(item, isStudentView)}
+    {@const itemRequired = isContentRequired($contentRequirements, { type: item.type, id: item.contentId })}
     {@const lockLabel = item.isUnlocked
       ? $t('course.navItem.lessons.add_lesson.lock')
       : $t('course.navItem.lessons.add_lesson.unlock')}
@@ -324,7 +328,9 @@
     {@const isLockPending = Boolean(lockPendingItemKeys[getItemLockKey(item)])}
     {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
     <div
-      class="relative m-auto mb-4 flex max-w-xl items-start rounded-md border border-gray-200 px-3 py-2 transition dark:bg-neutral-800 {reorder
+      class="relative m-auto mb-4 flex max-w-xl items-start rounded-md border border-gray-200 px-3 py-2 transition dark:bg-neutral-800 {itemRequired
+        ? ''
+        : 'border-dashed'} {reorder
         ? 'border-primary-300 bg-primary-50/40 cursor-grab shadow-sm active:cursor-grabbing'
         : ''}"
     >
@@ -339,6 +345,7 @@
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          requirement={isStudentView ? (itemRequired ? 'required' : 'optional') : undefined}
           linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
@@ -391,6 +398,7 @@
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          requirement={isStudentView ? (itemRequired ? 'required' : 'optional') : undefined}
           linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
@@ -428,6 +436,11 @@
             {/if}
           </span>
         {:else}
+          <RequirementToggle
+            required={itemRequired}
+            disabled={actionDisabled || isEditingItem}
+            onToggle={() => toggleContentRequirement({ type: item.type, id: item.contentId })}
+          />
           <Button
             size="icon-sm"
             variant="outline"

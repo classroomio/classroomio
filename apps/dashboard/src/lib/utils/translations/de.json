@@ -363,7 +363,9 @@
         "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
         "content_grouping_disabled": "Inhaltsgruppierung deaktiviert",
         "link_generated": "Der Kurslink wurde erfolgreich aktualisiert",
-        "converted_to_public": "Der Kurs wurde erfolgreich in den öffentlichen Kurs konvertiert"
+        "converted_to_public": "Der Kurs wurde erfolgreich in den öffentlichen Kurs konvertiert",
+        "all_content_required": "Alle Inhalte als erforderlich markiert",
+        "all_content_optional": "Alle Inhalte als optional markiert"
       },
       "info": {
         "conversion_blocked": "Beantworten Sie die folgenden Fragen, um die Umstellung auf öffentlich abzuschließen."
@@ -2842,6 +2844,22 @@
           "mode_edit": "Bearbeiten",
           "mode_preview": "Vorschau",
           "mode_shortcut": "Modus umschalten"
+        },
+        "requirement": {
+          "required": "Erforderlich",
+          "optional": "Optional",
+          "make_required": "Als erforderlich markieren",
+          "make_optional": "Als optional markieren",
+          "make_all_required": "Alles als erforderlich markieren",
+          "make_all_optional": "Alles als optional markieren",
+          "make_section_required": "Abschnitt als erforderlich markieren",
+          "make_section_optional": "Abschnitt als optional markieren",
+          "count_required": "{count} erforderlich",
+          "count_optional": "{count} optional",
+          "progress_label": "Erforderliche Elemente abgeschlossen",
+          "progress_value": "{done} von {total}",
+          "progress_remaining": "Noch {count} erforderliche Elemente. Optionale Elemente zählen nicht für den Abschluss.",
+          "progress_done": "Du hast alles Erforderliche abgeschlossen."
         }
       },
       "news_feed": {
