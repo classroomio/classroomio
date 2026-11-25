@@ -1,0 +1,267 @@
+"""Sound-effects synthesis library for motion-graphics projects.
+
+Every sound is generated here (filtered noise, sines, FFT reverb), so there is nothing to license.
+The result is a separate stem: the original voice and audio are never processed or re-levelled.
+
+A project's sfx.py does:
+    from sfxlib import *
+    begin(length_seconds)
+    place(5.85, whoosh(2.3, 150, 2500), -27, pan=-0.2, width=1)
+    ...
+    finish(sys.argv[1])
+"""
+import sys
+import wave
+
+import numpy as np
+
+RATE = 44100
+LENGTH = 0.0
+rng = np.random.default_rng(7)
+bus = np.zeros((RATE, 2), dtype=np.float64)
+
+
+def begin(length, seed=7):
+    """Starts an empty stereo bus `length` seconds long; call once before placing sounds."""
+    global LENGTH, bus
+    LENGTH = length
+    rng.bit_generator.state = np.random.default_rng(seed).bit_generator.state
+    bus = np.zeros((int(length * RATE) + RATE, 2), dtype=np.float64)
+
+
+def db(value):
+    return 10 ** (value / 20)
+
+
+def seconds(duration):
+    return np.arange(int(duration * RATE)) / RATE
+
+
+def one_pole(signal, cutoff):
+    """Time-varying one-pole low-pass; `cutoff` may be a scalar or an array (Hz)."""
+    cutoff = np.broadcast_to(np.asarray(cutoff, dtype=np.float64), signal.shape)
+    alpha = (1 - np.exp(-2 * np.pi * cutoff / RATE)).tolist()
+    values = signal.tolist()
+    out = [0.0] * len(values)
+    state = 0.0
+    for index, value in enumerate(values):
+        state += alpha[index] * (value - state)
+        out[index] = state
+
+    return np.asarray(out)
+
+
+def highpass(signal, cutoff):
+    return signal - one_pole(signal, cutoff)
+
+
+TAILS = {}
+
+
+def reverb_tail(decay):
+    if decay not in TAILS:
+        length = int(decay * RATE)
+        tail = rng.standard_normal(length) * np.exp(-6.9 * seconds(decay) / decay)
+        TAILS[decay] = one_pole(tail, 5000) / np.sqrt(length) * 6
+
+    return TAILS[decay]
+
+
+def reverb(signal, decay=1.2, mix=0.25):
+    tail = reverb_tail(decay)
+    length = len(tail)
+    size = len(signal) + length
+    wet = np.fft.irfft(np.fft.rfft(signal, size) * np.fft.rfft(tail, size), size)[:size]
+    dry = np.concatenate([signal, np.zeros(length)])
+
+    return dry + mix * wet
+
+
+def place(at, mono, gain_db, pan=0.0, width=0.0):
+    """Adds a mono sound at `at` seconds, panned (-1..1); `width` decorrelates the channels slightly."""
+    start = int(at * RATE)
+    sound = mono * db(gain_db)
+    left = sound * np.sqrt(0.5 * (1 - pan))
+    right = sound * np.sqrt(0.5 * (1 + pan))
+    if width:
+        shift = int(width * 0.012 * RATE)
+        right = np.concatenate([np.zeros(shift), right[: len(right) - shift]]) if shift else right
+    end = min(len(bus), start + len(sound))
+    bus[start:end, 0] += left[: end - start]
+    bus[start:end, 1] += right[: end - start]
+
+
+def normalise(signal):
+    peak = np.max(np.abs(signal)) or 1
+
+    return signal / peak
+
+
+def envelope(duration, attack, release, curve=2.0):
+    time = seconds(duration)
+    rise = np.clip(time / max(attack, 1e-4), 0, 1) ** curve
+    fall = np.clip((duration - time) / max(release, 1e-4), 0, 1) ** curve
+
+    return rise * fall
+
+
+def whoosh(duration, low=300, high=4000, peak=0.6, rising=False):
+    noise = rng.standard_normal(int(duration * RATE))
+    time = seconds(duration) / duration
+    shape = np.exp(-((time - peak) ** 2) / 0.05) if not rising else time ** 3
+    cutoff = low + (high - low) * shape
+    body = one_pole(noise, cutoff) - one_pole(noise, cutoff * 0.25)
+
+    return normalise(body * shape)
+
+
+def riser(duration, start=120, end=900):
+    time = seconds(duration)
+    phase = 2 * np.pi * np.cumsum(start * (end / start) ** (time / duration)) / RATE
+    tone = 0.5 * np.sin(phase) + 0.25 * np.sin(2 * phase + 0.3)
+    air = whoosh(duration, 400, 7000, rising=True)
+
+    return normalise((tone * 0.5 + air) * (time / duration) ** 2.5)
+
+
+def impact(size=1.0, low=58):
+    duration = 1.6 * size
+    time = seconds(duration)
+    pitch = low + 70 * np.exp(-time * 18)
+    sub = np.sin(2 * np.pi * np.cumsum(pitch) / RATE) * np.exp(-time * 3.2 / size)
+    crack = highpass(rng.standard_normal(len(time)), 1800) * np.exp(-time * 60)
+    body = one_pole(rng.standard_normal(len(time)), 900) * np.exp(-time * 9)
+
+    return normalise(reverb(sub + 0.35 * crack + 0.8 * body, 1.6 * size, 0.3))
+
+
+def tick(pitch=2400, length=0.03):
+    time = seconds(length)
+    blip = np.sin(2 * np.pi * pitch * time) * np.exp(-time * 160)
+    click = highpass(rng.standard_normal(len(time)), 3000) * np.exp(-time * 400)
+
+    return normalise(blip + 0.4 * click)
+
+
+def pop(start=380, end=980, length=0.09):
+    time = seconds(length)
+    pitch = start * (end / start) ** (time / length)
+    tone = np.sin(2 * np.pi * np.cumsum(pitch) / RATE) * np.exp(-time * 38)
+
+    return normalise(reverb(tone, 0.4, 0.15))
+
+
+def chime(base=1046.5, length=1.4, partials=(1, 2.01, 2.99, 4.2), wet=True):
+    time = seconds(length)
+    tone = sum(np.sin(2 * np.pi * base * ratio * time) * np.exp(-time * (2.5 + ratio * 1.5)) / ratio for ratio in partials)
+    tone = tone * np.clip(time / 0.004, 0, 1)
+
+    return normalise(reverb(tone, 1.2, 0.3) if wet else tone)
+
+
+def shimmer(duration, density=140, low=2500, high=9000):
+    out = np.zeros(int(duration * RATE) + RATE)
+    for _ in range(int(duration * density)):
+        at = int(rng.uniform(0, duration) * RATE)
+        grain = chime(rng.uniform(low, high), 0.25, (1, 2.4), wet=False)
+        out[at : at + len(grain)] += grain * rng.uniform(0.2, 1)
+    out = out[: int(duration * RATE)] * envelope(duration, duration * 0.2, duration * 0.5, 1)
+
+    return normalise(reverb(out, 1.0, 0.3)[: int(duration * RATE) + RATE // 2])
+
+
+def glitch(duration):
+    time = seconds(duration)
+    tone = np.sign(np.sin(2 * np.pi * 220 * time * (1 + 3 * (rng.random(len(time)) > 0.995).cumsum() % 4)))
+    gate = (np.floor(time * 38) % 3 != 0).astype(float)
+    crushed = np.round(tone * gate * 4) / 4 + 0.3 * rng.standard_normal(len(time)) * gate
+
+    return normalise(highpass(crushed, 500))
+
+
+def shatter():
+    duration = 0.9
+    out = np.zeros(int(duration * RATE))
+    for _ in range(40):
+        at = int(rng.uniform(0, 0.25) ** 1.5 * RATE)
+        grain = chime(rng.uniform(2800, 7500), 0.3, (1, 2.7, 5.1), wet=False)
+        out[at : at + len(grain)] += grain[: len(out) - at] * rng.uniform(0.2, 1)
+    crash = highpass(rng.standard_normal(len(out)), 2500) * np.exp(-seconds(duration) * 12)
+
+    return normalise(out + 0.7 * crash)
+
+
+def stamp():
+    time = seconds(1.2)
+    thud = np.sin(2 * np.pi * np.cumsum(70 + 60 * np.exp(-time * 30)) / RATE) * np.exp(-time * 9)
+    slap = one_pole(highpass(rng.standard_normal(len(time)), 700), 3500) * np.exp(-time * 45)
+
+    return normalise(reverb(thud + 1.1 * slap, 0.7, 0.2))
+
+
+def keys(count, duration):
+    out = np.zeros(int(duration * RATE) + RATE // 10)
+    for index in range(count):
+        at = int((index / max(count, 1)) * duration * RATE + rng.uniform(-0.008, 0.008) * RATE)
+        at = max(0, at)
+        click = tick(rng.uniform(1700, 2600), 0.025) * rng.uniform(0.5, 1)
+        out[at : at + len(click)] += click
+
+    return out
+
+
+def hangup():
+    time = seconds(0.5)
+    first = np.sin(2 * np.pi * 660 * time) * (time < 0.18)
+    second = np.sin(2 * np.pi * 440 * time) * (time >= 0.2)
+
+    return normalise(reverb((first + second) * np.exp(-((time % 0.2) * 6)), 0.5, 0.15))
+
+
+def swell(duration, notes=(196.0, 293.7, 392.0, 587.3)):
+    time = seconds(duration)
+    pad = sum(np.sin(2 * np.pi * note * time + index) for index, note in enumerate(notes))
+
+    return normalise(one_pole(pad, 2200) * envelope(duration, duration * 0.6, duration * 0.4, 1.6))
+
+
+def rewind(duration):
+    time = seconds(duration)
+    rate = 18 + 40 * (time / duration)
+    chirps = np.sin(2 * np.pi * np.cumsum(900 * (1 - 0.6 * (time * rate % 1))) / RATE)
+
+    return normalise(highpass(chirps, 400) * envelope(duration, 0.05, 0.2, 1))
+
+
+def drone(duration):
+    time = seconds(duration)
+    tone = np.sin(2 * np.pi * 55 * time) + 0.5 * np.sin(2 * np.pi * 82.4 * time) + 0.3 * one_pole(rng.standard_normal(len(time)), 300)
+
+    return normalise(tone * envelope(duration, 0.25, 0.05, 1))
+
+
+def thunk(pitch=110):
+    time = seconds(0.35)
+    body = np.sin(2 * np.pi * pitch * time) * np.exp(-time * 16)
+    hum = np.sin(2 * np.pi * 120 * time) * 0.2 * np.clip(time / 0.05, 0, 1) * np.exp(-time * 4)
+
+    return normalise(body + hum)
+
+
+def flash_whoosh(at):
+    place(at - 0.35, whoosh(0.55, 600, 9000, rising=True), -22, 0, 1)
+
+
+def finish(path, ceiling_db=-6):
+    """Writes the bus as 16-bit stereo WAV, pulled down only if it peaks above `ceiling_db`."""
+    stem = bus[: int(LENGTH * RATE)]
+    peak = np.max(np.abs(stem))
+    if peak > db(ceiling_db):
+        stem *= db(ceiling_db) / peak
+    pcm = (np.clip(stem, -1, 1) * 32767).astype('<i2')
+    with wave.open(path, 'wb') as handle:
+        handle.setnchannels(2)
+        handle.setsampwidth(2)
+        handle.setframerate(RATE)
+        handle.writeframes(pcm.tobytes())
+    print('peak dBFS', round(20 * np.log10(max(peak, 1e-9)), 1))

@@ -1,0 +1,292 @@
+#!/bin/zsh
+# Motion-graphics pipeline for HTML-rendered overlays on a source video.
+# Run `mg help` for the commands. Every command takes the project folder created by `mg init`.
+set -e
+setopt null_glob
+
+MG=${0:A:h}
+SKILL=${MG:h}
+NODE=${MG_NODE:-node}
+WHISPER_MODEL=${MG_WHISPER_MODEL:-$HOME/.cache/cio-video/whisper/ggml-large-v3-turbo.bin}
+CACHE=${MG_CACHE:-$HOME/.cache/motion-graphics}
+
+die() { print -u2 "mg: $*"; exit 1; }
+
+python_bin() {
+  if [[ -n $MG_PYTHON ]]; then print $MG_PYTHON; return; fi
+  for candidate in $CACHE/venv/bin/python $HOME/.cache/cio-video/venv/bin/python; do
+    if [[ -x $candidate ]] && $candidate -c 'import numpy, PIL' 2>/dev/null; then print $candidate; return; fi
+  done
+  print -u2 "mg: creating $CACHE/venv (numpy, pillow)"
+  mkdir -p $CACHE
+  python3 -m venv $CACHE/venv >&2
+  $CACHE/venv/bin/pip install -q numpy pillow >&2
+  print $CACHE/venv/bin/python
+}
+
+conf() { python3 -c "import json,sys; print(json.load(open(sys.argv[1]+'/motion.json'))[sys.argv[2]])" $1 $2; }
+
+frames_dir() {
+  local dir=$1 scale=$2
+  print $dir/renders/frames-$(( $(conf $dir height) * scale ))p
+}
+
+cmd_help() {
+  cat <<'EOF'
+mg init <projectDir> <source.mov>            new project from the template (motion.json, index.html, lib/, scenes/, sfx.py)
+mg doctor                                    check ffmpeg, node, Playwright, Python, whisper, swiftc
+mg transcribe <projectDir>                   word timings → transcript/words.txt (whisper-cli)
+mg look <projectDir> <t1> [t2 ...]           source frames at those times → look/ (study framing and captions)
+mg check <projectDir> <t1> [t2 ...]          graphics composited over the footage at those times → check/sheet.jpg
+mg footage <projectDir> <fromSec> <toSec>    full-res source frames for live footage inside graphics (img/footage)
+mg mattes <projectDir> [--no-captions]       person + caption mattes for every scene's `behind` range
+mg render <projectDir> [--scale 1|2] [--jobs 4] [--from s] [--to s] [--subframes 4]
+                                             frames → motion blur → mattes, in renders/frames-<height>p
+mg sfx <projectDir>                          run the project's sfx.py → renders/sfx-stem.wav
+mg preview <projectDir> [--sfx] [--frames dir] <out.mp4>   canvas-size preview over a downscale of the source
+mg final <projectDir> [--frames dir] [--no-sfx] <out.mov>  full-res composite, effects mixed at unity under the voice
+mg layers <projectDir> [--frames dir] <outDir>             one ProRes 4444 alpha clip per scene
+mg manifest <projectDir>                     rebuild img/manifest.js after adding images
+EOF
+}
+
+cmd_init() {
+  local dir=${1:?project dir} src=${2:?source video}
+  [[ -f $src ]] || die "no such source: $src"
+  src=${src:A}
+  [[ -e $dir/motion.json ]] && die "$dir already has a motion.json"
+  mkdir -p $dir
+  dir=${dir:A}
+  cp -R $SKILL/templates/project/. $dir/
+  mkdir -p $dir/lib $dir/img $dir/renders $dir/transcript
+  cp $MG/runtime/engine.js $MG/runtime/cinema.js $MG/runtime/styles.css $dir/lib/
+  python3 - $dir $src <<'EOF'
+import json, subprocess, sys
+from fractions import Fraction
+directory, source = sys.argv[1], sys.argv[2]
+probe = json.loads(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
+    'stream=width,height,r_frame_rate,nb_frames:format=duration', '-of', 'json', source]))
+stream = probe['streams'][0]
+fps = float(Fraction(stream['r_frame_rate']))
+duration = float(probe['format']['duration'])
+frames = int(stream.get('nb_frames') or round(duration * fps))
+width, height = stream['width'], stream['height']
+canvas = (1920, 1080) if width >= height else (1080, 1920)
+project = {'source': source, 'fps': round(fps, 3), 'frames': frames, 'duration': round(duration, 3),
+           'sourceWidth': width, 'sourceHeight': height, 'width': canvas[0], 'height': canvas[1]}
+json.dump(project, open(f'{directory}/motion.json', 'w'), indent=2)
+open(f'{directory}/project.js', 'w').write(
+    f"window.PROJECT = {json.dumps({k: project[k] for k in ('fps', 'frames', 'duration', 'width', 'height')})};\n"
+    "document.documentElement.style.setProperty('--canvas-w', PROJECT.width + 'px');\n"
+    "document.documentElement.style.setProperty('--canvas-h', PROJECT.height + 'px');\n")
+print(json.dumps(project, indent=2))
+EOF
+  sed -i '' "s/^begin(.*)$/begin($(conf $dir duration))/" $dir/sfx.py
+  $(python_bin) $MG/manifest.py $dir >/dev/null
+  print "project ready: $dir"
+}
+
+cmd_doctor() {
+  local ok=1
+  check() { if eval "$2" >/dev/null 2>&1; then print "ok    $1"; else print "MISS  $1  ($3)"; ok=0; fi; }
+  check ffmpeg 'ffmpeg -hide_banner -filters | grep -q overlay' 'brew install ffmpeg'
+  check node "$NODE -e 'process.exit(Number(process.versions.node.split(\".\")[0]) < 18 ? 1 : 0)'" 'Node 18+; set MG_NODE'
+  check 'playwright + chromium' "$NODE $MG/render.mjs --check" 'npm i -D playwright && npx playwright install chromium, or set MG_PLAYWRIGHT'
+  check python "$(python_bin) -c 'import numpy, PIL'" 'python3 with numpy + pillow; set MG_PYTHON'
+  check whisper-cli 'command -v whisper-cli && test -f $WHISPER_MODEL' "brew install whisper-cpp; model at \$MG_WHISPER_MODEL ($WHISPER_MODEL)"
+  check swiftc 'command -v swiftc' 'Xcode command line tools (macOS only; needed for behind-the-speaker mattes)'
+  (( ok )) && print "all good" || true
+}
+
+cmd_transcribe() {
+  local dir=${1:?project dir}
+  local src=$(conf $dir source)
+  mkdir -p $dir/transcript
+  ffmpeg -y -v error -i $src -ac 1 -ar 16000 $dir/transcript/audio16k.wav
+  whisper-cli -m $WHISPER_MODEL -f $dir/transcript/audio16k.wav -ojf -ml 1 -sow -of $dir/transcript/whisper >/dev/null 2>&1
+  whisper-cli -m $WHISPER_MODEL -f $dir/transcript/audio16k.wav -osrt -of $dir/transcript/segments >/dev/null 2>&1
+  python3 $MG/words.py $dir/transcript/whisper.json $dir/transcript
+  rm -f $dir/transcript/audio16k.wav
+}
+
+cmd_look() {
+  local dir=${1:?project dir}; shift
+  local src=$(conf $dir source) out=$dir/look
+  mkdir -p $out
+  local files=()
+  for t in "$@"; do
+    ffmpeg -y -v error -ss $t -i $src -frames:v 1 -vf scale=960:-2 $out/look_$t.jpg
+    files+=($out/look_$t.jpg)
+  done
+  $(python_bin) $MG/sheet.py $out/sheet.jpg $files
+}
+
+cmd_check() {
+  local dir=${1:?project dir}; shift
+  local src=$(conf $dir source) fps=$(conf $dir fps) w=$(conf $dir width) h=$(conf $dir height) out=$dir/check
+  local py=$(python_bin)
+  rm -rf $out && mkdir -p $out
+  $NODE $MG/render.mjs $dir stills $out "$@" >/dev/null
+  [[ -d $dir/mattes/behind ]] && $py $MG/apply-matte.py --stills $out $dir/mattes $fps >/dev/null
+  local files=()
+  for t in "$@"; do
+    local T=$(printf "%.2f" $t)
+    local F=$(python3 -c "print(round($t*$fps)/$fps)")
+    ffmpeg -y -v error -ss $F -i $src -frames:v 1 -vf scale=$w:$h $out/bg_$T.png
+    ffmpeg -y -v error -i $out/bg_$T.png -i $out/still_$T.png -filter_complex "[0][1]overlay,scale=960:-2" $out/c_$T.jpg
+    files+=($out/c_$T.jpg)
+  done
+  $py $MG/sheet.py $out/sheet.jpg $files
+}
+
+cmd_footage() {
+  local dir=${1:?project dir} from=${2:?from seconds} to=${3:?to seconds}
+  local src=$(conf $dir source) fps=$(conf $dir fps)
+  local first=$(python3 -c "import math; print(math.floor($from*$fps))") last=$(python3 -c "import math; print(math.ceil($to*$fps))")
+  mkdir -p $dir/footage-tiles
+  ffmpeg -v error -y -i $src -vf "select=between(n\,$first\,$last)" -fps_mode passthrough -q:v 2 -start_number $first $dir/footage-tiles/f_%05d.jpg
+  ln -sfn ../footage-tiles $dir/img/footage
+  print "footage frames $first-$last → img/footage (use footageClip($first, $last) in a scene)"
+}
+
+cmd_mattes() {
+  local dir=${1:?project dir}; shift
+  local src=$(conf $dir source) fps=$(conf $dir fps) w=$(conf $dir width) h=$(conf $dir height)
+  local py=$(python_bin)
+  mkdir -p $dir/mattes/src $dir/mattes/person $CACHE
+  if [[ ! -x $CACHE/person-matte || $MG/person-matte.swift -nt $CACHE/person-matte ]]; then
+    swiftc -O $MG/person-matte.swift -o $CACHE/person-matte
+  fi
+  $NODE $MG/render.mjs $dir scenes $dir/mattes/scenes.json
+  local ranges=($(python3 -c "
+import json,math,sys
+for s in json.load(open('$dir/mattes/scenes.json')):
+    if s.get('behind'):
+        a,b=s['behind']; print(f'{math.floor(a*$fps)}:{math.ceil(b*$fps)}')"))
+  (( ${#ranges} )) || { print "no scene has a behind range"; return; }
+  for range in $ranges; do
+    local first=${range%%:*} last=${range##*:}
+    ffmpeg -v error -y -i $src -vf "select=between(n\,$first\,$last),scale=$w:$h" -fps_mode passthrough -q:v 2 -start_number $first $dir/mattes/src/f_%05d.jpg
+  done
+  $CACHE/person-matte $dir/mattes/src $dir/mattes/person
+  $py $MG/behind-matte.py $dir/mattes "$@"
+}
+
+cmd_render() {
+  local dir=${1:?project dir}; shift
+  local scale=1 jobs=4 from=0 to=$(conf $dir duration) subframes=4 out=""
+  while (( $# )); do
+    case $1 in
+      --scale) scale=$2; shift 2 ;;
+      --jobs) jobs=$2; shift 2 ;;
+      --from) from=$2; shift 2 ;;
+      --to) to=$2; shift 2 ;;
+      --subframes) subframes=$2; shift 2 ;;
+      --out) out=$2; shift 2 ;;
+      *) die "unknown option $1" ;;
+    esac
+  done
+  [[ -n $out ]] || out=$(frames_dir $dir $scale)
+  local fps=$(conf $dir fps) frames=$(conf $dir frames) py=$(python_bin)
+  mkdir -p $out
+  local cuts=($(python3 -c "
+f,t,n=$from,$to,$jobs
+print(' '.join(str(round(f+(t-f)*i/n,3)) for i in range(n+1)))"))
+  local i
+  for (( i = 1; i <= jobs; i++ )); do
+    SUBFRAMES=$subframes $NODE $MG/render.mjs $dir frames $out ${cuts[i]} ${cuts[i+1]} $scale > $out/log_$i.txt 2>&1 &
+  done
+  wait
+  print "rendered $(date +%T)"
+  $py $MG/blur.py $out $frames
+  [[ -d $dir/mattes/behind ]] && $py $MG/apply-matte.py $out $dir/mattes $fps
+  print "frames ready: $out"
+}
+
+cmd_sfx() {
+  local dir=${1:?project dir}
+  mkdir -p $dir/renders
+  PYTHONPATH=$MG $(python_bin) $dir/sfx.py $dir/renders/sfx-stem.wav
+}
+
+graphics_filter() {
+  print "[1:v]scale=out_color_matrix=bt709:out_range=tv,format=yuva444p[gfx];[base][gfx]overlay=format=yuv444:shortest=1,format=yuv420p[v]"
+}
+
+cmd_preview() {
+  local dir=${1:?project dir}; shift
+  local frames=$(frames_dir $dir 1) sfx=0 out=""
+  while (( $# )); do
+    case $1 in
+      --sfx) sfx=1; shift ;;
+      --frames) frames=$2; shift 2 ;;
+      *) out=$1; shift ;;
+    esac
+  done
+  [[ -n $out ]] || die "output file required"
+  local src=$(conf $dir source) fps=$(conf $dir fps) w=$(conf $dir width) h=$(conf $dir height)
+  local base="[0:v]scale=$w:$h:flags=lanczos,format=yuv444p[base];"
+  if (( sfx )); then
+    ffmpeg -y -v error -stats -i $src -framerate $fps -i $frames/f_%05d.png -i $dir/renders/sfx-stem.wav \
+      -filter_complex "$base$(graphics_filter);[0:a][2:a]amix=inputs=2:normalize=0:duration=first[a]" \
+      -map "[v]" -map "[a]" -c:v libx264 -crf 17 -preset medium -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+      -c:a aac -b:a 320k -movflags +faststart $out
+  else
+    ffmpeg -y -v error -stats -i $src -framerate $fps -i $frames/f_%05d.png \
+      -filter_complex "$base$(graphics_filter)" \
+      -map "[v]" -map 0:a -c:v libx264 -crf 17 -preset medium -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+      -c:a copy -movflags +faststart $out
+  fi
+  print $out
+}
+
+cmd_final() {
+  local dir=${1:?project dir}; shift
+  local scale=$(( $(conf $dir sourceWidth) / $(conf $dir width) ))
+  local frames=$(frames_dir $dir $scale) sfx=1 out=""
+  while (( $# )); do
+    case $1 in
+      --no-sfx) sfx=0; shift ;;
+      --frames) frames=$2; shift 2 ;;
+      *) out=$1; shift ;;
+    esac
+  done
+  [[ -n $out ]] || die "output file required"
+  local src=$(conf $dir source) fps=$(conf $dir fps)
+  local base="[0:v]format=yuv444p[base];"
+  local video=(-c:v libx265 -preset medium -crf 14 -tag:v hvc1 -color_primaries bt709 -color_trc bt709 -colorspace bt709 -color_range tv)
+  if (( sfx )); then
+    ffmpeg -y -v error -stats -i $src -framerate $fps -i $frames/f_%05d.png -i $dir/renders/sfx-stem.wav \
+      -filter_complex "$base$(graphics_filter);[0:a][2:a]amix=inputs=2:normalize=0:duration=first[a]" \
+      -map "[v]" -map "[a]" $video -c:a aac -b:a 320k -movflags +faststart $out
+  else
+    ffmpeg -y -v error -stats -i $src -framerate $fps -i $frames/f_%05d.png \
+      -filter_complex "$base$(graphics_filter)" -map "[v]" -map 0:a $video -c:a copy -movflags +faststart $out
+  fi
+  print $out
+}
+
+cmd_layers() {
+  local dir=${1:?project dir}; shift
+  local scale=$(( $(conf $dir sourceWidth) / $(conf $dir width) ))
+  local frames=$(frames_dir $dir $scale) out=""
+  while (( $# )); do
+    case $1 in
+      --frames) frames=$2; shift 2 ;;
+      *) out=$1; shift ;;
+    esac
+  done
+  [[ -n $out ]] || die "output folder required"
+  mkdir -p $out
+  python3 $MG/layers.py $frames $out $(conf $dir fps)
+}
+
+cmd_manifest() { $(python_bin) $MG/manifest.py ${1:?project dir}; }
+
+command=${1:-help}
+(( $# )) && shift
+case $command in
+  help|-h|--help) cmd_help ;;
+  init|doctor|transcribe|look|check|footage|mattes|render|sfx|preview|final|layers|manifest) cmd_$command "$@" ;;
+  *) die "unknown command: $command (try mg help)" ;;
+esac
