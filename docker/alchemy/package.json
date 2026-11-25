@@ -1,0 +1,18 @@
+{
+  "name": "classroomio-alchemy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "alchemy deploy",
+    "destroy": "alchemy destroy"
+  },
+  "dependencies": {
+    "@alchemy.run/docker": "2.0.0-beta.87",
+    "@effect/platform-node": "4.1.5",
+    "alchemy": "2.0.0-beta.87",
+    "effect": "4.1.5"
+  },
+  "engines": {
+    "node": ">=24.11.1"
+  }
+}
