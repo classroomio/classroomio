@@ -56,12 +56,15 @@ import {
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
-import { getProfileByEmail } from '@cio/db/queries/auth';
+import { getProfileByEmail, getProfileById } from '@cio/db/queries/auth';
 import {
   getOrgMembersByProfileIds,
   getOrganizationMemberIdByOrgAndProfile,
+  hasLapsedStudentInvite,
   insertOrganizationMembersOnConflictDoNothing,
-  listActiveOrganizationRoles
+  listActiveOrganizationRoles,
+  selectOrganizationMemberByOrgAndNormalizedEmail,
+  updateOrganizationMemberById
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
@@ -158,6 +161,57 @@ async function enrollCohortStudentsInGroups(
   }
 
   return groupMemberRows.length;
+}
+
+/**
+ * Gives a cohort student the org membership their access needs. A pending student row for their email is linked
+ * to their account, as accepting its invite would. A pending team invite is refused: linking it would make them staff.
+ */
+async function ensureCohortStudentOrgMembership(
+  organizationId: string,
+  student: { profileId: string; email: string | null },
+  tx: DbOrTxClient
+): Promise<{
+  studentMilestoneNotification: StudentMilestoneNotification | null;
+  createdOrgMember: TOrganizationmember | null;
+}> {
+  if (await getOrganizationMemberIdByOrgAndProfile(organizationId, student.profileId, tx)) {
+    return { studentMilestoneNotification: null, createdOrgMember: null };
+  }
+
+  const email =
+    student.email?.toLowerCase().trim() || (await getProfileById(student.profileId, tx))?.email?.toLowerCase().trim();
+  const rowForEmail = email ? await selectOrganizationMemberByOrgAndNormalizedEmail(tx, organizationId, email) : null;
+
+  if (rowForEmail) {
+    if (rowForEmail.profileId) {
+      throw new AppError(`${email} belongs to another account in this organization`, ErrorCodes.CONFLICT, 409);
+    }
+    if (rowForEmail.roleId !== ROLE.STUDENT) {
+      throw new AppError(
+        `${email} has a pending team invite. Cancel it, or wait until it is accepted, before adding them as a student`,
+        ErrorCodes.CONFLICT,
+        409
+      );
+    }
+
+    const studentMilestoneNotification = (await hasLapsedStudentInvite(organizationId, rowForEmail.id, tx))
+      ? await assertStudentCapacityOrThrow(organizationId, 1, tx, { deferNotification: true })
+      : null;
+    await updateOrganizationMemberById(tx, rowForEmail.id, { profileId: student.profileId, verified: true });
+
+    return { studentMilestoneNotification, createdOrgMember: null };
+  }
+
+  const studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, 1, tx, {
+    deferNotification: true
+  });
+  const [createdOrgMember] = await insertOrganizationMembersOnConflictDoNothing(
+    [{ organizationId, roleId: ROLE.STUDENT, profileId: student.profileId, email, verified: true }],
+    tx
+  );
+
+  return { studentMilestoneNotification, createdOrgMember: createdOrgMember ?? null };
 }
 
 async function enrollCohortStaffInCourseGroups(
@@ -433,29 +487,13 @@ export async function addCohortMembersSettled(
           if (member && member.roleId === ROLE.STUDENT && member.profileId) {
             const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
 
-            const existingOrgMemberId = await getOrganizationMemberIdByOrgAndProfile(
+            const orgMembership = await ensureCohortStudentOrgMembership(
               cohort.organizationId,
-              member.profileId,
+              { profileId: member.profileId, email: normalizedEmail },
               tx
             );
-            if (!existingOrgMemberId) {
-              studentMilestoneNotification = await assertStudentCapacityOrThrow(cohort.organizationId, 1, tx, {
-                deferNotification: true
-              });
-            }
-
-            createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
-              [
-                {
-                  organizationId: cohort.organizationId,
-                  roleId: ROLE.STUDENT,
-                  profileId: member.profileId,
-                  email: normalizedEmail ?? undefined,
-                  verified: true
-                }
-              ],
-              tx
-            );
+            studentMilestoneNotification = orgMembership.studentMilestoneNotification;
+            createdOrgMembers = orgMembership.createdOrgMember ? [orgMembership.createdOrgMember] : [];
 
             if (validCourseGroupIds.length > 0) {
               enrolledMembers = await insertGroupMembersOnConflictDoNothing(
@@ -591,24 +629,13 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
 
       // A cohort student needs an org membership for access; a staff member may not have one.
       if (cohort && demotingToStudent && existing.profileId) {
-        const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(cohort.organizationId, existing.profileId, tx);
-        if (!orgMemberId) {
-          studentMilestoneNotification = await assertStudentCapacityOrThrow(cohort.organizationId, 1, tx, {
-            deferNotification: true
-          });
-          createdOrgMembers = await insertOrganizationMembersOnConflictDoNothing(
-            [
-              {
-                organizationId: cohort.organizationId,
-                roleId: ROLE.STUDENT,
-                profileId: existing.profileId,
-                email: existing.email ?? undefined,
-                verified: true
-              }
-            ],
-            tx
-          );
-        }
+        const orgMembership = await ensureCohortStudentOrgMembership(
+          cohort.organizationId,
+          { profileId: existing.profileId, email: existing.email },
+          tx
+        );
+        studentMilestoneNotification = orgMembership.studentMilestoneNotification;
+        createdOrgMembers = orgMembership.createdOrgMember ? [orgMembership.createdOrgMember] : [];
       }
 
       if (cohort && existing.profileId && !wasStaff && willBeStaff) {

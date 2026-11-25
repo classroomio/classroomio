@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/cohort', () => ({
   addCohortMember: vi.fn(),
+  getCohortMemberById: vi.fn(),
+  updateCohortMember: vi.fn(),
   getCohortById: vi.fn(),
   getCohortMemberByEmail: vi.fn(),
   findCohortMemberRowByProfileId: vi.fn(),
@@ -11,12 +13,15 @@ vi.mock('@cio/db/queries/course', () => ({ getCourseGroupIds: vi.fn() }));
 vi.mock('@cio/db/queries/group', () => ({
   insertGroupMembersOnConflictDoNothing: vi.fn()
 }));
-vi.mock('@cio/db/queries/auth', () => ({ getProfileByEmail: vi.fn() }));
+vi.mock('@cio/db/queries/auth', () => ({ getProfileByEmail: vi.fn(), getProfileById: vi.fn() }));
 vi.mock('@cio/db/queries/organization', () => ({
   getOrgMembersByProfileIds: vi.fn(),
   getOrganizationMemberIdByOrgAndProfile: vi.fn(),
+  hasLapsedStudentInvite: vi.fn(),
   insertOrganizationMembersOnConflictDoNothing: vi.fn(),
-  listActiveOrganizationRoles: vi.fn()
+  listActiveOrganizationRoles: vi.fn(),
+  selectOrganizationMemberByOrgAndNormalizedEmail: vi.fn(),
+  updateOrganizationMemberById: vi.fn()
 }));
 vi.mock('@cio/db/drizzle', () => ({
   db: { transaction: vi.fn((callback: (tx: unknown) => unknown) => callback({})) }
@@ -29,21 +34,26 @@ vi.mock('../../organization/student-limit', () => ({
 import {
   addCohortMember,
   getCohortById,
+  getCohortMemberById,
+  updateCohortMember,
   getCohortMemberByEmail,
   findCohortMemberRowByProfileId,
   getCoursesByCohort
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
-import { getProfileByEmail } from '@cio/db/queries/auth';
+import { getProfileByEmail, getProfileById } from '@cio/db/queries/auth';
 import {
   getOrganizationMemberIdByOrgAndProfile,
+  hasLapsedStudentInvite,
   insertOrganizationMembersOnConflictDoNothing,
-  listActiveOrganizationRoles
+  listActiveOrganizationRoles,
+  selectOrganizationMemberByOrgAndNormalizedEmail,
+  updateOrganizationMemberById
 } from '@cio/db/queries/organization';
 import { assertStudentCapacityOrThrow } from '../../organization/student-limit';
 import { ROLE } from '@cio/utils/constants';
-import { addCohortMembersSettled } from '@api/services/cohort/cohort';
+import { addCohortMembersSettled, updateCohortMemberService } from '@api/services/cohort/cohort';
 
 const COHORT_ID = 'cohort-1';
 
@@ -59,6 +69,8 @@ describe('addCohortMembersSettled', () => {
     vi.mocked(listActiveOrganizationRoles).mockResolvedValue([]);
     vi.mocked(getProfileByEmail).mockResolvedValue(null as never);
     vi.mocked(addCohortMember).mockResolvedValue({ id: 'new-member' } as Awaited<ReturnType<typeof addCohortMember>>);
+    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue(null as never);
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
   });
 
   it('refuses a second email-only membership for an email with no profile, so retries do not duplicate', async () => {
@@ -215,6 +227,103 @@ describe('addCohortMembersSettled', () => {
     });
 
     expect(result).toMatchObject({ status: 'rejected', reason: { code: 'MEMBER_ALREADY_IN_COHORT' } });
+    expect(insertOrganizationMembersOnConflictDoNothing).not.toHaveBeenCalled();
+  });
+  it('links a pending student row for the email instead of skipping it, with no new seat', async () => {
+    vi.mocked(findCohortMemberRowByProfileId).mockResolvedValue(null);
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null as never);
+    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue({
+      id: 7,
+      profileId: null,
+      roleId: ROLE.STUDENT
+    } as Awaited<ReturnType<typeof selectOrganizationMemberByOrgAndNormalizedEmail>>);
+    vi.mocked(addCohortMember).mockResolvedValue({
+      id: 'member-1',
+      profileId: 'profile-1',
+      roleId: ROLE.STUDENT
+    } as Awaited<ReturnType<typeof addCohortMember>>);
+
+    const [result] = await addCohortMembersSettled(COHORT_ID, {
+      members: [{ profileId: 'profile-1', email: 'Student@Example.com', roleId: ROLE.STUDENT }]
+    });
+
+    expect(result.status).toBe('fulfilled');
+    expect(selectOrganizationMemberByOrgAndNormalizedEmail).toHaveBeenCalledWith(
+      expect.anything(),
+      'org-1',
+      'student@example.com'
+    );
+    expect(updateOrganizationMemberById).toHaveBeenCalledWith(expect.anything(), 7, {
+      profileId: 'profile-1',
+      verified: true
+    });
+    expect(assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+    expect(insertOrganizationMembersOnConflictDoNothing).not.toHaveBeenCalled();
+  });
+
+  it('refuses a student whose email has a pending team invite, rather than making them staff', async () => {
+    vi.mocked(findCohortMemberRowByProfileId).mockResolvedValue(null);
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null as never);
+    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue({
+      id: 8,
+      profileId: null,
+      roleId: ROLE.TUTOR
+    } as Awaited<ReturnType<typeof selectOrganizationMemberByOrgAndNormalizedEmail>>);
+    vi.mocked(addCohortMember).mockResolvedValue({
+      id: 'member-1',
+      profileId: 'profile-1',
+      roleId: ROLE.STUDENT
+    } as Awaited<ReturnType<typeof addCohortMember>>);
+
+    const [result] = await addCohortMembersSettled(COHORT_ID, {
+      members: [{ profileId: 'profile-1', email: 'tutor@example.com', roleId: ROLE.STUDENT }]
+    });
+
+    expect(result).toMatchObject({ status: 'rejected', reason: { code: 'CONFLICT', statusCode: 409 } });
+    expect(updateOrganizationMemberById).not.toHaveBeenCalled();
+    expect(insertOrganizationMembersOnConflictDoNothing).not.toHaveBeenCalled();
+  });
+});
+
+describe('updateCohortMemberService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getCohortById).mockResolvedValue({ id: COHORT_ID, organizationId: 'org-1' } as Awaited<
+      ReturnType<typeof getCohortById>
+    >);
+    vi.mocked(getCohortMemberById).mockResolvedValue({
+      id: 'member-1',
+      profileId: 'profile-1',
+      email: null,
+      roleId: ROLE.TUTOR
+    } as Awaited<ReturnType<typeof getCohortMemberById>>);
+    vi.mocked(updateCohortMember).mockResolvedValue({
+      id: 'member-1',
+      profileId: 'profile-1',
+      roleId: ROLE.STUDENT
+    } as Awaited<ReturnType<typeof updateCohortMember>>);
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null as never);
+    vi.mocked(getProfileById).mockResolvedValue({ email: 'Tutor@Example.com' } as Awaited<
+      ReturnType<typeof getProfileById>
+    >);
+    vi.mocked(hasLapsedStudentInvite).mockResolvedValue(false);
+  });
+
+  it('refuses to make a cohort tutor a student while their email has a pending team invite', async () => {
+    vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue({
+      id: 8,
+      profileId: null,
+      roleId: ROLE.TUTOR
+    } as Awaited<ReturnType<typeof selectOrganizationMemberByOrgAndNormalizedEmail>>);
+
+    await expect(
+      updateCohortMemberService(COHORT_ID, 'member-1', { roleId: ROLE.STUDENT } as never)
+    ).rejects.toMatchObject({ code: 'CONFLICT', statusCode: 409 });
+    expect(selectOrganizationMemberByOrgAndNormalizedEmail).toHaveBeenCalledWith(
+      expect.anything(),
+      'org-1',
+      'tutor@example.com'
+    );
     expect(insertOrganizationMembersOnConflictDoNothing).not.toHaveBeenCalled();
   });
 });

@@ -101,7 +101,8 @@ export const v1CohortMembersRouter = new Hono()
         403: {
           description: `${cohortForbiddenResponses.team.description}, or the plan can't take another student (UPGRADE_REQUIRED)`
         },
-        404: { description: 'Cohort or member not found' }
+        404: { description: 'Cohort or member not found' },
+        409: { description: "The member's email has a pending team invite or belongs to another account" }
       }
     }),
     validator('param', ZPublicApiCohortMemberParam),
