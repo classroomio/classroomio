@@ -1,0 +1,204 @@
+@font-face {
+  font-family: 'Geist';
+  src: url('fonts/Geist-Variable-latin.woff2') format('woff2');
+  font-weight: 100 900;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('fonts/GeistMono-latin.woff2') format('woff2');
+  font-weight: 100 900;
+}
+
+:root {
+  --ink-900: #17140F;
+  --ink-700: #2A251D;
+  --ink-500: #6B6152;
+  --ink-400: #8C8272;
+  --page: #F7F7F7;
+  --paper: #FDFBF7;
+  --sand-100: #F6F2E9;
+  --sand-200: #F1EEE7;
+  --sand-300: #E3DACA;
+  --sand-400: #CFC5B3;
+  --blue-700: #0233BD;
+  --blue-500: #2F5BE0;
+  --blue-300: #ADC3FF;
+  --blue-200: #D6DEFF;
+  --blue-100: #EEF2FF;
+  --mono: 'Geist Mono', ui-monospace, monospace;
+  --sans: 'Geist', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: var(--canvas-w, 1920px);
+  height: var(--canvas-h, 1080px);
+  overflow: hidden;
+  background: transparent;
+}
+
+body.preview-bg { background: #6b7a6b; }
+
+#stage {
+  position: relative;
+  width: var(--canvas-w, 1920px);
+  height: var(--canvas-h, 1080px);
+  overflow: hidden;
+  font-family: var(--sans);
+  color: var(--ink-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.abs { position: absolute; }
+
+.wipe {
+  position: absolute;
+  inset: 0;
+}
+.wipe.blue { background: var(--blue-700); }
+.wipe.paper { background: var(--page); overflow: hidden; }
+
+.mono {
+  font-family: var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 22px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue-700);
+}
+
+.display {
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+}
+
+.card {
+  position: absolute;
+  background: var(--paper);
+  border: 1px solid var(--sand-300);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(23, 20, 15, 0.28), 0 4px 14px rgba(23, 20, 15, 0.12);
+}
+
+.block {
+  position: absolute;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: visible;
+}
+.block .kind {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.block .title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.block.sand { background: #E3DACA; color: var(--ink-900); }
+.block.sand .kind { color: var(--blue-700); }
+.block.tint { background: #D6DEFF; color: var(--ink-900); }
+.block.tint .kind { color: var(--blue-700); }
+.block.blue { background: var(--blue-700); color: #fff; }
+.block.blue .kind { color: var(--blue-300); }
+.block.ink { background: var(--ink-900); color: var(--paper); }
+.block.ink .kind { color: var(--blue-300); }
+.block.ghost { background: transparent; border: 2px dashed var(--sand-400); color: var(--ink-400); }
+.block.ghost .kind { color: var(--ink-400); }
+
+.notch, .tab { position: absolute; pointer-events: none; }
+
+.pill {
+  position: absolute;
+  border-radius: 999px;
+  font-family: var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.swipe {
+  position: absolute;
+  background: var(--blue-300);
+  border-radius: 6px;
+  transform-origin: left center;
+}
+
+.caret {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.95em;
+  background: var(--blue-700);
+  vertical-align: -0.12em;
+  margin-left: 0.04em;
+}
+
+.term {
+  font-family: var(--mono);
+  color: #EDE8DD;
+}
+
+.avatar {
+  position: absolute;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.avatar .head {
+  position: absolute;
+  border-radius: 50%;
+}
+.avatar .body {
+  position: absolute;
+  border-radius: 50% 50% 0 0;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('fonts/InstrumentSerif-Regular.ttf') format('truetype');
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('fonts/InstrumentSerif-Italic.ttf') format('truetype');
+  font-style: italic;
+}
+
+.serif { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; }
+.serif-i { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-weight: 400; }
+.cine { color: #F2EEE6; }
+.d3 { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.tile {
+  position: absolute;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0E1016;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+  backface-visibility: hidden;
+}
+.tile .ph { position: absolute; inset: 0; background-size: cover; background-position: center 30%; }
+.tile .label {
+  position: absolute; left: 14px; bottom: 12px;
+  font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em;
+  color: #fff; background: rgba(0,0,0,0.45); padding: 5px 9px; border-radius: 6px;
+}
+.glass {
+  position: absolute;
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.25);
+}
