@@ -24,6 +24,7 @@ const app = new Hono()
   .use('*', async (c, next) => {
     c.set('orgId', 'org-1');
     c.set('actorId', 'actor-1');
+    if (c.req.header('x-test-key-type')) c.set('automationKey', { type: c.req.header('x-test-key-type') } as never);
     await next();
   })
   .route('/', v1CoursesRouter);
@@ -58,17 +59,18 @@ describe('v1 course sections routes', () => {
   it('creates a section with 201', async () => {
     vi.mocked(createPublicApiCourseSectionService).mockResolvedValue({ id: SECTION_ID } as never);
 
-    const response = await app.request(
-      `/${COURSE_ID}/sections`,
-      jsonRequest('POST', { title: 'Loose', moveUngrouped: true })
-    );
+    const response = await app.request(`/${COURSE_ID}/sections`, {
+      ...jsonRequest('POST', { title: 'Loose', moveUngrouped: true }),
+      headers: { 'content-type': 'application/json', 'x-test-key-type': 'mcp' }
+    });
 
     expect(response.status).toBe(201);
     expect(createPublicApiCourseSectionService).toHaveBeenCalledWith(
       'org-1',
       'actor-1',
       { courseId: COURSE_ID },
-      { title: 'Loose', moveUngrouped: true }
+      { title: 'Loose', moveUngrouped: true },
+      'mcp'
     );
   });
 

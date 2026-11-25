@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { sanitizeHtml } from '../../utils/sanitize-html';
 import type { TLesson, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 import type { TBlockChangeSource } from '@cio/utils/constants/lesson-version';
 import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
 import {
@@ -50,12 +51,18 @@ export { getLessonHistoryService, getLessonTextHistoryService, type LessonStruct
  * Creates a new lesson
  * @param courseId Course ID
  * @param data Lesson creation data
+ * @param options.createdVia Channel the lesson was created through
  * @returns Created lesson
  */
 export async function createLesson(
   courseId: string,
   data: TLessonCreate,
-  options: { actorProfileId?: string | null; source?: TBlockChangeSource; clientName?: string | null } = {}
+  options: {
+    actorProfileId?: string | null;
+    source?: TBlockChangeSource;
+    clientName?: string | null;
+    createdVia?: TCreatedVia;
+  } = {}
 ): Promise<TLesson> {
   try {
     const slug = await resolveItemSlug({
@@ -69,6 +76,7 @@ export async function createLesson(
       ...lessonFields,
       courseId,
       slug,
+      createdVia: options.createdVia ?? 'dashboard',
       isUnlocked: data.isUnlocked ?? true
     };
 

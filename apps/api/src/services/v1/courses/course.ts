@@ -29,7 +29,7 @@ import { emitCoursePublishWebhookEvent } from '@cio/core/services/webhook/emit';
 import { buildCourseOutline } from '@cio/core/services/course/utils';
 import { getCourseGoLiveReadiness, publishCourseWhenReady } from '@cio/core/services/course/go-live-readiness';
 import { buildCourseLinks, resolveCourseBanner } from '@cio/core/services/course/landing-page';
-import type { TEventSource } from '@cio/core/services/posthog';
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 import {
   createCourseImportDraftService,
   getCourseImportStructureService,
@@ -131,7 +131,7 @@ export async function createPublicApiCourseService(
   orgId: string,
   actorId: string | null,
   payload: TPublicApiCreateCourse,
-  source: TEventSource = 'public_api'
+  source: TCreatedVia = 'public_api'
 ) {
   if (!actorId) {
     throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);

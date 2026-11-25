@@ -94,7 +94,7 @@ export async function createPublicApiLessonService(
       public: payload.public,
       ...(videos ? { videos } : {})
     },
-    { actorProfileId: actorId, ...attribution }
+    { actorProfileId: actorId, createdVia: attribution.source === 'mcp' ? 'mcp' : 'public_api', ...attribution }
   );
 
   if (videos) {

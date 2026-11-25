@@ -702,7 +702,11 @@ export function buildAgentTools(
       inputSchema: createSectionParam,
       execute: async (args) => {
         return executeAgentTool('create_section', { orgId, userId, courseId, args }, async () => {
-          const section = await createCourseSection(courseId, { title: args.title, courseId, order: args.order });
+          const section = await createCourseSection(
+            courseId,
+            { title: args.title, courseId, order: args.order },
+            'agent'
+          );
           return { id: section.id, title: section.title, order: section.order };
         });
       }
@@ -732,12 +736,16 @@ export function buildAgentTools(
       execute: async (args) => {
         return executeAgentTool('create_lesson', { orgId, userId, courseId, args }, async () => {
           await verifySectionBelongsToCourse(args.sectionId, courseId);
-          const lesson = await createLesson(courseId, {
-            title: args.title,
+          const lesson = await createLesson(
             courseId,
-            sectionId: args.sectionId,
-            order: args.order
-          });
+            {
+              title: args.title,
+              courseId,
+              sectionId: args.sectionId,
+              order: args.order
+            },
+            { createdVia: 'agent' }
+          );
           return { id: lesson.id, title: lesson.title, order: lesson.order };
         });
       }
@@ -1140,22 +1148,25 @@ export function buildAgentTools(
             await verifySectionBelongsToCourse(args.sectionId, courseId);
           }
 
-          const exercise = await createExercise({
-            title: args.title,
-            description: args.description,
-            courseId,
-            lessonId: args.lessonId,
-            sectionId: args.sectionId,
-            order: args.order,
-            questions: balanceCorrectAnswerPositions(args.questions).map((q, i) => ({
-              question: q.question,
-              questionTypeId: q.questionTypeId,
-              points: q.points,
-              order: q.order ?? i,
-              settings: q.settings,
-              options: q.options.map((o) => ({ label: o.label, isCorrect: o.isCorrect }))
-            }))
-          });
+          const exercise = await createExercise(
+            {
+              title: args.title,
+              description: args.description,
+              courseId,
+              lessonId: args.lessonId,
+              sectionId: args.sectionId,
+              order: args.order,
+              questions: balanceCorrectAnswerPositions(args.questions).map((q, i) => ({
+                question: q.question,
+                questionTypeId: q.questionTypeId,
+                points: q.points,
+                order: q.order ?? i,
+                settings: q.settings,
+                options: q.options.map((o) => ({ label: o.label, isCorrect: o.isCorrect }))
+              }))
+            },
+            'agent'
+          );
           return { id: exercise.id, title: exercise.title, questionCount: args.questions.length };
         });
       }
@@ -1234,13 +1245,17 @@ export function buildAgentTools(
 
           await verifyExerciseBelongsToCourse(args.exerciseId, courseId);
 
-          const created = await createExerciseSectionService(args.exerciseId, {
-            title: args.title,
-            description: args.description,
-            order: args.order,
-            colorTheme: args.colorTheme,
-            afterBehavior: args.afterBehavior
-          });
+          const created = await createExerciseSectionService(
+            args.exerciseId,
+            {
+              title: args.title,
+              description: args.description,
+              order: args.order,
+              colorTheme: args.colorTheme,
+              afterBehavior: args.afterBehavior
+            },
+            'agent'
+          );
 
           return { ...created, created: true };
         });

@@ -2,6 +2,7 @@ import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { handleError } from '@api/utils/errors';
+import { getEventSource } from '@api/utils/event-source';
 import {
   createCourseSection,
   deleteCourseSectionService,
@@ -24,7 +25,7 @@ export const sectionRouter = new Hono()
       const courseId = c.req.param('courseId')!;
       const data = c.req.valid('json');
 
-      const section = await createCourseSection(courseId, { ...data, courseId });
+      const section = await createCourseSection(courseId, { ...data, courseId }, getEventSource(c));
 
       return c.json({ success: true, data: section }, 201);
     } catch (error) {
@@ -41,7 +42,7 @@ export const sectionRouter = new Hono()
         const courseId = c.req.param('courseId')!;
         const data = c.req.valid('json');
 
-        const result = await promoteUngroupedSection(courseId, data);
+        const result = await promoteUngroupedSection(courseId, data, getEventSource(c));
 
         return c.json({ success: true, data: result }, 201);
       } catch (error) {

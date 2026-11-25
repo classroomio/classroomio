@@ -379,7 +379,8 @@ async function copyExerciseBody(
             order: section.order,
             colorTheme: section.colorTheme,
             afterBehavior: section.afterBehavior,
-            exerciseId: courseExerciseId
+            exerciseId: courseExerciseId,
+            createdVia: 'template'
           })),
           client
         )
@@ -509,7 +510,16 @@ export async function pullCourseTemplateUpdates(
 
         const order = await claimRootOrder(templateGraph, courseGraph, section.id, course.id, tx);
         const createdSections = await createCourseSections(
-          [{ title: section.title, order, courseId: course.id, sourceId: section.id, sourceSyncedAt: syncedAt }],
+          [
+            {
+              title: section.title,
+              order,
+              courseId: course.id,
+              sourceId: section.id,
+              sourceSyncedAt: syncedAt,
+              createdVia: 'template'
+            }
+          ],
           tx
         );
         const created = createdSections[0];
@@ -587,7 +597,8 @@ export async function pullCourseTemplateUpdates(
               sectionId: parentId,
               slug: remapped.slug,
               sourceId: lesson.id,
-              sourceSyncedAt: syncedAt
+              sourceSyncedAt: syncedAt,
+              createdVia: 'template'
             }
           ],
           tx
@@ -684,7 +695,8 @@ export async function pullCourseTemplateUpdates(
               passThreshold: remapped.passThreshold,
               slug: remapped.slug,
               sourceId: exercise.id,
-              sourceSyncedAt: syncedAt
+              sourceSyncedAt: syncedAt,
+              createdVia: 'template'
             }
           ],
           tx

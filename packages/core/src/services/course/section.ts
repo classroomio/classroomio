@@ -7,6 +7,7 @@ import {
   updateCourseSection,
   updateUngroupedLessonsSectionId
 } from '@cio/db/queries/course';
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type {
   TCourseSectionCreate,
@@ -23,13 +24,18 @@ import { claimSectionOrder } from './root-order';
  * Creates a new course section
  * @param courseId Course ID
  * @param data Section creation data
+ * @param createdVia Channel the section was created through
  * @returns Created section
  */
-export async function createCourseSection(courseId: string, data: TCourseSectionCreate): Promise<TCourseSection> {
+export async function createCourseSection(
+  courseId: string,
+  data: TCourseSectionCreate,
+  createdVia: TCreatedVia = 'dashboard'
+): Promise<TCourseSection> {
   try {
     const [section] = await db.transaction(async (tx) => {
       const order = await claimSectionOrder(courseId, data.order, null, tx);
-      return createCourseSections([{ ...data, order, courseId }], tx);
+      return createCourseSections([{ ...data, order, courseId, createdVia }], tx);
     });
     if (!section) {
       throw new AppError('Failed to create course section', ErrorCodes.INTERNAL_ERROR, 500);
@@ -57,7 +63,8 @@ export async function createCourseSection(courseId: string, data: TCourseSection
  */
 export async function promoteUngroupedSection(
   courseId: string,
-  data: TCourseSectionPromoteUngrouped
+  data: TCourseSectionPromoteUngrouped,
+  createdVia: TCreatedVia = 'dashboard'
 ): Promise<{ section: TCourseSection; movedLessons: number; movedExercises: number }> {
   try {
     const existingSections = await getCourseSectionsByCourseId(courseId);
@@ -69,7 +76,8 @@ export async function promoteUngroupedSection(
           {
             title: data.title,
             courseId,
-            order: nextOrder
+            order: nextOrder,
+            createdVia
           }
         ],
         tx

@@ -25,6 +25,7 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES, type TBlockChangeSource } from '@cio/utils/constants/lesson-version';
@@ -507,7 +508,8 @@ export const courseSection = pgTable(
       onUpdate: 'cascade'
     }),
     sourceId: uuid('source_id').references((): AnyPgColumn => courseSection.id, { onDelete: 'set null' }),
-    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' }),
+    createdVia: varchar('created_via').$type<TCreatedVia>()
   },
   (table) => [
     index('course_section_source_id_idx')
@@ -863,6 +865,7 @@ export const course = pgTable(
     templateId: uuid('template_id').references((): AnyPgColumn => course.id, { onDelete: 'set null' }),
     publicForAll: boolean('public_for_all').default(false).notNull(),
     seedKey: varchar('seed_key'),
+    createdVia: varchar('created_via').$type<TCreatedVia>(),
     logo: text().default('').notNull(),
     slug: varchar(),
     metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{
@@ -1284,7 +1287,8 @@ export const lesson = pgTable(
     }),
     slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
-    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' }),
+    createdVia: varchar('created_via').$type<TCreatedVia>()
   },
   (table) => [
     foreignKey({
@@ -1440,7 +1444,8 @@ export const exercise = pgTable(
     passThreshold: integer('pass_threshold'),
     slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => exercise.id, { onDelete: 'set null' }),
-    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' }),
+    createdVia: varchar('created_via').$type<TCreatedVia>()
   },
   (table) => [
     foreignKey({
@@ -1481,7 +1486,8 @@ export const exerciseSection = pgTable(
     colorTheme: varchar('color_theme').notNull().default('blue'),
     afterBehavior: jsonb('after_behavior').notNull().default({ action: 'continue' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    createdVia: varchar('created_via').$type<TCreatedVia>()
   },
   (table) => [
     foreignKey({

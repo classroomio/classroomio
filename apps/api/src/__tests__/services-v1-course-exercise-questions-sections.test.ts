@@ -174,7 +174,7 @@ describe('exercise section services', () => {
     const added = await addCourseExerciseSectionService(ORG_ID, ACTOR_ID, exerciseParams, payload);
 
     expect(added).toMatchObject({ id: SECTION_ID });
-    expect(createExerciseSectionService).toHaveBeenCalledWith('exercise-1', payload);
+    expect(createExerciseSectionService).toHaveBeenCalledWith('exercise-1', payload, 'public_api');
   });
 
   it('does not touch sections when the access check fails', async () => {

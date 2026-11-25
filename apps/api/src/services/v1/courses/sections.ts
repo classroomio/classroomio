@@ -15,6 +15,7 @@ import type {
   TPublicApiUpdateCourseSection
 } from '@cio/utils/validation/public-api';
 import { assertCourseTeamAccess, assertSectionInCourse, paginateInMemory } from '../shared';
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 
 function toPublicSection(section: TCourseSection) {
   return {
@@ -46,12 +47,13 @@ export async function createPublicApiCourseSectionService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseParam,
-  payload: TPublicApiCreateCourseSection
+  payload: TPublicApiCreateCourseSection,
+  createdVia: TCreatedVia = 'public_api'
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
 
   if (payload.moveUngrouped) {
-    const result = await promoteUngroupedSection(params.courseId, { title: payload.title });
+    const result = await promoteUngroupedSection(params.courseId, { title: payload.title }, createdVia);
     return {
       ...toPublicSection(result.section),
       movedLessons: result.movedLessons,
@@ -59,11 +61,15 @@ export async function createPublicApiCourseSectionService(
     };
   }
 
-  const section = await createCourseSection(params.courseId, {
-    title: payload.title,
-    order: payload.order!,
-    courseId: params.courseId
-  });
+  const section = await createCourseSection(
+    params.courseId,
+    {
+      title: payload.title,
+      order: payload.order!,
+      courseId: params.courseId
+    },
+    createdVia
+  );
   return { ...toPublicSection(section), movedLessons: 0, movedExercises: 0 };
 }
 

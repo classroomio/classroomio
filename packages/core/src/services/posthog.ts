@@ -1,5 +1,6 @@
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { LICENSE_FEATURE } from '@cio/utils';
+import type { TCreatedVia } from '@cio/utils/constants/created-via';
 import { PLAN } from '@cio/utils/plans';
 
 import { env } from '../config/env';
@@ -11,17 +12,7 @@ export const POSTHOG_TIMEOUT_MS = 10_000;
 const POSTHOG_BATCH_URL = 'https://eu.i.posthog.com/batch/';
 const POSTHOG_BATCH_SIZE = 500;
 
-export type TEventSource =
-  | 'dashboard'
-  | 'public_api'
-  | 'mcp'
-  | 'import'
-  | 'clone'
-  | 'template'
-  | 'agent'
-  | 'onboarding'
-  | 'add_org'
-  | 'workspace';
+export type TEventSource = TCreatedVia | 'onboarding' | 'add_org' | 'workspace';
 
 export type TServerEvent = {
   event: string;
