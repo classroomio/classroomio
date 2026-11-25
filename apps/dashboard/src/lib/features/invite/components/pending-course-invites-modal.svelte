@@ -16,7 +16,12 @@
 
     if (!redirectTo) return;
 
-    localStorage.setItem('classroomio_org_sitename', invite.organization.siteName);
+    try {
+      localStorage.setItem('classroomio_org_sitename', invite.organization.siteName);
+    } catch (error) {
+      console.error('Failed to remember the organization site name:', error);
+    }
+
     window.location.href = redirectTo;
   }
 

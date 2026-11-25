@@ -7,6 +7,7 @@
   $effect(() => {
     if (!$profile.id) return;
 
+    void $profile.isEmailVerified;
     void pendingCourseInvitesApi.fetchOnce();
   });
 

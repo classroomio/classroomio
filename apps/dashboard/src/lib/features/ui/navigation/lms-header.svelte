@@ -9,6 +9,7 @@
   import VisitOrgSiteBtn from '../visit-org-site-btn.svelte';
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
   import { onMount } from 'svelte';
+  import { t } from '$lib/utils/functions/translations';
   import { notificationsApi } from '$features/notifications/api/notifications.svelte';
   import NotificationsPanel from '$features/notifications/components/notifications-panel.svelte';
 
@@ -48,7 +49,13 @@
         <Popover.Root>
           <Popover.Trigger>
             {#snippet child({ props })}
-              <Button {...props} variant="secondary" size="icon" testId="lms-notifications-trigger">
+              <Button
+                {...props}
+                variant="secondary"
+                size="icon"
+                aria-label={$t('notifications.title')}
+                testId="lms-notifications-trigger"
+              >
                 <BellIcon class="custom rounded-full" />
               </Button>
             {/snippet}

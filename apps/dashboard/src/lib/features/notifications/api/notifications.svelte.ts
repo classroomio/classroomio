@@ -17,11 +17,11 @@ class NotificationsApi {
   unreadCount = $derived(this.items.filter((item) => item.unread).length);
 
   get isLoading() {
-    return pendingInvitesApi.isLoading;
+    return pendingInvitesApi.isLoading || pendingCourseInvitesApi.isLoading;
   }
 
   get hasLoaded() {
-    return pendingInvitesApi.hasLoaded;
+    return pendingInvitesApi.hasLoaded && pendingCourseInvitesApi.hasLoaded;
   }
 
   fetchOnce() {

@@ -23,6 +23,21 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationMemberIdByOrgAndProfile: vi.fn()
 }));
 
+vi.mock('@cio/db/queries/auth', () => ({
+  getProfileById: vi.fn(),
+  getProfileByEmail: vi.fn(),
+  markUserAndProfileEmailVerified: vi.fn()
+}));
+vi.mock('@cio/db/queries/course/people', () => ({ getCourseTeachers: vi.fn(async () => []) }));
+vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({ invalidateOrgStats: vi.fn() }));
+vi.mock('@api/services/course/compliance', () => ({ ensureComplianceEnrollmentRecordsForProfiles: vi.fn() }));
+vi.mock('@api/services/organization/student-limit', () => ({
+  assertStudentCapacityOrThrow: vi.fn(async () => null),
+  notifyStudentMilestone: vi.fn()
+}));
+vi.mock('@api/services/product-events', () => ({ captureLearnerInvited: vi.fn(), captureLearnersEnrolled: vi.fn() }));
+vi.mock('@cio/tracking', () => ({ trackServerEvent: vi.fn(), SERVER_EVENTS: { ENROLLMENT_COMPLETED: 'x' } }));
+vi.mock('@api/services/course/session-invite', () => ({ getWelcomeSessionIcs: vi.fn(async () => null) }));
 vi.mock('@api/services/jobs', () => ({ enqueueTransactionalEmail: vi.fn() }));
 vi.mock('@cio/core/services/webhook/emit', () => ({
   buildMemberSource: vi.fn(),
@@ -34,9 +49,11 @@ vi.mock('@cio/core/services/webhook/emit', () => ({
 import {
   countInviteDistinctPreviewIps,
   getActivePendingCourseInvitesForEmail,
+  optimisticIncrementCourseInviteUsedCount,
   selectCourseInviteAcceptBundleByInviteId
 } from '@cio/db/queries/course/invite';
-import { getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { listPendingCourseInvitesForAccount } from '@api/services/account/invites';
 import { acceptStudentInviteById } from '@api/services/course/invite';
 
@@ -96,6 +113,39 @@ describe('acceptStudentInviteById', () => {
     await expect(
       acceptStudentInviteById(INVITE_ID, { id: 'u1', email: 'a@x.com', emailVerified: true })
     ).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('enrolls a verified recipient, consumes the invite once and returns the course url', async () => {
+    vi.mocked(selectCourseInviteAcceptBundleByInviteId).mockResolvedValue(bundleWith(['A@x.com']));
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(11);
+    vi.mocked(addGroupMember).mockResolvedValue([{ id: 'member-1' }] as never);
+    vi.mocked(optimisticIncrementCourseInviteUsedCount).mockResolvedValue({ id: INVITE_ID });
+
+    const result = await acceptStudentInviteById(INVITE_ID, { id: 'u1', email: 'a@x.com', emailVerified: true });
+
+    expect(selectCourseInviteAcceptBundleByInviteId).toHaveBeenCalledWith(expect.anything(), INVITE_ID);
+    expect(addGroupMember).toHaveBeenCalledWith(
+      expect.objectContaining({ groupId: 'group-1', profileId: 'u1' }),
+      expect.anything()
+    );
+    expect(optimisticIncrementCourseInviteUsedCount).toHaveBeenCalledTimes(1);
+    expect(optimisticIncrementCourseInviteUsedCount).toHaveBeenCalledWith(expect.anything(), INVITE_ID, 0);
+    expect(result).toMatchObject({
+      success: true,
+      alreadyJoined: false,
+      redirectTo: '/courses/course-1/lessons?next=true'
+    });
+  });
+
+  it('returns alreadyJoined without consuming the invite for an enrolled recipient', async () => {
+    vi.mocked(selectCourseInviteAcceptBundleByInviteId).mockResolvedValue(bundleWith(['a@x.com']));
+    vi.mocked(getGroupMemberIdByGroupAndProfile).mockResolvedValue('member-1');
+
+    const result = await acceptStudentInviteById(INVITE_ID, { id: 'u1', email: 'a@x.com', emailVerified: true });
+
+    expect(result).toMatchObject({ success: true, alreadyJoined: true });
+    expect(addGroupMember).not.toHaveBeenCalled();
+    expect(optimisticIncrementCourseInviteUsedCount).not.toHaveBeenCalled();
   });
 });
 

@@ -664,7 +664,13 @@ export async function optimisticIncrementCourseInviteUsedCount(
         updatedAt: new Date().toISOString(),
         lastUsedAt: new Date().toISOString()
       })
-      .where(and(eq(schema.courseInvite.id, inviteId), eq(schema.courseInvite.usedCount, priorUsedCount)))
+      .where(
+        and(
+          eq(schema.courseInvite.id, inviteId),
+          eq(schema.courseInvite.usedCount, priorUsedCount),
+          eq(schema.courseInvite.isRevoked, false)
+        )
+      )
       .returning({
         id: schema.courseInvite.id
       });

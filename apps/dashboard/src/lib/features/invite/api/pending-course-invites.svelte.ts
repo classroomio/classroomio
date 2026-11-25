@@ -1,3 +1,6 @@
+import { get } from 'svelte/store';
+
+import { profile } from '$lib/utils/store/user';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 
 import { snackbar } from '$features/ui/snackbar/store';
@@ -13,16 +16,24 @@ class PendingCourseInvitesApi extends BaseApiWithErrors {
   hasLoaded = $state(false);
   isModalOpen = $state(false);
   private hasRequested = false;
+  private requestedWhileVerified = false;
 
   get count() {
     return this.invites.length;
   }
 
-  /** Fetches once per page load; call it only after the session's profile is known. */
+  /**
+   * Fetches once per page load, and again when the account becomes verified, because the API
+   * returns nothing for an unverified account. Call it only after the profile is known.
+   */
   async fetchOnce() {
-    if (this.hasRequested) return;
+    const isEmailVerified = get(profile).isEmailVerified;
+    const becameVerified = isEmailVerified && !this.requestedWhileVerified;
+
+    if (this.hasRequested && !becameVerified) return;
 
     this.hasRequested = true;
+    this.requestedWhileVerified = isEmailVerified;
     await this.fetchPendingInvites();
   }
 
