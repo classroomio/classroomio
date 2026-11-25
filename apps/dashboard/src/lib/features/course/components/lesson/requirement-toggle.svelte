@@ -1,7 +1,8 @@
 <script lang="ts">
   import FlagIcon from '@lucide/svelte/icons/flag';
   import FlagOffIcon from '@lucide/svelte/icons/flag-off';
-  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { Button } from '@cio/ui/base/button';
+  import * as Tooltip from '@cio/ui/base/tooltip';
   import { cn } from '@cio/ui/tools';
   import { t } from '$lib/utils/functions/translations';
 
@@ -20,20 +21,29 @@
   );
 </script>
 
-<IconButton
-  size="icon-sm"
-  class={cn('h-8 w-8', required ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400')}
-  tooltip={actionLabel}
-  tooltipSide="top"
-  aria-label={actionLabel}
-  aria-pressed={required}
-  {disabled}
-  testId="lessons-requirement-toggle"
-  onclick={onToggle}
->
-  {#if required}
-    <FlagIcon class="h-4 w-4 fill-current" />
-  {:else}
-    <FlagOffIcon class="h-4 w-4" />
-  {/if}
-</IconButton>
+<Tooltip.Provider>
+  <Tooltip.Root>
+    <Tooltip.Trigger>
+      {#snippet child({ props })}
+        <Button
+          {...props}
+          variant="secondary"
+          size="icon-sm"
+          class={cn('h-8 w-8', required ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400')}
+          aria-label={actionLabel}
+          aria-pressed={required}
+          {disabled}
+          testId="lessons-requirement-toggle"
+          onclick={onToggle}
+        >
+          {#if required}
+            <FlagIcon class="h-4 w-4 fill-current" />
+          {:else}
+            <FlagOffIcon class="h-4 w-4" />
+          {/if}
+        </Button>
+      {/snippet}
+    </Tooltip.Trigger>
+    <Tooltip.Content side="top">{actionLabel}</Tooltip.Content>
+  </Tooltip.Root>
+</Tooltip.Provider>

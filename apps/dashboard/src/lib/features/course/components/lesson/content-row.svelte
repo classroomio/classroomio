@@ -90,13 +90,12 @@
         this={linkDisabled ? 'span' : 'a'}
         href={linkDisabled ? undefined : resolve(href, {})}
         class={cn(
-          'flex-1 truncate text-sm text-black dark:text-white',
-          !linkDisabled && 'hover:underline',
+          'group/title flex min-w-0 flex-1 items-center gap-0.5 text-sm text-black dark:text-white',
           isLocked ? 'cursor-not-allowed opacity-50' : linkClass
         )}
         data-sveltekit-preload-data={preloadOff && !linkDisabled ? 'off' : undefined}
       >
-        <span class={titleClass}>{title}</span>
+        <span class={cn('truncate', !linkDisabled && 'group-hover/title:underline', titleClass)}>{title}</span>
         {#if required}
           <RequirementMarker />
         {/if}
