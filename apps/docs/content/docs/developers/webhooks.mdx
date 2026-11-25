@@ -1,6 +1,7 @@
 ---
 title: Webhooks
 description: Receive signed, real-time ClassroomIO events in Slack, your CRM, or your own backend.
+last_reviewed: '2026-10-31'
 ---
 
 Webhooks let ClassroomIO send an HTTP `POST` to a URL you control whenever something happens in your organization, such as a student finishing a course or a submission being graded. Use them to keep a CRM in sync, alert tutors in Slack, or trigger your own workflows.
@@ -23,9 +24,9 @@ Leave the secret blank to have ClassroomIO generate one. Every delivery is signe
 
 | Event | Sent when |
 | --- | --- |
-| `organization.invite.created` | A team invite is sent |
-| `organization.invite.accepted` | A team invite is accepted |
-| `organization.invite.revoked` | A team invite is revoked or replaced |
+| `organization.invite.created` | A team or student invite is created |
+| `organization.invite.accepted` | A team or student invite is accepted |
+| `organization.invite.revoked` | A team or student invite is revoked, or a team invite is replaced |
 | `course.invite.created` | A student invite is created |
 | `course.invite.accepted` | A student accepts an invite and enrolls |
 | `course.invite.revoked` | A student invite is revoked |
@@ -93,11 +94,11 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
 
 Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`, `externalId`), `course` (`id`, `title`, `slug`, `type`, `isPublished`, `cost`, `currency`, `tags`), a `status` label next to `statusId` (and `previousStatus` next to `previousStatusId`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`, and `links` with a staff `dashboard` URL and a `student` URL where the event has a page. `externalId` is the person's id in your identity provider when they signed in through your organization's SSO, otherwise `null`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
 
-### Team invites
+### Organization invites
 
 #### `organization.invite.created`
 
-A team invite is sent.
+A team or student invite is created. It doesn't confirm that an email was sent. Student invites come from Audience import, `POST /public-api/v1/audience` and cohort invites, with `roleId` 3. Renewing a student's invite replaces the old one without an `organization.invite.revoked` event.
 
 ```json
 {
@@ -126,7 +127,7 @@ A team invite is sent.
 
 #### `organization.invite.accepted`
 
-A team invite is accepted.
+A team or student invite is accepted.
 
 ```json
 {
@@ -158,7 +159,7 @@ A team invite is accepted.
 
 #### `organization.invite.revoked`
 
-A team invite is revoked or replaced.
+A team or student invite is revoked, or a team invite is replaced.
 
 ```json
 {
@@ -357,7 +358,8 @@ A member is added to a course, by an admin or by accepting an invite.
     "inviteLinkId": null,
     "cohortId": null,
     "programId": null,
-    "apiKeyId": null
+    "apiKeyId": null,
+    "oauthClientId": null
   },
   "actorProfileId": null,
   "actor": null,
@@ -368,7 +370,7 @@ A member is added to a course, by an admin or by accepting an invite.
 }
 ```
 
-`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `enrolledAt` is when the membership was created. `source.method` is `invite`, `invite_link`, `self_enroll`, `import`, `api`, `sso`, `payment`, `admin` or `cohort`, and the other `source` fields hold the matching id or `null`. `actor` is the admin or tutor who added the member, or `null` when the student joined by themselves. `roleId` is `1` for admin, `2` for tutor, `3` for student.
+`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `enrolledAt` is when the membership was created. `source.method` is `invite`, `invite_link`, `self_enroll`, `import`, `api`, `sso`, `payment`, `admin` or `cohort`, and the other `source` fields hold the matching id or `null`. `source.oauthClientId` holds the OAuth client ID when the enrollment was created by a connected application (such as Zapier), or `null` otherwise. `actor` is the admin or tutor who added the member, or `null` when the student joined by themselves. `roleId` is `1` for admin, `2` for tutor, `3` for student.
 
 #### `course.member.removed`
 
@@ -1238,10 +1240,10 @@ If a Standard Webhooks receiver rejects the signature for a webhook created befo
 ## Delivery and retries
 
 - Your endpoint must respond with any `2xx` status within **10 seconds**. Redirects are not followed and count as failures.
-- Failed deliveries are retried automatically, up to **3 attempts** in total: immediately, then after 10 seconds, and again after 1 minute. After the last attempt the delivery is marked as failed.
+- Failed deliveries are retried automatically, up to **6 attempts** in total: immediately, then after 10 seconds, 1 minute, 5 minutes, 30 minutes and 2 hours (about 2.6 hours in all). After the last attempt the delivery is marked as failed.
 - Deliveries are **at least once**. Use `X-Cio-Event-Id` (or `id` in the body) as an idempotency key so a retry never processes the same event twice.
 - Only one delivery to a given endpoint is in flight at a time, and the oldest due delivery is sent first. A delivery that is waiting to retry does not block newer events, so do not rely on strict ordering across retries. Use `createdAt` when order matters.
-- An endpoint shows as **Failing** after 20 consecutive failed deliveries and is **auto-disabled** after 100. Re-enable it from the dashboard once it is fixed. ClassroomIO emails your organization admins at both points, and the **Error rate (24h)** column shows how many recent deliveries failed. A webhook that is still retrying its first failed deliveries shows as **Retrying**.
+- An endpoint shows as **Failing** after 20 consecutive failed deliveries and is **auto-disabled** after 100. Re-enable it from the dashboard once it is fixed. ClassroomIO emails your organization admins at both points, except for OAuth-managed trigger subscriptions (such as Zapier's), which never send these admin emails. The **Error rate (24h)** column shows how many recent deliveries failed. A webhook that is still retrying its first failed deliveries shows as **Retrying**.
 - You can pause a webhook at any time with its toggle in the **Destination** list. While paused, no new events are queued for it, and any retry that comes due is marked as failed and is not resumed when you re-enable the webhook. Use **Redeliver** to resend retained events.
 - Event and delivery history is kept for **30 days**. Open **View deliveries** to inspect headers, payloads, responses, and errors, and to **Redeliver** any retained event. A redelivery keeps the original event id.
 
@@ -1253,6 +1255,11 @@ If a Standard Webhooks receiver rejects the signature for a webhook created befo
 - Self-hosted installs can allow private-network and plain `http` destinations by setting `WEBHOOK_ALLOW_PRIVATE_NETWORKS=true` on the API and jobs services.
 
 ## Changelog
+
+### 2026-10-31
+
+- `course.member.added`: Added `oauthClientId` (string or `null`) to the `source` object. Integration platforms like Zapier can inspect this field to identify which client performed an enrollment action and filter out self-triggered events to avoid loops.
+- Introduced managed webhook subscriptions (REST hooks) for OAuth-connected integrations under `/public-api/v1/webhooks/subscriptions`.
 
 ### 2026-10-21
 
@@ -1270,3 +1277,15 @@ If a Standard Webhooks receiver rejects the signature for a webhook created befo
 ## Management API
 
 Organization admins can also manage webhooks over the dashboard API under `/organization/webhooks` (list, create, update, delete, regenerate secret, send a test event, and list or redeliver deliveries). These routes use your dashboard session and are not part of the public API-key surface.
+
+## Managed subscriptions (REST hooks)
+
+The ClassroomIO Zapier app creates and manages webhook subscriptions programmatically via the public API (`/public-api/v1/webhooks/subscriptions`) using the `webhook:subscription:write` scope. Other OAuth apps can't create subscriptions yet: their target URLs are refused.
+
+These managed subscriptions:
+
+- Are registered directly by the connected app and do not count toward your organization's limit of 20 manual webhook destinations.
+- Are lifecycle-bound to the authorizing OAuth grant. Revoking the connection immediately deletes all subscriptions registered by that app.
+- Are delivered with per-subscription signing secrets using the same Standard Webhooks and HMAC-SHA256 headers as manual webhooks.
+
+See the [OAuth REST hooks guide](/developers/oauth#receive-events-rest-hooks) for endpoint details and payload examples.

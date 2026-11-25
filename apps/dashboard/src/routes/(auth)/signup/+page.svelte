@@ -3,7 +3,7 @@
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
-  import { PASSWORD_MIN_LENGTH } from '@cio/utils/validation/auth/password';
+  import { PASSWORD_MAX_BYTES, PASSWORD_MIN_LENGTH } from '@cio/utils/validation/auth/password';
   import { page } from '$app/state';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
@@ -24,6 +24,9 @@
   import { getPostJoinRedirect } from '$features/org/utils/org-join-redirect';
   import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+  import { isOrgChooserAvailable, ORG_CHOOSER_PATH } from '$features/app/utils/post-auth-destination';
+  import { buildLoginInsteadHref, isExistingAccountError } from '$features/auth/utils/auth-errors';
+  import { getInviteTokenFromSignupUrl } from '$features/auth/utils/invite-token';
 
   let { data } = $props();
   const emailFromUrl = page.url.searchParams.get('email') ?? '';
@@ -36,13 +39,15 @@
     confirmPassword?: string;
   } = $state({});
   let submitError: string = $state('');
+  let hasExistingAccount = $state(false);
+  const loginInsteadHref = $derived(buildLoginInsteadHref(page.url.search, fields.email));
 
   /** Per-email discovery result; display uses this over org-level when set */
   let discoveryState = $state<SsoAuthState | null>(null);
 
   const disableSubmit = $derived(getDisableSubmit(fields));
   const redirectUrl = $derived(page.url.searchParams.get('redirect'));
-  const inviteToken = $derived(page.url.searchParams.get('invite_token'));
+  const inviteToken = $derived(getInviteTokenFromSignupUrl(page.url.searchParams));
 
   // Use org from store or layout data (layout data ensures org is available on self-hosted before store is set)
   const org = $derived($currentOrg?.id ? $currentOrg : (data.org ?? $currentOrg));
@@ -75,6 +80,14 @@
   onMount(() => {
     if ($globalStore.isOrgSite && org.disableSignup) {
       goto(resolve('/login?error=signup_disabled', {}));
+      return;
+    }
+
+    const isSignedInOnAdminHost =
+      !!data.locals?.user &&
+      isOrgChooserAvailable({ isCloud: PUBLIC_IS_SELFHOSTED !== 'true', isOrgSite: !!data.isOrgSite });
+    if (isSignedInOnAdminHost && !hasInviteContext && !redirectUrl) {
+      goto(resolve(ORG_CHOOSER_PATH, {}));
     }
   });
 
@@ -95,6 +108,7 @@
     },
     onClear: () => {
       errors.email = '';
+      hasExistingAccount = false;
       discoveryState = null;
     }
   });
@@ -130,11 +144,14 @@
 
     try {
       loading = true;
+      hasExistingAccount = false;
       const name = fields.email.split('@')[0];
 
       // if in selfhosted instance always pass org id
       // if in cloud instance, ONLY pass when on subdomain i.e student experience
-      const headers = $globalStore.isOrgSite ? { 'cio-org-id': org.id } : undefined;
+      const headers = $globalStore.isOrgSite
+        ? { 'cio-org-id': org.id, ...(inviteToken ? { 'cio-invite-token': inviteToken } : {}) }
+        : undefined;
 
       const { error } = await authClient.signUp.email(
         {
@@ -194,10 +211,12 @@
       const redirect = redirectUrl || '/';
       window.location.href = redirect.startsWith('/') ? redirect : `/?redirect=${encodeURIComponent(redirect)}`;
     } catch (error) {
-      submitError =
-        (error as { error_description?: string; message?: string })?.error_description ||
-        (error as { message?: string })?.message ||
-        '';
+      hasExistingAccount = isExistingAccountError(error);
+      submitError = hasExistingAccount
+        ? ''
+        : (error as { error_description?: string; message?: string })?.error_description ||
+          (error as { message?: string })?.message ||
+          '';
       loading = false;
     }
   }
@@ -216,7 +235,9 @@
   }
 
   function validatePasswordLength() {
-    if (fields.password && fields.password.length < PASSWORD_MIN_LENGTH) {
+    if (fields.password && new TextEncoder().encode(fields.password).length > PASSWORD_MAX_BYTES) {
+      errors.password = 'validations.auth.password.max_bytes';
+    } else if (fields.password && fields.password.length < PASSWORD_MIN_LENGTH) {
       errors.password = 'validations.auth.password.min_char';
     } else {
       errors.password = '';
@@ -339,7 +360,14 @@
           </Field.Content>
         </Field.Field>
 
-        {#if submitError}
+        {#if hasExistingAccount}
+          <p class="ui:text-destructive text-sm" data-testid="signup-existing-account">
+            {$t('login.existing_account.message')}
+            <a class="ui:text-primary font-medium hover:underline" href={resolve(loginInsteadHref, {})}>
+              {$t('login.existing_account.cta')}
+            </a>
+          </p>
+        {:else if submitError}
           <p class="ui:text-destructive text-sm">{submitError}</p>
         {/if}
 

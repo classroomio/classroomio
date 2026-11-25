@@ -1,4 +1,6 @@
 import { emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
+import { invalidateAnalyticsPlan } from '@cio/core/utils/redis/analytics-cache';
+import { refreshOrgHasWebhookEndpoints } from '@cio/core/services/webhook/endpoint-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
@@ -56,7 +58,7 @@ import { countCohortsByOrgForProfile } from '@cio/db/queries/cohort';
 import { countAssetsByOrg } from '@cio/db/queries/assets';
 import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
-import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
+import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/student-progress';
 
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
 import { canUseBasicAuthSettings, PLAN } from '@cio/utils/plans';
@@ -64,7 +66,7 @@ import { env } from '@cio/core/config/env';
 import { isFreeLandingPageTheme, ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
-import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
+import { getProfileById, getProfileByEmail, revokeUserOAuthGrantsInOrganization } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure, recordOrganizationInviteAudits } from './organization/invite';
 import { assertStudentHomeDestination } from './organization/student-home';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
@@ -165,7 +167,7 @@ export async function getOrgTeam(orgId: string) {
  */
 export async function getOrgAudience(
   orgId: string,
-  query: TGetAudienceQuery
+  query: TGetAudienceQuery & { email?: string }
 ): Promise<{ items: OrgAudienceMember[]; pagination: OrgAudiencePagination; query: OrgAudienceQuery }> {
   try {
     const audienceResult = await getOrganizationAudience(orgId, query);
@@ -415,14 +417,14 @@ export async function getOrganizationCourses(
   orgId: string,
   userId: string,
   userRole: number,
-  query: TGetOrganizationCoursesQuery
+  query: TGetOrganizationCoursesQuery & { slug?: string; title?: string }
 ) {
   try {
     if (!userRole) {
       throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    const { page, limit, search, type, status, sort, order } = query;
+    const { page, limit, search, slug, title, type, status, sort, order } = query;
     const listQuery = {
       page,
       limit,
@@ -463,6 +465,8 @@ export async function getOrganizationCourses(
           page,
           limit,
           search,
+          slug,
+          title,
           type,
           publishedStatus: status,
           sortKey: sort,
@@ -495,6 +499,8 @@ export async function getOrganizationCourses(
           page,
           limit,
           search,
+          slug,
+          title,
           type,
           publishedStatus: status,
           sortKey: sort,
@@ -728,6 +734,7 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
       isActive: true,
       provider: 'polar'
     });
+    void invalidateAnalyticsPlan(targetOrgId);
     return plan;
   } catch (error) {
     if (error instanceof AppError) {
@@ -930,6 +937,9 @@ export async function updateOrgPlan(subscriptionId: string, payload: TOrganizati
     if (!plan) {
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
     }
+    if (plan.orgId) {
+      void invalidateAnalyticsPlan(plan.orgId);
+    }
     return plan;
   } catch (error) {
     if (error instanceof AppError) {
@@ -958,6 +968,9 @@ export async function activateOrgPlan(data: TNewOrganizationPlan) {
     const activatedPlan = await activateOrganizationPlan(data.subscriptionId, data.payload);
 
     if (activatedPlan) {
+      if (activatedPlan.orgId) {
+        void invalidateAnalyticsPlan(activatedPlan.orgId);
+      }
       return activatedPlan;
     }
 
@@ -986,6 +999,9 @@ export async function cancelOrgPlan(subscriptionId: string, payload: TOrganizati
     const plan = await cancelOrganizationPlan(subscriptionId, payload);
     if (!plan) {
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
+    }
+    if (plan.orgId) {
+      void invalidateAnalyticsPlan(plan.orgId);
     }
     return plan;
   } catch (error) {
@@ -1053,6 +1069,15 @@ export async function removeTeamMember(orgId: string, memberId: number, removedB
 
       return { deleted: removed, targetEmail: removedEmail, revoked: revokedInvites };
     });
+
+    if (deleted.profileId) {
+      try {
+        await revokeUserOAuthGrantsInOrganization(deleted.profileId, orgId);
+        await refreshOrgHasWebhookEndpoints(orgId);
+      } catch (error) {
+        console.error('Failed to revoke OAuth grants after member removal:', error);
+      }
+    }
 
     await emitOrganizationMemberWebhookEvent('organization.member.removed', orgId, deleted, removedByProfileId ?? null);
 

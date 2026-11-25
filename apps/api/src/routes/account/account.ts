@@ -1,6 +1,7 @@
 import {
-  createViewAsStudentToken,
+  createSelfLoginLinkToken,
   getAccountData,
+  listPendingCourseInvitesForAccount,
   listPendingInvitesForAccount,
   updateUser
 } from '@api/services/account';
@@ -71,13 +72,11 @@ export const accountRouter = new Hono()
       return handleError(c, error, 'Failed to update profile');
     }
   })
-  .post('/view-as-student-token', authMiddleware, async (c) => {
+  .post('/login-link-token', authMiddleware, async (c) => {
     const user = c.get('user')!;
 
     try {
-      // Self sign-in only — mints a login-link token for the current user so they
-      // can be auto-authenticated on the org domain to preview the student experience.
-      const token = await createViewAsStudentToken({ id: user.id, email: user.email });
+      const token = await createSelfLoginLinkToken({ id: user.id, email: user.email });
 
       return c.json(
         {
@@ -87,7 +86,7 @@ export const accountRouter = new Hono()
         200
       );
     } catch (error) {
-      return handleError(c, error, 'Failed to create view-as-student token');
+      return handleError(c, error, 'Failed to create login link token');
     }
   })
   .get('/profile', authMiddleware, async (c) => {
@@ -138,5 +137,22 @@ export const accountRouter = new Hono()
       return c.json({ success: true, data: invites }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to load pending invites');
+    }
+  })
+  /**
+   * GET /account/course-invites
+   * Student course invites awaiting this account, across all organizations.
+   */
+  .get('/course-invites', authMiddleware, pendingInvitesRateLimit, async (c) => {
+    const user = c.get('user')!;
+
+    try {
+      const invites = await listPendingCourseInvitesForAccount(user);
+
+      c.header('Cache-Control', 'no-store');
+
+      return c.json({ success: true, data: invites }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load pending course invites');
     }
   });

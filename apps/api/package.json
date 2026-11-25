@@ -20,7 +20,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "upload:openapi": "tsx scripts/upload-openapi-spec.ts"
+    "upload:openapi": "tsx scripts/upload-openapi-spec.ts",
+    "test:db": "vitest run --config vitest.db.config.ts"
   },
   "repository": {
     "type": "git",
@@ -42,7 +43,7 @@
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
     "@cio/ai-assistant": "workspace:*",
-    "@cio/analytics": "workspace:*",
+    "@cio/tracking": "workspace:*",
     "@cio/certificates": "workspace:*",
     "@cio/core": "workspace:*",
     "@cio/db": "workspace:*",

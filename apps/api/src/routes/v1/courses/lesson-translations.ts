@@ -15,6 +15,7 @@ import {
 
 import * as z from 'zod';
 import { Hono } from '@api/utils/hono';
+import { getChangeAttribution } from '@api/utils/change-attribution';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
@@ -66,7 +67,7 @@ export const v1CourseLessonTranslationsRouter = new Hono()
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          'Translation saved. The HTML is sanitized, and each save is recorded in the lesson history as the key creator.',
+          'Translation saved. The HTML is sanitized, and each save is recorded in the lesson history under the key creator and the AI client or integration that made it.',
           itemResponse(ZPublicApiCourseLessonTranslationResponse)
         ),
         400: errorResponses.badRequest,
@@ -86,7 +87,8 @@ export const v1CourseLessonTranslationsRouter = new Hono()
           orgId,
           actorId,
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          getChangeAttribution(c)
         );
 
         return c.json({ success: true, data: translation }, 200);

@@ -46,6 +46,7 @@
   let status = $state<AssetStatusValue>('active');
 
   const canSubmit = $derived(Boolean(asset) && !isSaving && !isThumbnailUploading);
+  const canChangeStatus = $derived(asset?.status === 'active' || asset?.status === 'archived');
 
   function setFormValues(nextAsset: OrganizationAsset | null) {
     title = nextAsset?.title ?? '';
@@ -76,7 +77,7 @@
       title: title.trim() || undefined,
       description: description.trim() || undefined,
       thumbnailUrl: thumbnailUrl.trim() || undefined,
-      status
+      status: canChangeStatus ? status : undefined
     });
   }
 
@@ -227,7 +228,7 @@
           </div>
         {/if}
 
-        {#if showStatus}
+        {#if showStatus && canChangeStatus}
           <div class="space-y-2">
             <p class="text-sm font-medium">{$t('media_manager.form.status')}</p>
             <Select.Root type="single" bind:value={status}>

@@ -32,6 +32,7 @@ import {
 import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import type { OrganizationMemberStatus } from './member-lifecycle';
 import type { TAudienceSortBy, TAudienceSortOrder } from '@cio/utils/validation/organization';
 
 export function getOrgIdBySiteName(siteName: string) {
@@ -55,6 +56,27 @@ export async function getVerifiedCustomDomainHostnames(): Promise<string[]> {
     throw new Error(
       `Failed to load verified custom domains: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+export async function isVerifiedCustomDomainHostname(hostname: string): Promise<boolean> {
+  try {
+    const normalizedHostname = hostname.trim().toLowerCase();
+    const rows = await db
+      .select({ id: schema.organization.id })
+      .from(schema.organization)
+      .where(
+        and(
+          eq(schema.organization.isCustomDomainVerified, true),
+          sql`lower(${schema.organization.customDomain}) = ${normalizedHostname}`
+        )
+      )
+      .limit(1);
+
+    return rows.length > 0;
+  } catch (error) {
+    console.error('isVerifiedCustomDomainHostname error:', error);
+    throw new Error(`Failed to check custom domain: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -901,6 +923,24 @@ export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient 
 }
 
 /**
+ * Seat-holding student memberships whose person has not joined yet: added or invited, with no account linked and no
+ * revoked or expired latest invite. A subset of `countActiveStudents`.
+ */
+export async function countNotJoinedSeatHolders(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
+  try {
+    const [row] = await dbClient
+      .select({ count: count(schema.organizationmember.id) })
+      .from(schema.organizationmember)
+      .where(and(unarchivedStudentConditions(orgId), isNull(schema.organizationmember.profileId), inviteHoldsSeatSql));
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countNotJoinedSeatHolders error:', error);
+    throw new Error('Failed to count students who have not joined');
+  }
+}
+
+/**
  * True for an unarchived student who never joined and whose latest invite was
  * revoked or expired: they hold no seat until re-invited or linked to an account.
  */
@@ -1591,6 +1631,7 @@ export type TOrganizationMemberByEmail = {
   normalizedEmail: string;
   profileId: string | null;
   roleId: number;
+  status: OrganizationMemberStatus;
   /** See `hasLapsedStudentInvite`. */
   hasLapsedInvite: boolean;
 };
@@ -1611,10 +1652,10 @@ export async function getOrganizationMembersByNormalizedEmails(
       .select({
         roleId: schema.organizationmember.roleId,
         profileId: schema.organizationmember.profileId,
+        status: schema.organizationmember.status,
         matchEmail: sql<string>`lower(trim(coalesce(${schema.profile.email}, ${schema.organizationmember.email})))`.as(
           'matchEmail'
         ),
-        status: schema.organizationmember.status,
         inviteHoldsSeat: inviteHoldsSeatSql.as('inviteHoldsSeat')
       })
       .from(schema.organizationmember)
@@ -1630,6 +1671,7 @@ export async function getOrganizationMembersByNormalizedEmails(
       normalizedEmail: row.matchEmail,
       profileId: row.profileId,
       roleId: row.roleId,
+      status: row.status,
       hasLapsedInvite: row.roleId === ROLE.STUDENT && row.status !== 'ARCHIVED' && !row.inviteHoldsSeat
     }));
   } catch (error) {

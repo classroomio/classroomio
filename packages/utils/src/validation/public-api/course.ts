@@ -8,6 +8,8 @@ import { ZPublicApiPaginationQuery } from './pagination';
 
 export const ZPublicApiCoursesQuery = ZPublicApiPaginationQuery.extend({
   search: z.string().trim().max(200).optional().describe('Matches the course title.'),
+  slug: z.string().trim().min(1).max(200).optional().describe('Exact course slug'),
+  title: z.string().trim().min(1).max(200).optional().describe('Exact course title, case-insensitive'),
   tags: z.string().max(2000).optional().describe('Comma-separated tag slugs; returns courses with any of them.'),
   type: ZCourseType.optional(),
   status: z.enum(['published', 'unpublished']).optional(),
@@ -25,10 +27,29 @@ export type TPublicApiCourseParam = z.infer<typeof ZPublicApiCourseParam>;
 
 export const ZPublicApiCreateCourse = ZCourseCreateBase.omit({
   organizationId: true
-}).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
-  message: 'Compliance settings are required for COMPLIANCE courses',
-  path: ['compliance']
-});
+})
+  .extend({
+    bannerImageUrl: z
+      .url()
+      .optional()
+      .describe('Public image URL used as the course banner. Any public image URL works, including Unsplash URLs.'),
+    generateBannerImage: z
+      .boolean()
+      .optional()
+      .describe(
+        'Pick a banner from Unsplash using the title (or bannerImageQuery). Ignored when bannerImageUrl is set.'
+      ),
+    bannerImageQuery: z
+      .string()
+      .min(1)
+      .max(120)
+      .optional()
+      .describe('Unsplash search text for the banner; setting it turns on banner generation.')
+  })
+  .refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
+    message: 'Compliance settings are required for COMPLIANCE courses',
+    path: ['compliance']
+  });
 export type TPublicApiCreateCourse = z.infer<typeof ZPublicApiCreateCourse>;
 
 export const ZPublicApiUpdateCourse = ZCourseUpdateBase.extend({

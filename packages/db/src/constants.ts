@@ -54,3 +54,8 @@ export const MCP_RESOURCE = hasOwnMcpHost ? `${BASE_URL}/mcp` : CLOUD_MCP_URL;
 export const MCP_RESOURCE_IDENTIFIERS = [...new Set([MCP_RESOURCE, new URL(MCP_RESOURCE).href])];
 
 export const PUBLIC_API_RESOURCE = `${BASE_URL}/public-api/v1`;
+
+export const OAUTH_TRUSTED_CLIENT_IDS = (process.env.OAUTH_TRUSTED_CLIENT_IDS ?? '')
+  .split(',')
+  .map((clientId) => clientId.trim())
+  .filter(Boolean);

@@ -28,7 +28,7 @@ export async function notifyWebhookHealthChange(
   try {
     const endpoint = await getWebhookEndpointById(webhookId);
 
-    if (!endpoint) return;
+    if (!endpoint || endpoint.oauthConsentId) return;
 
     const organization = await getOrganizationById(endpoint.organizationId);
 

@@ -1,15 +1,16 @@
 import type { TCourseInvite, TCourseInviteAudit, TNewCourseInvite, TNewCourseInviteAudit } from '@db/types';
 import * as schema from '@db/schema';
+import { ROLE } from '@cio/utils/constants/roles';
 
-import { and, desc, eq, gte, inArray, sql } from 'drizzle-orm';
+import { and, arrayContains, desc, eq, gt, gte, inArray, lt, notExists, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { chunk } from '@cio/utils/functions/array';
 
 const INVITE_INSERT_CHUNK_SIZE = 500;
 
-export async function createCourseInvite(values: TNewCourseInvite): Promise<TCourseInvite> {
+export async function createCourseInvite(values: TNewCourseInvite, client: DbOrTxClient = db): Promise<TCourseInvite> {
   try {
-    const [created] = await db.insert(schema.courseInvite).values(values).returning();
+    const [created] = await client.insert(schema.courseInvite).values(values).returning();
 
     if (!created) {
       throw new Error('Failed to create course invite');
@@ -386,6 +387,26 @@ export async function revokeCourseInvite(
   }
 }
 
+/**
+ * Permanently removes a course invite. Audit rows cascade, so no orphaned
+ * history is left behind. Used only to clean up a just-created invite whose
+ * email could not be queued, so a retry creates a fresh invite instead of
+ * reusing a dead one.
+ */
+export async function deleteCourseInvite(courseId: string, inviteId: string): Promise<boolean> {
+  try {
+    const deleted = await db
+      .delete(schema.courseInvite)
+      .where(and(eq(schema.courseInvite.id, inviteId), eq(schema.courseInvite.courseId, courseId)))
+      .returning({ id: schema.courseInvite.id });
+
+    return deleted.length > 0;
+  } catch (error) {
+    console.error('deleteCourseInvite error:', error);
+    throw new Error(`Failed to delete course invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export type TCourseInviteTokenData = {
   invite: TCourseInvite;
   course: {
@@ -541,6 +562,132 @@ export async function selectCourseInviteAcceptBundleByTokenHash(
   }
 }
 
+export type TPendingCourseInviteListItem = {
+  invite: TCourseInvite;
+  course: { id: string; title: string; description: string; slug: string | null };
+  organization: { id: string; name: string; siteName: string; avatarUrl: string | null };
+};
+
+/**
+ * Student course invites addressed to this exact email that can still be accepted:
+ * unrevoked, unexpired, with uses left, on an active published course the profile has not joined.
+ */
+export async function getActivePendingCourseInvitesForEmail(
+  email: string,
+  profileId: string
+): Promise<TPendingCourseInviteListItem[]> {
+  const normalized = email.toLowerCase().trim();
+  if (!normalized) {
+    return [];
+  }
+
+  try {
+    const rows = await db
+      .select({
+        invite: schema.courseInvite,
+        course: {
+          id: schema.course.id,
+          title: schema.course.title,
+          description: schema.course.description,
+          slug: schema.course.slug
+        },
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
+        }
+      })
+      .from(schema.courseInvite)
+      .innerJoin(schema.course, eq(schema.courseInvite.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(
+        and(
+          arrayContains(schema.courseInvite.allowedEmails, [normalized]),
+          eq(schema.courseInvite.roleId, ROLE.STUDENT),
+          eq(schema.courseInvite.isRevoked, false),
+          gt(schema.courseInvite.expiresAt, sql`NOW()`),
+          lt(schema.courseInvite.usedCount, schema.courseInvite.maxUses),
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          notExists(
+            db
+              .select({ id: schema.groupmember.id })
+              .from(schema.groupmember)
+              .where(and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId)))
+          )
+        )
+      )
+      .orderBy(desc(schema.courseInvite.createdAt));
+
+    return rows.map((row) => ({
+      ...row,
+      organization: { ...row.organization, siteName: row.organization.siteName ?? '' }
+    }));
+  } catch (error) {
+    console.error('getActivePendingCourseInvitesForEmail error:', error);
+    throw new Error(
+      `Failed to get pending course invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function selectCourseInviteAcceptBundleByInviteId(
+  dbClient: DbOrTxClient,
+  inviteId: string
+): Promise<TCourseInviteAcceptBundle | null> {
+  try {
+    const [row] = await dbClient
+      .select({
+        invite: schema.courseInvite,
+        course: {
+          id: schema.course.id,
+          title: schema.course.title,
+          status: schema.course.status,
+          isPublished: schema.course.isPublished,
+          metadata: schema.course.metadata,
+          groupId: schema.group.id
+        },
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName,
+          customDomain: schema.organization.customDomain,
+          isCustomDomainVerified: schema.organization.isCustomDomainVerified,
+          avatarUrl: schema.organization.avatarUrl,
+          theme: schema.organization.theme
+        }
+      })
+      .from(schema.courseInvite)
+      .innerJoin(schema.course, eq(schema.courseInvite.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(eq(schema.courseInvite.id, inviteId))
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      ...row,
+      course: { ...row.course, isPublished: !!row.course.isPublished },
+      organization: {
+        ...row.organization,
+        siteName: row.organization.siteName ?? '',
+        customDomain: row.organization.customDomain ?? null,
+        isCustomDomainVerified: row.organization.isCustomDomainVerified ?? null
+      }
+    };
+  } catch (error) {
+    console.error('selectCourseInviteAcceptBundleByInviteId error:', error);
+    throw new Error(
+      `Failed to load course invite for accept: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function optimisticIncrementCourseInviteUsedCount(
   dbClient: DbOrTxClient,
   inviteId: string,
@@ -554,7 +701,13 @@ export async function optimisticIncrementCourseInviteUsedCount(
         updatedAt: new Date().toISOString(),
         lastUsedAt: new Date().toISOString()
       })
-      .where(and(eq(schema.courseInvite.id, inviteId), eq(schema.courseInvite.usedCount, priorUsedCount)))
+      .where(
+        and(
+          eq(schema.courseInvite.id, inviteId),
+          eq(schema.courseInvite.usedCount, priorUsedCount),
+          eq(schema.courseInvite.isRevoked, false)
+        )
+      )
       .returning({
         id: schema.courseInvite.id
       });
@@ -565,5 +718,75 @@ export async function optimisticIncrementCourseInviteUsedCount(
     throw new Error(
       `Failed to update course invite usage: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * The newest usable invite to `courseId` that names `email` among its allowed emails, or null.
+ */
+export async function findActiveCourseInviteIdForEmail(
+  courseId: string,
+  email: string,
+  client: DbOrTxClient = db
+): Promise<string | null> {
+  try {
+    const normalizedEmail = email.trim().toLowerCase();
+    const [row] = await client
+      .select({ id: schema.courseInvite.id })
+      .from(schema.courseInvite)
+      .where(
+        and(
+          eq(schema.courseInvite.courseId, courseId),
+          eq(schema.courseInvite.isRevoked, false),
+          gt(schema.courseInvite.expiresAt, new Date().toISOString()),
+          lt(schema.courseInvite.usedCount, schema.courseInvite.maxUses),
+          sql`exists (select 1 from unnest(${schema.courseInvite.allowedEmails}) as allowed(email) where lower(allowed.email) = ${normalizedEmail})`
+        )
+      )
+      .orderBy(desc(schema.courseInvite.createdAt))
+      .limit(1);
+
+    return row?.id ?? null;
+  } catch (error) {
+    console.error('findActiveCourseInviteIdForEmail error:', error);
+    throw new Error('Failed to look up course invite');
+  }
+}
+
+export type TEnrollmentInviteResult = {
+  created: boolean;
+  invite: TCourseInvite | null;
+  existingInviteId: string | null;
+};
+
+/**
+ * Creates the single-use enrollment invite for `email` unless a usable invite for that address already
+ * exists. The transaction-scoped advisory lock serializes concurrent enrollments for the same
+ * course+email, so two requests can't both pass the check and send two invites.
+ */
+export async function createEnrollmentInviteIfAbsent(
+  courseId: string,
+  email: string,
+  values: TNewCourseInvite
+): Promise<TEnrollmentInviteResult> {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  try {
+    return await db.transaction(async (tx) => {
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${`${courseId}:${normalizedEmail}`}, 0))`);
+
+      const existingInviteId = await findActiveCourseInviteIdForEmail(courseId, normalizedEmail, tx);
+
+      if (existingInviteId) {
+        return { created: false, invite: null, existingInviteId };
+      }
+
+      const invite = await createCourseInvite(values, tx);
+
+      return { created: true, invite, existingInviteId: null };
+    });
+  } catch (error) {
+    console.error('createEnrollmentInviteIfAbsent error:', error);
+    throw new Error('Failed to create enrollment invite');
   }
 }

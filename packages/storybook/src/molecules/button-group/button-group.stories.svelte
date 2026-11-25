@@ -15,6 +15,8 @@
   import ArrowRight from '@lucide/svelte/icons/arrow-right';
   import Search from '@lucide/svelte/icons/search';
   import Archive from '@lucide/svelte/icons/archive';
+  import Download from '@lucide/svelte/icons/download';
+  import Maximize2 from '@lucide/svelte/icons/maximize-2';
   import CalendarPlus from '@lucide/svelte/icons/calendar-plus';
   import Clock from '@lucide/svelte/icons/clock';
   import ListFilter from '@lucide/svelte/icons/list-filter';
@@ -40,6 +42,9 @@
   const { Story } = defineMeta({
     title: 'Molecules/ButtonGroup',
     component: ButtonGroup.Root,
+    argTypes: {
+      variant: { control: 'select', options: ['default', 'toolbar'] }
+    },
     parameters: {
       layout: 'centered',
       controls: {
@@ -71,8 +76,8 @@
 </script>
 
 <Story name="Default">
-  {#snippet template()}
-    <ButtonGroup.Root>
+  {#snippet template(args)}
+    <ButtonGroup.Root orientation={args.orientation} variant={args.variant}>
       <ButtonGroup.Root class="hidden sm:flex">
         <Button variant="outline" size="icon" aria-label="Go Back">
           <ArrowLeft />
@@ -145,9 +150,72 @@
   {/snippet}
 </Story>
 
-<Story name="Orientation">
-  {#snippet template()}
-    <ButtonGroup.Root orientation="vertical" aria-label="Media controls" class="h-fit">
+<Story name="Toolbar" args={{ variant: 'toolbar' }}>
+  {#snippet template(args)}
+    <div class="flex flex-col items-start gap-8">
+      <Tooltip.Provider>
+        <ButtonGroup.Root orientation={args.orientation} variant={args.variant} aria-label="Widget actions">
+          <Tooltip.Root>
+            <Tooltip.Trigger>
+              {#snippet child({ props })}
+                <Button {...props} variant="secondary" size="icon-sm" aria-label="Expand">
+                  <Maximize2 />
+                </Button>
+              {/snippet}
+            </Tooltip.Trigger>
+            <Tooltip.Content>Expand</Tooltip.Content>
+          </Tooltip.Root>
+          <Tooltip.Root>
+            <Tooltip.Trigger>
+              {#snippet child({ props })}
+                <Button {...props} variant="secondary" size="icon-sm" aria-label="Download CSV">
+                  <Download />
+                </Button>
+              {/snippet}
+            </Tooltip.Trigger>
+            <Tooltip.Content>Download CSV</Tooltip.Content>
+          </Tooltip.Root>
+        </ButtonGroup.Root>
+      </Tooltip.Provider>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Toolbar single button" args={{ variant: 'toolbar' }}>
+  {#snippet template(args)}
+    <Tooltip.Provider>
+      <ButtonGroup.Root orientation={args.orientation} variant={args.variant} aria-label="Widget actions">
+        <Tooltip.Root>
+          <Tooltip.Trigger>
+            {#snippet child({ props })}
+              <Button {...props} variant="secondary" size="icon-sm" aria-label="Download CSV">
+                <Download />
+              </Button>
+            {/snippet}
+          </Tooltip.Trigger>
+          <Tooltip.Content>Download CSV</Tooltip.Content>
+        </Tooltip.Root>
+      </ButtonGroup.Root>
+    </Tooltip.Provider>
+  {/snippet}
+</Story>
+
+<Story name="Toolbar disabled" args={{ variant: 'toolbar' }}>
+  {#snippet template(args)}
+    <ButtonGroup.Root orientation={args.orientation} variant={args.variant} aria-label="Widget actions">
+      <Button variant="secondary" size="icon-sm" aria-label="Expand" disabled>
+        <Maximize2 />
+      </Button>
+      <Button variant="secondary" size="icon-sm" aria-label="Download CSV" disabled>
+        <Download />
+      </Button>
+    </ButtonGroup.Root>
+  {/snippet}
+</Story>
+
+<Story name="Orientation" args={{ orientation: 'vertical' }}>
+  {#snippet template(args)}
+    <ButtonGroup.Root orientation={args.orientation} variant={args.variant} aria-label="Media controls" class="h-fit">
       <Button variant="outline" size="icon">
         <Plus />
       </Button>

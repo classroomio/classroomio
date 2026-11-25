@@ -2,8 +2,8 @@ export const prerender = true;
 
 export const load = () => ({
   pageMetaTags: {
-    title: 'Open source LMS API, Webhooks, and MCP server | ClassroomIO',
+    title: 'Open source LMS API, Webhooks, Zapier, and MCP server | ClassroomIO',
     description:
-      'Automate course authoring and learner provisioning with the ClassroomIO REST API, Webhooks, and MCP server. Open source, self-hostable, no integration tax.'
+      'Automate with the ClassroomIO REST API, Webhooks, Zapier (Cloud), and MCP server. Open source, self-hostable, no integration tax.'
   }
 });

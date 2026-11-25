@@ -19,20 +19,21 @@ Use this file to keep a single prioritized view of all PRDs.
 | 7 | - | `prd/selective-exercise-assignment` | todo |
 | - | - | `prd/scorm-support` | todo |
 | - | 4 | `prd/course-content-search` | todo |
-| - | 9 | `prd/onboarding-ai-bootstrap` | todo |
+| - | 9 | `prd/onboarding` | todo |
 | - | 10 | `prd/pricing-improvements` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | - | `prd/walkthrough-widget` | draft |
 | - | - | `prd/copy-page-as-markdown` | todo |
 | - | 15 | `prd/webhooks` | todo |
-| - | - | `prd/zapier` | draft |
+| - | - | `prd/zapier` | in progress (built; Zapier app unpublished, so the private invite has not gone out) |
 | - | - | `prd/release-process` | draft |
 | - | - | `prd/events` | draft |
 | - | - | `prd/plugin-system` | proposal |
 | - | - | `prd/scroll-to-top` | draft |
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
 | - | - | `prd/gamification` | draft (prototyped; learner XP, streaks, badges, leaderboards, admin settings) |
-| - | - | `prd/insights-analytics` | draft (prototyped in `prototypes/insights-analytics`; learning-time widget blocked on #1299) |
+| - | - | `prd/analytics-dashboards` | in progress (engine #1444, dashboards #1445, public API and MCP #1495; naming in `prd/analytics-naming`) |
+| - | - | `prd/math-teaching` | draft (math authoring, Photo and Draw to Math, math input and grading, AI, results) |
 
 ## DONE (Completed PRDs)
 

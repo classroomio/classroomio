@@ -10,6 +10,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Confetti } from '$features/ui';
   import { courseApi } from '$features/course/api';
+  import { switchToOwnerOrg } from '$features/org/utils/owner-org';
   import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
   import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
   import { aiAssistantPanelDefinition, ContentAskAiBar, AI_ASSISTANT_PANEL_ID } from '$features/ai-assistant';
@@ -24,7 +25,7 @@
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin, orgs } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { CourseMobileBottomNav } from '$features/course/components/mobile';
@@ -77,6 +78,12 @@
     }
 
     void courseApi.ensureCourse(courseId, profileId);
+  });
+
+  $effect(() => {
+    if (!courseId || loadedCourseId !== courseId) return;
+
+    switchToOwnerOrg(courseApi.course?.group?.organizationId, $currentOrg.id, $orgs);
   });
 
   const isCourseReady = $derived(loadedCourseId === courseId && !!courseApi.group.id);

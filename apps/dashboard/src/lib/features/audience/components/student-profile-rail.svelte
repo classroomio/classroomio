@@ -39,7 +39,7 @@
     </div>
     <Badge variant="secondary">
       <ClockIcon />
-      {$t('analytics.last_seen')}
+      {$t('student_progress.last_seen')}
       {formatLastSeen(analytics.user.lastSeen)}
     </Badge>
   </Card.Content>
@@ -48,18 +48,18 @@
 
   <Card.Content class="flex flex-col items-center gap-1">
     <PercentRingProgress value={analytics.overallCourseProgress} size="default" />
-    <p class="ui:text-muted-foreground text-xs">{$t('analytics.overall_course_progress')}</p>
+    <p class="ui:text-muted-foreground text-xs">{$t('student_progress.overall_course_progress')}</p>
   </Card.Content>
 
   <Separator.Root />
 
   <Card.Content>
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
-      <span class="ui:text-muted-foreground">{$t('analytics.enrolled_courses')}</span>
+      <span class="ui:text-muted-foreground">{$t('student_progress.enrolled_courses')}</span>
       <span class="ui:tabular-nums font-medium">{analytics.courses.length}</span>
     </div>
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
-      <span class="ui:text-muted-foreground">{$t('analytics.completed')}</span>
+      <span class="ui:text-muted-foreground">{$t('student_progress.completed')}</span>
       <span class="ui:tabular-nums font-medium">{completedCourses}</span>
     </div>
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
@@ -67,7 +67,7 @@
       <span class="ui:tabular-nums font-medium">{inProgressCourses}</span>
     </div>
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
-      <span class="ui:text-muted-foreground">{$t('analytics.average_grade')}</span>
+      <span class="ui:text-muted-foreground">{$t('student_progress.average_grade')}</span>
       <span class="ui:tabular-nums font-medium">{gradeLabel(analytics.overallAverageGrade)}</span>
     </div>
   </Card.Content>

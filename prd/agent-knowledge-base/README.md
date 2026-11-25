@@ -52,7 +52,7 @@ Three current and planned features all need the same thing — persistent ingest
 
 1. **AI Course Templates** ([plan](.cursor/plans/course_templates_on_org_home_63a7b19a.plan.md)) — when a teacher creates a course from a template and provides a docs URL, the agent fetches it via Jina. Today: cached for 7 days in Redis, then disappears.
 2. **Study from Source** ([prd/study-from-source/](../study-from-source/README.md)) — already designs persistent `study_source` and `study_source_segment` tables for one-source-at-a-time course creation. But the data is scoped to a single course.
-3. **Onboarding AI Bootstrap** ([prd/onboarding-ai-bootstrap/](../onboarding-ai-bootstrap/README.md)) — paste website URL during signup → 2 starter courses. Same fetch happens; same data is thrown away.
+3. **Onboarding** ([prd/onboarding/](../onboarding/README.md)) — paste website URL during signup → starter courses. Same fetch happens; same data is thrown away.
 
 Each feature reinvents fetching, chunking, and "what's good context to give the agent." The result is duplicated infrastructure, missed reuse opportunities, and high recurring fetch cost.
 
@@ -96,7 +96,7 @@ These came out of the Tier-1/2/3 conversation that produced the AI Course Templa
 |---|---|
 | [AI Course Templates plan](../../.cursor/plans/course_templates_on_org_home_63a7b19a.plan.md) | Ships Tier-2 cache. This PRD is the Tier-3 promotion. |
 | [Study from Source](../study-from-source/README.md) | Defines `study_source` and `study_source_segment` tables that this KB should either extend or absorb. Open question 1 below. |
-| [Onboarding AI Bootstrap](../onboarding-ai-bootstrap/README.md) | First place a fresh org gets a website URL. Should write into the KB so subsequent courses inherit that ingestion. |
+| [Onboarding](../onboarding/README.md) | First place a fresh org gets a website URL. Should write into the KB so subsequent courses inherit that ingestion. |
 | [AI Course Assistant](../ai-course-assistant%20%5BDONE%5D/README.md) | The agent that consumes this KB. |
 | [MCP Course Authoring](../mcp-course-authoring%20%5BDONE%5D/README.md) | External MCP consumers may also want to query KB; design tool surface to be MCP-friendly. |
 

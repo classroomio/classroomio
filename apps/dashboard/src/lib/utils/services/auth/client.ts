@@ -58,3 +58,16 @@ export const authClient = createAuthClient({
     })
   ]
 });
+
+/**
+ * Auth client that never navigates on its own. Use it for endpoints that answer `{ redirect, url }` when the caller
+ * must read the URL before deciding where to go.
+ */
+export const nonNavigatingAuthClient = createAuthClient({
+  baseURL,
+  fetchOptions: {
+    credentials: 'include'
+  },
+  // better-auth's default redirectPlugin sets window.location.href on every `{ redirect: true, url }` response.
+  disableDefaultFetchPlugins: true
+});

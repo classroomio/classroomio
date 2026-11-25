@@ -15,7 +15,7 @@ Nothing here depends on a particular machine or account. Every input path comes 
 - **ffmpeg 6+** with the `arnndn`, `afftdn`, `silencedetect`, `loudnorm` and `ebur128` filters.
 - **Python 3.10+.** `scripts/cio-video` creates its own venv and installs `scripts/requirements.txt` on first run.
 - **Chrome or Chromium** for screenshots and the guide PDF. It's found on PATH, or set `CIO_VIDEO_CHROME`.
-- **Network on first run** to download the RNNoise `sh` model.
+- **Network** to download the RNNoise `sh` model, only when `audio.denoise` is on.
 - **The `classroomio-design` skill** next to this one (`skills/classroomio-design/`). Fonts, logo geometry and image assets are read from it.
 - Caches live in `$CIO_VIDEO_CACHE`, or `$XDG_CACHE_HOME/cio-video`, or `~/.cache/cio-video`.
 
@@ -42,18 +42,19 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
 1. **Collect inputs.** You need the source recording and a transcript with word timings. A YouTube auto-caption VTT is best (`yt-dlp --write-auto-subs --sub-format vtt --skip-download <url>`). SRT or `[[seconds, "word"], …]` JSON also work; SRT words are spread across each cue, so they land less precisely. Ask the user where the files are. Never assume a path.
 2. **Look before you cut.**
    - Grab a few frames from the source to learn the framing: talking head or screen, and where the speaker sits.
+   - For a screen demo, check frames across every clip window, not just the start. Recorder exports (Cap, Screen Studio) can bake in zooms, a floating or large camera, or a 608 px wide mobile screen, any of which hides the thing being demoed. When they do, rebuild the source from the recorder's raw screen and camera tracks instead of cutting the export (see `references/recorder-sources.md`).
    - Read the transcript with `cio-video words project.json --start 0 --end 300`.
    - Pick windows that stand alone: one idea, a strong first line, a full-sentence ending.
 3. **Write `project.json`** next to the source. Start from `templates/project.example.json` (talking head) or `templates/project.screen.example.json` (screen recording). `references/project-file.md` lists every field.
-4. **Plan and clean.** Run `cio-video plan project.json --transcript`. It trims pauses and removes noise (cached), prints each cleaned transcript, and lists every explainer and hook with its timing. Add `corrections` until the transcript reads right, then fix every `!` warning.
+4. **Plan and clean.** Run `cio-video plan project.json --transcript`. It trims pauses (cached), prints each cleaned transcript, and lists every explainer and hook with its timing. Add `corrections` until the transcript reads right, then fix every `!` warning.
 5. **Add explainers and hooks.** See `references/explainers.md`.
    - Tie each visual to the phrase that introduces it.
    - For news, verify the claim with web search, capture the real article with `cio-video screenshot`, crop it, and credit it on screen.
    - Ask the user for anything the web won't give you, such as banners or logged-in pages.
-   - The hook is a 2–5 s line from the same clip.
+   - Leave `hook` out unless the user asks for one. A line lifted from the middle of a clip and played first reads as a non sequitur; the user rejected them on 2026-11-17. When asked for, it is a 2–5 s line from the same clip.
 6. **Preview one clip** with `cio-video render project.json --clip 01 --out preview/`, then build its QA sheet. Show the user before rendering the rest: hooks, visual choices and split versus full are taste calls.
 7. **Render everything.** Run `cio-video render project.json --jobs 3`, then `captions`, `thumbnails` and `guide`. Write the copy in each clip's `posts`, following `docs/content.md`.
-8. **QA.** Run `cio-video qa project.json`. Every row must read `ok`: loudness within 1 LU of target and at least 90% of words landing on speech. Then look at every contact sheet in `<work>/qa/`:
+8. **QA.** Run `cio-video qa project.json`. Every row must read `ok`: at least 90% of words landing on speech. Then look at every contact sheet in `<work>/qa/`:
    - captions don't cover a visual
    - text is legible at phone size
    - nothing sits in the 9:16 platform UI zones
@@ -63,11 +64,18 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
    - facts and sources
    - visuals that are illustrative rather than real
 
+## Where the output goes
+
+- **Marketing cuts** go in `~/Videos/marketing/<slug>/`, one folder per topic (for example `404-game`, `claude-connector`). The clips sit at the top of the folder, and the project file, transcript and caches sit in `project/`. This covers any short or social clip made to promote a feature, even when it is cut from a changelog recording or links to the changelog.
+- **Changelog videos** go in `company/changelogs/<number>-<range>/video/`. Only the changelog itself belongs there: the full walkthrough, its per-feature YouTube videos and the intro that the `write-changelog` skill publishes.
+- Once a marketing topic has been posted, its folder is renamed with a `[posted] ` prefix (`[posted] claude-connector`). A folder without the prefix is still waiting to be posted.
+- When it is unclear which kind a job is, ask before rendering.
+
 ## Ask the user, don't assume
 
-- Where the source and transcript are, and where the output should go.
+- Where the source and transcript are, and where the output should go (see above).
 - News and third-party pages: real credited screenshots, or brand cards that quote the headline.
-- Which formats get the hook (the default is 9:16 only).
+- Whether they want a hook at all (default: no hook).
 - The sign-off headline and the series eyebrow (`INSIGHTS`, `PRODUCT TOUR`, `CHANGELOG`, …).
 - Anything said on camera about customers, numbers or other companies that will be published.
 
@@ -87,7 +95,7 @@ Load `classroomio-design` before choosing any colour, type, copy or layout. This
 V=skills/edit-video/scripts/cio-video
 $V check
 $V words project.json --start 120 --end 240          # source transcript with times
-$V plan project.json [--clip 01 02] [--transcript]    # trim, denoise, print timelines and warnings
+$V plan project.json [--clip 01 02] [--transcript]    # trim, print timelines and warnings
 $V render project.json [--clip 01] [--format 9x16] [--jobs 3] [--out preview/]
 $V sign-off project.json [--force]                    # standalone sign-off clips (16:9 and 9:16)
 $V thumbnails | captions | qa | guide project.json [--clip …]

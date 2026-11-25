@@ -83,7 +83,7 @@
     {/snippet}
   </Popover.Trigger>
 
-  <Popover.Content align="end" class="w-[360px] p-3">
+  <Popover.Content align="end" class="max-h-(--bits-popover-content-available-height) w-[360px] max-w-[calc(100vw-1rem)] overflow-y-auto p-3">
     <div class="space-y-4">
       <div class="flex items-center justify-between gap-2">
         <p class="text-sm font-semibold">{title ?? $t('courses.tag_filters.popover_title')}</p>

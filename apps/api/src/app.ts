@@ -28,7 +28,9 @@ import { agentRouter } from '@api/routes/agent';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
 import { courseRouter } from '@api/routes/course';
-import { dashAnalyticsRouter } from '@api/routes/dash';
+import { dashRouter } from '@api/routes/dash';
+import { marketingRouter } from '@api/routes/marketing';
+import { orgComplianceRouter } from '@api/routes/compliance';
 import { domainRouter } from '@api/routes/domain/domain';
 import { internalRouter } from '@api/routes/internal';
 import { inviteRouter } from '@api/routes/invite';
@@ -54,11 +56,12 @@ import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
 import { prettyJSON } from 'hono/pretty-json';
 import { cohortRouter } from '@api/routes/cohort';
+import { analyticsRouter } from '@api/routes/analytics';
 import { publicCourseRouter, orgSiteOgRouter } from '@api/routes/org-site';
 import { publicWidgetsRouter } from '@api/routes/widgets';
 import { reportRouter } from '@api/routes/report';
 import rateLimiter from '@api/middlewares/rate-limiter';
-import { secureHeaders } from 'hono/secure-headers';
+import { apiSecureHeadersMiddleware } from '@api/middlewares/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { upgradeRequiredEvent } from '@api/middlewares/upgrade-required-event';
@@ -70,13 +73,7 @@ export const app = new Hono()
   // Middleware
   .use('*', logger())
   .use('*', prettyJSON())
-  // `Cross-Origin-Resource-Policy: same-origin` (Hono's default) blocks the
-  // dashboard from embedding api-served media (e.g. HLS segments via
-  // `<video>`) when the dashboard and api live on different origins in
-  // local dev / self-hosted. We're an API server — every response is
-  // designed for cross-origin consumption, so the right value is
-  // `cross-origin`. CORS still gates which origins can read the bytes.
-  .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
+  .use('*', apiSecureHeadersMiddleware)
   .use('*', async (c, next) => {
     if (isPublicOAuthPath(c.req.path)) return publicApiCors(c, next);
 
@@ -272,12 +269,15 @@ export const app = new Hono()
   .route('/organization/sso', organizationSsoRouter)
   .route('/organization/token-auth', organizationTokenAuthRouter)
   .route('/sso', ssoDiscoveryRouter)
-  .route('/dash', dashAnalyticsRouter)
+  .route('/dash', dashRouter)
+  .route('/marketing', marketingRouter)
+  .route('/compliance', orgComplianceRouter)
   .route('/community', communityRouter)
   .route('/invite', inviteRouter)
   .route('/org-site/course', publicCourseRouter)
   .route('/org-site/og', orgSiteOgRouter)
   .route('/cohort', cohortRouter)
+  .route('/analytics', analyticsRouter)
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)
   .route('/report', reportRouter)

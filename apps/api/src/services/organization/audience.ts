@@ -1,5 +1,6 @@
 import { emitCohortMemberWebhookEvent, emitOrganizationMemberWebhookEvent } from '@cio/core/services/webhook/emit';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { parseFullnameFromInviteMetadata } from '@api/utils/org';
 import {
   type AudienceImportResult,
   type ParsedImportRow,
@@ -28,6 +29,7 @@ import {
   createOrganizationInvites,
   createOrganizationMembers,
   getOrganizationAudienceMember,
+  getLatestOrganizationInviteMetadataByEmails,
   getLatestOrganizationInviteRowByOrgAndEmail,
   getOrgMembersByProfileIds,
   getOrganizationById,
@@ -412,12 +414,22 @@ async function createStudentOrgInvitesAndSendEmails(
     accessNamesLabel: string | undefined;
     invitedByProfileId: string;
     shouldSendEmail: boolean;
+    fullnamesByEmail?: Map<string, string>;
   },
   tx: DbOrTxClient,
   afterCommit: TAfterCommit
 ): Promise<TInviteResult> {
-  const { orgId, organization, emails, courseIds, cohortIds, accessNamesLabel, invitedByProfileId, shouldSendEmail } =
-    input;
+  const {
+    orgId,
+    organization,
+    emails,
+    courseIds,
+    cohortIds,
+    accessNamesLabel,
+    invitedByProfileId,
+    shouldSendEmail,
+    fullnamesByEmail
+  } = input;
   const result: TInviteResult = { created: emails.length, emailsSent: 0, emailsFailed: 0 };
 
   if (emails.length === 0) {
@@ -426,10 +438,20 @@ async function createStudentOrgInvitesAndSendEmails(
 
   await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId, tx);
 
+  const namelessEmails = emails.filter((email) => !fullnamesByEmail?.get(email));
+  const previousInvites = await getLatestOrganizationInviteMetadataByEmails(orgId, namelessEmails, tx);
+  const previousFullnames = new Map<string, string>();
+  for (const previousInvite of previousInvites) {
+    const previousFullname = parseFullnameFromInviteMetadata(previousInvite.metadata);
+    if (previousFullname) previousFullnames.set(previousInvite.email.toLowerCase(), previousFullname);
+  }
+
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
 
   const inviteInputs = emails.map((email) => {
     const token = generateToken();
+    const fullname = fullnamesByEmail?.get(email) ?? previousFullnames.get(email);
+
     return {
       email,
       token,
@@ -444,7 +466,8 @@ async function createStudentOrgInvitesAndSendEmails(
         metadata: {
           source: 'AUDIENCE_IMPORT',
           courseIds: courseIds.length > 0 ? courseIds : undefined,
-          cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+          cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+          fullname
         }
       }
     };
@@ -644,6 +667,14 @@ export async function importAudienceMembers(
     row.status = 'already_member';
   }
 
+  const fullnamesByEmail = new Map<string, string>();
+  for (const row of rows) {
+    if (row.status !== 'ready' && row.status !== 'invite_resent') continue;
+
+    const fullname = row.name?.trim();
+    if (fullname) fullnamesByEmail.set(row.email, fullname);
+  }
+
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
   const cohorts = await resolveCohortsForImport(orgId, data);
   const cohortIds = cohorts.map((cohort) => cohort.id);
@@ -658,7 +689,15 @@ export async function importAudienceMembers(
     source,
     actorProfileId: invitedByProfileId
   };
-  const inviteInput = { orgId, organization, courseIds, cohortIds, accessNamesLabel, invitedByProfileId };
+  const inviteInput = {
+    orgId,
+    organization,
+    courseIds,
+    cohortIds,
+    accessNamesLabel,
+    invitedByProfileId,
+    fullnamesByEmail
+  };
   const afterCommit: TAfterCommit = [];
 
   const { assignedToCourses, assignedToCohorts, importInvites, pendingInvites } = await db.transaction(async (tx) => {
@@ -844,6 +883,7 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, emailToUse);
   const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
+  const previousFullname = parseFullnameFromInviteMetadata(latestInvite?.metadata);
   const courseIdsFromMetadata = meta.courseIds?.filter(Boolean) ?? [];
   const cohortIdsFromMetadata = meta.cohortIds?.filter(Boolean) ?? [];
 
@@ -890,7 +930,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
         metadata: {
           source: 'AUDIENCE_RESEND',
           courseIds: courseIds.length > 0 ? courseIds : undefined,
-          cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+          cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+          fullname: previousFullname
         }
       },
       tx
@@ -1126,6 +1167,9 @@ export async function updatePendingAudienceMemberEmail(
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
   const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
+  const fullnamesByEmail = new Map<string, string>();
+  const previousFullname = parseFullnameFromInviteMetadata(latestInvite?.metadata);
+  if (previousFullname) fullnamesByEmail.set(normalizedEmail, previousFullname);
   const afterCommit: TAfterCommit = [];
 
   const updatedMember = await db.transaction(async (tx) => {
@@ -1165,7 +1209,8 @@ export async function updatePendingAudienceMemberEmail(
         cohortIds: meta.cohortIds?.filter(Boolean) ?? [],
         accessNamesLabel: undefined,
         invitedByProfileId,
-        shouldSendEmail: data.sendEmail
+        shouldSendEmail: data.sendEmail,
+        fullnamesByEmail
       },
       tx,
       afterCommit

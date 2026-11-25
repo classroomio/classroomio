@@ -7,21 +7,41 @@ import { publicApiScopesMiddleware } from './public-api-scopes';
 const COHORT_SCOPES = ['cohort:read', 'cohort:write'];
 const MEDIA_SCOPES = ['media:write'];
 
-function buildApp(scopes: string[]) {
+function buildApp(scopes: string[], oauthConsentId: string | null = null) {
   const v1Router = new Hono()
     .use('*', async (c: Context, next: Next) => {
-      c.set('automationKey', { id: 'key-id', organizationId: 'org-id', type: 'mcp', scopes } as never);
+      c.set('automationKey', {
+        id: 'key-id',
+        organizationId: 'org-id',
+        type: 'mcp',
+        scopes,
+        oauthConsentId
+      } as never);
       await next();
     })
     .use('*', publicApiScopesMiddleware)
     .get('/cohorts', (c) => c.json({ success: true }))
     .post('/cohorts/:cohortId/invite', (c) => c.json({ success: true }, 201))
+    .get('/courses', (c) => c.json({ success: true }))
+    .post('/courses', (c) => c.json({ success: true }, 201))
     .put('/courses/:courseId', (c) => c.json({ success: true }))
     .delete('/courses/:courseId', (c) => c.json({ success: true }))
     .get('/audience', (c) => c.json({ success: true }))
-    .get('/analytics', (c) => c.json({ success: true }))
-    .post('/analytics', (c) => c.json({ success: true }))
-    .get('/analytics/learners/:profileId', (c) => c.json({ success: true }))
+    .get('/analytics/academy', (c) => c.json({ success: true }))
+    .post('/analytics/academy', (c) => c.json({ success: true }))
+    .get('/analytics/academy/catalog', (c) => c.json({ success: true }))
+    .post('/analytics/academy/query', (c) => c.json({ success: true }))
+    .get('/analytics/academy/students', (c) => c.json({ success: true }))
+    .get('/analytics/marketing', (c) => c.json({ success: true }))
+    .get('/analytics/marketing/courses/:courseId', (c) => c.json({ success: true }))
+    .get('/analytics/compliance', (c) => c.json({ success: true }))
+    .get('/analytics/compliance/students', (c) => c.json({ success: true }))
+    .get('/organization/overview', (c) => c.json({ success: true }))
+    .get('/organization', (c) => c.json({ success: true }))
+    .get('/audience/:profileId/analytics', (c) => c.json({ success: true }))
+    .get('/audience/:memberId', (c) => c.json({ success: true }))
+    .get('/cohorts/:cohortId/analytics', (c) => c.json({ success: true }))
+    .get('/cohorts/:cohortId/analytics/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId/students', (c) => c.json({ success: true }))
@@ -30,6 +50,7 @@ function buildApp(scopes: string[]) {
       c.json({ success: true }, 201)
     )
     .put('/courses/:courseId/members/:memberId', (c) => c.json({ success: true }))
+    .post('/courses/:courseId/enrollments', (c) => c.json({ success: true }, 201))
     .get('/courses/:courseId', (c) => c.json({ success: true }))
     .get('/courses', (c) => c.json({ success: true }))
     .post('/courses', (c) => c.json({ success: true }, 201))
@@ -68,21 +89,73 @@ describe('publicApiScopesMiddleware', () => {
 
   it('lets analytics:read reach only analytics GETs', async () => {
     const app = buildApp(['analytics:read']);
+    const reads = [
+      '/public-api/v1/analytics/academy',
+      '/public-api/v1/analytics/academy/catalog',
+      '/public-api/v1/analytics/academy/students',
+      '/public-api/v1/analytics/marketing',
+      '/public-api/v1/analytics/marketing/courses/c1',
+      '/public-api/v1/analytics/compliance',
+      '/public-api/v1/analytics/compliance/students',
+      '/public-api/v1/courses/c1/analytics',
+      '/public-api/v1/courses/c1/analytics/students',
+      '/public-api/v1/cohorts/c1/analytics',
+      '/public-api/v1/cohorts/c1/analytics/students',
+      '/public-api/v1/organization/overview',
+      '/public-api/v1/audience/p1/analytics'
+    ];
 
-    expect((await app.request('/public-api/v1/analytics')).status).toBe(200);
-    expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(200);
-    expect((await app.request('/public-api/v1/courses/c1/analytics/students')).status).toBe(200);
-    expect((await app.request('/public-api/v1/analytics/learners/p1')).status).toBe(200);
-    expect((await app.request('/public-api/v1/analytics', { method: 'POST' })).status).toBe(403);
+    for (const path of reads) {
+      expect((await app.request(path)).status, path).toBe(200);
+    }
+
     expect((await app.request('/public-api/v1/courses/c1/students')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1')).status).toBe(403);
     expect((await app.request('/public-api/v1/cohorts')).status).toBe(403);
+    expect((await app.request('/public-api/v1/organization')).status).toBe(403);
+    expect((await app.request('/public-api/v1/audience/7')).status).toBe(403);
+  });
+
+  it('maps the cohort analytics, organization overview and audience analytics to analytics:read, not their family scope', async () => {
+    const cohortKey = buildApp(COHORT_SCOPES);
+    const organizationKey = buildApp(['organization:read']);
+    const audienceKey = buildApp(['audience:read']);
+
+    expect((await cohortKey.request('/public-api/v1/cohorts/c1/analytics')).status).toBe(403);
+    expect((await cohortKey.request('/public-api/v1/cohorts/c1/analytics/students')).status).toBe(403);
+    expect((await organizationKey.request('/public-api/v1/organization/overview')).status).toBe(403);
+    expect((await organizationKey.request('/public-api/v1/organization')).status).toBe(200);
+    expect((await audienceKey.request('/public-api/v1/audience/p1/analytics')).status).toBe(403);
+    expect((await audienceKey.request('/public-api/v1/audience/7')).status).toBe(200);
+  });
+
+  it('maps the academy query POST to analytics:read, before the generic analytics rule', async () => {
+    const app = buildApp(['analytics:read']);
+
+    expect((await app.request('/public-api/v1/analytics/academy/query', { method: 'POST' })).status).toBe(200);
+  });
+
+  it('keeps the academy query POST out of keys without analytics:read', async () => {
+    const app = buildApp(COHORT_SCOPES);
+
+    expect((await app.request('/public-api/v1/analytics/academy/query', { method: 'POST' })).status).toBe(403);
+  });
+
+  it('still refuses every analytics POST that is not the academy query', async () => {
+    const app = buildApp(['analytics:read']);
+
+    expect((await app.request('/public-api/v1/analytics/academy', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/academy/catalog', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/academy/students', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/marketing', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/compliance', { method: 'POST' })).status).toBe(403);
   });
 
   it('keeps cohort-scoped keys out of analytics', async () => {
     const app = buildApp(COHORT_SCOPES);
 
-    expect((await app.request('/public-api/v1/analytics')).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/academy')).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/marketing')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(403);
   });
 
@@ -121,6 +194,18 @@ describe('publicApiScopesMiddleware', () => {
     const app = buildApp(['course:member:write']);
 
     expect((await app.request('/public-api/v1/courses/c1/members/m1', { method: 'PUT' })).status).toBe(200);
+  });
+
+  it('lets course:member:write enroll a student through the enrollments route', async () => {
+    const app = buildApp(['course:member:write']);
+
+    expect((await app.request('/public-api/v1/courses/c1/enrollments', { method: 'POST' })).status).toBe(201);
+  });
+
+  it('keeps course:read keys out of the enrollments route', async () => {
+    const app = buildApp(['course:read']);
+
+    expect((await app.request('/public-api/v1/courses/c1/enrollments', { method: 'POST' })).status).toBe(403);
   });
 
   it('lets a media:write key create an asset upload', async () => {
@@ -185,5 +270,35 @@ describe('publicApiScopesMiddleware', () => {
     const app = buildApp(['public_api:*']);
 
     expect((await app.request('/public-api/v1/assets', { method: 'POST' })).status).toBe(201);
+  });
+
+  it('lets course:read reach GET /courses and GET /courses/:courseId without opening writes or student lists', async () => {
+    const app = buildApp(['course:read']);
+
+    expect((await app.request('/public-api/v1/courses')).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses/c1')).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1', { method: 'PUT' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1', { method: 'DELETE' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1/students')).status).toBe(403);
+  });
+
+  it('tells an OAuth connection which permission it was not granted', async () => {
+    const app = buildApp(['cohort:read', 'webhook:subscription:write'], 'consent-1');
+    const response = await app.request('/public-api/v1/cohorts/c1/invite', { method: 'POST' });
+
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({
+      success: false,
+      error: 'This connection was not granted the cohort:write permission',
+      code: 'INSUFFICIENT_SCOPE',
+      requiredScope: 'cohort:write'
+    });
+  });
+
+  it('keeps the automation key error code when a key lacks a scope', async () => {
+    const response = await buildApp(['cohort:read']).request('/public-api/v1/cohorts/c1/invite', { method: 'POST' });
+
+    await expect(response.json()).resolves.toMatchObject({ code: 'FORBIDDEN', requiredScope: 'cohort:write' });
   });
 });

@@ -220,11 +220,12 @@ export const ZPublicApiInviteStudentsToCohortResponse = z.object({
           'duplicate_in_file',
           'is_staff',
           'over_seat_limit',
-          'missing_email'
+          'missing_email',
+          'invite_resent'
         ])
       })
     )
-    .describe('Outcome for each CSV row, including invalid, repeated and over-seat-limit emails'),
+    .describe('Outcome for each CSV row'),
   assigned: z.number().optional(),
   alreadyEnrolledInCourses: z.number().optional(),
   alreadyEnrolledInCohorts: z.number().optional(),
@@ -245,4 +246,14 @@ export const ZPublicApiCohortInviteLinkResponse = z.object({
   isRevoked: z.boolean(),
   joinCount: z.number(),
   lastUsedAt: nullableTimestamp
+});
+
+export const ZPublicApiRemindOverdueCohortGoalsResponse = z.object({
+  enqueued: z.number().describe('Email reminders queued for overdue goal assignments.'),
+  skipped: z
+    .number()
+    .describe(
+      'Overdue students not emailed now: no email address or due date, already reminded today, or the enqueue failed.'
+    ),
+  truncated: z.boolean().describe('True when the reminder run hit its page budget with assignments still unread.')
 });

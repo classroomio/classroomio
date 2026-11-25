@@ -9,7 +9,6 @@ import { registerLessonTools } from './tools/lessons';
 import { registerCohortTools } from './tools/cohorts';
 import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseContentTools } from './tools/course-content';
-import { registerCourseDraftTools } from './tools/course-drafts';
 import { registerCourseLessonTools } from './tools/course-lessons';
 import { registerCourseMemberTools } from './tools/course-members';
 import { registerCourseSectionTools } from './tools/course-sections';
@@ -19,6 +18,8 @@ import { registerCourseTools } from './tools/courses';
 import { registerCourseTemplateTools } from './tools/course-templates';
 import { registerDomainTools } from './tools/domain';
 import { registerEmailTemplateTools } from './tools/email-templates';
+import { registerComplianceTools } from './tools/compliance';
+import { registerMarketingTools } from './tools/marketing';
 import { registerLandingPageTools } from './tools/landing-page';
 import { registerOrganizationTools } from './tools/organization';
 import { registerTagTools } from './tools/tags';
@@ -43,8 +44,12 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
     version: MCP_VERSION
   });
   returnApiErrorsAsToolResults(server);
+  server.server.oninitialized = () => {
+    const clientName = server.server.getClientVersion()?.name;
 
-  registerCourseDraftTools(server, apiClient);
+    if (clientName) apiClient.setClientName(clientName);
+  };
+
   registerCourseTools(server, apiClient);
   registerCohortTools(server, apiClient);
   registerCohortNewsfeedTools(server, apiClient);
@@ -59,6 +64,8 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
   registerCourseSubmissionTools(server, apiClient);
   registerCourseTemplateTools(server, apiClient);
   registerAnalyticsTools(server, apiClient);
+  registerMarketingTools(server, apiClient);
+  registerComplianceTools(server, apiClient);
   registerAudienceTools(server, apiClient);
   registerTeamTools(server, apiClient);
   registerOrganizationTools(server, apiClient);

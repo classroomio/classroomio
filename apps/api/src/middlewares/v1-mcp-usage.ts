@@ -7,7 +7,13 @@ import {
   reserveMcpAutomationUsage
 } from '@api/services/organization/automation-usage';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { MCP_TOOL_CREDIT_COST, type TAutomationUsageCategory, type TMcpToolName } from '@cio/utils/plans';
+import { ORG_ANALYTICS_PAGE, ORG_ANALYTICS_TOOLS } from '@cio/utils/constants/analytics-pages';
+import {
+  MCP_TOOL_CREDIT_COST,
+  getMcpAutomationCategory,
+  type TAutomationUsageCategory,
+  type TMcpToolName
+} from '@cio/utils/plans';
 
 type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -41,7 +47,10 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   '/public-api/v1/organization/domain': { GET: 'get_domain', PATCH: 'update_domain' },
   '/public-api/v1/organization/domain/custom': { PUT: 'connect_custom_domain', DELETE: 'remove_custom_domain' },
   '/public-api/v1/organization/domain/custom/refresh': { POST: 'refresh_custom_domain' },
-  '/public-api/v1/courses': { GET: 'list_org_courses' },
+  '/public-api/v1/courses': { GET: 'list_org_courses', POST: 'create_course' },
+  '/public-api/v1/courses/:courseId/structure': { GET: 'get_course_structure' },
+  '/public-api/v1/courses/:courseId/publish': { POST: 'publish_course' },
+  '/public-api/v1/courses/:courseId/unpublish': { POST: 'unpublish_course' },
   '/public-api/v1/courses/:courseId/clone': { POST: 'clone_course' },
   '/public-api/v1/courses/:courseId/related': { GET: 'list_related_courses' },
   '/public-api/v1/organization/email-templates': { GET: 'list_email_templates' },
@@ -65,6 +74,7 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   },
   '/public-api/v1/courses/:courseId/members/:memberId/reset-progress': { POST: 'reset_course_member_progress' },
   '/public-api/v1/courses/:courseId/members/:memberId/analytics': { GET: 'get_course_member_analytics' },
+  '/public-api/v1/courses/:courseId/enrollments': { POST: 'enroll_course_student' },
   '/public-api/v1/courses/:courseId/invites': { GET: 'list_course_invites', POST: 'create_course_invite' },
   '/public-api/v1/courses/:courseId/invites/:inviteId/revoke': { POST: 'revoke_course_invite' },
   '/public-api/v1/courses/:courseId/certificate': { GET: 'get_course_certificate', PATCH: 'update_course_certificate' },
@@ -176,15 +186,66 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     DELETE: 'delete_cohort_goal'
   },
   '/public-api/v1/cohorts/:cohortId/goals/:goalId/archive': { POST: 'archive_cohort_goal' },
-  '/public-api/v1/analytics': { GET: 'get_org_analytics' },
-  '/public-api/v1/analytics/compliance/learners': { GET: 'list_compliance_learners' },
-  '/public-api/v1/analytics/learners/:profileId': { GET: 'get_learner_analytics' },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}`]: { GET: ORG_ANALYTICS_TOOLS.snapshot },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/students`]: { GET: ORG_ANALYTICS_TOOLS.students },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`]: { GET: ORG_ANALYTICS_TOOLS.catalog },
+  [`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/query`]: { POST: ORG_ANALYTICS_TOOLS.query },
   '/public-api/v1/courses/:courseId/analytics': { GET: 'get_course_analytics' },
-  '/public-api/v1/courses/:courseId/analytics/students': { GET: 'list_course_analytics_students' }
+  '/public-api/v1/courses/:courseId/analytics/students': { GET: 'list_course_analytics_students' },
+  '/public-api/v1/cohorts/:cohortId/analytics': { GET: 'get_cohort_analytics' },
+  '/public-api/v1/cohorts/:cohortId/analytics/students': { GET: 'list_cohort_analytics_students' },
+  '/public-api/v1/analytics/marketing': { GET: 'get_marketing_analytics' },
+  '/public-api/v1/analytics/marketing/courses/:courseId': { GET: 'get_course_marketing_analytics' },
+  '/public-api/v1/analytics/compliance': { GET: 'get_compliance_analytics' },
+  '/public-api/v1/analytics/compliance/students': { GET: 'list_compliance_students' },
+  '/public-api/v1/organization/overview': { GET: 'get_org_overview' },
+  '/public-api/v1/audience/:profileId/analytics': { GET: 'get_student_analytics' },
+  '/public-api/v1/cohorts/:cohortId/goals/remind-overdue': { POST: 'remind_overdue_cohort_goals' }
 };
 
 function resolveMcpToolName(method: string, routePath: string): TMcpToolName | undefined {
   return MCP_V1_ROUTE_TOOL_MAP[routePath]?.[method as TRouteMethod];
+}
+
+function routePatternMatches(pattern: string, requestSegments: string[]): boolean {
+  const patternSegments = pattern.split('/');
+
+  return (
+    patternSegments.length === requestSegments.length &&
+    patternSegments.every(
+      (patternSegment, segmentIndex) =>
+        patternSegment === requestSegments[segmentIndex] ||
+        (patternSegment.startsWith(':') && requestSegments[segmentIndex]!.length > 0)
+    )
+  );
+}
+
+function routePatternSpecificity(pattern: string): number {
+  return pattern.split('/').filter((patternSegment) => !patternSegment.startsWith(':')).length;
+}
+
+// Hono resolves `c.req.routePath` only once the handler runs, so the reserve-time match cannot use it.
+export function resolveMcpToolNameForRequest(method: string, path: string): TMcpToolName | undefined {
+  const requestSegments = path.split('/');
+  let bestMatch: { pattern: string; tool: TMcpToolName } | undefined;
+
+  for (const [pattern, methods] of Object.entries(MCP_V1_ROUTE_TOOL_MAP)) {
+    const tool = methods[method as TRouteMethod];
+    if (!tool || !routePatternMatches(pattern, requestSegments)) continue;
+
+    if (!bestMatch || routePatternSpecificity(pattern) > routePatternSpecificity(bestMatch.pattern)) {
+      bestMatch = { pattern, tool };
+    }
+  }
+
+  return bestMatch?.tool;
+}
+
+function resolveMcpAutomationCategory(method: string, path: string): TAutomationUsageCategory {
+  const reservedTool = resolveMcpToolNameForRequest(method, path);
+  if (reservedTool) return getMcpAutomationCategory(reservedTool);
+
+  return method === 'GET' || method === 'HEAD' ? 'read' : 'write';
 }
 
 export const v1McpUsageMiddleware = async (c: Context, next: Next) => {
@@ -194,9 +255,7 @@ export const v1McpUsageMiddleware = async (c: Context, next: Next) => {
     return next();
   }
 
-  // GET and HEAD are reads (as in publicApiScopesMiddleware); everything else is a write, known before routing.
-  const isRead = c.req.method === 'GET' || c.req.method === 'HEAD';
-  const category: TAutomationUsageCategory = isRead ? 'read' : 'write';
+  const category = resolveMcpAutomationCategory(c.req.method, c.req.path);
 
   let reservationId: string;
   try {

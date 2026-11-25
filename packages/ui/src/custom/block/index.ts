@@ -32,6 +32,8 @@ export {
   Video as VideoBlock
 };
 
+export { BRAND_COVER_IMAGES, DEFAULT_IMAGE_BLOCK_IMAGE } from './image-defaults';
+
 export type {
   BlockDocumentLabels,
   BlockLoaderBlock,

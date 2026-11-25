@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Button } from '@cio/ui/base/button';
+  import PendingCourseInvitesBanner from '$features/invite/components/pending-course-invites-banner.svelte';
   import { CoursesPage } from '$features/course/pages';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
@@ -35,6 +36,8 @@
   ]);
   let currentTab = $state('1');
 </script>
+
+<PendingCourseInvitesBanner />
 
 <UnderlineTabs.Root bind:value={currentTab}>
   <UnderlineTabs.List>

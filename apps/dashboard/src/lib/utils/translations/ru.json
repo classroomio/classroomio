@@ -37,7 +37,16 @@
         "caption": "Подготавливаем ваши курсы, студентов и настройки."
       }
     },
-    "back": "Назад"
+    "back": "Назад",
+    "range": {
+      "7d": "Последние 7 дней",
+      "30d": "Последние 30 дней",
+      "90d": "Последние 90 дней",
+      "all": "Все время",
+      "label": "Временной диапазон",
+      "locked": "Обновите план, чтобы открыть этот период"
+    },
+    "dismiss": "Закрыть"
   },
   "validations": {
     "generic": {
@@ -91,7 +100,8 @@
     },
     "auth": {
       "password": {
-        "min_char": "Должно быть 8 или более символов."
+        "min_char": "Должно быть 8 или более символов.",
+        "max_bytes": "Не должно превышать 72 байта"
       },
       "email": {
         "invalid_email": "Неверный адрес электронной почты"
@@ -532,6 +542,28 @@
     },
     "oauth": {
       "revoked": "Доступ приложения отозван"
+    },
+    "analytics": {
+      "reminder_sent": "Напоминание отправлено",
+      "reminder_not_sent": "Напоминание не отправлено: оно уже отправлялось сегодня, или студент отключил эти письма",
+      "reminder_failed": "Не удалось отправить напоминание.",
+      "reminders_sending": "Отправка напоминаний…",
+      "reminders_sent": "{count, plural, one {# напоминание отправлено} other {# напоминания отправлены}}",
+      "target_saved": "Цель по числу студентов сохранена",
+      "target_failed": "Не удалось сохранить цель по числу студентов",
+      "target_invalid": "Введите целое число от 1 до 1 000 000.",
+      "reminders_truncated": "{count, plural, one {Отправлено # напоминание} other {Отправлено # напоминаний}}. Слишком много просроченных студентов для одной отправки — сузьте курс, чтобы охватить остальных.",
+      "students_refresh_failed": "Не удалось обновить список студентов",
+      "refresh_failed": "Не удалось обновить аналитику"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Не удалось открыть эту академию. Попробуйте ещё раз."
+    },
+    "zapier": {
+      "removed": "Доступ Zapier удален",
+      "remove_failed": "Не удалось отозвать доступ Zapier. Повторите попытку.",
+      "redelivered": "{count} неудачных событий поставлено в очередь для повторной доставки",
+      "redeliver_failed": "Не удалось повторно доставить неудачные события."
     }
   },
   "explore": {
@@ -556,7 +588,12 @@
     "any_progress": "Здесь будет отображаться любой курс, который вы начинаете.",
     "not_completed": "Ни один курс не завершен",
     "any_course": "Здесь будут отображаться все пройденные вами курсы.",
-    "find_courses": "Найти курсы"
+    "find_courses": "Найти курсы",
+    "pending_invites": {
+      "title": "У вас есть неотвеченные приглашения на курсы",
+      "description": "Примите их, чтобы начать обучение.",
+      "review": "Посмотреть приглашения"
+    }
   },
   "certificates": {
     "heading": "Сертификаты",
@@ -593,10 +630,10 @@
     "enterprise_required": "Для этой функции требуется план Enterprise.",
     "public_api_required": "Перейдите на Early Adopter или Enterprise, чтобы получить доступ к публичному API.",
     "unlock_field": "Обновите версию, чтобы разблокировать эту настройку.",
-    "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки."
+    "webhooks_required": "Перейдите на тариф Early Adopter или Enterprise, чтобы использовать вебхуки.",
+    "zapier_required": "Для Zapier требуется план Early Adopter или Enterprise."
   },
-  "analytics": {
-    "title": "Аналитика",
+  "student_progress": {
     "courses": "Курсы",
     "progress": "Прогресс",
     "progress_description": "{value, number} из {total, number} завершено",
@@ -618,118 +655,15 @@
     "assignment_completion": "Выполнение задания",
     "assignment_completion_description": "Процент выполненных заданий",
     "average_grade_description": "Средняя оценка за все выполненные задания",
-    "students": "Студенты",
     "lessons": "Уроки",
     "tutors": "репетиторы",
     "avg_grade": "Средняя оценка",
-    "completion_rate": "Скорость завершения",
-    "student_progress_overview": "Обзор успеваемости учащихся",
-    "student_name": "Имя студента",
     "lessons_completed": "Уроки завершены",
-    "exercises_submitted": "Упражнения отправлены",
     "average_grade": "Средняя оценка",
-    "actions": "Действия",
-    "view_details": "Посмотреть детали",
-    "no_students_found": "Студенты не найдены",
-    "no_students_description": "На этот курс еще не поступило ни одного студента. Студенты появятся здесь, как только присоединятся к курсу.",
-    "showing_students": "Показаны {start} по {end} из {total} учащихся",
-    "no_analytics_data": "Нет данных аналитики",
-    "no_analytics_description": "Невозможно загрузить аналитические данные для этого курса. Повторите попытку позже или обратитесь в службу поддержки, если проблема не исчезнет.",
     "student": "Студент",
-    "student_progress_distribution": "Распределение успеваемости учащихся",
-    "grade_distribution": "Распределение оценок",
-    "progress_80_plus": "80%+ прогресс",
-    "progress_60_79": "60-79% прогресса",
-    "progress_below_60": "Прогресс ниже 60%",
-    "grade_90_plus": "90%+ Оценка",
-    "grade_80_89": "80-89% Оценка",
-    "grade_70_79": "70-79% Оценка",
-    "grade_below_70": "Оценка ниже 70%",
-    "number_of_students": "Количество студентов",
-    "progress_range": "Диапазон прогресса",
-    "grade_range": "Диапазон оценок",
-    "no_progress_data": "Нет данных о прогрессе",
-    "no_grade_data": "Нет данных об оценках",
     "loading_chart": "Загрузка диаграммы...",
     "no_data_default": "Нет доступных данных",
     "no_data_default_description": "В настоящее время нет данных для отображения.",
-    "subtitle": "Узнайте, как посетители находят ваши курсы и превращаются в студентов.",
-    "refresh": "Обновить",
-    "popularTypes": {
-      "heading": "Популярные типы курсов",
-      "description": "Зачисления сгруппированы по типу курса",
-      "subtitle": "{total} зачислений по всем типам",
-      "empty": "Данных о регистрации пока нет",
-      "course_count": "{count, plural, one {# курс} other {# курсов}}",
-      "views_short": "просмотры",
-      "types": {
-        "SELF_PACED": "Самостоятельный темп",
-        "LIVE_CLASS": "Живой урок",
-        "COMPLIANCE": "Соответствие требованиям",
-        "PUBLIC": "Общественный"
-      }
-    },
-    "topCourses": {
-      "heading": "Лучшие курсы по просмотрам",
-      "description": "Курсы, ранжированные по просмотрам страниц",
-      "subtitle": "Рейтинг по просмотрам страниц за выбранный период",
-      "empty": "Пока нет просмотров страниц курсов",
-      "course": "Курс",
-      "views": "Просмотры"
-    },
-    "countries": {
-      "heading": "Топ стран",
-      "subtitle": "Всего посетителей: {total}",
-      "empty": "Данных о местоположении пока нет.",
-      "country": "Страна",
-      "visitors": "Посетители",
-      "enrollments_short": "зачислен"
-    },
-    "funnel": {
-      "heading": "Воронка конверсий",
-      "description": "От первого посещения до завершения курса",
-      "empty": "Данных о воронке пока нет.",
-      "step": {
-        "landing_view": "Посадочные просмотры",
-        "course_page_view": "Просмотры страниц курса",
-        "enrollment_completed": "Зачисления",
-        "course_completed": "Завершения"
-      }
-    },
-    "trend": {
-      "heading": "Трафик с течением времени",
-      "description": "Просмотры страниц и регистрации по дням",
-      "empty": "Нет трафика в выбранном диапазоне",
-      "views": "Просмотры",
-      "enrollments": "Зачисления"
-    },
-    "kpi": {
-      "landing_views": "Посадочные просмотры",
-      "unique_visitors": "Уникальные посетители",
-      "course_page_views": "Просмотры страниц курса",
-      "enrollments": "Зачисления",
-      "range_description": "В выбранном диапазоне"
-    },
-    "range": {
-      "7d": "Последние 7 дней",
-      "30d": "Последние 30 дней",
-      "90d": "Последние 90 дней"
-    },
-    "tabs": {
-      "overview": "Обзор",
-      "funnel": "Воронка",
-      "geography": "География",
-      "course_types": "Типы курсов"
-    },
-    "course_metrics": {
-      "page_subtitle": "Зачисление, завершение уроков, оценки и прогресс каждого учащегося по этому курсу.",
-      "progress_distribution_card_description": "Сколько студентов попадает в каждую группу завершения.",
-      "grade_distribution_card_description": "Сколько учеников попадает в каждую группу классов.",
-      "students_table_description": "Сортируемый обзор со ссылками на профили студентов.",
-      "kpi_team_tutors": "{count, plural, one {# преподаватель в команде курса} other {# преподавателей в команде курса}}",
-      "kpi_lessons_exercises": "{count, plural, one {# упражнение} other {# упражнений}} сопоставлено с уроками",
-      "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся"
-    },
     "exercises_completed": "Выполненные упражнения",
     "course_progress": "Прогресс курса",
     "just_now": "только что",
@@ -803,6 +737,10 @@
       "csv_hint": "CSV-файл в кодировке UTF-8 со столбцом email. До {rows} строк, 5 МБ.",
       "download_template": "Скачать шаблон",
       "paste_hint": "Один адрес на строку или через запятую.",
+      "edit_email": "Изменить адрес эл. почты",
+      "edit_name": "Изменить имя",
+      "search_placeholder": "Имя или эл. почта",
+      "search_no_results": "Нет строк, соответствующих вашему поиску.",
       "review": "Проверка",
       "done": "Готово",
       "count_ready": "{count} готовы",
@@ -1760,6 +1698,9 @@
         "drag": "перетащите карточку, чтобы изменить порядок",
         "no_lesson": "Уроков пока нет",
         "share_your_knowledge": "Поделитесь своими знаниями со всем миром, создавая увлекательные уроки. Начните с нажатия кнопки «Добавить».",
+        "empty_title": "Этот курс пуст",
+        "empty_description": "Добавьте урок, упражнение или сертификат, чтобы начать его создание.",
+        "empty_drawer_certificates": "Сертификаты",
         "add_content": "Добавить контент",
         "add_content_description": "Выберите тип контента, который вы хотите добавить.",
         "add_content_details": "Заполните детали этого контента.",
@@ -1826,6 +1767,8 @@
           "restore_lesson_confirm": "Заменить весь урок этой версией?",
           "by_assistant": "Ассистент",
           "by_restore": "Восстановление",
+          "by_ai_client": "ИИ-клиент",
+          "by_api": "API",
           "change_kind": {
             "added": "Добавлено",
             "removed": "Удалено",
@@ -1870,6 +1813,16 @@
           "chill": "расслабиться с большими мальчиками",
           "add_exercise": "Поделитесь своими знаниями со всем миром, создавая увлекательные упражнения. Добавьте упражнение сейчас.",
           "all_exercises": {
+            "draft_recovery": "Для этого упражнения найден несохранённый черновик. Хотели бы вы восстановить его?",
+            "remote_update": {
+              "merged_title": "Изменения Ассистента объединены",
+              "merged_description": "Ваши несохранённые правки были сохранены при добавлении изменений Ассистента.",
+              "conflict_title": "Проверьте изменения Ассистента",
+              "conflict_description": "Ассистент изменил {count} элемент(ов), которые вы также редактировали. Сейчас сохранена ваша версия.",
+              "keep_mine": "Оставить мои правки",
+              "use_assistant": "Использовать изменения Ассистента",
+              "dismiss": "Закрыть"
+            },
             "heading": "Все упражнения",
             "questions": "Вопросы",
             "submissions": "Материалы",
@@ -2510,6 +2463,7 @@
                 "loading_library": "Загрузка медиатеки...",
                 "no_library_videos": "В вашей медиатеке нет доступных видео.",
                 "add_from_library": "Добавить",
+                "upload_not_finished": "Загрузка не завершена. У этого видео пока нет файла, поэтому его нельзя добавить.",
                 "cancel_upload": "Отменить загрузку",
                 "upload_cancelled": "Загрузка отменена пользователем",
                 "max_files": "{count, plural, one {Можно загрузить # файл} other {Можно загрузить # файлов}}",
@@ -2712,6 +2666,7 @@
             "empty_description": "Добавьте заметку, видео, слайды, документ или изображение. Блоков можно добавить сколько угодно и в любом порядке.",
             "empty_note": "Эта заметка пуста.",
             "scroll_rail": "Блоки урока",
+            "save_failed": "Не удалось сохранить это изменение, поэтому блок был восстановлен. {reason}",
             "go_to_block": "Перейти к блоку {index}",
             "reading_density": {
               "title": "Плотность чтения",
@@ -3566,6 +3521,26 @@
     "sitename": "Поддомен Академии уже существует",
     "error_organization": "Что-то пошло не так при создании этой организации. Пожалуйста, перезагрузите компьютер и попробуйте еще раз"
   },
+  "org_chooser": {
+    "page_title": "Ваши организации",
+    "title": "Выберите академию, чтобы продолжить",
+    "subtitle": "У вас есть доступ к {count, plural, one {# академии} few {# академиям} many {# академиям} other {# академиям}}. Выберите, куда вы хотите попасть.",
+    "managed_heading": "Организации, которыми вы управляете",
+    "learning_heading": "Где вы учитесь",
+    "invites_heading": "Ожидающие приглашения",
+    "open_dashboard": "Открыть панель {name}",
+    "open_academy": "Открыть {name} на {host}",
+    "invited_as": "Приглашён как {role}",
+    "accept_invite": "Принять",
+    "invites_error": "Не удалось загрузить ваши приглашения. Проверьте соединение и попробуйте ещё раз.",
+    "invites_retry": "Попробовать снова",
+    "create_heading": "Управляйте собственной академией",
+    "create_description": "Создайте организацию, публикуйте курсы и приглашайте своих учеников.",
+    "create_cta": "Создать организацию",
+    "for_teams": "Для команд",
+    "different_account": "Не видите свою академию?",
+    "different_account_cta": "Попробуйте другую электронную почту"
+  },
   "setup": {
     "your_checklist": "Ваш контрольный список",
     "get_started": "Начать",
@@ -3653,7 +3628,6 @@
     "tags": "Теги",
     "automation": "Автоматизация",
     "widgets": "Виджеты",
-    "stats": "Статистика",
     "analytics": "Аналитика",
     "compliance": "Соответствие требованиям",
     "cohorts": "Когорты",
@@ -3667,7 +3641,9 @@
     "back_to_app": "Вернуться в приложение",
     "create": "Создать",
     "distribute": "Распространение",
-    "tools": "Инструменты"
+    "tools": "Инструменты",
+    "marketing": "Маркетинг",
+    "org_analytics": "Академия"
   },
   "media_manager": {
     "page_title": "Медиаменеджер — ClassroomIO",
@@ -3743,7 +3719,8 @@
     "status": {
       "active": "Активный",
       "archived": "В архиве",
-      "processing": "Обработка"
+      "processing": "Обработка",
+      "upload_not_finished": "Загрузка не завершена"
     },
     "provider": {
       "upload": "Загрузить",
@@ -4734,7 +4711,11 @@
       "heading": "Новый пароль",
       "description": "Введите данные нового пароля"
     },
-    "continue_with": "Или продолжить с"
+    "continue_with": "Или продолжить с",
+    "existing_account": {
+      "message": "Аккаунт с таким адресом электронной почты уже существует.",
+      "cta": "Войти"
+    }
   },
   "app": {
     "search": {
@@ -5089,6 +5070,18 @@
       "disabled": "Эта ссылка для приглашения отключена организацией.",
       "join_failed": "Не удалось присоединиться к организации",
       "joined": "Присоединившаяся организация"
+    },
+    "course": {
+      "modal": {
+        "title": "Вас пригласили на курс",
+        "description": "Примите приглашение, чтобы добавить курс в своё обучение.",
+        "accept": "Принять",
+        "later": "Позже"
+      },
+      "messages": {
+        "joined": "Вы присоединились к курсу.",
+        "join_failed": "Не удалось принять приглашение. Попробуйте ещё раз."
+      }
     }
   },
   "automation": {
@@ -5174,7 +5167,636 @@
       "disabled_description": "Только администраторы организации могут управлять автоматизацией, включая подключённые приложения и ключи."
     },
     "zapier": {
-      "page_subtitle": "Автоматизируйте ClassroomIO с тысячами приложений через Zapier. Скоро."
+      "page_subtitle": "Автоматизируйте ClassroomIO с тысячами приложений через Zapier.",
+      "permissions_description": "Только администраторы организации могут подключать Zapier и управлять его подключениями.",
+      "create_zap": "Создать Zap",
+      "upgrade": {
+        "title": "Обновите план, чтобы подключить Zapier",
+        "description": "Для подключения ClassroomIO к Zapier требуется план Early Adopter или Enterprise.",
+        "cta": "Обновить план"
+      },
+      "error": {
+        "title": "Не удалось загрузить подключения Zapier",
+        "description": "Не удалось связаться с сервером. Проверьте подключение и повторите попытку.",
+        "retry": "Повторить попытку"
+      },
+      "paused": {
+        "title": "Zapier приостановлен",
+        "description": "Ваш план больше не включает Zapier. Запуски Zap будут завершаться с ошибкой до обновления плана; ваши подключения сохраняются."
+      },
+      "selfhosted": {
+        "title": "Zapier доступен в ClassroomIO Cloud",
+        "description": "При автономной установке (self-hosted) используйте вебхуки с триггером Webhooks by Zapier и ключи API для действий."
+      },
+      "catalog": {
+        "categories": {
+          "all": "Все",
+          "crm": "CRM",
+          "marketing": "Маркетинг",
+          "communication": "Коммуникации",
+          "customer-support": "Поддержка клиентов",
+          "sales": "Продажи",
+          "productivity": "Продуктивность",
+          "forms": "Формы и опросы",
+          "analytics": "Аналитика",
+          "community": "Сообщество"
+        }
+      },
+      "app_sheet": {
+        "title": "ClassroomIO + {app}",
+        "create_zap": "Создать Zap для {app}"
+      },
+      "catalog_triggers": {
+        "new_course_enrollment": {
+          "label": "Новая запись на курс"
+        },
+        "course_member_removed": {
+          "label": "Студент удален из курса"
+        },
+        "course_completed": {
+          "label": "Курс завершен"
+        },
+        "new_certificate": {
+          "label": "Новый сертификат"
+        },
+        "new_submission": {
+          "label": "Новая сдача упражнения"
+        },
+        "submission_status_changed": {
+          "label": "Статус сдачи изменен"
+        },
+        "lesson_completed": {
+          "label": "Урок завершен"
+        },
+        "course_invite_accepted": {
+          "label": "Приглашение на курс принято"
+        },
+        "new_payment_request": {
+          "label": "Новый запрос на оплату"
+        },
+        "new_organization_member": {
+          "label": "Новый участник организации"
+        },
+        "compliance_status_changed": {
+          "label": "Статус соответствия изменен"
+        },
+        "course_published": {
+          "label": "Курс опубликован"
+        },
+        "live_session_scheduled": {
+          "label": "Живая сессия запланирована"
+        },
+        "new_cohort_member": {
+          "label": "Новый участник когорты"
+        }
+      },
+      "catalog_actions": {
+        "enroll_student": {
+          "label": "Записать студента на курс"
+        },
+        "add_student": {
+          "label": "Добавить студента в организацию"
+        },
+        "update_student": {
+          "label": "Обновить студента"
+        },
+        "remove_student": {
+          "label": "Удалить студента из организации"
+        },
+        "remove_course_member": {
+          "label": "Удалить студента из курса"
+        },
+        "send_course_invite": {
+          "label": "Отправить приглашение на курс"
+        },
+        "revoke_course_invite": {
+          "label": "Отозвать приглашение на курс"
+        },
+        "reset_course_progress": {
+          "label": "Сбросить прогресс студента по курсу"
+        },
+        "mark_lesson_complete": {
+          "label": "Отметить урок как завершенный"
+        },
+        "add_cohort_member": {
+          "label": "Добавить студента в когорту"
+        },
+        "post_cohort_announcement": {
+          "label": "Опубликовать в ленте когорты"
+        }
+      },
+      "apps": {
+        "hubspot": {
+          "description": "CRM и клиентская платформа"
+        },
+        "salesforce": {
+          "description": "CRM для отделов продаж и сервиса"
+        },
+        "mailchimp": {
+          "description": "Email-маркетинг и аудитории"
+        },
+        "customerio": {
+          "description": "Кампании сообщений и жизненного цикла"
+        },
+        "slack": {
+          "description": "Командное общение и совместная работа"
+        },
+        "teams": {
+          "description": "Чат и каналы для вашей организации"
+        },
+        "google_meet": {
+          "description": "Видеовстречи в Google Workspace"
+        },
+        "zoom": {
+          "description": "Видеоконференции и вебинары"
+        },
+        "zendesk": {
+          "description": "Поддержка клиентов и тикеты"
+        },
+        "intercom": {
+          "description": "Платформа обмена сообщениями с клиентами"
+        },
+        "calendly": {
+          "description": "Ссылки для планирования и бронирования"
+        },
+        "calcom": {
+          "description": "Open-source ссылки для планирования и встреч"
+        },
+        "sheets": {
+          "description": "Таблицы и управление данными"
+        },
+        "notion": {
+          "description": "Документы, вики и заметки проекта"
+        },
+        "confluence": {
+          "description": "Документы и вики для технических команд"
+        },
+        "typeform": {
+          "description": "Формы и опросы"
+        },
+        "jotform": {
+          "description": "Формы и опросы"
+        },
+        "pendo": {
+          "description": "Цифровое внедрение и использование продукта"
+        },
+        "mixpanel": {
+          "description": "Продуктовая аналитика и воронки"
+        },
+        "circle": {
+          "description": "Пространства сообщества и обсуждения"
+        }
+      },
+      "directory": {
+        "title": "Каталог приложений",
+        "subtitle": "Просмотрите приложения, которые можно подключить к ClassroomIO через Zapier.",
+        "create_zap": "Создать Zap в Zapier",
+        "back": "Вернуться к Zaps",
+        "search_placeholder": "Поиск приложений…",
+        "filters_title": "Фильтры",
+        "categories": "Категории",
+        "all_apps": "Все приложения",
+        "count": {
+          "all": "{count} приложений",
+          "one": "1 приложение",
+          "all_matching": "{count} приложений, соответствующих запросу «{query}»",
+          "one_matching": "1 приложение, соответствующее запросу «{query}»"
+        },
+        "empty": {
+          "title": "Нет приложений, соответствующих вашему запросу",
+          "description": "Попробуйте другое имя или просмотрите все приложения, к которым Zapier подключает ClassroomIO.",
+          "search_zapier": "Искать в Zapier"
+        },
+        "end": {
+          "title": "Это все приложения, которые мы выбрали",
+          "description": "Zapier соединяет ClassroomIO с тысячами других пользователей.",
+          "cta": "Продолжить в Zapier"
+        }
+      },
+      "page_title": "Zaps",
+      "zaps_empty": {
+        "title": "Zapier ещё не подключён"
+      },
+      "invite": {
+        "title": "Подключите ClassroomIO к Zapier",
+        "description": "Zapier требует, чтобы вы один раз приняли приглашение ClassroomIO, прежде чем вы сможете создавать Zaps.",
+        "step_1_title": "Примите приглашение ClassroomIO в Zapier",
+        "step_1_description": "Zapier попросит вас принять один раз. После этого ClassroomIO появится в вашей учетной записи Zapier.",
+        "step_1_button": "Откройте приглашение в Zapier",
+        "step_2_title": "Продолжайте свой Zap",
+        "step_2_description": "Ваш Zap откроется в новой вкладке. Ничего не работает, пока не включишь.",
+        "step_2_button": "Продолжить в Zapier",
+        "already_accepted": "я уже принял",
+        "note": "ClassroomIO на данный момент доступен только по приглашению в Zapier. Примите приглашение один раз, прежде чем создавать свой первый Zap.",
+        "step_done": "Готово"
+      },
+      "recipes": {
+        "tabs_out": "Из ClassroomIO",
+        "tabs_in": "В ClassroomIO",
+        "sentence_out": "Когда {trigger} в ClassroomIO, {action} в {app}.",
+        "sentence_in": "Когда {trigger} в {app}, {action} в ClassroomIO.",
+        "hubspot_deal_stage_enroll": {
+          "title": "Привлекайте новых клиентов к участию в программе, когда сделка достигает стадии"
+        },
+        "hubspot_list_enroll": {
+          "title": "Зарегистрируйте контакты, когда они присоединяются к списку HubSpot."
+        },
+        "hubspot_form_invite": {
+          "title": "Форма приглашения на курс"
+        },
+        "hubspot_completed_contact": {
+          "title": "Обновите контакт после завершения курса"
+        },
+        "hubspot_certificate_list": {
+          "title": "Добавьте сертифицированных учащихся в список HubSpot"
+        },
+        "hubspot_compliance_task": {
+          "title": "Создайте дополнительную задачу, когда обучение станет просроченным."
+        },
+        "salesforce_certificate_record": {
+          "title": "Запишите каждый сертификат в Salesforce."
+        },
+        "salesforce_completed_contact": {
+          "title": "Обновите контакт после завершения курса"
+        },
+        "salesforce_payment_lead": {
+          "title": "Создавайте лид для каждого запроса платежа"
+        },
+        "salesforce_contact_enroll": {
+          "title": "Зарегистрируйте новые контакты в онбординге"
+        },
+        "salesforce_opportunity_enroll": {
+          "title": "Зарегистрируйте клиентов, когда возможность закрывается"
+        },
+        "mailchimp_enrollment_subscriber": {
+          "title": "Добавление новых участников в аудиторию"
+        },
+        "mailchimp_completed_tag": {
+          "title": "Отмечайте подписчиков, прошедших курс"
+        },
+        "mailchimp_removed_untag": {
+          "title": "Удалить тег курса, когда студент уходит"
+        },
+        "mailchimp_subscriber_student": {
+          "title": "Добавляйте новых подписчиков в качестве студентов"
+        },
+        "mailchimp_tag_enroll": {
+          "title": "Зарегистрируйте подписчиков, когда они получат метку"
+        },
+        "customerio_completed_event": {
+          "title": "Отправлять завершение курса как событие"
+        },
+        "customerio_enrollment_person": {
+          "title": "Создайте или обновите человека при его регистрации"
+        },
+        "customerio_certificate_event": {
+          "title": "Отправлять сертификаты как события"
+        },
+        "customerio_compliance_event": {
+          "title": "Запускайте кампании с напоминаниями, когда обучение просрочено"
+        },
+        "customerio_lesson_event": {
+          "title": "Отправлять ход урока в виде событий"
+        },
+        "slack_completed_channel": {
+          "title": "Публикуйте на канале после завершения курса"
+        },
+        "slack_submission_dm": {
+          "title": "Сообщить преподавателю, когда ученик отправит упражнение"
+        },
+        "slack_payment_channel": {
+          "title": "Оповещение команды о запросах на оплату"
+        },
+        "slack_compliance_channel": {
+          "title": "Пометить просроченное обучение в канале"
+        },
+        "slack_certificate_channel": {
+          "title": "Отмечайте новые сертификаты"
+        },
+        "slack_member_enroll": {
+          "title": "Зарегистрируйте новых участников рабочей области для регистрации"
+        },
+        "teams_completed_channel": {
+          "title": "Публикуйте на канале после завершения курса"
+        },
+        "teams_submission_chat": {
+          "title": "Сообщить преподавателю, когда ученик отправит упражнение"
+        },
+        "teams_compliance_channel": {
+          "title": "Пометить просроченное обучение в канале"
+        },
+        "teams_session_channel": {
+          "title": "Анонсируйте прямые трансляции на канале"
+        },
+        "teams_member_enroll": {
+          "title": "Зарегистрируйте новых членов команды в онбординге"
+        },
+        "meet_session_meeting": {
+          "title": "Создавайте Meet для каждого сеанса прямой трансляции"
+        },
+        "meet_completed_meeting": {
+          "title": "Закажите обзорный звонок после завершения курса"
+        },
+        "zoom_enrollment_registrant": {
+          "title": "Зарегистрируйте новых студентов на вебинар"
+        },
+        "zoom_cohort_registrant": {
+          "title": "Зарегистрируйте членов когорты для стартового собрания"
+        },
+        "zoom_session_meeting": {
+          "title": "Создавайте собрания Zoom для каждого живого сеанса."
+        },
+        "zoom_registrant_enroll": {
+          "title": "Зарегистрируйте зарегистрировавшихся на вебинар в подготовительных материалах"
+        },
+        "zoom_joiner_lesson": {
+          "title": "Отмечайте живой урок как завершенный, когда к нему присоединяется учащийся."
+        },
+        "zendesk_tag_enroll": {
+          "title": "Зарегистрируйте клиента, когда агент помечает его билет"
+        },
+        "zendesk_compliance_ticket": {
+          "title": "Откройте заявку, когда обучение становится просроченным"
+        },
+        "zendesk_payment_ticket": {
+          "title": "Открытие заявки на каждый платежный запрос"
+        },
+        "zendesk_completed_user": {
+          "title": "Запись пройденного обучения пользователя Zendesk"
+        },
+        "zendesk_user_enroll": {
+          "title": "Запишите новых пользователей Zendesk на начальный курс"
+        },
+        "intercom_completed_message": {
+          "title": "Отправляйте пользователям сообщения после завершения курса"
+        },
+        "intercom_completed_tag": {
+          "title": "Отмечайте пользователей, которые завершили регистрацию"
+        },
+        "intercom_lesson_event": {
+          "title": "Отправлять ход урока в виде событий"
+        },
+        "intercom_user_enroll": {
+          "title": "Зарегистрируйте новых пользователей в онбординге"
+        },
+        "intercom_tag_enroll": {
+          "title": "Регистрируйте пользователей, когда они отмечены"
+        },
+        "calendly_booking_enroll": {
+          "title": "Зарегистрируйте приглашенных в подготовительных материалах при бронировании"
+        },
+        "calendly_noshow_invite": {
+          "title": "Отправьте курс для самостоятельного обучения тем, кто не явился"
+        },
+        "calendly_form_student": {
+          "title": "Добавление потенциальных клиентов в форму маршрутизации в качестве учащихся"
+        },
+        "calendly_cancel_remove": {
+          "title": "Удалить подготовительный курс при отмене бронирования"
+        },
+        "calcom_booking_enroll": {
+          "title": "Зарегистрируйте участников в подготовительных материалах при бронировании"
+        },
+        "calcom_cancel_remove": {
+          "title": "Удалить подготовительный курс при отмене бронирования"
+        },
+        "calcom_meeting_invite": {
+          "title": "Отправьте дополнительный курс после звонка"
+        },
+        "sheets_completed_row": {
+          "title": "Записывать выполненные работы в таблицу"
+        },
+        "sheets_certificate_row": {
+          "title": "Ведите реестр сертификатов"
+        },
+        "sheets_compliance_row": {
+          "title": "Записывать изменения в соответствии с требованиями"
+        },
+        "sheets_payment_row": {
+          "title": "Отслеживание запросов на оплату"
+        },
+        "sheets_row_enroll": {
+          "title": "Зарегистрировать всех, кто добавлен в таблицу"
+        },
+        "sheets_row_cohort": {
+          "title": "Добавить всех в таблице в группу"
+        },
+        "notion_completed_item": {
+          "title": "Отслеживание завершений в базе данных"
+        },
+        "notion_submission_item": {
+          "title": "Поставить заявки на рассмотрение"
+        },
+        "notion_course_page": {
+          "title": "Добавляйте страницу для каждого нового курса"
+        },
+        "notion_item_enroll": {
+          "title": "Регистрация людей, добавленных в базу данных"
+        },
+        "confluence_course_page": {
+          "title": "Создать страницу при публикации курса"
+        },
+        "confluence_session_page": {
+          "title": "Создайте страницу повестки дня для каждого сеанса в реальном времени."
+        },
+        "confluence_page_announce": {
+          "title": "Анонсируйте новые документы группе"
+        },
+        "typeform_entry_enroll": {
+          "title": "Запишите респондентов на курс"
+        },
+        "typeform_entry_cohort": {
+          "title": "Добавьте кандидатов в когорту"
+        },
+        "typeform_entry_student": {
+          "title": "Добавить респондентов в качестве студентов"
+        },
+        "jotform_submission_enroll": {
+          "title": "Зарегистрируйте людей, отправивших форму"
+        },
+        "jotform_completed_form": {
+          "title": "Отправьте форму обратной связи после завершения курса"
+        },
+        "jotform_submission_student": {
+          "title": "Добавление людей, отправляющих форму в качестве студентов"
+        },
+        "pendo_status_enroll": {
+          "title": "Зарегистрируйте запрашивающих на курс, когда их запрос будет отправлен."
+        },
+        "pendo_status_announce": {
+          "title": "Объявить об отправленных запросах группе"
+        },
+        "mixpanel_completed_event": {
+          "title": "Отслеживайте завершение курса"
+        },
+        "mixpanel_enrollment_event": {
+          "title": "Отслеживать зачисления"
+        },
+        "mixpanel_lesson_event": {
+          "title": "Отслеживайте прогресс урока"
+        },
+        "mixpanel_certificate_profile": {
+          "title": "Отмечайте сертифицированных пользователей в их профилях"
+        },
+        "circle_member_enroll": {
+          "title": "Зарегистрируйте новых членов сообщества на приветственный курс"
+        },
+        "circle_certificate_space": {
+          "title": "Разблокируйте место, когда учащийся получит сертификат"
+        },
+        "circle_completed_tag": {
+          "title": "Отмечайте участников, прошедших курс"
+        },
+        "circle_cohort_group": {
+          "title": "Предоставьте членам когорты доступ к пространственной группе"
+        },
+        "circle_removed_student": {
+          "title": "Удалить студентов, которые покидают сообщество"
+        },
+        "use_zap": "Использовать Zap",
+        "ways_to_use": "{count} способов использования"
+      },
+      "partner_steps": {
+        "hubspot": {
+          "add_to_list_v3": "Добавить контакт в список",
+          "create_engagement": "Создать взаимодействие",
+          "form_submission_resthook_v3": "Отправка новой формы",
+          "new_contact_in_list_resthook_v3": "Новый контакт в списке",
+          "updated_deal_stage": "Обновленный этап сделки",
+          "upsert_contact": "Создать или обновить контакт"
+        },
+        "salesforce": {
+          "create_lead": "Создать интерес",
+          "create_record": "Создать запись",
+          "new_contact": "Новый контакт",
+          "update_contact": "Обновить контакт",
+          "updated_field_on_record": "Обновленное поле в записи"
+        },
+        "mailchimp": {
+          "memberCreate": "Добавить/обновить подписчика",
+          "new_member": "Новый подписчик",
+          "remove_tag": "Удалить подписчика из тега",
+          "subscriber_segment": "Добавить подписчика в тег",
+          "subscriber_tag": "Новый подписчик в сегменте или теге"
+        },
+        "customerio": {
+          "create_customer": "Создать или обновить человека",
+          "track_event": "Создать событие"
+        },
+        "slack": {
+          "channel_message": "Отправить сообщение канала",
+          "direct_message": "Отправить прямое сообщение",
+          "team_join": "Новый пользователь"
+        },
+        "teams": {
+          "member": "Новый член команды",
+          "send_channel_message_from_user": "Отправить сообщение канала",
+          "send_chat_message": "Отправить сообщение в чат"
+        },
+        "google_meet": {
+          "schedule_meeting": "Запланировать встречу"
+        },
+        "zoom": {
+          "create_meeting": "Создать встречу",
+          "create_meeting_registrant": "Создать регистратора собрания",
+          "create_registrant": "Создать регистратора вебинара",
+          "new_joiner": "Новый участник присоединился к вебинару или совещанию",
+          "new_registrant": "Новый регистратор вебинара"
+        },
+        "zendesk": {
+          "new_tag_ticket": "В билет добавлен новый тег",
+          "ticket": "Создать билет",
+          "update_user": "Обновить пользователя",
+          "user_v2": "Новый пользователь"
+        },
+        "intercom": {
+          "add_tag_to_contact": "Добавить тег в контакт",
+          "create_data_event": "Создать событие данных",
+          "new_user_created": "Новый пользователь",
+          "send_message_to_contact": "Отправить сообщение контакту",
+          "user_tag": "Тег добавлен пользователю"
+        },
+        "calendly": {
+          "invitee_canceled": "Приглашенный отменен",
+          "invitee_created": "Приглашенный создан или перенесен",
+          "invitee_no_show_created": "Приглашенный не явился создано",
+          "routing_form_submission": "Отправка новой формы маршрутизации"
+        },
+        "calcom": {
+          "booking_cancelled": "Бронирование отменено",
+          "booking_created": "Бронирование создано",
+          "meeting_ended": "Встреча завершена"
+        },
+        "sheets": {
+          "add_row": "Создать строку таблицы",
+          "new_row_notify_hook": "Новая строка таблицы"
+        },
+        "notion": {
+          "create_database_item": "Создать элемент источника данных",
+          "create_page": "Создать страницу",
+          "new_data_source_item": "Новый элемент источника данных"
+        },
+        "confluence": {
+          "pageCreate": "Создать страницу или сообщение в блоге",
+          "pageList": "Новая страница или сообщение в блоге"
+        },
+        "typeform": {
+          "entries_resthook_v2": "Новая запись"
+        },
+        "jotform": {
+          "assign_prefilled_form": "Назначить предварительно заполненную форму",
+          "new_submission": "Новое представление"
+        },
+        "pendo": {
+          "feature_status_changed": "Статус запроса изменен"
+        },
+        "mixpanel": {
+          "engage": "Создать или обновить профиль",
+          "track": "Отслеживать событие"
+        },
+        "circle": {
+          "add_space_group_member": "Добавить участника в космическую группу",
+          "add_space_member": "Добавить участника в пространство",
+          "community_member_removed": "Участник удален",
+          "new_member": "Добавлен новый участник",
+          "tag_members": "Отметить участника"
+        }
+      },
+      "explore_apps": "Обзор приложений",
+      "my_zaps": "Мои Zap",
+      "see_all_apps": "Все приложения",
+      "popular_zaps": "Популярные Zap",
+      "view_all": "Показать все",
+      "failed_events": {
+        "title": "Некоторые события не дошли до Zapier",
+        "description": "Zapier не получил события за последние 24 часа. Отправьте их повторно, чтобы запустить Zap, которые должны были сработать.",
+        "resend": "Отправить события повторно"
+      },
+      "disabled_triggers": {
+        "title": "Некоторые триггеры отключены",
+        "description": "Эти триггеры были отключены после неоднократных сбоев доставки. Исправьте принимающую сторону в Zapier, затем снова включите Zap, чтобы переподписаться."
+      },
+      "connection": {
+        "title": "Подключение",
+        "name": "Zapier",
+        "connected_by": "Подключил(а) {name} {date}",
+        "unknown_admin": "бывший администратор",
+        "disconnect": "Отключить",
+        "access_read_write": "Чтение и запись",
+        "access_read_only": "Только чтение"
+      },
+      "app_page": {
+        "connected": "{organization} подключена к Zapier · {access}.",
+        "manage": "Управлять",
+        "related_apps": "Похожие приложения"
+      },
+      "remove": {
+        "title": "Отключить Zapier?",
+        "description": "Zap, использующие это подключение, сразу остановятся, а его активные триггеры ({count}) будут удалены. Чтобы снова использовать их, подключитесь заново из Zapier.",
+        "confirm": "Отключить",
+        "zapier_side": "ClassroomIO не может удалить подключение из вашей учетной записи Zapier, поэтому удалите его и там.",
+        "open_zapier_connections": "Открыть соединения Zapier"
+      }
     },
     "webhooks": {
       "page_subtitle": "Отправляйте события ClassroomIO в реальном времени в Slack, вашу CRM или собственный бэкенд.",
@@ -5524,16 +6146,13 @@
     },
     "run_monitor": {
       "cancel": "Отменить создание",
-      "dismiss": "Отклонить",
       "now_doing": "Сейчас",
       "input_disabled_hint": "Чат приостановлен, пока агент завершает создание курса. Отмените или дождитесь завершения.",
-      "dismiss_confirm": "Уйти",
-      "dismiss_cancel": "Остаться здесь",
-      "dismiss_confirm_body": "Уйти от этого отменённого создания? Кнопка «Возобновить» исчезнет — любой дальнейший чат начнётся заново и не продолжит план.",
       "stuck_queued": {
         "title": "Работник не отвечает",
         "body": "Создание курса ожидает больше 30 секунд, и ни один фоновый процесс его не подхватил. Фоновый процесс может быть недоступен или перезапускается."
-      }
+      },
+      "pause": "Приостановить создание"
     },
     "ask_ai": "Спросите ИИ",
     "content_input_placeholder": "Спросите об этом контенте…",
@@ -5541,7 +6160,12 @@
     "ask_ai_input_aria": "Спросите ИИ об этом контенте",
     "upload_error_file_too_large": "Файл слишком большой. Максимальный размер — 5 МБ.",
     "upload_error_unsupported_type": "Тип файла не поддерживается. Загрузите файл PDF, DOCX, PPTX или ODT.",
-    "upload_error_generic": "Не удалось загрузить документ. Пожалуйста, попробуйте еще раз."
+    "upload_error_generic": "Не удалось загрузить документ. Пожалуйста, попробуйте еще раз.",
+    "run_paused": "Создание курса приостановлено",
+    "resume_failed": "Не удалось возобновить создание курса. Попробуйте ещё раз.",
+    "pause_failed": "Не удалось приостановить создание курса. Попробуйте ещё раз.",
+    "cancel_failed": "Не удалось отменить создание курса. Попробуйте ещё раз.",
+    "retry_failed": "Не удалось повторить создание курса. Попробуйте ещё раз."
   },
   "widgets": {
     "heading": "Виджеты",
@@ -5788,7 +6412,7 @@
       "no_results_title": "Нет виджетов, соответствующих вашим фильтрам.",
       "no_results_description": "Попробуйте другой поисковый запрос или очистите фильтры, чтобы снова увидеть все.",
       "no_results_page_title": "На этой странице ничего нет",
-      "no_results_page_description": "Эти фильтры соответствуют меньшему количеству виджетов, чем указано на этой странице.",
+      "no_results_page_description": "Эти фильтры соответствуют меньшему количеству виджетов, чем начинается на этой странице.",
       "back_to_first_page": "Вернуться на первую страницу"
     }
   },
@@ -5928,7 +6552,10 @@
     },
     "switcher": {
       "your_account": "Ваш аккаунт",
-      "other_organizations": "Другие организации"
+      "other_organizations": "Другие организации",
+      "learning": "Обучение",
+      "add_organization": "Добавить организацию",
+      "current": "Текущая организация"
     }
   },
   "aiTutor": {
@@ -6177,7 +6804,8 @@
       "newsfeed": "Лента новостей",
       "courses": "Курсы",
       "people": "Люди",
-      "settings": "Настройки"
+      "settings": "Настройки",
+      "analytics": "Аналитика"
     },
     "status": {
       "active": "Активный",
@@ -6338,6 +6966,10 @@
     "tabs": {
       "direct": "Прямая ссылка",
       "watching": "Смотреть"
+    },
+    "pending_course_invite": {
+      "heading": "Приглашение на курс",
+      "body": "{orgName} приглашает вас на курс {courseTitle}."
     }
   },
   "export": {
@@ -6474,8 +7106,8 @@
     },
     "empty": {
       "title": "Курсов пока нет",
-      "description": "Выберите шаблон, чтобы увидеть, как выглядит хороший курс, или начните с пустого.",
-      "browse": "Смотреть шаблоны"
+      "description": "Создайте курс один раз, а затем записывайте на него своих клиентов. Создайте его сами или поручите черновик своему агенту.",
+      "enrolled": "Записан"
     },
     "editor": {
       "badge": "Шаблон"
@@ -6606,7 +7238,15 @@
       "deny": "Отклонить",
       "unknown_client": "Это приложение",
       "error_title": "Этот запрос на подключение недействителен",
-      "error_description": "Вернитесь в приложение, которое вы подключали, и начните заново."
+      "error_description": "Вернитесь в приложение, которое вы подключали, и начните заново.",
+      "verified": "Проверено",
+      "allow_changes": {
+        "label": "Разрешить пользователю {client} вносить изменения",
+        "description": "Отключите это для доступа только для чтения. {client} по-прежнему может читать данные и запускать триггеры, но не может ничего добавлять, изменять или удалять."
+      },
+      "plan_required": "Перейдите на план Early Adopter для подключения этого приложения",
+      "no_eligible_title": "Нет подходящего рабочего пространства",
+      "no_eligible_description": "Ни один из ваших рабочих пространств не использует тариф с этим приложением. Обновите тариф до Early Adopter или Enterprise и повторите попытку."
     },
     "error": {
       "generic": "Что-то пошло не так. Попробуйте ещё раз.",
@@ -6656,6 +7296,10 @@
       "media": {
         "read": "Загружать медиафайлы",
         "write": "Загружать медиафайлы"
+      },
+      "webhooks": {
+        "read": "Просмотр недавних событий в вашем рабочем пространстве",
+        "write": "Получение событий в реальном времени в вашем рабочем пространстве"
       }
     },
     "connect": {
@@ -6691,5 +7335,702 @@
     },
     "close": "Закрыть",
     "dismiss": "Понятно"
+  },
+  "marketing": {
+    "title": "Маркетинг",
+    "subtitle": "Узнайте, как посетители находят ваши курсы и становятся студентами.",
+    "popularTypes": {
+      "heading": "Популярные типы курсов",
+      "description": "Зачисления сгруппированы по типу курса",
+      "subtitle": "{total} зачислений по всем типам",
+      "empty": "Данных о регистрации пока нет",
+      "course_count": "{count, plural, one {# курс} other {# курсов}}",
+      "views_short": "просмотры",
+      "types": {
+        "SELF_PACED": "Самостоятельный темп",
+        "LIVE_CLASS": "Живой урок",
+        "COMPLIANCE": "Соответствие требованиям",
+        "PUBLIC": "Общественный"
+      }
+    },
+    "topCourses": {
+      "heading": "Лучшие курсы по просмотрам",
+      "description": "Курсы, ранжированные по просмотрам страниц",
+      "subtitle": "Рейтинг по просмотрам страниц за выбранный период",
+      "empty": "Пока нет просмотров страниц курсов",
+      "course": "Курс",
+      "views": "Просмотры"
+    },
+    "countries": {
+      "heading": "Топ стран",
+      "subtitle": "Всего посетителей: {total}",
+      "empty": "Данных о местоположении пока нет.",
+      "country": "Страна",
+      "visitors": "Посетители",
+      "enrollments_short": "зачислен"
+    },
+    "funnel": {
+      "heading": "Воронка конверсий",
+      "description": "От первого посещения до завершения курса",
+      "empty": "Данных о воронке пока нет.",
+      "step": {
+        "landing_view": "Посадочные просмотры",
+        "course_page_view": "Просмотры страниц курса",
+        "enrollment_completed": "Зачисления",
+        "course_completed": "Завершения"
+      }
+    },
+    "trend": {
+      "heading": "Трафик с течением времени",
+      "description": "Просмотры страниц и регистрации по дням",
+      "empty": "Нет трафика в выбранном диапазоне",
+      "views": "Просмотры",
+      "enrollments": "Зачисления"
+    },
+    "kpi": {
+      "landing_views": "Посадочные просмотры",
+      "unique_visitors": "Уникальные посетители",
+      "course_page_views": "Просмотры страниц курса",
+      "enrollments": "Зачисления",
+      "range_description": "В выбранном диапазоне"
+    },
+    "tabs": {
+      "overview": "Обзор",
+      "funnel": "Воронка",
+      "geography": "География",
+      "course_types": "Типы курсов"
+    }
+  },
+  "analytics": {
+    "title": "Аналитика",
+    "updated_seconds_ago": "обновлено {count}s назад",
+    "updated_minutes_ago": "{count, plural, one {обновлено # минуту назад} other {обновлено # минуты назад}}",
+    "retry": "Попробуйте еще раз",
+    "all_courses": "Все курсы",
+    "course_picker": "Курс",
+    "exercise_picker": "Упражнение",
+    "not_in_section": "Не в разделе",
+    "section_number": "Раздел {number}",
+    "section_with_title": "Раздел {number} · {title}",
+    "finished": "Законченный",
+    "awaiting_grade": "Ожидание оценки",
+    "awaiting_grade_short": "В ожидании",
+    "pass_mark_tag": "Проходной балл {mark}%",
+    "of_total": "{count} из {total}",
+    "never": "Никогда",
+    "invited": "{count} приглашен",
+    "no_students": "Нет студентов",
+    "no_students_yet": "Пока нет студентов",
+    "no_graded_attempts": "Нет оцененных попыток",
+    "names_and_more": "{names} и еще {count}",
+    "certificate_issued": "{count, plural, one {Выдан} other {Выдано: #}}",
+    "question_hint": {
+      "context_and_answer": "{context} · наиболее распространенный неправильный ответ: {answer}",
+      "answer": "Самый распространенный неправильный ответ: {answer}."
+    },
+    "chips": {
+      "label": "Об этой информационной панели",
+      "live": "Прямой эфир · {updated}",
+      "live_every": "Прямой эфир · {updated} · обновляется каждые {seconds} с.",
+      "students": "{count, plural, one {# студент} other {# студентов}}",
+      "courses": "Курсы: {count}",
+      "cohorts": "Когорты: {count}",
+      "active_cohorts": "{count, plural, one {# активная когорта} other {# активных когорт}}",
+      "seats": "Мест: {used} из {limit}",
+      "seats_not_joined": "{count} ещё не присоединились"
+    },
+    "now_tag": {
+      "label": "Сейчас",
+      "hint": "Показывает, где сейчас находятся студенты. Диапазон не меняет эту карту."
+    },
+    "student_chips": {
+      "latest": "Последний",
+      "progress": "Прогресс",
+      "now_at": "сейчас в {place}"
+    },
+    "donut": {
+      "students": "{count, plural, one {студент} other {студенты}}"
+    },
+    "status": {
+      "at_risk": "В зоне риска",
+      "lagging": "Отставание",
+      "on_track": "По плану",
+      "completed": "Завершенный"
+    },
+    "flags": {
+      "overdue": "Просрочено"
+    },
+    "legend": {
+      "middle_half": "Средние 50% студентов",
+      "cohort_average": "Средний показатель по когорте",
+      "student": "Студент",
+      "all_students": "Все студенты",
+      "in_progress": "{name} (в разработке)",
+      "enrolled_students": "Зачисленные студенты",
+      "target": "Цель",
+      "logins": "Входы",
+      "direct_students": "Прямые студенты"
+    },
+    "notes": {
+      "score_distribution": "Студенты по балльным группам.",
+      "course_details": "Выберите курс выше, чтобы просмотреть оценки по упражнениям, таблицу оценок по разделам и самые сложные вопросы.",
+      "section_scorecard": "Одна строка на раздел курса. Посещаемость видео — это доля просмотренных видеороликов уроков. Посещение занятий фиксируется преподавателем.",
+      "needs_attention": "Студент может появиться по нескольким причинам.",
+      "overdue": "Студенты уже получают запланированные электронные письма с напоминаниями до наступления крайнего срока. Функция «Отправить напоминание» отправляет напоминание прямо сейчас.",
+      "hardest_questions": "Вопросы, которые студенты пропускают больше всего, и на которые чаще всего приходится неправильный ответ.",
+      "logins_per_day": "Студенты, которые регистрировались каждый день.",
+      "students": {
+        "all_courses": "Нажмите на студента, чтобы просмотреть его курсы.",
+        "one_course": "Нажмите на студента, чтобы отобразить его баллы. Поиск, фильтры и сортировка также применяются к экспорту.",
+        "course_scope": "Выберите студента, чтобы просмотреть его прогресс в этом курсе. Поиск, фильтры и сортировка также применяются к экспорту."
+      },
+      "showing_first": "Показаны первые {shown} из {total}.",
+      "cohorts_select": "Выберите когорту, чтобы открыть ее панель мониторинга.",
+      "cohorts_in_table": "{count, plural, one {когорта} other {# когорты}} в таблице выше.",
+      "courses_in_table": "{count, plural, one {Курс} other {# курсов}} из таблицы выше.",
+      "not_counted_empty": "Не учтены: {names} (пока нет студентов).",
+      "not_charted_empty": "Не показаны на графике: {names} (пока нет студентов).",
+      "lesson_dropoff": "Самое крутое падение происходит между {from} и {to}.",
+      "no_pass_mark": "Ни одно из упражнений здесь пока не имеет проходного балла, поэтому нет доли сдавших. Установите проходной балл для упражнения, чтобы увидеть её.",
+      "bucketed_total": "Каждый столбец суммирует количество входов за {days} дн. Студент учитывается один раз в день.",
+      "student_sheet_pick_course": "Нажмите на курс, чтобы отобразить его оценки по упражнениям.",
+      "direct_students_charted": "Прямые студенты не входят в когорту; они отображаются отдельной линией.",
+      "courses_select": "Выберите курс, чтобы открыть его панель мониторинга."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–25",
+        "1": "25–50",
+        "2": "50–75",
+        "3": "75–99",
+        "4": "Сделанный"
+      },
+      "score": {
+        "4": "<50",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
+        "9": "90+",
+        "null": "Нет оценки"
+      }
+    },
+    "kpi": {
+      "share_of_cohort": "{percent} из когорты",
+      "share_of_enrolled": "{percent} зачисленных",
+      "share_of_completions": "{percent} завершенных проектов",
+      "avg_progress_hint": "обязательных уроков и упражнений выполнено/всего",
+      "avg_score_hint": "по упражнениям, выполненным",
+      "overdue_hint": "истек срок, не выполнено",
+      "completed_certified": "{percent} когорты · сертифицирован {count}",
+      "enrolled_this_week": "{count, plural, =0 {На этой неделе новых студентов нет} other {+# на этой неделе}}",
+      "enrolled_in_days": "{count, plural, =0 {Нет новых студентов за последние {days} дней.} other {+# за последние {days} дней}}",
+      "added_in_days": "{count, plural, =0 {Ни одного за последние {days} дней} other {+# за последние {days} дней}}",
+      "completed_in_days": "{percent} из когорты{count, plural, =0 {} other { · +# за последние {days} дней}}",
+      "logged_in_days": "Вход в систему, последние {days} дн.",
+      "avg_score_in_days": "попыток за последние {days} дней",
+      "first_try_in_days": "из {took} выставлены оценки за последние {days} дней{still, plural, =0 {} other { · # ещё предстоит пройти}}",
+      "median_days_in_days": "по выполненным за последние {days} дням",
+      "first_try_context": "из {took}, выполнившего проходное упражнение{still, plural, =0 {} other { · # ещё предстоит пройти}}",
+      "median_days_hint": "регистрация до завершения",
+      "needs_attention_hint": "неактивен, низкий балл или просрочен",
+      "delta": {
+        "this_week": {
+          "up": "+{count} баллов на этой неделе",
+          "down": "−{count} баллов на этой неделе",
+          "flat": "На этой неделе изменений нет"
+        },
+        "vs_last_week": {
+          "up": "+{count} баллов по сравнению с прошлой неделей",
+          "down": "−{count} баллов по сравнению с прошлой неделей",
+          "flat": "Никаких изменений по сравнению с прошлой неделей"
+        },
+        "in_days": {
+          "up": "+{count} баллов за последние {days} дней",
+          "down": "−{count} баллов за последние {days} дней",
+          "flat": "Никаких изменений за последние {days} дней"
+        },
+        "vs_days_ago": {
+          "up": "+{count} пунктов против {days} дней назад",
+          "down": "−{count} очков против {days} дней назад",
+          "flat": "Без изменений по сравнению с {days} дней назад"
+        }
+      },
+      "no_data": {
+        "students": "студентов пока нет",
+        "graded": "оценённых попыток пока нет",
+        "first_try": "пока нет оценённых попыток по упражнению с проходным баллом",
+        "completions": "завершений пока нет",
+        "enrolments": "записей пока нет",
+        "in_days": "нет за последние {days} дн."
+      }
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Вошёл сегодня"
+      },
+      "kpi_logged_in_week": {
+        "title": "Вход в систему, последние 7 дней"
+      },
+      "kpi_avg_progress": {
+        "title": "Средний прогресс"
+      },
+      "kpi_avg_score": {
+        "title": "Средний балл"
+      },
+      "kpi_avg_grade": {
+        "title": "Средняя оценка"
+      },
+      "kpi_overdue": {
+        "title": "Просрочено"
+      },
+      "kpi_completed": {
+        "title": "Завершенный"
+      },
+      "kpi_enrolled": {
+        "title": "Зачислен"
+      },
+      "kpi_completion_rate": {
+        "title": "Скорость завершения"
+      },
+      "kpi_first_try_pass": {
+        "title": "Доля сдавших"
+      },
+      "kpi_median_days": {
+        "title": "Медианное количество дней до завершения"
+      },
+      "kpi_completions": {
+        "title": "Завершения"
+      },
+      "kpi_certificates": {
+        "title": "Выданные сертификаты"
+      },
+      "kpi_needs_attention": {
+        "title": "Требует внимания"
+      },
+      "courses_summary": {
+        "title": "Курсы в этой когорте"
+      },
+      "students_by_status": {
+        "title": "Студенты по статусу"
+      },
+      "course_details": {
+        "title": "Детали курса"
+      },
+      "scores_by_exercise": {
+        "title": "Очки по упражнениям, {course}"
+      },
+      "progress_distribution": {
+        "title": "Распределение прогресса"
+      },
+      "section_scores": {
+        "title": "Баллы и посещаемость по разделам"
+      },
+      "score_distribution": {
+        "title": "Распределение среднего балла"
+      },
+      "section_scorecard": {
+        "title": "оценочная таблица по разделам"
+      },
+      "needs_attention": {
+        "title": "Требует внимания по причине"
+      },
+      "overdue": {
+        "title": "Просрочено, с напоминаниями"
+      },
+      "hardest_questions": {
+        "title": "Самые сложные вопросы"
+      },
+      "students": {
+        "title": "Студенты"
+      },
+      "logins_per_day": {
+        "title": "Студенты заходили в систему за день"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Оценки по упражнениям, по когортам"
+      },
+      "exercise_score_distribution": {
+        "title": "Распределение баллов, {exercise}"
+      },
+      "lesson_dropoff": {
+        "title": "Отказ от завершения урока"
+      },
+      "hardest_exercises": {
+        "title": "Самые сложные упражнения"
+      },
+      "cohorts_in_course": {
+        "title": "Группы, проходящие этот курс"
+      },
+      "cohort_details": {
+        "title": "Подробности о когорте"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Когорты с первого взгляда"
+      },
+      "cohort_health": {
+        "title": "Студенты по состоянию здоровья когорты"
+      },
+      "hiring_ramp": {
+        "title": "Зачисленные студенты против цели"
+      },
+      "avg_score_by_cohort": {
+        "title": "Средний балл по когортам"
+      },
+      "courses_by_completion": {
+        "title": "Курсы по завершению"
+      },
+      "courses_at_a_glance": {
+        "title": "Курсы с первого взгляда"
+      },
+      "scores_by_exercise_course": {
+        "title": "Оценки по упражнениям"
+      },
+      "avg_score_by_course": {
+        "title": "Средняя оценка, по курсу"
+      },
+      "cohort_empty": {
+        "title": "Когорты без студентов"
+      }
+    },
+    "measures": {
+      "rows__count": "Студенты",
+      "progress_pct__avg": "Средний прогресс",
+      "avg_score_pct__avg": "Средний балл",
+      "avg_progress_pct__value": "Средний прогресс",
+      "avg_score_pct__value": "Средний балл",
+      "first_try_pass__pooled": "Доля сдавших",
+      "is_completed__count_if": "Завершенный",
+      "is_completed__rate": "Скорость завершения",
+      "is_inactive__count_if": "Нет входа, 2+ дня",
+      "is_low_score__count_if": "Средний балл ниже 50%",
+      "is_overdue__count_if": "Просрочено",
+      "is_low_video__count_if": "Посещаемость видео менее 60%",
+      "logged_in__count_if": "Студенты вошли в систему",
+      "section_score_pct__avg": "Средний балл",
+      "video_pct__avg": "Видео посещаемости",
+      "attendance__pooled": "Посещаемость занятий",
+      "best_score_pct__avg": "Средний балл",
+      "is_complete__rate": "Завершенный",
+      "members_total__value": "Зачисленные студенты"
+    },
+    "columns": {
+      "student": "Студент",
+      "email": "Электронная почта",
+      "course": "Курс",
+      "students": "Студенты",
+      "progress": "Прогресс",
+      "avg_progress": "Средний прогресс",
+      "avg_score": "Средний балл",
+      "average_score": "Средний балл",
+      "completed": "Завершенный",
+      "took_pass_mark": "Выполнил упражнение на проходной балл",
+      "passed_first_try": "Доля сдавших",
+      "exercises_passed": "Сдано упражнений",
+      "now_at": "Сейчас в",
+      "courses_completed": "Курсы завершены",
+      "video": "Видео",
+      "classroom": "класс",
+      "video_attendance": "Видео посещаемости",
+      "classroom_attendance": "Посещаемость занятий",
+      "certificate": "Сертификат",
+      "certificates": "Сертификаты",
+      "last_login": "Последний вход",
+      "status": "Статус",
+      "trend": "Тренд",
+      "cohort": "когорта",
+      "created": "Созданный",
+      "overdue": "Просрочено",
+      "health": "Здоровье",
+      "section": "Раздел курса",
+      "exercises_taken": "Выполнено упражнений",
+      "actions": "Действия"
+    },
+    "column_hints": {
+      "passed_first_try": "Студенты, получившие проходной балл с первой попытки выполнения упражнений, имеющих проходной балл.",
+      "section_passed_first_try": "Студенты, получившие проходной балл при первой попытке выполнения каждого упражнения, получили проходной балл в этом разделе.",
+      "took_pass_mark": "Студенты получили оценку хотя бы за одно упражнение, получившее проходной балл.",
+      "exercises_passed": "Упражнения с проходным баллом, по которым этот студент достиг оценки, из всех упражнений с проходным баллом в курсе."
+    },
+    "actions": {
+      "send_reminder": "Отправить напоминание",
+      "queued": "В очереди",
+      "remind_all_overdue": "{count, plural, one {Напомнить всем # опоздавшему студенту} other {Напомнить всем # опоздавшим студентам}}",
+      "reminders_queued": "Напоминания в очереди"
+    },
+    "target": {
+      "set": "Установить цель",
+      "edit": "Изменить цель",
+      "label": "Цель по числу студентов",
+      "helper": "Сколько зачисленных студентов вы хотите охватить. Он отображается пунктирной линией.",
+      "clear": "Удалить цель",
+      "save": "Сохранить цель"
+    },
+    "hints": {
+      "exercise_score_distribution": "Выберите упражнение, чтобы увидеть его оценки."
+    },
+    "students": {
+      "search": "Поиск по имени или электронной почте",
+      "empty": "Ни один студент не соответствует этим фильтрам",
+      "showing": {
+        "cohort": "Показаны {from}–{to} из {total}, соответствующие · {count, plural, one {# студент} other {# студентов}} в когорте",
+        "course": "Показаны {from}–{to} из {total}, соответствующие · {count, plural, one {# студент} other {# студентов}} в курсе",
+        "org": "Показаны {from}–{to} из {total}, соответствующие · {count, plural, one {# студент} other {# студентов}} в организации"
+      },
+      "clear_filters": "{count, plural, one {Очистить # фильтр} other {Очистить # фильтра}}",
+      "sort": {
+        "status": "Сортировка: сначала отстающие",
+        "progress": "Сортировка: наименьший прогресс",
+        "name": "Сортировка: по названию от А до Я",
+        "low_score": "Сортировка: наименьший средний балл"
+      },
+      "filters": {
+        "status": {
+          "label": "Статус",
+          "any": "Все статусы",
+          "at_risk": "В зоне риска",
+          "lagging": "Отставание",
+          "on_track": "По плану",
+          "completed": "Завершенный"
+        },
+        "activity": {
+          "label": "Последний вход",
+          "any": "Любой логин",
+          "today": "Вошёл сегодня",
+          "idle": "Нет входа в систему более 2 дней"
+        },
+        "score": {
+          "label": "Средний балл",
+          "any": "Любой средний балл",
+          "lt50": "Менее 50%",
+          "mid": "от 50% до 69%",
+          "gte70": "70% и выше"
+        },
+        "flag": {
+          "label": "Флаги",
+          "any": "Любой флаг",
+          "overdue": "Просрочено",
+          "certified": "Сертификат выдан",
+          "not_certified": "Нет сертификата"
+        },
+        "completion": {
+          "label": "Завершение",
+          "any": "Любое завершение",
+          "incomplete": "Не завершено"
+        },
+        "video": {
+          "label": "Видео",
+          "any": "Любое видео",
+          "low": "Видео меньше 60%"
+        },
+        "cohort_chip": "{count, plural, one {# когорта} few {# когорты} many {# когорт} other {# когорты}}"
+      },
+      "showing_paged": {
+        "cohort": "Показаны {from}–{to} из {count, plural, one {# студент} other {# студентов}} в когорте",
+        "course": "Показаны {from}–{to} из {count, plural, one {# студент} other {# студентов}} в курсе",
+        "org": "Показаны {from}–{to} из {count, plural, one {# студент} other {# студентов}} в организации"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# подходящий студент} other {# подходящих студентов}} · {count, plural, one {# студент} other {# студентов}} в когорте",
+        "course": "{total, plural, one {# подходящий студент} other {# подходящих студентов}} · {count, plural, one {# студент} other {# студентов}} в курсе",
+        "org": "{total, plural, one {# подходящий студент} other {# подходящих студентов}} · {count, plural, one {# студент} other {# студентов}} в организации"
+      },
+      "showing_all": {
+        "cohort": "{count, plural, one {# студент} other {# студентов}} в когорте",
+        "course": "{count, plural, one {# студент} other {# студентов}} в курсе",
+        "org": "{count, plural, one {# студент} other {# студентов}} в организации"
+      },
+      "failed": "Не удалось загрузить студентов",
+      "cells_failed": "Не удалось загрузить результаты упражнений",
+      "attempts_unavailable": "Не удалось проверить, по каким упражнениям есть попытки, поэтому некоторые заблокированные упражнения могут быть скрыты."
+    },
+    "empty": {
+      "failed": "Не удалось загрузить эту диаграмму",
+      "dashboard_failed": "Не удалось загрузить аналитику",
+      "not_permitted": "У вас нет доступа к этой аналитике",
+      "no_exercises": "В этом курсе нет упражнений",
+      "no_exercises_description": "Оценки появятся, когда будут добавлены упражнения, а студенты сдадут попытки."
+    },
+    "scope_empty": {
+      "title": {
+        "cohort": "В этой когорте пока нет студентов",
+        "course": "В этом курсе пока нет студентов",
+        "org": "В вашей организации пока нет студентов"
+      },
+      "description": {
+        "cohort": "Аналитика заполняется по мере того, как студенты открывают уроки и отправляют задания.",
+        "cohort_no_courses": "Добавьте курсы, затем пригласите студентов. Аналитика заполняется по мере того, как они открывают уроки и отправляют задания.",
+        "course": "Аналитика заполняется по мере того, как студенты открывают уроки и отправляют задания.",
+        "org": "Добавьте студентов в свою академию, затем запишите их на курсы или в когорты."
+      },
+      "pending": "{count, plural, one {# приглашение ожидает} few {# приглашения ожидают} many {# приглашений ожидают} other {# приглашения ожидают}} принятия. Аналитика заполнится, когда студенты присоединятся.",
+      "invite_students": "Пригласить студентов",
+      "add_courses": "Добавить курсы",
+      "add_students": "Добавить студентов"
+    },
+    "student_sheet": {
+      "last_login": "Последний вход: {when}",
+      "courses_heading": "Курсы",
+      "scores_heading": "Очки по упражнениям, {course}",
+      "open_profile": "Открыть профиль курса",
+      "all_courses": "Все курсы"
+    },
+    "pagination": {
+      "showing": "Отображение {from}–{to} из {total}",
+      "cohorts_org": "Отображение {from}–{to} из {total, plural, one {# когорты} few {# когорт} many {# когорт} other {# когорт}} в организации",
+      "cohorts_course": "Отображение {from}–{to} из {total, plural, one {# когорты} few {# когорт} many {# когорт} other {# когорт}}, проходящих этот курс",
+      "courses_cohort": "Отображение {from}–{to} из {total, plural, one {# курса} few {# курсов} many {# курсов} other {# курсов}} в когорте",
+      "courses_org": "Отображение {from}–{to} из {total, plural, one {# курса} few {# курсов} many {# курсов} other {# курсов}} в организации",
+      "sections_course": "Отображение {from}–{to} из {total, plural, one {# раздела} few {# разделов} many {# разделов} other {# разделов}} в курсе",
+      "overdue_cohort": "Отображение {from}–{to} из {total, plural, one {# отстающего студента} few {# отстающих студентов} many {# отстающих студентов} other {# отстающих студентов}} в когорте"
+    },
+    "breakdown": {
+      "label": "Разбивка",
+      "courses": "Курсы ({count})",
+      "cohorts": "Когорты ({count})",
+      "all_students": "Все студенты",
+      "by_cohort": "По когорте ({count})"
+    },
+    "cohorts": {
+      "picker": "Когорты: {selected} из {total}",
+      "search": "Поиск когорт",
+      "empty": "Нет подходящих когорт",
+      "newest": "Последние {count}",
+      "none": "Очистить",
+      "students": "{count, plural, one {# студент} other {# студентов}}",
+      "no_students": "Пока нет студентов",
+      "direct_included": "Прямые студенты всегда включаются.",
+      "select_all": "Выбрать все",
+      "select_shown": "Выбрать показанные",
+      "load_more": "Загрузить ещё",
+      "showing_matches": "Показано {shown} из {total}",
+      "loading": "Загрузка когорт…",
+      "load_failed": "Не удалось загрузить когорты."
+    },
+    "course_search": "Поиск курсов",
+    "course_search_empty": "Нет подходящих курсов",
+    "empty_states": {
+      "show_all_time": "Показать всё время",
+      "create_cohort": "Создать когорту",
+      "range": {
+        "title": "Нет активности за последние {days} дн.",
+        "description": "Эта карточка учитывает только то, что произошло за выбранный период."
+      },
+      "needs_attention": {
+        "title": "Никто не требует внимания",
+        "description": "Ни один студент не неактивен, не имеет оценки ниже 50%, не просрочил задания и не отстаёт по видео."
+      },
+      "overdue": {
+        "title": "Никто не просрочил",
+        "description": "Все студенты укладываются в сроки."
+      },
+      "scores": {
+        "title": "Оценённых попыток пока нет",
+        "description": "Оценки появятся, когда студенты сдадут упражнения, а попытки будут проверены."
+      },
+      "student_scores": {
+        "title": "Оценённых попыток пока нет",
+        "description": "Оценки этого студента появятся, когда его попытки будут проверены."
+      },
+      "hardest_exercises": {
+        "title": "Оценённых попыток пока недостаточно",
+        "description": "Упражнение появляется, когда хотя бы у 3 студентов есть оценённая попытка."
+      },
+      "questions": {
+        "title": "Ответов пока недостаточно",
+        "description": "Вопрос появляется, когда хотя бы 5 студентов ответили на него в оценённой попытке."
+      },
+      "logins": {
+        "title": "Входов пока нет",
+        "description": "Студенты появляются здесь в дни, когда они входят в систему."
+      },
+      "lessons": {
+        "title": "Пройденных уроков пока нет",
+        "description": "Полоса каждого урока заполняется по мере его прохождения студентами."
+      },
+      "growth": {
+        "title": "Студенты ещё не добавлены",
+        "description": "Линия начинается с первого студента, добавленного в вашу организацию."
+      },
+      "courses_org": {
+        "title": "Пройденных курсов пока нет",
+        "description": "Курсы появляются здесь, когда студенты записываются на них и проходят их."
+      },
+      "courses_cohort": {
+        "title": "Активности по курсу пока нет",
+        "description": "Полосы и строки заполняются, когда студенты начинают уроки или упражнения."
+      },
+      "cohorts_org": {
+        "title": "Когорт пока нет",
+        "description": "Создайте когорту, чтобы объединить студентов и сравнивать их прогресс."
+      },
+      "cohorts_org_no_students": {
+        "title": "В этих когортах пока нет студентов",
+        "description": "Добавьте студентов в организацию, чтобы сравнивать прогресс между когортами."
+      },
+      "cohorts_course": {
+        "title": "Ни одна когорта не включает этот курс",
+        "description": "Добавьте этот курс в когорту, чтобы сравнивать когорты здесь."
+      },
+      "cohorts_course_no_students": {
+        "title": "В этих когортах пока нет студентов",
+        "description": "Пригласите студентов на этот курс, чтобы сравнивать прогресс между когортами."
+      },
+      "default": {
+        "title": "Данных пока нет",
+        "description": "Эта карточка заполняется по мере использования курса студентами."
+      }
+    },
+    "export": {
+      "students_capped": "Список студентов ограничен первыми {limit} строками.",
+      "exercises_capped": "Результаты упражнений ограничены первыми {limit} результатами.",
+      "yes": "Да",
+      "no": "Нет",
+      "columns": {
+        "segment": "Группа"
+      },
+      "dimensions": {
+        "student": "Студент",
+        "course": "Курс",
+        "cohort": "Когорта",
+        "exercise": "Упражнение",
+        "section": "Раздел",
+        "lesson": "Урок",
+        "question": "Вопрос",
+        "item": "Элемент",
+        "day": "День",
+        "period": "Период",
+        "status": "Статус",
+        "overdue_kind": "Тип просрочки",
+        "progress_bucket_25": "Прогресс",
+        "score_bucket_10": "Средний балл"
+      }
+    },
+    "org_page_title": "Академия",
+    "widget_toolbar": {
+      "label": "Действия для: {title}",
+      "expand": "Развернуть",
+      "download": "Скачать CSV"
+    },
+    "drilldown": {
+      "count": "{count, plural, one {# студент} few {# студента} many {# студентов} other {# студента}}",
+      "description": "Студенты, составляющие это число.",
+      "cohort_health": {
+        "any": "В когортах со студентами",
+        "at_risk": "В когортах в зоне риска",
+        "lagging": "В когортах с отставанием",
+        "on_track": "В когортах, идущих по плану",
+        "completed": "В завершённых когортах"
+      },
+      "cohort_health_note": "Диаграмма считает студентов в когортах с такой оценкой, а не студентов с таким статусом.",
+      "count_differs": "Диаграмма показывает {expected}, потому что считает студента по одному разу для каждой когорты, в которой он состоит. В этом списке {total}.",
+      "lesson_incomplete": "Не завершено: {lesson}",
+      "lesson_fallback": "этот урок",
+      "score_bucket": "Средний балл {range}",
+      "scored": "Со средним баллом",
+      "open_in_students": "Открыть на вкладке «Студенты»",
+      "kpi_label": "Показать студентов: {title}",
+      "segment_label": "Сегмент"
+    }
   }
 }

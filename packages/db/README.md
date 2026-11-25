@@ -86,6 +86,32 @@ pnpm db:backfill-profile-email-verification -- --execute
 
 The script prints how many profiles were updated and verifies zero mismatches remain.
 
+#### db:create-org
+
+Creates an organization, makes the given email its verified admin, and attaches an active plan that is never billed. A user and profile are created first when the email is new.
+
+```bash
+pnpm --filter @cio/db db:create-org "<Org Name>" <email> [PLAN] [site-name] [--dry-run]
+```
+
+`PLAN` is `BASIC` (default), `EARLY_ADOPTER` or `ENTERPRISE`. `site-name` defaults to a slug of the organization name. `--dry-run` prints what would be created and writes nothing.
+
+Without a password the admin signs in by choosing **Forgot password** on the login page, which creates their password. To give the admin a password from the start, set `ADMIN_PASSWORD` (8–128 characters, but no more than 72 UTF-8 bytes) in the environment. It is read from the environment so it stays out of shell history and process listings, and it is refused if the user already has a password:
+
+```bash
+read -rs ADMIN_PASSWORD && export ADMIN_PASSWORD
+pnpm --filter @cio/db db:create-org "Zapier Integration Testing" integration-testing@zapier.com ENTERPRISE zapier-integration-testing --dry-run
+unset ADMIN_PASSWORD
+```
+
+#### oauth:register-client
+
+Registers the ClassroomIO Zapier app as an OAuth client with the Zapier scopes and prints its `client_id` and `client_secret` once. Store both in the Zapier integration's environment (`CLIENT_ID`, `CLIENT_SECRET`) and add the `client_id` to `OAUTH_TRUSTED_CLIENT_IDS` and `ZAPIER_OAUTH_CLIENT_ID`. Set `ZAPIER_OAUTH_REDIRECT_URIS` to the redirect URI from the Zapier developer platform (comma-separated for more than one) before running it:
+
+```bash
+ZAPIER_OAUTH_REDIRECT_URIS="https://zapier.com/dashboard/auth/oauth/return/App123CLIAPI/" pnpm --filter @cio/db oauth:register-client
+```
+
 ## Seeding
 
 The seed script populates the database with demo data for local development. It is idempotent — running it multiple times is safe; existing records are skipped.
@@ -144,6 +170,26 @@ pnpm seed --organizations --organization-members --organization-plan
 | `--exercises`            | Exercises                                              |
 | `--questions`            | Questions                                              |
 | `--templates`            | Exercise templates                                     |
+
+### Analytics states seed
+
+`db:seed:analytics-states` creates a dedicated `analytics-states` organization with one of every analytics state: active, empty and archived cohorts, including an empty cohort with a course and one without; a cohort linked to 11 courses to test horizontal chart scrolling and searchable course selection; a shared course linked across 13 cohorts to test cohort table pagination; pending invites; learners who are completed, on track, lagging or at risk; recent, inactive and never-used logins; graded, awaiting-grade, still-to-pass and passed-after-retry attempts; overdue goals, compliance records and exercises; certificates; grouped and ungrouped courses; a course without a pass mark; an empty course; and an archived course. It deletes and recreates that organization on each run, so it is deterministic and safe to repeat. The reset also removes an organization left by the older `insights-states` version of this seed, which used the same ids, and the seed people's memberships, posts and comments in other organizations, so the seed can be rerun on a database that has been used.
+
+```bash
+pnpm --filter @cio/db db:seed:analytics-states
+```
+
+Sign in with `admin@analytics-states.demo`, `tutor@analytics-states.demo`, or a learner such as `priya@analytics-states.demo`. Every account uses `123456`.
+
+### Analytics load seed
+
+`db:seed:analytics-load` creates an `analytics-load` organization sized for performance checks: 5,000 students in 20 cohorts of 250, each cohort on 3 courses with lessons, exercises, attempts, attendance and logins. Sign in with `admin@analytics-load.demo` or `tutor@analytics-load.demo` (password `123456`).
+
+```bash
+pnpm --filter @cio/db db:seed:analytics-load
+```
+
+To time every preset widget against it, run `apps/api/scripts/measure-analytics.ts` with `tsx` from `apps/api`. `ANALYTICS_LOAD_ORG` picks another organization by site name, `ANALYTICS_BENCHMARK_RUNS` sets the runs per widget (default 5), and `ANALYTICS_EXPLAIN_WIDGET=<widget id>` prints that widget's query plan.
 
 ### Demo accounts
 

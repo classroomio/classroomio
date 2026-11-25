@@ -15,9 +15,10 @@ One JSON file per editing job. Paths are relative to the file. A path that start
 | `corrections` | `{}` | Word fixes for the cleaned transcript: `{"SAS": "SaaS", "classroom": "ClassroomIO"}`. Keys match the bare word, case-sensitive first, and trailing punctuation is kept. |
 | `phrase_corrections` | brand defaults | Multi-word fixes such as `{"classroom io": "ClassroomIO", "class room": "ClassroomIO"}`. Applied before `corrections`. |
 | `drop_words` | `um uh erm hmm` | Words removed from captions only. The audio is untouched. |
-| `audio` | see below | `denoise`, `trim_pauses`, `pause_db` (−35), `pause_min` (0.4 s), `pad_before` (0.12), `pad_after` (0.08), `loudness` (−14). |
+| `audio` | see below | `denoise` (false), `master` (false), `gain_db` (0), `trim_pauses`, `pause_db` (−35), `pause_min` (0.4 s), `pad_before` (0.12), `pad_after` (0.08), `loudness` (−14, used only with `master`). |
 | `sign_off` | ClassroomIO default | `headline` (lines), `swipe` (the word that gets the sky marker), `url`, optional `blocks` (`kind`, `title`, `tone`: sand, tint or blue). `enabled: false` skips it. `file` reuses an existing sign-off: name the 16x9 file, and the 9x16 file is found by swapping the suffix. |
 | `url` | `CLASSROOMIO.COM` | Mono footer on vertical cuts. |
+| `logo_bug` | `true` | The white logo in the top-right of 16:9 cuts. Turn it off when the recording already shows the ClassroomIO logo or the corner overlaps a light screen. |
 | `thumbnail` | | `label` and `url` for the thumbnail's colour rows. |
 | `guide` | | `title`, `lede`, `band`, `schedule_intro`, `notes: [{title, text}]` and `youtube_footer` for the posting-guide PDF. |
 | `clips` | required | List of clips (below). |
@@ -31,6 +32,7 @@ One JSON file per editing job. Paths are relative to the file. A path that start
 | `file` | Instead of `start`: a pre-cut clip, located in the source by audio alignment. `trim_start` adds seconds. |
 | `start_phrase`, `end_phrase` | Instead of seconds: the first and last words of the clip as spoken. `search_from` (seconds) disambiguates repeats. |
 | `duration` | Instead of `end`. |
+| `hard_end` | Source second where the clip must stop, even mid-pause. Use it when the screen changes or the next sentence starts right after the last word. Without it the clip runs on to just before the next spoken word (at most 1.25 s past the last word's start). |
 | `speaker` | Optional one-line credit under the 16:9 title card headline, for example `Andrew Bedell, Strategy and Operations Intern, SensorHubb`. |
 | `title` | Headline on the 16:9 title card and the 9:16 header. A plain claim in sentence case, 4–9 words. |
 | `thumbnail` | Thumbnail headline, at most 6 words. |
@@ -44,6 +46,7 @@ One JSON file per editing job. Paths are relative to the file. A path that start
 ## Picking good windows
 
 - Run `cio-video words` around the moment, then end on the word that finishes the sentence. A clip that stops mid-sentence feels cut off on its own.
+- Look at the frames just after the last word. If the screen moves on to the next scene before the next word, set `hard_end` before that frame.
 - Overlapping windows are fine (one clip can repeat the previous clip's last line), but give each clip its own opening.
 - Short is fine. A strong 15 s clip beats a 60 s ramble.
 - After `plan`, read the cleaned transcript and add corrections until it reads like the speaker meant it.

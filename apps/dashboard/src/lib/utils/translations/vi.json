@@ -37,7 +37,16 @@
         "caption": "Đang chuẩn bị khóa học, học viên và cài đặt của bạn."
       }
     },
-    "back": "Quay lại"
+    "back": "Quay lại",
+    "range": {
+      "7d": "7 ngày qua",
+      "30d": "30 ngày qua",
+      "90d": "90 ngày qua",
+      "all": "Mọi lúc",
+      "label": "Phạm vi thời gian",
+      "locked": "Nâng cấp để mở khóa khoảng thời gian này"
+    },
+    "dismiss": "Đóng"
   },
   "validations": {
     "generic": {
@@ -91,7 +100,8 @@
     },
     "auth": {
       "password": {
-        "min_char": "Phải dài từ 8 ký tự trở lên"
+        "min_char": "Phải dài từ 8 ký tự trở lên",
+        "max_bytes": "Không được vượt quá 72 byte"
       },
       "email": {
         "invalid_email": "Địa chỉ email không hợp lệ"
@@ -530,8 +540,30 @@
       "test_failed": "Sự kiện thử nghiệm thất bại. Mở nhật ký gửi để xem lý do.",
       "redelivered": "Sự kiện đã được đưa vào hàng đợi để gửi lại."
     },
+    "analytics": {
+      "reminder_sent": "Đã gửi lời nhắc",
+      "reminder_not_sent": "Lời nhắc chưa được gửi: đã gửi hôm nay, hoặc học viên đã tắt các email này",
+      "reminder_failed": "Không thể gửi lời nhắc",
+      "reminders_sending": "Đang gửi lời nhắc nhở…",
+      "reminders_sent": "{count, plural, one {# lời nhắc đã được gửi} other {# lời nhắc đã được gửi}}",
+      "target_saved": "Đã lưu mục tiêu học viên",
+      "target_failed": "Không thể lưu mục tiêu học viên",
+      "target_invalid": "Nhập số nguyên từ 1 đến 1.000.000",
+      "reminders_truncated": "{count, plural, other {Đã gửi # lời nhắc}}. Có quá nhiều học viên quá hạn để gửi cùng lúc — hãy thu hẹp khóa học để tiếp cận những người còn lại.",
+      "students_refresh_failed": "Không thể làm mới danh sách học viên",
+      "refresh_failed": "Không thể làm mới phân tích"
+    },
     "oauth": {
       "revoked": "Đã gỡ quyền truy cập của ứng dụng"
+    },
+    "org_switcher": {
+      "open_academy_failed": "Không thể mở học viện đó. Vui lòng thử lại."
+    },
+    "zapier": {
+      "removed": "Đã xóa quyền truy cập Zapier",
+      "remove_failed": "Không thể gỡ quyền truy cập Zapier. Hãy thử lại.",
+      "redelivered": "{count} sự kiện không thành công được xếp hàng để phân phối lại",
+      "redeliver_failed": "Không thể gửi lại các sự kiện không thành công"
     }
   },
   "explore": {
@@ -556,7 +588,12 @@
     "any_progress": "Bất kỳ khóa học nào bạn bắt đầu sẽ được hiển thị ở đây",
     "not_completed": "Không có khóa học nào hoàn thành",
     "any_course": "Bất kỳ khóa học nào bạn hoàn thành sẽ được hiển thị ở đây",
-    "find_courses": "Tìm khóa học"
+    "find_courses": "Tìm khóa học",
+    "pending_invites": {
+      "title": "Bạn có lời mời khóa học đang chờ",
+      "description": "Hãy chấp nhận để bắt đầu học.",
+      "review": "Xem lời mời"
+    }
   },
   "certificates": {
     "heading": "Chứng chỉ",
@@ -593,10 +630,10 @@
     "enterprise_required": "Tính năng này yêu cầu gói Enterprise.",
     "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai.",
     "unlock_field": "Nâng cấp để mở khóa cài đặt này",
-    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook."
+    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook.",
+    "zapier_required": "Zapier yêu cầu gói Early Adopter hoặc Enterprise."
   },
-  "analytics": {
-    "title": "Phân tích",
+  "student_progress": {
     "courses": "Khóa học",
     "progress": "Tiến độ",
     "progress_description": "{value, number} của {total, number} đã hoàn thành",
@@ -618,118 +655,15 @@
     "assignment_completion": "Hoàn thành bài tập",
     "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
     "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành",
-    "students": "Sinh viên",
     "lessons": "Bài học",
     "tutors": "gia sư",
     "avg_grade": "Điểm trung bình",
-    "completion_rate": "Tỷ lệ hoàn thành",
-    "student_progress_overview": "Tổng quan về tiến bộ của học sinh",
-    "student_name": "Tên sinh viên",
     "lessons_completed": "Bài học đã hoàn thành",
-    "exercises_submitted": "Bài tập đã gửi",
     "average_grade": "Điểm trung bình",
-    "actions": "Hành động",
-    "view_details": "Xem chi tiết",
-    "no_students_found": "Không tìm thấy sinh viên nào",
-    "no_students_description": "Hiện chưa có học viên nào đăng ký khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
-    "showing_students": "Đang hiển thị {start} cho {end} trong tổng số {total} sinh viên",
-    "no_analytics_data": "Không có dữ liệu phân tích",
-    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.",
     "student": "Học viên",
-    "student_progress_distribution": "Phân phối tiến bộ của học sinh",
-    "grade_distribution": "Phân phối lớp",
-    "progress_80_plus": "Tiến độ trên 80%",
-    "progress_60_79": "Tiến độ 60-79%",
-    "progress_below_60": "Tiến độ dưới 60%",
-    "grade_90_plus": "90% + Lớp",
-    "grade_80_89": "Lớp 80-89%",
-    "grade_70_79": "Lớp 70-79%",
-    "grade_below_70": "Dưới 70% lớp",
-    "number_of_students": "Số lượng sinh viên",
-    "progress_range": "Phạm vi tiến độ",
-    "grade_range": "Khoảng điểm",
-    "no_progress_data": "Không có dữ liệu tiến độ",
-    "no_grade_data": "Không có dữ liệu điểm",
     "loading_chart": "Đang tải biểu đồ...",
     "no_data_default": "Không có sẵn dữ liệu",
     "no_data_default_description": "Không có dữ liệu để hiển thị tại thời điểm này.",
-    "subtitle": "Hiểu cách khách truy cập khám phá các khóa học của bạn và chuyển đổi thành sinh viên.",
-    "refresh": "Làm mới",
-    "popularTypes": {
-      "heading": "Các loại khóa học phổ biến",
-      "description": "Tuyển sinh được nhóm theo loại khóa học",
-      "subtitle": "{total} lượt đăng ký trên tất cả các loại",
-      "empty": "Chưa có dữ liệu tuyển sinh",
-      "course_count": "{count, plural, one {# khóa học} other {# khóa học}}",
-      "views_short": "lượt xem",
-      "types": {
-        "SELF_PACED": "Tự nhịp độ",
-        "LIVE_CLASS": "Lớp học trực tiếp",
-        "COMPLIANCE": "Tuân thủ",
-        "PUBLIC": "công cộng"
-      }
-    },
-    "topCourses": {
-      "heading": "Khóa học hàng đầu theo lượt xem",
-      "description": "Khóa học xếp hạng theo lượt xem trang",
-      "subtitle": "Xếp hạng theo lượt xem trang trong khoảng này",
-      "empty": "Chưa có lượt xem trang khóa học",
-      "course": "Khóa học",
-      "views": "Lượt xem"
-    },
-    "countries": {
-      "heading": "Các quốc gia hàng đầu",
-      "subtitle": "tổng số {total} khách truy cập",
-      "empty": "Chưa có dữ liệu vị trí",
-      "country": "Quốc gia",
-      "visitors": "Du khách",
-      "enrollments_short": "đã ghi danh"
-    },
-    "funnel": {
-      "heading": "Phễu chuyển đổi",
-      "description": "Từ lần truy cập đầu tiên đến khi hoàn thành khóa học",
-      "empty": "Chưa có dữ liệu kênh",
-      "step": {
-        "landing_view": "Lượt xem đích",
-        "course_page_view": "Lượt xem trang khóa học",
-        "enrollment_completed": "tuyển sinh",
-        "course_completed": "Hoàn thành"
-      }
-    },
-    "trend": {
-      "heading": "Lưu lượng truy cập theo thời gian",
-      "description": "Lượt xem trang và đăng ký theo ngày",
-      "empty": "Không có lưu lượng truy cập trong phạm vi đã chọn",
-      "views": "Lượt xem",
-      "enrollments": "tuyển sinh"
-    },
-    "kpi": {
-      "landing_views": "Lượt xem đích",
-      "unique_visitors": "Số lượng khách truy cập",
-      "course_page_views": "Lượt xem trang khóa học",
-      "enrollments": "tuyển sinh",
-      "range_description": "Trong phạm vi đã chọn"
-    },
-    "range": {
-      "7d": "7 ngày qua",
-      "30d": "30 ngày qua",
-      "90d": "90 ngày qua"
-    },
-    "tabs": {
-      "overview": "Tổng quan",
-      "funnel": "Kênh",
-      "geography": "Địa lý",
-      "course_types": "Các loại khóa học"
-    },
-    "course_metrics": {
-      "page_subtitle": "Việc ghi danh, hoàn thành bài học, điểm số và sự tiến bộ của mỗi học sinh đối với khóa học này.",
-      "progress_distribution_card_description": "Có bao nhiêu học sinh rơi vào mỗi mức độ hoàn thành.",
-      "grade_distribution_card_description": "Có bao nhiêu học sinh rơi vào từng nhóm lớp.",
-      "students_table_description": "Tổng quan có thể sắp xếp với các liên kết đến hồ sơ sinh viên.",
-      "kpi_team_tutors": "{count, plural, one {# gia sư trong nhóm khóa học} other {# gia sư trong nhóm khóa học}}",
-      "kpi_lessons_exercises": "{count, plural, one {# bài tập} other {# bài tập}} được ánh xạ tới bài học",
-      "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký"
-    },
     "exercises_completed": "Bài tập đã hoàn thành",
     "course_progress": "Tiến độ khóa học",
     "just_now": "vừa mới đây",
@@ -803,6 +737,10 @@
       "csv_hint": "CSV UTF-8 với cột email. Tối đa {rows} hàng, 5 MB.",
       "download_template": "Tải xuống mẫu",
       "paste_hint": "Một địa chỉ trên mỗi dòng, hoặc phân tách bằng dấu phẩy.",
+      "edit_email": "Chỉnh sửa email",
+      "edit_name": "Chỉnh sửa tên",
+      "search_placeholder": "Tên hoặc email",
+      "search_no_results": "Không có dòng nào khớp với tìm kiếm của bạn.",
       "review": "Xem lại",
       "done": "Hoàn tất",
       "count_ready": "{count} sẵn sàng",
@@ -1754,6 +1692,9 @@
         "drag": "kéo thẻ để sắp xếp lại",
         "no_lesson": "Chưa có bài học nào",
         "share_your_knowledge": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm.",
+        "empty_title": "Khóa học này đang trống",
+        "empty_description": "Thêm bài học, bài tập hoặc chứng chỉ để bắt đầu xây dựng khóa học.",
+        "empty_drawer_certificates": "Chứng chỉ",
         "add_content": "Thêm nội dung",
         "add_content_description": "Chọn loại nội dung bạn muốn thêm.",
         "add_content_details": "Điền thông tin chi tiết cho nội dung này.",
@@ -1814,6 +1755,8 @@
           "undo_change": "Hoàn tác",
           "by_assistant": "Trợ lý",
           "by_restore": "Khôi phục",
+          "by_ai_client": "Ứng dụng AI",
+          "by_api": "API",
           "change_added": "Đã thêm {name}",
           "change_removed": "Đã xóa {name}",
           "change_moved": "Đã di chuyển {name}",
@@ -1864,6 +1807,16 @@
           "chill": "thư giãn với các chàng trai lớn",
           "add_exercise": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo ra các bài tập hấp dẫn. Thêm một bài tập bây giờ.",
           "all_exercises": {
+            "draft_recovery": "Đã tìm thấy một bản nháp chưa được lưu cho bài tập này. Bạn có muốn khôi phục nó không?",
+            "remote_update": {
+              "merged_title": "Đã hợp nhất thay đổi của Trợ lý",
+              "merged_description": "Các chỉnh sửa chưa lưu của bạn được giữ lại khi thêm thay đổi của Trợ lý.",
+              "conflict_title": "Xem lại thay đổi của Trợ lý",
+              "conflict_description": "Trợ lý đã thay đổi {count} mục mà bạn cũng đã chỉnh sửa. Phiên bản của bạn hiện được giữ lại.",
+              "keep_mine": "Giữ chỉnh sửa của tôi",
+              "use_assistant": "Dùng thay đổi của Trợ lý",
+              "dismiss": "Đóng"
+            },
             "heading": "Tất cả bài tập",
             "questions": "Câu hỏi",
             "submissions": "bài nộp",
@@ -2504,6 +2457,7 @@
                 "loading_library": "Đang tải thư viện phương tiện...",
                 "no_library_videos": "Không có video nào trong thư viện phương tiện của bạn",
                 "add_from_library": "Thêm",
+                "upload_not_finished": "Tải lên chưa hoàn tất. Video này chưa có tệp nên không thể thêm.",
                 "cancel_upload": "Hủy tải lên",
                 "upload_cancelled": "Tải lên bị người dùng hủy",
                 "max_files": "{count, plural, one {Bạn có thể tải lên # tệp} other {Bạn có thể tải lên # tệp}}",
@@ -2694,6 +2648,7 @@
             "empty_description": "Thêm ghi chú, video, slide, tài liệu hoặc hình ảnh. Bạn có thể thêm bao nhiêu khối tùy thích, theo bất kỳ thứ tự nào.",
             "empty_note": "Ghi chú này trống.",
             "scroll_rail": "Khối bài học",
+            "save_failed": "Không thể lưu thay đổi này nên khối đã được khôi phục. {reason}",
             "go_to_block": "Đi đến khối {index}",
             "image": {
               "upload": "Tải ảnh lên",
@@ -3566,6 +3521,26 @@
     "sitename": "Tên miền phụ của học viện đã tồn tại",
     "error_organization": "Đã xảy ra lỗi khi tạo tổ chức này. Vui lòng tải lại và thử lại"
   },
+  "org_chooser": {
+    "page_title": "Các tổ chức của bạn",
+    "title": "Chọn một học viện để tiếp tục",
+    "subtitle": "Bạn có quyền truy cập vào {count, plural, other {# học viện}}. Chọn nơi bạn muốn đến.",
+    "managed_heading": "Tổ chức bạn quản lý",
+    "learning_heading": "Nơi bạn học",
+    "invites_heading": "Lời mời đang chờ",
+    "open_dashboard": "Mở bảng điều khiển {name}",
+    "open_academy": "Mở {name} trên {host}",
+    "invited_as": "Được mời với vai trò {role}",
+    "accept_invite": "Chấp nhận",
+    "invites_error": "Không tải được lời mời của bạn. Kiểm tra kết nối và thử lại.",
+    "invites_retry": "Thử lại",
+    "create_heading": "Điều hành học viện riêng của bạn",
+    "create_description": "Tạo tổ chức, xuất bản khóa học và mời học viên của riêng bạn.",
+    "create_cta": "Tạo tổ chức",
+    "for_teams": "Dành cho nhóm",
+    "different_account": "Không thấy học viện của bạn?",
+    "different_account_cta": "Thử email khác"
+  },
   "setup": {
     "your_checklist": "Danh sách kiểm tra của bạn",
     "get_started": "Bắt đầu",
@@ -3653,7 +3628,6 @@
     "tags": "Thẻ",
     "automation": "Tự động hóa",
     "widgets": "Widget",
-    "stats": "Thống kê",
     "analytics": "Phân tích",
     "compliance": "Tuân thủ",
     "cohorts": "Nhóm học tập",
@@ -3667,7 +3641,9 @@
     "back_to_app": "Quay lại ứng dụng",
     "create": "Tạo",
     "distribute": "phân phối",
-    "tools": "Công cụ"
+    "tools": "Công cụ",
+    "marketing": "Tiếp thị",
+    "org_analytics": "Học viện"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -3743,7 +3719,8 @@
     "status": {
       "active": "Đang hoạt động",
       "archived": "Đã lưu trữ",
-      "processing": "Đang xử lý"
+      "processing": "Đang xử lý",
+      "upload_not_finished": "Tải lên chưa hoàn tất"
     },
     "provider": {
       "upload": "Tải lên",
@@ -4734,7 +4711,11 @@
       "heading": "Mật khẩu mới",
       "description": "Nhập chi tiết mật khẩu mới của bạn"
     },
-    "continue_with": "Hoặc tiếp tục với"
+    "continue_with": "Hoặc tiếp tục với",
+    "existing_account": {
+      "message": "Đã có tài khoản với email này.",
+      "cta": "Đăng nhập"
+    }
   },
   "app": {
     "search": {
@@ -5089,6 +5070,18 @@
       "disabled": "Liên kết mời này đã bị tổ chức vô hiệu hóa.",
       "join_failed": "Không thể tham gia tổ chức",
       "joined": "Đã tham gia tổ chức"
+    },
+    "course": {
+      "modal": {
+        "title": "Bạn đã được mời tham gia một khóa học",
+        "description": "Chấp nhận lời mời để thêm khóa học vào quá trình học của bạn.",
+        "accept": "Chấp nhận",
+        "later": "Để sau"
+      },
+      "messages": {
+        "joined": "Bạn đã tham gia khóa học.",
+        "join_failed": "Không thể chấp nhận lời mời. Vui lòng thử lại."
+      }
     }
   },
   "automation": {
@@ -5174,7 +5167,636 @@
       "disabled_description": "Chỉ quản trị viên tổ chức mới có thể quản lý tự động hóa, bao gồm các ứng dụng đã kết nối và khóa."
     },
     "zapier": {
-      "page_subtitle": "Tự động hóa ClassroomIO với hàng nghìn ứng dụng qua Zapier. Sắp ra mắt."
+      "page_subtitle": "Tự động hóa ClassroomIO với hàng nghìn ứng dụng qua Zapier.",
+      "permissions_description": "Chỉ quản trị viên tổ chức mới có thể kết nối Zapier và quản lý các kết nối của tổ chức.",
+      "create_zap": "Tạo một Zap",
+      "upgrade": {
+        "title": "Nâng cấp để kết nối Zapier",
+        "description": "Kết nối ClassroomIO với Zapier yêu cầu gói Early Adopter hoặc Enterprise.",
+        "cta": "Nâng cấp gói"
+      },
+      "error": {
+        "title": "Không thể tải các kết nối Zapier",
+        "description": "Không thể kết nối tới máy chủ. Kiểm tra kết nối của bạn và thử lại.",
+        "retry": "Thử lại"
+      },
+      "paused": {
+        "title": "Zapier đang tạm dừng",
+        "description": "Gói của bạn không còn bao gồm Zapier. Các Zap sẽ thất bại cho đến khi bạn nâng cấp; các kết nối của bạn vẫn được giữ nguyên."
+      },
+      "selfhosted": {
+        "title": "Zapier có sẵn trên ClassroomIO Cloud",
+        "description": "Trên bản cài đặt tự lưu trữ (self-hosted), hãy sử dụng Webhooks với trigger Webhooks by Zapier và khóa API cho các hành động."
+      },
+      "catalog": {
+        "categories": {
+          "all": "Tất cả",
+          "crm": "CRM",
+          "marketing": "Tiếp thị",
+          "communication": "Giao tiếp",
+          "customer-support": "Hỗ trợ khách hàng",
+          "sales": "bán hàng",
+          "productivity": "Năng suất",
+          "forms": "Biểu mẫu & khảo sát",
+          "analytics": "Phân tích",
+          "community": "Cộng đồng"
+        }
+      },
+      "app_sheet": {
+        "title": "ClassroomIO + {app}",
+        "create_zap": "Tạo một {app} Zap"
+      },
+      "catalog_triggers": {
+        "new_course_enrollment": {
+          "label": "Đăng ký khóa học mới"
+        },
+        "course_member_removed": {
+          "label": "Học viên bị xóa khỏi khóa học"
+        },
+        "course_completed": {
+          "label": "Khóa học đã hoàn thành"
+        },
+        "new_certificate": {
+          "label": "Chứng chỉ mới"
+        },
+        "new_submission": {
+          "label": "Bài nộp bài tập mới"
+        },
+        "submission_status_changed": {
+          "label": "Trạng thái bài nộp đã thay đổi"
+        },
+        "lesson_completed": {
+          "label": "Bài học đã hoàn thành"
+        },
+        "course_invite_accepted": {
+          "label": "Lời mời tham gia khóa học đã được chấp nhận"
+        },
+        "new_payment_request": {
+          "label": "Yêu cầu thanh toán mới"
+        },
+        "new_organization_member": {
+          "label": "Thành viên tổ chức mới"
+        },
+        "compliance_status_changed": {
+          "label": "Trạng thái tuân thủ đã thay đổi"
+        },
+        "course_published": {
+          "label": "Khóa học đã được xuất bản"
+        },
+        "live_session_scheduled": {
+          "label": "Phiên học trực tiếp đã được lên lịch"
+        },
+        "new_cohort_member": {
+          "label": "Thành viên nhóm mới"
+        }
+      },
+      "catalog_actions": {
+        "enroll_student": {
+          "label": "Ghi danh học viên vào khóa học"
+        },
+        "add_student": {
+          "label": "Thêm học viên vào tổ chức"
+        },
+        "update_student": {
+          "label": "Cập nhật thông tin học viên"
+        },
+        "remove_student": {
+          "label": "Xóa học viên khỏi tổ chức"
+        },
+        "remove_course_member": {
+          "label": "Xóa học viên khỏi khóa học"
+        },
+        "send_course_invite": {
+          "label": "Gửi lời mời tham gia khóa học"
+        },
+        "revoke_course_invite": {
+          "label": "Thu hồi lời mời tham gia khóa học"
+        },
+        "reset_course_progress": {
+          "label": "Đặt lại tiến trình khóa học của học viên"
+        },
+        "mark_lesson_complete": {
+          "label": "Đánh dấu bài học đã hoàn thành"
+        },
+        "add_cohort_member": {
+          "label": "Thêm học viên vào nhóm"
+        },
+        "post_cohort_announcement": {
+          "label": "Đăng lên bảng tin của nhóm"
+        }
+      },
+      "apps": {
+        "hubspot": {
+          "description": "Nền tảng CRM và khách hàng"
+        },
+        "salesforce": {
+          "description": "CRM dành cho đội ngũ bán hàng và dịch vụ"
+        },
+        "mailchimp": {
+          "description": "Tiếp thị qua email và đối tượng người xem"
+        },
+        "customerio": {
+          "description": "Chiến dịch nhắn tin và vòng đời khách hàng"
+        },
+        "slack": {
+          "description": "Giao tiếp nhóm và cộng tác"
+        },
+        "teams": {
+          "description": "Trò chuyện và các kênh cho tổ chức của bạn"
+        },
+        "google_meet": {
+          "description": "Cuộc họp video trong Google Workspace"
+        },
+        "zoom": {
+          "description": "Họp video và hội thảo trực tuyến"
+        },
+        "zendesk": {
+          "description": "Hỗ trợ khách hàng và xử lý yêu cầu"
+        },
+        "intercom": {
+          "description": "Nền tảng nhắn tin khách hàng"
+        },
+        "calendly": {
+          "description": "Liên kết lên lịch và đặt lịch hẹn"
+        },
+        "calcom": {
+          "description": "Liên kết đặt lịch và hẹn mã nguồn mở"
+        },
+        "sheets": {
+          "description": "Bảng tính và quản lý dữ liệu"
+        },
+        "notion": {
+          "description": "Tài liệu, wiki và ghi chú dự án"
+        },
+        "confluence": {
+          "description": "Tài liệu và wiki cho các nhóm kỹ thuật"
+        },
+        "typeform": {
+          "description": "Biểu mẫu và khảo sát"
+        },
+        "jotform": {
+          "description": "Biểu mẫu và khảo sát"
+        },
+        "pendo": {
+          "description": "Tiếp nhận kỹ thuật số và sử dụng sản phẩm"
+        },
+        "mixpanel": {
+          "description": "Phân tích sản phẩm và phễu chuyển đổi"
+        },
+        "circle": {
+          "description": "Không gian cộng đồng và thảo luận"
+        }
+      },
+      "directory": {
+        "title": "Thư mục ứng dụng",
+        "subtitle": "Duyệt qua các ứng dụng bạn có thể kết nối với ClassroomIO thông qua Zapier.",
+        "create_zap": "Tạo Zap trong Zapier",
+        "back": "Quay lại Zaps",
+        "search_placeholder": "Tìm kiếm ứng dụng…",
+        "filters_title": "Bộ lọc",
+        "categories": "Danh mục",
+        "all_apps": "Tất cả ứng dụng",
+        "count": {
+          "all": "{count} ứng dụng",
+          "one": "1 ứng dụng",
+          "all_matching": "{count} ứng dụng phù hợp với “{query}”",
+          "one_matching": "1 ứng dụng phù hợp với “{query}”"
+        },
+        "empty": {
+          "title": "Không có ứng dụng nào phù hợp với tìm kiếm của bạn",
+          "description": "Hãy thử một tên khác hoặc duyệt qua mọi ứng dụng mà Zapier kết nối với ClassroomIO.",
+          "search_zapier": "Tìm kiếm ở Zapier"
+        },
+        "end": {
+          "title": "Đó là mọi ứng dụng chúng tôi đã chọn",
+          "description": "Zapier kết nối ClassroomIO với hàng nghìn người khác.",
+          "cta": "Tiếp tục ở Zapier"
+        }
+      },
+      "page_title": "Zap",
+      "zaps_empty": {
+        "title": "Zapier chưa được kết nối"
+      },
+      "invite": {
+        "title": "Kết nối ClassroomIO với Zapier",
+        "description": "Zapier cần bạn chấp nhận lời mời ClassroomIO một lần trước khi bạn có thể tạo Zaps.",
+        "step_1_title": "Chấp nhận lời mời ClassroomIO trên Zapier",
+        "step_1_description": "Zapier yêu cầu bạn chấp nhận một lần. Sau đó, ClassroomIO xuất hiện trong tài khoản Zapier của bạn.",
+        "step_1_button": "Mở lời mời trên Zapier",
+        "step_2_title": "Tiếp tục với Zap của bạn",
+        "step_2_description": "Zap của bạn sẽ mở trong một tab mới. Không có gì chạy cho đến khi bạn bật nó lên.",
+        "step_2_button": "Tiếp tục đến Zapier",
+        "already_accepted": "Tôi đã chấp nhận rồi",
+        "note": "ClassroomIO hiện chỉ dành cho người được mời trên Zapier. Chấp nhận lời mời một lần trước khi xây dựng Zap đầu tiên của bạn.",
+        "step_done": "Xong"
+      },
+      "recipes": {
+        "tabs_out": "Từ ClassroomIO",
+        "tabs_in": "Vào ClassroomIO",
+        "sentence_out": "Khi {trigger} trong ClassroomIO, {action} trong {app}.",
+        "sentence_in": "Khi {trigger} trong {app}, {action} trong ClassroomIO.",
+        "hubspot_deal_stage_enroll": {
+          "title": "Đăng ký khách hàng mới tham gia giới thiệu khi thỏa thuận đạt đến một giai đoạn"
+        },
+        "hubspot_list_enroll": {
+          "title": "Đăng ký liên hệ khi họ tham gia danh sách HubSpot"
+        },
+        "hubspot_form_invite": {
+          "title": "Mời biểu mẫu đăng ký tham gia khóa học"
+        },
+        "hubspot_completed_contact": {
+          "title": "Cập nhật liên hệ khi họ hoàn thành khóa học"
+        },
+        "hubspot_certificate_list": {
+          "title": "Thêm người học được chứng nhận vào danh sách HubSpot"
+        },
+        "hubspot_compliance_task": {
+          "title": "Tạo nhiệm vụ tiếp theo khi việc đào tạo trở nên quá hạn"
+        },
+        "salesforce_certificate_record": {
+          "title": "Ghi lại từng chứng chỉ trong Salesforce"
+        },
+        "salesforce_completed_contact": {
+          "title": "Cập nhật liên hệ khi họ hoàn thành khóa học"
+        },
+        "salesforce_payment_lead": {
+          "title": "Tạo khách hàng tiềm năng cho mỗi yêu cầu thanh toán"
+        },
+        "salesforce_contact_enroll": {
+          "title": "Đăng ký các liên hệ mới trong quá trình giới thiệu"
+        },
+        "salesforce_opportunity_enroll": {
+          "title": "Ghi danh khách hàng khi cơ hội kết thúc"
+        },
+        "mailchimp_enrollment_subscriber": {
+          "title": "Thêm lượt đăng ký mới vào đối tượng"
+        },
+        "mailchimp_completed_tag": {
+          "title": "Gắn thẻ những người đăng ký đã hoàn thành khóa học"
+        },
+        "mailchimp_removed_untag": {
+          "title": "Xóa thẻ khóa học khi học sinh rời đi"
+        },
+        "mailchimp_subscriber_student": {
+          "title": "Thêm người đăng ký mới là sinh viên"
+        },
+        "mailchimp_tag_enroll": {
+          "title": "Đăng ký người đăng ký khi họ nhận được thẻ"
+        },
+        "customerio_completed_event": {
+          "title": "Gửi kết quả hoàn thành khóa học dưới dạng sự kiện"
+        },
+        "customerio_enrollment_person": {
+          "title": "Tạo hoặc cập nhật người đó khi họ đăng ký"
+        },
+        "customerio_certificate_event": {
+          "title": "Gửi chứng chỉ dưới dạng sự kiện"
+        },
+        "customerio_compliance_event": {
+          "title": "Bắt đầu các chiến dịch nhắc nhở khi đào tạo quá hạn"
+        },
+        "customerio_lesson_event": {
+          "title": "Gửi tiến độ bài học dưới dạng sự kiện"
+        },
+        "slack_completed_channel": {
+          "title": "Đăng lên kênh khi khóa học hoàn thành"
+        },
+        "slack_submission_dm": {
+          "title": "Nhắn tin cho gia sư khi học sinh nộp bài tập"
+        },
+        "slack_payment_channel": {
+          "title": "Thông báo cho nhóm về yêu cầu thanh toán"
+        },
+        "slack_compliance_channel": {
+          "title": "Gắn cờ đào tạo quá hạn trong một kênh"
+        },
+        "slack_certificate_channel": {
+          "title": "Kỷ niệm các chứng chỉ mới"
+        },
+        "slack_member_enroll": {
+          "title": "Đăng ký thành viên không gian làm việc mới để giới thiệu"
+        },
+        "teams_completed_channel": {
+          "title": "Đăng lên kênh khi khóa học hoàn thành"
+        },
+        "teams_submission_chat": {
+          "title": "Nhắn tin cho gia sư khi học sinh nộp bài tập"
+        },
+        "teams_compliance_channel": {
+          "title": "Gắn cờ đào tạo quá hạn trong một kênh"
+        },
+        "teams_session_channel": {
+          "title": "Thông báo các phiên trực tiếp trong một kênh"
+        },
+        "teams_member_enroll": {
+          "title": "Đăng ký thành viên nhóm mới tham gia hội nhập"
+        },
+        "meet_session_meeting": {
+          "title": "Tạo Meet cho mỗi phiên trực tiếp"
+        },
+        "meet_completed_meeting": {
+          "title": "Đặt cuộc gọi đánh giá khi khóa học hoàn thành"
+        },
+        "zoom_enrollment_registrant": {
+          "title": "Đăng ký sinh viên mới cho hội thảo trên web"
+        },
+        "zoom_cohort_registrant": {
+          "title": "Đăng ký thành viên nhóm cho cuộc họp khởi động"
+        },
+        "zoom_session_meeting": {
+          "title": "Tạo cuộc họp Zoom cho mỗi phiên trực tiếp"
+        },
+        "zoom_registrant_enroll": {
+          "title": "Đăng ký người đăng ký hội thảo trên web trong tài liệu chuẩn bị"
+        },
+        "zoom_joiner_lesson": {
+          "title": "Đánh dấu bài học trực tiếp là hoàn thành khi người học tham gia"
+        },
+        "zendesk_tag_enroll": {
+          "title": "Đăng ký khách hàng khi đại lý gắn thẻ vé của họ"
+        },
+        "zendesk_compliance_ticket": {
+          "title": "Mở một vé khi đào tạo trở nên quá hạn"
+        },
+        "zendesk_payment_ticket": {
+          "title": "Mở một vé cho mỗi yêu cầu thanh toán"
+        },
+        "zendesk_completed_user": {
+          "title": "Ghi lại quá trình đào tạo đã hoàn thành của người dùng Zendesk"
+        },
+        "zendesk_user_enroll": {
+          "title": "Đăng ký người dùng Zendesk mới vào khóa học bắt đầu"
+        },
+        "intercom_completed_message": {
+          "title": "Nhắn tin cho người dùng khi họ hoàn thành khóa học"
+        },
+        "intercom_completed_tag": {
+          "title": "Gắn thẻ người dùng hoàn tất quá trình giới thiệu"
+        },
+        "intercom_lesson_event": {
+          "title": "Gửi tiến độ bài học dưới dạng sự kiện"
+        },
+        "intercom_user_enroll": {
+          "title": "Đăng ký người dùng mới vào quá trình giới thiệu"
+        },
+        "intercom_tag_enroll": {
+          "title": "Đăng ký người dùng khi họ được gắn thẻ"
+        },
+        "calendly_booking_enroll": {
+          "title": "Ghi danh người được mời vào tài liệu chuẩn bị khi họ đăng ký"
+        },
+        "calendly_noshow_invite": {
+          "title": "Gửi một khóa học theo nhịp độ riêng cho những người vắng mặt"
+        },
+        "calendly_form_student": {
+          "title": "Thêm khách hàng tiềm năng biểu mẫu định tuyến với tư cách là sinh viên"
+        },
+        "calendly_cancel_remove": {
+          "title": "Xóa khóa học dự bị khi hủy đặt chỗ"
+        },
+        "calcom_booking_enroll": {
+          "title": "Ghi danh người tham dự vào tài liệu chuẩn bị khi họ đăng ký"
+        },
+        "calcom_cancel_remove": {
+          "title": "Xóa khóa học dự bị khi hủy đặt chỗ"
+        },
+        "calcom_meeting_invite": {
+          "title": "Gửi khóa học tiếp theo sau cuộc gọi"
+        },
+        "sheets_completed_row": {
+          "title": "Đăng nhập hoàn thành trong một trang tính"
+        },
+        "sheets_certificate_row": {
+          "title": "Giữ một sổ đăng ký chứng chỉ"
+        },
+        "sheets_compliance_row": {
+          "title": "Ghi lại các thay đổi tuân thủ"
+        },
+        "sheets_payment_row": {
+          "title": "Theo dõi yêu cầu thanh toán"
+        },
+        "sheets_row_enroll": {
+          "title": "Đăng ký tất cả mọi người được thêm vào một trang tính"
+        },
+        "sheets_row_cohort": {
+          "title": "Thêm mọi người trong trang tính vào nhóm thuần tập"
+        },
+        "notion_completed_item": {
+          "title": "Theo dõi việc hoàn thành trong cơ sở dữ liệu"
+        },
+        "notion_submission_item": {
+          "title": "Xếp hàng gửi bài để xem xét"
+        },
+        "notion_course_page": {
+          "title": "Thêm một trang cho mỗi khóa học mới"
+        },
+        "notion_item_enroll": {
+          "title": "Đăng ký người được thêm vào cơ sở dữ liệu"
+        },
+        "confluence_course_page": {
+          "title": "Tạo một trang khi một khóa học được xuất bản"
+        },
+        "confluence_session_page": {
+          "title": "Tạo trang chương trình nghị sự cho mỗi phiên trực tiếp"
+        },
+        "confluence_page_announce": {
+          "title": "Thông báo tài liệu mới cho một nhóm thuần tập"
+        },
+        "typeform_entry_enroll": {
+          "title": "Ghi danh người trả lời vào một khóa học"
+        },
+        "typeform_entry_cohort": {
+          "title": "Thêm ứng viên vào nhóm thuần tập"
+        },
+        "typeform_entry_student": {
+          "title": "Thêm người trả lời là sinh viên"
+        },
+        "jotform_submission_enroll": {
+          "title": "Ghi danh những người gửi biểu mẫu"
+        },
+        "jotform_completed_form": {
+          "title": "Gửi mẫu phản hồi khi hoàn thành khóa học"
+        },
+        "jotform_submission_student": {
+          "title": "Thêm những người gửi biểu mẫu với tư cách là sinh viên"
+        },
+        "pendo_status_enroll": {
+          "title": "Đăng ký người yêu cầu vào một khóa học khi yêu cầu của họ được gửi đi"
+        },
+        "pendo_status_announce": {
+          "title": "Thông báo các yêu cầu đã chuyển đến một nhóm thuần tập"
+        },
+        "mixpanel_completed_event": {
+          "title": "Theo dõi việc hoàn thành khóa học"
+        },
+        "mixpanel_enrollment_event": {
+          "title": "Theo dõi tuyển sinh"
+        },
+        "mixpanel_lesson_event": {
+          "title": "Theo dõi tiến độ bài học"
+        },
+        "mixpanel_certificate_profile": {
+          "title": "Đánh dấu người dùng được chứng nhận trên hồ sơ của họ"
+        },
+        "circle_member_enroll": {
+          "title": "Đăng ký thành viên cộng đồng mới vào khóa học chào mừng"
+        },
+        "circle_certificate_space": {
+          "title": "Mở khóa không gian khi người học đạt được chứng chỉ"
+        },
+        "circle_completed_tag": {
+          "title": "Tag thành viên đã hoàn thành khóa học"
+        },
+        "circle_cohort_group": {
+          "title": "Cấp cho các thành viên trong nhóm quyền truy cập vào một nhóm không gian"
+        },
+        "circle_removed_student": {
+          "title": "Loại bỏ những sinh viên rời khỏi cộng đồng"
+        },
+        "use_zap": "Sử dụng Zap",
+        "ways_to_use": "{count} cách sử dụng"
+      },
+      "partner_steps": {
+        "hubspot": {
+          "add_to_list_v3": "Thêm liên hệ vào danh sách",
+          "create_engagement": "Tạo sự tương tác",
+          "form_submission_resthook_v3": "Gửi biểu mẫu mới",
+          "new_contact_in_list_resthook_v3": "Liên hệ mới trong danh sách",
+          "updated_deal_stage": "Giai đoạn giao dịch được cập nhật",
+          "upsert_contact": "Tạo hoặc cập nhật liên hệ"
+        },
+        "salesforce": {
+          "create_lead": "Tạo khách hàng tiềm năng",
+          "create_record": "Tạo bản ghi",
+          "new_contact": "Liên hệ mới",
+          "update_contact": "Cập nhật liên hệ",
+          "updated_field_on_record": "Trường đã cập nhật trên bản ghi"
+        },
+        "mailchimp": {
+          "memberCreate": "Thêm/Cập nhật người đăng ký",
+          "new_member": "Người đăng ký mới",
+          "remove_tag": "Xóa người đăng ký khỏi thẻ",
+          "subscriber_segment": "Thêm người đăng ký vào thẻ",
+          "subscriber_tag": "Người đăng ký mới trong Phân đoạn hoặc Thẻ"
+        },
+        "customerio": {
+          "create_customer": "Tạo hoặc cập nhật một người",
+          "track_event": "Tạo sự kiện"
+        },
+        "slack": {
+          "channel_message": "Gửi tin nhắn kênh",
+          "direct_message": "Gửi tin nhắn trực tiếp",
+          "team_join": "Người dùng mới"
+        },
+        "teams": {
+          "member": "Thành viên nhóm mới",
+          "send_channel_message_from_user": "Gửi tin nhắn kênh",
+          "send_chat_message": "Gửi tin nhắn trò chuyện"
+        },
+        "google_meet": {
+          "schedule_meeting": "Lên lịch một cuộc họp"
+        },
+        "zoom": {
+          "create_meeting": "Tạo cuộc họp",
+          "create_meeting_registrant": "Tạo người đăng ký cuộc họp",
+          "create_registrant": "Tạo người đăng ký hội thảo trên web",
+          "new_joiner": "Người tham gia mới đã tham gia hội thảo hoặc cuộc họp trên web",
+          "new_registrant": "Người đăng ký hội thảo trực tuyến mới"
+        },
+        "zendesk": {
+          "new_tag_ticket": "Thẻ mới được thêm vào vé",
+          "ticket": "Tạo vé",
+          "update_user": "Cập nhật người dùng",
+          "user_v2": "Người dùng mới"
+        },
+        "intercom": {
+          "add_tag_to_contact": "Thêm thẻ vào liên hệ",
+          "create_data_event": "Tạo sự kiện dữ liệu",
+          "new_user_created": "Người dùng mới",
+          "send_message_to_contact": "Gửi tin nhắn đến liên hệ",
+          "user_tag": "Thẻ đã được thêm vào người dùng"
+        },
+        "calendly": {
+          "invitee_canceled": "Người được mời đã bị hủy",
+          "invitee_created": "Người được mời đã được tạo hoặc lên lịch lại",
+          "invitee_no_show_created": "Người được mời vắng mặt đã được tạo",
+          "routing_form_submission": "Gửi biểu mẫu định tuyến mới"
+        },
+        "calcom": {
+          "booking_cancelled": "Đặt chỗ đã bị hủy",
+          "booking_created": "Đã tạo đặt chỗ",
+          "meeting_ended": "Cuộc họp đã kết thúc"
+        },
+        "sheets": {
+          "add_row": "Tạo hàng bảng tính",
+          "new_row_notify_hook": "Hàng bảng tính mới"
+        },
+        "notion": {
+          "create_database_item": "Tạo mục nguồn dữ liệu",
+          "create_page": "Tạo trang",
+          "new_data_source_item": "Mục nguồn dữ liệu mới"
+        },
+        "confluence": {
+          "pageCreate": "Tạo Trang hoặc Bài đăng trên Blog",
+          "pageList": "Trang mới hoặc bài đăng trên blog"
+        },
+        "typeform": {
+          "entries_resthook_v2": "Mục mới"
+        },
+        "jotform": {
+          "assign_prefilled_form": "Chỉ định biểu mẫu điền sẵn",
+          "new_submission": "Đệ trình mới"
+        },
+        "pendo": {
+          "feature_status_changed": "Trạng thái yêu cầu đã thay đổi"
+        },
+        "mixpanel": {
+          "engage": "Tạo hoặc cập nhật hồ sơ",
+          "track": "Theo dõi sự kiện"
+        },
+        "circle": {
+          "add_space_group_member": "Thêm thành viên vào nhóm không gian",
+          "add_space_member": "Thêm thành viên vào không gian",
+          "community_member_removed": "Thành viên đã bị xóa",
+          "new_member": "Đã thêm thành viên mới",
+          "tag_members": "Gắn thẻ thành viên"
+        }
+      },
+      "explore_apps": "Khám phá ứng dụng",
+      "my_zaps": "Zap của tôi",
+      "see_all_apps": "Xem tất cả ứng dụng",
+      "popular_zaps": "Zap phổ biến",
+      "view_all": "Xem tất cả",
+      "app_page": {
+        "connected": "{organization} được kết nối với Zapier · {access}.",
+        "manage": "Quản lý",
+        "related_apps": "Ứng dụng liên quan"
+      },
+      "connection": {
+        "title": "Kết nối",
+        "name": "Zapier",
+        "connected_by": "Được kết nối bởi {name} vào {date}",
+        "unknown_admin": "cựu quản trị viên",
+        "disconnect": "Ngắt kết nối",
+        "access_read_write": "Đọc và viết",
+        "access_read_only": "Chỉ đọc"
+      },
+      "failed_events": {
+        "title": "Một số sự kiện đã không đến được Zapier",
+        "description": "Zapier đã bỏ lỡ các sự kiện trong 24 giờ qua. Gửi lại chúng để chạy Zaps lẽ ra phải bắt đầu.",
+        "resend": "Gửi lại sự kiện không thành công"
+      },
+      "disabled_triggers": {
+        "title": "Một số trình kích hoạt đã bị tắt",
+        "description": "Các trình kích hoạt này đã bị tắt sau nhiều lần gửi thất bại. Hãy sửa đầu nhận trong Zapier, sau đó bật lại Zap để đăng ký lại."
+      },
+      "remove": {
+        "title": "Ngắt kết nối Zapier?",
+        "description": "Các Zap sử dụng kết nối này sẽ dừng ngay lập tức và trình kích hoạt hoạt động {count} của nó sẽ bị xóa. Kết nối lại từ Zapier để sử dụng lại chúng.",
+        "confirm": "Ngắt kết nối",
+        "zapier_side": "ClassroomIO không thể xóa kết nối khỏi tài khoản Zapier của bạn, vì vậy hãy xóa kết nối đó luôn.",
+        "open_zapier_connections": "Mở kết nối Zapier"
+      }
     },
     "webhooks": {
       "page_subtitle": "Gửi các sự kiện ClassroomIO theo thời gian thực đến Slack, CRM hoặc backend của riêng bạn.",
@@ -5524,16 +6146,13 @@
     },
     "run_monitor": {
       "cancel": "Hủy tạo khóa học",
-      "dismiss": "Loại bỏ",
       "now_doing": "bây giờ",
       "input_disabled_hint": "Cuộc trò chuyện bị tạm dừng trong khi nhân viên hỗ trợ hoàn tất việc xây dựng khóa học. Hủy bỏ hoặc đợi cho đến khi nó hoàn thành.",
-      "dismiss_confirm": "Bỏ đi",
-      "dismiss_cancel": "Ở lại đây",
-      "dismiss_confirm_body": "Rời khỏi lần tạo đã hủy này? Nút Tiếp tục sẽ biến mất — mọi cuộc trò chuyện tiếp theo sẽ bắt đầu lại và không tiếp tục kế hoạch.",
       "stuck_queued": {
         "title": "Công nhân không phản hồi",
         "body": "Việc tạo khóa học đã chờ hơn 30 giây mà không có tiến trình nền nào tiếp nhận. Tiến trình nền có thể đang tắt hoặc đang khởi động lại."
-      }
+      },
+      "pause": "Tạm dừng tạo khóa học"
     },
     "ask_ai": "Hỏi AI",
     "content_input_placeholder": "Hỏi về nội dung này…",
@@ -5541,7 +6160,12 @@
     "ask_ai_input_aria": "Hỏi AI về nội dung này",
     "upload_error_file_too_large": "Tệp quá lớn. Kích thước tối đa là 5 MB.",
     "upload_error_unsupported_type": "Loại tệp không được hỗ trợ. Vui lòng tải lên tệp PDF, DOCX, PPTX hoặc ODT.",
-    "upload_error_generic": "Không thể tải tài liệu lên. Vui lòng thử lại."
+    "upload_error_generic": "Không thể tải tài liệu lên. Vui lòng thử lại.",
+    "run_paused": "Đã tạm dừng tạo khóa học",
+    "resume_failed": "Không thể tiếp tục tạo khóa học. Vui lòng thử lại.",
+    "pause_failed": "Không thể tạm dừng tạo khóa học. Vui lòng thử lại.",
+    "cancel_failed": "Không thể hủy tạo khóa học. Vui lòng thử lại.",
+    "retry_failed": "Không thể thử lại việc tạo khóa học. Vui lòng thử lại."
   },
   "widgets": {
     "heading": "Widget",
@@ -5928,7 +6552,10 @@
     },
     "switcher": {
       "your_account": "Tài khoản của bạn",
-      "other_organizations": "Các tổ chức khác"
+      "other_organizations": "Các tổ chức khác",
+      "learning": "Học tập",
+      "add_organization": "Thêm tổ chức",
+      "current": "Tổ chức hiện tại"
     }
   },
   "aiTutor": {
@@ -6177,7 +6804,8 @@
       "newsfeed": "Bảng tin",
       "courses": "Khóa học",
       "people": "mọi người",
-      "settings": "Cài đặt"
+      "settings": "Cài đặt",
+      "analytics": "Phân tích"
     },
     "status": {
       "active": "Đang hoạt động",
@@ -6338,6 +6966,10 @@
     "tabs": {
       "direct": "Trực tiếp",
       "watching": "Đang xem"
+    },
+    "pending_course_invite": {
+      "heading": "Lời mời tham gia khóa học",
+      "body": "{orgName} đã mời bạn tham gia khóa học {courseTitle}."
     }
   },
   "export": {
@@ -6474,8 +7106,8 @@
     },
     "empty": {
       "title": "Chưa có khóa học nào",
-      "description": "Chọn một mẫu để xem khóa học ClassroomIO tuyệt vời trông như thế nào hoặc bắt đầu từ một khóa học trống.",
-      "browse": "Duyệt mẫu"
+      "description": "Tạo khóa học một lần, sau đó ghi danh khách hàng của bạn vào đó. Hãy tự tạo hoặc để tác nhân của bạn soạn bản nháp.",
+      "enrolled": "Đã ghi danh"
     },
     "editor": {
       "badge": "mẫu"
@@ -6590,6 +7222,703 @@
     "read_full": "Đọc toàn bộ nhật ký thay đổi",
     "close": "Đóng"
   },
+  "marketing": {
+    "title": "Tiếp thị",
+    "subtitle": "Hiểu cách khách truy cập tìm thấy các khóa học của bạn và chuyển đổi thành học viên.",
+    "popularTypes": {
+      "heading": "Các loại khóa học phổ biến",
+      "description": "Tuyển sinh được nhóm theo loại khóa học",
+      "subtitle": "{total} lượt đăng ký trên tất cả các loại",
+      "empty": "Chưa có dữ liệu tuyển sinh",
+      "course_count": "{count, plural, one {# khóa học} other {# khóa học}}",
+      "views_short": "lượt xem",
+      "types": {
+        "SELF_PACED": "Tự nhịp độ",
+        "LIVE_CLASS": "Lớp học trực tiếp",
+        "COMPLIANCE": "Tuân thủ",
+        "PUBLIC": "công cộng"
+      }
+    },
+    "topCourses": {
+      "heading": "Khóa học hàng đầu theo lượt xem",
+      "description": "Khóa học xếp hạng theo lượt xem trang",
+      "subtitle": "Xếp hạng theo lượt xem trang trong khoảng này",
+      "empty": "Chưa có lượt xem trang khóa học",
+      "course": "Khóa học",
+      "views": "Lượt xem"
+    },
+    "countries": {
+      "heading": "Các quốc gia hàng đầu",
+      "subtitle": "tổng số {total} khách truy cập",
+      "empty": "Chưa có dữ liệu vị trí",
+      "country": "Quốc gia",
+      "visitors": "Du khách",
+      "enrollments_short": "đã ghi danh"
+    },
+    "funnel": {
+      "heading": "Phễu chuyển đổi",
+      "description": "Từ lần truy cập đầu tiên đến khi hoàn thành khóa học",
+      "empty": "Chưa có dữ liệu kênh",
+      "step": {
+        "landing_view": "Lượt xem đích",
+        "course_page_view": "Lượt xem trang khóa học",
+        "enrollment_completed": "tuyển sinh",
+        "course_completed": "Hoàn thành"
+      }
+    },
+    "trend": {
+      "heading": "Lưu lượng truy cập theo thời gian",
+      "description": "Lượt xem trang và đăng ký theo ngày",
+      "empty": "Không có lưu lượng truy cập trong phạm vi đã chọn",
+      "views": "Lượt xem",
+      "enrollments": "tuyển sinh"
+    },
+    "kpi": {
+      "landing_views": "Lượt xem đích",
+      "unique_visitors": "Số lượng khách truy cập",
+      "course_page_views": "Lượt xem trang khóa học",
+      "enrollments": "tuyển sinh",
+      "range_description": "Trong phạm vi đã chọn"
+    },
+    "tabs": {
+      "overview": "Tổng quan",
+      "funnel": "Kênh",
+      "geography": "Địa lý",
+      "course_types": "Các loại khóa học"
+    }
+  },
+  "analytics": {
+    "title": "Phân tích",
+    "updated_seconds_ago": "đã cập nhật {count} giây trước",
+    "updated_minutes_ago": "{count, plural, one {đã cập nhật # phút trước} other {đã cập nhật # phút trước}}",
+    "retry": "Thử lại",
+    "all_courses": "Tất cả các khóa học",
+    "course_picker": "Khóa học",
+    "exercise_picker": "Bài tập",
+    "not_in_section": "Không có trong một phần",
+    "section_number": "Phần {number}",
+    "section_with_title": "Mục {number} · {title}",
+    "finished": "Hoàn thành",
+    "awaiting_grade": "Đang chờ chấm điểm",
+    "awaiting_grade_short": "Chưa giải quyết",
+    "pass_mark_tag": "Điểm đậu {mark}%",
+    "of_total": "{count} trong số {total}",
+    "never": "Không bao giờ",
+    "invited": "{count} đã mời",
+    "no_students": "Không có học viên",
+    "no_students_yet": "Chưa có học viên",
+    "no_graded_attempts": "Không có bài làm được chấm",
+    "names_and_more": "{names} và {count} mục khác",
+    "certificate_issued": "{count, plural, other {Đã cấp #}}",
+    "question_hint": {
+      "context_and_answer": "{context} · câu trả lời sai phổ biến nhất: {answer}",
+      "answer": "Câu trả lời sai phổ biến nhất: {answer}"
+    },
+    "chips": {
+      "label": "Giới thiệu về trang tổng quan này",
+      "live": "Trực tiếp · {updated}",
+      "live_every": "Trực tiếp · {updated} · làm mới mỗi {seconds} giây",
+      "students": "{count, plural, one {# người học} other {# người học}}",
+      "courses": "Khóa học: {count}",
+      "cohorts": "Nhóm thuần tập: {count}",
+      "active_cohorts": "{count, plural, one {# đoàn hệ tích cực} other {# nhóm thuần tập đang hoạt động}}",
+      "seats": "Số ghế: {used} trong tổng số {limit}",
+      "seats_not_joined": "{count} chưa tham gia"
+    },
+    "now_tag": {
+      "label": "Hiện nay",
+      "hint": "Cho thấy vị trí của người học hiện nay. Phạm vi không thay đổi thẻ này."
+    },
+    "student_chips": {
+      "latest": "Mới nhất",
+      "progress": "Tiến triển",
+      "now_at": "bây giờ ở {place}"
+    },
+    "donut": {
+      "students": "{count, plural, one {người học} other {người học}}"
+    },
+    "status": {
+      "at_risk": "Có nguy cơ",
+      "lagging": "tụt hậu",
+      "on_track": "Đang đi đúng hướng",
+      "completed": "Hoàn thành"
+    },
+    "flags": {
+      "overdue": "Quá hạn"
+    },
+    "legend": {
+      "middle_half": "50% người học ở giữa",
+      "cohort_average": "trung bình nhóm",
+      "student": "Người học",
+      "all_students": "Tất cả người học",
+      "in_progress": "{name} (đang tiến hành)",
+      "enrolled_students": "Người học đã đăng ký",
+      "target": "Mục tiêu",
+      "logins": "Lượt đăng nhập",
+      "direct_students": "Người học trực tiếp"
+    },
+    "notes": {
+      "score_distribution": "Người học theo thang điểm.",
+      "course_details": "Chọn một khóa học ở trên để xem điểm theo bài tập, bảng điểm theo từng phần và các câu hỏi khó nhất.",
+      "section_scorecard": "Một hàng cho mỗi phần khóa học. Điểm danh video là tỷ lệ video bài học đã xem. Việc đi học đều do gia sư chấm.",
+      "needs_attention": "Một người học có thể xuất hiện với nhiều lý do.",
+      "overdue": "Người học đã nhận được email nhắc nhở theo lịch trước thời hạn. \"Gửi lời nhắc\" sẽ gửi một lời nhắc ngay bây giờ.",
+      "hardest_questions": "Những câu hỏi người học bỏ lỡ nhiều nhất, với câu trả lời sai phổ biến nhất.",
+      "logins_per_day": "Học viên đăng nhập mỗi ngày.",
+      "students": {
+        "all_courses": "Nhấp vào một học viên để xem các khóa học của họ.",
+        "one_course": "Nhấp vào người học để xếp hạng điểm số của họ. Tìm kiếm, lọc và sắp xếp cũng áp dụng cho việc xuất.",
+        "course_scope": "Chọn một người học để mở ra sự tiến bộ của họ trong khóa học này. Tìm kiếm, lọc và sắp xếp cũng áp dụng cho việc xuất."
+      },
+      "showing_first": "Đang hiển thị {shown} mục đầu tiên trong {total}.",
+      "cohorts_select": "Chọn một nhóm thuần tập để mở trang tổng quan của nhóm đó.",
+      "cohorts_in_table": "{count, plural, one {Đoàn hệ} other {# nhóm thuần tập}} trong bảng trên.",
+      "courses_in_table": "{count, plural, other {# khóa học}} trong bảng trên.",
+      "not_counted_empty": "Không tính: {names} (chưa có học viên).",
+      "not_charted_empty": "Không hiển thị trên biểu đồ: {names} (chưa có học viên).",
+      "lesson_dropoff": "Độ dốc cao nhất là từ {from} đến {to}.",
+      "no_pass_mark": "Ở đây chưa có bài tập nào có điểm đậu nên không có tỷ lệ đạt. Đặt điểm đậu cho một bài tập để xem tỷ lệ này.",
+      "bucketed_total": "Mỗi thanh biểu thị tổng số lượt đăng nhập trong {days} ngày. Một người học được tính một lần mỗi ngày.",
+      "student_sheet_pick_course": "Nhấp vào một khóa học để lập biểu đồ điểm số của họ theo bài tập.",
+      "direct_students_charted": "Người học trực tiếp không thuộc đoàn hệ nào; họ hiển thị thành một đường riêng.",
+      "courses_select": "Chọn một khóa học để mở trang tổng quan của khóa học đó."
+    },
+    "buckets": {
+      "progress": {
+        "0": "0–25",
+        "1": "25–50",
+        "2": "50–75",
+        "3": "75–99",
+        "4": "Xong"
+      },
+      "score": {
+        "4": "<50",
+        "5": "50–59",
+        "6": "60–69",
+        "7": "70–79",
+        "8": "80–89",
+        "9": "90+",
+        "null": "Không có điểm"
+      }
+    },
+    "kpi": {
+      "share_of_cohort": "{percent} của nhóm thuần tập",
+      "share_of_enrolled": "{percent} trong số đã đăng ký",
+      "share_of_completions": "{percent} số lần hoàn thành",
+      "avg_progress_hint": "bài học và bài tập bắt buộc đã hoàn thành / tổng số",
+      "avg_score_hint": "qua các bài tập đã thực hiện",
+      "overdue_hint": "quá thời hạn của họ, chưa xong",
+      "completed_certified": "{percent} của nhóm thuần tập · {count} được chứng nhận",
+      "enrolled_this_week": "{count, plural, =0 {Tuần này không có học viên mới} other {+# tuần này}}",
+      "enrolled_in_days": "{count, plural, =0 {Không có người học mới trong {days} ngày qua} other {+# trong {days} ngày qua}}",
+      "added_in_days": "{count, plural, =0 {Không có trong {days} ngày qua} other {+# trong {days} ngày qua}}",
+      "completed_in_days": "{percent} của nhóm{count, plural, =0 {} other { · +# trong {days} ngày qua}}",
+      "logged_in_days": "Đã đăng nhập, {days} ngày qua",
+      "avg_score_in_days": "số lần thử trong {days} ngày qua",
+      "first_try_in_days": "của {took} được xếp loại trong {days} ngày{still, plural, =0 {} other { · # vẫn vượt qua}} vừa qua",
+      "median_days_in_days": "để hoàn thành trong {days} ngày qua",
+      "first_try_context": "của {took} đã làm bài tập đạt điểm {still, plural, =0 {} other { · # vẫn vượt qua}}",
+      "median_days_hint": "tuyển sinh đến khi hoàn thành",
+      "needs_attention_hint": "không hoạt động, điểm thấp hoặc quá hạn",
+      "delta": {
+        "this_week": {
+          "up": "+{count} điểm trong tuần này",
+          "down": "−{count} điểm trong tuần này",
+          "flat": "Không có thay đổi trong tuần này"
+        },
+        "vs_last_week": {
+          "up": "+{count} điểm so với tuần trước",
+          "down": "−{count} điểm so với tuần trước",
+          "flat": "Không có thay đổi so với tuần trước"
+        },
+        "in_days": {
+          "up": "+{count} điểm trong {days} ngày qua",
+          "down": "−{count} điểm trong {days} ngày qua",
+          "flat": "Không có thay đổi trong {days} ngày qua"
+        },
+        "vs_days_ago": {
+          "up": "+{count} điểm so với {days} ngày trước",
+          "down": "−{count} điểm so với {days} ngày trước",
+          "flat": "Không có thay đổi so với {days} ngày trước"
+        }
+      },
+      "no_data": {
+        "students": "chưa có người học",
+        "graded": "chưa có lượt làm bài được chấm",
+        "first_try": "chưa có lượt làm bài được chấm ở bài tập có điểm đạt",
+        "completions": "chưa có lượt hoàn thành",
+        "enrolments": "chưa có lượt ghi danh",
+        "in_days": "không có trong {days} ngày qua"
+      }
+    },
+    "widgets": {
+      "kpi_logged_in_today": {
+        "title": "Đã đăng nhập hôm nay"
+      },
+      "kpi_logged_in_week": {
+        "title": "Đã đăng nhập, 7 ngày qua"
+      },
+      "kpi_avg_progress": {
+        "title": "Tiến độ trung bình"
+      },
+      "kpi_avg_score": {
+        "title": "Điểm trung bình"
+      },
+      "kpi_avg_grade": {
+        "title": "Điểm trung bình"
+      },
+      "kpi_overdue": {
+        "title": "Quá hạn"
+      },
+      "kpi_completed": {
+        "title": "Hoàn thành"
+      },
+      "kpi_enrolled": {
+        "title": "Đã đăng ký"
+      },
+      "kpi_completion_rate": {
+        "title": "Tỷ lệ hoàn thành"
+      },
+      "kpi_first_try_pass": {
+        "title": "Tỷ lệ đạt"
+      },
+      "kpi_median_days": {
+        "title": "Số ngày trung vị để kết thúc"
+      },
+      "kpi_completions": {
+        "title": "Hoàn thành"
+      },
+      "kpi_certificates": {
+        "title": "Giấy chứng nhận đã cấp"
+      },
+      "kpi_needs_attention": {
+        "title": "Cần chú ý"
+      },
+      "courses_summary": {
+        "title": "Các khóa học trong nhóm này"
+      },
+      "students_by_status": {
+        "title": "Người học theo trạng thái"
+      },
+      "course_details": {
+        "title": "Chi tiết khóa học"
+      },
+      "scores_by_exercise": {
+        "title": "Điểm theo bài tập, {course}"
+      },
+      "progress_distribution": {
+        "title": "Phân phối tiến độ"
+      },
+      "section_scores": {
+        "title": "Điểm số và điểm danh theo từng phần"
+      },
+      "score_distribution": {
+        "title": "Phân phối điểm trung bình"
+      },
+      "section_scorecard": {
+        "title": "Bảng điểm theo từng phần"
+      },
+      "needs_attention": {
+        "title": "Cần sự chú ý, bởi lý do"
+      },
+      "overdue": {
+        "title": "Quá hạn, có nhắc nhở"
+      },
+      "hardest_questions": {
+        "title": "Những câu hỏi khó nhất"
+      },
+      "students": {
+        "title": "Người học"
+      },
+      "logins_per_day": {
+        "title": "Học viên đăng nhập mỗi ngày"
+      },
+      "scores_by_exercise_by_cohort": {
+        "title": "Điểm theo bài tập, theo đoàn hệ"
+      },
+      "exercise_score_distribution": {
+        "title": "Phân phối điểm, {exercise}"
+      },
+      "lesson_dropoff": {
+        "title": "Quá trình hoàn thành bài học"
+      },
+      "hardest_exercises": {
+        "title": "Bài tập khó nhất"
+      },
+      "cohorts_in_course": {
+        "title": "Nhóm tham gia khóa học này"
+      },
+      "cohort_details": {
+        "title": "Chi tiết nhóm"
+      },
+      "cohorts_at_a_glance": {
+        "title": "Tổng quan về nhóm thuần tập"
+      },
+      "cohort_health": {
+        "title": "Người học theo nhóm sức khỏe"
+      },
+      "hiring_ramp": {
+        "title": "Người học đã đăng ký so với mục tiêu"
+      },
+      "avg_score_by_cohort": {
+        "title": "Điểm trung bình, theo đoàn hệ"
+      },
+      "courses_by_completion": {
+        "title": "Các khóa học hoàn thành"
+      },
+      "courses_at_a_glance": {
+        "title": "Khóa học tổng quan"
+      },
+      "scores_by_exercise_course": {
+        "title": "Điểm theo bài tập"
+      },
+      "avg_score_by_course": {
+        "title": "Điểm trung bình, theo khóa học"
+      },
+      "cohort_empty": {
+        "title": "Đoàn hệ chưa có học viên"
+      }
+    },
+    "measures": {
+      "rows__count": "Người học",
+      "progress_pct__avg": "Tiến độ trung bình",
+      "avg_score_pct__avg": "Điểm trung bình",
+      "avg_progress_pct__value": "Tiến độ trung bình",
+      "avg_score_pct__value": "Điểm trung bình",
+      "first_try_pass__pooled": "Tỷ lệ đạt",
+      "is_completed__count_if": "Hoàn thành",
+      "is_completed__rate": "Tỷ lệ hoàn thành",
+      "is_inactive__count_if": "Không đăng nhập, hơn 2 ngày",
+      "is_low_score__count_if": "Điểm trung bình dưới 50%",
+      "is_overdue__count_if": "Quá hạn",
+      "is_low_video__count_if": "Tỉ lệ xem video dưới 60%",
+      "logged_in__count_if": "Người học đã đăng nhập",
+      "section_score_pct__avg": "Điểm trung bình",
+      "video_pct__avg": "Tham dự video",
+      "attendance__pooled": "Tham dự lớp học",
+      "best_score_pct__avg": "Điểm trung bình",
+      "is_complete__rate": "Hoàn thành",
+      "members_total__value": "Người học đã đăng ký"
+    },
+    "columns": {
+      "student": "Người học",
+      "email": "E-mail",
+      "course": "Khóa học",
+      "students": "Người học",
+      "progress": "Tiến triển",
+      "avg_progress": "Tiến độ trung bình",
+      "avg_score": "Điểm trung bình",
+      "average_score": "Điểm trung bình",
+      "completed": "Hoàn thành",
+      "took_pass_mark": "Đã làm bài tập đạt điểm",
+      "passed_first_try": "Tỷ lệ đạt",
+      "exercises_passed": "Bài tập đã qua",
+      "now_at": "Bây giờ tại",
+      "courses_completed": "Khóa học đã hoàn thành",
+      "video": "Băng hình",
+      "classroom": "lớp học",
+      "video_attendance": "Tham dự video",
+      "classroom_attendance": "Tham dự lớp học",
+      "certificate": "Giấy chứng nhận",
+      "certificates": "Chứng chỉ",
+      "last_login": "Lần đăng nhập cuối cùng",
+      "status": "Trạng thái",
+      "trend": "Xu hướng",
+      "cohort": "đoàn hệ",
+      "created": "Tạo",
+      "overdue": "Quá hạn",
+      "health": "Sức khỏe",
+      "section": "Phần khóa học",
+      "exercises_taken": "Bài tập đã thực hiện",
+      "actions": "hành động"
+    },
+    "column_hints": {
+      "passed_first_try": "Những học viên đạt điểm đậu trong lần thi đầu tiên, trong các bài tập có điểm đậu.",
+      "section_passed_first_try": "Những học viên đạt điểm đậu trong lần chấm điểm đầu tiên ở mọi bài tập đều có điểm đậu trong phần này.",
+      "took_pass_mark": "Người học đã chấm điểm ít nhất một bài tập có điểm đạt.",
+      "exercises_passed": "Các bài tập có điểm đạt mà học viên này đã đạt điểm, trong số tất cả các bài tập có điểm đạt trong khóa học."
+    },
+    "actions": {
+      "send_reminder": "Gửi lời nhắc",
+      "queued": "Đã xếp hàng",
+      "remind_all_overdue": "{count, plural, other {Nhắc tất cả # người học quá hạn}}",
+      "reminders_queued": "Lời nhắc được xếp hàng đợi"
+    },
+    "target": {
+      "set": "Đặt mục tiêu",
+      "edit": "Chỉnh sửa mục tiêu",
+      "label": "Mục tiêu học viên",
+      "helper": "Bạn đang hướng tới có bao nhiêu người học đã đăng ký. Nó hiển thị dưới dạng một đường đứt nét.",
+      "clear": "Xóa mục tiêu",
+      "save": "Lưu mục tiêu"
+    },
+    "hints": {
+      "exercise_score_distribution": "Chọn một bài tập để xem điểm của nó"
+    },
+    "students": {
+      "search": "Tìm kiếm theo tên hoặc email",
+      "empty": "Không có người học nào phù hợp với các bộ lọc này",
+      "showing": {
+        "cohort": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
+        "course": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong khóa học",
+        "org": "Đang hiển thị {from}–{to} trong số {total} khớp · {count, plural, one {# người học} other {# người học}} trong tổ chức"
+      },
+      "clear_filters": "{count, plural, one {Xóa # bộ lọc} other {Xóa # bộ lọc}}",
+      "sort": {
+        "status": "Sắp xếp: tụt hậu đầu tiên",
+        "progress": "Sắp xếp: ít tiến bộ nhất",
+        "name": "Sắp xếp: đặt tên từ A đến Z",
+        "low_score": "Sắp xếp: điểm trung bình thấp nhất"
+      },
+      "filters": {
+        "status": {
+          "label": "Trạng thái",
+          "any": "Tất cả trạng thái",
+          "at_risk": "Có nguy cơ",
+          "lagging": "tụt hậu",
+          "on_track": "Đang đi đúng hướng",
+          "completed": "Hoàn thành"
+        },
+        "activity": {
+          "label": "Lần đăng nhập cuối cùng",
+          "any": "Đăng nhập bất kỳ",
+          "today": "Đã đăng nhập hôm nay",
+          "idle": "Không đăng nhập hơn 2 ngày"
+        },
+        "score": {
+          "label": "Điểm trung bình",
+          "any": "Bất kỳ điểm trung bình nào",
+          "lt50": "Dưới 50%",
+          "mid": "50% đến 69%",
+          "gte70": "70% trở lên"
+        },
+        "flag": {
+          "label": "Cờ",
+          "any": "Bất kỳ lá cờ nào",
+          "overdue": "Quá hạn",
+          "certified": "Giấy chứng nhận đã được cấp",
+          "not_certified": "Không có chứng chỉ"
+        },
+        "completion": {
+          "label": "Hoàn thành",
+          "any": "Mọi mức hoàn thành",
+          "incomplete": "Chưa hoàn thành"
+        },
+        "video": {
+          "label": "Video",
+          "any": "Mọi video",
+          "low": "Video dưới 60%"
+        },
+        "cohort_chip": "{count, plural, other {# đoàn hệ}}"
+      },
+      "showing_paged": {
+        "cohort": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
+        "course": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong khóa học",
+        "org": "Đang hiển thị {from}–{to} trong số {count, plural, one {# người học} other {# người học}} trong tổ chức"
+      },
+      "showing_filtered": {
+        "cohort": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
+        "course": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong khóa học",
+        "org": "{total, plural, one {# người học phù hợp} other {# người học phù hợp}} · {count, plural, one {# người học} other {# người học}} trong tổ chức"
+      },
+      "showing_all": {
+        "cohort": "{count, plural, one {# người học} other {# người học}} trong nhóm thuần tập",
+        "course": "{count, plural, one {# người học} other {# người học}} trong khóa học",
+        "org": "{count, plural, one {# người học} other {# người học}} trong tổ chức"
+      },
+      "failed": "Không thể tải học viên",
+      "cells_failed": "Không thể tải điểm bài tập",
+      "attempts_unavailable": "Không thể kiểm tra bài tập nào có lượt làm, nên một số bài tập bị khóa có thể bị ẩn."
+    },
+    "empty": {
+      "failed": "Không thể tải biểu đồ này",
+      "dashboard_failed": "Phân tích không thể tải",
+      "not_permitted": "Bạn không có quyền truy cập vào những phân tích này",
+      "no_exercises": "Không có bài tập nào trong khóa học này",
+      "no_exercises_description": "Điểm sẽ xuất hiện khi bài tập được thêm vào và học sinh nộp bài."
+    },
+    "scope_empty": {
+      "title": {
+        "cohort": "Chưa có học viên trong nhóm này",
+        "course": "Chưa có học viên trong khóa học này",
+        "org": "Chưa có học viên trong tổ chức của bạn"
+      },
+      "description": {
+        "cohort": "Phân tích sẽ được điền khi học viên mở bài học và nộp bài tập.",
+        "cohort_no_courses": "Thêm khóa học, sau đó mời học viên. Phân tích sẽ được điền khi họ mở bài học và nộp bài tập.",
+        "course": "Phân tích sẽ được điền khi học viên mở bài học và nộp bài tập.",
+        "org": "Thêm học viên vào học viện của bạn, sau đó ghi danh họ vào khóa học hoặc nhóm."
+      },
+      "pending": "{count, plural, one {# lời mời đang} other {# lời mời đang}} chờ được chấp nhận. Phân tích sẽ được điền khi học viên tham gia.",
+      "invite_students": "Mời học viên",
+      "add_courses": "Thêm khóa học",
+      "add_students": "Thêm học viên"
+    },
+    "student_sheet": {
+      "last_login": "Lần đăng nhập cuối cùng: {when}",
+      "courses_heading": "Khóa học",
+      "scores_heading": "Điểm theo bài tập, {course}",
+      "open_profile": "Mở hồ sơ khóa học",
+      "all_courses": "Tất cả khóa học"
+    },
+    "pagination": {
+      "showing": "Đang hiển thị {from}–{to} trên tổng số {total}",
+      "cohorts_org": "Đang hiển thị {from}–{to} trên tổng số {total} nhóm trong tổ chức",
+      "cohorts_course": "Đang hiển thị {from}–{to} trên tổng số {total} nhóm tham gia khóa học này",
+      "courses_cohort": "Đang hiển thị {from}–{to} trên tổng số {total} khóa học trong nhóm",
+      "courses_org": "Đang hiển thị {from}–{to} trên tổng số {total} khóa học trong tổ chức",
+      "sections_course": "Đang hiển thị {from}–{to} trên tổng số {total} phần trong khóa học",
+      "overdue_cohort": "Đang hiển thị {from}–{to} trên tổng số {total} học viên quá hạn trong nhóm"
+    },
+    "breakdown": {
+      "label": "Phân tích",
+      "courses": "Khóa học ({count})",
+      "cohorts": "Đoàn hệ ({count})",
+      "all_students": "Tất cả người học",
+      "by_cohort": "Theo đoàn hệ ({count})"
+    },
+    "cohorts": {
+      "picker": "Đoàn hệ: {selected} trên {total}",
+      "search": "Tìm đoàn hệ",
+      "empty": "Không có đoàn hệ phù hợp",
+      "newest": "Mới nhất {count}",
+      "none": "Xóa",
+      "students": "{count, plural, one {# học viên} other {# học viên}}",
+      "no_students": "Chưa có học viên",
+      "direct_included": "Học viên trực tiếp luôn được bao gồm.",
+      "select_all": "Chọn tất cả",
+      "select_shown": "Chọn mục đang hiển thị",
+      "load_more": "Tải thêm",
+      "showing_matches": "Đang hiển thị {shown} trên {total}",
+      "loading": "Đang tải đoàn hệ…",
+      "load_failed": "Không thể tải đoàn hệ."
+    },
+    "course_search": "Tìm khóa học",
+    "course_search_empty": "Không có khóa học phù hợp",
+    "empty_states": {
+      "show_all_time": "Hiển thị toàn bộ thời gian",
+      "create_cohort": "Tạo đoàn hệ",
+      "range": {
+        "title": "Không có hoạt động trong {days} ngày qua",
+        "description": "Thẻ này chỉ tính những gì diễn ra trong khoảng thời gian đã chọn."
+      },
+      "needs_attention": {
+        "title": "Không ai cần chú ý",
+        "description": "Không có người học nào không hoạt động, đạt dưới 50%, quá hạn hoặc chậm video."
+      },
+      "overdue": {
+        "title": "Không ai quá hạn",
+        "description": "Mọi người học đều trong thời hạn."
+      },
+      "scores": {
+        "title": "Chưa có lượt làm bài được chấm",
+        "description": "Điểm xuất hiện khi người học nộp bài tập và các lượt làm được chấm."
+      },
+      "student_scores": {
+        "title": "Chưa có lượt làm bài được chấm",
+        "description": "Điểm của người học này xuất hiện khi các lượt làm của họ được chấm."
+      },
+      "hardest_exercises": {
+        "title": "Chưa đủ lượt làm bài được chấm",
+        "description": "Một bài tập xuất hiện khi có ít nhất 3 người học có lượt làm được chấm."
+      },
+      "questions": {
+        "title": "Chưa đủ câu trả lời",
+        "description": "Một câu hỏi xuất hiện khi có ít nhất 5 người học trả lời trong một lượt làm được chấm."
+      },
+      "logins": {
+        "title": "Chưa có lượt đăng nhập",
+        "description": "Người học xuất hiện ở đây vào những ngày họ đăng nhập."
+      },
+      "lessons": {
+        "title": "Chưa có bài học hoàn thành",
+        "description": "Thanh của mỗi bài học được lấp đầy khi người học hoàn thành."
+      },
+      "growth": {
+        "title": "Chưa thêm người học",
+        "description": "Đường bắt đầu với người học đầu tiên được thêm vào tổ chức của bạn."
+      },
+      "courses_org": {
+        "title": "Chưa có khóa học hoàn thành",
+        "description": "Khóa học xuất hiện ở đây khi người học ghi danh và hoàn thành."
+      },
+      "courses_cohort": {
+        "title": "Chưa có hoạt động khóa học",
+        "description": "Thanh và hàng được lấp đầy khi người học bắt đầu bài học hoặc bài tập."
+      },
+      "cohorts_org": {
+        "title": "Chưa có đoàn hệ",
+        "description": "Tạo đoàn hệ để nhóm người học và so sánh tiến độ của họ."
+      },
+      "cohorts_org_no_students": {
+        "title": "Chưa có người học trong các đoàn hệ này",
+        "description": "Thêm người học vào tổ chức để bắt đầu so sánh tiến độ giữa các đoàn hệ."
+      },
+      "cohorts_course": {
+        "title": "Không có đoàn hệ nào bao gồm khóa học này",
+        "description": "Thêm khóa học này vào một đoàn hệ để so sánh các đoàn hệ tại đây."
+      },
+      "cohorts_course_no_students": {
+        "title": "Chưa có người học trong các đoàn hệ này",
+        "description": "Mời người học vào khóa học này để bắt đầu so sánh tiến độ giữa các đoàn hệ."
+      },
+      "default": {
+        "title": "Chưa có dữ liệu",
+        "description": "Thẻ này được lấp đầy khi người học sử dụng khóa học."
+      }
+    },
+    "export": {
+      "students_capped": "Danh sách học viên được giới hạn ở {limit} dòng đầu tiên.",
+      "exercises_capped": "Điểm bài tập được giới hạn ở {limit} kết quả đầu tiên.",
+      "yes": "Có",
+      "no": "Không",
+      "columns": {
+        "segment": "Nhóm"
+      },
+      "dimensions": {
+        "student": "Người học",
+        "course": "Khóa học",
+        "cohort": "Đoàn hệ",
+        "exercise": "Bài tập",
+        "section": "Phần",
+        "lesson": "Bài học",
+        "question": "Câu hỏi",
+        "item": "Mục",
+        "day": "Ngày",
+        "period": "Giai đoạn",
+        "status": "Trạng thái",
+        "overdue_kind": "Loại quá hạn",
+        "progress_bucket_25": "Tiến độ",
+        "score_bucket_10": "Điểm trung bình"
+      }
+    },
+    "org_page_title": "Học viện",
+    "widget_toolbar": {
+      "label": "Thao tác cho {title}",
+      "expand": "Mở rộng",
+      "download": "Tải xuống CSV"
+    },
+    "drilldown": {
+      "count": "{count, plural, other {# người học}}",
+      "description": "Những người học đằng sau con số này.",
+      "cohort_health": {
+        "any": "Trong các đoàn hệ có người học",
+        "at_risk": "Trong các đoàn hệ có nguy cơ",
+        "lagging": "Trong các đoàn hệ tụt hậu",
+        "on_track": "Trong các đoàn hệ đang đi đúng hướng",
+        "completed": "Trong các đoàn hệ đã hoàn thành"
+      },
+      "cohort_health_note": "Biểu đồ đếm người học trong các đoàn hệ có xếp loại này, không phải người học có trạng thái này.",
+      "count_differs": "Biểu đồ đếm {expected} vì mỗi người học được đếm một lần cho mỗi đoàn hệ mà họ tham gia. Danh sách này hiển thị {total}.",
+      "lesson_incomplete": "Chưa hoàn thành: {lesson}",
+      "lesson_fallback": "bài học này",
+      "score_bucket": "Điểm trung bình {range}",
+      "scored": "Có điểm trung bình",
+      "open_in_students": "Mở trong tab Người học",
+      "kpi_label": "Xem người học: {title}",
+      "segment_label": "Phân khúc"
+    }
+  },
   "oauth": {
     "consent": {
       "page_title": "Kết nối ứng dụng với ClassroomIO",
@@ -6606,7 +7935,15 @@
       "deny": "Từ chối",
       "unknown_client": "Ứng dụng này",
       "error_title": "Yêu cầu kết nối này không hợp lệ",
-      "error_description": "Hãy quay lại ứng dụng bạn đang kết nối và bắt đầu lại."
+      "error_description": "Hãy quay lại ứng dụng bạn đang kết nối và bắt đầu lại.",
+      "verified": "Đã xác minh",
+      "allow_changes": {
+        "label": "Cho phép {client} thực hiện thay đổi",
+        "description": "Tắt tính năng này để truy cập chỉ đọc. {client} vẫn có thể đọc dữ liệu và chạy trình kích hoạt nhưng không thể thêm, thay đổi hoặc xóa bất kỳ nội dung nào."
+      },
+      "plan_required": "Nâng cấp lên gói Early Adopter để kết nối ứng dụng này",
+      "no_eligible_title": "Không có không gian làm việc đủ điều kiện",
+      "no_eligible_description": "Không không gian làm việc nào của bạn có gói bao gồm ứng dụng này. Hãy nâng cấp một không gian làm việc lên Early Adopter hoặc Enterprise rồi thử lại."
     },
     "error": {
       "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
@@ -6656,6 +7993,10 @@
       "media": {
         "read": "Tải lên phương tiện",
         "write": "Tải lên phương tiện"
+      },
+      "webhooks": {
+        "read": "Xem các sự kiện gần đây trong không gian làm việc của bạn",
+        "write": "Nhận các sự kiện theo thời gian thực trong không gian làm việc của bạn"
       }
     },
     "connect": {

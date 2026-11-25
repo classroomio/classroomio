@@ -13,6 +13,7 @@
     formatRunSummaryCounts,
     type ExerciseTitleLookup
   } from '$features/ai-assistant/utils/run-summary';
+  import { getRunQueuedSince, isRunQueueStalled } from '$features/ai-assistant/utils/run-state';
   import type { AiAssistantRunSummaryMetadata, RunChangedItem } from '$features/ai-assistant/utils/types';
   import { resolve } from '$app/paths';
   import { getCompletedToolLine, getPendingToolLine, MUTATION_TOOLS } from '$features/ai-assistant/utils/tool-labels';
@@ -53,6 +54,7 @@
     AiAssistantMessage,
     AiAssistantMessageMetadata,
     AiAssistantTemplateMetadata,
+    AgentRunDetail,
     AgentRunStep,
     UploadedDocument
   } from '$features/ai-assistant/utils/types';
@@ -83,24 +85,26 @@
   let lastSeenDurableStepCount = 0;
   /** Run ids we've already injected a synthetic summary message for in this session. */
   let lastInjectedRunSummaryId = '';
+  let isRetryingStuck = $state(false);
   /**
    * Statuses that warrant injecting a synthetic summary message into the
-   * conversation. Only `completed` is auto-injected — canceled runs are
-   * resumable, so the summary is deferred until the user explicitly
-   * dismisses the canceled run.
+   * conversation. Both settled outcomes that end the run get one, so the
+   * teacher keeps a record of what was created and the composer can reopen.
    */
-  const INJECTABLE_RUN_STATUSES = new Set(['completed']);
+  const INJECTABLE_RUN_STATUSES = new Set(['completed', 'canceled']);
   /**
-   * Statuses that keep the panel in run-mode (composer hidden). `canceled`
-   * stays here so the user can either Resume or Dismiss — only `completed`
-   * unconditionally flips back to planning.
+   * Statuses that keep the panel in run-mode (composer hidden). `canceled` is
+   * terminal: it injects its summary and flips straight back to planning, so
+   * the teacher is never invited to resume it.
    */
-  const RUN_MODE_STATUSES = new Set(['queued', 'running', 'waiting_for_input', 'paused', 'failed', 'canceled']);
+  const RUN_MODE_STATUSES = new Set(['queued', 'running', 'waiting_for_input', 'paused', 'failed']);
 
   const RUN_POLL_INTERVAL_MS = 3_000;
   const RUN_POLL_STATUSES = new Set(['queued', 'running', 'waiting_for_input']);
-  const RUN_RESUMABLE_STATUSES = new Set(['paused', 'waiting_for_input', 'canceled']);
-  const RUN_TERMINAL_STATUSES = new Set(['completed', 'failed', 'canceled', 'paused']);
+  /** Pause is the only reversible stop. `canceled` is terminal by design. */
+  const RUN_RESUMABLE_STATUSES = new Set(['paused', 'waiting_for_input']);
+  /** Statuses where the worker stops driving the run, so course data is worth refetching. */
+  const RUN_SETTLED_STATUSES = new Set(['completed', 'failed', 'canceled', 'paused']);
 
   // Read course id from the route. The chat panel is only mounted inside the
   // course content layout, so `page.params.id` is always the active course.
@@ -317,25 +321,52 @@
     }
   });
 
-  function refreshCourseStateAfterChat() {
+  function getInlineMutationScope() {
+    const lastMessage = chat.messages[chat.messages.length - 1] as AiAssistantMessage | undefined;
+    const messages = lastMessage?.role === 'assistant' ? [lastMessage] : [];
+    const changedItems = extractChangedItemsFromMessages(messages, resolveExerciseTitle);
+    const hasMutations = (lastMessage?.parts ?? []).some((part) => {
+      if (!isAgentToolPart(part)) return false;
+
+      const toolName = getAgentToolName(part);
+      return !!toolName && MUTATION_TOOLS.includes(toolName) && getAgentToolStatus(part) === 'completed';
+    });
+
+    return { changedItems, hasMutations };
+  }
+
+  function getRunMutationScope(runDetail: AgentRunDetail) {
+    const changedItems = extractChangedItems(runDetail, resolveExerciseTitle);
+    const hasMutations = runDetail.steps.some((step) => {
+      if (step.status !== 'completed' || !step.stepType.startsWith('tool:')) return false;
+
+      return MUTATION_TOOLS.includes(step.stepType.slice('tool:'.length));
+    });
+
+    return { changedItems, hasMutations };
+  }
+
+  function refreshCourseStateAfterChat(changedItems: RunChangedItem[], hasMutations: boolean) {
     const profileId = $profile.id;
 
-    // Force refetch course data so new sections/lessons/exercises show in the UI
-    if (courseId && profileId) {
+    if (hasMutations && courseId && profileId) {
       void courseApi.refreshCourse(courseId, profileId);
     }
 
-    // Refresh current lesson content if viewing a lesson
-    if (courseId && currentLessonId) {
+    const currentLessonChanged = changedItems.some(
+      (item) => item.targetType === 'lesson' && item.targetId === currentLessonId
+    );
+    if (courseId && currentLessonId && currentLessonChanged) {
       void lessonApi.get(courseId, currentLessonId);
     }
 
-    // Refresh current exercise if viewing an exercise
-    if (courseId && currentExerciseId) {
+    const currentExerciseChanged = changedItems.some(
+      (item) => item.targetType === 'exercise' && item.targetId === currentExerciseId
+    );
+    if (courseId && currentExerciseId && currentExerciseChanged) {
       void refreshExercisePageData(courseId, currentExerciseId);
     }
 
-    // Refresh usage meter
     if (courseId) {
       void aiAssistantApi.fetchStatus(courseId);
     }
@@ -398,10 +429,10 @@
       fetch: (input, init) => apiClient.request(input, init)
     }),
     onFinish: () => {
-      // Clear document attachment after message is processed
       uploadedDocument = null;
 
-      refreshCourseStateAfterChat();
+      const mutationScope = getInlineMutationScope();
+      refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
       void persistFinishedChat(chat.messages as AiAssistantMessage[], activeConversationId);
     }
   });
@@ -578,7 +609,7 @@
   }
 
   function isRunActive(status: string | undefined): boolean {
-    return status === 'queued' || status === 'running' || status === 'waiting_for_input';
+    return status === 'queued' || status === 'running' || status === 'waiting_for_input' || status === 'paused';
   }
 
   function getRunToolName(step: AgentRunStep): string | null {
@@ -666,7 +697,23 @@
     if (!runId) return;
 
     await aiAssistantApi.cancelRun(runId);
-    refreshCourseStateAfterChat();
+    const runDetail = aiAssistantApi.currentRun;
+    if (runDetail) {
+      const mutationScope = getRunMutationScope(runDetail);
+      refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
+    }
+  }
+
+  async function handlePauseRun() {
+    const runId = aiAssistantApi.currentRun?.run.id;
+    if (!runId) return;
+
+    await aiAssistantApi.pauseRun(runId);
+    const runDetail = aiAssistantApi.currentRun;
+    if (runDetail) {
+      const mutationScope = getRunMutationScope(runDetail);
+      refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
+    }
   }
 
   async function handleRetryRun() {
@@ -683,38 +730,18 @@
     await aiAssistantApi.resumeRun(runId);
   }
 
-  /**
-   * Walk away from a canceled run: inject the run-summary message into the
-   * conversation (the same one we used to auto-write on cancel) and clear
-   * the local currentRun so the panel flips back to planning. The run row
-   * itself stays in the DB — user could still find it in run history.
-   */
-  async function handleDismissRun() {
-    const runDetail = aiAssistantApi.currentRun;
-    if (!runDetail || !activeConversationId) return;
-    if (runDetail.run.conversationId !== activeConversationId) return;
+  /** Re-enqueue a run that has sat in `queued` without a worker pickup. */
+  async function handleRetryStuckRun() {
+    const runId = aiAssistantApi.currentRun?.run.id;
+    if (!runId || isRetryingStuck) return;
 
-    const summaryMeta = buildRunSummaryMetadata({ runDetail, resolveExerciseTitle });
-    if (summaryMeta) {
-      const alreadyInConversation = (chat.messages as AiAssistantMessage[]).some(
-        (msg) => (msg.metadata as AiAssistantMessageMetadata | undefined)?.runSummary?.runId === summaryMeta.runId
-      );
+    isRetryingStuck = true;
 
-      if (!alreadyInConversation) {
-        const summaryMessage: AiAssistantMessage = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          parts: [{ type: 'text', text: buildRunSummaryText(summaryMeta) }],
-          metadata: { runSummary: summaryMeta } satisfies AiAssistantMessageMetadata
-        };
-
-        chat.messages = [...(chat.messages as AiAssistantMessage[]), summaryMessage];
-        lastInjectedRunSummaryId = summaryMeta.runId;
-        void aiAssistantApi.saveMessages(activeConversationId, chat.messages as AiAssistantMessage[]);
-      }
+    try {
+      await aiAssistantApi.resumeRun(runId);
+    } finally {
+      isRetryingStuck = false;
     }
-
-    aiAssistantApi.currentRun = null;
   }
 
   async function handleAskPlanChanges(message: string) {
@@ -893,10 +920,12 @@
           ? 'ai_assistant.run_failed'
           : run.status === 'canceled'
             ? 'ai_assistant.run_canceled'
-            : 'ai_assistant.run_running';
+            : run.status === 'paused'
+              ? 'ai_assistant.run_paused'
+              : 'ai_assistant.run_running';
 
     const waitingLine: ToolLineUi | undefined =
-      steps.length === 0 && run.status !== 'failed' && run.status !== 'canceled'
+      steps.length === 0 && run.status !== 'failed' && run.status !== 'canceled' && run.status !== 'paused'
         ? { shape: 'i18n' as const, key: 'ai_assistant.run_waiting_for_worker' }
         : undefined;
     const currentActionLine = steps.find((step) => step.status === 'in_progress')?.line ?? waitingLine;
@@ -906,12 +935,19 @@
       steps,
       currentActionLine,
       isStopped: run.status === 'failed' || run.status === 'canceled' || run.status === 'paused',
-      error: run.lastError?.message,
-      canCancel: run.status === 'queued' || run.status === 'running' || run.status === 'waiting_for_input',
+      error: run.lastError?.message || aiAssistantApi.error || undefined,
+      canCancel:
+        run.status === 'queued' ||
+        run.status === 'running' ||
+        run.status === 'waiting_for_input' ||
+        run.status === 'paused',
+      canPause: run.status === 'queued' || run.status === 'running' || run.status === 'waiting_for_input',
       canRetry: run.status === 'failed',
       canResume: RUN_RESUMABLE_STATUSES.has(run.status)
     };
   });
+
+  const durableRunQueueStalled = $derived(isRunQueueStalled(aiAssistantApi.currentRun?.queueHealth));
 
   /**
    * Decides what the bottom of the chat panel is showing: the composer
@@ -1114,8 +1150,12 @@
     const previousSig = lastRunStatusSig;
     lastRunStatusSig = nextSig;
 
-    if (previousSig.startsWith(`${run.id}:`) && RUN_TERMINAL_STATUSES.has(run.status)) {
-      refreshCourseStateAfterChat();
+    if (previousSig.startsWith(`${run.id}:`) && RUN_SETTLED_STATUSES.has(run.status)) {
+      const runDetail = aiAssistantApi.currentRun;
+      if (!runDetail) return;
+
+      const mutationScope = getRunMutationScope(runDetail);
+      refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
     }
   });
 
@@ -1171,7 +1211,8 @@
       if (completedStepCount >= threshold && !agentMutationProgressThresholdsTriggered.has(threshold)) {
         agentMutationProgressThresholdsTriggered.add(threshold);
 
-        refreshCourseStateAfterChat();
+        const mutationScope = getInlineMutationScope();
+        refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
       }
     }
   });
@@ -1214,7 +1255,8 @@
       if (completedStepCount >= threshold && !agentMutationProgressThresholdsTriggered.has(threshold)) {
         agentMutationProgressThresholdsTriggered.add(threshold);
 
-        refreshCourseStateAfterChat();
+        const mutationScope = getRunMutationScope(runDetail);
+        refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
       }
     }
   });
@@ -1331,11 +1373,14 @@
       state={durableRunState}
       {courseId}
       onCancel={handleCancelRun}
+      onPause={handlePauseRun}
       onResume={handleResumeRun}
       onRetry={handleRetryRun}
-      onDismiss={handleDismissRun}
       runStatus={aiAssistantApi.currentRun?.run.status ?? null}
-      queuedSince={aiAssistantApi.currentRun?.run.createdAt ?? null}
+      queuedSince={getRunQueuedSince(aiAssistantApi.currentRun?.run)}
+      queueStalled={durableRunQueueStalled}
+      onRetryStuck={handleRetryStuckRun}
+      retryStuckLoading={isRetryingStuck}
       onMentionClick={handleMentionClick}
     />
   {:else}

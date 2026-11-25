@@ -1,7 +1,9 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { emitOrganizationMemberUpdatedWebhookEvent } from '@cio/core/services/webhook/emit';
+import { refreshOrgHasWebhookEndpoints } from '@cio/core/services/webhook/endpoint-cache';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
+import { revokeUserOAuthGrantsInOrganization } from '@cio/db/queries/auth';
 import {
   countOrganizationAdmins,
   getOrganizationMemberRoleId,
@@ -11,6 +13,7 @@ import {
   updateOrganizationMemberRole
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
+import { sendTeamRoleChangedEmail } from './team-role-email';
 
 type UpdatedTeamMemberRole = {
   id: number;
@@ -96,7 +99,7 @@ export async function applyTeamMemberRoleChange(
   };
 }
 
-/** Schedules the course role reconcile for a member whose org role just changed. */
+/** Runs the post-commit work for a role change: course role reconcile, member email, and webhook. */
 export async function reconcileAfterTeamRoleChange(
   orgId: string,
   applied: AppliedTeamMemberRole,
@@ -106,7 +109,28 @@ export async function reconcileAfterTeamRoleChange(
     await scheduleCourseRoleReconcile(orgId, applied.profileId);
   }
 
+  const lostAdminAccess =
+    applied.previousRoleId === ROLE.ADMIN && applied.roleId !== ROLE.ADMIN && Boolean(applied.profileId);
+
+  if (applied.roleChanged && lostAdminAccess && applied.profileId) {
+    try {
+      await revokeUserOAuthGrantsInOrganization(applied.profileId, orgId);
+      await refreshOrgHasWebhookEndpoints(orgId);
+    } catch (error) {
+      console.error('Failed to revoke OAuth grants after admin demotion:', error);
+    }
+  }
+
   if (applied.roleChanged) {
+    await sendTeamRoleChangedEmail({
+      orgId,
+      memberEmail: applied.email,
+      memberProfileId: applied.profileId,
+      previousRoleId: applied.previousRoleId,
+      roleId: applied.roleId,
+      actorProfileId
+    });
+
     await emitOrganizationMemberUpdatedWebhookEvent(
       orgId,
       { id: applied.id, profileId: applied.profileId, email: applied.email, roleId: applied.roleId },

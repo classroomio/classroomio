@@ -60,7 +60,8 @@ describe('v1 lesson translation and history routes', () => {
       'org-1',
       'actor-1',
       { ...lessonParams, locale: 'fr' },
-      { content: '<p>Salut</p>' }
+      { content: '<p>Salut</p>' },
+      {}
     );
   });
 

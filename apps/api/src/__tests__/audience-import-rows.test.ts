@@ -17,6 +17,7 @@ vi.mock('@cio/db/queries/organization', () => ({
     ),
   createOrganizationMembers: vi.fn().mockImplementation(async (rows: { email: string }[]) => rows),
   getOrganizationAudienceMember: vi.fn(),
+  getLatestOrganizationInviteMetadataByEmails: vi.fn().mockResolvedValue([]),
   getLatestOrganizationInviteRowByOrgAndEmail: vi.fn(),
   getOrgMembersByProfileIds: vi.fn().mockResolvedValue([]),
   getOrganizationById: vi.fn(),
@@ -82,6 +83,7 @@ import {
   getOrganizationAudienceMember,
   getLatestOrganizationInviteRowByOrgAndEmail,
   getOrganizationById,
+  getLatestOrganizationInviteMetadataByEmails,
   getOrganizationMembersByNormalizedEmails,
   getStudentOrganizationMemberByOrgAndEmail,
   hasLapsedStudentInvite,
@@ -276,7 +278,13 @@ describe('importAudienceMembers — seat limit', () => {
   it('renews a lapsed invite only when a seat is free, in file order with new addresses', async () => {
     vi.mocked(getRemainingStudentSeats).mockResolvedValue(1);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+      {
+        normalizedEmail: 'lapsed@test.dev',
+        profileId: null,
+        roleId: ROLE.STUDENT,
+        status: 'ACTIVE',
+        hasLapsedInvite: true
+      }
     ] as never);
 
     const result = await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev', 'new@test.dev'), ACTOR);
@@ -288,7 +296,13 @@ describe('importAudienceMembers — seat limit', () => {
   it('reports a lapsed invite as over the limit when no seats remain', async () => {
     vi.mocked(getRemainingStudentSeats).mockResolvedValue(0);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+      {
+        normalizedEmail: 'lapsed@test.dev',
+        profileId: null,
+        roleId: ROLE.STUDENT,
+        status: 'ACTIVE',
+        hasLapsedInvite: true
+      }
     ] as never);
 
     const result = await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev'), ACTOR);
@@ -301,7 +315,13 @@ describe('importAudienceMembers — seat limit', () => {
   it('renews a still-pending invite without needing a free seat', async () => {
     vi.mocked(getRemainingStudentSeats).mockResolvedValue(0);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'pending@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: false }
+      {
+        normalizedEmail: 'pending@test.dev',
+        profileId: null,
+        roleId: ROLE.STUDENT,
+        status: 'ACTIVE',
+        hasLapsedInvite: false
+      }
     ] as never);
 
     const result = await importAudienceMembers(ORG, csv('email', 'pending@test.dev'), ACTOR);
@@ -314,7 +334,13 @@ describe('importAudienceMembers — seat limit', () => {
   it('counts a renewed lapsed invite in the seat check, so milestone emails fire', async () => {
     vi.mocked(getRemainingStudentSeats).mockResolvedValue(5);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+      {
+        normalizedEmail: 'lapsed@test.dev',
+        profileId: null,
+        roleId: ROLE.STUDENT,
+        status: 'ACTIVE',
+        hasLapsedInvite: true
+      }
     ] as never);
 
     await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev', 'new@test.dev'), ACTOR);
@@ -325,7 +351,13 @@ describe('importAudienceMembers — seat limit', () => {
   it('renews lapsed invites inside the seat-check transaction, so the seat is taken under the lock', async () => {
     vi.mocked(getRemainingStudentSeats).mockResolvedValue(5);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
-      { normalizedEmail: 'lapsed@test.dev', profileId: null, roleId: ROLE.STUDENT, hasLapsedInvite: true }
+      {
+        normalizedEmail: 'lapsed@test.dev',
+        profileId: null,
+        roleId: ROLE.STUDENT,
+        status: 'ACTIVE',
+        hasLapsedInvite: true
+      }
     ] as never);
 
     await importAudienceMembers(ORG, csv('email', 'lapsed@test.dev'), ACTOR);
@@ -518,6 +550,53 @@ describe('importAudienceMembers — cohort enrolment of existing students', () =
     expect(result.assigned).toBe(0);
     expect(result.alreadyEnrolledInCohorts).toBe(1);
     expect(enqueueTransactionalEmails).not.toHaveBeenCalledWith('studentCohortWelcome', expect.anything());
+  });
+});
+
+describe('importAudienceMembers — names stored with the invite', () => {
+  function storedFullnames() {
+    const rows = vi.mocked(createOrganizationInvites).mock.calls.flatMap(([invites]) => invites) as unknown as {
+      email: string;
+      metadata: { fullname?: string };
+    }[];
+
+    return Object.fromEntries(rows.map((row) => [row.email, row.metadata.fullname]));
+  }
+
+  it('stores each imported name in its invite metadata', async () => {
+    await importAudienceMembers(ORG, csv('email,name', 'ada@test.dev,Ada Lovelace', 'grace@test.dev,'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace', 'grace@test.dev': undefined });
+  });
+
+  it('keeps the first row name when a later duplicate row carries another name', async () => {
+    await importAudienceMembers(
+      ORG,
+      csv('email,name', 'ada@test.dev,Ada Lovelace', 'ada@test.dev,Someone Else'),
+      ACTOR
+    );
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace' });
+  });
+
+  it('keeps the saved name, even from a revoked invite, when a pending student is imported again without one', async () => {
+    vi.mocked(getLatestOrganizationInviteMetadataByEmails).mockResolvedValueOnce([
+      { email: 'ada@test.dev', metadata: { source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' } }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email', 'ada@test.dev'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada Lovelace' });
+  });
+
+  it('prefers the name in the new import over the previous invite name', async () => {
+    vi.mocked(getLatestOrganizationInviteMetadataByEmails).mockResolvedValueOnce([
+      { email: 'ada@test.dev', metadata: { source: 'AUDIENCE_IMPORT', fullname: 'Ada Lovelace' } }
+    ] as never);
+
+    await importAudienceMembers(ORG, csv('email,name', 'ada@test.dev,Ada King'), ACTOR);
+
+    expect(storedFullnames()).toEqual({ 'ada@test.dev': 'Ada King' });
   });
 });
 

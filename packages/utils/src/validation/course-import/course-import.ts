@@ -336,27 +336,6 @@ export const ZCourseImportCourseParam = z.object({
 });
 export type TCourseImportCourseParam = z.infer<typeof ZCourseImportCourseParam>;
 
-export const ZCourseImportDraftCreateFromCourse = z.object({
-  courseId: z.string().min(1),
-  idempotencyKey: z.string().min(1).optional(),
-  summary: z.record(z.string(), z.unknown()).optional(),
-  sourceArtifacts: z.array(z.record(z.string(), z.unknown())).optional()
-});
-export type TCourseImportDraftCreateFromCourse = z.infer<typeof ZCourseImportDraftCreateFromCourse>;
-
-export const ZCourseImportDraftGetParam = z.object({
-  draftId: z.string().uuid()
-});
-export type TCourseImportDraftGetParam = z.infer<typeof ZCourseImportDraftGetParam>;
-
-export const ZCourseImportDraftUpdate = z.object({
-  summary: z.record(z.string(), z.unknown()).optional(),
-  sourceArtifacts: z.array(z.record(z.string(), z.unknown())).optional(),
-  warnings: z.array(ZCourseImportWarning).optional(),
-  draft: ZCourseImportDraftPayload.optional()
-});
-export type TCourseImportDraftUpdate = z.infer<typeof ZCourseImportDraftUpdate>;
-
 export const ZCourseImportDraftPublishBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
@@ -367,15 +346,6 @@ export const ZCourseImportDraftPublishBase = z.object({
   bannerImageQuery: z.string().min(1).max(120).optional(),
   generateBannerImage: z.boolean().optional()
 });
-
-export const ZCourseImportDraftPublish = ZCourseImportDraftPublishBase.refine(
-  (data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined,
-  {
-    message: 'Compliance settings are required for COMPLIANCE courses',
-    path: ['compliance']
-  }
-);
-export type TCourseImportDraftPublish = z.infer<typeof ZCourseImportDraftPublish>;
 
 export const ZCourseImportDraftPublishToCourseBase = ZCourseImportDraftPublishBase.extend({
   courseId: z.string().min(1),

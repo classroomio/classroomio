@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
+import { ZSafeRedirectPath } from '../shared/safe-redirect';
+
 export const ZTokenExchangeQuery = z.object({
   token: z.string().min(1),
-  redirect: z.string().optional()
+  redirect: ZSafeRedirectPath
 });
 
 export type TTokenExchangeQuery = z.infer<typeof ZTokenExchangeQuery>;

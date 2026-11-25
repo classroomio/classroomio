@@ -33,6 +33,10 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
     ]
   },
   {
+    label: 'Automation',
+    tags: [{ tag: 'Connection', flat: true }, { tag: 'Webhook Subscriptions', label: 'Webhook Subscriptions' }]
+  },
+  {
     label: 'Courses',
     tags: [
       { tag: 'Courses', label: 'Overview' },
@@ -66,7 +70,10 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
       { tag: 'Cohort Newsfeed Comments', label: 'Comments' }
     ]
   },
-  { label: 'Analytics', tags: [{ tag: 'Analytics', flat: true }] },
+  {
+    label: 'Analytics',
+    tags: [{ tag: 'Academy' }, { tag: 'Marketing' }, { tag: 'Compliance' }]
+  },
   { label: 'Media', tags: [{ tag: 'Public API Assets', flat: true }] }
 ];
 
@@ -326,7 +333,7 @@ export default defineConfig({
           {
             label: 'Getting started',
             display: 'flat',
-            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types']
+            items: [API_ROUTE, '/api/authentication', '/api/rate-limits', '/api/errors', '/api/pagination', '/api/question-types', '/api/analytics']
           },
           { label: 'Reference', display: 'flat', items: [API_REFERENCE_ROUTE] },
           ...apiSidebarSections

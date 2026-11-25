@@ -6,6 +6,7 @@ import { setInternalDispatch } from '@api/utils/internal-dispatch';
 import { isInternalRequest } from '@api/utils/internal-request';
 import { mcpCors } from '@api/middlewares/cors';
 
+import { ORG_ANALYTICS_PAGE, ORG_ANALYTICS_TOOLS } from '@cio/utils/constants/analytics-pages';
 import { mcpRouter } from './mcp';
 
 const mocks = vi.hoisted(() => ({
@@ -40,7 +41,11 @@ describe('POST /mcp', () => {
   beforeEach(() => {
     mocks.authenticateKey.mockReset();
     mocks.authenticateOAuth.mockReset();
-    mocks.authenticateOAuth.mockResolvedValue({ id: 'key-1', type: 'mcp', organizationId: 'org-1' });
+    mocks.authenticateOAuth.mockResolvedValue({
+      key: { id: 'key-1', type: 'mcp', organizationId: 'org-1' },
+      clientId: 'client-1',
+      planName: null
+    });
     dispatched.mockReset();
     dispatched.mockImplementation(
       () =>
@@ -83,7 +88,11 @@ describe('POST /mcp', () => {
   });
 
   it('refuses credentials that were not issued for MCP', async () => {
-    mocks.authenticateOAuth.mockResolvedValue({ id: 'key-1', type: 'api', organizationId: 'org-1' });
+    mocks.authenticateOAuth.mockResolvedValue({
+      key: { id: 'key-1', type: 'api', organizationId: 'org-1' },
+      clientId: 'client-1',
+      planName: 'free'
+    });
 
     const response = await rpc('initialize', {}, { Authorization: 'Bearer eyJhbGciOi' });
 
@@ -125,6 +134,7 @@ describe('POST /mcp', () => {
     const names: string[] = body.result.tools.map((tool: { name: string }) => tool.name);
 
     expect(names).toContain('list_team_members');
+    expect(names).toContain(ORG_ANALYTICS_TOOLS.query);
     expect(names).not.toContain('upload_video');
   });
 
@@ -161,6 +171,23 @@ describe('POST /mcp', () => {
     expect(new URL(forwarded.url).pathname).toBe('/public-api/v1/team');
     expect(forwarded.headers.get('authorization')).toBe('Bearer eyJhbGciOi');
     expect(forwarded.headers.get('cf-connecting-ip')).toBe('203.0.113.7');
+    expect(isInternalRequest(forwarded.headers)).toBe(true);
+  });
+
+  it(`dispatches ${ORG_ANALYTICS_TOOLS.catalog} to the ${ORG_ANALYTICS_PAGE.label} catalog route`, async () => {
+    const response = await rpc(
+      'tools/call',
+      { name: ORG_ANALYTICS_TOOLS.catalog, arguments: {} },
+      { Authorization: 'Bearer eyJhbGciOi' }
+    );
+
+    expect(response.status).toBe(200);
+    expect(dispatched).toHaveBeenCalledTimes(1);
+
+    const forwarded = dispatched.mock.calls[0]![0];
+
+    expect(new URL(forwarded.url).pathname).toBe(`/public-api/v1/analytics/${ORG_ANALYTICS_PAGE.slug}/catalog`);
+    expect(forwarded.headers.get('authorization')).toBe('Bearer eyJhbGciOi');
     expect(isInternalRequest(forwarded.headers)).toBe(true);
   });
 });

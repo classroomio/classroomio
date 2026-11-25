@@ -23,20 +23,21 @@ When a request fails, the API returns an HTTP error status and a JSON body that 
 
 ## HTTP status codes
 
-| Status | Meaning |
-| --- | --- |
-| `200` / `201` | The request worked |
-| `400` | The request body or query is invalid |
-| `401` | The API key is missing, invalid, or revoked |
-| `403` | The key can't call this endpoint, or your plan doesn't include API access |
-| `404` | The resource doesn't exist, or belongs to another organization |
-| `409` | The request conflicts with the resource's current state |
-| `429` | Too many requests. See [Rate limits](/api/rate-limits) |
-| `500` | Something went wrong on our side |
+| Status        | Meaning                                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `200` / `201` | The request worked                                                                                                                                           |
+| `400`         | The request body or query is invalid                                                                                                                         |
+| `401`         | The credential (API key or OAuth token) is missing, invalid, expired, or revoked                                                                             |
+| `403`         | The credential can't call this endpoint — missing scope, read-only connection, or a plan without API access                                                  |
+| `404`         | The resource doesn't exist, or belongs to another organization                                                                                               |
+| `409`         | The request conflicts with the resource's current state                                                                                                      |
+| `429`         | Too many requests. See [Rate limits](/api/rate-limits)                                                                                                       |
+| `500`         | Something went wrong on our side                                                                                                                             |
+| `503`         | A safety check, such as a rate limit, couldn't run. A fail-closed analytics, reminder, email-template test, or course-invite request is refused; retry later |
 
 ## Common errors
 
-### Invalid API key
+### Invalid API key or token
 
 Status `401`
 
@@ -48,7 +49,7 @@ Status `401`
 }
 ```
 
-**Fix:** Check that the header is `Authorization: Bearer <key>` and that the key hasn't been rotated or revoked. See [Authentication](/api/authentication).
+**Fix:** Check that the header is `Authorization: Bearer <credential>` and that it hasn't been rotated, revoked, or — for an OAuth access token — expired. Access tokens last 10 minutes; refresh the token and retry. See [Authentication](/api/authentication).
 
 ### Missing scope
 
@@ -62,7 +63,20 @@ Status `403`
 }
 ```
 
-**Fix:** You're using a key that can't call this endpoint, usually an MCP key or a connected MCP app. Use an API key (`cio_api_...`) instead.
+**Fix:** You're using an MCP key (`cio_mcp_...`) that can't call this endpoint. Use an API key (`cio_api_...`) instead.
+
+An OAuth connection, such as Zapier, gets `INSUFFICIENT_SCOPE` instead, with the missing scope in `requiredScope`:
+
+```json
+{
+  "success": false,
+  "error": "This connection was not granted the course:member:write permission",
+  "code": "INSUFFICIENT_SCOPE",
+  "requiredScope": "course:member:write"
+}
+```
+
+**Fix:** Reconnect the app and grant the permission. A connection made read-only can't call endpoints whose scopes change workspace data, but it keeps `webhook:subscription:write` so it can still manage the subscriptions its triggers need.
 
 ### Resource not found
 
@@ -95,7 +109,29 @@ Status `400`
 
 ### Rate limit exceeded
 
-Status `429`. The body depends on which limit you hit. The per-key request limit uses its own shape with `retryAfter`. The MCP usage limit uses the standard format with `code` `AUTOMATION_RATE_LIMIT_EXCEEDED`. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit).
+Status `429`. The body depends on which limit you hit. The per-key request limit uses its own shape with `retryAfter`. The MCP usage limit uses the standard format with `code` `AUTOMATION_RATE_LIMIT_EXCEEDED`, and the course invite limit on `POST /courses/{courseId}/enrollments` uses it with `code` `COURSE_INVITE_RATE_LIMIT_EXCEEDED`. See [Exceeding the limit](/api/rate-limits#exceeding-the-limit) and [Course invites](/api/rate-limits#course-invites).
+
+### Rate limit unavailable
+
+Status `503`, with `code` `RATE_LIMIT_UNAVAILABLE`. Creating course invites is refused while the rate limiter can't be checked, rather than letting invites through unlimited.
+
+**Fix:** Retry after a short wait.
+
+### Staff can't be enrolled
+
+Status `409`, with `code` `STAFF_CANNOT_ENROLL`, from `POST /courses/{courseId}/enrollments` when the email belongs to an admin or tutor in your organization.
+
+**Fix:** Add admins and tutors to the course from the dashboard.
+
+### Rate limit unavailable
+
+Status `503` with `code` `RATE_LIMIT_UNAVAILABLE`. The Academy analytics query, analytics snapshot, overdue-goal reminder, email-template test-email, and course-invite limiters are fail-closed: when Redis cannot be reached to check the budget, the request is refused instead of going through. Retry once Redis is reachable again. See [Fail-closed limits](/api/rate-limits#fail-closed-limits).
+
+### Organization member is archived
+
+Status `409`, with `code` `ORG_MEMBER_ARCHIVED`, from `POST /courses/{courseId}/enrollments` and `POST /courses/{courseId}/members` when the email belongs to an archived organization member. Archived members cannot gain a course seat until they are restored.
+
+**Fix:** Restore the member from **Audience** with the **Archived** status filter, then call the endpoint again.
 
 ## Next steps
 
