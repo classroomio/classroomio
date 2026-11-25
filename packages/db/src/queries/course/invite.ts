@@ -1,7 +1,8 @@
 import type { TCourseInvite, TCourseInviteAudit, TNewCourseInvite, TNewCourseInviteAudit } from '@db/types';
 import * as schema from '@db/schema';
+import { ROLE } from '@cio/utils/constants/roles';
 
-import { and, desc, eq, gt, gte, inArray, lt, sql } from 'drizzle-orm';
+import { and, arrayContains, desc, eq, gt, gte, inArray, lt, notExists, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 export async function createCourseInvite(values: TNewCourseInvite, client: DbOrTxClient = db): Promise<TCourseInvite> {
@@ -524,6 +525,132 @@ export async function selectCourseInviteAcceptBundleByTokenHash(
   }
 }
 
+export type TPendingCourseInviteListItem = {
+  invite: TCourseInvite;
+  course: { id: string; title: string; description: string; slug: string | null };
+  organization: { id: string; name: string; siteName: string; avatarUrl: string | null };
+};
+
+/**
+ * Student course invites addressed to this exact email that can still be accepted:
+ * unrevoked, unexpired, with uses left, on an active published course the profile has not joined.
+ */
+export async function getActivePendingCourseInvitesForEmail(
+  email: string,
+  profileId: string
+): Promise<TPendingCourseInviteListItem[]> {
+  const normalized = email.toLowerCase().trim();
+  if (!normalized) {
+    return [];
+  }
+
+  try {
+    const rows = await db
+      .select({
+        invite: schema.courseInvite,
+        course: {
+          id: schema.course.id,
+          title: schema.course.title,
+          description: schema.course.description,
+          slug: schema.course.slug
+        },
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
+        }
+      })
+      .from(schema.courseInvite)
+      .innerJoin(schema.course, eq(schema.courseInvite.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(
+        and(
+          arrayContains(schema.courseInvite.allowedEmails, [normalized]),
+          eq(schema.courseInvite.roleId, ROLE.STUDENT),
+          eq(schema.courseInvite.isRevoked, false),
+          gt(schema.courseInvite.expiresAt, sql`NOW()`),
+          lt(schema.courseInvite.usedCount, schema.courseInvite.maxUses),
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          notExists(
+            db
+              .select({ id: schema.groupmember.id })
+              .from(schema.groupmember)
+              .where(and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId)))
+          )
+        )
+      )
+      .orderBy(desc(schema.courseInvite.createdAt));
+
+    return rows.map((row) => ({
+      ...row,
+      organization: { ...row.organization, siteName: row.organization.siteName ?? '' }
+    }));
+  } catch (error) {
+    console.error('getActivePendingCourseInvitesForEmail error:', error);
+    throw new Error(
+      `Failed to get pending course invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function selectCourseInviteAcceptBundleByInviteId(
+  dbClient: DbOrTxClient,
+  inviteId: string
+): Promise<TCourseInviteAcceptBundle | null> {
+  try {
+    const [row] = await dbClient
+      .select({
+        invite: schema.courseInvite,
+        course: {
+          id: schema.course.id,
+          title: schema.course.title,
+          status: schema.course.status,
+          isPublished: schema.course.isPublished,
+          metadata: schema.course.metadata,
+          groupId: schema.group.id
+        },
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName,
+          customDomain: schema.organization.customDomain,
+          isCustomDomainVerified: schema.organization.isCustomDomainVerified,
+          avatarUrl: schema.organization.avatarUrl,
+          theme: schema.organization.theme
+        }
+      })
+      .from(schema.courseInvite)
+      .innerJoin(schema.course, eq(schema.courseInvite.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(eq(schema.courseInvite.id, inviteId))
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      ...row,
+      course: { ...row.course, isPublished: !!row.course.isPublished },
+      organization: {
+        ...row.organization,
+        siteName: row.organization.siteName ?? '',
+        customDomain: row.organization.customDomain ?? null,
+        isCustomDomainVerified: row.organization.isCustomDomainVerified ?? null
+      }
+    };
+  } catch (error) {
+    console.error('selectCourseInviteAcceptBundleByInviteId error:', error);
+    throw new Error(
+      `Failed to load course invite for accept: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function optimisticIncrementCourseInviteUsedCount(
   dbClient: DbOrTxClient,
   inviteId: string,
@@ -537,7 +664,13 @@ export async function optimisticIncrementCourseInviteUsedCount(
         updatedAt: new Date().toISOString(),
         lastUsedAt: new Date().toISOString()
       })
-      .where(and(eq(schema.courseInvite.id, inviteId), eq(schema.courseInvite.usedCount, priorUsedCount)))
+      .where(
+        and(
+          eq(schema.courseInvite.id, inviteId),
+          eq(schema.courseInvite.usedCount, priorUsedCount),
+          eq(schema.courseInvite.isRevoked, false)
+        )
+      )
       .returning({
         id: schema.courseInvite.id
       });

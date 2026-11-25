@@ -2,6 +2,7 @@
   import * as Empty from '@cio/ui/base/empty';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import EyeIcon from '@lucide/svelte/icons/eye';
+  import { pendingCourseInvitesApi } from '$features/invite/api/pending-course-invites.svelte';
   import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
   import PendingInviteModal from '$features/invite/components/pending-invite-modal.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -28,6 +29,10 @@
     if (item.kind === 'org_invite') {
       selectedInviteId = item.sourceId;
       isModalOpen = true;
+    }
+
+    if (item.kind === 'course_invite') {
+      pendingCourseInvitesApi.openModal();
     }
   }
 

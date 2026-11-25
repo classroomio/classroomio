@@ -1,4 +1,4 @@
-export type NotificationKind = 'org_invite';
+export type NotificationKind = 'org_invite' | 'course_invite';
 
 /** Translation key plus its params, resolved at render so a locale switch re-renders. */
 export type NotificationText = {

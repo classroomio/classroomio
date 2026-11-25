@@ -5827,7 +5827,12 @@
     "any_progress": "Qualsiasi corso avviato verrà visualizzato qui",
     "not_completed": "Nessun corso completato",
     "any_course": "Tutti i corsi completati verranno visualizzati qui",
-    "find_courses": "Trova corsi"
+    "find_courses": "Trova corsi",
+    "pending_invites": {
+      "title": "Hai inviti a corsi in sospeso",
+      "description": "Accettali per iniziare a imparare.",
+      "review": "Rivedi gli inviti"
+    }
   },
   "certificates": {
     "heading": "Certificati",
@@ -6262,6 +6267,18 @@
       "disabled": "Questo collegamento di invito è stato disabilitato dall'organizzazione.",
       "join_failed": "Impossibile aderire all'organizzazione",
       "joined": "Organizzazione unita"
+    },
+    "course": {
+      "modal": {
+        "title": "Sei stato invitato a un corso",
+        "description": "Accetta un invito per aggiungere il corso al tuo apprendimento.",
+        "accept": "Accetta",
+        "later": "Più tardi"
+      },
+      "messages": {
+        "joined": "Ti sei iscritto al corso.",
+        "join_failed": "Non è stato possibile accettare l'invito. Riprova."
+      }
     }
   },
   "content": {
@@ -6923,7 +6940,11 @@
       "watching": "Guardando"
     },
     "watching_empty_title": "Niente da guardare ancora",
-    "watching_empty_description": "Gli aggiornamenti sugli elementi che segui verranno visualizzati qui."
+    "watching_empty_description": "Gli aggiornamenti sugli elementi che segui verranno visualizzati qui.",
+    "pending_course_invite": {
+      "heading": "Invito a un corso",
+      "body": "{orgName} ti ha invitato al corso {courseTitle}."
+    }
   },
   "report": {
     "menu": "Rapporto",
