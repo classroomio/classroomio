@@ -46,7 +46,7 @@ OpenAI's documentation calls these plugins. Your account and workspace policies 
 
 ## What the app can do
 
-The app can use every ClassroomIO MCP tool except `upload_video`, which needs a file on your own computer. Every action passes the same checks as the API: the permissions you approved, your role in the workspace, and your plan's limits.
+The app sees only the ClassroomIO MCP tools your approved permissions cover. If you turn off **Allow changes** on the approval screen, it sees only the tools that read data. `upload_video` is never available, because it needs a file on your own computer. Every action passes the same checks as the API: the permissions you approved, your role in the workspace, and your plan's limits.
 
 Approval is tied to one workspace. To use another workspace, connect again and choose it.
 

@@ -32,6 +32,8 @@ export { ClassroomIoApiClient } from './api-client';
 export type CreateMcpServerOptions = {
   /** Registers tools that read files from the machine running the server; only safe for a local stdio process. */
   includeLocalFileTools: boolean;
+  /** Registers only the tools this returns true for; every tool when omitted. The API still enforces scopes on each call. */
+  isToolAllowed?: (toolName: string) => boolean;
 };
 
 /**
@@ -44,6 +46,7 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
     version: MCP_VERSION
   });
   returnApiErrorsAsToolResults(server);
+  if (options.isToolAllowed) registerOnlyAllowedTools(server, options.isToolAllowed);
   server.server.oninitialized = () => {
     const clientName = server.server.getClientVersion()?.name;
 
@@ -79,6 +82,16 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
   }
 
   return server;
+}
+
+function registerOnlyAllowedTools(server: McpServer, isToolAllowed: (toolName: string) => boolean) {
+  const register = server.tool.bind(server) as (...args: unknown[]) => unknown;
+
+  server.tool = ((...args: unknown[]) => {
+    if (!isToolAllowed(args[0] as string)) return undefined;
+
+    return register(...args);
+  }) as McpServer['tool'];
 }
 
 /** The SDK keeps only a thrown error's message, so API failures are returned with their code and status. */
