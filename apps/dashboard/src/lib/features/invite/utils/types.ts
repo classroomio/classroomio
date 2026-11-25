@@ -18,3 +18,9 @@ export type AcceptableOrgInvite = {
   roleLabel: string;
   organization: { name: string; siteName: string };
 };
+
+export type GetPendingCourseInvitesRequest = (typeof classroomio.account)['course-invites']['$get'];
+type GetPendingCourseInvitesResponse = Extract<InferResponseType<GetPendingCourseInvitesRequest>, { success: true }>;
+export type PendingCourseInviteItem = GetPendingCourseInvitesResponse['data'][number];
+
+export type AcceptCourseInviteRequest = (typeof classroomio.invite.student)[':inviteId']['accept-by-id']['$post'];

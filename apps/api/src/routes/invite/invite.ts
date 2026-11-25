@@ -1,7 +1,7 @@
 import { ZCourseInviteTokenParam } from '@cio/utils/validation/course/invite';
 import { ZInviteLinkTokenParam } from '@cio/utils/validation/invite-link';
 import { acceptInviteLink, previewInviteLink } from '@api/services/invite-link';
-import { previewStudentInvite } from '@api/services/course/invite';
+import { acceptStudentInviteById, previewStudentInvite } from '@api/services/course/invite';
 import { ZOrganizationInviteTokenParam } from '@cio/utils/validation/organization/invite';
 import {
   acceptLinkInvite,
@@ -103,6 +103,17 @@ const acceptByIdRateLimit = createRateLimiter({
   }
 });
 
+const acceptCourseInviteByIdRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 20,
+  message: 'Too many invite accept attempts. Please try again later.',
+  keyGenerator: (c) => {
+    const user = c.get('user');
+    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    return `course_invite_accept_by_id:${actor}:${c.req.param('inviteId')}`;
+  }
+});
+
 export const inviteRouter = new Hono()
   /**
    * GET /invite/organization/pending
@@ -146,6 +157,31 @@ export const inviteRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to accept organization invite');
+      }
+    }
+  )
+  /**
+   * POST /invite/student/:inviteId/accept-by-id
+   * Enrolls the signed-in learner through a course invite addressed to their verified email.
+   */
+  .post(
+    '/student/:inviteId/accept-by-id',
+    authMiddleware,
+    acceptCourseInviteByIdRateLimit,
+    zValidator('param', z.object({ inviteId: z.string().uuid() })),
+    async (c) => {
+      try {
+        const { inviteId } = c.req.valid('param');
+        const user = c.get('user')!;
+        const result = await acceptStudentInviteById(
+          inviteId,
+          { id: user.id, email: user.email, emailVerified: user.emailVerified },
+          { ipAddress: extractClientIp(c), userAgent: c.req.header('user-agent') || null }
+        );
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to accept course invite');
       }
     }
   )

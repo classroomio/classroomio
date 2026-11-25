@@ -5847,7 +5847,12 @@
     "any_progress": "Başladığınız herhangi bir kurs burada görüntülenecektir",
     "not_completed": "Tamamlanan Kurs Yok",
     "any_course": "Tamamladığınız herhangi bir kurs burada görüntülenecektir",
-    "find_courses": "Bul kurslar"
+    "find_courses": "Bul kurslar",
+    "pending_invites": {
+      "title": "Bekleyen kurs davetlerin var",
+      "description": "Öğrenmeye başlamak için onları kabul et.",
+      "review": "Davetleri incele"
+    }
   },
   "certificates": {
     "heading": "Sertifikalar",
@@ -6282,6 +6287,18 @@
       "disabled": "Bu davet bağlantısı kuruluş tarafından devre dışı bırakıldı.",
       "join_failed": "Kuruluşa katılılamadı",
       "joined": "Kuruluşa katılındı"
+    },
+    "course": {
+      "modal": {
+        "title": "Bir kursa davet edildin",
+        "description": "Kursu öğrenimine eklemek için bir daveti kabul et.",
+        "accept": "Kabul et",
+        "later": "Daha sonra"
+      },
+      "messages": {
+        "joined": "Kursa katıldın.",
+        "join_failed": "Davet kabul edilemedi. Lütfen tekrar dene."
+      }
     }
   },
   "content": {
@@ -6943,7 +6960,11 @@
       "watching": "İzleniyor"
     },
     "watching_empty_title": "Henüz izlenecek bir şey yok",
-    "watching_empty_description": "Takip ettiğiniz öğelerle ilgili güncellemeler burada gösterilecektir."
+    "watching_empty_description": "Takip ettiğiniz öğelerle ilgili güncellemeler burada gösterilecektir.",
+    "pending_course_invite": {
+      "heading": "Kurs daveti",
+      "body": "{orgName} seni {courseTitle} kursuna davet etti."
+    }
   },
   "report": {
     "menu": "Rapor",

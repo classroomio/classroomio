@@ -588,7 +588,12 @@
     "any_progress": "Qualquer curso que você iniciar será exibido aqui",
     "not_completed": "Nenhum curso concluído",
     "any_course": "Qualquer curso que você concluir será exibido aqui",
-    "find_courses": "Encontre cursos"
+    "find_courses": "Encontre cursos",
+    "pending_invites": {
+      "title": "Você tem convites para cursos pendentes",
+      "description": "Aceite-os para começar a aprender.",
+      "review": "Ver convites"
+    }
   },
   "certificates": {
     "heading": "Certificados",
@@ -5065,6 +5070,18 @@
       "disabled": "Este link de convite foi desativado pela organização.",
       "join_failed": "Falha ao ingressar na organização",
       "joined": "Organização aderida"
+    },
+    "course": {
+      "modal": {
+        "title": "Você foi convidado para um curso",
+        "description": "Aceite um convite para adicionar o curso ao seu aprendizado.",
+        "accept": "Aceitar",
+        "later": "Mais tarde"
+      },
+      "messages": {
+        "joined": "Você entrou no curso.",
+        "join_failed": "Não foi possível aceitar o convite. Tente novamente."
+      }
     }
   },
   "automation": {
@@ -6948,6 +6965,10 @@
     "tabs": {
       "direct": "Direto",
       "watching": "Assistindo"
+    },
+    "pending_course_invite": {
+      "heading": "Convite para um curso",
+      "body": "{orgName} convidou você para o curso {courseTitle}."
     }
   },
   "export": {

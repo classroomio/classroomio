@@ -1,6 +1,7 @@
 import {
   createSelfLoginLinkToken,
   getAccountData,
+  listPendingCourseInvitesForAccount,
   listPendingInvitesForAccount,
   updateUser
 } from '@api/services/account';
@@ -136,5 +137,22 @@ export const accountRouter = new Hono()
       return c.json({ success: true, data: invites }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to load pending invites');
+    }
+  })
+  /**
+   * GET /account/course-invites
+   * Student course invites awaiting this account, across all organizations.
+   */
+  .get('/course-invites', authMiddleware, pendingInvitesRateLimit, async (c) => {
+    const user = c.get('user')!;
+
+    try {
+      const invites = await listPendingCourseInvitesForAccount(user);
+
+      c.header('Cache-Control', 'no-store');
+
+      return c.json({ success: true, data: invites }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load pending course invites');
     }
   });

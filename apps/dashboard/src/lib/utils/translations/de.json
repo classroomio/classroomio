@@ -588,7 +588,12 @@
     "any_progress": "Jeder Kurs, den Sie starten, wird hier angezeigt",
     "not_completed": "Kein Kurs abgeschlossen",
     "any_course": "Alle von Ihnen abgeschlossenen Kurse werden hier angezeigt",
-    "find_courses": "Kurse finden"
+    "find_courses": "Kurse finden",
+    "pending_invites": {
+      "title": "Du hast offene Kurseinladungen",
+      "description": "Nimm sie an, um mit dem Lernen zu beginnen.",
+      "review": "Einladungen ansehen"
+    }
   },
   "certificates": {
     "heading": "Zertifikate",
@@ -5065,6 +5070,18 @@
       "disabled": "Dieser Einladungslink wurde von der Organisation deaktiviert.",
       "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
       "joined": "Der Organisation beigetreten"
+    },
+    "course": {
+      "modal": {
+        "title": "Du wurdest zu einem Kurs eingeladen",
+        "description": "Nimm eine Einladung an, um den Kurs zu deinem Lernbereich hinzuzufügen.",
+        "accept": "Annehmen",
+        "later": "Später"
+      },
+      "messages": {
+        "joined": "Du bist dem Kurs beigetreten.",
+        "join_failed": "Die Einladung konnte nicht angenommen werden. Bitte versuche es erneut."
+      }
     }
   },
   "automation": {
@@ -6948,6 +6965,10 @@
     "tabs": {
       "direct": "Direkt",
       "watching": "Beobachtet"
+    },
+    "pending_course_invite": {
+      "heading": "Kurseinladung",
+      "body": "{orgName} hat dich zum Kurs {courseTitle} eingeladen."
     }
   },
   "export": {

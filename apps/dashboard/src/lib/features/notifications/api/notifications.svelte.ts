@@ -1,5 +1,6 @@
+import { pendingCourseInvitesApi } from '$features/invite/api/pending-course-invites.svelte';
 import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
-import { toInviteNotifications } from '$features/invite/utils/invite-notification-utils';
+import { toCourseInviteNotifications, toInviteNotifications } from '$features/invite/utils/invite-notification-utils';
 import { sortNewestFirst } from '../utils/notification-utils';
 
 /**
@@ -7,7 +8,12 @@ import { sortNewestFirst } from '../utils/notification-utils';
  * cannot leave the badge under-counting.
  */
 class NotificationsApi {
-  items = $derived(sortNewestFirst(toInviteNotifications(pendingInvitesApi.invites)));
+  items = $derived(
+    sortNewestFirst([
+      ...toInviteNotifications(pendingInvitesApi.invites),
+      ...toCourseInviteNotifications(pendingCourseInvitesApi.invites)
+    ])
+  );
   unreadCount = $derived(this.items.filter((item) => item.unread).length);
 
   get isLoading() {
@@ -19,11 +25,11 @@ class NotificationsApi {
   }
 
   fetchOnce() {
-    return pendingInvitesApi.fetchOnce();
+    return Promise.all([pendingInvitesApi.fetchOnce(), pendingCourseInvitesApi.fetchOnce()]);
   }
 
   refresh() {
-    return pendingInvitesApi.fetchPendingInvites();
+    return Promise.all([pendingInvitesApi.fetchPendingInvites(), pendingCourseInvitesApi.fetchPendingInvites()]);
   }
 }
 

@@ -588,7 +588,12 @@
     "any_progress": "Bất kỳ khóa học nào bạn bắt đầu sẽ được hiển thị ở đây",
     "not_completed": "Không có khóa học nào hoàn thành",
     "any_course": "Bất kỳ khóa học nào bạn hoàn thành sẽ được hiển thị ở đây",
-    "find_courses": "Tìm khóa học"
+    "find_courses": "Tìm khóa học",
+    "pending_invites": {
+      "title": "Bạn có lời mời khóa học đang chờ",
+      "description": "Hãy chấp nhận để bắt đầu học.",
+      "review": "Xem lời mời"
+    }
   },
   "certificates": {
     "heading": "Chứng chỉ",
@@ -5065,6 +5070,18 @@
       "disabled": "Liên kết mời này đã bị tổ chức vô hiệu hóa.",
       "join_failed": "Không thể tham gia tổ chức",
       "joined": "Đã tham gia tổ chức"
+    },
+    "course": {
+      "modal": {
+        "title": "Bạn đã được mời tham gia một khóa học",
+        "description": "Chấp nhận lời mời để thêm khóa học vào quá trình học của bạn.",
+        "accept": "Chấp nhận",
+        "later": "Để sau"
+      },
+      "messages": {
+        "joined": "Bạn đã tham gia khóa học.",
+        "join_failed": "Không thể chấp nhận lời mời. Vui lòng thử lại."
+      }
     }
   },
   "automation": {
@@ -6948,6 +6965,10 @@
     "tabs": {
       "direct": "Trực tiếp",
       "watching": "Đang xem"
+    },
+    "pending_course_invite": {
+      "heading": "Lời mời tham gia khóa học",
+      "body": "{orgName} đã mời bạn tham gia khóa học {courseTitle}."
     }
   },
   "export": {

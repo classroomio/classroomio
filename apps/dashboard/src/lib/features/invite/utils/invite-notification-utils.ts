@@ -1,7 +1,7 @@
 import { ROLE } from '@cio/utils/constants';
 
 import type { NotificationItem } from '$features/notifications/utils/types';
-import type { PendingOrgInviteItem } from './types';
+import type { PendingCourseInviteItem, PendingOrgInviteItem } from './types';
 
 /**
  * The API's `roleLabel` is built server-side in English. Map the id to a translation key
@@ -27,6 +27,23 @@ export function toInviteNotifications(invites: PendingOrgInviteItem[]): Notifica
       key: 'notifications.pending_invite.body',
       params: { orgName: invite.organization.name },
       keyParams: { role: ROLE_LABEL_KEYS[invite.roleId] ?? 'course.navItem.people.roles.student' }
+    },
+    avatarUrl: invite.organization.avatarUrl,
+    avatarName: invite.organization.name,
+    unread: true,
+    sourceId: invite.id
+  }));
+}
+
+export function toCourseInviteNotifications(invites: PendingCourseInviteItem[]): NotificationItem[] {
+  return invites.map((invite) => ({
+    id: `course_invite:${invite.id}`,
+    kind: 'course_invite' as const,
+    createdAt: invite.createdAt,
+    title: { key: 'notifications.pending_course_invite.heading' },
+    body: {
+      key: 'notifications.pending_course_invite.body',
+      params: { orgName: invite.organization.name, courseTitle: invite.course.title }
     },
     avatarUrl: invite.organization.avatarUrl,
     avatarName: invite.organization.name,

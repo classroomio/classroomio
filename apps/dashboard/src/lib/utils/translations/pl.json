@@ -588,7 +588,12 @@
     "any_progress": "Tutaj wyświetli się każdy rozpoczęty kurs",
     "not_completed": "Żaden kurs nie został ukończony",
     "any_course": "Tutaj wyświetli się każdy ukończony kurs",
-    "find_courses": "Znajdź kursy"
+    "find_courses": "Znajdź kursy",
+    "pending_invites": {
+      "title": "Masz oczekujące zaproszenia do kursów",
+      "description": "Zaakceptuj je, aby zacząć naukę.",
+      "review": "Zobacz zaproszenia"
+    }
   },
   "certificates": {
     "heading": "Certyfikaty",
@@ -5065,6 +5070,18 @@
       "disabled": "Ten link z zaproszeniem został wyłączony przez organizację.",
       "join_failed": "Nie udało się dołączyć do organizacji",
       "joined": "Dołączył do organizacji"
+    },
+    "course": {
+      "modal": {
+        "title": "Zaproszono Cię do kursu",
+        "description": "Zaakceptuj zaproszenie, aby dodać kurs do swojej nauki.",
+        "accept": "Akceptuj",
+        "later": "Później"
+      },
+      "messages": {
+        "joined": "Dołączono do kursu.",
+        "join_failed": "Nie udało się zaakceptować zaproszenia. Spróbuj ponownie."
+      }
     }
   },
   "automation": {
@@ -6948,6 +6965,10 @@
     "tabs": {
       "direct": "Bezpośrednio",
       "watching": "Obserwowanie"
+    },
+    "pending_course_invite": {
+      "heading": "Zaproszenie do kursu",
+      "body": "{orgName} zaprasza Cię do kursu {courseTitle}."
     }
   },
   "export": {

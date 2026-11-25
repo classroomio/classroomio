@@ -13,9 +13,10 @@ import {
   listCourseInvites,
   optimisticIncrementCourseInviteUsedCount,
   revokeCourseInvite,
+  selectCourseInviteAcceptBundleByInviteId,
   selectCourseInviteAcceptBundleByTokenHash
 } from '@cio/db/queries/course/invite';
-import type { TCourseInviteListItem } from '@cio/db/queries/course/invite';
+import type { TCourseInviteAcceptBundle, TCourseInviteListItem } from '@cio/db/queries/course/invite';
 import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import {
@@ -51,7 +52,7 @@ import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
 import { getWelcomeSessionIcs } from './session-invite';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/tracking';
 import type { TEventSource } from '@cio/core/services/posthog';
 import { captureLearnerInvited, captureLearnersEnrolled } from '@api/services/product-events';
@@ -1227,19 +1228,55 @@ export async function previewStudentInvite(token: string, context: TInviteReques
   };
 }
 
+type InviteAcceptOptions = {
+  loadBundle: (client: DbOrTxClient) => Promise<TCourseInviteAcceptBundle | null>;
+  requireAllowedEmail: boolean;
+};
+
 /**
  * Accepts a student invite token and enrolls the user transactionally.
  */
 export async function acceptStudentInvite(token: string, user: TAuthUser, context: TInviteRequestContext = {}) {
+  const tokenHash = hashToken(token);
+
+  return acceptStudentInviteWith(
+    {
+      loadBundle: (client) => selectCourseInviteAcceptBundleByTokenHash(client, tokenHash),
+      requireAllowedEmail: false
+    },
+    user,
+    context
+  );
+}
+
+/**
+ * Accepts a student invite by id for a signed-in learner. Possession of an id proves nothing,
+ * so the invite must name the caller's verified email.
+ */
+export async function acceptStudentInviteById(inviteId: string, user: TAuthUser, context: TInviteRequestContext = {}) {
+  if (!user.emailVerified) {
+    throw new AppError('Verify your email address to accept this invite', ErrorCodes.FORBIDDEN, 403);
+  }
+
+  return acceptStudentInviteWith(
+    {
+      loadBundle: (client) => selectCourseInviteAcceptBundleByInviteId(client, inviteId),
+      requireAllowedEmail: true
+    },
+    user,
+    context
+  );
+}
+
+async function acceptStudentInviteWith(options: InviteAcceptOptions, user: TAuthUser, context: TInviteRequestContext) {
   if (!user.id || !user.email) {
     throw new AppError('Authenticated user email is required', ErrorCodes.UNAUTHORIZED, 401);
   }
 
   const normalizedEmail = user.email.toLowerCase().trim();
-  const tokenHash = hashToken(token);
 
   const result = await db.transaction(async (tx) => {
-    const inviteRow = await selectCourseInviteAcceptBundleByTokenHash(tx, tokenHash);
+    const inviteRow = await options.loadBundle(tx);
 
     if (!inviteRow) {
       throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
@@ -1264,7 +1301,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     }
 
     const allowedEmails = invite.allowedEmails?.map((email) => email.toLowerCase()) || [];
-    if (allowedEmails.length > 0 && !allowedEmails.includes(normalizedEmail)) {
+    const isEmailRestrictionMissing = options.requireAllowedEmail && allowedEmails.length === 0;
+    if (isEmailRestrictionMissing || (allowedEmails.length > 0 && !allowedEmails.includes(normalizedEmail))) {
       throw new AppError('This invite is restricted to a different email address', ErrorCodes.INVITE_RESTRICTED, 403);
     }
 

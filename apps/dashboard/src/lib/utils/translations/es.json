@@ -588,7 +588,12 @@
     "any_progress": "Cualquier curso que inicies se mostrará aquí.",
     "not_completed": "Ningún curso completado",
     "any_course": "Cualquier curso que completes se mostrará aquí.",
-    "find_courses": "encontrar cursos"
+    "find_courses": "encontrar cursos",
+    "pending_invites": {
+      "title": "Tienes invitaciones a cursos pendientes",
+      "description": "Acéptalas para empezar a aprender.",
+      "review": "Revisar invitaciones"
+    }
   },
   "certificates": {
     "heading": "Certificados",
@@ -5065,6 +5070,18 @@
       "disabled": "Este enlace de invitación ha sido deshabilitado por la organización.",
       "join_failed": "No se pudo unir a la organización",
       "joined": "Organización unida"
+    },
+    "course": {
+      "modal": {
+        "title": "Te han invitado a un curso",
+        "description": "Acepta una invitación para añadir el curso a tu aprendizaje.",
+        "accept": "Aceptar",
+        "later": "Más tarde"
+      },
+      "messages": {
+        "joined": "Te has unido al curso.",
+        "join_failed": "No pudimos aceptar la invitación. Inténtalo de nuevo."
+      }
     }
   },
   "automation": {
@@ -6948,6 +6965,10 @@
     "tabs": {
       "direct": "Directo",
       "watching": "Siguiendo"
+    },
+    "pending_course_invite": {
+      "heading": "Invitación a un curso",
+      "body": "{orgName} te invitó al curso {courseTitle}."
     }
   },
   "export": {

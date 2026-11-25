@@ -5902,7 +5902,12 @@
     "any_progress": "Any course that you start will be displayed here",
     "not_completed": "No Course Completed",
     "any_course": "Any course that you complete will be displayed here",
-    "find_courses": "Find courses"
+    "find_courses": "Find courses",
+    "pending_invites": {
+      "title": "You have pending course invitations",
+      "description": "Accept them to start learning.",
+      "review": "Review invitations"
+    }
   },
   "certificates": {
     "heading": "Certificates",
@@ -6337,6 +6342,18 @@
       "disabled": "This invite link has been disabled by the organization.",
       "join_failed": "Failed to join organization",
       "joined": "Joined organization"
+    },
+    "course": {
+      "modal": {
+        "title": "You've been invited to a course",
+        "description": "Accept an invitation to add the course to your learning.",
+        "accept": "Accept",
+        "later": "Later"
+      },
+      "messages": {
+        "joined": "You've joined the course.",
+        "join_failed": "We couldn't accept this invitation. Please try again."
+      }
     }
   },
   "content": {
@@ -6998,7 +7015,11 @@
       "watching": "Watching"
     },
     "watching_empty_title": "Nothing to watch yet",
-    "watching_empty_description": "Updates on items you follow will show up here."
+    "watching_empty_description": "Updates on items you follow will show up here.",
+    "pending_course_invite": {
+      "heading": "Course invite",
+      "body": "{orgName} invited you to the course {courseTitle}."
+    }
   },
   "report": {
     "menu": "Report",

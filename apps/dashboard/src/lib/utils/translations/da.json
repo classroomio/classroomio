@@ -588,7 +588,12 @@
     "any_progress": "Ethvert kursus, du starter, vil blive vist her",
     "not_completed": "Intet kursus gennemført",
     "any_course": "Ethvert kursus, du gennemfører, vil blive vist her",
-    "find_courses": "Find kurser"
+    "find_courses": "Find kurser",
+    "pending_invites": {
+      "title": "Du har afventende kursusinvitationer",
+      "description": "Accepter dem for at begynde at lære.",
+      "review": "Gennemse invitationer"
+    }
   },
   "certificates": {
     "heading": "Certifikater",
@@ -5065,6 +5070,18 @@
       "disabled": "Dette invitationslink er blevet deaktiveret af organisationen.",
       "join_failed": "Kunne ikke deltage i organisationen",
       "joined": "Tilsluttet organisation"
+    },
+    "course": {
+      "modal": {
+        "title": "Du er blevet inviteret til et kursus",
+        "description": "Accepter en invitation for at tilføje kurset til din læring.",
+        "accept": "Accepter",
+        "later": "Senere"
+      },
+      "messages": {
+        "joined": "Du er tilmeldt kurset.",
+        "join_failed": "Invitationen kunne ikke accepteres. Prøv igen."
+      }
     }
   },
   "automation": {
@@ -6948,6 +6965,10 @@
     "tabs": {
       "direct": "Direkte",
       "watching": "Ser"
+    },
+    "pending_course_invite": {
+      "heading": "Kursusinvitation",
+      "body": "{orgName} har inviteret dig til kurset {courseTitle}."
     }
   },
   "export": {
