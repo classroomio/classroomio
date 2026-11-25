@@ -72,7 +72,10 @@ def resolve_hook(clip, tokens, duration, warn=print):
         warn(f"  ! {clip['id']}: hook not found: \"{clip['hook']}\"")
         return None
     first = next(index for index, (t, _) in enumerate(tokens) if t == start)
-    hook = {'start': max(0.0, start - 0.08), 'end': word_end(tokens, last, duration) + 0.05, 'words': tokens[first:last + 1]}
+    words = list(tokens[first:last + 1])
+    first_time, first_word = words[0]
+    words[0] = (first_time, first_word[:1].upper() + first_word[1:])
+    hook = {'start': max(0.0, start - 0.08), 'end': word_end(tokens, last, duration) + 0.05, 'words': words}
     if hook['end'] - hook['start'] > 5.5:
         warn(f"  ! {clip['id']}: hook is {hook['end'] - hook['start']:.1f}s; aim for 2–5s")
     return hook

@@ -139,6 +139,7 @@ def compose_landscape(project, clip, info, events, sign_off, out_path):
     show_title = not events or events[0]['start'] > 5.2
     card = title_card(project, clip)
     bug = brand.logo(34)
+    show_bug = project.data.get('logo_bug', True)
     caption_track = captions.Captions(tokens, duration, captions.LANDSCAPE)
     total = duration + (4.5 if sign_off else 0.5)
     audio = os.path.join(project.clip_work(clip), 'audio-16x9.wav')
@@ -168,7 +169,7 @@ def compose_landscape(project, clip, info, events, sign_off, out_path):
             alpha = min(visuals.ease_out((t - 0.2) / 0.35), visuals.ease_out((4.75 - t) / 0.35))
             if alpha > 0:
                 visuals.put(canvas, visuals.with_alpha(card, alpha), (0, round(24 * (1 - visuals.ease_out((t - 0.2) / 0.35)))))
-        if s < 0.98:
+        if show_bug and s < 0.98:
             visuals.put(canvas, visuals.with_alpha(bug, 0.9 * (1 - s)), (1920 - bug.width - 80, 84))
         caption = caption_track.layer(t)
         if caption:

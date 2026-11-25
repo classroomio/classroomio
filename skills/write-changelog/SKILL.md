@@ -1,15 +1,16 @@
 ---
 name: write-changelog
-description: Write ClassroomIO's weekly customer changelog from the previous week's shipped work. Produce a concise customer email, a separate changelog-site article and a step-by-step demo walkthrough backed by seeded demo data, capture framed PNG screenshots, and draft the Resend broadcast. Use every Monday when preparing the previous week's release update.
+description: Write ClassroomIO's weekly customer changelog from the previous week's shipped work. Produce a concise customer email, a separate changelog-site article, LinkedIn and X posts, and a step-by-step demo walkthrough backed by seeded demo data, capture framed PNG screenshots, and draft the Resend broadcast. Use every Monday when preparing the previous week's release update.
 ---
 
 # Write weekly changelogs
 
-Turn the previous week's verified, customer-facing releases into three separate pieces:
+Turn the previous week's verified, customer-facing releases into four separate pieces:
 
 1. A short email customers can scan quickly.
 2. A fuller article for the ClassroomIO changelog site.
-3. A demo walkthrough the team follows to record the weekly video.
+3. A social post for LinkedIn and X.
+4. A demo walkthrough the team follows to record the weekly video.
 
 The article should explain what changed and why it matters. It should not read like an internal engineering report.
 
@@ -189,7 +190,43 @@ Article rules:
 - End every `## Fixes and improvements` bullet with links to its PRs, as in the template. Keep PR numbers out of the feature sections and the email, and keep author handles and engineering-only details out of the article.
 - Use links only when they help the customer take action or learn more.
 
-## 6. Prepare the media
+## 6. Write the social post
+
+Add `## Social post` after the article and before `## Publishing notes`, with a LinkedIn and an X version. Both are plain text, ready to paste.
+
+```markdown
+## Social post
+
+### LinkedIn
+
+New in ClassroomIO this week:
+
+- [What customers can now do with headline feature 1]
+- [One line per headline feature and notable smaller item]
+
+Full changelog and video walkthrough: CHANGELOG_URL
+
+### X
+
+New in ClassroomIO this week:
+
+- [Headline feature 1]
+- [Headline feature 2]
+- [Headline feature 3]
+
+Full changelog: CHANGELOG_URL
+```
+
+Rules:
+
+- Follow the article's order and use the same feature names as the title.
+- LinkedIn has 5 to 7 bullets. Each says what the customer can now do in one short line. Developer-facing work (API, MCP, webhooks) gets one bullet at most, unless it is a headline feature.
+- X has only the three headline features, and the whole post stays under 280 characters with the link.
+- Say "this week" for a one-week changelog and "over the past two weeks" when the range covers two.
+- No hashtags, emoji, or em or en dashes.
+- Keep `CHANGELOG_URL` until the article is live, then replace it in both posts with the UserJot link.
+
+## 7. Prepare the media
 
 Write every image placeholder as `[IMAGE: file-name.png | what the screenshot shows]`, so the person publishing knows both the file and the shot.
 
@@ -205,13 +242,13 @@ The person publishing uploads the files flat to `https://assets.cdn.clsrio.com/c
 
 The walkthrough video is a YouTube link they supply. Replace `[VIDEO: Weekly walkthrough]` with the bare link.
 
-## 7. Write the demo walkthrough
+## 8. Write the demo walkthrough
 
 The walkthrough video is recorded from local, so the changelog file also carries the steps to demo every item. Add it as `## Demo walkthrough`, the last section of the file. Someone who has not read the PRs should be able to record the whole video from it without guessing a login, a URL or a click.
 
 Prepare the data first, then write the steps against it:
 
-- **Seed what a demo needs.** If a feature needs data the local database does not have (submissions, a second teammate, a live class with past sessions), extend or add the idempotent seed script from section 6. Give it a `db:seed:*` script in `packages/db/package.json`. It also resets anything a demo changes, such as a role switched during the recording or a student's live upload, so every take starts from the same state.
+- **Seed what a demo needs.** If a feature needs data the local database does not have (submissions, a second teammate, a live class with past sessions), extend or add the idempotent seed script from section 7. Give it a `db:seed:*` script in `packages/db/package.json`. It also resets anything a demo changes, such as a role switched during the recording or a student's live upload, so every take starts from the same state.
 - **Give every role a login.** Each demo that switches people (student vs admin, a tutor without access) needs a seeded account with a known password. Copy the password hash from an existing seed account instead of hashing one yourself.
 - **Make files real.** If a demo shows a file (View, Download, a preview), the object must exist in storage. Local storage may be the shared Cloudflare R2 account, so ask before uploading, keep demo objects under the organization's folder with a recognisable prefix, and store each file's real size on its row.
 - **Ship the upload files.** When the demo has a student upload something, put sample files with fictional content in `company/changelogs/<number>-<range>/assets/demo-files/`.
@@ -253,17 +290,17 @@ Rules:
 - Include a curl or MCP prompt for API and MCP features, with the local base URL and a real id from the seed.
 - Walk through the steps in the running app before handing them over. Fix any label or path that differs, and list steps you could not run under `Publishing notes`.
 
-## 8. Publish
+## 9. Publish
 
 Each changelog has its own folder, `company/changelogs/<number>-<range>/` (for example `0009-26-oct-09-nov/`), where `<number>` is the four-digit changelog number, so folders sort oldest first:
 
-- `changelog.md`: the drafts, with `## Customer email`, `## Changelog article`, `## Publishing notes` and `## Demo walkthrough` sections.
+- `changelog.md`: the drafts, with `## Customer email`, `## Changelog article`, `## Social post`, `## Publishing notes` and `## Demo walkthrough` sections.
 - `assets/`: framed screenshots, the YouTube thumbnail and its source, and `demo-files/`.
 - `video/`: the edited walkthrough clips (`youtube/`, `social/`, `intro/`, `project/` and a `README.md` listing each clip).
 
 Add a row for the new changelog to the index in `company/changelogs/README.md`.
 
-- **Article:** the person publishing posts it in UserJot themselves. Its public URL looks like `https://feedback.classroomio.com/updates/p/<slug>`. Ask for it before finishing the email.
+- **Article:** the person publishing posts it in UserJot themselves. Its public URL looks like `https://feedback.classroomio.com/updates/<slug>`. Ask for it before finishing the email.
 - **Walkthrough video:** publish the video to the public "Changelogs" YouTube playlist on the same day as the UserJot entry. The website reads that playlist's RSS feed and pairs each video with the entry published within 24 hours, so the dashboard "What's new" modal shows it with no code change. Only when a pairing is wrong, or the video lives outside the playlist, map the UserJot entry id (`id` from `GET https://api.userjot.com/v1/changelogs`) to the YouTube id in `CHANGELOG_VIDEO_OVERRIDES` in `apps/website/src/lib/data/changelog-videos.ts`.
 - **Email:** draft it as a Resend broadcast in the browser, matching the previous broadcasts. Open one of them first to check the layout.
   - Reuse an existing `Untitled` draft instead of creating a second one.
@@ -272,9 +309,9 @@ Add a row for the new changelog to the index in `company/changelogs/README.md`.
   - Resend only renders and accepts clicks in a tab that is in front. If the editor stays on "Loading..." or a selector will not save, ask the person to bring the tab forward, or leave that field for them.
   - Never send or schedule the broadcast. Hand back the draft link and list anything left to set.
 
-## 9. Final review
+## 10. Final review
 
-Before returning the two deliverables, check:
+Before returning the deliverables, check:
 
 - [ ] The date range is the previous Monday through the publishing day, checked against the latest `origin/main`, and is stated clearly.
 - [ ] Every listed item shipped during that range.
@@ -284,6 +321,7 @@ Before returning the two deliverables, check:
 - [ ] The email is scannable and includes the changelog link.
 - [ ] The biggest feature leads, related features are grouped under one customer goal, and small improvements sit in Fixes and improvements.
 - [ ] The article has a video placeholder or YouTube link near the top.
+- [ ] The social post has a LinkedIn version of 5 to 7 bullets and an X version under 280 characters, both ending with the changelog link.
 - [ ] Every article feature has a framed PNG or JPG with a lowercase, hyphenated name in `company/changelogs/<number>-<range>/assets/`.
 - [ ] Empty sections and filler have been removed.
 - [ ] The terms organization, academy, and student are used consistently.
@@ -296,4 +334,4 @@ Before returning the two deliverables, check:
 - [ ] The demo walkthrough covers every article section and the fixes, in article order, with a login, URL and exact labels for each step.
 - [ ] Every demo has data behind it: the seed runs twice cleanly, files open, and time-based content is in the right state on recording day.
 
-Return the email first, then the article, then the demo walkthrough. If a required input is missing, list it briefly after the drafts under `Publishing notes`.
+Return the email first, then the article, then the social post, then the demo walkthrough. If a required input is missing, list it briefly after the drafts under `Publishing notes`.
