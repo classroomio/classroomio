@@ -18,6 +18,39 @@ export const STUDENT_OUTPUT_FIELDS: Array<{ key: string; label: string; type?: '
   { key: 'email', label: 'Email' }
 ];
 
+export const MEMBER_DETAILS_SAMPLE = {
+  id: 1042,
+  profileId: '000000b1-0000-4000-8000-0000000000b1',
+  name: 'Alex Johnson',
+  username: 'alex-johnson',
+  email: 'student@example.com',
+  avatarUrl: '',
+  locale: 'en',
+  createdAt: 'Mon Oct 05 2026',
+  status: 'active',
+  memberStatus: 'ACTIVE',
+  lastLoginAt: null,
+  lastActiveAt: null,
+  enrolledCount: 1,
+  completedCount: 0,
+  progressPercent: 0,
+  certificateCount: 0
+};
+
+export const MEMBER_DETAILS_OUTPUT_FIELDS: Array<{ key: string; label: string; type?: 'integer' | 'number' }> = [
+  { key: 'id', label: 'Audience ID', type: 'integer' },
+  { key: 'profileId', label: 'Profile ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'status', label: 'Invite Status' },
+  { key: 'memberStatus', label: 'Member Status' },
+  { key: 'enrolledCount', label: 'Courses Enrolled', type: 'integer' },
+  { key: 'completedCount', label: 'Courses Completed', type: 'integer' },
+  { key: 'progressPercent', label: 'Progress Percent', type: 'number' },
+  { key: 'certificateCount', label: 'Certificates', type: 'integer' },
+  { key: 'lastActiveAt', label: 'Last Active' }
+];
+
 export async function findStudentByEmail(z: ZObject, email: string): Promise<AudienceMember | null> {
   const response = await z.request({ url: apiUrl('/audience'), params: { email: email.trim() } });
   const members = response.data.data as AudienceMember[];

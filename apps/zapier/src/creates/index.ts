@@ -1,12 +1,13 @@
 import { addCohortMember, postCohortAnnouncement } from './cohorts';
 import {
+  getCourse,
   markLessonComplete,
   removeCourseMember,
   resetCourseProgress,
   revokeCourseInvite,
   sendCourseInvite
 } from './courses';
-import { addStudent, enrollStudent, removeStudent, updateStudent } from './students';
+import { addStudent, enrollStudent, getStudent, removeStudent, updateStudent } from './students';
 
 export const creates = [
   enrollStudent,
@@ -19,5 +20,7 @@ export const creates = [
   resetCourseProgress,
   markLessonComplete,
   addCohortMember,
-  postCohortAnnouncement
+  postCohortAnnouncement,
+  getStudent,
+  getCourse
 ];

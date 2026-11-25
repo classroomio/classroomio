@@ -182,3 +182,59 @@ export const markLessonComplete = defineCreate({
     }
   }
 });
+
+export const getCourse = defineCreate({
+  key: 'get_course',
+  noun: 'Course',
+  display: {
+    label: 'Get Course Details',
+    description: "Returns a course's description, publishing state and settings."
+  },
+  operation: {
+    inputFields: defineInputFields([courseField]),
+    perform: async (z, bundle) => {
+      const response = await z.request({ url: apiUrl(`/courses/${bundle.inputData.courseId}`) });
+
+      return response.data.data;
+    },
+    sample: {
+      id: '000000c1-0000-4000-8000-0000000000c1',
+      title: 'Intro to Data Science',
+      description: 'A six-week introduction to working with data.',
+      overview: null,
+      createdAt: '2026-10-01T09:00:00.000Z',
+      updatedAt: '2026-10-20T11:30:00.000Z',
+      groupId: null,
+      isTemplate: false,
+      templateId: null,
+      publicForAll: false,
+      seedKey: null,
+      logo: '',
+      slug: 'intro-to-data-science',
+      metadata: { grading: true, commentsEnabled: true, progressionMode: 'linear' },
+      cost: null,
+      currency: 'USD',
+      bannerImage: null,
+      isPublished: true,
+      displayOrder: 1,
+      certificate: null,
+      compliance: null,
+      status: 'ACTIVE',
+      type: 'SELF_PACED',
+      callout: null
+    },
+    outputFields: [
+      { key: 'id', label: 'Course ID' },
+      { key: 'title', label: 'Title' },
+      { key: 'slug', label: 'Slug' },
+      { key: 'description', label: 'Description' },
+      { key: 'isPublished', label: 'Published', type: 'boolean' },
+      { key: 'status', label: 'Status' },
+      { key: 'type', label: 'Type' },
+      { key: 'cost', label: 'Cost', type: 'number' },
+      { key: 'currency', label: 'Currency' },
+      { key: 'createdAt', label: 'Created At' },
+      { key: 'updatedAt', label: 'Updated At' }
+    ]
+  }
+});

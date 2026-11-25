@@ -61,6 +61,8 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
 | 9 | Mark Lesson Complete | Marks a lesson complete on a student's behalf. | `PUT /courses/:courseId/members/:memberId/lessons/:lessonId/completion` |
 | 10 | Add Student to Cohort | Adds a student to a cohort. | `POST /cohorts/:cohortId/members` |
 | 11 | Post to Cohort Feed | Posts an announcement to a cohort's newsfeed. | `POST /cohorts/:cohortId/newsfeed` |
+| 12 | Get Student Details | Returns a student's invite state, course count, progress and certificates. Read-only, so it can end a Zap. | `GET /audience/:memberId` |
+| 13 | Get Course Details | Returns a course's description, publishing state and settings. Read-only, so it can end a Zap. | `GET /courses/:courseId` |
 
 ### Searches (find a record so later steps can use it)
 
@@ -68,6 +70,8 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
 | --- | --- | --- | --- |
 | 1 | Find Student | Looks up an audience member by exact email. Powers "Find or Create Student". | `GET /audience?email=` |
 | 2 | Find Course | Looks up a course by slug or exact title. | `GET /courses?slug=` / `?title=` |
+
+Zapier refuses to publish a Zap whose last step is a search, so a lookup-only Zap needs a read action after it. Get Student Details and Get Course Details are those actions: read-only, and richer than the searches, which keeps a lookup Zap publishable with no writes at all. Find Student also keeps the "Find or Create" pair (`searchOrCreates.find_student` → `add_student`) for Zaps that may write; Find Course has none, because no course create exists to pair it with.
 
 ### Deferred (not in v1)
 
@@ -89,6 +93,7 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
 | Triggers | Instant. Every trigger is a REST Hook delivered by the webhooks platform. No polling triggers in v1. |
 | Trigger scope | Org-wide by default, with optional `Course` / `Cohort` / `Source` / `Role` filters. No separate per-course trigger duplicates. |
 | Scope | ClassroomIO does not build Zaps. Building, mapping, testing and publishing stay on zapier.com. |
+| Searches | Read-only, and never the last step of a Zap. Each one is followed by an action, and the two Get actions exist so a lookup-only Zap can end on a read instead of a write. Find Student also ships Zapier's Find or Create pair; Find Course has no course create to pair with. |
 | App Directory | A curated list of 20 apps inside ClassroomIO, for discovery only. |
 | Code | The Zapier app lives in `apps/zapier`. It only packages the existing public API and the generic subscription endpoint. Nothing else in the monorepo imports from it. |
 | iPaaS parity | The public REST API plus webhooks is the integration surface. No Zapier-specific payloads. The subscription endpoint is generic so other iPaaS vendors can use it. |
@@ -102,7 +107,7 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
    - CRM new customer → Enroll Student in Course.
    - New Certificate → upload to HRIS / Drive.
    - New Exercise Submission → notify the tutor in Slack.
-3. 14 instant triggers, 11 actions, and 2 searches in v1.
+3. 14 instant triggers, 13 actions, and 2 searches in v1.
 4. The same OAuth flow, REST endpoints, and subscription endpoint work for Make, n8n, and Pipedream.
 5. Connected Zapier accounts are visible to admins in the dashboard, with per-connection revoke.
 6. A Zap fires within seconds of the event, not on a polling cadence.
@@ -256,7 +261,7 @@ Zapier is available on the Early Adopter and Enterprise plans. Basic sees an upg
 | Queries (`packages/db`) | Managed webhook endpoints bound to an OAuth grant (deleted with the grant); connection and trigger listings; failed-delivery lookups. |
 | API (`apps/api`) | `GET /public-api/v1/me`; `POST /public-api/v1/courses/:courseId/enrollments`; `POST` and `DELETE /public-api/v1/webhooks/subscriptions`; `GET /public-api/v1/webhooks/samples`; `GET /organization/automation/zapier` and `POST /organization/automation/zapier/triggers/redeliver` (one batch of trigger ids, one rate-limit slot) for the dashboard; connected apps listed by kind so the MCP tab excludes Zapier. |
 | Dashboard (`apps/dashboard`) | The Zaps page, App Directory and ClassroomIO + {App} page under the Automation → Zapier tab; workspace picker and consent changes. |
-| Zapier app (`apps/zapier`) | Zapier Platform CLI app with OAuth, 14 REST Hook triggers, 11 actions, 2 searches, course and cohort dropdowns, and error mapping (plan, read-only, rate limit, validation). Built, tested and validated in CI; pushed manually. |
+| Zapier app (`apps/zapier`) | Zapier Platform CLI app with OAuth, 14 REST Hook triggers, 13 actions, 2 searches, course and cohort dropdowns, and error mapping (plan, read-only, rate limit, validation). Built, tested and validated in CI; pushed manually. |
 
 ## API and Docs
 
@@ -269,7 +274,7 @@ Zapier is available on the Early Adopter and Enterprise plans. Basic sees an upg
 1. **Authorization**: OAuth server, consent and workspace picker, plan and admin checks, read-only consent.
 2. **Public API and subscriptions**: `/me`, filters, enrollment endpoint, subscription and samples routes, OpenAPI upload.
 3. **Dashboard**: Zaps page, App Directory, ClassroomIO + {App} page, translations.
-4. **Zapier app**: 14 triggers, 11 actions, 2 searches, dropdowns, `zapier push`. The reconnect and read-only-narrowing behavior in the help center assumes the pushed app version containing `prompt=consent`; do not publish those doc updates until that push is live.
+4. **Zapier app**: 14 triggers, 13 actions, 2 searches, dropdowns, `zapier push`. The reconnect and read-only-narrowing behavior in the help center assumes the pushed app version containing `prompt=consent`; do not publish those doc updates until that push is live.
 5. **Early access (pre-listing)**: share the invite link with early orgs until the listing is approved, watch usage and delivery logs, iterate, update docs.
 6. **Public listing**: submit for directory review, promote, announce.
 7. **Later**: deferred triggers and actions, other iPaaS clients.

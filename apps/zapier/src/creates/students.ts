@@ -3,7 +3,14 @@ import { defineCreate, defineInputFields } from 'zapier-platform-core';
 import { apiUrl } from '../lib/config';
 import { courseField, sendEmailField, studentEmailField } from '../lib/fields';
 import { throwApiErrors } from '../lib/http';
-import { findStudentByEmail, requireStudentByEmail, STUDENT_OUTPUT_FIELDS, STUDENT_SAMPLE } from '../lib/lookups';
+import {
+  findStudentByEmail,
+  MEMBER_DETAILS_OUTPUT_FIELDS,
+  MEMBER_DETAILS_SAMPLE,
+  requireStudentByEmail,
+  STUDENT_OUTPUT_FIELDS,
+  STUDENT_SAMPLE
+} from '../lib/lookups';
 
 const CONFLICT_STATUS = 409;
 const IMPORT_SUCCESS_STATUSES = new Set(['ready', 'already_member', 'invite_resent']);
@@ -155,22 +162,27 @@ export const updateStudent = defineCreate({
 
       return response.data.data;
     },
-    sample: {
-      id: 1042,
-      profileId: '000000b1-0000-4000-8000-0000000000b1',
-      name: 'Alex Johnson',
-      email: 'student@example.com',
-      avatarUrl: '',
-      createdAt: 'Mon Oct 05 2026',
-      status: 'active',
-      memberStatus: 'ACTIVE',
-      lastLoginAt: null,
-      lastActiveAt: null,
-      enrolledCount: 1,
-      completedCount: 0,
-      progressPercent: 0,
-      certificateCount: 0
-    }
+    sample: MEMBER_DETAILS_SAMPLE
+  }
+});
+
+export const getStudent = defineCreate({
+  key: 'get_student',
+  noun: 'Student',
+  display: {
+    label: 'Get Student Details',
+    description: "Returns a student's invite state, course count and progress by email."
+  },
+  operation: {
+    inputFields: defineInputFields([studentEmailField]),
+    perform: async (z, bundle) => {
+      const member = await requireStudentByEmail(z, String(bundle.inputData.email));
+      const response = await z.request({ url: apiUrl(`/audience/${member.id}`) });
+
+      return response.data.data;
+    },
+    sample: MEMBER_DETAILS_SAMPLE,
+    outputFields: MEMBER_DETAILS_OUTPUT_FIELDS
   }
 });
 

@@ -409,6 +409,54 @@ describe('creates and actions', () => {
     });
   });
 
+  describe('get_student', () => {
+    it('returns the full member record', async () => {
+      nock(API_ORIGIN)
+        .get('/public-api/v1/audience')
+        .query({ email: 'student@example.com' })
+        .reply(200, {
+          data: [{ id: 1042, profileId: 'prof-1', name: 'Alex Johnson', email: 'student@example.com' }]
+        })
+        .get('/public-api/v1/audience/1042')
+        .reply(200, {
+          data: { id: 1042, name: 'Alex Johnson', email: 'student@example.com', enrolledCount: 2, progressPercent: 40 }
+        });
+
+      const perform = (App.creates.get_student.operation as any).perform;
+      const result = await appTester(perform, {
+        inputData: { email: 'student@example.com' }
+      });
+
+      expect(result).toMatchObject({ id: 1042, enrolledCount: 2, progressPercent: 40 });
+    });
+
+    it('rejects a student that is not in the organization', async () => {
+      nock(API_ORIGIN).get('/public-api/v1/audience').query({ email: 'missing@example.com' }).reply(200, { data: [] });
+
+      const perform = (App.creates.get_student.operation as any).perform;
+      await expect(
+        appTester(perform, {
+          inputData: { email: 'missing@example.com' }
+        })
+      ).rejects.toThrow('No student in your organization has the email missing@example.com');
+    });
+  });
+
+  describe('get_course', () => {
+    it('returns the course record', async () => {
+      nock(API_ORIGIN)
+        .get('/public-api/v1/courses/course-1')
+        .reply(200, { data: { id: 'course-1', title: 'Intro to Data Science', isPublished: true } });
+
+      const perform = (App.creates.get_course.operation as any).perform;
+      const result = await appTester(perform, {
+        inputData: { courseId: 'course-1' }
+      });
+
+      expect(result).toMatchObject({ id: 'course-1', isPublished: true });
+    });
+  });
+
   describe('searches', () => {
     it('finds student by email', async () => {
       nock(API_ORIGIN)
@@ -440,6 +488,40 @@ describe('creates and actions', () => {
       });
 
       expect(result).toEqual([{ id: 'course-1', title: 'Intro to Data Science', slug: 'intro-to-data-science' }]);
+    });
+
+    it('returns no results when no student has the email', async () => {
+      nock(API_ORIGIN).get('/public-api/v1/audience').query({ email: 'missing@example.com' }).reply(200, { data: [] });
+
+      const perform = (App.searches.find_student.operation as any).perform;
+      const result = await appTester(perform, {
+        inputData: { email: 'missing@example.com' }
+      });
+
+      expect(result).toEqual([]);
+    });
+
+    it('falls back to the title when the slug is empty', async () => {
+      nock(API_ORIGIN)
+        .get('/public-api/v1/courses')
+        .query({ title: 'Intro to Data Science' })
+        .reply(200, {
+          data: [{ id: 'course-1', title: 'Intro to Data Science', slug: 'intro-to-data-science' }]
+        });
+
+      const perform = (App.searches.find_course.operation as any).perform;
+      const result = await appTester(perform, {
+        inputData: { title: 'Intro to Data Science' }
+      });
+
+      expect(result).toEqual([{ id: 'course-1', title: 'Intro to Data Science', slug: 'intro-to-data-science' }]);
+    });
+
+    it('keeps Find or Create Student paired so the search can end a Zap', () => {
+      const pairing = App.searchOrCreates?.find_student;
+
+      expect(pairing).toMatchObject({ search: 'find_student', create: 'add_student' });
+      expect(Object.keys(App.creates)).toContain(pairing?.create);
     });
 
     it('errors when find_course has neither slug nor title', async () => {

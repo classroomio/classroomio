@@ -253,6 +253,20 @@ export const ZAPIER_ACTIONS = [
     label: 'Post to Cohort Feed',
     description: "Posts an announcement to a cohort's feed.",
     prefill: 'cohortId'
+  },
+  {
+    key: 'get_student',
+    noun: 'Student',
+    label: 'Get Student Details',
+    description: "Returns a student's invite state, course count and progress by email.",
+    prefill: null
+  },
+  {
+    key: 'get_course',
+    noun: 'Course',
+    label: 'Get Course Details',
+    description: "Returns a course's description, publishing state and settings.",
+    prefill: 'courseId'
   }
 ] as const satisfies readonly TZapierAction[];
 export type TZapierActionKey = (typeof ZAPIER_ACTIONS)[number]['key'];

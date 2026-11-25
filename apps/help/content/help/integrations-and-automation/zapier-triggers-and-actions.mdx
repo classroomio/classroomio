@@ -1,7 +1,7 @@
 ---
 title: 'Zapier triggers and actions'
-description: 'Reference guide for all 14 instant triggers, 11 actions, and 2 searches available in the ClassroomIO Zapier app.'
-last_reviewed: '2026-11-12'
+description: 'Reference guide for all 14 instant triggers, 13 actions, and 2 searches available in the ClassroomIO Zapier app.'
+last_reviewed: '2026-11-25'
 ---
 
 The ClassroomIO Zapier app provides instant triggers, actions, and searches to connect your academy to thousands of tools like CRMs, spreadsheets, messaging apps, and email platforms without writing code.
@@ -234,6 +234,22 @@ All create actions that take a student accept the student's email address, not a
 - **Outputs**: `id`, `createdAt`, `authorId`, `cohortId`, `content`, `reaction`, `isPinned`.
 - **Repeat behavior**: Creates a new announcement post in the cohort feed.
 
+### 12. Get Student Details
+
+- **Key**: `get_student`
+- **Description**: Returns a student's invite state, course count and progress by email.
+- **Inputs**: `Student Email` (required).
+- **Outputs**: `id`, `profileId`, `name`, `email`, `status` (invite state: `active`, `pending`, `expired`, or `revoked`), `memberStatus` (`ACTIVE` or `ARCHIVED`), `enrolledCount`, `completedCount`, `progressPercent`, `certificateCount`, `lastActiveAt`.
+- **Repeat behavior**: Read-only. Nothing in ClassroomIO changes.
+
+### 13. Get Course Details
+
+- **Key**: `get_course`
+- **Description**: Returns a course's description, publishing state and settings.
+- **Inputs**: `Course` (required).
+- **Outputs**: `id`, `title`, `slug`, `description`, `isPublished`, `status`, `type`, `cost`, `currency`, `createdAt`, `updatedAt`.
+- **Repeat behavior**: Read-only. Nothing in ClassroomIO changes.
+
 ---
 
 ## Searches
@@ -244,7 +260,7 @@ All create actions that take a student accept the student's email address, not a
 - **Description**: Finds a student in your organization by exact email address.
 - **Inputs**: `Email`.
 - **Outputs**: `id`, `profileId`, `name`, `email`.
-- **Common use case**: Used as a lookup step before an action, or paired with **Add Student to Organization** to form Zapier's **Find or Create Student** pattern.
+- **Common use case**: Used as a lookup step before an action, or paired with **Add Student to Organization** to form Zapier's **Find or Create Student** pattern. Pair it with **Get Student Details** when the Zap ends on the student rather than on a change.
 
 ### 2. Find Course
 
@@ -252,4 +268,30 @@ All create actions that take a student accept the student's email address, not a
 - **Description**: Finds a course by its slug or exact title.
 - **Inputs**: `Slug` or `Title` (fill in at least one; `Title` is used when `Slug` is empty).
 - **Outputs**: `id`, `title`, `slug`.
-- **Common use case**: Finds a course ID from an external input so enrollment actions can target the right course.
+- **Common use case**: Finds a course ID from an external input so enrollment actions can target the right course, or so **Get Course Details** can return the full record.
+
+---
+
+## Publishing a Zap that uses a search
+
+Zapier will not publish a Zap whose last step is a search. The step keeps a warning and **Publish** stays disabled until an action follows it, because a Zap that ends on a lookup throws the result away. [Zapier's search documentation](https://help.zapier.com/hc/en-us/articles/8496241402253-Search-for-existing-data-in-Zap-workflows) states the rule.
+
+Two actions finish a lookup without touching your academy, so a Zap that only reads records still publishes:
+
+- **Get Student Details** takes a student's email and returns their invite state, course count, progress and certificates.
+- **Get Course Details** takes a course and returns its description, publishing state and settings.
+
+They also carry more than the searches do, which makes them the right last step when the Zap needs the extra fields: trigger → **Find Course** → **Get Course Details**.
+
+### Find Student
+
+For a student there is a second route, **Find or Create Student**. The step offers **Create ClassroomIO Student if it doesn't exist yet?**, pairing the search with **Add Student to Organization**:
+
+- **Leave it off** and the step only reads. End the Zap on **Get Student Details**, **Enroll Student in Course**, **Add Student to Cohort**, or any step that needs the student record.
+- **Turn it on** and the step can be the last one in the Zap. The search runs first, so a student who already exists comes back unchanged and nothing is written for them. The invite runs only when no student has that email, which is the moment the person joins your audience, a student seat is taken, and an invitation email goes out unless you turn **Send Email** off in the step's fields.
+
+Neither choice duplicates a student. **Add Student to Organization** returns the existing record for someone who has already joined, and for an invite that hasn't been accepted it renews that invite instead of creating a second one.
+
+### Find Course
+
+There is no **Find or Create Course**, and v1 doesn't add one: creating a course needs the `public_api:*` scope, which a Zapier connection never carries, so the app has no course create action to pair with the search. Find Course needs an action after it — **Get Course Details** when the Zap only reads, or one of the course actions (**Enroll Student in Course**, **Send Course Invite**, **Mark Lesson Complete**) when it changes something.
