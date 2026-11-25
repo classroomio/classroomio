@@ -128,36 +128,46 @@ Pass any of these in front of `npm run deploy`. Alchemy reads them on every depl
 ## Back up and restore
 
 Run these on the server. They stop the app and storage so nothing is written mid-backup, which takes
-the site offline for about a minute, then start everything again even if a step fails. Each backup gets
-its own timestamped files, and a failed step deletes its partial file.
+the site offline for about a minute, then start everything again. If the services can't be stopped, no
+backup is taken. Each backup gets its own timestamped files, and a failed step deletes its partial file.
 
 ```bash title="Terminal"
 set -o pipefail
 mkdir -p backups
 ts=$(date +%Y%m%d-%H%M%S)
-docker stop cio-api cio-dashboard cio-jobs cio-storage
-docker exec cio-postgres pg_dump -U postgres classroomio | gzip > "backups/db-$ts.sql.gz" \
-  || { rm -f "backups/db-$ts.sql.gz"; echo "Database backup failed"; }
-docker run --rm -v cio-storage-data:/data:ro -v "$PWD/backups":/backup \
-  alpine tar czf "/backup/storage-$ts.tar.gz" -C /data . \
-  || { rm -f "backups/storage-$ts.tar.gz"; echo "Storage backup failed"; }
+if docker stop cio-api cio-dashboard cio-jobs cio-storage; then
+  docker exec cio-postgres pg_dump -U postgres classroomio | gzip > "backups/db-$ts.sql.gz" \
+    || { rm -f "backups/db-$ts.sql.gz"; echo "Database backup failed"; }
+  docker run --rm -v cio-storage-data:/data:ro -v "$PWD/backups":/backup \
+    alpine tar czf "/backup/storage-$ts.tar.gz" -C /data . \
+    || { rm -f "backups/storage-$ts.tar.gz"; echo "Storage backup failed"; }
+else
+  echo "Could not stop the services, so no backup was taken"
+fi
 docker start cio-storage cio-api cio-dashboard cio-jobs
 ```
 
 Copy the `backups` folder and the `.alchemy` folder somewhere off the server.
 
-To restore, stop the services that write data, restore both, then start them again:
+:::warning[Restoring replaces your current data]
+A restore deletes the current database and every file in storage, then loads the backup. Copy anything
+you need to keep off the server first.
+:::
+
+Each step runs only if the one before it succeeded. If a step fails, the app stays stopped so it never
+runs on a half-restored copy; fix the error and run the commands again.
 
 ```bash title="Terminal"
-docker stop cio-api cio-dashboard cio-jobs cio-storage
-gunzip -c backups/db-<timestamp>.sql.gz | docker exec -i cio-postgres psql -U postgres classroomio
-docker run --rm -v cio-storage-data:/data -v "$PWD/backups":/backup \
-  alpine sh -c "cd /data && tar xzf /backup/storage-<timestamp>.tar.gz"
-docker start cio-storage cio-api cio-dashboard cio-jobs
+set -o pipefail
+docker stop cio-api cio-dashboard cio-jobs cio-storage &&
+  docker exec cio-postgres dropdb -U postgres classroomio &&
+  docker exec cio-postgres createdb -U postgres classroomio &&
+  gunzip -c backups/db-<timestamp>.sql.gz |
+  docker exec -i cio-postgres psql -v ON_ERROR_STOP=1 -U postgres classroomio &&
+  docker run --rm -v cio-storage-data:/data -v "$PWD/backups":/backup alpine \
+    sh -c "find /data -mindepth 1 -delete && tar xzf /backup/storage-<timestamp>.tar.gz -C /data" &&
+  docker start cio-storage cio-api cio-dashboard cio-jobs
 ```
-
-Restoring into a non-empty database can conflict with existing rows. For a clean restore, drop and
-recreate the database first (`dropdb`/`createdb` inside `cio-postgres`).
 
 ## Upgrading
 
