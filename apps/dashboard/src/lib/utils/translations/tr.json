@@ -3837,12 +3837,8 @@
           "make_all_optional": "Her şeyi isteğe bağlı yap",
           "make_section_required": "Bölümü zorunlu yap",
           "make_section_optional": "Bölümü isteğe bağlı yap",
-          "count_required": "{count} zorunlu",
-          "count_optional": "{count} isteğe bağlı",
-          "progress_label": "Tamamlanan zorunlu öğeler",
-          "progress_value": "{total} öğeden {done}",
-          "progress_remaining": "{count} zorunlu öğe kaldı. İsteğe bağlı öğeler tamamlanma durumuna sayılmaz.",
-          "progress_done": "Zorunlu olan her şeyi tamamladınız."
+          "progress_summary": "{total} zorunlu öğeden {done} tamamlandı",
+          "teacher_summary": "{required} zorunlu · {optional} isteğe bağlı"
         }
       },
       "attendance": {

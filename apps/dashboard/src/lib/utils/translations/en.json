@@ -3827,12 +3827,8 @@
           "make_all_optional": "Make everything optional",
           "make_section_required": "Make section required",
           "make_section_optional": "Make section optional",
-          "count_required": "{count} required",
-          "count_optional": "{count} optional",
-          "progress_label": "Required items done",
-          "progress_value": "{done} of {total}",
-          "progress_remaining": "{count} required items to go. Optional items do not count toward completion.",
-          "progress_done": "You have finished everything that is required."
+          "progress_summary": "{done} of {total} required done",
+          "teacher_summary": "{required} required · {optional} optional"
         }
       },
       "attendance": {

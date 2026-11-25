@@ -2854,12 +2854,8 @@
           "make_all_optional": "Tornar tudo opcional",
           "make_section_required": "Tornar a seção obrigatória",
           "make_section_optional": "Tornar a seção opcional",
-          "count_required": "{count} obrigatórios",
-          "count_optional": "{count} opcionais",
-          "progress_label": "Itens obrigatórios concluídos",
-          "progress_value": "{done} de {total}",
-          "progress_remaining": "Faltam {count} itens obrigatórios. Itens opcionais não contam para a conclusão.",
-          "progress_done": "Você concluiu tudo o que é obrigatório."
+          "progress_summary": "{done} de {total} obrigatórios concluídos",
+          "teacher_summary": "{required} obrigatórios · {optional} opcionais"
         }
       },
       "news_feed": {

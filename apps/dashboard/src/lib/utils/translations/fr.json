@@ -2854,12 +2854,8 @@
           "make_all_optional": "Tout rendre facultatif",
           "make_section_required": "Rendre la section obligatoire",
           "make_section_optional": "Rendre la section facultative",
-          "count_required": "{count} obligatoires",
-          "count_optional": "{count} facultatifs",
-          "progress_label": "Éléments obligatoires terminés",
-          "progress_value": "{done} sur {total}",
-          "progress_remaining": "Il reste {count} éléments obligatoires. Les éléments facultatifs ne comptent pas pour la complétion.",
-          "progress_done": "Vous avez terminé tout ce qui est obligatoire."
+          "progress_summary": "{done} sur {total} obligatoires terminés",
+          "teacher_summary": "{required} obligatoires · {optional} facultatifs"
         }
       },
       "news_feed": {

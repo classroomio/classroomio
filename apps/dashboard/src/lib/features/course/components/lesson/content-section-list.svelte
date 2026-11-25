@@ -594,9 +594,7 @@
           {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
 
           <div
-            class="mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md border px-3 py-1 transition {itemRequired
-              ? ''
-              : 'border-dashed'}"
+            class="mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md border px-3 py-1 transition"
             style={reorder ? 'border: 2px #1d4ed8 solid; border-style: dashed; cursor: grab;' : ''}
             animate:flip={{ duration: flipDurationMs }}
           >
@@ -605,7 +603,7 @@
                 {item}
                 bind:title={item.title}
                 isLocked={itemLocked}
-                requirement={isStudentView ? (itemRequired ? 'required' : 'optional') : undefined}
+                required={itemRequired}
                 linkDisabled={reorder}
                 href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
                 isEditing={isEditingItem}
@@ -660,7 +658,7 @@
                 {item}
                 bind:title={item.title}
                 isLocked={itemLocked}
-                requirement={isStudentView ? (itemRequired ? 'required' : 'optional') : undefined}
+                required={itemRequired}
                 linkDisabled={reorder}
                 href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
                 isEditing={isEditingItem}

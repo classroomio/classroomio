@@ -2854,12 +2854,8 @@
           "make_all_optional": "Gør alt valgfrit",
           "make_section_required": "Gør sektionen påkrævet",
           "make_section_optional": "Gør sektionen valgfri",
-          "count_required": "{count} påkrævet",
-          "count_optional": "{count} valgfri",
-          "progress_label": "Påkrævede elementer fuldført",
-          "progress_value": "{done} af {total}",
-          "progress_remaining": "{count} påkrævede elementer tilbage. Valgfrie elementer tæller ikke med i gennemførelsen.",
-          "progress_done": "Du har fuldført alt, hvad der er påkrævet."
+          "progress_summary": "{done} af {total} påkrævede fuldført",
+          "teacher_summary": "{required} påkrævede · {optional} valgfrie"
         }
       },
       "news_feed": {

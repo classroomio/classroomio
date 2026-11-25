@@ -2854,12 +2854,8 @@
           "make_all_optional": "Alles als optional markieren",
           "make_section_required": "Abschnitt als erforderlich markieren",
           "make_section_optional": "Abschnitt als optional markieren",
-          "count_required": "{count} erforderlich",
-          "count_optional": "{count} optional",
-          "progress_label": "Erforderliche Elemente abgeschlossen",
-          "progress_value": "{done} von {total}",
-          "progress_remaining": "Noch {count} erforderliche Elemente. Optionale Elemente zählen nicht für den Abschluss.",
-          "progress_done": "Du hast alles Erforderliche abgeschlossen."
+          "progress_summary": "{done} von {total} erforderlichen abgeschlossen",
+          "teacher_summary": "{required} erforderlich · {optional} optional"
         }
       },
       "news_feed": {

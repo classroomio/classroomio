@@ -2854,12 +2854,8 @@
           "make_all_optional": "Ustaw wszystko jako opcjonalne",
           "make_section_required": "Ustaw sekcję jako wymaganą",
           "make_section_optional": "Ustaw sekcję jako opcjonalną",
-          "count_required": "{count} wymaganych",
-          "count_optional": "{count} opcjonalnych",
-          "progress_label": "Ukończone wymagane elementy",
-          "progress_value": "{done} z {total}",
-          "progress_remaining": "Pozostało wymaganych elementów: {count}. Elementy opcjonalne nie wliczają się do ukończenia.",
-          "progress_done": "Ukończono wszystko, co wymagane."
+          "progress_summary": "{done} z {total} wymaganych ukończono",
+          "teacher_summary": "{required} wymaganych · {optional} opcjonalnych"
         }
       },
       "news_feed": {

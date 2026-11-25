@@ -10,7 +10,7 @@
   import { cn } from '@cio/ui/tools';
   import { getSessionIndicatorPhase, liveSessionClock } from '$features/course/utils/live-session-phase';
   import LiveSessionIndicator from './live-session-indicator.svelte';
-  import RequirementChip from './requirement-chip.svelte';
+  import RequirementMarker from './requirement-marker.svelte';
 
   interface Props {
     item: CourseContentItem;
@@ -21,7 +21,7 @@
     errors?: Record<string, string>;
     isLocked?: boolean;
     isComplete?: boolean | null;
-    requirement?: 'required' | 'optional';
+    required?: boolean;
     showStatus?: boolean;
     showIcon?: boolean;
     iconSize?: number;
@@ -45,7 +45,7 @@
     errors = {},
     isLocked = false,
     isComplete = null,
-    requirement,
+    required = false,
     showStatus = false,
     showIcon = true,
     iconSize = 14,
@@ -97,6 +97,9 @@
         data-sveltekit-preload-data={preloadOff && !linkDisabled ? 'off' : undefined}
       >
         <span class={titleClass}>{title}</span>
+        {#if required}
+          <RequirementMarker />
+        {/if}
       </svelte:element>
 
       {#if showStatus}
@@ -107,10 +110,6 @@
             <CircleCheckIcon size={iconSize} filled />
           </span>
         {/if}
-      {/if}
-
-      {#if requirement}
-        <RequirementChip required={requirement === 'required'} />
       {/if}
 
       {@render inline?.()}

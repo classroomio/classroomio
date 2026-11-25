@@ -2854,12 +2854,8 @@
           "make_all_optional": "सब कुछ वैकल्पिक बनाएं",
           "make_section_required": "सेक्शन को अनिवार्य बनाएं",
           "make_section_optional": "सेक्शन को वैकल्पिक बनाएं",
-          "count_required": "{count} अनिवार्य",
-          "count_optional": "{count} वैकल्पिक",
-          "progress_label": "पूरे किए गए अनिवार्य आइटम",
-          "progress_value": "{total} में से {done}",
-          "progress_remaining": "{count} अनिवार्य आइटम बाकी हैं। वैकल्पिक आइटम पूर्णता में नहीं गिने जाते।",
-          "progress_done": "आपने सभी अनिवार्य आइटम पूरे कर लिए हैं।"
+          "progress_summary": "{total} अनिवार्य में से {done} पूरे",
+          "teacher_summary": "{required} अनिवार्य · {optional} वैकल्पिक"
         }
       },
       "news_feed": {

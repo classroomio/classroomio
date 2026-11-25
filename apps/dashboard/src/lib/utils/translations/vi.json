@@ -2854,12 +2854,8 @@
           "make_all_optional": "Đặt tất cả là tùy chọn",
           "make_section_required": "Đặt phần là bắt buộc",
           "make_section_optional": "Đặt phần là tùy chọn",
-          "count_required": "{count} bắt buộc",
-          "count_optional": "{count} tùy chọn",
-          "progress_label": "Mục bắt buộc đã hoàn thành",
-          "progress_value": "{done} trên {total}",
-          "progress_remaining": "Còn {count} mục bắt buộc. Các mục tùy chọn không được tính vào việc hoàn thành.",
-          "progress_done": "Bạn đã hoàn thành mọi mục bắt buộc."
+          "progress_summary": "{done}/{total} mục bắt buộc đã hoàn thành",
+          "teacher_summary": "{required} bắt buộc · {optional} tùy chọn"
         }
       },
       "news_feed": {

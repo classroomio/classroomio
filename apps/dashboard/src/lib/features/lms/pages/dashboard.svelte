@@ -246,6 +246,7 @@
           {/if}
           <Button
             variant="outline"
+            testId="lms-dashboard-hero-action"
             class="shrink-0"
             onclick={() =>
               currentCourse

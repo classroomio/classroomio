@@ -105,6 +105,7 @@
     <DropdownMenu.Trigger>
       <IconButton
         disabled={menuDisabled}
+        testId="lessons-content-menu"
         tooltip={t.get('course.navItem.lessons.content_menu.label')}
         tooltipSide="bottom"
         aria-label={t.get('course.navItem.lessons.content_menu.label')}
@@ -119,13 +120,21 @@
           {$t('course.navItem.lessons.content_menu.unlock_all')}
         </span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item onclick={() => handleSetAllRequirements(true)} disabled={menuDisabled}>
+      <DropdownMenu.Item
+        onclick={() => handleSetAllRequirements(true)}
+        disabled={menuDisabled}
+        data-testid="lessons-requirement-all-required"
+      >
         <span class="flex items-center gap-2">
           <FlagIcon size={14} />
           {$t('course.navItem.lessons.requirement.make_all_required')}
         </span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item onclick={() => handleSetAllRequirements(false)} disabled={menuDisabled}>
+      <DropdownMenu.Item
+        onclick={() => handleSetAllRequirements(false)}
+        disabled={menuDisabled}
+        data-testid="lessons-requirement-all-optional"
+      >
         <span class="flex items-center gap-2">
           <FlagOffIcon size={14} />
           {$t('course.navItem.lessons.requirement.make_all_optional')}

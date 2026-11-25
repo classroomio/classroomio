@@ -2854,12 +2854,8 @@
           "make_all_optional": "Hacer todo opcional",
           "make_section_required": "Hacer la sección obligatoria",
           "make_section_optional": "Hacer la sección opcional",
-          "count_required": "{count} obligatorios",
-          "count_optional": "{count} opcionales",
-          "progress_label": "Elementos obligatorios completados",
-          "progress_value": "{done} de {total}",
-          "progress_remaining": "Faltan {count} elementos obligatorios. Los elementos opcionales no cuentan para completar el curso.",
-          "progress_done": "Has completado todo lo obligatorio."
+          "progress_summary": "{done} de {total} obligatorios completados",
+          "teacher_summary": "{required} obligatorios · {optional} opcionales"
         }
       },
       "news_feed": {

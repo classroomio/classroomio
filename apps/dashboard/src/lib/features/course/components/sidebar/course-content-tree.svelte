@@ -28,6 +28,7 @@
   import * as Collapsible from '@cio/ui/base/collapsible';
   import { ContentType } from '@cio/utils/constants/content';
   import { courseApi, contentApi, exerciseApi, lessonApi } from '$features/course/api';
+  import RequirementMarker from '$features/course/components/lesson/requirement-marker.svelte';
   import { contentRequirements } from '$features/course/utils/content-requirement-store';
   import { isContentRequired, isRequirementTarget } from '$features/course/utils/content-requirement-utils';
   import { deleteContent } from '$features/course/components/lesson/content-action-helpers';
@@ -367,14 +368,7 @@
             </div>
           {/if}
           {#if showRequiredMarker}
-            <span
-              class="shrink-0 text-sm leading-none font-bold text-red-600 dark:text-red-400"
-              title={$t('course.navItem.lessons.requirement.required')}
-              aria-label={$t('course.navItem.lessons.requirement.required')}
-              data-testid="sidebar-requirement-marker"
-            >
-              *
-            </span>
+            <RequirementMarker testId="sidebar-requirement-marker" />
           {/if}
           {#if contentItem.isComplete}
             <span class="shrink-0">
