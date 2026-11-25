@@ -22,6 +22,8 @@ Alchemy itself may need small edits to the stack file.
 - **Ports 80 and 443** open to the internet, for HTTPS and its certificates.
 - **Node.js 24.11.1 or newer** on the machine you deploy from. The simplest is the server itself.
 - Two hostnames pointing at the server: one for the dashboard and one for storage.
+- A server that isn't already running the [Docker](/self-hosted/docker) stack: both use the same
+  `cio-*` container names.
 
 ## Why two hostnames
 
@@ -107,6 +109,7 @@ Pass any of these in front of `npm run deploy`. Alchemy reads them on every depl
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER` | No | [Email](/self-hosted/configuration/email) for signup, password resets and invites |
 | `OPENAI_API_KEY` | No | [AI features](/self-hosted/configuration/ai) |
 | `LICENSE_KEY` | No | [Enterprise](/self-hosted/enterprise) features |
+| `CIO_TELEMETRY_DISABLED` | No | `true` turns off the [anonymous usage ping](/self-hosted/101) |
 
 ## Your data and secrets
 
@@ -114,11 +117,36 @@ Pass any of these in front of `npm run deploy`. Alchemy reads them on every depl
   password and auth secrets. Back it up and keep it private. Without it, Alchemy loses track of the
   stack and new secrets would be generated.
 - **Volumes are protected.** The database, Redis, storage and certificate volumes are never deleted by
-  `alchemy destroy` or by a change to the stack. That is not a backup; see [Backups](/self-hosted/backups).
+  `alchemy destroy` or by a change to the stack. That is not a backup.
+
+## Back up and restore
+
+Run these on the server. Copy the `backups` folder and the `.alchemy` folder somewhere off the server.
+
+```bash title="Terminal"
+mkdir -p backups
+docker exec cio-postgres pg_dump -U postgres classroomio | gzip > backups/db.sql.gz
+docker run --rm -v cio-storage-data:/data:ro -v "$PWD/backups":/backup \
+  alpine tar czf /backup/storage.tar.gz -C /data .
+```
+
+To restore, stop the services that write data, restore both, then start them again:
+
+```bash title="Terminal"
+docker stop cio-api cio-dashboard cio-jobs cio-storage
+gunzip -c backups/db.sql.gz | docker exec -i cio-postgres psql -U postgres classroomio
+docker run --rm -v cio-storage-data:/data -v "$PWD/backups":/backup \
+  alpine sh -c "cd /data && tar xzf /backup/storage.tar.gz"
+docker start cio-storage cio-api cio-dashboard cio-jobs
+```
+
+Restoring into a non-empty database can conflict with existing rows. For a clean restore, drop and
+recreate the database first (`dropdb`/`createdb` inside `cio-postgres`).
 
 ## Upgrading
 
-Set `CIO_VERSION` to the new release and deploy again from the same folder. Only the containers whose
+[Back up](#back-up-and-restore) first, then set `CIO_VERSION` to the new release and deploy again from
+the same folder. Only the containers whose
 image changed are replaced. See [Versions & upgrades](/self-hosted/configuration/versions).
 
 ## Troubleshooting
@@ -128,6 +156,6 @@ image changed are replaced. See [Versions & upgrades](/self-hosted/configuration
   `docker/alchemy`.
 - **Certificate errors in the browser**: check both hostnames resolve to the server
   (`getent hosts app.yourdomain.com`), ports 80 and 443 are open, and `ACME_EMAIL` is a real address.
-  The Caddy container's log shows the reason.
-- **A container keeps restarting**: find its name with `docker ps -a`, then read its log with
-  `docker logs <name> --tail 50`.
+  `docker logs cio-caddy` shows the reason.
+- **A container keeps restarting**: read its log, e.g. `docker logs cio-api --tail 50`. The containers
+  are `cio-postgres`, `cio-redis`, `cio-storage`, `cio-api`, `cio-dashboard`, `cio-jobs` and `cio-caddy`.
