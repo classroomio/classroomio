@@ -47,20 +47,6 @@
   const nav = document.getElementById('nav');
   onScroll((scrollY) => nav.classList.toggle('scrolled', scrollY > 8));
 
-  const burger = document.getElementById('burger');
-  const sheet = document.getElementById('sheet');
-  burger.addEventListener('click', () => {
-    const isOpen = burger.getAttribute('aria-expanded') === 'true';
-    burger.setAttribute('aria-expanded', String(!isOpen));
-    sheet.hidden = isOpen;
-  });
-  sheet.addEventListener('click', (event) => {
-    if (!event.target.closest('a')) return;
-
-    burger.setAttribute('aria-expanded', 'false');
-    sheet.hidden = true;
-  });
-
   const dropdowns = [...document.querySelectorAll('.dd')];
   const closeDropdowns = (except) => {
     dropdowns.forEach((dropdown) => {

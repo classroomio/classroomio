@@ -1,0 +1,300 @@
+.ab-sec {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 104px 56px 0;
+}
+.ab-head {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.ab-head .h2 {
+  margin: 0 auto;
+}
+.ab-head .sub {
+  margin: 16px auto 0;
+  font-size: 16.5px;
+  max-width: 52ch;
+}
+.ab-h {
+  font-size: clamp(30px, 3.4vw, 44px);
+  color: #0b1233;
+}
+.ab-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 11px;
+  border: 1px solid var(--line-2);
+  border-radius: 99px;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.ab-head > .ab-pill {
+  margin-bottom: 18px;
+}
+.ab-pill.on-dark {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+.ab-faq {
+  max-width: 760px;
+  margin: 0 auto;
+  display: grid;
+  gap: 8px;
+}
+.ab-faq details {
+  border-radius: var(--radius);
+  background: var(--panel);
+  transition: background 0.25s;
+}
+.ab-faq details[open] {
+  background: #eaf0fd;
+}
+.ab-faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  font-size: 15.5px;
+  font-weight: 500;
+  color: #0b1233;
+}
+.ab-faq summary::-webkit-details-marker {
+  display: none;
+}
+.ab-faq summary::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--blue);
+}
+.ab-faq summary::after {
+  content: '';
+  margin-left: auto;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.25s var(--ease);
+}
+.ab-faq details[open] summary::after {
+  transform: rotate(-135deg);
+}
+.ab-faq details p {
+  margin: -4px 0 0;
+  padding: 0 20px 20px 38px;
+  color: var(--muted);
+  font-size: 14.5px;
+  max-width: 62ch;
+}
+.ab-faq summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+.ts-h {
+  font-size: clamp(32px, 4vw, 52px);
+  max-width: 16ch;
+}
+.ts-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.ts-tabs button {
+  position: relative;
+  height: 44px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--panel);
+  font:
+    500 14px/1 'Geist',
+    system-ui,
+    sans-serif;
+  color: var(--muted);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+.ts-tabs button:hover {
+  color: #0b1233;
+}
+.ts-tabs button[aria-selected='true'] {
+  background: #0b1233;
+  color: #fff;
+}
+.ts-tabs button i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: #cddcfc;
+  transform-origin: left;
+  transform: scaleX(0);
+}
+.ts-tabs button[aria-selected='true'] i {
+  animation: ts-fill var(--dur, 7s) linear forwards;
+}
+.ts.hold .ts-tabs button i {
+  animation: none;
+  transform: scaleX(0);
+}
+.ts-tabs button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.ts-panel {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 12px;
+  min-height: 340px;
+}
+.ts-panel:not([hidden]) {
+  animation: ts-in 0.6s var(--ease);
+}
+.ts-brand {
+  border-radius: var(--radius);
+  background: #cddcfc;
+  color: #0b1233;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  text-align: center;
+  font-size: clamp(24px, 2.6vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.ts-brand img {
+  max-width: 220px;
+  max-height: 64px;
+}
+.ts blockquote {
+  margin: 0;
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.ts blockquote p {
+  margin: 0;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  color: #0b1233;
+}
+.ts footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: 28px;
+}
+.ts-av {
+  width: 36px;
+  height: 36px;
+  border-radius: 99px;
+  object-fit: cover;
+}
+.ts cite {
+  font-style: normal;
+  font-size: 14px;
+  color: var(--muted);
+  flex: 1;
+  min-width: 180px;
+}
+.ts footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue);
+}
+.ts footer a svg {
+  transition: transform 0.3s var(--ease);
+}
+.ts footer a:hover svg {
+  transform: translateX(3px);
+}
+.ab-sec + .fx {
+  margin-top: 104px;
+}
+@keyframes ts-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ab-faq details p a {
+  color: var(--blue);
+  font-weight: 500;
+}
+.ab-faq details p a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@keyframes ts-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (max-width: 960px) {
+  .ab-sec {
+    padding: 80px 28px 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .ab-sec {
+    padding: 64px 8px 0;
+  }
+  .ab-head {
+    margin-bottom: 32px;
+  }
+  .ts-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ts-panel {
+    grid-template-columns: 1fr;
+  }
+  .ts-brand {
+    min-height: 140px;
+  }
+  .ts blockquote {
+    padding: 24px;
+  }
+  .ab-sec + .fx {
+    margin-top: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-panel:not([hidden]) {
+    animation: none;
+  }
+  .ts-tabs button[aria-selected='true'] i {
+    animation: none;
+    transform: scaleX(1);
+  }
+}

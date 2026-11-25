@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClassroomIO Homepage Prototype</title>
+<meta name="description" content="ClassroomIO is the customer education platform for B2B SaaS. Create courses with AI, put them wherever your customers already are, and turn product knowledge into growth.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="logo" href="#top" aria-label="ClassroomIO home">
+      <img src="../images/logo.svg" width="26" height="19" alt="">
+      <span>ClassroomIO</span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <div class="dd">
+        <button class="nav-link" type="button" aria-expanded="false" aria-controls="solutions-menu" id="solutions-btn">Solutions <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></button>
+        <div class="dd-menu" id="solutions-menu" hidden>
+          <a href="https://classroomio.com/customer-education"><b>Customer Education</b><span>Customer academies for SaaS.</span></a>
+          <a href="https://classroomio.com/partner-training"><b>Partner Training</b><span>A separate academy for your channel.</span></a>
+          <a href="https://classroomio.com/compliance-training"><b>Compliance Training</b><span>Turn policies and SOPs into proof.</span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="https://classroomio.com/pricing">Pricing</a>
+      <a class="nav-link" href="#about">About</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="nav-link hide-sm" href="https://classroomio.com/login">Sign in</a>
+      <a class="btn btn-ghost hide-sm" href="https://cal.com/classroomio/demo">Book a demo</a>
+      <a class="btn btn-blue" href="https://classroomio.com/signup">Get started</a>
+      <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sheet" id="burger"><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="sheet" id="sheet" hidden>
+    <a href="https://classroomio.com/customer-education">Customer Education</a>
+    <a href="https://classroomio.com/partner-training">Partner Training</a>
+    <a href="https://classroomio.com/compliance-training">Compliance Training</a>
+    <a href="https://classroomio.com/pricing">Pricing</a>
+    <a href="#about">About</a>
+    <a href="https://classroomio.com/login">Sign in</a>
+    <div class="sheet-cta">
+      <a class="btn btn-ghost" href="https://cal.com/classroomio/demo">Book a demo</a>
+      <a class="btn btn-blue" href="https://classroomio.com/signup">Get started</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero frame">
+  <a class="announce" href="#create"><span class="announce-tag">AI</span> Build a course from one prompt <span aria-hidden="true">→</span></a>
+  <h1 class="h1">The SaaS companies that teach&nbsp;best, grow&nbsp;best.</h1>
+  <p class="lede">ClassroomIO is the customer education platform for B2B SaaS. Create courses with AI, put them wherever your customers already are, and turn product knowledge into growth.</p>
+  <div class="ctas">
+    <a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Get started free</a>
+    <a class="btn btn-ghost btn-lg" href="https://cal.com/classroomio/demo">Book a demo</a>
+  </div>
+  <p class="fine">Free plan · Open source · Cloud or self-hosted</p>
+
+  <div class="fan" aria-label="Examples of what you can publish with ClassroomIO">
+    <!-- 1. public course page -->
+    <figure class="fan-card f1">
+      <div class="fc-cover cover-orange"><span class="cv-kicker">Free course</span><span class="cv-title">API basics in 20&nbsp;minutes</span><span class="cv-shape s-arc"></span></div>
+      <div class="fc-body">
+        <span class="fc-meta">learn.yourproduct.com</span>
+        <b>API basics in 20 minutes</b>
+        <span class="fc-text">5 lessons · Self paced · Certificate</span>
+        <span class="fc-btn">Enroll for free</span>
+      </div>
+      <figcaption>Public course</figcaption>
+    </figure>
+    <!-- 2. lesson with tutor -->
+    <figure class="fan-card f2">
+      <div class="fc-photo"><img src="../images/team-laptops.jpg" alt="" loading="eager"><span class="play" aria-hidden="true"></span></div>
+      <div class="fc-body">
+        <span class="fc-meta">Lesson 3 of 8</span>
+        <b>Invite your team</b>
+        <div class="mini-chat">
+          <span class="mc-q">Can viewers edit reports?</span>
+          <span class="mc-a"><i class="spark-dot"></i>No, they can comment. Step 2 shows Editor access.</span>
+        </div>
+      </div>
+      <figcaption>AI Tutor</figcaption>
+    </figure>
+    <!-- 3. academy (centre) -->
+    <figure class="fan-card f3">
+      <div class="acad-bar"><span class="acad-logo"></span><span>Your Academy</span><span class="acad-sign">Sign in</span></div>
+      <div class="acad-hero"><b>Learn the product, your way.</b><span>Courses, live cohorts and certificates.</span></div>
+      <div class="acad-grid">
+        <div class="ac"><span class="ac-cover cover-blue"><span class="cv-shape s-grid"></span></span><b>Getting started</b><span class="chip c-purple">Self paced</span></div>
+        <div class="ac"><span class="ac-cover cover-green"><span class="cv-shape s-dots"></span></span><b>Admin essentials</b><span class="chip c-amber">Live class</span></div>
+        <div class="ac"><span class="ac-cover cover-pink"><span class="cv-shape s-ring"></span></span><b>Reporting 101</b><span class="chip c-purple">Self paced</span></div>
+        <div class="ac"><span class="ac-cover cover-ink"><span class="cv-shape s-bars"></span></span><b>Automations</b><span class="chip c-green">Certificate</span></div>
+      </div>
+      <figcaption>Branded academy</figcaption>
+    </figure>
+    <!-- 4. certificate -->
+    <figure class="fan-card f4">
+      <div class="cert">
+        <span class="cert-k">Certificate of completion</span>
+        <span class="cert-name">Amara Okafor</span>
+        <span class="cert-line"></span>
+        <span class="cert-course">Reporting Specialist</span>
+        <span class="cert-seal"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2.4"/><path d="M13 20.5l4.5 4.5L27 15.5" stroke="currentColor" stroke-width="2" fill="none"/></svg></span>
+      </div>
+      <div class="fc-body"><span class="fc-meta">Verified · CIO-7F3K-29QD</span><b>Shareable certificate</b></div>
+      <figcaption>Certificate</figcaption>
+    </figure>
+    <!-- 5. embed inside product -->
+    <figure class="fan-card f5 dark">
+      <div class="host-top"><i></i><i></i><i></i><span>app.yourproduct.com</span></div>
+      <div class="host">
+        <div class="host-side"><i class="on"></i><i></i><i></i><i></i></div>
+        <div class="host-main">
+          <b>Learn</b>
+          <div class="emb"><span class="emb-cover cover-orange"></span><span>API basics<em>Self paced</em></span></div>
+          <div class="emb"><span class="emb-cover cover-blue"></span><span>Getting started<em>Self paced</em></span></div>
+          <div class="emb"><span class="emb-cover cover-green"></span><span>Admin essentials<em>Live class</em></span></div>
+          <span class="powered">Powered by ClassroomIO</span>
+        </div>
+      </div>
+      <figcaption>Embedded in your product</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- PRODUCT FRAME -->
+<section class="frame product-wrap" aria-label="ClassroomIO course editor with the AI assistant">
+  <div class="panel product-panel">
+    <div class="app">
+      <div class="app-side">
+        <span class="app-org"><img src="../images/logo.svg" width="16" height="12" alt="">Your Academy</span>
+        <span class="app-back">← Courses</span>
+        <span class="app-course">Admin onboarding</span>
+        <span class="app-item">News feed</span>
+        <span class="app-item on">Content</span>
+        <span class="app-sub">Set up your workspace</span>
+        <span class="app-sub">Invite your team</span>
+        <span class="app-sub">Roles and permissions</span>
+        <span class="app-sub">Quiz: workspace basics</span>
+        <span class="app-sub">Connect your data</span>
+        <span class="app-item">Analytics</span>
+        <span class="app-item">Submissions</span>
+        <span class="app-item">Certificates</span>
+        <span class="app-foot">Powered by ClassroomIO</span>
+      </div>
+      <div class="app-main">
+        <div class="app-head"><span>Content <span class="pill-blue">Published</span></span><span class="app-actions"><span class="ghost-sm">Reorder</span><span class="blue-sm">Add content</span></span></div>
+        <div class="app-stats"><div><span>Sections</span><b>4</b></div><div><span>Lessons</span><b>9</b></div><div><span>Exercises</span><b>4</b></div></div>
+        <div class="sec">
+          <div class="sec-h">Set up your workspace<span class="counts">3 lessons · 1 exercise</span></div>
+          <div class="les"><span class="li li-note"></span>Set up your workspace<span class="tag">Note</span></div>
+          <div class="les"><span class="li li-video"></span>Invite your team<span class="tag">Video</span></div>
+          <div class="les"><span class="li li-note"></span>Roles and permissions<span class="tag">Slides</span></div>
+          <div class="les"><span class="li li-quiz"></span>Quiz: workspace basics<span class="tag">5 questions</span></div>
+        </div>
+        <div class="sec">
+          <div class="sec-h">Connect your data<span class="counts">2 lessons · 1 exercise</span></div>
+          <div class="les"><span class="li li-video"></span>Connect a data source<span class="tag">Video</span></div>
+        </div>
+      </div>
+      <div class="app-lesson">
+        <span class="al-k">Lesson · Invite your team</span>
+        <div class="al-video"><img src="../images/onboarding.jpg" alt=""><span class="play" aria-hidden="true"></span></div>
+        <b class="al-h">Bring your team in</b>
+        <span class="al-p">Invite teammates from Settings → Members. Choose a role for each person before you send the invite.</span>
+        <div class="al-blocks"><span>Note</span><span>Video</span><span>Slides</span><span>Document</span><span>Image</span></div>
+      </div>
+    </div>
+
+    <div class="agent">
+      <div class="agent-h"><i class="spark-dot"></i>Assistant<span class="agent-x">×</span></div>
+      <span class="bubble-me">Create a 4-part onboarding course for new admins, with a quiz after each section.</span>
+      <div class="agent-msg">
+        <span>Here's a plan. Approve it and I'll build it.</span>
+        <div class="plan">
+          <b>Admin onboarding</b>
+          <span class="plan-meta">4 sections, 9 lessons, 4 exercises</span>
+          <span class="plan-ln">Set up your workspace</span>
+          <span class="plan-ln">Connect your data</span>
+          <span class="plan-ln">Build your first report</span>
+          <span class="plan-ln">Automate and share</span>
+        </div>
+        <div class="agent-acts"><span class="blue-sm">Implement plan</span><span class="ghost-sm">Edit</span></div>
+      </div>
+      <span class="agent-input">Tell me what to change about the plan…<i>↑</i></span>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="frame proof">
+  <span>Open source under AGPL-3.0</span><span class="dot"></span>
+  <span>Cloud or self-hosted</span><span class="dot"></span>
+  <span>Works with Claude, Cursor and any MCP client</span><span class="dot"></span>
+  <a href="#story">Read the SensorHubb story →</a>
+</section>
+
+<!-- 01 CREATE -->
+<section class="frame block" id="create">
+  <p class="eyebrow">01 · Create</p>
+  <h2 class="h2">Go from product knowledge to a <span class="ichip ic-blue" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 3h4.5a1.5 1.5 0 011.5 1.5V13a1.5 1.5 0 00-1.5-1.5H3zM13 3H9.5A1.5 1.5 0 008 4.5V13a1.5 1.5 0 011.5-1.5H13z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span> finished course in hours, not&nbsp;weeks.</h2>
+  <p class="sub">Describe what customers need to learn. The assistant drafts the course, you shape it in a block editor, and quizzes check that it stuck.</p>
+
+  <div class="feature" data-feature>
+    <div class="panel feature-stage">
+      <div class="fs" data-pane="ai">
+        <div class="win w-wide">
+          <div class="win-bar"><i></i><i></i><i></i><span>Assistant</span></div>
+          <div class="fs-ai">
+            <span class="bubble-me">Turn our reporting workflow into a short course for new customers.</span>
+            <div class="plan plan-lg">
+              <b>Reporting basics</b>
+              <span class="plan-meta">3 sections, 7 lessons, 3 exercises · Estimated cost ~28,000 tokens</span>
+              <div class="plan-sec"><b>Section 1 · Your first report</b><span>Pick a template · Add a chart · Filter by date</span></div>
+              <div class="plan-sec"><b>Section 2 · Sharing</b><span>Share with your team · Schedule an email digest</span></div>
+              <div class="plan-sec"><b>Section 3 · Going further</b><span>Custom metrics · Quiz: reporting basics</span></div>
+            </div>
+            <div class="agent-acts"><span class="blue-sm">Implement plan</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="fs" data-pane="editor" hidden>
+        <div class="win w-wide">
+          <div class="win-bar"><i></i><i></i><i></i><span>Lesson editor</span></div>
+          <div class="fs-ed">
+            <b class="fs-ed-h">Add a chart to your report</b>
+            <div class="blk"><span class="blk-k">Note</span><span class="ln w90"></span><span class="ln w70"></span></div>
+            <div class="blk blk-media"><span class="blk-k">Video</span><img src="../images/analytics.jpg" alt=""><span class="play" aria-hidden="true"></span></div>
+            <div class="blk-add"><span>+ Note</span><span>+ Video</span><span>+ Slides</span><span>+ Document</span><span>+ Image</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="fs" data-pane="quiz" hidden>
+        <div class="win w-wide">
+          <div class="win-bar"><i></i><i></i><i></i><span>Exercise · Quiz: reporting basics</span></div>
+          <div class="fs-quiz">
+            <span class="q-k">Question 2 of 5 · Multiple choice</span>
+            <b>Which view lets a teammate comment but not edit?</b>
+            <span class="opt">Owner</span><span class="opt">Editor</span><span class="opt on">Viewer<i>✓</i></span><span class="opt">Admin</span>
+            <div class="q-types"><span>Single choice</span><span>Multiple choice</span><span>Short answer</span><span>Paragraph</span><span>File upload</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="fs" data-pane="templates" hidden>
+        <div class="tpl-row">
+          <div class="tpl"><span class="tpl-cover cover-blue"><span class="cv-title-sm">Product onboarding</span></span><b>Product onboarding</b><span>6 lessons</span></div>
+          <div class="tpl"><span class="tpl-cover cover-orange"><span class="cv-title-sm">Feature launch</span></span><b>Feature launch</b><span>3 lessons</span></div>
+          <div class="tpl"><span class="tpl-cover cover-green"><span class="cv-title-sm">Partner certification</span></span><b>Partner certification</b><span>8 lessons</span></div>
+          <div class="tpl"><span class="tpl-cover cover-ink"><span class="cv-title-sm">Admin essentials</span></span><b>Admin essentials</b><span>5 lessons</span></div>
+        </div>
+      </div>
+      <div class="fs" data-pane="translate" hidden>
+        <div class="win w-mid">
+          <div class="win-bar"><i></i><i></i><i></i><span>Lesson translations</span></div>
+          <div class="fs-tr">
+            <div class="tr-row"><span class="flag">EN</span><b>Add a chart to your report</b><span class="ok">Source</span></div>
+            <div class="tr-row"><span class="flag">ES</span><b>Añade un gráfico a tu informe</b><span class="ok">Translated</span></div>
+            <div class="tr-row"><span class="flag">FR</span><b>Ajoutez un graphique à votre rapport</b><span class="ok">Translated</span></div>
+            <div class="tr-row"><span class="flag">DE</span><b>Fügen Sie Ihrem Bericht ein Diagramm hinzu</b><span class="ok">Translated</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="acc" role="tablist" aria-label="Create features">
+      <button class="acc-i on" role="tab" aria-selected="true" data-target="ai"><span class="acc-t">AI course creation</span><span class="acc-d">Describe the course. The assistant drafts sections, lessons and exercises for you to approve or change.</span></button>
+      <button class="acc-i" role="tab" aria-selected="false" data-target="editor"><span class="acc-t">Block-based lesson editor</span><span class="acc-d">Notes, video, slides, documents and images, arranged as blocks in one lesson.</span></button>
+      <button class="acc-i" role="tab" aria-selected="false" data-target="quiz"><span class="acc-t">Quizzes and exercises</span><span class="acc-d">Check understanding with several question types, then grade in one place.</span></button>
+      <button class="acc-i" role="tab" aria-selected="false" data-target="templates"><span class="acc-t">Course templates</span><span class="acc-d">Save a course as a template and start the next one from what already works.</span></button>
+      <button class="acc-i" role="tab" aria-selected="false" data-target="translate"><span class="acc-t">Lesson translations</span><span class="acc-d">Give customers lessons in their own language.</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- 02 DISTRIBUTE -->
+<section class="frame block" id="distribute">
+  <p class="eyebrow">02 · Distribute</p>
+  <h2 class="h2">Education wherever your customers are, not behind a login they&nbsp;forgot.</h2>
+  <p class="sub">Publish the same course as a public page, embed it inside your product, or run a full academy on your own domain with your brand.</p>
+
+  <div class="tabs" role="tablist" aria-label="Distribution surfaces" data-tabs="dist">
+    <button class="tab on" role="tab" aria-selected="true" data-target="public">Public courses</button>
+    <button class="tab" role="tab" aria-selected="false" data-target="embed">In your product</button>
+    <button class="tab" role="tab" aria-selected="false" data-target="domain">Your domain and brand</button>
+    <button class="tab" role="tab" aria-selected="false" data-target="cohort">Cohorts and certificates</button>
+  </div>
+
+  <div class="panel dist-stage" data-tabpanes="dist">
+    <div class="dp" data-pane="public">
+      <div class="win w-wide pub">
+        <div class="win-bar"><i></i><i></i><i></i><span>learn.yourproduct.com/courses/api-basics</span></div>
+        <div class="pub-in">
+          <div class="pub-copy">
+            <span class="fc-meta">Free course · No account needed to preview</span>
+            <b class="pub-h">API basics in 20 minutes</b>
+            <span class="pub-p">Make your first authenticated request, read the response and handle errors. Built for developers evaluating the product.</span>
+            <div class="pub-acts"><span class="blue-sm lg">Enroll for free</span><span class="ghost-sm lg">Preview lesson 1</span></div>
+            <div class="pub-list"><span>01 Authentication</span><span>02 Your first request</span><span>03 Pagination</span><span>04 Errors and retries</span><span>05 Webhooks</span></div>
+          </div>
+          <div class="pub-cover cover-orange"><span class="cv-kicker">Free course</span><span class="cv-title">API basics in 20&nbsp;minutes</span><span class="cv-shape s-arc"></span></div>
+        </div>
+      </div>
+      <p class="dp-note">Let prospects learn before they buy. Every public course has its own landing page you can share or link from your site.</p>
+    </div>
+    <div class="dp" data-pane="embed" hidden>
+      <div class="emb-split">
+        <div class="win w-dark">
+          <div class="host-top"><i></i><i></i><i></i><span>app.yourproduct.com/help</span></div>
+          <div class="host host-lg">
+            <div class="host-side"><i></i><i></i><i class="on"></i><i></i><i></i></div>
+            <div class="host-main">
+              <b>Learn</b>
+              <div class="emb-grid">
+                <div class="eg"><span class="eg-cover cover-orange"></span><b>API basics</b><em>Self paced</em></div>
+                <div class="eg"><span class="eg-cover cover-blue"></span><b>Getting started</b><em>Self paced</em></div>
+                <div class="eg"><span class="eg-cover cover-green"></span><b>Admin essentials</b><em>Live class</em></div>
+              </div>
+              <span class="powered">Powered by ClassroomIO</span>
+            </div>
+          </div>
+        </div>
+        <div class="code">
+          <div class="code-bar"><span>help.html</span></div>
+<pre><code><span class="c-t">&lt;div</span> <span class="c-a">data-cio-widget</span>=<span class="c-s">"course-widget"</span>
+     <span class="c-a">data-widget-key</span>=<span class="c-s">"wgt_…"</span><span class="c-t">&gt;&lt;/div&gt;</span>
+<span class="c-t">&lt;script</span> <span class="c-a">async type</span>=<span class="c-s">"module"</span>
+  <span class="c-a">src</span>=<span class="c-s">"…/embeds/course-widget.js"</span><span class="c-t">&gt;&lt;/script&gt;</span></code></pre>
+        </div>
+      </div>
+      <p class="dp-note">Design a course widget in the dashboard, then paste two lines wherever HTML runs: your app, help centre or docs.</p>
+    </div>
+    <div class="dp" data-pane="domain" hidden>
+      <div class="brand-row">
+        <div class="win brand-win" style="--b:#0542CC">
+          <div class="win-bar"><i></i><i></i><i></i><span>learn.yourproduct.com</span></div>
+          <div class="brand-in"><span class="brand-logo"></span><b>Your Academy</b><span class="brand-btn">Browse courses</span></div>
+        </div>
+        <div class="win brand-win" style="--b:#E2552B">
+          <div class="win-bar"><i></i><i></i><i></i><span>academy.yourproduct.com</span></div>
+          <div class="brand-in"><span class="brand-logo"></span><b>Partner Academy</b><span class="brand-btn">Browse courses</span></div>
+        </div>
+        <div class="win brand-win" style="--b:#0F7A55">
+          <div class="win-bar"><i></i><i></i><i></i><span>training.yourproduct.com</span></div>
+          <div class="brand-in"><span class="brand-logo"></span><b>Customer Training</b><span class="brand-btn">Browse courses</span></div>
+        </div>
+      </div>
+      <p class="dp-note">Your logo, colours and domain, so learning feels like part of your product. Custom domains are on paid plans.</p>
+    </div>
+    <div class="dp" data-pane="cohort" hidden>
+      <div class="cohort-row">
+        <div class="win w-mid">
+          <div class="win-bar"><i></i><i></i><i></i><span>Cohort · March admins</span></div>
+          <div class="coh">
+            <div class="coh-h"><b>March admins</b><span>3 courses · 24 learners</span></div>
+            <div class="coh-r"><span class="av a1">AO</span><span>Amara Okafor</span><span class="bar"><i style="width:100%"></i></span><span class="badge-ok">Certified</span></div>
+            <div class="coh-r"><span class="av a2">JL</span><span>Jonas Lind</span><span class="bar"><i style="width:72%"></i></span><span class="pct">72%</span></div>
+            <div class="coh-r"><span class="av a3">PR</span><span>Priya Raman</span><span class="bar"><i style="width:45%"></i></span><span class="pct">45%</span></div>
+            <div class="coh-r"><span class="av a4">MB</span><span>Marco Bianchi</span><span class="bar"><i style="width:18%"></i></span><span class="pct">18%</span></div>
+          </div>
+        </div>
+        <div class="cert cert-lg">
+          <span class="cert-k">Certificate of completion</span>
+          <span class="cert-name">Amara Okafor</span>
+          <span class="cert-line"></span>
+          <span class="cert-course">Admin onboarding</span>
+          <span class="cert-seal"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2.4"/><path d="M13 20.5l4.5 4.5L27 15.5" stroke="currentColor" stroke-width="2" fill="none"/></svg></span>
+        </div>
+      </div>
+      <p class="dp-note">Group customers into cohorts, track their progress, and issue certificates they can share and anyone can verify.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 03 INTELLIGENCE -->
+<section class="frame block-dark" id="intelligence">
+  <div class="dark-in">
+    <p class="eyebrow">03 · Intelligence</p>
+    <h2 class="h2">Let <span class="ichip ic-dark" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1.5l1.6 4.9L14.5 8l-4.9 1.6L8 14.5l-1.6-4.9L1.5 8l4.9-1.6z" fill="currentColor"/></svg></span> AI take the busywork. Use our assistant, or connect <span class="ichip ic-dark" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 4L1.5 8 5 12M11 4l3.5 4-3.5 4" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></span> your own agent.</h2>
+    <p class="sub">An AI tutor answers learners' questions inside the lesson. Your team builds and updates courses from the assistant, or from Claude, Cursor and any MCP client.</p>
+
+    <div class="ai-grid">
+      <div class="ai-card">
+        <div class="ai-card-h"><b>AI Lesson Tutor</b><span>For learners</span></div>
+        <div class="tutor">
+          <span class="ctx">Lesson · Connect a data source</span>
+          <span class="t-q">Do I need admin rights to add a data source?</span>
+          <span class="t-a">Yes. Only workspace admins can add data sources. If you're not an admin, step 1 of this lesson shows how to request access.</span>
+          <span class="t-q">Where do I find the API key?</span>
+          <span class="t-a typing"><i></i><i></i><i></i></span>
+          <span class="t-in">Ask about this lesson…</span>
+        </div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-card-h"><b>MCP server</b><span>For your team</span></div>
+        <div class="term">
+<pre><span class="tp">›</span> Add a 5-question quiz to the end of
+  "Admin onboarding", based on section 2.
+
+<span class="tc">● classroomio</span> <span class="tm">get_course_structure</span>     <span class="tok">done</span>
+<span class="tc">● classroomio</span> <span class="tm">create_course_exercise</span>   <span class="tok">done</span>
+<span class="tc">● classroomio</span> <span class="tm">add_exercise_question</span> ×5 <span class="tok">done</span>
+
+Added "Quiz: connect your data" with 5
+questions. It's saved as a draft.</pre>
+          <div class="term-foot"><span>mcp.classroomio.com</span><span>Claude · Cursor · Codex · VS Code</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-list">
+      <div><b>Course assistant</b><span>Drafts, restructures and updates courses on request.</span></div>
+      <div><b>AI Lesson Tutor</b><span>Answers learner questions in the context of the lesson.</span></div>
+      <div><b>MCP server</b><span>Lets any MCP client create, edit and publish courses.</span></div>
+      <div><b>Learner analytics</b><span>Drill from a number to the students behind it.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 JOURNEY -->
+<section class="frame block" id="journey">
+  <p class="eyebrow">04 · Across the customer journey</p>
+  <h2 class="h2">One course library. Every stage of the customer&nbsp;journey.</h2>
+  <p class="sub">Education isn't only for onboarding. The same courses can help you win customers, get them live and keep them around.</p>
+
+  <div class="journey" data-tabs="journey">
+    <div class="j-rail" role="tablist" aria-label="Customer journey stages">
+      <button class="j-step on" role="tab" aria-selected="true" data-target="marketing"><span class="j-n">1</span>Marketing</button>
+      <button class="j-step" role="tab" aria-selected="false" data-target="sales"><span class="j-n">2</span>Sales</button>
+      <button class="j-step" role="tab" aria-selected="false" data-target="onboarding"><span class="j-n">3</span>Onboarding</button>
+      <button class="j-step" role="tab" aria-selected="false" data-target="adoption"><span class="j-n">4</span>Adoption</button>
+      <button class="j-step" role="tab" aria-selected="false" data-target="retention"><span class="j-n">5</span>Retention</button>
+      <span class="j-progress" aria-hidden="true"><i></i></span>
+    </div>
+    <div class="panel j-stage" data-tabpanes="journey">
+      <div class="jp" data-pane="marketing">
+        <div class="jp-copy"><b>Teach before they buy.</b><span>Publish free courses that show what your product does. Prospects learn the value on their own time, from a page you can link anywhere.</span><span class="jp-feat">Public courses · Custom landing pages</span></div>
+        <div class="jp-vis">
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>learn.yourproduct.com</span></div>
+            <div class="jv-pub"><span class="pub-cover cover-orange sm"><span class="cv-title">API basics</span></span><div><b>API basics in 20 minutes</b><span>Free · 5 lessons</span><span class="blue-sm">Enroll for free</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="jp" data-pane="sales" hidden>
+        <div class="jp-copy"><b>Give prospects a head start.</b><span>Invite an evaluating team into a course so they arrive at the demo already knowing the basics.</span><span class="jp-feat">Course invites · Shareable links</span></div>
+        <div class="jp-vis">
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>Invite to course</span></div>
+            <div class="jv-inv"><b>Invite people to "Getting started"</b><span class="field">ops@prospect.com, lead@prospect.com</span><span class="field link">learn.yourproduct.com/invite/…<em>Copy link</em></span><span class="blue-sm">Send invites</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="jp" data-pane="onboarding" hidden>
+        <div class="jp-copy"><b>Get new customers to value faster.</b><span>Put the onboarding path inside your product with an embed, and run live cohorts for bigger accounts.</span><span class="jp-feat">Embedded widgets · Cohorts</span></div>
+        <div class="jp-vis">
+          <div class="win w-dark"><div class="host-top"><i></i><i></i><i></i><span>app.yourproduct.com</span></div>
+            <div class="jv-onb"><b>Get set up</b><div class="step-l done">Set up your workspace</div><div class="step-l done">Invite your team</div><div class="step-l cur">Connect your data</div><div class="step-l">Build your first report</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="jp" data-pane="adoption" hidden>
+        <div class="jp-copy"><b>Show them what else the product can do.</b><span>Ship a short course with every feature launch. The AI Tutor answers follow-up questions inside the lesson, so fewer of them become support tickets.</span><span class="jp-feat">AI Lesson Tutor · Feature courses</span></div>
+        <div class="jp-vis">
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>Lesson · Automations</span></div>
+            <div class="tutor light"><span class="t-q">Can an automation run every Monday?</span><span class="t-a">Yes. Choose "Weekly" as the trigger and pick Monday. Step 3 in this lesson walks through it.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="jp" data-pane="retention" hidden>
+        <div class="jp-copy"><b>Keep them learning, and spot who's stuck.</b><span>See progress by course and learner, follow up with the people who stalled, and reward completion with certificates.</span><span class="jp-feat">Analytics · Certificates</span></div>
+        <div class="jp-vis">
+          <div class="win"><div class="win-bar"><i></i><i></i><i></i><span>Analytics · Admin onboarding</span></div>
+            <div class="jv-an">
+              <div class="an-row an-h"><span>Learner</span><span>Progress</span><span>Last active</span></div>
+              <div class="an-row"><span>Jonas Lind</span><span class="bar"><i style="width:72%"></i></span><span>Today</span></div>
+              <div class="an-row"><span>Priya Raman</span><span class="bar"><i style="width:45%"></i></span><span>3 days ago</span></div>
+              <div class="an-row warn"><span>Marco Bianchi</span><span class="bar"><i style="width:18%"></i></span><span>12 days ago</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 WHY -->
+<section class="frame block" id="why">
+  <p class="eyebrow">05 · Why ClassroomIO</p>
+  <h2 class="h2">Serious customer education, without the enterprise&nbsp;baggage.</h2>
+  <div class="why">
+    <div class="why-i"><span class="why-ic"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12.5 7.5c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.3.7-2.3 1.7 0 2.4 5 1.3 5 3.9 0 1-1 1.8-2.6 1.8-1.2 0-2.2-.5-2.7-1.3M10 5v1.3M10 13.9v1.2" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span><b>Affordable</b><span>Flat plans and a free tier. You don't need an enterprise budget to teach customers well.</span><a href="https://classroomio.com/pricing">See pricing →</a></div>
+    <div class="why-i"><span class="why-ic"><svg viewBox="0 0 20 20"><rect x="2.5" y="4" width="15" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="8" width="6" height="5" rx="1" fill="currentColor" opacity=".3"/></svg></span><b>Seamless</b><span>Education fits inside your product and brand, so customers don't have to go looking for it.</span><a href="#distribute">How embeds work →</a></div>
+    <div class="why-i"><span class="why-ic"><svg viewBox="0 0 20 20"><path d="M10 2.5l1.9 5.6 5.6 1.9-5.6 1.9L10 17.5l-1.9-5.6L2.5 10l5.6-1.9z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span><b>AI-native</b><span>AI does real work: drafting courses, writing quizzes, answering learners and running tasks through MCP.</span><a href="#intelligence">See the AI →</a></div>
+    <div class="why-i"><span class="why-ic"><svg viewBox="0 0 20 20"><path d="M7 6L3 10l4 4M13 6l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span><b>Modern</b><span>Open source, with an API, webhooks and embeds. Built for how SaaS teams work today.</span><a href="#developers">For developers →</a></div>
+  </div>
+</section>
+
+<!-- 06 WHO -->
+<section class="frame block" id="who">
+  <p class="eyebrow">06 · Who it's for</p>
+  <h2 class="h2">Built for the teams that teach your&nbsp;customers.</h2>
+  <div class="who" data-tabs="who">
+    <div class="who-list" role="tablist" aria-label="Teams">
+      <button class="who-t on" role="tab" aria-selected="true" data-target="ce">Customer Education</button>
+      <button class="who-t" role="tab" aria-selected="false" data-target="cs">Customer Success</button>
+      <button class="who-t" role="tab" aria-selected="false" data-target="founders">SaaS founders</button>
+      <button class="who-t" role="tab" aria-selected="false" data-target="product">Product teams</button>
+      <button class="who-t" role="tab" aria-selected="false" data-target="tech">Technical teams</button>
+    </div>
+    <div class="panel who-stage" data-tabpanes="who">
+      <div class="wp" data-pane="ce"><b>Create and maintain more education without creating more work.</b><span>Use AI to speed up course creation, and reach customers beyond the traditional academy.</span><div class="wp-chips"><span>AI course creation</span><span>Templates</span><span>Embeds</span></div></div>
+      <div class="wp" data-pane="cs" hidden><b>Help customers get more value from your product.</b><span>Give customers what they need to onboard faster, use more features and solve more problems themselves.</span><div class="wp-chips"><span>Cohorts</span><span>AI Lesson Tutor</span><span>Analytics</span></div></div>
+      <div class="wp" data-pane="founders" hidden><b>Turn product knowledge into a growth channel.</b><span>Use education across marketing, sales, onboarding, adoption and retention, without committing to an expensive enterprise platform.</span><div class="wp-chips"><span>Free plan</span><span>Public courses</span><span>Custom domain</span></div></div>
+      <div class="wp" data-pane="product" hidden><b>Make education part of the product experience.</b><span>Bring learning closer to the features and workflows customers are actually using.</span><div class="wp-chips"><span>Embedded widgets</span><span>Feature courses</span><span>Webhooks</span></div></div>
+      <div class="wp" data-pane="tech" hidden><b>Build education into the rest of your stack.</b><span>An open-source platform with an API, embeds, customisation and AI that works with the tools your team already uses.</span><div class="wp-chips"><span>REST API</span><span>MCP server</span><span>Self-hosting</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 DEVELOPERS -->
+<section class="frame block" id="developers">
+  <p class="eyebrow">07 · Developers</p>
+  <h2 class="h2">Open source, with the pieces you need to build&nbsp;around it.</h2>
+  <div class="dev">
+    <div class="dev-grid">
+      <div><b>REST API</b><span>Enroll learners, manage courses and read progress.</span></div>
+      <div><b>MCP server</b><span>Hosted at mcp.classroomio.com.</span></div>
+      <div><b>Embeds</b><span>Course widgets for any page that runs HTML.</span></div>
+      <div><b>Webhooks and Zapier</b><span>Send learning events to Slack, your CRM or your backend.</span></div>
+      <div><b>Custom domains</b><span>Run the academy on your own subdomain.</span></div>
+      <div><b>SSO</b><span>Single sign-on for teams with stricter requirements.</span></div>
+      <div><b>Open source</b><span>AGPL-3.0, on GitHub.</span></div>
+      <div><b>Self-hosting</b><span>Run it in your own infrastructure.</span></div>
+    </div>
+    <div class="code code-tabs" data-tabs="code">
+      <div class="code-bar" role="tablist" aria-label="Code examples">
+        <button class="ct on" role="tab" aria-selected="true" data-target="api">API</button>
+        <button class="ct" role="tab" aria-selected="false" data-target="mcp">MCP</button>
+        <button class="ct" role="tab" aria-selected="false" data-target="hook">Webhook</button>
+      </div>
+      <div data-tabpanes="code">
+<pre data-pane="api"><code><span class="c-c"># Enroll a learner in a course</span>
+<span class="c-t">curl</span> <span class="c-s">"https://api.classroomio.com/v1/enrollments"</span> \
+  -H <span class="c-s">"Authorization: Bearer $CIO_API_KEY"</span> \
+  -H <span class="c-s">"Content-Type: application/json"</span> \
+  -d <span class="c-s">'{ "courseId": "crs_…", "userId": "usr_…" }'</span></code></pre>
+<pre data-pane="mcp" hidden><code>{
+  <span class="c-a">"mcpServers"</span>: {
+    <span class="c-a">"classroomio"</span>: {
+      <span class="c-a">"url"</span>: <span class="c-s">"https://mcp.classroomio.com"</span>
+    }
+  }
+}</code></pre>
+<pre data-pane="hook" hidden><code><span class="c-c">// POST https://yourapp.com/webhooks/cio</span>
+{
+  <span class="c-a">"event"</span>: <span class="c-s">"certificate.issued"</span>,
+  <span class="c-a">"data"</span>: {
+    <span class="c-a">"learnerId"</span>: <span class="c-s">"usr_…"</span>,
+    <span class="c-a">"courseId"</span>: <span class="c-s">"crs_…"</span>
+  }
+}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="frame block" id="story">
+  <div class="story">
+    <div class="story-media"><img src="../images/sensorhubb-poster.webp" alt="Andrew Bedell of SensorHubb"><span class="play lg" aria-hidden="true"></span><span class="story-len">Customer story · 1:39</span></div>
+    <div class="story-copy">
+      <p class="eyebrow">Customer story</p>
+      <blockquote>“I think my favorite part of using ClassroomIO, however, has been the extremely professional and prompt response from their team.”</blockquote>
+      <span class="who-n"><b>Andrew Bedell</b> · Strategy and Operations, SensorHubb</span>
+      <div class="quote-sm">
+        <img src="../images/jody.webp" alt="" width="40" height="40">
+        <span>“We love it because it helps us get training material out to clients, while clients can also monitor progress of their staff.”<em>Jody Segers, MD of QuickEasy Business Systems</em></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="frame cta">
+  <div class="panel cta-panel">
+    <h2 class="h2">Start teaching your customers today.</h2>
+    <p class="sub">Free to start. Open source. Your first course can be live this afternoon.</p>
+    <div class="ctas">
+      <a class="btn btn-blue btn-lg" href="https://classroomio.com/signup">Get started free</a>
+      <a class="btn btn-ghost btn-lg" href="https://cal.com/classroomio/demo">Book a demo</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="frame foot" id="about">
+  <div class="foot-top">
+    <div class="foot-brand"><a class="logo" href="#top"><img src="../images/logo.svg" width="26" height="19" alt=""><span>ClassroomIO</span></a><span>The customer education platform for B2B SaaS.</span></div>
+    <div class="foot-cols">
+      <div><b>Product</b><a href="https://classroomio.com/pricing">Pricing</a><a href="https://classroomio.com/changelog">What's new</a><a href="https://classroomio.com/automation">Automation</a><a href="https://classroomio.com/mcp-recipes">MCP recipes</a></div>
+      <div><b>Solutions</b><a href="https://classroomio.com/customer-education">Customer Education</a><a href="https://classroomio.com/partner-training">Partner Training</a><a href="https://classroomio.com/compliance-training">Compliance Training</a></div>
+      <div><b>Resources</b><a href="https://classroomio.com/blog">Blog</a><a href="https://classroomio.com/help">Help Center</a><a href="https://classroomio.com/docs">Docs</a><a href="https://classroomio.com/github">GitHub</a></div>
+      <div><b>Company</b><a href="#about">About</a><a href="https://classroomio.com/discord">Discord</a><a href="https://classroomio.com/privacy">Privacy</a><a href="https://classroomio.com/tos">Terms</a></div>
+    </div>
+  </div>
+  <div class="foot-bot"><span>© 2026 ClassroomIO</span><span>Prototype. Not the live site.</span></div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

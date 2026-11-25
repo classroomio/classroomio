@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Footer Options v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css?v=54">
+<link rel="stylesheet" href="footer-options-v2.css?v=4">
+</head>
+<body>
+
+<div class="topbar">Prototype for review · footer concepts v2, not the live site <a href="index.html">Back to homepage →</a></div>
+
+<header class="v2-intro rails">
+  <span class="tag-sm">Footer concepts · round 2</span>
+  <h1 class="h2">Five takes on the big-wordmark footer.</h1>
+  <p>Even link columns, a large wordmark, legal links on the left, copyright and socials on the right. Each version changes how the wordmark and the page meet.</p>
+  <nav class="v2-jump" aria-label="Jump to option"><a href="#v1">A · Clean</a><a href="#v2">B · Rails</a><a href="#v3">C · Navy</a><a href="#v4">D · Panel</a><a href="#v5">E · Split</a></nav>
+</header>
+
+<section class="v2-opt" id="v1">
+  <p class="v2-label rails"><b>A</b> Clean: closest to the reference, with our blue mark next to an ink wordmark</p>
+  <footer class="ft fa rails">
+    <div class="ft-cols" data-cols></div>
+    <div class="ft-tick" data-ticker></div>
+    <div class="ft-mark"><img src="images/logo.svg" alt=""><span>ClassroomIO</span></div>
+    <div class="ft-bot" data-bot></div>
+  </footer>
+</section>
+
+<section class="v2-opt" id="v2">
+  <p class="v2-label rails"><b>B</b> Rails: the page&rsquo;s vertical rails run through the columns, and the wordmark fills the width in blue</p>
+  <footer class="ft fb rails">
+    <div class="ft-cols" data-cols></div>
+    <div class="ft-mark mq" data-word-marquee aria-label="ClassroomIO"></div>
+    <div class="ft-bot" data-bot></div>
+  </footer>
+</section>
+
+<section class="v2-opt" id="v3">
+  <p class="v2-label rails"><b>C</b> Navy: the same layout in the dark of the journey section, with a light-blue wordmark</p>
+  <footer class="ft fc">
+    <div class="rails fc-in">
+      <div class="ft-cols" data-cols></div>
+      <div class="ft-tick" data-ticker></div>
+      <div class="ft-mark"><img src="images/logo.svg" alt=""><span>ClassroomIO</span></div>
+      <div class="ft-bot" data-bot></div>
+    </div>
+  </footer>
+</section>
+
+<section class="v2-opt" id="v4">
+  <p class="v2-label rails"><b>D</b> Panel: the wordmark sits in a light-blue card with the sign-up button</p>
+  <footer class="ft fd rails">
+    <div class="ft-cols" data-cols></div>
+    <div class="ft-tick" data-ticker></div>
+    <div class="fd-panel">
+      <div class="ft-mark"><img src="images/logo.svg" alt=""><span>ClassroomIO</span></div>
+      <div class="fd-cta"><p>The open source customer education platform.</p><div><a class="btn btn-blue" href="https://classroomio.com/signup">Start for free</a><a class="btn fd-line" href="https://cal.com/classroomio/demo">Book a demo</a></div></div>
+    </div>
+    <div class="ft-bot" data-bot></div>
+  </footer>
+</section>
+
+<section class="v2-opt" id="v5">
+  <p class="v2-label rails"><b>E</b> Split: the wordmark leads, and the columns sit in a ruled grid underneath</p>
+  <footer class="ft fe rails">
+    <div class="fe-top">
+      <div class="ft-mark"><img src="images/logo.svg" alt=""><span>ClassroomIO</span></div>
+      <div class="fe-side"><p>Teach customers your product. Open source, cloud or self-hosted.</p><div><a class="btn btn-blue" href="https://classroomio.com/signup">Start for free</a><a class="btn btn-line" href="https://cal.com/classroomio/demo">Book a demo</a></div></div>
+    </div>
+    <div class="ft-tick" data-ticker></div>
+    <div class="ft-cols" data-cols></div>
+    <div class="ft-bot" data-bot></div>
+  </footer>
+</section>
+
+<script src="footer-options-v2.js?v=4"></script>
+</body>
+</html>

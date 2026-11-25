@@ -107,7 +107,7 @@
     <div class="ft-mark"><img src="images/logo.svg" alt=""><span role="img" aria-label="ClassroomIO">${wordmark}</span></div>
     <div class="ft-bot">
       <div class="ft-legal"><a href="${site}terms">Terms of Use</a>, <a href="${site}privacy">Privacy Policy</a> and <a href="${site}privacy">Cookies</a></div>
-      <div class="ft-right"><span>© 2026 ClassroomIO · AGPL-3.0</span><div class="ft-social">${socials.map(([label, href, svg]) => `<a href="${href}" aria-label="${label}">${svg}</a>`).join('')}</div></div>
+      <div class="ft-right"><span>© 2026 ClassroomIO</span><div class="ft-social">${socials.map(([label, href, svg]) => `<a href="${href}" aria-label="${label}">${svg}</a>`).join('')}</div></div>
     </div>`;
 
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {

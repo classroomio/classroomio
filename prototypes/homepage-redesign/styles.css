@@ -179,27 +179,6 @@ figure {
 .burger[aria-expanded='true'] span:last-child {
   transform: translateY(-3px) rotate(-45deg);
 }
-.sheet {
-  border-top: 1px solid var(--line);
-  padding: 12px 20px 20px;
-  display: grid;
-  gap: 2px;
-  background: #fff;
-}
-.sheet a {
-  padding: 12px 4px;
-  border-bottom: 1px solid var(--line);
-  font-size: 16px;
-}
-.sheet-cta {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 14px;
-}
-.sheet-cta a {
-  border-bottom: 0;
-}
 
 .btn {
   display: inline-flex;
@@ -5709,15 +5688,6 @@ figure {
 .dd-foot a {
   color: var(--blue);
   font-weight: 500;
-}
-.sheet-h {
-  margin: 14px 0 2px;
-  font:
-    500 12px/1 'Geist',
-    sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 .hs .db-tilt::before,
