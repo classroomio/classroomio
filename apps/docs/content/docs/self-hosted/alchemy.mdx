@@ -54,6 +54,12 @@ curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 apt-get install -y nodejs git
 ```
 
+If `docker version` doesn't show a **Server** section, install Docker:
+
+```bash title="Terminal"
+curl -fsSL https://get.docker.com | sh
+```
+
 If the server runs the `ufw` firewall (DigitalOcean's Docker image does), open ports 80 and 443:
 
 ```bash title="Terminal"
@@ -151,6 +157,9 @@ image changed are replaced. See [Versions & upgrades](/self-hosted/configuration
 
 ## Troubleshooting
 
+- **`Failed to run docker; is it installed and on PATH?`**: Docker isn't installed on the machine you
+  deploy from. Install it (see [Prepare the server](#2-prepare-the-server)), or set `DOCKER_HOST` to
+  deploy to a remote server.
 - **`Alchemy could not load the required peer dependency "@effect/platform-node"`**: you ran a
   separate copy of Alchemy, usually `npx alchemy` from another folder. Run `npm run deploy` inside
   `docker/alchemy`.
