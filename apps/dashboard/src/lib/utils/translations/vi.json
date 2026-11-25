@@ -5749,6 +5749,7 @@
       "my_zaps": "Zap của tôi",
       "see_all_apps": "Xem tất cả ứng dụng",
       "popular_zaps": "Zap phổ biến",
+      "view_all": "Xem tất cả",
       "app_page": {
         "connected": "{organization} được kết nối với Zapier · {access}.",
         "manage": "Quản lý",

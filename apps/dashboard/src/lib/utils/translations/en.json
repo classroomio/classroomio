@@ -5854,6 +5854,7 @@
       "my_zaps": "My Zaps",
       "see_all_apps": "See all apps",
       "popular_zaps": "Popular Zaps",
+      "view_all": "View All",
       "failed_events": {
         "title": "Some events didn't reach Zapier",
         "description": "Zapier missed events from the last 24 hours. Resend them to run the Zaps that should have started.",

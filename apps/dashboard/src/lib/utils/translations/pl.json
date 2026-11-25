@@ -5749,6 +5749,7 @@
       "my_zaps": "Moje Zapy",
       "see_all_apps": "Zobacz wszystkie aplikacje",
       "popular_zaps": "Popularne Zapy",
+      "view_all": "Zobacz wszystko",
       "app_page": {
         "connected": "{organization} jest połączona z Zapierem · {access}.",
         "manage": "Zarządzaj",

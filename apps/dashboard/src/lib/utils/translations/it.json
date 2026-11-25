@@ -5636,6 +5636,7 @@
       "my_zaps": "I miei Zap",
       "see_all_apps": "Vedi tutte le app",
       "popular_zaps": "Zap popolari",
+      "view_all": "Mostra tutto",
       "app_page": {
         "connected": "{organization} è connessa a Zapier · {access}.",
         "manage": "Gestisci",

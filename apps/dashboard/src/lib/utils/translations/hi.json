@@ -5749,6 +5749,7 @@
       "my_zaps": "मेरे जैप्स",
       "see_all_apps": "सभी ऐप्स देखें",
       "popular_zaps": "लोकप्रिय जैप्स",
+      "view_all": "सभी देखें",
       "app_page": {
         "connected": "{organization} जैपियर · {access} से जुड़ा है।",
         "manage": "प्रबंधित करें",

@@ -154,7 +154,7 @@ flowchart TD
 
 **Not connected**
 
-1. The admin opens Automation, Zapier and sees "Zapier isn't connected yet" with **Create a Zap** and **Explore apps**, followed by popular Zaps.
+1. The admin opens Automation, Zapier and sees "Zapier isn't connected yet" with **Create a Zap** and **Explore apps**, followed by popular Zaps with a **View All** link beside the heading that opens the App Directory.
 2. **Explore apps** opens the App Directory. Search or pick a category, then click an app.
 3. The ClassroomIO + {App} page lists ready-made Zaps for the pairing. **Use Zap** opens Zapier with both apps already chosen.
 4. **Create a Zap** opens the Zapier editor directly.
@@ -174,7 +174,7 @@ flowchart TD
 
 ## Screens ClassroomIO Builds
 
-- **Zaps page** (`/org/[slug]/automation/zapier`): header actions **Create a Zap**, **My Zaps** (once connected) and **Read docs**. Not connected: a full-width empty state with **Create a Zap** and **Explore apps**, then popular Zaps. Connected: the connection list with **Disconnect**, a failed-events or disabled-triggers warning when needed, and popular Zaps with an **Explore apps** link. While the app is private, a dismissible invite note sits above both. Plans without Zapier get an upgrade empty state; non-admins, a paused plan and self-hosted installs get callouts.
+- **Zaps page** (`/org/[slug]/automation/zapier`): header actions **Create a Zap**, **My Zaps** (once connected) and **Read docs**. Not connected: a full-width empty state with **Create a Zap** and **Explore apps**, then popular Zaps with a **View All** link. Connected: the connection list with **Disconnect**, a failed-events or disabled-triggers warning when needed, and popular Zaps with an **Explore apps** link. While the app is private, a dismissible invite note sits above both. Plans without Zapier get an upgrade empty state; non-admins, a paused plan and self-hosted installs get callouts.
 - **App Directory** (`.../zapier/apps`): a sidebar with search and categories with counts (All apps first); every curated app in one A–Z grid with its logo, description and ways to use; and a closing card linking to Zapier.
 - **ClassroomIO + {App} page** (`.../zapier/apps/[app]`): a header with both logos, **Create a {App} Zap** and **My Zaps**; a one-line connected status; popular Zaps grouped "From ClassroomIO" and "Into ClassroomIO"; and related apps.
 - **Workspace picker** (the **Workspace** dropdown on `/oauth/consent`): every workspace where the admin is an admin is listed, and one whose plan excludes Zapier is shown but can't be chosen. A single eligible workspace is preselected, and when none qualifies the page shows **No eligible workspace**.

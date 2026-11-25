@@ -109,22 +109,20 @@
   }
 </script>
 
-{#snippet popularZaps(showExploreLink: boolean)}
+{#snippet popularZaps(linkLabelKey: string)}
   <Field.Set class="gap-3">
     <div class="flex items-center justify-between gap-2">
       <Field.Legend class="mb-0">{$t(`${T}.popular_zaps`)}</Field.Legend>
-      {#if showExploreLink}
-        <Button
-          variant="link"
-          size="sm"
-          href={`${$currentOrgPath}/automation/zapier/apps`}
-          class="px-0"
-          testId="zapier-explore-apps-link"
-        >
-          {$t(`${T}.explore_apps`)}
-          <ArrowRightIcon size={14} />
-        </Button>
-      {/if}
+      <Button
+        variant="link"
+        size="sm"
+        href={`${$currentOrgPath}/automation/zapier/apps`}
+        class="px-0"
+        testId="zapier-explore-apps-link"
+      >
+        {$t(`${T}.${linkLabelKey}`)}
+        <ArrowRightIcon size={14} />
+      </Button>
     </div>
     <Card.Root class="ui:divide-border gap-0 divide-y px-4 py-0">
       {#each featuredRecipes as featured (featured.recipe.id)}
@@ -179,7 +177,7 @@
       <ZapierInviteNote onDismiss={dismissInviteNote} />
     {/if}
     <ZapierZapsEmpty />
-    {@render popularZaps(false)}
+    {@render popularZaps('view_all')}
   {:else}
     {#if showInviteNote}
       <ZapierInviteNote onDismiss={dismissInviteNote} />
@@ -222,7 +220,7 @@
       <ZapierConnectionList {connections} onDisconnect={(connection) => (disconnectingConnection = connection)} />
     </Field.Set>
 
-    {@render popularZaps(true)}
+    {@render popularZaps('explore_apps')}
   {/if}
 </Field.Group>
 

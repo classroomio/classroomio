@@ -5656,6 +5656,7 @@
       "my_zaps": "Zap'lerim",
       "see_all_apps": "Tüm uygulamaları görün",
       "popular_zaps": "Popüler Zap'ler",
+      "view_all": "Tümünü gör",
       "app_page": {
         "connected": "{organization}, Zapier · {access}'e bağlı.",
         "manage": "Yönet",
