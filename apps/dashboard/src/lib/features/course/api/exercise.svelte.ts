@@ -36,7 +36,7 @@ import { t } from '$lib/utils/functions/translations';
  * API class for exercise operations
  */
 export class ExerciseApi extends BaseApiWithErrors {
-  exercise = $state<Exercise | null>(null);
+  exercise = $state.raw<Exercise | null>(null);
 
   /**
    * Gets an exercise by ID
