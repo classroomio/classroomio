@@ -31,6 +31,7 @@
       .ico.ex { background: oklch(0.6 0.15 150); }
       .req-current { color: red; font-weight: 700; }
       .req-muted { color: var(--muted-foreground); font-weight: 600; }
+      .dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.7 0 0); flex: none; margin-right: 2px; }
       .opt { font-size: 11px; color: var(--muted-foreground); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; flex: none; }
       .note { max-width: 520px; font-size: 13px; color: var(--muted-foreground); margin-top: 16px; line-height: 1.5; }
     </style>
@@ -50,13 +51,12 @@
         { name: 'Look After Each Learner', items: [['Review a Learner Profile', 'l'], ['Archive, Restore or Delete a Learner', 'l'], ['Exercise: Practice Your Learner Care', 'e']] }
       ];
       const optionalWhenMixed = new Set(['Read the Audience Page', 'Segment Learners with Groups', 'Exercise: Practice Your Learner Import']);
-      const state = { variant: 'proposed', course: 'allRequired' };
-      const variants = { current: 'Current', proposed: 'Proposed', alt: 'Alternative' };
+      const state = { variant: 'dot', course: 'mixed' };
+      const variants = { current: 'Current', dot: 'Muted dot' };
       const courses = { allRequired: 'All required', mixed: 'Mixed' };
       const notes = {
         current: 'Every required item gets a red asterisk. When everything is required the marker says nothing and reads like an error.',
-        proposed: 'Required is the default and shows nothing. Only optional items get a small "Optional" label.',
-        alt: 'A muted marker on required items, shown only when the course mixes required and optional items.'
+        dot: 'A muted dot with a "Required" tooltip, shown only when the course mixes required and optional items. Hover a dot. All-required courses stay clean.'
       };
       function buildToggles(id, map, key) {
         const el = document.getElementById(id);
@@ -77,8 +77,7 @@
             const optional = mixed && optionalWhenMixed.has(title);
             let marker = '';
             if (state.variant === 'current') marker = optional ? '' : '<span class="req-current">*</span>';
-            if (state.variant === 'proposed') marker = optional ? '<span class="opt">Optional</span>' : '';
-            if (state.variant === 'alt') marker = mixed && !optional ? '<span class="req-muted">*</span>' : optional ? '<span class="opt">Optional</span>' : '';
+            if (state.variant === 'dot') marker = mixed && !optional ? '<span class="dot" title="Required" aria-label="Required"></span>' : '';
             return `<div class="row"><span class="ico ${kind === 'e' ? 'ex' : ''}"></span><span class="title">${title}</span>${marker}</div>`;
           }).join('');
           return `<div class="section">${s.name}<small>${s.items.length}</small></div>${rows}`;
