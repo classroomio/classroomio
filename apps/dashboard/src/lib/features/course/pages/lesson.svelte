@@ -396,6 +396,7 @@
           {/if}
 
           <IconButton
+            testId="lesson-settings-open"
             onclick={() => (settingsOpen = true)}
             aria-label={$t('course.navItem.lessons.materials.blocks.settings.title')}
             tooltip={$t('course.navItem.lessons.materials.blocks.settings.title')}

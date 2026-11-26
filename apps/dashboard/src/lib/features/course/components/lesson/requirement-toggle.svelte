@@ -30,7 +30,7 @@
           variant="secondary"
           size="icon-sm"
           class={cn(
-            'h-8 w-8 opacity-0 transition-opacity group-focus-within/card:opacity-100 group-hover/card:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100',
+            'h-8 w-8 opacity-0! transition-opacity group-focus-within/card:opacity-100! group-hover/card:opacity-100! focus-visible:opacity-100! group-focus-within/card:disabled:opacity-50! group-hover/card:disabled:opacity-50! [@media(hover:none)]:opacity-100! [@media(hover:none)]:disabled:opacity-50!',
             required ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'
           )}
           aria-label={actionLabel}

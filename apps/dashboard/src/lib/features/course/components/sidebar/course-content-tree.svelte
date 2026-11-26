@@ -364,9 +364,6 @@
               )}
             </div>
           {/if}
-          {#if showRequiredMarker}
-            <RequirementMarker testId="sidebar-requirement-marker" />
-          {/if}
           {#if contentItem.isComplete}
             <span class="shrink-0">
               <CircleCheckIcon size={16} filled />
@@ -384,6 +381,9 @@
             </span>
           {:else if sessionPhase}
             <LiveSessionIndicator phase={sessionPhase} />
+          {/if}
+          {#if showRequiredMarker}
+            <RequirementMarker testId="sidebar-requirement-marker" />
           {/if}
         </div>
       </a>

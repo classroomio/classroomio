@@ -45,6 +45,9 @@ Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{
 |---|---|
 | `course-settings-people-link` | Self-enrollment description link to the course People page |
 | `customize-lms-student-home` | Customize LMS student-home combobox trigger |
+| `lesson-settings-open` | Lesson page header button that opens **Lesson settings** |
+| `lesson-completion-manual` | **Manual** option of a lesson's **Completion rule** |
+| `lesson-completion-none` | **None** option of a lesson's **Completion rule** |
 | `lms-dashboard-hero-action` | Student dashboard hero button (**Continue Learning**, **My Certificate** or **View courses**) |
 | `lessons-content-menu` | Content page `⋮` options menu trigger |
 | `lessons-requirement-toggle` | Icon button on a Content page row that flips required/optional (teacher view) |

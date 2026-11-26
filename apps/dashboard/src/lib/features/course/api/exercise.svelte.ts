@@ -1,4 +1,6 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { courseApi } from './course.svelte';
+import { ContentType } from '@cio/utils/constants/content';
 import type {
   CreateExerciseFromTemplateRequest,
   CreateExerciseFromTemplateOptions,
@@ -202,6 +204,12 @@ export class ExerciseApi extends BaseApiWithErrors {
           this.exercise = response.data as unknown as Exercise;
           this.success = true;
           this.errors = {};
+
+          if (result.data.completionPolicy) {
+            courseApi.updateContentItem(exerciseId, ContentType.Exercise, {
+              completionPolicy: result.data.completionPolicy
+            });
+          }
         }
       },
       onError: (result) => {
