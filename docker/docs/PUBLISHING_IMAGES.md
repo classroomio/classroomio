@@ -63,10 +63,8 @@ The workflow will automatically publish images when:
 
 #### Create a version tag and push:
 
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
+Patch releases are tagged automatically each week. To tag a minor or major release by hand, see
+[Cutting a release](#cutting-a-release).
 
 #### Manual trigger from GitHub:
 
@@ -133,12 +131,14 @@ If a release has no images, recover from the Actions tab:
 
 Rebuilding an older tag moves `X.Y` and `X` back to it, so only rebuild the newest release.
 
-For a minor or major release, push the tag yourself; the weekly job then patches from it:
+For a minor or major release, push the tag and create its GitHub Release yourself; the weekly job
+then patches from it:
 
 ```bash
 git fetch origin
 git tag v1.1.0 origin/main
 git push origin v1.1.0
+gh release create v1.1.0 --verify-tag --generate-notes
 ```
 
 To publish manually from a laptop instead, `./docker/docker-push.sh` builds + pushes all three

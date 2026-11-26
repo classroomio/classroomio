@@ -47,6 +47,7 @@ jobs:
           echo "tag=${NEXT_TAG}" >> "$GITHUB_OUTPUT"
 
   publish-images:
+    name: Publish Docker images
     needs: release
     if: needs.release.outputs.tag != ''
     runs-on: ubuntu-latest
