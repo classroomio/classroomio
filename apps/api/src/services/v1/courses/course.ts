@@ -1,6 +1,7 @@
 import type {
   TPublicApiCloneCourse,
   TPublicApiCourseParam,
+  TPublicApiSetCoursePrivacy,
   TPublicApiCoursesQuery,
   TPublicApiCreateCourse,
   TPublicApiPaginationQuery,
@@ -198,6 +199,20 @@ export async function unpublishPublicApiCourseService(
 
   const { course, publishChange } = await updateCourseService(params.courseId, { isPublished: false });
   await emitCoursePublishWebhookEvent(params.courseId, publishChange, actorId);
+  const links = await buildCourseLinks(orgId, course);
+
+  return { course, ...links };
+}
+
+export async function setPublicApiCoursePrivacyService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseParam,
+  payload: TPublicApiSetCoursePrivacy
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+
+  const { course } = await updateCourseService(params.courseId, { isPrivate: payload.isPrivate });
   const links = await buildCourseLinks(orgId, course);
 
   return { course, ...links };

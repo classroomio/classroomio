@@ -67,6 +67,7 @@ Current tools:
 - `create_course`
 - `publish_course`
 - `unpublish_course`
+- `set_course_private`
 - `tag_courses`
 - `clone_course`
 - `list_related_courses`
@@ -312,7 +313,7 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
-Course member and invite tools call the public API (`/public-api/v1/courses/:id/members`, `/public-api/v1/courses/:id/enrollments` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course tools call the public API too: `list_org_courses` and `get_course_structure` need `course:read`, and `create_course`, `publish_course` and `unpublish_course` need `course:write`, which MCP keys have by default. `update_course_landing_page` calls an internal endpoint with its own scopes. Both kinds count toward the same MCP rate limits. `list_course_members` takes the dashboard People page's filters and sort (`progress`, `membership`, `enrolledWithin`, `lastLoginBefore`, `certificateEarned`, `sortBy`, `sortOrder`).
+Course member and invite tools call the public API (`/public-api/v1/courses/:id/members`, `/public-api/v1/courses/:id/enrollments` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course tools call the public API too: `list_org_courses` and `get_course_structure` need `course:read`, and `create_course`, `publish_course`, `unpublish_course` and `set_course_private` need `course:write`, which MCP keys have by default. `update_course_landing_page` calls an internal endpoint with its own scopes. Both kinds count toward the same MCP rate limits. `list_course_members` takes the dashboard People page's filters and sort (`progress`, `membership`, `enrolledWithin`, `lastLoginBefore`, `certificateEarned`, `sortBy`, `sortOrder`).
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409. Adding a member by email, or enrolling one with `enroll_course_student`, fails with 409 `ORG_MEMBER_ARCHIVED` when that email belongs to an archived organization member; restore them in the dashboard first. `enroll_course_student` takes an email instead: it adds an existing organization student, invites someone new with a single-use invite, and changes nothing when the student is already enrolled or invited. It refuses admin and tutor emails with 409. Each new invite it creates counts toward the same 60-per-hour budget as `create_course_invite`.
 
@@ -505,7 +506,7 @@ Lesson authoring rule:
 
 ### Links to give the user
 
-`create_course`, `publish_course` and `unpublish_course` each return two links:
+`create_course`, `publish_course`, `unpublish_course` and `set_course_private` each return two links:
 
 - `appUrl`: the dashboard page where the team edits the course. Hand this one to the user while the course is unpublished.
 - `landingPageUrl`: the public landing page. It is `null` until the course is published, and always `null` for a private course; hand it to the user only once it is not null.
@@ -516,7 +517,7 @@ Lesson authoring rule:
 
 ### Publishing
 
-`publish_course` and `unpublish_course` act as the key creator, who must be a course tutor/admin or an org admin; `create_course` needs an org admin or tutor. `publish_course` runs the go-live readiness check first. A course needs a title, description, landing page overview, description, goals and requirements, a banner, at least one lesson or exercise, content in every lesson, and questions in every exercise (plus a completion deadline for compliance courses). When something is missing the course stays unpublished and the result lists `blockers`, which `update_course_landing_page` and the lesson tools can fix. `published` in the result is the outcome, and `unpublish_course` hides the course again.
+`publish_course`, `unpublish_course` and `set_course_private` act as the key creator, who must be a course tutor/admin or an org admin; `create_course` needs an org admin or tutor. `publish_course` runs the go-live readiness check first. A course needs a title, description, landing page overview, description, goals and requirements, a banner, at least one lesson or exercise, content in every lesson, and questions in every exercise (plus a completion deadline for compliance courses). When something is missing the course stays unpublished and the result lists `blockers`, which `update_course_landing_page` and the lesson tools can fix. `published` in the result is the outcome, and `unpublish_course` hides the course again.
 
 ## User Flows
 

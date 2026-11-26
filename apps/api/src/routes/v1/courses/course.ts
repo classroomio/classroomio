@@ -13,6 +13,8 @@ import {
   ZPublicApiPaginationQuery,
   ZPublicApiPublishCourseResponse,
   ZPublicApiRelatedCourseResponse,
+  ZPublicApiSetCoursePrivacy,
+  ZPublicApiSetCoursePrivacyResponse,
   ZPublicApiRelatedCoursesQuery,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseEnvelope,
@@ -32,6 +34,7 @@ import {
   listRelatedCoursesService,
   publishPublicApiCourseService,
   unpublishPublicApiCourseService,
+  setPublicApiCoursePrivacyService,
   updatePublicApiCourseService,
   updatePublicApiCourseStructureService
 } from '@api/services/v1/courses/course';
@@ -222,6 +225,38 @@ export const v1CourseRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to unpublish course');
+      }
+    }
+  )
+  .put(
+    '/:courseId/privacy',
+    describeRoute({
+      description:
+        'Make a course private (hidden from listings and landing pages, no self-enrollment) or public again; needs public_api:* or course:write and a course tutor/admin or org admin key creator.',
+      tags: ['Courses'],
+      responses: {
+        200: jsonResponse('Privacy updated', itemResponse(ZPublicApiSetCoursePrivacyResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: {
+          description: 'Missing the course:write scope, or the key creator is not a course tutor/admin or org admin'
+        },
+        404: { description: 'Course not found' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('json', ZPublicApiSetCoursePrivacy),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const params = c.req.valid('param');
+        const payload = c.req.valid('json');
+        const result = await setPublicApiCoursePrivacyService(orgId, actorId, params, payload);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to update course privacy');
       }
     }
   )

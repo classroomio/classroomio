@@ -174,6 +174,7 @@ export const OPERATION_SUMMARIES: Record<string, string> = {
   'DELETE /public-api/v1/courses/{courseId}': 'Delete a course',
   'POST /public-api/v1/courses/{courseId}/publish': 'Publish a course',
   'POST /public-api/v1/courses/{courseId}/unpublish': 'Unpublish a course',
+  'PUT /public-api/v1/courses/{courseId}/privacy': 'Make a course private or public',
   'POST /public-api/v1/courses/{courseId}/clone': 'Clone a course',
   'GET /public-api/v1/courses/{courseId}/related': 'List related courses',
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',

@@ -308,6 +308,10 @@ export const ZPublicApiUnpublishCourseResponse = ZPublicApiCourseLinksResponse.e
   course: ZPublicApiCourseResponse
 });
 
+export const ZPublicApiSetCoursePrivacyResponse = ZPublicApiCourseLinksResponse.extend({
+  course: ZPublicApiCourseResponse
+});
+
 export const ZPublicApiCourseConversionOffenderResponse = z.object({
   questionId: z.union([z.number(), z.string()]),
   questionTitle: z.string(),

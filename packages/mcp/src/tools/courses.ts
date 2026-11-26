@@ -3,7 +3,8 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
-  ZPublicApiRelatedCoursesQuery
+  ZPublicApiRelatedCoursesQuery,
+  ZPublicApiSetCoursePrivacy
 } from '@cio/utils/validation/public-api';
 import { ZAutomationCourseTagAssignment } from '@cio/utils/validation/tag';
 import { ZCourseLandingPageUpdate } from '@cio/utils/validation/course';
@@ -34,6 +35,7 @@ export const ZCreateCourseToolInput = ZPublicApiCreateCourse.safeExtend({
 });
 export const ZGetCourseStructureToolInput = z.object({ courseId });
 export const ZPublishCourseToolInput = z.object({ courseId });
+export const ZSetCoursePrivateToolInput = ZPublicApiSetCoursePrivacy.safeExtend({ courseId });
 export const ZUpdateCourseLandingPageToolInput = ZCourseLandingPageUpdate.extend({ courseId });
 export const ZCloneCourseToolInput = ZPublicApiCloneCourse.safeExtend({ courseId });
 export const ZListRelatedCoursesToolInput = ZPublicApiRelatedCoursesQuery.safeExtend({ courseId });
@@ -84,6 +86,17 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
     async (args) => {
       const { courseId } = ZPublishCourseToolInput.parse(args);
       return jsonContent(await apiClient.publishCourse(courseId));
+    }
+  );
+
+  server.tool(
+    'set_course_private',
+    'Make a course private (isPrivate true) or public again (false; this does not turn self-enrollment back on); the API key creator must be a course tutor/admin or an org admin. A private course stays published but is hidden from the landing page, explore, search, related courses and widgets, its landingPageUrl is null, and students cannot enroll themselves: they get in only when staff enroll them, for example with enroll_course_student or add_course_member. A PUBLIC-type course cannot be private.',
+    shape(ZSetCoursePrivateToolInput),
+    { title: 'Set course private', ...UPDATE },
+    async (args) => {
+      const { courseId, isPrivate } = ZSetCoursePrivateToolInput.parse(args);
+      return jsonContent(await apiClient.setCoursePrivacy(courseId, isPrivate));
     }
   );
 
