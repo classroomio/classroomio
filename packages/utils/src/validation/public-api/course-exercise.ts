@@ -18,10 +18,10 @@ const OPTIONS_DESCRIPTION =
   'Shown to students in this order; vary where the correct option sits across questions instead of always listing it first.';
 
 const ADDED_OPTIONS_DESCRIPTION =
-  'New options are shown to students after the existing ones, in the order sent; existing options keep their position. Vary where the correct option sits across questions.';
+  'New options are shown after the existing ones, in the order sent. Vary where the correct option sits across questions.';
 
 const UPDATE_QUESTION_OPTIONS_DESCRIPTION =
-  'Options with an id edit or delete that option and keep its position; new options (no id) are shown after the existing ones, in the order sent. For a new question this is its full option list, shown in this order, so vary where the correct option sits.';
+  'Options with an id edit or delete that option; new options (no id) are shown after existing ones, in the order sent. Vary where the correct option sits.';
 
 const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; the Question types guide lists each type.';
 

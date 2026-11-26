@@ -662,7 +662,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
             "type": "integer",
           },
           "options": {
-            "description": "Options with an id edit or delete that option and keep its position; new options (no id) are shown after the existing ones, in the order sent. For a new question this is its full option list, shown in this order, so vary where the correct option sits.",
+            "description": "Options with an id edit or delete that option; new options (no id) are shown after existing ones, in the order sent. Vary where the correct option sits.",
             "items": {
               "properties": {
                 "delete": {
@@ -897,7 +897,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "addOptions": {
-      "description": "New options are shown to students after the existing ones, in the order sent; existing options keep their position. Vary where the correct option sits across questions.",
+      "description": "New options are shown after the existing ones, in the order sent. Vary where the correct option sits across questions.",
       "items": {
         "properties": {
           "isCorrect": {
