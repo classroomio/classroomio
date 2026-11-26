@@ -467,7 +467,7 @@ function runOpenCodeProcess(args, { cwd, env, timeoutMs, maxBufferBytes }) {
       });
     }
 
-    child.on('exit', (code, signal) => {
+    child.on('close', (code, signal) => {
       if (timedOut) {
         fail(new Error(`OpenCode timed out after ${Math.round(timeoutMs / 60000)} minutes`));
         return;
