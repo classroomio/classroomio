@@ -1,0 +1,190 @@
+---
+title: Alchemy
+description: Deploy ClassroomIO to any server with Docker from one TypeScript file, with automatic HTTPS.
+---
+
+[Alchemy](https://alchemy.run) is an infrastructure-as-code tool: you describe your services in a
+TypeScript file and `alchemy deploy` creates them. The ClassroomIO stack in
+[`docker/alchemy`](https://github.com/classroomio/classroomio/tree/main/docker/alchemy) runs the same
+published `classroomio/*` images as the [Docker](/self-hosted/docker) guide, plus
+[Caddy](https://caddyserver.com) for automatic HTTPS. Alchemy generates the database password and auth
+secrets for you, so there is no `.env` to fill in.
+
+:::note[Alchemy 2.x is in beta]
+The stack pins an exact Alchemy version (`2.0.0-beta.87`) so it can't change under you. Upgrading
+Alchemy itself may need small edits to the stack file.
+:::
+
+## Prerequisites
+
+- A server that meets the [requirements](/self-hosted#server-requirements) (8 GB RAM recommended),
+  with **Docker** installed. On DigitalOcean, the **Docker** 1-Click image comes with it.
+- **Ports 80 and 443** open to the internet, for HTTPS and its certificates.
+- **Node.js 24.11.1 or newer** on the machine you deploy from. The simplest is the server itself.
+- Two hostnames pointing at the server: one for the dashboard and one for storage.
+- A server that isn't already running the [Docker](/self-hosted/docker) stack: both use the same
+  `cio-*` container names.
+
+## Why two hostnames
+
+The dashboard is served from `app.<your-domain>`, and object storage from `storage.<your-domain>`.
+Video and document uploads hand **presigned S3 URLs** to the browser, and the signature covers the
+full path and `Host`. Storage on its own hostname keeps both intact; under a path on the app host,
+every upload would fail with `SignatureDoesNotMatch`.
+
+## Deployment
+
+### 1. Point your domains at the server
+
+Add two `A` records to your DNS, both pointing at the server's IP: `app` and `storage`. On Cloudflare,
+set them to **DNS only**, so Caddy can get its certificates.
+
+:::tip[Testing without a domain]
+[sslip.io](https://sslip.io) names resolve to the IP they contain, so `app.203-0-113-10.sslip.io`
+points at `203.0.113.10` with no DNS setup. Certificates for these shared names can be rate-limited;
+use your own domain for anything real.
+:::
+
+### 2. Prepare the server
+
+On the server, install Node.js and git:
+
+```bash title="Terminal"
+curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+apt-get install -y nodejs git
+```
+
+If `docker version` doesn't show a **Server** section, install Docker:
+
+```bash title="Terminal"
+curl -fsSL https://get.docker.com | sh
+```
+
+If the server runs the `ufw` firewall (DigitalOcean's Docker image does), open ports 80 and 443:
+
+```bash title="Terminal"
+ufw allow 80/tcp && ufw allow 443
+```
+
+### 3. Get the stack
+
+```bash title="Terminal"
+git clone --depth 1 https://github.com/classroomio/classroomio.git
+cd classroomio/docker/alchemy
+npm install
+```
+
+### 4. Deploy
+
+```bash title="Terminal"
+APP_DOMAIN=app.yourdomain.com STORAGE_DOMAIN=storage.yourdomain.com npm run deploy
+```
+
+The first deploy pulls every image, so it takes a few minutes. The API may restart a few times while
+Postgres starts; that's expected. Check that every container is up:
+
+```bash title="Terminal"
+docker ps --format 'table {{.Names}}\t{{.Status}}'
+```
+
+### 5. Open the app and sign up
+
+Open `https://app.yourdomain.com` and create your account.
+
+## Deploy from your own computer instead
+
+Alchemy drives whatever engine the `docker` CLI points at, so you can deploy to the server over SSH
+from a machine with Docker and Node.js installed:
+
+```bash title="Terminal"
+DOCKER_HOST=ssh://root@203.0.113.10 APP_DOMAIN=app.yourdomain.com STORAGE_DOMAIN=storage.yourdomain.com npm run deploy
+```
+
+The `.alchemy` folder then lives on your computer, so always deploy from there.
+
+## Settings
+
+Pass any of these in front of `npm run deploy`. Alchemy reads them on every deploy.
+
+| Variable | Required | What it sets |
+| --- | --- | --- |
+| `APP_DOMAIN` | Yes | Dashboard hostname, e.g. `app.yourdomain.com` |
+| `STORAGE_DOMAIN` | Yes | Object storage hostname, e.g. `storage.yourdomain.com` |
+| `CIO_VERSION` | No | Image tag to run; defaults to `latest` |
+| `ACME_EMAIL` | No | Email for certificate notices; must be a real address |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER` | No | [Email](/self-hosted/configuration/email) for signup, password resets and invites |
+| `OPENAI_API_KEY` | No | [AI features](/self-hosted/configuration/ai) |
+| `LICENSE_KEY` | No | [Enterprise](/self-hosted/enterprise) features |
+| `CIO_TELEMETRY_DISABLED` | No | `true` turns off the [anonymous usage ping](/self-hosted/101) |
+
+## Your data and secrets
+
+- **The `.alchemy` folder is Alchemy's memory** of what it created, including the generated database
+  password and auth secrets. Back it up and keep it private. Without it, Alchemy loses track of the
+  stack and new secrets would be generated.
+- **Volumes are protected.** The database, Redis, storage and certificate volumes are never deleted by
+  `alchemy destroy` or by a change to the stack. That is not a backup.
+
+## Back up and restore
+
+Run these on the server. They stop the app and storage so nothing is written mid-backup, which takes
+the site offline for about a minute, then start everything again. If the services can't be stopped, no
+backup is taken. Each backup gets its own timestamped files, and a failed step deletes its partial file.
+
+```bash title="Terminal"
+set -o pipefail
+mkdir -p backups
+ts=$(date +%Y%m%d-%H%M%S)
+if docker stop cio-api cio-dashboard cio-jobs cio-storage; then
+  docker exec cio-postgres pg_dump -U postgres classroomio | gzip > "backups/db-$ts.sql.gz" \
+    || { rm -f "backups/db-$ts.sql.gz"; echo "Database backup failed"; }
+  docker run --rm -v cio-storage-data:/data:ro -v "$PWD/backups":/backup \
+    alpine tar czf "/backup/storage-$ts.tar.gz" -C /data . \
+    || { rm -f "backups/storage-$ts.tar.gz"; echo "Storage backup failed"; }
+else
+  echo "Could not stop the services, so no backup was taken"
+fi
+docker start cio-storage cio-api cio-dashboard cio-jobs
+```
+
+Copy the `backups` folder and the `.alchemy` folder somewhere off the server.
+
+:::warning[Restoring replaces your current data]
+A restore deletes the current database and every file in storage, then loads the backup. Copy anything
+you need to keep off the server first.
+:::
+
+Each step runs only if the one before it succeeded. If a step fails, the app stays stopped so it never
+runs on a half-restored copy; fix the error and run the commands again.
+
+```bash title="Terminal"
+set -o pipefail
+docker stop cio-api cio-dashboard cio-jobs cio-storage &&
+  docker exec cio-postgres dropdb --if-exists -U postgres classroomio &&
+  docker exec cio-postgres createdb -U postgres classroomio &&
+  gunzip -c backups/db-<timestamp>.sql.gz |
+  docker exec -i cio-postgres psql -v ON_ERROR_STOP=1 -U postgres classroomio &&
+  docker run --rm -v cio-storage-data:/data -v "$PWD/backups":/backup alpine \
+    sh -c "find /data -mindepth 1 -delete && tar xzf /backup/storage-<timestamp>.tar.gz -C /data" &&
+  docker start cio-storage cio-api cio-dashboard cio-jobs
+```
+
+## Upgrading
+
+[Back up](#back-up-and-restore) first, then set `CIO_VERSION` to the new release and deploy again from
+the same folder. Only the containers whose
+image changed are replaced. See [Versions & upgrades](/self-hosted/configuration/versions).
+
+## Troubleshooting
+
+- **`Failed to run docker; is it installed and on PATH?`**: Docker isn't installed on the machine you
+  deploy from. Install it (see [Prepare the server](#2-prepare-the-server)), or set `DOCKER_HOST` to
+  deploy to a remote server.
+- **`Alchemy could not load the required peer dependency "@effect/platform-node"`**: you ran a
+  separate copy of Alchemy, usually `npx alchemy` from another folder. Run `npm run deploy` inside
+  `docker/alchemy`.
+- **Certificate errors in the browser**: check both hostnames resolve to the server
+  (`getent hosts app.yourdomain.com`), ports 80 and 443 are open, and `ACME_EMAIL` is a real address.
+  `docker logs cio-caddy` shows the reason.
+- **A container keeps restarting**: read its log, e.g. `docker logs cio-api --tail 50`. The containers
+  are `cio-postgres`, `cio-redis`, `cio-storage`, `cio-api`, `cio-dashboard`, `cio-jobs` and `cio-caddy`.

@@ -279,7 +279,8 @@ export default defineConfig({
               '/self-hosted/digitalocean',
               '/self-hosted/railway',
               '/self-hosted/coolify',
-              '/self-hosted/dokploy'
+              '/self-hosted/dokploy',
+              '/self-hosted/alchemy'
             ]
           },
           {
