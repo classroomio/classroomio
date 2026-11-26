@@ -24,7 +24,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     acceptedBy: null,
     links: {
       dashboard: 'https://app.classroomio.com/org/acme/settings/teams',
-      student: null
+      student: null,
+      landing: null
     }
   },
   'organization.invite.accepted': {
@@ -49,7 +50,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/org/acme/settings/teams',
-      student: null
+      student: null,
+      landing: null
     }
   },
   'organization.invite.revoked': {
@@ -69,12 +71,14 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     acceptedBy: null,
     links: {
       dashboard: 'https://app.classroomio.com/org/acme/settings/teams',
-      student: null
+      student: null,
+      landing: null
     }
   },
   'course.invite.created': {
     courseId: '000000c1-0000-4000-8000-0000000000c1',
     inviteId: '000000e1-0000-4000-8000-0000000000e1',
+    inviteLinkId: null,
     email: 'student@example.com',
     actorProfileId: '000000b1-0000-4000-8000-0000000000b1',
     course: {
@@ -101,12 +105,14 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     allowedDomains: ['example.com'],
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'course.invite.accepted': {
     courseId: '000000c1-0000-4000-8000-0000000000c1',
     inviteId: '000000e1-0000-4000-8000-0000000000e1',
+    inviteLinkId: null,
     email: 'student@example.com',
     actorProfileId: '000000b1-0000-4000-8000-0000000000b1',
     course: {
@@ -133,12 +139,14 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     allowedDomains: ['example.com'],
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'course.invite.revoked': {
     courseId: '000000c1-0000-4000-8000-0000000000c1',
     inviteId: '000000e1-0000-4000-8000-0000000000e1',
+    inviteLinkId: null,
     email: 'student@example.com',
     actorProfileId: '000000b1-0000-4000-8000-0000000000b1',
     course: {
@@ -165,7 +173,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     allowedDomains: ['example.com'],
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'course.member.added': {
@@ -205,7 +214,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     actor: null,
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'course.member.removed': {
@@ -247,7 +257,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'course.completed': {
@@ -286,7 +297,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     compliance: null,
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'course.certificate.issued': {
@@ -334,7 +346,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'course.submission.created': {
@@ -381,7 +394,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     links: {
       dashboard:
         'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/submissions?id=000000f1-0000-4000-8000-0000000000f1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     },
     reviewer: null
   },
@@ -432,7 +446,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     links: {
       dashboard:
         'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/submissions?id=000000f1-0000-4000-8000-0000000000f1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     },
     actorProfileId: '000000b2-0000-4000-8000-0000000000b2',
     actor: {
@@ -487,7 +502,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'exercise.completion.updated': {
@@ -531,7 +547,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'compliance.record.status_changed': {
@@ -565,7 +582,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     actor: null,
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/compliance',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'compliance.record.waived': {
@@ -601,7 +619,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/compliance',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'organization.member.added': {
@@ -626,7 +645,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/org/acme/settings/teams',
-      student: null
+      student: null,
+      landing: null
     }
   },
   'organization.member.removed': {
@@ -651,7 +671,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/org/acme/settings/teams',
-      student: null
+      student: null,
+      landing: null
     }
   },
   'organization.member.updated': {
@@ -682,7 +703,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/org/acme/settings/teams',
-      student: null
+      student: null,
+      landing: null
     }
   },
   'course.published': {
@@ -706,7 +728,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'course.unpublished': {
@@ -730,7 +753,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: null
     }
   },
   'course.payment_request.created': {
@@ -756,7 +780,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   },
   'cohort.member.added': {
@@ -785,7 +810,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5',
-      student: 'https://acme.myclassroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5'
+      student: 'https://acme.myclassroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5',
+      landing: null
     }
   },
   'cohort.member.removed': {
@@ -814,7 +840,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5',
-      student: 'https://acme.myclassroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5'
+      student: 'https://acme.myclassroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5',
+      landing: null
     }
   },
   'lesson.session.scheduled': {
@@ -846,7 +873,8 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     },
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1'
+      student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
+      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
     }
   }
 };

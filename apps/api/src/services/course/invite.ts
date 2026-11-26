@@ -376,6 +376,7 @@ async function emitInviteWebhook(
 
   await emitCourseWebhookEvent(courseId, webhookEventType, {
     inviteId,
+    inviteLinkId: null,
     email: context.targetEmail ?? null,
     actorProfileId: context.actorProfileId ?? null
   });

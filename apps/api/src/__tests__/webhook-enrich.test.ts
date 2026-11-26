@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   getCourseProgress: vi.fn(),
   getOrganizationById: vi.fn(),
   getWebhookCourseInviteDetails: vi.fn(),
+  getWebhookInviteLinkDetails: vi.fn(),
   getWebhookOrganizationInviteDetails: vi.fn(),
   getWebhookMemberDetails: vi.fn(),
   getWebhookMemberIdForProfile: vi.fn(),
@@ -20,6 +21,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@cio/db/queries/webhook', () => ({
   getWebhookEventContext: mocks.getWebhookEventContext,
   getWebhookCourseInviteDetails: mocks.getWebhookCourseInviteDetails,
+  getWebhookInviteLinkDetails: mocks.getWebhookInviteLinkDetails,
   getWebhookOrganizationInviteDetails: mocks.getWebhookOrganizationInviteDetails,
   getWebhookMemberDetails: mocks.getWebhookMemberDetails,
   getWebhookMemberIdForProfile: mocks.getWebhookMemberIdForProfile,
@@ -106,14 +108,27 @@ const inputs: Record<TWebhookEventType, Record<string, unknown>> = {
   'organization.invite.created': { inviteId: ids.invite, email: 'a@b.co', actorProfileId: ids.actor, reason: null },
   'organization.invite.accepted': { inviteId: ids.invite, email: 'a@b.co', actorProfileId: null, reason: null },
   'organization.invite.revoked': { inviteId: ids.invite, email: null, actorProfileId: ids.actor, reason: 'revoked' },
-  'course.invite.created': { courseId: ids.course, inviteId: ids.invite, email: null, actorProfileId: ids.actor },
+  'course.invite.created': {
+    courseId: ids.course,
+    inviteId: ids.invite,
+    inviteLinkId: null,
+    email: null,
+    actorProfileId: ids.actor
+  },
   'course.invite.accepted': {
     courseId: ids.course,
     inviteId: ids.invite,
+    inviteLinkId: null,
     email: 'a@b.co',
     actorProfileId: ids.profile
   },
-  'course.invite.revoked': { courseId: ids.course, inviteId: ids.invite, email: null, actorProfileId: null },
+  'course.invite.revoked': {
+    courseId: ids.course,
+    inviteId: ids.invite,
+    inviteLinkId: null,
+    email: null,
+    actorProfileId: null
+  },
   'course.member.added': {
     courseId: ids.course,
     memberId: ids.member,
@@ -543,10 +558,81 @@ describe('webhook event enrichment', () => {
       'course.submission.created',
       inputs['course.submission.created']
     );
-    const links = enriched.links as { dashboard: string; student: string };
+    const links = enriched.links as { dashboard: string; student: string; landing: string };
 
     expect(links.dashboard).toContain(`/courses/${ids.course}/submissions?id=${ids.submission}`);
     expect(links.student).toContain(`/courses/${ids.course}`);
+    expect(links.landing).toBe('https://acme.myclassroomio.com/course/intro-to-data-science');
+  });
+
+  it('omits the landing link when the course is not published', async () => {
+    mocks.getWebhookEventContext.mockResolvedValue({
+      ...fullContext(),
+      course: { ...fullContext().course, isPublished: false }
+    });
+    const enriched = await enrichWebhookEventData(
+      ids.org,
+      'course.submission.created',
+      inputs['course.submission.created']
+    );
+
+    expect(enriched.links).toMatchObject({ dashboard: expect.any(String), student: expect.any(String), landing: null });
+  });
+
+  it('omits the landing link when the course has no slug', async () => {
+    mocks.getWebhookEventContext.mockResolvedValue({
+      ...fullContext(),
+      course: { ...fullContext().course, slug: null }
+    });
+    const enriched = await enrichWebhookEventData(
+      ids.org,
+      'course.submission.created',
+      inputs['course.submission.created']
+    );
+
+    expect(enriched.links).toMatchObject({ dashboard: expect.any(String), student: expect.any(String), landing: null });
+  });
+
+  it('encodes an unusual course slug as one path segment', async () => {
+    mocks.getWebhookEventContext.mockResolvedValue({
+      ...fullContext(),
+      course: { ...fullContext().course, slug: 'intro?level=1' }
+    });
+    const enriched = await enrichWebhookEventData(
+      ids.org,
+      'course.submission.created',
+      inputs['course.submission.created']
+    );
+
+    expect(enriched.links).toMatchObject({
+      landing: `https://acme.myclassroomio.com/course/${encodeURIComponent('intro?level=1')}`
+    });
+  });
+
+  it('reads the grants from the invite link when a link join is accepted', async () => {
+    mocks.getWebhookInviteLinkDetails.mockResolvedValue({
+      roleId: 3,
+      expiresAt: null,
+      maxUses: null,
+      usedCount: 5,
+      allowedDomains: null,
+      acceptedByProfileId: null
+    });
+    const enriched = await enrichWebhookEventData(ids.org, 'course.invite.accepted', {
+      ...inputs['course.invite.accepted'],
+      inviteId: null,
+      inviteLinkId: '000000e2-0000-4000-8000-0000000000e2'
+    });
+
+    expect(mocks.getWebhookInviteLinkDetails).toHaveBeenCalledWith('000000e2-0000-4000-8000-0000000000e2');
+    expect(mocks.getWebhookCourseInviteDetails).not.toHaveBeenCalled();
+    expect(enriched).toMatchObject({
+      role: 'student',
+      expiresAt: null,
+      maxUses: null,
+      usedCount: 5,
+      allowedDomains: null
+    });
   });
 
   it('names the person of an organization member event member', async () => {

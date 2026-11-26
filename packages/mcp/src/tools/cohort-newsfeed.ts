@@ -70,7 +70,7 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'create_cohort_newsfeed_post',
-    'Create a cohort newsfeed post authored by the API key creator; the API key creator must be a cohort tutor/admin, or an org admin who is a member of the cohort.',
+    'Create a cohort newsfeed post authored by the API key creator; the API key creator must be a cohort tutor/admin or an org admin. An org admin who has not joined the cohort is added to it as an admin.',
     createCohortNewsfeedPostShape,
     WRITE,
     async (args) => {

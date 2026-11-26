@@ -104,7 +104,7 @@ export const ZAPIER_TRIGGERS = [
     eventType: 'course.invite.accepted',
     noun: 'Invite',
     label: 'Course Invite Accepted',
-    description: 'Triggers when someone accepts a course invite.',
+    description: 'Triggers when someone accepts a course invite or joins through a course invite link.',
     filters: ['course'],
     prefill: 'courseId'
   },
@@ -256,22 +256,6 @@ export const ZAPIER_ACTIONS = [
   }
 ] as const satisfies readonly TZapierAction[];
 export type TZapierActionKey = (typeof ZAPIER_ACTIONS)[number]['key'];
-
-export const ZAPIER_SEARCHES = [
-  {
-    key: 'find_student',
-    noun: 'Student',
-    label: 'Find Student',
-    description: 'Finds a student in your organization by email.'
-  },
-  {
-    key: 'find_course',
-    noun: 'Course',
-    label: 'Find Course',
-    description: 'Finds a course by its slug or exact title.'
-  }
-] as const;
-export type TZapierSearchKey = (typeof ZAPIER_SEARCHES)[number]['key'];
 
 export const ZAPIER_APP_CATEGORIES = [
   'crm',

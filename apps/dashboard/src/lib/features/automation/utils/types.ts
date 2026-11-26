@@ -1,4 +1,4 @@
-import type { TZapierAppCategory, TZapierRecipeStep, TZapierSearchKey } from '@cio/utils/constants/zapier';
+import type { TZapierAppCategory, TZapierRecipeStep } from '@cio/utils/constants/zapier';
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
 export type ListAutomationKeysRequest = (typeof classroomio.organization)['automation']['keys']['$get'];
@@ -91,6 +91,6 @@ export type ZapierDirectoryCounts = {
   categories: Record<ZapierAppCategory, number>;
 };
 
-export type ZapierZapStep = TZapierRecipeStep | { app: 'classroomio'; type: 'search'; key: TZapierSearchKey };
+export type ZapierZapStep = TZapierRecipeStep;
 
 export type ZapierAccess = 'read_write' | 'read_only';

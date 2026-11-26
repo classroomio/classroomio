@@ -238,4 +238,14 @@ describe('event triggers', () => {
       expect(() => ZWebhookEventData[eventType].parse(data)).not.toThrow();
     }
   );
+
+  it('labels link fields for the Zap field picker', () => {
+    const courseFields = (App.triggers.course_completed.operation as any).outputFields;
+    const organizationFields = (App.triggers.new_organization_member.operation as any).outputFields;
+
+    expect(courseFields).toContainEqual({ key: 'links__dashboard', label: 'Admin Course URL' });
+    expect(courseFields).toContainEqual({ key: 'links__student', label: 'Student Course URL' });
+    expect(courseFields).toContainEqual({ key: 'links__landing', label: 'Course Landing Page URL' });
+    expect(organizationFields).toContainEqual({ key: 'links__dashboard', label: 'Admin URL' });
+  });
 });

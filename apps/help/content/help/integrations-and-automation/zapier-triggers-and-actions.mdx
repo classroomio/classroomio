@@ -1,10 +1,10 @@
 ---
 title: 'Zapier triggers and actions'
-description: 'Reference guide for all 14 instant triggers, 11 actions, and 2 searches available in the ClassroomIO Zapier app.'
+description: 'Reference guide for all 14 instant triggers and 11 actions available in the ClassroomIO Zapier app.'
 last_reviewed: '2026-11-12'
 ---
 
-The ClassroomIO Zapier app provides instant triggers, actions, and searches to connect your academy to thousands of tools like CRMs, spreadsheets, messaging apps, and email platforms without writing code.
+The ClassroomIO Zapier app provides instant triggers and actions to connect your academy to thousands of tools like CRMs, spreadsheets, messaging apps, and email platforms without writing code.
 
 :::info[Plan requirement]
 Zapier triggers and actions require an Early Adopter or Enterprise plan on ClassroomIO cloud.
@@ -22,7 +22,7 @@ If your Zap's hook endpoint is unreachable, ClassroomIO retries the event for ab
 
 ![ClassroomIO + HubSpot page with the connected status, popular Zaps and related apps](./images/zapier-triggers-and-actions/overview.webp)
 
-Every trigger returns the event fields listed below plus the shared envelope fields `id`, `event_type`, `occurred_at`, and `organization`.
+Every trigger returns the event fields listed below plus the shared envelope fields `id`, `event_type`, `occurred_at`, and `organization`. Course events also include a `links` object with three labelled URLs: **Admin Course URL** (the course in your dashboard), **Student Course URL** (the learner's course view), and **Course Landing Page URL** (the public course page, filled only when the course is published and has a slug). Organization and cohort events label the first two **Admin URL** and **Student URL**, and their landing URL is empty.
 
 ---
 
@@ -84,9 +84,9 @@ Every trigger returns the event fields listed below plus the shared envelope fie
 ### 8. Course Invite Accepted
 
 - **Key**: `course_invite_accepted`
-- **When it fires**: Someone accepts a course invite.
+- **When it fires**: Someone accepts a course invite, or joins a course through its invite link.
 - **Inputs**: `Course` (optional).
-- **Outputs**: `courseId`, `inviteId`, `email`, `actorProfileId`, `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount`, `allowedDomains`, `links`, `course.*`, `actor.*`.
+- **Outputs**: `courseId`, `inviteId`, `inviteLinkId`, `email`, `actorProfileId`, `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount`, `allowedDomains`, `links`, `course.*`, `actor.*`.
 
 ### 9. New Payment Request
 
@@ -136,7 +136,7 @@ Every trigger returns the event fields listed below plus the shared envelope fie
 
 ## Actions
 
-All create actions that take a student accept the student's email address, not a member ID. Use **Find Student** first when you need to confirm the person exists.
+All create actions that take a student accept the student's email address, not a member ID.
 
 ### 1. Enroll Student in Course
 
@@ -157,7 +157,7 @@ All create actions that take a student accept the student's email address, not a
   - `Student Email` (required).
   - `Send Email` (optional, defaults to on).
 - **Outputs**: `id`, `profileId`, `name`, `email`.
-- **Repeat behavior**: If the student has already joined, returns the existing record. If they have an invite that hasn't been accepted, the invite is renewed and re-sent, and the existing record is returned. Renewing a pending invite keeps its seat; renewing one that expired or was revoked takes a free student seat, and the step fails if your plan has no seats left. When used through **Find or Create Student**, this action returns the same student shape as **Find Student**, so later steps receive the student record rather than an import summary.
+- **Repeat behavior**: If the student has already joined, returns the existing record. If they have an invite that hasn't been accepted, the invite is renewed and re-sent, and the existing record is returned. Renewing a pending invite keeps its seat; renewing one that expired or was revoked takes a free student seat, and the step fails if your plan has no seats left.
 
 ### 3. Update Student
 
@@ -233,23 +233,3 @@ All create actions that take a student accept the student's email address, not a
 - **Inputs**: `Cohort` (required), `Message` (required), `Pin Post` (optional).
 - **Outputs**: `id`, `createdAt`, `authorId`, `cohortId`, `content`, `reaction`, `isPinned`.
 - **Repeat behavior**: Creates a new announcement post in the cohort feed.
-
----
-
-## Searches
-
-### 1. Find Student
-
-- **Key**: `find_student`
-- **Description**: Finds a student in your organization by exact email address.
-- **Inputs**: `Email`.
-- **Outputs**: `id`, `profileId`, `name`, `email`.
-- **Common use case**: Used as a lookup step before an action, or paired with **Add Student to Organization** to form Zapier's **Find or Create Student** pattern.
-
-### 2. Find Course
-
-- **Key**: `find_course`
-- **Description**: Finds a course by its slug or exact title.
-- **Inputs**: `Slug` or `Title` (fill in at least one; `Title` is used when `Slug` is empty).
-- **Outputs**: `id`, `title`, `slug`.
-- **Common use case**: Finds a course ID from an external input so enrollment actions can target the right course.

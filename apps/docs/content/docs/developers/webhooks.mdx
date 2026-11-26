@@ -28,7 +28,7 @@ Leave the secret blank to have ClassroomIO generate one. Every delivery is signe
 | `organization.invite.accepted` | A team or student invite is accepted |
 | `organization.invite.revoked` | A team or student invite is revoked, or a team invite is replaced |
 | `course.invite.created` | A student invite is created |
-| `course.invite.accepted` | A student accepts an invite and enrolls |
+| `course.invite.accepted` | A student accepts a course invite or joins through a course invite link |
 | `course.invite.revoked` | A student invite is revoked |
 | `course.member.added` | A member is added to a course |
 | `course.member.removed` | A member is removed from a course |
@@ -92,7 +92,7 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
 
 ## Event reference
 
-Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`, `externalId`), `course` (`id`, `title`, `slug`, `type`, `isPublished`, `cost`, `currency`, `tags`), a `status` label next to `statusId` (and `previousStatus` next to `previousStatusId`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`, and `links` with a staff `dashboard` URL and a `student` URL where the event has a page. `externalId` is the person's id in your identity provider when they signed in through your organization's SSO, otherwise `null`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
+Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`, `externalId`), `course` (`id`, `title`, `slug`, `type`, `isPublished`, `cost`, `currency`, `tags`), a `status` label next to `statusId` (and `previousStatus` next to `previousStatusId`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`, and `links` with a staff `dashboard` URL, a `student` URL, and a public course `landing` URL, filled when the course is published and has a slug and `null` otherwise. `externalId` is the person's id in your identity provider when they signed in through your organization's SSO, otherwise `null`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
 
 ### Organization invites
 
@@ -118,7 +118,8 @@ A team or student invite is created. It doesn't confirm that an email was sent. 
   "acceptedBy": null,
   "links": {
     "dashboard": "https://app.classroomio.com/org/acme/settings/teams",
-    "student": null
+    "student": null,
+    "landing": null
   }
 }
 ```
@@ -152,7 +153,8 @@ A team or student invite is accepted.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/org/acme/settings/teams",
-    "student": null
+    "student": null,
+    "landing": null
   }
 }
 ```
@@ -179,7 +181,8 @@ A team or student invite is revoked, or a team invite is replaced.
   "acceptedBy": null,
   "links": {
     "dashboard": "https://app.classroomio.com/org/acme/settings/teams",
-    "student": null
+    "student": null,
+    "landing": null
   }
 }
 ```
@@ -194,6 +197,7 @@ A student invite is created.
 {
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "inviteLinkId": null,
   "email": "student@example.com",
   "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
   "course": {
@@ -224,21 +228,25 @@ A student invite is created.
   ],
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
 
-`email` is `null` for shareable invite links that are not tied to an address.
+`inviteId` identifies the email invite. `inviteLinkId` is always `null` for this event.
 
 #### `course.invite.accepted`
 
-A student accepts an invite and enrolls.
+A student accepts an email invite or joins through a course invite link, and enrolls.
+
+`inviteId` is set when an email invite is accepted, and `inviteLinkId` is set when someone joins through a course invite link. Exactly one of them is non-null.
 
 ```json
 {
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "inviteLinkId": null,
   "email": "student@example.com",
   "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
   "course": {
@@ -269,7 +277,8 @@ A student accepts an invite and enrolls.
   ],
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -284,6 +293,7 @@ A student invite is revoked.
 {
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "inviteLinkId": null,
   "email": "student@example.com",
   "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
   "course": {
@@ -314,7 +324,8 @@ A student invite is revoked.
   ],
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -365,7 +376,8 @@ A member is added to a course, by an admin or by accepting an invite.
   "actor": null,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -418,7 +430,8 @@ A member is removed from a course. `progressAtRemoval` is the student's progress
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -468,7 +481,8 @@ A student completes a course, including after any certificate deadline has passe
   "compliance": null,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -527,7 +541,8 @@ A certificate is earned. Sent right after `course.completed`, and only when cert
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -586,7 +601,8 @@ An exercise submission is created.
   "isLate": false,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/submissions?id=000000f1-0000-4000-8000-0000000000f1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   },
   "reviewer": null
 }
@@ -647,7 +663,8 @@ A submission status or grading state changes, for example when it is graded.
   "isLate": false,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/submissions?id=000000f1-0000-4000-8000-0000000000f1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   },
   "actorProfileId": "000000b2-0000-4000-8000-0000000000b2",
   "actor": {
@@ -715,7 +732,8 @@ A lesson is marked complete, or reset when an admin resets a student's progress.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -768,7 +786,8 @@ An exercise is completed, meeting any passing grade it requires, or reset by an 
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -815,7 +834,8 @@ A student's compliance status for a course cycle changes. States are `not_starte
   "actor": null,
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/compliance",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -863,7 +883,8 @@ A compliance requirement is waived for a student.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/compliance",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -897,7 +918,8 @@ A person joins the organization, by accepting an invite, signing up to an open a
   },
   "links": {
     "dashboard": "https://app.classroomio.com/org/acme/settings/teams",
-    "student": null
+    "student": null,
+    "landing": null
   }
 }
 ```
@@ -932,7 +954,8 @@ A person is removed from the organization.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/org/acme/settings/teams",
-    "student": null
+    "student": null,
+    "landing": null
   }
 }
 ```
@@ -970,7 +993,8 @@ A person's role or status changes.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/org/acme/settings/teams",
-    "student": null
+    "student": null,
+    "landing": null
   }
 }
 ```
@@ -1012,7 +1036,8 @@ A course is published.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -1045,7 +1070,8 @@ A course is unpublished.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": null
   }
 }
 ```
@@ -1080,7 +1106,8 @@ A student asks to pay for a paid course. `student.id` is set only when the reque
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1/people",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```
@@ -1118,7 +1145,8 @@ A person is added to a cohort.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5",
-    "student": "https://acme.myclassroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5"
+    "student": "https://acme.myclassroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5",
+    "landing": null
   }
 }
 ```
@@ -1157,7 +1185,8 @@ A person is removed from a cohort.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5",
-    "student": "https://acme.myclassroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5"
+    "student": "https://acme.myclassroomio.com/cohorts/000000a5-0000-4000-8000-0000000000a5",
+    "landing": null
   }
 }
 ```
@@ -1200,7 +1229,8 @@ A live session is scheduled or moved, or its call link changes.
   },
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1"
+    "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
+    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
   }
 }
 ```

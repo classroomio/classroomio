@@ -401,54 +401,5 @@ describe('creates and actions', () => {
         })
       ).rejects.toThrow('could not send the invitation email');
     });
-
-    it('shares the student shape with the find_student search', () => {
-      expect((App.creates.add_student.operation as any).sample).toEqual(
-        (App.searches.find_student.operation as any).sample
-      );
-    });
-  });
-
-  describe('searches', () => {
-    it('finds student by email', async () => {
-      nock(API_ORIGIN)
-        .get('/public-api/v1/audience')
-        .query({ email: 'student@example.com' })
-        .reply(200, {
-          data: [{ id: 1042, profileId: 'prof-1', name: 'Alex Johnson', email: 'student@example.com' }]
-        });
-
-      const perform = (App.searches.find_student.operation as any).perform;
-      const result = await appTester(perform, {
-        inputData: { email: 'student@example.com' }
-      });
-
-      expect(result).toEqual([{ id: 1042, profileId: 'prof-1', name: 'Alex Johnson', email: 'student@example.com' }]);
-    });
-
-    it('finds course by slug', async () => {
-      nock(API_ORIGIN)
-        .get('/public-api/v1/courses')
-        .query({ slug: 'intro-to-data-science' })
-        .reply(200, {
-          data: [{ id: 'course-1', title: 'Intro to Data Science', slug: 'intro-to-data-science' }]
-        });
-
-      const perform = (App.searches.find_course.operation as any).perform;
-      const result = await appTester(perform, {
-        inputData: { slug: 'intro-to-data-science' }
-      });
-
-      expect(result).toEqual([{ id: 'course-1', title: 'Intro to Data Science', slug: 'intro-to-data-science' }]);
-    });
-
-    it('errors when find_course has neither slug nor title', async () => {
-      const perform = (App.searches.find_course.operation as any).perform;
-      await expect(
-        appTester(perform, {
-          inputData: {}
-        })
-      ).rejects.toThrow('Fill in Slug or Title');
-    });
   });
 });

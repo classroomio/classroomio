@@ -34,6 +34,25 @@ function isAuthenticDelivery(bundle: Bundle): boolean {
   return isValidWebhookSignature(subscribeData.secret, headers, body);
 }
 
+function isCourseScopedEvent(eventType: string): boolean {
+  return (
+    eventType.startsWith('course.') ||
+    eventType.startsWith('compliance.') ||
+    eventType.startsWith('lesson.') ||
+    eventType.startsWith('exercise.')
+  );
+}
+
+function buildLinksOutputFields(eventType: string) {
+  const isCourseScoped = isCourseScopedEvent(eventType);
+
+  return [
+    { key: 'links__dashboard', label: isCourseScoped ? 'Admin Course URL' : 'Admin URL' },
+    { key: 'links__student', label: isCourseScoped ? 'Student Course URL' : 'Student URL' },
+    { key: 'links__landing', label: isCourseScoped ? 'Course Landing Page URL' : 'Landing Page URL' }
+  ];
+}
+
 export function createEventTrigger(options: EventTriggerOptions) {
   const { trigger } = options;
   const matches = options.matches ?? matchesAll;
@@ -47,6 +66,7 @@ export function createEventTrigger(options: EventTriggerOptions) {
     operation: {
       type: 'hook',
       inputFields: options.inputFields ?? [],
+      outputFields: buildLinksOutputFields(trigger.eventType),
       performSubscribe: async (z, bundle: Bundle<Record<string, any>>) => {
         const response = await z.request({
           url: apiUrl('/webhooks/subscriptions'),
