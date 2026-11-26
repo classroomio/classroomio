@@ -330,7 +330,7 @@ Cohort tools act as the person who created the API key and follow the same rules
 
 `add_cohort_members` creates memberships directly and sends no email; `invite_students_to_cohort` is the dashboard invite flow (organization invites plus emails).
 
-`list_org_courses` takes `search`, `tags`, `type`, `status` (`published`, `unpublished` or `private`), `sort` and `order`; `private` returns the published courses that are hidden from every listing.
+`list_org_courses` takes `search`, `tags`, `type`, `status` (`published`, `unpublished` or `private`), `sort` and `order`; `private` returns every course with the private flag on, published or not, and `published` and `unpublished` filter only on the published state, so a private course also appears under whichever of those matches it.
 
 List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `list_cohort_goals`, `list_cohort_newsfeed_comments`, `list_my_enrolled_cohorts`, `list_my_cohort_goals`, `get_org_goals_overview`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`. `list_cohort_newsfeed` is cursor-based: pass the returned `nextCursor` back as `cursor`. `list_org_cohorts` also takes `search`, `status`, `sortBy` and `sortOrder`; `list_cohort_members` takes `search`, `roleId`, `membership`, `lastLoginBefore`, `sortBy` and `sortOrder`, the same filters as the dashboard.
 

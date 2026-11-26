@@ -25,6 +25,7 @@ describe.skipIf(!shouldRun)('private courses (database)', () => {
   let publicCourseId: string;
   let privateCourseId: string;
   let publicTypeCourseId: string;
+  let privateDraftCourseId: string;
 
   beforeAll(async () => {
     await db.insert(schema.organization).values({ id: orgId, name: `Private test ${siteName}`, siteName });
@@ -50,12 +51,14 @@ describe.skipIf(!shouldRun)('private courses (database)', () => {
     publicCourseId = await insertCourse('Open course', {});
     privateCourseId = await insertCourse('Hidden course', { isPrivate: true });
     publicTypeCourseId = await insertCourse('Public type course', { type: 'PUBLIC' });
+    privateDraftCourseId = await insertCourse('Private draft course', { isPrivate: true, isPublished: false });
   });
 
   afterAll(async () => {
     await db.delete(schema.course).where(eq(schema.course.slug, `${siteName}-open-course`));
     await db.delete(schema.course).where(eq(schema.course.slug, `${siteName}-hidden-course`));
     await db.delete(schema.course).where(eq(schema.course.slug, `${siteName}-public-type-course`));
+    await db.delete(schema.course).where(eq(schema.course.slug, `${siteName}-private-draft-course`));
     await db.delete(schema.group).where(eq(schema.group.organizationId, orgId));
     await db.delete(schema.organization).where(eq(schema.organization.id, orgId));
   });
@@ -83,7 +86,7 @@ describe.skipIf(!shouldRun)('private courses (database)', () => {
     const onlyPrivate = await getOrgCourses({ orgId, publishedStatus: 'private' });
 
     expect(all.items.map((course) => course.id)).toContain(privateCourseId);
-    expect(onlyPrivate.items.map((course) => course.id)).toEqual([privateCourseId]);
+    expect(onlyPrivate.items.map((course) => course.id).sort()).toEqual([privateCourseId, privateDraftCourseId].sort());
   });
 
   it('reports which of the given courses are private', async () => {

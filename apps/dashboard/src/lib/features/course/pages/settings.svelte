@@ -318,11 +318,16 @@
         avatar
       });
 
+      const privacyAtSave = $settings.isPrivate;
       const response = await courseApi.update(courseApi.course.id, updatePayload, {
         showSuccessToast: !hasTagChanges
       });
 
       if (courseApi.success && response) {
+        if ($settings.isPrivate === privacyAtSave) {
+          $settings.isPrivate = !!courseApi.course.isPrivate;
+        }
+
         const draftUnchanged =
           JSON.stringify({ settings: $settings, tagIds: [...selectedTagIds].sort(), avatar }) === draftAtSave;
 
