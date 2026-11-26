@@ -212,26 +212,6 @@ export async function deleteNewsfeed(courseId: string, feedId: string): Promise<
   }
 }
 
-/**
- * Gets comments for a newsfeed item
- * @param feedId Newsfeed ID
- * @returns Array of comments
- */
-export async function getNewsfeedCommentsByFeedId(feedId: string): Promise<TCourseNewsfeedComment[]> {
-  try {
-    return db
-      .select()
-      .from(schema.courseNewsfeedComment)
-      .where(eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId))
-      .orderBy(schema.courseNewsfeedComment.createdAt);
-  } catch (error) {
-    console.error('getNewsfeedCommentsByFeedId error:', error);
-    throw new Error(
-      `Failed to get newsfeed comments for feed "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
 export type TNewsfeedCommentNode = {
   id: number;
   parentId: number | null;

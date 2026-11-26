@@ -12,7 +12,6 @@ vi.mock('@cio/db/queries/newsfeed', () => ({
   getNewsfeedCommentById: vi.fn(),
   getNewsfeedCommentDepth: vi.fn(),
   getNewsfeedCommentThread: vi.fn(),
-  getNewsfeedCommentsByFeedId: vi.fn(),
   getNewsfeedForEmail: vi.fn(),
   updateNewsfeed: vi.fn(),
   updateNewsfeedComment: vi.fn()

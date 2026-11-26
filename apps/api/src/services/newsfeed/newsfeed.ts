@@ -15,7 +15,6 @@ import {
   getNewsfeedCommentById,
   getNewsfeedCommentDepth,
   getNewsfeedCommentThread,
-  getNewsfeedCommentsByFeedId,
   getNewsfeedForEmail,
   updateNewsfeed,
   updateNewsfeedComment
@@ -223,23 +222,6 @@ export async function deleteNewsfeedService(courseId: string, feedId: string): P
 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to delete newsfeed',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Gets comments for a newsfeed item
- * @param feedId Newsfeed ID
- * @returns Array of comments
- */
-export async function getNewsfeedComments(feedId: string) {
-  try {
-    return await getNewsfeedCommentsByFeedId(feedId);
-  } catch (error) {
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get newsfeed comments',
       ErrorCodes.INTERNAL_ERROR,
       500
     );
