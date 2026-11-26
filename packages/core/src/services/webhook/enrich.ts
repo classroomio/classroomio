@@ -492,7 +492,7 @@ export async function enrichWebhookEventData(
     applyLessonOrExerciseDetails(enriched, eventType, details);
   }
 
-  enriched.links = buildWebhookLinks(eventType, data, organization, context.course?.slug ?? null);
+  enriched.links = buildWebhookLinks(eventType, data, organization, context.course);
 
   return enriched;
 }

@@ -7,6 +7,8 @@ export type TWebhookLinks = { dashboard: string | null; student: string | null; 
 
 type TLinkOrg = DashboardOrg & { siteName?: string | null };
 
+type TLinkCourse = { slug: string | null; isPublished: boolean | null };
+
 function readString(data: Record<string, unknown>, key: string): string | null {
   const value = data[key];
 
@@ -48,14 +50,14 @@ function buildOrganizationDashboardPath(eventType: TWebhookEventType, data: Reco
 
 /**
  * Builds the deep links an event carries: `dashboard` opens the staff view on the admin app, `student`
- * opens the learner view on the organization's public site, and `landing` opens the public course page.
- * A link is `null` when the event has no such page.
+ * opens the learner view on the organization's public site, and `landing` opens the public course page
+ * when the course is published and has a slug. A link is `null` when the event has no such page.
  */
 export function buildWebhookLinks(
   eventType: TWebhookEventType,
   data: Record<string, unknown>,
   org: TLinkOrg | null,
-  courseSlug: string | null = null
+  course: TLinkCourse | null = null
 ): TWebhookLinks {
   const appBaseUrl = getAppBaseUrl();
   const learnerBaseUrl = getDashboardBaseUrl(org ?? undefined);
@@ -63,10 +65,12 @@ export function buildWebhookLinks(
   const cohortId = readString(data, 'cohortId');
 
   if (courseId) {
+    const courseLink = course?.isPublished && course.slug ? `/course/${encodeURIComponent(course.slug)}` : null;
+
     return {
       dashboard: `${appBaseUrl}${buildCourseDashboardPath(eventType, courseId, data)}`,
       student: `${learnerBaseUrl}/courses/${courseId}`,
-      landing: courseSlug ? `${learnerBaseUrl}/course/${courseSlug}` : null
+      landing: courseLink ? `${learnerBaseUrl}${courseLink}` : null
     };
   }
 

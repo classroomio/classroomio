@@ -92,7 +92,7 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
 
 ## Event reference
 
-Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`, `externalId`), `course` (`id`, `title`, `slug`, `type`, `isPublished`, `cost`, `currency`, `tags`), a `status` label next to `statusId` (and `previousStatus` next to `previousStatusId`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`, and `links` with a staff `dashboard` URL, a `student` URL, and a public course `landing` URL where the event has such a page. `externalId` is the person's id in your identity provider when they signed in through your organization's SSO, otherwise `null`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
+Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`, `externalId`), `course` (`id`, `title`, `slug`, `type`, `isPublished`, `cost`, `currency`, `tags`), a `status` label next to `statusId` (and `previousStatus` next to `previousStatusId`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`, and `links` with a staff `dashboard` URL, a `student` URL, and a public course `landing` URL, filled when the course is published and has a slug and `null` otherwise. `externalId` is the person's id in your identity provider when they signed in through your organization's SSO, otherwise `null`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
 
 ### Organization invites
 
@@ -1071,7 +1071,7 @@ A course is unpublished.
   "links": {
     "dashboard": "https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
     "student": "https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1",
-    "landing": "https://acme.myclassroomio.com/course/intro-to-data-science"
+    "landing": null
   }
 }
 ```

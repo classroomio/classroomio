@@ -754,7 +754,7 @@ export const WEBHOOK_EVENT_DATA_EXAMPLES: { [TEvent in TWebhookEventType]: TWebh
     links: {
       dashboard: 'https://app.classroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
       student: 'https://acme.myclassroomio.com/courses/000000c1-0000-4000-8000-0000000000c1',
-      landing: 'https://acme.myclassroomio.com/course/intro-to-data-science'
+      landing: null
     }
   },
   'course.payment_request.created': {
