@@ -7,7 +7,7 @@
     [
       'Product',
       [
-        ['AI Agents', 'index.html#ncard-agents'],
+        ['AI Agents', 'ai-agents.html'],
         ['Branded Academies', 'index.html#bx-academy'],
         ['Analytics', 'index.html#hs'],
         ['Integrations', 'index.html#bx-integrations'],

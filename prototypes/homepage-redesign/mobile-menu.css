@@ -269,6 +269,14 @@
   color: #0542cc;
 }
 
+@media (max-width: 860px) {
+  .nav-in .nav-cta {
+    margin-left: auto;
+  }
+  .nav-cta .btn-blue {
+    display: none;
+  }
+}
 @media (min-width: 861px) {
   .sheet {
     display: none !important;

@@ -5323,9 +5323,7 @@ html:not(.js) .tl-tile {
 }
 .vx-dark {
   color: #fff;
-  background:
-    radial-gradient(120% 70% at 50% 115%, rgba(120, 170, 255, 0.5), transparent 62%),
-    linear-gradient(180deg, #2f6bff 0%, #0b5bff 100%);
+  background: radial-gradient(120% 70% at 50% 115%, rgba(255, 255, 255, 0.16), transparent 62%), var(--blue);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 .vx-light {

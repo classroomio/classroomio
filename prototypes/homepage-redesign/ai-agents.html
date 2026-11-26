@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClassroomIO AI Agents</title>
+<meta name="description" content="Connect Claude, Cursor, Codex or any MCP client to ClassroomIO and run your academy in plain English, inside the permissions you approve.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css?v=54">
+<link rel="stylesheet" href="mobile-menu.css?v=5">
+<link rel="stylesheet" href="site-footer.css?v=5">
+<link rel="stylesheet" href="sections.css?v=3">
+<link rel="stylesheet" href="ai-agents.css?v=3">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+
+<div class="topbar">Prototype for review · not the live site <a href="index.html">Back to homepage →</a></div>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="logo" href="index.html" aria-label="ClassroomIO home"><img src="images/logo.svg" width="26" height="19" alt=""><span>ClassroomIO</span></a>
+    <nav class="nav-links" aria-label="Main">
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="product-menu">Product <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu" id="product-menu" hidden>
+          <a class="dd-item" href="ai-agents.html" aria-current="page"><i class="dd-ic">✦</i><span><b>AI Agents</b><em>Connect Claude, Cursor or any MCP client</em></span></a>
+          <a class="dd-item" href="index.html#bx-academy"><i class="dd-ic">▣</i><span><b>Branded Academies</b><em>Your domain, your colours, your sign-in</em></span></a>
+          <a class="dd-item" href="index.html#hs"><i class="dd-ic">◔</i><span><b>Analytics</b><em>Track progress, completion and engagement</em></span></a>
+          <a class="dd-item" href="index.html#bx-integrations"><i class="dd-ic">⇄</i><span><b>Integrations</b><em>Connect Zapier and the tools your team uses</em></span></a>
+          <a class="dd-item" href="index.html#bx-plugins"><i class="dd-ic">◈</i><span><b>Plugins</b><em>Add custom widgets to your platform</em></span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="pricing.html">Pricing</a>
+      <a class="nav-link" href="about.html">About</a>
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="solutions-menu">Solutions <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu wide" id="solutions-menu" hidden>
+          <div class="dd-cols">
+            <div class="dd-col">
+              <p class="dd-h">By use case</p>
+          <a class="dd-item" href="https://classroomio.com/customer-education"><i class="dd-ic">☺</i><span><b>Customer Education</b><em>Help customers get more value from your product</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/partner-training"><i class="dd-ic">∞</i><span><b>Partner Training</b><em>Certify resellers and partners at scale</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/cohort-training"><i class="dd-ic">◎</i><span><b>Cohort Training</b><em>Run customers through a course together</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/certification-programs"><i class="dd-ic">✦</i><span><b>Certification Programs</b><em>Give customers and partners a certificate when they finish</em></span></a>
+            </div>
+            <div class="dd-col dd-ind">
+              <p class="dd-h">By industry</p>
+              <div class="dd-grid">
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">‹›</i><span><b>Software</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">⚙</i><span><b>Manufacturing</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">⌂</i><span><b>Public Sector</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">◫</i><span><b>Retail</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">▤</i><span><b>IT and Tech Services</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">$</i><span><b>Financial Services</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">✚</i><span><b>Healthcare</b></span></a>
+                <a class="dd-item sm" href="https://classroomio.com/solutions"><i class="dd-ic">✎</i><span><b>Education</b></span></a>
+              </div>
+            </div>
+          </div>
+          <div class="dd-foot"><span>Not sure where to start?</span><a href="https://cal.com/classroomio/demo">Talk to our team →</a></div>
+        </div>
+      </div>
+      <div class="dd">
+        <button class="nav-link dd-btn" type="button" aria-expanded="false" aria-controls="resources-menu">Resources <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu end" id="resources-menu" hidden>
+          <a class="dd-item" href="customers.html"><i class="dd-ic">☺</i><span><b>Customer stories</b><em>See how teams use ClassroomIO</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/blog"><i class="dd-ic">✎</i><span><b>Blog</b><em>Articles from the ClassroomIO team</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/help"><i class="dd-ic">?</i><span><b>Help center</b><em>Guides for setting up and using ClassroomIO</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/changelog"><i class="dd-ic">◷</i><span><b>Changelog</b><em>What changed in each release</em></span></a>
+          <a class="dd-item" href="https://classroomio.com/roadmap"><i class="dd-ic">→</i><span><b>Roadmap</b><em>What we are building next</em></span></a>
+        </div>
+      </div>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-line hide-sm" href="https://classroomio.com/login">Log in</a>
+      <a class="btn btn-blue" href="https://classroomio.com/signup">Start for free</a>
+      <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sheet" id="burger"><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="sheet" id="sheet" hidden></div>
+</header>
+
+<main id="top" class="ag">
+
+<section class="ag-hero" id="hero" aria-labelledby="ag-title">
+  <div class="ag-hero-bg" aria-hidden="true"><i class="ag-grid"></i><i class="ag-glow"></i></div>
+  <span class="ab-pill" data-rv>AI Agents</span>
+  <h1 class="ag-title" id="ag-title" data-words>Run your academy from <span class="tone">the AI agent you already use</span></h1>
+  <p class="ag-sub" data-rv>Connect Claude, Cursor, Codex or any MCP client to ClassroomIO. Ask in plain English, and your agent builds courses, enrols learners and pulls reports, inside the permissions you approve.</p>
+  <div class="ag-ctas" data-rv>
+    <a class="btn btn-blue btn-lg" href="#connect">Connect your agent</a>
+    <a class="btn btn-line btn-lg" href="#ask">See it work</a>
+  </div>
+
+  <div class="ag-cards">
+    <article class="ag-card ag-dark" data-tilt data-rv style="--rv:0">
+      <span class="ag-glare" aria-hidden="true"></span>
+      <span class="ag-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M6 5L1.8 10 6 15M14 5l4.2 5L14 15M11.5 3.5l-3 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <h2>Works with the agent you already use</h2>
+      <div class="ag-cube-stage" aria-hidden="true"><div class="ag-cubes" id="ag-cubes"></div></div>
+      <ul class="ag-logos" aria-label="Supported clients">
+        <li><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="">Claude</li>
+        <li><img src="https://assets.cdn.clsrio.com/www/home/cursor-logo.png" alt="">Cursor</li>
+        <li><img src="https://assets.cdn.clsrio.com/www/home/codex-logo.png" alt="">Codex</li>
+      </ul>
+    </article>
+
+    <article class="ag-card ag-photo" data-tilt data-rv style="--rv:1">
+      <img class="ag-photo-img" src="https://images.unsplash.com/photo-1759903553690-e29fdc8b1c68?w=900&q=80&auto=format&fit=crop" alt="A woman working on her laptop by a bright window">
+      <span class="ag-glare" aria-hidden="true"></span>
+      <span class="ag-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3.5 4.5h13v8.5H9l-3.5 3v-3h-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+      <h2>Ask once.<br>Get a course draft back.</h2>
+      <div class="ag-chat" id="ag-hero-chat" aria-hidden="true">
+        <p class="ag-bub me">Turn our setup guide into a 4-lesson onboarding course.</p>
+        <p class="ag-bub typing"><i></i><i></i><i></i></p>
+        <p class="ag-bub ai"><b>Draft ready.</b> 4 lessons in Admin Onboarding. It stays unpublished until you publish it.</p>
+      </div>
+    </article>
+
+    <article class="ag-card ag-dark" data-tilt data-rv style="--rv:2">
+      <span class="ag-glare" aria-hidden="true"></span>
+      <span class="ag-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="4" y="9" width="12" height="8.5" rx="2" fill="currentColor"/><path d="M6.8 9V6.6a3.2 3.2 0 0 1 6.4 0V9" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span>
+      <h2>It only gets the access you approve</h2>
+      <div class="ag-plates" aria-hidden="true">
+        <div class="ag-plate p3"><span class="pl-keys"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i></span></div>
+        <div class="ag-plate p2"><svg viewBox="0 0 48 48"><rect x="9" y="11" width="30" height="26" rx="5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M9 19h30M16 27h9M16 31h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+        <div class="ag-plate p1"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="14" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M17.5 24.5l4.5 4.5 9-10" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <ol class="ag-plate-key" aria-label="How access works"><li>Sign in</li><li>Pick a workspace</li><li>Approve</li></ol>
+    </article>
+  </div>
+</section>
+
+<section class="ag-ask" id="ask" aria-labelledby="ask-title">
+  <div class="ag-head">
+    <span class="ab-pill" data-rv>Plain English in, real work out</span>
+    <h2 class="ag-h2" id="ask-title" data-rv>Say what you need. <span class="tone">Your agent does the clicking.</span></h2>
+    <p class="ag-sub" data-rv>Your agent can create and edit courses, add quizzes, run cohorts and read your analytics. Pick a request and watch it happen.</p>
+  </div>
+
+  <div class="ag-capsule-wrap" data-rv>
+    <div class="ag-capsule" id="ag-capsule">
+      <span class="ag-cap-glow" aria-hidden="true"></span>
+      <div class="ag-win" data-tilt>
+        <div class="ag-win-bar"><i></i><i></i><i></i><span><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="">Claude Code</span><em>classroomio · connected</em></div>
+        <div class="ag-win-body" id="ag-win" aria-live="polite">
+          <p class="ag-prompt"><span class="ag-caret-mark">›</span><span class="ag-typed"></span><i class="ag-caret"></i></p>
+          <ul class="ag-tools"></ul>
+          <div class="ag-result" hidden><span class="ag-res-ic"></span><span><b></b><em></em></span></div>
+        </div>
+      </div>
+      <div class="ag-chips" role="tablist" aria-label="Example requests">
+        <button class="ag-chip c1" type="button" role="tab" aria-selected="true" data-s="0">Draft a course</button>
+        <button class="ag-chip c2 lt" type="button" role="tab" aria-selected="false" data-s="1">Add a quiz</button>
+        <button class="ag-chip c3 lt" type="button" role="tab" aria-selected="false" data-s="2">Invite a cohort</button>
+        <button class="ag-chip c4" type="button" role="tab" aria-selected="false" data-s="3">Check progress</button>
+        <button class="ag-chip c5" type="button" role="tab" aria-selected="false" data-s="4">Publish</button>
+      </div>
+    </div>
+  </div>
+  <p class="ag-note" data-rv>New courses start as unpublished drafts. Learners only see a course after it is published.</p>
+</section>
+
+<section class="ag-insight" id="insight" aria-labelledby="ins-title">
+  <div class="ag-head">
+    <span class="ab-pill" data-rv>Answers on the go</span>
+    <h2 class="ag-h2" id="ins-title" data-rv>Ask how your learners are doing. <span class="tone">Get the answer in seconds.</span></h2>
+  </div>
+
+  <div class="ag-split">
+    <div class="ag-photo-panel" data-rv style="--rv:0">
+      <img src="https://images.unsplash.com/photo-1702047129200-89734f555f38?w=900&q=80&auto=format&fit=crop" alt="A training lead working at her desk">
+      <div class="ag-phone" data-tilt>
+        <span class="ag-notch" aria-hidden="true"></span>
+        <div class="ag-phone-top"><span>9:41</span><span class="ag-sig" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <div class="ag-phone-app"><img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt=""><b>Claude</b><em>ClassroomIO connected</em></div>
+        <div class="ag-phone-msgs" id="ag-phone" aria-hidden="true">
+          <p class="ag-pm me">How is SOC 2 Security Basics doing this month?</p>
+          <p class="ag-pm tool">Reading course analytics…</p>
+          <p class="ag-pm ai"><b>87% have finished.</b> 23 learners are still in progress, most of them in Sales. Want the list?</p>
+          <p class="ag-pm me">Yes, please.</p>
+          <p class="ag-pm ai list"><span>Ada Obi · Sales · 60%</span><span>Tomi Bello · Sales · 45%</span><span>Kemi Ade · Support · 30%</span><em>+20 more</em></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ag-ring-panel" data-rv style="--rv:1">
+      <div class="ag-rp-top"><span>ClassroomIO analytics</span><span>Completion</span></div>
+      <div class="ag-ring-wrap">
+        <svg class="ag-ring" viewBox="0 0 400 400" aria-hidden="true">
+          <circle cx="200" cy="200" r="150" class="trk"/>
+          <circle cx="200" cy="200" r="150" class="val" id="ag-ring-val" pathLength="100"/>
+        </svg>
+        <div class="ag-ring-num"><b id="ag-ring-pct">0%</b><span id="ag-ring-name">SOC 2 Security Basics</span></div>
+        <div class="ag-call a"><i></i><span>Finished</span><b id="ag-call-a">0</b></div>
+        <div class="ag-call b"><i></i><span>In progress</span><b id="ag-call-b">0</b></div>
+      </div>
+      <div class="ag-rp-foot">
+        <p>Read straight from your analytics. Analytics reads use no AI credits.</p>
+        <div class="ag-tabs" role="tablist" aria-label="Course">
+          <button type="button" role="tab" aria-selected="true" data-c="0">SOC 2</button>
+          <button type="button" role="tab" aria-selected="false" data-c="1">HIPAA</button>
+          <button type="button" role="tab" aria-selected="false" data-c="2">Onboarding</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ag-steps" id="connect" aria-labelledby="steps-title">
+  <div class="ag-head">
+    <span class="ab-pill on-dark" data-rv>Set up in minutes</span>
+    <h2 class="ag-h2" id="steps-title" data-rv>Connected in three steps. <span class="tone">No keys to paste.</span></h2>
+    <p class="ag-sub" data-rv>Point your agent at the hosted ClassroomIO server, sign in as a workspace admin and approve. Nothing to install.</p>
+  </div>
+
+  <div class="ag-stories" id="ag-stories">
+    <article class="ag-story s1 on" data-rv style="--rv:0" tabindex="0" aria-label="Step 1: add the server">
+      <div class="ag-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="ag-st-top"><span class="ag-av"><img src="images/logo.svg" alt=""></span><b>Step 1</b><em>⋯</em></div>
+      <p class="ag-st-lede">Add the ClassroomIO server to your agent.</p>
+      <div class="ag-code">
+        <div class="ag-code-tabs" role="tablist" aria-label="Client">
+          <button type="button" role="tab" aria-selected="true" data-k="claude">Claude Code</button>
+          <button type="button" role="tab" aria-selected="false" data-k="codex">Codex</button>
+          <button type="button" role="tab" aria-selected="false" data-k="cursor">Cursor</button>
+        </div>
+        <pre id="ag-code-pre"></pre>
+        <button class="ag-copy" type="button" id="ag-copy">Copy</button>
+      </div>
+      <svg class="ag-big-mark" viewBox="0 0 33 24" aria-hidden="true"><circle cx="26.15" cy="6.49" r="6.09" fill="currentColor"/><path d="M32.3 14.98v8.83H18.93V20.6c0-3.08 2.47-5.62 5.62-5.62zM16.72.4v23.41h-5.02C8.5 23.81 5.55 22.47 3.41 20.4 1.27 18.26 0 15.32 0 12.1 0 5.62 5.22.4 11.7.4z" fill="currentColor"/></svg>
+      <div class="ag-st-input" aria-hidden="true"><span></span><svg viewBox="0 0 16 16"><path d="M2 8l12-5-5 12-2-5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+    </article>
+
+    <article class="ag-story s2" data-rv style="--rv:1" tabindex="0" aria-label="Step 2: sign in and approve">
+      <img class="ag-st-bg" src="https://images.unsplash.com/photo-1758876017801-f5a892ee460a?w=900&q=80&auto=format&fit=crop" alt="">
+      <div class="ag-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="ag-st-top"><span class="ag-av"><img src="images/logo.svg" alt=""></span><b>Step 2</b><em>⋯</em></div>
+      <div class="ag-auth" aria-hidden="true">
+        <img src="images/logo.svg" alt="">
+        <b>Claude Code wants to access Acme Academy</b>
+        <span>Manage courses, cohorts and analytics</span>
+        <div><em>Cancel</em><em class="ok">Approve</em></div>
+      </div>
+      <p class="ag-st-big">Sign in.<br>Pick a workspace.<br><span>Approve.</span></p>
+      <div class="ag-st-input" aria-hidden="true"><span></span><svg viewBox="0 0 16 16"><path d="M2 8l12-5-5 12-2-5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+    </article>
+
+    <article class="ag-story s3" data-rv style="--rv:2" tabindex="0" aria-label="Step 3: ask your first question">
+      <div class="ag-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="ag-st-top"><span class="ag-av"><img src="images/logo.svg" alt=""></span><b>Step 3</b><em>⋯</em></div>
+      <div class="ag-st-pic"><img src="https://images.unsplash.com/photo-1758691737605-69a0e78bd193?w=600&q=80&auto=format&fit=crop" alt=""><span class="ag-st-cut" aria-hidden="true"></span></div>
+      <p class="ag-st-small">Limited to one workspace, your role and the permissions you approved.</p>
+      <p class="ag-st-huge">Ask your first question.</p>
+      <div class="ag-st-input" aria-hidden="true"><span>Which courses need updating?</span><svg viewBox="0 0 16 16"><path d="M2 8l12-5-5 12-2-5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+    </article>
+  </div>
+
+  <div class="ag-ctas center" data-rv>
+    <a class="btn btn-white btn-lg" href="https://classroomio.com/signup">Start for free</a>
+    <a class="btn btn-ghost-dark btn-lg" href="https://classroomio.com/help/integrations-and-automation/connect-claude-code-codex-cursor-or-opencode">Read the setup guide</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="ft rails" data-site-footer></footer>
+
+<script src="mobile-menu.js?v=4"></script>
+<script src="site-footer.js?v=3"></script>
+<script src="ai-agents.js?v=1"></script>
+</body>
+</html>
