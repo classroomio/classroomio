@@ -7,6 +7,7 @@ import {
   getWebhookCourseInviteDetails,
   getWebhookEventContext,
   getWebhookExerciseDetails,
+  getWebhookInviteLinkDetails,
   getWebhookLatestSubmissionScore,
   getWebhookLessonSection,
   getWebhookMemberDetails,
@@ -21,7 +22,6 @@ import { ROLE_LABELS } from '@cio/utils/constants';
 import type { TWebhookEventType } from '@cio/utils/constants/webhook';
 
 import { buildCertificateDownloadUrl, buildWebhookLinks } from './links';
-
 
 const EMPTY_CONTEXT: TWebhookEventContext = {
   profiles: new Map(),
@@ -111,6 +111,7 @@ async function loadDetails(eventType: TWebhookEventType, data: Record<string, un
   const profileId = readString(data, 'profileId');
   const memberId = readString(data, 'memberId');
   const inviteId = readString(data, 'inviteId');
+  const inviteLinkId = readString(data, 'inviteLinkId');
   const exerciseId = readString(data, 'exerciseId');
   const lessonId = readString(data, 'lessonId');
   const submissionId = readString(data, 'submissionId');
@@ -138,7 +139,9 @@ async function loadDetails(eventType: TWebhookEventType, data: Record<string, un
       ? eventType.startsWith('organization.')
         ? getWebhookOrganizationInviteDetails(inviteId)
         : getWebhookCourseInviteDetails(inviteId)
-      : null,
+      : inviteLinkId && isInviteEvent && eventType.startsWith('course.')
+        ? getWebhookInviteLinkDetails(inviteLinkId)
+        : null,
     isCompletionEvent && memberId ? getWebhookMemberDetails(memberId) : null,
     eventType === 'lesson.completion.updated' && courseId && profileId
       ? getWebhookMemberIdForProfile(courseId, profileId)
@@ -489,7 +492,7 @@ export async function enrichWebhookEventData(
     applyLessonOrExerciseDetails(enriched, eventType, details);
   }
 
-  enriched.links = buildWebhookLinks(eventType, data, organization);
+  enriched.links = buildWebhookLinks(eventType, data, organization, context.course?.slug ?? null);
 
   return enriched;
 }

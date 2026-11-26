@@ -36,7 +36,7 @@ ClassroomIO exposes a versioned public REST API at `/public-api/v1/*`, an MCP se
 | 5 | New Exercise Submission | Fires when a student submits an exercise. | `course.submission.created` | Course |
 | 6 | Submission Status Changed | Fires when a submission is graded or its status changes. Includes previous and new status. | `course.submission.status_changed` | Course |
 | 7 | Lesson Completed | Fires when a student marks a lesson complete. | `lesson.completion.updated` (`isComplete: true`) | Course |
-| 8 | Course Invite Accepted | Fires when a student accepts a course invite. | `course.invite.accepted` | Course |
+| 8 | Course Invite Accepted | Fires when a student accepts a course invite or joins through a course invite link. | `course.invite.accepted` | Course |
 | 9 | New Payment Request | Fires when a learner submits a payment request for a course. | `course.payment_request.created` | Course |
 | 10 | New Organization Member | Fires when someone joins the organization (student, tutor, or admin). | `organization.member.added` | Role |
 | 11 | Compliance Status Changed | Fires when a learner's compliance record changes (compliant, overdue, expired, and so on). Includes due date and valid-until. | `compliance.record.status_changed` | Course |

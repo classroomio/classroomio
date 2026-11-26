@@ -104,7 +104,7 @@ export const ZAPIER_TRIGGERS = [
     eventType: 'course.invite.accepted',
     noun: 'Invite',
     label: 'Course Invite Accepted',
-    description: 'Triggers when someone accepts a course invite.',
+    description: 'Triggers when someone accepts a course invite or joins through a course invite link.',
     filters: ['course'],
     prefill: 'courseId'
   },

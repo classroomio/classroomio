@@ -47,7 +47,7 @@ export type TWebhookSubmissionDetails = {
 
 export type TWebhookInviteDetails = {
   roleId: number;
-  expiresAt: string;
+  expiresAt: string | null;
   maxUses: number | null;
   usedCount: number | null;
   allowedDomains: string[] | null;
@@ -304,6 +304,39 @@ export async function getWebhookCourseInviteDetails(
   } catch (error) {
     console.error('getWebhookCourseInviteDetails error:', error);
     throw new Error('Failed to read webhook course invite details');
+  }
+}
+
+/**
+ * Reads what a permanent invite link grants. The link has no expiry or usage cap.
+ */
+export async function getWebhookInviteLinkDetails(
+  inviteLinkId: string,
+  client: DbOrTxClient = db
+): Promise<TWebhookInviteDetails | null> {
+  try {
+    const [row] = await client
+      .select({
+        roleId: schema.inviteLink.roleId,
+        usedCount: schema.inviteLink.joinCount
+      })
+      .from(schema.inviteLink)
+      .where(eq(schema.inviteLink.id, inviteLinkId))
+      .limit(1);
+
+    return row
+      ? {
+          roleId: row.roleId,
+          expiresAt: null,
+          maxUses: null,
+          usedCount: row.usedCount,
+          allowedDomains: null,
+          acceptedByProfileId: null
+        }
+      : null;
+  } catch (error) {
+    console.error('getWebhookInviteLinkDetails error:', error);
+    throw new Error('Failed to read webhook invite link details');
   }
 }
 

@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   getCourseProgress: vi.fn(),
   getOrganizationById: vi.fn(),
   getWebhookCourseInviteDetails: vi.fn(),
+  getWebhookInviteLinkDetails: vi.fn(),
   getWebhookOrganizationInviteDetails: vi.fn(),
   getWebhookMemberDetails: vi.fn(),
   getWebhookMemberIdForProfile: vi.fn(),
@@ -20,6 +21,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@cio/db/queries/webhook', () => ({
   getWebhookEventContext: mocks.getWebhookEventContext,
   getWebhookCourseInviteDetails: mocks.getWebhookCourseInviteDetails,
+  getWebhookInviteLinkDetails: mocks.getWebhookInviteLinkDetails,
   getWebhookOrganizationInviteDetails: mocks.getWebhookOrganizationInviteDetails,
   getWebhookMemberDetails: mocks.getWebhookMemberDetails,
   getWebhookMemberIdForProfile: mocks.getWebhookMemberIdForProfile,
@@ -106,14 +108,27 @@ const inputs: Record<TWebhookEventType, Record<string, unknown>> = {
   'organization.invite.created': { inviteId: ids.invite, email: 'a@b.co', actorProfileId: ids.actor, reason: null },
   'organization.invite.accepted': { inviteId: ids.invite, email: 'a@b.co', actorProfileId: null, reason: null },
   'organization.invite.revoked': { inviteId: ids.invite, email: null, actorProfileId: ids.actor, reason: 'revoked' },
-  'course.invite.created': { courseId: ids.course, inviteId: ids.invite, email: null, actorProfileId: ids.actor },
+  'course.invite.created': {
+    courseId: ids.course,
+    inviteId: ids.invite,
+    inviteLinkId: null,
+    email: null,
+    actorProfileId: ids.actor
+  },
   'course.invite.accepted': {
     courseId: ids.course,
     inviteId: ids.invite,
+    inviteLinkId: null,
     email: 'a@b.co',
     actorProfileId: ids.profile
   },
-  'course.invite.revoked': { courseId: ids.course, inviteId: ids.invite, email: null, actorProfileId: null },
+  'course.invite.revoked': {
+    courseId: ids.course,
+    inviteId: ids.invite,
+    inviteLinkId: null,
+    email: null,
+    actorProfileId: null
+  },
   'course.member.added': {
     courseId: ids.course,
     memberId: ids.member,

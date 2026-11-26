@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/group', () => ({
   addGroupMember: vi.fn(),
@@ -31,6 +31,18 @@ vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
   invalidateOrgStats: vi.fn()
 }));
 
+vi.mock('@cio/core/services/webhook/emit', () => ({
+  buildMemberSource: vi.fn(() => ({ source: 'invite_link' })),
+  emitCohortMemberWebhookEvent: vi.fn(),
+  emitCourseMemberAddedWebhookEvent: vi.fn(),
+  emitCourseWebhookEvent: vi.fn()
+}));
+
+vi.mock('@api/services/product-events', () => ({
+  captureLearnersEnrolled: vi.fn()
+}));
+
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getInviteLinkHandler } from '@api/services/invite-link/handlers';
 import { ROLE } from '@cio/utils/constants';
 import type { TInviteLinkWithContext } from '@cio/db/queries/invite-link';
@@ -120,5 +132,52 @@ describe('invite link redirects', () => {
     );
 
     expect(getInviteLinkHandler('COHORT').redirectTo(context)).toBe(`/cohorts/${COHORT_ID}/newsfeed`);
+  });
+});
+
+describe('invite link webhooks', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const course = {
+    id: COURSE_ID,
+    title: 'SOC 2 Basics',
+    description: null,
+    slug: 'soc2',
+    status: 'ACTIVE',
+    isPublished: true
+  };
+
+  function buildCourseContext(inviteId = 'invite-link-1') {
+    return buildContext({ invite: { id: inviteId, roleId: ROLE.STUDENT } as never, course });
+  }
+
+  it('fires course.invite.accepted when a link join adds a member', async () => {
+    const context = buildCourseContext();
+    const enrolledMembers = [{ id: 'member-1', groupId: 'group-1', profileId: 'profile-1', roleId: ROLE.STUDENT }];
+
+    await getInviteLinkHandler('COURSE').afterCommit(context, 'profile-1', 'sam@example.com', {
+      isFreshJoin: true,
+      enrolledMembers
+    } as never);
+
+    expect(emitCourseWebhookEvent).toHaveBeenCalledWith(COURSE_ID, 'course.invite.accepted', {
+      inviteId: null,
+      inviteLinkId: 'invite-link-1',
+      email: 'sam@example.com',
+      actorProfileId: 'profile-1'
+    });
+  });
+
+  it('does not fire course.invite.accepted when the member already belonged to the course', async () => {
+    const context = buildCourseContext();
+
+    await getInviteLinkHandler('COURSE').afterCommit(context, 'profile-1', 'sam@example.com', {
+      isFreshJoin: false,
+      enrolledMembers: []
+    } as never);
+
+    expect(emitCourseWebhookEvent).not.toHaveBeenCalled();
   });
 });

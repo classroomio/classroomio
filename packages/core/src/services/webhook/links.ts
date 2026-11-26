@@ -3,7 +3,7 @@ import { ROLE } from '@cio/utils/constants';
 
 import { getAppBaseUrl, getDashboardBaseUrl, type DashboardOrg } from '../../config/dashboard-url';
 
-export type TWebhookLinks = { dashboard: string | null; student: string | null };
+export type TWebhookLinks = { dashboard: string | null; student: string | null; landing: string | null };
 
 type TLinkOrg = DashboardOrg & { siteName?: string | null };
 
@@ -48,12 +48,14 @@ function buildOrganizationDashboardPath(eventType: TWebhookEventType, data: Reco
 
 /**
  * Builds the deep links an event carries: `dashboard` opens the staff view on the admin app, `student`
- * opens the learner view on the organization's public site. A link is `null` when the event has no such page.
+ * opens the learner view on the organization's public site, and `landing` opens the public course page.
+ * A link is `null` when the event has no such page.
  */
 export function buildWebhookLinks(
   eventType: TWebhookEventType,
   data: Record<string, unknown>,
-  org: TLinkOrg | null
+  org: TLinkOrg | null,
+  courseSlug: string | null = null
 ): TWebhookLinks {
   const appBaseUrl = getAppBaseUrl();
   const learnerBaseUrl = getDashboardBaseUrl(org ?? undefined);
@@ -63,25 +65,28 @@ export function buildWebhookLinks(
   if (courseId) {
     return {
       dashboard: `${appBaseUrl}${buildCourseDashboardPath(eventType, courseId, data)}`,
-      student: `${learnerBaseUrl}/courses/${courseId}`
+      student: `${learnerBaseUrl}/courses/${courseId}`,
+      landing: courseSlug ? `${learnerBaseUrl}/course/${courseSlug}` : null
     };
   }
 
   if (cohortId) {
     return {
       dashboard: `${appBaseUrl}/cohorts/${cohortId}/courses`,
-      student: `${learnerBaseUrl}/cohorts/${cohortId}/courses`
+      student: `${learnerBaseUrl}/cohorts/${cohortId}/courses`,
+      landing: null
     };
   }
 
   if (org?.siteName) {
     return {
       dashboard: `${appBaseUrl}${buildOrganizationDashboardPath(eventType, data, org.siteName)}`,
-      student: null
+      student: null,
+      landing: null
     };
   }
 
-  return { dashboard: null, student: null };
+  return { dashboard: null, student: null, landing: null };
 }
 
 /**

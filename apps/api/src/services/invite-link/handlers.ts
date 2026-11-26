@@ -20,7 +20,8 @@ import { captureLearnersEnrolled } from '@api/services/product-events';
 import {
   buildMemberSource,
   emitCohortMemberWebhookEvent,
-  emitCourseMemberAddedWebhookEvent
+  emitCourseMemberAddedWebhookEvent,
+  emitCourseWebhookEvent
 } from '@cio/core/services/webhook/emit';
 import type { TInviteLinkWithContext } from '@cio/db/queries/invite-link';
 import type { TInviteLinkResourceType } from '@cio/utils/validation/invite-link';
@@ -164,8 +165,17 @@ const courseHandler: InviteLinkHandler = {
     return { isFreshJoin, enrolledMembers };
   },
 
-  async afterCommit(context, profileId, _email, { enrolledMembers }) {
+  async afterCommit(context, profileId, email, { enrolledMembers }) {
     const course = requireCourse(context);
+
+    if (enrolledMembers && enrolledMembers.length > 0) {
+      await emitCourseWebhookEvent(course.id, 'course.invite.accepted', {
+        inviteId: null,
+        inviteLinkId: context.invite.id,
+        email,
+        actorProfileId: profileId
+      });
+    }
 
     for (const courseMember of enrolledMembers ?? []) {
       await emitCourseMemberAddedWebhookEvent(course.id, courseMember, {

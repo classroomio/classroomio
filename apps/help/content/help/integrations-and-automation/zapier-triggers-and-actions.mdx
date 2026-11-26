@@ -22,7 +22,7 @@ If your Zap's hook endpoint is unreachable, ClassroomIO retries the event for ab
 
 ![ClassroomIO + HubSpot page with the connected status, popular Zaps and related apps](./images/zapier-triggers-and-actions/overview.webp)
 
-Every trigger returns the event fields listed below plus the shared envelope fields `id`, `event_type`, `occurred_at`, and `organization`.
+Every trigger returns the event fields listed below plus the shared envelope fields `id`, `event_type`, `occurred_at`, and `organization`. Course events also include a `links` object with three labelled URLs: **Admin Course URL** (the course in your dashboard), **Student Course URL** (the learner's course view), and **Course Landing Page URL** (the public course page). Organization and cohort events label the first two **Admin URL** and **Student URL**, and their landing URL is empty.
 
 ---
 
@@ -84,9 +84,9 @@ Every trigger returns the event fields listed below plus the shared envelope fie
 ### 8. Course Invite Accepted
 
 - **Key**: `course_invite_accepted`
-- **When it fires**: Someone accepts a course invite.
+- **When it fires**: Someone accepts a course invite, or joins a course through its invite link.
 - **Inputs**: `Course` (optional).
-- **Outputs**: `courseId`, `inviteId`, `email`, `actorProfileId`, `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount`, `allowedDomains`, `links`, `course.*`, `actor.*`.
+- **Outputs**: `courseId`, `inviteId`, `inviteLinkId`, `email`, `actorProfileId`, `roleId`, `role`, `expiresAt`, `maxUses`, `usedCount`, `allowedDomains`, `links`, `course.*`, `actor.*`.
 
 ### 9. New Payment Request
 

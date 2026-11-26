@@ -18,7 +18,8 @@ const organizationInviteInput = z
 const courseInviteInput = z
   .object({
     courseId: z.string(),
-    inviteId: z.string(),
+    inviteId: z.string().nullable(),
+    inviteLinkId: z.string().nullable(),
     email: z.string().nullable(),
     actorProfileId: z.string().nullable()
   })
@@ -255,7 +256,9 @@ const itemRef = z.object({ id: z.string(), title: z.string().nullable() }).stric
 
 const cohortRef = z.object({ id: z.string(), name: z.string().nullable() }).strict();
 
-const linksRef = z.object({ dashboard: z.string().nullable(), student: z.string().nullable() }).strict();
+const linksRef = z
+  .object({ dashboard: z.string().nullable(), student: z.string().nullable(), landing: z.string().nullable() })
+  .strict();
 
 const progressRef = z
   .object({
