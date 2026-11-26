@@ -20,3 +20,10 @@ Each of these cost a re-render at least once.
 | Random-looking particles jump between frames or processes | `Math.random()` | Use `seeded(seed)` and derive everything from `T`. |
 | Fonts fall back to Times in the first frames | The screenshot ran before fonts loaded | `render.mjs` waits for `document.fonts.ready` and `assetsReady`. Add every image through `preload`. |
 | Huge memory use or slow frames | A canvas sized for the full 4K frame on every tile | Size canvases from their on-screen scale (`drawFootage`), and cache footage frames near `T` only. |
+| A matte or template built from a 16-bit PNG comes out empty | Pillow opens some 16-bit RGB PNGs as 8-bit | Check the dtype after `np.asarray` and divide by 255 or 65535 to match. |
+| A blur or band turns to NaN or inf | A float64 or non-contiguous array was passed to `Image.fromarray(..., 'F')` | Pass `np.ascontiguousarray(channel, np.float32)`. |
+| Blotchy dark patches in a fill or blur | 8-bit normalised convolution quantises the weights | Do the convolution in float (a separable Gaussian in numpy), at quarter size for speed. |
+| The whole page fails with `Identifier 'FPS' has already been declared` | Every scene file shares one global scope, and two of them declared the same `const` | Give each file's constants distinctive names (`CUT_FPS`), or wrap the file in a block. |
+| PIL `box offset can't be negative` when scaling about an anchor | A crop-box resize fails when the zoom is below 1 | Use an `Image.AFFINE` transform about the anchor instead. |
+| Graphics pinned to the body drift off in punch-in shots | The footage was reframed after the graphics were placed | Scale those positions about the same anchor with the same `zoom_at(frame)` as the reframe. |
+| Trashed files can't be removed for good | macOS blocks the session from `~/.Trash` ("Operation not permitted") | Delete with `rm` once the user has approved the list; never `trash`. |
