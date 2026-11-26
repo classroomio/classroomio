@@ -432,7 +432,7 @@
               {policyTriggerLabel(completionPolicy)}
             </Select.Trigger>
             <Select.Content class="max-w-sm">
-              <Select.Item value="manual">
+              <Select.Item value="manual" data-testid="lesson-completion-manual">
                 <div class="flex flex-col items-start gap-0.5">
                   <span>{$t('course.navItem.lessons.completion_policy.manual_label')}</span>
                   <span class="ui:text-muted-foreground text-xs">
@@ -448,7 +448,7 @@
                   </span>
                 </div>
               </Select.Item>
-              <Select.Item value="none">
+              <Select.Item value="none" data-testid="lesson-completion-none">
                 <div class="flex flex-col items-start gap-0.5">
                   <span>{$t('course.navItem.lessons.completion_policy.none_label')}</span>
                   <span class="ui:text-muted-foreground text-xs">

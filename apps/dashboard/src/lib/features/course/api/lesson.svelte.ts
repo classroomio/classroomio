@@ -1,5 +1,6 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { courseApi } from './course.svelte';
+import { ContentType } from '@cio/utils/constants/content';
 import { toggleConfetti } from '$features/ui/confetti/store';
 import { updateLessonCompletionInCourseContent } from '../utils/content-completion';
 import type {
@@ -212,6 +213,10 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'updating lesson',
       onSuccess: () => {
         this.errors = {};
+
+        if (result.data.completionPolicy) {
+          courseApi.updateContentItem(lessonId, ContentType.Lesson, { completionPolicy: result.data.completionPolicy });
+        }
 
         if (this.revision !== revisionAtRequest) return;
 
