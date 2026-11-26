@@ -5,10 +5,6 @@ on:
     - cron: "0 8 * * 1"
   workflow_dispatch:
 
-permissions:
-  contents: write
-  actions: write
-
 concurrency:
   group: weekly-release
   cancel-in-progress: false
@@ -16,6 +12,10 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.create.outputs.tag }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -33,18 +33,29 @@ jobs:
           echo "commits=$(git rev-list --count "${last_tag}..HEAD")" >> "$GITHUB_OUTPUT"
 
       - name: Create the GitHub release
+        id: create
         if: steps.version.outputs.commits != '0'
         env:
           GH_TOKEN: ${{ github.token }}
+          NEXT_TAG: ${{ steps.version.outputs.next }}
+          LAST_TAG: ${{ steps.version.outputs.last }}
         run: |
-          gh release create "${{ steps.version.outputs.next }}" \
+          gh release create "$NEXT_TAG" \
             --target "$(git rev-parse HEAD)" \
             --generate-notes \
-            --notes-start-tag "${{ steps.version.outputs.last }}"
+            --notes-start-tag "$LAST_TAG"
+          echo "tag=${NEXT_TAG}" >> "$GITHUB_OUTPUT"
 
+  publish-images:
+    needs: release
+    if: needs.release.outputs.tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
       # Tags created with GITHUB_TOKEN do not fire `push` workflows; workflow_dispatch is the documented exception.
       - name: Publish Docker images for the release
-        if: steps.version.outputs.commits != '0'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run docker-publish.yml --ref "${{ steps.version.outputs.next }}"
+          RELEASE_TAG: ${{ needs.release.outputs.tag }}
+        run: gh workflow run docker-publish.yml --repo "$GITHUB_REPOSITORY" --ref "$RELEASE_TAG"

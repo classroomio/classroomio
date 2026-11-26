@@ -68,6 +68,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}
+          flavor: latest=false
           # Tag policy:
           #   push to main    -> latest              (freshest main build; moves on every merge)
           #   git tag v1.4.2  -> 1.4.2, 1.4, 1       (1.4.2 is immutable; 1.4 and 1 follow the newest patch)

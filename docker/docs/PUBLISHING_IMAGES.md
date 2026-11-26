@@ -125,9 +125,18 @@ patch release (`v1.0.0` → `v1.0.1`) as a GitHub Release with auto-generated no
 workflow on the new tag to push `X.Y.Z`/`X.Y`/`X`. To release early, run "Weekly Patch Release"
 from the Actions tab.
 
+If a release has no images, recover from the Actions tab:
+
+- The "Publish Docker images" job failed: open that "Weekly Patch Release" run and choose
+  **Re-run failed jobs**. It dispatches the same tag again.
+- The image build itself failed: re-run the "Publish Docker Images" run for that tag.
+
+Rebuilding an older tag moves `X.Y` and `X` back to it, so only rebuild the newest release.
+
 For a minor or major release, push the tag yourself; the weekly job then patches from it:
 
 ```bash
+git fetch origin
 git tag v1.1.0 origin/main
 git push origin v1.1.0
 ```
