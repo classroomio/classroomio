@@ -24,6 +24,18 @@ Those files ran against the project they were written for. Images came from its 
 | **URL typed, Enter, button click, ripple into the end card** | the call to action | `scenes-v3c.js`: `O-academy-new` |
 | **Sound cues for all of the above** | timing references | `sfx-cues.py` |
 
+From the teach-once product video in `examples/teach-once/`. It is calmer and lighter, in the block language of the ClassroomIO outro, and everything sits behind the speaker:
+
+| Recipe | Use it for | Code |
+|---|---|---|
+| **Same question piling up in an inbox** | repetition, "they all ask the same thing" | `scenes/graphics.js`: `A-same-question` |
+| **Week sheet filling with calls** | time spent, schedules | `scenes/graphics.js`: `B-onboarding-week` |
+| **Checklist that ticks, rewinds and restarts** | loops, "every new hire starts over" | `scenes/graphics.js`: `D-onboarding-loop` |
+| **Loop drawn around the speaker that snaps open** | "break the cycle" | `scenes/graphics.js`: `E-break-the-loop` |
+| **Documents snapping into course blocks** | turning knowledge into training | `scenes/graphics.js`: `F-knowledge-to-training` |
+| **Real product UI: Mark as Complete → 24/7 pill → Next lesson** | what learners can do, "whenever they need it" | `scenes/graphics.js`: `F2-course-ui` |
+| **Captions behind and in front from one file, plus band mode** | captions that weave around the speaker; covering a logo | `scenes/captions.js` (`LAYER`, `CAPTION_BAND`) |
+
 ## Patterns worth copying
 
 - **Named beat constants per cue**: `const SITE = { in, cut, domainAt, nameAt, logoAt, … }`.

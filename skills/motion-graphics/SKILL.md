@@ -1,6 +1,6 @@
 ---
 name: motion-graphics
-description: Design and render cinematic motion graphics on top of an existing video (launch films, product announcements, talking-head explainers, ads) without touching the footage or the voice. Covers cue planning from word-level transcripts, HTML/CSS/canvas scenes rendered frame by frame with headless Chromium, motion blur, 3D camera moves, ink reveals, light flashes, particle dissolves, graphics that sit behind the speaker (Apple Vision person matte plus a burned-in-caption matte), live footage inside graphics, synthesised sound effects mixed under the untouched voice, 1080p previews, a full-resolution final and ProRes 4444 alpha layers for an editor. Use this skill whenever the user wants motion graphics, animated overlays, kinetic type, explainer animations, "magical" or "cinematic" visuals, VFX-style inserts or sound design added to a video, or wants to replicate the ClassroomIO launch-video graphics — even if they only say "make this video pop" or "add graphics to my video".
+description: Design and render cinematic motion graphics on top of an existing video (launch films, product announcements, talking-head explainers, ads), leaving the footage and voice untouched unless the user asks (it asks before any audio edit). Covers cue planning from word-level transcripts, HTML/CSS/canvas scenes rendered frame by frame with headless Chromium, motion blur, 3D camera moves, ink reveals, light flashes, particle dissolves, graphics that sit behind the speaker (Apple Vision person matte plus a burned-in-caption matte), live footage inside graphics, synthesised sound effects and original music mixed under the voice, cuts, grade and punch-ins on raw iPhone footage, hiding a third-party logo on the speaker's clothing, 1080p previews, a full-resolution final and ProRes 4444 alpha layers for an editor. Use this skill whenever the user wants motion graphics, animated overlays, kinetic type, explainer animations, "magical" or "cinematic" visuals, VFX-style inserts or sound design added to a video, or wants to replicate the ClassroomIO launch-video graphics — even if they only say "make this video pop" or "add graphics to my video".
 user-invocable: true
 ---
 
@@ -8,13 +8,14 @@ user-invocable: true
 
 Turn a finished recording into a film with graphics that feel designed, not templated. The graphics are web pages rendered one frame at a time, so anything a browser can draw (3D transforms, canvas particles, SVG light trails, real photos, real logos) can be animated with exact, repeatable timing. A command-line tool, `scripts/mg`, runs the whole pipeline.
 
-This skill only adds graphics and sound. To cut, trim, caption or brand raw recordings, use `edit-video`.
+This skill mainly adds graphics and sound. When the user hands over raw footage and asks for the edit as well (cuts, grade, punch-ins, original music, removing a logo), see `references/raw-footage.md`.
 
 ## What the user cares about
 
 These come straight from the person this skill was built with. Treat them as the brief unless told otherwise.
 
-- **Never alter the source.** Never grade, denoise, re-level or crop the original picture or audio. Graphics go on top. The voice is never ducked, compressed or EQ'd. Sound effects are a separate stem mixed at unity gain under it.
+- **Leave the source alone unless asked.** By default, graphics go on top of the untouched picture and audio. Picture edits (cuts, grade, punch-ins) happen only when the user asks for them.
+- **Ask before touching the audio.** Before any audio work, ask whether the user wants the audio edited at all: noise removal, cutting off-camera voices, a quiet or humming first second. Make no audio change without a yes. Even then, the voice is never ducked, compressed, EQ'd or loudness-normalised. Sound effects and music are separate stems mixed at unity gain under it.
 - **Graphics may replace the picture.** A full-frame graphic can cover the speaker while their audio keeps playing. Roughly half the film as graphics was welcome.
 - **Extraordinary, not basic.** A first pass of flat cards on brand colours was rejected as "nothing wow, not magical". What landed:
   - dark cinematic panels with grain, vignette and ink reveals;
@@ -25,8 +26,13 @@ These come straight from the person this skill was built with. Treat them as the
   - motion blur;
   - light, particles and sound design.
   Brand colour is an accent, not the whole palette.
-- **Propose before building.** Describe the cues (moment, words, what happens on screen) and wait for a go-ahead before rendering. Taste calls belong to the user.
-- **Keep every version.** Never overwrite earlier renders. Put deliverables beside the source in a folder named after it: `Original.MOV`, `1080p.mp4`, `1080p (no sound effects).mp4`, `4K.mov`.
+- **Explore widely, then propose.** For every moment, sketch several graphic ideas yourself before showing anything. Discard the weak ones and show the user only the strongest two or three per cue, each with what happens on screen. Ask which ones they want, and wait for a go-ahead before rendering. Taste calls belong to the user.
+- **Keep every version.** Never overwrite earlier renders.
+  - Deliverables go in the project folder: `Original.MOV`, `1080p.mp4`, `1080p (no sound effects).mp4`, `4K.mov`.
+  - Alternatives for the user to compare go in the same folder with clear names, like `1080p (caption band).mp4`. Don't put them in a subfolder.
+  - Once the user picks one, move the old main files into `previous/<n> <what it was>/` and rename the pick to `1080p.mp4`.
+- **Ask before deleting anything.** When the work is done, list the intermediate files with their sizes and ask which ones to delete. Delete only what the user picks, and delete it permanently with `rm`, not `trash`: the session can't empty the macOS Trash afterwards.
+- **No third-party brands.** A logo on the speaker's clothing or in the room that belongs to another company has to go. Spot it during the first look, raise it before building, and offer the fixes in `references/raw-footage.md`.
 - **Work around burned-in captions.** Behind-the-speaker graphics must leave both the speaker and the captions in front.
 - **Never drop the sign-off.** If the speaker says a URL or call to action at the end, it gets a hero moment that hands off cleanly to the end card.
 
@@ -55,18 +61,31 @@ Read `transcript/words.txt` end to end. Then note:
 - where the speaker sits;
 - where the captions are and what colour they are;
 - what the background looks like (white walls and sky matter, see step 4);
-- where the end card starts.
+- where the end card starts;
+- any third-party logo on clothing, a mug or a screen;
+- off-camera voices, hum or a noisy first second in the audio.
+
+Then ask whether the user wants the audio edited at all, before doing any audio work.
 
 ### 2. Plan cues and get approval
 
-Read `references/craft.md` before planning. List cues as a table with these columns:
+Read `references/craft.md` before planning. For each moment, sketch several graphic ideas, at least four or five in different directions:
+- a literal illustration of the line;
+- a metaphor;
+- the real product UI doing the thing;
+- data or a counter;
+- type alone.
+
+Pick the strongest two or three for each moment. When a line describes something the product does, one option should show the real product UI doing it, like the course page in `references/examples/teach-once/`.
+
+List the cues as a table with these columns:
 - id;
 - in → out, in seconds, taken from word timings;
 - the line being said;
 - what happens;
 - type: full frame, behind the speaker, beside the speaker, or transition.
 
-Tie every beat to a word. Show the plan and wait for a yes. When the user asks for more moments, suggest them first, then build.
+Tie every beat to a word. Show the options per cue and ask which ones the user wants, then wait for a yes. When the user asks for more moments, explore and suggest them first, then build.
 
 ### 3. Build scenes
 
@@ -100,6 +119,8 @@ Edit `sfx.py` in the project and place sounds from `scripts/sfxlib.py` on the fr
 
 Then run `$MG sfx <project>`. `references/sound.md` covers levels and taste.
 
+For music, compose an original score timed to the words; `references/sound.md` covers how. Never use a track from the user's Downloads or any licensed music without asking.
+
 ### 6. Preview and get feedback
 
 ```bash
@@ -124,14 +145,24 @@ $MG layers <project> <dir>                              # optional: per-scene Pr
 Organise the deliverables:
 - Move the source into `<Name>/Original.<ext>`. If a render is still reading the source, leave a temporary symlink at the old path and remove it afterwards.
 - Copy the previews in as `1080p.mp4` and `1080p (no sound effects).mp4`.
-- Report what changed, where everything is, and that the voice is untouched.
+- Report what changed, where everything is, and what was done to the audio: nothing, or only what the user approved.
+
+### 8. Clean up
+
+A project can grow to many gigabytes: ProRes masters, PNG frames, mattes, old versions. Once the user is happy, list what is left in groups with their sizes:
+- leftovers nothing uses any more;
+- old versions in `previous/`;
+- files needed to rebuild the video.
+
+Say what deleting each group costs, for example "any further change means re-rendering from the source". Ask which ones to delete, then `rm` only those.
 
 ## References
 
 | Need | File |
 |---|---|
 | Creative direction: what makes it feel cinematic, cue planning, timing to words, type, colour, pacing | `references/craft.md` |
-| Recipe → working code in the launch-film example | `references/recipes.md` |
+| Recipe → working code in the launch-film and teach-once examples | `references/recipes.md` |
+| Raw footage: audio question, cuts, grade, punch-ins, hiding third-party logos | `references/raw-footage.md` |
 | Engine API, render pipeline, motion blur, mattes, encoding and colour, performance | `references/pipeline.md` |
 | Bugs already paid for (3D opacity, masks, glass legibility, ffmpeg flags…) | `references/gotchas.md` |
 | Sound-effects design and mixing | `references/sound.md` |
