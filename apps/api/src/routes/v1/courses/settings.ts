@@ -16,6 +16,10 @@ import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse } fro
 
 const TAG = 'Course Settings';
 
+const SettingsItemResponse = itemResponse(ZPublicApiCourseSettingsResponse);
+const GetSettingsResponse = jsonResponse('Course settings, with defaults applied', SettingsItemResponse);
+const UpdateSettingsResponse = jsonResponse('Course settings after the update', SettingsItemResponse);
+
 export const v1CourseSettingsRouter = new Hono()
   .get(
     '/',
@@ -23,7 +27,7 @@ export const v1CourseSettingsRouter = new Hono()
       description: `Get a course's student progression, self-enrollment, Markdown export and comment settings; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Course settings, with defaults applied', itemResponse(ZPublicApiCourseSettingsResponse)),
+        200: GetSettingsResponse,
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.read,
@@ -50,7 +54,7 @@ export const v1CourseSettingsRouter = new Hono()
       description: `Change a course's student progression, self-enrollment, Markdown export or comment settings; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Course settings after the update', itemResponse(ZPublicApiCourseSettingsResponse)),
+        200: UpdateSettingsResponse,
         400: {
           description: 'Invalid request body, no setting sent, or self-enrollment turned on for a private course'
         },

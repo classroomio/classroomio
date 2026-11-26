@@ -122,7 +122,8 @@ describe('createMcpServer', () => {
   it('sends update_course_settings as a PATCH of only the given settings', async () => {
     const requests: { url: string; method?: string; body: unknown }[] = [];
     const respond = async (input: RequestInfo | URL, init?: RequestInit) => {
-      requests.push({ url: String(input), method: init?.method, body: JSON.parse(String(init?.body)) });
+      const body = JSON.parse(String(init?.body));
+      requests.push({ url: String(input), method: init?.method, body });
       const data = {
         progressionMode: 'sequential',
         allowSelfEnrollment: true,

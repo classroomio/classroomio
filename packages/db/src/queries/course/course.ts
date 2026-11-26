@@ -640,11 +640,12 @@ export async function mergeCourseMetadata(
 ) {
   try {
     const patchJson = JSON.stringify(patch);
+    const updatedAt = new Date().toISOString();
     const [updated] = await dbClient
       .update(schema.course)
       .set({
         metadata: sql`COALESCE(${schema.course.metadata}, '{}'::jsonb) || ${patchJson}::jsonb`,
-        updatedAt: new Date().toISOString()
+        updatedAt
       })
       .where(eq(schema.course.id, courseId))
       .returning();

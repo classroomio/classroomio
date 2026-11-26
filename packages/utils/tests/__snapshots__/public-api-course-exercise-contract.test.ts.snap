@@ -604,6 +604,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "type": "boolean",
     },
     "completionPolicy": {
+      "description": "submitted: any submission. passed: a graded score of at least passThreshold. none: never required.",
       "enum": [
         "submitted",
         "passed",
@@ -620,6 +621,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "type": "string",
     },
     "isUnlocked": {
+      "description": "false holds the exercise back from every student until it is released.",
       "type": "boolean",
     },
     "lessonId": {
@@ -633,6 +635,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "type": "integer",
     },
     "passThreshold": {
+      "description": "Percent a graded submission needs when completionPolicy is passed; 100 when unset.",
       "maximum": 100,
       "minimum": 0,
       "type": "integer",
