@@ -10,6 +10,19 @@ import { ZPublicApiPaginationQuery } from './pagination';
 export const PUBLIC_API_QUESTION_TYPES_NOTE =
   'Question types: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
 
+/** Authoring guidance for MCP tools that write questions; options are rendered in the order they are sent. */
+export const PUBLIC_API_QUESTION_AUTHORING_NOTE =
+  'Write exercises the way a good teacher would. Options are shown to students in the order you send them, so vary which position holds the correct answer from question to question instead of putting it first. Mix question types to fit what each question tests (true/false, single and multiple choice, numeric, fill in the blank, ordering, and so on), within the types the course and plan allow, rather than making every question single choice. For an ordering question, put the correct sequence in settings.items, using the exact option labels, and send the options scrambled; without settings.items the option order is the answer and students see it already solved.';
+
+const OPTIONS_DESCRIPTION =
+  'Shown to students in this order; vary where the correct option sits across questions instead of always listing it first.';
+
+const ADDED_OPTIONS_DESCRIPTION =
+  'New options are shown to students after the existing ones, in the order sent; existing options keep their position. Vary where the correct option sits across questions.';
+
+const UPDATE_QUESTION_OPTIONS_DESCRIPTION =
+  'Options with an id edit or delete that option and keep its position; new options (no id) are shown after the existing ones, in the order sent. For a new question this is its full option list, shown in this order, so vary where the correct option sits.';
+
 const QUESTION_TYPE_DESCRIPTION = 'Question type id from 1 to 14; the Question types guide lists each type.';
 
 /** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
@@ -82,6 +95,7 @@ export const ZPublicApiCreateExerciseQuestion = z
       )
       .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
       .optional()
+      .describe(OPTIONS_DESCRIPTION)
   })
   .superRefine(validateQuestionOptions);
 export type TPublicApiCreateExerciseQuestion = z.infer<typeof ZPublicApiCreateExerciseQuestion>;
@@ -150,6 +164,7 @@ export const ZPublicApiUpdateExerciseQuestion = z
       )
       .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
       .optional()
+      .describe(UPDATE_QUESTION_OPTIONS_DESCRIPTION)
   })
   .superRefine((question, ctx) => {
     if (question.delete && !question.id) {
@@ -321,7 +336,11 @@ export const ZPublicApiUpdateExerciseQuestionFields = z
     points: z.number().int().min(1).optional(),
     order: z.number().int().min(0).optional(),
     settings: ZSettings.optional(),
-    addOptions: z.array(ZPublicApiNewQuestionOption).max(PUBLIC_API_MAX_QUESTION_OPTIONS).optional(),
+    addOptions: z
+      .array(ZPublicApiNewQuestionOption)
+      .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
+      .optional()
+      .describe(ADDED_OPTIONS_DESCRIPTION),
     updateOptions: z
       .array(ZPublicApiQuestionOptionPatch)
       .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
