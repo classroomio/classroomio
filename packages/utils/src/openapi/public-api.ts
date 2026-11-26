@@ -260,6 +260,7 @@ export const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/courses/{courseId}/lessons': 'Create a course lesson',
   'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Update a course lesson',
   'POST /public-api/v1/assets': 'Reserve an asset upload',
+  'POST /public-api/v1/assets/images': 'Reserve an image upload',
   'GET /public-api/v1/cohorts': 'List cohorts',
   'POST /public-api/v1/cohorts': 'Create a cohort',
   'GET /public-api/v1/cohorts/{cohortId}': 'Get a cohort',
@@ -358,7 +359,7 @@ const OPERATION_TAGS = [
   {
     name: 'Lesson Blocks',
     description:
-      'Read and edit the content blocks of a lesson: add, reorder, reuse, copy and remove notes, videos and slides.'
+      'Read and edit the content blocks of a lesson: add, reorder, reuse, copy and remove notes, videos, slides and images.'
   },
   {
     name: 'Lesson Translations',
@@ -377,7 +378,10 @@ const OPERATION_TAGS = [
     description:
       'Browse course templates, create courses from them, and save courses as templates. Converting a course into a template in place and pulling template updates are dashboard-only for now.'
   },
-  { name: 'Public API Assets', description: 'Reserve asset uploads for media attached to lessons and exercises.' },
+  {
+    name: 'Public API Assets',
+    description: 'Reserve uploads for videos and images used in lessons, exercises, courses and the organization.'
+  },
   { name: 'Cohorts', description: 'Create and manage cohorts.' },
   { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
   { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },

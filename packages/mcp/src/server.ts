@@ -24,6 +24,7 @@ import { registerLandingPageTools } from './tools/landing-page';
 import { registerOrganizationTools } from './tools/organization';
 import { registerTagTools } from './tools/tags';
 import { registerTeamTools } from './tools/team';
+import { registerImageUploadTools } from './tools/image-upload';
 import { registerMediaUploadTools } from './tools/media-upload';
 import { MCP_VERSION } from './version';
 
@@ -73,6 +74,7 @@ export function createMcpServer(apiClient: ClassroomIoApiClient, options: Create
   registerLandingPageTools(server, apiClient);
   registerTagTools(server, apiClient);
   registerDomainTools(server, apiClient);
+  registerImageUploadTools(server, apiClient);
 
   if (options.includeLocalFileTools) {
     registerMediaUploadTools(server, apiClient);

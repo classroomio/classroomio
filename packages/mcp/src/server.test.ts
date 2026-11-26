@@ -71,6 +71,30 @@ describe('createMcpServer', () => {
     expect(names).toContain('list_team_members');
   });
 
+  it('serves create_image_upload remotely and posts the request to the image upload endpoint', async () => {
+    const requests: { url: string; body: unknown }[] = [];
+    const reserve = async (input: RequestInfo | URL, init?: RequestInit) => {
+      requests.push({ url: String(input), body: JSON.parse(String(init?.body)) });
+      const data = {
+        url: 'https://media.example.com/a.png',
+        uploadUrl: 'https://s/x',
+        expiresAt: '2026-11-26T00:00:00Z'
+      };
+
+      return new Response(JSON.stringify({ success: true, data }), { status: 201 });
+    };
+    const client = await connect({ includeLocalFileTools: false }, reserve as typeof fetch);
+    const args = { purpose: 'cover', fileName: 'banner.png', mimeType: 'image/png', byteSize: 1024 };
+
+    const result = await client.callTool({ name: 'create_image_upload', arguments: args });
+
+    expect(result.isError).toBeFalsy();
+    expect(requests).toEqual([{ url: 'https://api.example.com/public-api/v1/assets/images', body: args }]);
+    expect(JSON.parse((result.content as { text: string }[])[0]!.text)).toMatchObject({
+      url: 'https://media.example.com/a.png'
+    });
+  });
+
   it('exposes the same tools apart from the local file tools', async () => {
     const local = (await (await connect({ includeLocalFileTools: true })).listTools()).tools.map((tool) => tool.name);
     const remote = (await (await connect({ includeLocalFileTools: false })).listTools()).tools.map((tool) => tool.name);

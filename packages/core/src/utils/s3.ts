@@ -198,6 +198,31 @@ export async function generateUploadPresignedUrl(
   return presignedUrl;
 }
 
+/**
+ * Presigned PUT for an object in the public media bucket. The URL only accepts this exact content type and size.
+ */
+export async function generateMediaUploadPresignedUrl(
+  fileKey: string,
+  contentType: string,
+  contentLength: number
+): Promise<string> {
+  const config = getStorageConfig();
+  const client = getPresignS3Client();
+
+  const command = new PutObjectCommand({
+    Bucket: config.bucketMedia,
+    Key: fileKey,
+    ContentType: contentType,
+    ContentLength: contentLength
+  }) as GetSignedUrlParameters[1];
+
+  return getSignedUrl(client as GetSignedUrlParameters[0], command, {
+    expiresIn: config.presignUploadExpiresSeconds,
+    // The S3 presigner leaves content-type unsigned by default, which would let a caller store HTML or SVG under an image key.
+    signableHeaders: new Set(['content-type', 'content-length'])
+  });
+}
+
 /** 6h presigned GET for private transcript VTT objects (not Redis-cached). */
 export const TRANSCRIPT_VTT_PRESIGN_SECONDS = 21_600;
 

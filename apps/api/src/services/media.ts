@@ -13,15 +13,7 @@ import { uploadToS3 } from '@cio/core/utils/s3';
  */
 export async function uploadImage(file: File) {
   const config = getStorageConfig();
-  if (!config.mediaPublicBaseUrl) {
-    throw new AppError(
-      new Error(
-        'Media public URL not configured. Set OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL or CLOUDFLARE_IMAGE_BUCKET_DOMAIN.'
-      ),
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
+  const mediaPublicBaseUrl = getMediaPublicBaseUrl();
 
   // Validate file type
   if (!ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
@@ -61,12 +53,26 @@ export async function uploadImage(file: File) {
     throw new AppError(new Error(uploadResult.error || 'Failed to upload image'), ErrorCodes.INTERNAL_ERROR, 500);
   }
 
-  // Construct public URL
-  const baseUrl = config.mediaPublicBaseUrl.replace(/\/$/, '');
-  const publicUrl = `${baseUrl}/${fileKey}`;
+  const publicUrl = `${mediaPublicBaseUrl}/${fileKey}`;
 
   return {
     url: publicUrl,
     fileKey
   };
+}
+
+/** Base URL public media objects are served from, without a trailing slash. Throws 500 when it is not configured. */
+export function getMediaPublicBaseUrl(): string {
+  const { mediaPublicBaseUrl } = getStorageConfig();
+  if (!mediaPublicBaseUrl) {
+    throw new AppError(
+      new Error(
+        'Media public URL not configured. Set OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL or CLOUDFLARE_IMAGE_BUCKET_DOMAIN.'
+      ),
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+
+  return mediaPublicBaseUrl.replace(/\/$/, '');
 }

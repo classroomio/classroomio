@@ -151,7 +151,7 @@ exports[`public API organization customization contract > ZPublicApiUpdateOrgani
               "type": "null",
             },
           ],
-          "description": "Public http(s) URL of the dashboard banner image; null removes it. Upload the image first, then send its URL.",
+          "description": "Public http(s) URL of the dashboard banner image, such as the url from POST /assets/images with purpose cover; null removes it.",
         },
         "bannerText": {
           "description": "Dashboard banner text; an empty string removes it",

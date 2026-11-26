@@ -113,11 +113,11 @@ the `api` and `dashboard` containers. Unset = built-in defaults. On [Railway](/s
 | Variable | Default | Applies to |
 |----------|---------|------------|
 | `UPLOAD_MAX_DOCUMENT_MB` | 5 | Course lesson documents and Media page document uploads |
-| `UPLOAD_MAX_IMAGE_MB` | 5 | Avatars, media library, editor images |
+| `UPLOAD_MAX_IMAGE_MB` | 5 | Avatars, media library, editor images, and public API image uploads (the `content` purpose, and the ceiling for `cover` and `avatar`) |
 | `UPLOAD_MAX_VIDEO_MB` | 1024 | Lesson video uploads, Media page video uploads (never more than 1 GB per file there), and public API video uploads |
 | `UPLOAD_MAX_EXERCISE_FILE_MB` | 2 | Student assignment file-upload questions |
 | `UPLOAD_MAX_AGENT_DOCUMENT_MB` | 5 | AI assistant document uploads |
-| `UPLOAD_MAX_LANDING_IMAGE_MB` | 0.5 | Org landing page cover images |
+| `UPLOAD_MAX_LANDING_IMAGE_MB` | 0.5 | Course and dashboard banners, login background, favicon, org landing page cover images, and public API `cover` image uploads |
 | `UPLOAD_MAX_THUMBNAIL_MB` | 5 | Media thumbnail uploads |
 
 :::warning[Reverse proxy limits]

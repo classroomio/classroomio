@@ -67,3 +67,22 @@ export function resolveUploadLimits(env: UploadLimitEnv): UploadLimits {
     thumbnailBytes: thumbnailMb * BYTES_PER_MB
   };
 }
+
+export const AVATAR_IMAGE_MAX_MB = 2;
+
+export const IMAGE_UPLOAD_PURPOSES = ['content', 'cover', 'avatar'] as const;
+export type ImageUploadPurpose = (typeof IMAGE_UPLOAD_PURPOSES)[number];
+
+/**
+ * Largest image, in bytes, the dashboard accepts for this purpose: content for lesson and exercise images,
+ * cover for banners, backgrounds and favicons, avatar for logos, photos and certificate images.
+ */
+export function getImageUploadLimitBytes(purpose: ImageUploadPurpose, limits: UploadLimits): number {
+  const purposeLimitBytes: Record<ImageUploadPurpose, number> = {
+    content: limits.imageBytes,
+    cover: limits.landingImageBytes,
+    avatar: AVATAR_IMAGE_MAX_MB * BYTES_PER_MB
+  };
+
+  return Math.min(purposeLimitBytes[purpose], limits.imageBytes);
+}

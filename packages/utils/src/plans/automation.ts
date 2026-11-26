@@ -114,6 +114,7 @@ export const MCP_TOOL_CREDIT_COST = {
   delete_course_lesson_comment: 1,
   list_lesson_blocks: 0,
   add_lesson_block: 1,
+  create_image_upload: 1,
   attach_lesson_block: 1,
   update_lesson_block: 1,
   set_lesson_block_content: 1,

@@ -117,7 +117,7 @@ export function registerCourseTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'update_course_landing_page',
-    "Update a course's landing page fields: title, description, overview, price and metadata. For the banner pass imageUrl (any public image URL, including Unsplash photo URLs), or generateImage/imageQuery to pick one from Unsplash. The result's courseUrl only opens for students once the course is published; until then give the user the appUrl from create_course.",
+    "Update a course's landing page fields: title, description, overview, price and metadata. For the banner pass imageUrl (any public image URL, such as one from create_image_upload with purpose cover, or an Unsplash photo URL), or generateImage/imageQuery to pick one from Unsplash. The result's courseUrl only opens for students once the course is published; until then give the user the appUrl from create_course.",
     shape(ZUpdateCourseLandingPageToolInput),
     { ...UPDATE, idempotentHint: false },
     async (args) => {
