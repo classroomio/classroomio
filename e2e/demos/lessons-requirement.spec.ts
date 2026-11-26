@@ -15,6 +15,15 @@ async function openContentPage(page: Page) {
   await expect(page.getByTestId('lessons-requirement-summary')).toBeVisible({ timeout: 30_000 });
 }
 
+async function ensureAllRequired(page: Page) {
+  const markers = page.getByTestId('lessons-requirement-marker');
+  if ((await markers.count()) === 3) return;
+
+  await page.getByTestId('lessons-content-menu').click();
+  await page.getByTestId('lessons-requirement-all-required').click();
+  await expect(markers).toHaveCount(3, { timeout: 30_000 });
+}
+
 test('teacher marks course content as required or optional', async ({ page }) => {
   test.setTimeout(90_000);
 
@@ -22,6 +31,7 @@ test('teacher marks course content as required or optional', async ({ page }) =>
   await goToOrgCourses(page);
   await page.getByText(COURSE_TITLE).first().click();
   await openContentPage(page);
+  await ensureAllRequired(page);
 
   const markers = page.getByTestId('lessons-requirement-marker');
   const toggles = page.getByTestId('lessons-requirement-toggle');
@@ -31,17 +41,27 @@ test('teacher marks course content as required or optional', async ({ page }) =>
   await markers.first().hover();
   await page.waitForTimeout(1200);
 
-  await page.route(/\/course\/[^/]+\/(lesson|exercise)\/[^/]+$/, async (route) => {
-    if (route.request().method() === 'PUT') await new Promise((resolve) => setTimeout(resolve, 1500));
+  const savePattern = /\/course\/[^/]+\/(lesson|exercise)\/[^/]+$/;
+  let releaseSave = () => {};
+  const saveGate = new Promise<void>((resolve) => {
+    releaseSave = resolve;
+  });
+  await page.route(savePattern, async (route) => {
+    if (route.request().method() === 'PUT') await saveGate;
     await route.continue();
   });
   await markers.nth(1).hover();
   await page.waitForTimeout(800);
   await toggles.nth(1).click();
-  await expect(toggles.nth(0)).toHaveCSS('opacity', '0');
-  await expect(toggles.nth(2)).toHaveCSS('opacity', '0');
+  try {
+    await expect(toggles.nth(1)).toBeDisabled();
+    await expect(toggles.nth(0)).toHaveCSS('opacity', '0');
+    await expect(toggles.nth(2)).toHaveCSS('opacity', '0');
+  } finally {
+    releaseSave();
+  }
   await expect(markers).toHaveCount(2);
-  await page.unroute(/\/course\/[^/]+\/(lesson|exercise)\/[^/]+$/);
+  await page.unroute(savePattern);
 
   await page.reload();
   await expect(page.getByTestId('lessons-requirement-summary')).toBeVisible({ timeout: 30_000 });
@@ -74,19 +94,32 @@ test('changing a lesson completion rule updates the sidebar marker', async ({ pa
   await goToOrgCourses(page);
   await page.getByText(COURSE_TITLE).first().click();
   await openContentPage(page);
+  await ensureAllRequired(page);
   await page.getByRole('link', { name: 'Passwords, MFA, and not getting phished' }).first().click();
 
   const sidebarMarkers = page.getByTestId('sidebar-requirement-marker');
   await page.getByTestId('lesson-settings-open').click({ timeout: 30_000 });
   await expect(sidebarMarkers).toHaveCount(3);
 
-  await page.locator('#lesson-completion-policy').click();
-  await page.getByTestId('lesson-completion-none').click();
-  await expect(sidebarMarkers).toHaveCount(2, { timeout: 15_000 });
-  await page.waitForTimeout(1500);
+  const completionSelect = page.locator('#lesson-completion-policy');
+  const lessonSaved = () =>
+    page.waitForResponse((response) => response.request().method() === 'PUT' && /\/lesson\//.test(response.url()), {
+      timeout: 15_000
+    });
 
-  await page.locator('#lesson-completion-policy').click();
-  await page.getByTestId('lesson-completion-manual').click();
+  try {
+    await completionSelect.click();
+    await page.getByTestId('lesson-completion-none').click();
+    await expect(sidebarMarkers).toHaveCount(2, { timeout: 15_000 });
+  } finally {
+    const restored = lessonSaved().catch(() => undefined);
+    await completionSelect.click({ timeout: 5_000 }).catch(() => undefined);
+    await page
+      .getByTestId('lesson-completion-manual')
+      .click({ timeout: 5_000 })
+      .catch(() => undefined);
+    await restored;
+  }
   await expect(sidebarMarkers).toHaveCount(3, { timeout: 15_000 });
 });
 
