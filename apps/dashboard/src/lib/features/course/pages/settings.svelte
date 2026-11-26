@@ -210,7 +210,10 @@
     hasUnsavedChanges = true;
   }
 
+  let privacyEdited = false;
+
   function onPrivateToggle(checked: boolean) {
+    privacyEdited = true;
     $settings.isPrivate = checked;
     if (checked) {
       $settings.allowSelfEnrollment = false;
@@ -292,7 +295,7 @@
         type: $settings.type,
         bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
-        ...($settings.isPrivate !== !!courseApi.course.isPrivate ? { isPrivate: $settings.isPrivate } : {}),
+        ...(privacyEdited ? { isPrivate: $settings.isPrivate } : {}),
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
@@ -324,12 +327,18 @@
       });
 
       if (courseApi.success && response) {
-        if ($settings.isPrivate === privacyAtSave) {
-          $settings.isPrivate = !!courseApi.course.isPrivate;
-        }
-
         const draftUnchanged =
           JSON.stringify({ settings: $settings, tagIds: [...selectedTagIds].sort(), avatar }) === draftAtSave;
+
+        if ($settings.isPrivate === privacyAtSave) {
+          privacyEdited = false;
+          $settings.isPrivate = !!courseApi.course.isPrivate;
+
+          if ($settings.isPrivate && $settings.type === 'PUBLIC') {
+            $settings.type = (courseApi.course.type as TCourseType) || 'SELF_PACED';
+            publicConversionFlow.cancel();
+          }
+        }
 
         if (hasTagChanges) {
           // The server stored the submitted tags; keep the user's newer toggles selected.
@@ -371,6 +380,12 @@
 
   async function setDefault(course: Course) {
     if (!course || !Object.keys(course).length) return;
+
+    privacyEdited = false;
+
+    if (course.isPrivate && publicConversionFlow.isActive && publicConversionFlow.courseId === course.id) {
+      publicConversionFlow.cancel();
+    }
 
     const isConversionFlowActive = publicConversionFlow.isActive && publicConversionFlow.courseId === course.id;
 
