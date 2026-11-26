@@ -379,6 +379,13 @@
       "when": 1795015813395,
       "tag": "0053_webhook_subscriptions",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1795634851304,
+      "tag": "0054_organization_invite_lower_email_index",
+      "breakpoints": true
     }
   ]
 }

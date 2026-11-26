@@ -1693,6 +1693,12 @@ export const organizationInvite = pgTable(
     unique('organization_invite_token_hash_key').on(table.tokenHash),
     index('idx_organization_invite_organization_id').on(table.organizationId),
     index('idx_organization_invite_email_org').on(table.email, table.organizationId),
+    index('idx_organization_invite_org_lower_email_created_at').using(
+      'btree',
+      table.organizationId.asc(),
+      sql`lower(${table.email})`,
+      table.createdAt.desc().nullsFirst()
+    ),
     index('idx_organization_invite_expires_at').on(table.expiresAt),
     index('idx_organization_invite_created_by').on(table.createdByProfileId),
     index('idx_organization_invite_accepted_by').on(table.acceptedByProfileId),
